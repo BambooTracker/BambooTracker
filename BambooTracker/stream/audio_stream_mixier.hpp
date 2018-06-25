@@ -20,6 +20,9 @@ public:
 	void setRate(uint32_t rate);
 	void setDuration(uint32_t duration);
 
+	bool startPlaySong();
+	bool stopPlaySong();
+
 	qint64 readData(char *data, qint64 maxlen) override;
 	qint64 writeData(const char *data, qint64 len) override;
 

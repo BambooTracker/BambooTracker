@@ -25,8 +25,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
+    main.cpp \
+    gui/mainwindow.cpp \
     chips/chip.cpp \
     chips/opna.cpp \
     chips/resampler.cpp \
@@ -36,10 +36,13 @@ SOURCES += \
     chips/mame/ymdeltat.c \
     bamboo_tracker.cpp \
     stream/audio_stream.cpp \
-    stream/audio_stream_mixier.cpp
+    stream/audio_stream_mixier.cpp \
+    jam_manager.cpp \
+    channel_attribute.cpp \
+    pitch_converter.cpp
 
 HEADERS += \
-        mainwindow.hpp \
+    gui/mainwindow.hpp \
     chips/mame/2608intf.h \
     chips/mame/emu2149.h \
     chips/mame/emutypes.h \
@@ -53,10 +56,14 @@ HEADERS += \
     bamboo_tracker.hpp \
     stream/audio_stream.hpp \
     stream/audio_stream_mixier.hpp \
-    chips/chip_def.h
+    chips/chip_def.h \
+    jam_manager.hpp \
+    misc.hpp \
+    channel_attribute.hpp \
+    pitch_converter.hpp
 
 FORMS += \
-        mainwindow.ui
+    gui/mainwindow.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

@@ -19,6 +19,9 @@ public:
 	void setRate(uint32_t rate);
 	void setDuration(uint32_t duration);
 
+	bool startPlaySong();
+	bool stopPlaySong();
+
 signals:
 	void nextStepArrived();
 	void nextTickArrived();

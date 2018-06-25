@@ -41,6 +41,16 @@ void AudioStream::setDuration(uint32_t duration)
 	start();
 }
 
+bool AudioStream::startPlaySong()
+{
+	return mixer_->startPlaySong();
+}
+
+bool AudioStream::stopPlaySong()
+{
+	return mixer_->stopPlaySong();
+}
+
 void AudioStream::start()
 {
 	if (!mixer_->hasRun()) mixer_->start();

@@ -58,6 +58,18 @@ void AudioStreamMixier::setDuration(uint32_t duration)
 	setBufferSampleSize(rate_, duration);
 }
 
+bool AudioStreamMixier::startPlaySong()
+{
+	isPlaySong_ = !isPlaySong_;
+	return isPlaySong_;
+}
+
+bool AudioStreamMixier::stopPlaySong()
+{
+	isPlaySong_ = !isPlaySong_;
+	return isPlaySong_;
+}
+
 void  AudioStreamMixier::setBufferSampleSize(uint32_t rate, uint32_t duration)
 {
 	bufferSampleSize_ = rate * duration / 1000;
