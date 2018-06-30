@@ -32,14 +32,14 @@ private:
 	int channel_ = 0;
 	//********************
 
-	// Voice list
-	void addVoice();
-	void removeVoice();
-	void editVoice();
+	// Instrument list
+	void addInstrument();
+	void removeInstrument();
+	void editInstrument();
 
 private slots:
-	void on_voiceListWidget_customContextMenuRequested(const QPoint &pos);
-	void on_voiceListWidget_itemDoubleClicked(QListWidgetItem *item);
+	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
+	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
 };
 
 #endif // MAINWINDOW_HPP

@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QListWidget" name="voiceListWidget">
+   <widget class="QListWidget" name="instrumentListWidget">
     <property name="geometry">
      <rect>
       <x>250</x>

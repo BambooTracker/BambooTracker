@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	auto& vl = ui->voiceListWidget;
+	auto& vl = ui->instrumentListWidget;
 	vl->setContextMenuPolicy(Qt::CustomContextMenu);
 	vl->setSelectionMode(QAbstractItemView::SingleSelection);
 	vl->setFocusPolicy(Qt::NoFocus);
@@ -130,54 +130,54 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 }
 
 
-/********** Voice list **********/
-void MainWindow::addVoice()
+/********** Instrument list **********/
+void MainWindow::addInstrument()
 {
-	auto& list = ui->voiceListWidget;
+	auto& list = ui->instrumentListWidget;
 	ChannelAttribute ch = bt_->getCurrentChannel();
 	QString str;
 	switch (ch.getSoundSource()) {
 	case SoundSource::FM:	str = "[FM]";	break;
 	case SoundSource::PSG:	str = "[PSG]";	break;
 	}
-	auto item = new QListWidgetItem(str + "Voice " + QString::number(list->count()));
-	item->setData(Qt::UserRole, "voice num");
+	auto item = new QListWidgetItem(str + "Instrument " + QString::number(list->count()));
+	item->setData(Qt::UserRole, "Instrument num");
 	list->addItem(item);
 }
 
-void MainWindow::removeVoice()
+void MainWindow::removeInstrument()
 {
-	auto& list = ui->voiceListWidget;
+	auto& list = ui->instrumentListWidget;
 	auto&& item = list->takeItem(list->currentRow());
 	delete item;
 }
 
-void MainWindow::editVoice()
+void MainWindow::editInstrument()
 {
-	auto& list = ui->voiceListWidget;
+	auto& list = ui->instrumentListWidget;
 	qDebug() << list->currentItem()->data(Qt::UserRole);
 }
 
-void MainWindow::on_voiceListWidget_customContextMenuRequested(const QPoint &pos)
+void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint &pos)
 {
-	auto& list = ui->voiceListWidget;
+	auto& list = ui->instrumentListWidget;
 	QPoint globalPos = list->mapToGlobal(pos);
 	QMenu menu;
-	menu.addAction("Add voice", this, &MainWindow::addVoice);
-	menu.addAction("Remove voice", this, &MainWindow::removeVoice);
+	menu.addAction("Add instrument", this, &MainWindow::addInstrument);
+	menu.addAction("Remove instrument", this, &MainWindow::removeInstrument);
 	if (list->currentItem() == nullptr) menu.actions().at(1)->setEnabled(false);
 	menu.addSeparator();
 	menu.addAction("Load from file...")->setEnabled(false);
 	menu.addAction("Save to file...")->setEnabled(false);
 	menu.addSeparator();
-	menu.addAction("Edit...", this, &MainWindow::editVoice);
+	menu.addAction("Edit...", this, &MainWindow::editInstrument);
 	if (list->currentItem() == nullptr) menu.actions().at(6)->setEnabled(false);
 
 	menu.exec(globalPos);
 }
 
-void MainWindow::on_voiceListWidget_itemDoubleClicked(QListWidgetItem *item)
+void MainWindow::on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item)
 {
 	Q_UNUSED(item)
-	editVoice();
+	editInstrument();
 }
