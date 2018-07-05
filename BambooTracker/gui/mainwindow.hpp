@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QUndoStack>
 #include "bamboo_tracker.hpp"
+#include "audio_stream.hpp"
 #include "instrument_editor/instrumenteditorfmform.hpp"
 
 namespace Ui {
@@ -31,6 +32,7 @@ private:
 	Ui::MainWindow *ui;
 
 	std::unique_ptr<BambooTracker> bt_;
+	std::unique_ptr<AudioStream> stream_;
 	std::unique_ptr<QUndoStack> comStack_;
 
 	//*********** dummy
@@ -46,6 +48,11 @@ private:
 	// Undo-Redo
 	void undo();
 	void redo();
+
+	// Play song
+	bool isPlaySong_;
+	void startPlaySong();
+	void stopPlaySong();
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);

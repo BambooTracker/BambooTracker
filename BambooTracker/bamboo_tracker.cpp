@@ -12,17 +12,11 @@ BambooTracker::BambooTracker() :
 	#else
 	chip_(3993600 * 2, 44100),
 	#endif
-	stream_(chip_, chip_.getRate(), 40),
 	octave_(4),
 	curChannel_(0),
 	isPlaySong_(false)
 {
 	initChip();
-
-	QObject::connect(&stream_, &AudioStream::nextStepArrived,
-					 this, &BambooTracker::onNextStepArrived, Qt::DirectConnection);
-	QObject::connect(&stream_, &AudioStream::nextTickArrived,
-					 this, &BambooTracker::onNextTickArrived, Qt::DirectConnection);
 }
 
 /********** Change octave **********/
@@ -131,7 +125,7 @@ void BambooTracker::startPlaySong()
 	chip_.reset();
 	initChip();
 	jamMan_.polyphonic(false);
-	isPlaySong_ = stream_.startPlaySong();
+	isPlaySong_ = true;
 }
 
 void BambooTracker::stopPlaySong()
@@ -139,7 +133,34 @@ void BambooTracker::stopPlaySong()
 	chip_.reset();
 	initChip();
 	jamMan_.polyphonic(true);
-	isPlaySong_ = stream_.stopPlaySong();
+	isPlaySong_ = false;
+}
+
+void BambooTracker::readStep()
+{
+//	qDebug() << "step";
+}
+
+void BambooTracker::readTick()
+{
+//	qDebug() << "tick";
+}
+
+/********** Stream samples **********/
+void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
+{
+	chip_.mix(container, nSamples);
+}
+
+/********** Stream details **********/
+int BambooTracker::getStreamRate() const
+{
+	return chip_.getRate();
+}
+
+int BambooTracker::getStreamDuration() const
+{
+	return 40;	// dummy set
 }
 
 /***********************************/
@@ -204,15 +225,4 @@ void BambooTracker::keyOffPSG(int id)
 void BambooTracker::changeVolumePSG(int id, int level)
 {
 	chip_.setRegister(0x08 + id, level);
-}
-
-/********** Stream events **********/
-void BambooTracker::onNextStepArrived()
-{
-//	qDebug() << "step";
-}
-
-void BambooTracker::onNextTickArrived()
-{
-//	qDebug() << "tick";
 }

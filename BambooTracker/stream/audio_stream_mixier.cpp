@@ -4,9 +4,8 @@
 const size_t AudioStreamMixier::NTSC_ = 60;
 const size_t AudioStreamMixier::PAL_ = 50;
 
-AudioStreamMixier::AudioStreamMixier(chip::Chip& chip, uint32_t rate, uint32_t duration, QObject* parent) :
+AudioStreamMixier::AudioStreamMixier(uint32_t rate, uint32_t duration, QObject* parent) :
 	QIODevice(parent),
-	chip_(chip),
 	rate_(rate),
 	duration_(duration),
 	bufferSampleSize_(rate * duration / 1000),
@@ -122,7 +121,7 @@ qint64 AudioStreamMixier::readData(char* data, qint64 maxlen)
 		requiredCount -= count;
 		tickIntrCountRest_ -= count;
 
-		chip_.mix(destPtr, count);
+		emit bufferPrepared(destPtr, count);
 
 		destPtr += (count << 1);	// Move head
 	}

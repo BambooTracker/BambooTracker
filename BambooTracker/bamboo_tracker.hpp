@@ -2,19 +2,15 @@
 
 #include <cstdint>
 #include <string>
-#include <QObject>
 #include "opna.hpp"
-#include "audio_stream.hpp"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
 #include "command_manager.hpp"
 #include "instruments_manager.hpp"
 #include "misc.hpp"
 
-class BambooTracker : public QObject
+class BambooTracker
 {
-	Q_OBJECT
-
 public:
 	BambooTracker();
 
@@ -43,10 +39,18 @@ public:
 	// Play song
 	void startPlaySong();
 	void stopPlaySong();
+	void readStep();
+	void readTick();
+
+	// Stream samples
+	void getStreamSamples(int16_t *container, size_t nSamples);
+
+	// Stream details
+	int getStreamRate() const;
+	int getStreamDuration() const;
 
 private:
 	chip::OPNA chip_;
-	AudioStream stream_;
 	CommandManager comMan_;
 	InstrumentsManager instMan_;
 
@@ -70,8 +74,4 @@ private:
 
 	// Volume change
 	void changeVolumePSG(int id, int level);
-
-private slots:
-	void onNextStepArrived();
-	void onNextTickArrived();
 };

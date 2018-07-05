@@ -4,7 +4,6 @@
 #include <QAudioOutput>
 #include <QAudioFormat>
 #include <memory>
-#include "chip.hpp"
 #include "audio_stream_mixier.hpp"
 
 class AudioStream : public QObject
@@ -13,7 +12,7 @@ class AudioStream : public QObject
 
 public:
 	// duration: miliseconds
-	AudioStream(chip::Chip& chip, uint32_t rate, uint32_t duration);
+	AudioStream(uint32_t rate, uint32_t duration);
 	~AudioStream();
 
 	void setRate(uint32_t rate);
@@ -25,17 +24,13 @@ public:
 signals:
 	void nextStepArrived();
 	void nextTickArrived();
+	void bufferPrepared(int16_t *container, size_t nSamples);
 
 private:
-	chip::Chip& chip_;
 	QAudioFormat format_;
 	std::unique_ptr<QAudioOutput> audio_;
 	std::unique_ptr<AudioStreamMixier> mixer_;
 
 	void start();
 	void stop();
-
-private slots:
-	void onNextStepArrived();
-	void onNextTickArrived();
 };

@@ -3,14 +3,13 @@
 #include <QObject>
 #include <QIODevice>
 #include <cstdint>
-#include "chips/chip.hpp"
 
 class AudioStreamMixier : public QIODevice
 {
 	Q_OBJECT
 
 public:
-	AudioStreamMixier(chip::Chip& chip, uint32_t rate, uint32_t duration, QObject* parent = nullptr);
+	AudioStreamMixier(uint32_t rate, uint32_t duration, QObject* parent = nullptr);
 	~AudioStreamMixier();
 
 	void start();
@@ -29,9 +28,9 @@ public:
 signals:
 	void nextStepArrived();
 	void nextTickArrived();
+	void bufferPrepared(int16_t *container, size_t nSamples);
 
 private:
-	chip::Chip& chip_;
 	size_t rate_;
 	size_t duration_;
 	qint64 bufferSampleSize_;

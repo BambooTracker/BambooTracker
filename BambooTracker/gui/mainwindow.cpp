@@ -10,10 +10,23 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	bt_(std::make_unique<BambooTracker>()),
-	comStack_(std::make_unique<QUndoStack>(this))
+	comStack_(std::make_unique<QUndoStack>(this)),
+	isPlaySong_(false)
 {
 	ui->setupUi(this);
 
+	// Audio stream
+	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(), bt_->getStreamDuration());
+	QObject::connect(stream_.get(), &AudioStream::nextStepArrived,
+					 this, [&]() { bt_->readStep(); }, Qt::DirectConnection);
+	QObject::connect(stream_.get(), &AudioStream::nextTickArrived,
+					 this, [&]() { bt_->readTick(); }, Qt::DirectConnection);
+	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
+					 this, [&](int16_t *container, size_t nSamples) {
+		bt_->getStreamSamples(container, nSamples);
+	}, Qt::DirectConnection);
+
+	// Instrument list
 	auto& vl = ui->instrumentListWidget;
 	vl->setContextMenuPolicy(Qt::CustomContextMenu);
 	vl->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -42,8 +55,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		case Qt::Key_Space:		bt_->toggleJamMode();	break;
 		case Qt::Key_Asterisk:	bt_->raiseOctave();		break;
 		case Qt::Key_Slash:		bt_->lowerOctave();		break;
-		case Qt::Key_F5:		bt_->startPlaySong();	break;
-		case Qt::Key_F8:		bt_->stopPlaySong();	break;
+		case Qt::Key_F5:		startPlaySong();		break;
+		case Qt::Key_F8:		stopPlaySong();			break;
 
 	//********** dummy
 		case Qt::Key_Left: if (channel_ != 0) bt_->selectChannel(--channel_); break;
@@ -193,7 +206,21 @@ void MainWindow::redo()
 	comStack_->redo();
 }
 
+/********** Play song **********/
+void MainWindow::startPlaySong()
+{
+	bt_->startPlaySong();
+	isPlaySong_ = stream_->startPlaySong();
+}
+
+void MainWindow::stopPlaySong()
+{
+	bt_->stopPlaySong();
+	isPlaySong_ = stream_->stopPlaySong();
+}
+
 /******************************/
+/********** Instrument list events **********/
 void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint &pos)
 {
 	auto& list = ui->instrumentListWidget;

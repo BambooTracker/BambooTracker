@@ -1,8 +1,7 @@
 #include "audio_stream.hpp"
 #include <QSysInfo>
 
-AudioStream::AudioStream(chip::Chip& chip, uint32_t rate, uint32_t duration) :
-	chip_(chip)
+AudioStream::AudioStream(uint32_t rate, uint32_t duration)
 {
 	format_.setByteOrder(QAudioFormat::Endian(QSysInfo::ByteOrder));
 	format_.setChannelCount(2); // Stereo
@@ -12,11 +11,16 @@ AudioStream::AudioStream(chip::Chip& chip, uint32_t rate, uint32_t duration) :
 	format_.setSampleType(QAudioFormat::SignedInt);
 
 	audio_ = std::make_unique<QAudioOutput>(format_);
-	mixer_ = std::make_unique<AudioStreamMixier>(chip_, rate, duration);
+	mixer_ = std::make_unique<AudioStreamMixier>(rate, duration);
 	QObject::connect(mixer_.get(), &AudioStreamMixier::nextStepArrived,
-					 this, &AudioStream::onNextStepArrived, Qt::DirectConnection);
+					 this, [&]() { emit nextStepArrived(); }, Qt::DirectConnection);
 	QObject::connect(mixer_.get(), &AudioStreamMixier::nextTickArrived,
-					 this, &AudioStream::onNextTickArrived, Qt::DirectConnection);
+					 this, [&]() { emit nextTickArrived(); }, Qt::DirectConnection);
+	QObject::connect(mixer_.get(), &AudioStreamMixier::bufferPrepared,
+					 this, [&](int16_t *container, size_t nSamples) {
+		emit bufferPrepared(container, nSamples);
+	}, Qt::DirectConnection);
+
 	start();
 }
 
@@ -61,14 +65,4 @@ void AudioStream::stop()
 {
 	if (mixer_->hasRun()) mixer_->stop();
 	if (audio_->state() != QAudio::StoppedState) audio_->stop();
-}
-
-void AudioStream::onNextStepArrived()
-{
-	emit nextStepArrived();
-}
-
-void AudioStream::onNextTickArrived()
-{
-	emit nextTickArrived();
 }
