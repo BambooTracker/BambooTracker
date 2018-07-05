@@ -16,8 +16,8 @@ public:
 	bool toggleJamMode();
 	bool isJamMode() const;
 	void polyphonic(bool flag);
-	void keyOn(JamKey key, int channel, SoundSource source, std::vector<JamKeyData>& keyDataList);
-	void keyOff(JamKey key, JamKeyData& keyData);
+	std::vector<JamKeyData> keyOn(JamKey key, int channel, SoundSource source);
+	JamKeyData keyOff(JamKey key);
 
 	static Note jamKeyToNote(JamKey& key);
 	static int calcOctave(int baseOctave, JamKey& key);

@@ -1,5 +1,6 @@
 #include "jam_manager.hpp"
 #include <algorithm>
+#include <utility>
 
 JamManager::JamManager() :
 	isJamMode_(true),
@@ -47,8 +48,9 @@ void JamManager::polyphonic(bool flag)
 	}
 }
 
-void JamManager::keyOn(JamKey key, int channel, SoundSource source, std::vector<JamKeyData> &keyDataList)
+std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource source)
 {
+	std::vector<JamKeyData> keyDataList;
 	JamKeyData onData{key, channel, source};
 
 	std::deque<int>* unusedCh = nullptr;
@@ -57,7 +59,7 @@ void JamManager::keyOn(JamKey key, int channel, SoundSource source, std::vector<
 	case SoundSource::PSG:	unusedCh = &unusedChPSG_;	break;
 	}
 
-	if (unusedCh->size()) {
+	if (!unusedCh->empty()) {
 		if (isPoly_) onData.chIdInSource = unusedCh->front();
 		unusedCh->pop_front();
 		keyOnTable_.push_back(onData);
@@ -74,10 +76,14 @@ void JamManager::keyOn(JamKey key, int channel, SoundSource source, std::vector<
 		keyOnTable_.erase(it);
 		keyOnTable_.push_back(onData);
 	}
+
+	return std::move(keyDataList);
 }
 
-void JamManager::keyOff(JamKey key, JamKeyData &keyData)
+JamKeyData JamManager::keyOff(JamKey key)
 {
+	JamKeyData keyData;
+
 	auto&& it = std::find_if(keyOnTable_.begin(),
 							 keyOnTable_.end(),
 							 [&](JamKeyData x) {return (x.key == key);});
@@ -95,6 +101,8 @@ void JamManager::keyOff(JamKey key, JamKeyData &keyData)
 		}
 		keyOnTable_.erase(it);
 	}
+
+	return std::move(keyData);
 }
 
 Note JamManager::jamKeyToNote(JamKey &key)

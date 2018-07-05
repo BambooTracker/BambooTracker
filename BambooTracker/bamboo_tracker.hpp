@@ -1,11 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <QObject>
 #include "opna.hpp"
 #include "audio_stream.hpp"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
+#include "command_manager.hpp"
+#include "instruments_manager.hpp"
 #include "misc.hpp"
 
 class BambooTracker : public QObject
@@ -23,6 +26,14 @@ public:
 	void selectChannel(int channel);
 	ChannelAttribute getCurrentChannel() const;
 
+	// Instrument edit
+	void addInstrument(int num, std::string name);
+	void removeInstrument(int num);
+
+	// Undo-Redo
+	void undo();
+	void redo();
+
 	// Jam mode
 	bool toggleJamMode();
 	bool isJamMode() const;
@@ -36,6 +47,8 @@ public:
 private:
 	chip::OPNA chip_;
 	AudioStream stream_;
+	CommandManager comMan_;
+	InstrumentsManager instMan_;
 
 	// Current status
 	int octave_;	// 0-7
@@ -45,7 +58,7 @@ private:
 	// Chip parameters
 	uint8_t mixerPSG_;
 
-	JamManager jm_;
+	JamManager jamMan_;
 
 	void initChip();
 

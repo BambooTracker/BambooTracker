@@ -1,7 +1,10 @@
 #include "bamboo_tracker.hpp"
 #include <vector>
-#include <QDebug>
+#include <memory>
 #include "pitch_converter.hpp"
+#include "commands.hpp"
+
+#include <QDebug>
 
 BambooTracker::BambooTracker() :
 	#ifdef SINC_INTERPOLATION
@@ -46,21 +49,44 @@ ChannelAttribute BambooTracker::getCurrentChannel() const
 	return curChannel_;
 }
 
+/********** Instrument edit **********/
+void BambooTracker::addInstrument(int num, std::string name)
+{
+	comMan_.invoke(std::make_unique<AddInstrumentCommand>(instMan_, num, curChannel_.getSoundSource(), name));
+}
+
+void BambooTracker::removeInstrument(int num)
+{
+	comMan_.invoke(std::make_unique<RemoveInstrumentCommand>(instMan_, num));
+}
+
+/********** Undo-Redo **********/
+void BambooTracker::undo()
+{
+	comMan_.undo();
+}
+
+void BambooTracker::redo()
+{
+	comMan_.redo();
+}
+
 /********** Jam mode **********/
 bool BambooTracker::toggleJamMode()
 {
-	return jm_.toggleJamMode();
+	return jamMan_.toggleJamMode();
 }
 
 bool BambooTracker::isJamMode() const
 {
-	return jm_.isJamMode();
+	return jamMan_.isJamMode();
 }
 
 void BambooTracker::jamKeyOn(JamKey key)
 {
-	std::vector<JamKeyData> list;
-	jm_.keyOn(key, curChannel_.getIdInSoundSource(), curChannel_.getSoundSource(), list);
+	std::vector<JamKeyData> &&list = jamMan_.keyOn(key,
+											   curChannel_.getIdInSoundSource(),
+											   curChannel_.getSoundSource());
 
 	if (list.size() == 2) {	// Key off
 		JamKeyData& offData = list[1];
@@ -89,8 +115,7 @@ void BambooTracker::jamKeyOn(JamKey key)
 
 void BambooTracker::jamKeyOff(JamKey key)
 {
-	JamKeyData data;
-	jm_.keyOff(key, data);
+	JamKeyData &&data = jamMan_.keyOff(key);
 
 	if (data.chIdInSource > -1) {	// Key still sound
 		switch (data.source) {
@@ -105,7 +130,7 @@ void BambooTracker::startPlaySong()
 {
 	chip_.reset();
 	initChip();
-	jm_.polyphonic(false);
+	jamMan_.polyphonic(false);
 	isPlaySong_ = stream_.startPlaySong();
 }
 
@@ -113,7 +138,7 @@ void BambooTracker::stopPlaySong()
 {
 	chip_.reset();
 	initChip();
-	jm_.polyphonic(true);
+	jamMan_.polyphonic(true);
 	isPlaySong_ = stream_.stopPlaySong();
 }
 

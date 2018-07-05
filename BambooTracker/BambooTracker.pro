@@ -39,7 +39,17 @@ SOURCES += \
     stream/audio_stream_mixier.cpp \
     jam_manager.cpp \
     channel_attribute.cpp \
-    pitch_converter.cpp
+    pitch_converter.cpp \
+    gui/instrument_editor/instrumenteditorfmform.cpp \
+    instrument/instruments_manager.cpp \
+    command/command_manager.cpp \
+    command/instrument/add_instrument_command.cpp \
+    instrument/abstruct_instrument.cpp \
+    instrument/instrument_fm.cpp \
+    instrument/instrument_psg.cpp \
+    command/instrument/remove_instrument_command.cpp \
+    gui/command/instrument/add_instrument_qt_command.cpp \
+    gui/command/instrument/remove_instrument_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -60,11 +70,27 @@ HEADERS += \
     jam_manager.hpp \
     misc.hpp \
     channel_attribute.hpp \
-    pitch_converter.hpp
+    pitch_converter.hpp \
+    gui/instrument_editor/instrumenteditorfmform.hpp \
+    instrument/instruments_manager.hpp \
+    command/command_interface.hpp \
+    command/command_manager.hpp \
+    command/instrument/add_instrument_command.hpp \
+    instrument/abstruct_instrument.hpp \
+    instrument/instrument_fm.hpp \
+    instrument/instrument_psg.hpp \
+    command/instrument/remove_instrument_command.hpp \
+    command/commands.hpp \
+    gui/command/instrument/add_instrument_qt_command.hpp \
+    gui/command/commands_qt.hpp \
+    gui/command/instrument/remove_instrument_qt_command.hpp
 
 FORMS += \
-    gui/mainwindow.ui
+    gui/mainwindow.ui \
+    gui/instrument_editor/instrumenteditorfmform.ui
 
 INCLUDEPATH += \
     $$PWD/chips \
-    $$PWD/stream
+    $$PWD/stream \
+    $$PWD/instrument \
+    $$PWD/command
