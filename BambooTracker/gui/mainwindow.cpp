@@ -4,6 +4,9 @@
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
 #include "./command/commands_qt.hpp"
+#include "gui/instrument_editor/instrument_editor_fm_form.hpp"
+#include "gui/instrument_editor/instrument_editor_psg_form.hpp"
+
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -153,7 +156,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
-
 /********** Instrument list **********/
 void MainWindow::addInstrument()
 {
@@ -169,12 +171,7 @@ void MainWindow::addInstrument()
 	bt_->addInstrument(num, name.toUtf8().toStdString());
 
 	ChannelAttribute ch = bt_->getCurrentChannel();
-	QString typestr;
-	switch (ch.getSoundSource()) {
-	case SoundSource::FM:	typestr = "[FM]";	break;
-	case SoundSource::PSG:	typestr = "[PSG]";	break;
-	}
-	comStack_->push(new AddInstrumentQtCommand(list, num, typestr+name));
+	comStack_->push(new AddInstrumentQtCommand(list, num, name, ch.getSoundSource(), instFormMap_));
 }
 
 void MainWindow::removeInstrument()
@@ -184,13 +181,37 @@ void MainWindow::removeInstrument()
 	int num = list->item(row)->data(Qt::UserRole).toInt();
 
 	bt_->removeInstrument(num);
-	comStack_->push(new RemoveInstrumentQtCommand(list, num, row));
+	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, instFormMap_));
 }
 
 void MainWindow::editInstrument()
 {
-	auto& list = ui->instrumentListWidget;
-	qDebug() << list->currentItem()->data(Qt::UserRole);
+	auto item = ui->instrumentListWidget->currentItem();
+	int num = item->data(Qt::UserRole).toInt();
+	auto& form = instFormMap_.at(num);
+	if (form->isHidden()) {
+		std::unique_ptr<AbstructInstrument> inst = bt_->getInstrument(num);
+		switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
+		case SoundSource::FM:
+		{
+			auto&& fmForm = dynamic_cast<InstrumentEditorFMForm*>(form.get());
+			auto&& ifm = dynamic_cast<InstrumentFM*>(inst.get());
+			fmForm->setInstrumentParameters(*ifm);
+			break;
+		}
+		case SoundSource::PSG:
+		{
+			auto&& psgForm = dynamic_cast<InstrumentEditorPSGForm*>(form.get());
+			auto&& ipsg = dynamic_cast<InstrumentPSG*>(inst.get());
+			psgForm->setInstrumentParameters(*ipsg);
+			break;
+		}
+		}
+		form->show();
+	}
+	else {
+		form->activateWindow();
+	}
 }
 
 /********** Undo-Redo **********/

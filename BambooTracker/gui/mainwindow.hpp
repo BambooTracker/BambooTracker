@@ -10,7 +10,6 @@
 #include <QUndoStack>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
-#include "instrument_editor/instrumenteditorfmform.hpp"
 
 namespace Ui {
 	class MainWindow;

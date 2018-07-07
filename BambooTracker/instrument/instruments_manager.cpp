@@ -3,27 +3,34 @@
 #include "instrument_fm.hpp"
 #include "instrument_psg.hpp"
 
-InstrumentsManager::InstrumentsManager() {}
+InstrumentsManager::InstrumentsManager(chip::Chip& chip) :
+	chip_(chip) {}
 
-AbstructInstrument InstrumentsManager::addInstrument(int num, SoundSource source, std::string name)
+std::unique_ptr<AbstructInstrument> InstrumentsManager::addInstrument(int num, SoundSource source, std::string name)
 {
 	switch (source) {
-	case SoundSource::FM:	map_.emplace(num, InstrumentFM(num, name));		break;
-	case SoundSource::PSG:	map_.emplace(num, InstrumentPSG(num, name));	break;
+	case SoundSource::FM:	map_.emplace(num, std::make_unique<InstrumentFM>(num, name));	break;
+	case SoundSource::PSG:	map_.emplace(num, std::make_unique<InstrumentPSG>(num, name));	break;
 	}
 
-	return map_.at(num);
+	return map_.at(num)->clone();
 }
 
-AbstructInstrument InstrumentsManager::addInstrument(AbstructInstrument inst)
+std::unique_ptr<AbstructInstrument> InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 {
-	map_.emplace(inst.getNumber(), inst);
-	return map_.at(inst.getNumber());
+	int num = inst->getNumber();
+	map_.emplace(num, std::move(inst));
+	return map_.at(num)->clone();
 }
 
-AbstructInstrument InstrumentsManager::removeInstrument(int n)
+std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int n)
 {
-	AbstructInstrument ret = map_.at(n);
+	std::unique_ptr<AbstructInstrument> ret = map_.at(n)->clone();
 	map_.erase(n);
-	return std::move(ret);
+	return ret;
+}
+
+std::unique_ptr<AbstructInstrument> InstrumentsManager::getInstrument(int n) const
+{
+	return map_.at(n)->clone();
 }

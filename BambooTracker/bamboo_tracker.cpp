@@ -1,6 +1,5 @@
 #include "bamboo_tracker.hpp"
 #include <vector>
-#include <memory>
 #include "pitch_converter.hpp"
 #include "commands.hpp"
 
@@ -12,6 +11,7 @@ BambooTracker::BambooTracker() :
 	#else
 	chip_(3993600 * 2, 44100),
 	#endif
+	instMan_(chip_),
 	octave_(4),
 	curChannel_(0),
 	isPlaySong_(false)
@@ -52,6 +52,11 @@ void BambooTracker::addInstrument(int num, std::string name)
 void BambooTracker::removeInstrument(int num)
 {
 	comMan_.invoke(std::make_unique<RemoveInstrumentCommand>(instMan_, num));
+}
+
+std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
+{
+	return instMan_.getInstrument(num);
 }
 
 /********** Undo-Redo **********/

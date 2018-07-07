@@ -5,21 +5,20 @@ AddInstrumentCommand::AddInstrumentCommand(InstrumentsManager &manager, int num,
 	manager_(manager),
 	num_(num),
 	source_(source),
-	name_(name),
-	inst_(InstrumentFM(0, u8"dummy"))
+	name_(name)
 {}
 
 void AddInstrumentCommand::invoke()
 {
-	inst_ = manager_.addInstrument(num_, source_, name_);
+	manager_.addInstrument(num_, source_, name_);
 }
 
 void AddInstrumentCommand::undo()
 {
-	manager_.removeInstrument(inst_.getNumber());
+	manager_.removeInstrument(num_);
 }
 
 void AddInstrumentCommand::redo()
 {
-	manager_.addInstrument(inst_);
+	invoke();
 }

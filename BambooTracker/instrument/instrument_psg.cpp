@@ -9,3 +9,8 @@ InstrumentPSG::InstrumentPSG(int number, std::string name) :
 {
 	qDebug() << QString::fromUtf8(name.c_str(), name.length());
 }
+
+std::unique_ptr<AbstructInstrument> InstrumentPSG::clone()
+{
+	return std::unique_ptr<AbstructInstrument>(std::make_unique<InstrumentPSG>(*this));
+}

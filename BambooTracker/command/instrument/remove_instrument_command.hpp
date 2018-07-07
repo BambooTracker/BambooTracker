@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "command_interface.hpp"
 #include "instruments_manager.hpp"
 #include "abstruct_instrument.hpp"
@@ -16,7 +17,5 @@ public:
 private:
 	InstrumentsManager &manager_;
 	int number_;
-	AbstructInstrument inst_;
-
-	void remove();
+	std::unique_ptr<AbstructInstrument> inst_;
 };

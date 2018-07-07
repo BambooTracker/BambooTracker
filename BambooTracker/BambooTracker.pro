@@ -40,7 +40,6 @@ SOURCES += \
     jam_manager.cpp \
     channel_attribute.cpp \
     pitch_converter.cpp \
-    gui/instrument_editor/instrumenteditorfmform.cpp \
     instrument/instruments_manager.cpp \
     command/command_manager.cpp \
     command/instrument/add_instrument_command.cpp \
@@ -49,7 +48,12 @@ SOURCES += \
     instrument/instrument_psg.cpp \
     command/instrument/remove_instrument_command.cpp \
     gui/command/instrument/add_instrument_qt_command.cpp \
-    gui/command/instrument/remove_instrument_qt_command.cpp
+    gui/command/instrument/remove_instrument_qt_command.cpp \
+    gui/instrument_editor/instrument_editor_psg_form.cpp \
+    gui/instrument_editor/instrument_editor_fm_form.cpp \
+    gui/custom_slider.cpp \
+    gui/labeled_slider.cpp \
+    gui/instrument_editor/fm_operator_table.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -71,7 +75,6 @@ HEADERS += \
     misc.hpp \
     channel_attribute.hpp \
     pitch_converter.hpp \
-    gui/instrument_editor/instrumenteditorfmform.hpp \
     instrument/instruments_manager.hpp \
     command/command_interface.hpp \
     command/command_manager.hpp \
@@ -83,11 +86,19 @@ HEADERS += \
     command/commands.hpp \
     gui/command/instrument/add_instrument_qt_command.hpp \
     gui/command/commands_qt.hpp \
-    gui/command/instrument/remove_instrument_qt_command.hpp
+    gui/command/instrument/remove_instrument_qt_command.hpp \
+    gui/instrument_editor/instrument_editor_psg_form.hpp \
+    gui/instrument_editor/instrument_editor_fm_form.hpp \
+    gui/custom_slider.hpp \
+    gui/labeled_slider.hpp \
+    gui/instrument_editor/fm_operator_table.hpp
 
 FORMS += \
     gui/mainwindow.ui \
-    gui/instrument_editor/instrumenteditorfmform.ui
+    gui/instrument_editor/instrument_editor_psg_form.ui \
+    gui/instrument_editor/instrument_editor_fm_form.ui \
+    gui/labeled_slider.ui \
+    gui/instrument_editor/fm_operator_table.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

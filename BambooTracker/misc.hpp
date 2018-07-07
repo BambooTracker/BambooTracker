@@ -1,6 +1,6 @@
 #pragma once
 
-enum class SoundSource
+enum class SoundSource : int
 {
 	FM, PSG
 };

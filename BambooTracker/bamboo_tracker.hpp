@@ -2,11 +2,13 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 #include "opna.hpp"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
 #include "command_manager.hpp"
 #include "instruments_manager.hpp"
+#include "abstruct_instrument.hpp"
 #include "misc.hpp"
 
 class BambooTracker
@@ -25,6 +27,7 @@ public:
 	// Instrument edit
 	void addInstrument(int num, std::string name);
 	void removeInstrument(int num);
+	std::unique_ptr<AbstructInstrument> getInstrument(int num);
 
 	// Undo-Redo
 	void undo();
