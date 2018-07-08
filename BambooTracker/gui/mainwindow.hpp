@@ -8,6 +8,7 @@
 #include <QListWidgetItem>
 #include <QWidget>
 #include <QUndoStack>
+#include <QCloseEvent>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
 
@@ -26,6 +27,8 @@ public:
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
+
+	void closeEvent(QCloseEvent* ce) override;
 
 private:
 	Ui::MainWindow *ui;

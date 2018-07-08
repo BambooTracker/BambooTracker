@@ -156,6 +156,14 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
+void MainWindow::closeEvent(QCloseEvent *ce)
+{
+	for (auto& pair : instFormMap_) {
+		pair.second->close();
+	}
+	ce->accept();	// dummy
+}
+
 /********** Instrument list **********/
 void MainWindow::addInstrument()
 {

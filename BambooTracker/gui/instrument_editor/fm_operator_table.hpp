@@ -2,7 +2,9 @@
 #define FM_OPERATOR_TABLE_HPP
 
 #include <map>
+#include <memory>
 #include <QFrame>
+#include <QPoint>
 #include "gui/labeled_slider.hpp"
 
 namespace Ui {
@@ -30,6 +32,8 @@ private:
 	Ui::FMOperatorTable *ui;
 	int number_;
 	std::map<Ui::FMOperatorParameter, LabeledSlider*> sliderMap_;
+
+	void rewriteGraph();
 };
 
 namespace Ui {
