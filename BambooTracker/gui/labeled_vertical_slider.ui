@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LabeledSlider</class>
- <widget class="QFrame" name="LabeledSlider">
+ <class>LabeledVerticalSlider</class>
+ <widget class="QFrame" name="LabeledVerticalSlider">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -37,7 +37,7 @@
     </widget>
    </item>
    <item alignment="Qt::AlignHCenter">
-    <widget class="CustomSlider" name="slider">
+    <widget class="QSlider" name="slider">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -52,13 +52,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>CustomSlider</class>
-   <extends>QSlider</extends>
-   <header>gui/custom_slider.hpp</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

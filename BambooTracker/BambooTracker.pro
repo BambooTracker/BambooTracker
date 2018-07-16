@@ -51,9 +51,10 @@ SOURCES += \
     gui/command/instrument/remove_instrument_qt_command.cpp \
     gui/instrument_editor/instrument_editor_psg_form.cpp \
     gui/instrument_editor/instrument_editor_fm_form.cpp \
-    gui/custom_slider.cpp \
-    gui/labeled_slider.cpp \
-    gui/instrument_editor/fm_operator_table.cpp
+    gui/instrument_editor/fm_operator_table.cpp \
+    gui/labeled_vertical_slider.cpp \
+    gui/labeled_horizontal_slider.cpp \
+    gui/slider_style.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -89,16 +90,18 @@ HEADERS += \
     gui/command/instrument/remove_instrument_qt_command.hpp \
     gui/instrument_editor/instrument_editor_psg_form.hpp \
     gui/instrument_editor/instrument_editor_fm_form.hpp \
-    gui/custom_slider.hpp \
-    gui/labeled_slider.hpp \
-    gui/instrument_editor/fm_operator_table.hpp
+    gui/instrument_editor/fm_operator_table.hpp \
+    gui/labeled_vertical_slider.hpp \
+    gui/labeled_horizontal_slider.hpp \
+    gui/slider_style.hpp
 
 FORMS += \
     gui/mainwindow.ui \
     gui/instrument_editor/instrument_editor_psg_form.ui \
     gui/instrument_editor/instrument_editor_fm_form.ui \
-    gui/labeled_slider.ui \
-    gui/instrument_editor/fm_operator_table.ui
+    gui/instrument_editor/fm_operator_table.ui \
+    gui/labeled_vertical_slider.ui \
+    gui/labeled_horizontal_slider.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

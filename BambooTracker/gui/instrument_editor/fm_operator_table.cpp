@@ -31,7 +31,7 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	for (auto& pair : sliderMap_) {
 		pair.second->setText(name[n]);
 		pair.second->setMaximum(maxValue[n]);
-		QObject::connect(pair.second, &LabeledSlider::valueChanged,
+		QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
 						 this, [&](int value) {
 			repaintGraph();
 			emit operatorValueChanged(pair.first, value);
@@ -51,7 +51,7 @@ FMOperatorTable::~FMOperatorTable()
 void FMOperatorTable::setOperatorNumber(int n)
 {
 	number_ = n;
-	ui->groupBox->setTitle("Operator " + QString::number(n));
+	ui->groupBox->setTitle("Operator " + QString::number(n + 1));
 }
 
 int FMOperatorTable::operatorNumber() const

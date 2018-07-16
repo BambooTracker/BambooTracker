@@ -6,7 +6,7 @@
 #include <QFrame>
 #include <QShowEvent>
 #include <QResizeEvent>
-#include "gui/labeled_slider.hpp"
+#include "gui/labeled_vertical_slider.hpp"
 
 namespace Ui {
 	class FMOperatorTable;
@@ -39,7 +39,7 @@ private slots:
 private:
 	Ui::FMOperatorTable *ui;
 	int number_;
-	std::map<Ui::FMOperatorParameter, LabeledSlider*> sliderMap_;
+	std::map<Ui::FMOperatorParameter, LabeledVerticalSlider*> sliderMap_;
 
 	// Envelope graph
 	void resizeGraph();

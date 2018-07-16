@@ -1,21 +1,21 @@
-#ifndef LABELED_SLIDER_HPP
-#define LABELED_SLIDER_HPP
+#ifndef LABALED_HORIZONTAL_SLIDER_HPP
+#define LABALED_HORIZONTAL_SLIDER_HPP
 
 #include <QFrame>
 #include <QString>
 
 namespace Ui {
-	class LabeledSlider;
+	class LabeledHorizontalSlider;
 }
 
-class LabeledSlider : public QFrame
+class LabeledHorizontalSlider : public QFrame
 {
 	Q_OBJECT
 
 public:
-	explicit LabeledSlider(QWidget *parent = 0);
-	LabeledSlider(QString text, QWidget *parent = 0);
-	~LabeledSlider();
+	explicit LabeledHorizontalSlider(QWidget *parent = 0);
+	LabeledHorizontalSlider(QString text, QWidget *parent = 0);
+	~LabeledHorizontalSlider();
 
 	int value() const;
 	void setValue(int value);
@@ -35,8 +35,8 @@ private slots:
 	void on_slider_valueChanged(int value);
 
 private:
-	Ui::LabeledSlider *ui;
+	Ui::LabeledHorizontalSlider *ui;
 	void init(QString text);
 };
 
-#endif // LABELED_SLIDER_HPP
+#endif // LABALED_HORIZONTAL_SLIDER_HPP
