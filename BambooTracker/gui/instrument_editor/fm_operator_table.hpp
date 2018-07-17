@@ -32,9 +32,11 @@ protected:
 
 signals:
 	void operatorValueChanged(Ui::FMOperatorParameter param, int value);
+	void operatorEnableChanged(bool enable);
 
 private slots:
 	void on_ssgegCheckBox_stateChanged(int arg1);
+	void on_groupBox_toggled(bool arg1);
 
 private:
 	Ui::FMOperatorTable *ui;
@@ -49,7 +51,7 @@ private:
 namespace Ui {
 	enum class FMOperatorParameter
 	{
-		AR, DR, SR, RR, SL, TL, KS, ML, DT, AM, IS_SSGEG, TYPE_SSGEG
+		AR, DR, SR, RR, SL, TL, KS, ML, DT, AM, SSGEG
 	};
 }
 

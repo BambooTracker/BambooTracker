@@ -10,22 +10,22 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	ui(new Ui::FMOperatorTable)
 {
 	ui->setupUi(this);
-	ui->ssgegSlider->setEnabled(false);
 
 	// Init sliders
-	sliderMap_.emplace(Ui::FMOperatorParameter::AR, ui->arSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::DR, ui->drSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::SR, ui->srSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::RR, ui->rrSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::SL, ui->slSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::TL, ui->tlSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::KS, ui->ksSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::ML, ui->mlSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::DT, ui->dtSlider);
-	sliderMap_.emplace(Ui::FMOperatorParameter::TYPE_SSGEG, ui->ssgegSlider);
+	sliderMap_ = {
+		{ Ui::FMOperatorParameter::AR, ui->arSlider },
+		{ Ui::FMOperatorParameter::DR, ui->drSlider },
+		{ Ui::FMOperatorParameter::SR, ui->srSlider },
+		{ Ui::FMOperatorParameter::RR, ui->rrSlider },
+		{ Ui::FMOperatorParameter::SL, ui->slSlider },
+		{ Ui::FMOperatorParameter::TL, ui->tlSlider },
+		{ Ui::FMOperatorParameter::KS, ui->ksSlider },
+		{ Ui::FMOperatorParameter::ML, ui->mlSlider },
+		{ Ui::FMOperatorParameter::DT, ui->dtSlider }
+	};
 
-	QString name[] = { "AR", "DR", "SR", "RR", "SL", "TL", "KS", "ML", "DT", "TYPE" };
-	int maxValue[] = { 31, 31, 31, 15, 15, 127, 3, 15, 7, 7 };
+	QString name[] = { "AR", "DR", "SR", "RR", "SL", "TL", "KS", "ML", "DT"};
+	int maxValue[] = { 31, 31, 31, 15, 15, 127, 3, 15, 7};
 
 	int n = 0;
 	for (auto& pair : sliderMap_) {
@@ -39,6 +39,16 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		++n;
 	}
 
+	ui->ssgegSlider->setEnabled(false);
+	ui->ssgegSlider->setText("TYPE");
+	ui->ssgegSlider->setMaximum(7);
+	QObject::connect(ui->ssgegSlider, &LabeledVerticalSlider::valueChanged,
+					 this, [&](int value) {
+		repaintGraph();
+		emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, value);
+	});
+
+	// Init graph
 	auto scene = new QGraphicsScene(0, 0,201, 128, ui->envelopeGraphicsView);
 	ui->envelopeGraphicsView->setScene(scene);
 }
@@ -61,7 +71,18 @@ int FMOperatorTable::operatorNumber() const
 
 void FMOperatorTable::setValue(Ui::FMOperatorParameter param, int value)
 {
-	sliderMap_.at(param)->setValue(value);
+	if (param == Ui::FMOperatorParameter::SSGEG) {
+		if (value == -1) {
+			ui->ssgegCheckBox->setChecked(false);
+		}
+		else {
+			ui->ssgegCheckBox->setChecked(true);
+			ui->ssgegSlider->setValue(value);
+		}
+	}
+	else {
+		sliderMap_.at(param)->setValue(value);
+	}
 }
 
 void FMOperatorTable::showEvent(QShowEvent* event)
@@ -238,10 +259,17 @@ void FMOperatorTable::on_ssgegCheckBox_stateChanged(int arg1)
 		ui->ssgegSlider->setEnabled(true);
 		ui->arSlider->setValue(31);
 		ui->arSlider->setEnabled(false);
+		emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, ui->ssgegSlider->value());
 	}
 	else {
 		ui->ssgegSlider->setEnabled(false);
 		ui->arSlider->setEnabled(true);
+		emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, -1);
 	}
 	repaintGraph();
+}
+
+void FMOperatorTable::on_groupBox_toggled(bool arg1)
+{
+	emit operatorEnableChanged(arg1);
 }
