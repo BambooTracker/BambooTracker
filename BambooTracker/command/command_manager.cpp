@@ -5,9 +5,12 @@ CommandManager::CommandManager() {}
 
 void CommandManager::invoke(CommandIPtr command)
 {
-	command->invoke();
+	command->redo();
+
 	redoStack_ = std::stack<CommandIPtr>();
-	undoStack_.push(std::move(command));
+	if (undoStack_.empty() || !undoStack_.top()->mergeWith(command.get())) {
+		undoStack_.push(std::move(command));
+	}
 }
 
 void CommandManager::undo()

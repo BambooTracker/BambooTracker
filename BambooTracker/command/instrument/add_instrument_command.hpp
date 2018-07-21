@@ -1,19 +1,19 @@
 #pragma once
 
 #include <string>
-#include "command_interface.hpp"
+#include "abstruct_command.hpp"
 #include "abstruct_instrument.hpp"
 #include "instruments_manager.hpp"
 #include "misc.hpp"
 
-class AddInstrumentCommand : public CommandInterface
+class AddInstrumentCommand : public AbstructCommand
 {
 public:
 	AddInstrumentCommand(InstrumentsManager &manager, int num, SoundSource source, std::string name);
 
-	void invoke() override;
-	void undo() override;
 	void redo() override;
+	void undo() override;
+	int getID() const override;
 
 private:
 	InstrumentsManager &manager_;

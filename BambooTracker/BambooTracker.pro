@@ -54,7 +54,9 @@ SOURCES += \
     gui/instrument_editor/fm_operator_table.cpp \
     gui/labeled_vertical_slider.cpp \
     gui/labeled_horizontal_slider.cpp \
-    gui/slider_style.cpp
+    gui/slider_style.cpp \
+    gui/command/instrument/change_instrument_name_qt_command.cpp \
+    command/instrument/change_instrument_name_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -77,7 +79,6 @@ HEADERS += \
     channel_attribute.hpp \
     pitch_converter.hpp \
     instrument/instruments_manager.hpp \
-    command/command_interface.hpp \
     command/command_manager.hpp \
     command/instrument/add_instrument_command.hpp \
     instrument/abstruct_instrument.hpp \
@@ -93,7 +94,10 @@ HEADERS += \
     gui/instrument_editor/fm_operator_table.hpp \
     gui/labeled_vertical_slider.hpp \
     gui/labeled_horizontal_slider.hpp \
-    gui/slider_style.hpp
+    gui/slider_style.hpp \
+    gui/command/instrument/change_instrument_name_qt_command.hpp \
+    command/instrument/change_instrument_name_command.hpp \
+    command/abstruct_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

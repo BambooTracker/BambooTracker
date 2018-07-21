@@ -34,3 +34,15 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::getInstrument(int n) con
 {
 	return map_.at(n)->clone();
 }
+
+void InstrumentsManager::setInstrumentName(int num, std::string name)
+{
+	map_.at(num)->setName(name);
+}
+
+void InstrumentsManager::setFMParameterValue(int n, FMParameter param, int value)
+{
+	auto inst = map_.at(n).get();
+	if (inst->getSoundSource() != SoundSource::FM) return;
+	return dynamic_cast<InstrumentFM*>(inst)->setParameterValue(param, value);
+}

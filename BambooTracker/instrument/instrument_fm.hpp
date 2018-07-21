@@ -11,6 +11,8 @@ class InstrumentFM : public AbstructInstrument
 {
 public:
 	InstrumentFM(int number, std::string name);
+	InstrumentFM(const InstrumentFM& other);
+	~InstrumentFM() = default;
 	std::unique_ptr<AbstructInstrument> clone() override;
 
 	bool getOperatorEnable(int num) const;
@@ -40,6 +42,7 @@ private:
 	FMOperator op_[4];
 
 	std::map<FMParameter, int&> paramMap_;
+	void initParamMap();
 };
 
 enum class FMParameter

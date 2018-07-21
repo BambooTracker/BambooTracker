@@ -36,6 +36,7 @@ private slots:
 
 private:
 	Ui::LabeledVerticalSlider *ui;
+
 	void init(QString text);
 };
 

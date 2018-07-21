@@ -1,18 +1,18 @@
 #pragma once
 
 #include <memory>
-#include "command_interface.hpp"
+#include "abstruct_command.hpp"
 #include "instruments_manager.hpp"
 #include "abstruct_instrument.hpp"
 
-class RemoveInstrumentCommand : public CommandInterface
+class RemoveInstrumentCommand : public AbstructCommand
 {
 public:
 	RemoveInstrumentCommand(InstrumentsManager &manager, int number);
 
-	void invoke() override;
-	void undo() override;
 	void redo() override;
+	void undo() override;
+	int getID() const override;
 
 private:
 	InstrumentsManager &manager_;

@@ -59,6 +59,16 @@ std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
 	return instMan_.getInstrument(num);
 }
 
+void BambooTracker::setInstrumentName(int num, std::string name)
+{
+	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
+}
+
+void BambooTracker::setFMParameter(int num, FMParameter param, int value)
+{
+	// TODO: inplement
+}
+
 /********** Undo-Redo **********/
 void BambooTracker::undo()
 {

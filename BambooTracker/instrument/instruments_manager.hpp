@@ -5,6 +5,7 @@
 #include <memory>
 #include "chip.hpp"
 #include "abstruct_instrument.hpp"
+#include "instrument_fm.hpp"
 #include "misc.hpp"
 
 class InstrumentsManager
@@ -16,6 +17,9 @@ public:
 	std::unique_ptr<AbstructInstrument> addInstrument(std::unique_ptr<AbstructInstrument> inst);
 	std::unique_ptr<AbstructInstrument> removeInstrument(int n);
 	std::unique_ptr<AbstructInstrument> getInstrument(int n) const;
+
+	void setInstrumentName(int num, std::string name);
+	void setFMParameterValue(int n, FMParameter param, int value);
 
 private:
 	chip::Chip& chip_;

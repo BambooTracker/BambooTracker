@@ -16,6 +16,7 @@ public:
 							  std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent = nullptr);
 	void undo() Q_DECL_OVERRIDE;
 	void redo() Q_DECL_OVERRIDE;
+	int id() const Q_DECL_OVERRIDE;
 
 private:
 	QListWidget *list_;

@@ -7,7 +7,6 @@ LabeledVerticalSlider::LabeledVerticalSlider(QWidget *parent) :
 	ui(new Ui::LabeledVerticalSlider)
 {
 	init("");
-	ui->slider->setStyle(new SliderStyle());
 }
 
 LabeledVerticalSlider::LabeledVerticalSlider(QString text, QWidget *parent) :
@@ -22,6 +21,7 @@ void LabeledVerticalSlider::init(QString text)
 	ui->setupUi(this);
 	ui->textLabel->setText(text);
 	ui->valueLabel->setText(QString::number(ui->slider->value()));
+	ui->slider->setStyle(new SliderStyle());
 }
 
 LabeledVerticalSlider::~LabeledVerticalSlider()
@@ -72,6 +72,5 @@ void LabeledVerticalSlider::setText(QString text)
 void LabeledVerticalSlider::on_slider_valueChanged(int value)
 {
 	ui->valueLabel->setText(QString::number(value));
-
 	emit valueChanged(value);
 }

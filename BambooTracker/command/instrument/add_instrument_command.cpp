@@ -8,7 +8,7 @@ AddInstrumentCommand::AddInstrumentCommand(InstrumentsManager &manager, int num,
 	name_(name)
 {}
 
-void AddInstrumentCommand::invoke()
+void AddInstrumentCommand::redo()
 {
 	manager_.addInstrument(num_, source_, name_);
 }
@@ -18,7 +18,7 @@ void AddInstrumentCommand::undo()
 	manager_.removeInstrument(num_);
 }
 
-void AddInstrumentCommand::redo()
+int AddInstrumentCommand::getID() const
 {
-	invoke();
+	return 0;
 }

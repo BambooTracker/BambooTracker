@@ -9,6 +9,33 @@ InstrumentFM::InstrumentFM(int number, std::string name) :
 		o = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, 0, -1 };
 	}
 
+	initParamMap();
+}
+
+InstrumentFM::InstrumentFM(const InstrumentFM &other) :
+	AbstructInstrument(other.getNumber(), other.getSoundSource(), other.getName()),
+	al_(other.al_), fb_(other.fb_)
+{
+	for (int i = 0; i < 4; ++i) {
+		op_[i].enable_ = other.op_[i].enable_;
+		op_[i].ar_ = other.op_[i].ar_;
+		op_[i].dr_ = other.op_[i].dr_;
+		op_[i].sr_ = other.op_[i].sr_;
+		op_[i].rr_ = other.op_[i].rr_;
+		op_[i].sl_ = other.op_[i].sl_;
+		op_[i].tl_ = other.op_[i].tl_;
+		op_[i].ks_ = other.op_[i].ks_;
+		op_[i].ml_ = other.op_[i].ml_;
+		op_[i].dt_ = other.op_[i].dt_;
+		op_[i].am_ = other.op_[i].am_;
+		op_[i].ssgeg_ = other.op_[i].ssgeg_;
+	}
+
+	initParamMap();
+}
+
+void InstrumentFM::initParamMap()
+{
 	paramMap_ = {
 		{ FMParameter::AL, al_ },
 		{ FMParameter::FB, fb_ },

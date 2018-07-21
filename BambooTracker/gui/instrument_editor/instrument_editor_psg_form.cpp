@@ -2,9 +2,10 @@
 #include "ui_instrument_editor_psg_form.h"
 #include "misc.hpp"
 
-InstrumentEditorPSGForm::InstrumentEditorPSGForm(QWidget *parent) :
+InstrumentEditorPSGForm::InstrumentEditorPSGForm(int num, QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::InstrumentEditorPSGForm)
+	ui(new Ui::InstrumentEditorPSGForm),
+	instNum_(num)
 {
 	ui->setupUi(this);
 }

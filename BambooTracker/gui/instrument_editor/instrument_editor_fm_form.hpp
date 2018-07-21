@@ -13,13 +13,18 @@ class InstrumentEditorFMForm : public QWidget
 	Q_OBJECT
 
 public:
-	explicit InstrumentEditorFMForm(QWidget *parent = 0);
+	InstrumentEditorFMForm(int num, QWidget *parent = 0);
 	~InstrumentEditorFMForm();
 
 	void setInstrumentParameters(const InstrumentFM inst);
 
+signals:
+	void parameterChanged(int instNum, FMParameter param, int value);
+
 private:
 	Ui::InstrumentEditorFMForm *ui;
+	int instNum_;
+	bool isValidEmit;
 };
 
 #endif // INSTRUMENTEDITORFMFORM_HPP

@@ -7,7 +7,7 @@ RemoveInstrumentCommand::RemoveInstrumentCommand(InstrumentsManager &manager, in
 	number_(number)
 {}
 
-void RemoveInstrumentCommand::invoke()
+void RemoveInstrumentCommand::redo()
 {
 	inst_ = manager_.removeInstrument(number_);
 }
@@ -17,7 +17,7 @@ void RemoveInstrumentCommand::undo()
 	manager_.addInstrument(std::move(inst_));
 }
 
-void RemoveInstrumentCommand::redo()
+int RemoveInstrumentCommand::getID() const
 {
-	invoke();
+	return 1;
 }

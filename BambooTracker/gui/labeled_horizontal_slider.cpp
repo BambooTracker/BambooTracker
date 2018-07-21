@@ -7,7 +7,6 @@ LabeledHorizontalSlider::LabeledHorizontalSlider(QWidget *parent) :
 	ui(new Ui::LabeledHorizontalSlider)
 {
 	init("");
-	ui->slider->setStyle(new SliderStyle());
 }
 
 LabeledHorizontalSlider::LabeledHorizontalSlider(QString text, QWidget *parent) :
@@ -22,6 +21,7 @@ void LabeledHorizontalSlider::init(QString text)
 	ui->setupUi(this);
 	ui->textLabel->setText(text);
 	ui->valueLabel->setText(QString::number(ui->slider->value()));
+	ui->slider->setStyle(new SliderStyle());
 }
 
 LabeledHorizontalSlider::~LabeledHorizontalSlider()
@@ -72,6 +72,5 @@ void LabeledHorizontalSlider::setText(QString text)
 void LabeledHorizontalSlider::on_slider_valueChanged(int value)
 {
 	ui->valueLabel->setText(QString::number(value));
-
 	emit valueChanged(value);
 }

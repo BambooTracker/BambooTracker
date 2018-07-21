@@ -1,5 +1,6 @@
 #include "mainwindow.hpp"
 #include <QString>
+#include <QLineEdit>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
@@ -205,6 +206,8 @@ void MainWindow::editInstrument()
 			auto&& fmForm = dynamic_cast<InstrumentEditorFMForm*>(form.get());
 			auto&& ifm = dynamic_cast<InstrumentFM*>(inst.get());
 			fmForm->setInstrumentParameters(*ifm);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::parameterChanged,
+							 this, &MainWindow::onInstrumentFMParameterChanged);
 			break;
 		}
 		case SoundSource::PSG:
@@ -220,6 +223,40 @@ void MainWindow::editInstrument()
 	else {
 		form->activateWindow();
 	}
+}
+
+int MainWindow::findRowFromInstrumentList(int instNum)
+{
+	auto& list = ui->instrumentListWidget;
+	int row = 0;
+	for (; row < list->count(); ++row) {
+		auto item = list->item(row);
+		if (item->data(Qt::UserRole).toInt() == instNum) break;
+	}
+	return row;
+}
+
+void MainWindow::editInstrumentName()
+{
+	auto list = ui->instrumentListWidget;
+	auto item = list->currentItem();
+	int num = item->data(Qt::UserRole).toInt();
+	QString oldName = item->text();
+	auto line = new QLineEdit(item->text());
+	QObject::connect(line, &QLineEdit::editingFinished,
+					 this, [&, item, list, num, oldName]() {
+		QString newName = dynamic_cast<QLineEdit*>(list->itemWidget(item))->text();
+		item->setText(newName);
+		list->removeItemWidget(item);
+
+		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
+		int row = findRowFromInstrumentList(num);
+		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instFormMap_, oldName, newName));
+	});
+	ui->instrumentListWidget->setItemWidget(item, line);
+
+	line->selectAll();
+	line->setFocus();
 }
 
 /********** Undo-Redo **********/
@@ -259,11 +296,14 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	menu.addAction("Remove instrument", this, &MainWindow::removeInstrument);
 	if (list->currentItem() == nullptr) menu.actions().at(1)->setEnabled(false);
 	menu.addSeparator();
+	menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
+	if (list->currentItem() == nullptr) menu.actions().at(3)->setEnabled(false);
+	menu.addSeparator();
 	menu.addAction("Load from file...")->setEnabled(false);
 	menu.addAction("Save to file...")->setEnabled(false);
 	menu.addSeparator();
 	menu.addAction("Edit...", this, &MainWindow::editInstrument);
-	if (list->currentItem() == nullptr) menu.actions().at(6)->setEnabled(false);
+	if (list->currentItem() == nullptr) menu.actions().at(8)->setEnabled(false);
 
 	menu.exec(globalPos);
 }
@@ -272,4 +312,9 @@ void MainWindow::on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item
 {
 	Q_UNUSED(item)
 	editInstrument();
+}
+
+void MainWindow::onInstrumentFMParameterChanged(int instNum, FMParameter param, int value)
+{
+	bt_->setFMParameter(instNum, param, value);
 }

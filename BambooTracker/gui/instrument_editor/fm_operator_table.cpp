@@ -32,7 +32,7 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		pair.second->setText(name[n]);
 		pair.second->setMaximum(maxValue[n]);
 		QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
-						 this, [&](int value) {
+						 this, [=](int value) {
 			repaintGraph();
 			emit operatorValueChanged(pair.first, value);
 		});

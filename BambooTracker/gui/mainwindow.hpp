@@ -11,6 +11,7 @@
 #include <QCloseEvent>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
+#include "instrument_fm.hpp"
 
 namespace Ui {
 	class MainWindow;
@@ -46,6 +47,8 @@ private:
 	void addInstrument();
 	void removeInstrument();
 	void editInstrument();
+	int findRowFromInstrumentList(int instNum);
+	void editInstrumentName();
 
 	// Undo-Redo
 	void undo();
@@ -59,6 +62,7 @@ private:
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
+	void onInstrumentFMParameterChanged(int instNum, FMParameter param, int value);
 };
 
 #endif // MAINWINDOW_HPP

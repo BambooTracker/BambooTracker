@@ -30,15 +30,20 @@ void AddInstrumentQtCommand::redo()
 	switch (source_) {
 	case SoundSource::FM:
 		item = new QListWidgetItem(QIcon(), name_);
-		form = std::make_unique<InstrumentEditorFMForm>();
+		form = std::make_unique<InstrumentEditorFMForm>(num_);
 		break;
 	case SoundSource::PSG:
 		item = new QListWidgetItem(QIcon(), name_);
-		form = std::make_unique<InstrumentEditorPSGForm>();
+		form = std::make_unique<InstrumentEditorPSGForm>(num_);
 		break;
 	}
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(num_, item);
 	form->setProperty("SoundSource", static_cast<int>(source_));
 	map_.emplace(num_, std::move(form));
+}
+
+int AddInstrumentQtCommand::id() const
+{
+	return 0;
 }

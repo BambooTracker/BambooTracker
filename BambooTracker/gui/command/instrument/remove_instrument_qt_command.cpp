@@ -22,11 +22,11 @@ void RemoveInstrumentQtCommand::undo()
 	switch (source_) {
 	case SoundSource::FM:
 		item = new QListWidgetItem(QIcon(), name_);
-		form = std::make_unique<InstrumentEditorFMForm>();
+		form = std::make_unique<InstrumentEditorFMForm>(num_);
 		break;
 	case SoundSource::PSG:
 		item = new QListWidgetItem(QIcon(), name_);
-		form = std::make_unique<InstrumentEditorPSGForm>();
+		form = std::make_unique<InstrumentEditorPSGForm>(num_);
 		break;
 	}
 	item->setData(Qt::UserRole, num_);
@@ -43,4 +43,9 @@ void RemoveInstrumentQtCommand::redo()
 
 	map_.at(num_)->close();
 	map_.erase(num_);
+}
+
+int RemoveInstrumentQtCommand::id() const
+{
+	return 1;
 }

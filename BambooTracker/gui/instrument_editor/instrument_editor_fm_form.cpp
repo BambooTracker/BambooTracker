@@ -5,21 +5,98 @@
 
 #include <QDebug>
 
-InstrumentEditorFMForm::InstrumentEditorFMForm(QWidget *parent) :
+InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::InstrumentEditorFMForm)
+	ui(new Ui::InstrumentEditorFMForm),
+	instNum_(num),
+	isValidEmit(true)
 {
 	ui->setupUi(this);
 
 	ui->alSlider->setText("AL");
 	ui->alSlider->setMaximum(7);
+	QObject::connect(ui->alSlider, &LabeledHorizontalSlider::valueChanged, this,
+					 [&](int value) { emit parameterChanged(instNum_, FMParameter::AL, value); });
 	ui->fbSlider->setText("FB");
 	ui->fbSlider->setMaximum(7);
+	QObject::connect(ui->fbSlider, &LabeledHorizontalSlider::valueChanged, this,
+					 [&](int value) { emit parameterChanged(instNum_, FMParameter::FB, value); });
 
 	ui->op1Table->setOperatorNumber(0);
+	QObject::connect(ui->op1Table, &FMOperatorTable::operatorValueChanged,
+					 this, [&](Ui::FMOperatorParameter opParam, int value) {
+			FMParameter param;
+			switch (opParam) {
+			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR1;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR1;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR1;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR1;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL1;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL1;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS1;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML1;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT1;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG1;	break;
+			}
+			emit parameterChanged(instNum_, param, value);
+	});
+
 	ui->op2Table->setOperatorNumber(1);
+	QObject::connect(ui->op2Table, &FMOperatorTable::operatorValueChanged,
+						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+			FMParameter param;
+			switch (opParam) {
+			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR2;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR2;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR2;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR2;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL2;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL2;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS2;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML2;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT2;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG2;	break;
+			}
+			emit parameterChanged(instNum_, param, value);
+	});
+
 	ui->op3Table->setOperatorNumber(2);
+	QObject::connect(ui->op3Table, &FMOperatorTable::operatorValueChanged,
+						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+			FMParameter param;
+			switch (opParam) {
+			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR3;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR3;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR3;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR3;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL3;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL3;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS3;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML3;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT3;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG3;	break;
+			}
+			emit parameterChanged(instNum_, param, value);
+	});
+
 	ui->op4Table->setOperatorNumber(3);
+	QObject::connect(ui->op4Table, &FMOperatorTable::operatorValueChanged,
+						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+			FMParameter param;
+			switch (opParam) {
+			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR4;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR4;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR4;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR4;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL4;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL4;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS4;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML4;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT4;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG4;	break;
+			}
+			emit parameterChanged(instNum_, param, value);
+	});
 }
 
 InstrumentEditorFMForm::~InstrumentEditorFMForm()
@@ -32,7 +109,6 @@ void InstrumentEditorFMForm::setInstrumentParameters(const InstrumentFM inst)
 	// Envelope tab
 	auto name = QString::fromUtf8(inst.getName().c_str(), inst.getName().length());
 	setWindowTitle(name);
-	ui->nameLineEdit->setText(name);
 	ui->alSlider->setValue(inst.getParameterValue(FMParameter::AL));
 	ui->fbSlider->setValue(inst.getParameterValue(FMParameter::FB));
 	ui->op1Table->setValue(Ui::FMOperatorParameter::AR, inst.getParameterValue(FMParameter::AR1));

@@ -9,6 +9,7 @@
 #include "command_manager.hpp"
 #include "instruments_manager.hpp"
 #include "abstruct_instrument.hpp"
+#include "instrument_fm.hpp"
 #include "misc.hpp"
 
 class BambooTracker
@@ -28,6 +29,8 @@ public:
 	void addInstrument(int num, std::string name);
 	void removeInstrument(int num);
 	std::unique_ptr<AbstructInstrument> getInstrument(int num);
+	void setInstrumentName(int num, std::string name);
+	void setFMParameter(int num, FMParameter param, int value);
 
 	// Undo-Redo
 	void undo();
