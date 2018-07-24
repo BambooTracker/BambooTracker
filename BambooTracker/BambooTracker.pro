@@ -56,7 +56,8 @@ SOURCES += \
     gui/labeled_horizontal_slider.cpp \
     gui/slider_style.cpp \
     gui/command/instrument/change_instrument_name_qt_command.cpp \
-    command/instrument/change_instrument_name_command.cpp
+    command/instrument/change_instrument_name_command.cpp \
+    opna_controller.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -97,7 +98,8 @@ HEADERS += \
     gui/slider_style.hpp \
     gui/command/instrument/change_instrument_name_qt_command.hpp \
     command/instrument/change_instrument_name_command.hpp \
-    command/abstruct_command.hpp
+    command/abstruct_command.hpp \
+    opna_controller.hpp
 
 FORMS += \
     gui/mainwindow.ui \

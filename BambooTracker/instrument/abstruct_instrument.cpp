@@ -8,6 +8,11 @@ int AbstructInstrument::getNumber() const
 	return number_;
 }
 
+void AbstructInstrument::setNumber(int n)
+{
+	number_ = n;
+}
+
 SoundSource AbstructInstrument::getSoundSource() const
 {
 	return source_;

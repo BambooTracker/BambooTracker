@@ -23,6 +23,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 					 [&](int value) { emit parameterChanged(instNum_, FMParameter::FB, value); });
 
 	ui->op1Table->setOperatorNumber(0);
+	QObject::connect(ui->op1Table, &FMOperatorTable::operatorEnableChanged,
+					 this, [&](bool enable) { emit operatorEnableChanged(instNum_, 0, enable); });
 	QObject::connect(ui->op1Table, &FMOperatorTable::operatorValueChanged,
 					 this, [&](Ui::FMOperatorParameter opParam, int value) {
 			FMParameter param;
@@ -42,6 +44,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	});
 
 	ui->op2Table->setOperatorNumber(1);
+	QObject::connect(ui->op2Table, &FMOperatorTable::operatorEnableChanged,
+					 this, [&](bool enable) { emit operatorEnableChanged(instNum_, 1, enable); });
 	QObject::connect(ui->op2Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
 			FMParameter param;
@@ -61,6 +65,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	});
 
 	ui->op3Table->setOperatorNumber(2);
+	QObject::connect(ui->op3Table, &FMOperatorTable::operatorEnableChanged,
+					 this, [&](bool enable) { emit operatorEnableChanged(instNum_, 2, enable); });
 	QObject::connect(ui->op3Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
 			FMParameter param;
@@ -80,6 +86,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	});
 
 	ui->op4Table->setOperatorNumber(3);
+	QObject::connect(ui->op4Table, &FMOperatorTable::operatorEnableChanged,
+					 this, [&](bool enable) { emit operatorEnableChanged(instNum_, 3, enable); });
 	QObject::connect(ui->op4Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
 			FMParameter param;

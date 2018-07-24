@@ -1,22 +1,21 @@
 #include "bamboo_tracker.hpp"
 #include <vector>
-#include "pitch_converter.hpp"
+#include <algorithm>
 #include "commands.hpp"
 
 #include <QDebug>
 
 BambooTracker::BambooTracker() :
 	#ifdef SINC_INTERPOLATION
-	chip_(3993600 * 2, 44100, 40),
+	opnaCtrl_(3993600 * 2, 44100, 40),
 	#else
-	chip_(3993600 * 2, 44100),
+	opnaCtrl_(3993600 * 2, 44100),
 	#endif
-	instMan_(chip_),
 	octave_(4),
 	curChannel_(0),
+	curInstNum_(-1),
 	isPlaySong_(false)
 {
-	initChip();
 }
 
 /********** Change octave **********/
@@ -43,6 +42,12 @@ ChannelAttribute BambooTracker::getCurrentChannel() const
 	return curChannel_;
 }
 
+/********** Current instrument **********/
+void BambooTracker::setCurrentInstrument(int n)
+{
+	curInstNum_ = n;
+}
+
 /********** Instrument edit **********/
 void BambooTracker::addInstrument(int num, std::string name)
 {
@@ -56,7 +61,7 @@ void BambooTracker::removeInstrument(int num)
 
 std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
 {
-	return instMan_.getInstrument(num);
+	return instMan_.getInstrumentCopy(num);
 }
 
 void BambooTracker::setInstrumentName(int num, std::string name)
@@ -64,9 +69,16 @@ void BambooTracker::setInstrumentName(int num, std::string name)
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
 }
 
-void BambooTracker::setFMParameter(int num, FMParameter param, int value)
+void BambooTracker::setInstrumentFMParameter(int num, FMParameter param, int value)
 {
-	// TODO: inplement
+	instMan_.setFMParameterValue(num, param, value);
+	opnaCtrl_.setInstrumentFMParameter(num, param, value);
+}
+
+void BambooTracker::setInstrumentFMOperatorEnable(int instNum, int opNum, bool enable)
+{
+	instMan_.setFMOperatorEnable(instNum, opNum, enable);
+	opnaCtrl_.setInstrumentFMOperatorEnable(instNum, opNum, enable);
 }
 
 /********** Undo-Redo **********/
@@ -96,28 +108,30 @@ void BambooTracker::jamKeyOn(JamKey key)
 	std::vector<JamKeyData> &&list = jamMan_.keyOn(key,
 											   curChannel_.getIdInSoundSource(),
 											   curChannel_.getSoundSource());
-
 	if (list.size() == 2) {	// Key off
 		JamKeyData& offData = list[1];
 		switch (offData.source) {
-		case SoundSource::FM:	keyOffFM(offData.chIdInSource);		break;
-		case SoundSource::PSG:	keyOffPSG(offData.chIdInSource);	break;
+		case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.chIdInSource);	break;
+		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(offData.chIdInSource);	break;
 		}
 	}
 
+	auto tmpInst = instMan_.getInstrumentCopy(curInstNum_);
 	JamKeyData& onData = list[0];
 	switch (onData.source) {
 	case SoundSource::FM:
-		keyOnFM(onData.chIdInSource,
-				JamManager::jamKeyToNote(onData.key),
-				JamManager::calcOctave(octave_, onData.key),
-				0);
+		opnaCtrl_.setInstrumentFM(onData.chIdInSource, dynamic_cast<InstrumentFM*>(tmpInst.release()));
+		opnaCtrl_.keyOnFM(onData.chIdInSource,
+						  JamManager::jamKeyToNote(onData.key),
+						  JamManager::calcOctave(octave_, onData.key),
+						  0);
 		break;
 	case SoundSource::PSG:
-		keyOnPSG(onData.chIdInSource,
-				 JamManager::jamKeyToNote(onData.key),
-				 JamManager::calcOctave(octave_, onData.key),
-				 0);
+		opnaCtrl_.setInstrumentPSG(onData.chIdInSource, dynamic_cast<InstrumentPSG*>(tmpInst.release()));
+		opnaCtrl_.keyOnPSG(onData.chIdInSource,
+						   JamManager::jamKeyToNote(onData.key),
+						   JamManager::calcOctave(octave_, onData.key),
+						   0);
 		break;
 	}
 }
@@ -128,8 +142,8 @@ void BambooTracker::jamKeyOff(JamKey key)
 
 	if (data.chIdInSource > -1) {	// Key still sound
 		switch (data.source) {
-		case SoundSource::FM:	keyOffFM(data.chIdInSource);	break;
-		case SoundSource::PSG:	keyOffPSG(data.chIdInSource);	break;
+		case SoundSource::FM:	opnaCtrl_.keyOffFM(data.chIdInSource);	break;
+		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(data.chIdInSource);	break;
 		}
 	}
 }
@@ -137,16 +151,14 @@ void BambooTracker::jamKeyOff(JamKey key)
 /********** Play song **********/
 void BambooTracker::startPlaySong()
 {
-	chip_.reset();
-	initChip();
+	opnaCtrl_.reset();
 	jamMan_.polyphonic(false);
 	isPlaySong_ = true;
 }
 
 void BambooTracker::stopPlaySong()
 {
-	chip_.reset();
-	initChip();
+	opnaCtrl_.reset();
 	jamMan_.polyphonic(true);
 	isPlaySong_ = false;
 }
@@ -164,80 +176,16 @@ void BambooTracker::readTick()
 /********** Stream samples **********/
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 {
-	chip_.mix(container, nSamples);
+	opnaCtrl_.getStreamSamples(container, nSamples);
 }
 
 /********** Stream details **********/
 int BambooTracker::getStreamRate() const
 {
-	return chip_.getRate();
+	return opnaCtrl_.getRate();
 }
 
 int BambooTracker::getStreamDuration() const
 {
-	return 40;	// dummy set
-}
-
-/***********************************/
-void BambooTracker::initChip()
-{
-	chip_.setRegister(0x29, 0x80);		// Init interrupt / YM2608 mode
-	mixerPSG_ = 0xff;
-	chip_.setRegister(0x07, mixerPSG_);	// PSG mix
-	chip_.setRegister(0x11, 0x3f);		// Drum total volume
-
-	// Init pan
-	for (int i = 0; i < 0x200; i += 0x100) {
-		for (int j = 0; j < 3; ++j) {
-			chip_.setRegister(0xb4+i+j, 0xc0);
-		}
-	}
-}
-
-/********** Key on-off **********/
-void BambooTracker::keyOnFM(int id, Note note, int octave, int fine)
-{
-	uint16_t pitch = PitchConverter::getPitchFM(note, octave, fine);
-	// UNDONE: change channel type by Effect mode
-	uint8_t bank = (id < 3)? 0 : 0x100;
-	uint8_t offset = bank + id % 3;
-	chip_.setRegister(0xa4 + offset, pitch >> 8);
-	chip_.setRegister(0xa0 + offset, pitch & 0x00ff);
-}
-
-void BambooTracker::keyOnPSG(int id, Note note, int octave, int fine)
-{
-	uint16_t pitch = PitchConverter::getPitchPSG(note, octave, fine);
-	uint8_t offset = id << 1;
-	chip_.setRegister(0x00 + offset, pitch & 0xff);
-	chip_.setRegister(0x01 + offset, pitch >> 8);
-
-	uint8_t mask = ~(1 << id);
-	mixerPSG_ &= mask;
-	chip_.setRegister(0x07, mixerPSG_);
-
-	// Dummy volume
-	changeVolumePSG(id, 0xf);
-	//*********************
-}
-
-void BambooTracker::keyOffFM(int id)
-{
-	// UNDONE: change channel type by Effect mode
-	uint8_t data = id;
-	chip_.setRegister(0x28, data);
-}
-
-void BambooTracker::keyOffPSG(int id)
-{
-	uint8_t flag = 1 << id;
-	mixerPSG_ |= flag;
-	chip_.setRegister(0x07, mixerPSG_);
-	changeVolumePSG(id, 0);
-}
-
-/********** Volume change **********/
-void BambooTracker::changeVolumePSG(int id, int level)
-{
-	chip_.setRegister(0x08 + id, level);
+	return opnaCtrl_.getDuration();
 }

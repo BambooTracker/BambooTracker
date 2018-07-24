@@ -10,6 +10,7 @@ public:
 	virtual ~AbstructInstrument() = default;
 
 	int getNumber() const;
+	void setNumber(int n);
 	SoundSource getSoundSource() const;
 	std::string getName() const;
 	void setName(std::string name);

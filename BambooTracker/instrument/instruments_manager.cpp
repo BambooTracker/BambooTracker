@@ -3,46 +3,53 @@
 #include "instrument_fm.hpp"
 #include "instrument_psg.hpp"
 
-InstrumentsManager::InstrumentsManager(chip::Chip& chip) :
-	chip_(chip) {}
-
 std::unique_ptr<AbstructInstrument> InstrumentsManager::addInstrument(int num, SoundSource source, std::string name)
 {
 	switch (source) {
-	case SoundSource::FM:	map_.emplace(num, std::make_unique<InstrumentFM>(num, name));	break;
-	case SoundSource::PSG:	map_.emplace(num, std::make_unique<InstrumentPSG>(num, name));	break;
+	case SoundSource::FM:	instMap_.emplace(num, std::make_unique<InstrumentFM>(num, name));	break;
+	case SoundSource::PSG:	instMap_.emplace(num, std::make_unique<InstrumentPSG>(num, name));	break;
 	}
 
-	return map_.at(num)->clone();
+	return instMap_.at(num)->clone();
 }
 
 std::unique_ptr<AbstructInstrument> InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 {
 	int num = inst->getNumber();
-	map_.emplace(num, std::move(inst));
-	return map_.at(num)->clone();
+	instMap_.emplace(num, std::move(inst));
+	return instMap_.at(num)->clone();
 }
 
 std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int n)
 {
-	std::unique_ptr<AbstructInstrument> ret = map_.at(n)->clone();
-	map_.erase(n);
+	std::unique_ptr<AbstructInstrument> ret = instMap_.at(n)->clone();
+	instMap_.erase(n);
 	return ret;
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentsManager::getInstrument(int n) const
+std::unique_ptr<AbstructInstrument> InstrumentsManager::getInstrumentCopy(int n)
 {
-	return map_.at(n)->clone();
+	try {
+		return instMap_.at(n)->clone();
+	}
+	catch (...) {
+		return std::unique_ptr<AbstructInstrument>();	// Throw nullptr
+	}
 }
 
 void InstrumentsManager::setInstrumentName(int num, std::string name)
 {
-	map_.at(num)->setName(name);
+	instMap_.at(num)->setName(name);
 }
 
 void InstrumentsManager::setFMParameterValue(int n, FMParameter param, int value)
 {
-	auto inst = map_.at(n).get();
+	auto inst = instMap_.at(n).get();
 	if (inst->getSoundSource() != SoundSource::FM) return;
-	return dynamic_cast<InstrumentFM*>(inst)->setParameterValue(param, value);
+	dynamic_cast<InstrumentFM*>(inst)->setParameterValue(param, value);
+}
+
+void InstrumentsManager::setFMOperatorEnable(int instNum, int opNum, bool enable)
+{
+	dynamic_cast<InstrumentFM*>(instMap_.at(instNum).get())->setOperatorEnable(opNum, enable);
 }

@@ -5,9 +5,10 @@ InstrumentFM::InstrumentFM(int number, std::string name) :
 	AbstructInstrument(number, SoundSource::FM, name),
 	al_(4), fb_(0)
 {
-	for (auto& o : op_) {
-		o = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, 0, -1 };
-	}
+	op_[0] = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, 0, -1 };
+	op_[1] = FMOperator{ true, 31, 0, 0, 7, 0, 0, 0, 0, 0, 0, -1 };
+	op_[2] = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, 0, -1 };
+	op_[3] = FMOperator{ true, 31, 0, 0, 7, 0, 0, 0, 0, 0, 0, -1 };
 
 	initParamMap();
 }

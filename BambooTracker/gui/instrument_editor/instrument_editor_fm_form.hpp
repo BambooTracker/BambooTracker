@@ -20,6 +20,7 @@ public:
 
 signals:
 	void parameterChanged(int instNum, FMParameter param, int value);
+	void operatorEnableChanged(int instNum, int opNum, bool enable);
 
 private:
 	Ui::InstrumentEditorFMForm *ui;

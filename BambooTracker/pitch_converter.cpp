@@ -1,7 +1,5 @@
 #include "pitch_converter.hpp"
 
-#include <QDebug>
-
 uint16_t PitchConverter::getPitchFM(Note note, int octave, int fine)
 {
 	int index = static_cast<int>(note) + fine;

@@ -208,6 +208,10 @@ void MainWindow::editInstrument()
 			fmForm->setInstrumentParameters(*ifm);
 			QObject::connect(fmForm, &InstrumentEditorFMForm::parameterChanged,
 							 this, &MainWindow::onInstrumentFMParameterChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::operatorEnableChanged,
+							 this, [&](int instNum, int opNum, bool enabled) {
+				bt_->setInstrumentFMOperatorEnable(instNum, opNum, enabled);
+			});
 			break;
 		}
 		case SoundSource::PSG:
@@ -316,5 +320,13 @@ void MainWindow::on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item
 
 void MainWindow::onInstrumentFMParameterChanged(int instNum, FMParameter param, int value)
 {
-	bt_->setFMParameter(instNum, param, value);
+	bt_->setInstrumentFMParameter(instNum, param, value);
+}
+
+void MainWindow::on_instrumentListWidget_itemSelectionChanged()
+{
+	int num = (ui->instrumentListWidget->currentRow() == -1)?
+				  -1 :
+				  ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	bt_->setCurrentInstrument(num);
 }

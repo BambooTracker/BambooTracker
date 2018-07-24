@@ -3,7 +3,10 @@
 #include <cstdint>
 #include <string>
 #include <memory>
+#include "opna_controller.hpp"
+
 #include "opna.hpp"
+
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
 #include "command_manager.hpp"
@@ -25,12 +28,16 @@ public:
 	void selectChannel(int channel);
 	ChannelAttribute getCurrentChannel() const;
 
+	// Current instrument
+	void setCurrentInstrument(int n);
+
 	// Instrument edit
 	void addInstrument(int num, std::string name);
 	void removeInstrument(int num);
 	std::unique_ptr<AbstructInstrument> getInstrument(int num);
 	void setInstrumentName(int num, std::string name);
-	void setFMParameter(int num, FMParameter param, int value);
+	void setInstrumentFMParameter(int num, FMParameter param, int value);
+	void setInstrumentFMOperatorEnable(int instNum, int opNum, bool enable);
 
 	// Undo-Redo
 	void undo();
@@ -56,28 +63,14 @@ public:
 	int getStreamDuration() const;
 
 private:
-	chip::OPNA chip_;
+	OPNAController opnaCtrl_;
 	CommandManager comMan_;
 	InstrumentsManager instMan_;
+	JamManager jamMan_;
 
 	// Current status
 	int octave_;	// 0-7
 	ChannelAttribute curChannel_;
+	int curInstNum_;
 	bool isPlaySong_;
-
-	// Chip parameters
-	uint8_t mixerPSG_;
-
-	JamManager jamMan_;
-
-	void initChip();
-
-	// Key on-off
-	void keyOnFM(int id, Note note, int octave, int fine);
-	void keyOnPSG(int id, Note note, int octave, int fine);
-	void keyOffFM(int id);
-	void keyOffPSG(int id);
-
-	// Volume change
-	void changeVolumePSG(int id, int level);
 };
