@@ -3,8 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include "opna.hpp"
-#include "instrument_fm.hpp"
-#include "instrument_psg.hpp"
+#include "instrument.hpp"
 #include "misc.hpp"
 
 class OPNAController

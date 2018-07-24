@@ -2,7 +2,7 @@
 #define INSTRUMENT_EDITOR_PSG_FORM_HPP
 
 #include <QWidget>
-#include "instrument_psg.hpp"
+#include "instrument.hpp"
 
 namespace Ui {
 	class InstrumentEditorPSGForm;

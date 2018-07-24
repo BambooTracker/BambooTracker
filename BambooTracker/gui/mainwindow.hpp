@@ -11,7 +11,7 @@
 #include <QCloseEvent>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
-#include "instrument_fm.hpp"
+#include "instrument.hpp"
 
 namespace Ui {
 	class MainWindow;

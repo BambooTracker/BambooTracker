@@ -1,6 +1,5 @@
 #include "remove_instrument_command.hpp"
 #include <utility>
-#include "instrument_fm.hpp"
 
 RemoveInstrumentCommand::RemoveInstrumentCommand(InstrumentsManager &manager, int number) :
 	manager_(manager),

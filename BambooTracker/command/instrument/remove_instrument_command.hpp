@@ -3,7 +3,7 @@
 #include <memory>
 #include "abstruct_command.hpp"
 #include "instruments_manager.hpp"
-#include "abstruct_instrument.hpp"
+#include "instrument.hpp"
 
 class RemoveInstrumentCommand : public AbstructCommand
 {

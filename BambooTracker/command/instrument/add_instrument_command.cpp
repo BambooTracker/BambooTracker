@@ -1,5 +1,4 @@
 #include "add_instrument_command.hpp"
-#include "instrument_fm.hpp"
 
 AddInstrumentCommand::AddInstrumentCommand(InstrumentsManager &manager, int num, SoundSource source, std::string name) :
 	manager_(manager),

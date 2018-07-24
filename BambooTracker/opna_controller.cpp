@@ -12,11 +12,11 @@ OPNAController::OPNAController(int clock, int rate) :
 	initChip();
 
 	for (int i = 0; i < 6; ++i) {
-		instFM_[i] = std::make_unique<InstrumentFM>(-1, "dummy");
+		instFM_[i] = std::make_unique<InstrumentFM>(-1, "dummy", nullptr);
 		setInstrumentFM(i, nullptr);
 	}
 	for (int i = 0; i < 3; ++i) {
-		instPSG_[i] = std::make_unique<InstrumentPSG>(-1, "dummy");
+		instPSG_[i] = std::make_unique<InstrumentPSG>(-1, "dummy", nullptr);
 		setInstrumentPSG(i, nullptr);
 	}
 }

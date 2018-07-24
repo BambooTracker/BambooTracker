@@ -3,14 +3,41 @@
 #include <string>
 #include <memory>
 #include <map>
-#include "abstruct_instrument.hpp"
+#include "instruments_manager.hpp"
+#include "misc.hpp"
+
+class InstrumentsManager;
+
+class AbstructInstrument
+{
+public:
+	virtual ~AbstructInstrument() = default;
+
+	int getNumber() const;
+	void setNumber(int n);
+	SoundSource getSoundSource() const;
+	std::string getName() const;
+	void setName(std::string name);
+	InstrumentsManager* getOwner() const;
+	virtual std::unique_ptr<AbstructInstrument> clone() = 0;
+
+protected:
+	AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner);
+
+private:
+	int number_;
+	SoundSource source_;
+	std::string name_;	// UTF-8
+	InstrumentsManager* owner_;
+};
+
 
 enum class FMParameter;
 
 class InstrumentFM : public AbstructInstrument
 {
 public:
-	InstrumentFM(int number, std::string name);
+	InstrumentFM(int number, std::string name, InstrumentsManager* owner);
 	InstrumentFM(const InstrumentFM& other);
 	~InstrumentFM() = default;
 	std::unique_ptr<AbstructInstrument> clone() override;
@@ -53,4 +80,12 @@ enum class FMParameter
 	AR3, DR3, SR3, RR3, SL3, TL3, KS3, ML3, DT3, AM3,
 	AR4, DR4, SR4, RR4, SL4, TL4, KS4, ML4, DT4, AM4,
 	SSGEG1, SSGEG2, SSGEG3, SSGEG4
+};
+
+
+class InstrumentPSG : public AbstructInstrument
+{
+public:
+	InstrumentPSG(int number, std::string name, InstrumentsManager* owner);
+	std::unique_ptr<AbstructInstrument> clone() override;
 };

@@ -11,8 +11,7 @@
 #include "channel_attribute.hpp"
 #include "command_manager.hpp"
 #include "instruments_manager.hpp"
-#include "abstruct_instrument.hpp"
-#include "instrument_fm.hpp"
+#include "instrument.hpp"
 #include "misc.hpp"
 
 class BambooTracker

@@ -43,9 +43,6 @@ SOURCES += \
     instrument/instruments_manager.cpp \
     command/command_manager.cpp \
     command/instrument/add_instrument_command.cpp \
-    instrument/abstruct_instrument.cpp \
-    instrument/instrument_fm.cpp \
-    instrument/instrument_psg.cpp \
     command/instrument/remove_instrument_command.cpp \
     gui/command/instrument/add_instrument_qt_command.cpp \
     gui/command/instrument/remove_instrument_qt_command.cpp \
@@ -57,7 +54,9 @@ SOURCES += \
     gui/slider_style.cpp \
     gui/command/instrument/change_instrument_name_qt_command.cpp \
     command/instrument/change_instrument_name_command.cpp \
-    opna_controller.cpp
+    opna_controller.cpp \
+    instrument/instrument.cpp \
+    instrument/envelope_fm.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -82,9 +81,6 @@ HEADERS += \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \
     command/instrument/add_instrument_command.hpp \
-    instrument/abstruct_instrument.hpp \
-    instrument/instrument_fm.hpp \
-    instrument/instrument_psg.hpp \
     command/instrument/remove_instrument_command.hpp \
     command/commands.hpp \
     gui/command/instrument/add_instrument_qt_command.hpp \
@@ -99,7 +95,9 @@ HEADERS += \
     gui/command/instrument/change_instrument_name_qt_command.hpp \
     command/instrument/change_instrument_name_command.hpp \
     command/abstruct_command.hpp \
-    opna_controller.hpp
+    opna_controller.hpp \
+    instrument/instrument.hpp \
+    instrument/envelope_fm.hpp
 
 FORMS += \
     gui/mainwindow.ui \

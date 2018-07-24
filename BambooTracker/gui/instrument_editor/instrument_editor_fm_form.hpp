@@ -2,7 +2,7 @@
 #define INSTRUMENTEDITORFMFORM_HPP
 
 #include <QWidget>
-#include "instrument_fm.hpp"
+#include "instrument.hpp"
 
 namespace Ui {
 	class InstrumentEditorFMForm;

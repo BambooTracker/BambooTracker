@@ -2,7 +2,7 @@
 
 #include <string>
 #include "abstruct_command.hpp"
-#include "abstruct_instrument.hpp"
+#include "instrument.hpp"
 #include "instruments_manager.hpp"
 #include "misc.hpp"
 

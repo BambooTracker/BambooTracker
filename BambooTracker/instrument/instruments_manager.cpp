@@ -1,13 +1,12 @@
 #include "instruments_manager.hpp"
 #include <utility>
-#include "instrument_fm.hpp"
-#include "instrument_psg.hpp"
+#include "instrument.hpp"
 
 std::unique_ptr<AbstructInstrument> InstrumentsManager::addInstrument(int num, SoundSource source, std::string name)
 {
 	switch (source) {
-	case SoundSource::FM:	instMap_.emplace(num, std::make_unique<InstrumentFM>(num, name));	break;
-	case SoundSource::PSG:	instMap_.emplace(num, std::make_unique<InstrumentPSG>(num, name));	break;
+	case SoundSource::FM:	instMap_.emplace(num, std::make_unique<InstrumentFM>(num, name, this));	break;
+	case SoundSource::PSG:	instMap_.emplace(num, std::make_unique<InstrumentPSG>(num, name, this));	break;
 	}
 
 	return instMap_.at(num)->clone();

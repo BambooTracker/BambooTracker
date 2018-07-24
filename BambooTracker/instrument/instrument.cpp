@@ -1,8 +1,42 @@
-#include "instrument_fm.hpp"
-#include "misc.hpp"
+#include "instrument.hpp"
 
-InstrumentFM::InstrumentFM(int number, std::string name) :
-	AbstructInstrument(number, SoundSource::FM, name),
+AbstructInstrument::AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner) :
+	number_(number), source_(source), name_(name), owner_(owner) {}
+
+int AbstructInstrument::getNumber() const
+{
+	return number_;
+}
+
+void AbstructInstrument::setNumber(int n)
+{
+	number_ = n;
+}
+
+SoundSource AbstructInstrument::getSoundSource() const
+{
+	return source_;
+}
+
+std::string AbstructInstrument::getName() const
+{
+	return name_;
+}
+
+void AbstructInstrument::setName(std::string name)
+{
+	name_ = name;
+}
+
+InstrumentsManager* AbstructInstrument::getOwner() const
+{
+	return owner_;
+}
+
+/****************************************/
+
+InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
+	AbstructInstrument(number, SoundSource::FM, name, owner),
 	al_(4), fb_(0)
 {
 	op_[0] = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, 0, -1 };
@@ -14,7 +48,7 @@ InstrumentFM::InstrumentFM(int number, std::string name) :
 }
 
 InstrumentFM::InstrumentFM(const InstrumentFM &other) :
-	AbstructInstrument(other.getNumber(), other.getSoundSource(), other.getName()),
+	AbstructInstrument(other.getNumber(), other.getSoundSource(), other.getName(), other.getOwner()),
 	al_(other.al_), fb_(other.fb_)
 {
 	for (int i = 0; i < 4; ++i) {
@@ -110,4 +144,16 @@ int InstrumentFM::getParameterValue(FMParameter param) const
 void InstrumentFM::setParameterValue(FMParameter param, int value)
 {
 	paramMap_.at(param) = value;
+}
+
+/****************************************/
+
+InstrumentPSG::InstrumentPSG(int number, std::string name, InstrumentsManager* owner) :
+	AbstructInstrument(number, SoundSource::PSG, name, owner)
+{
+}
+
+std::unique_ptr<AbstructInstrument> InstrumentPSG::clone()
+{
+	return std::unique_ptr<AbstructInstrument>(std::make_unique<InstrumentPSG>(*this));
 }

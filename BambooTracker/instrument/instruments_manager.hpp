@@ -3,9 +3,11 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "abstruct_instrument.hpp"
-#include "instrument_fm.hpp"
+#include "instrument.hpp"
 #include "misc.hpp"
+
+class AbstructInstrument;
+enum class FMParameter;
 
 class InstrumentsManager
 {
