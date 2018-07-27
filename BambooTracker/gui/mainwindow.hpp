@@ -11,7 +11,6 @@
 #include <QCloseEvent>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
-#include "instrument.hpp"
 
 namespace Ui {
 	class MainWindow;
@@ -34,7 +33,7 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
-	std::unique_ptr<BambooTracker> bt_;
+	std::shared_ptr<BambooTracker> bt_;
 	std::unique_ptr<AudioStream> stream_;
 	std::unique_ptr<QUndoStack> comStack_;
 
@@ -62,7 +61,6 @@ private:
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
-	void onInstrumentFMParameterChanged(int instNum, FMParameter param, int value);
 	void on_instrumentListWidget_itemSelectionChanged();
 };
 

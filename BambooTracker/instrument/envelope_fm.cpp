@@ -58,3 +58,48 @@ void EnvelopeFM::initParamMap()
 		{ FMParameter::SSGEG4, op_[3].ssgeg_ }
 	};
 }
+
+EnvelopeFM::EnvelopeFM(const EnvelopeFM &other)
+{
+	for (int i = 0; i < 4; ++i) {
+		op_[i].enable_ = other.op_[i].enable_;
+		op_[i].ar_ = other.op_[i].ar_;
+		op_[i].dr_ = other.op_[i].dr_;
+		op_[i].sr_ = other.op_[i].sr_;
+		op_[i].rr_ = other.op_[i].rr_;
+		op_[i].sl_ = other.op_[i].sl_;
+		op_[i].tl_ = other.op_[i].tl_;
+		op_[i].ks_ = other.op_[i].ks_;
+		op_[i].ml_ = other.op_[i].ml_;
+		op_[i].dt_ = other.op_[i].dt_;
+		op_[i].ssgeg_ = other.op_[i].ssgeg_;
+	}
+
+	initParamMap();
+}
+
+std::unique_ptr<EnvelopeFM> EnvelopeFM::clone()
+{
+	return std::unique_ptr<EnvelopeFM>(std::make_unique<EnvelopeFM>(*this));
+}
+
+
+bool EnvelopeFM::getOperatorEnable(int num) const
+{
+	return op_[num].enable_;
+}
+
+void EnvelopeFM::setOperatorEnable(int num, bool enable)
+{
+	op_[num].enable_ = enable;
+}
+
+int EnvelopeFM::getParameterValue(FMParameter param) const
+{
+	return paramMap_.at(param);
+}
+
+void EnvelopeFM::setParameterValue(FMParameter param, int value)
+{
+	paramMap_.at(param) = value;
+}

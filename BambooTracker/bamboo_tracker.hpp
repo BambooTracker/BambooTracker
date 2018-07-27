@@ -62,10 +62,10 @@ public:
 	int getStreamDuration() const;
 
 private:
-	OPNAController opnaCtrl_;
 	CommandManager comMan_;
 	InstrumentsManager instMan_;
 	JamManager jamMan_;
+	OPNAController opnaCtrl_;
 
 	// Current status
 	int octave_;	// 0-7

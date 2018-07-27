@@ -2,6 +2,8 @@
 #define INSTRUMENTEDITORFMFORM_HPP
 
 #include <QWidget>
+#include <memory>
+#include "bamboo_tracker.hpp"
 #include "instrument.hpp"
 
 namespace Ui {
@@ -15,17 +17,16 @@ class InstrumentEditorFMForm : public QWidget
 public:
 	InstrumentEditorFMForm(int num, QWidget *parent = 0);
 	~InstrumentEditorFMForm();
-
-	void setInstrumentParameters(const InstrumentFM inst);
-
-signals:
-	void parameterChanged(int instNum, FMParameter param, int value);
-	void operatorEnableChanged(int instNum, int opNum, bool enable);
+	void setCore(std::shared_ptr<BambooTracker> core);
 
 private:
 	Ui::InstrumentEditorFMForm *ui;
 	int instNum_;
 	bool isValidEmit;
+
+	std::shared_ptr<BambooTracker> bt_;
+
+	void setInstrumentParameters();
 };
 
 #endif // INSTRUMENTEDITORFMFORM_HPP

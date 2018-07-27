@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
+#include "instrument.hpp"
 #include "./command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_psg_form.hpp"
@@ -13,12 +14,11 @@
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	bt_(std::make_unique<BambooTracker>()),
+	bt_(std::make_shared<BambooTracker>()),
 	comStack_(std::make_unique<QUndoStack>(this)),
 	isPlaySong_(false)
 {
 	ui->setupUi(this);
-
 	// Audio stream
 	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(), bt_->getStreamDuration());
 	QObject::connect(stream_.get(), &AudioStream::nextStepArrived,
@@ -199,26 +199,16 @@ void MainWindow::editInstrument()
 	int num = item->data(Qt::UserRole).toInt();
 	auto& form = instFormMap_.at(num);
 	if (form->isHidden()) {
-		std::unique_ptr<AbstructInstrument> inst = bt_->getInstrument(num);
 		switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
 		case SoundSource::FM:
 		{
 			auto&& fmForm = dynamic_cast<InstrumentEditorFMForm*>(form.get());
-			auto&& ifm = dynamic_cast<InstrumentFM*>(inst.get());
-			fmForm->setInstrumentParameters(*ifm);
-			QObject::connect(fmForm, &InstrumentEditorFMForm::parameterChanged,
-							 this, &MainWindow::onInstrumentFMParameterChanged);
-			QObject::connect(fmForm, &InstrumentEditorFMForm::operatorEnableChanged,
-							 this, [&](int instNum, int opNum, bool enabled) {
-				bt_->setInstrumentFMOperatorEnable(instNum, opNum, enabled);
-			});
+			fmForm->setCore(bt_);
 			break;
 		}
 		case SoundSource::PSG:
 		{
 			auto&& psgForm = dynamic_cast<InstrumentEditorPSGForm*>(form.get());
-			auto&& ipsg = dynamic_cast<InstrumentPSG*>(inst.get());
-			psgForm->setInstrumentParameters(*ipsg);
 			break;
 		}
 		}
@@ -318,15 +308,10 @@ void MainWindow::on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item
 	editInstrument();
 }
 
-void MainWindow::onInstrumentFMParameterChanged(int instNum, FMParameter param, int value)
-{
-	bt_->setInstrumentFMParameter(instNum, param, value);
-}
-
 void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 {
-	int num = (ui->instrumentListWidget->currentRow() == -1)?
-				  -1 :
-				  ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	int num = (ui->instrumentListWidget->currentRow() == -1)
+			  ? -1
+			  : ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	bt_->setCurrentInstrument(num);
 }

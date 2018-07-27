@@ -2,53 +2,63 @@
 #include <utility>
 #include "instrument.hpp"
 
-std::unique_ptr<AbstructInstrument> InstrumentsManager::addInstrument(int num, SoundSource source, std::string name)
+InstrumentsManager::InstrumentsManager()
 {
-	switch (source) {
-	case SoundSource::FM:	instMap_.emplace(num, std::make_unique<InstrumentFM>(num, name, this));	break;
-	case SoundSource::PSG:	instMap_.emplace(num, std::make_unique<InstrumentPSG>(num, name, this));	break;
+	for (int i = 0; i < 128; ++i) {
+		envFM_[i] = std::make_shared<EnvelopeFM>();
 	}
-
-	return instMap_.at(num)->clone();
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
+void InstrumentsManager::addInstrument(int num, SoundSource source, std::string name)
+{
+	switch (source) {
+	case SoundSource::FM:	insts_[num] = std::make_unique<InstrumentFM>(num, name, this);	break;
+	case SoundSource::PSG:	insts_[num] = std::make_unique<InstrumentPSG>(num, name, this);	break;
+	}
+}
+
+void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 {
 	int num = inst->getNumber();
-	instMap_.emplace(num, std::move(inst));
-	return instMap_.at(num)->clone();
+	insts_[num] = std::move(inst);
 }
 
 std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int n)
 {
-	std::unique_ptr<AbstructInstrument> ret = instMap_.at(n)->clone();
-	instMap_.erase(n);
-	return ret;
+	return std::move(insts_[n]);
 }
 
 std::unique_ptr<AbstructInstrument> InstrumentsManager::getInstrumentCopy(int n)
 {
-	try {
-		return instMap_.at(n)->clone();
+	if (0 <= n && n < 128 && insts_[n] != nullptr) {
+		return insts_[n]->clone();
 	}
-	catch (...) {
+	else {
 		return std::unique_ptr<AbstructInstrument>();	// Throw nullptr
 	}
 }
 
 void InstrumentsManager::setInstrumentName(int num, std::string name)
 {
-	instMap_.at(num)->setName(name);
+	insts_[num]->setName(name);
 }
 
-void InstrumentsManager::setFMParameterValue(int n, FMParameter param, int value)
+void InstrumentsManager::setFMEnvelopeParameter(int envNum, FMParameter param, int value)
 {
-	auto inst = instMap_.at(n).get();
-	if (inst->getSoundSource() != SoundSource::FM) return;
-	dynamic_cast<InstrumentFM*>(inst)->setParameterValue(param, value);
+	envFM_[envNum]->setParameterValue(param, value);
 }
 
-void InstrumentsManager::setFMOperatorEnable(int instNum, int opNum, bool enable)
+int InstrumentsManager::getFMEnvelopeParameter(int envNum, FMParameter param) const
 {
-	dynamic_cast<InstrumentFM*>(instMap_.at(instNum).get())->setOperatorEnable(opNum, enable);
+	return envFM_[envNum]->getParameterValue(param);
+}
+
+void InstrumentsManager::setFMOperatorEnable(int envNum, int opNum, bool enable)
+{
+	envFM_[envNum]->setOperatorEnable(opNum, enable);
+}
+
+bool InstrumentsManager::getFMOperatorEnable(int envNum, int opNum) const
+{
+	return envFM_[envNum]->getOperatorEnable(opNum);
 }

@@ -7,9 +7,9 @@
 
 BambooTracker::BambooTracker() :
 	#ifdef SINC_INTERPOLATION
-	opnaCtrl_(3993600 * 2, 44100, 40),
+	opnaCtrl_(3993600 * 2, 44100, 40, &instMan_),
 	#else
-	opnaCtrl_(3993600 * 2, 44100),
+	opnaCtrl_(3993600 * 2, 44100, &instMan_),
 	#endif
 	octave_(4),
 	curChannel_(0),
@@ -71,14 +71,14 @@ void BambooTracker::setInstrumentName(int num, std::string name)
 
 void BambooTracker::setInstrumentFMParameter(int num, FMParameter param, int value)
 {
-	instMan_.setFMParameterValue(num, param, value);
-	opnaCtrl_.setInstrumentFMParameter(num, param, value);
+	instMan_.setFMEnvelopeParameter(num, param, value);
+	opnaCtrl_.setInstrumentFMParameter(num, param);
 }
 
 void BambooTracker::setInstrumentFMOperatorEnable(int instNum, int opNum, bool enable)
 {
 	instMan_.setFMOperatorEnable(instNum, opNum, enable);
-	opnaCtrl_.setInstrumentFMOperatorEnable(instNum, opNum, enable);
+	opnaCtrl_.setInstrumentFMOperatorEnable(instNum, opNum);
 }
 
 /********** Undo-Redo **********/

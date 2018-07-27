@@ -4,15 +4,16 @@
 #include <memory>
 #include "opna.hpp"
 #include "instrument.hpp"
+#include "instruments_manager.hpp"
 #include "misc.hpp"
 
 class OPNAController
 {
 public:
 	#ifdef SINC_INTERPOLATION
-	OPNAController(int clock, int rate, int duration);
+	OPNAController(int clock, int rate, int duration, InstrumentsManager* im);
 	#else
-	OPNAController(int clock, int rate);
+	OPNAController(int clock, int rate, InstrumentsManager* im);
 	#endif
 
 	// Reset and initialize
@@ -27,8 +28,8 @@ public:
 	// Set Instrument
 	void setInstrumentFM(int id, InstrumentFM* inst);
 	void setInstrumentPSG(int id, InstrumentPSG* inst);
-	void setInstrumentFMParameter(int instNum, FMParameter param, int value);
-	void setInstrumentFMOperatorEnable(int instNum, int opNum, bool enable);
+	void setInstrumentFMParameter(int instNum, FMParameter param);
+	void setInstrumentFMOperatorEnable(int instNum, int opNum);
 
 	// Set volume
 	void setVolumePSG(int id, int level);

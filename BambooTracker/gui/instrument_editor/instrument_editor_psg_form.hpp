@@ -16,8 +16,6 @@ public:
 	InstrumentEditorPSGForm(int num, QWidget *parent = 0);
 	~InstrumentEditorPSGForm();
 
-	void setInstrumentParameters(const InstrumentPSG inst);
-
 private:
 	Ui::InstrumentEditorPSGForm *ui;
 	int instNum_;

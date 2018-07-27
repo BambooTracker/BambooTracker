@@ -18,17 +18,16 @@ public:
 	SoundSource getSoundSource() const;
 	std::string getName() const;
 	void setName(std::string name);
-	InstrumentsManager* getOwner() const;
 	virtual std::unique_ptr<AbstructInstrument> clone() = 0;
 
 protected:
+	InstrumentsManager* owner_;
 	AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner);
 
 private:
 	int number_;
 	SoundSource source_;
 	std::string name_;	// UTF-8
-	InstrumentsManager* owner_;
 };
 
 
@@ -38,38 +37,15 @@ class InstrumentFM : public AbstructInstrument
 {
 public:
 	InstrumentFM(int number, std::string name, InstrumentsManager* owner);
-	InstrumentFM(const InstrumentFM& other);
-	~InstrumentFM() = default;
 	std::unique_ptr<AbstructInstrument> clone() override;
 
-	bool getOperatorEnable(int num) const;
-	void setOperatorEnable(int num, bool enable);
-
-	int getParameterValue(FMParameter param) const;
-	void setParameterValue(FMParameter param, int value);
+	void setEnvelopeNumber(int n);
+	int getEnvelopeNumber() const;
+	int getEnvelopeParameter(FMParameter param) const;
+	bool getOperatorEnable(int n) const;
 
 private:
-	int al_;
-	int fb_;
-	struct FMOperator
-	{
-		bool enable_;
-		int ar_;
-		int dr_;
-		int sr_;
-		int rr_;
-		int sl_;
-		int tl_;
-		int ks_;
-		int ml_;
-		int dt_;
-		int am_;
-		int ssgeg_;	// -1: No use
-	};
-	FMOperator op_[4];
-
-	std::map<FMParameter, int&> paramMap_;
-	void initParamMap();
+	int envNum_;
 };
 
 enum class FMParameter

@@ -14,8 +14,3 @@ InstrumentEditorPSGForm::~InstrumentEditorPSGForm()
 {
 	delete ui;
 }
-
-void InstrumentEditorPSGForm::setInstrumentParameters(const InstrumentPSG inst)
-{
-
-}

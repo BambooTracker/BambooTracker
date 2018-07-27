@@ -1,12 +1,25 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include "instrument.hpp"
+
+enum class FMParameter;
 
 class EnvelopeFM
 {
 public:
 	EnvelopeFM();
+	~EnvelopeFM() = default;
+	EnvelopeFM(const EnvelopeFM& other);
+
+	std::unique_ptr<EnvelopeFM> clone();
+
+	bool getOperatorEnable(int num) const;
+	void setOperatorEnable(int num, bool enable);
+
+	int getParameterValue(FMParameter param) const;
+	void setParameterValue(FMParameter param, int value);
 
 private:
 	int al_;
