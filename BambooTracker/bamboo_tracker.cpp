@@ -61,7 +61,7 @@ void BambooTracker::removeInstrument(int num)
 
 std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
 {
-	return instMan_.getInstrumentCopy(num);
+	return instMan_.getInstrumentSharedPtr(num)->clone();
 }
 
 void BambooTracker::setInstrumentName(int num, std::string name)
@@ -69,16 +69,22 @@ void BambooTracker::setInstrumentName(int num, std::string name)
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
 }
 
-void BambooTracker::setInstrumentFMParameter(int num, FMParameter param, int value)
+void BambooTracker::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
 {
-	instMan_.setFMEnvelopeParameter(num, param, value);
-	opnaCtrl_.setInstrumentFMParameter(num, param);
+	instMan_.setEnvelopeFMParameter(envNum, param, value);
+	opnaCtrl_.setInstrumentFMEnvelopeParameter(envNum, param);
 }
 
-void BambooTracker::setInstrumentFMOperatorEnable(int instNum, int opNum, bool enable)
+void BambooTracker::setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable)
 {
-	instMan_.setFMOperatorEnable(instNum, opNum, enable);
-	opnaCtrl_.setInstrumentFMOperatorEnable(instNum, opNum);
+	instMan_.setEnvelopeFMOperatorEnable(envNum, opNum, enable);
+	opnaCtrl_.setInstrumentFMOperatorEnable(envNum, opNum);
+}
+
+void BambooTracker::setInstrumentFMEnvelope(int instNum, int envNum)
+{
+	instMan_.setInstrumentFMEnvelope(instNum, envNum);
+	opnaCtrl_.updateInstrumentFM(instNum);
 }
 
 /********** Undo-Redo **********/
@@ -116,18 +122,18 @@ void BambooTracker::jamKeyOn(JamKey key)
 		}
 	}
 
-	auto tmpInst = instMan_.getInstrumentCopy(curInstNum_);
+	std::shared_ptr<AbstructInstrument> tmpInst = instMan_.getInstrumentSharedPtr(curInstNum_);
 	JamKeyData& onData = list[0];
 	switch (onData.source) {
 	case SoundSource::FM:
-		opnaCtrl_.setInstrumentFM(onData.chIdInSource, dynamic_cast<InstrumentFM*>(tmpInst.release()));
+		opnaCtrl_.setInstrumentFM(onData.chIdInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
 		opnaCtrl_.keyOnFM(onData.chIdInSource,
 						  JamManager::jamKeyToNote(onData.key),
 						  JamManager::calcOctave(octave_, onData.key),
 						  0);
 		break;
 	case SoundSource::PSG:
-		opnaCtrl_.setInstrumentPSG(onData.chIdInSource, dynamic_cast<InstrumentPSG*>(tmpInst.release()));
+		opnaCtrl_.setInstrumentPSG(onData.chIdInSource, std::dynamic_pointer_cast<InstrumentPSG>(tmpInst));
 		opnaCtrl_.keyOnPSG(onData.chIdInSource,
 						   JamManager::jamKeyToNote(onData.key),
 						   JamManager::calcOctave(octave_, onData.key),

@@ -56,7 +56,8 @@ SOURCES += \
     command/instrument/change_instrument_name_command.cpp \
     opna_controller.cpp \
     instrument/instrument.cpp \
-    instrument/envelope_fm.cpp
+    instrument/envelope_fm.cpp \
+    gui/event_guard.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -97,7 +98,8 @@ HEADERS += \
     command/abstruct_command.hpp \
     opna_controller.hpp \
     instrument/instrument.hpp \
-    instrument/envelope_fm.hpp
+    instrument/envelope_fm.hpp \
+    gui/event_guard.hpp
 
 FORMS += \
     gui/mainwindow.ui \

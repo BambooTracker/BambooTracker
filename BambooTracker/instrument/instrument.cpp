@@ -53,12 +53,12 @@ int InstrumentFM::getEnvelopeNumber() const
 
 int InstrumentFM::getEnvelopeParameter(FMParameter param) const
 {
-	return owner_->getFMEnvelopeParameter(envNum_, param);
+	return owner_->getEnvelopeFMParameter(envNum_, param);
 }
 
 bool InstrumentFM::getOperatorEnable(int n) const
 {
-	return owner_->getFMOperatorEnable(envNum_, n);
+	return owner_->getEnvelopeFMOperatorEnable(envNum_, n);
 }
 
 /****************************************/

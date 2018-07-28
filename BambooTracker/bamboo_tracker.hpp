@@ -35,8 +35,9 @@ public:
 	void removeInstrument(int num);
 	std::unique_ptr<AbstructInstrument> getInstrument(int num);
 	void setInstrumentName(int num, std::string name);
-	void setInstrumentFMParameter(int num, FMParameter param, int value);
-	void setInstrumentFMOperatorEnable(int instNum, int opNum, bool enable);
+	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
+	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
+	void setInstrumentFMEnvelope(int instNum, int envNum);
 
 	// Undo-Redo
 	void undo();

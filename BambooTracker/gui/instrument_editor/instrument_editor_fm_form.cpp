@@ -1,6 +1,7 @@
 #include "instrument_editor_fm_form.hpp"
 #include "ui_instrument_editor_fm_form.h"
 #include <QString>
+#include "gui/event_guard.hpp"
 #include "misc.hpp"
 
 #include <QDebug>
@@ -9,25 +10,38 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::InstrumentEditorFMForm),
 	instNum_(num),
-	isValidEmit(true)
+	isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
 
 	/******************** Envelope editor ********************/
 	ui->alSlider->setText("AL");
 	ui->alSlider->setMaximum(7);
-	QObject::connect(ui->alSlider, &LabeledHorizontalSlider::valueChanged, this,
-					 [&](int value) { bt_->setInstrumentFMParameter(instNum_, FMParameter::AL, value); });
+	QObject::connect(ui->alSlider, &LabeledHorizontalSlider::valueChanged, this, [&](int value) {
+		if (!isIgnoreEvent_) {
+			bt_->setEnvelopeFMParameter(ui->envNumSpinBox->value(), FMParameter::AL, value);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
+	});
 	ui->fbSlider->setText("FB");
 	ui->fbSlider->setMaximum(7);
-	QObject::connect(ui->fbSlider, &LabeledHorizontalSlider::valueChanged, this,
-					 [&](int value) { bt_->setInstrumentFMParameter(instNum_, FMParameter::FB, value); });
+	QObject::connect(ui->fbSlider, &LabeledHorizontalSlider::valueChanged, this, [&](int value) {
+		if (!isIgnoreEvent_) {
+			bt_->setEnvelopeFMParameter(ui->envNumSpinBox->value(), FMParameter::FB, value);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
+	});
 
 	ui->op1Table->setOperatorNumber(0);
-	QObject::connect(ui->op1Table, &FMOperatorTable::operatorEnableChanged,
-					 this, [&](bool enable) { bt_->setInstrumentFMOperatorEnable(instNum_, 0, enable); });
+	QObject::connect(ui->op1Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
+		if (!isIgnoreEvent_) {
+			bt_->setEnvelopeFMOperatorEnable(ui->envNumSpinBox->value(), 0, enable);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
+	});
 	QObject::connect(ui->op1Table, &FMOperatorTable::operatorValueChanged,
 					 this, [&](Ui::FMOperatorParameter opParam, int value) {
+		if (!isIgnoreEvent_) {
 			FMParameter param;
 			switch (opParam) {
 			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR1;		break;
@@ -40,15 +54,23 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML1;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT1;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG1;	break;
+			default:																break;
 			}
-			bt_->setInstrumentFMParameter(instNum_, param, value);
+			bt_->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
 	});
 
 	ui->op2Table->setOperatorNumber(1);
-	QObject::connect(ui->op2Table, &FMOperatorTable::operatorEnableChanged,
-					 this, [&](bool enable) { bt_->setInstrumentFMOperatorEnable(instNum_, 1, enable); });
+	QObject::connect(ui->op2Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
+		if (!isIgnoreEvent_) {
+			bt_->setEnvelopeFMOperatorEnable(ui->envNumSpinBox->value(), 1, enable);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
+	});
 	QObject::connect(ui->op2Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+		if (!isIgnoreEvent_) {
 			FMParameter param;
 			switch (opParam) {
 			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR2;		break;
@@ -61,15 +83,23 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML2;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT2;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG2;	break;
+			default:																break;
 			}
-			bt_->setInstrumentFMParameter(instNum_, param, value);
+			bt_->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
 	});
 
 	ui->op3Table->setOperatorNumber(2);
-	QObject::connect(ui->op3Table, &FMOperatorTable::operatorEnableChanged,
-					 this, [&](bool enable) { bt_->setInstrumentFMOperatorEnable(instNum_, 2, enable); });
+	QObject::connect(ui->op3Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
+		if (!isIgnoreEvent_) {
+			bt_->setEnvelopeFMOperatorEnable(ui->envNumSpinBox->value(), 2, enable);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
+	});
 	QObject::connect(ui->op3Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+		if (!isIgnoreEvent_) {
 			FMParameter param;
 			switch (opParam) {
 			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR3;		break;
@@ -82,15 +112,23 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML3;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT3;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG3;	break;
+			default:																break;
 			}
-			bt_->setInstrumentFMParameter(instNum_, param, value);
+			bt_->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
 	});
 
 	ui->op4Table->setOperatorNumber(3);
-	QObject::connect(ui->op4Table, &FMOperatorTable::operatorEnableChanged,
-					 this, [&](bool enable) { bt_->setInstrumentFMOperatorEnable(instNum_, 3, enable); });
+	QObject::connect(ui->op4Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
+		if (!isIgnoreEvent_) {
+			bt_->setEnvelopeFMOperatorEnable(ui->envNumSpinBox->value(), 3, enable);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
+	});
 	QObject::connect(ui->op4Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+		if (!isIgnoreEvent_) {
 			FMParameter param;
 			switch (opParam) {
 			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR4;		break;
@@ -103,8 +141,11 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML4;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT4;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG4;	break;
+			default:																break;
 			}
-			bt_->setInstrumentFMParameter(instNum_, param, value);
+			bt_->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
+			emit instrumentFMEnvelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+		}
 	});
 }
 
@@ -115,18 +156,39 @@ InstrumentEditorFMForm::~InstrumentEditorFMForm()
 
 void InstrumentEditorFMForm::setCore(std::shared_ptr<BambooTracker> core)
 {
+	Ui::EventGuard eg(isIgnoreEvent_);
 	bt_ = core;
 	setInstrumentParameters();
 }
 
+void InstrumentEditorFMForm::checkEnvelopeChange(int envNum)
+{
+	if (ui->envNumSpinBox->value() == envNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentEnvelopeParameters();
+	}
+}
+
 void InstrumentEditorFMForm::setInstrumentParameters()
 {	
+	Ui::EventGuard eg(isIgnoreEvent_);
+
 	std::unique_ptr<AbstructInstrument> inst = bt_->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 	auto name = QString::fromUtf8(instFM->getName().c_str(), instFM->getName().length());
 	setWindowTitle(name);
 
-	// Envelope tab
+	setInstrumentEnvelopeParameters();
+}
+
+void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
+{
+	Ui::EventGuard eg(isIgnoreEvent_);
+
+	std::unique_ptr<AbstructInstrument> inst = bt_->getInstrument(instNum_);
+	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
+
+	ui->envNumSpinBox->setValue(instFM->getEnvelopeNumber());
 	ui->alSlider->setValue(instFM->getEnvelopeParameter(FMParameter::AL));
 	ui->fbSlider->setValue(instFM->getEnvelopeParameter(FMParameter::FB));
 	ui->op1Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMParameter::AR1));
@@ -169,4 +231,12 @@ void InstrumentEditorFMForm::setInstrumentParameters()
 	ui->op4Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMParameter::ML4));
 	ui->op4Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMParameter::DT4));
 	ui->op4Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMParameter::SSGEG4));
+}
+
+void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_->setInstrumentFMEnvelope(instNum_, arg1);
+		setInstrumentEnvelopeParameters();
+	}
 }

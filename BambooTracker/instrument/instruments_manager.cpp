@@ -9,11 +9,11 @@ InstrumentsManager::InstrumentsManager()
 	}
 }
 
-void InstrumentsManager::addInstrument(int num, SoundSource source, std::string name)
+void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::string name)
 {
 	switch (source) {
-	case SoundSource::FM:	insts_[num] = std::make_unique<InstrumentFM>(num, name, this);	break;
-	case SoundSource::PSG:	insts_[num] = std::make_unique<InstrumentPSG>(num, name, this);	break;
+	case SoundSource::FM:	insts_[instNum] = std::make_shared<InstrumentFM>(instNum, name, this);	break;
+	case SoundSource::PSG:	insts_[instNum] = std::make_shared<InstrumentPSG>(instNum, name, this);	break;
 	}
 }
 
@@ -23,42 +23,55 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 	insts_[num] = std::move(inst);
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int n)
+std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int instNum)
 {
-	return std::move(insts_[n]);
+	std::unique_ptr<AbstructInstrument> clone = insts_[instNum]->clone();
+	insts_[instNum]->setNumber(-1);	// Unregistered number
+	insts_[instNum].reset();
+	return std::move(clone);
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentsManager::getInstrumentCopy(int n)
+std::shared_ptr<AbstructInstrument> InstrumentsManager::getInstrumentSharedPtr(int instNum)
 {
-	if (0 <= n && n < 128 && insts_[n] != nullptr) {
-		return insts_[n]->clone();
+	if (0 <= instNum && instNum < 128 && insts_[instNum] != nullptr) {
+		return insts_[instNum];
 	}
 	else {
-		return std::unique_ptr<AbstructInstrument>();	// Throw nullptr
+		return std::shared_ptr<AbstructInstrument>();	// Throw nullptr
 	}
 }
 
-void InstrumentsManager::setInstrumentName(int num, std::string name)
+void InstrumentsManager::setInstrumentName(int instNum, std::string name)
 {
-	insts_[num]->setName(name);
+	insts_[instNum]->setName(name);
 }
 
-void InstrumentsManager::setFMEnvelopeParameter(int envNum, FMParameter param, int value)
+std::string InstrumentsManager::getInstrumentName(int instNum) const
+{
+	return insts_[instNum]->getName();
+}
+
+void InstrumentsManager::setInstrumentFMEnvelope(int instNum, int envNum)
+{
+	std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->setEnvelopeNumber(envNum);
+}
+
+void InstrumentsManager::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
 {
 	envFM_[envNum]->setParameterValue(param, value);
 }
 
-int InstrumentsManager::getFMEnvelopeParameter(int envNum, FMParameter param) const
+int InstrumentsManager::getEnvelopeFMParameter(int envNum, FMParameter param) const
 {
 	return envFM_[envNum]->getParameterValue(param);
 }
 
-void InstrumentsManager::setFMOperatorEnable(int envNum, int opNum, bool enable)
+void InstrumentsManager::setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable)
 {
 	envFM_[envNum]->setOperatorEnable(opNum, enable);
 }
 
-bool InstrumentsManager::getFMOperatorEnable(int envNum, int opNum) const
+bool InstrumentsManager::getEnvelopeFMOperatorEnable(int envNum, int opNum) const
 {
 	return envFM_[envNum]->getOperatorEnable(opNum);
 }

@@ -203,6 +203,8 @@ void MainWindow::editInstrument()
 		case SoundSource::FM:
 		{
 			auto&& fmForm = dynamic_cast<InstrumentEditorFMForm*>(form.get());
+			QObject::connect(fmForm, &InstrumentEditorFMForm::instrumentFMEnvelopeParameterChanged,
+							 this, &MainWindow::onInstrumentFMEnvelopeChanged);
 			fmForm->setCore(bt_);
 			break;
 		}
@@ -215,6 +217,7 @@ void MainWindow::editInstrument()
 		form->show();
 	}
 	else {
+		qDebug() << form->isHidden();
 		form->activateWindow();
 	}
 }
@@ -314,4 +317,14 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 			  ? -1
 			  : ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	bt_->setCurrentInstrument(num);
+}
+
+void MainWindow::onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum)
+{
+	for (auto& pair : instFormMap_) {
+		if (pair.first != fromInstNum &&
+				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			dynamic_cast<InstrumentEditorFMForm*>(pair.second.get())->checkEnvelopeChange(envNum);
+		}
+	}
 }

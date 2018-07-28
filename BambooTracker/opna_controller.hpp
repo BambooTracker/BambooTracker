@@ -20,19 +20,20 @@ public:
 	void reset();
 
 	// Key on-off
-	void keyOnFM(int id, Note note, int octave, int fine);
-	void keyOnPSG(int id, Note note, int octave, int fine);
-	void keyOffFM(int id);
-	void keyOffPSG(int id);
+	void keyOnFM(int chId, Note note, int octave, int fine);
+	void keyOnPSG(int chId, Note note, int octave, int fine);
+	void keyOffFM(int chId);
+	void keyOffPSG(int chId);
 
 	// Set Instrument
-	void setInstrumentFM(int id, InstrumentFM* inst);
-	void setInstrumentPSG(int id, InstrumentPSG* inst);
-	void setInstrumentFMParameter(int instNum, FMParameter param);
-	void setInstrumentFMOperatorEnable(int instNum, int opNum);
+	void setInstrumentFM(int chId, std::shared_ptr<InstrumentFM> inst);
+	void setInstrumentPSG(int chId, std::shared_ptr<InstrumentPSG> inst);
+	void updateInstrumentFM(int instNum);
+	void setInstrumentFMEnvelopeParameter(int envNum, FMParameter param);
+	void setInstrumentFMOperatorEnable(int envNum, int opNum);
 
 	// Set volume
-	void setVolumePSG(int id, int level);
+	void setVolumePSG(int chId, int level);
 
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
@@ -43,13 +44,14 @@ public:
 
 private:
 	chip::OPNA opna_;
-	std::unique_ptr<InstrumentFM> instFM_[6];
-	std::unique_ptr<InstrumentPSG> instPSG_[3];
+	std::shared_ptr<InstrumentFM> instFM_[6];
+	std::shared_ptr<InstrumentPSG> instPSG_[3];
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
 	uint8_t mixerPSG_;
 
 	void initChip();
-	uint32_t getFmChannelMask(int id);
-	uint32_t getFMChannelOffset(int id);
+	uint32_t getFmChannelMask(int chId);
+	uint32_t getFMChannelOffset(int chId);
+	void updateFMEnvelopeRegisters(int chId);
 };

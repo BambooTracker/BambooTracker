@@ -3,7 +3,7 @@
 ChangeInstrumentNameCommand::ChangeInstrumentNameCommand(InstrumentsManager &manager, int num, std::string name) :
 	manager_(manager), instNum_(num), newName_(name)
 {
-	oldName_ = manager_.getInstrumentCopy(instNum_)->getName();
+	oldName_ = manager_.getInstrumentName(instNum_);
 }
 
 void ChangeInstrumentNameCommand::redo()

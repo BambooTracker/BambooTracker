@@ -62,6 +62,7 @@ private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
 	void on_instrumentListWidget_itemSelectionChanged();
+	void onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum);
 };
 
 #endif // MAINWINDOW_HPP
