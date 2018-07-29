@@ -6,6 +6,7 @@
 #include <QFrame>
 #include <QShowEvent>
 #include <QResizeEvent>
+#include <QString>
 #include "gui/labeled_vertical_slider.hpp"
 
 namespace Ui {
@@ -25,6 +26,8 @@ public:
 	int operatorNumber() const;
 
 	void setValue(Ui::FMOperatorParameter param, int value);
+
+	QString toString() const;
 
 protected:
 	void showEvent(QShowEvent* event) override;

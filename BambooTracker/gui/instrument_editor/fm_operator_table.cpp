@@ -85,6 +85,24 @@ void FMOperatorTable::setValue(Ui::FMOperatorParameter param, int value)
 	}
 }
 
+QString FMOperatorTable::toString() const
+{
+	auto str = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,%10")
+			   .arg(QString::number(ui->arSlider->value()))
+			   .arg(QString::number(ui->drSlider->value()))
+			   .arg(QString::number(ui->srSlider->value()))
+			   .arg(QString::number(ui->rrSlider->value()))
+			   .arg(QString::number(ui->slSlider->value()))
+			   .arg(QString::number(ui->tlSlider->value()))
+			   .arg(QString::number(ui->ksSlider->value()))
+			   .arg(QString::number(ui->mlSlider->value()))
+			   .arg(QString::number(ui->dtSlider->value()))
+			   .arg(ui->ssgegCheckBox->isChecked()
+					? QString::number(ui->ssgegSlider->value())
+					: "-1");
+	return str;
+}
+
 void FMOperatorTable::showEvent(QShowEvent* event)
 {
 	Q_UNUSED(event)

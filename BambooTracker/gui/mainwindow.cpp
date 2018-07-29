@@ -1,6 +1,7 @@
 #include "mainwindow.hpp"
 #include <QString>
 #include <QLineEdit>
+#include <QClipboard>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
@@ -19,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	isPlaySong_(false)
 {
 	ui->setupUi(this);
+
+	QApplication::clipboard()->clear();
+
 	// Audio stream
 	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(), bt_->getStreamDuration());
 	QObject::connect(stream_.get(), &AudioStream::nextStepArrived,

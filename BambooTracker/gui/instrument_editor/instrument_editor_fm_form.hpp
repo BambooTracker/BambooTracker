@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QKeyEvent>
+#include <QClipboard>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
@@ -19,7 +20,7 @@ public:
 	InstrumentEditorFMForm(int num, QWidget *parent = 0);
 	~InstrumentEditorFMForm();
 	int getInstrumentNumber() const;
-	void setCore(std::shared_ptr<BambooTracker> core);
+	void setCore(std::weak_ptr<BambooTracker> core);
 	void checkEnvelopeChange(int envNum);
 
 signals:
@@ -33,16 +34,20 @@ protected:
 
 private slots:
 	void on_envNumSpinBox_valueChanged(int arg1);
+	void on_envelopeTab_customContextMenuRequested(const QPoint &pos);
 
 private:
 	Ui::InstrumentEditorFMForm *ui;
 	int instNum_;
 	bool isIgnoreEvent_;
 
-	std::shared_ptr<BambooTracker> bt_;
+	std::weak_ptr<BambooTracker> bt_;
 
 	void setInstrumentParameters();
 	void setInstrumentEnvelopeParameters();
+	void setInstrumentEnvelopeParameters(QString data);
+
+	QString toEnvelopeString() const;
 };
 
 #endif // INSTRUMENTEDITORFMFORM_HPP
