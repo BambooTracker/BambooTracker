@@ -57,7 +57,8 @@ SOURCES += \
     opna_controller.cpp \
     instrument/instrument.cpp \
     instrument/envelope_fm.cpp \
-    gui/event_guard.cpp
+    gui/event_guard.cpp \
+    tick_counter.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -99,7 +100,8 @@ HEADERS += \
     opna_controller.hpp \
     instrument/instrument.hpp \
     instrument/envelope_fm.hpp \
-    gui/event_guard.hpp
+    gui/event_guard.hpp \
+    tick_counter.hpp
 
 FORMS += \
     gui/mainwindow.ui \

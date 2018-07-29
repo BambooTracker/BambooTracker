@@ -4,9 +4,6 @@
 #include <string>
 #include <memory>
 #include "opna_controller.hpp"
-
-#include "opna.hpp"
-
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
 #include "command_manager.hpp"
