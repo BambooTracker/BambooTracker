@@ -2,6 +2,7 @@
 #define INSTRUMENTEDITORFMFORM_HPP
 
 #include <QWidget>
+#include <QKeyEvent>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
@@ -17,11 +18,18 @@ class InstrumentEditorFMForm : public QWidget
 public:
 	InstrumentEditorFMForm(int num, QWidget *parent = 0);
 	~InstrumentEditorFMForm();
+	int getInstrumentNumber() const;
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void checkEnvelopeChange(int envNum);
 
 signals:
 	void instrumentFMEnvelopeParameterChanged(int envNum, int fromInstNum);
+	void jamKeyOnEvent(QKeyEvent* event);
+	void jamKeyOffEvent(QKeyEvent* event);
+
+protected:
+	void keyPressEvent(QKeyEvent* event) override;
+	void keyReleaseEvent(QKeyEvent* event) override;
 
 private slots:
 	void on_envNumSpinBox_valueChanged(int arg1);

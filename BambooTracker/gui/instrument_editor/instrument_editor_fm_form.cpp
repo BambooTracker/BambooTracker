@@ -14,6 +14,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	installEventFilter(this);
+
 	/******************** Envelope editor ********************/
 	ui->alSlider->setText("AL");
 	ui->alSlider->setMaximum(7);
@@ -152,6 +154,111 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 InstrumentEditorFMForm::~InstrumentEditorFMForm()
 {
 	delete ui;
+}
+
+int InstrumentEditorFMForm::getInstrumentNumber() const
+{
+	return instNum_;
+}
+
+// MUST DIRECT CONNECTION
+void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
+{
+	// For jam key on
+	auto focus = focusWidget();
+	if (focus == ui->envNumSpinBox) return;
+
+	if (bt_->isJamMode() && !event->isAutoRepeat()) {
+		switch (event->key()) {
+		case Qt::Key_Z:
+		case Qt::Key_S:
+		case Qt::Key_X:
+		case Qt::Key_D:
+		case Qt::Key_C:
+		case Qt::Key_V:
+		case Qt::Key_G:
+		case Qt::Key_B:
+		case Qt::Key_H:
+		case Qt::Key_N:
+		case Qt::Key_J:
+		case Qt::Key_M:
+		case Qt::Key_Comma:
+		case Qt::Key_L:
+		case Qt::Key_Period:
+		case Qt::Key_Q:
+		case Qt::Key_2:
+		case Qt::Key_W:
+		case Qt::Key_3:
+		case Qt::Key_E:
+		case Qt::Key_R:
+		case Qt::Key_5:
+		case Qt::Key_T:
+		case Qt::Key_6:
+		case Qt::Key_Y:
+		case Qt::Key_7:
+		case Qt::Key_U:
+		case Qt::Key_I:
+		case Qt::Key_9:
+		case Qt::Key_O:
+			emit jamKeyOnEvent(event);
+			break;
+		default: break;
+		}
+	}
+	else {
+		switch (event->key()) {
+		// Common keys
+		case Qt::Key_Asterisk:	bt_->raiseOctave();		break;
+		case Qt::Key_Slash:		bt_->lowerOctave();		break;
+		default:	break;
+		}
+	}
+}
+
+// MUST DIRECT CONNECTION
+void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
+{
+	// For jam key off
+	auto focus = focusWidget();
+	if (focus == ui->envNumSpinBox) return;
+
+	if (bt_->isJamMode() && !event->isAutoRepeat()) {
+		switch (event->key()) {
+		case Qt::Key_Z:
+		case Qt::Key_S:
+		case Qt::Key_X:
+		case Qt::Key_D:
+		case Qt::Key_C:
+		case Qt::Key_V:
+		case Qt::Key_G:
+		case Qt::Key_B:
+		case Qt::Key_H:
+		case Qt::Key_N:
+		case Qt::Key_J:
+		case Qt::Key_M:
+		case Qt::Key_Comma:
+		case Qt::Key_L:
+		case Qt::Key_Period:
+		case Qt::Key_Q:
+		case Qt::Key_2:
+		case Qt::Key_W:
+		case Qt::Key_3:
+		case Qt::Key_E:
+		case Qt::Key_R:
+		case Qt::Key_5:
+		case Qt::Key_T:
+		case Qt::Key_6:
+		case Qt::Key_Y:
+		case Qt::Key_7:
+		case Qt::Key_U:
+		case Qt::Key_I:
+		case Qt::Key_9:
+		case Qt::Key_O:
+			emit jamKeyOffEvent(event);
+			break;
+		default: break;
+		}
+	}
 }
 
 void InstrumentEditorFMForm::setCore(std::shared_ptr<BambooTracker> core)

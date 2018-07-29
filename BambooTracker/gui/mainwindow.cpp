@@ -42,6 +42,20 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+	if (auto fmForm = qobject_cast<InstrumentEditorFMForm*>(watched)) {
+		// Change current instrument by activating FM editor
+		if (event->type() == QEvent::WindowActivate) {
+			int row = findRowFromInstrumentList(fmForm->getInstrumentNumber());
+			ui->instrumentListWidget->setCurrentRow(row);
+			return false;
+		}
+	}
+
+	return false;
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
 	int key = event->key();
@@ -202,15 +216,20 @@ void MainWindow::editInstrument()
 		switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
 		case SoundSource::FM:
 		{
-			auto&& fmForm = dynamic_cast<InstrumentEditorFMForm*>(form.get());
+			auto&& fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
 			QObject::connect(fmForm, &InstrumentEditorFMForm::instrumentFMEnvelopeParameterChanged,
 							 this, &MainWindow::onInstrumentFMEnvelopeChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
+							 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
+							 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
+			fmForm->installEventFilter(this);
 			fmForm->setCore(bt_);
 			break;
 		}
 		case SoundSource::PSG:
 		{
-			auto&& psgForm = dynamic_cast<InstrumentEditorPSGForm*>(form.get());
+			auto&& psgForm = qobject_cast<InstrumentEditorPSGForm*>(form.get());
 			break;
 		}
 		}
@@ -242,7 +261,7 @@ void MainWindow::editInstrumentName()
 	auto line = new QLineEdit(item->text());
 	QObject::connect(line, &QLineEdit::editingFinished,
 					 this, [&, item, list, num, oldName]() {
-		QString newName = dynamic_cast<QLineEdit*>(list->itemWidget(item))->text();
+		QString newName = qobject_cast<QLineEdit*>(list->itemWidget(item))->text();
 		item->setText(newName);
 		list->removeItemWidget(item);
 
@@ -324,7 +343,7 @@ void MainWindow::onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum)
 	for (auto& pair : instFormMap_) {
 		if (pair.first != fromInstNum &&
 				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
-			dynamic_cast<InstrumentEditorFMForm*>(pair.second.get())->checkEnvelopeChange(envNum);
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->checkEnvelopeChange(envNum);
 		}
 	}
 }

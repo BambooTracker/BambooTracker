@@ -19,7 +19,7 @@ void ChangeInstrumentNameQtCommand::redo()
 	switch (source_) {
 	case SoundSource::FM:
 	{
-		auto fmForm = dynamic_cast<InstrumentEditorFMForm*>(form);
+		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form);
 		fmForm->setWindowTitle(newName_);
 	}
 		break;
@@ -39,7 +39,7 @@ void ChangeInstrumentNameQtCommand::undo()
 	switch (source_) {
 	case SoundSource::FM:
 	{
-		auto fmForm = dynamic_cast<InstrumentEditorFMForm*>(form);
+		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form);
 		fmForm->setWindowTitle(oldName_);
 	}
 		break;
