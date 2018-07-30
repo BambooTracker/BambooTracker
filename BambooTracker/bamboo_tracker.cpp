@@ -14,7 +14,7 @@ BambooTracker::BambooTracker() :
 	octave_(4),
 	curChannel_(0),
 	curInstNum_(-1),
-	isPlaySong_(false)
+	streamIntrRate_(60)	// NTSC
 {
 }
 
@@ -159,14 +159,15 @@ void BambooTracker::startPlaySong()
 {
 	opnaCtrl_.reset();
 	jamMan_.polyphonic(false);
-	isPlaySong_ = true;
+	tickCounter_.resetCount();
+	tickCounter_.setPlayState(true);
 }
 
 void BambooTracker::stopPlaySong()
 {
 	opnaCtrl_.reset();
 	jamMan_.polyphonic(true);
-	isPlaySong_ = false;
+	tickCounter_.setPlayState(false);
 }
 
 void BambooTracker::readStep()
@@ -179,7 +180,17 @@ void BambooTracker::readTick()
 //	qDebug() << "tick";
 }
 
-/********** Stream samples **********/
+/********** Stream events **********/
+int BambooTracker::streamCountUp()
+{
+	int state = tickCounter_.countUp();
+
+	if (state > 0) readTick();
+	else if (!state) readStep();
+
+	return state;
+}
+
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 {
 	opnaCtrl_.getStreamSamples(container, nSamples);
@@ -194,4 +205,9 @@ int BambooTracker::getStreamRate() const
 int BambooTracker::getStreamDuration() const
 {
 	return opnaCtrl_.getDuration();
+}
+
+int BambooTracker::getStreamInterruptRate() const
+{
+	return streamIntrRate_;
 }

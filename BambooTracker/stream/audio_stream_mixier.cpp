@@ -1,26 +1,16 @@
 #include "audio_stream_mixier.hpp"
 #include <algorithm>
 
-const size_t AudioStreamMixier::NTSC_ = 60;
-const size_t AudioStreamMixier::PAL_ = 50;
-
-AudioStreamMixier::AudioStreamMixier(uint32_t rate, uint32_t duration, QObject* parent) :
+AudioStreamMixier::AudioStreamMixier(uint32_t rate, uint32_t duration, uint32_t intrRate, QObject* parent) :
 	QIODevice(parent),
 	rate_(rate),
 	duration_(duration),
-	bufferSampleSize_(rate * duration / 1000),
-	tickRate_(NTSC_),
-	tickIntrCount_(rate / tickRate_),
-	tickIntrCountRest_(0),
-	isPlaySong_(false),
-	specificTicksPerStep_(0),
-	executingTicksPerStep_(0),
-	tickCount_(0),
-	tempo_(0),
-	strictTicksPerStepByBpm_(0),
-	tickDifSum_(0),
+	intrRate_(intrRate),
+	intrCountRest_(0),
 	isFirstRead_(true)
 {
+	updateBufferSampleSize();
+	updateIntrruptCount();
 }
 
 AudioStreamMixier::~AudioStreamMixier()
@@ -47,31 +37,30 @@ bool AudioStreamMixier::hasRun()
 void AudioStreamMixier::setRate(uint32_t rate)
 {
 	rate_ = rate;
-	setBufferSampleSize(rate, duration_);
-	tickIntrCount_ = rate / tickRate_;
+	updateBufferSampleSize();
+	updateIntrruptCount();
 }
 
 void AudioStreamMixier::setDuration(uint32_t duration)
 {
 	duration_ = duration;
-	setBufferSampleSize(rate_, duration);
+	updateBufferSampleSize();
 }
 
-bool AudioStreamMixier::startPlaySong()
+void AudioStreamMixier::setInterruption(uint32_t rate)
 {
-	isPlaySong_ = !isPlaySong_;
-	return isPlaySong_;
+	intrRate_ = rate;
+	updateIntrruptCount();
 }
 
-bool AudioStreamMixier::stopPlaySong()
+void AudioStreamMixier::updateBufferSampleSize()
 {
-	isPlaySong_ = !isPlaySong_;
-	return isPlaySong_;
+	bufferSampleSize_ = rate_ * duration_ / 1000;
 }
 
-void  AudioStreamMixier::setBufferSampleSize(uint32_t rate, uint32_t duration)
+void AudioStreamMixier::updateIntrruptCount()
 {
-	bufferSampleSize_ = rate * duration / 1000;
+	intrCount_ = rate_ / intrRate_;
 }
 
 qint64 AudioStreamMixier::readData(char* data, qint64 maxlen)
@@ -89,37 +78,14 @@ qint64 AudioStreamMixier::readData(char* data, qint64 maxlen)
 
 	size_t count;
 	while (requiredCount) {
-		if (!tickIntrCountRest_) {	// in tick point
-			tickIntrCountRest_ = tickIntrCount_;    // Set distance to next tick
-
-			if (isPlaySong_) {
-				if (executingTicksPerStep_) {   //  Read by tick
-					emit nextTickArrived();
-				}
-				else {  // Read by step (first tick in step)
-					emit nextStepArrived();
-
-					// Dummy set reading speed
-					specificTicksPerStep_ = 6;
-					tempo_ = 150;
-
-					// Calculate executing ticks in step
-					{
-						strictTicksPerStepByBpm_ = 10.0 * tickRate_ * specificTicksPerStep_ / (tempo_ << 2);
-						tickDifSum_ += strictTicksPerStepByBpm_ - static_cast<float>(specificTicksPerStep_);
-						int castedTickDifSum = static_cast<int>(tickDifSum_);
-						executingTicksPerStep_ = specificTicksPerStep_ + castedTickDifSum;
-						tickDifSum_ -= castedTickDifSum;
-					}
-				}
-
-				--executingTicksPerStep_;   // Mix by 1 tick
-			}
+		if (!intrCountRest_) {	// Interruption
+			intrCountRest_ = intrCount_;    // Set counts to next interruption
+			emit streamInterrupted();
 		}
 
-		count = std::min(tickIntrCountRest_, requiredCount);
+		count = std::min(intrCountRest_, requiredCount);
 		requiredCount -= count;
-		tickIntrCountRest_ -= count;
+		intrCountRest_ -= count;
 
 		emit bufferPrepared(destPtr, count);
 

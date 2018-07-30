@@ -12,18 +12,15 @@ class AudioStream : public QObject
 
 public:
 	// duration: miliseconds
-	AudioStream(uint32_t rate, uint32_t duration);
+	AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate);
 	~AudioStream();
 
 	void setRate(uint32_t rate);
 	void setDuration(uint32_t duration);
-
-	bool startPlaySong();
-	bool stopPlaySong();
+	void setInturuption(uint32_t rate);
 
 signals:
-	void nextStepArrived();
-	void nextTickArrived();
+	void streamInterrupted();
 	void bufferPrepared(int16_t *container, size_t nSamples);
 
 private:

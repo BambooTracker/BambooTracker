@@ -53,12 +53,14 @@ public:
 	void readStep();
 	void readTick();
 
-	// Stream samples
+	// Stream events
+	int streamCountUp();
 	void getStreamSamples(int16_t *container, size_t nSamples);
 
 	// Stream details
 	int getStreamRate() const;
 	int getStreamDuration() const;
+	int getStreamInterruptRate() const;
 
 private:
 	CommandManager comMan_;
@@ -72,5 +74,6 @@ private:
 	int octave_;	// 0-7
 	ChannelAttribute curChannel_;
 	int curInstNum_;
-	bool isPlaySong_;
+
+	int streamIntrRate_;
 };

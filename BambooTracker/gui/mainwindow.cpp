@@ -16,19 +16,18 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	bt_(std::make_shared<BambooTracker>()),
-	comStack_(std::make_unique<QUndoStack>(this)),
-	isPlaySong_(false)
+	comStack_(std::make_unique<QUndoStack>(this))
 {
 	ui->setupUi(this);
 
 	QApplication::clipboard()->clear();
 
 	// Audio stream
-	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(), bt_->getStreamDuration());
-	QObject::connect(stream_.get(), &AudioStream::nextStepArrived,
-					 this, [&]() { bt_->readStep(); }, Qt::DirectConnection);
-	QObject::connect(stream_.get(), &AudioStream::nextTickArrived,
-					 this, [&]() { bt_->readTick(); }, Qt::DirectConnection);
+	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(),
+											bt_->getStreamDuration(),
+											bt_->getStreamInterruptRate());
+	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
+					 this, [&]() { bt_->streamCountUp(); }, Qt::DirectConnection);
 	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
 					 this, [&](int16_t *container, size_t nSamples) {
 		bt_->getStreamSamples(container, nSamples);
@@ -180,7 +179,7 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 	for (auto& pair : instFormMap_) {
 		pair.second->close();
 	}
-	ce->accept();	// dummy
+	ce->accept();
 }
 
 /********** Instrument list **********/
@@ -296,13 +295,11 @@ void MainWindow::redo()
 void MainWindow::startPlaySong()
 {
 	bt_->startPlaySong();
-	isPlaySong_ = stream_->startPlaySong();
 }
 
 void MainWindow::stopPlaySong()
 {
 	bt_->stopPlaySong();
-	isPlaySong_ = stream_->stopPlaySong();
 }
 
 /******************************/

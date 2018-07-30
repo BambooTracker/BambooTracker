@@ -1,7 +1,7 @@
 #include "audio_stream.hpp"
 #include <QSysInfo>
 
-AudioStream::AudioStream(uint32_t rate, uint32_t duration)
+AudioStream::AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate)
 {
 	format_.setByteOrder(QAudioFormat::Endian(QSysInfo::ByteOrder));
 	format_.setChannelCount(2); // Stereo
@@ -11,11 +11,9 @@ AudioStream::AudioStream(uint32_t rate, uint32_t duration)
 	format_.setSampleType(QAudioFormat::SignedInt);
 
 	audio_ = std::make_unique<QAudioOutput>(format_);
-	mixer_ = std::make_unique<AudioStreamMixier>(rate, duration);
-	QObject::connect(mixer_.get(), &AudioStreamMixier::nextStepArrived,
-					 this, [&]() { emit nextStepArrived(); }, Qt::DirectConnection);
-	QObject::connect(mixer_.get(), &AudioStreamMixier::nextTickArrived,
-					 this, [&]() { emit nextTickArrived(); }, Qt::DirectConnection);
+	mixer_ = std::make_unique<AudioStreamMixier>(rate, duration, intrRate);
+	QObject::connect(mixer_.get(), &AudioStreamMixier::streamInterrupted,
+					 this, [&]() { emit streamInterrupted(); }, Qt::DirectConnection);
 	QObject::connect(mixer_.get(), &AudioStreamMixier::bufferPrepared,
 					 this, [&](int16_t *container, size_t nSamples) {
 		emit bufferPrepared(container, nSamples);
@@ -45,14 +43,11 @@ void AudioStream::setDuration(uint32_t duration)
 	start();
 }
 
-bool AudioStream::startPlaySong()
+void AudioStream::setInturuption(uint32_t rate)
 {
-	return mixer_->startPlaySong();
-}
-
-bool AudioStream::stopPlaySong()
-{
-	return mixer_->stopPlaySong();
+	stop();
+	mixer_->setInterruption(rate);
+	start();
 }
 
 void AudioStream::start()

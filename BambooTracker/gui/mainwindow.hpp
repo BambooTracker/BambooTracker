@@ -55,7 +55,6 @@ private:
 	void redo();
 
 	// Play song
-	bool isPlaySong_;
 	void startPlaySong();
 	void stopPlaySong();
 
