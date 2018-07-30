@@ -27,18 +27,20 @@ void AddInstrumentQtCommand::redo()
 {
 	QListWidgetItem *item;
 	std::unique_ptr<QWidget> form;
+	auto title = QString("%1: %2").arg(num_, 2, 16, QChar('0')).toUpper().arg(name_);
 	switch (source_) {
 	case SoundSource::FM:
-		item = new QListWidgetItem(QIcon(), name_);
+		item = new QListWidgetItem(QIcon(), title);
 		form = std::make_unique<InstrumentEditorFMForm>(num_);
 		break;
 	case SoundSource::PSG:
-		item = new QListWidgetItem(QIcon(), name_);
+		item = new QListWidgetItem(QIcon(), title);
 		form = std::make_unique<InstrumentEditorPSGForm>(num_);
 		break;
 	}
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(num_, item);
+	form->setProperty("Shown", false);
 	form->setProperty("SoundSource", static_cast<int>(source_));
 	map_.emplace(num_, std::move(form));
 }

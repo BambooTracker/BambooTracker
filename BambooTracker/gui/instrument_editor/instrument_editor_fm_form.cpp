@@ -289,7 +289,7 @@ void InstrumentEditorFMForm::setInstrumentParameters()
 	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 	auto name = QString::fromUtf8(instFM->getName().c_str(), instFM->getName().length());
-	setWindowTitle(name);
+	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentEnvelopeParameters();
 }

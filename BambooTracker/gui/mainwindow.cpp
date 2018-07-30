@@ -2,6 +2,7 @@
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
+#include <QRegularExpression>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
@@ -215,32 +216,36 @@ void MainWindow::editInstrument()
 	auto item = ui->instrumentListWidget->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
 	auto& form = instFormMap_.at(num);
-	if (form->isHidden()) {
-		switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
-		case SoundSource::FM:
-		{
-			auto&& fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
-			QObject::connect(fmForm, &InstrumentEditorFMForm::instrumentFMEnvelopeParameterChanged,
-							 this, &MainWindow::onInstrumentFMEnvelopeChanged);
-			QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
-							 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
-			QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
-							 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
-			fmForm->installEventFilter(this);
-			fmForm->setCore(bt_);
-			break;
-		}
-		case SoundSource::PSG:
-		{
-			auto&& psgForm = qobject_cast<InstrumentEditorPSGForm*>(form.get());
-			break;
-		}
-		}
-		form->show();
+
+	if (form->isVisible()) {
+		form->activateWindow();
 	}
 	else {
-		qDebug() << form->isHidden();
-		form->activateWindow();
+		if (!form->property("Shown").toBool()) {	// Set data before first show
+			switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
+			case SoundSource::FM:
+			{
+				auto&& fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
+				QObject::connect(fmForm, &InstrumentEditorFMForm::instrumentFMEnvelopeParameterChanged,
+								 this, &MainWindow::onInstrumentFMEnvelopeChanged);
+				QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
+								 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
+				QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
+								 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
+				fmForm->installEventFilter(this);
+				fmForm->setCore(bt_);
+				break;
+			}
+			case SoundSource::PSG:
+			{
+				auto&& psgForm = qobject_cast<InstrumentEditorPSGForm*>(form.get());
+				break;
+			}
+			}
+			form->setProperty("Shown", true);
+		}
+
+		form->show();
 	}
 }
 
@@ -260,17 +265,17 @@ void MainWindow::editInstrumentName()
 	auto list = ui->instrumentListWidget;
 	auto item = list->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
-	QString oldName = item->text();
-	auto line = new QLineEdit(item->text());
+	QString oldTitle = item->text();
+	auto line = new QLineEdit(oldTitle.remove(QRegularExpression("^[0-9A-F]{2}: ")));
 	QObject::connect(line, &QLineEdit::editingFinished,
-					 this, [&, item, list, num, oldName]() {
+					 this, [&, item, list, num, oldTitle]() {
 		QString newName = qobject_cast<QLineEdit*>(list->itemWidget(item))->text();
-		item->setText(newName);
+		auto newTitle = QString("%1: %2").arg(num, 2, 16, QChar('0')).toUpper().arg(newName);
 		list->removeItemWidget(item);
 
 		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
 		int row = findRowFromInstrumentList(num);
-		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instFormMap_, oldName, newName));
+		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instFormMap_, oldTitle, newTitle));
 	});
 	ui->instrumentListWidget->setItemWidget(item, line);
 
