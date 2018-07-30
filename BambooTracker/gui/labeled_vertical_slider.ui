@@ -6,12 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>29</width>
+    <width>33</width>
     <height>115</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Frame</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">LabeledVerticalSlider {
+	border: 0;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">

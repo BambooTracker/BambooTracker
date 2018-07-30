@@ -9,6 +9,7 @@
 #include "command_manager.hpp"
 #include "instruments_manager.hpp"
 #include "instrument.hpp"
+#include "tick_counter.hpp"
 #include "misc.hpp"
 
 class BambooTracker
@@ -64,6 +65,8 @@ private:
 	InstrumentsManager instMan_;
 	JamManager jamMan_;
 	OPNAController opnaCtrl_;
+
+    TickCounter tickCounter_;
 
 	// Current status
 	int octave_;	// 0-7

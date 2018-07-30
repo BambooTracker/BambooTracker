@@ -2,30 +2,29 @@
 
 TickCounter::TickCounter() :
 	isPlaySong_(false),
-	tickRate_(60)	// NTSC
+    tempo_(150),    // Dummy set
+    tickRate_(60),	// NTSC
+    defStepSize_(6)    // Dummy set
 {
-}
-
-void TickCounter::setChipRate(uint32_t rate)
-{
-	rate_ = rate;
-	tickIntrCount_ = rate / tickRate_;
+    updateTickDIf();
 }
 
 void TickCounter::setInterruptRate(uint32_t rate)
 {
 	tickRate_ = rate;
-	tickIntrCount_ = rate_ / rate;
+    updateTickDIf();
 }
 
 void TickCounter::setTempo(int tempo)
 {
 	tempo_ = tempo;
+    updateTickDIf();
 }
 
 void TickCounter::setStepSize(size_t size)
 {
-	specificTicksPerStep_ = size;
+    defStepSize_ = size;
+    updateTickDIf();
 }
 
 void TickCounter::setPlayState(bool isPlaySong)
@@ -35,37 +34,39 @@ void TickCounter::setPlayState(bool isPlaySong)
 
 /// Reuturn:
 ///		-1: not tick or step
-///		 0: step
+///		 0: head of step
 ///		0<: rest tick count to next step
 int TickCounter::countUp()
 {
-	int ret = 0;
+    int ret;
 
 	if (isPlaySong_) {
-		if (executingTicksPerStep_) {   //  Read by tick
-		}
-		else {  // Read by step (first tick in step)
+        ret = restTickToNextStep_;
 
-			// Dummy set reading speed
-			specificTicksPerStep_ = 6;
-			tempo_ = 150;
+        if (!restTickToNextStep_) {  // When head of step, calculate real step size
+            tickDifSum_ += tickDif_;
+            int castedTickDifSum = static_cast<int>(tickDifSum_);
+            restTickToNextStep_ = defStepSize_ + castedTickDifSum;
+            tickDifSum_ -= castedTickDifSum;
+        }
 
-			// Calculate executing ticks in step
-			{
-				strictTicksPerStepByBpm_ = 10.0 * tickRate_ * specificTicksPerStep_ / (tempo_ << 2);
-				tickDifSum_ += strictTicksPerStepByBpm_ - static_cast<float>(specificTicksPerStep_);
-				int castedTickDifSum = static_cast<int>(tickDifSum_);
-				executingTicksPerStep_ = specificTicksPerStep_ + castedTickDifSum;
-				tickDifSum_ -= castedTickDifSum;
-			}
-		}
-		ret = executingTicksPerStep_;
-
-		--executingTicksPerStep_;   // Count down to next step
-	}
+        --restTickToNextStep_;   // Count down to next step
+    }
 	else {
 		ret = -1;
 	}
 
 	return ret;
+}
+
+void TickCounter::updateTickDIf()
+{
+    float strictTicksPerStepByBpm = 10.0 * tickRate_ * defStepSize_ / (tempo_ << 2);
+    tickDif_ = strictTicksPerStepByBpm - static_cast<float>(defStepSize_);
+}
+
+void TickCounter::resetCount()
+{
+    restTickToNextStep_ = 0;
+    tickDifSum_ = 0;
 }

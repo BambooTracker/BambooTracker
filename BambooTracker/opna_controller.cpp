@@ -139,7 +139,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case FMParameter::AM1:
 			case FMParameter::DR1:
-				data = instFM_[i]->getEnvelopeParameter(FMParameter::AM1) << 7;
+                data = 0 << 7;	// For AM1
 				data |= instFM_[i]->getEnvelopeParameter(FMParameter::DR1);
 				opna_.setRegister(0x60 + bch, data);
 				break;
@@ -176,7 +176,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case FMParameter::AM2:
 			case FMParameter::DR2:
-				data = instFM_[i]->getEnvelopeParameter(FMParameter::AM2) << 7;
+                data = 0 << 7;	// For AM2
 				data |= instFM_[i]->getEnvelopeParameter(FMParameter::DR2);
 				opna_.setRegister(0x60 + bch + 8, data);
 				break;
@@ -213,7 +213,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case FMParameter::AM3:
 			case FMParameter::DR3:
-				data = instFM_[i]->getEnvelopeParameter(FMParameter::AM3) << 7;
+                data = 0 << 7;	// For AM3
 				data |= instFM_[i]->getEnvelopeParameter(FMParameter::DR3);
 				opna_.setRegister(0x60 + bch + 4, data);
 				break;
@@ -250,7 +250,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case FMParameter::AM4:
 			case FMParameter::DR4:
-				data = instFM_[i]->getEnvelopeParameter(FMParameter::AM4) << 7;
+                data = 0 << 7;	// For AM4
 				data |= instFM_[i]->getEnvelopeParameter(FMParameter::DR4);
 				opna_.setRegister(0x60 + bch + 12, data);
 				break;
