@@ -56,6 +56,11 @@ void InstrumentsManager::setInstrumentFMEnvelope(int instNum, int envNum)
 	std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->setEnvelopeNumber(envNum);
 }
 
+int InstrumentsManager::getInstrumentFMEnvelope(int instNum) const
+{
+    return std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->getEnvelopeNumber();
+}
+
 void InstrumentsManager::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
 {
 	envFM_[envNum]->setParameterValue(param, value);

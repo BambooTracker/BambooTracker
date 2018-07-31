@@ -23,6 +23,7 @@ public:
 	void setInstrumentName(int instNum, std::string name);
 	std::string getInstrumentName(int instNum) const;
 	void setInstrumentFMEnvelope(int instNum, int envNum);
+    int getInstrumentFMEnvelope(int instNum) const;
 
 	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
 	int getEnvelopeFMParameter(int envNum, FMParameter param) const;

@@ -9,18 +9,21 @@ ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, 
 															 QUndoCommand *parent) :
 	QUndoCommand(parent), list_(list), num_(num), row_(row), map_(map), oldName_(oldName), newName_(newName)
 {
+    source_ = static_cast<SoundSource>(map.at(num)->property("SoundSource").toInt());
 }
 
 void ChangeInstrumentNameQtCommand::redo()
 {
 	auto item = list_->item(row_);
-	item->setText(newName_);
+    auto title = QString("%1: %2").arg(num_, 2, 16, QChar('0')).toUpper().arg(newName_);
+    item->setText(title);
 	auto form = map_.at(num_).get();
-	switch (source_) {
+    form->setProperty("Name", newName_);
+    switch (source_) {
 	case SoundSource::FM:
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form);
-		fmForm->setWindowTitle(newName_);
+        fmForm->setWindowTitle(title);
 	}
 		break;
 	case SoundSource::PSG:
@@ -34,13 +37,15 @@ void ChangeInstrumentNameQtCommand::redo()
 void ChangeInstrumentNameQtCommand::undo()
 {
 	auto item = list_->item(row_);
-	item->setText(oldName_);
+    auto title = QString("%1: %2").arg(num_, 2, 16, QChar('0')).toUpper().arg(oldName_);
+    item->setText(title);
 	auto form = map_.at(num_).get();
+    form->setProperty("Name", oldName_);
 	switch (source_) {
 	case SoundSource::FM:
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form);
-		fmForm->setWindowTitle(oldName_);
+        fmForm->setWindowTitle(title);
 	}
 		break;
 	case SoundSource::PSG:

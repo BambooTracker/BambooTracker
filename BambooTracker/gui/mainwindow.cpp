@@ -2,7 +2,6 @@
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
-#include <QRegularExpression>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "channel_attribute.hpp"
@@ -186,7 +185,7 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 /********** Instrument list **********/
 void MainWindow::addInstrument()
 {
-	auto& list = ui->instrumentListWidget;
+    auto& list = ui->instrumentListWidget;
 
 	// Find free number
 	int num = 0;
@@ -265,22 +264,57 @@ void MainWindow::editInstrumentName()
 	auto list = ui->instrumentListWidget;
 	auto item = list->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
-	QString oldTitle = item->text();
-	auto line = new QLineEdit(oldTitle.remove(QRegularExpression("^[0-9A-F]{2}: ")));
-	QObject::connect(line, &QLineEdit::editingFinished,
-					 this, [&, item, list, num, oldTitle]() {
-		QString newName = qobject_cast<QLineEdit*>(list->itemWidget(item))->text();
-		auto newTitle = QString("%1: %2").arg(num, 2, 16, QChar('0')).toUpper().arg(newName);
-		list->removeItemWidget(item);
+    QString oldName = instFormMap_.at(num)->property("Name").toString();
+    auto line = new QLineEdit(oldName);
 
+	QObject::connect(line, &QLineEdit::editingFinished,
+                     this, [&, item, list, num, oldName]() {
+		QString newName = qobject_cast<QLineEdit*>(list->itemWidget(item))->text();
+		list->removeItemWidget(item);
 		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
 		int row = findRowFromInstrumentList(num);
-		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instFormMap_, oldTitle, newTitle));
+        comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instFormMap_, oldName, newName));
 	});
-	ui->instrumentListWidget->setItemWidget(item, line);
+
+    ui->instrumentListWidget->setItemWidget(item, line);
 
 	line->selectAll();
 	line->setFocus();
+}
+
+void MainWindow::copyInstrument()
+{
+    auto&& inst = bt_->getInstrument(ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt());
+    QString tag = "";
+    switch (inst->getSoundSource()) {
+    case SoundSource::FM:   tag = "FM_INSTRUMENT:";     break;
+    case SoundSource::PSG:  tag = "PSG_INSTRUMENT:";    break;
+    }
+    QApplication::clipboard()->setText(tag + QString::number(inst->getNumber()));
+}
+
+void MainWindow::pasteInstrument()
+{
+    QString newStr = QApplication::clipboard()->text();
+    int row = ui->instrumentListWidget->currentRow();
+    int num = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+    auto&& inst = bt_->getInstrument(num);
+    auto oldStr = QString::fromUtf8(inst->toString().c_str(), inst->toString().length());
+
+    QRegularExpression re("^.+:(.+)$", QRegularExpression::DotMatchesEverythingOption);
+    QRegularExpressionMatch match = re.match(str);
+    if (str.startsWith("FM")) {
+        bt_->pasteInstrument(ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt(),
+                             match.captured(1).toUtf8().toStdString());
+    }
+    else if (str.startsWith("PSG")) {
+
+    }
+}
+
+void MainWindow::cloneInstrument()
+{
+    // UNDONE
 }
 
 /********** Undo-Redo **********/
@@ -314,18 +348,49 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	auto& list = ui->instrumentListWidget;
 	QPoint globalPos = list->mapToGlobal(pos);
 	QMenu menu;
-	menu.addAction("Add instrument", this, &MainWindow::addInstrument);
-	menu.addAction("Remove instrument", this, &MainWindow::removeInstrument);
-	if (list->currentItem() == nullptr) menu.actions().at(1)->setEnabled(false);
-	menu.addSeparator();
-	menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
-	if (list->currentItem() == nullptr) menu.actions().at(3)->setEnabled(false);
-	menu.addSeparator();
-	menu.addAction("Load from file...")->setEnabled(false);
-	menu.addAction("Save to file...")->setEnabled(false);
-	menu.addSeparator();
-	menu.addAction("Edit...", this, &MainWindow::editInstrument);
-	if (list->currentItem() == nullptr) menu.actions().at(8)->setEnabled(false);
+
+    menu.addAction("Add", this, &MainWindow::addInstrument);
+    menu.addAction("Remove", this, &MainWindow::removeInstrument);
+    menu.addSeparator();
+    menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
+    menu.addSeparator();
+    menu.addAction("Copy", this, &MainWindow::copyInstrument);
+    menu.addAction("Paste", this, &MainWindow::pasteInstrument);
+    menu.addAction("Clone", this, &MainWindow::cloneInstrument);
+    menu.addSeparator();
+    menu.addAction("Load from file...")->setEnabled(false);
+    menu.addAction("Save to file...")->setEnabled(false);
+    menu.addSeparator();
+    menu.addAction("Edit...", this, &MainWindow::editInstrument);
+
+    if (list->count() == 128)    // Max size
+        menu.actions().at(0)->setEnabled(false);    // "Add"
+    if (list->currentItem() == nullptr) {    // Not selected
+        menu.actions().at(1)->setEnabled(false);    // "Remove"
+        menu.actions().at(3)->setEnabled(false);    // "Edit name"
+        menu.actions().at(5)->setEnabled(false);    // "Copy"
+        menu.actions().at(12)->setEnabled(false);   // "Edit"
+    }
+    if (QApplication::clipboard()->text().startsWith("FM_INSTRUMENT:")) {
+        auto item = ui->instrumentListWidget->currentItem();
+        if (item == nullptr
+                || bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::FM) {
+            menu.actions().at(6)->setEnabled(false);    // "Paste"
+            menu.actions().at(7)->setEnabled(false);    // "Clone"
+        }
+    }
+    else if (QApplication::clipboard()->text().startsWith("PSG_INSTRUMENT:")) {
+        auto item = ui->instrumentListWidget->currentItem();
+        if (item == nullptr
+                || bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::PSG) {
+            menu.actions().at(6)->setEnabled(false);    // "Paste"
+            menu.actions().at(7)->setEnabled(false);    // "Clone"
+        }
+    }
+    else {
+        menu.actions().at(6)->setEnabled(false);    // "Paste"
+        menu.actions().at(7)->setEnabled(false);    // "Clone"
+    }
 
 	menu.exec(globalPos);
 }

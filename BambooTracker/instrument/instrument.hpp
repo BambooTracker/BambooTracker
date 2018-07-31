@@ -20,14 +20,15 @@ public:
 	void setName(std::string name);
 	virtual std::unique_ptr<AbstructInstrument> clone() = 0;
 
+
 protected:
 	InstrumentsManager* owner_;
+    std::string name_;	// UTF-8
 	AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner);
 
 private:
 	int number_;
-	SoundSource source_;
-	std::string name_;	// UTF-8
+    SoundSource source_;
 };
 
 

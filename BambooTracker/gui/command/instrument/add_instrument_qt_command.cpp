@@ -40,6 +40,7 @@ void AddInstrumentQtCommand::redo()
 	}
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(num_, item);
+    form->setProperty("Name", name_);
 	form->setProperty("Shown", false);
 	form->setProperty("SoundSource", static_cast<int>(source_));
 	map_.emplace(num_, std::move(form));

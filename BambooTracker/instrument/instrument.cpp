@@ -1,7 +1,8 @@
 #include "instrument.hpp"
+#include <regex>
 
 AbstructInstrument::AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner) :
-	owner_(owner), number_(number), source_(source), name_(name) {}
+    owner_(owner), name_(name), number_(number), source_(source) {}
 
 int AbstructInstrument::getNumber() const
 {

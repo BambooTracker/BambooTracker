@@ -58,7 +58,8 @@ SOURCES += \
     instrument/instrument.cpp \
     instrument/envelope_fm.cpp \
     gui/event_guard.cpp \
-    tick_counter.cpp
+    tick_counter.cpp \
+    gui/command/instrument/paste_instrument_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -101,7 +102,8 @@ HEADERS += \
     instrument/instrument.hpp \
     instrument/envelope_fm.hpp \
     gui/event_guard.hpp \
-    tick_counter.hpp
+    tick_counter.hpp \
+    gui/command/instrument/paste_instrument_qt_command.h
 
 FORMS += \
     gui/mainwindow.ui \
