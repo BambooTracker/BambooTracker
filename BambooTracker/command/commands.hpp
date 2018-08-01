@@ -5,3 +5,4 @@
 #include "./instrument/remove_instrument_command.hpp"
 #include "./instrument/change_instrument_name_command.hpp"
 #include "./instrument/paste_instrument_command.hpp"
+#include "./instrument/clone_instrument_command.hpp"

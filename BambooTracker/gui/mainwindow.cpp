@@ -190,12 +190,7 @@ void MainWindow::addInstrument()
 {
     auto& list = ui->instrumentListWidget;
 
-	// Find free number
-	int num = 0;
-	for (int i = 0; i < list->count(); ++i, ++num) {
-		if (list->item(i)->data(Qt::UserRole).toInt() != num) break;
-	}
-
+	int num = bt_->findFirstFreeInstrumentNumber();
 	QString name = "Instrument " + QString::number(num);
 	bt_->addInstrument(num, name.toUtf8().toStdString());
 
@@ -279,13 +274,11 @@ void MainWindow::pasteInstrument()
 	QString str = QApplication::clipboard()->text();
 	int refNum = QApplication::clipboard()->text().remove(QRegularExpression("^(FM|PSG)_INSTRUMENT:")).toInt();
 	int refRow = findRowFromInstrumentList(refNum);
+
 	SoundSource source;
-	if (str.startsWith("FM")) {
-		source = SoundSource::FM;
-	}
-	else if (str.startsWith("PSG")) {
-		source = SoundSource::PSG;
-	}
+	if (str.startsWith("FM")) source = SoundSource::FM;
+	else if (str.startsWith("PSG")) source = SoundSource::PSG;
+
 	int oldRow = ui->instrumentListWidget->currentRow();
 	int oldNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 
@@ -298,7 +291,15 @@ void MainWindow::pasteInstrument()
 
 void MainWindow::cloneInstrument()
 {
-    // UNDONE
+	SoundSource source;
+	int num = bt_->findFirstFreeInstrumentNumber();
+	int refNum = QApplication::clipboard()->text().remove(
+					 QRegularExpression("^.+_INSTRUMENT:", QRegularExpression::DotMatchesEverythingOption))
+				 .toInt();
+
+	bt_->cloneInstrument(num, refNum);
+	comStack_->push(new CloneInstrumentQtCommand(
+						ui->instrumentListWidget, num, refNum, instFormMap_));
 }
 
 /********** Undo-Redo **********/
@@ -347,7 +348,7 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
     menu.addSeparator();
     menu.addAction("Edit...", this, &MainWindow::editInstrument);
 
-    if (list->count() == 128)    // Max size
+	if (bt_->findFirstFreeInstrumentNumber() == -1)    // Max size
         menu.actions().at(0)->setEnabled(false);    // "Add"
     if (list->currentItem() == nullptr) {    // Not selected
         menu.actions().at(1)->setEnabled(false);    // "Remove"
@@ -355,26 +356,31 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
         menu.actions().at(5)->setEnabled(false);    // "Copy"
         menu.actions().at(12)->setEnabled(false);   // "Edit"
     }
-    if (QApplication::clipboard()->text().startsWith("FM_INSTRUMENT:")) {
+	QString str = QApplication::clipboard()->text();
+	if (str.startsWith("FM_INSTRUMENT:")) {
         auto item = ui->instrumentListWidget->currentItem();
         if (item == nullptr
                 || bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::FM) {
             menu.actions().at(6)->setEnabled(false);    // "Paste"
-            menu.actions().at(7)->setEnabled(false);    // "Clone"
         }
-    }
-    else if (QApplication::clipboard()->text().startsWith("PSG_INSTRUMENT:")) {
-        auto item = ui->instrumentListWidget->currentItem();
-        if (item == nullptr
-                || bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::PSG) {
-            menu.actions().at(6)->setEnabled(false);    // "Paste"
-            menu.actions().at(7)->setEnabled(false);    // "Clone"
-        }
-    }
-    else {
-        menu.actions().at(6)->setEnabled(false);    // "Paste"
-        menu.actions().at(7)->setEnabled(false);    // "Clone"
-    }
+		if (bt_->findFirstFreeInstrumentNumber() == -1) {
+			menu.actions().at(7)->setEnabled(false);    // "Clone"
+		}
+	}
+	else if (str.startsWith("PSG_INSTRUMENT:")) {
+		auto item = ui->instrumentListWidget->currentItem();
+		if (item == nullptr
+				|| bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::PSG) {
+			menu.actions().at(6)->setEnabled(false);    // "Paste"
+		}
+		if (bt_->findFirstFreeInstrumentNumber() == -1) {
+			menu.actions().at(7)->setEnabled(false);    // "Clone"
+		}
+	}
+	else {
+		menu.actions().at(6)->setEnabled(false);    // "Paste"
+		menu.actions().at(7)->setEnabled(false);    // "Clone"
+	}
 
 	menu.exec(globalPos);
 }

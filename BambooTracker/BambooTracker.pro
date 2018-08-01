@@ -60,7 +60,9 @@ SOURCES += \
     gui/event_guard.cpp \
     tick_counter.cpp \
     gui/command/instrument/paste_instrument_qt_command.cpp \
-    command/instrument/paste_instrument_command.cpp
+    command/instrument/paste_instrument_command.cpp \
+    command/instrument/clone_instrument_command.cpp \
+    gui/command/instrument/clone_instrument_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -104,8 +106,10 @@ HEADERS += \
     instrument/envelope_fm.hpp \
     gui/event_guard.hpp \
     tick_counter.hpp \
-    gui/command/instrument/paste_instrument_qt_command.h \
-    command/instrument/paste_instrument_command.hpp
+    command/instrument/paste_instrument_command.hpp \
+    command/instrument/clone_instrument_command.hpp \
+    gui/command/instrument/clone_instrument_qt_command.hpp \
+    gui/command/instrument/paste_instrument_qt_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

@@ -1,7 +1,8 @@
 #include "envelope_fm.hpp"
+#include <algorithm>
 
-EnvelopeFM::EnvelopeFM() :
-	al_(4), fb_(0)
+EnvelopeFM::EnvelopeFM(int num) :
+	num_(num), al_(4), fb_(0)
 {
 	op_[0] = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, -1 };
 	op_[1] = FMOperator{ true, 31, 0, 0, 7, 0, 0, 0, 0, 0, -1 };
@@ -61,6 +62,10 @@ void EnvelopeFM::initParamMap()
 
 EnvelopeFM::EnvelopeFM(const EnvelopeFM &other)
 {
+	num_ = other.num_;
+	al_ = other.al_;
+	fb_ = other.fb_;
+
 	for (int i = 0; i < 4; ++i) {
 		op_[i].enable_ = other.op_[i].enable_;
 		op_[i].ar_ = other.op_[i].ar_;
@@ -83,6 +88,15 @@ std::unique_ptr<EnvelopeFM> EnvelopeFM::clone()
 	return std::unique_ptr<EnvelopeFM>(std::make_unique<EnvelopeFM>(*this));
 }
 
+void EnvelopeFM::setNumber(int num)
+{
+	num_ = num;
+}
+
+int EnvelopeFM::getNumber() const
+{
+	return num_;
+}
 
 bool EnvelopeFM::getOperatorEnable(int num) const
 {
@@ -102,4 +116,19 @@ int EnvelopeFM::getParameterValue(FMParameter param) const
 void EnvelopeFM::setParameterValue(FMParameter param, int value)
 {
 	paramMap_.at(param) = value;
+}
+
+void EnvelopeFM::registerInstrumentUsingThis(int instNum)
+{
+	instsUseThis_.push_back(instNum);
+}
+
+void EnvelopeFM::deregisterInstrumentUsingThis(int instNum)
+{
+	instsUseThis_.erase(std::find(instsUseThis_.begin(), instsUseThis_.end(), instNum));
+}
+
+bool EnvelopeFM::isUsedInInstrument() const
+{
+	return !instsUseThis_.empty();
 }

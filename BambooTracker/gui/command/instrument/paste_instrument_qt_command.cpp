@@ -1,4 +1,4 @@
-#include "paste_instrument_qt_command.h"
+#include "paste_instrument_qt_command.hpp"
 #include <QRegularExpression>
 #include <utility>
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -8,7 +8,7 @@ PasteInstrumentQtCommand::PasteInstrumentQtCommand(QListWidget *list, int oldRow
 	QUndoCommand(parent), list_(list),
 	oldRow_(oldRow), refRow_(refRow),
 	oldNum_(oldNum), refNum_(refNum),
-	source_(source), map_(map)
+	map_(map), source_(source)
 {
 	oldName_ = map.at(oldNum)->property("Name").toString();
 	refName_ = map.at(refNum)->property("Name").toString();

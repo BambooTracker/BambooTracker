@@ -70,6 +70,16 @@ void BambooTracker::pasteInstrument(int num, int refNum)
 	opnaCtrl_.updateInstrumentFM(num);
 }
 
+void BambooTracker::cloneInstrument(int num, int refNum)
+{
+	comMan_.invoke(std::make_unique<CloneInstrumentCommand>(instMan_, num, refNum));
+}
+
+int BambooTracker::findFirstFreeInstrumentNumber() const
+{
+	return instMan_.findFirstFreeInstrument();
+}
+
 void BambooTracker::setInstrumentName(int num, std::string name)
 {
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
