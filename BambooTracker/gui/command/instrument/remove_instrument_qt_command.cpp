@@ -1,6 +1,8 @@
 #include "remove_instrument_qt_command.hpp"
 #include <utility>
 #include <QListWidgetItem>
+#include <QApplication>
+#include <QRegularExpression>
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_psg_form.hpp"
 
@@ -30,12 +32,16 @@ void RemoveInstrumentQtCommand::undo()
 		form = std::make_unique<InstrumentEditorPSGForm>(num_);
 		break;
 	}
-	item->setData(Qt::UserRole, num_);
-	list_->insertItem(row_, item);
+
+	// KEEP CODE ORDER //
     form->setProperty("Name", name_);
 	form->setProperty("Shown", false);
 	form->setProperty("SoundSource", static_cast<int>(source_));
 	map_.emplace(num_, std::move(form));
+
+	item->setData(Qt::UserRole, num_);
+	list_->insertItem(row_, item);
+	//----------//
 }
 
 void RemoveInstrumentQtCommand::redo()
@@ -46,6 +52,12 @@ void RemoveInstrumentQtCommand::redo()
     name_ = map_.at(num_)->property("Name").toString();
 	map_.at(num_)->close();
 	map_.erase(num_);
+
+	if (QApplication::clipboard()->text().contains(
+				QRegularExpression("^.+_INSTRUMENT:"+QString::number(num_),
+								   QRegularExpression::DotMatchesEverythingOption))) {
+		QApplication::clipboard()->clear();
+	}
 }
 
 int RemoveInstrumentQtCommand::id() const

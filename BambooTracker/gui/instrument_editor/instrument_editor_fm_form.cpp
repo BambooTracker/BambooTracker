@@ -8,8 +8,6 @@
 #include "gui/event_guard.hpp"
 #include "misc.hpp"
 
-#include <QDebug>
-
 InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::InstrumentEditorFMForm),
@@ -269,9 +267,8 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 
 void InstrumentEditorFMForm::setCore(std::weak_ptr<BambooTracker> core)
 {
-	Ui::EventGuard eg(isIgnoreEvent_);
 	bt_ = core;
-	setInstrumentParameters();
+	updateInstrumentParameters();
 }
 
 void InstrumentEditorFMForm::checkEnvelopeChange(int envNum)
@@ -282,7 +279,7 @@ void InstrumentEditorFMForm::checkEnvelopeChange(int envNum)
 	}
 }
 
-void InstrumentEditorFMForm::setInstrumentParameters()
+void InstrumentEditorFMForm::updateInstrumentParameters()
 {	
 	Ui::EventGuard eg(isIgnoreEvent_);
 

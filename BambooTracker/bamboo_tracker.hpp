@@ -32,6 +32,7 @@ public:
 	void addInstrument(int num, std::string name);
 	void removeInstrument(int num);
 	std::unique_ptr<AbstructInstrument> getInstrument(int num);
+	void pasteInstrument(int num, int refNum);
 	void setInstrumentName(int num, std::string name);
 	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);

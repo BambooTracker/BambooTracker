@@ -64,6 +64,7 @@ private:
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
+	void onInstrumentListWidgetItemAdded(const QModelIndex& parent, int start, int end);
 	void on_instrumentListWidget_itemSelectionChanged();
 	void onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum);
 };

@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QApplication::clipboard()->clear();
 
-	// Audio stream
+	/* Audio stream */
 	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(),
 											bt_->getStreamDuration(),
 											bt_->getStreamInterruptRate());
@@ -33,11 +33,14 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->getStreamSamples(container, nSamples);
 	}, Qt::DirectConnection);
 
-	// Instrument list
+	/* Instrument list */
 	auto& vl = ui->instrumentListWidget;
 	vl->setContextMenuPolicy(Qt::CustomContextMenu);
 	vl->setSelectionMode(QAbstractItemView::SingleSelection);
 	vl->setFocusPolicy(Qt::NoFocus);
+	// Set core data to editor when add insrument
+	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
+					 this, &MainWindow::onInstrumentListWidgetItemAdded);
 }
 
 MainWindow::~MainWindow()
@@ -220,30 +223,8 @@ void MainWindow::editInstrument()
 		form->activateWindow();
 	}
 	else {
-		if (!form->property("Shown").toBool()) {	// Set data before first show
-			switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
-			case SoundSource::FM:
-			{
-				auto&& fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
-				QObject::connect(fmForm, &InstrumentEditorFMForm::instrumentFMEnvelopeParameterChanged,
-								 this, &MainWindow::onInstrumentFMEnvelopeChanged);
-				QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
-								 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
-				QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
-								 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
-				fmForm->installEventFilter(this);
-				fmForm->setCore(bt_);
-				break;
-			}
-			case SoundSource::PSG:
-			{
-				auto&& psgForm = qobject_cast<InstrumentEditorPSGForm*>(form.get());
-				break;
-			}
-			}
-			form->setProperty("Shown", true);
-		}
-
+		// Set data before first show
+		if (!form->property("Shown").toBool()) form->setProperty("Shown", true);
 		form->show();
 	}
 }
@@ -284,7 +265,7 @@ void MainWindow::editInstrumentName()
 
 void MainWindow::copyInstrument()
 {
-    auto&& inst = bt_->getInstrument(ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt());
+	auto inst = bt_->getInstrument(findRowFromInstrumentList(ui->instrumentListWidget->currentRow()));
     QString tag = "";
     switch (inst->getSoundSource()) {
     case SoundSource::FM:   tag = "FM_INSTRUMENT:";     break;
@@ -295,21 +276,24 @@ void MainWindow::copyInstrument()
 
 void MainWindow::pasteInstrument()
 {
-    QString newStr = QApplication::clipboard()->text();
-    int row = ui->instrumentListWidget->currentRow();
-    int num = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
-    auto&& inst = bt_->getInstrument(num);
-    auto oldStr = QString::fromUtf8(inst->toString().c_str(), inst->toString().length());
+	QString str = QApplication::clipboard()->text();
+	int refNum = QApplication::clipboard()->text().remove(QRegularExpression("^(FM|PSG)_INSTRUMENT:")).toInt();
+	int refRow = findRowFromInstrumentList(refNum);
+	SoundSource source;
+	if (str.startsWith("FM")) {
+		source = SoundSource::FM;
+	}
+	else if (str.startsWith("PSG")) {
+		source = SoundSource::PSG;
+	}
+	int oldRow = ui->instrumentListWidget->currentRow();
+	int oldNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 
-    QRegularExpression re("^.+:(.+)$", QRegularExpression::DotMatchesEverythingOption);
-    QRegularExpressionMatch match = re.match(str);
-    if (str.startsWith("FM")) {
-        bt_->pasteInstrument(ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt(),
-                             match.captured(1).toUtf8().toStdString());
-    }
-    else if (str.startsWith("PSG")) {
-
-    }
+	// KEEP CODE ORDER //
+	bt_->pasteInstrument(oldNum, refNum);
+	comStack_->push(new PasteInstrumentQtCommand(
+						ui->instrumentListWidget, oldRow, refRow, oldNum, refNum, instFormMap_, source));
+	//----------//
 }
 
 void MainWindow::cloneInstrument()
@@ -399,6 +383,35 @@ void MainWindow::on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item
 {
 	Q_UNUSED(item)
 	editInstrument();
+}
+
+void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int start, int end)
+{
+	Q_UNUSED(parent)
+	Q_UNUSED(end)
+
+	// Set core data to editor when add insrument
+	auto& form = instFormMap_.at(ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt());
+	switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
+	case SoundSource::FM:
+	{
+		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
+		QObject::connect(fmForm, &InstrumentEditorFMForm::instrumentFMEnvelopeParameterChanged,
+						 this, &MainWindow::onInstrumentFMEnvelopeChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
+						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
+						 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
+		fmForm->installEventFilter(this);
+		fmForm->setCore(bt_);
+		break;
+	}
+	case SoundSource::PSG:
+	{
+		auto psgForm = qobject_cast<InstrumentEditorPSGForm*>(form.get());
+		break;
+	}
+	}
 }
 
 void MainWindow::on_instrumentListWidget_itemSelectionChanged()

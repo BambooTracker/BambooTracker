@@ -286,7 +286,7 @@ void FMOperatorTable::on_ssgegCheckBox_stateChanged(int arg1)
 	}
 	repaintGraph();
 }
-#include <QDebug>
+
 void FMOperatorTable::on_groupBox_toggled(bool arg1)
 {
 	emit operatorEnableChanged(arg1);

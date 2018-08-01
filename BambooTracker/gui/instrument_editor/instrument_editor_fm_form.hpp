@@ -22,6 +22,7 @@ public:
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
 	void checkEnvelopeChange(int envNum);
+	void updateInstrumentParameters();
 
 signals:
 	void instrumentFMEnvelopeParameterChanged(int envNum, int fromInstNum);
@@ -43,7 +44,6 @@ private:
 
 	std::weak_ptr<BambooTracker> bt_;
 
-	void setInstrumentParameters();
 	void setInstrumentEnvelopeParameters();
 	void setInstrumentEnvelopeParameters(QString data);
 

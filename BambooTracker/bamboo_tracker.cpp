@@ -64,6 +64,12 @@ std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
 	return instMan_.getInstrumentSharedPtr(num)->clone();
 }
 
+void BambooTracker::pasteInstrument(int num, int refNum)
+{
+	comMan_.invoke(std::make_unique<PasteInstrumentCommand>(instMan_, num, refNum));
+	opnaCtrl_.updateInstrumentFM(num);
+}
+
 void BambooTracker::setInstrumentName(int num, std::string name)
 {
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
