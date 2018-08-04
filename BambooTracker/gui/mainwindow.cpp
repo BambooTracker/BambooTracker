@@ -41,6 +41,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
 					 this, &MainWindow::onInstrumentListWidgetItemAdded);
+
+	/* Pattern editor */
+	ui->patternEditorWidget->setCore(bt_);
 }
 
 MainWindow::~MainWindow()
