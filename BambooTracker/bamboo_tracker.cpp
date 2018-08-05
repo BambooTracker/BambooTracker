@@ -11,6 +11,7 @@ BambooTracker::BambooTracker() :
 	#else
 	opnaCtrl_(3993600 * 2, 44100, &instMan_),
 	#endif
+	mod_(std::make_unique<Module>(ModuleType::STD)),
 	octave_(4),
 	curChannel_(0),
 	curInstNum_(-1),

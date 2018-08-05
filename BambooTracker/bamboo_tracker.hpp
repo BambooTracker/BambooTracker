@@ -10,6 +10,7 @@
 #include "instruments_manager.hpp"
 #include "instrument.hpp"
 #include "tick_counter.hpp"
+#include "module.hpp"
 #include "misc.hpp"
 
 class BambooTracker
@@ -72,6 +73,8 @@ private:
 	OPNAController opnaCtrl_;
 
     TickCounter tickCounter_;
+
+	std::unique_ptr<Module> mod_;
 
 	// Current status
 	int octave_;	// 0-7

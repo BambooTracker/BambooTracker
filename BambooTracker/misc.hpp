@@ -5,6 +5,12 @@ enum class SoundSource : int
 	FM, PSG
 };
 
+enum class ModuleType
+{
+	STD,
+	FMEX
+};
+
 enum class Note : int
 {
 	C	= 0,

@@ -64,7 +64,12 @@ SOURCES += \
     command/instrument/clone_instrument_command.cpp \
     gui/command/instrument/clone_instrument_qt_command.cpp \
     gui/pattern_editor/pattern_editor.cpp \
-    gui/order_list/order_list.cpp
+    gui/order_list/order_list.cpp \
+    module/module.cpp \
+    module/song.cpp \
+    module/pattern.cpp \
+    module/track.cpp \
+    module/step.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -113,7 +118,12 @@ HEADERS += \
     gui/command/instrument/clone_instrument_qt_command.hpp \
     gui/command/instrument/paste_instrument_qt_command.hpp \
     gui/pattern_editor/pattern_editor.hpp \
-    gui/order_list/order_list.hpp
+    gui/order_list/order_list.hpp \
+    module/module.hpp \
+    module/song.hpp \
+    module/pattern.hpp \
+    module/track.hpp \
+    module/step.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -127,4 +137,5 @@ INCLUDEPATH += \
     $$PWD/chips \
     $$PWD/stream \
     $$PWD/instrument \
-    $$PWD/command
+    $$PWD/command \
+    $$PWD/module
