@@ -11,11 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>BambooTracker</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7">
-    <item row="0" column="1">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="2,4,4">
+    <item row="0" column="2">
      <widget class="QGroupBox" name="instrumentListGroupBox">
       <property name="title">
        <string>Instruments</string>
@@ -42,8 +42,8 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="PatternEditor" name="patternEditorWidget" native="true"/>
+    <item row="1" column="0" colspan="3">
+     <widget class="PatternEditor" name="patternEditor" native="true"/>
     </item>
     <item row="0" column="0">
      <spacer name="horizontalSpacer">
@@ -57,6 +57,30 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="orderListGroupBox">
+      <property name="title">
+       <string>Order List</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="OrderList" name="orderList" native="true"/>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -86,6 +110,12 @@
    <class>PatternEditor</class>
    <extends>QWidget</extends>
    <header>gui/pattern_editor/pattern_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>OrderList</class>
+   <extends>QWidget</extends>
+   <header>gui/order_list/order_list.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

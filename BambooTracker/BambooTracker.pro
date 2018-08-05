@@ -63,7 +63,8 @@ SOURCES += \
     command/instrument/paste_instrument_command.cpp \
     command/instrument/clone_instrument_command.cpp \
     gui/command/instrument/clone_instrument_qt_command.cpp \
-    gui/pattern_editor/pattern_editor.cpp
+    gui/pattern_editor/pattern_editor.cpp \
+    gui/order_list/order_list.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -111,7 +112,8 @@ HEADERS += \
     command/instrument/clone_instrument_command.hpp \
     gui/command/instrument/clone_instrument_qt_command.hpp \
     gui/command/instrument/paste_instrument_qt_command.hpp \
-    gui/pattern_editor/pattern_editor.hpp
+    gui/pattern_editor/pattern_editor.hpp \
+    gui/order_list/order_list.hpp
 
 FORMS += \
     gui/mainwindow.ui \

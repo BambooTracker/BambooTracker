@@ -1,22 +1,21 @@
-#ifndef PATTERN_EDITOR_HPP
-#define PATTERN_EDITOR_HPP
+#ifndef ORDER_LIST_HPP
+#define ORDER_LIST_HPP
 
 #include <QWidget>
 #include <QPixmap>
 #include <QFont>
 #include <QPaintEvent>
 #include <QResizeEvent>
-#include <QHoverEvent>
 #include <QRect>
 #include <QColor>
 #include <memory>
 #include "bamboo_tracker.hpp"
 
-class PatternEditor : public QWidget
+class OrderList : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit PatternEditor(QWidget *parent = nullptr);
+	explicit OrderList(QWidget *parent = nullptr);
 	void setCore(std::shared_ptr<BambooTracker> core);
 
 protected:
@@ -34,25 +33,22 @@ private:
 	int widthSpace_;
 	int rowNumWidth_;
 	int trackWidth_;
-	int toneNameWidth_, instWidth_, volWidth_, effWidth_;
 	int headerHeight_;
 	int curRowBaselineY_;
 	int curRowY_;
 
-	QColor defTextColor_, defRowColor_, mkRowColor_;
-	QColor curTextColor_, curRowColor_, curCellColor_;
+	QColor defTextColor_, defRowColor_;
+	QColor curTextColor_, curRowColor_;
 	QColor selTextColor_, selCellColor_;
-	QColor defRowNumColor_, mkRowNumColor_;
+	QColor rowNumColor_;
 	QColor headerTextColor_, headerRowColor_;
 	QColor borderColor_;
 
 	void initDisplay();
-	void drawPattern(const QRect& rect);
+	void drawList(const QRect& rect);
 	void drawRows();
 	void drawHeaders();
 	void drawBorders();
-
-	void mouseHoverd(QHoverEvent* event);
 };
 
-#endif // PATTERN_EDITOR_HPP
+#endif // ORDER_LIST_HPP

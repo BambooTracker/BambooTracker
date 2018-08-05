@@ -43,7 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, &MainWindow::onInstrumentListWidgetItemAdded);
 
 	/* Pattern editor */
-	ui->patternEditorWidget->setCore(bt_);
+	ui->patternEditor->setCore(bt_);
+
+	/* Order List */
+	ui->orderList->setCore(bt_);
 }
 
 MainWindow::~MainWindow()
