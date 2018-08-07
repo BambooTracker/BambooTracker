@@ -38,7 +38,6 @@ SOURCES += \
     stream/audio_stream.cpp \
     stream/audio_stream_mixier.cpp \
     jam_manager.cpp \
-    channel_attribute.cpp \
     pitch_converter.cpp \
     instrument/instruments_manager.cpp \
     command/command_manager.cpp \
@@ -89,7 +88,6 @@ HEADERS += \
     chips/chip_def.h \
     jam_manager.hpp \
     misc.hpp \
-    channel_attribute.hpp \
     pitch_converter.hpp \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \
