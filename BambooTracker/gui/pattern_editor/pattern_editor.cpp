@@ -3,10 +3,13 @@
 #include <QFontMetrics>
 #include <QPoint>
 #include <QApplication>
+#include <algorithm>
 
 #include <QDebug>
 
-PatternEditor::PatternEditor(QWidget *parent) : QWidget(parent)
+PatternEditor::PatternEditor(QWidget *parent)
+	: QWidget(parent),
+	  leftTrackNum_(0)
 {	
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -37,7 +40,8 @@ PatternEditor::PatternEditor(QWidget *parent) : QWidget(parent)
 	mkRowColor_ = QColor::fromRgb(40, 40, 80);
 	curTextColor_ = QColor::fromRgb(255, 255, 255);
 	curRowColor_ = QColor::fromRgb(110, 90, 140);
-	curCellColor_ = QColor::fromRgb(130, 110, 160);
+	curRowColorEditable_ = QColor::fromRgb(140, 90, 110);
+	curCellColor_ = QColor::fromRgb(255, 255, 255, 127);
 	selTextColor_ = defTextColor_;
 	selCellColor_ = QColor::fromRgb(100, 100, 200);
 	defRowNumColor_ = QColor::fromRgb(255, 200, 180);
@@ -56,41 +60,49 @@ void PatternEditor::initDisplay()
 {
 	/* Pixmap */
 	pixmap_ = std::make_unique<QPixmap>(geometry().size());
-	pixmap_->fill(Qt::black);
 }
 
 void PatternEditor::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
+	modStyle_ = bt_->getModuleStyle();
+	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
 }
 
 void PatternEditor::drawPattern(const QRect &rect)
 {
-	drawRows();
-	drawHeaders();
-	drawBorders();
+	int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
+
+	pixmap_->fill(Qt::black);
+	drawRows(maxWidth);
+	drawHeaders(maxWidth);
+	drawBorders(maxWidth);
+	if (!hasFocus()) drawShadow();
 
 	QPainter painter(this);
 	painter.drawPixmap(rect, *pixmap_.get());
 }
 
-void PatternEditor::drawRows()
+void PatternEditor::drawRows(int maxWidth)
 {
 	QPainter painter(pixmap_.get());
 	painter.setFont(rowFont_);
+
+	int x, trackNum;
 
 	int curRowNum = 32;	// dummy set
 	int mkCnt = 8;
 
 	/* Current row */
 	// Fill row
-	painter.fillRect(0, curRowY_, geometry().width(), rowFontHeight_, curRowColor_);
+	painter.fillRect(0, curRowY_, maxWidth, rowFontHeight_,
+					 (bt_->isJamMode())? curRowColor_ : curRowColorEditable_);
 	// Row number
 	painter.setPen((curRowNum % mkCnt)? defRowNumColor_ : mkRowNumColor_);
 	painter.drawText(1, curRowBaselineY_, QString("%1").arg(curRowNum, 2, 16, QChar('0')).toUpper());
 	// Step data
 	painter.setPen(curTextColor_);
-	for (int x = rowNumWidth_ + widthSpace_; x < geometry().width(); x += trackWidth_) {
+	for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		int offset = x;
 		painter.drawText(offset, curRowBaselineY_, "---");
 		offset += toneNameWidth_ +  rowFontWidth_;
@@ -99,6 +111,14 @@ void PatternEditor::drawRows()
 		painter.drawText(offset, curRowBaselineY_, "--");
 		offset += volWidth_ +  rowFontWidth_;
 		painter.drawText(offset, curRowBaselineY_, "---");
+
+		switch (modStyle_.trackAttribs[trackNum].source) {
+		case SoundSource::FM:
+		case SoundSource::PSG:
+			x += trackWidth_;
+			break;
+		}
+		++trackNum;
 	}
 
 	int rowNum;
@@ -109,13 +129,12 @@ void PatternEditor::drawRows()
 		 rowY >= headerHeight_ - rowFontHeight_;
 		 rowY -= rowFontHeight_, baseY -= rowFontHeight_, --rowNum) {
 		// Fill row
-		painter.fillRect(0, rowY, geometry().width(), rowFontHeight_,
-						 (rowNum % mkCnt)? defRowColor_ : mkRowColor_);
+		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, (rowNum % mkCnt)? defRowColor_ : mkRowColor_);
 		// Row number
 		painter.setPen((rowNum % mkCnt)? defRowNumColor_ : mkRowNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
 		painter.setPen(defTextColor_);
-		for (int x = rowNumWidth_ + widthSpace_; x < geometry().width(); x += trackWidth_) {
+		for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			int offset = x;
 			painter.drawText(offset, baseY, "---");
 			offset += toneNameWidth_ +  rowFontWidth_;
@@ -124,6 +143,14 @@ void PatternEditor::drawRows()
 			painter.drawText(offset, baseY, "--");
 			offset += volWidth_ +  rowFontWidth_;
 			painter.drawText(offset, baseY, "---");
+
+			switch (modStyle_.trackAttribs[trackNum].source) {
+			case SoundSource::FM:
+			case SoundSource::PSG:
+				x += trackWidth_;
+				break;
+			}
+			++trackNum;
 		}
 	}
 
@@ -132,13 +159,12 @@ void PatternEditor::drawRows()
 		 rowY <= geometry().height();
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
 		// Fill row
-		painter.fillRect(0, rowY, geometry().width(), rowFontHeight_,
-						 (rowNum % mkCnt)? defRowColor_ : mkRowColor_);
+		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, (rowNum % mkCnt)? defRowColor_ : mkRowColor_);
 		// Row number
 		painter.setPen((rowNum % mkCnt)? defRowNumColor_ : mkRowNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
 		painter.setPen(defTextColor_);
-		for (int x = rowNumWidth_ + widthSpace_; x < geometry().width(); x += trackWidth_) {
+		for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			int offset = x;
 			painter.drawText(offset, baseY, "---");
 			offset += toneNameWidth_ +  rowFontWidth_;
@@ -147,33 +173,89 @@ void PatternEditor::drawRows()
 			painter.drawText(offset, baseY, "--");
 			offset += volWidth_ +  rowFontWidth_;
 			painter.drawText(offset, baseY, "---");
+
+			switch (modStyle_.trackAttribs[trackNum].source) {
+			case SoundSource::FM:
+			case SoundSource::PSG:
+				x += trackWidth_;
+				break;
+			}
+			++trackNum;
 		}
 	}
 }
 
-void PatternEditor::drawHeaders()
+void PatternEditor::drawHeaders(int maxWidth)
 {
 	QPainter painter(pixmap_.get());
 	painter.setFont(headerFont_);
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, headerRowColor_);
 	painter.setPen(headerTextColor_);
-	int x, num;
-	for (x = rowNumWidth_ + widthSpace_, num = 1;
-		 x < geometry().width();
-		 x += trackWidth_, ++num) {
-		painter.drawText(x, rowFontLeading_ + rowFontAscend_, " Channel " + QString::number(num));
+	int x, trackNum;
+	for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
+		QString str;
+		switch (modStyle_.trackAttribs[trackNum].source) {
+		case SoundSource::FM:	str = " FM";	break;
+		case SoundSource::PSG:	str = " PSG";	break;
+		}
+		painter.drawText(x,
+						 rowFontLeading_ + rowFontAscend_,
+						 str + QString::number(modStyle_.trackAttribs[trackNum].channelInSource + 1));
+
+		switch (modStyle_.trackAttribs[trackNum].source) {
+		case SoundSource::FM:
+		case SoundSource::PSG:
+			x += trackWidth_;
+			break;
+		}
+		++trackNum;
 	}
 }
 
-void PatternEditor::drawBorders()
+void PatternEditor::drawBorders(int maxWidth)
 {
 	QPainter painter(pixmap_.get());
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
-	for (int x = rowNumWidth_; x <= geometry().width(); x += trackWidth_) {
+	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, geometry().height());
+	int x, trackNum;
+	for (x = rowNumWidth_ + trackWidth_, trackNum = leftTrackNum_; x <= maxWidth; ) {
 		painter.drawLine(x, 0, x, geometry().height());
+
+		switch (modStyle_.trackAttribs[trackNum].source) {
+		case SoundSource::FM:
+		case SoundSource::PSG:
+			x += trackWidth_;
+			break;
+		}
+		++trackNum;
 	}
+}
+
+void PatternEditor::drawShadow()
+{
+	QPainter painter(pixmap_.get());
+	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
+}
+
+int PatternEditor::calculateColumnsWidthWithRowNum(int begin, int end)
+{
+	int width = rowNumWidth_;
+	for (int i = begin; i <= end; ++i) {
+		switch (modStyle_.trackAttribs.at(i).source) {
+		case SoundSource::FM:
+		case SoundSource::PSG:
+			width +=  trackWidth_;
+			break;
+		}
+	}
+	return width;
+}
+
+void PatternEditor::changeEditable()
+{
+	update();
 }
 
 /********** Events **********/
@@ -202,6 +284,11 @@ void PatternEditor::resizeEvent(QResizeEvent *event)
 	curRowY_ = curRowBaselineY_ - (rowFontAscend_ + rowFontLeading_ / 2);
 
 	initDisplay();
+}
+
+void PatternEditor::mousePressEvent(QMouseEvent *event)
+{
+	setFocus();
 }
 
 void PatternEditor::mouseHoverd(QHoverEvent *event)

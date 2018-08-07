@@ -33,7 +33,7 @@ private:
 struct JamKeyData
 {
 	JamKey key;
-	int chIdInSource;
+	int channelInSource;
 	SoundSource source;
 };
 

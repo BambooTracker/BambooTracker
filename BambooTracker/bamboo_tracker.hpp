@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <string>
 #include <memory>
+#include <vector>
 #include "opna_controller.hpp"
 #include "jam_manager.hpp"
-#include "channel_attribute.hpp"
 #include "command_manager.hpp"
 #include "instruments_manager.hpp"
 #include "instrument.hpp"
@@ -22,9 +22,9 @@ public:
 	int raiseOctave();
 	int lowerOctave();
 
-	// Current channel
-	void selectChannel(int channel);
-	ChannelAttribute getCurrentChannel() const;
+	// Current track
+	void selectTrack(int num);
+	TrackAttribute getCurrentTrack() const;
 
 	// Current instrument
 	void setCurrentInstrument(int n);
@@ -66,6 +66,10 @@ public:
 	int getStreamDuration() const;
 	int getStreamInterruptRate() const;
 
+	// Module details
+	ModuleStyle getModuleStyle() const;
+	std::vector<int> getOrderList(int songNum, int trackNum) const;
+
 private:
 	CommandManager comMan_;
 	InstrumentsManager instMan_;
@@ -78,7 +82,9 @@ private:
 
 	// Current status
 	int octave_;	// 0-7
-	ChannelAttribute curChannel_;
+	ModuleStyle modStyle_;
+	int curTrackNumInPtn_;
+	int curTrackNumInOrd_;
 	int curInstNum_;
 
 	int streamIntrRate_;

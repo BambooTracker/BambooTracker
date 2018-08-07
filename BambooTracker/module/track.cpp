@@ -1,10 +1,28 @@
 #include "track.hpp"
-#include <algorithm>
+#include <utility>
 
-Track::Track(int number, SoundSource source, int channelInSource) :
-	num_(number), src_(source), chInSrc_(channelInSource)
+Track::Track(int number, SoundSource source, int channelInSource)
+	: attrib_(std::make_unique<TrackAttribute>())
+{	
+	attrib_->number = number;
+	attrib_->source = source;
+	attrib_->channelInSource = channelInSource;
+
+	order_.push_back(0);	// Set first order
+
+	for (int i = 0; i < 128; ++i) {
+		patterns_.emplace_back(i);
+	}
+}
+
+TrackAttribute Track::getAttribute() const
 {
-	order_.push_back(0);
-	int n = 0;
-	std::generate(patterns_.begin(), patterns_.end(), [&]() { return std::make_unique<Pattern>(n++); });
+	TrackAttribute ret = *attrib_;
+	return std::move(ret);
+}
+
+std::vector<int> Track::getOrderList() const
+{
+	std::vector<int> ret = order_;
+	return std::move(ret);
 }

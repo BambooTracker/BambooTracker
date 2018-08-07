@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include <cstddef>
 #include "step.hpp"
 
@@ -14,7 +13,7 @@ public:
 
 private:
 	int num_;
-	std::vector<std::unique_ptr<Step>> rows_;
+	std::vector<Step> rows_;
 
 	static size_t rowSize_;
 };

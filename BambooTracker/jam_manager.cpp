@@ -60,7 +60,7 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 	}
 
 	if (!unusedCh->empty()) {
-		if (isPoly_) onData.chIdInSource = unusedCh->front();
+		if (isPoly_) onData.channelInSource = unusedCh->front();
 		unusedCh->pop_front();
 		keyOnTable_.push_back(onData);
 		keyDataList.push_back(onData);
@@ -70,7 +70,7 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 								 keyOnTable_.end(),
 								 [&](JamKeyData x) {return (x.source == source);});
 		JamKeyData del = *it;
-		if (isPoly_) onData.chIdInSource = del.chIdInSource;
+		if (isPoly_) onData.channelInSource = del.channelInSource;
 		keyDataList.push_back(onData);
 		keyDataList.push_back(del);
 		keyOnTable_.erase(it);
@@ -88,16 +88,16 @@ JamKeyData JamManager::keyOff(JamKey key)
 							 keyOnTable_.end(),
 							 [&](JamKeyData x) {return (x.key == key);});
 	if (it == keyOnTable_.end()) {
-		keyData.chIdInSource = -1;	// Already released
+		keyData.channelInSource = -1;	// Already released
 	}
 	else {
 		JamKeyData data = *it;
-		keyData.chIdInSource = data.chIdInSource;
+		keyData.channelInSource = data.channelInSource;
 		keyData.key = key;
 		keyData.source = data.source;
 		switch (keyData.source) {
-		case SoundSource::FM:	unusedChFM_.push_front(keyData.chIdInSource);	break;
-		case SoundSource::PSG:	unusedChPSG_.push_front(keyData.chIdInSource);	break;
+		case SoundSource::FM:	unusedChFM_.push_front(keyData.channelInSource);	break;
+		case SoundSource::PSG:	unusedChPSG_.push_front(keyData.channelInSource);	break;
 		}
 		keyOnTable_.erase(it);
 	}

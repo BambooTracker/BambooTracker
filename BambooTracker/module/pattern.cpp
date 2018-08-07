@@ -2,12 +2,9 @@
 
 size_t Pattern::rowSize_ = 64;
 
-Pattern::Pattern(int num) :
-	num_(num)
+Pattern::Pattern(int num)
+	: num_(num), rows_(rowSize_)
 {
-	for (int i = 0; i < rowSize_; ++i) {
-		rows_.push_back(std::make_unique<Step>());
-	}
 }
 
 /********** Static **********/

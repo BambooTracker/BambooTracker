@@ -29,69 +29,69 @@ void OPNAController::reset()
 }
 
 /********** Key on-off **********/
-void OPNAController::keyOnFM(int chId, Note note, int octave, int fine)
+void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
 {
 	uint16_t pitch = PitchConverter::getPitchFM(note, octave, fine);
-	uint8_t offset = getFMChannelOffset(chId);
+	uint8_t offset = getFMChannelOffset(ch);
 	opna_.setRegister(0xa4 + offset, pitch >> 8);
 	opna_.setRegister(0xa0 + offset, pitch & 0x00ff);
-	uint32_t ch = getFmChannelMask(chId);
-	opna_.setRegister(0x28, (fmOpEnables_[chId] << 4) | ch);
+	uint32_t chdata = getFmChannelMask(ch);
+	opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
 
-	isKeyOnFM_[chId] = true;
+	isKeyOnFM_[ch] = true;
 }
 
-void OPNAController::keyOnPSG(int chId, Note note, int octave, int fine)
+void OPNAController::keyOnPSG(int ch, Note note, int octave, int fine)
 {
 	uint16_t pitch = PitchConverter::getPitchPSG(note, octave, fine);
-	uint8_t offset = chId << 1;
+	uint8_t offset = ch << 1;
 	opna_.setRegister(0x00 + offset, pitch & 0xff);
 	opna_.setRegister(0x01 + offset, pitch >> 8);
 
-	uint8_t mask = ~(1 << chId);
+	uint8_t mask = ~(1 << ch);
 	mixerPSG_ &= mask;
 	opna_.setRegister(0x07, mixerPSG_);
 
 	// Dummy volume
-	setVolumePSG(chId, 0xf);
+	setVolumePSG(ch, 0xf);
 	//*********************
 }
 
-void OPNAController::keyOffFM(int chId)
+void OPNAController::keyOffFM(int ch)
 {	
-	uint8_t ch = getFmChannelMask(chId);
-	opna_.setRegister(0x28, ch);
-	isKeyOnFM_[chId] = false;
+	uint8_t chdata = getFmChannelMask(ch);
+	opna_.setRegister(0x28, chdata);
+	isKeyOnFM_[ch] = false;
 }
 
-void OPNAController::keyOffPSG(int chId)
+void OPNAController::keyOffPSG(int ch)
 {
-	uint8_t flag = 1 << chId;
+	uint8_t flag = 1 << ch;
 	mixerPSG_ |= flag;
 	opna_.setRegister(0x07, mixerPSG_);
-	setVolumePSG(chId, 0);
+	setVolumePSG(ch, 0);
 }
 
 /********** Set instrument **********/
-void OPNAController::setInstrumentFM(int chId, std::shared_ptr<InstrumentFM> inst)
+void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 {
 	if (inst == nullptr) {	// Error set ()
-		instFM_[chId]->setNumber(-1);
+		instFM_[ch]->setNumber(-1);
 	}
 	else {
-		instFM_[chId] = inst;
+		instFM_[ch] = inst;
 	}
 
-	updateFMEnvelopeRegisters(chId);
+	updateFMEnvelopeRegisters(ch);
 }
 
-void OPNAController::setInstrumentPSG(int chId, std::shared_ptr<InstrumentPSG> inst)
+void OPNAController::setInstrumentPSG(int ch, std::shared_ptr<InstrumentPSG> inst)
 {
 	if (inst == nullptr) {	// Error set ()
-		instPSG_[chId]->setNumber(-1);
+		instPSG_[ch]->setNumber(-1);
 	}
 	else {
-		instPSG_[chId] = inst;
+		instPSG_[ch] = inst;
 	}
 
 	// UNDONE: implement
@@ -291,9 +291,9 @@ void OPNAController::setInstrumentFMOperatorEnable(int envNum, int opNum)
 }
 
 /********** Set volume **********/
-void OPNAController::setVolumePSG(int chId, int level)
+void OPNAController::setVolumePSG(int ch, int level)
 {
-	opna_.setRegister(0x08 + chId, level);
+	opna_.setRegister(0x08 + ch, level);
 }
 
 /********** Stream samples **********/
@@ -335,10 +335,10 @@ void OPNAController::initChip()
 	}
 }
 
-uint32_t OPNAController::getFmChannelMask(int chId)
+uint32_t OPNAController::getFmChannelMask(int ch)
 {
 	// UNDONE: change channel type by Effect mode
-	switch (chId) {
+	switch (ch) {
 	case 0: return 0x00;
 	case 1: return 0x01;
 	case 2: return 0x02;
@@ -349,140 +349,140 @@ uint32_t OPNAController::getFmChannelMask(int chId)
 	}
 }
 
-uint32_t OPNAController::getFMChannelOffset(int chId)
+uint32_t OPNAController::getFMChannelOffset(int ch)
 {
-	switch (chId) {
+	switch (ch) {
 	case 0:
 	case 1:
 	case 2:
-		return chId;
+		return ch;
 	case 3:
 	case 4:
 	case 5:
-		return 0x100 + chId % 3;
+		return 0x100 + ch % 3;
 	default:
 		return 0;
 	}
 }
 
-void OPNAController::updateFMEnvelopeRegisters(int chId)
+void OPNAController::updateFMEnvelopeRegisters(int ch)
 {
-	uint32_t bch = getFMChannelOffset(chId);	// Bank and channel offset
+	uint32_t bch = getFMChannelOffset(ch);	// Bank and channel offset
 	uint8_t data;
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::FB) << 3;
-	data += instFM_[chId]->getEnvelopeParameter(FMParameter::AL);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::FB) << 3;
+	data += instFM_[ch]->getEnvelopeParameter(FMParameter::AL);
 	opna_.setRegister(0xb0 + bch, data);
 
 	uint32_t offset = bch;	// Operator 1
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::DT1) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::ML1);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::DT1) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::ML1);
 	opna_.setRegister(0x30 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::TL1);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::TL1);
 	opna_.setRegister(0x40 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::KS1) << 6;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::AR1);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::KS1) << 6;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::AR1);
 	opna_.setRegister(0x50 + offset, data);
 
 	data = 0 << 7;	// For AM1
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::DR1);
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::DR1);
 	opna_.setRegister(0x60 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SR1);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SR1);
 	opna_.setRegister(0x70 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SL1) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::RR1);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SL1) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::RR1);
 	opna_.setRegister(0x80 + offset, data);
 
-	int tmp = instFM_[chId]->getEnvelopeParameter(FMParameter::SSGEG1);
+	int tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG1);
 	data = (tmp == -1)? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 
 	offset = bch + 8;	// Operator 2
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::DT2) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::ML2);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::DT2) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::ML2);
 	opna_.setRegister(0x30 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::TL2);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::TL2);
 	opna_.setRegister(0x40 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::KS2) << 6;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::AR2);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::KS2) << 6;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::AR2);
 	opna_.setRegister(0x50 + offset, data);
 
 	data = 0 << 7;	// For AM2
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::DR2);
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::DR2);
 	opna_.setRegister(0x60 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SR2);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SR2);
 	opna_.setRegister(0x70 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SL2) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::RR2);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SL2) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::RR2);
 	opna_.setRegister(0x80 + offset, data);
 
-	tmp = instFM_[chId]->getEnvelopeParameter(FMParameter::SSGEG2);
+	tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG2);
 	data = (tmp == -1)? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 
 	offset = bch + 4;	// Operator 3
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::DT3) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::ML3);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::DT3) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::ML3);
 	opna_.setRegister(0x30 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::TL3);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::TL3);
 	opna_.setRegister(0x40 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::KS3) << 6;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::AR3);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::KS3) << 6;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::AR3);
 	opna_.setRegister(0x50 + offset, data);
 
 	data = 0 << 7;	// For AM3
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::DR3);
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::DR3);
 	opna_.setRegister(0x60 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SR3);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SR3);
 	opna_.setRegister(0x70 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SL3) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::RR3);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SL3) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::RR3);
 	opna_.setRegister(0x80 + offset, data);
 
-	tmp = instFM_[chId]->getEnvelopeParameter(FMParameter::SSGEG3);
+	tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG3);
 	data = (tmp == -1)? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 
 	offset = bch + 12;	// Operator 4
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::DT4) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::ML4);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::DT4) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::ML4);
 	opna_.setRegister(0x30 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::TL4);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::TL4);
 	opna_.setRegister(0x40 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::KS4) << 6;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::AR4);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::KS4) << 6;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::AR4);
 	opna_.setRegister(0x50 + offset, data);
 
 	data = 0 << 7;	// For AM4
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::DR4);
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::DR4);
 	opna_.setRegister(0x60 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SR4);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SR4);
 	opna_.setRegister(0x70 + offset, data);
 
-	data = instFM_[chId]->getEnvelopeParameter(FMParameter::SL4) << 4;
-	data |= instFM_[chId]->getEnvelopeParameter(FMParameter::RR4);
+	data = instFM_[ch]->getEnvelopeParameter(FMParameter::SL4) << 4;
+	data |= instFM_[ch]->getEnvelopeParameter(FMParameter::RR4);
 	opna_.setRegister(0x80 + offset, data);
 
-	tmp = instFM_[chId]->getEnvelopeParameter(FMParameter::SSGEG4);
+	tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG4);
 	data = (tmp == -1)? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 }

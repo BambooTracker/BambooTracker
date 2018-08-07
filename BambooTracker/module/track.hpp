@@ -1,21 +1,29 @@
 #pragma once
 
 #include <vector>
-#include <array>
 #include <memory>
 #include "pattern.hpp"
 #include "misc.hpp"
+
+struct TrackAttribute;
 
 class Track
 {
 public:
 	Track(int number, SoundSource source, int channelInSource);
+	TrackAttribute getAttribute() const;
+	std::vector<int> getOrderList() const;
 
 private:
-	int num_;
-	SoundSource src_;
-	int chInSrc_;
+	std::unique_ptr<TrackAttribute> attrib_;
 
 	std::vector<int> order_;
-	std::array<std::unique_ptr<Pattern>, 128> patterns_;
+	std::vector<Pattern> patterns_;
+};
+
+struct TrackAttribute
+{
+	int number;
+	SoundSource source;
+	int channelInSource;
 };

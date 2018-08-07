@@ -4,7 +4,7 @@
 #include <QClipboard>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
-#include "channel_attribute.hpp"
+#include "track.hpp"
 #include "instrument.hpp"
 #include "./command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
+	ui->orderList->installEventFilter(this);
 }
 
 MainWindow::~MainWindow()
@@ -62,6 +63,16 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 			int row = findRowFromInstrumentList(fmForm->getInstrumentNumber());
 			ui->instrumentListWidget->setCurrentRow(row);
 			return false;
+		}
+	}
+	if (auto orderList = qobject_cast<OrderList*>(watched)) {
+		// Catch space key pressing in order list
+		if (event->type() == QEvent::KeyPress) {
+			auto keyEvent = dynamic_cast<QKeyEvent*>(event);
+			if (keyEvent->key() == Qt::Key_Space) {
+				keyPressEvent(keyEvent);
+				return true;
+			}
 		}
 	}
 
@@ -82,15 +93,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	else {
 		switch (key) {
 		// Common keys
-		case Qt::Key_Space:		bt_->toggleJamMode();	break;
+		case Qt::Key_Space:		toggleJamMode();		break;
 		case Qt::Key_Asterisk:	bt_->raiseOctave();		break;
 		case Qt::Key_Slash:		bt_->lowerOctave();		break;
 		case Qt::Key_F5:		startPlaySong();		break;
 		case Qt::Key_F8:		stopPlaySong();			break;
 
 	//********** dummy
-		case Qt::Key_Left: if (channel_ != 0) bt_->selectChannel(--channel_); break;
-		case Qt::Key_Right: if (channel_ != 8) bt_->selectChannel(++channel_); break;
+		case Qt::Key_Left: if (track_ != 0) bt_->selectTrack(--track_); break;
+		case Qt::Key_Right: if (track_ != 8) bt_->selectTrack(++track_); break;
 	//***************
 
 		default:
@@ -200,8 +211,8 @@ void MainWindow::addInstrument()
 	QString name = "Instrument " + QString::number(num);
 	bt_->addInstrument(num, name.toUtf8().toStdString());
 
-	ChannelAttribute ch = bt_->getCurrentChannel();
-	comStack_->push(new AddInstrumentQtCommand(list, num, name, ch.getSoundSource(), instFormMap_));
+	TrackAttribute attrib = bt_->getCurrentTrack();
+	comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instFormMap_));
 }
 
 void MainWindow::removeInstrument()
@@ -330,6 +341,14 @@ void MainWindow::startPlaySong()
 void MainWindow::stopPlaySong()
 {
 	bt_->stopPlaySong();
+}
+
+/********** Toggle jam mode **********/
+void MainWindow::toggleJamMode()
+{
+	bt_->toggleJamMode();
+	ui->orderList->changeEditable();
+	ui->patternEditor->changeEditable();
 }
 
 /******************************/

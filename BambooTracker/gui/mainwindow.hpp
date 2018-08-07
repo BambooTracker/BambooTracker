@@ -39,7 +39,7 @@ private:
 	std::unique_ptr<QUndoStack> comStack_;
 
 	//*********** dummy
-	int channel_ = 0;
+	int track_ = 0;
 	//********************
 
 	// Instrument list
@@ -60,6 +60,9 @@ private:
 	// Play song
 	void startPlaySong();
 	void stopPlaySong();
+
+	// Toggle Jam mode
+	void toggleJamMode();
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);

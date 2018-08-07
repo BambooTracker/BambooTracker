@@ -1,22 +1,25 @@
 #include "bamboo_tracker.hpp"
-#include <vector>
 #include <algorithm>
+#include <utility>
 #include "commands.hpp"
 
 #include <QDebug>
 
-BambooTracker::BambooTracker() :
-	#ifdef SINC_INTERPOLATION
-	opnaCtrl_(3993600 * 2, 44100, 40, &instMan_),
-	#else
-	opnaCtrl_(3993600 * 2, 44100, &instMan_),
-	#endif
-	mod_(std::make_unique<Module>(ModuleType::STD)),
-	octave_(4),
-	curChannel_(0),
-	curInstNum_(-1),
-	streamIntrRate_(60)	// NTSC
+BambooTracker::BambooTracker()
+	:
+	  #ifdef SINC_INTERPOLATION
+	  opnaCtrl_(3993600 * 2, 44100, 40, &instMan_),
+	  #else
+	  opnaCtrl_(3993600 * 2, 44100, &instMan_),
+	  #endif
+	  mod_(std::make_unique<Module>(ModuleType::STD)),
+	  octave_(4),
+	  curTrackNumInPtn_(0),
+	  curTrackNumInOrd_(0),
+	  curInstNum_(-1),
+	  streamIntrRate_(60)	// NTSC
 {
+	modStyle_ = mod_->getStyle();
 }
 
 /********** Change octave **********/
@@ -32,15 +35,16 @@ int BambooTracker::lowerOctave()
 	return octave_;
 }
 
-/********** Current channel **********/
-void BambooTracker::selectChannel(int channel)
+/********** Current track **********/
+void BambooTracker::selectTrack(int num)
 {
-	curChannel_.setNumber(channel);
+	curTrackNumInPtn_ = num;
 }
 
-ChannelAttribute BambooTracker::getCurrentChannel() const
+TrackAttribute BambooTracker::getCurrentTrack() const
 {
-	return curChannel_;
+	TrackAttribute ret = modStyle_.trackAttribs.at(curTrackNumInPtn_);
+	return std::move(ret);
 }
 
 /********** Current instrument **********/
@@ -52,7 +56,8 @@ void BambooTracker::setCurrentInstrument(int n)
 /********** Instrument edit **********/
 void BambooTracker::addInstrument(int num, std::string name)
 {
-	comMan_.invoke(std::make_unique<AddInstrumentCommand>(instMan_, num, curChannel_.getSoundSource(), name));
+	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
+					   instMan_, num, modStyle_.trackAttribs[curTrackNumInPtn_].source, name));
 }
 
 void BambooTracker::removeInstrument(int num)
@@ -129,13 +134,13 @@ bool BambooTracker::isJamMode() const
 void BambooTracker::jamKeyOn(JamKey key)
 {
 	std::vector<JamKeyData> &&list = jamMan_.keyOn(key,
-											   curChannel_.getIdInSoundSource(),
-											   curChannel_.getSoundSource());
+												   modStyle_.trackAttribs[curTrackNumInPtn_].channelInSource,
+												   modStyle_.trackAttribs[curTrackNumInPtn_].source);
 	if (list.size() == 2) {	// Key off
 		JamKeyData& offData = list[1];
 		switch (offData.source) {
-		case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.chIdInSource);	break;
-		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(offData.chIdInSource);	break;
+		case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.channelInSource);	break;
+		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(offData.channelInSource);	break;
 		}
 	}
 
@@ -143,15 +148,15 @@ void BambooTracker::jamKeyOn(JamKey key)
 	JamKeyData& onData = list[0];
 	switch (onData.source) {
 	case SoundSource::FM:
-		opnaCtrl_.setInstrumentFM(onData.chIdInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
-		opnaCtrl_.keyOnFM(onData.chIdInSource,
+		opnaCtrl_.setInstrumentFM(onData.channelInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
+		opnaCtrl_.keyOnFM(onData.channelInSource,
 						  JamManager::jamKeyToNote(onData.key),
 						  JamManager::calcOctave(octave_, onData.key),
 						  0);
 		break;
 	case SoundSource::PSG:
-		opnaCtrl_.setInstrumentPSG(onData.chIdInSource, std::dynamic_pointer_cast<InstrumentPSG>(tmpInst));
-		opnaCtrl_.keyOnPSG(onData.chIdInSource,
+		opnaCtrl_.setInstrumentPSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentPSG>(tmpInst));
+		opnaCtrl_.keyOnPSG(onData.channelInSource,
 						   JamManager::jamKeyToNote(onData.key),
 						   JamManager::calcOctave(octave_, onData.key),
 						   0);
@@ -163,10 +168,10 @@ void BambooTracker::jamKeyOff(JamKey key)
 {
 	JamKeyData &&data = jamMan_.keyOff(key);
 
-	if (data.chIdInSource > -1) {	// Key still sound
+	if (data.channelInSource > -1) {	// Key still sound
 		switch (data.source) {
-		case SoundSource::FM:	opnaCtrl_.keyOffFM(data.chIdInSource);	break;
-		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(data.chIdInSource);	break;
+		case SoundSource::FM:	opnaCtrl_.keyOffFM(data.channelInSource);	break;
+		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(data.channelInSource);	break;
 		}
 	}
 }
@@ -227,4 +232,15 @@ int BambooTracker::getStreamDuration() const
 int BambooTracker::getStreamInterruptRate() const
 {
 	return streamIntrRate_;
+}
+
+/********** Module details **********/
+ModuleStyle BambooTracker::getModuleStyle() const
+{
+	return mod_->getStyle();
+}
+
+std::vector<int> BambooTracker::getOrderList(int songNum, int trackNum) const
+{
+	return mod_->getOrderList(songNum, trackNum);
 }

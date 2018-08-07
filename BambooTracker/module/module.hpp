@@ -1,15 +1,25 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include "song.hpp"
+
+struct ModuleStyle;
 
 class Module
 {
 public:
-	Module(ModuleType modType);
+	Module(ModuleType type);
+	ModuleStyle getStyle() const;
+	std::vector<int> getOrderList(int songNum, int trackNum) const;
 
 private:
-	ModuleType modType_;
-	std::vector<std::unique_ptr<Song>> songs_;
+	ModuleType type_;
+	std::vector<Song> songs_;
+};
+
+
+struct ModuleStyle
+{
+	ModuleType type;
+	std::vector<TrackAttribute> trackAttribs;
 };
