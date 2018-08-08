@@ -1,5 +1,5 @@
-#ifndef ORDER_LIST_HPP
-#define ORDER_LIST_HPP
+#ifndef ORDER_LIST_PANEL_HPP
+#define ORDER_LIST_PANEL_HPP
 
 #include <QWidget>
 #include <QPixmap>
@@ -14,14 +14,20 @@
 #include "bamboo_tracker.hpp"
 #include "module.hpp"
 
-class OrderList : public QWidget
+class OrderListPanel : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit OrderList(QWidget *parent = nullptr);
+	explicit OrderListPanel(QWidget *parent = nullptr);
 	void setCore(std::shared_ptr<BambooTracker> core);
 
 	void changeEditable();
+
+public slots:
+	void setCurrentTrack(int num);
+
+signals:
+	void currentTrackChanged(int num);
 
 protected:
 	virtual bool event(QEvent *event) override;
@@ -57,6 +63,8 @@ private:
 
 	int curTrackNum_, curRowNum_;
 
+	bool isIgnoreEvent_;
+
 	/**********/
 	int songNum = 0;	// dummy set
 	/**********/
@@ -74,4 +82,4 @@ private:
 	void MoveCursorToRight(int n);
 };
 
-#endif // ORDER_LIST_HPP
+#endif // ORDER_LIST_PANEL_HPP

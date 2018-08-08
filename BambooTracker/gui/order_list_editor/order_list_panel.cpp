@@ -1,16 +1,18 @@
-#include "order_list.hpp"
+#include "order_list_panel.hpp"
 #include <QPainter>
 #include <QFontMetrics>
 #include <QApplication>
 #include <algorithm>
+#include "gui/event_guard.hpp"
 
 #include <QDebug>
 
-OrderList::OrderList(QWidget *parent)
+OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
 	  leftTrackNum_(0),
 	  curTrackNum_(0),
-	  curRowNum_(0)
+	  curRowNum_(0),
+	  isIgnoreEvent_(false)
 {
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -49,19 +51,19 @@ OrderList::OrderList(QWidget *parent)
 	initDisplay();
 }
 
-void OrderList::setCore(std::shared_ptr<BambooTracker> core)
+void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
 	modStyle_ = bt_->getModuleStyle();
 	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
 }
 
-void OrderList::initDisplay()
+void OrderListPanel::initDisplay()
 {
 	pixmap_ = std::make_unique<QPixmap>(geometry().size());
 }
 
-void OrderList::drawList(const QRect &rect)
+void OrderListPanel::drawList(const QRect &rect)
 {
 	int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
 
@@ -75,7 +77,7 @@ void OrderList::drawList(const QRect &rect)
 	painter.drawPixmap(rect, *pixmap_.get());
 }
 
-void OrderList::drawRows(int maxWidth)
+void OrderListPanel::drawRows(int maxWidth)
 {
 	QPainter painter(pixmap_.get());
 	painter.setFont(rowFont_);
@@ -173,7 +175,7 @@ void OrderList::drawRows(int maxWidth)
 	}
 }
 
-void OrderList::drawHeaders(int maxWidth)
+void OrderListPanel::drawHeaders(int maxWidth)
 {
 	QPainter painter(pixmap_.get());
 	painter.setFont(headerFont_);
@@ -201,7 +203,7 @@ void OrderList::drawHeaders(int maxWidth)
 	}
 }
 
-void OrderList::drawBorders(int maxWidth)
+void OrderListPanel::drawBorders(int maxWidth)
 {
 	QPainter painter(pixmap_.get());
 
@@ -221,13 +223,13 @@ void OrderList::drawBorders(int maxWidth)
 	}
 }
 
-void OrderList::drawShadow()
+void OrderListPanel::drawShadow()
 {
 	QPainter painter(pixmap_.get());
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 
-int OrderList::calculateColumnsWidthWithRowNum(int begin, int end)
+int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end)
 {
 	int width = rowNumWidth_;
 	for (int i = begin; i <= end; ++i) {
@@ -241,7 +243,7 @@ int OrderList::calculateColumnsWidthWithRowNum(int begin, int end)
 	return width;
 }
 
-void OrderList::MoveCursorToRight(int n)
+void OrderListPanel::MoveCursorToRight(int n)
 {
 	if (n > 0) {
 		curTrackNum_ = std::min(curTrackNum_ + n, static_cast<int>(modStyle_.trackAttribs.size()) - 1);
@@ -255,16 +257,26 @@ void OrderList::MoveCursorToRight(int n)
 	columnsWidthFromLeftToEnd_
 			= calculateColumnsWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
 
+	if (!isIgnoreEvent_) emit currentTrackChanged(curTrackNum_);
+
 	update();
 }
 
-void OrderList::changeEditable()
+void OrderListPanel::changeEditable()
 {
 	update();
 }
 
+/********** Slots **********/
+void OrderListPanel::setCurrentTrack(int num)
+{
+	Ui::EventGuard eg(isIgnoreEvent_);
+
+	if (int dif = num - curTrackNum_) MoveCursorToRight(dif);
+}
+
 /********** Events **********/
-bool OrderList::event(QEvent *event)
+bool OrderListPanel::event(QEvent *event)
 {
 	switch (event->type()) {
 	case QEvent::KeyPress:	return KeyPressed(dynamic_cast<QKeyEvent*>(event));
@@ -272,7 +284,7 @@ bool OrderList::event(QEvent *event)
 	}
 }
 
-bool OrderList::KeyPressed(QKeyEvent *event)
+bool OrderListPanel::KeyPressed(QKeyEvent *event)
 {
 	switch (event->key()) {
 	case Qt::Key_Left:	MoveCursorToRight(-1);	return true;
@@ -283,12 +295,12 @@ bool OrderList::KeyPressed(QKeyEvent *event)
 	}
 }
 
-void OrderList::paintEvent(QPaintEvent *event)
+void OrderListPanel::paintEvent(QPaintEvent *event)
 {
 	if (bt_ != nullptr) drawList(event->rect());
 }
 
-void OrderList::resizeEvent(QResizeEvent *event)
+void OrderListPanel::resizeEvent(QResizeEvent *event)
 {
 	QWidget::resizeEvent(event);
 
@@ -298,7 +310,7 @@ void OrderList::resizeEvent(QResizeEvent *event)
 	initDisplay();
 }
 
-void OrderList::mousePressEvent(QMouseEvent *event)
+void OrderListPanel::mousePressEvent(QMouseEvent *event)
 {
 	setFocus();
 }

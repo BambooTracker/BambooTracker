@@ -65,7 +65,8 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 			return false;
 		}
 	}
-	if (auto orderList = qobject_cast<OrderList*>(watched)) {
+
+	if (auto orderList = qobject_cast<OrderListEditor*>(watched)) {
 		// Catch space key pressing in order list
 		if (event->type() == QEvent::KeyPress) {
 			auto keyEvent = dynamic_cast<QKeyEvent*>(event);

@@ -77,7 +77,7 @@
         <number>3</number>
        </property>
        <item row="0" column="0">
-        <widget class="OrderList" name="orderList" native="true"/>
+        <widget class="OrderListEditor" name="orderList" native="true"/>
        </item>
       </layout>
      </widget>
@@ -113,9 +113,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>OrderList</class>
+   <class>OrderListEditor</class>
    <extends>QWidget</extends>
-   <header>gui/order_list/order_list.hpp</header>
+   <header>gui/order_list_editor/order_list_editor.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
