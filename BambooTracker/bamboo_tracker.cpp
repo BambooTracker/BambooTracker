@@ -36,7 +36,7 @@ int BambooTracker::lowerOctave()
 }
 
 /********** Current track **********/
-void BambooTracker::selectTrack(int num)
+void BambooTracker::setCurrentTrack(int num)
 {
 	curTrackNumInPtn_ = num;
 }

@@ -44,10 +44,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	/* Pattern editor */
 	ui->patternEditor->setCore(bt_);
+	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
+					 ui->orderList, &OrderListEditor::setCurrentTrack);
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
-	ui->orderList->installEventFilter(this);
+	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
+					 ui->patternEditor, &PatternEditor::setCurrentTrack);
 }
 
 MainWindow::~MainWindow()
@@ -99,11 +102,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		case Qt::Key_Slash:		bt_->lowerOctave();		break;
 		case Qt::Key_F5:		startPlaySong();		break;
 		case Qt::Key_F8:		stopPlaySong();			break;
-
-	//********** dummy
-		case Qt::Key_Left: if (track_ != 0) bt_->selectTrack(--track_); break;
-		case Qt::Key_Right: if (track_ != 8) bt_->selectTrack(++track_); break;
-	//***************
 
 		default:
 			if (bt_->isJamMode() && !event->isAutoRepeat()) {

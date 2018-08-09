@@ -23,7 +23,7 @@ public:
 	int lowerOctave();
 
 	// Current track
-	void selectTrack(int num);
+	void setCurrentTrack(int num);
 	TrackAttribute getCurrentTrack() const;
 
 	// Current instrument

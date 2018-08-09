@@ -62,14 +62,15 @@ SOURCES += \
     command/instrument/paste_instrument_command.cpp \
     command/instrument/clone_instrument_command.cpp \
     gui/command/instrument/clone_instrument_qt_command.cpp \
-    gui/pattern_editor/pattern_editor.cpp \
     module/module.cpp \
     module/song.cpp \
     module/pattern.cpp \
     module/track.cpp \
     module/step.cpp \
     gui/order_list_editor/order_list_panel.cpp \
-    gui/order_list_editor/order_list_editor.cpp
+    gui/order_list_editor/order_list_editor.cpp \
+    gui/pattern_editor/pattern_editor_panel.cpp \
+    gui/pattern_editor/pattern_editor.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -116,14 +117,15 @@ HEADERS += \
     command/instrument/clone_instrument_command.hpp \
     gui/command/instrument/clone_instrument_qt_command.hpp \
     gui/command/instrument/paste_instrument_qt_command.hpp \
-    gui/pattern_editor/pattern_editor.hpp \
     module/module.hpp \
     module/song.hpp \
     module/pattern.hpp \
     module/track.hpp \
     module/step.hpp \
     gui/order_list_editor/order_list_panel.hpp \
-    gui/order_list_editor/order_list_editor.hpp
+    gui/order_list_editor/order_list_editor.hpp \
+    gui/pattern_editor/pattern_editor_panel.hpp \
+    gui/pattern_editor/pattern_editor.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -132,7 +134,8 @@ FORMS += \
     gui/instrument_editor/fm_operator_table.ui \
     gui/labeled_vertical_slider.ui \
     gui/labeled_horizontal_slider.ui \
-    gui/order_list_editor/order_list_editor.ui
+    gui/order_list_editor/order_list_editor.ui \
+    gui/pattern_editor/pattern_editor.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

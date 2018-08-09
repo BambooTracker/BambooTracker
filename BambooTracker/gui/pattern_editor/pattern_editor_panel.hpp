@@ -1,42 +1,44 @@
-#ifndef ORDER_LIST_PANEL_HPP
-#define ORDER_LIST_PANEL_HPP
+#ifndef PATTERN_EDITOR_PANEL_HPP
+#define PATTERN_EDITOR_PANEL_HPP
 
 #include <QWidget>
 #include <QPixmap>
 #include <QFont>
 #include <QPaintEvent>
 #include <QResizeEvent>
-#include <QKeyEvent>
 #include <QMouseEvent>
+#include <QHoverEvent>
 #include <QRect>
 #include <QColor>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "module.hpp"
 
-class OrderListPanel : public QWidget
+class PatternEditorPanel : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit OrderListPanel(QWidget *parent = nullptr);
+	explicit PatternEditorPanel(QWidget *parent = nullptr);
 	void setCore(std::shared_ptr<BambooTracker> core);
 
 	void changeEditable();
+	int getFullColmunSize() const;
 
 public slots:
-	void setCurrentTrackForSlider(int num);
+	void setCurrentCellInRow(int num);
 	void setCurrentTrack(int num);
 
 signals:
-	void currentTrackChangedForSlider(int num);
+	void currentCellInRowChanged(int num);
 	void currentTrackChanged(int num);
 
 protected:
 	virtual bool event(QEvent *event) override;
-	bool KeyPressed(QKeyEvent* event);
+	bool keyPressed(QKeyEvent* event);
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
+	void mouseHoverd(QHoverEvent* event);
 
 private:
 	std::unique_ptr<QPixmap> pixmap_;
@@ -48,40 +50,37 @@ private:
 	int widthSpace_;
 	int rowNumWidth_;
 	int trackWidth_;
-	int columnsWidthFromLeftToEnd_;
+	int toneNameWidth_, instWidth_, volWidth_, effWidth_;
+	int TracksWidthFromLeftToEnd_;
 	int headerHeight_;
 	int curRowBaselineY_;
 	int curRowY_;
 
-	QColor defTextColor_, defRowColor_;
+	QColor defTextColor_, defRowColor_, mkRowColor_;
 	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
 	QColor selTextColor_, selCellColor_;
-	QColor rowNumColor_;
+	QColor defRowNumColor_, mkRowNumColor_;
 	QColor headerTextColor_, headerRowColor_;
 	QColor borderColor_;
 
 	int leftTrackNum_;
 	ModuleStyle modStyle_;
 
-	int curTrackNum_, curRowNum_;
+	int curTrackNum_, curCellNumInTrack_, curRowNum_;
 
-	bool isIgnoreToSlider_, isIgnoreToPattern_;
-
-	/**********/
-	int songNum = 0;	// dummy set
-	/**********/
+	bool isIgnoreToSlider_, isIgnoreToOrder_;
 
 	void initDisplay();
-
-	void drawList(const QRect& rect);
+	void drawPattern(const QRect& rect);
 	void drawRows(int maxWidth);
 	void drawHeaders(int maxWidth);
 	void drawBorders(int maxWidth);
 	void drawShadow();
 
-	int calculateColumnsWidthWithRowNum(int begin, int end) const;
+	int calculateTracksWidthWithRowNum(int begin, int end) const;
+	int calculateCellNumInRow(int trackNum, int cellNumInTrack) const;
 
 	void MoveCursorToRight(int n);
 };
 
-#endif // ORDER_LIST_PANEL_HPP
+#endif // PATTERN_EDITOR_PANEL_HPP

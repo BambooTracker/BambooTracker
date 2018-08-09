@@ -38,10 +38,6 @@ private:
 	std::unique_ptr<AudioStream> stream_;
 	std::unique_ptr<QUndoStack> comStack_;
 
-	//*********** dummy
-	int track_ = 0;
-	//********************
-
 	// Instrument list
 	std::map<int, std::unique_ptr<QWidget>> instFormMap_;
 	void addInstrument();

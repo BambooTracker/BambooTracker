@@ -12,7 +12,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  leftTrackNum_(0),
 	  curTrackNum_(0),
 	  curRowNum_(0),
-	  isIgnoreEvent_(false)
+	  isIgnoreToSlider_(false),
+	  isIgnoreToPattern_(false)
 {
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -229,7 +230,7 @@ void OrderListPanel::drawShadow()
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 
-int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end)
+int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
 {
 	int width = rowNumWidth_;
 	for (int i = begin; i <= end; ++i) {
@@ -257,7 +258,11 @@ void OrderListPanel::MoveCursorToRight(int n)
 	columnsWidthFromLeftToEnd_
 			= calculateColumnsWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
 
-	if (!isIgnoreEvent_) emit currentTrackChanged(curTrackNum_);
+	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curTrackNum_);	// Send to slider
+
+	bt_->setCurrentTrack(curTrackNum_);
+
+	if (!isIgnoreToPattern_) emit currentTrackChanged(curTrackNum_);	// Send to pattern editor
 
 	update();
 }
@@ -268,9 +273,16 @@ void OrderListPanel::changeEditable()
 }
 
 /********** Slots **********/
+void OrderListPanel::setCurrentTrackForSlider(int num)
+{
+	Ui::EventGuard eg(isIgnoreToSlider_);
+
+	if (int dif = num - curTrackNum_) MoveCursorToRight(dif);
+}
+
 void OrderListPanel::setCurrentTrack(int num)
 {
-	Ui::EventGuard eg(isIgnoreEvent_);
+	Ui::EventGuard eg(isIgnoreToPattern_);
 
 	if (int dif = num - curTrackNum_) MoveCursorToRight(dif);
 }

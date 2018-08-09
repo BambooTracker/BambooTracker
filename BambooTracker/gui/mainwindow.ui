@@ -42,9 +42,6 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0" colspan="3">
-     <widget class="PatternEditor" name="patternEditor" native="true"/>
-    </item>
     <item row="0" column="0">
      <spacer name="horizontalSpacer">
       <property name="orientation">
@@ -77,10 +74,13 @@
         <number>3</number>
        </property>
        <item row="0" column="0">
-        <widget class="OrderListEditor" name="orderList" native="true"/>
+        <widget class="OrderListEditor" name="orderList"/>
        </item>
       </layout>
      </widget>
+    </item>
+    <item row="1" column="0" colspan="3">
+     <widget class="PatternEditor" name="patternEditor"/>
     </item>
    </layout>
   </widget>
@@ -108,13 +108,13 @@
  <customwidgets>
   <customwidget>
    <class>PatternEditor</class>
-   <extends>QWidget</extends>
+   <extends>QFrame</extends>
    <header>gui/pattern_editor/pattern_editor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>OrderListEditor</class>
-   <extends>QWidget</extends>
+   <extends>QFrame</extends>
    <header>gui/order_list_editor/order_list_editor.hpp</header>
    <container>1</container>
   </customwidget>

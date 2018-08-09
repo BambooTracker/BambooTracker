@@ -7,18 +7,18 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	QObject::connect(ui->panel, &OrderListPanel::currentTrackChanged,
+	QObject::connect(ui->panel, &OrderListPanel::currentTrackChangedForSlider,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
+	QObject::connect(ui->panel, &OrderListPanel::currentTrackChanged,
+					 this, [&](int num) { emit currentTrackChanged(num); });
 
 	auto focusSlot = [&]() { ui->panel->setFocus(); };
 
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::valueChanged,
-					 ui->panel, &OrderListPanel::setCurrentTrack);
+					 ui->panel, &OrderListPanel::setCurrentTrackForSlider);
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
-	ui->horizontalScrollBar->installEventFilter(this);
 
 	QObject::connect(ui->verticalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
-	ui->verticalScrollBar->installEventFilter(this);
 }
 
 OrderListEditor::~OrderListEditor()
@@ -37,4 +37,10 @@ void OrderListEditor::setCore(std::shared_ptr<BambooTracker> core)
 void OrderListEditor::changeEditable()
 {
 	ui->panel->changeEditable();
+}
+
+/********** Slots **********/
+void OrderListEditor::setCurrentTrack(int num)
+{
+	ui->panel->setCurrentTrack(num);
 }

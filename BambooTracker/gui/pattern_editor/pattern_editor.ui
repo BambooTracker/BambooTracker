@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>OrderListEditor</class>
- <widget class="QFrame" name="OrderListEditor">
+ <class>PatternEditor</class>
+ <widget class="QFrame" name="PatternEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,7 +14,7 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">OrderListEditor {
+   <string notr="true">PatternEditor {
 	border: 0;
 }</string>
   </property>
@@ -27,7 +27,7 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="OrderListPanel" name="panel" native="true"/>
+    <widget class="PatternEditorPanel" name="panel" native="true"/>
    </item>
    <item row="0" column="1">
     <widget class="QScrollBar" name="verticalScrollBar">
@@ -40,9 +40,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>OrderListPanel</class>
+   <class>PatternEditorPanel</class>
    <extends>QWidget</extends>
-   <header>gui/order_list_editor/order_list_panel.hpp</header>
+   <header>gui/pattern_editor/pattern_editor_panel.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

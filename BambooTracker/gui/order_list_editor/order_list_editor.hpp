@@ -4,6 +4,7 @@
 #include <QFrame>
 #include <QEvent>
 #include <QMouseEvent>
+#include <memory>
 #include "bamboo_tracker.hpp"
 #include "module.hpp"
 
@@ -22,6 +23,12 @@ public:
 	void setCore(std::shared_ptr<BambooTracker> core);
 
 	void changeEditable();
+
+signals:
+	void currentTrackChanged(int num);
+
+public slots:
+	void setCurrentTrack(int num);
 
 private:
 	Ui::OrderListEditor *ui;
