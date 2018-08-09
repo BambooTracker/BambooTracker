@@ -38,7 +38,7 @@ protected:
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
-	void mouseHoverd(QHoverEvent* event);
+	bool mouseHoverd(QHoverEvent* event);
 
 private:
 	std::unique_ptr<QPixmap> pixmap_;
@@ -80,7 +80,7 @@ private:
 	int calculateTracksWidthWithRowNum(int begin, int end) const;
 	int calculateCellNumInRow(int trackNum, int cellNumInTrack) const;
 
-	void MoveCursorToRight(int n);
+	void moveCursorToRight(int n);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

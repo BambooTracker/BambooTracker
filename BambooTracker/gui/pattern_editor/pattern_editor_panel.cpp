@@ -266,7 +266,7 @@ int PatternEditorPanel::calculateTracksWidthWithRowNum(int begin, int end) const
 	return width;
 }
 
-void PatternEditorPanel::MoveCursorToRight(int n)
+void PatternEditorPanel::moveCursorToRight(int n)
 {
 	int oldTrackNum = curTrackNum_;
 
@@ -320,7 +320,7 @@ void PatternEditorPanel::MoveCursorToRight(int n)
 	if (!isIgnoreToSlider_)
 		emit currentCellInRowChanged(calculateCellNumInRow(curTrackNum_, curCellNumInTrack_));
 
-	if (!isIgnoreToSlider_ && curTrackNum_ != oldTrackNum)
+	if (!isIgnoreToOrder_ && curTrackNum_ != oldTrackNum)
 		emit currentTrackChanged(curTrackNum_);	// Send to order list
 
 	update();
@@ -363,7 +363,7 @@ void PatternEditorPanel::setCurrentCellInRow(int num)
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
 	if (int dif = num - calculateCellNumInRow(curTrackNum_, curCellNumInTrack_))
-		MoveCursorToRight(dif);
+		moveCursorToRight(dif);
 }
 
 void PatternEditorPanel::setCurrentTrack(int num)
@@ -372,7 +372,7 @@ void PatternEditorPanel::setCurrentTrack(int num)
 
 	int dif = calculateCellNumInRow(num, 0)
 			- calculateCellNumInRow(curTrackNum_, curCellNumInTrack_);
-	MoveCursorToRight(dif);
+	moveCursorToRight(dif);
 }
 
 /********** Events **********/
@@ -382,8 +382,7 @@ bool PatternEditorPanel::event(QEvent *event)
 	case QEvent::KeyPress:
 		return keyPressed(dynamic_cast<QKeyEvent*>(event));
 	case QEvent::HoverMove:
-		mouseHoverd(dynamic_cast<QHoverEvent*>(event));
-		return true;
+		return mouseHoverd(dynamic_cast<QHoverEvent*>(event));
 	default:
 		return QWidget::event(event);
 	}
@@ -392,8 +391,8 @@ bool PatternEditorPanel::event(QEvent *event)
 bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
 	switch (event->key()) {
-	case Qt::Key_Left:	MoveCursorToRight(-1);	return true;
-	case Qt::Key_Right:	MoveCursorToRight(1);	return true;
+	case Qt::Key_Left:	moveCursorToRight(-1);	return true;
+	case Qt::Key_Right:	moveCursorToRight(1);	return true;
 	case Qt::Key_Up:	return true;
 	case Qt::Key_Down:	return true;
 	default: return false;
@@ -421,7 +420,7 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 	setFocus();
 }
 
-void PatternEditorPanel::mouseHoverd(QHoverEvent *event)
+bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 {
 	QPoint pos = event->pos();
 	int rowNum = 0;
@@ -452,4 +451,6 @@ void PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 	else {
 		// TODO
 	}
+
+	return true;
 }

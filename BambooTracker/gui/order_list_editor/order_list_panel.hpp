@@ -8,6 +8,7 @@
 #include <QResizeEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QHoverEvent>
 #include <QRect>
 #include <QColor>
 #include <memory>
@@ -37,6 +38,7 @@ protected:
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
+	bool mouseHoverd(QHoverEvent* event);
 
 private:
 	std::unique_ptr<QPixmap> pixmap_;
@@ -56,6 +58,7 @@ private:
 	QColor defTextColor_, defRowColor_;
 	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
 	QColor selTextColor_, selCellColor_;
+	QColor hovCellColor_;
 	QColor rowNumColor_;
 	QColor headerTextColor_, headerRowColor_;
 	QColor borderColor_;
@@ -64,6 +67,7 @@ private:
 	ModuleStyle modStyle_;
 
 	int curTrackNum_, curRowNum_;
+	int hovTrackNum_, hovRowNum_;
 
 	bool isIgnoreToSlider_, isIgnoreToPattern_;
 
@@ -81,7 +85,8 @@ private:
 
 	int calculateColumnsWidthWithRowNum(int begin, int end) const;
 
-	void MoveCursorToRight(int n);
+	void moveCursorToRight(int n);
+	void MoveCursorToDown(int n);
 };
 
 #endif // ORDER_LIST_PANEL_HPP

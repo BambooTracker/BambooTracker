@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QFontMetrics>
 #include <QApplication>
+#include <QPoint>
 #include <algorithm>
 #include "gui/event_guard.hpp"
 
@@ -12,6 +13,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  leftTrackNum_(0),
 	  curTrackNum_(0),
 	  curRowNum_(0),
+	  hovTrackNum_(-1),
+	  hovRowNum_(-1),
 	  isIgnoreToSlider_(false),
 	  isIgnoreToPattern_(false)
 {
@@ -43,6 +46,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	curCellColor_ = QColor::fromRgb(255, 255, 255, 127);
 	selTextColor_ = defTextColor_;
 	selCellColor_ = QColor::fromRgb(100, 100, 200);
+	hovCellColor_ = QColor::fromRgb(255, 255, 255, 64);
 	rowNumColor_ = QColor::fromRgb(255, 200, 180);
 	headerTextColor_ = QColor::fromRgb(240, 240, 200);
 	headerRowColor_ = QColor::fromRgb(60, 60, 60);
@@ -50,6 +54,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 
 
 	initDisplay();
+
+	setAttribute(Qt::WA_Hover);
 }
 
 void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
@@ -107,6 +113,16 @@ void OrderListPanel::drawRows(int maxWidth)
 			}
 			painter.fillRect(x - widthSpace_, curRowY_, curCellWidth, rowFontHeight_, curCellColor_);
 		}
+		if (hovRowNum_ == curRowNum_ && hovTrackNum_ == trackNum) {	// Paint hover
+			int curCellWidth;
+			switch (modStyle_.trackAttribs[trackNum].source) {
+			case SoundSource::FM:
+			case SoundSource::PSG:
+				curCellWidth = trackWidth_;
+				break;
+			}
+			painter.fillRect(x - widthSpace_, curRowY_, curCellWidth, rowFontHeight_, hovCellColor_);
+		}
 		painter.drawText(
 					x,
 					curRowBaselineY_,
@@ -138,6 +154,16 @@ void OrderListPanel::drawRows(int maxWidth)
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
 		painter.setPen(defTextColor_);
 		for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
+			if (hovRowNum_ == rowNum && hovTrackNum_ == trackNum) {	// Paint hover
+				int curCellWidth;
+				switch (modStyle_.trackAttribs[trackNum].source) {
+				case SoundSource::FM:
+				case SoundSource::PSG:
+					curCellWidth = trackWidth_;
+					break;
+				}
+				painter.fillRect(x - widthSpace_, rowY, curCellWidth, rowFontHeight_, hovCellColor_);
+			}
 			painter.drawText(x, baseY, QString(" %1").arg(0, 2, 16, QChar('0')).toUpper());
 
 			switch (modStyle_.trackAttribs[trackNum].source) {
@@ -163,6 +189,16 @@ void OrderListPanel::drawRows(int maxWidth)
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
 		painter.setPen(defTextColor_);
 		for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
+			if (hovRowNum_ == rowNum && hovTrackNum_ == trackNum) {	// Paint hover
+				int curCellWidth;
+				switch (modStyle_.trackAttribs[trackNum].source) {
+				case SoundSource::FM:
+				case SoundSource::PSG:
+					curCellWidth = trackWidth_;
+					break;
+				}
+				painter.fillRect(x - widthSpace_, rowY, curCellWidth, rowFontHeight_, hovCellColor_);
+			}
 			painter.drawText(x, baseY, QString(" %1").arg(0, 2, 16, QChar('0')).toUpper());
 
 			switch (modStyle_.trackAttribs[trackNum].source) {
@@ -244,7 +280,7 @@ int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
 	return width;
 }
 
-void OrderListPanel::MoveCursorToRight(int n)
+void OrderListPanel::moveCursorToRight(int n)
 {
 	if (n > 0) {
 		curTrackNum_ = std::min(curTrackNum_ + n, static_cast<int>(modStyle_.trackAttribs.size()) - 1);
@@ -267,6 +303,11 @@ void OrderListPanel::MoveCursorToRight(int n)
 	update();
 }
 
+void OrderListPanel::MoveCursorToDown(int n)
+{
+
+}
+
 void OrderListPanel::changeEditable()
 {
 	update();
@@ -277,30 +318,34 @@ void OrderListPanel::setCurrentTrackForSlider(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
-	if (int dif = num - curTrackNum_) MoveCursorToRight(dif);
+	if (int dif = num - curTrackNum_) moveCursorToRight(dif);
 }
 
 void OrderListPanel::setCurrentTrack(int num)
 {
 	Ui::EventGuard eg(isIgnoreToPattern_);
 
-	if (int dif = num - curTrackNum_) MoveCursorToRight(dif);
+	if (int dif = num - curTrackNum_) moveCursorToRight(dif);
 }
 
 /********** Events **********/
 bool OrderListPanel::event(QEvent *event)
 {
 	switch (event->type()) {
-	case QEvent::KeyPress:	return KeyPressed(dynamic_cast<QKeyEvent*>(event));
-	default:				return QWidget::event(event);
+	case QEvent::KeyPress:
+		return KeyPressed(dynamic_cast<QKeyEvent*>(event));
+	case QEvent::HoverMove:
+		return mouseHoverd(dynamic_cast<QHoverEvent*>(event));
+	default:
+		return QWidget::event(event);
 	}
 }
 
 bool OrderListPanel::KeyPressed(QKeyEvent *event)
 {
 	switch (event->key()) {
-	case Qt::Key_Left:	MoveCursorToRight(-1);	return true;
-	case Qt::Key_Right:	MoveCursorToRight(1);	return true;
+	case Qt::Key_Left:	moveCursorToRight(-1);	return true;
+	case Qt::Key_Right:	moveCursorToRight(1);	return true;
 	case Qt::Key_Up:	return true;
 	case Qt::Key_Down:	return true;
 	default: return false;
@@ -324,5 +369,60 @@ void OrderListPanel::resizeEvent(QResizeEvent *event)
 
 void OrderListPanel::mousePressEvent(QMouseEvent *event)
 {
+	Q_UNUSED(event)
+
 	setFocus();
+
+	if (hovRowNum_ >= 0 && hovTrackNum_ >= 0) {
+		curRowNum_ = hovRowNum_;
+		moveCursorToRight(hovTrackNum_ - curTrackNum_);
+		update();
+	}
+}
+
+bool OrderListPanel::mouseHoverd(QHoverEvent *event)
+{
+	QPoint pos = event->pos();
+
+	int oldRow = hovRowNum_;
+	int oldTrack = hovTrackNum_;
+
+	// Detect row
+	if (pos.y() <= headerHeight_) {
+		 hovRowNum_ = -1;	// Header
+	}
+	else {
+		if (pos.y() < curRowY_) {
+			hovRowNum_ = curRowNum_ + (pos.y() - curRowY_) / rowFontHeight_ - 1;
+		}
+		else {
+			hovRowNum_ = curRowNum_ + (pos.y() - curRowY_) / rowFontHeight_;
+			if (hovRowNum_ >= bt_->getOrderList(songNum, 0).size()) hovRowNum_ = -1;
+		}
+	}
+
+	// Detect track
+	if (pos.x() <= rowNumWidth_) {
+		hovTrackNum_ = -1;	// Row number
+	}
+	else {
+		int tmpWidth = rowNumWidth_;
+		for (int i = leftTrackNum_; ; ++i) {
+			switch (modStyle_.trackAttribs[i].source) {
+			case SoundSource::FM:
+			case SoundSource::PSG:
+				tmpWidth += trackWidth_;
+				break;
+			}
+
+			if (pos.x() <= tmpWidth) {
+				hovTrackNum_ = i;
+				break;
+			}
+		}
+	}
+
+	if (hovTrackNum_ != oldTrack || hovRowNum_ != oldRow) update();
+
+	return true;
 }
