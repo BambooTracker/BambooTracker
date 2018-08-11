@@ -14,8 +14,10 @@ BambooTracker::BambooTracker()
 	  #endif
 	  mod_(std::make_unique<Module>(ModuleType::STD)),
 	  octave_(4),
-	  curTrackNumInPtn_(0),
-	  curTrackNumInOrd_(0),
+	  curSongNum_(0),
+	  curTrackNum_(0),
+	  curOrderNum_(0),
+	  curStepNum_(0),
 	  curInstNum_(-1),
 	  streamIntrRate_(60)	// NTSC
 {
@@ -38,12 +40,12 @@ int BambooTracker::lowerOctave()
 /********** Current track **********/
 void BambooTracker::setCurrentTrack(int num)
 {
-	curTrackNumInPtn_ = num;
+	curTrackNum_ = num;
 }
 
-TrackAttribute BambooTracker::getCurrentTrack() const
+TrackAttribute BambooTracker::getCurrentTrackAttribute() const
 {
-	TrackAttribute ret = modStyle_.trackAttribs.at(curTrackNumInPtn_);
+	TrackAttribute ret = modStyle_.trackAttribs.at(curTrackNum_);
 	return std::move(ret);
 }
 
@@ -57,7 +59,7 @@ void BambooTracker::setCurrentInstrument(int n)
 void BambooTracker::addInstrument(int num, std::string name)
 {
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
-					   instMan_, num, modStyle_.trackAttribs[curTrackNumInPtn_].source, name));
+					   instMan_, num, modStyle_.trackAttribs[curTrackNum_].source, name));
 }
 
 void BambooTracker::removeInstrument(int num)
@@ -109,6 +111,44 @@ void BambooTracker::setInstrumentFMEnvelope(int instNum, int envNum)
 	opnaCtrl_.updateInstrumentFM(instNum);
 }
 
+/********** Song edit **********/
+int BambooTracker::getCurrentSongNumber() const
+{
+	return curSongNum_;
+}
+
+void BambooTracker::setCurrentSongNumber(int num)
+{
+	curSongNum_ = num;
+}
+
+/********** Order edit **********/
+int BambooTracker::getCurrentOrderNumber() const
+{
+	return curOrderNum_;
+}
+
+void BambooTracker::setCurrentOrderNumber(int num)
+{
+	curOrderNum_ = num;
+}
+
+void BambooTracker::insertNewOrder(int prevOdrNum)
+{
+
+}
+
+/********** Pattern edit **********/
+int BambooTracker::getCurrentStepNumber() const
+{
+	return curStepNum_;
+}
+
+void BambooTracker::setCurrentStepNumber(int num)
+{
+	curStepNum_ = num;
+}
+
 /********** Undo-Redo **********/
 void BambooTracker::undo()
 {
@@ -134,8 +174,8 @@ bool BambooTracker::isJamMode() const
 void BambooTracker::jamKeyOn(JamKey key)
 {
 	std::vector<JamKeyData> &&list = jamMan_.keyOn(key,
-												   modStyle_.trackAttribs[curTrackNumInPtn_].channelInSource,
-												   modStyle_.trackAttribs[curTrackNumInPtn_].source);
+												   modStyle_.trackAttribs[curTrackNum_].channelInSource,
+												   modStyle_.trackAttribs[curTrackNum_].source);
 	if (list.size() == 2) {	// Key off
 		JamKeyData& offData = list[1];
 		switch (offData.source) {
@@ -242,5 +282,43 @@ ModuleStyle BambooTracker::getModuleStyle() const
 
 std::vector<int> BambooTracker::getOrderList(int songNum, int trackNum) const
 {
-	return mod_->getOrderList(songNum, trackNum);
+	return mod_->getSong(songNum).getTrack(trackNum).getOrderList();
+}
+
+int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const
+{
+	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).getNoteNumber();
+}
+
+int BambooTracker::getStepInstrumentNumber(int songNum, int trackNum, int orderNum, int stepNum) const
+{
+	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).getInstrumentNumber();
+}
+
+int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const
+{
+	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).getVolume();
+}
+
+std::string BambooTracker::getStepEffectString(int songNum, int trackNum, int orderNum, int stepNum) const
+{
+	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).getEffectString();
+}
+
+size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const
+{
+	size_t size = 0;
+	for (auto& t : modStyle_.trackAttribs) {
+		size = (!size)
+			   ? mod_->getSong(songNum).getTrack(t.number).getPatternFromOrderNumber(orderNum).getSize()
+			   : std::min(
+					 size,
+					 mod_->getSong(songNum).getTrack(t.number).getPatternFromOrderNumber(orderNum).getSize()
+					 );
+	}
+	return size;
 }

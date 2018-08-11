@@ -23,6 +23,7 @@ public:
 
 signals:
 	void currentTrackChanged(int num);
+	void currentOrderChanged(int num);
 
 public slots:
 	void setCurrentTrack(int num);

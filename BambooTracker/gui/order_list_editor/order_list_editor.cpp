@@ -39,6 +39,11 @@ void OrderListEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
+void OrderListEditor::insertNewRow(int prevRowNum)
+{
+
+}
+
 /********** Slots **********/
 void OrderListEditor::setCurrentTrack(int num)
 {

@@ -29,7 +29,7 @@ std::vector<TrackAttribute> Song::getTrackAttributes() const
 	return std::move(ret);
 }
 
-std::vector<int> Song::getOrderList(int trackNum) const
+Track& Song::getTrack(int num)
 {
-	return tracks_.at(trackNum).getOrderList();
+	return tracks_.at(num);
 }

@@ -26,3 +26,13 @@ std::vector<int> Track::getOrderList() const
 	std::vector<int> ret = order_;
 	return std::move(ret);
 }
+
+Pattern& Track::getPattern(int num)
+{
+	return patterns_.at(num);
+}
+
+Pattern& Track::getPatternFromOrderNumber(int num)
+{
+	return getPattern(order_.at(num));
+}

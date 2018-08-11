@@ -13,6 +13,8 @@ public:
 	Track(int number, SoundSource source, int channelInSource);
 	TrackAttribute getAttribute() const;
 	std::vector<int> getOrderList() const;
+	Pattern& getPattern(int num);
+	Pattern& getPatternFromOrderNumber(int num);
 
 private:
 	std::unique_ptr<TrackAttribute> attrib_;

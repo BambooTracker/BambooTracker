@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QHoverEvent>
+#include <QWheelEvent>
 #include <QRect>
 #include <QColor>
 #include <memory>
@@ -39,6 +40,7 @@ protected:
 	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
 	bool mouseHoverd(QHoverEvent* event);
+	virtual void wheelEvent(QWheelEvent* event) override;
 
 private:
 	std::unique_ptr<QPixmap> pixmap_;

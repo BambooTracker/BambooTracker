@@ -10,8 +10,15 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	ui->panel->setFocus();
 	QObject::connect(ui->panel, &PatternEditorPanel::currentCellInRowChanged,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
+	QObject::connect(ui->panel, &PatternEditorPanel::currentStepChanged,
+					 this, [&](int num, int max) {
+		ui->verticalScrollBar->setValue(num);
+		ui->verticalScrollBar->setMaximum(max);
+	});
 	QObject::connect(ui->panel, &PatternEditorPanel::currentTrackChanged,
 					 this, [&](int num) { emit currentTrackChanged(num); });
+	QObject::connect(ui->panel, &PatternEditorPanel::currentOrderChanged,
+					 this, [&](int num) { emit currentOrderChanged(num); });
 
 	auto focusSlot = [&]() { ui->panel->setFocus(); };
 
@@ -19,6 +26,8 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 ui->panel, &PatternEditorPanel::setCurrentCellInRow);
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
 
+	QObject::connect(ui->verticalScrollBar, &QScrollBar::valueChanged,
+					 ui->panel, &PatternEditorPanel::setCurrentStep);
 	QObject::connect(ui->verticalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
 }
 
@@ -31,6 +40,9 @@ void PatternEditor::setCore(std::shared_ptr<BambooTracker> core)
 {
 	ui->panel->setCore(core);
 	ui->horizontalScrollBar->setMaximum(ui->panel->getFullColmunSize());
+	ui->verticalScrollBar->setMaximum(core->getPatternSizeFromOrderNumber(
+										  core->getCurrentSongNumber(),
+										  core->getCurrentOrderNumber()) - 1);
 }
 
 void PatternEditor::changeEditable()

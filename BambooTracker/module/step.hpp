@@ -7,6 +7,11 @@ class Step
 public:
 	Step();
 
+	int getNoteNumber() const;
+	int getInstrumentNumber() const;
+	int getVolume() const;
+	std::string getEffectString() const;
+
 private:
 	/// noteNum_
 	///		0<=: note number

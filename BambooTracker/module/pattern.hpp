@@ -9,11 +9,13 @@ class Pattern
 public:
 	explicit Pattern(int num);
 
-	static void changeRowSize(size_t size);
+	Step& getStep(int num);
+
+	size_t getSize() const;
+	void changeSize(size_t size);
 
 private:
 	int num_;
-	std::vector<Step> rows_;
-
-	static size_t rowSize_;
+	size_t size_;
+	std::vector<Step> steps_;
 };

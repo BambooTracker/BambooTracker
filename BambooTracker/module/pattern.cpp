@@ -1,14 +1,23 @@
 #include "pattern.hpp"
 
-size_t Pattern::rowSize_ = 64;
-
 Pattern::Pattern(int num)
-	: num_(num), rows_(rowSize_)
+	: num_(num), size_(64), steps_(64)
 {
 }
 
-/********** Static **********/
-void Pattern::changeRowSize(size_t size)
+Step& Pattern::getStep(int num)
 {
-	rowSize_ = size;
+	return steps_.at(num);
+}
+
+size_t Pattern::getSize() const
+{
+	return size_;
+}
+
+void Pattern::changeSize(size_t size)
+{
+	size_ = size;
+	if (steps_.size() < size)
+		steps_.resize(size);
 }

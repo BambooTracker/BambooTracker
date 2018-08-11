@@ -10,7 +10,7 @@ class Module
 public:
 	Module(ModuleType type);
 	ModuleStyle getStyle() const;
-	std::vector<int> getOrderList(int songNum, int trackNum) const;
+	Song& getSong(int num);
 
 private:
 	ModuleType type_;

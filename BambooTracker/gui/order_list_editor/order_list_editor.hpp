@@ -23,6 +23,7 @@ public:
 	void setCore(std::shared_ptr<BambooTracker> core);
 
 	void changeEditable();
+	void insertNewRow(int prevRowNum);
 
 signals:
 	void currentTrackChanged(int num);

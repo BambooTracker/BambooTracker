@@ -210,7 +210,7 @@ void MainWindow::addInstrument()
 	QString name = "Instrument " + QString::number(num);
 	bt_->addInstrument(num, name.toUtf8().toStdString());
 
-	TrackAttribute attrib = bt_->getCurrentTrack();
+	TrackAttribute attrib = bt_->getCurrentTrackAttribute();
 	comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instFormMap_));
 }
 

@@ -10,7 +10,7 @@ class Song
 public:
 	Song(int number, ModuleType modType, std::string title = u8"Song");
 	std::vector<TrackAttribute> getTrackAttributes() const;
-	std::vector<int> getOrderList(int trackNum) const;
+	Track& getTrack(int num);
 
 private:
 	int num_;

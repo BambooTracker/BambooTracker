@@ -24,7 +24,7 @@ public:
 
 	// Current track
 	void setCurrentTrack(int num);
-	TrackAttribute getCurrentTrack() const;
+	TrackAttribute getCurrentTrackAttribute() const;
 
 	// Current instrument
 	void setCurrentInstrument(int n);
@@ -40,6 +40,19 @@ public:
 	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
 	void setInstrumentFMEnvelope(int instNum, int envNum);
+
+	// Song edit
+	void setCurrentSongNumber(int num);
+	int getCurrentSongNumber() const;
+
+	// Order edit
+	int getCurrentOrderNumber() const;
+	void setCurrentOrderNumber(int num);
+	void insertNewOrder(int prevOdrNum);
+
+	// Pattern edit
+	int getCurrentStepNumber() const;
+	void setCurrentStepNumber(int num);
 
 	// Undo-Redo
 	void undo();
@@ -69,6 +82,11 @@ public:
 	// Module details
 	ModuleStyle getModuleStyle() const;
 	std::vector<int> getOrderList(int songNum, int trackNum) const;
+	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
+	int getStepInstrumentNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
+	int getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const;
+	std::string getStepEffectString(int songNum, int trackNum, int orderNum, int stepNum) const;
+	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 
 private:
 	CommandManager comMan_;
@@ -82,9 +100,11 @@ private:
 
 	// Current status
 	int octave_;	// 0-7
+	int curSongNum_;
 	ModuleStyle modStyle_;
-	int curTrackNumInPtn_;
-	int curTrackNumInOrd_;
+	int curTrackNum_;
+	int curOrderNum_;
+	int curStepNum_;
 	int curInstNum_;
 
 	int streamIntrRate_;

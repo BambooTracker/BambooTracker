@@ -15,7 +15,7 @@ ModuleStyle Module::getStyle() const
 	return std::move(style);
 }
 
-std::vector<int> Module::getOrderList(int songNum, int trackNum) const
+Song& Module::getSong(int num)
 {
-	return songs_.at(songNum).getOrderList(trackNum);
+	return songs_.at(num);
 }

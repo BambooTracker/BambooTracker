@@ -61,6 +61,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
+	curTrackNum_ = bt_->getCurrentTrackAttribute().number;
+	curRowNum_ = bt_->getCurrentOrderNumber();
 	modStyle_ = bt_->getModuleStyle();
 	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
 }
@@ -294,9 +296,9 @@ void OrderListPanel::moveCursorToRight(int n)
 	columnsWidthFromLeftToEnd_
 			= calculateColumnsWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
 
-	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curTrackNum_);	// Send to slider
-
 	bt_->setCurrentTrack(curTrackNum_);
+
+	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curTrackNum_);	// Send to slider
 
 	if (!isIgnoreToPattern_) emit currentTrackChanged(curTrackNum_);	// Send to pattern editor
 
@@ -305,7 +307,7 @@ void OrderListPanel::moveCursorToRight(int n)
 
 void OrderListPanel::MoveCursorToDown(int n)
 {
-
+	// TODO
 }
 
 void OrderListPanel::changeEditable()
@@ -425,4 +427,10 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 	if (hovTrackNum_ != oldTrack || hovRowNum_ != oldRow) update();
 
 	return true;
+}
+
+void OrderListPanel::wheelEvent(QWheelEvent *event)
+{
+	int degree = event->angleDelta().y() / 8;
+	MoveCursorToDown(-degree / 15);
 }
