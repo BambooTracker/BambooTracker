@@ -11,6 +11,7 @@
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
 	  leftTrackNum_(0),
+	  curSongNum_(0),
 	  curTrackNum_(0),
 	  curRowNum_(0),
 	  hovTrackNum_(-1),
@@ -61,6 +62,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
+	curSongNum_ = bt_->getCurrentSongNumber();
 	curTrackNum_ = bt_->getCurrentTrackAttribute().number;
 	curRowNum_ = bt_->getCurrentOrderNumber();
 	modStyle_ = bt_->getModuleStyle();
@@ -104,7 +106,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	// Step data
 	painter.setPen(curTextColor_);
 	for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
-		lists_.push_back(bt_->getOrderList(songNum, trackNum));
+		lists_.push_back(bt_->getOrderList(curSongNum_, trackNum));
 		if (trackNum == curTrackNum_) {	// Paint current cell
 			int curCellWidth;
 			switch (modStyle_.trackAttribs[trackNum].source) {
@@ -399,7 +401,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 		}
 		else {
 			hovRowNum_ = curRowNum_ + (pos.y() - curRowY_) / rowFontHeight_;
-			if (hovRowNum_ >= bt_->getOrderList(songNum, 0).size()) hovRowNum_ = -1;
+			if (hovRowNum_ >= bt_->getOrderList(curSongNum_, 0).size()) hovRowNum_ = -1;
 		}
 	}
 

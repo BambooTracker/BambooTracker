@@ -65,6 +65,7 @@ private:
 	QColor defTextColor_, defRowColor_, mkRowColor_;
 	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
 	QColor selTextColor_, selCellColor_;
+	QColor hovCellColor_;
 	QColor defStepNumColor_, mkStepNumColor_;
 	QColor toneColor_, instColor_, volColor_, effColor_;
 	QColor headerTextColor_, headerRowColor_;
@@ -73,9 +74,11 @@ private:
 	int leftTrackNum_;
 	ModuleStyle modStyle_;
 
-	int curSongNum_, curTrackNum_, curCellNumInTrack_, curStepNum_, curOrderNum_;
+	int curSongNum_;
+	int curTrackNum_, curCellNumInTrack_, curOrderNum_, curStepNum_;
+	int hovTrackNum_, hovCellNumInTrack_, hovOrderNum_, hovStepNum_;
 
-	bool isIgnoreToSlider_;
+	bool isIgnoreToSlider_, isIgnoreToOrder_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);
@@ -89,6 +92,7 @@ private:
 
 	int calculateTracksWidthWithRowNum(int begin, int end) const;
 	int calculateCellNumInRow(int trackNum, int cellNumInTrack) const;
+	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);

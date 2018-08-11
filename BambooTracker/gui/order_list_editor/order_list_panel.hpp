@@ -68,14 +68,11 @@ private:
 	int leftTrackNum_;
 	ModuleStyle modStyle_;
 
+	int curSongNum_;
 	int curTrackNum_, curRowNum_;
 	int hovTrackNum_, hovRowNum_;
 
 	bool isIgnoreToSlider_, isIgnoreToPattern_;
-
-	/**********/
-	int songNum = 0;	// dummy set
-	/**********/
 
 	void initDisplay();
 
