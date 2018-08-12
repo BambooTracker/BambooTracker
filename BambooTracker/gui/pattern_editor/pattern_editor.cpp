@@ -55,3 +55,8 @@ void PatternEditor::setCurrentTrack(int num)
 {
 	ui->panel->setCurrentTrack(num);
 }
+
+void PatternEditor::setCurrentOrder(int num)
+{
+	ui->panel->setCurrentOrder(num);
+}

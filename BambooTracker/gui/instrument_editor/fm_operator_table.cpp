@@ -124,7 +124,7 @@ void FMOperatorTable::resizeGraph()
 void FMOperatorTable::repaintGraph()
 {
 	auto scene = ui->envelopeGraphicsView->scene();
-	double envHeight = ui->ssgegCheckBox->isChecked()? (scene->height() - 40) : scene->height();
+	double envHeight = ui->ssgegCheckBox->isChecked() ? (scene->height() - 40) : scene->height();
 	int linew = 2;
 	QBrush lineColor = Qt::red;
 	double startx = 0;

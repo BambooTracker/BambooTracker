@@ -23,13 +23,14 @@ public:
 	void setCore(std::shared_ptr<BambooTracker> core);
 
 	void changeEditable();
-	void insertNewRow(int prevRowNum);
 
 signals:
 	void currentTrackChanged(int num);
+	void currentOrderChanged(int num);
 
 public slots:
 	void setCurrentTrack(int num);
+	void setCurrentOrder(int num);
 
 private:
 	Ui::OrderListEditor *ui;

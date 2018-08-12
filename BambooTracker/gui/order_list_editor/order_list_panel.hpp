@@ -27,11 +27,15 @@ public:
 
 public slots:
 	void setCurrentTrackForSlider(int num);
+	void setCurrentOrderForSlider(int num);
 	void setCurrentTrack(int num);
+	void setCurrentOrder(int num);
 
 signals:
 	void currentTrackChangedForSlider(int num);
+	void currentOrderChangedForSlider(int num);
 	void currentTrackChanged(int num);
+	void currentOrderChanged(int num);
 
 protected:
 	virtual bool event(QEvent *event) override;
@@ -85,7 +89,7 @@ private:
 	int calculateColumnsWidthWithRowNum(int begin, int end) const;
 
 	void moveCursorToRight(int n);
-	void MoveCursorToDown(int n);
+	void moveCursorToDown(int n);
 };
 
 #endif // ORDER_LIST_PANEL_HPP

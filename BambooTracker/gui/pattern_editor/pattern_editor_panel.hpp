@@ -69,6 +69,7 @@ private:
 	QColor defStepNumColor_, mkStepNumColor_;
 	QColor toneColor_, instColor_, volColor_, effColor_;
 	QColor headerTextColor_, headerRowColor_;
+	QColor patternMaskColor_;
 	QColor borderColor_;
 
 	int leftTrackNum_;

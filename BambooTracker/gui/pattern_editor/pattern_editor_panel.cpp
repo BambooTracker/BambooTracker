@@ -6,8 +6,6 @@
 #include <algorithm>
 #include "gui/event_guard.hpp"
 
-#include <QDebug>
-
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
 	  leftTrackNum_(0),
@@ -65,6 +63,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	effColor_ = QColor::fromRgb(42, 187, 155);
 	headerTextColor_ = QColor::fromRgb(240, 240, 200);
 	headerRowColor_ = QColor::fromRgb(60, 60, 60);
+	patternMaskColor_ = QColor::fromRgb(0, 0, 0, 128);
 	borderColor_ = QColor::fromRgb(120, 120, 120);
 
 
@@ -114,9 +113,9 @@ void PatternEditorPanel::drawRows(int maxWidth)
 	/* Current row */
 	// Fill row
 	painter.fillRect(0, curRowY_, maxWidth, stepFontHeight_,
-					 (bt_->isJamMode())? curRowColor_ : curRowColorEditable_);
+					 bt_->isJamMode() ? curRowColor_ : curRowColorEditable_);
 	// Step number
-	painter.setPen((curStepNum_ % mkCnt)? defStepNumColor_ : mkStepNumColor_);
+	painter.setPen((curStepNum_ % mkCnt) ? defStepNumColor_ : mkStepNumColor_);
 	painter.drawText(1, curRowBaselineY_, QString("%1").arg(curStepNum_, 2, 16, QChar('0')).toUpper());
 	// Step data
 	for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
@@ -143,9 +142,9 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		}
 
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, (stepNum % mkCnt)? defRowColor_ : mkRowColor_);
+		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, (stepNum % mkCnt) ? defRowColor_ : mkRowColor_);
 		// Step number
-		painter.setPen((stepNum % mkCnt)? defStepNumColor_ : mkStepNumColor_);
+		painter.setPen((stepNum % mkCnt) ? defStepNumColor_ : mkStepNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
 		// Step data
 		painter.setPen(defTextColor_);
@@ -153,6 +152,8 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			x += drawStep(painter, trackNum, odrNum, stepNum, x, baseY, rowY);
 			++trackNum;
 		}
+		if (odrNum != curOrderNum_)	// Mask
+			painter.fillRect(0, rowY, maxWidth, stepFontHeight_, patternMaskColor_);
 	}
 
 	int stepEnd = bt_->getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_);
@@ -174,9 +175,9 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		}
 
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, (stepNum % mkCnt)? defRowColor_ : mkRowColor_);
+		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, (stepNum % mkCnt) ? defRowColor_ : mkRowColor_);
 		// Step number
-		painter.setPen((stepNum % mkCnt)? defStepNumColor_ : mkStepNumColor_);
+		painter.setPen((stepNum % mkCnt) ? defStepNumColor_ : mkStepNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
 		// Step data
 		painter.setPen(defTextColor_);
@@ -184,13 +185,15 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			x += drawStep(painter, trackNum, odrNum, stepNum, x, baseY, rowY);
 			++trackNum;
 		}
+		if (odrNum != curOrderNum_)	// Mask
+			painter.fillRect(0, rowY, maxWidth, stepFontHeight_, patternMaskColor_);
 	}
 }
 
 int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY)
 {
 	int offset = x + widthSpace_;
-	QColor textColor = (stepNum == curStepNum_)? curTextColor_ : defTextColor_;
+	QColor textColor = (stepNum == curStepNum_) ? curTextColor_ : defTextColor_;
 
 	switch (modStyle_.trackAttribs[trackNum].source) {
 	case SoundSource::FM:
@@ -288,7 +291,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 			painter.fillRect(offset - widthSpace_, rowY, effWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
 		auto tmpStr = bt_->getStepEffectString(curSongNum_, trackNum, orderNum, stepNum);
 		QString effStr = QString::fromUtf8(tmpStr.c_str(), tmpStr.length());
-		painter.setPen((effStr == "---")? textColor : effColor_);
+		painter.setPen((effStr == "---") ? textColor : effColor_);
 		painter.drawText(offset, baseY, effStr);
 
 		return trackWidth_;
@@ -414,6 +417,9 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	TracksWidthFromLeftToEnd_
 			= calculateTracksWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
 
+	if (curTrackNum_ != oldTrackNum)
+		bt_->setCurrentTrack(curTrackNum_);
+
 	if (!isIgnoreToSlider_)
 		emit currentCellInRowChanged(calculateCellNumInRow(curTrackNum_, curCellNumInTrack_));
 
@@ -465,6 +471,10 @@ void PatternEditorPanel::moveCursorToDown(int n)
 		}
 	}
 
+	if (curOrderNum_ != oldOdr)
+		bt_->setCurrentOrderNumber(curOrderNum_);
+	bt_->setCurrentStepNumber(curStepNum_);
+
 	if (!isIgnoreToSlider_)
 		emit currentStepChanged(curStepNum_, bt_->getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_) - 1);
 
@@ -493,21 +503,36 @@ int PatternEditorPanel::calculateCellNumInRow(int trackNum, int cellNumInTrack) 
 int PatternEditorPanel::calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const
 {
 	int d = 0;
-	int tmpOrder = endOrder;
-	int tmpStep = endStep;
+	int startOrder, startStep, stopOrder, stopStep;
+	bool flag;
+
+	if (endOrder >= beginOrder) {
+		startOrder = endOrder;
+		startStep = endStep;
+		stopOrder = beginOrder;
+		stopStep = beginStep;
+		flag = true;
+	}
+	else {
+		startOrder = beginOrder;
+		startStep = beginStep;
+		stopOrder = endOrder;
+		stopStep = endStep;
+		flag = false;
+	}
 
 	while (true) {
-		if (tmpOrder == beginOrder) {
-			d += (tmpStep - beginStep);
+		if (startOrder == stopOrder) {
+			d += (startStep - stopStep);
 			break;
 		}
 		else {
-			d += tmpStep;
-			tmpStep = bt_->getPatternSizeFromOrderNumber(curSongNum_, --tmpOrder);
+			d += startStep;
+			startStep = bt_->getPatternSizeFromOrderNumber(curSongNum_, --startOrder);
 		}
 	}
 
-	return d;
+	return flag ? d : -d;
 }
 
 void PatternEditorPanel::changeEditable()
@@ -608,8 +633,9 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 			&& hovTrackNum_ >= 0 && hovCellNumInTrack_ >= 0) {
 		int horDif = calculateCellNumInRow(hovTrackNum_, hovCellNumInTrack_)
 					 - calculateCellNumInRow(curTrackNum_, curCellNumInTrack_);
-		moveCursorToRight(horDif);
 		int verDif = calculateStepDistance(curOrderNum_, curStepNum_, hovOrderNum_, hovStepNum_);
+
+		moveCursorToRight(horDif);
 		moveCursorToDown(verDif);
 
 		update();

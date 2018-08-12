@@ -6,8 +6,6 @@
 #include <algorithm>
 #include "gui/event_guard.hpp"
 
-#include <QDebug>
-
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
 	  leftTrackNum_(0),
@@ -99,7 +97,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	/* Current row */
 	// Fill row
 	painter.fillRect(0, curRowY_, maxWidth, rowFontHeight_,
-					 (bt_->isJamMode())? curRowColor_ : curRowColorEditable_);
+					 bt_->isJamMode() ? curRowColor_ : curRowColorEditable_);
 	// Row number
 	painter.setPen(rowNumColor_);
 	painter.drawText(1, curRowBaselineY_, QString("%1").arg(curRowNum_, 2, 16, QChar('0')).toUpper());
@@ -298,8 +296,6 @@ void OrderListPanel::moveCursorToRight(int n)
 	columnsWidthFromLeftToEnd_
 			= calculateColumnsWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
 
-	bt_->setCurrentTrack(curTrackNum_);
-
 	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curTrackNum_);	// Send to slider
 
 	if (!isIgnoreToPattern_) emit currentTrackChanged(curTrackNum_);	// Send to pattern editor
@@ -307,9 +303,33 @@ void OrderListPanel::moveCursorToRight(int n)
 	update();
 }
 
-void OrderListPanel::MoveCursorToDown(int n)
+void OrderListPanel::moveCursorToDown(int n)
 {
-	// TODO
+	int tmp = curRowNum_ + n;
+
+	if (n > 0) {
+		int endRow = bt_->getOrderList(curSongNum_, 0).size();
+		if (tmp < endRow) {
+			curRowNum_ = tmp;
+		}
+		else {
+			curRowNum_ = endRow - 1;
+		}
+	}
+	else {
+		if (tmp < 0) {
+			curRowNum_ = 0;
+		}
+		else {
+			curRowNum_ = tmp;
+		}
+	}
+
+	if (!isIgnoreToSlider_) emit currentOrderChangedForSlider(curRowNum_);	// Send to slider
+
+	if (!isIgnoreToPattern_) emit currentOrderChanged(curRowNum_);	// Send to pattern editor
+
+	update();
 }
 
 void OrderListPanel::changeEditable()
@@ -325,11 +345,23 @@ void OrderListPanel::setCurrentTrackForSlider(int num)
 	if (int dif = num - curTrackNum_) moveCursorToRight(dif);
 }
 
+void OrderListPanel::setCurrentOrderForSlider(int num) {
+	Ui::EventGuard eg(isIgnoreToSlider_);
+
+	if (int dif = num - curRowNum_) moveCursorToDown(dif);
+}
+
 void OrderListPanel::setCurrentTrack(int num)
 {
 	Ui::EventGuard eg(isIgnoreToPattern_);
 
 	if (int dif = num - curTrackNum_) moveCursorToRight(dif);
+}
+
+void OrderListPanel::setCurrentOrder(int num) {
+	Ui::EventGuard eg(isIgnoreToPattern_);
+
+	if (int dif = num - curRowNum_) moveCursorToDown(dif);
 }
 
 /********** Events **********/
@@ -350,8 +382,8 @@ bool OrderListPanel::KeyPressed(QKeyEvent *event)
 	switch (event->key()) {
 	case Qt::Key_Left:	moveCursorToRight(-1);	return true;
 	case Qt::Key_Right:	moveCursorToRight(1);	return true;
-	case Qt::Key_Up:	return true;
-	case Qt::Key_Down:	return true;
+	case Qt::Key_Up:	moveCursorToDown(-1);	return true;
+	case Qt::Key_Down:	moveCursorToDown(1);	return true;
 	default: return false;
 	}
 }
@@ -378,8 +410,11 @@ void OrderListPanel::mousePressEvent(QMouseEvent *event)
 	setFocus();
 
 	if (hovRowNum_ >= 0 && hovTrackNum_ >= 0) {
-		curRowNum_ = hovRowNum_;
-		moveCursorToRight(hovTrackNum_ - curTrackNum_);
+		int horDif = hovTrackNum_ - curTrackNum_;
+		int verDif = hovRowNum_ - curRowNum_;
+
+		moveCursorToRight(horDif);
+		moveCursorToDown(verDif);
 		update();
 	}
 }
@@ -434,5 +469,5 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 void OrderListPanel::wheelEvent(QWheelEvent *event)
 {
 	int degree = event->angleDelta().y() / 8;
-	MoveCursorToDown(-degree / 15);
+	moveCursorToDown(-degree / 15);
 }

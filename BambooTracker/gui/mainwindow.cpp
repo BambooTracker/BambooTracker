@@ -46,11 +46,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->patternEditor->setCore(bt_);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 ui->orderList, &OrderListEditor::setCurrentTrack);
+	QObject::connect(ui->patternEditor, &PatternEditor::currentOrderChanged,
+					 ui->orderList, &OrderListEditor::setCurrentOrder);
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 ui->patternEditor, &PatternEditor::setCurrentTrack);
+	QObject::connect(ui->orderList, &OrderListEditor::currentOrderChanged,
+					 ui->patternEditor, &PatternEditor::setCurrentOrder);
 }
 
 MainWindow::~MainWindow()

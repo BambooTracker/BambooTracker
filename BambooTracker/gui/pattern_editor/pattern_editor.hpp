@@ -27,6 +27,7 @@ signals:
 
 public slots:
 	void setCurrentTrack(int num);
+	void setCurrentOrder(int num);
 
 private:
 	Ui::PatternEditor *ui;

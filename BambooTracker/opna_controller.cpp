@@ -155,7 +155,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case::FMParameter::SSGEG1:
 				tmp = instFM_[i]->getEnvelopeParameter(FMParameter::SSGEG1);
-				data = (tmp == -1)? 0 : (0x08 + tmp);
+				data = (tmp == -1) ? 0 : (0x08 + tmp);
 				opna_.setRegister(0x90 + bch, data);
 				break;
 			case FMParameter::DT2:
@@ -192,7 +192,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case FMParameter::SSGEG2:
 				tmp = instFM_[i]->getEnvelopeParameter(FMParameter::SSGEG2);
-				data = (tmp == -1)? 0 : (0x08 + tmp);
+				data = (tmp == -1) ? 0 : (0x08 + tmp);
 				opna_.setRegister(0x90 + bch + 8, data);
 				break;
 			case FMParameter::DT3:
@@ -229,7 +229,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case FMParameter::SSGEG3:
 				tmp = instFM_[i]->getEnvelopeParameter(FMParameter::SSGEG3);
-				data = (tmp == -1)? 0 : (0x08 + tmp);
+				data = (tmp == -1) ? 0 : (0x08 + tmp);
 				opna_.setRegister(0x90 + bch + 4, data);
 				break;
 			case FMParameter::DT4:
@@ -266,7 +266,7 @@ void OPNAController::setInstrumentFMEnvelopeParameter(int envNum, FMParameter pa
 				break;
 			case FMParameter::SSGEG4:
 				tmp = instFM_[i]->getEnvelopeParameter(FMParameter::SSGEG4);
-				data = (tmp == -1)? 0 : (0x08 + tmp);
+				data = (tmp == -1) ? 0 : (0x08 + tmp);
 				opna_.setRegister(0x90 + bch + 12, data);
 				break;
 			}
@@ -399,7 +399,7 @@ void OPNAController::updateFMEnvelopeRegisters(int ch)
 	opna_.setRegister(0x80 + offset, data);
 
 	int tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG1);
-	data = (tmp == -1)? 0 : (0x08 + tmp);
+	data = (tmp == -1) ? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 
 	offset = bch + 8;	// Operator 2
@@ -427,7 +427,7 @@ void OPNAController::updateFMEnvelopeRegisters(int ch)
 	opna_.setRegister(0x80 + offset, data);
 
 	tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG2);
-	data = (tmp == -1)? 0 : (0x08 + tmp);
+	data = (tmp == -1) ? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 
 	offset = bch + 4;	// Operator 3
@@ -455,7 +455,7 @@ void OPNAController::updateFMEnvelopeRegisters(int ch)
 	opna_.setRegister(0x80 + offset, data);
 
 	tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG3);
-	data = (tmp == -1)? 0 : (0x08 + tmp);
+	data = (tmp == -1) ? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 
 	offset = bch + 12;	// Operator 4
@@ -483,6 +483,6 @@ void OPNAController::updateFMEnvelopeRegisters(int ch)
 	opna_.setRegister(0x80 + offset, data);
 
 	tmp = instFM_[ch]->getEnvelopeParameter(FMParameter::SSGEG4);
-	data = (tmp == -1)? 0 : (0x08 + tmp);
+	data = (tmp == -1) ? 0 : (0x08 + tmp);
 	opna_.setRegister(0x90 + offset, data);
 }
