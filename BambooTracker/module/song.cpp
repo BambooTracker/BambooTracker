@@ -9,7 +9,7 @@ Song::Song(int number, ModuleType modType, std::string title)
 			tracks_.emplace_back(i, SoundSource::FM, i);
 		}
 		for (int i = 0; i < 3; ++i) {
-			tracks_.emplace_back(i + 6, SoundSource::PSG, i);
+			tracks_.emplace_back(i + 6, SoundSource::SSG, i);
 		}
 		break;
 	case ModuleType::FMEX:

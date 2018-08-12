@@ -5,13 +5,13 @@ JamManager::JamManager() :
 	isJamMode_(true),
 	isPoly_(true),
 	unusedChFM_(6),
-	unusedChPSG_(3)
+	unusedChSSG_(3)
 {
 	for (int i = 0; i < unusedChFM_.size(); ++i) {
 		unusedChFM_[i] = i;
 	}
-	for (int i = 0; i < unusedChPSG_.size(); ++i) {
-		unusedChPSG_[i] = i;
+	for (int i = 0; i < unusedChSSG_.size(); ++i) {
+		unusedChSSG_[i] = i;
 	}
 }
 
@@ -32,18 +32,18 @@ void JamManager::polyphonic(bool flag)
 		isPoly_ = true;
 		// UNDONE: change channel size by Effect mode
 		unusedChFM_.resize(6);
-		unusedChPSG_.resize(3);
+		unusedChSSG_.resize(3);
 		for (int i = 0; i < unusedChFM_.size(); ++i) {
 			unusedChFM_[i] = i;
 		}
-		for (int i = 0; i < unusedChPSG_.size(); ++i) {
-			unusedChPSG_[i] = i;
+		for (int i = 0; i < unusedChSSG_.size(); ++i) {
+			unusedChSSG_[i] = i;
 		}
 	}
 	else {
 		isPoly_ = false;
 		unusedChFM_.resize(1);
-		unusedChPSG_.resize(1);
+		unusedChSSG_.resize(1);
 	}
 }
 
@@ -55,7 +55,7 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 	std::deque<int>* unusedCh = nullptr;
 	switch (source) {
 	case SoundSource::FM:	unusedCh = &unusedChFM_;	break;
-	case SoundSource::PSG:	unusedCh = &unusedChPSG_;	break;
+	case SoundSource::SSG:	unusedCh = &unusedChSSG_;	break;
 	}
 
 	if (!unusedCh->empty()) {
@@ -96,7 +96,7 @@ JamKeyData JamManager::keyOff(JamKey key)
 		keyData.source = data.source;
 		switch (keyData.source) {
 		case SoundSource::FM:	unusedChFM_.push_front(keyData.channelInSource);	break;
-		case SoundSource::PSG:	unusedChPSG_.push_front(keyData.channelInSource);	break;
+		case SoundSource::SSG:	unusedChSSG_.push_front(keyData.channelInSource);	break;
 		}
 		keyOnTable_.erase(it);
 	}

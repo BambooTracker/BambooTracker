@@ -60,9 +60,9 @@ enum class FMParameter
 };
 
 
-class InstrumentPSG : public AbstructInstrument
+class InstrumentSSG : public AbstructInstrument
 {
 public:
-	InstrumentPSG(int number, std::string name, InstrumentsManager* owner);
+	InstrumentSSG(int number, std::string name, InstrumentsManager* owner);
 	std::unique_ptr<AbstructInstrument> clone() override;
 };

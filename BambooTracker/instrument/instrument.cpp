@@ -64,12 +64,12 @@ bool InstrumentFM::getOperatorEnable(int n) const
 
 /****************************************/
 
-InstrumentPSG::InstrumentPSG(int number, std::string name, InstrumentsManager* owner) :
-	AbstructInstrument(number, SoundSource::PSG, name, owner)
+InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner) :
+	AbstructInstrument(number, SoundSource::SSG, name, owner)
 {
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentPSG::clone()
+std::unique_ptr<AbstructInstrument> InstrumentSSG::clone()
 {
-	return std::unique_ptr<AbstructInstrument>(std::make_unique<InstrumentPSG>(*this));
+	return std::unique_ptr<AbstructInstrument>(std::make_unique<InstrumentSSG>(*this));
 }

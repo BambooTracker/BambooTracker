@@ -15,8 +15,8 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 		insts_.at(instNum) = std::make_shared<InstrumentFM>(instNum, name, this);
 		envFM_.at(0)->registerInstrumentUsingThis(instNum);	// Setted 0 in init
 		break;
-	case SoundSource::PSG:
-		insts_.at(instNum) = std::make_shared<InstrumentPSG>(instNum, name, this);
+	case SoundSource::SSG:
+		insts_.at(instNum) = std::make_shared<InstrumentSSG>(instNum, name, this);
 		break;
 	}
 }
@@ -33,7 +33,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		envFM_.at(fm->getEnvelopeNumber())->registerInstrumentUsingThis(num);
 		break;
 	}
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		// UNDONE
 		break;
 	}
@@ -55,7 +55,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		envFM_[envNum]->registerInstrumentUsingThis(cloneInstNum);
 		break;
 	}
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		// UNODNE
 		break;
 	}
@@ -70,7 +70,7 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		envFM_.at(fm->getEnvelopeNumber())->deregisterInstrumentUsingThis(instNum);
 		break;
 	}
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		// UNODNE
 		break;
 	}

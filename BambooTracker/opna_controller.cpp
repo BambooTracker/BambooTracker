@@ -16,8 +16,8 @@ OPNAController::OPNAController(int clock, int rate, InstrumentsManager* im) :
 		setInstrumentFM(i, nullptr);
 	}
 	for (int i = 0; i < 3; ++i) {
-		instPSG_[i] = std::make_shared<InstrumentPSG>(-1, u8"Dummy", im);
-		setInstrumentPSG(i, nullptr);
+		instSSG_[i] = std::make_shared<InstrumentSSG>(-1, u8"Dummy", im);
+		setInstrumentSSG(i, nullptr);
 	}
 }
 
@@ -41,19 +41,19 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
 	isKeyOnFM_[ch] = true;
 }
 
-void OPNAController::keyOnPSG(int ch, Note note, int octave, int fine)
+void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine)
 {
-	uint16_t pitch = PitchConverter::getPitchPSG(note, octave, fine);
+	uint16_t pitch = PitchConverter::getPitchSSG(note, octave, fine);
 	uint8_t offset = ch << 1;
 	opna_.setRegister(0x00 + offset, pitch & 0xff);
 	opna_.setRegister(0x01 + offset, pitch >> 8);
 
 	uint8_t mask = ~(1 << ch);
-	mixerPSG_ &= mask;
-	opna_.setRegister(0x07, mixerPSG_);
+	mixerSSG_ &= mask;
+	opna_.setRegister(0x07, mixerSSG_);
 
 	// Dummy volume
-	setVolumePSG(ch, 0xf);
+	setVolumeSSG(ch, 0xf);
 	//*********************
 }
 
@@ -64,12 +64,12 @@ void OPNAController::keyOffFM(int ch)
 	isKeyOnFM_[ch] = false;
 }
 
-void OPNAController::keyOffPSG(int ch)
+void OPNAController::keyOffSSG(int ch)
 {
 	uint8_t flag = 1 << ch;
-	mixerPSG_ |= flag;
-	opna_.setRegister(0x07, mixerPSG_);
-	setVolumePSG(ch, 0);
+	mixerSSG_ |= flag;
+	opna_.setRegister(0x07, mixerSSG_);
+	setVolumeSSG(ch, 0);
 }
 
 /********** Set instrument **********/
@@ -85,13 +85,13 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 	updateFMEnvelopeRegisters(ch);
 }
 
-void OPNAController::setInstrumentPSG(int ch, std::shared_ptr<InstrumentPSG> inst)
+void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst)
 {
 	if (inst == nullptr) {	// Error set ()
-		instPSG_[ch]->setNumber(-1);
+		instSSG_[ch]->setNumber(-1);
 	}
 	else {
-		instPSG_[ch] = inst;
+		instSSG_[ch] = inst;
 	}
 
 	// UNDONE: implement
@@ -291,7 +291,7 @@ void OPNAController::setInstrumentFMOperatorEnable(int envNum, int opNum)
 }
 
 /********** Set volume **********/
-void OPNAController::setVolumePSG(int ch, int level)
+void OPNAController::setVolumeSSG(int ch, int level)
 {
 	opna_.setRegister(0x08 + ch, level);
 }
@@ -317,8 +317,8 @@ int OPNAController::getDuration() const
 void OPNAController::initChip()
 {
 	opna_.setRegister(0x29, 0x80);		// Init interrupt / YM2608 mode
-	mixerPSG_ = 0xff;
-	opna_.setRegister(0x07, mixerPSG_);	// PSG mix
+	mixerSSG_ = 0xff;
+	opna_.setRegister(0x07, mixerSSG_);	// SSG mix
 	opna_.setRegister(0x11, 0x3f);		// Drum total volume
 
 	// Init operators key off

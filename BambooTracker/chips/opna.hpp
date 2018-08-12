@@ -19,18 +19,18 @@ namespace chip
 		void reset() override;
 		void setRegister(uint32_t offset, uint8_t value) override;
 		uint8_t getRegister(uint32_t offset) const override;
-		void setVolume(float dBFM, float dBPSG);	// NOT work
+		void setVolume(float dBFM, float dBSSG);	// NOT work
 		void mix(int16_t* stream, size_t nSamples) override;
 
 	private:
 		static size_t count_;
 
-		/*static const int DEF_AMP_FM_, DEF_AMP_PSG_;*/
+		/*static const int DEF_AMP_FM_, DEF_AMP_SSG_;*/
 
 		enum SoundSource : int
 		{
 			FM  = 0,
-			PSG = 1
+			SSG = 1
 		};
 	};
 }

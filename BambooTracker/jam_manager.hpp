@@ -26,7 +26,7 @@ private:
 	bool isJamMode_;
 	bool isPoly_;
 	std::vector<JamKeyData> keyOnTable_;
-	std::deque<int> unusedChFM_, unusedChPSG_;
+	std::deque<int> unusedChFM_, unusedChSSG_;
 };
 
 

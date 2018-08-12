@@ -109,7 +109,7 @@ void OrderListPanel::drawRows(int maxWidth)
 			int curCellWidth;
 			switch (modStyle_.trackAttribs[trackNum].source) {
 			case SoundSource::FM:
-			case SoundSource::PSG:
+			case SoundSource::SSG:
 				curCellWidth = trackWidth_;
 				break;
 			}
@@ -119,7 +119,7 @@ void OrderListPanel::drawRows(int maxWidth)
 			int curCellWidth;
 			switch (modStyle_.trackAttribs[trackNum].source) {
 			case SoundSource::FM:
-			case SoundSource::PSG:
+			case SoundSource::SSG:
 				curCellWidth = trackWidth_;
 				break;
 			}
@@ -134,7 +134,7 @@ void OrderListPanel::drawRows(int maxWidth)
 
 		switch (modStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			x += trackWidth_;
 			break;
 		}
@@ -160,7 +160,7 @@ void OrderListPanel::drawRows(int maxWidth)
 				int curCellWidth;
 				switch (modStyle_.trackAttribs[trackNum].source) {
 				case SoundSource::FM:
-				case SoundSource::PSG:
+				case SoundSource::SSG:
 					curCellWidth = trackWidth_;
 					break;
 				}
@@ -170,7 +170,7 @@ void OrderListPanel::drawRows(int maxWidth)
 
 			switch (modStyle_.trackAttribs[trackNum].source) {
 			case SoundSource::FM:
-			case SoundSource::PSG:
+			case SoundSource::SSG:
 				x += trackWidth_;
 				break;
 			}
@@ -195,7 +195,7 @@ void OrderListPanel::drawRows(int maxWidth)
 				int curCellWidth;
 				switch (modStyle_.trackAttribs[trackNum].source) {
 				case SoundSource::FM:
-				case SoundSource::PSG:
+				case SoundSource::SSG:
 					curCellWidth = trackWidth_;
 					break;
 				}
@@ -205,7 +205,7 @@ void OrderListPanel::drawRows(int maxWidth)
 
 			switch (modStyle_.trackAttribs[trackNum].source) {
 			case SoundSource::FM:
-			case SoundSource::PSG:
+			case SoundSource::SSG:
 				x += trackWidth_;
 				break;
 			}
@@ -226,7 +226,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 		QString str;
 		switch (modStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:	str = " FM";	break;
-		case SoundSource::PSG:	str = " PSG";	break;
+		case SoundSource::SSG:	str = " SSG";	break;
 		}
 		painter.drawText(x,
 						 rowFontLeading_ + rowFontAscend_,
@@ -234,7 +234,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 
 		switch (modStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			x += trackWidth_;
 			break;
 		}
@@ -254,7 +254,7 @@ void OrderListPanel::drawBorders(int maxWidth)
 
 		switch (modStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			x += trackWidth_;
 			break;
 		}
@@ -274,7 +274,7 @@ int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
 	for (int i = begin; i <= end; ++i) {
 		switch (modStyle_.trackAttribs.at(i).source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			width +=  trackWidth_;
 			break;
 		}
@@ -449,7 +449,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 		for (int i = leftTrackNum_; ; ++i) {
 			switch (modStyle_.trackAttribs[i].source) {
 			case SoundSource::FM:
-			case SoundSource::PSG:
+			case SoundSource::SSG:
 				tmpWidth += trackWidth_;
 				break;
 			}

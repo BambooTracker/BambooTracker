@@ -26,7 +26,7 @@ void PasteInstrumentQtCommand::redo()
 		fmForm->updateInstrumentParameters();
 		break;
 	}
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		// UNDONE
 		break;
 	}
@@ -44,7 +44,7 @@ void PasteInstrumentQtCommand::undo()
 		fmForm->updateInstrumentParameters();
 		break;
 	}
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		// UNDONE
 		break;
 	}

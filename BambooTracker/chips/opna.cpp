@@ -17,7 +17,7 @@ namespace chip
 	size_t OPNA::count_ = 0;
 	
 	/*const int OPNA::DEF_AMP_FM_ = 11722;*/
-	/*const int OPNA::DEF_AMP_PSG_ = 7250;*/
+	/*const int OPNA::DEF_AMP_SSG_ = 7250;*/
 
 	#ifdef SINC_INTERPOLATION
 	OPNA::OPNA(int clock, int rate, size_t maxDuration) :
@@ -33,7 +33,7 @@ namespace chip
 
 		UINT8 AYDisable = 0;	// Enable
 		UINT8 AYFlags = 0;		// None
-		internalRate_[FM] = device_start_ym2608(id_, clock, AYDisable, AYFlags, reinterpret_cast<int*>(&internalRate_[PSG]));
+		internalRate_[FM] = device_start_ym2608(id_, clock, AYDisable, AYFlags, reinterpret_cast<int*>(&internalRate_[SSG]));
 
 		// Init resampler
 		#ifdef SINC_INTERPOLATION
@@ -89,23 +89,23 @@ namespace chip
 	}
 
 	// TODO: Volume settings
-	void OPNA::setVolume(float dBFM, float dBPSG)
+	void OPNA::setVolume(float dBFM, float dBSSG)
 	{
 		std::lock_guard<std::mutex> lg(mutex_);
 
 		/*dB_[FM] = dBFM;*/
-		/*dB_[PSG] = dBFM;*/
+		/*dB_[SSG] = dBFM;*/
 
 		/*VolumeRatio_[FM] = maxAmplitude_ / defaultFMAmplitude_ * std::pow(10, fmdB / 20);
-		VolumeRatio_[PSG] = maxAmplitude_ / defaultPSGAmplitude_ * std::pow(10, psgdB / 20);*/
+		VolumeRatio_[SSG] = maxAmplitude_ / defaultSSGAmplitude_ * std::pow(10, ssgdB / 20);*/
 		volumeRatio_[FM] = 0.25;
-		volumeRatio_[PSG] = 0.25;
+		volumeRatio_[SSG] = 0.25;
 	}
 
 	void OPNA::mix(int16_t* stream, size_t nSamples)
 	{
 		std::lock_guard<std::mutex> lg(mutex_);
-		sample **bufFM, **bufPSG;
+		sample **bufFM, **bufSSG;
 
 		// Set FM buffer
 		if (internalRate_[FM] == rate_) {
@@ -118,19 +118,19 @@ namespace chip
 			bufFM = resampler_[FM].interpolate(buffer_[FM], nSamples, intrSize);
 		}
 
-		// Set PSG buffer
-		if (internalRate_[PSG] == rate_) {
-			ym2608_stream_update_ay(id_, buffer_[PSG], nSamples);
-			bufPSG = buffer_[PSG];
+		// Set SSG buffer
+		if (internalRate_[SSG] == rate_) {
+			ym2608_stream_update_ay(id_, buffer_[SSG], nSamples);
+			bufSSG = buffer_[SSG];
 		}
 		else {
-			size_t intrSize = resampler_[PSG].calculateInternalSampleSize(nSamples);
-			ym2608_stream_update_ay(id_, buffer_[PSG], intrSize);
-			bufPSG = resampler_[PSG].interpolate(buffer_[PSG], nSamples, intrSize);
+			size_t intrSize = resampler_[SSG].calculateInternalSampleSize(nSamples);
+			ym2608_stream_update_ay(id_, buffer_[SSG], intrSize);
+			bufSSG = resampler_[SSG].interpolate(buffer_[SSG], nSamples, intrSize);
 		}
 		for (size_t i = 0; i < nSamples; ++i) {
 			for (int pan = LEFT; pan <= RIGHT; ++pan) {
-				float s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[PSG] * bufPSG[pan][i];
+				float s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
 				*stream++ = static_cast<int16_t>(clamp(s, -32768.0f, 32767.0f));
 			}
 		}

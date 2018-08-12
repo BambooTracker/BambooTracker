@@ -16,7 +16,7 @@ void PasteInstrumentCommand::redo()
 		manager_.setInstrumentFMEnvelope(oldInst_->getNumber(),
 										 dynamic_cast<InstrumentFM*>(refInst_.get())->getEnvelopeNumber());
 		break;
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		// UNDONE
 		break;
 	}
@@ -30,7 +30,7 @@ void PasteInstrumentCommand::undo()
 		manager_.setInstrumentFMEnvelope(oldInst_->getNumber(),
 										 dynamic_cast<InstrumentFM*>(oldInst_.get())->getEnvelopeNumber());
 		break;
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		// UNDONE
 		break;
 	}

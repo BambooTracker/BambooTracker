@@ -2,7 +2,7 @@
 
 enum class SoundSource : int
 {
-	FM, PSG
+	FM, SSG
 };
 
 enum class ModuleType

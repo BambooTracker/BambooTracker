@@ -45,7 +45,6 @@ SOURCES += \
     command/instrument/remove_instrument_command.cpp \
     gui/command/instrument/add_instrument_qt_command.cpp \
     gui/command/instrument/remove_instrument_qt_command.cpp \
-    gui/instrument_editor/instrument_editor_psg_form.cpp \
     gui/instrument_editor/instrument_editor_fm_form.cpp \
     gui/instrument_editor/fm_operator_table.cpp \
     gui/labeled_vertical_slider.cpp \
@@ -70,7 +69,8 @@ SOURCES += \
     gui/order_list_editor/order_list_panel.cpp \
     gui/order_list_editor/order_list_editor.cpp \
     gui/pattern_editor/pattern_editor_panel.cpp \
-    gui/pattern_editor/pattern_editor.cpp
+    gui/pattern_editor/pattern_editor.cpp \
+    gui/instrument_editor/instrument_editor_ssg_form.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -99,7 +99,6 @@ HEADERS += \
     gui/command/instrument/add_instrument_qt_command.hpp \
     gui/command/commands_qt.hpp \
     gui/command/instrument/remove_instrument_qt_command.hpp \
-    gui/instrument_editor/instrument_editor_psg_form.hpp \
     gui/instrument_editor/instrument_editor_fm_form.hpp \
     gui/instrument_editor/fm_operator_table.hpp \
     gui/labeled_vertical_slider.hpp \
@@ -125,17 +124,18 @@ HEADERS += \
     gui/order_list_editor/order_list_panel.hpp \
     gui/order_list_editor/order_list_editor.hpp \
     gui/pattern_editor/pattern_editor_panel.hpp \
-    gui/pattern_editor/pattern_editor.hpp
+    gui/pattern_editor/pattern_editor.hpp \
+    gui/instrument_editor/instrument_editor_ssg_form.hpp
 
 FORMS += \
     gui/mainwindow.ui \
-    gui/instrument_editor/instrument_editor_psg_form.ui \
     gui/instrument_editor/instrument_editor_fm_form.ui \
     gui/instrument_editor/fm_operator_table.ui \
     gui/labeled_vertical_slider.ui \
     gui/labeled_horizontal_slider.ui \
     gui/order_list_editor/order_list_editor.ui \
-    gui/pattern_editor/pattern_editor.ui
+    gui/pattern_editor/pattern_editor.ui \
+    gui/instrument_editor/instrument_editor_ssg_form.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

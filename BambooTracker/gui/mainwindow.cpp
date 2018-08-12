@@ -8,7 +8,7 @@
 #include "instrument.hpp"
 #include "./command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
-#include "gui/instrument_editor/instrument_editor_psg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
 #include <QDebug>
 
@@ -284,7 +284,7 @@ void MainWindow::copyInstrument()
     QString tag = "";
     switch (inst->getSoundSource()) {
     case SoundSource::FM:   tag = "FM_INSTRUMENT:";     break;
-    case SoundSource::PSG:  tag = "PSG_INSTRUMENT:";    break;
+	case SoundSource::SSG:  tag = "SSG_INSTRUMENT:";    break;
     }
     QApplication::clipboard()->setText(tag + QString::number(inst->getNumber()));
 }
@@ -292,12 +292,12 @@ void MainWindow::copyInstrument()
 void MainWindow::pasteInstrument()
 {
 	QString str = QApplication::clipboard()->text();
-	int refNum = QApplication::clipboard()->text().remove(QRegularExpression("^(FM|PSG)_INSTRUMENT:")).toInt();
+	int refNum = QApplication::clipboard()->text().remove(QRegularExpression("^(FM|SSG)_INSTRUMENT:")).toInt();
 	int refRow = findRowFromInstrumentList(refNum);
 
 	SoundSource source;
 	if (str.startsWith("FM")) source = SoundSource::FM;
-	else if (str.startsWith("PSG")) source = SoundSource::PSG;
+	else if (str.startsWith("SSG")) source = SoundSource::SSG;
 
 	int oldRow = ui->instrumentListWidget->currentRow();
 	int oldNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
@@ -394,10 +394,10 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 			menu.actions().at(7)->setEnabled(false);    // "Clone"
 		}
 	}
-	else if (str.startsWith("PSG_INSTRUMENT:")) {
+	else if (str.startsWith("SSG_INSTRUMENT:")) {
 		auto item = ui->instrumentListWidget->currentItem();
 		if (item == nullptr
-				|| bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::PSG) {
+				|| bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::SSG) {
 			menu.actions().at(6)->setEnabled(false);    // "Paste"
 		}
 		if (bt_->findFirstFreeInstrumentNumber() == -1) {
@@ -439,9 +439,9 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		fmForm->setCore(bt_);
 		break;
 	}
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 	{
-		auto psgForm = qobject_cast<InstrumentEditorPSGForm*>(form.get());
+		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
 		break;
 	}
 	}

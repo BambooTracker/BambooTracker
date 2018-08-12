@@ -197,7 +197,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 
 	switch (modStyle_.trackAttribs[trackNum].source) {
 	case SoundSource::FM:
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		/* Tone name */
 		if (trackNum == curTrackNum_ && stepNum == curStepNum_ && curCellNumInTrack_ == 0)	// Paint current cell
 			painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
@@ -310,7 +310,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		QString str;
 		switch (modStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:	str = " FM";	break;
-		case SoundSource::PSG:	str = " PSG";	break;
+		case SoundSource::SSG:	str = " SSG";	break;
 		}
 		painter.drawText(x,
 						 stepFontLeading_ + stepFontAscend_,
@@ -318,7 +318,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 
 		switch (modStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			x += trackWidth_;
 			break;
 		}
@@ -338,7 +338,7 @@ void PatternEditorPanel::drawBorders(int maxWidth)
 
 		switch (modStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			x += trackWidth_;
 			break;
 		}
@@ -358,7 +358,7 @@ int PatternEditorPanel::calculateTracksWidthWithRowNum(int begin, int end) const
 	for (int i = begin; i <= end; ++i) {
 		switch (modStyle_.trackAttribs.at(i).source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			width +=  trackWidth_;
 			break;
 		}
@@ -375,7 +375,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 		for (bool flag = true; flag; ) {
 			switch (modStyle_.trackAttribs[curTrackNum_].source) {
 			case SoundSource::FM:
-			case SoundSource::PSG:
+			case SoundSource::SSG:
 				if (curCellNumInTrack_ < 4) {
 					flag = false;
 				}
@@ -406,7 +406,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 				--curTrackNum_;
 				switch (modStyle_.trackAttribs[curTrackNum_].source) {
 				case SoundSource::FM:
-				case SoundSource::PSG:
+				case SoundSource::SSG:
 					curCellNumInTrack_ += 4;
 					break;
 				}
@@ -490,7 +490,7 @@ int PatternEditorPanel::calculateCellNumInRow(int trackNum, int cellNumInTrack) 
 	for (i = 0; i < trackNum; ++i) {
 		switch (modStyle_.trackAttribs[i].source) {
 		case SoundSource::FM:
-		case SoundSource::PSG:
+		case SoundSource::SSG:
 			cnt += 4;
 			break;
 		}
@@ -544,7 +544,7 @@ int PatternEditorPanel::getFullColmunSize() const
 {
 	switch (modStyle_.trackAttribs.back().source) {
 	case SoundSource::FM:
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		return calculateCellNumInRow(modStyle_.trackAttribs.size() - 1, 3);
 	default: return 0;
 	}
@@ -716,7 +716,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 		for (hovTrackNum_ = leftTrackNum_; flag; ) {
 			switch (modStyle_.trackAttribs[hovTrackNum_].source) {
 			case SoundSource::FM:
-			case SoundSource::PSG:
+			case SoundSource::SSG:
 				tmpWidth += (toneNameWidth_ + stepFontWidth_);
 				if (pos.x() <= tmpWidth) {
 					hovCellNumInTrack_ = 0;

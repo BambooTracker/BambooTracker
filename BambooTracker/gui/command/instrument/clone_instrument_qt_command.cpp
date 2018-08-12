@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QRegularExpression>
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
-#include "gui/instrument_editor/instrument_editor_psg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
 CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
 												   std::map<int, std::unique_ptr<QWidget>>& map, QUndoCommand *parent) :
@@ -24,9 +24,9 @@ void CloneInstrumentQtCommand::redo()
 		item = new QListWidgetItem(QIcon(), title);
 		form = std::make_unique<InstrumentEditorFMForm>(cloneNum_);
 		break;
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		item = new QListWidgetItem(QIcon(), title);
-		form = std::make_unique<InstrumentEditorPSGForm>(cloneNum_);
+		form = std::make_unique<InstrumentEditorSSGForm>(cloneNum_);
 		break;
 	}
 

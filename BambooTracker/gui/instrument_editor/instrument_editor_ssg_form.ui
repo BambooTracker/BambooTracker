@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InstrumentEditorPSGForm</class>
- <widget class="QWidget" name="InstrumentEditorPSGForm">
+ <class>InstrumentEditorSSGForm</class>
+ <widget class="QWidget" name="InstrumentEditorSSGForm">
   <property name="geometry">
    <rect>
     <x>0</x>

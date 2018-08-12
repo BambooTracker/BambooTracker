@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QRegularExpression>
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
-#include "gui/instrument_editor/instrument_editor_psg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
 AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, SoundSource source,
 											   std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent) :
@@ -41,9 +41,9 @@ void AddInstrumentQtCommand::redo()
 		item = new QListWidgetItem(QIcon(), title);
 		form = std::make_unique<InstrumentEditorFMForm>(num_);
 		break;
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 		item = new QListWidgetItem(QIcon(), title);
-		form = std::make_unique<InstrumentEditorPSGForm>(num_);
+		form = std::make_unique<InstrumentEditorSSGForm>(num_);
 		break;
 	}
 

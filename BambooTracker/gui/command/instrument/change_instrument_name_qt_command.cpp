@@ -1,6 +1,6 @@
 #include "change_instrument_name_qt_command.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
-#include "gui/instrument_editor/instrument_editor_psg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "misc.hpp"
 
 ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
@@ -26,9 +26,9 @@ void ChangeInstrumentNameQtCommand::redo()
         fmForm->setWindowTitle(title);
 	}
 		break;
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 	{
-		// UNDONE: PSG form name change
+		// UNDONE: SSG form name change
 	}
 		break;
 	}
@@ -48,9 +48,9 @@ void ChangeInstrumentNameQtCommand::undo()
         fmForm->setWindowTitle(title);
 	}
 		break;
-	case SoundSource::PSG:
+	case SoundSource::SSG:
 	{
-		// UNDONE: PSG form name change
+		// UNDONE: SSG form name change
 	}
 		break;
 	}

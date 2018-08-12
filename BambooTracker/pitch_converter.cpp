@@ -7,11 +7,11 @@ uint16_t PitchConverter::getPitchFM(Note note, int octave, int fine)
 	return centTableFM_[index] | (octave << 11);
 }
 
-uint16_t PitchConverter::getPitchPSG(Note note, int octave, int fine)
+uint16_t PitchConverter::getPitchSSG(Note note, int octave, int fine)
 {
 	int index = static_cast<int>(note) + fine;
 	PitchConverter::calc(index, octave);
-	return centTablePSG_[index] >> octave;
+	return centTableSSG_[index] >> octave;
 }
 
 const uint16_t PitchConverter::centTableFM_[384] = {
@@ -49,7 +49,7 @@ const uint16_t PitchConverter::centTableFM_[384] = {
 	0x4ba, 0x4bc, 0x4be, 0x4c1, 0x4c3, 0x4c5, 0x4c7, 0x4c9, 0x4cc, 0x4ce, 0x4d0, 0x4d2
 };
 
-const uint16_t PitchConverter::centTablePSG_[384] = {
+const uint16_t PitchConverter::centTableSSG_[384] = {
 	0xee8, 0xee1, 0xeda, 0xed4, 0xecd, 0xec6, 0xebf, 0xeb8, 0xeb1, 0xeab, 0xea4, 0xe9d,
 	0xe96, 0xe90, 0xe89, 0xe82, 0xe7c, 0xe75, 0xe6e, 0xe67, 0xe61, 0xe5a, 0xe54, 0xe4d,
 	0xe46, 0xe40, 0xe39, 0xe33, 0xe2c, 0xe26, 0xe1f, 0xe18, 0xe12, 0xe0b, 0xe05, 0xdff,

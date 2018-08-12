@@ -179,7 +179,7 @@ void BambooTracker::jamKeyOn(JamKey key)
 		JamKeyData& offData = list[1];
 		switch (offData.source) {
 		case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.channelInSource);	break;
-		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(offData.channelInSource);	break;
+		case SoundSource::SSG:	opnaCtrl_.keyOffSSG(offData.channelInSource);	break;
 		}
 	}
 
@@ -193,9 +193,9 @@ void BambooTracker::jamKeyOn(JamKey key)
 						  JamManager::calcOctave(octave_, onData.key),
 						  0);
 		break;
-	case SoundSource::PSG:
-		opnaCtrl_.setInstrumentPSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentPSG>(tmpInst));
-		opnaCtrl_.keyOnPSG(onData.channelInSource,
+	case SoundSource::SSG:
+		opnaCtrl_.setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
+		opnaCtrl_.keyOnSSG(onData.channelInSource,
 						   JamManager::jamKeyToNote(onData.key),
 						   JamManager::calcOctave(octave_, onData.key),
 						   0);
@@ -210,7 +210,7 @@ void BambooTracker::jamKeyOff(JamKey key)
 	if (data.channelInSource > -1) {	// Key still sound
 		switch (data.source) {
 		case SoundSource::FM:	opnaCtrl_.keyOffFM(data.channelInSource);	break;
-		case SoundSource::PSG:	opnaCtrl_.keyOffPSG(data.channelInSource);	break;
+		case SoundSource::SSG:	opnaCtrl_.keyOffSSG(data.channelInSource);	break;
 		}
 	}
 }
