@@ -1,5 +1,4 @@
 #include "song.hpp"
-#include <utility>
 
 Song::Song(int number, ModuleType modType, std::string title)
 	: num_(number), modType_(modType), title_(title)
@@ -25,8 +24,7 @@ std::vector<TrackAttribute> Song::getTrackAttributes() const
 	for (auto& track : tracks_) {
 		ret.push_back(track.getAttribute());
 	}
-
-	return std::move(ret);
+	return ret;
 }
 
 Track& Song::getTrack(int num)

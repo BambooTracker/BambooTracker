@@ -1,6 +1,5 @@
 #include "jam_manager.hpp"
 #include <algorithm>
-#include <utility>
 
 JamManager::JamManager() :
 	isJamMode_(true),
@@ -77,7 +76,7 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 		keyOnTable_.push_back(onData);
 	}
 
-	return std::move(keyDataList);
+	return keyDataList;
 }
 
 JamKeyData JamManager::keyOff(JamKey key)
@@ -102,7 +101,7 @@ JamKeyData JamManager::keyOff(JamKey key)
 		keyOnTable_.erase(it);
 	}
 
-	return std::move(keyData);
+	return keyData;
 }
 
 Note JamManager::jamKeyToNote(JamKey &key)

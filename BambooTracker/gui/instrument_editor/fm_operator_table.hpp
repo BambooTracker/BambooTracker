@@ -19,8 +19,8 @@ class FMOperatorTable : public QFrame
 	Q_OBJECT
 
 public:
-	explicit FMOperatorTable(QWidget *parent = 0);
-	~FMOperatorTable();
+	explicit FMOperatorTable(QWidget *parent = nullptr);
+	~FMOperatorTable() override;
 
 	void setOperatorNumber(int n);
 	int operatorNumber() const;

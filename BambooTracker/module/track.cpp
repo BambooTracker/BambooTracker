@@ -1,5 +1,4 @@
 #include "track.hpp"
-#include <utility>
 
 Track::Track(int number, SoundSource source, int channelInSource)
 	: attrib_(std::make_unique<TrackAttribute>())
@@ -17,14 +16,12 @@ Track::Track(int number, SoundSource source, int channelInSource)
 
 TrackAttribute Track::getAttribute() const
 {
-	TrackAttribute ret = *attrib_;
-	return std::move(ret);
+	return *attrib_;
 }
 
 std::vector<int> Track::getOrderList() const
 {
-	std::vector<int> ret = order_;
-	return std::move(ret);
+	return  order_;
 }
 
 Pattern& Track::getPattern(int num)

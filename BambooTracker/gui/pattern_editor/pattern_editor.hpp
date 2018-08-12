@@ -14,7 +14,7 @@ class PatternEditor : public QFrame
 	Q_OBJECT
 
 public:
-	explicit PatternEditor(QWidget *parent = 0);
+	explicit PatternEditor(QWidget *parent = nullptr);
 	~PatternEditor();
 
 	void setCore(std::shared_ptr<BambooTracker> core);

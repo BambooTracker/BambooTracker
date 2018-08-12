@@ -13,8 +13,8 @@ class LabeledVerticalSlider : public QFrame
 	Q_OBJECT
 
 public:
-	explicit LabeledVerticalSlider(QWidget *parent = 0);
-	LabeledVerticalSlider(QString text, QWidget *parent = 0);
+	explicit LabeledVerticalSlider(QWidget *parent = nullptr);
+	LabeledVerticalSlider(QString text, QWidget *parent = nullptr);
 	~LabeledVerticalSlider();
 
 	int value() const;

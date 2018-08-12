@@ -1,6 +1,5 @@
 #include "bamboo_tracker.hpp"
 #include <algorithm>
-#include <utility>
 #include "commands.hpp"
 
 #include <QDebug>
@@ -46,7 +45,7 @@ void BambooTracker::setCurrentTrack(int num)
 TrackAttribute BambooTracker::getCurrentTrackAttribute() const
 {
 	TrackAttribute ret = modStyle_.trackAttribs.at(curTrackNum_);
-	return std::move(ret);
+	return ret;
 }
 
 /********** Current instrument **********/

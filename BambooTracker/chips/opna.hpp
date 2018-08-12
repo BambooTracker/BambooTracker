@@ -14,7 +14,7 @@ namespace chip
 		#else
 		OPNA(int clock, int rate);
 		#endif
-		~OPNA();
+		~OPNA() override;
 
 		void reset() override;
 		void setRegister(uint32_t offset, uint8_t value) override;

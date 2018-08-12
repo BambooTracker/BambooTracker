@@ -1,5 +1,4 @@
 #include "instruments_manager.hpp"
-#include <utility>
 #include <algorithm>
 #include "instrument.hpp"
 
@@ -79,7 +78,7 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 	std::unique_ptr<AbstructInstrument> clone = insts_[instNum]->clone();
 	insts_[instNum]->setNumber(-1);	// Unregistered number
 	insts_[instNum].reset();
-	return std::move(clone);
+	return clone;
 }
 
 std::shared_ptr<AbstructInstrument> InstrumentsManager::getInstrumentSharedPtr(int instNum)

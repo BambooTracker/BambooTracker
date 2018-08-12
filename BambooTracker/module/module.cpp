@@ -1,5 +1,4 @@
 #include "module.hpp"
-#include <utility>
 
 Module::Module(ModuleType type)
 	: type_(type)
@@ -12,7 +11,7 @@ ModuleStyle Module::getStyle() const
 	ModuleStyle style;
 	style.type = type_;
 	style.trackAttribs = songs_.at(0).getTrackAttributes();
-	return std::move(style);
+	return  style;
 }
 
 Song& Module::getSong(int num)

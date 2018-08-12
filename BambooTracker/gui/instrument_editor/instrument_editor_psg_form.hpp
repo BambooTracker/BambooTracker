@@ -13,7 +13,7 @@ class InstrumentEditorPSGForm : public QWidget
 	Q_OBJECT
 
 public:
-	InstrumentEditorPSGForm(int num, QWidget *parent = 0);
+	InstrumentEditorPSGForm(int num, QWidget *parent = nullptr);
 	~InstrumentEditorPSGForm();
 
 private:

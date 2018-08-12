@@ -13,8 +13,8 @@ class LabeledHorizontalSlider : public QFrame
 	Q_OBJECT
 
 public:
-	explicit LabeledHorizontalSlider(QWidget *parent = 0);
-	LabeledHorizontalSlider(QString text, QWidget *parent = 0);
+	explicit LabeledHorizontalSlider(QWidget *parent = nullptr);
+	LabeledHorizontalSlider(QString text, QWidget *parent = nullptr);
 	~LabeledHorizontalSlider();
 
 	int value() const;

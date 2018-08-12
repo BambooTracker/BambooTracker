@@ -10,7 +10,7 @@ class AudioStreamMixier : public QIODevice
 
 public:
 	AudioStreamMixier(uint32_t rate, uint32_t duration, uint32_t intrRate, QObject* parent = nullptr);
-	~AudioStreamMixier();
+	~AudioStreamMixier() override;
 
 	void start();
 	void stop();

@@ -17,8 +17,8 @@ class InstrumentEditorFMForm : public QWidget
 	Q_OBJECT
 
 public:
-	InstrumentEditorFMForm(int num, QWidget *parent = 0);
-	~InstrumentEditorFMForm();
+	InstrumentEditorFMForm(int num, QWidget *parent = nullptr);
+	~InstrumentEditorFMForm() override;
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
 	void checkEnvelopeChange(int envNum);

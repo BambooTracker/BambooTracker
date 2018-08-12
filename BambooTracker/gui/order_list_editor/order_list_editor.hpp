@@ -17,7 +17,7 @@ class OrderListEditor : public QFrame
 	Q_OBJECT
 
 public:
-	explicit OrderListEditor(QWidget *parent = 0);
+	explicit OrderListEditor(QWidget *parent = nullptr);
 	~OrderListEditor();
 
 	void setCore(std::shared_ptr<BambooTracker> core);

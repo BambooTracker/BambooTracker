@@ -307,7 +307,6 @@ void MainWindow::pasteInstrument()
 
 void MainWindow::cloneInstrument()
 {
-	SoundSource source;
 	int num = bt_->findFirstFreeInstrumentNumber();
 	int refNum = QApplication::clipboard()->text().remove(
 					 QRegularExpression("^.+_INSTRUMENT:", QRegularExpression::DotMatchesEverythingOption))
