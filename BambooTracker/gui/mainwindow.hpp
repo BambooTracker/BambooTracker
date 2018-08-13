@@ -59,6 +59,9 @@ private:
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
 
+	// Octave change
+	void changeOctave(bool upFlag);
+
 	// Toggle Jam mode
 	void toggleJamMode();
 

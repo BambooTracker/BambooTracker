@@ -19,8 +19,8 @@ public:
 	BambooTracker();
 
 	// Change octave
-	int raiseOctave();
-	int lowerOctave();
+	void setCurrentOctave(int octave);
+	int getCurrentOctave() const;
 
 	// Current track
 	void setCurrentTrack(int num);

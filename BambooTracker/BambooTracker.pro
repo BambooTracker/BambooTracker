@@ -70,7 +70,8 @@ SOURCES += \
     gui/order_list_editor/order_list_editor.cpp \
     gui/pattern_editor/pattern_editor_panel.cpp \
     gui/pattern_editor/pattern_editor.cpp \
-    gui/instrument_editor/instrument_editor_ssg_form.cpp
+    gui/instrument_editor/instrument_editor_ssg_form.cpp \
+    gui/line_read_only_spin_box.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -125,7 +126,8 @@ HEADERS += \
     gui/order_list_editor/order_list_editor.hpp \
     gui/pattern_editor/pattern_editor_panel.hpp \
     gui/pattern_editor/pattern_editor.hpp \
-    gui/instrument_editor/instrument_editor_ssg_form.hpp
+    gui/instrument_editor/instrument_editor_ssg_form.hpp \
+    gui/line_read_only_spin_box.hpp
 
 FORMS += \
     gui/mainwindow.ui \

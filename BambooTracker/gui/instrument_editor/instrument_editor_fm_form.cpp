@@ -172,6 +172,14 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 	auto focus = focusWidget();
 	if (focus == ui->envNumSpinBox) return;
 
+	// General keys
+	switch (event->key()) {
+	case Qt::Key_Asterisk:	emit octaveChanged(true);		break;
+	case Qt::Key_Slash:		emit octaveChanged(false);		break;
+	default:	break;
+	}
+
+	// Jam keys
 	if (bt_.lock()->isJamMode() && !event->isAutoRepeat()) {
 		switch (event->key()) {
 		case Qt::Key_Z:
@@ -207,14 +215,6 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 			emit jamKeyOnEvent(event);
 			break;
 		default: break;
-		}
-	}
-	else {
-		switch (event->key()) {
-		// General keys
-		case Qt::Key_Asterisk:	bt_.lock()->raiseOctave();		break;
-		case Qt::Key_Slash:		bt_.lock()->lowerOctave();		break;
-		default:	break;
 		}
 	}
 }

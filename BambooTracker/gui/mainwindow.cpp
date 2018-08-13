@@ -35,11 +35,15 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->getStreamSamples(container, nSamples);
 	}, Qt::DirectConnection);
 
+	/* Octave */
+	ui->octaveSpinBox->setValue(bt_->getCurrentOctave());
+	QObject::connect(ui->octaveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int octave) { bt_->setCurrentOctave(octave); });
+
 	/* Instrument list */
-	auto& vl = ui->instrumentListWidget;
-	vl->setContextMenuPolicy(Qt::CustomContextMenu);
-	vl->setSelectionMode(QAbstractItemView::SingleSelection);
-	vl->setFocusPolicy(Qt::NoFocus);
+	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+	ui->instrumentListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+	ui->instrumentListWidget->setFocusPolicy(Qt::NoFocus);
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
 					 this, &MainWindow::onInstrumentListWidgetItemAdded);
@@ -104,8 +108,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		switch (key) {
 		// General keys
 		case Qt::Key_Space:		toggleJamMode();			break;
-		case Qt::Key_Asterisk:	bt_->raiseOctave();			break;
-		case Qt::Key_Slash:		bt_->lowerOctave();			break;
+		case Qt::Key_Asterisk:	changeOctave(true);			break;
+		case Qt::Key_Slash:		changeOctave(false);		break;
 		case Qt::Key_F5:		startPlaySong();			break;
 		case Qt::Key_F6:		startPlayPattern();			break;
 		case Qt::Key_F7:		startPlayFromCurrentStep();	break;
@@ -361,6 +365,13 @@ void MainWindow::stopPlaySong()
 	bt_->stopPlaySong();
 }
 
+/********** Octave change **********/
+void MainWindow::changeOctave(bool upFlag)
+{
+	if (upFlag) ui->octaveSpinBox->stepUp();
+	else ui->octaveSpinBox->stepDown();
+}
+
 /********** Toggle jam mode **********/
 void MainWindow::toggleJamMode()
 {
@@ -451,6 +462,8 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
 						 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::octaveChanged,
+						 this, &MainWindow::changeOctave, Qt::DirectConnection);
 		fmForm->installEventFilter(this);
 		fmForm->setCore(bt_);
 		break;

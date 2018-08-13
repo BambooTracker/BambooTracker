@@ -28,6 +28,7 @@ signals:
 	void instrumentFMEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void jamKeyOnEvent(QKeyEvent* event);
 	void jamKeyOffEvent(QKeyEvent* event);
+	void octaveChanged(bool upFlag);
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;

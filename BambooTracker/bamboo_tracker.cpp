@@ -25,16 +25,14 @@ BambooTracker::BambooTracker()
 }
 
 /********** Change octave **********/
-int BambooTracker::raiseOctave()
+void BambooTracker::setCurrentOctave(int octave)
 {
-	if (octave_ != 7) ++octave_;
-	return octave_;
+	octave_ = octave;
 }
 
-int BambooTracker::lowerOctave()
+int BambooTracker::getCurrentOctave() const
 {
-	if (octave_ != 0) --octave_;
-	return octave_;
+	return  octave_;
 }
 
 /********** Current track **********/
