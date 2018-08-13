@@ -176,46 +176,46 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 	switch (event->key()) {
 	case Qt::Key_Asterisk:	emit octaveChanged(true);		break;
 	case Qt::Key_Slash:		emit octaveChanged(false);		break;
-	default:	break;
-	}
-
-	// Jam keys
-	if (bt_.lock()->isJamMode() && !event->isAutoRepeat()) {
-		switch (event->key()) {
-		case Qt::Key_Z:
-		case Qt::Key_S:
-		case Qt::Key_X:
-		case Qt::Key_D:
-		case Qt::Key_C:
-		case Qt::Key_V:
-		case Qt::Key_G:
-		case Qt::Key_B:
-		case Qt::Key_H:
-		case Qt::Key_N:
-		case Qt::Key_J:
-		case Qt::Key_M:
-		case Qt::Key_Comma:
-		case Qt::Key_L:
-		case Qt::Key_Period:
-		case Qt::Key_Q:
-		case Qt::Key_2:
-		case Qt::Key_W:
-		case Qt::Key_3:
-		case Qt::Key_E:
-		case Qt::Key_R:
-		case Qt::Key_5:
-		case Qt::Key_T:
-		case Qt::Key_6:
-		case Qt::Key_Y:
-		case Qt::Key_7:
-		case Qt::Key_U:
-		case Qt::Key_I:
-		case Qt::Key_9:
-		case Qt::Key_O:
-			emit jamKeyOnEvent(event);
-			break;
-		default: break;
+	default:
+		if (!event->isAutoRepeat()) {
+			// Musical keyboard
+			switch (event->key()) {
+			case Qt::Key_Z:
+			case Qt::Key_S:
+			case Qt::Key_X:
+			case Qt::Key_D:
+			case Qt::Key_C:
+			case Qt::Key_V:
+			case Qt::Key_G:
+			case Qt::Key_B:
+			case Qt::Key_H:
+			case Qt::Key_N:
+			case Qt::Key_J:
+			case Qt::Key_M:
+			case Qt::Key_Comma:
+			case Qt::Key_L:
+			case Qt::Key_Period:
+			case Qt::Key_Q:
+			case Qt::Key_2:
+			case Qt::Key_W:
+			case Qt::Key_3:
+			case Qt::Key_E:
+			case Qt::Key_R:
+			case Qt::Key_5:
+			case Qt::Key_T:
+			case Qt::Key_6:
+			case Qt::Key_Y:
+			case Qt::Key_7:
+			case Qt::Key_U:
+			case Qt::Key_I:
+			case Qt::Key_9:
+			case Qt::Key_O:
+				emit jamKeyOnEvent(event);
+				break;
+			default: break;
+			}
 		}
+		break;
 	}
 }
 
@@ -226,7 +226,7 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 	auto focus = focusWidget();
 	if (focus == ui->envNumSpinBox) return;
 
-	if (bt_.lock()->isJamMode() && !event->isAutoRepeat()) {
+	if (!event->isAutoRepeat()) {
 		switch (event->key()) {
 		case Qt::Key_Z:
 		case Qt::Key_S:

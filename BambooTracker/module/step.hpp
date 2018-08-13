@@ -8,9 +8,16 @@ public:
 	Step();
 
 	int getNoteNumber() const;
+	void setNoteNumber(int num);
+
 	int getInstrumentNumber() const;
+	void setInstrumentNumber(int num);
+
 	int getVolume() const;
+	void setVolume(int volume);
+
 	std::string getEffectString() const;
+	void setEffectString(std::string str);
 
 private:
 	/// noteNum_

@@ -32,7 +32,7 @@ void OPNAController::reset()
 void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
 {
 	uint16_t pitch = PitchConverter::getPitchFM(note, octave, fine);
-	uint8_t offset = getFMChannelOffset(ch);
+	uint32_t offset = getFMChannelOffset(ch);
 	opna_.setRegister(0xa4 + offset, pitch >> 8);
 	opna_.setRegister(0xa0 + offset, pitch & 0x00ff);
 	uint32_t chdata = getFmChannelMask(ch);

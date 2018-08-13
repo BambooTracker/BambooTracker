@@ -26,13 +26,19 @@ bool JamManager::isJamMode() const
 	return isJamMode_;
 }
 
-void JamManager::polyphonic(bool flag)
+void JamManager::polyphonic(bool flag, ModuleType type)
 {
 	if (flag) {
 		isPoly_ = true;
-		// UNDONE: change channel size by Effect mode
-		unusedChFM_.resize(6);
-		unusedChSSG_.resize(3);
+		switch (type) {
+		case ModuleType::STD:
+			unusedChFM_.resize(6);
+			unusedChSSG_.resize(3);
+			break;
+		case ModuleType::FMEX:
+			// UNDONE: change channel size by Effect mode
+			break;
+		}
 		for (int i = 0; i < unusedChFM_.size(); ++i) {
 			unusedChFM_[i] = i;
 		}

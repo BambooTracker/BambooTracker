@@ -131,11 +131,6 @@ void BambooTracker::setCurrentOrderNumber(int num)
 	curOrderNum_ = num;
 }
 
-void BambooTracker::insertNewOrder(int prevOdrNum)
-{
-
-}
-
 /********** Pattern edit **********/
 int BambooTracker::getCurrentStepNumber() const
 {
@@ -159,9 +154,14 @@ void BambooTracker::redo()
 }
 
 /********** Jam mode **********/
-bool BambooTracker::toggleJamMode()
+void BambooTracker::toggleJamMode()
 {
-	return jamMan_.toggleJamMode();
+	if (jamMan_.toggleJamMode() && !isPlaySong()) {
+		jamMan_.polyphonic(true, modStyle_.type);
+	}
+	else {
+		jamMan_.polyphonic(false, modStyle_.type);
+	}
 }
 
 bool BambooTracker::isJamMode() const
@@ -239,7 +239,7 @@ void BambooTracker::startPlayFromCurrentStep()
 void BambooTracker::startPlay()
 {
 	opnaCtrl_.reset();
-	jamMan_.polyphonic(false);
+	jamMan_.polyphonic(false, modStyle_.type);
 	tickCounter_.resetCount();
 	tickCounter_.setPlayState(true);
 }
@@ -247,7 +247,7 @@ void BambooTracker::startPlay()
 void BambooTracker::stopPlaySong()
 {
 	opnaCtrl_.reset();
-	jamMan_.polyphonic(true);
+	jamMan_.polyphonic(true, modStyle_.type);
 	tickCounter_.setPlayState(false);
 	playState_ = 0;
 }
@@ -338,10 +338,69 @@ int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, in
 			.getStep(stepNum).getNoteNumber();
 }
 
-int BambooTracker::getStepInstrumentNumber(int songNum, int trackNum, int orderNum, int stepNum) const
+void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note)
+{
+	int nn = 12 * octave;
+
+	switch (note) {
+	case Note::C:	nn += 0;	break;
+	case Note::CS:	nn += 1;	break;
+	case Note::D:	nn += 2;	break;
+	case Note::DS:	nn += 3;	break;
+	case Note::E:	nn += 4;	break;
+	case Note::F:	nn += 5;	break;
+	case Note::FS:	nn += 6;	break;
+	case Note::G:	nn += 7;	break;
+	case Note::GS:	nn += 8;	break;
+	case Note::A:	nn += 9;	break;
+	case Note::AS:	nn += 10;	break;
+	case Note::B:	nn += 11;	break;
+	}
+
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setNoteNumber(nn);
+}
+
+void BambooTracker::setStepKeyOn(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setNoteNumber(-2);
+}
+
+void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setNoteNumber(-3);
+}
+
+void BambooTracker::setStepKeyRelease(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setNoteNumber(-4);
+}
+
+void BambooTracker::eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setNoteNumber(-1);
+}
+
+int BambooTracker::getStepInstrument(int songNum, int trackNum, int orderNum, int stepNum) const
 {
 	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
 			.getStep(stepNum).getInstrumentNumber();
+}
+
+void BambooTracker::setStepInstrument(int songNum, int trackNum, int orderNum, int stepNum, int instNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setInstrumentNumber(instNum);
+}
+
+void BambooTracker::eraseStepInstrument(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setInstrumentNumber(-1);
 }
 
 int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const
@@ -350,10 +409,34 @@ int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int st
 			.getStep(stepNum).getVolume();
 }
 
+void BambooTracker::setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setVolume(volume);
+}
+
+void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setVolume(-1);
+}
+
 std::string BambooTracker::getStepEffectString(int songNum, int trackNum, int orderNum, int stepNum) const
 {
 	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
 			.getStep(stepNum).getEffectString();
+}
+
+void BambooTracker::setStepEffectString(int songNum, int trackNum, int orderNum, int stepNum, std::string str)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setEffectString(str);
+}
+
+void BambooTracker::eraseEffectString(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+			.getStep(stepNum).setEffectString(u8"---");
 }
 
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const

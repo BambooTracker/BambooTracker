@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <algorithm>
 #include "gui/event_guard.hpp"
+#include "misc.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -57,7 +58,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	hovCellColor_ = QColor::fromRgb(255, 255, 255, 64);
 	defStepNumColor_ = QColor::fromRgb(255, 200, 180);
 	mkStepNumColor_ = QColor::fromRgb(255, 140, 160);
-	toneColor_ = QColor::fromRgb(0, 230, 64);
+	toneColor_ = QColor::fromRgb(210, 230, 64);
 	instColor_ = QColor::fromRgb(82, 179, 217);
 	volColor_ = QColor::fromRgb(246, 36, 89);
 	effColor_ = QColor::fromRgb(42, 187, 155);
@@ -255,7 +256,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		if (orderNum == hovOrderNum_ && stepNum == hovStepNum_
 				&& trackNum == hovTrackNum_ && hovCellNumInTrack_ == 1)	// Paint hover
 			painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
-		int instNum = bt_->getStepInstrumentNumber(curSongNum_, trackNum, orderNum, stepNum);
+		int instNum = bt_->getStepInstrument(curSongNum_, trackNum, orderNum, stepNum);
 		if (instNum == -1) {
 			painter.setPen(textColor);
 			painter.drawText(offset, baseY, "--");
@@ -609,6 +610,7 @@ bool PatternEditorPanel::event(QEvent *event)
 
 bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
+	/* General Keys */
 	switch (event->key()) {
 	case Qt::Key_Left:
 		moveCursorToRight(-1);
@@ -633,6 +635,213 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	default:
+		if (!bt_->isJamMode()) {
+			// Pattern edit
+			switch (modStyle_.trackAttribs[curTrackNum_].source) {
+			case SoundSource::FM:
+			case SoundSource::SSG:
+				switch (curCellNumInTrack_) {
+				case 0:
+				{
+					int baseOct = bt_->getCurrentOctave();
+					switch (event->key()) {
+					case Qt::Key_Z:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_S:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_X:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_D:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::DS);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_C:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::E);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_V:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::F);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_G:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::FS);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_B:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::G);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_H:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::GS);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_N:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::A);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_J:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::AS);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_M:
+						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::B);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_Comma:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_L:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_Period:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_Q:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_2:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_W:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_3:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::DS);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_E:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::E);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_R:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::F);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_5:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::FS);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_T:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::G);
+						}
+						break;
+					case Qt::Key_6:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::GS);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_Y:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::A);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_7:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::AS);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_U:
+						if (++baseOct < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::B);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_I:
+						if ((baseOct += 2) < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_9:
+						if ((baseOct += 2) < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_O:
+						if ((baseOct += 2) < 7) {
+							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
+							moveCursorToDown(1);
+						}
+						break;
+					case Qt::Key_Minus:
+						bt_->setStepKeyOff(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_Equal:
+						bt_->setStepKeyRelease(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_Bar:
+						bt_->setStepKeyOn(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						moveCursorToDown(1);
+						break;
+					case Qt::Key_Backspace:
+						bt_->eraseStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						moveCursorToDown(1);
+						break;
+					default:
+						break;
+					}
+					break;
+				}
+				case 1:
+				{
+					// UNDONE: instrument number
+					break;
+				}
+				case 2:
+				{
+					// UNDONE: volume number
+					break;
+				}
+				case 3:
+				{
+					// UNDONE: effect
+					break;
+				}
+				}
+				break;;
+			}
+
+			update();
+		}
 		return false;
 	}
 }

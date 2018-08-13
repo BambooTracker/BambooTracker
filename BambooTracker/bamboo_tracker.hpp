@@ -48,7 +48,6 @@ public:
 	// Order edit
 	int getCurrentOrderNumber() const;
 	void setCurrentOrderNumber(int num);
-	void insertNewOrder(int prevOdrNum);
 
 	// Pattern edit
 	int getCurrentStepNumber() const;
@@ -59,7 +58,7 @@ public:
 	void redo();
 
 	// Jam mode
-	bool toggleJamMode();
+	void toggleJamMode();
 	bool isJamMode() const;
 	void jamKeyOn(JamKey key);
 	void jamKeyOff(JamKey key);
@@ -86,9 +85,20 @@ public:
 	ModuleStyle getModuleStyle() const;
 	std::vector<int> getOrderList(int songNum, int trackNum) const;
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
-	int getStepInstrumentNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
+	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);
+	void setStepKeyOn(int songNum, int trackNum, int orderNum, int stepNum);
+	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
+	void setStepKeyRelease(int songNum, int trackNum, int orderNum, int stepNum);
+	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);
+	int getStepInstrument(int songNum, int trackNum, int orderNum, int stepNum) const;
+	void setStepInstrument(int songNum, int trackNum, int orderNum, int stepNum, int instNum);
+	void eraseStepInstrument(int songNum, int trackNum, int orderNum, int stepNum);
 	int getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const;
+	void setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume);
+	void eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum);
 	std::string getStepEffectString(int songNum, int trackNum, int orderNum, int stepNum) const;
+	void setStepEffectString(int songNum, int trackNum, int orderNum, int stepNum, std::string str);
+	void eraseEffectString(int songNum, int trackNum, int orderNum, int stepNum);
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 
 private:

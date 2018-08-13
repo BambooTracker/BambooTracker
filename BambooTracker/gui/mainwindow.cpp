@@ -97,6 +97,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
 	int key = event->key();
 
+	/* General keys */
 	if (event->modifiers().testFlag(Qt::ControlModifier)) {	// Pressed ctrl
 		switch (key) {
 		case Qt::Key_Z:	undo();	break;
@@ -106,7 +107,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	}
 	else {
 		switch (key) {
-		// General keys
 		case Qt::Key_Space:		toggleJamMode();			break;
 		case Qt::Key_Asterisk:	changeOctave(true);			break;
 		case Qt::Key_Slash:		changeOctave(false);		break;
@@ -116,8 +116,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		case Qt::Key_F8:		stopPlaySong();				break;
 
 		default:
-			if (bt_->isJamMode() && !event->isAutoRepeat()) {
-				// Jam mode keys
+			if (!event->isAutoRepeat()) {
+				// Musical keyboard
 				switch (key) {
 				case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
 				case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
@@ -152,12 +152,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 				default:	break;
 				}
 			}
-			else {
-				// Edit mode keys
-				switch (key) {
-				default:	break;
-				}
-			}
 			break;
 		}
 	}
@@ -167,8 +161,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
 	int key = event->key();
 
-	if (bt_->isJamMode() && !event->isAutoRepeat()) {
-		// Jam mode keys
+	if (!event->isAutoRepeat()) {
+		// Musical keyboard
 		switch (key) {
 		case Qt::Key_Z:			bt_->jamKeyOff(JamKey::LOW_C);		break;
 		case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
