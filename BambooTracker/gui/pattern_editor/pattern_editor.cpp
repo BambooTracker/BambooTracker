@@ -50,6 +50,11 @@ void PatternEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
+void PatternEditor::updatePosition()
+{
+	ui->panel->updatePosition();
+}
+
 /********** Slots **********/
 void PatternEditor::setCurrentTrack(int num)
 {

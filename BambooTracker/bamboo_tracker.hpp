@@ -66,7 +66,10 @@ public:
 
 	// Play song
 	void startPlaySong();
+	void startPlayPattern();
+	void startPlayFromCurrentStep();
 	void stopPlaySong();
+	bool isPlaySong() const;
 	void readStep();
 	void readTick();
 
@@ -106,6 +109,16 @@ private:
 	int curOrderNum_;
 	int curStepNum_;
 	int curInstNum_;
+	/// High nibble - play type
+	///		bit 4: play song
+	///		bit 5: play pattern
+	///		bit 6: play from current step
+	/// Low nibble - read state
+	///		bit 0: playing
+	///		bit 1: have read first step data
+	unsigned int playState_;
 
 	int streamIntrRate_;
+
+	void startPlay();
 };

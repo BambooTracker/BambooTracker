@@ -550,6 +550,17 @@ int PatternEditorPanel::getFullColmunSize() const
 	}
 }
 
+void PatternEditorPanel::updatePosition()
+{
+	curOrderNum_ = bt_->getCurrentOrderNumber();
+	curStepNum_ = bt_->getCurrentStepNumber();
+
+	emit currentOrderChanged(curOrderNum_);
+	emit currentStepChanged(curStepNum_, bt_->getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_) - 1);
+
+	update();
+}
+
 /********** Slots **********/
 void PatternEditorPanel::setCurrentCellInRow(int num)
 {
@@ -599,11 +610,30 @@ bool PatternEditorPanel::event(QEvent *event)
 bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
 	switch (event->key()) {
-	case Qt::Key_Left:	moveCursorToRight(-1);	return true;
-	case Qt::Key_Right:	moveCursorToRight(1);	return true;
-	case Qt::Key_Up:	moveCursorToDown(-1);	return true;
-	case Qt::Key_Down:	moveCursorToDown(1);	return true;
-	default: return false;
+	case Qt::Key_Left:
+		moveCursorToRight(-1);
+		return true;
+	case Qt::Key_Right:
+		moveCursorToRight(1);
+		return true;
+	case Qt::Key_Up:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(-1);
+			return true;
+		}
+	case Qt::Key_Down:
+		if (bt_->isPlaySong()) {
+			return  false;
+		}
+		else {
+			moveCursorToDown(1);
+			return true;
+		}
+	default:
+		return false;
 	}
 }
 

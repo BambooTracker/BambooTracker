@@ -211,7 +211,7 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 	}
 	else {
 		switch (event->key()) {
-		// Common keys
+		// General keys
 		case Qt::Key_Asterisk:	bt_.lock()->raiseOctave();		break;
 		case Qt::Key_Slash:		bt_.lock()->lowerOctave();		break;
 		default:	break;

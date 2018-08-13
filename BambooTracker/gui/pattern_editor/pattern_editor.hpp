@@ -16,10 +16,10 @@ class PatternEditor : public QFrame
 public:
 	explicit PatternEditor(QWidget *parent = nullptr);
 	~PatternEditor();
-
 	void setCore(std::shared_ptr<BambooTracker> core);
 
 	void changeEditable();
+	void updatePosition();
 
 signals:
 	void currentTrackChanged(int num);

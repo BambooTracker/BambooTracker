@@ -24,6 +24,7 @@ public:
 
 	void changeEditable();
 	int getFullColmunSize() const;
+	void updatePosition();
 
 public slots:
 	void setCurrentCellInRow(int num);

@@ -55,6 +55,8 @@ private:
 
 	// Play song
 	void startPlaySong();
+	void startPlayPattern();
+	void startPlayFromCurrentStep();
 	void stopPlaySong();
 
 	// Toggle Jam mode

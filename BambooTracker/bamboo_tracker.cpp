@@ -18,6 +18,7 @@ BambooTracker::BambooTracker()
 	  curOrderNum_(0),
 	  curStepNum_(0),
 	  curInstNum_(-1),
+	  playState_(false),
 	  streamIntrRate_(60)	// NTSC
 {
 	modStyle_ = mod_->getStyle();
@@ -218,6 +219,27 @@ void BambooTracker::jamKeyOff(JamKey key)
 /********** Play song **********/
 void BambooTracker::startPlaySong()
 {
+	startPlay();
+	playState_ = 0x11;
+	curOrderNum_ = 0;
+	curStepNum_ = 0;
+}
+
+void BambooTracker::startPlayPattern()
+{
+	startPlay();
+	playState_ = 0x21;
+	curStepNum_ = 0;
+}
+
+void BambooTracker::startPlayFromCurrentStep()
+{
+	startPlay();
+	playState_ = 0x41;
+}
+
+void BambooTracker::startPlay()
+{
 	opnaCtrl_.reset();
 	jamMan_.polyphonic(false);
 	tickCounter_.resetCount();
@@ -229,16 +251,44 @@ void BambooTracker::stopPlaySong()
 	opnaCtrl_.reset();
 	jamMan_.polyphonic(true);
 	tickCounter_.setPlayState(false);
+	playState_ = 0;
+}
+
+bool BambooTracker::isPlaySong() const
+{
+	return  ((playState_ & 0x01) > 0);
 }
 
 void BambooTracker::readStep()
 {
-//	qDebug() << "step";
+	if (playState_ & 0x02) {	// Foward current step
+		if (curStepNum_ == getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_) - 1) {
+			if (!(playState_ & 0x20)) {	// Not play pattern
+				if (curOrderNum_ == getOrderList(curSongNum_, 0).size() - 1) {
+					curOrderNum_ = 0;
+				}
+				else {
+					++curOrderNum_;
+				}
+			}
+			curStepNum_ = 0;
+		}
+		else {
+			++curStepNum_;
+		}
+	}
+	else {	// First read
+		playState_ |= 0x02;
+	}
+
+	// Read step data
+	// TODO
+
 }
 
 void BambooTracker::readTick()
 {
-//	qDebug() << "tick";
+	// UNDONE: read tick
 }
 
 /********** Stream events **********/

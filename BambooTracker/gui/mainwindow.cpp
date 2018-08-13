@@ -27,7 +27,9 @@ MainWindow::MainWindow(QWidget *parent) :
 											bt_->getStreamDuration(),
 											bt_->getStreamInterruptRate());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
-					 this, [&]() { bt_->streamCountUp(); }, Qt::DirectConnection);
+					 this, [&]() {
+		if (!bt_->streamCountUp()) ui->patternEditor->updatePosition();
+	}, Qt::DirectConnection);
 	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
 					 this, [&](int16_t *container, size_t nSamples) {
 		bt_->getStreamSamples(container, nSamples);
@@ -100,12 +102,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	}
 	else {
 		switch (key) {
-		// Common keys
-		case Qt::Key_Space:		toggleJamMode();		break;
-		case Qt::Key_Asterisk:	bt_->raiseOctave();		break;
-		case Qt::Key_Slash:		bt_->lowerOctave();		break;
-		case Qt::Key_F5:		startPlaySong();		break;
-		case Qt::Key_F8:		stopPlaySong();			break;
+		// General keys
+		case Qt::Key_Space:		toggleJamMode();			break;
+		case Qt::Key_Asterisk:	bt_->raiseOctave();			break;
+		case Qt::Key_Slash:		bt_->lowerOctave();			break;
+		case Qt::Key_F5:		startPlaySong();			break;
+		case Qt::Key_F6:		startPlayPattern();			break;
+		case Qt::Key_F7:		startPlayFromCurrentStep();	break;
+		case Qt::Key_F8:		stopPlaySong();				break;
 
 		default:
 			if (bt_->isJamMode() && !event->isAutoRepeat()) {
@@ -338,6 +342,18 @@ void MainWindow::redo()
 void MainWindow::startPlaySong()
 {
 	bt_->startPlaySong();
+	ui->patternEditor->updatePosition();
+}
+
+void MainWindow::startPlayPattern()
+{
+	bt_->startPlayPattern();
+	ui->patternEditor->updatePosition();
+}
+
+void MainWindow::startPlayFromCurrentStep()
+{
+	bt_->startPlayFromCurrentStep();
 }
 
 void MainWindow::stopPlaySong()
