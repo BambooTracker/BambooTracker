@@ -5,8 +5,12 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
 CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
-												   std::map<int, std::unique_ptr<QWidget>>& map, QUndoCommand *parent) :
-	QUndoCommand(parent), list_(list), cloneNum_(num), refNum_(refNum), map_(map)
+												   std::map<int, std::unique_ptr<QWidget>>& map, QUndoCommand *parent)
+	: QUndoCommand(parent),
+	  list_(list),
+	  cloneNum_(num),
+	  refNum_(refNum),
+	  map_(map)
 {
 	source_ = static_cast<SoundSource>(map_.at(refNum)->property("SoundSource").toInt());
 }

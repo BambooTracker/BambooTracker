@@ -2,8 +2,6 @@
 #include <algorithm>
 #include "commands.hpp"
 
-#include <QDebug>
-
 BambooTracker::BambooTracker()
 	:
 	  #ifdef SINC_INTERPOLATION
@@ -11,7 +9,7 @@ BambooTracker::BambooTracker()
 	  #else
 	  opnaCtrl_(3993600 * 2, 44100, &instMan_),
 	  #endif
-	  mod_(std::make_unique<Module>(ModuleType::STD)),
+	  mod_(std::make_shared<Module>(ModuleType::STD)),
 	  octave_(4),
 	  curSongNum_(0),
 	  curTrackNum_(0),
@@ -51,6 +49,11 @@ TrackAttribute BambooTracker::getCurrentTrackAttribute() const
 void BambooTracker::setCurrentInstrument(int n)
 {
 	curInstNum_ = n;
+}
+
+int BambooTracker::getCurrentInstrumentNumber() const
+{
+	return curInstNum_;
 }
 
 /********** Instrument edit **********/
@@ -357,32 +360,35 @@ void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int ste
 	case Note::B:	nn += 11;	break;
 	}
 
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setNoteNumber(nn);
+	int in;
+	if (curInstNum_ != -1
+			&& (modStyle_.trackAttribs.at(trackNum).source
+				== instMan_.getInstrumentSharedPtr(curInstNum_)->getSoundSource()))
+		in = curInstNum_;
+	else
+		in = -1;
+
+	comMan_.invoke(std::make_unique<SetNoteToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, in));
 }
 
 void BambooTracker::setStepKeyOn(int songNum, int trackNum, int orderNum, int stepNum)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setNoteNumber(-2);
+	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setNoteNumber(-3);
+	comMan_.invoke(std::make_unique<SetKeyOffToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 void BambooTracker::setStepKeyRelease(int songNum, int trackNum, int orderNum, int stepNum)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setNoteNumber(-4);
+	comMan_.invoke(std::make_unique<SetKeyReleaseToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 void BambooTracker::eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setNoteNumber(-1);
+	comMan_.invoke(std::make_unique<EraseNoteInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 int BambooTracker::getStepInstrument(int songNum, int trackNum, int orderNum, int stepNum) const

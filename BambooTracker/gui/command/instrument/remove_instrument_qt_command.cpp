@@ -7,12 +7,12 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
 RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row,
-													 std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent) :
-	QUndoCommand(parent),
-	list_(list),
-	num_(num),
-	row_(row),
-	map_(map)
+													 std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent)
+	: QUndoCommand(parent),
+	  list_(list),
+	  num_(num),
+	  row_(row),
+	  map_(map)
 {
 	source_ = static_cast<SoundSource>(map.at(num)->property("SoundSource").toInt());
 }

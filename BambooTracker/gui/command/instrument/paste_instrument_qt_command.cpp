@@ -4,11 +4,15 @@
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 
 PasteInstrumentQtCommand::PasteInstrumentQtCommand(QListWidget *list, int oldRow, int refRow, int oldNum, int refNum,
-												   std::map<int, std::unique_ptr<QWidget>>& map, SoundSource source, QUndoCommand *parent) :
-	QUndoCommand(parent), list_(list),
-	oldRow_(oldRow), refRow_(refRow),
-	oldNum_(oldNum), refNum_(refNum),
-	map_(map), source_(source)
+												   std::map<int, std::unique_ptr<QWidget>>& map, SoundSource source, QUndoCommand *parent)
+	: QUndoCommand(parent),
+	  list_(list),
+	  oldRow_(oldRow),
+	  refRow_(refRow),
+	  oldNum_(oldNum),
+	  refNum_(refNum),
+	  map_(map),
+	  source_(source)
 {
 	oldName_ = map.at(oldNum)->property("Name").toString();
 	refName_ = map.at(refNum)->property("Name").toString();

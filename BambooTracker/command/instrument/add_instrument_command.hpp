@@ -20,6 +20,4 @@ private:
 	int num_;
 	SoundSource source_;
 	std::string name_;
-
-	void add();
 };

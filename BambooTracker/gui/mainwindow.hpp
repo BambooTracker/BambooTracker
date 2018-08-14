@@ -36,7 +36,7 @@ private:
 
 	std::shared_ptr<BambooTracker> bt_;
 	std::unique_ptr<AudioStream> stream_;
-	std::unique_ptr<QUndoStack> comStack_;
+	std::shared_ptr<QUndoStack> comStack_;
 
 	// Instrument list
 	std::map<int, std::unique_ptr<QWidget>> instFormMap_;

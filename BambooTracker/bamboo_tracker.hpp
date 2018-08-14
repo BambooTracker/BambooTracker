@@ -28,6 +28,7 @@ public:
 
 	// Current instrument
 	void setCurrentInstrument(int n);
+	int getCurrentInstrumentNumber() const;
 
 	// Instrument edit
 	void addInstrument(int num, std::string name);
@@ -109,7 +110,7 @@ private:
 
     TickCounter tickCounter_;
 
-	std::unique_ptr<Module> mod_;
+	std::shared_ptr<Module> mod_;
 
 	// Current status
 	int octave_;	// 0-7
@@ -118,6 +119,7 @@ private:
 	int curTrackNum_;
 	int curOrderNum_;
 	int curStepNum_;
+	///	-1: not set
 	int curInstNum_;
 	/// High nibble - play type
 	///		bit 4: play song

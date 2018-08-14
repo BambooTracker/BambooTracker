@@ -6,8 +6,14 @@
 ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
 															 std::map<int, std::unique_ptr<QWidget> > &map,
 															 QString oldName, QString newName,
-															 QUndoCommand *parent) :
-	QUndoCommand(parent), list_(list), num_(num), row_(row), map_(map), oldName_(oldName), newName_(newName)
+															 QUndoCommand *parent)
+	: QUndoCommand(parent),
+	  list_(list),
+	  num_(num),
+	  row_(row),
+	  map_(map),
+	  oldName_(oldName),
+	  newName_(newName)
 {
     source_ = static_cast<SoundSource>(map.at(num)->property("SoundSource").toInt());
 }

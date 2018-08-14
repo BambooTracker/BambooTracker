@@ -6,3 +6,10 @@
 #include "./instrument/change_instrument_name_command.hpp"
 #include "./instrument/paste_instrument_command.hpp"
 #include "./instrument/clone_instrument_command.hpp"
+
+/********** Pattern edit **********/
+#include "./pattern/set_note_to_step_command.hpp"
+#include "./pattern/set_key_on_to_step_command.hpp"
+#include "./pattern/set_key_off_to_step_command.hpp"
+#include "./pattern/set_key_release_to_step_command.hpp"
+#include "./pattern/erase_note_in_step_command.hpp"

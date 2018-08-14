@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	bt_(std::make_shared<BambooTracker>()),
-	comStack_(std::make_unique<QUndoStack>(this))
+	comStack_(std::make_shared<QUndoStack>(this))
 {
 	ui->setupUi(this);
 
@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	/* Pattern editor */
 	ui->patternEditor->setCore(bt_);
+	ui->patternEditor->setCommandStack(comStack_);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 ui->orderList, &OrderListEditor::setCurrentTrack);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentOrderChanged,

@@ -379,6 +379,10 @@ bool OrderListPanel::event(QEvent *event)
 
 bool OrderListPanel::KeyPressed(QKeyEvent *event)
 {
+	/* General Keys (with Ctrl) */
+	if (event->modifiers().testFlag(Qt::ControlModifier)) return false;
+
+	/* General Keys */
 	switch (event->key()) {
 	case Qt::Key_Left:	moveCursorToRight(-1);	return true;
 	case Qt::Key_Right:	moveCursorToRight(1);	return true;

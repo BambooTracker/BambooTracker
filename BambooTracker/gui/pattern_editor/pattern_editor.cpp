@@ -45,6 +45,11 @@ void PatternEditor::setCore(std::shared_ptr<BambooTracker> core)
 										  core->getCurrentOrderNumber()) - 1);
 }
 
+void PatternEditor::setCommandStack(std::weak_ptr<QUndoStack> stack)
+{
+	ui->panel->setCommandStack(stack);
+}
+
 void PatternEditor::changeEditable()
 {
 	ui->panel->changeEditable();

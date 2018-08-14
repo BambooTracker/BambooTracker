@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <algorithm>
 #include "gui/event_guard.hpp"
-#include "misc.hpp"
+#include "gui/command/pattern/pattern_commands_qt.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -87,6 +87,11 @@ void PatternEditorPanel::setCore(std::shared_ptr<BambooTracker> core)
 	curOrderNum_ = bt_->getCurrentOrderNumber();
 	modStyle_ = bt_->getModuleStyle();
 	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
+}
+
+void PatternEditorPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
+{
+	comStack_ = stack;
 }
 
 void PatternEditorPanel::drawPattern(const QRect &rect)
@@ -547,7 +552,6 @@ int PatternEditorPanel::getFullColmunSize() const
 	case SoundSource::FM:
 	case SoundSource::SSG:
 		return calculateCellNumInRow(modStyle_.trackAttribs.size() - 1, 3);
-	default: return 0;
 	}
 }
 
@@ -560,6 +564,15 @@ void PatternEditorPanel::updatePosition()
 	emit currentStepChanged(curStepNum_, bt_->getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_) - 1);
 
 	update();
+}
+
+void PatternEditorPanel::setStepNote(Note note, int octave)
+{
+	if (octave < 7) {
+		bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, octave, note);
+		comStack_.lock()->push(new SetNoteToStepQtCommand(this));
+		moveCursorToDown(1);
+	}
 }
 
 /********** Slots **********/
@@ -610,6 +623,9 @@ bool PatternEditorPanel::event(QEvent *event)
 
 bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
+	/* General Keys (with Ctrl) */
+	if (event->modifiers().testFlag(Qt::ControlModifier)) return false;
+
 	/* General Keys */
 	switch (event->key()) {
 	case Qt::Key_Left:
@@ -645,175 +661,54 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				{
 					int baseOct = bt_->getCurrentOctave();
 					switch (event->key()) {
-					case Qt::Key_Z:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_S:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_X:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_D:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::DS);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_C:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::E);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_V:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::F);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_G:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::FS);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_B:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::G);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_H:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::GS);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_N:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::A);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_J:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::AS);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_M:
-						bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::B);
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_Comma:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_L:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_Period:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_Q:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_2:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_W:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_3:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::DS);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_E:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::E);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_R:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::F);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_5:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::FS);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_T:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::G);
-						}
-						break;
-					case Qt::Key_6:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::GS);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_Y:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::A);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_7:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::AS);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_U:
-						if (++baseOct < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::B);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_I:
-						if ((baseOct += 2) < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::C);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_9:
-						if ((baseOct += 2) < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::CS);
-							moveCursorToDown(1);
-						}
-						break;
-					case Qt::Key_O:
-						if ((baseOct += 2) < 7) {
-							bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, baseOct, Note::D);
-							moveCursorToDown(1);
-						}
-						break;
+					case Qt::Key_Z:			setStepNote(Note::C, baseOct);		break;
+					case Qt::Key_S:			setStepNote(Note::CS, baseOct);		break;
+					case Qt::Key_X:			setStepNote(Note::D, baseOct);		break;
+					case Qt::Key_D:			setStepNote(Note::DS, baseOct);		break;
+					case Qt::Key_C:			setStepNote(Note::E, baseOct);		break;
+					case Qt::Key_V:			setStepNote(Note::F, baseOct);		break;
+					case Qt::Key_G:			setStepNote(Note::FS, baseOct);		break;
+					case Qt::Key_B:			setStepNote(Note::G, baseOct);		break;
+					case Qt::Key_H:			setStepNote(Note::GS, baseOct);		break;
+					case Qt::Key_N:			setStepNote(Note::A, baseOct);		break;
+					case Qt::Key_J:			setStepNote(Note::AS, baseOct);		break;
+					case Qt::Key_M:			setStepNote(Note::B, baseOct);		break;
+					case Qt::Key_Comma:		setStepNote(Note::C, baseOct + 1);	break;
+					case Qt::Key_L:			setStepNote(Note::CS, baseOct + 1);	break;
+					case Qt::Key_Period:	setStepNote(Note::D, baseOct + 1);	break;
+					case Qt::Key_Q:			setStepNote(Note::C, baseOct + 1);	break;
+					case Qt::Key_2:			setStepNote(Note::CS, baseOct + 1);	break;
+					case Qt::Key_W:			setStepNote(Note::D, baseOct + 1);	break;
+					case Qt::Key_3:			setStepNote(Note::DS, baseOct + 1);	break;
+					case Qt::Key_E:			setStepNote(Note::E, baseOct + 1);	break;
+					case Qt::Key_R:			setStepNote(Note::F, baseOct + 1);	break;
+					case Qt::Key_5:			setStepNote(Note::FS, baseOct + 1);	break;
+					case Qt::Key_T:			setStepNote(Note::G, baseOct + 1);	break;
+					case Qt::Key_6:			setStepNote(Note::GS, baseOct + 1);	break;
+					case Qt::Key_Y:			setStepNote(Note::A, baseOct + 1);	break;
+					case Qt::Key_7:			setStepNote(Note::AS, baseOct + 1);	break;
+					case Qt::Key_U:			setStepNote(Note::B, baseOct + 1);	break;
+					case Qt::Key_I:			setStepNote(Note::C, baseOct + 2);	break;
+					case Qt::Key_9:			setStepNote(Note::CS, baseOct + 2);	break;
+					case Qt::Key_O:			setStepNote(Note::D, baseOct + 2);	break;
 					case Qt::Key_Minus:
 						bt_->setStepKeyOff(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 						moveCursorToDown(1);
 						break;
 					case Qt::Key_Equal:
 						bt_->setStepKeyRelease(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						comStack_.lock()->push(new SetKeyReleaseToStepQtCommand(this));
 						moveCursorToDown(1);
 						break;
 					case Qt::Key_Bar:
 						bt_->setStepKeyOn(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 						moveCursorToDown(1);
 						break;
 					case Qt::Key_Backspace:
 						bt_->eraseStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
+						comStack_.lock()->push(new EraseNoteInStepQtCommand(this));
 						moveCursorToDown(1);
 						break;
 					default:
@@ -839,8 +734,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				}
 				break;;
 			}
-
-			update();
 		}
 		return false;
 	}

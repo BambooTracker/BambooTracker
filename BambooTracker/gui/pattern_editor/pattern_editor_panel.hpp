@@ -11,9 +11,11 @@
 #include <QWheelEvent>
 #include <QRect>
 #include <QColor>
+#include <QUndoStack>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "module.hpp"
+#include "misc.hpp"
 
 class PatternEditorPanel : public QWidget
 {
@@ -21,6 +23,7 @@ class PatternEditorPanel : public QWidget
 public:
 	explicit PatternEditorPanel(QWidget *parent = nullptr);
 	void setCore(std::shared_ptr<BambooTracker> core);
+	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 
 	void changeEditable();
 	int getFullColmunSize() const;
@@ -50,6 +53,7 @@ protected:
 private:
 	std::unique_ptr<QPixmap> pixmap_;
 	std::shared_ptr<BambooTracker> bt_;
+	std::weak_ptr<QUndoStack> comStack_;
 
 	QFont stepFont_, headerFont_;
 	int stepFontWidth_, stepFontHeight_, stepFontAscend_, stepFontLeading_;
@@ -98,6 +102,8 @@ private:
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
+
+	void setStepNote(Note note, int octave);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

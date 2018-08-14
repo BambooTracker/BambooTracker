@@ -2,6 +2,7 @@
 #define PATTERN_EDITOR_HPP
 
 #include <QFrame>
+#include <QUndoStack>
 #include <memory>
 #include "bamboo_tracker.hpp"
 
@@ -17,6 +18,7 @@ public:
 	explicit PatternEditor(QWidget *parent = nullptr);
 	~PatternEditor();
 	void setCore(std::shared_ptr<BambooTracker> core);
+	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 
 	void changeEditable();
 	void updatePosition();

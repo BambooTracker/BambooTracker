@@ -7,13 +7,13 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
 AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, SoundSource source,
-											   std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent) :
-	QUndoCommand(parent),
-	list_(list),
-	num_(num),
-	name_(name),
-	source_(source),
-	map_(map)
+											   std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent)
+	: QUndoCommand(parent),
+	  list_(list),
+	  num_(num),
+	  name_(name),
+	  source_(source),
+	  map_(map)
 {}
 
 void AddInstrumentQtCommand::undo()
