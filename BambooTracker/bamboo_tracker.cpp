@@ -1,5 +1,6 @@
 #include "bamboo_tracker.hpp"
 #include <algorithm>
+#include <utility>
 #include "commands.hpp"
 
 BambooTracker::BambooTracker()
@@ -224,6 +225,7 @@ void BambooTracker::startPlaySong()
 	playState_ = 0x11;
 	curOrderNum_ = 0;
 	curStepNum_ = 0;
+	findNextStep();
 }
 
 void BambooTracker::startPlayPattern()
@@ -231,12 +233,14 @@ void BambooTracker::startPlayPattern()
 	startPlay();
 	playState_ = 0x21;
 	curStepNum_ = 0;
+	findNextStep();
 }
 
 void BambooTracker::startPlayFromCurrentStep()
 {
 	startPlay();
 	playState_ = 0x41;
+	findNextStep();
 }
 
 void BambooTracker::startPlay()
@@ -260,36 +264,137 @@ bool BambooTracker::isPlaySong() const
 	return  ((playState_ & 0x01) > 0);
 }
 
-void BambooTracker::readStep()
+void BambooTracker::stepDown()
 {
 	if (playState_ & 0x02) {	// Foward current step
-		if (curStepNum_ == getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_) - 1) {
-			if (!(playState_ & 0x20)) {	// Not play pattern
-				if (curOrderNum_ == getOrderList(curSongNum_, 0).size() - 1) {
-					curOrderNum_ = 0;
-				}
-				else {
-					++curOrderNum_;
-				}
-			}
-			curStepNum_ = 0;
-		}
-		else {
-			++curStepNum_;
-		}
+		curOrderNum_ = nextReadStepOrder_;
+		curStepNum_ = nextReadStepStep_;
 	}
 	else {	// First read
 		playState_ |= 0x02;
 	}
-
-	// Read step data
-	// TODO
-
 }
 
-void BambooTracker::readTick()
+void BambooTracker::findNextStep()
 {
-	// UNDONE: read tick
+	// Init
+	nextReadStepOrder_ = curOrderNum_;
+	nextReadStepStep_ = curStepNum_;
+
+	// Search
+	if (nextReadStepStep_ == getPatternSizeFromOrderNumber(curSongNum_, nextReadStepOrder_) - 1) {
+		if (!(playState_ & 0x20)) {	// Not play pattern
+			if (nextReadStepOrder_ == getOrderList(curSongNum_, 0).size() - 1) {
+				nextReadStepOrder_ = 0;
+			}
+			else {
+				++nextReadStepOrder_;
+			}
+		}
+		nextReadStepStep_ = 0;
+	}
+	else {
+		++nextReadStepStep_;
+	}
+}
+
+void BambooTracker::readStep()
+{
+	auto& song = mod_->getSong(curSongNum_);
+	for (auto& attrib : modStyle_.trackAttribs) {
+		auto& step = song.getTrack(attrib.number)
+					 .getPatternFromOrderNumber(curOrderNum_).getStep(curStepNum_);
+		switch (attrib.source) {
+		case SoundSource::FM:
+		{
+			// Set instrument
+			if (step.getInstrumentNumber() != -1)
+				opnaCtrl_.setInstrumentFM(
+							attrib.channelInSource,
+							std::dynamic_pointer_cast<InstrumentFM>(instMan_.getInstrumentSharedPtr(step.getInstrumentNumber()))
+							);
+			// Set volume
+			// TODO: volume set
+			// Set effect
+			// TODO: effect set
+			// Set key
+			switch (step.getNoteNumber()) {
+			case -1:
+				break;
+			case -3:
+			case -4:
+				opnaCtrl_.keyOffFM(attrib.channelInSource);
+				break;
+			default:
+			{
+				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
+				opnaCtrl_.keyOnFM(attrib.channelInSource, octNote.second, octNote.first, 0);
+				break;
+			}
+			}
+			break;
+		}
+
+		case SoundSource::SSG:
+		{
+			// Set instrument
+			if (step.getInstrumentNumber() != -1)
+				opnaCtrl_.setInstrumentSSG(
+							attrib.channelInSource,
+							std::dynamic_pointer_cast<InstrumentSSG>(instMan_.getInstrumentSharedPtr(step.getInstrumentNumber()))
+							);
+			// Set volume
+			// TODO: volume set
+			// Set effect
+			// TODO: effect set
+			// Set key
+			switch (step.getNoteNumber()) {
+			case -1:
+				break;
+			case -3:
+			case -4:
+				opnaCtrl_.keyOffSSG(attrib.channelInSource);
+				break;
+			default:
+			{
+				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
+				opnaCtrl_.keyOnSSG(attrib.channelInSource, octNote.second, octNote.first, 0);
+				break;
+			}
+			}
+			break;
+		}
+		}
+	}
+}
+
+void BambooTracker::readTick(int rest)
+{
+	if (!(playState_ & 0x02)) return;	// When it has not read first step
+
+	if (rest == 1) {
+		findNextStep();
+
+		auto& song = mod_->getSong(curSongNum_);
+		for (auto& attrib : modStyle_.trackAttribs) {
+			auto& step = song.getTrack(attrib.number)
+						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
+			switch (attrib.source) {
+			case SoundSource::FM:
+				// Key off before next key on
+				if (step.getNoteNumber() >= 0 && opnaCtrl_.isKeyOnFM(attrib.channelInSource)) {
+					opnaCtrl_.keyOffFM(attrib.channelInSource);
+				}
+				break;
+
+			case SoundSource::SSG:
+				// Key off before next key on
+				if (step.getNoteNumber() >= 0 && opnaCtrl_.isKeyOnSSG(attrib.channelInSource))
+					opnaCtrl_.keyOffSSG(attrib.channelInSource);
+				break;
+			}
+		}
+	}
 }
 
 /********** Stream events **********/
@@ -297,8 +402,13 @@ int BambooTracker::streamCountUp()
 {
 	int state = tickCounter_.countUp();
 
-	if (state > 0) readTick();
-	else if (!state) readStep();
+	if (state > 0) {
+		readTick(state);
+	}
+	else if (!state) {
+		stepDown();
+		readStep();
+	}
 
 	return state;
 }
@@ -343,22 +453,7 @@ int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, in
 
 void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note)
 {
-	int nn = 12 * octave;
-
-	switch (note) {
-	case Note::C:	nn += 0;	break;
-	case Note::CS:	nn += 1;	break;
-	case Note::D:	nn += 2;	break;
-	case Note::DS:	nn += 3;	break;
-	case Note::E:	nn += 4;	break;
-	case Note::F:	nn += 5;	break;
-	case Note::FS:	nn += 6;	break;
-	case Note::G:	nn += 7;	break;
-	case Note::GS:	nn += 8;	break;
-	case Note::A:	nn += 9;	break;
-	case Note::AS:	nn += 10;	break;
-	case Note::B:	nn += 11;	break;
-	}
+	int nn = octaveAndNoteToNoteNumber(octave, note);
 
 	int in;
 	if (curInstNum_ != -1

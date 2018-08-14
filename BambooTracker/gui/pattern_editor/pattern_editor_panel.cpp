@@ -420,6 +420,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 		}
 		if (curTrackNum_ < leftTrackNum_) leftTrackNum_ = curTrackNum_;
 	}
+
 	TracksWidthFromLeftToEnd_
 			= calculateTracksWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
 
@@ -766,10 +767,8 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 		int horDif = calculateCellNumInRow(hovTrackNum_, hovCellNumInTrack_)
 					 - calculateCellNumInRow(curTrackNum_, curCellNumInTrack_);
 		int verDif = calculateStepDistance(curOrderNum_, curStepNum_, hovOrderNum_, hovStepNum_);
-
 		moveCursorToRight(horDif);
 		moveCursorToDown(verDif);
-
 		update();
 	}
 }
@@ -845,35 +844,45 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 	else {
 		int flag = true;
 		int tmpWidth = stepNumWidth_;
-		for (hovTrackNum_ = leftTrackNum_; flag; ) {
-			switch (modStyle_.trackAttribs[hovTrackNum_].source) {
+		for (int i = leftTrackNum_; flag; ) {
+			switch (modStyle_.trackAttribs[i].source) {
 			case SoundSource::FM:
 			case SoundSource::SSG:
 				tmpWidth += (toneNameWidth_ + stepFontWidth_);
 				if (pos.x() <= tmpWidth) {
+					hovTrackNum_ = i;
 					hovCellNumInTrack_ = 0;
 					flag = false;
 					break;
 				}
 				tmpWidth += (instWidth_ + stepFontWidth_);
 				if (pos.x() <= tmpWidth) {
+					hovTrackNum_ = i;
 					hovCellNumInTrack_ = 1;
 					flag = false;
 					break;
 				}
 				tmpWidth += (volWidth_ + stepFontWidth_);
 				if (pos.x() <= tmpWidth) {
+					hovTrackNum_ = i;
 					hovCellNumInTrack_ = 2;
 					flag = false;
 					break;
 				}
 				tmpWidth += (effWidth_ + stepFontWidth_);
 				if (pos.x() <= tmpWidth) {
+					hovTrackNum_ = i;
 					hovCellNumInTrack_ = 3;
 					flag = false;
 					break;
 				}
-				++hovTrackNum_;
+				++i;
+				break;
+			}
+
+			if (i == modStyle_.trackAttribs.size()) {
+				hovTrackNum_ = -1;
+				hovStepNum_ = -1;
 				break;
 			}
 		}

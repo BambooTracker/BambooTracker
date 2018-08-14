@@ -14,10 +14,12 @@ OPNAController::OPNAController(int clock, int rate, InstrumentsManager* im) :
 	for (int i = 0; i < 6; ++i) {
 		instFM_[i] = std::make_shared<InstrumentFM>(-1, u8"Dummy", im);
 		setInstrumentFM(i, nullptr);
+		toneFM_[i].octave = -1;
 	}
 	for (int i = 0; i < 3; ++i) {
 		instSSG_[i] = std::make_shared<InstrumentSSG>(-1, u8"Dummy", im);
 		setInstrumentSSG(i, nullptr);
+		toneSSG_[i].octave = -1;
 	}
 }
 
@@ -39,6 +41,9 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
 	opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
 
 	isKeyOnFM_[ch] = true;
+	toneFM_[ch].octave = octave;
+	toneFM_[ch].note = note;
+	toneFM_[ch].fine = fine;
 }
 
 void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine)
@@ -55,6 +60,10 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine)
 	// Dummy volume
 	setVolumeSSG(ch, 0xf);
 	//*********************
+
+	toneSSG_[ch].octave = octave;
+	toneSSG_[ch].note = note;
+	toneSSG_[ch].fine = fine;
 }
 
 void OPNAController::keyOffFM(int ch)
@@ -294,6 +303,27 @@ void OPNAController::setInstrumentFMOperatorEnable(int envNum, int opNum)
 void OPNAController::setVolumeSSG(int ch, int level)
 {
 	opna_.setRegister(0x08 + ch, level);
+}
+
+/********** Chip details **********/
+bool OPNAController::isKeyOnFM(int ch) const
+{
+	return isKeyOnFM_[ch];
+}
+
+bool OPNAController::isKeyOnSSG(int ch) const
+{
+	return (((0x09 << ch) & ~mixerSSG_) > 0);
+}
+
+ToneDetail OPNAController::getFMTone(int ch) const
+{
+	return toneFM_[ch];
+}
+
+ToneDetail OPNAController::getSSGTone(int ch) const
+{
+	return toneSSG_[ch];
 }
 
 /********** Stream samples **********/

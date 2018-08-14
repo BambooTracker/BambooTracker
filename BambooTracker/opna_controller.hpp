@@ -7,6 +7,13 @@
 #include "instruments_manager.hpp"
 #include "misc.hpp"
 
+struct ToneDetail
+{
+	int octave;
+	Note note;
+	int fine;
+};
+
 class OPNAController
 {
 public:
@@ -35,6 +42,12 @@ public:
 	// Set volume
 	void setVolumeSSG(int ch, int level);
 
+	// Chip details
+	bool isKeyOnFM(int ch) const;
+	bool isKeyOnSSG(int ch) const;
+	ToneDetail getFMTone(int ch) const;
+	ToneDetail getSSGTone(int ch) const;
+
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
 
@@ -49,6 +62,7 @@ private:
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
 	uint8_t mixerSSG_;
+	ToneDetail toneFM_[6], toneSSG_[3];
 
 	void initChip();
 	uint32_t getFmChannelMask(int ch);

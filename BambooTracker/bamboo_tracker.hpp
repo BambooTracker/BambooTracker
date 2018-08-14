@@ -70,8 +70,6 @@ public:
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
 	bool isPlaySong() const;
-	void readStep();
-	void readTick();
 
 	// Stream events
 	int streamCountUp();
@@ -130,7 +128,14 @@ private:
 	///		bit 1: have read first step data
 	unsigned int playState_;
 
+	int nextReadStepOrder_, nextReadStepStep_;
+
 	int streamIntrRate_;
 
+	// Play song
 	void startPlay();
+	void stepDown();
+	void findNextStep();
+	void readStep();
+	void readTick(int rest);
 };
