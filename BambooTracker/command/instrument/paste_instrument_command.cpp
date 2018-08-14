@@ -38,5 +38,5 @@ void PasteInstrumentCommand::undo()
 
 int PasteInstrumentCommand::getID() const
 {
-	return 3;
+	return 0x14;
 }

@@ -19,5 +19,5 @@ void ChangeInstrumentNameCommand::undo()
 
 int ChangeInstrumentNameCommand::getID() const
 {
-	return 2;
+	return 0x13;
 }
