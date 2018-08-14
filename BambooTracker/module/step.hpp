@@ -21,11 +21,9 @@ public:
 
 private:
 	/// noteNum_
-	///		0<=: note number
+	///		0<=: note number (key on)
 	///		 -1: none
-	///		 -2: key on
-	///		 -3: key off
-	///		 -4: key release
+	///		 -2: key off
 	int noteNum_;
 	/// instNum_
 	///		0<=: instrument number

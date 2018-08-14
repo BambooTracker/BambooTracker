@@ -25,5 +25,5 @@ void EraseNoteInStepCommand::undo()
 
 int EraseNoteInStepCommand::getID() const
 {
-	return 0x25;
+	return 0x23;
 }

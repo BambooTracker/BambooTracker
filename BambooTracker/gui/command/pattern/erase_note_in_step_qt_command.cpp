@@ -18,5 +18,5 @@ void EraseNoteInStepQtCommand::undo()
 
 int EraseNoteInStepQtCommand::id() const
 {
-	return 0x25;
+	return 0x23;
 }

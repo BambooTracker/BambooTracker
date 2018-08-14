@@ -18,5 +18,5 @@ void SetKeyOnToStepQtCommand::undo()
 
 int SetKeyOnToStepQtCommand::id() const
 {
-	return 0x22;
+	return 0x21;
 }

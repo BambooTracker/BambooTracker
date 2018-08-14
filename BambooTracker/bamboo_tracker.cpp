@@ -321,8 +321,7 @@ void BambooTracker::readStep()
 			switch (step.getNoteNumber()) {
 			case -1:
 				break;
-			case -3:
-			case -4:
+			case -2:
 				opnaCtrl_.keyOffFM(attrib.channelInSource);
 				break;
 			default:
@@ -351,8 +350,7 @@ void BambooTracker::readStep()
 			switch (step.getNoteNumber()) {
 			case -1:
 				break;
-			case -3:
-			case -4:
+			case -2:
 				opnaCtrl_.keyOffSSG(attrib.channelInSource);
 				break;
 			default:
@@ -463,22 +461,12 @@ void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int ste
 	else
 		in = -1;
 
-	comMan_.invoke(std::make_unique<SetNoteToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, in));
-}
-
-void BambooTracker::setStepKeyOn(int songNum, int trackNum, int orderNum, int stepNum)
-{
-	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, in));
 }
 
 void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum)
 {
 	comMan_.invoke(std::make_unique<SetKeyOffToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
-}
-
-void BambooTracker::setStepKeyRelease(int songNum, int trackNum, int orderNum, int stepNum)
-{
-	comMan_.invoke(std::make_unique<SetKeyReleaseToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 void BambooTracker::eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum)

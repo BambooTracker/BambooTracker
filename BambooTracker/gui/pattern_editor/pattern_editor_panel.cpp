@@ -216,20 +216,9 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 			painter.setPen(textColor);
 			painter.drawText(offset, baseY, "---");
 			break;
-		case -2:	// Key on
-			painter.setPen(toneColor_);
-			painter.drawRect(offset, rowY + stepFontHeight_ * 2 / 5,  toneNameWidth_, stepFontHeight_ / 5);
-			break;
-		case -3:	// Key off
+		case -2:	// Key off
 			painter.fillRect(offset, rowY + stepFontHeight_ * 2 / 5,
 							 toneNameWidth_, stepFontHeight_ / 5, toneColor_);
-			break;
-		case -4:	// Key release
-			painter.setPen(toneColor_);
-			painter.drawLine(offset, rowY + stepFontHeight_ * 2 / 5,
-							 offset + toneNameWidth_, rowY + stepFontHeight_ * 2 / 5);
-			painter.drawLine(offset, rowY + stepFontHeight_ * 3 / 5,
-							 offset + toneNameWidth_, rowY + stepFontHeight_ * 3 / 5);
 			break;
 		default:	// Convert tone name
 		{
@@ -571,7 +560,7 @@ void PatternEditorPanel::setStepNote(Note note, int octave)
 {
 	if (octave < 7) {
 		bt_->setStepNote(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_, octave, note);
-		comStack_.lock()->push(new SetNoteToStepQtCommand(this));
+		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 		moveCursorToDown(1);
 	}
 }
@@ -695,16 +684,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 					case Qt::Key_Minus:
 						bt_->setStepKeyOff(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
 						comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_Equal:
-						bt_->setStepKeyRelease(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
-						comStack_.lock()->push(new SetKeyReleaseToStepQtCommand(this));
-						moveCursorToDown(1);
-						break;
-					case Qt::Key_Bar:
-						bt_->setStepKeyOn(curSongNum_, curTrackNum_, curOrderNum_, curStepNum_);
-						comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 						moveCursorToDown(1);
 						break;
 					case Qt::Key_Backspace:

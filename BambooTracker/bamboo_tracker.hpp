@@ -85,9 +85,7 @@ public:
 	std::vector<int> getOrderList(int songNum, int trackNum) const;
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);
-	void setStepKeyOn(int songNum, int trackNum, int orderNum, int stepNum);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
-	void setStepKeyRelease(int songNum, int trackNum, int orderNum, int stepNum);
 	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);
 	int getStepInstrument(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepInstrument(int songNum, int trackNum, int orderNum, int stepNum, int instNum);

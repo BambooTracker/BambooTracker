@@ -17,7 +17,7 @@ SetKeyOffToStepCommand::SetKeyOffToStepCommand(std::weak_ptr<Module> mod, int so
 void SetKeyOffToStepCommand::redo()
 {
 	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
-	st.setNoteNumber(-3);
+	st.setNoteNumber(-2);
 	st.setInstrumentNumber(-1);
 	st.setVolume(-1);
 	st.setEffectString(u8"---");
@@ -34,5 +34,5 @@ void SetKeyOffToStepCommand::undo()
 
 int SetKeyOffToStepCommand::getID() const
 {
-	return 0x23;
+	return 0x22;
 }
