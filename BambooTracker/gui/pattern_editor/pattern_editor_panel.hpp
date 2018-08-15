@@ -15,6 +15,7 @@
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "module.hpp"
+#include "gui/pattern_editor/pattern_position.hpp"
 #include "misc.hpp"
 
 class PatternEditorPanel : public QWidget
@@ -81,10 +82,11 @@ private:
 	ModuleStyle modStyle_;
 
 	int curSongNum_;
-	int curTrackNum_, curCellNumInTrack_, curOrderNum_, curStepNum_;
-	int hovTrackNum_, hovCellNumInTrack_, hovOrderNum_, hovStepNum_;
+	PatternPosition curPos_, hovPos_, editPos_;
 
 	bool isIgnoreToSlider_, isIgnoreToOrder_;
+
+	int entryCnt_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);
@@ -103,7 +105,10 @@ private:
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
 
-	void setStepNote(Note note, int octave);
+	void enterToneDataFMSSG(int key);
+	void setStepKeyOn(Note note, int octave);
+	bool enterInstrumentDataFMSSG(int key);
+	void setStepInstrument(int num);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

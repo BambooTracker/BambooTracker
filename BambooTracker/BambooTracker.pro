@@ -77,7 +77,11 @@ SOURCES += \
     command/pattern/erase_note_in_step_command.cpp \
     command/pattern/set_key_off_to_step_command.cpp \
     command/pattern/set_key_on_to_step_command.cpp \
-    gui/command/pattern/set_key_on_to_step_qt_command.cpp
+    gui/command/pattern/set_key_on_to_step_qt_command.cpp \
+    gui/command/pattern/set_instrument_to_step_qt_command.cpp \
+    command/pattern/set_instrument_to_step_command.cpp \
+    gui/command/pattern/erase_instrument_in_step_qt_command.cpp \
+    command/pattern/erase_instrument_in_step_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -140,7 +144,12 @@ HEADERS += \
     command/pattern/set_key_off_to_step_command.hpp \
     gui/command/pattern/pattern_commands_qt.hpp \
     command/pattern/set_key_on_to_step_command.hpp \
-    gui/command/pattern/set_key_on_to_step_qt_command.hpp
+    gui/command/pattern/set_key_on_to_step_qt_command.hpp \
+    gui/pattern_editor/pattern_position.hpp \
+    gui/command/pattern/set_instrument_to_step_qt_command.hpp \
+    command/pattern/set_instrument_to_step_command.hpp \
+    gui/command/pattern/erase_instrument_in_step_qt_command.hpp \
+    command/pattern/erase_instrument_in_step_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

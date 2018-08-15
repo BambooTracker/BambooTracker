@@ -308,20 +308,20 @@ void BambooTracker::readStep()
 		case SoundSource::FM:
 		{
 			// Set instrument
-			if (step.getInstrumentNumber() != -1)
-				opnaCtrl_.setInstrumentFM(
-							attrib.channelInSource,
-							std::dynamic_pointer_cast<InstrumentFM>(instMan_.getInstrumentSharedPtr(step.getInstrumentNumber()))
-							);
+			if (step.getInstrumentNumber() != -1) {
+				if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
+							instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
+					opnaCtrl_.setInstrumentFM(attrib.channelInSource, inst);
+			}
 			// Set volume
 			// TODO: volume set
 			// Set effect
 			// TODO: effect set
 			// Set key
 			switch (step.getNoteNumber()) {
-			case -1:
+			case -1:	// None
 				break;
-			case -2:
+			case -2:	// Key off
 				opnaCtrl_.keyOffFM(attrib.channelInSource);
 				break;
 			default:
@@ -337,20 +337,20 @@ void BambooTracker::readStep()
 		case SoundSource::SSG:
 		{
 			// Set instrument
-			if (step.getInstrumentNumber() != -1)
-				opnaCtrl_.setInstrumentSSG(
-							attrib.channelInSource,
-							std::dynamic_pointer_cast<InstrumentSSG>(instMan_.getInstrumentSharedPtr(step.getInstrumentNumber()))
-							);
+			if (step.getInstrumentNumber() != -1) {
+				if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
+							instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
+					opnaCtrl_.setInstrumentSSG(attrib.channelInSource, inst);
+			}
 			// Set volume
 			// TODO: volume set
 			// Set effect
 			// TODO: effect set
 			// Set key
 			switch (step.getNoteNumber()) {
-			case -1:
+			case -1:	// None
 				break;
-			case -2:
+			case -2:	// Key off
 				opnaCtrl_.keyOffSSG(attrib.channelInSource);
 				break;
 			default:
@@ -482,14 +482,12 @@ int BambooTracker::getStepInstrument(int songNum, int trackNum, int orderNum, in
 
 void BambooTracker::setStepInstrument(int songNum, int trackNum, int orderNum, int stepNum, int instNum)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setInstrumentNumber(instNum);
+	comMan_.invoke(std::make_unique<SetInstrumentToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, instNum));
 }
 
 void BambooTracker::eraseStepInstrument(int songNum, int trackNum, int orderNum, int stepNum)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setInstrumentNumber(-1);
+	comMan_.invoke(std::make_unique<EraseInstrumentInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const
