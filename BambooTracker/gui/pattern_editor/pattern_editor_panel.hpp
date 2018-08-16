@@ -109,6 +109,8 @@ private:
 	void setStepKeyOn(Note note, int octave);
 	bool enterInstrumentDataFMSSG(int key);
 	void setStepInstrument(int num);
+	bool enterVolumeDataFMSSG(int key);
+	void setStepVolume(int volume);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

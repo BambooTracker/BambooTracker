@@ -646,6 +646,52 @@ void PatternEditorPanel::setStepInstrument(int num)
 	if (!entryCnt_) moveCursorToDown(1);
 }
 
+bool PatternEditorPanel::enterVolumeDataFMSSG(int key)
+{
+	switch (key) {
+	case Qt::Key_0:	setStepVolume(0x0);	return true;
+	case Qt::Key_1:	setStepVolume(0x1);	return true;
+	case Qt::Key_2:	setStepVolume(0x2);	return true;
+	case Qt::Key_3:	setStepVolume(0x3);	return true;
+	case Qt::Key_4:	setStepVolume(0x4);	return true;
+	case Qt::Key_5:	setStepVolume(0x5);	return true;
+	case Qt::Key_6:	setStepVolume(0x6);	return true;
+	case Qt::Key_7:	setStepVolume(0x7);	return true;
+	case Qt::Key_8:	setStepVolume(0x8);	return true;
+	case Qt::Key_9:	setStepVolume(0x9);	return true;
+	case Qt::Key_A:	setStepVolume(0xa);	return true;
+	case Qt::Key_B:	setStepVolume(0xb);	return true;
+	case Qt::Key_C:	setStepVolume(0xc);	return true;
+	case Qt::Key_D:	setStepVolume(0xd);	return true;
+	case Qt::Key_E:	setStepVolume(0xe);	return true;
+	case Qt::Key_F:	setStepVolume(0xf);	return true;
+	case Qt::Key_Backspace:
+		bt_->eraseStepVolume(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+		comStack_.lock()->push(new EraseVolumeInStepQtCommand(this));
+		moveCursorToDown(1);
+		return false;
+	default:	return false;
+	}
+}
+
+void PatternEditorPanel::setStepVolume(int volume)
+{
+	SoundSource src = modStyle_.trackAttribs[curPos_.track].source;
+	switch (src) {
+	case SoundSource::FM:
+		entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
+		break;
+	case SoundSource::SSG:
+		entryCnt_ = 0;
+		break;
+	}
+	editPos_ = curPos_;
+	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume);
+	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_, src));
+
+	if (!entryCnt_) moveCursorToDown(1);
+}
+
 /********** Slots **********/
 void PatternEditorPanel::setCurrentCellInRow(int num)
 {
@@ -734,8 +780,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				case 1:
 					return enterInstrumentDataFMSSG(event->key());
 				case 2:
-					// UNDONE: volume number
-					break;
+					return enterVolumeDataFMSSG(event->key());
 				case 3:
 					// UNDONE: effect
 					break;

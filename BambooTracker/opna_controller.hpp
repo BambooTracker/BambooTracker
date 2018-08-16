@@ -4,7 +4,6 @@
 #include <memory>
 #include "opna.hpp"
 #include "instrument.hpp"
-#include "instruments_manager.hpp"
 #include "misc.hpp"
 
 struct ToneDetail
@@ -18,9 +17,9 @@ class OPNAController
 {
 public:
 	#ifdef SINC_INTERPOLATION
-	OPNAController(int clock, int rate, int duration, InstrumentsManager* im);
+	OPNAController(int clock, int rate, int duration);
 	#else
-	OPNAController(int clock, int rate, InstrumentsManager* im);
+	OPNAController(int clock, int rate);
 	#endif
 
 	// Reset and initialize
@@ -36,11 +35,12 @@ public:
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
 	void updateInstrumentFM(int instNum);
-	void setInstrumentFMEnvelopeParameter(int envNum, FMParameter param);
+	void updateInstrumentFMEnvelopeParameter(int envNum, FMParameter param);
 	void setInstrumentFMOperatorEnable(int envNum, int opNum);
 
 	// Set volume
-	void setVolumeSSG(int ch, int level);
+	void setVolumeFM(int ch, int volume);
+	void setVolumeSSG(int ch, int volume);
 
 	// Chip details
 	bool isKeyOnFM(int ch) const;
@@ -57,15 +57,27 @@ public:
 
 private:
 	chip::OPNA opna_;
-	std::shared_ptr<InstrumentFM> instFM_[6];
-	std::shared_ptr<InstrumentSSG> instSSG_[3];
+	std::shared_ptr<InstrumentFM> refInstFM_[6];
+	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
+	std::unique_ptr<EnvelopeFM> envFM_[6];
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
 	uint8_t mixerSSG_;
 	ToneDetail toneFM_[6], toneSSG_[3];
+	int volFM_[6], volSSG_[3];
 
 	void initChip();
 	uint32_t getFmChannelMask(int ch);
 	uint32_t getFMChannelOffset(int ch);
-	void updateFMEnvelopeRegisters(int ch);
+	void writeFMEnvelopeToRegistersFromInstrument(int ch);
+	void writeFMEnveropeParameterToRegister(int ch, FMParameter param, int value);
+
+	inline uint8_t judgeSSEGRegisterValue(int v) {
+		return (v == -1) ? 0 : (0x08 + v);
+	}
+
+	inline uint8_t calculateTL(int ch, uint8_t data) const
+	{
+		return (data > 127 - volFM_[ch]) ? 127 : (data + volFM_[ch]);
+	}
 };

@@ -6,9 +6,9 @@
 BambooTracker::BambooTracker()
 	:
 	  #ifdef SINC_INTERPOLATION
-	  opnaCtrl_(3993600 * 2, 44100, 40, &instMan_),
+	  opnaCtrl_(3993600 * 2, 44100, 40),
 	  #else
-	  opnaCtrl_(3993600 * 2, 44100, &instMan_),
+	  opnaCtrl_(3993600 * 2, 44100),
 	  #endif
 	  mod_(std::make_shared<Module>(ModuleType::STD)),
 	  octave_(4),
@@ -98,7 +98,7 @@ void BambooTracker::setInstrumentName(int num, std::string name)
 void BambooTracker::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
 {
 	instMan_.setEnvelopeFMParameter(envNum, param, value);
-	opnaCtrl_.setInstrumentFMEnvelopeParameter(envNum, param);
+	opnaCtrl_.updateInstrumentFMEnvelopeParameter(envNum, param);
 }
 
 void BambooTracker::setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable)
@@ -298,6 +298,7 @@ void BambooTracker::findNextStep()
 	}
 }
 
+/// Read order: volume -> instrument -> effect -> key on
 void BambooTracker::readStep()
 {
 	auto& song = mod_->getSong(curSongNum_);
@@ -307,14 +308,16 @@ void BambooTracker::readStep()
 		switch (attrib.source) {
 		case SoundSource::FM:
 		{
+			// Set volume
+			if (step.getVolume() != -1) {
+				opnaCtrl_.setVolumeFM(attrib.channelInSource, step.getVolume());
+			}
 			// Set instrument
 			if (step.getInstrumentNumber() != -1) {
 				if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
 							instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
 					opnaCtrl_.setInstrumentFM(attrib.channelInSource, inst);
 			}
-			// Set volume
-			// TODO: volume set
 			// Set effect
 			// TODO: effect set
 			// Set key
@@ -336,14 +339,16 @@ void BambooTracker::readStep()
 
 		case SoundSource::SSG:
 		{
+			// Set volume
+			if (step.getVolume() != -1) {
+				opnaCtrl_.setVolumeSSG(attrib.channelInSource, step.getVolume());
+			}
 			// Set instrument
 			if (step.getInstrumentNumber() != -1) {
 				if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
 							instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
 					opnaCtrl_.setInstrumentSSG(attrib.channelInSource, inst);
 			}
-			// Set volume
-			// TODO: volume set
 			// Set effect
 			// TODO: effect set
 			// Set key
@@ -497,15 +502,13 @@ int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int st
 }
 
 void BambooTracker::setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume)
-{
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setVolume(volume);
+{	
+	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume));
 }
 
 void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setVolume(-1);
+	comMan_.invoke(std::make_unique<EraseVolumeInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 std::string BambooTracker::getStepEffectString(int songNum, int trackNum, int orderNum, int stepNum) const

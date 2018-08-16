@@ -81,7 +81,11 @@ SOURCES += \
     gui/command/pattern/set_instrument_to_step_qt_command.cpp \
     command/pattern/set_instrument_to_step_command.cpp \
     gui/command/pattern/erase_instrument_in_step_qt_command.cpp \
-    command/pattern/erase_instrument_in_step_command.cpp
+    command/pattern/erase_instrument_in_step_command.cpp \
+    gui/command/pattern/set_volume_to_step_qt_command.cpp \
+    command/pattern/set_volume_to_step_command.cpp \
+    gui/command/pattern/erase_volume_in_step_qt_command.cpp \
+    command/pattern/erase_volume_in_step_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -149,7 +153,11 @@ HEADERS += \
     gui/command/pattern/set_instrument_to_step_qt_command.hpp \
     command/pattern/set_instrument_to_step_command.hpp \
     gui/command/pattern/erase_instrument_in_step_qt_command.hpp \
-    command/pattern/erase_instrument_in_step_command.hpp
+    command/pattern/erase_instrument_in_step_command.hpp \
+    gui/command/pattern/set_volume_to_step_qt_command.hpp \
+    command/pattern/set_volume_to_step_command.hpp \
+    gui/command/pattern/erase_volume_in_step_qt_command.hpp \
+    command/pattern/erase_volume_in_step_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \
