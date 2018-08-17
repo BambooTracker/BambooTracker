@@ -508,22 +508,36 @@ void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int
 	comMan_.invoke(std::make_unique<EraseVolumeInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
-std::string BambooTracker::getStepEffectString(int songNum, int trackNum, int orderNum, int stepNum) const
+std::string BambooTracker::getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum) const
 {
 	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).getEffectString();
+			.getStep(stepNum).getEffectID();
 }
 
-void BambooTracker::setStepEffectString(int songNum, int trackNum, int orderNum, int stepNum, std::string str)
+void BambooTracker::setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, std::string id)
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setEffectString(str);
+	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, id));
 }
 
-void BambooTracker::eraseEffectString(int songNum, int trackNum, int orderNum, int stepNum)
+int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum) const
 {
 	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).setEffectString(u8"---");
+			.getStep(stepNum).getEffectValue();
+}
+
+void BambooTracker::setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int value)
+{
+	comMan_.invoke(std::make_unique<SetEffectValueToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, value));
+}
+
+void BambooTracker::eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	comMan_.invoke(std::make_unique<EraseEffectInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+}
+
+void BambooTracker::eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	comMan_.invoke(std::make_unique<EraseEffectValueInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const

@@ -12,6 +12,7 @@
 #include <QRect>
 #include <QColor>
 #include <QUndoStack>
+#include <QString>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "module.hpp"
@@ -62,7 +63,7 @@ private:
 	int widthSpace_;
 	int stepNumWidth_;
 	int trackWidth_;
-	int toneNameWidth_, instWidth_, volWidth_, effWidth_;
+	int toneNameWidth_, instWidth_, volWidth_, effIDWidth_, effValWidth_;
 	int TracksWidthFromLeftToEnd_;
 	int headerHeight_;
 	int curRowBaselineY_;
@@ -73,7 +74,8 @@ private:
 	QColor selTextColor_, selCellColor_;
 	QColor hovCellColor_;
 	QColor defStepNumColor_, mkStepNumColor_;
-	QColor toneColor_, instColor_, volColor_, effColor_;
+	QColor toneColor_, instColor_, volColor_, effIDColor_, effValColor_;
+	QColor errorColor_;
 	QColor headerTextColor_, headerRowColor_;
 	QColor patternMaskColor_;
 	QColor borderColor_;
@@ -105,12 +107,18 @@ private:
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
 
-	void enterToneDataFMSSG(int key);
+	bool enterToneDataFMSSG(int key);
 	void setStepKeyOn(Note note, int octave);
 	bool enterInstrumentDataFMSSG(int key);
 	void setStepInstrument(int num);
 	bool enterVolumeDataFMSSG(int key);
 	void setStepVolume(int volume);
+	bool enterEffectIdFM(int key);
+	bool enterEffectIdSSG(int key);
+	void setStepEffectID(QString str);
+	void eraseStepEffect();
+	bool enterEffectValueFMSSG(int key);
+	void setStepEffectValue(int value);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

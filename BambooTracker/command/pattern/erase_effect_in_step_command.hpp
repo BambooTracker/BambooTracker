@@ -1,14 +1,14 @@
 #pragma once
 
 #include "abstruct_command.hpp"
-#include <string>
 #include <memory>
+#include <string>
 #include "module.hpp"
 
-class EraseNoteInStepCommand : public AbstructCommand
+class EraseEffectInStepCommand : public AbstructCommand
 {
 public:
-	EraseNoteInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);
+	EraseEffectInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);
 	void redo() override;
 	void undo() override;
 	int getID() const override;
@@ -16,6 +16,6 @@ public:
 private:
 	std::weak_ptr<Module> mod_;
 	int song_, track_, order_, step_;
-	int prevNote_, prevInst_, prevVol_, prevEffVal_;
 	std::string prevEffID_;
+	int prevEffVal_;
 };

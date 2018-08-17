@@ -15,3 +15,7 @@
 #include "./pattern/erase_instrument_in_step_command.hpp"
 #include "./pattern/set_volume_to_step_command.hpp"
 #include "./pattern/erase_volume_in_step_command.hpp"
+#include "./pattern/set_effect_id_to_step_command.hpp"
+#include "./pattern/erase_effect_in_step_command.hpp"
+#include "./pattern/set_effect_value_to_step_command.hpp"
+#include "./pattern/erase_effect_value_in_step_command.hpp"

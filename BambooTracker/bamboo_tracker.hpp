@@ -93,9 +93,12 @@ public:
 	int getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume);
 	void eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum);
-	std::string getStepEffectString(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepEffectString(int songNum, int trackNum, int orderNum, int stepNum, std::string str);
-	void eraseEffectString(int songNum, int trackNum, int orderNum, int stepNum);
+	std::string getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum) const;
+	void setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, std::string id);
+	int getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum) const;
+	void setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int value);
+	void eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum);
+	void eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum);
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 
 private:

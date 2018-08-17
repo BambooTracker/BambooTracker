@@ -16,8 +16,11 @@ public:
 	int getVolume() const;
 	void setVolume(int volume);
 
-	std::string getEffectString() const;
-	void setEffectString(std::string str);
+	std::string getEffectID() const;
+	void setEffectID(std::string str);
+
+	int getEffectValue() const;
+	void setEffectValue(int v);
 
 private:
 	/// noteNum_
@@ -33,5 +36,9 @@ private:
 	///		0<=: volume level
 	///		 -1: none
 	int vol_;
-	std::string effStr_;
+	std::string effID_;
+	/// effVal_
+	///		0<=: effect value
+	///		 -1: none
+	int effVal_;
 };

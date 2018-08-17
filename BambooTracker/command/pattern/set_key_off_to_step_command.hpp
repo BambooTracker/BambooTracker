@@ -16,6 +16,6 @@ public:
 private:
 	std::weak_ptr<Module> mod_;
 	int song_, track_, order_, step_;
-	int prevNote_, prevInst_, prevVol_;
-	std::string prevEff_;
+	int prevNote_, prevInst_, prevVol_, prevEffVal_;
+	std::string prevEffID_;
 };

@@ -1,7 +1,11 @@
 #include "step.hpp"
 
 Step::Step()
-	: noteNum_(-1), instNum_(-1), vol_(-1), effStr_(u8"---")
+	: noteNum_(-1),
+	  instNum_(-1),
+	  vol_(-1),
+	  effID_("--"),
+	  effVal_(-1)
 {
 }
 
@@ -35,12 +39,22 @@ void Step::setVolume(int volume)
 	vol_ = volume;
 }
 
-std::string Step::getEffectString() const
+std::string Step::getEffectID() const
 {
-	return effStr_;
+	return effID_;
 }
 
-void Step::setEffectString(std::string str)
+void Step::setEffectID(std::string str)
 {
-	effStr_ = str;
+	effID_ = str;
+}
+
+int Step::getEffectValue() const
+{
+	return effVal_;
+}
+
+void Step::setEffectValue(int v)
+{
+	effVal_ = v;
 }
