@@ -62,8 +62,10 @@ private:
 
 	int widthSpace_;
 	int stepNumWidth_;
-	int trackWidth_;
-	int toneNameWidth_, instWidth_, volWidth_, effIDWidth_, effValWidth_;
+	int trackFMWidth_, trackSSGWidth_;
+	int toneNameWidth_, instWidth_;
+	int volFMWidth_, volSSGWidth_;
+	int effIDWidth_, effValWidth_;
 	int TracksWidthFromLeftToEnd_;
 	int headerHeight_;
 	int curRowBaselineY_;

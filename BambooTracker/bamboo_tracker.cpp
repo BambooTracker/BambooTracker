@@ -71,7 +71,9 @@ void BambooTracker::removeInstrument(int num)
 
 std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
 {
-	return instMan_.getInstrumentSharedPtr(num)->clone();
+	std::shared_ptr<AbstructInstrument> inst = instMan_.getInstrumentSharedPtr(num);
+	if (inst == nullptr) return std::unique_ptr<AbstructInstrument>();
+	else return inst->clone();
 }
 
 void BambooTracker::pasteInstrument(int num, int refNum)
