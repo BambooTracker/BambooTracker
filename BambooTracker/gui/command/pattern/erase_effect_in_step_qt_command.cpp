@@ -18,5 +18,5 @@ void EraseEffectInStepQtCommand::undo()
 
 int EraseEffectInStepQtCommand::id() const
 {
-	return 0x29;
+	return 0x28;
 }

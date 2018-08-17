@@ -1,6 +1,6 @@
-#include "erase_note_in_step_command.hpp"
+#include "erase_step_command.hpp"
 
-EraseNoteInStepCommand::EraseNoteInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
+EraseStepCommand::EraseStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
@@ -15,7 +15,7 @@ EraseNoteInStepCommand::EraseNoteInStepCommand(std::weak_ptr<Module> mod, int so
 	prevEffVal_ = st.getEffectValue();
 }
 
-void EraseNoteInStepCommand::redo()
+void EraseStepCommand::redo()
 {
 	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
 	st.setNoteNumber(-1);
@@ -25,7 +25,7 @@ void EraseNoteInStepCommand::redo()
 	st.setEffectValue(-1);
 }
 
-void EraseNoteInStepCommand::undo()
+void EraseStepCommand::undo()
 {
 	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
 	st.setNoteNumber(prevNote_);
@@ -35,7 +35,7 @@ void EraseNoteInStepCommand::undo()
 	st.setEffectValue(prevEffVal_);
 }
 
-int EraseNoteInStepCommand::getID() const
+int EraseStepCommand::getID() const
 {
-	return 0x23;
+	return 0x22;
 }

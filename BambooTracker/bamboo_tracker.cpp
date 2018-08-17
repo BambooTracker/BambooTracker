@@ -475,7 +475,7 @@ void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int s
 
 void BambooTracker::eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum)
 {
-	comMan_.invoke(std::make_unique<EraseNoteInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+	comMan_.invoke(std::make_unique<EraseStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
 int BambooTracker::getStepInstrument(int songNum, int trackNum, int orderNum, int stepNum) const

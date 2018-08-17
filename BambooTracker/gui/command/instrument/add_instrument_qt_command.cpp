@@ -60,5 +60,5 @@ void AddInstrumentQtCommand::redo()
 
 int AddInstrumentQtCommand::id() const
 {
-	return 0x11;
+	return 0x10;
 }

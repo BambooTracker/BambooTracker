@@ -18,5 +18,5 @@ void EraseInstrumentInStepQtCommand::undo()
 
 int EraseInstrumentInStepQtCommand::id() const
 {
-	return 0x25;
+	return 0x24;
 }

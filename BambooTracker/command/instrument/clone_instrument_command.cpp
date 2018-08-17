@@ -17,5 +17,5 @@ void CloneInstrumentCommand::undo()
 
 int CloneInstrumentCommand::getID() const
 {
-	return 0x15;
+	return 0x14;
 }

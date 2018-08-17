@@ -5,10 +5,10 @@
 #include <memory>
 #include "module.hpp"
 
-class EraseNoteInStepCommand : public AbstructCommand
+class EraseStepCommand : public AbstructCommand
 {
 public:
-	EraseNoteInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);
+	EraseStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);
 	void redo() override;
 	void undo() override;
 	int getID() const override;

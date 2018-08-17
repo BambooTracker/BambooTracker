@@ -73,8 +73,6 @@ SOURCES += \
     gui/instrument_editor/instrument_editor_ssg_form.cpp \
     gui/line_read_only_spin_box.cpp \
     gui/command/pattern/set_key_off_to_step_qt_command.cpp \
-    gui/command/pattern/erase_note_in_step_qt_command.cpp \
-    command/pattern/erase_note_in_step_command.cpp \
     command/pattern/set_key_off_to_step_command.cpp \
     command/pattern/set_key_on_to_step_command.cpp \
     gui/command/pattern/set_key_on_to_step_qt_command.cpp \
@@ -97,7 +95,9 @@ SOURCES += \
     command/pattern/insert_step_command.cpp \
     command/pattern/delete_previous_step_command.cpp \
     gui/command/pattern/insert_step_qt_command.cpp \
-    gui/command/pattern/delete_previous_step_qt_command.cpp
+    gui/command/pattern/delete_previous_step_qt_command.cpp \
+    gui/command/pattern/erase_step_qt_command.cpp \
+    command/pattern/erase_step_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -155,8 +155,6 @@ HEADERS += \
     gui/instrument_editor/instrument_editor_ssg_form.hpp \
     gui/line_read_only_spin_box.hpp \
     gui/command/pattern/set_key_off_to_step_qt_command.hpp \
-    gui/command/pattern/erase_note_in_step_qt_command.hpp \
-    command/pattern/erase_note_in_step_command.hpp \
     command/pattern/set_key_off_to_step_command.hpp \
     gui/command/pattern/pattern_commands_qt.hpp \
     command/pattern/set_key_on_to_step_command.hpp \
@@ -181,7 +179,9 @@ HEADERS += \
     command/pattern/insert_step_command.hpp \
     command/pattern/delete_previous_step_command.hpp \
     gui/command/pattern/insert_step_qt_command.hpp \
-    gui/command/pattern/delete_previous_step_qt_command.hpp
+    gui/command/pattern/delete_previous_step_qt_command.hpp \
+    gui/command/pattern/erase_step_qt_command.hpp \
+    command/pattern/erase_step_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

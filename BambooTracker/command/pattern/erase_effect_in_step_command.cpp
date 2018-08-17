@@ -28,5 +28,5 @@ void EraseEffectInStepCommand::undo()
 
 int EraseEffectInStepCommand::getID() const
 {
-	return 0x29;
+	return 0x28;
 }

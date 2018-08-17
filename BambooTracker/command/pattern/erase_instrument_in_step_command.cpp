@@ -25,5 +25,5 @@ void EraseInstrumentInStepCommand::undo()
 
 int EraseInstrumentInStepCommand::getID() const
 {
-	return 0x25;
+	return 0x24;
 }

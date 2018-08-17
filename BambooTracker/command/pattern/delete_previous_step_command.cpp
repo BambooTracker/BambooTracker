@@ -36,5 +36,5 @@ void DeletePreviousStepCommand::undo()
 
 int DeletePreviousStepCommand::getID() const
 {
-	return 0x2d;
+	return 0x2c;
 }

@@ -31,7 +31,7 @@ void SetVolumeToStepCommand::undo()
 
 int SetVolumeToStepCommand::getID() const
 {
-	return 0x26;
+	return 0x25;
 }
 
 bool SetVolumeToStepCommand::mergeWith(const AbstructCommand* other)

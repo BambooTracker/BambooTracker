@@ -62,5 +62,5 @@ void RemoveInstrumentQtCommand::redo()
 
 int RemoveInstrumentQtCommand::id() const
 {
-	return 0x12;
+	return 0x11;
 }

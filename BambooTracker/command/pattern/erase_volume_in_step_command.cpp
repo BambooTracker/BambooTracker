@@ -25,5 +25,5 @@ void EraseVolumeInStepCommand::undo()
 
 int EraseVolumeInStepCommand::getID() const
 {
-	return 0x27;
+	return 0x26;
 }

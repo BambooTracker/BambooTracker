@@ -24,7 +24,7 @@ void SetVolumeToStepQtCommand::undo()
 
 int SetVolumeToStepQtCommand::id() const
 {
-	return 0x26;
+	return 0x25;
 }
 
 bool SetVolumeToStepQtCommand::mergeWith(const QUndoCommand* other)

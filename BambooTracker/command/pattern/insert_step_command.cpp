@@ -21,5 +21,5 @@ void InsertStepCommand::undo()
 
 int InsertStepCommand::getID() const
 {
-	return 0x2c;
+	return 0x2b;
 }

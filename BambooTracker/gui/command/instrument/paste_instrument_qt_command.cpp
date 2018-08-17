@@ -56,5 +56,5 @@ void PasteInstrumentQtCommand::undo()
 
 int PasteInstrumentQtCommand::id() const
 {
-	return 0x14;
+	return 0x13;
 }

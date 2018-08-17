@@ -18,5 +18,5 @@ void InsertStepQtCommand::undo()
 
 int InsertStepQtCommand::id() const
 {
-	return 0x2c;
+	return 0x2b;
 }

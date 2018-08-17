@@ -10,7 +10,7 @@
 /********** Pattern edit **********/
 #include "./pattern/set_key_on_to_step_command.hpp"
 #include "./pattern/set_key_off_to_step_command.hpp"
-#include "./pattern/erase_note_in_step_command.hpp"
+#include "./pattern/erase_step_command.hpp"
 #include "./pattern/set_instrument_to_step_command.hpp"
 #include "./pattern/erase_instrument_in_step_command.hpp"
 #include "./pattern/set_volume_to_step_command.hpp"

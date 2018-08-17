@@ -30,5 +30,5 @@ void SetKeyOnToStepCommand::undo()
 
 int SetKeyOnToStepCommand::getID() const
 {
-	return 0x21;
+	return 0x20;
 }

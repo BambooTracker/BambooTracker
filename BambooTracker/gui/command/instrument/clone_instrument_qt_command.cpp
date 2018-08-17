@@ -62,5 +62,5 @@ void CloneInstrumentQtCommand::undo()
 
 int CloneInstrumentQtCommand::id() const
 {
-	return 0x15;
+	return 0x14;
 }

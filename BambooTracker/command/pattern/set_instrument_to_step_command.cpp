@@ -27,7 +27,7 @@ void SetInstrumentToStepCommand::undo()
 
 int SetInstrumentToStepCommand::getID() const
 {
-	return 0x24;
+	return 0x23;
 }
 
 bool SetInstrumentToStepCommand::mergeWith(const AbstructCommand* other)

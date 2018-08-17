@@ -18,5 +18,5 @@ void EraseVolumeInStepQtCommand::undo()
 
 int EraseVolumeInStepQtCommand::id() const
 {
-	return 0x27;
+	return 0x26;
 }

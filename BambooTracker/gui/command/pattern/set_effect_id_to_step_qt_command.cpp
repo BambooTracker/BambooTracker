@@ -20,7 +20,7 @@ void SetEffectIDToStepQtCommand::undo()
 
 int SetEffectIDToStepQtCommand::id() const
 {
-	return 0x28;
+	return 0x27;
 }
 
 bool SetEffectIDToStepQtCommand::mergeWith(const QUndoCommand* other)

@@ -18,5 +18,5 @@ void DeletePreviousStepQtCommand::undo()
 
 int DeletePreviousStepQtCommand::id() const
 {
-	return 0x2d;
+	return 0x2c;
 }

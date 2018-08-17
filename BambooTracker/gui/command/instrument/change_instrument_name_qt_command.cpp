@@ -64,5 +64,5 @@ void ChangeInstrumentNameQtCommand::undo()
 
 int ChangeInstrumentNameQtCommand::id() const
 {
-	return 0x13;
+	return 0x12;
 }

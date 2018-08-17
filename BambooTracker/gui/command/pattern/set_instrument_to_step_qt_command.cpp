@@ -20,7 +20,7 @@ void SetInstrumentToStepQtCommand::undo()
 
 int SetInstrumentToStepQtCommand::id() const
 {
-	return 0x24;
+	return 0x23;
 }
 
 bool SetInstrumentToStepQtCommand::mergeWith(const QUndoCommand* other)

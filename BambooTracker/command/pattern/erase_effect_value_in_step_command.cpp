@@ -25,5 +25,5 @@ void EraseEffectValueInStepCommand::undo()
 
 int EraseEffectValueInStepCommand::getID() const
 {
-	return 0x2b;
+	return 0x2a;
 }

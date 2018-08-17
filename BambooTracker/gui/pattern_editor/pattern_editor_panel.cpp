@@ -636,7 +636,7 @@ bool PatternEditorPanel::enterToneDataFMSSG(int key)
 		return true;
 	case Qt::Key_Delete:
 		bt_->eraseStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
-		comStack_.lock()->push(new EraseNoteInStepQtCommand(this));
+		comStack_.lock()->push(new EraseStepQtCommand(this));
 		moveCursorToDown(1);
 		return true;
 	default:

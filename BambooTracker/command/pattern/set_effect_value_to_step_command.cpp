@@ -27,7 +27,7 @@ void SetEffectValueToStepCommand::undo()
 
 int SetEffectValueToStepCommand::getID() const
 {
-	return 0x2a;
+	return 0x29;
 }
 
 bool SetEffectValueToStepCommand::mergeWith(const AbstructCommand* other)
