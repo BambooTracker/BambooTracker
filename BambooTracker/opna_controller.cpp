@@ -68,6 +68,28 @@ void OPNAController::keyOffSSG(int ch)
 	opna_.setRegister(0x08 + ch, 0);	// Volume 0
 }
 
+void OPNAController::resetChannelEnvelope(int ch)
+{
+	keyOffFM(ch);
+
+	// Change register only
+	int prev = envFM_[ch]->getParameterValue(FMParameter::RR1);
+	writeFMEnveropeParameterToRegister(ch, FMParameter::RR1, 127);
+	envFM_[ch]->setParameterValue(FMParameter::RR1, prev);
+
+	prev = envFM_[ch]->getParameterValue(FMParameter::RR2);
+	writeFMEnveropeParameterToRegister(ch, FMParameter::RR2, 127);
+	envFM_[ch]->setParameterValue(FMParameter::RR2, prev);
+
+	prev = envFM_[ch]->getParameterValue(FMParameter::RR3);
+	writeFMEnveropeParameterToRegister(ch, FMParameter::RR3, 127);
+	envFM_[ch]->setParameterValue(FMParameter::RR3, prev);
+
+	prev = envFM_[ch]->getParameterValue(FMParameter::RR4);
+	writeFMEnveropeParameterToRegister(ch, FMParameter::RR4, 127);
+	envFM_[ch]->setParameterValue(FMParameter::RR4, prev);
+}
+
 /********** Set instrument **********/
 void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 {
@@ -129,7 +151,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMParameter para
 	case FMParameter::TL1:
 		data = envFM_[ch]->getParameterValue(FMParameter::TL1);
 		// Adjust volume
-		if (envFM_[ch]->getParameterValue(FMParameter::AL) == 7) {
+		if (isCareer(0, envFM_[ch]->getParameterValue(FMParameter::AL))) {
 			data = calculateTL(ch, data);
 			envFM_[ch]->setParameterValue(param, data);	// Update
 		}
@@ -171,16 +193,9 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMParameter para
 	case FMParameter::TL2:
 		data = envFM_[ch]->getParameterValue(FMParameter::TL2);
 		// Adjust volume
-		switch (envFM_[ch]->getParameterValue(FMParameter::AL)) {
-		case 4:
-		case 5:
-		case 6:
-		case 7:
+		if (isCareer(1, envFM_[ch]->getParameterValue(FMParameter::AL))) {
 			data = calculateTL(ch, data);
 			envFM_[ch]->setParameterValue(param, data);	// Update
-			break;
-		default:
-			break;
 		}
 		opna_.setRegister(0x40 + bch + 8, data);
 		break;
@@ -220,15 +235,9 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMParameter para
 	case FMParameter::TL3:
 		data = envFM_[ch]->getParameterValue(FMParameter::TL3);
 		// Adjust volume
-		switch (envFM_[ch]->getParameterValue(FMParameter::AL)) {
-		case 5:
-		case 6:
-		case 7:
+		if (isCareer(2, envFM_[ch]->getParameterValue(FMParameter::AL))) {
 			data = calculateTL(ch, data);
 			envFM_[ch]->setParameterValue(param, data);	// Update
-			break;
-		default:
-			break;
 		}
 		opna_.setRegister(0x40 + bch + 4, data);
 		break;
@@ -315,14 +324,18 @@ void OPNAController::setInstrumentFMOperatorEnable(int envNum, int opNum)
 {
 	for (int ch = 0; ch < 6; ++ch) {
 		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getEnvelopeNumber() == envNum) {
-			uint32_t ch = getFmChannelMask(ch);
-			if (refInstFM_[ch]->getOperatorEnable(opNum)) {
+			bool enable = refInstFM_[ch]->getOperatorEnable(opNum);
+			envFM_[ch]->setOperatorEnable(opNum, enable);
+			if (enable) {
 				fmOpEnables_[ch] |= (1 << opNum);
 			}
 			else {
 				fmOpEnables_[ch] &= ~(1 << opNum);
 			}
-			if (isKeyOnFM_[ch]) opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | ch);
+			if (isKeyOnFM_[ch]) {
+				uint32_t mask = getFmChannelMask(ch);
+				opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | mask);
+			}
 		}
 	}
 }
@@ -360,6 +373,13 @@ bool OPNAController::isKeyOnFM(int ch) const
 bool OPNAController::isKeyOnSSG(int ch) const
 {
 	return (((0x09 << ch) & ~mixerSSG_) > 0);
+}
+
+bool OPNAController::enableEnvelopeReset(int ch) const
+{
+	return (envFM_[ch] == nullptr)
+			? false
+			: true;	// UNDONE: envelope reset selection
 }
 
 ToneDetail OPNAController::getFMTone(int ch) const
@@ -481,9 +501,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	opna_.setRegister(0x30 + offset, data1);
 
 	data1 = refInstFM_[ch]->getEnvelopeParameter(FMParameter::TL1);
-	// Adjust volume
-	if (al == 7)
-		data1 = calculateTL(ch, data1);
+	if (isCareer(0, al)) data1 = calculateTL(ch, data1);	// Adjust volume
 	envFM_[ch]->setParameterValue(FMParameter::TL1, data1);
 	opna_.setRegister(0x40 + offset, data1);
 
@@ -529,17 +547,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	opna_.setRegister(0x30 + offset, data1);
 
 	data1 = refInstFM_[ch]->getEnvelopeParameter(FMParameter::TL2);
-	// Adjust volume
-	switch (al) {
-	case 4:
-	case 5:
-	case 6:
-	case 7:
-		data1 = calculateTL(ch, data1);
-		break;
-	default:
-		break;
-	}
+	if (isCareer(1, al)) data1 = calculateTL(ch, data1);	// Adjust volume
 	envFM_[ch]->setParameterValue(FMParameter::TL2, data1);
 	opna_.setRegister(0x40 + offset, data1);
 
@@ -585,16 +593,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	opna_.setRegister(0x30 + offset, data1);
 
 	data1 = refInstFM_[ch]->getEnvelopeParameter(FMParameter::TL3);
-	// Adjust volume
-	switch (al) {
-	case 5:
-	case 6:
-	case 7:
-		data1 = calculateTL(ch, data1);
-		break;
-	default:
-		break;
-	}
+	if (isCareer(3, al)) data1 = calculateTL(ch, data1);	// Adjust volume
 	envFM_[ch]->setParameterValue(FMParameter::TL3, data1);
 	opna_.setRegister(0x40 + offset, data1);
 
@@ -640,8 +639,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	opna_.setRegister(0x30 + offset, data1);
 
 	data1 = refInstFM_[ch]->getEnvelopeParameter(FMParameter::TL4);
-	// Adjust volume
-	data1 = calculateTL(ch, data1);
+	data1 = calculateTL(ch, data1);	// Adjust volume
 	envFM_[ch]->setParameterValue(FMParameter::TL4, data1);
 	opna_.setRegister(0x40 + offset, data1);
 
@@ -675,4 +673,35 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	envFM_[ch]->setParameterValue(FMParameter::SSGEG4, tmp);
 	data1 = judgeSSEGRegisterValue(tmp);
 	opna_.setRegister(0x90 + offset, data1);
+}
+
+bool OPNAController::isCareer(int op, int al)
+{
+	switch (op) {
+	case 0:
+		return (al == 7);
+	case 1:
+		switch (al) {
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			return true;
+		default:
+			return false;
+		}
+	case 2:
+		switch (al) {
+		case 5:
+		case 6:
+		case 7:
+			return true;
+		default:
+			return false;
+		}
+	case 3:
+		return true;
+	default:
+		return false;
+	}
 }

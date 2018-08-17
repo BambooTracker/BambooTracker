@@ -264,14 +264,45 @@ bool BambooTracker::isPlaySong() const
 	return  ((playState_ & 0x01) > 0);
 }
 
-void BambooTracker::stepDown()
+/********** Stream events **********/
+int BambooTracker::streamCountUp()
 {
-	if (playState_ & 0x02) {	// Foward current step
-		curOrderNum_ = nextReadStepOrder_;
-		curStepNum_ = nextReadStepStep_;
+	int state = tickCounter_.countUp();
+
+	if (state > 0) {
+		readTick(state);
 	}
-	else {	// First read
-		playState_ |= 0x02;
+	else if (!state) {
+		stepDown();
+		readStep();
+	}
+
+	return state;
+}
+
+void BambooTracker::readTick(int rest)
+{
+	if (!(playState_ & 0x02)) return;	// When it has not read first step
+
+	if (rest == 1) {
+		findNextStep();
+
+		auto& song = mod_->getSong(curSongNum_);
+		for (auto& attrib : modStyle_.trackAttribs) {
+			auto& step = song.getTrack(attrib.number)
+						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
+			switch (attrib.source) {
+			case SoundSource::FM:
+				// Channel envelope reset before next key on
+				if (step.getNoteNumber() >= 0 && opnaCtrl_.enableEnvelopeReset(attrib.channelInSource)) {
+					opnaCtrl_.resetChannelEnvelope(attrib.channelInSource);
+				}
+				break;
+
+			case SoundSource::SSG:
+				break;
+			}
+		}
 	}
 }
 
@@ -295,6 +326,17 @@ void BambooTracker::findNextStep()
 	}
 	else {
 		++nextReadStepStep_;
+	}
+}
+
+void BambooTracker::stepDown()
+{
+	if (playState_ & 0x02) {	// Foward current step
+		curOrderNum_ = nextReadStepOrder_;
+		curStepNum_ = nextReadStepStep_;
+	}
+	else {	// First read
+		playState_ |= 0x02;
 	}
 }
 
@@ -369,51 +411,6 @@ void BambooTracker::readStep()
 		}
 		}
 	}
-}
-
-void BambooTracker::readTick(int rest)
-{
-	if (!(playState_ & 0x02)) return;	// When it has not read first step
-
-	if (rest == 1) {
-		findNextStep();
-
-		auto& song = mod_->getSong(curSongNum_);
-		for (auto& attrib : modStyle_.trackAttribs) {
-			auto& step = song.getTrack(attrib.number)
-						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
-			switch (attrib.source) {
-			case SoundSource::FM:
-				// Key off before next key on
-				if (step.getNoteNumber() >= 0 && opnaCtrl_.isKeyOnFM(attrib.channelInSource)) {
-					opnaCtrl_.keyOffFM(attrib.channelInSource);
-				}
-				break;
-
-			case SoundSource::SSG:
-				// Key off before next key on
-				if (step.getNoteNumber() >= 0 && opnaCtrl_.isKeyOnSSG(attrib.channelInSource))
-					opnaCtrl_.keyOffSSG(attrib.channelInSource);
-				break;
-			}
-		}
-	}
-}
-
-/********** Stream events **********/
-int BambooTracker::streamCountUp()
-{
-	int state = tickCounter_.countUp();
-
-	if (state > 0) {
-		readTick(state);
-	}
-	else if (!state) {
-		stepDown();
-		readStep();
-	}
-
-	return state;
 }
 
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)

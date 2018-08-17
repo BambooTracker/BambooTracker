@@ -28,8 +28,10 @@ public:
 	// Key on-off
 	void keyOnFM(int ch, Note note, int octave, int fine);
 	void keyOnSSG(int ch, Note note, int octave, int fine);
+	/// envReset: whether it is envelope reset key off 1 count before next key on, or not
 	void keyOffFM(int ch);
 	void keyOffSSG(int ch);
+	void resetChannelEnvelope(int ch);
 
 	// Set Instrument
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
@@ -45,6 +47,7 @@ public:
 	// Chip details
 	bool isKeyOnFM(int ch) const;
 	bool isKeyOnSSG(int ch) const;
+	bool enableEnvelopeReset(int ch) const;
 	ToneDetail getFMTone(int ch) const;
 	ToneDetail getSSGTone(int ch) const;
 
@@ -71,6 +74,8 @@ private:
 	uint32_t getFMChannelOffset(int ch);
 	void writeFMEnvelopeToRegistersFromInstrument(int ch);
 	void writeFMEnveropeParameterToRegister(int ch, FMParameter param, int value);
+
+	bool isCareer(int op, int al);
 
 	inline uint8_t judgeSSEGRegisterValue(int v) {
 		return (v == -1) ? 0 : (0x08 + v);
