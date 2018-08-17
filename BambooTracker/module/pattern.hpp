@@ -7,12 +7,15 @@
 class Pattern
 {
 public:
-	explicit Pattern(int num);
+	explicit Pattern(int n);
 
-	Step& getStep(int num);
+	Step& getStep(int n);
 
 	size_t getSize() const;
 	void changeSize(size_t size);
+
+	void insertStep(int n);
+	void deletePreviousStep(int n);
 
 private:
 	int num_;

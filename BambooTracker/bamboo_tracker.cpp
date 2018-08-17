@@ -542,6 +542,16 @@ void BambooTracker::eraseStepEffectValue(int songNum, int trackNum, int orderNum
 	comMan_.invoke(std::make_unique<EraseEffectValueInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
+void BambooTracker::insertStep(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	comMan_.invoke(std::make_unique<InsertStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+}
+
+void BambooTracker::deletePreviousStep(int songNum, int trackNum, int orderNum, int stepNum)
+{
+	comMan_.invoke(std::make_unique<DeletePreviousStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+}
+
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const
 {
 	size_t size = 0;

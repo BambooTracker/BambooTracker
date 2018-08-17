@@ -99,6 +99,8 @@ public:
 	void setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int value);
 	void eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum);
 	void eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum);
+	void deletePreviousStep(int songNum, int trackNum, int orderNum, int stepNum);
+	void insertStep(int songNum, int trackNum, int orderNum, int stepNum);
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 
 private:

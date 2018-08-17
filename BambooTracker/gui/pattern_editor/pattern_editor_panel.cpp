@@ -634,7 +634,7 @@ bool PatternEditorPanel::enterToneDataFMSSG(int key)
 		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 		moveCursorToDown(1);
 		return true;
-	case Qt::Key_Backspace:
+	case Qt::Key_Delete:
 		bt_->eraseStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new EraseNoteInStepQtCommand(this));
 		moveCursorToDown(1);
@@ -672,7 +672,7 @@ bool PatternEditorPanel::enterInstrumentDataFMSSG(int key)
 	case Qt::Key_D:	setStepInstrument(0xd);	return true;
 	case Qt::Key_E:	setStepInstrument(0xe);	return true;
 	case Qt::Key_F:	setStepInstrument(0xf);	return true;
-	case Qt::Key_Backspace:
+	case Qt::Key_Delete:
 		bt_->eraseStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new EraseInstrumentInStepQtCommand(this));
 		moveCursorToDown(1);
@@ -710,7 +710,7 @@ bool PatternEditorPanel::enterVolumeDataFMSSG(int key)
 	case Qt::Key_D:	setStepVolume(0xd);	return true;
 	case Qt::Key_E:	setStepVolume(0xe);	return true;
 	case Qt::Key_F:	setStepVolume(0xf);	return true;
-	case Qt::Key_Backspace:
+	case Qt::Key_Delete:
 		bt_->eraseStepVolume(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new EraseVolumeInStepQtCommand(this));
 		moveCursorToDown(1);
@@ -742,7 +742,7 @@ bool PatternEditorPanel::enterEffectIdFM(int key)
 	switch (key) {
 	// UNDONE: effect id
 	case Qt::Key_A:			setStepEffectID("A");	return true;
-	case Qt::Key_Backspace:	eraseStepEffect();		return true;
+	case Qt::Key_Delete:	eraseStepEffect();		return true;
 	default:	return false;
 	}
 }
@@ -752,7 +752,7 @@ bool PatternEditorPanel::enterEffectIdSSG(int key)
 	switch (key) {
 	// UNDONE: effect id
 	case Qt::Key_B:			setStepEffectID("B");	return true;
-	case Qt::Key_Backspace:	eraseStepEffect();		return true;
+	case Qt::Key_Delete:	eraseStepEffect();		return true;
 	default:	return false;
 	}
 }
@@ -793,7 +793,7 @@ bool PatternEditorPanel::enterEffectValueFMSSG(int key)
 	case Qt::Key_D:	setStepEffectValue(0xd);	return true;
 	case Qt::Key_E:	setStepEffectValue(0xe);	return true;
 	case Qt::Key_F:	setStepEffectValue(0xf);	return true;
-	case Qt::Key_Backspace:
+	case Qt::Key_Delete:
 		bt_->eraseStepEffectValue(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new EraseEffectValueInStepQtCommand(this));
 		moveCursorToDown(1);
@@ -845,6 +845,22 @@ void PatternEditorPanel::setCurrentOrder(int num)
 	moveCursorToDown(dif);
 }
 
+void PatternEditorPanel::insertStep()
+{
+	bt_->insertStep(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+	comStack_.lock()->push(new InsertStepQtCommand(this));
+	moveCursorToDown(1);
+}
+
+void PatternEditorPanel::deletePreviousStep()
+{
+	if (curPos_.step) {
+		bt_->deletePreviousStep(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+		comStack_.lock()->push(new DeletePreviousStepQtCommand(this));
+		moveCursorToDown(-1);
+	}
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -881,12 +897,18 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 	case Qt::Key_Down:
 		if (bt_->isPlaySong()) {
-			return  false;
+			return false;
 		}
 		else {
 			moveCursorToDown(1);
 			return true;
 		}
+	case Qt::Key_Insert:
+		insertStep();
+		return true;
+	case Qt::Key_Backspace:
+		deletePreviousStep();
+		return true;
 	default:
 		if (!bt_->isJamMode()) {
 			// Pattern edit

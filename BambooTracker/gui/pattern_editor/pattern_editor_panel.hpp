@@ -121,6 +121,9 @@ private:
 	void eraseStepEffect();
 	bool enterEffectValueFMSSG(int key);
 	void setStepEffectValue(int value);
+
+	void insertStep();
+	void deletePreviousStep();
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

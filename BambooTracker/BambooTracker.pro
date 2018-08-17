@@ -93,7 +93,11 @@ SOURCES += \
     command/pattern/set_effect_value_to_step_command.cpp \
     gui/command/pattern/set_effect_value_to_step_qt_command.cpp \
     command/pattern/erase_effect_value_in_step_command.cpp \
-    gui/command/pattern/erase_effect_value_in_step_qt_command.cpp
+    gui/command/pattern/erase_effect_value_in_step_qt_command.cpp \
+    command/pattern/insert_step_command.cpp \
+    command/pattern/delete_previous_step_command.cpp \
+    gui/command/pattern/insert_step_qt_command.cpp \
+    gui/command/pattern/delete_previous_step_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -173,7 +177,11 @@ HEADERS += \
     command/pattern/set_effect_value_to_step_command.hpp \
     gui/command/pattern/set_effect_value_to_step_qt_command.hpp \
     command/pattern/erase_effect_value_in_step_command.hpp \
-    gui/command/pattern/erase_effect_value_in_step_qt_command.hpp
+    gui/command/pattern/erase_effect_value_in_step_qt_command.hpp \
+    command/pattern/insert_step_command.hpp \
+    command/pattern/delete_previous_step_command.hpp \
+    gui/command/pattern/insert_step_qt_command.hpp \
+    gui/command/pattern/delete_previous_step_qt_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \
