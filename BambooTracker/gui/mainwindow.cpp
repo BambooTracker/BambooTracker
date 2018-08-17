@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
+	ui->orderList->installEventFilter(this);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 ui->patternEditor, &PatternEditor::setCurrentTrack);
 	QObject::connect(ui->orderList, &OrderListEditor::currentOrderChanged,
