@@ -10,6 +10,14 @@ OPNAController::OPNAController(int clock, int rate) :
 #endif
 {
 	initChip();
+
+	for (int i = 0; i < 6; ++i) {
+		isMuteFM_[i] = false;
+	}
+
+	for (int i = 0; i < 3; ++i) {
+		isMuteSSG_[i] = false;
+	}
 }
 
 /********** Reset and initialize **********/
@@ -22,6 +30,8 @@ void OPNAController::reset()
 /********** Key on-off **********/
 void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
 {
+	if (isMuteFM(ch)) return;
+
 	uint16_t pitch = PitchConverter::getPitchFM(note, octave, fine);
 	uint32_t offset = getFMChannelOffset(ch);
 	opna_.setRegister(0xa4 + offset, pitch >> 8);
@@ -37,6 +47,8 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
 
 void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine)
 {
+	if (isMuteSSG(ch)) return;
+
 	uint16_t pitch = PitchConverter::getPitchSSG(note, octave, fine);
 	uint8_t offset = ch << 1;
 	opna_.setRegister(0x00 + offset, pitch & 0xff);
@@ -362,6 +374,31 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 	volSSG_[ch] = volume;
 
 	if (isKeyOnSSG(ch)) opna_.setRegister(0x08 + ch, volume);
+}
+
+/********** Mute **********/
+void OPNAController::setMuteFMState(int ch, bool isMute)
+{
+	isMuteFM_[ch] = isMute;
+
+	if (isMute) resetChannelEnvelope(ch);
+}
+
+void OPNAController::setMuteSSGState(int ch, bool isMute)
+{
+	isMuteSSG_[ch] = isMute;
+
+	if (isMute) keyOffSSG(ch);
+}
+
+bool OPNAController::isMuteFM(int ch)
+{
+	return isMuteFM_[ch];
+}
+
+bool OPNAController::isMuteSSG(int ch)
+{
+	return isMuteSSG_[ch];
 }
 
 /********** Chip details **********/

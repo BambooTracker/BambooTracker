@@ -70,6 +70,8 @@ public:
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
 	bool isPlaySong() const;
+	void setTrackMuteState(int trackNum, bool isMute);
+	bool isMute(int trackNum);
 
 	// Stream events
 	int streamCountUp();

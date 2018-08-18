@@ -266,6 +266,24 @@ bool BambooTracker::isPlaySong() const
 	return  ((playState_ & 0x01) > 0);
 }
 
+void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
+{
+	auto& ta = modStyle_.trackAttribs[trackNum];
+	switch (ta.source) {
+	case SoundSource::FM:	opnaCtrl_.setMuteFMState(ta.channelInSource, isMute);	break;
+	case SoundSource::SSG:	opnaCtrl_.setMuteSSGState(ta.channelInSource, isMute);	break;
+	}
+}
+
+bool BambooTracker::isMute(int trackNum)
+{
+	auto& ta = modStyle_.trackAttribs[trackNum];
+	switch (ta.source) {
+	case SoundSource::FM:	return opnaCtrl_.isMuteFM(ta.channelInSource);
+	case SoundSource::SSG:	return opnaCtrl_.isMuteSSG(ta.channelInSource);
+	}
+}
+
 /********** Stream events **********/
 int BambooTracker::streamCountUp()
 {

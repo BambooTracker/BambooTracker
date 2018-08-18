@@ -79,8 +79,9 @@ private:
 	QColor toneColor_, instColor_, volColor_, effIDColor_, effValColor_;
 	QColor errorColor_;
 	QColor headerTextColor_, headerRowColor_;
-	QColor patternMaskColor_;
+	QColor maskColor_;
 	QColor borderColor_;
+	QColor muteColor_, unmuteColor_;
 
 	int leftTrackNum_;
 	ModuleStyle modStyle_;
