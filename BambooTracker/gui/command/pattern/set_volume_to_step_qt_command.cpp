@@ -1,15 +1,11 @@
 #include "set_volume_to_step_qt_command.hpp"
 
-SetVolumeToStepQtCommand::SetVolumeToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, SoundSource src, QUndoCommand* parent)
+SetVolumeToStepQtCommand::SetVolumeToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  panel_(panel),
 	  pos_(pos),
-	  src_(src)
+	  isComplete_(false)
 {
-	switch (src) {
-	case SoundSource::FM:	isComplete_ = false;
-	case SoundSource::SSG:	isComplete_ = true;
-	}
 }
 
 void SetVolumeToStepQtCommand::redo()

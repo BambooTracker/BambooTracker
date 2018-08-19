@@ -38,14 +38,11 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	stepNumWidth_ = stepFontWidth_ * 2 + widthSpace_;
 	toneNameWidth_ = stepFontWidth_ * 3;
 	instWidth_ = stepFontWidth_ * 2;
-	volFMWidth_ = stepFontWidth_ * 2;
-	volSSGWidth_ = stepFontWidth_;
+	volWidth_ = stepFontWidth_ * 2;
 	effIDWidth_ = stepFontWidth_ * 2;
 	effValWidth_ = stepFontWidth_ * 2;
-	trackFMWidth_ = toneNameWidth_ + instWidth_ + volFMWidth_
+	trackWidth_ = toneNameWidth_ + instWidth_ + volWidth_
 					+ effIDWidth_ + effValWidth_ + stepFontWidth_ * 4;
-	trackSSGWidth_ = toneNameWidth_ + instWidth_ + volSSGWidth_
-					 + effIDWidth_ + effValWidth_ + stepFontWidth_ * 4;
 	headerHeight_ = stepFontHeight_ * 2;
 
 	/* Color */
@@ -63,7 +60,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	mkStepNumColor_ = QColor::fromRgb(255, 140, 160);
 	toneColor_ = QColor::fromRgb(210, 230, 64);
 	instColor_ = QColor::fromRgb(82, 179, 217);
-	volColor_ = QColor::fromRgb(246, 36, 89);
+	volColor_ = QColor::fromRgb(226, 156, 80);
 	effIDColor_ = QColor::fromRgb(42, 187, 155);
 	effValColor_ = QColor::fromRgb(42, 187, 155);
 	errorColor_ = QColor::fromRgb(255, 0, 0);
@@ -215,153 +212,132 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 	bool isHovTrack = (hovPos_.order == -2 && hovPos_.track == trackNum);
 	bool isHovStep = (hovPos_.track == -2 && hovPos_.order == orderNum && hovPos_.step == stepNum);
 	bool isMuteTrack = bt_->isMute(trackNum);
+	SoundSource src = modStyle_.trackAttribs[trackNum].source;
 
-	switch (modStyle_.trackAttribs[trackNum].source) {
-	case SoundSource::FM:
-	case SoundSource::SSG:
-		/* Tone name */
-		if (pos == curPos_)	// Paint current cell
-			painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
-		if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-			painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
-		int noteNum = bt_->getStepNoteNumber(curSongNum_, trackNum, orderNum, stepNum);
-		switch (noteNum) {
-		case -1:	// None
-			painter.setPen(textColor);
-			painter.drawText(offset, baseY, "---");
-			break;
-		case -2:	// Key off
-			painter.fillRect(offset, rowY + stepFontHeight_ * 2 / 5,
-							 toneNameWidth_, stepFontHeight_ / 5, toneColor_);
-			break;
-		default:	// Convert tone name
-		{
-			QString toneStr;
-			switch (noteNum % 12) {
-			case 0:		toneStr = "C-";	break;
-			case 1:		toneStr = "C#";	break;
-			case 2:		toneStr = "D-";	break;
-			case 3:		toneStr = "D#";	break;
-			case 4:		toneStr = "E-";	break;
-			case 5:		toneStr = "F-";	break;
-			case 6:		toneStr = "F#";	break;
-			case 7:		toneStr = "G-";	break;
-			case 8:		toneStr = "G#";	break;
-			case 9:		toneStr = "A-";	break;
-			case 10:	toneStr = "A#";	break;
-			case 11:	toneStr = "B-";	break;
-			}
-			painter.setPen(toneColor_);
-			painter.drawText(offset, baseY, toneStr + QString::number(noteNum / 12));
-			break;
-		}
-		}
-		if (isMuteTrack)	// Paint mute mask
-			painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, maskColor_);
-		offset += toneNameWidth_ +  stepFontWidth_;
-		pos.colInTrack = 1;
 
-		/* Instrument */
-		if (pos == curPos_)	// Paint current cell
-			painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
-		if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-			painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
-		int instNum = bt_->getStepInstrument(curSongNum_, trackNum, orderNum, stepNum);
-		if (instNum == -1) {
-			painter.setPen(textColor);
-			painter.drawText(offset, baseY, "--");
+	/* Tone name */
+	if (pos == curPos_)	// Paint current cell
+		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
+	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
+		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
+	int noteNum = bt_->getStepNoteNumber(curSongNum_, trackNum, orderNum, stepNum);
+	switch (noteNum) {
+	case -1:	// None
+		painter.setPen(textColor);
+		painter.drawText(offset, baseY, "---");
+		break;
+	case -2:	// Key off
+		painter.fillRect(offset, rowY + stepFontHeight_ * 2 / 5,
+						 toneNameWidth_, stepFontHeight_ / 5, toneColor_);
+		break;
+	default:	// Convert tone name
+	{
+		QString toneStr;
+		switch (noteNum % 12) {
+		case 0:		toneStr = "C-";	break;
+		case 1:		toneStr = "C#";	break;
+		case 2:		toneStr = "D-";	break;
+		case 3:		toneStr = "D#";	break;
+		case 4:		toneStr = "E-";	break;
+		case 5:		toneStr = "F-";	break;
+		case 6:		toneStr = "F#";	break;
+		case 7:		toneStr = "G-";	break;
+		case 8:		toneStr = "G#";	break;
+		case 9:		toneStr = "A-";	break;
+		case 10:	toneStr = "A#";	break;
+		case 11:	toneStr = "B-";	break;
 		}
-		else {
-			QColor color;
-			std::unique_ptr<AbstructInstrument> inst = bt_->getInstrument(instNum);
-			if (inst != nullptr && inst->getSoundSource() == modStyle_.trackAttribs[trackNum].source) {
-				color = instColor_;
-			}
-			else {
-				color = errorColor_;
-			}
-			painter.setPen(color);
-			painter.drawText(offset, baseY, QString("%1").arg(instNum, 2, 16, QChar('0')).toUpper());
-		}
-		if (isMuteTrack)	// Paint mute mask
-			painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, maskColor_);
-		offset += instWidth_ +  stepFontWidth_;
-		pos.colInTrack = 2;
-
-		/* Volume */
-		if (modStyle_.trackAttribs[trackNum].source == SoundSource::FM)
-		{
-			if (pos == curPos_)	// Paint current cell
-				painter.fillRect(offset - widthSpace_, rowY, volFMWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
-			if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-				painter.fillRect(offset - widthSpace_, rowY, volFMWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
-			int vol = bt_->getStepVolume(curSongNum_, trackNum, orderNum, stepNum);
-			if (vol == -1) {
-				painter.setPen(textColor);
-				painter.drawText(offset, baseY, "--");
-			}
-			else {
-				painter.setPen(volColor_);
-				painter.drawText(offset, baseY, QString("%1").arg(vol, 2, 16, QChar('0')).toUpper());
-			}
-			if (isMuteTrack)	// Paint mute mask
-				painter.fillRect(offset - widthSpace_, rowY, volFMWidth_ + stepFontWidth_, stepFontHeight_, maskColor_);
-			offset += volFMWidth_ +  stepFontWidth_;
-		}
-		else {
-			if (pos == curPos_)	// Paint current cell
-				painter.fillRect(offset - widthSpace_, rowY, volSSGWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
-			if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-				painter.fillRect(offset - widthSpace_, rowY, volSSGWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
-			int vol = bt_->getStepVolume(curSongNum_, trackNum, orderNum, stepNum);
-			if (vol == -1) {
-				painter.setPen(textColor);
-				painter.drawText(offset, baseY, "-");
-			}
-			else {
-				painter.setPen(volColor_);
-				painter.drawText(offset, baseY, QString("%1").arg(vol, 1, 16).toUpper());
-			}
-			if (isMuteTrack)	// Paint mute mask
-				painter.fillRect(offset - widthSpace_, rowY, volSSGWidth_ + stepFontWidth_, stepFontHeight_, maskColor_);
-			offset += volSSGWidth_ +  stepFontWidth_;
-		}
-		pos.colInTrack = 3;
-
-		/* Effect ID */
-		if (pos == curPos_)	// Paint current cell
-			painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, curCellColor_);
-		if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-			painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, hovCellColor_);
-		QString effStr = QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackNum, orderNum, stepNum));
-		painter.setPen((effStr == "--") ? textColor : effIDColor_);
-		painter.drawText(offset, baseY, effStr);
-		if (isMuteTrack)	// Paint mute mask
-			painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, maskColor_);
-		offset += effIDWidth_;
-		pos.colInTrack = 4;
-
-		/* Effect Value */
-		if (pos == curPos_)	// Paint current cell
-			painter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, curCellColor_);
-		if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-			painter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, hovCellColor_);
-		int effVal = bt_->getStepEffectValue(curSongNum_, trackNum, orderNum, stepNum);
-		if (effVal == -1) {
-			painter.setPen(textColor);
-			painter.drawText(offset, baseY, "--");
-		}
-		else {
-			painter.setPen(effValColor_);
-			painter.drawText(offset, baseY, QString("%1").arg(effVal, 2, 16, QChar('0')).toUpper());
-		}
-		if (isMuteTrack)	// Paint mute mask
-			painter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, maskColor_);
-
-		return (modStyle_.trackAttribs[trackNum].source == SoundSource::FM)
-				? trackFMWidth_
-				: trackSSGWidth_;
+		painter.setPen(toneColor_);
+		painter.drawText(offset, baseY, toneStr + QString::number(noteNum / 12));
+		break;
 	}
+	}
+	if (isMuteTrack)	// Paint mute mask
+		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, maskColor_);
+	offset += toneNameWidth_ +  stepFontWidth_;
+	pos.colInTrack = 1;
+
+	/* Instrument */
+	if (pos == curPos_)	// Paint current cell
+		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
+	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
+		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
+	int instNum = bt_->getStepInstrument(curSongNum_, trackNum, orderNum, stepNum);
+	if (instNum == -1) {
+		painter.setPen(textColor);
+		painter.drawText(offset, baseY, "--");
+	}
+	else {
+		std::unique_ptr<AbstructInstrument> inst = bt_->getInstrument(instNum);
+		painter.setPen((inst != nullptr && src == inst->getSoundSource())
+					   ? instColor_
+					   : errorColor_);
+		painter.drawText(offset, baseY, QString("%1").arg(instNum, 2, 16, QChar('0')).toUpper());
+	}
+	if (isMuteTrack)	// Paint mute mask
+		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, maskColor_);
+	offset += instWidth_ +  stepFontWidth_;
+	pos.colInTrack = 2;
+
+	/* Volume */
+	if (pos == curPos_)	// Paint current cell
+		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + stepFontWidth_, stepFontHeight_, curCellColor_);
+	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
+		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + stepFontWidth_, stepFontHeight_, hovCellColor_);
+	int vol = bt_->getStepVolume(curSongNum_, trackNum, orderNum, stepNum);
+	if (vol == -1) {
+		painter.setPen(textColor);
+		painter.drawText(offset, baseY, "--");
+	}
+	else {
+		QColor color;
+		switch (src) {
+		case SoundSource::FM:
+			color = volColor_;
+			break;
+		case SoundSource::SSG:
+			color = (vol < 0x10) ? volColor_ : errorColor_;
+			break;
+		}
+		painter.setPen(color);
+		painter.drawText(offset, baseY, QString("%1").arg(vol, 2, 16, QChar('0')).toUpper());
+	}
+	if (isMuteTrack)	// Paint mute mask
+		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + stepFontWidth_, stepFontHeight_, maskColor_);
+	offset += volWidth_ +  stepFontWidth_;
+	pos.colInTrack = 3;
+
+	/* Effect ID */
+	if (pos == curPos_)	// Paint current cell
+		painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, curCellColor_);
+	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
+		painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, hovCellColor_);
+	QString effStr = QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackNum, orderNum, stepNum));
+	painter.setPen((effStr == "--") ? textColor : effIDColor_);
+	painter.drawText(offset, baseY, effStr);
+	if (isMuteTrack)	// Paint mute mask
+		painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, maskColor_);
+	offset += effIDWidth_;
+	pos.colInTrack = 4;
+
+	/* Effect Value */
+	if (pos == curPos_)	// Paint current cell
+		painter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, curCellColor_);
+	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
+		painter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, hovCellColor_);
+	int effVal = bt_->getStepEffectValue(curSongNum_, trackNum, orderNum, stepNum);
+	if (effVal == -1) {
+		painter.setPen(textColor);
+		painter.drawText(offset, baseY, "--");
+	}
+	else {
+		painter.setPen(effValColor_);
+		painter.drawText(offset, baseY, QString("%1").arg(effVal, 2, 16, QChar('0')).toUpper());
+	}
+	if (isMuteTrack)	// Paint mute mask
+		painter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, maskColor_);
+
+	return trackWidth_;
 }
 
 void PatternEditorPanel::drawHeaders(int maxWidth)
@@ -372,31 +348,23 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, headerRowColor_);
 	int x, trackNum;
 	for (x = stepNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
-		QColor mc = bt_->isMute(trackNum) ? muteColor_ : unmuteColor_;
+		if (hovPos_.order == -2 && hovPos_.track == trackNum)
+			painter.fillRect(x - widthSpace_, 0, trackWidth_, headerHeight_, hovCellColor_);
 
+		painter.setPen(headerTextColor_);
+		QString srcName;
 		switch (modStyle_.trackAttribs[trackNum].source) {
-		case SoundSource::FM:
-			if (hovPos_.order == -2 && hovPos_.track == trackNum)
-				painter.fillRect(x - widthSpace_, 0, trackFMWidth_, headerHeight_, hovCellColor_);
-			painter.setPen(headerTextColor_);
-			painter.drawText(x,
-							 stepFontLeading_ + stepFontAscend_,
-							 "FM" + QString::number(modStyle_.trackAttribs[trackNum].channelInSource + 1));
-			painter.fillRect(x, headerHeight_ - 4, trackFMWidth_ - stepFontWidth_,2, mc);
-			x += trackFMWidth_;
-			break;
-		case SoundSource::SSG:
-			if (hovPos_.order == -2 && hovPos_.track == trackNum)
-				painter.fillRect(x - widthSpace_, 0, trackSSGWidth_, headerHeight_, hovCellColor_);
-			painter.setPen(headerTextColor_);
-			painter.drawText(x,
-							 stepFontLeading_ + stepFontAscend_,
-							 "SSG" + QString::number(modStyle_.trackAttribs[trackNum].channelInSource + 1));
-			painter.fillRect(x, headerHeight_ - 4, trackSSGWidth_ - stepFontWidth_, 2, mc);
-			x += trackSSGWidth_;
-			break;
+		case SoundSource::FM:	srcName = "FM";		break;
+		case SoundSource::SSG:	srcName = "SSG";	break;
 		}
+		painter.drawText(x,
+						 stepFontLeading_ + stepFontAscend_,
+						 srcName + QString::number(modStyle_.trackAttribs[trackNum].channelInSource + 1));
 
+		painter.fillRect(x, headerHeight_ - 4, trackWidth_ - stepFontWidth_, 2,
+						 bt_->isMute(trackNum) ? muteColor_ : unmuteColor_);
+
+		x += trackWidth_;
 		++trackNum;
 	}
 }
@@ -409,10 +377,7 @@ void PatternEditorPanel::drawBorders(int maxWidth)
 	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, geometry().height());
 	int x, trackNum;
 	for (x = stepNumWidth_, trackNum = leftTrackNum_; x <= maxWidth; ) {
-		switch (modStyle_.trackAttribs[trackNum].source) {
-		case SoundSource::FM:	x += trackFMWidth_;		break;
-		case SoundSource::SSG:	x += trackSSGWidth_;	break;
-		}
+		x += trackWidth_;
 		painter.drawLine(x, 0, x, geometry().height());
 		++trackNum;
 	}
@@ -428,10 +393,7 @@ int PatternEditorPanel::calculateTracksWidthWithRowNum(int begin, int end) const
 {
 	int width = stepNumWidth_;
 	for (int i = begin; i <= end; ++i) {
-		switch (modStyle_.trackAttribs.at(i).source) {
-		case SoundSource::FM:	width +=  trackFMWidth_;	break;
-		case SoundSource::SSG:	width +=  trackSSGWidth_;	break;
-		}
+		width += trackWidth_;
 	}
 	return width;
 }
@@ -442,44 +404,34 @@ void PatternEditorPanel::moveCursorToRight(int n)
 
 	curPos_.colInTrack += n;
 	if (n > 0) {
-		for (bool flag = true; flag; ) {
-			switch (modStyle_.trackAttribs[curPos_.track].source) {
-			case SoundSource::FM:
-			case SoundSource::SSG:
-				if (curPos_.colInTrack < 5) {
-					flag = false;
-				}
-				else if (curPos_.track == modStyle_.trackAttribs.size() - 1) {
-					curPos_.colInTrack = 4;
-					flag = false;
-				}
-				else {
-					curPos_.colInTrack -= 5;
-					++curPos_.track;
-				}
+		while (true) {
+			if (curPos_.colInTrack < 5) {
 				break;
+			}
+			else if (curPos_.track == modStyle_.trackAttribs.size() - 1) {
+				curPos_.colInTrack = 4;
+				break;
+			}
+			else {
+				curPos_.colInTrack -= 5;
+				++curPos_.track;
 			}
 		}
 		while (calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width())
 			++leftTrackNum_;
 	}
 	else {
-		for (bool flag = true; flag; ) {
+		while (true) {
 			if (curPos_.colInTrack >= 0) {
-				flag = false;
+				break;
 			}
 			else if (!curPos_.track) {
 				curPos_.colInTrack = 0;
-				flag = false;
+				break;
 			}
 			else {
 				--curPos_.track;
-				switch (modStyle_.trackAttribs[curPos_.track].source) {
-				case SoundSource::FM:
-				case SoundSource::SSG:
-					curPos_.colInTrack += 5;
-					break;
-				}
+				curPos_.colInTrack += 5;
 			}
 		}
 		if (curPos_.track < leftTrackNum_) leftTrackNum_ = curPos_.track;
@@ -559,12 +511,7 @@ int PatternEditorPanel::calculateCellNumInRow(int trackNum, int cellNumInTrack) 
 {
 	int i, cnt = 0;
 	for (i = 0; i < trackNum; ++i) {
-		switch (modStyle_.trackAttribs[i].source) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			cnt += 5;
-			break;
-		}
+		cnt += 5;
 	}
 	cnt += cellNumInTrack;
 
@@ -613,11 +560,7 @@ void PatternEditorPanel::changeEditable()
 
 int PatternEditorPanel::getFullColmunSize() const
 {
-	switch (modStyle_.trackAttribs.back().source) {
-	case SoundSource::FM:
-	case SoundSource::SSG:
-		return calculateCellNumInRow(modStyle_.trackAttribs.size() - 1, 4);
-	}
+	return calculateCellNumInRow(modStyle_.trackAttribs.size() - 1, 4);
 }
 
 void PatternEditorPanel::updatePosition()
@@ -757,18 +700,10 @@ bool PatternEditorPanel::enterVolumeDataFMSSG(int key)
 
 void PatternEditorPanel::setStepVolume(int volume)
 {
-	SoundSource src = modStyle_.trackAttribs[curPos_.track].source;
-	switch (src) {
-	case SoundSource::FM:
-		entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
-		break;
-	case SoundSource::SSG:
-		entryCnt_ = 0;
-		break;
-	}
+	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
 	editPos_ = curPos_;
 	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume);
-	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_, src));
+	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_));
 
 	if (!entryCnt_) moveCursorToDown(1);
 }
@@ -1103,47 +1038,34 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 		hovPos_.setCols(-2, -2);
 	}
 	else {
-		int flag = true;
 		int tmpWidth = stepNumWidth_;
-		for (int i = leftTrackNum_; flag; ) {
-			switch (modStyle_.trackAttribs[i].source) {
-			case SoundSource::FM:
-			case SoundSource::SSG:
-				tmpWidth += (toneNameWidth_ + stepFontWidth_);
-				if (pos.x() <= tmpWidth) {
-					hovPos_.setCols(i, 0);
-					flag = false;
-					break;
-				}
-				tmpWidth += (instWidth_ + stepFontWidth_);
-				if (pos.x() <= tmpWidth) {
-					hovPos_.setCols(i, 1);
-					flag = false;
-					break;
-				}
-				tmpWidth += (modStyle_.trackAttribs[i].source == SoundSource::FM)
-							? (volFMWidth_ + stepFontWidth_)
-							: (volSSGWidth_ + stepFontWidth_);
-				if (pos.x() <= tmpWidth) {
-					hovPos_.setCols(i, 2);
-					flag = false;
-					break;
-				}
-				tmpWidth += (effIDWidth_ + widthSpace_);
-				if (pos.x() <= tmpWidth) {
-					hovPos_.setCols(i, 3);
-					flag = false;
-					break;
-				}
-				tmpWidth += (effValWidth_ + widthSpace_);
-				if (pos.x() <= tmpWidth) {
-					hovPos_.setCols(i, 4);
-					flag = false;
-					break;
-				}
-				++i;
+		for (int i = leftTrackNum_; ; ) {
+			tmpWidth += (toneNameWidth_ + stepFontWidth_);
+			if (pos.x() <= tmpWidth) {
+				hovPos_.setCols(i, 0);
 				break;
 			}
+			tmpWidth += (instWidth_ + stepFontWidth_);
+			if (pos.x() <= tmpWidth) {
+				hovPos_.setCols(i, 1);
+				break;
+			}
+			tmpWidth += (volWidth_ + stepFontWidth_);
+			if (pos.x() <= tmpWidth) {
+				hovPos_.setCols(i, 2);
+				break;
+			}
+			tmpWidth += (effIDWidth_ + widthSpace_);
+			if (pos.x() <= tmpWidth) {
+				hovPos_.setCols(i, 3);
+				break;
+			}
+			tmpWidth += (effValWidth_ + widthSpace_);
+			if (pos.x() <= tmpWidth) {
+				hovPos_.setCols(i, 4);
+				break;
+			}
+			++i;
 
 			if (i == modStyle_.trackAttribs.size()) {
 				hovPos_.setCols(-1, -1);

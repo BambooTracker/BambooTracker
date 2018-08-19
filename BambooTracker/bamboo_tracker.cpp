@@ -401,7 +401,8 @@ void BambooTracker::readStep()
 		case SoundSource::SSG:
 		{
 			// Set volume
-			if (step.getVolume() != -1) {
+			int vol = step.getVolume();
+			if (0 <= vol && vol < 0x10) {
 				opnaCtrl_.setVolumeSSG(attrib.channelInSource, step.getVolume());
 			}
 			// Set instrument

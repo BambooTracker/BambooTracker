@@ -371,6 +371,8 @@ void OPNAController::setVolumeFM(int ch, int volume)
 
 void OPNAController::setVolumeSSG(int ch, int volume)
 {
+	if (volume > 0xf) return;	// Out of range
+
 	volSSG_[ch] = volume;
 
 	if (isKeyOnSSG(ch)) opna_.setRegister(0x08 + ch, volume);

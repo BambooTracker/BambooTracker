@@ -7,14 +7,11 @@ SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int so
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
-	  vol_(volume)
+	  vol_(volume),
+	  isComplete_(false)
 {
-	auto& t = mod_.lock()->getSong(songNum).getTrack(trackNum);
-	switch (t.getAttribute().source) {
-	case SoundSource::FM:	isComplete_ = false;	break;
-	case SoundSource::SSG:	isComplete_ = true;		break;
-	}
-	prevVol_ = t.getPatternFromOrderNumber(orderNum).getStep(stepNum).getVolume();
+	prevVol_ = mod_.lock()->getSong(songNum).getTrack(trackNum)
+			   .getPatternFromOrderNumber(orderNum).getStep(stepNum).getVolume();
 }
 
 void SetVolumeToStepCommand::redo()
