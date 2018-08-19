@@ -181,7 +181,8 @@ HEADERS += \
     gui/command/instrument/deep_clone_instrument_qt_command.hpp \
     command/instrument/deep_clone_instrument_command.hpp \
     command/instrument/clone_instrument_command.hpp \
-    gui/command/instrument/clone_instrument_qt_command.hpp
+    gui/command/instrument/clone_instrument_qt_command.hpp \
+    gui/order_list_editor/order_position.hpp
 
 FORMS += \
     gui/mainwindow.ui \

@@ -90,7 +90,7 @@ void PatternEditorPanel::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
 	curSongNum_ = bt_->getCurrentSongNumber();
-	curPos_ = PatternPosition{ 0, 0, bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber() };
+	curPos_ = { 0, 0, bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber() };
 	modStyle_ = bt_->getModuleStyle();
 	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
 }
@@ -826,14 +826,14 @@ void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, cons
 			selRightBelowPos_ = start;
 		}
 		else {
-			selLeftAbovePos_ = PatternPosition{ end.track, end.colInTrack, start.order, start.step };
-			selRightBelowPos_ = PatternPosition{ start.track, start.colInTrack, end.order, end.step };
+			selLeftAbovePos_ = { end.track, end.colInTrack, start.order, start.step };
+			selRightBelowPos_ = { start.track, start.colInTrack, end.order, end.step };
 		}
 	}
 	else {
 		if (start.compareRows(end) > 0) {
-			selLeftAbovePos_ = PatternPosition{ start.track, start.colInTrack, end.order, end.step };
-			selRightBelowPos_ = PatternPosition{ end.track, end.colInTrack, start.order, start.step };
+			selLeftAbovePos_ = { start.track, start.colInTrack, end.order, end.step };
+			selRightBelowPos_ = { end.track, end.colInTrack, start.order, start.step };
 		}
 		else {
 			selLeftAbovePos_ = start;
@@ -845,7 +845,7 @@ void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, cons
 bool PatternEditorPanel::isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum)
 {
 	PatternPosition pos{ trackNum, colNum, orderNum, stepNum };
-	return  (selLeftAbovePos_.compareCols(pos) <= 0 && selRightBelowPos_.compareCols(pos) >= 0
+	return (selLeftAbovePos_.compareCols(pos) <= 0 && selRightBelowPos_.compareCols(pos) >= 0
 			&& selLeftAbovePos_.compareRows(pos) <= 0 && selRightBelowPos_.compareRows(pos) >= 0);
 }
 
@@ -901,12 +901,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
 	/* General Keys (with Ctrl) */
 	if (event->modifiers().testFlag(Qt::ControlModifier)) return false;
-
-	if (event->modifiers().testFlag(Qt::ShiftModifier)) {
-		switch (event->key()) {
-
-		}
-	}
 
 	/* General Keys */
 	switch (event->key()) {
@@ -1030,7 +1024,7 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 	if (event->buttons() & Qt::LeftButton) {
 		if (mousePressPos_.track < 0 || mousePressPos_.order < 0) return;	// Start point is out f range
 
-		if (/*mousePressPos_ != hovPos_ &&*/ mousePressPos_.order == hovPos_.order && hovPos_.track >= 0) {
+		if (mousePressPos_.order == hovPos_.order && hovPos_.track >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
 			update();
 		}
@@ -1195,5 +1189,5 @@ void PatternEditorPanel::leaveEvent(QEvent* event)
 {
 	Q_UNUSED(event)
 	// Clear mouse hover selection
-	hovPos_ = PatternPosition{ -1, -1, -1, -1 };
+	hovPos_ = { -1, -1, -1, -1 };
 }

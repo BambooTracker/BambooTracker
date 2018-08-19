@@ -10,10 +10,12 @@
 #include <QMouseEvent>
 #include <QHoverEvent>
 #include <QWheelEvent>
+#include <QEvent>
 #include <QRect>
 #include <QColor>
 #include <memory>
 #include "bamboo_tracker.hpp"
+#include "gui/order_list_editor/order_position.hpp"
 #include "module.hpp"
 
 class OrderListPanel : public QWidget
@@ -39,12 +41,16 @@ signals:
 
 protected:
 	virtual bool event(QEvent *event) override;
-	bool KeyPressed(QKeyEvent* event);
+	bool keyPressed(QKeyEvent* event);
+	bool keyReleased(QKeyEvent* event);
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
+	virtual void mouseMoveEvent(QMouseEvent* event) override;
+	virtual void mouseReleaseEvent(QMouseEvent* event) override;
 	bool mouseHoverd(QHoverEvent* event);
 	virtual void wheelEvent(QWheelEvent* event) override;
+	virtual void leaveEvent(QEvent* event) override;
 
 private:
 	std::unique_ptr<QPixmap> pixmap_;
@@ -63,7 +69,7 @@ private:
 
 	QColor defTextColor_, defRowColor_;
 	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
-	QColor selTextColor_, selCellColor_;
+	QColor selCellColor_;
 	QColor hovCellColor_;
 	QColor rowNumColor_;
 	QColor headerTextColor_, headerRowColor_;
@@ -73,8 +79,10 @@ private:
 	ModuleStyle modStyle_;
 
 	int curSongNum_;
-	int curTrackNum_, curRowNum_;
-	int hovTrackNum_, hovRowNum_;
+	OrderPosition curPos_, hovPos_;
+	OrderPosition mousePressPos_, mouseReleasePos_;
+	OrderPosition selLeftAbovePos_, selRightBelowPos_;
+	OrderPosition shiftPressedPos_;
 
 	bool isIgnoreToSlider_, isIgnoreToPattern_;
 
@@ -90,6 +98,9 @@ private:
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
+
+	void setSelectedRectangle(const OrderPosition& start, const OrderPosition& end);
+	bool isSelectedCell(int track, int row);
 };
 
 #endif // ORDER_LIST_PANEL_HPP
