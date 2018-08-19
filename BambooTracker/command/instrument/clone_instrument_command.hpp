@@ -3,10 +3,10 @@
 #include "abstruct_command.hpp"
 #include "instruments_manager.hpp"
 
-class CloneInstrumentCommand : public AbstructCommand
+class cloneInstrumentCommand : public AbstructCommand
 {
 public:
-	CloneInstrumentCommand(InstrumentsManager &manager, int num, int refNum);
+	cloneInstrumentCommand(InstrumentsManager &manager, int num, int refNum);
 
 	void redo() override;
 	void undo() override;

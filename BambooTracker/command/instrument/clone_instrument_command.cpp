@@ -1,21 +1,21 @@
 #include "clone_instrument_command.hpp"
 
-CloneInstrumentCommand::CloneInstrumentCommand(InstrumentsManager& manager, int num, int refNum) :
-	manager_(manager), cloneInstNum_(num), refInstNum_(refNum)
+cloneInstrumentCommand::cloneInstrumentCommand(InstrumentsManager &manager, int num, int refNum)
+	: manager_(manager), cloneInstNum_(num), refInstNum_(refNum)
 {
 }
 
-void CloneInstrumentCommand::redo()
+void cloneInstrumentCommand::redo()
 {
 	manager_.cloneInstrument(cloneInstNum_, refInstNum_);
 }
 
-void CloneInstrumentCommand::undo()
+void cloneInstrumentCommand::undo()
 {
 	manager_.removeInstrument(cloneInstNum_);
 }
 
-int CloneInstrumentCommand::getID() const
+int cloneInstrumentCommand::getID() const
 {
-	return 0x14;
+	return 0x13;
 }

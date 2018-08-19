@@ -45,9 +45,8 @@ private:
 	void editInstrument();
 	int findRowFromInstrumentList(int instNum);
 	void editInstrumentName();
-    void copyInstrument();
-    void pasteInstrument();
-    void cloneInstrument();
+	void cloneInstrument();
+    void deepCloneInstrument();
 
 	// Undo-Redo
 	void undo();

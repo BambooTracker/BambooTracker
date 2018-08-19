@@ -76,15 +76,14 @@ std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
 	else return inst->clone();
 }
 
-void BambooTracker::pasteInstrument(int num, int refNum)
-{
-	comMan_.invoke(std::make_unique<PasteInstrumentCommand>(instMan_, num, refNum));
-	opnaCtrl_.updateInstrumentFM(num);
-}
-
 void BambooTracker::cloneInstrument(int num, int refNum)
 {
-	comMan_.invoke(std::make_unique<CloneInstrumentCommand>(instMan_, num, refNum));
+	comMan_.invoke(std::make_unique<cloneInstrumentCommand>(instMan_, num, refNum));
+}
+
+void BambooTracker::deepCloneInstrument(int num, int refNum)
+{
+	comMan_.invoke(std::make_unique<DeepCloneInstrumentCommand>(instMan_, num, refNum));
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const

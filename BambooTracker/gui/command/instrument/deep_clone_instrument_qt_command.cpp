@@ -1,8 +1,8 @@
-#include "clone_instrument_qt_command.hpp"
+#include "deep_clone_instrument_qt_command.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
-CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
+DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
 												   std::map<int, std::unique_ptr<QWidget>>& map, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
@@ -13,7 +13,7 @@ CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, i
 	source_ = static_cast<SoundSource>(map_.at(refNum)->property("SoundSource").toInt());
 }
 
-void CloneInstrumentQtCommand::redo()
+void DeepCloneInstrumentQtCommand::redo()
 {
 	QListWidgetItem *item;
 	std::unique_ptr<QWidget> form;
@@ -43,7 +43,7 @@ void CloneInstrumentQtCommand::redo()
 	//----------//
 }
 
-void CloneInstrumentQtCommand::undo()
+void DeepCloneInstrumentQtCommand::undo()
 {
 	auto&& item = list_->takeItem(cloneNum_);
 	delete item;
@@ -52,7 +52,7 @@ void CloneInstrumentQtCommand::undo()
 	map_.erase(cloneNum_);
 }
 
-int CloneInstrumentQtCommand::id() const
+int DeepCloneInstrumentQtCommand::id() const
 {
-	return 0x13;
+	return 0x14;
 }

@@ -47,8 +47,25 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	case SoundSource::FM:
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
-		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(cloneInstNum));
+		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
+		break;
+	}
+	case SoundSource::SSG:
+		// UNODNE
+		break;
+	}
+}
 
+void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
+{
+	std::shared_ptr<AbstructInstrument> refInst = insts_.at(refInstNum);
+	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
+	switch (refInst->getSoundSource()) {
+	case SoundSource::FM:
+	{
+		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
+		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(cloneInstNum));
+		
 		envFM_[0]->deregisterInstrumentUsingThis(cloneInstNum);	// Remove temporary number
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);

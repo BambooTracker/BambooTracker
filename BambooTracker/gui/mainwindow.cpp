@@ -282,47 +282,26 @@ void MainWindow::editInstrumentName()
 	line->setFocus();
 }
 
-void MainWindow::copyInstrument()
-{
-	auto inst = bt_->getInstrument(findRowFromInstrumentList(ui->instrumentListWidget->currentRow()));
-    QString tag = "";
-    switch (inst->getSoundSource()) {
-    case SoundSource::FM:   tag = "FM_INSTRUMENT:";     break;
-	case SoundSource::SSG:  tag = "SSG_INSTRUMENT:";    break;
-    }
-    QApplication::clipboard()->setText(tag + QString::number(inst->getNumber()));
-}
-
-void MainWindow::pasteInstrument()
-{
-	QString str = QApplication::clipboard()->text();
-	int refNum = QApplication::clipboard()->text().remove(QRegularExpression("^(FM|SSG)_INSTRUMENT:")).toInt();
-	int refRow = findRowFromInstrumentList(refNum);
-
-	SoundSource source;
-	if (str.startsWith("FM")) source = SoundSource::FM;
-	else if (str.startsWith("SSG")) source = SoundSource::SSG;
-
-	int oldRow = ui->instrumentListWidget->currentRow();
-	int oldNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
-
-	// KEEP CODE ORDER //
-	bt_->pasteInstrument(oldNum, refNum);
-	comStack_->push(new PasteInstrumentQtCommand(
-						ui->instrumentListWidget, oldRow, refRow, oldNum, refNum, instFormMap_, source));
-	//----------//
-}
-
 void MainWindow::cloneInstrument()
 {
 	int num = bt_->findFirstFreeInstrumentNumber();
-	int refNum = QApplication::clipboard()->text().remove(
-					 QRegularExpression("^.+_INSTRUMENT:", QRegularExpression::DotMatchesEverythingOption))
-				 .toInt();
-
+	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	// KEEP CODE ORDER //
 	bt_->cloneInstrument(num, refNum);
 	comStack_->push(new CloneInstrumentQtCommand(
 						ui->instrumentListWidget, num, refNum, instFormMap_));
+	//----------//
+}
+
+void MainWindow::deepCloneInstrument()
+{
+	int num = bt_->findFirstFreeInstrumentNumber();
+	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	// KEEP CODE ORDER //
+	bt_->deepCloneInstrument(num, refNum);
+	comStack_->push(new DeepCloneInstrumentQtCommand(
+						ui->instrumentListWidget, num, refNum, instFormMap_));
+	//----------//
 }
 
 /********** Undo-Redo **********/
@@ -389,9 +368,8 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
     menu.addSeparator();
     menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
     menu.addSeparator();
-    menu.addAction("Copy", this, &MainWindow::copyInstrument);
-    menu.addAction("Paste", this, &MainWindow::pasteInstrument);
-    menu.addAction("Clone", this, &MainWindow::cloneInstrument);
+	menu.addAction("Clone", this, &MainWindow::cloneInstrument);
+	menu.addAction("Deep clone", this, &MainWindow::deepCloneInstrument);
     menu.addSeparator();
     menu.addAction("Load from file...")->setEnabled(false);
     menu.addAction("Save to file...")->setEnabled(false);
@@ -400,36 +378,15 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 
 	if (bt_->findFirstFreeInstrumentNumber() == -1)    // Max size
         menu.actions().at(0)->setEnabled(false);    // "Add"
-    if (list->currentItem() == nullptr) {    // Not selected
+	auto item = list->currentItem();
+	if (item == nullptr) {    // Not selected
         menu.actions().at(1)->setEnabled(false);    // "Remove"
         menu.actions().at(3)->setEnabled(false);    // "Edit name"
-        menu.actions().at(5)->setEnabled(false);    // "Copy"
-        menu.actions().at(12)->setEnabled(false);   // "Edit"
+		menu.actions().at(11)->setEnabled(false);   // "Edit"
     }
-	QString str = QApplication::clipboard()->text();
-	if (str.startsWith("FM_INSTRUMENT:")) {
-        auto item = ui->instrumentListWidget->currentItem();
-        if (item == nullptr
-                || bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::FM) {
-            menu.actions().at(6)->setEnabled(false);    // "Paste"
-        }
-		if (bt_->findFirstFreeInstrumentNumber() == -1) {
-			menu.actions().at(7)->setEnabled(false);    // "Clone"
-		}
-	}
-	else if (str.startsWith("SSG_INSTRUMENT:")) {
-		auto item = ui->instrumentListWidget->currentItem();
-		if (item == nullptr
-				|| bt_->getInstrument(item->data(Qt::UserRole).toInt())->getSoundSource() != SoundSource::SSG) {
-			menu.actions().at(6)->setEnabled(false);    // "Paste"
-		}
-		if (bt_->findFirstFreeInstrumentNumber() == -1) {
-			menu.actions().at(7)->setEnabled(false);    // "Clone"
-		}
-	}
-	else {
-		menu.actions().at(6)->setEnabled(false);    // "Paste"
-		menu.actions().at(7)->setEnabled(false);    // "Clone"
+	if (item == nullptr || bt_->findFirstFreeInstrumentNumber() == -1) {
+		menu.actions().at(5)->setEnabled(false);    // "Clone"
+		menu.actions().at(6)->setEnabled(false);    // "Deep clone"
 	}
 
 	menu.exec(globalPos);

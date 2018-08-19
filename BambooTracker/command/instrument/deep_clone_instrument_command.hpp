@@ -1,13 +1,12 @@
 #pragma once
 
 #include "abstruct_command.hpp"
-#include <memory>
 #include "instruments_manager.hpp"
 
-class PasteInstrumentCommand : public AbstructCommand
+class DeepCloneInstrumentCommand : public AbstructCommand
 {
 public:
-	PasteInstrumentCommand(InstrumentsManager &manager, int num, int refNum);
+	DeepCloneInstrumentCommand(InstrumentsManager &manager, int num, int refNum);
 
 	void redo() override;
 	void undo() override;
@@ -15,5 +14,5 @@ public:
 
 private:
 	InstrumentsManager& manager_;
-	std::unique_ptr<AbstructInstrument> oldInst_, refInst_;
+	int cloneInstNum_, refInstNum_;
 };

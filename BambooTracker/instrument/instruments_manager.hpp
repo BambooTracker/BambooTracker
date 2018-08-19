@@ -20,6 +20,7 @@ public:
 	void addInstrument(std::unique_ptr<AbstructInstrument> inst);
 	std::unique_ptr<AbstructInstrument> removeInstrument(int instNum);
 	void cloneInstrument(int cloneInstNum, int resInstNum);
+	void deepCloneInstrument(int cloneInstNum, int resInstNum);
 	std::shared_ptr<AbstructInstrument> getInstrumentSharedPtr(int instNum);
 
 	void setInstrumentName(int instNum, std::string name);

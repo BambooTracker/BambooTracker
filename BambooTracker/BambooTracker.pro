@@ -57,10 +57,6 @@ SOURCES += \
     instrument/envelope_fm.cpp \
     gui/event_guard.cpp \
     tick_counter.cpp \
-    gui/command/instrument/paste_instrument_qt_command.cpp \
-    command/instrument/paste_instrument_command.cpp \
-    command/instrument/clone_instrument_command.cpp \
-    gui/command/instrument/clone_instrument_qt_command.cpp \
     module/module.cpp \
     module/song.cpp \
     module/pattern.cpp \
@@ -97,7 +93,11 @@ SOURCES += \
     gui/command/pattern/insert_step_qt_command.cpp \
     gui/command/pattern/delete_previous_step_qt_command.cpp \
     gui/command/pattern/erase_step_qt_command.cpp \
-    command/pattern/erase_step_command.cpp
+    command/pattern/erase_step_command.cpp \
+    gui/command/instrument/deep_clone_instrument_qt_command.cpp \
+    command/instrument/deep_clone_instrument_command.cpp \
+    command/instrument/clone_instrument_command.cpp \
+    gui/command/instrument/clone_instrument_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -139,10 +139,6 @@ HEADERS += \
     instrument/envelope_fm.hpp \
     gui/event_guard.hpp \
     tick_counter.hpp \
-    command/instrument/paste_instrument_command.hpp \
-    command/instrument/clone_instrument_command.hpp \
-    gui/command/instrument/clone_instrument_qt_command.hpp \
-    gui/command/instrument/paste_instrument_qt_command.hpp \
     module/module.hpp \
     module/song.hpp \
     module/pattern.hpp \
@@ -181,7 +177,11 @@ HEADERS += \
     gui/command/pattern/insert_step_qt_command.hpp \
     gui/command/pattern/delete_previous_step_qt_command.hpp \
     gui/command/pattern/erase_step_qt_command.hpp \
-    command/pattern/erase_step_command.hpp
+    command/pattern/erase_step_command.hpp \
+    gui/command/instrument/deep_clone_instrument_qt_command.hpp \
+    command/instrument/deep_clone_instrument_command.hpp \
+    command/instrument/clone_instrument_command.hpp \
+    gui/command/instrument/clone_instrument_qt_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \
