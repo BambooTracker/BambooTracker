@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QHoverEvent>
 #include <QWheelEvent>
+#include <QEvent>
 #include <QRect>
 #include <QColor>
 #include <QUndoStack>
@@ -46,11 +47,15 @@ signals:
 protected:
 	virtual bool event(QEvent *event) override;
 	bool keyPressed(QKeyEvent* event);
+	bool keyReleased(QKeyEvent* event);
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
+	virtual void mouseMoveEvent(QMouseEvent* event) override;
+	virtual void mouseReleaseEvent(QMouseEvent* event) override;
 	bool mouseHoverd(QHoverEvent* event);
 	virtual void wheelEvent(QWheelEvent* event) override;
+	virtual void leaveEvent(QEvent* event) override;
 
 private:
 	std::unique_ptr<QPixmap> pixmap_;
@@ -73,7 +78,7 @@ private:
 
 	QColor defTextColor_, defRowColor_, mkRowColor_;
 	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
-	QColor selTextColor_, selCellColor_;
+	QColor selCellColor_;
 	QColor hovCellColor_;
 	QColor defStepNumColor_, mkStepNumColor_;
 	QColor toneColor_, instColor_, volColor_, effIDColor_, effValColor_;
@@ -88,6 +93,9 @@ private:
 
 	int curSongNum_;
 	PatternPosition curPos_, hovPos_, editPos_;
+	PatternPosition mousePressPos_, mouseReleasePos_;
+	PatternPosition selLeftAbovePos_, selRightBelowPos_;
+	PatternPosition shiftPressedPos_;
 
 	bool isIgnoreToSlider_, isIgnoreToOrder_;
 
@@ -104,7 +112,7 @@ private:
 	void drawShadow();
 
 	int calculateTracksWidthWithRowNum(int begin, int end) const;
-	int calculateCellNumInRow(int trackNum, int cellNumInTrack) const;
+	int calculateColNumInRow(int trackNum, int colNumInTrack) const;
 	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
 
 	void moveCursorToRight(int n);
@@ -125,6 +133,9 @@ private:
 
 	void insertStep();
 	void deletePreviousStep();
+
+	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
+	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP
