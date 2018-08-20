@@ -24,6 +24,15 @@ std::vector<int> Track::getOrderList() const
 	return  order_;
 }
 
+OrderData Track::getOrderData(int order)
+{
+	OrderData res;
+	res.trackAttribute = getAttribute();
+	res.order = order;
+	res.patten = order_.at(order);
+	return res;
+}
+
 Pattern& Track::getPattern(int num)
 {
 	return patterns_.at(num);
@@ -32,4 +41,20 @@ Pattern& Track::getPattern(int num)
 Pattern& Track::getPatternFromOrderNumber(int num)
 {
 	return getPattern(order_.at(num));
+}
+
+void Track::registerPatternToOrder(int order, int pattern)
+{
+	order_.at(order) = pattern;
+}
+
+void Track::insertOrderBelow(int order)
+{
+	if (order == order_.size() - 1) order_.push_back(0);
+	else order_.insert(order_.begin() + order + 1, 0);
+}
+
+void Track::deleteOrder(int order)
+{
+	order_.erase(order_.begin() + order);
 }

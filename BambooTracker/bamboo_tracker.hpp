@@ -85,6 +85,9 @@ public:
 	// Module details
 	ModuleStyle getModuleStyle() const;
 	std::vector<int> getOrderList(int songNum, int trackNum) const;
+	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
+	void insertOrderBelow(int songNum, int orderNum);
+	void deleteOrder(int songNum, int orderNum);
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);

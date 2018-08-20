@@ -97,7 +97,13 @@ SOURCES += \
     gui/command/instrument/deep_clone_instrument_qt_command.cpp \
     command/instrument/deep_clone_instrument_command.cpp \
     command/instrument/clone_instrument_command.cpp \
-    gui/command/instrument/clone_instrument_qt_command.cpp
+    gui/command/instrument/clone_instrument_qt_command.cpp \
+    command/order/set_pattern_to_order_command.cpp \
+    gui/command/order/set_pattern_to_order_qt_command.cpp \
+    command/order/insert_order_below_command.cpp \
+    command/order/delete_order_command.cpp \
+    gui/command/order/insert_order_below_qt_command.cpp \
+    gui/command/order/delete_order_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -182,7 +188,14 @@ HEADERS += \
     command/instrument/deep_clone_instrument_command.hpp \
     command/instrument/clone_instrument_command.hpp \
     gui/command/instrument/clone_instrument_qt_command.hpp \
-    gui/order_list_editor/order_position.hpp
+    gui/order_list_editor/order_position.hpp \
+    command/order/set_pattern_to_order_command.hpp \
+    gui/command/order/set_pattern_to_order_qt_command.hpp \
+    gui/command/order/order_commands.hpp \
+    command/order/insert_order_below_command.hpp \
+    command/order/delete_order_command.hpp \
+    gui/command/order/insert_order_below_qt_command.hpp \
+    gui/command/order/delete_order_qt_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

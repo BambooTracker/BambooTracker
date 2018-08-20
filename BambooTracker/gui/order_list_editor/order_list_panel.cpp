@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <algorithm>
 #include "gui/event_guard.hpp"
+#include "gui/command/order/order_commands.hpp"
 
 #include <QDebug>
 
@@ -14,13 +15,15 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  curSongNum_(0),
 	  curPos_{ 0, 0 },
 	  hovPos_{ -1, -1 },
+	  editPos_{ -1, -1 },
 	  mousePressPos_{ -1, -1 },
 	  mouseReleasePos_{ -1, -1 },
 	  selLeftAbovePos_{ -1, -1 },
 	  selRightBelowPos_{ -1, -1 },
 	  shiftPressedPos_{ -1, -1 },
 	  isIgnoreToSlider_(false),
-	  isIgnoreToPattern_(false)
+	  isIgnoreToPattern_(false),
+	  entryCnt_(0)
 {
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -68,6 +71,11 @@ void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
 	curPos_ = { bt_->getCurrentTrackAttribute().number, bt_->getCurrentOrderNumber() };
 	modStyle_ = bt_->getModuleStyle();
 	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
+}
+
+void OrderListPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
+{
+	comStack_ = stack;
 }
 
 void OrderListPanel::initDisplay()
@@ -148,7 +156,11 @@ void OrderListPanel::drawRows(int maxWidth)
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
 				painter.fillRect(x - widthSpace_, rowY, trackWidth_, rowFontHeight_, selCellColor_);
-			painter.drawText(x, baseY, QString(" %1").arg(0, 2, 16, QChar('0')).toUpper());
+			painter.drawText(
+						x,
+						baseY,
+						QString(" %1").arg(lists_[trackNum - leftTrackNum_].at(rowNum), 2, 16, QChar('0')).toUpper()
+					);
 
 			x += trackWidth_;
 			++trackNum;
@@ -174,7 +186,11 @@ void OrderListPanel::drawRows(int maxWidth)
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
 				painter.fillRect(x - widthSpace_, rowY, trackWidth_, rowFontHeight_, selCellColor_);
-			painter.drawText(x, baseY, QString(" %1").arg(0, 2, 16, QChar('0')).toUpper());
+			painter.drawText(
+						x,
+						baseY,
+						QString(" %1").arg(lists_[trackNum - leftTrackNum_].at(rowNum), 2, 16, QChar('0')).toUpper()
+					);
 
 			x += trackWidth_;
 			++trackNum;
@@ -289,6 +305,57 @@ void OrderListPanel::changeEditable()
 	update();
 }
 
+bool OrderListPanel::enterOrder(int key)
+{
+	switch (key) {
+	case Qt::Key_0:	setCellOrderNum(0x0);	return true;
+	case Qt::Key_1:	setCellOrderNum(0x1);	return true;
+	case Qt::Key_2:	setCellOrderNum(0x2);	return true;
+	case Qt::Key_3:	setCellOrderNum(0x3);	return true;
+	case Qt::Key_4:	setCellOrderNum(0x4);	return true;
+	case Qt::Key_5:	setCellOrderNum(0x5);	return true;
+	case Qt::Key_6:	setCellOrderNum(0x6);	return true;
+	case Qt::Key_7:	setCellOrderNum(0x7);	return true;
+	case Qt::Key_8:	setCellOrderNum(0x8);	return true;
+	case Qt::Key_9:	setCellOrderNum(0x9);	return true;
+	case Qt::Key_A:	setCellOrderNum(0xa);	return true;
+	case Qt::Key_B:	setCellOrderNum(0xb);	return true;
+	case Qt::Key_C:	setCellOrderNum(0xc);	return true;
+	case Qt::Key_D:	setCellOrderNum(0xd);	return true;
+	case Qt::Key_E:	setCellOrderNum(0xe);	return true;
+	case Qt::Key_F:	setCellOrderNum(0xf);	return true;
+	default:	return false;
+	}
+}
+
+void OrderListPanel::setCellOrderNum(int n)
+{
+	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
+	editPos_ = curPos_;
+	bt_->setOrderPattern(curSongNum_, editPos_.track, editPos_.row, n);
+	comStack_.lock()->push(new SetPatternToOrderQtCommand(this, editPos_));
+
+	if (!entryCnt_) moveCursorToDown(1);
+}
+
+void OrderListPanel::insertOrderBelow()
+{
+	bt_->insertOrderBelow(curSongNum_, curPos_.row);
+	comStack_.lock()->push(new InsertOrderBelowQtCommand(this));
+	moveCursorToDown(1);
+}
+
+void OrderListPanel::deleteOrder()
+{
+	if (bt_->getOrderList(curSongNum_, 0).size() > 1) {
+		// KEEP CODE ORDER //
+		bt_->deleteOrder(curSongNum_, curPos_.row);
+		moveCursorToDown(-1);
+		comStack_.lock()->push(new DeleteOrderQtCommand(this));
+		//----------//
+	}
+}
+
 void OrderListPanel::setSelectedRectangle(const OrderPosition& start, const OrderPosition& end)
 {
 	if (start.track > end.track) {
@@ -347,6 +414,11 @@ void OrderListPanel::setCurrentOrder(int num) {
 	if (int dif = num - curPos_.row) moveCursorToDown(dif);
 }
 
+void OrderListPanel::onOrderEdited()
+{
+	emit orderEdited();
+}
+
 /********** Events **********/
 bool OrderListPanel::event(QEvent *event)
 {
@@ -363,7 +435,7 @@ bool OrderListPanel::event(QEvent *event)
 }
 
 bool OrderListPanel::keyPressed(QKeyEvent *event)
-{
+{	
 	/* General Keys (with Ctrl) */
 	if (event->modifiers().testFlag(Qt::ControlModifier)) return false;
 
@@ -408,7 +480,26 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			}
 			return true;
 		}
+	case Qt::Key_Insert:
+		if (bt_->isJamMode()) {
+			return false;
+		}
+		else {
+			insertOrderBelow();
+			return true;
+		}
+	case Qt::Key_Delete:
+		if (bt_->isJamMode()) {
+			return false;
+		}
+		else {
+			deleteOrder();
+			return true;
+		}
 	default:
+		if (!bt_->isJamMode()) {
+			return enterOrder(event->key());
+		}
 		return false;
 	}
 }
@@ -459,16 +550,16 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 	if (event->buttons() & Qt::LeftButton) {
 		if (mousePressPos_.track < 0 || mousePressPos_.row < 0) return;	// Start point is out of range
 
-		if (mousePressPos_.row == hovPos_.row && hovPos_.track >= 0) {
+		if (hovPos_.track >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
 			update();
 		}
 
 		if (event->x() < rowNumWidth_ && leftTrackNum_ > 0) {
-			moveCursorToRight(-5);
+			moveCursorToRight(-1);
 		}
 		else if (event->x() > geometry().width() - rowNumWidth_ && hovPos_.track != -1) {
-			moveCursorToRight(5);
+			moveCursorToRight(1);
 		}
 		if (event->pos().y() < headerHeight_ + rowFontHeight_) {
 			moveCursorToDown(-1);

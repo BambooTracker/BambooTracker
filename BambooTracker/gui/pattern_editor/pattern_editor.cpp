@@ -70,3 +70,8 @@ void PatternEditor::setCurrentOrder(int num)
 {
 	ui->panel->setCurrentOrder(num);
 }
+
+void PatternEditor::onOrderListEdited()
+{
+	ui->panel->onOrderListEdited();
+}

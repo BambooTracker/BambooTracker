@@ -882,6 +882,19 @@ void PatternEditorPanel::setCurrentOrder(int num)
 	moveCursorToDown(dif);
 }
 
+void PatternEditorPanel::onOrderListEdited()
+{
+	hovPos_ = { -1, -1, -1, -1 };
+	editPos_ = { -1, -1, -1, -1 };
+	mousePressPos_ = { -1, -1, -1, -1 };
+	mouseReleasePos_ = { -1, -1, -1, -1 };
+	selLeftAbovePos_ = { -1, -1, -1, -1 };
+	selRightBelowPos_ = { -1, -1, -1, -1 };
+	shiftPressedPos_ = { -1, -1, -1, -1 };
+
+	update();
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -944,11 +957,21 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Insert:
-		insertStep();
-		return true;
+		if (bt_->isJamMode()) {
+			return false;
+		}
+		else {
+			insertStep();
+			return true;
+		}
 	case Qt::Key_Backspace:
-		deletePreviousStep();
-		return true;
+		if (bt_->isJamMode()) {
+			return false;
+		}
+		else {
+			deletePreviousStep();
+			return true;
+		}
 	default:
 		if (!bt_->isJamMode()) {
 			// Pattern edit
@@ -989,8 +1012,14 @@ bool PatternEditorPanel::keyReleased(QKeyEvent* event)
 }
 
 void PatternEditorPanel::paintEvent(QPaintEvent *event)
-{
-	if (bt_ != nullptr) drawPattern(event->rect());
+{	
+	if (bt_ != nullptr) {
+		// Check order size
+		size_t odrSize = bt_->getOrderList(curSongNum_, 0).size();
+		if (curPos_.order >= odrSize) curPos_.setRows(odrSize - 1, 0);
+
+		drawPattern(event->rect());
+	}
 }
 
 void PatternEditorPanel::resizeEvent(QResizeEvent *event)

@@ -31,3 +31,26 @@ Track& Song::getTrack(int num)
 {
 	return tracks_.at(num);
 }
+
+std::vector<OrderData> Song::getOrderData(int order)
+{
+	std::vector<OrderData> ret;
+	for (auto& track : tracks_) {
+		ret.push_back(track.getOrderData(order));
+	}
+	return ret;
+}
+
+void Song::insertOrderBelow(int order)
+{
+	for (auto& track : tracks_) {
+		track.insertOrderBelow(order);
+	}
+}
+
+void Song::deleteOrder(int order)
+{
+	for (auto& track : tracks_) {
+		track.deleteOrder(order);
+	}
+}

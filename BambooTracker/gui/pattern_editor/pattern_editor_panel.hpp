@@ -38,6 +38,8 @@ public slots:
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num);
 
+	void onOrderListEdited();
+
 signals:
 	void currentCellInRowChanged(int num);
 	void currentStepChanged(int num, int max);

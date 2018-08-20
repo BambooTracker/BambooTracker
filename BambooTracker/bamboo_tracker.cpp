@@ -465,6 +465,21 @@ std::vector<int> BambooTracker::getOrderList(int songNum, int trackNum) const
 	return mod_->getSong(songNum).getTrack(trackNum).getOrderList();
 }
 
+void BambooTracker::setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum)
+{
+	comMan_.invoke(std::make_unique<SetPatternToOrderCommand>(mod_, songNum, trackNum, orderNum, patternNum));
+}
+
+void BambooTracker::insertOrderBelow(int songNum, int orderNum)
+{
+	comMan_.invoke(std::make_unique<InsertOrderBelowCommand>(mod_, songNum, orderNum));
+}
+
+void BambooTracker::deleteOrder(int songNum, int orderNum)
+{
+	comMan_.invoke(std::make_unique<DeleteOrderCommand>(mod_, songNum, orderNum));
+}
+
 int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const
 {
 	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)

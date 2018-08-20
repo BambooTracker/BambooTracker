@@ -2,6 +2,7 @@
 #define ORDER_LIST_PANEL_HPP
 
 #include <QWidget>
+#include <QUndoStack>
 #include <QPixmap>
 #include <QFont>
 #include <QPaintEvent>
@@ -24,6 +25,7 @@ class OrderListPanel : public QWidget
 public:
 	explicit OrderListPanel(QWidget *parent = nullptr);
 	void setCore(std::shared_ptr<BambooTracker> core);
+	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 
 	void changeEditable();
 
@@ -33,11 +35,15 @@ public slots:
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num);
 
+	void onOrderEdited();
+
 signals:
 	void currentTrackChangedForSlider(int num);
 	void currentOrderChangedForSlider(int num);
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num);
+
+	void orderEdited();
 
 protected:
 	virtual bool event(QEvent *event) override;
@@ -55,6 +61,7 @@ protected:
 private:
 	std::unique_ptr<QPixmap> pixmap_;
 	std::shared_ptr<BambooTracker> bt_;
+	std::weak_ptr<QUndoStack> comStack_;
 
 	QFont rowFont_, headerFont_;
 	int rowFontWidth_, rowFontHeight_, rowFontAscend_, rowFontLeading_;
@@ -79,12 +86,14 @@ private:
 	ModuleStyle modStyle_;
 
 	int curSongNum_;
-	OrderPosition curPos_, hovPos_;
+	OrderPosition curPos_, hovPos_, editPos_;
 	OrderPosition mousePressPos_, mouseReleasePos_;
 	OrderPosition selLeftAbovePos_, selRightBelowPos_;
 	OrderPosition shiftPressedPos_;
 
 	bool isIgnoreToSlider_, isIgnoreToPattern_;
+
+	int entryCnt_;
 
 	void initDisplay();
 
@@ -98,6 +107,11 @@ private:
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
+
+	bool enterOrder(int key);
+	void setCellOrderNum(int n);
+	void insertOrderBelow();
+	void deleteOrder();
 
 	void setSelectedRectangle(const OrderPosition& start, const OrderPosition& end);
 	bool isSelectedCell(int track, int row);

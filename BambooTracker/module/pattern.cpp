@@ -5,6 +5,11 @@ Pattern::Pattern(int n)
 {
 }
 
+int Pattern::getNumber() const
+{
+	return num_;
+}
+
 Step& Pattern::getStep(int n)
 {
 	return steps_.at(n);

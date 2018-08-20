@@ -2,11 +2,9 @@
 #define ORDER_LIST_EDITOR_HPP
 
 #include <QFrame>
-#include <QEvent>
-#include <QMouseEvent>
+#include <QUndoStack>
 #include <memory>
 #include "bamboo_tracker.hpp"
-#include "module.hpp"
 
 namespace Ui {
 	class OrderListEditor;
@@ -21,12 +19,15 @@ public:
 	~OrderListEditor();
 
 	void setCore(std::shared_ptr<BambooTracker> core);
+	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 
 	void changeEditable();
 
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num);
+
+	void orderEdited();
 
 public slots:
 	void setCurrentTrack(int num);

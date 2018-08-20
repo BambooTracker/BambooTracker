@@ -15,6 +15,8 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 					 this, [&](int num) { emit currentTrackChanged(num); });
 	QObject::connect(ui->panel, &OrderListPanel::currentOrderChanged,
 					 this, [&](int num) { emit currentOrderChanged(num); });
+	QObject::connect(ui->panel, &OrderListPanel::orderEdited,
+					 this, [&]() { emit orderEdited(); });
 
 	auto focusSlot = [&]() { ui->panel->setFocus(); };
 
@@ -38,6 +40,11 @@ void OrderListEditor::setCore(std::shared_ptr<BambooTracker> core)
 
 	ui->horizontalScrollBar->setMaximum(core->getModuleStyle().trackAttribs.size() - 1);
 	ui->verticalScrollBar->setMaximum(core->getOrderList(0, 0).size() - 1);
+}
+
+void OrderListEditor::setCommandStack(std::weak_ptr<QUndoStack> stack)
+{
+	ui->panel->setCommandStack(stack);
 }
 
 void OrderListEditor::changeEditable()

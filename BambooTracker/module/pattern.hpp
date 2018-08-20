@@ -9,6 +9,8 @@ class Pattern
 public:
 	explicit Pattern(int n);
 
+	int getNumber() const;
+
 	Step& getStep(int n);
 
 	size_t getSize() const;

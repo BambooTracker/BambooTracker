@@ -12,6 +12,10 @@ public:
 	std::vector<TrackAttribute> getTrackAttributes() const;
 	Track& getTrack(int num);
 
+	std::vector<OrderData> getOrderData(int order);
+	void insertOrderBelow(int order);
+	void deleteOrder(int order);
+
 private:
 	int num_;
 	ModuleType modType_;

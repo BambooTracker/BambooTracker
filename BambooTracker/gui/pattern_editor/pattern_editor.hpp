@@ -31,6 +31,8 @@ public slots:
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num);
 
+	void onOrderListEdited();
+
 private:
 	Ui::PatternEditor *ui;
 };
