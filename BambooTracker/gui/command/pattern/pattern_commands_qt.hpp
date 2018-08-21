@@ -16,5 +16,6 @@
 #include "insert_step_qt_command.hpp"
 #include "delete_previous_step_qt_command.hpp"
 #include "paste_copied_data_to_pattern_qt_command.hpp"
+#include "erase_cells_in_pattern_qt_command.hpp"
 
 #endif // PATTERN_COMMANDS_QT_HPP

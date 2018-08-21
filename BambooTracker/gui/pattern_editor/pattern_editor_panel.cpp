@@ -896,7 +896,10 @@ void PatternEditorPanel::copySelectedCells()
 
 void PatternEditorPanel::eraseSelectedCells()
 {
-	// TODO
+	bt_->erasePatternCells(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+						   selLeftAbovePos_.order, selLeftAbovePos_.step,
+						   selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+	comStack_.lock()->push(new EraseCellsInPatternQtCommand(this));
 }
 
 void PatternEditorPanel::pasteCopiedCells(PatternPosition startPos)
@@ -932,6 +935,15 @@ void PatternEditorPanel::pasteCopiedCells(PatternPosition startPos)
 	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
 						   startPos.order, startPos.step, std::move(cells));
 	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
+}
+
+void PatternEditorPanel::cutSelectedCells()
+{
+	copySelectedCells();
+	eraseSelectedCells();
+	QString str = QApplication::clipboard()->text();
+	str.replace("COPY", "CUT");
+	QApplication::clipboard()->setText(str);
 }
 
 void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, const PatternPosition& end)
@@ -1028,7 +1040,36 @@ bool PatternEditorPanel::event(QEvent *event)
 bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
 	/* General Keys (with Ctrl) */
-	if (event->modifiers().testFlag(Qt::ControlModifier)) return false;
+	if (event->modifiers().testFlag(Qt::ControlModifier)) {
+		switch (event->key()) {
+		case Qt::Key_C:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				copySelectedCells();
+				return true;
+			}
+		case Qt::Key_X:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				cutSelectedCells();
+				return true;
+			}
+		case Qt::Key_V:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				pasteCopiedCells(curPos_);
+				return true;
+			}
+		default:
+			return false;
+		}
+	}
 
 	/* General Keys */
 	switch (event->key()) {
@@ -1213,9 +1254,9 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 	{
 		QMenu menu;
 		menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
-		menu.addAction("Cut");
+		menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
 		menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
-		menu.addAction("Erase");
+		menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
 
 		if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
 			menu.actions().at(0)->setEnabled(false);	// Copy

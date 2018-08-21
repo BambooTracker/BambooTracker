@@ -114,6 +114,8 @@ public:
 	///		4: effect value
 	void pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   std::vector<std::vector<std::string>> cells);
+	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+						   int endTrack, int endColmn, int endStep);
 	size_t getOrderSize(int songNum) const;
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 

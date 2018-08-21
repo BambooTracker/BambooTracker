@@ -606,6 +606,13 @@ void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColm
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, d));
 }
 
+void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+									  int endTrack, int endColmn, int endStep)
+{
+	comMan_.invoke(std::make_unique<EraseCellsInPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
+}
+
 size_t BambooTracker::getOrderSize(int songNum) const
 {
 	return  mod_->getSong(songNum).getOrderSize();

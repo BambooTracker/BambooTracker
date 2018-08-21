@@ -105,7 +105,9 @@ SOURCES += \
     gui/command/order/insert_order_below_qt_command.cpp \
     gui/command/order/delete_order_qt_command.cpp \
     command/pattern/paste_copied_data_to_pattern_command.cpp \
-    gui/command/pattern/paste_copied_data_to_pattern_qt_command.cpp
+    gui/command/pattern/paste_copied_data_to_pattern_qt_command.cpp \
+    command/pattern/erase_cells_in_pattern_command.cpp \
+    gui/command/pattern/erase_cells_in_pattern_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -199,7 +201,9 @@ HEADERS += \
     gui/command/order/insert_order_below_qt_command.hpp \
     gui/command/order/delete_order_qt_command.hpp \
     command/pattern/paste_copied_data_to_pattern_command.hpp \
-    gui/command/pattern/paste_copied_data_to_pattern_qt_command.hpp
+    gui/command/pattern/paste_copied_data_to_pattern_qt_command.hpp \
+    command/pattern/erase_cells_in_pattern_command.hpp \
+    gui/command/pattern/erase_cells_in_pattern_qt_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \
