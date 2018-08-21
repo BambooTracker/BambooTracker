@@ -187,7 +187,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		 rowY <= geometry().height();
 		 rowY += stepFontHeight_, baseY += stepFontHeight_, ++stepNum) {
 		if (stepNum == stepEnd) {
-			if (odrNum == bt_->getOrderList(curSongNum_, curPos_.track).size() - 1) {
+			if (odrNum == bt_->getOrderSize(curSongNum_) - 1) {
 				break;
 			}
 			else {
@@ -491,7 +491,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 				break;
 			}
 			else {
-				if (curPos_.order == bt_->getOrderList(curSongNum_, curPos_.track).size() - 1) {
+				if (curPos_.order == bt_->getOrderSize(curSongNum_) - 1) {
 					curPos_.step = tmp - dif - 1;	// Last step
 					break;
 				}
@@ -1158,7 +1158,7 @@ void PatternEditorPanel::paintEvent(QPaintEvent *event)
 {	
 	if (bt_ != nullptr) {
 		// Check order size
-		size_t odrSize = bt_->getOrderList(curSongNum_, 0).size();
+		size_t odrSize = bt_->getOrderSize(curSongNum_);
 		if (curPos_.order >= odrSize) curPos_.setRows(odrSize - 1, 0);
 
 		drawPattern(event->rect());
@@ -1330,7 +1330,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 					break;
 				}
 				else {
-					if (tmpOdr == bt_->getOrderList(curSongNum_, 0).size() - 1) {
+					if (tmpOdr == bt_->getOrderSize(curSongNum_) - 1) {
 						hovPos_.setRows(-1, -1);
 						break;
 					}

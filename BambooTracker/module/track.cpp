@@ -19,11 +19,6 @@ TrackAttribute Track::getAttribute() const
 	return *attrib_;
 }
 
-std::vector<int> Track::getOrderList() const
-{
-	return  order_;
-}
-
 OrderData Track::getOrderData(int order)
 {
 	OrderData res;

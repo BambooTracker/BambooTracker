@@ -13,7 +13,6 @@ class Track
 public:
 	Track(int number, SoundSource source, int channelInSource);
 	TrackAttribute getAttribute() const;
-	std::vector<int> getOrderList() const;
 	OrderData getOrderData(int order);
 	size_t getOrderSize() const;
 	Pattern& getPattern(int num);

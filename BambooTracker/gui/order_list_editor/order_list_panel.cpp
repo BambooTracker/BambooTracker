@@ -4,8 +4,10 @@
 #include <QApplication>
 #include <QPoint>
 #include <algorithm>
+#include <vector>
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands.hpp"
+#include "track.hpp"
 
 #include <QDebug>
 
@@ -46,7 +48,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 
 	/* Color */
 	defTextColor_ = QColor::fromRgb(180, 180, 180);
-	defRowColor_ = QColor::fromRgb(0, 0, 40);
+	defRowColor_ = QColor::fromRgb(40, 40, 80);
 	curTextColor_ = QColor::fromRgb(255, 255, 255);
 	curRowColor_ = QColor::fromRgb(110, 90, 140);
 	curRowColorEditable_ = QColor::fromRgb(140, 90, 110);
@@ -102,8 +104,9 @@ void OrderListPanel::drawRows(int maxWidth)
 	QPainter painter(pixmap_.get());
 	painter.setFont(rowFont_);
 
-	std::vector<std::vector<int>> lists_;
+	std::vector<OrderData> orderRowData_;
 	int x, trackNum;
+	int textOffset = trackWidth_ / 2 - rowFontWidth_;
 
 	/* Current row */
 	// Fill row
@@ -112,23 +115,23 @@ void OrderListPanel::drawRows(int maxWidth)
 	// Row number
 	painter.setPen(rowNumColor_);
 	painter.drawText(1, curRowBaselineY_, QString("%1").arg(curPos_.row, 2, 16, QChar('0')).toUpper());
-	// Step data
+	// Order data
+	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
 	painter.setPen(curTextColor_);
-	for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
-		lists_.push_back(bt_->getOrderList(curSongNum_, trackNum));
+	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		if (trackNum == curPos_.track)	// Paint current cell
-			painter.fillRect(x - widthSpace_, curRowY_, trackWidth_, rowFontHeight_, curCellColor_);
+			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, curCellColor_);
 		if (((hovPos_.row == curPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
 				|| (hovPos_.track == -2 && hovPos_.row == curPos_.row))	// Paint hover
-			painter.fillRect(x - widthSpace_, curRowY_, trackWidth_, rowFontHeight_, hovCellColor_);
+			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, hovCellColor_);
 		if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 				&& isSelectedCell(trackNum, curPos_.row))	// Paint selected
-			painter.fillRect(x - widthSpace_, curRowY_, trackWidth_, rowFontHeight_, selCellColor_);
+			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, selCellColor_);
 		painter.drawText(
-					x,
+					x + textOffset,
 					curRowBaselineY_,
-					QString(" %1")
-					.arg(lists_[trackNum - leftTrackNum_].at(curPos_.row), 2, 16, QChar('0')).toUpper()
+					QString("%1")
+					.arg(orderRowData_.at(trackNum).patten, 2, 16, QChar('0')).toUpper()
 				);
 
 		x += trackWidth_;
@@ -148,18 +151,20 @@ void OrderListPanel::drawRows(int maxWidth)
 		// Row number
 		painter.setPen(rowNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
+		// Order data
+		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
 		painter.setPen(defTextColor_);
-		for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
+		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
-				painter.fillRect(x - widthSpace_, rowY, trackWidth_, rowFontHeight_, hovCellColor_);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, hovCellColor_);
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
-				painter.fillRect(x - widthSpace_, rowY, trackWidth_, rowFontHeight_, selCellColor_);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, selCellColor_);
 			painter.drawText(
-						x,
+						x + textOffset,
 						baseY,
-						QString(" %1").arg(lists_[trackNum - leftTrackNum_].at(rowNum), 2, 16, QChar('0')).toUpper()
+						QString("%1").arg(orderRowData_.at(trackNum).patten, 2, 16, QChar('0')).toUpper()
 					);
 
 			x += trackWidth_;
@@ -169,7 +174,7 @@ void OrderListPanel::drawRows(int maxWidth)
 
 	/* Next rows */
 	endY = std::min(geometry().height(),
-					curRowY_ + rowFontHeight_ * (static_cast<int>(lists_[0].size()) - curPos_.row - 1));
+					curRowY_ + rowFontHeight_ * (static_cast<int>(bt_->getOrderSize(curSongNum_)) - curPos_.row - 1));
 	for (rowY = curRowY_ + rowFontHeight_, baseY = curRowBaselineY_ + rowFontHeight_, rowNum = curPos_.row + 1;
 		 rowY <= endY;
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
@@ -178,18 +183,20 @@ void OrderListPanel::drawRows(int maxWidth)
 		// Row number
 		painter.setPen(rowNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
+		// Order data
+		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
 		painter.setPen(defTextColor_);
-		for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
+		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
-				painter.fillRect(x - widthSpace_, rowY, trackWidth_, rowFontHeight_, hovCellColor_);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, hovCellColor_);
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
-				painter.fillRect(x - widthSpace_, rowY, trackWidth_, rowFontHeight_, selCellColor_);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, selCellColor_);
 			painter.drawText(
-						x,
+						x + textOffset,
 						baseY,
-						QString(" %1").arg(lists_[trackNum - leftTrackNum_].at(rowNum), 2, 16, QChar('0')).toUpper()
+						QString("%1").arg(orderRowData_.at(trackNum).patten, 2, 16, QChar('0')).toUpper()
 					);
 
 			x += trackWidth_;
@@ -276,7 +283,7 @@ void OrderListPanel::moveCursorToDown(int n)
 	int tmp = curPos_.row + n;
 
 	if (n > 0) {
-		int endRow = bt_->getOrderList(curSongNum_, 0).size();
+		int endRow = bt_->getOrderSize(curSongNum_);
 		if (tmp < endRow) {
 			curPos_.row = tmp;
 		}
@@ -347,7 +354,7 @@ void OrderListPanel::insertOrderBelow()
 
 void OrderListPanel::deleteOrder()
 {
-	if (bt_->getOrderList(curSongNum_, 0).size() > 1) {
+	if (bt_->getOrderSize(curSongNum_) > 1) {
 		// KEEP CODE ORDER //
 		bt_->deleteOrder(curSongNum_, curPos_.row);
 		moveCursorToDown(-1);
@@ -617,7 +624,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 		}
 		else {
 			hovPos_.row = curPos_.row + (pos.y() - curRowY_) / rowFontHeight_;
-			if (hovPos_.row >= bt_->getOrderList(curSongNum_, 0).size()) hovPos_.row = -1;
+			if (hovPos_.row >= bt_->getOrderSize(curSongNum_)) hovPos_.row = -1;
 		}
 	}
 

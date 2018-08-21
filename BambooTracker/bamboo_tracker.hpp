@@ -84,7 +84,7 @@ public:
 
 	// Module details
 	ModuleStyle getModuleStyle() const;
-	std::vector<int> getOrderList(int songNum, int trackNum) const;
+	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);

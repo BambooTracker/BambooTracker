@@ -334,7 +334,7 @@ void BambooTracker::findNextStep()
 	// Search
 	if (nextReadStepStep_ == getPatternSizeFromOrderNumber(curSongNum_, nextReadStepOrder_) - 1) {
 		if (!(playState_ & 0x20)) {	// Not play pattern
-			if (nextReadStepOrder_ == getOrderList(curSongNum_, 0).size() - 1) {
+			if (nextReadStepOrder_ == getOrderSize(curSongNum_) - 1) {
 				nextReadStepOrder_ = 0;
 			}
 			else {
@@ -460,9 +460,9 @@ ModuleStyle BambooTracker::getModuleStyle() const
 	return mod_->getStyle();
 }
 
-std::vector<int> BambooTracker::getOrderList(int songNum, int trackNum) const
+std::vector<OrderData> BambooTracker::getOrderData(int songNum, int orderNum) const
 {
-	return mod_->getSong(songNum).getTrack(trackNum).getOrderList();
+	return mod_->getSong(songNum).getOrderData(orderNum);
 }
 
 void BambooTracker::setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum)
