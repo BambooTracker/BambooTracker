@@ -15,5 +15,6 @@
 #include "erase_effect_value_in_step_qt_command.hpp"
 #include "insert_step_qt_command.hpp"
 #include "delete_previous_step_qt_command.hpp"
+#include "paste_copied_data_to_pattern_qt_command.hpp"
 
 #endif // PATTERN_COMMANDS_QT_HPP

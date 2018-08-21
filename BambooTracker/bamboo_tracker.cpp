@@ -585,6 +585,32 @@ void BambooTracker::deletePreviousStep(int songNum, int trackNum, int orderNum, 
 	comMan_.invoke(std::make_unique<DeletePreviousStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
+void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+									  std::vector<std::vector<std::string>> cells)
+{
+	std::vector<std::vector<std::string>> d;
+	int w = (modStyle_.trackAttribs.size() - beginTrack - 1) * 5 + (5 - beginColmn);
+	int h = getPatternSizeFromOrderNumber(songNum, beginOrder) - beginStep;
+
+	int width = std::min(cells.at(0).size(), static_cast<size_t>(w));
+	int height = std::min(cells.size(), static_cast<size_t>(h));
+
+	for (int i = 0; i < height; ++i) {
+		d.emplace_back();
+		for (int j = 0; j < width; ++j) {
+			d.at(i).push_back(cells.at(i).at(j));
+		}
+	}
+
+	comMan_.invoke(std::make_unique<PasteCopiedDataToPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, d));
+}
+
+size_t BambooTracker::getOrderSize(int songNum) const
+{
+	return  mod_->getSong(songNum).getOrderSize();
+}
+
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const
 {
 	size_t size = 0;

@@ -15,6 +15,7 @@ public:
 	TrackAttribute getAttribute() const;
 	std::vector<int> getOrderList() const;
 	OrderData getOrderData(int order);
+	size_t getOrderSize() const;
 	Pattern& getPattern(int num);
 	Pattern& getPatternFromOrderNumber(int num);
 

@@ -33,6 +33,11 @@ OrderData Track::getOrderData(int order)
 	return res;
 }
 
+size_t Track::getOrderSize() const
+{
+	return order_.size();
+}
+
 Pattern& Track::getPattern(int num)
 {
 	return patterns_.at(num);

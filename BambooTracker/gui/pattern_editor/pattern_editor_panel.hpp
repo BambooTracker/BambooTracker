@@ -115,29 +115,38 @@ private:
 
 	int calculateTracksWidthWithRowNum(int begin, int end) const;
 	int calculateColNumInRow(int trackNum, int colNumInTrack) const;
+	int calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn) const;
 	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
 
-	bool enterToneDataFMSSG(int key);
+	bool enterToneData(int key);
 	void setStepKeyOn(Note note, int octave);
-	bool enterInstrumentDataFMSSG(int key);
+	bool enterInstrumentData(int key);
 	void setStepInstrument(int num);
-	bool enterVolumeDataFMSSG(int key);
+	bool enterVolumeData(int key);
 	void setStepVolume(int volume);
-	bool enterEffectIdFM(int key);
-	bool enterEffectIdSSG(int key);
+	bool enterEffectID(int key);
 	void setStepEffectID(QString str);
 	void eraseStepEffect();
-	bool enterEffectValueFMSSG(int key);
+	bool enterEffectValue(int key);
 	void setStepEffectValue(int value);
 
 	void insertStep();
 	void deletePreviousStep();
 
+	void copySelectedCells();
+	void eraseSelectedCells();
+	void pasteCopiedCells(PatternPosition startPos);
+
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
 };
+
+inline int PatternEditorPanel::calculateColNumInRow(int trackNum, int colNumInTrack) const
+{
+	return trackNum * 5 + colNumInTrack;
+}
 
 #endif // PATTERN_EDITOR_PANEL_HPP

@@ -13,6 +13,7 @@ public:
 	Track& getTrack(int num);
 
 	std::vector<OrderData> getOrderData(int order);
+	size_t getOrderSize() const;
 	void insertOrderBelow(int order);
 	void deleteOrder(int order);
 

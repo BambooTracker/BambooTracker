@@ -3,7 +3,13 @@
 #include <QFontMetrics>
 #include <QPoint>
 #include <QApplication>
+#include <QClipboard>
+#include <QMenu>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <algorithm>
+#include <vector>
+#include <utility>
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 
@@ -79,6 +85,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	initDisplay();
 
 	setAttribute(Qt::WA_Hover);
+	setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
 void PatternEditorPanel::initDisplay()
@@ -526,15 +533,9 @@ void PatternEditorPanel::moveCursorToDown(int n)
 	update();
 }
 
-int PatternEditorPanel::calculateColNumInRow(int trackNum, int colNumInTrack) const
+int PatternEditorPanel::calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn) const
 {
-	int i, cnt = 0;
-	for (i = 0; i < trackNum; ++i) {
-		cnt += 5;
-	}
-	cnt += colNumInTrack;
-
-	return cnt;
+	return calculateColNumInRow(endTrack, endColumn) - calculateColNumInRow(beginTrack, beginColumn);
 }
 
 int PatternEditorPanel::calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const
@@ -592,7 +593,7 @@ void PatternEditorPanel::updatePosition()
 	update();
 }
 
-bool PatternEditorPanel::enterToneDataFMSSG(int key)
+bool PatternEditorPanel::enterToneData(int key)
 {
 	int baseOct = bt_->getCurrentOctave();
 
@@ -651,7 +652,7 @@ void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 	}
 }
 
-bool PatternEditorPanel::enterInstrumentDataFMSSG(int key)
+bool PatternEditorPanel::enterInstrumentData(int key)
 {
 	switch (key) {
 	case Qt::Key_0:	setStepInstrument(0x0);	return true;
@@ -689,7 +690,7 @@ void PatternEditorPanel::setStepInstrument(int num)
 	if (!entryCnt_) moveCursorToDown(1);
 }
 
-bool PatternEditorPanel::enterVolumeDataFMSSG(int key)
+bool PatternEditorPanel::enterVolumeData(int key)
 {
 	switch (key) {
 	case Qt::Key_0:	setStepVolume(0x0);	return true;
@@ -727,23 +728,47 @@ void PatternEditorPanel::setStepVolume(int volume)
 	if (!entryCnt_) moveCursorToDown(1);
 }
 
-bool PatternEditorPanel::enterEffectIdFM(int key)
+bool PatternEditorPanel::enterEffectID(int key)
 {
 	switch (key) {
-	// UNDONE: effect id
+	case Qt::Key_0:			setStepEffectID("0");	return true;
+	case Qt::Key_1:			setStepEffectID("1");	return true;
+	case Qt::Key_2:			setStepEffectID("2");	return true;
+	case Qt::Key_3:			setStepEffectID("3");	return true;
+	case Qt::Key_4:			setStepEffectID("4");	return true;
+	case Qt::Key_5:			setStepEffectID("5");	return true;
+	case Qt::Key_6:			setStepEffectID("6");	return true;
+	case Qt::Key_7:			setStepEffectID("7");	return true;
+	case Qt::Key_8:			setStepEffectID("8");	return true;
+	case Qt::Key_9:			setStepEffectID("9");	return true;
 	case Qt::Key_A:			setStepEffectID("A");	return true;
-	case Qt::Key_Delete:	eraseStepEffect();		return true;
-	default:	return false;
-	}
-}
-
-bool PatternEditorPanel::enterEffectIdSSG(int key)
-{
-	switch (key) {
-	// UNDONE: effect id
 	case Qt::Key_B:			setStepEffectID("B");	return true;
+	case Qt::Key_C:			setStepEffectID("C");	return true;
+	case Qt::Key_D:			setStepEffectID("D");	return true;
+	case Qt::Key_E:			setStepEffectID("E");	return true;
+	case Qt::Key_F:			setStepEffectID("F");	return true;
+	case Qt::Key_G:			setStepEffectID("G");	return true;
+	case Qt::Key_H:			setStepEffectID("H");	return true;
+	case Qt::Key_I:			setStepEffectID("I");	return true;
+	case Qt::Key_J:			setStepEffectID("J");	return true;
+	case Qt::Key_K:			setStepEffectID("K");	return true;
+	case Qt::Key_L:			setStepEffectID("L");	return true;
+	case Qt::Key_M:			setStepEffectID("M");	return true;
+	case Qt::Key_N:			setStepEffectID("N");	return true;
+	case Qt::Key_O:			setStepEffectID("O");	return true;
+	case Qt::Key_P:			setStepEffectID("P");	return true;
+	case Qt::Key_Q:			setStepEffectID("Q");	return true;
+	case Qt::Key_R:			setStepEffectID("R");	return true;
+	case Qt::Key_S:			setStepEffectID("S");	return true;
+	case Qt::Key_T:			setStepEffectID("T");	return true;
+	case Qt::Key_U:			setStepEffectID("U");	return true;
+	case Qt::Key_V:			setStepEffectID("V");	return true;
+	case Qt::Key_W:			setStepEffectID("W");	return true;
+	case Qt::Key_X:			setStepEffectID("X");	return true;
+	case Qt::Key_Y:			setStepEffectID("Y");	return true;
+	case Qt::Key_Z:			setStepEffectID("Z");	return true;
 	case Qt::Key_Delete:	eraseStepEffect();		return true;
-	default:	return false;
+	default:										return false;
 	}
 }
 
@@ -764,7 +789,7 @@ void PatternEditorPanel::eraseStepEffect()
 	moveCursorToDown(1);
 }
 
-bool PatternEditorPanel::enterEffectValueFMSSG(int key)
+bool PatternEditorPanel::enterEffectValue(int key)
 {
 	switch (key) {
 	case Qt::Key_0:	setStepEffectValue(0x0);	return true;
@@ -818,6 +843,97 @@ void PatternEditorPanel::deletePreviousStep()
 	}
 }
 
+void PatternEditorPanel::copySelectedCells()
+{
+	int w = 1 + calculateColumnDistance(selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+										selRightBelowPos_.track, selRightBelowPos_.colInTrack);
+	int h = 1 + calculateStepDistance(selLeftAbovePos_.order, selLeftAbovePos_.step,
+									  selRightBelowPos_.order, selRightBelowPos_.step);
+	QString str = QString("PATTERN_COPY:%1,%2,%3,")
+				  .arg(QString::number(selLeftAbovePos_.colInTrack),
+					   QString::number(w),
+					   QString::number(h));
+	PatternPosition pos = selLeftAbovePos_;
+	while (true) {
+		switch (pos.colInTrack) {
+		case 0:
+			str += QString::number(bt_->getStepNoteNumber(curSongNum_, pos.track, pos.order, pos.step));
+			break;
+		case 1:
+			str += QString::number(bt_->getStepInstrument(curSongNum_, pos.track, pos.order, pos.step));
+			break;
+		case 2:
+			str += QString::number(bt_->getStepVolume(curSongNum_, pos.track, pos.order, pos.step));
+			break;
+		case 3:
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.track, pos.order, pos.step));
+			break;
+		case 4:
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.track, pos.order, pos.step));
+			break;
+		}
+
+		if (pos.track == selRightBelowPos_.track && pos.colInTrack == selRightBelowPos_.colInTrack) {
+			if (pos.order == selRightBelowPos_.order && pos.step == selRightBelowPos_.step) {
+				break;
+			}
+			else {
+				pos.setCols(selLeftAbovePos_.track, selLeftAbovePos_.colInTrack);
+				++pos.step;
+			}
+		}
+		else {
+			++pos.colInTrack;
+			pos.track += (pos.colInTrack / 5);
+			pos.colInTrack %= 5;
+		}
+
+		str += ",";
+	}
+
+	QApplication::clipboard()->setText(str);
+}
+
+void PatternEditorPanel::eraseSelectedCells()
+{
+	// TODO
+}
+
+void PatternEditorPanel::pasteCopiedCells(PatternPosition startPos)
+{
+	// Analyze text
+	QString str = QApplication::clipboard()->text().remove(QRegularExpression("PATTERN_(COPY|CUT):"));
+	QString hdRe = "^([0-9]+),([0-9]+),([0-9]+),";
+	QRegularExpression re(hdRe);
+	QRegularExpressionMatch match = re.match(str);
+	int sCol = match.captured(1).toInt();
+	int w = match.captured(2).toInt();
+	int h = match.captured(3).toInt();
+	str.remove(re);
+
+	std::vector<std::vector<std::string>> cells;
+	re = QRegularExpression("^([^,]+),", QRegularExpression::DotMatchesEverythingOption);
+	for (int i = 0; i < h; ++i) {
+		cells.emplace_back();
+		for (int j = 0; j < w; ++j) {
+			match = re.match(str);
+			if (match.hasMatch()) {
+				cells.at(i).push_back(match.captured(1).toStdString());
+				str.remove(re);
+			}
+			else {
+				cells.at(i).push_back(str.toStdString());
+				break;
+			}
+		}
+	}
+
+	// Send cells data
+	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
+						   startPos.order, startPos.step, std::move(cells));
+	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
+}
+
 void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, const PatternPosition& end)
 {
 	if (start.compareCols(end) > 0) {
@@ -869,8 +985,7 @@ void PatternEditorPanel::setCurrentTrack(int num)
 {
 	Ui::EventGuard eg(isIgnoreToOrder_);
 
-	int dif = calculateColNumInRow(num, 0)
-			  - calculateColNumInRow(curPos_.track, curPos_.colInTrack);
+	int dif = calculateColumnDistance(curPos_.track, curPos_.colInTrack, num, 0);
 	moveCursorToRight(dif);
 }
 
@@ -975,25 +1090,12 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	default:
 		if (!bt_->isJamMode()) {
 			// Pattern edit
-			switch (modStyle_.trackAttribs[curPos_.track].source) {
-			case SoundSource::FM:
-				switch (curPos_.colInTrack) {
-				case 0:	return enterToneDataFMSSG(event->key());
-				case 1:	return enterInstrumentDataFMSSG(event->key());
-				case 2:	return enterVolumeDataFMSSG(event->key());
-				case 3:	return enterEffectIdFM(event->key());
-				case 4:	return enterEffectValueFMSSG(event->key());
-				}
-				break;
-			case SoundSource::SSG:
-				switch (curPos_.colInTrack) {
-				case 0:	return enterToneDataFMSSG(event->key());
-				case 1:	return enterInstrumentDataFMSSG(event->key());
-				case 2:	return enterVolumeDataFMSSG(event->key());
-				case 3:	return enterEffectIdSSG(event->key());
-				case 4:	return enterEffectValueFMSSG(event->key());
-				}
-				break;
+			switch (curPos_.colInTrack) {
+			case 0:	return enterToneData(event->key());
+			case 1:	return enterInstrumentData(event->key());
+			case 2:	return enterVolumeData(event->key());
+			case 3:	return enterEffectID(event->key());
+			case 4:	return enterEffectValue(event->key());
 			}
 		}
 		return false;
@@ -1077,13 +1179,15 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 {
 	mouseReleasePos_ = hovPos_;
 
-	if (event->button() == Qt::LeftButton) {
+	switch (event->button()) {
+	case Qt::LeftButton:
 		if (mousePressPos_ == mouseReleasePos_) {	// Jump cell
 			if (hovPos_.order >= 0 && hovPos_.step >= 0
 					&& hovPos_.track >= 0 && hovPos_.colInTrack >= 0) {
-				int horDif = calculateColNumInRow(hovPos_.track, hovPos_.colInTrack)
-							 - calculateColNumInRow(curPos_.track, curPos_.colInTrack);
-				int verDif = calculateStepDistance(curPos_.order, curPos_.step, hovPos_.order, hovPos_.step);
+				int horDif = calculateColumnDistance(curPos_.track, curPos_.colInTrack,
+													 hovPos_.track, hovPos_.colInTrack);
+				int verDif = calculateStepDistance(curPos_.order, curPos_.step,
+												   hovPos_.order, hovPos_.step);
 				moveCursorToRight(horDif);
 				moveCursorToDown(verDif);
 				update();
@@ -1091,17 +1195,54 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			else if (hovPos_.order == -2 && hovPos_.track >= 0) {	// Header
 				bt_->setTrackMuteState(hovPos_.track, !bt_->isMute(hovPos_.track));	// Toggle mute
 
-				int horDif = calculateColNumInRow(hovPos_.track, 0)
-							 - calculateColNumInRow(curPos_.track, curPos_.colInTrack);
+				int horDif = calculateColumnDistance(curPos_.track, curPos_.colInTrack,
+													 hovPos_.track, 0);
 				moveCursorToRight(horDif);
 				update();
 			}
 			else if (hovPos_.track == -2 && hovPos_.order >= 0 && hovPos_.step >= 0) {	// Step number
-				int verDif = calculateStepDistance(curPos_.order, curPos_.step, hovPos_.order, hovPos_.step);
+				int verDif = calculateStepDistance(curPos_.order, curPos_.step,
+												   hovPos_.order, hovPos_.step);
 				moveCursorToDown(verDif);
 				update();
 			}
 		}
+		break;
+
+	case Qt::RightButton:	// Show context menu
+	{
+		QMenu menu;
+		menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
+		menu.addAction("Cut");
+		menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
+		menu.addAction("Erase");
+
+		if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
+			menu.actions().at(0)->setEnabled(false);	// Copy
+			menu.actions().at(1)->setEnabled(false);	// Cut
+			menu.actions().at(2)->setEnabled(false);	// Paste
+			menu.actions().at(3)->setEnabled(false);	// Erase
+		}
+		else {
+			QString clipText = QApplication::clipboard()->text();
+			if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
+					menu.actions().at(2)->setEnabled(false);	// Paste
+			}
+			if (selRightBelowPos_.order < 0
+					|| !isSelectedCell(mousePressPos_.track, mousePressPos_.colInTrack,
+									   mousePressPos_.order, mousePressPos_.step)) {
+				menu.actions().at(0)->setEnabled(false);	// Copy
+				menu.actions().at(1)->setEnabled(false);	// Cut
+				menu.actions().at(3)->setEnabled(false);	// Erase
+			}
+		}
+
+		menu.exec(mapToGlobal(event->pos()));
+		break;
+	}
+
+	default:
+		break;
 	}
 
 	mousePressPos_ = { -1, -1, -1, -1 };

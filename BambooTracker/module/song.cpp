@@ -41,6 +41,11 @@ std::vector<OrderData> Song::getOrderData(int order)
 	return ret;
 }
 
+size_t Song::getOrderSize() const
+{
+	return tracks_[0].getOrderSize();
+}
+
 void Song::insertOrderBelow(int order)
 {
 	for (auto& track : tracks_) {

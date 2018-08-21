@@ -106,6 +106,15 @@ public:
 	void eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum);
 	void deletePreviousStep(int songNum, int trackNum, int orderNum, int stepNum);
 	void insertStep(int songNum, int trackNum, int orderNum, int stepNum);
+	/// beginColumn
+	///		0: note
+	///		1: instrument
+	///		2: volume
+	///		3: effect id
+	///		4: effect value
+	void pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+						   std::vector<std::vector<std::string>> cells);
+	size_t getOrderSize(int songNum) const;
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 
 private:
