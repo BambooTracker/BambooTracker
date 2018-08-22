@@ -7,7 +7,7 @@ SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int so
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
-	  vol_(volume),
+	  vol_(volume << 4),
 	  isComplete_(false)
 {
 	prevVol_ = mod_.lock()->getSong(songNum).getTrack(trackNum)
@@ -37,7 +37,7 @@ bool SetVolumeToStepCommand::mergeWith(const AbstructCommand* other)
 		auto com = dynamic_cast<const SetVolumeToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
 				&& com->getOrder() == order_ && com->getStep() == step_) {
-			vol_ = (vol_ << 4) + com->getVol();
+			vol_ += (com->getVol() >> 4);
 			redo();
 			isComplete_ = true;
 			return true;

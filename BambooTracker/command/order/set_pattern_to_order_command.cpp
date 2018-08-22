@@ -5,7 +5,7 @@ SetPatternToOrderCommand::SetPatternToOrderCommand(std::weak_ptr<Module> mod, in
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
-	  pattern_(patternNum),
+	  pattern_(patternNum << 4),
 	  isComplete_(false)
 {
 	prevPattern_ = mod_.lock()->getSong(songNum).getTrack(trackNum)
@@ -33,7 +33,7 @@ bool SetPatternToOrderCommand::mergeWith(const AbstructCommand* other)
 		auto com = dynamic_cast<const SetPatternToOrderCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
 				&& com->getOrder() == order_) {
-			pattern_ = (pattern_ << 4) + com->getPattern();
+			pattern_ += (com->getPattern() >> 4);
 			redo();
 			isComplete_ = true;
 			return true;

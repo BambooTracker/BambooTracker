@@ -15,7 +15,7 @@ SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, in
 
 void SetEffectIDToStepCommand::redo()
 {
-	std::string str = isComplete_ ? effID_ : ("0" + effID_);
+	std::string str = isComplete_ ? effID_ : (effID_ + "0");
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
 					.getStep(step_).setEffectID(str);
 }
