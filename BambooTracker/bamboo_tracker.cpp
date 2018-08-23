@@ -460,6 +460,51 @@ ModuleStyle BambooTracker::getModuleStyle() const
 	return mod_->getStyle();
 }
 
+/*----- Song -----*/
+void BambooTracker::setSongTitle(int songNum, std::string title)
+{
+	mod_->getSong(songNum).setTitle(title);
+}
+
+std::string BambooTracker::getSongTitle(int songNum) const
+{
+	return mod_->getSong(songNum).getTitle();
+}
+
+void BambooTracker::setSongTickFrequency(int songNum, unsigned int freq)
+{
+	mod_->getSong(songNum).setTickFrequency(freq);
+	if (curSongNum_ == songNum) tickCounter_.setInterruptRate(freq);
+}
+
+unsigned int BambooTracker::getSongTickFrequency(int songNum) const
+{
+	return mod_->getSong(songNum).getTickFrequency();
+}
+
+void BambooTracker::setSongTempo(int songNum, int tempo)
+{
+	mod_->getSong(songNum).setTempo(tempo);
+	if (curSongNum_ == songNum) tickCounter_.setTempo(tempo);
+}
+
+int BambooTracker::getSongtempo(int songNum) const
+{
+	return mod_->getSong(songNum).getTempo();
+}
+
+void BambooTracker::setSongStepSize(int songNum, size_t size)
+{
+	mod_->getSong(songNum).setStepSize(size);
+	if (curSongNum_ == songNum) tickCounter_.setStepSize(size);
+}
+
+size_t BambooTracker::getSongStepSize(int songNum) const
+{
+	return mod_->getSong(songNum).getStepSize();
+}
+
+/*----- Order -----*/
 std::vector<OrderData> BambooTracker::getOrderData(int songNum, int orderNum) const
 {
 	return mod_->getSong(songNum).getOrderData(orderNum);
@@ -501,6 +546,12 @@ void BambooTracker::pasteOrderCells(int songNum, int beginTrack, int beginOrder,
 	comMan_.invoke(std::make_unique<PasteCopiedDataToOrderCommand>(mod_, songNum, beginTrack, beginOrder, std::move(d)));
 }
 
+size_t BambooTracker::getOrderSize(int songNum) const
+{
+	return  mod_->getSong(songNum).getOrderSize();
+}
+
+/*----- Pattern -----*/
 int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const
 {
 	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
@@ -633,11 +684,6 @@ void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColm
 {
 	comMan_.invoke(std::make_unique<EraseCellsInPatternCommand>(
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
-}
-
-size_t BambooTracker::getOrderSize(int songNum) const
-{
-	return  mod_->getSong(songNum).getOrderSize();
 }
 
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const

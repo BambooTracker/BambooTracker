@@ -71,17 +71,74 @@
     </item>
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0" alignment="Qt::AlignRight">
+      <item row="3" column="1">
+       <widget class="LineReadOnlySpinBox" name="octaveSpinBox">
+        <property name="maximum">
+         <number>7</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" alignment="Qt::AlignRight">
        <widget class="QLabel" name="octaveLabel">
         <property name="text">
          <string>Octave:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="LineReadOnlySpinBox" name="octaveSpinBox">
+      <item row="2" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="stepSizeLabel">
+        <property name="text">
+         <string>StepSize:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="tempoLabel">
+        <property name="text">
+         <string>Tempo:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="tickFreqLabel">
+        <property name="text">
+         <string>Tick Freq.:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="stepSizeSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="tempoSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
         <property name="maximum">
-         <number>7</number>
+         <number>512</number>
+        </property>
+        <property name="value">
+         <number>150</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="tickFreqSpinBox">
+        <property name="suffix">
+         <string>Hz</string>
+        </property>
+        <property name="prefix">
+         <string/>
+        </property>
+        <property name="value">
+         <number>60</number>
         </property>
        </widget>
       </item>

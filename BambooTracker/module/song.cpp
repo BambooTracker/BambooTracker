@@ -1,7 +1,12 @@
 #include "song.hpp"
 
-Song::Song(int number, ModuleType modType, std::string title)
-	: num_(number), modType_(modType), title_(title)
+Song::Song(int number, ModuleType modType, std::string title, unsigned int tickFreq, unsigned int tempo, unsigned int stepSize)
+	: num_(number),
+	  modType_(modType),
+	  title_(title),
+	  tickFreq_(tickFreq),
+	  tempo_(tempo),
+	  stepSize_(stepSize)
 {
 	switch (modType) {
 	case ModuleType::STD:
@@ -16,6 +21,51 @@ Song::Song(int number, ModuleType modType, std::string title)
 		// UNDONE: FM extend mode
 		break;
 	}
+}
+
+int Song::getNumber() const
+{
+	return num_;
+}
+
+void Song::setTitle(std::string title)
+{
+	title_ = title;
+}
+
+std::string Song::getTitle() const
+{
+	return title_;
+}
+
+void Song::setTickFrequency(unsigned int freq)
+{
+	tickFreq_ = freq;
+}
+
+unsigned int Song::getTickFrequency() const
+{
+	return tickFreq_;
+}
+
+void Song::setTempo(int tempo)
+{
+	tempo_ = tempo;
+}
+
+int Song::getTempo() const
+{
+	return tempo_;
+}
+
+void Song::setStepSize(size_t size)
+{
+	stepSize_ = size;
+}
+
+size_t Song::getStepSize() const
+{
+	return stepSize_;
 }
 
 std::vector<TrackAttribute> Song::getTrackAttributes() const

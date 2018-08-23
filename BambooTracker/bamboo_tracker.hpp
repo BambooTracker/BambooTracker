@@ -84,12 +84,24 @@ public:
 
 	// Module details
 	ModuleStyle getModuleStyle() const;
+	/*----- Song -----*/
+	void setSongTitle(int songNum, std::string title);
+	std::string getSongTitle(int songNum) const;
+	void setSongTickFrequency(int songNum, unsigned int freq);
+	unsigned int getSongTickFrequency(int songNum) const;
+	void setSongTempo(int songNum, int tempo);
+	int getSongtempo(int songNum) const;
+	void setSongStepSize(int songNum, size_t size);
+	size_t getSongStepSize(int songNum) const;
+	/*----- Order -----*/
 	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
 	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
 						   std::vector<std::vector<std::string>> cells);
+	size_t getOrderSize(int songNum) const;
+	/*----- Pattern -----*/
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
@@ -118,7 +130,6 @@ public:
 						   std::vector<std::vector<std::string>> cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
-	size_t getOrderSize(int songNum) const;
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 
 private:

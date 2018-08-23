@@ -37,6 +37,18 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->getStreamSamples(container, nSamples);
 	}, Qt::DirectConnection);
 
+	/* Play speed settings */
+	int curSong = bt_->getCurrentSongNumber();
+	ui->tickFreqSpinBox->setValue(bt_->getSongTickFrequency(curSong));
+	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int freq) { bt_->setSongTickFrequency(bt_->getCurrentSongNumber(), freq); });
+	ui->tempoSpinBox->setValue(bt_->getSongtempo(curSong));
+	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int tempo) { bt_->setSongTempo(bt_->getCurrentSongNumber(), tempo); });
+	ui->stepSizeSpinBox->setValue(bt_->getSongStepSize(curSong));
+	QObject::connect(ui->stepSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int size) { bt_->setSongStepSize(bt_->getCurrentSongNumber(), size); });
+
 	/* Octave */
 	ui->octaveSpinBox->setValue(bt_->getCurrentOctave());
 	QObject::connect(ui->octaveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
