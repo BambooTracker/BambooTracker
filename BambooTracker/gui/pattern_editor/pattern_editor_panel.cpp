@@ -1010,6 +1010,7 @@ void PatternEditorPanel::setCurrentOrder(int num)
 
 void PatternEditorPanel::onOrderListEdited()
 {
+	// Reset position memory
 	hovPos_ = { -1, -1, -1, -1 };
 	editPos_ = { -1, -1, -1, -1 };
 	mousePressPos_ = { -1, -1, -1, -1 };
@@ -1017,6 +1018,15 @@ void PatternEditorPanel::onOrderListEdited()
 	selLeftAbovePos_ = { -1, -1, -1, -1 };
 	selRightBelowPos_ = { -1, -1, -1, -1 };
 	shiftPressedPos_ = { -1, -1, -1, -1 };
+
+	update();
+}
+
+void PatternEditorPanel::onDefaultPatternSizeChanged()
+{
+	// Check pattern size
+	int end = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
+	if (curPos_.step >= end) curPos_.step = end - 1;
 
 	update();
 }

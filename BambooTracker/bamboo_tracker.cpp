@@ -699,3 +699,13 @@ size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) c
 	}
 	return size;
 }
+
+void BambooTracker::setDefaultPatternSize(int songNum, size_t size)
+{
+	mod_->getSong(songNum).setDefaultPatternSize(size);
+}
+
+size_t BambooTracker::getDefaultPatternSize(int songNum) const
+{
+	return mod_->getSong(songNum).getDefaultPatternSize();
+}

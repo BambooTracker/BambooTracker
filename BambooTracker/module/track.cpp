@@ -58,3 +58,10 @@ void Track::deleteOrder(int order)
 {
 	order_.erase(order_.begin() + order);
 }
+
+void Track::changeDefaultPatternSize(size_t size)
+{
+	for (auto& ptn : patterns_) {
+		ptn.changeSize(size);
+	}
+}

@@ -32,6 +32,7 @@ public slots:
 	void setCurrentOrder(int num);
 
 	void onOrderListEdited();
+	void onDefaultPatternSizeChanged();
 
 private:
 	Ui::PatternEditor *ui;

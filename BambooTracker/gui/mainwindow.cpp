@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QApplication::clipboard()->clear();
 
+	int curSong = bt_->getCurrentSongNumber();
+
 	/* Audio stream */
 	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(),
 											bt_->getStreamDuration(),
@@ -38,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	}, Qt::DirectConnection);
 
 	/* Play speed settings */
-	int curSong = bt_->getCurrentSongNumber();
 	ui->tickFreqSpinBox->setValue(bt_->getSongTickFrequency(curSong));
 	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int freq) { bt_->setSongTickFrequency(bt_->getCurrentSongNumber(), freq); });
@@ -48,6 +49,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->stepSizeSpinBox->setValue(bt_->getSongStepSize(curSong));
 	QObject::connect(ui->stepSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int size) { bt_->setSongStepSize(bt_->getCurrentSongNumber(), size); });
+
+	/* Pattern size */
+	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(curSong));
+	QObject::connect(ui->patternSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int size) {
+		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
+		ui->patternEditor->onDefaultPatternSizeChanged();
+	});
 
 	/* Octave */
 	ui->octaveSpinBox->setValue(bt_->getCurrentOctave());

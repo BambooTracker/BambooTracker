@@ -22,6 +22,8 @@ public:
 	void insertOrderBelow(int order);
 	void deleteOrder(int order);
 
+	void changeDefaultPatternSize(size_t size);
+
 private:
 	std::unique_ptr<TrackAttribute> attrib_;
 

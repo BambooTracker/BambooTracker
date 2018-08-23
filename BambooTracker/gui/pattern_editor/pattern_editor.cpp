@@ -75,3 +75,8 @@ void PatternEditor::onOrderListEdited()
 {
 	ui->panel->onOrderListEdited();
 }
+
+void PatternEditor::onDefaultPatternSizeChanged()
+{
+	ui->panel->onDefaultPatternSizeChanged();
+}

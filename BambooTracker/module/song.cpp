@@ -1,12 +1,15 @@
 #include "song.hpp"
 
-Song::Song(int number, ModuleType modType, std::string title, unsigned int tickFreq, unsigned int tempo, unsigned int stepSize)
+Song::Song(int number, ModuleType modType, std::string title,
+		   unsigned int tickFreq, int tempo, unsigned int stepSize,
+		   size_t defaultPatternSize)
 	: num_(number),
 	  modType_(modType),
 	  title_(title),
 	  tickFreq_(tickFreq),
 	  tempo_(tempo),
-	  stepSize_(stepSize)
+	  stepSize_(stepSize),
+	  defPtnSize_(defaultPatternSize)
 {
 	switch (modType) {
 	case ModuleType::STD:
@@ -66,6 +69,19 @@ void Song::setStepSize(size_t size)
 size_t Song::getStepSize() const
 {
 	return stepSize_;
+}
+
+void Song::setDefaultPatternSize(size_t size)
+{
+	defPtnSize_ = size;
+	for (auto& t : tracks_) {
+		t.changeDefaultPatternSize(size);
+	}
+}
+
+size_t Song::getDefaultPatternSize() const
+{
+	return defPtnSize_;
 }
 
 std::vector<TrackAttribute> Song::getTrackAttributes() const

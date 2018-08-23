@@ -39,6 +39,7 @@ public slots:
 	void setCurrentOrder(int num);
 
 	void onOrderListEdited();
+	void onDefaultPatternSizeChanged();
 
 signals:
 	void currentCellInRowChanged(int num);
