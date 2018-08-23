@@ -644,7 +644,7 @@ bool PatternEditorPanel::enterToneData(int key)
 
 void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 {
-	if (octave < 7) {
+	if (octave < 8) {
 		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note);
 		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 		moveCursorToDown(1);
