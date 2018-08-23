@@ -28,3 +28,4 @@
 #include "./order/set_pattern_to_order_command.hpp"
 #include "./order/insert_order_below_command.hpp"
 #include "./order/delete_order_command.hpp"
+#include "./order/paste_copied_data_to_order_command.hpp"

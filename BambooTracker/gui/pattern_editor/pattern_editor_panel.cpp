@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMenu>
+#include <QAction>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <algorithm>
@@ -12,8 +13,6 @@
 #include <utility>
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
-
-#include <QDebug>
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -902,7 +901,7 @@ void PatternEditorPanel::eraseSelectedCells()
 	comStack_.lock()->push(new EraseCellsInPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteCopiedCells(PatternPosition startPos)
+void PatternEditorPanel::pasteCopiedCells(PatternPosition& startPos)
 {
 	// Analyze text
 	QString str = QApplication::clipboard()->text().remove(QRegularExpression("PATTERN_(COPY|CUT):"));
@@ -915,7 +914,7 @@ void PatternEditorPanel::pasteCopiedCells(PatternPosition startPos)
 	str.remove(re);
 
 	std::vector<std::vector<std::string>> cells;
-	re = QRegularExpression("^([^,]+),", QRegularExpression::DotMatchesEverythingOption);
+	re = QRegularExpression("^([^,]+),");
 	for (int i = 0; i < h; ++i) {
 		cells.emplace_back();
 		for (int j = 0; j < w; ++j) {
@@ -1253,28 +1252,28 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::RightButton:	// Show context menu
 	{
 		QMenu menu;
-		menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
-		menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
-		menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
-		menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
+		QAction* copy = menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
+		QAction* cut = menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
+		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
+		QAction* erase = menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
 
 		if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
-			menu.actions().at(0)->setEnabled(false);	// Copy
-			menu.actions().at(1)->setEnabled(false);	// Cut
-			menu.actions().at(2)->setEnabled(false);	// Paste
-			menu.actions().at(3)->setEnabled(false);	// Erase
+			copy->setEnabled(false);
+			cut->setEnabled(false);
+			paste->setEnabled(false);
+			erase->setEnabled(false);
 		}
 		else {
 			QString clipText = QApplication::clipboard()->text();
 			if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
-					menu.actions().at(2)->setEnabled(false);	// Paste
+					paste->setEnabled(false);
 			}
 			if (selRightBelowPos_.order < 0
 					|| !isSelectedCell(mousePressPos_.track, mousePressPos_.colInTrack,
 									   mousePressPos_.order, mousePressPos_.step)) {
-				menu.actions().at(0)->setEnabled(false);	// Copy
-				menu.actions().at(1)->setEnabled(false);	// Cut
-				menu.actions().at(3)->setEnabled(false);	// Erase
+				copy->setEnabled(false);
+				cut->setEnabled(false);
+				erase->setEnabled(false);
 			}
 		}
 

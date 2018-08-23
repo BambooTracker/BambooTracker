@@ -2,6 +2,8 @@
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
+#include <QMenu>
+#include <QAction>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "track.hpp"
@@ -366,30 +368,35 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QPoint globalPos = list->mapToGlobal(pos);
 	QMenu menu;
 
-    menu.addAction("Add", this, &MainWindow::addInstrument);
-    menu.addAction("Remove", this, &MainWindow::removeInstrument);
+	QAction* add = menu.addAction("Add", this, &MainWindow::addInstrument);
+	QAction* remove = menu.addAction("Remove", this, &MainWindow::removeInstrument);
     menu.addSeparator();
-    menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
+	QAction* name = menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
     menu.addSeparator();
-	menu.addAction("Clone", this, &MainWindow::cloneInstrument);
-	menu.addAction("Deep clone", this, &MainWindow::deepCloneInstrument);
+	QAction* clone = menu.addAction("Clone", this, &MainWindow::cloneInstrument);
+	QAction* dClone = menu.addAction("Deep clone", this, &MainWindow::deepCloneInstrument);
     menu.addSeparator();
-    menu.addAction("Load from file...")->setEnabled(false);
-    menu.addAction("Save to file...")->setEnabled(false);
+	QAction* ldFile = menu.addAction("Load from file...");
+	QAction* svFile = menu.addAction("Save to file...");
     menu.addSeparator();
-    menu.addAction("Edit...", this, &MainWindow::editInstrument);
+	QAction* edit = menu.addAction("Edit...", this, &MainWindow::editInstrument);
+
+	// UNDONE --------------
+	ldFile->setEnabled(false);
+	svFile->setEnabled(false);
+	// ---------------------
 
 	if (bt_->findFirstFreeInstrumentNumber() == -1)    // Max size
-        menu.actions().at(0)->setEnabled(false);    // "Add"
+		add->setEnabled(false);
 	auto item = list->currentItem();
 	if (item == nullptr) {    // Not selected
-        menu.actions().at(1)->setEnabled(false);    // "Remove"
-        menu.actions().at(3)->setEnabled(false);    // "Edit name"
-		menu.actions().at(11)->setEnabled(false);   // "Edit"
+		remove->setEnabled(false);
+		name->setEnabled(false);
+		edit->setEnabled(false);
     }
 	if (item == nullptr || bt_->findFirstFreeInstrumentNumber() == -1) {
-		menu.actions().at(5)->setEnabled(false);    // "Clone"
-		menu.actions().at(6)->setEnabled(false);    // "Deep clone"
+		clone->setEnabled(false);
+		dClone->setEnabled(false);
 	}
 
 	menu.exec(globalPos);

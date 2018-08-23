@@ -113,6 +113,9 @@ private:
 	void insertOrderBelow();
 	void deleteOrder();
 
+	void copySelectedCells();
+	void pasteCopiedCells(OrderPosition& startPos);
+
 	void setSelectedRectangle(const OrderPosition& start, const OrderPosition& end);
 	bool isSelectedCell(int track, int row);
 };

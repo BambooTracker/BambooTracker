@@ -8,14 +8,14 @@ InsertOrderBelowQtCommand::InsertOrderBelowQtCommand(OrderListPanel* panel, QUnd
 
 void InsertOrderBelowQtCommand::redo()
 {
-	panel_->update();
 	panel_->onOrderEdited();
+	panel_->update();
 }
 
 void InsertOrderBelowQtCommand::undo()
 {
-	panel_->update();
 	panel_->onOrderEdited();
+	panel_->update();
 }
 
 int InsertOrderBelowQtCommand::id() const

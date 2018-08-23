@@ -88,6 +88,8 @@ public:
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
+	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
+						   std::vector<std::vector<std::string>> cells);
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);

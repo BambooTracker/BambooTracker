@@ -10,14 +10,14 @@ SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(OrderListPanel* panel, Or
 
 void SetPatternToOrderQtCommand::redo()
 {
-	panel_->update();
 	panel_->onOrderEdited();
+	panel_->update();
 }
 
 void SetPatternToOrderQtCommand::undo()
 {
-	panel_->update();
 	panel_->onOrderEdited();
+	panel_->update();
 }
 
 int SetPatternToOrderQtCommand::id() const

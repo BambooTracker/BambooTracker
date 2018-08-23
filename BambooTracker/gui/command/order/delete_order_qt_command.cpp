@@ -8,14 +8,14 @@ DeleteOrderQtCommand::DeleteOrderQtCommand(OrderListPanel* panel, QUndoCommand* 
 
 void DeleteOrderQtCommand::redo()
 {
-	panel_->update();
 	panel_->onOrderEdited();
+	panel_->update();
 }
 
 void DeleteOrderQtCommand::undo()
 {
-	panel_->update();
 	panel_->onOrderEdited();
+	panel_->update();
 }
 
 int DeleteOrderQtCommand::id() const

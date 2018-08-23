@@ -138,7 +138,7 @@ private:
 
 	void copySelectedCells();
 	void eraseSelectedCells();
-	void pasteCopiedCells(PatternPosition startPos);
+	void pasteCopiedCells(PatternPosition& startPos);
 	void cutSelectedCells();
 
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);

@@ -2,14 +2,19 @@
 #include <QPainter>
 #include <QFontMetrics>
 #include <QApplication>
+#include <QClipboard>
+#include <QMenu>
+#include <QAction>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <QPoint>
+#include <QString>
 #include <algorithm>
 #include <vector>
+#include <utility>
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands.hpp"
 #include "track.hpp"
-
-#include <QDebug>
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
@@ -355,12 +360,60 @@ void OrderListPanel::insertOrderBelow()
 void OrderListPanel::deleteOrder()
 {
 	if (bt_->getOrderSize(curSongNum_) > 1) {
-		// KEEP CODE ORDER //
 		bt_->deleteOrder(curSongNum_, curPos_.row);
-		moveCursorToDown(-1);
 		comStack_.lock()->push(new DeleteOrderQtCommand(this));
-		//----------//
 	}
+}
+
+void OrderListPanel::copySelectedCells()
+{
+	int w = selRightBelowPos_.track - selLeftAbovePos_.track + 1;
+	int h = selRightBelowPos_.row - selLeftAbovePos_.row + 1;
+
+	QString str = QString("ORDER_COPY:%1,%2,")
+				  .arg(QString::number(w), QString::number(h));
+	for (int i = 0; i < h; ++i) {
+		std::vector<OrderData> odrs = bt_->getOrderData(curSongNum_, selLeftAbovePos_.row + i);
+		for (int j = 0; j < w; ++j) {
+			str += QString::number(odrs.at(selLeftAbovePos_.track + j).patten);
+			if (i < h - 1 || j < w - 1) str += ",";
+		}
+	}
+
+	QApplication::clipboard()->setText(str);
+}
+
+void OrderListPanel::pasteCopiedCells(OrderPosition& startPos)
+{
+	// Analyze text
+	QString str = QApplication::clipboard()->text().remove(QRegularExpression("ORDER_COPY:"));
+	QString hdRe = "^([0-9]+),([0-9]+),";
+	QRegularExpression re(hdRe);
+	QRegularExpressionMatch match = re.match(str);
+	int w = match.captured(1).toInt();
+	int h = match.captured(2).toInt();
+	str.remove(re);
+
+	std::vector<std::vector<std::string>> cells;
+	re = QRegularExpression("^([^,]+),");
+	for (int i = 0; i < h; ++i) {
+		cells.emplace_back();
+		for (int j = 0; j < w; ++j) {
+			match = re.match(str);
+			if (match.hasMatch()) {
+				cells.at(i).push_back(match.captured(1).toStdString());
+				str.remove(re);
+			}
+			else {
+				cells.at(i).push_back(str.toStdString());
+				break;
+			}
+		}
+	}
+
+	// Send cells data
+	bt_->pasteOrderCells(curSongNum_, startPos.track, startPos.row, std::move(cells));
+	comStack_.lock()->push(new PasteCopiedDataToOrderQtCommand(this));
 }
 
 void OrderListPanel::setSelectedRectangle(const OrderPosition& start, const OrderPosition& end)
@@ -423,6 +476,10 @@ void OrderListPanel::setCurrentOrder(int num) {
 
 void OrderListPanel::onOrderEdited()
 {
+	// Move cursor
+	size_t s = bt_->getOrderSize(curSongNum_);
+	if (s <= curPos_.row) curPos_.row = s - 1;
+
 	emit orderEdited();
 }
 
@@ -444,7 +501,29 @@ bool OrderListPanel::event(QEvent *event)
 bool OrderListPanel::keyPressed(QKeyEvent *event)
 {	
 	/* General Keys (with Ctrl) */
-	if (event->modifiers().testFlag(Qt::ControlModifier)) return false;
+	if (event->modifiers().testFlag(Qt::ControlModifier)) {
+		switch (event->key()) {
+		case Qt::Key_C:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				copySelectedCells();
+				return true;
+			}
+		case Qt::Key_V:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				pasteCopiedCells(curPos_);
+				return true;
+			}
+		default:
+			return false;
+		}
+	}
+
 
 	/* General Keys */
 	switch (event->key()) {
@@ -581,7 +660,8 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 {
 	mouseReleasePos_ = hovPos_;
 
-	if (event->button() == Qt::LeftButton) {
+	switch (event->button()) {
+	case Qt::LeftButton:
 		if (mousePressPos_ == mouseReleasePos_) {	// Jump cell
 			if (hovPos_.row >= 0 && hovPos_.track >= 0) {
 				int horDif = hovPos_.track - curPos_.track;
@@ -601,6 +681,35 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 				update();
 			}
 		}
+		break;
+
+	case Qt::RightButton:
+	{
+		QMenu menu;
+		QAction* copy = menu.addAction("Copy", this, &OrderListPanel::copySelectedCells);
+		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
+
+		if (bt_->isJamMode() || mousePressPos_.row < 0 || mousePressPos_.track < 0) {
+			copy->setEnabled(false);
+			paste->setEnabled(false);
+		}
+		else {
+			QString clipText = QApplication::clipboard()->text();
+			if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
+					paste->setEnabled(false);
+			}
+			if (selRightBelowPos_.row < 0
+					|| !isSelectedCell(mousePressPos_.track, mousePressPos_.row)) {
+				copy->setEnabled(false);
+			}
+		}
+
+		menu.exec(mapToGlobal(event->pos()));
+		break;
+	}
+
+	default:
+		break;
 	}
 
 	mousePressPos_ = { -1, -1 };
