@@ -15,7 +15,7 @@ public:
 	JamManager();
 	bool toggleJamMode();
 	bool isJamMode() const;
-	void polyphonic(bool flag, ModuleType type);
+	void polyphonic(bool flag, SongType type);
 	std::vector<JamKeyData> keyOn(JamKey key, int channel, SoundSource source);
 	JamKeyData keyOff(JamKey key);
 

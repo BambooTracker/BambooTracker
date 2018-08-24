@@ -10,7 +10,7 @@ BambooTracker::BambooTracker()
 	  #else
 	  opnaCtrl_(3993600 * 2, 44100),
 	  #endif
-	  mod_(std::make_shared<Module>(ModuleType::STD)),
+	  mod_(std::make_shared<Module>()),
 	  octave_(4),
 	  curSongNum_(0),
 	  curTrackNum_(0),
@@ -20,7 +20,7 @@ BambooTracker::BambooTracker()
 	  playState_(false),
 	  streamIntrRate_(60)	// NTSC
 {
-	modStyle_ = mod_->getStyle();
+	songStyle_ = mod_->getSong(curSongNum_).getStyle();
 }
 
 /********** Change octave **********/
@@ -42,7 +42,7 @@ void BambooTracker::setCurrentTrack(int num)
 
 TrackAttribute BambooTracker::getCurrentTrackAttribute() const
 {
-	TrackAttribute ret = modStyle_.trackAttribs.at(curTrackNum_);
+	TrackAttribute ret = songStyle_.trackAttribs.at(curTrackNum_);
 	return ret;
 }
 
@@ -61,7 +61,7 @@ int BambooTracker::getCurrentInstrumentNumber() const
 void BambooTracker::addInstrument(int num, std::string name)
 {
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
-					   instMan_, num, modStyle_.trackAttribs[curTrackNum_].source, name));
+					   instMan_, num, songStyle_.trackAttribs[curTrackNum_].source, name));
 }
 
 void BambooTracker::removeInstrument(int num)
@@ -162,10 +162,10 @@ void BambooTracker::redo()
 void BambooTracker::toggleJamMode()
 {
 	if (jamMan_.toggleJamMode() && !isPlaySong()) {
-		jamMan_.polyphonic(true, modStyle_.type);
+		jamMan_.polyphonic(true, songStyle_.type);
 	}
 	else {
-		jamMan_.polyphonic(false, modStyle_.type);
+		jamMan_.polyphonic(false, songStyle_.type);
 	}
 }
 
@@ -177,8 +177,8 @@ bool BambooTracker::isJamMode() const
 void BambooTracker::jamKeyOn(JamKey key)
 {
 	std::vector<JamKeyData> &&list = jamMan_.keyOn(key,
-												   modStyle_.trackAttribs[curTrackNum_].channelInSource,
-												   modStyle_.trackAttribs[curTrackNum_].source);
+												   songStyle_.trackAttribs[curTrackNum_].channelInSource,
+												   songStyle_.trackAttribs[curTrackNum_].source);
 	if (list.size() == 2) {	// Key off
 		JamKeyData& offData = list[1];
 		switch (offData.source) {
@@ -247,7 +247,7 @@ void BambooTracker::startPlayFromCurrentStep()
 void BambooTracker::startPlay()
 {
 	opnaCtrl_.reset();
-	jamMan_.polyphonic(false, modStyle_.type);
+	jamMan_.polyphonic(false, songStyle_.type);
 	tickCounter_.resetCount();
 	tickCounter_.setPlayState(true);
 }
@@ -255,7 +255,7 @@ void BambooTracker::startPlay()
 void BambooTracker::stopPlaySong()
 {
 	opnaCtrl_.reset();
-	jamMan_.polyphonic(true, modStyle_.type);
+	jamMan_.polyphonic(true, songStyle_.type);
 	tickCounter_.setPlayState(false);
 	playState_ = 0;
 }
@@ -267,7 +267,7 @@ bool BambooTracker::isPlaySong() const
 
 void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 {
-	auto& ta = modStyle_.trackAttribs[trackNum];
+	auto& ta = songStyle_.trackAttribs[trackNum];
 	switch (ta.source) {
 	case SoundSource::FM:	opnaCtrl_.setMuteFMState(ta.channelInSource, isMute);	break;
 	case SoundSource::SSG:	opnaCtrl_.setMuteSSGState(ta.channelInSource, isMute);	break;
@@ -276,7 +276,7 @@ void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 
 bool BambooTracker::isMute(int trackNum)
 {
-	auto& ta = modStyle_.trackAttribs[trackNum];
+	auto& ta = songStyle_.trackAttribs[trackNum];
 	switch (ta.source) {
 	case SoundSource::FM:	return opnaCtrl_.isMuteFM(ta.channelInSource);
 	case SoundSource::SSG:	return opnaCtrl_.isMuteSSG(ta.channelInSource);
@@ -307,7 +307,7 @@ void BambooTracker::readTick(int rest)
 		findNextStep();
 
 		auto& song = mod_->getSong(curSongNum_);
-		for (auto& attrib : modStyle_.trackAttribs) {
+		for (auto& attrib : songStyle_.trackAttribs) {
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
 			switch (attrib.source) {
@@ -363,7 +363,7 @@ void BambooTracker::stepDown()
 void BambooTracker::readStep()
 {
 	auto& song = mod_->getSong(curSongNum_);
-	for (auto& attrib : modStyle_.trackAttribs) {
+	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(curOrderNum_).getStep(curStepNum_);
 		switch (attrib.source) {
@@ -486,11 +486,6 @@ std::string BambooTracker::getModuleCopyright() const
 	return mod_->getCopyright();
 }
 
-ModuleStyle BambooTracker::getModuleStyle() const
-{
-	return mod_->getStyle();
-}
-
 /*----- Song -----*/
 void BambooTracker::setSongTitle(int songNum, std::string title)
 {
@@ -522,6 +517,11 @@ void BambooTracker::setSongTempo(int songNum, int tempo)
 int BambooTracker::getSongtempo(int songNum) const
 {
 	return mod_->getSong(songNum).getTempo();
+}
+
+SongStyle BambooTracker::getSongStyle(int songNum) const
+{
+	return mod_->getSong(songNum).getStyle();
 }
 
 void BambooTracker::setSongStepSize(int songNum, size_t size)
@@ -561,7 +561,7 @@ void BambooTracker::pasteOrderCells(int songNum, int beginTrack, int beginOrder,
 {
 	// Arrange data
 	std::vector<std::vector<std::string>> d;
-	size_t w = modStyle_.trackAttribs.size() - beginTrack;
+	size_t w = songStyle_.trackAttribs.size() - beginTrack;
 	size_t h = getOrderSize(songNum) - beginOrder;
 
 	size_t width = std::min(cells.at(0).size(), w);
@@ -595,7 +595,7 @@ void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int ste
 
 	int in;
 	if (curInstNum_ != -1
-			&& (modStyle_.trackAttribs.at(trackNum).source
+			&& (songStyle_.trackAttribs.at(trackNum).source
 				== instMan_.getInstrumentSharedPtr(curInstNum_)->getSoundSource()))
 		in = curInstNum_;
 	else
@@ -693,7 +693,7 @@ void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColm
 {
 	// Arrange data
 	std::vector<std::vector<std::string>> d;
-	size_t w = (modStyle_.trackAttribs.size() - beginTrack - 1) * 5 + (5 - beginColmn);
+	size_t w = (songStyle_.trackAttribs.size() - beginTrack - 1) * 5 + (5 - beginColmn);
 	size_t h = getPatternSizeFromOrderNumber(songNum, beginOrder) - beginStep;
 
 	size_t width = std::min(cells.at(0).size(), w);
@@ -720,7 +720,7 @@ void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColm
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const
 {
 	size_t size = 0;
-	for (auto& t : modStyle_.trackAttribs) {
+	for (auto& t : songStyle_.trackAttribs) {
 		size = (!size)
 			   ? mod_->getSong(songNum).getTrack(t.number).getPatternFromOrderNumber(orderNum).getSize()
 			   : std::min(

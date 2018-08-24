@@ -26,16 +26,16 @@ bool JamManager::isJamMode() const
 	return isJamMode_;
 }
 
-void JamManager::polyphonic(bool flag, ModuleType type)
+void JamManager::polyphonic(bool flag, SongType type)
 {
 	if (flag) {
 		isPoly_ = true;
 		switch (type) {
-		case ModuleType::STD:
+		case SongType::STD:
 			unusedChFM_.resize(6);
 			unusedChSSG_.resize(3);
 			break;
-		case ModuleType::FMEX:
+		case SongType::FMEX:
 			// UNDONE: change channel size by Effect mode
 			break;
 		}

@@ -38,8 +38,9 @@ void OrderListEditor::setCore(std::shared_ptr<BambooTracker> core)
 {
 	ui->panel->setCore(core);
 
-	ui->horizontalScrollBar->setMaximum(core->getModuleStyle().trackAttribs.size() - 1);
-	ui->verticalScrollBar->setMaximum(core->getOrderSize(core->getCurrentSongNumber()) - 1);
+	int song = core->getCurrentSongNumber();
+	ui->horizontalScrollBar->setMaximum(core->getSongStyle(song).trackAttribs.size() - 1);
+	ui->verticalScrollBar->setMaximum(core->getOrderSize(song) - 1);
 }
 
 void OrderListEditor::setCommandStack(std::weak_ptr<QUndoStack> stack)

@@ -1,13 +1,11 @@
 #include "module.hpp"
 
-Module::Module(ModuleType type,
-			   std::string title, std::string author, std::string copyright)
-	: type_(type),
-	  title_(title),
+Module::Module(std::string title, std::string author, std::string copyright)
+	: title_(title),
 	  author_(author),
 	  copyright_(copyright)
 {
-	songs_.emplace_back(0, type);
+	songs_.emplace_back(0);
 }
 
 void Module::setTitle(std::string title)
@@ -38,14 +36,6 @@ void Module::setCopyright(std::string copyright)
 std::string Module::getCopyright() const
 {
 	return copyright_;
-}
-
-ModuleStyle Module::getStyle() const
-{
-	ModuleStyle style;
-	style.type = type_;
-	style.trackAttribs = songs_.at(0).getTrackAttributes();
-	return  style;
 }
 
 Song& Module::getSong(int num)

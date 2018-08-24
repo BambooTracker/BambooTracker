@@ -6,6 +6,7 @@
 #include <QAction>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
+#include "song.hpp"
 #include "track.hpp"
 #include "instrument.hpp"
 #include "./command/commands_qt.hpp"
@@ -58,6 +59,10 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, [&](QString str) {
 		bt_->setSongTitle(bt_->getCurrentSongNumber(), str.toUtf8().toStdString());
 	});
+	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
+	case SongType::STD:		ui->songStyleLineEdit->setText("Standard");			break;
+	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch extension");	break;
+	}
 	ui->tickFreqSpinBox->setValue(bt_->getSongTickFrequency(bt_->getCurrentSongNumber()));
 	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int freq) { bt_->setSongTickFrequency(bt_->getCurrentSongNumber(), freq); });

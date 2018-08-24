@@ -17,7 +17,7 @@
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "gui/order_list_editor/order_position.hpp"
-#include "module.hpp"
+#include "song.hpp"
 
 class OrderListPanel : public QWidget
 {
@@ -83,7 +83,7 @@ private:
 	QColor borderColor_;
 
 	int leftTrackNum_;
-	ModuleStyle modStyle_;
+	SongStyle songStyle_;
 
 	int curSongNum_;
 	OrderPosition curPos_, hovPos_, editPos_;

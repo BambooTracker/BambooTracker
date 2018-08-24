@@ -11,6 +11,7 @@
 #include "instrument.hpp"
 #include "tick_counter.hpp"
 #include "module.hpp"
+#include "song.hpp"
 #include "misc.hpp"
 
 class BambooTracker
@@ -90,7 +91,6 @@ public:
 	std::string getModuleAuthor() const;
 	void setModuleCopyright(std::string copyright);
 	std::string getModuleCopyright() const;
-	ModuleStyle getModuleStyle() const;
 	/*----- Song -----*/
 	void setSongTitle(int songNum, std::string title);
 	std::string getSongTitle(int songNum) const;
@@ -98,6 +98,7 @@ public:
 	unsigned int getSongTickFrequency(int songNum) const;
 	void setSongTempo(int songNum, int tempo);
 	int getSongtempo(int songNum) const;
+	SongStyle getSongStyle(int songNum) const;
 	void setSongStepSize(int songNum, size_t size);
 	size_t getSongStepSize(int songNum) const;
 	/*----- Order -----*/
@@ -154,7 +155,7 @@ private:
 	// Current status
 	int octave_;	// 0-7
 	int curSongNum_;
-	ModuleStyle modStyle_;
+	SongStyle songStyle_;
 	int curTrackNum_;
 	int curOrderNum_;
 	int curStepNum_;

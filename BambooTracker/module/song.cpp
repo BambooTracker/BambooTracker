@@ -1,18 +1,18 @@
 #include "song.hpp"
 
-Song::Song(int number, ModuleType modType, std::string title,
+Song::Song(int number, SongType songType, std::string title,
 		   unsigned int tickFreq, int tempo, unsigned int stepSize,
 		   size_t defaultPatternSize)
 	: num_(number),
-	  modType_(modType),
+	  type_(songType),
 	  title_(title),
 	  tickFreq_(tickFreq),
 	  tempo_(tempo),
 	  stepSize_(stepSize),
 	  defPtnSize_(defaultPatternSize)
 {
-	switch (modType) {
-	case ModuleType::STD:
+	switch (songType) {
+	case SongType::STD:
 		for (int i = 0; i < 6; ++i) {
 			tracks_.emplace_back(i, SoundSource::FM, i);
 		}
@@ -20,7 +20,7 @@ Song::Song(int number, ModuleType modType, std::string title,
 			tracks_.emplace_back(i + 6, SoundSource::SSG, i);
 		}
 		break;
-	case ModuleType::FMEX:
+	case SongType::FMEX:
 		// UNDONE: FM extend mode
 		break;
 	}
@@ -83,6 +83,16 @@ size_t Song::getDefaultPatternSize() const
 {
 	return defPtnSize_;
 }
+
+
+SongStyle Song::getStyle() const
+{
+	SongStyle style;
+	style.type = type_;
+	style.trackAttribs = getTrackAttributes();
+	return style;
+}
+
 
 std::vector<TrackAttribute> Song::getTrackAttributes() const
 {

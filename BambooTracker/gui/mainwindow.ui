@@ -161,14 +161,14 @@
          <property name="spacing">
           <number>3</number>
          </property>
-         <item row="1" column="0" alignment="Qt::AlignRight">
+         <item row="2" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="tickFreqLabel">
            <property name="text">
-            <string>Tick Freq.:</string>
+            <string>Tick Freq:</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="4" column="1">
           <widget class="QSpinBox" name="stepSizeSpinBox">
            <property name="minimum">
             <number>1</number>
@@ -178,7 +178,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="2" column="1">
           <widget class="QSpinBox" name="tickFreqSpinBox">
            <property name="suffix">
             <string>Hz</string>
@@ -191,7 +191,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="5" column="1">
           <widget class="QSpinBox" name="patternSizeSpinBox">
            <property name="minimum">
             <number>1</number>
@@ -204,28 +204,28 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0" alignment="Qt::AlignRight">
+         <item row="4" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="stepSizeLabel">
            <property name="text">
             <string>Step Size:</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0" alignment="Qt::AlignRight">
+         <item row="3" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="tempoLabel">
            <property name="text">
             <string>Tempo:</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0" alignment="Qt::AlignRight">
+         <item row="5" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="patternSizeLabel">
            <property name="text">
             <string>Pattern Size</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="3" column="1">
           <widget class="QSpinBox" name="tempoSpinBox">
            <property name="minimum">
             <number>1</number>
@@ -242,6 +242,23 @@
           <widget class="QLineEdit" name="songTitleLineEdit">
            <property name="placeholderText">
             <string>Song Title</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="songStyleLabel">
+           <property name="text">
+            <string>Style:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="songStyleLineEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

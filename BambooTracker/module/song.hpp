@@ -5,10 +5,12 @@
 #include "track.hpp"
 #include "misc.hpp"
 
+struct SongStyle;
+
 class Song
 {
 public:
-	Song(int number, ModuleType modType, std::string title = u8"",
+	Song(int number, SongType songType = SongType::STD, std::string title = u8"",
 		 unsigned int tickFreq = 60, int tempo = 150, size_t stepSize = 6,
 		 size_t defaultPatternSize = 64);
 
@@ -24,6 +26,7 @@ public:
 	void setDefaultPatternSize(size_t size);
 	size_t getDefaultPatternSize() const;
 
+	SongStyle getStyle() const;
 	std::vector<TrackAttribute> getTrackAttributes() const;
 	Track& getTrack(int num);
 
@@ -34,7 +37,7 @@ public:
 
 private:
 	int num_;
-	ModuleType modType_;
+	SongType type_;
 	std::string title_;
 	unsigned int tickFreq_;
 	int tempo_;
@@ -42,4 +45,10 @@ private:
 	size_t defPtnSize_;
 
 	std::vector<Track> tracks_;
+};
+
+struct SongStyle
+{
+	SongType type;
+	std::vector<TrackAttribute> trackAttribs;
 };

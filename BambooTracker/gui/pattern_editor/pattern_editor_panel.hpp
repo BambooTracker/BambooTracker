@@ -16,7 +16,7 @@
 #include <QString>
 #include <memory>
 #include "bamboo_tracker.hpp"
-#include "module.hpp"
+#include "song.hpp"
 #include "gui/pattern_editor/pattern_position.hpp"
 #include "misc.hpp"
 
@@ -92,7 +92,7 @@ private:
 	QColor muteColor_, unmuteColor_;
 
 	int leftTrackNum_;
-	ModuleStyle modStyle_;
+	SongStyle songStyle_;
 
 	int curSongNum_;
 	PatternPosition curPos_, hovPos_, editPos_;

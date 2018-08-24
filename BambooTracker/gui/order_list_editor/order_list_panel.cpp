@@ -76,8 +76,8 @@ void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
 	bt_ = core;
 	curSongNum_ = bt_->getCurrentSongNumber();
 	curPos_ = { bt_->getCurrentTrackAttribute().number, bt_->getCurrentOrderNumber() };
-	modStyle_ = bt_->getModuleStyle();
-	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
+	songStyle_ = bt_->getSongStyle(curSongNum_);
+	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
 }
 
 void OrderListPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
@@ -220,13 +220,13 @@ void OrderListPanel::drawHeaders(int maxWidth)
 	int x, trackNum;
 	for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		QString str;
-		switch (modStyle_.trackAttribs[trackNum].source) {
+		switch (songStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:	str = " FM";	break;
 		case SoundSource::SSG:	str = " SSG";	break;
 		}
 		painter.drawText(x,
 						 rowFontLeading_ + rowFontAscend_,
-						 str + QString::number(modStyle_.trackAttribs[trackNum].channelInSource + 1));
+						 str + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1));
 
 		x += trackWidth_;
 		++trackNum;
@@ -265,7 +265,7 @@ int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
 void OrderListPanel::moveCursorToRight(int n)
 {
 	if (n > 0) {
-		curPos_.track = std::min(curPos_.track + n, static_cast<int>(modStyle_.trackAttribs.size()) - 1);
+		curPos_.track = std::min(curPos_.track + n, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 		while (calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width())
 			++leftTrackNum_;
 	}
@@ -274,7 +274,7 @@ void OrderListPanel::moveCursorToRight(int n)
 		if (curPos_.track < leftTrackNum_) leftTrackNum_ = curPos_.track;
 	}
 	columnsWidthFromLeftToEnd_
-			= calculateColumnsWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
+			= calculateColumnsWidthWithRowNum(leftTrackNum_, songStyle_.trackAttribs.size() - 1);
 
 	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curPos_.track);	// Send to slider
 
@@ -751,7 +751,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 			}
 			++i;
 
-			if (i == modStyle_.trackAttribs.size()) {
+			if (i == songStyle_.trackAttribs.size()) {
 				hovPos_.track = -1;
 				break;
 			}

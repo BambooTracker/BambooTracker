@@ -97,8 +97,8 @@ void PatternEditorPanel::setCore(std::shared_ptr<BambooTracker> core)
 	bt_ = core;
 	curSongNum_ = bt_->getCurrentSongNumber();
 	curPos_ = { 0, 0, bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber() };
-	modStyle_ = bt_->getModuleStyle();
-	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(0, modStyle_.trackAttribs.size() - 1);
+	songStyle_ = bt_->getSongStyle(curSongNum_);
+	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
 }
 
 void PatternEditorPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
@@ -222,7 +222,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 	bool isHovTrack = (hovPos_.order == -2 && hovPos_.track == trackNum);
 	bool isHovStep = (hovPos_.track == -2 && hovPos_.order == orderNum && hovPos_.step == stepNum);
 	bool isMuteTrack = bt_->isMute(trackNum);
-	SoundSource src = modStyle_.trackAttribs[trackNum].source;
+	SoundSource src = songStyle_.trackAttribs[trackNum].source;
 
 
 	/* Tone name */
@@ -378,13 +378,13 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 
 		painter.setPen(headerTextColor_);
 		QString srcName;
-		switch (modStyle_.trackAttribs[trackNum].source) {
+		switch (songStyle_.trackAttribs[trackNum].source) {
 		case SoundSource::FM:	srcName = "FM";		break;
 		case SoundSource::SSG:	srcName = "SSG";	break;
 		}
 		painter.drawText(x,
 						 stepFontLeading_ + stepFontAscend_,
-						 srcName + QString::number(modStyle_.trackAttribs[trackNum].channelInSource + 1));
+						 srcName + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1));
 
 		painter.fillRect(x, headerHeight_ - 4, trackWidth_ - stepFontWidth_, 2,
 						 bt_->isMute(trackNum) ? muteColor_ : unmuteColor_);
@@ -433,7 +433,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 			if (curPos_.colInTrack < 5) {
 				break;
 			}
-			else if (curPos_.track == modStyle_.trackAttribs.size() - 1) {
+			else if (curPos_.track == songStyle_.trackAttribs.size() - 1) {
 				curPos_.colInTrack = 4;
 				break;
 			}
@@ -463,7 +463,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	}
 
 	TracksWidthFromLeftToEnd_
-			= calculateTracksWidthWithRowNum(leftTrackNum_, modStyle_.trackAttribs.size() - 1);
+			= calculateTracksWidthWithRowNum(leftTrackNum_, songStyle_.trackAttribs.size() - 1);
 
 	if (curPos_.track != oldTrackNum)
 		bt_->setCurrentTrack(curPos_.track);
@@ -579,7 +579,7 @@ void PatternEditorPanel::changeEditable()
 
 int PatternEditorPanel::getFullColmunSize() const
 {
-	return calculateColNumInRow(modStyle_.trackAttribs.size() - 1, 4);
+	return calculateColNumInRow(songStyle_.trackAttribs.size() - 1, 4);
 }
 
 void PatternEditorPanel::updatePosition()
@@ -1387,7 +1387,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 			}
 			++i;
 
-			if (i == modStyle_.trackAttribs.size()) {
+			if (i == songStyle_.trackAttribs.size()) {
 				hovPos_.setCols(-1, -1);
 				break;
 			}
