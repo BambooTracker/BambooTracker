@@ -8,7 +8,7 @@
 class Song
 {
 public:
-	Song(int number, ModuleType modType, std::string title = u8"Song",
+	Song(int number, ModuleType modType, std::string title = u8"",
 		 unsigned int tickFreq = 60, int tempo = 150, size_t stepSize = 6,
 		 size_t defaultPatternSize = 64);
 

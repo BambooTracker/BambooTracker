@@ -455,6 +455,37 @@ int BambooTracker::getStreamInterruptRate() const
 }
 
 /********** Module details **********/
+/*----- Module -----*/
+void BambooTracker::setModuleTitle(std::string title)
+{
+	mod_->setTitle(title);
+}
+
+std::string BambooTracker::getModuleTitle() const
+{
+	return mod_->getTitle();
+}
+
+void BambooTracker::setModuleAuthor(std::string author)
+{
+	mod_->setAuthor(author);
+}
+
+std::string BambooTracker::getModuleAuthor() const
+{
+	return mod_->getAuthor();
+}
+
+void BambooTracker::setModuleCopyright(std::string copyright)
+{
+	mod_->setCopyright(copyright);
+}
+
+std::string BambooTracker::getModuleCopyright() const
+{
+	return mod_->getCopyright();
+}
+
 ModuleStyle BambooTracker::getModuleStyle() const
 {
 	return mod_->getStyle();

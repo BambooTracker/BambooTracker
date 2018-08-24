@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>698</width>
-    <height>711</height>
+    <width>933</width>
+    <height>783</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>BambooTracker</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="2,4,4">
-    <item row="0" column="2">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="2,2,4,2">
+    <item row="0" column="3">
      <widget class="QGroupBox" name="instrumentListGroupBox">
       <property name="title">
        <string>Instruments</string>
@@ -42,7 +42,7 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="0" column="2">
      <widget class="QGroupBox" name="orderListGroupBox">
       <property name="title">
        <string>Order List</string>
@@ -66,100 +66,186 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0" colspan="3">
+    <item row="1" column="0" colspan="4">
      <widget class="PatternEditor" name="patternEditor"/>
     </item>
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="1">
-       <widget class="QSpinBox" name="tickFreqSpinBox">
-        <property name="suffix">
-         <string>Hz</string>
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <item row="0" column="0" colspan="2">
+       <widget class="QGroupBox" name="moduleSettingsGroupBox">
+        <property name="title">
+         <string>Module Settings</string>
         </property>
-        <property name="prefix">
-         <string/>
-        </property>
-        <property name="value">
-         <number>60</number>
-        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <property name="leftMargin">
+          <number>3</number>
+         </property>
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="rightMargin">
+          <number>3</number>
+         </property>
+         <property name="bottomMargin">
+          <number>3</number>
+         </property>
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLineEdit" name="modTitleLineEdit">
+           <property name="placeholderText">
+            <string>Module Title</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLineEdit" name="copyrightLineEdit">
+           <property name="placeholderText">
+            <string>Copyright</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLineEdit" name="authorLineEdit">
+           <property name="placeholderText">
+            <string>Author</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="stepSizeSpinBox">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="value">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="tempoSpinBox">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>512</number>
-        </property>
-        <property name="value">
-         <number>150</number>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
        <widget class="LineReadOnlySpinBox" name="octaveSpinBox">
         <property name="maximum">
          <number>7</number>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" alignment="Qt::AlignRight">
+      <item row="2" column="0" alignment="Qt::AlignRight">
        <widget class="QLabel" name="octaveLabel">
         <property name="text">
          <string>Octave:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="stepSizeLabel">
-        <property name="text">
-         <string>Step Size:</string>
+     </layout>
+    </item>
+    <item row="0" column="1">
+     <layout class="QGridLayout" name="gridLayout_7">
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QGroupBox" name="songSettingsGroupBox">
+        <property name="title">
+         <string>Song Settings</string>
         </property>
-       </widget>
-      </item>
-      <item row="0" column="0" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="tickFreqLabel">
-        <property name="text">
-         <string>Tick Freq.:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="tempoLabel">
-        <property name="text">
-         <string>Tempo:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="patternSizeLabel">
-        <property name="text">
-         <string>Pattern Size</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QSpinBox" name="patternSizeSpinBox">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>256</number>
-        </property>
-        <property name="value">
-         <number>64</number>
-        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <property name="leftMargin">
+          <number>3</number>
+         </property>
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="rightMargin">
+          <number>3</number>
+         </property>
+         <property name="bottomMargin">
+          <number>3</number>
+         </property>
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <item row="1" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="tickFreqLabel">
+           <property name="text">
+            <string>Tick Freq.:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QSpinBox" name="stepSizeSpinBox">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>6</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="tickFreqSpinBox">
+           <property name="suffix">
+            <string>Hz</string>
+           </property>
+           <property name="prefix">
+            <string/>
+           </property>
+           <property name="value">
+            <number>60</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QSpinBox" name="patternSizeSpinBox">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>256</number>
+           </property>
+           <property name="value">
+            <number>64</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="stepSizeLabel">
+           <property name="text">
+            <string>Step Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="tempoLabel">
+           <property name="text">
+            <string>Tempo:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="patternSizeLabel">
+           <property name="text">
+            <string>Pattern Size</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QSpinBox" name="tempoSpinBox">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>512</number>
+           </property>
+           <property name="value">
+            <number>150</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLineEdit" name="songTitleLineEdit">
+           <property name="placeholderText">
+            <string>Song Title</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -171,7 +257,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>698</width>
+     <width>933</width>
      <height>21</height>
     </rect>
    </property>

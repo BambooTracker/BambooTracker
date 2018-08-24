@@ -83,6 +83,13 @@ public:
 	int getStreamInterruptRate() const;
 
 	// Module details
+	/*----- Module -----*/
+	void setModuleTitle(std::string title);
+	std::string getModuleTitle() const;
+	void setModuleAuthor(std::string author);
+	std::string getModuleAuthor() const;
+	void setModuleCopyright(std::string copyright);
+	std::string getModuleCopyright() const;
 	ModuleStyle getModuleStyle() const;
 	/*----- Song -----*/
 	void setSongTitle(int songNum, std::string title);
