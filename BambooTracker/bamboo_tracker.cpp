@@ -18,7 +18,8 @@ BambooTracker::BambooTracker()
 	  curStepNum_(0),
 	  curInstNum_(-1),
 	  playState_(false),
-	  streamIntrRate_(60)	// NTSC
+	  streamIntrRate_(60),	// NTSC
+	  ptnHlCnt_(8)
 {
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
 }
@@ -767,4 +768,14 @@ void BambooTracker::setDefaultPatternSize(int songNum, size_t size)
 size_t BambooTracker::getDefaultPatternSize(int songNum) const
 {
 	return mod_->getSong(songNum).getDefaultPatternSize();
+}
+
+void BambooTracker::setPatternStepHighlightCount(int count)
+{
+	ptnHlCnt_ = count;
+}
+
+int BambooTracker::getPatternStepHighlightCount() const
+{
+	return ptnHlCnt_;
 }

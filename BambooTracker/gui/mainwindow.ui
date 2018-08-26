@@ -153,12 +153,35 @@ QListWidget::item:selected:hover {
         <property name="maximum">
          <number>7</number>
         </property>
+        <property name="value">
+         <number>4</number>
+        </property>
        </widget>
       </item>
       <item row="2" column="0" alignment="Qt::AlignRight">
        <widget class="QLabel" name="octaveLabel">
         <property name="text">
          <string>Octave:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="stepHighlightLabel">
+        <property name="text">
+         <string>Step highlight:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="stepHighrightSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>256</number>
+        </property>
+        <property name="value">
+         <number>8</number>
         </property>
        </widget>
       </item>

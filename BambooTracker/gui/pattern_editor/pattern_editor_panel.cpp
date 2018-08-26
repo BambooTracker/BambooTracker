@@ -122,7 +122,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 	painter.setFont(stepFont_);
 
 	int x, trackNum;
-	int mkCnt = 8;	// dummy set
+	int mkCnt = bt_->getPatternStepHighlightCount();
 
 	/* Current row */
 	// Fill row

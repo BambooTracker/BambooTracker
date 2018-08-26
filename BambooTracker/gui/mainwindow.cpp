@@ -101,6 +101,14 @@ MainWindow::MainWindow(QWidget *parent) :
 		setModifiedTrue();
 	});
 
+	/* Pattern step highlight */
+	ui->stepHighrightSpinBox->setValue(bt_->getPatternStepHighlightCount());
+	QObject::connect(ui->stepHighrightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int count) {
+		bt_->setPatternStepHighlightCount(count);
+		ui->patternEditor->update();
+	});
+
 	/* Octave */
 	ui->octaveSpinBox->setValue(bt_->getCurrentOctave());
 	QObject::connect(ui->octaveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
