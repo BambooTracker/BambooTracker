@@ -127,7 +127,7 @@
          <item row="0" column="1">
           <widget class="QLineEdit" name="insertTitleLineEdit">
            <property name="placeholderText">
-            <string>No title</string>
+            <string>Untitled</string>
            </property>
           </widget>
          </item>
@@ -159,7 +159,7 @@
          <bool>true</bool>
         </property>
         <property name="placeholderText">
-         <string>No title</string>
+         <string>Untitled</string>
         </property>
        </widget>
       </item>

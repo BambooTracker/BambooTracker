@@ -5,6 +5,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QDialog>
+#include <QMessageBox>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
@@ -21,9 +22,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	bt_(std::make_shared<BambooTracker>()),
-	comStack_(std::make_shared<QUndoStack>(this))
+	comStack_(std::make_shared<QUndoStack>(this)),
+	isModifiedForNotCommand_(false)
 {
 	ui->setupUi(this);
+
+	/* Command stack */
+	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
+					 this, [&](int idx) { setWindowModified(idx || isModifiedForNotCommand_); });
 
 	/* Audio stream */
 	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(),
@@ -40,11 +46,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
-					 this, [&](QString str) { bt_->setModuleTitle(str.toUtf8().toStdString()); });
+					 this, [&](QString str) {
+		bt_->setModuleTitle(str.toUtf8().toStdString());
+		setModifiedTrue();
+		setWindowTitle();
+	});
 	QObject::connect(ui->authorLineEdit, &QLineEdit::textEdited,
-					 this, [&](QString str) { bt_->setModuleAuthor(str.toUtf8().toStdString()); });
+					 this, [&](QString str) {
+		bt_->setModuleAuthor(str.toUtf8().toStdString());
+		setModifiedTrue();
+	});
 	QObject::connect(ui->copyrightLineEdit, &QLineEdit::textEdited,
-					 this, [&](QString str) { bt_->setModuleCopyright(str.toUtf8().toStdString()); });
+					 this, [&](QString str) {
+		bt_->setModuleCopyright(str.toUtf8().toStdString());
+		setModifiedTrue();
+	});
 
 	/* Song number */
 	QObject::connect(ui->songNumSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
@@ -57,25 +73,32 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int freq) {
 		int curSong = bt_->getCurrentSongNumber();
-		if (freq != bt_->getSongTickFrequency(curSong))
-				bt_->setSongTickFrequency(curSong, freq);
+		if (freq != bt_->getSongTickFrequency(curSong)) {
+			bt_->setSongTickFrequency(curSong, freq);
+			setModifiedTrue();
+		}
 	});
 	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int tempo) {
 		int curSong = bt_->getCurrentSongNumber();
-		if (tempo != bt_->getSongtempo(curSong))
+		if (tempo != bt_->getSongtempo(curSong)) {
 			bt_->setSongTempo(curSong, tempo);
+			setModifiedTrue();
+		}
 	});
 	QObject::connect(ui->stepSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int size) {
 		int curSong = bt_->getCurrentSongNumber();
-		if (size != bt_->getSongStepSize(curSong))
+		if (size != bt_->getSongStepSize(curSong)) {
 			bt_->setSongStepSize(curSong, size);
+			setModifiedTrue();
+		}
 	});
 	QObject::connect(ui->patternSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int size) {
 		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
 		ui->patternEditor->onDefaultPatternSizeChanged();
+		setModifiedTrue();
 	});
 
 	/* Octave */
@@ -251,6 +274,28 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *ce)
 {
+	if (isWindowModified()) {
+		auto modTitleStd = bt_->getModuleTitle();
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		if (modTitle.isEmpty()) modTitle = "Untitled";
+		QMessageBox dialog(QMessageBox::Warning,
+						   "BambooTracker",
+						   "Save changes to " + modTitle + "?",
+						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+		switch (dialog.exec()) {
+		case QMessageBox::Yes:
+			// UNDONE: save file
+			break;
+		case QMessageBox::No:
+			break;
+		case QMessageBox::Cancel:
+			ce->ignore();
+			return;
+		default:
+			break;
+		}
+	}
+
 	for (auto& pair : instFormMap_) {
 		pair.second->close();
 	}
@@ -410,6 +455,8 @@ void MainWindow::loadSong()
 	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(bt_->getCurrentSongNumber()));
 	ui->orderList->onSongLoaded();
 	ui->patternEditor->onSongLoaded();
+
+	setWindowTitle();
 }
 
 /********** Play song **********/
@@ -458,6 +505,26 @@ void MainWindow::toggleJamMode()
 	bt_->toggleJamMode();
 	ui->orderList->changeEditable();
 	ui->patternEditor->changeEditable();
+}
+
+/******************************/
+void MainWindow::setWindowTitle()
+{
+	int n = bt_->getCurrentSongNumber();
+	auto modTitleStd = bt_->getModuleTitle();
+	auto songTitleStd = bt_->getSongTitle(n);
+	QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+	if (modTitle.isEmpty()) modTitle = "Untitled";
+	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), songTitleStd.length());
+	if (songTitle.isEmpty()) songTitle = "Untitled";
+	QMainWindow::setWindowTitle(QString("%1[*] [#%2 %3] - BambooTracker")
+								.arg(modTitle).arg(QString::number(n)).arg(songTitle));
+}
+
+void MainWindow::setModifiedTrue()
+{
+	isModifiedForNotCommand_ = true;
+	setWindowModified(true);
 }
 
 /******************************/
@@ -555,6 +622,8 @@ void MainWindow::onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum)
 			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->checkEnvelopeChange(envNum);
 		}
 	}
+
+	setModifiedTrue();
 }
 
 void MainWindow::on_modSetDialogOpenToolButton_clicked()
@@ -562,5 +631,7 @@ void MainWindow::on_modSetDialogOpenToolButton_clicked()
 	ModuleSettingsDialog dialog(bt_);
 	if (dialog.exec() == QDialog::Accepted) {
 		loadModule();
+		setModifiedTrue();
+		setWindowTitle();
 	}
 }

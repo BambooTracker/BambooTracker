@@ -316,7 +316,7 @@ QListWidget::item:selected:hover {
             <bool>true</bool>
            </property>
            <property name="placeholderText">
-            <string>No title</string>
+            <string>Untitled</string>
            </property>
           </widget>
          </item>

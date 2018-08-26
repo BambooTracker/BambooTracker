@@ -52,6 +52,7 @@ private:
 	// Undo-Redo
 	void undo();
 	void redo();
+	bool isModifiedForNotCommand_;
 
 	// Load data
 	void loadModule();
@@ -69,6 +70,9 @@ private:
 
 	// Toggle Jam mode
 	void toggleJamMode();
+
+	void setWindowTitle();
+	void setModifiedTrue();
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
