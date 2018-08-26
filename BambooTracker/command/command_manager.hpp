@@ -13,6 +13,7 @@ public:
 	void invoke(CommandIPtr command);
 	void undo();
 	void redo();
+	void clear();
 
 private:
 	std::stack<CommandIPtr> undoStack_;

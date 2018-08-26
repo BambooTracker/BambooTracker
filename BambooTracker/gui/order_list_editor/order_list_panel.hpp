@@ -36,6 +36,7 @@ public slots:
 	void setCurrentOrder(int num);
 
 	void onOrderEdited();
+	void onSongLoaded();
 
 signals:
 	void currentTrackChangedForSlider(int num);

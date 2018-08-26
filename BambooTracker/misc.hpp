@@ -7,7 +7,7 @@ enum class SoundSource : int
 	FM, SSG
 };
 
-enum class SongType
+enum class SongType : int
 {
 	STD,
 	FMEX

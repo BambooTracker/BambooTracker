@@ -26,6 +26,11 @@ Song::Song(int number, SongType songType, std::string title,
 	}
 }
 
+void Song::setNumber(int n)
+{
+	num_ = n;
+}
+
 int Song::getNumber() const
 {
 	return num_;

@@ -30,3 +30,9 @@ void CommandManager::redo()
 	redoStack_.pop();
 	undoStack_.push(std::move(command));
 }
+
+void CommandManager::clear()
+{
+	redoStack_ = std::stack<CommandIPtr>();
+	undoStack_ = std::stack<CommandIPtr>();
+}

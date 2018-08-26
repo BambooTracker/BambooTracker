@@ -41,6 +41,8 @@ public slots:
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
 
+	void onSongLoaded();
+
 signals:
 	void currentCellInRowChanged(int num);
 	void currentStepChanged(int num, int max);

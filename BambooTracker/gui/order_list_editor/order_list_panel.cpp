@@ -74,10 +74,6 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
-	curSongNum_ = bt_->getCurrentSongNumber();
-	curPos_ = { bt_->getCurrentTrackAttribute().number, bt_->getCurrentOrderNumber() };
-	songStyle_ = bt_->getSongStyle(curSongNum_);
-	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
 }
 
 void OrderListPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
@@ -481,6 +477,25 @@ void OrderListPanel::onOrderEdited()
 	if (s <= curPos_.row) curPos_.row = s - 1;
 
 	emit orderEdited();
+}
+
+void OrderListPanel::onSongLoaded()
+{
+	curSongNum_ = bt_->getCurrentSongNumber();
+	curPos_ = { bt_->getCurrentTrackAttribute().number, bt_->getCurrentOrderNumber() };
+	songStyle_ = bt_->getSongStyle(curSongNum_);
+	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
+
+	hovPos_ = { -1, -1 };
+	editPos_ = { -1, -1 };
+	mousePressPos_ = { -1, -1 };
+	mouseReleasePos_ = { -1, -1 };
+	selLeftAbovePos_ = { -1, -1 };
+	selRightBelowPos_ = { -1, -1 };
+	shiftPressedPos_ = { -1, -1 };
+	entryCnt_ = 0;
+
+	update();
 }
 
 /********** Events **********/

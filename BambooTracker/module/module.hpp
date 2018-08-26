@@ -15,7 +15,10 @@ public:
 	std::string getAuthor() const;
 	void setCopyright(std::string copyright);
 	std::string getCopyright() const;
+	size_t getSongCount() const;
 
+	void addSong(SongType songType, std::string title);
+	void sortSongs(std::vector<int> numbers);
 	Song& getSong(int num);
 
 private:

@@ -109,7 +109,8 @@ SOURCES += \
     command/pattern/erase_cells_in_pattern_command.cpp \
     gui/command/pattern/erase_cells_in_pattern_qt_command.cpp \
     command/order/paste_copied_data_to_order_command.cpp \
-    gui/command/order/paste_copied_data_to_order_qt_command.cpp
+    gui/command/order/paste_copied_data_to_order_qt_command.cpp \
+    gui/module_settings_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -207,7 +208,8 @@ HEADERS += \
     command/pattern/erase_cells_in_pattern_command.hpp \
     gui/command/pattern/erase_cells_in_pattern_qt_command.hpp \
     command/order/paste_copied_data_to_order_command.hpp \
-    gui/command/order/paste_copied_data_to_order_qt_command.hpp
+    gui/command/order/paste_copied_data_to_order_qt_command.hpp \
+    gui/module_settings_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -217,7 +219,8 @@ FORMS += \
     gui/labeled_horizontal_slider.ui \
     gui/order_list_editor/order_list_editor.ui \
     gui/pattern_editor/pattern_editor.ui \
-    gui/instrument_editor/instrument_editor_ssg_form.ui
+    gui/instrument_editor/instrument_editor_ssg_form.ui \
+    gui/module_settings_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

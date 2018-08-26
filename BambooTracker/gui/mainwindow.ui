@@ -15,6 +15,30 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="2,2,4,2">
+    <item row="0" column="2">
+     <widget class="QGroupBox" name="orderListGroupBox">
+      <property name="title">
+       <string>Order List</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="OrderListEditor" name="orderList"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="0" column="3">
      <widget class="QGroupBox" name="instrumentListGroupBox">
       <property name="title">
@@ -64,30 +88,6 @@ QListWidget::item:selected:hover {
       </layout>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QGroupBox" name="orderListGroupBox">
-      <property name="title">
-       <string>Order List</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <property name="leftMargin">
-        <number>3</number>
-       </property>
-       <property name="topMargin">
-        <number>3</number>
-       </property>
-       <property name="rightMargin">
-        <number>3</number>
-       </property>
-       <property name="bottomMargin">
-        <number>3</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="OrderListEditor" name="orderList"/>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="1" column="0" colspan="4">
      <widget class="PatternEditor" name="patternEditor"/>
     </item>
@@ -124,6 +124,13 @@ QListWidget::item:selected:hover {
            </property>
           </widget>
          </item>
+         <item row="1" column="0">
+          <widget class="QLineEdit" name="authorLineEdit">
+           <property name="placeholderText">
+            <string>Author</string>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="0">
           <widget class="QLineEdit" name="copyrightLineEdit">
            <property name="placeholderText">
@@ -131,10 +138,10 @@ QListWidget::item:selected:hover {
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLineEdit" name="authorLineEdit">
-           <property name="placeholderText">
-            <string>Author</string>
+         <item row="3" column="0" alignment="Qt::AlignRight">
+          <widget class="QToolButton" name="modSetDialogOpenToolButton">
+           <property name="text">
+            <string>...</string>
            </property>
           </widget>
          </item>
@@ -162,7 +169,30 @@ QListWidget::item:selected:hover {
       <property name="spacing">
        <number>3</number>
       </property>
-      <item row="0" column="0">
+      <item row="1" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="songNumLabel">
+        <property name="text">
+         <string>Song Number:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="LineReadOnlySpinBox" name="songNumSpinBox"/>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="0" colspan="3">
        <widget class="QGroupBox" name="songSettingsGroupBox">
         <property name="title">
          <string>Song Settings</string>
@@ -183,14 +213,14 @@ QListWidget::item:selected:hover {
          <property name="spacing">
           <number>3</number>
          </property>
-         <item row="2" column="0" alignment="Qt::AlignRight">
+         <item row="3" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="tickFreqLabel">
            <property name="text">
             <string>Tick Freq:</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="5" column="1">
           <widget class="QSpinBox" name="stepSizeSpinBox">
            <property name="minimum">
             <number>1</number>
@@ -200,7 +230,28 @@ QListWidget::item:selected:hover {
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="6" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="patternSizeLabel">
+           <property name="text">
+            <string>Pattern Size</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="stepSizeLabel">
+           <property name="text">
+            <string>Step Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="tempoLabel">
+           <property name="text">
+            <string>Tempo:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
           <widget class="QSpinBox" name="tickFreqSpinBox">
            <property name="suffix">
             <string>Hz</string>
@@ -213,7 +264,7 @@ QListWidget::item:selected:hover {
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="6" column="1">
           <widget class="QSpinBox" name="patternSizeSpinBox">
            <property name="minimum">
             <number>1</number>
@@ -226,28 +277,7 @@ QListWidget::item:selected:hover {
            </property>
           </widget>
          </item>
-         <item row="4" column="0" alignment="Qt::AlignRight">
-          <widget class="QLabel" name="stepSizeLabel">
-           <property name="text">
-            <string>Step Size:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" alignment="Qt::AlignRight">
-          <widget class="QLabel" name="tempoLabel">
-           <property name="text">
-            <string>Tempo:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" alignment="Qt::AlignRight">
-          <widget class="QLabel" name="patternSizeLabel">
-           <property name="text">
-            <string>Pattern Size</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
+         <item row="4" column="1">
           <widget class="QSpinBox" name="tempoSpinBox">
            <property name="minimum">
             <number>1</number>
@@ -260,27 +290,33 @@ QListWidget::item:selected:hover {
            </property>
           </widget>
          </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="QLineEdit" name="songTitleLineEdit">
-           <property name="placeholderText">
-            <string>Song Title</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" alignment="Qt::AlignRight">
+         <item row="2" column="0" alignment="Qt::AlignRight">
           <widget class="QLabel" name="songStyleLabel">
            <property name="text">
             <string>Style:</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="2" column="1">
           <widget class="QLineEdit" name="songStyleLineEdit">
            <property name="enabled">
             <bool>false</bool>
            </property>
            <property name="readOnly">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QLineEdit" name="songTitleLineEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string>No title</string>
            </property>
           </widget>
          </item>

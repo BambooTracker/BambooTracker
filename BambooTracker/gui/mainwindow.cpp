@@ -4,12 +4,14 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QAction>
+#include <QDialog>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
 #include "instrument.hpp"
 #include "./command/commands_qt.hpp"
+#include "gui/module_settings_dialog.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
@@ -22,8 +24,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	comStack_(std::make_shared<QUndoStack>(this))
 {
 	ui->setupUi(this);
-
-	QApplication::clipboard()->clear();
 
 	/* Audio stream */
 	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(),
@@ -39,40 +39,39 @@ MainWindow::MainWindow(QWidget *parent) :
 	}, Qt::DirectConnection);
 
 	/* Module settings */
-	auto modTitle = bt_->getModuleTitle();
-	ui->songTitleLineEdit->setText(QString::fromUtf8(modTitle.c_str(), modTitle.length()));
-	QObject::connect(ui->songTitleLineEdit, &QLineEdit::textChanged,
+	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
 					 this, [&](QString str) { bt_->setModuleTitle(str.toUtf8().toStdString()); });
-	auto modAuthor = bt_->getModuleAuthor();
-	ui->songTitleLineEdit->setText(QString::fromUtf8(modAuthor.c_str(), modAuthor.length()));
-	QObject::connect(ui->songTitleLineEdit, &QLineEdit::textChanged,
+	QObject::connect(ui->authorLineEdit, &QLineEdit::textEdited,
 					 this, [&](QString str) { bt_->setModuleAuthor(str.toUtf8().toStdString()); });
-	auto modCopyright = bt_->getModuleCopyright();
-	ui->songTitleLineEdit->setText(QString::fromUtf8(modCopyright.c_str(), modCopyright.length()));
-	QObject::connect(ui->songTitleLineEdit, &QLineEdit::textChanged,
+	QObject::connect(ui->copyrightLineEdit, &QLineEdit::textEdited,
 					 this, [&](QString str) { bt_->setModuleCopyright(str.toUtf8().toStdString()); });
 
-	/* Song settings */
-	auto songTitle = bt_->getSongTitle(bt_->getCurrentSongNumber());
-	ui->songTitleLineEdit->setText(QString::fromUtf8(songTitle.c_str(), songTitle.length()));
-	QObject::connect(ui->songTitleLineEdit, &QLineEdit::textChanged,
-					 this, [&](QString str) {
-		bt_->setSongTitle(bt_->getCurrentSongNumber(), str.toUtf8().toStdString());
+	/* Song number */
+	QObject::connect(ui->songNumSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int num) {
+		bt_->setCurrentSongNumber(num);
+		loadSong();
 	});
-	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
-	case SongType::STD:		ui->songStyleLineEdit->setText("Standard");			break;
-	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch extension");	break;
-	}
-	ui->tickFreqSpinBox->setValue(bt_->getSongTickFrequency(bt_->getCurrentSongNumber()));
+
+	/* Song settings */
 	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int freq) { bt_->setSongTickFrequency(bt_->getCurrentSongNumber(), freq); });
-	ui->tempoSpinBox->setValue(bt_->getSongtempo(bt_->getCurrentSongNumber()));
+					 this, [&](int freq) {
+		int curSong = bt_->getCurrentSongNumber();
+		if (freq != bt_->getSongTickFrequency(curSong))
+				bt_->setSongTickFrequency(curSong, freq);
+	});
 	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int tempo) { bt_->setSongTempo(bt_->getCurrentSongNumber(), tempo); });
-	ui->stepSizeSpinBox->setValue(bt_->getSongStepSize(bt_->getCurrentSongNumber()));
+					 this, [&](int tempo) {
+		int curSong = bt_->getCurrentSongNumber();
+		if (tempo != bt_->getSongtempo(curSong))
+			bt_->setSongTempo(curSong, tempo);
+	});
 	QObject::connect(ui->stepSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int size) { bt_->setSongStepSize(bt_->getCurrentSongNumber(), size); });
-	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(bt_->getCurrentSongNumber()));
+					 this, [&](int size) {
+		int curSong = bt_->getCurrentSongNumber();
+		if (size != bt_->getSongStepSize(curSong))
+			bt_->setSongStepSize(curSong, size);
+	});
 	QObject::connect(ui->patternSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int size) {
 		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
@@ -110,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent) :
 					 ui->patternEditor, &PatternEditor::setCurrentOrder);
 	QObject::connect(ui->orderList, &OrderListEditor::orderEdited,
 					 ui->patternEditor, &PatternEditor::onOrderListEdited);
+
+	loadModule();
 }
 
 MainWindow::~MainWindow()
@@ -364,27 +365,84 @@ void MainWindow::redo()
 	comStack_->redo();
 }
 
+/********** Load data **********/
+void MainWindow::loadModule()
+{
+	auto modTitle = bt_->getModuleTitle();
+	ui->modTitleLineEdit->setText(QString::fromUtf8(modTitle.c_str(), modTitle.length()));
+	auto modAuthor = bt_->getModuleAuthor();
+	ui->authorLineEdit->setText(QString::fromUtf8(modAuthor.c_str(), modAuthor.length()));
+	auto modCopyright = bt_->getModuleCopyright();
+	ui->copyrightLineEdit->setText(QString::fromUtf8(modCopyright.c_str(), modCopyright.length()));
+	ui->songNumSpinBox->setMaximum(bt_->getSongCount() - 1);
+
+	loadSong();
+
+	// Clear records
+	QApplication::clipboard()->clear();
+	comStack_->clear();
+	bt_->clearCommandHistory();
+}
+
+void MainWindow::loadSong()
+{
+	// Init position
+	if (ui->songNumSpinBox->value() >= bt_->getSongCount())
+		bt_->setCurrentSongNumber(bt_->getSongCount() - 1);
+	else
+		bt_->setCurrentSongNumber(bt_->getCurrentSongNumber());
+	bt_->setCurrentOrderNumber(0);
+	bt_->setCurrentTrack(0);
+	bt_->setCurrentStepNumber(0);
+
+	// Init ui
+	int curSong = bt_->getCurrentSongNumber();
+	ui->songNumSpinBox->setValue(curSong);
+	auto title = bt_->getSongTitle(curSong);
+	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), title.length()));
+	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
+	case SongType::STD:		ui->songStyleLineEdit->setText("Standard");			break;
+	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch extension");	break;
+	}
+	ui->tickFreqSpinBox->setValue(bt_->getSongTickFrequency(bt_->getCurrentSongNumber()));
+	ui->tempoSpinBox->setValue(bt_->getSongtempo(bt_->getCurrentSongNumber()));
+	ui->stepSizeSpinBox->setValue(bt_->getSongStepSize(bt_->getCurrentSongNumber()));
+	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(bt_->getCurrentSongNumber()));
+	ui->orderList->onSongLoaded();
+	ui->patternEditor->onSongLoaded();
+}
+
 /********** Play song **********/
 void MainWindow::startPlaySong()
 {
 	bt_->startPlaySong();
 	ui->patternEditor->updatePosition();
+	lockControls(true);
 }
 
 void MainWindow::startPlayPattern()
 {
 	bt_->startPlayPattern();
 	ui->patternEditor->updatePosition();
+	lockControls(true);
 }
 
 void MainWindow::startPlayFromCurrentStep()
 {
 	bt_->startPlayFromCurrentStep();
+	lockControls(true);
 }
 
 void MainWindow::stopPlaySong()
 {
 	bt_->stopPlaySong();
+	lockControls(false);
+}
+
+void MainWindow::lockControls(bool isLock)
+{
+	ui->modSetDialogOpenToolButton->setEnabled(!isLock);
+	ui->songNumSpinBox->setEnabled(!isLock);
 }
 
 /********** Octave change **********/
@@ -496,5 +554,13 @@ void MainWindow::onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum)
 				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
 			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->checkEnvelopeChange(envNum);
 		}
+	}
+}
+
+void MainWindow::on_modSetDialogOpenToolButton_clicked()
+{
+	ModuleSettingsDialog dialog(bt_);
+	if (dialog.exec() == QDialog::Accepted) {
+		loadModule();
 	}
 }

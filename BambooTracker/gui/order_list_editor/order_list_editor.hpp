@@ -32,9 +32,11 @@ signals:
 public slots:
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num);
+	void onSongLoaded();
 
 private:
 	Ui::OrderListEditor *ui;
+	std::shared_ptr<BambooTracker> bt_;
 };
 
 #endif // ORDER_LIST_EDITOR_HPP

@@ -58,6 +58,7 @@ public:
 	// Undo-Redo
 	void undo();
 	void redo();
+	void clearCommandHistory();
 
 	// Jam mode
 	void toggleJamMode();
@@ -101,6 +102,9 @@ public:
 	SongStyle getSongStyle(int songNum) const;
 	void setSongStepSize(int songNum, size_t size);
 	size_t getSongStepSize(int songNum) const;
+	size_t getSongCount() const;
+	void addSong(SongType songType, std::string title);
+	void sortSongs(std::vector<int> numbers);
 	/*----- Order -----*/
 	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);

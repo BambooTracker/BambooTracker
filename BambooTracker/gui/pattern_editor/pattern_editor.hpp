@@ -34,8 +34,11 @@ public slots:
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
 
+	void onSongLoaded();
+
 private:
 	Ui::PatternEditor *ui;
+	std::shared_ptr<BambooTracker> bt_;
 };
 
 #endif // PATTERN_EDITOR_HPP

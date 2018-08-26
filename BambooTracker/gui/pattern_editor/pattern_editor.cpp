@@ -38,11 +38,8 @@ PatternEditor::~PatternEditor()
 
 void PatternEditor::setCore(std::shared_ptr<BambooTracker> core)
 {
+	bt_ = core;
 	ui->panel->setCore(core);
-	ui->horizontalScrollBar->setMaximum(ui->panel->getFullColmunSize());
-	ui->verticalScrollBar->setMaximum(core->getPatternSizeFromOrderNumber(
-										  core->getCurrentSongNumber(),
-										  core->getCurrentOrderNumber()) - 1);
 }
 
 void PatternEditor::setCommandStack(std::weak_ptr<QUndoStack> stack)
@@ -79,4 +76,15 @@ void PatternEditor::onOrderListEdited()
 void PatternEditor::onDefaultPatternSizeChanged()
 {
 	ui->panel->onDefaultPatternSizeChanged();
+}
+
+void PatternEditor::onSongLoaded()
+{
+	ui->panel->onSongLoaded();
+	ui->horizontalScrollBar->setMaximum(ui->panel->getFullColmunSize());
+	ui->horizontalScrollBar->setValue(0);
+	ui->verticalScrollBar->setMaximum(bt_->getPatternSizeFromOrderNumber(
+										  bt_->getCurrentSongNumber(),
+										  bt_->getCurrentOrderNumber()) - 1);
+	ui->verticalScrollBar->setValue(0);
 }

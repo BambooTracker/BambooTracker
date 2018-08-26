@@ -123,6 +123,14 @@ int BambooTracker::getCurrentSongNumber() const
 void BambooTracker::setCurrentSongNumber(int num)
 {
 	curSongNum_ = num;
+	songStyle_ = mod_->getSong(num).getStyle();
+
+	// Reset
+	opnaCtrl_.reset();
+	tickCounter_.resetCount();
+	tickCounter_.setInterruptRate(getSongTickFrequency(num));
+	tickCounter_.setTempo(getSongtempo(num));
+	tickCounter_.setStepSize(getSongStepSize(num));
 }
 
 /********** Order edit **********/
@@ -156,6 +164,11 @@ void BambooTracker::undo()
 void BambooTracker::redo()
 {
 	comMan_.redo();
+}
+
+void BambooTracker::clearCommandHistory()
+{
+	comMan_.clear();
 }
 
 /********** Jam mode **********/
@@ -533,6 +546,21 @@ void BambooTracker::setSongStepSize(int songNum, size_t size)
 size_t BambooTracker::getSongStepSize(int songNum) const
 {
 	return mod_->getSong(songNum).getStepSize();
+}
+
+size_t BambooTracker::getSongCount() const
+{
+	return mod_->getSongCount();
+}
+
+void BambooTracker::addSong(SongType songType, std::string title)
+{
+	mod_->addSong(songType, title);
+}
+
+void BambooTracker::sortSongs(std::vector<int> numbers)
+{
+	mod_->sortSongs(std::move(numbers));
 }
 
 /*----- Order -----*/

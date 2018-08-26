@@ -95,10 +95,6 @@ void PatternEditorPanel::initDisplay()
 void PatternEditorPanel::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
-	curSongNum_ = bt_->getCurrentSongNumber();
-	curPos_ = { 0, 0, bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber() };
-	songStyle_ = bt_->getSongStyle(curSongNum_);
-	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
 }
 
 void PatternEditorPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
@@ -1027,6 +1023,30 @@ void PatternEditorPanel::onDefaultPatternSizeChanged()
 	// Check pattern size
 	int end = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
 	if (curPos_.step >= end) curPos_.step = end - 1;
+
+	update();
+}
+
+void PatternEditorPanel::onSongLoaded()
+{
+	curSongNum_ = bt_->getCurrentSongNumber();
+	curPos_ = {
+		bt_->getCurrentTrackAttribute().number,
+		0,
+		bt_->getCurrentOrderNumber(),
+		bt_->getCurrentStepNumber()
+	};
+	songStyle_ = bt_->getSongStyle(curSongNum_);
+	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
+
+	hovPos_ = { -1, -1, -1, -1 };
+	editPos_ = { -1, -1, -1, -1 };
+	mousePressPos_ = { -1, -1, -1, -1 };
+	mouseReleasePos_ = { -1, -1, -1, -1 };
+	selLeftAbovePos_ = { -1, -1, -1, -1 };
+	selRightBelowPos_ = { -1, -1, -1, -1 };
+	shiftPressedPos_ = { -1, -1, -1, -1 };
+	entryCnt_ = 0;
 
 	update();
 }

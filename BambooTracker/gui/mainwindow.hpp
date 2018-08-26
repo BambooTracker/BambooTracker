@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <map>
+#include <cstdint>
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QListWidgetItem>
@@ -52,11 +53,16 @@ private:
 	void undo();
 	void redo();
 
+	// Load data
+	void loadModule();
+	void loadSong();
+
 	// Play song
 	void startPlaySong();
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
+	void lockControls(bool isLock);
 
 	// Octave change
 	void changeOctave(bool upFlag);
@@ -70,6 +76,7 @@ private slots:
 	void onInstrumentListWidgetItemAdded(const QModelIndex& parent, int start, int end);
 	void on_instrumentListWidget_itemSelectionChanged();
 	void onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum);
+	void on_modSetDialogOpenToolButton_clicked();
 };
 
 #endif // MAINWINDOW_HPP

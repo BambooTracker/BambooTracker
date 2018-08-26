@@ -14,6 +14,7 @@ public:
 		 unsigned int tickFreq = 60, int tempo = 150, size_t stepSize = 6,
 		 size_t defaultPatternSize = 64);
 
+	void setNumber(int n);
 	int getNumber() const;
 	void setTitle(std::string title);
 	std::string getTitle() const;
