@@ -42,6 +42,7 @@ public:
 	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
 	void setInstrumentFMEnvelope(int instNum, int envNum);
+	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 
 	// Song edit
 	void setCurrentSongNumber(int num);

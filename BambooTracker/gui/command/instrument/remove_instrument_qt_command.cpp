@@ -7,14 +7,14 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
 RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row,
-													 std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent)
+													 std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
 	  row_(row),
-	  map_(map)
+	  formMan_(formMan)
 {
-	source_ = static_cast<SoundSource>(map.at(num)->property("SoundSource").toInt());
+	source_ = formMan.lock()->getFormInstrumentSoundSource(num);
 }
 
 void RemoveInstrumentQtCommand::undo()
@@ -34,10 +34,7 @@ void RemoveInstrumentQtCommand::undo()
 	}
 
 	// KEEP CODE ORDER //
-    form->setProperty("Name", name_);
-	form->setProperty("Shown", false);
-	form->setProperty("SoundSource", static_cast<int>(source_));
-	map_.emplace(num_, std::move(form));
+	formMan_.lock()->add(num_, std::move(form), name_, source_);
 
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(row_, item);
@@ -49,9 +46,8 @@ void RemoveInstrumentQtCommand::redo()
 	auto&& item = list_->takeItem(row_);
 	delete item;
 
-    name_ = map_.at(num_)->property("Name").toString();
-	map_.at(num_)->close();
-	map_.erase(num_);
+	name_ = formMan_.lock()->getFormInstrumentName(num_);
+	formMan_.lock()->remove(num_);
 
 	if (QApplication::clipboard()->text().contains(
 				QRegularExpression("^.+_INSTRUMENT:"+QString::number(num_),

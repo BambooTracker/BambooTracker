@@ -12,9 +12,9 @@
 #include "track.hpp"
 #include "instrument.hpp"
 #include "./command/commands_qt.hpp"
-#include "gui/module_settings_dialog.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
+#include "gui/module_settings_dialog.hpp"
 
 #include <QDebug>
 
@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow),
 	bt_(std::make_shared<BambooTracker>()),
 	comStack_(std::make_shared<QUndoStack>(this)),
+	instForms_(std::make_shared<InstrumentFormManager>()),
 	isModifiedForNotCommand_(false)
 {
 	ui->setupUi(this);
@@ -304,9 +305,8 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 		}
 	}
 
-	for (auto& pair : instFormMap_) {
-		pair.second->close();
-	}
+	instForms_->closeAll();
+
 	ce->accept();
 }
 
@@ -320,7 +320,7 @@ void MainWindow::addInstrument()
 	bt_->addInstrument(num, name.toUtf8().toStdString());
 
 	TrackAttribute attrib = bt_->getCurrentTrackAttribute();
-	comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instFormMap_));
+	comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instForms_));
 }
 
 void MainWindow::removeInstrument()
@@ -330,23 +330,14 @@ void MainWindow::removeInstrument()
 	int num = list->item(row)->data(Qt::UserRole).toInt();
 
 	bt_->removeInstrument(num);
-	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, instFormMap_));
+	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, instForms_));
 }
 
 void MainWindow::editInstrument()
 {
 	auto item = ui->instrumentListWidget->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
-	auto& form = instFormMap_.at(num);
-
-	if (form->isVisible()) {
-		form->activateWindow();
-	}
-	else {
-		// Set data before first show
-		if (!form->property("Shown").toBool()) form->setProperty("Shown", true);
-		form->show();
-	}
+	instForms_->showForm(num);
 }
 
 int MainWindow::findRowFromInstrumentList(int instNum)
@@ -365,7 +356,7 @@ void MainWindow::editInstrumentName()
 	auto list = ui->instrumentListWidget;
 	auto item = list->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
-    QString oldName = instFormMap_.at(num)->property("Name").toString();
+	QString oldName = instForms_->getFormInstrumentName(num);
     auto line = new QLineEdit(oldName);
 
 	QObject::connect(line, &QLineEdit::editingFinished,
@@ -374,7 +365,7 @@ void MainWindow::editInstrumentName()
 		list->removeItemWidget(item);
 		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
 		int row = findRowFromInstrumentList(num);
-        comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instFormMap_, oldName, newName));
+		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
 	});
 
     ui->instrumentListWidget->setItemWidget(item, line);
@@ -390,7 +381,7 @@ void MainWindow::cloneInstrument()
 	// KEEP CODE ORDER //
 	bt_->cloneInstrument(num, refNum);
 	comStack_->push(new CloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, refNum, instFormMap_));
+						ui->instrumentListWidget, num, refNum, instForms_));
 	//----------//
 }
 
@@ -401,7 +392,7 @@ void MainWindow::deepCloneInstrument()
 	// KEEP CODE ORDER //
 	bt_->deepCloneInstrument(num, refNum);
 	comStack_->push(new DeepCloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, refNum, instFormMap_));
+						ui->instrumentListWidget, num, refNum, instForms_));
 	//----------//
 }
 
@@ -589,21 +580,29 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	Q_UNUSED(end)
 
 	// Set core data to editor when add insrument
-	auto& form = instFormMap_.at(ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt());
-	switch (static_cast<SoundSource>(form->property("SoundSource").toInt())) {
+	int n = ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt();
+	auto& form = instForms_->getForm(n);
+	switch (instForms_->getFormInstrumentSoundSource(n)) {
 	case SoundSource::FM:
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
-		QObject::connect(fmForm, &InstrumentEditorFMForm::instrumentFMEnvelopeParameterChanged,
-						 this, &MainWindow::onInstrumentFMEnvelopeChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeParameterChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
 						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
 						 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::octaveChanged,
 						 this, &MainWindow::changeOctave, Qt::DirectConnection);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
+						 this, &MainWindow::setModifiedTrue);
+
 		fmForm->installEventFilter(this);
 		fmForm->setCore(bt_);
+
+		instForms_->onInstrumentFMEnvelopeNumberChanged(fmForm->getEnvelopeNumber());
 		break;
 	}
 	case SoundSource::SSG:
@@ -620,18 +619,6 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 			  ? -1
 			  : ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	bt_->setCurrentInstrument(num);
-}
-
-void MainWindow::onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum)
-{
-	for (auto& pair : instFormMap_) {
-		if (pair.first != fromInstNum &&
-				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
-			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->checkEnvelopeChange(envNum);
-		}
-	}
-
-	setModifiedTrue();
 }
 
 void MainWindow::on_modSetDialogOpenToolButton_clicked()

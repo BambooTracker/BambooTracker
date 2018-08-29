@@ -13,7 +13,7 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	switch (source) {
 	case SoundSource::FM:
 		insts_.at(instNum) = std::make_shared<InstrumentFM>(instNum, name, this);
-		envFM_.at(0)->registerInstrumentUsingThis(instNum);	// Setted 0 in init
+		envFM_.at(0)->registerUserInstrument(instNum);	// Setted 0 in init
 		break;
 	case SoundSource::SSG:
 		insts_.at(instNum) = std::make_shared<InstrumentSSG>(instNum, name, this);
@@ -30,7 +30,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 	case SoundSource::FM:
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[num]);
-		envFM_.at(fm->getEnvelopeNumber())->registerInstrumentUsingThis(num);
+		envFM_.at(fm->getEnvelopeNumber())->registerUserInstrument(num);
 		break;
 	}
 	case SoundSource::SSG:
@@ -66,10 +66,10 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(cloneInstNum));
 		
-		envFM_[0]->deregisterInstrumentUsingThis(cloneInstNum);	// Remove temporary number
+		envFM_[0]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
-		envFM_[envNum]->registerInstrumentUsingThis(cloneInstNum);
+		envFM_[envNum]->registerUserInstrument(cloneInstNum);
 		break;
 	}
 	case SoundSource::SSG:
@@ -78,13 +78,27 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 	}
 }
 
+int InstrumentsManager::cloneFMEnvelope(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& env : envFM_) {
+		if (!env->isUserInstrument()) {
+			env = envFM_.at(srcNum)->clone();
+			env->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
 std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
 	switch (insts_.at(instNum)->getSoundSource()) {
 	case SoundSource::FM:
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum]);
-		envFM_.at(fm->getEnvelopeNumber())->deregisterInstrumentUsingThis(instNum);
+		envFM_.at(fm->getEnvelopeNumber())->deregisterUserInstrument(instNum);
 		break;
 	}
 	case SoundSource::SSG:
@@ -118,11 +132,25 @@ std::string InstrumentsManager::getInstrumentName(int instNum) const
 	return insts_.at(instNum)->getName();
 }
 
+/// Return:
+///		-1: no free instrument
+///		else: first free instrument number
+int InstrumentsManager::findFirstFreeInstrument() const
+{
+	int num = 0;
+	for (auto& inst : insts_) {
+		if (inst == nullptr) return num;
+		++num;
+	}
+	return -1;
+}
+
+//----- FM methods -----
 void InstrumentsManager::setInstrumentFMEnvelope(int instNum, int envNum)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
-	envFM_.at(fm->getEnvelopeNumber())->deregisterInstrumentUsingThis(instNum);
-	envFM_.at(envNum)->registerInstrumentUsingThis(instNum);
+	envFM_.at(fm->getEnvelopeNumber())->deregisterUserInstrument(instNum);
+	envFM_.at(envNum)->registerUserInstrument(instNum);
 
 	fm->setEnvelopeNumber(envNum);
 }
@@ -152,29 +180,8 @@ bool InstrumentsManager::getEnvelopeFMOperatorEnable(int envNum, int opNum) cons
 	return envFM_.at(envNum)->getOperatorEnable(opNum);
 }
 
-/// Return:
-///		-1: no free instrument
-///		else: first free instrument number
-int InstrumentsManager::findFirstFreeInstrument() const
+std::vector<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
 {
-	int num = 0;
-	for (auto& inst : insts_) {
-		if (inst == nullptr) return num;
-		++num;
-	}
-	return -1;
+	return envFM_.at(envNum)->getUserInstruments();
 }
 
-int InstrumentsManager::cloneFMEnvelope(int srcNum)
-{
-	int cloneNum = 0;
-	for (auto& env : envFM_) {
-		if (!env->isUsedInInstrument()) {
-			env = envFM_.at(srcNum)->clone();
-			env->setNumber(cloneNum);
-			break;
-		}
-		++cloneNum;
-	}
-	return cloneNum;
-}

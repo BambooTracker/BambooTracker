@@ -118,17 +118,23 @@ void EnvelopeFM::setParameterValue(FMParameter param, int value)
 	paramMap_.at(param) = value;
 }
 
-void EnvelopeFM::registerInstrumentUsingThis(int instNum)
+void EnvelopeFM::registerUserInstrument(int instNum)
 {
 	instsUseThis_.push_back(instNum);
+	std::sort(instsUseThis_.begin(), instsUseThis_.end());
 }
 
-void EnvelopeFM::deregisterInstrumentUsingThis(int instNum)
+void EnvelopeFM::deregisterUserInstrument(int instNum)
 {
 	instsUseThis_.erase(std::find(instsUseThis_.begin(), instsUseThis_.end(), instNum));
 }
 
-bool EnvelopeFM::isUsedInInstrument() const
+bool EnvelopeFM::isUserInstrument() const
 {
 	return !instsUseThis_.empty();
+}
+
+std::vector<int> EnvelopeFM::getUserInstruments() const
+{
+	return instsUseThis_;
 }

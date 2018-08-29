@@ -115,6 +115,11 @@ void BambooTracker::setInstrumentFMEnvelope(int instNum, int envNum)
 	opnaCtrl_.updateInstrumentFM(instNum);
 }
 
+std::vector<int> BambooTracker::getEnvelopeFMUsers(int envNum) const
+{
+	return instMan_.getEnvelopeFMUsers(envNum);
+}
+
 /********** Song edit **********/
 int BambooTracker::getCurrentSongNumber() const
 {

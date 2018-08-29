@@ -25,9 +25,10 @@ public:
 	int getParameterValue(FMParameter param) const;
 	void setParameterValue(FMParameter param, int value);
 
-	void registerInstrumentUsingThis(int instNum);
-	void deregisterInstrumentUsingThis(int instNum);
-	bool isUsedInInstrument() const;
+	void registerUserInstrument(int instNum);
+	void deregisterUserInstrument(int instNum);
+	bool isUserInstrument() const;
+	std::vector<int> getUserInstruments() const;
 
 private:
 	int num_;

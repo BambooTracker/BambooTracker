@@ -10,6 +10,8 @@ ModuleSettingsDialog::ModuleSettingsDialog(std::weak_ptr<BambooTracker> core, QW
 {
 	ui->setupUi(this);
 
+	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+
 	ui->songTreeWidget->setColumnCount(2);
 	ui->songTreeWidget->setHeaderLabels({ "Number", "Title", "Song type" });
 	ui->songTreeWidget->header()->resizeSection(0, 52);

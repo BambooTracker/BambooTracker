@@ -3,15 +3,15 @@
 
 #include <QUndoCommand>
 #include <QListWidget>
-#include <map>
 #include <memory>
+#include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "misc.hpp"
 
 class DeepCloneInstrumentQtCommand : public QUndoCommand
 {
 public:
 	DeepCloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
-							 std::map<int, std::unique_ptr<QWidget>>& map,
+							 std::weak_ptr<InstrumentFormManager> formMan,
 							 QUndoCommand* parent = nullptr);
 
 	void undo() Q_DECL_OVERRIDE;
@@ -21,7 +21,7 @@ public:
 private:
 	QListWidget* list_;
 	int cloneNum_, refNum_;
-	std::map<int, std::unique_ptr<QWidget>>& map_;
+	std::weak_ptr<InstrumentFormManager> formMan_;
 	SoundSource source_;
 };
 

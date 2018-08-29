@@ -110,7 +110,8 @@ SOURCES += \
     gui/command/pattern/erase_cells_in_pattern_qt_command.cpp \
     command/order/paste_copied_data_to_order_command.cpp \
     gui/command/order/paste_copied_data_to_order_qt_command.cpp \
-    gui/module_settings_dialog.cpp
+    gui/module_settings_dialog.cpp \
+    gui/instrument_editor/instrument_form_manager.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -209,7 +210,8 @@ HEADERS += \
     gui/command/pattern/erase_cells_in_pattern_qt_command.hpp \
     command/order/paste_copied_data_to_order_command.hpp \
     gui/command/order/paste_copied_data_to_order_qt_command.hpp \
-    gui/module_settings_dialog.hpp
+    gui/module_settings_dialog.hpp \
+    gui/instrument_editor/instrument_form_manager.hpp
 
 FORMS += \
     gui/mainwindow.ui \

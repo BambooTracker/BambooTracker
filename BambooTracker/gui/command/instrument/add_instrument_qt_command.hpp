@@ -1,19 +1,19 @@
 #ifndef ADD_INSTRUMENT_QT_COMMAND_HPP
 #define ADD_INSTRUMENT_QT_COMMAND_HPP
 
-#include <map>
 #include <memory>
 #include <QUndoCommand>
 #include <QWidget>
 #include <QListWidget>
 #include <QString>
+#include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "misc.hpp"
 
 class AddInstrumentQtCommand : public QUndoCommand
 {
 public:
 	AddInstrumentQtCommand(QListWidget *list, int num, QString name, SoundSource source,
-						   std::map<int, std::unique_ptr<QWidget>> &map, QUndoCommand *parent = nullptr);
+						   std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent = nullptr);
 	void undo() Q_DECL_OVERRIDE;
 	void redo() Q_DECL_OVERRIDE;
 	int id() const Q_DECL_OVERRIDE;
@@ -23,7 +23,7 @@ private:
 	int num_;
 	QString name_;
 	SoundSource source_;
-	std::map<int, std::unique_ptr<QWidget>> &map_;
+	std::weak_ptr<InstrumentFormManager> formMan_;
 };
 
 #endif // ADD_INSTRUMENT_QT_COMMAND_HPP

@@ -67,6 +67,23 @@
                </property>
               </widget>
              </item>
+             <item alignment="Qt::AlignRight">
+              <widget class="QLabel" name="envUsersLabel">
+               <property name="text">
+                <string>Users:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="envUsersLineEdit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>

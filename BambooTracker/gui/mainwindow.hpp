@@ -2,7 +2,6 @@
 #define MAINWINDOW_HPP
 
 #include <memory>
-#include <map>
 #include <cstdint>
 #include <QMainWindow>
 #include <QKeyEvent>
@@ -12,6 +11,7 @@
 #include <QCloseEvent>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
+#include "gui/instrument_editor/instrument_form_manager.hpp"
 
 namespace Ui {
 	class MainWindow;
@@ -40,7 +40,7 @@ private:
 	std::shared_ptr<QUndoStack> comStack_;
 
 	// Instrument list
-	std::map<int, std::unique_ptr<QWidget>> instFormMap_;
+	std::shared_ptr<InstrumentFormManager> instForms_;
 	void addInstrument();
 	void removeInstrument();
 	void editInstrument();
@@ -79,7 +79,6 @@ private slots:
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
 	void onInstrumentListWidgetItemAdded(const QModelIndex& parent, int start, int end);
 	void on_instrumentListWidget_itemSelectionChanged();
-	void onInstrumentFMEnvelopeChanged(int envNum, int fromInstNum);
 	void on_modSetDialogOpenToolButton_clicked();
 };
 

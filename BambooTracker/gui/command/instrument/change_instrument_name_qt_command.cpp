@@ -4,18 +4,18 @@
 #include "misc.hpp"
 
 ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
-															 std::map<int, std::unique_ptr<QWidget> > &map,
+															 std::weak_ptr<InstrumentFormManager> formMan,
 															 QString oldName, QString newName,
 															 QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
 	  row_(row),
-	  map_(map),
+	  formMan_(formMan),
 	  oldName_(oldName),
 	  newName_(newName)
 {
-    source_ = static_cast<SoundSource>(map.at(num)->property("SoundSource").toInt());
+	source_ = static_cast<SoundSource>(formMan.lock()->getForm(num)->property("SoundSource").toInt());
 }
 
 void ChangeInstrumentNameQtCommand::redo()
@@ -23,8 +23,8 @@ void ChangeInstrumentNameQtCommand::redo()
 	auto item = list_->item(row_);
     auto title = QString("%1: %2").arg(num_, 2, 16, QChar('0')).toUpper().arg(newName_);
     item->setText(title);
-	auto form = map_.at(num_).get();
-    form->setProperty("Name", newName_);
+	formMan_.lock()->setFormInstrumentName(num_, newName_);
+	auto form = formMan_.lock()->getForm(num_).get();
     switch (source_) {
 	case SoundSource::FM:
 	{
@@ -45,8 +45,8 @@ void ChangeInstrumentNameQtCommand::undo()
 	auto item = list_->item(row_);
     auto title = QString("%1: %2").arg(num_, 2, 16, QChar('0')).toUpper().arg(oldName_);
     item->setText(title);
-	auto form = map_.at(num_).get();
-    form->setProperty("Name", oldName_);
+	formMan_.lock()->setFormInstrumentName(num_, oldName_);
+	auto form = formMan_.lock()->getForm(num_).get();
 	switch (source_) {
 	case SoundSource::FM:
 	{

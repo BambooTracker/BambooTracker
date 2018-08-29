@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <array>
+#include <vector>
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "misc.hpp"
@@ -25,15 +26,17 @@ public:
 
 	void setInstrumentName(int instNum, std::string name);
 	std::string getInstrumentName(int instNum) const;
+
+	int findFirstFreeInstrument() const;
+
+	//----- FM methods -----
 	void setInstrumentFMEnvelope(int instNum, int envNum);
     int getInstrumentFMEnvelope(int instNum) const;
-
 	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
 	int getEnvelopeFMParameter(int envNum, FMParameter param) const;
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
 	bool getEnvelopeFMOperatorEnable(int envNum, int opNum) const;
-
-	int findFirstFreeInstrument() const;
+	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 
 private:
 	std::array<std::shared_ptr<AbstructInstrument>, 128> insts_;
