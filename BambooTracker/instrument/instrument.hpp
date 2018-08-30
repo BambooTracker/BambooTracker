@@ -45,8 +45,13 @@ public:
 	int getEnvelopeParameter(FMParameter param) const;
 	bool getOperatorEnable(int n) const;
 
+	void setEnvelopeResetEnabled(bool enabled);
+	bool getEnvelopeResetEnabled() const;
+
 private:
 	int envNum_;
+
+	bool envResetEnabled_;
 };
 
 enum class FMParameter

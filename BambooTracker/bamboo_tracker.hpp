@@ -39,10 +39,12 @@ public:
 	void deepCloneInstrument(int num, int refNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
+	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
 	void setInstrumentFMEnvelope(int instNum, int envNum);
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
+	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
 	// Song edit
 	void setCurrentSongNumber(int num);

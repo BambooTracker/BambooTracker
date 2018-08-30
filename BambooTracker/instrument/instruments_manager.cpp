@@ -185,3 +185,7 @@ std::vector<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
 	return envFM_.at(envNum)->getUserInstruments();
 }
 
+void InstrumentsManager::setinstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
+{
+	std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->setEnvelopeResetEnabled(enabled);
+}

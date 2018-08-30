@@ -33,7 +33,8 @@ void AbstructInstrument::setName(std::string name)
 
 InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
 	AbstructInstrument(number, SoundSource::FM, name, owner),
-	envNum_(0)
+	envNum_(0),
+	envResetEnabled_(true)
 {
 }
 
@@ -60,6 +61,16 @@ int InstrumentFM::getEnvelopeParameter(FMParameter param) const
 bool InstrumentFM::getOperatorEnable(int n) const
 {
 	return owner_->getEnvelopeFMOperatorEnable(envNum_, n);
+}
+
+void InstrumentFM::setEnvelopeResetEnabled(bool enabled)
+{
+	envResetEnabled_ = enabled;
+}
+
+bool InstrumentFM::getEnvelopeResetEnabled() const
+{
+	return envResetEnabled_;
 }
 
 /****************************************/

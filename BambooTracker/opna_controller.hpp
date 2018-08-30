@@ -74,12 +74,14 @@ private:
 	ToneDetail toneFM_[6], toneSSG_[3];
 	int volFM_[6], volSSG_[3];
 	bool isMuteFM_[6], isMuteSSG_[3];
+	bool enableEnvResetFM_[6];
 
 	void initChip();
 	uint32_t getFmChannelMask(int ch);
 	uint32_t getFMChannelOffset(int ch);
 	void writeFMEnvelopeToRegistersFromInstrument(int ch);
 	void writeFMEnveropeParameterToRegister(int ch, FMParameter param, int value);
+	void setInstrumentFMProperties(int ch);
 
 	bool isCareer(int op, int al);
 

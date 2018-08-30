@@ -298,6 +298,8 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentEnvelopeParameters();
+
+	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled());
 }
 
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
@@ -474,5 +476,17 @@ void InstrumentEditorFMForm::onEnvelopeNumberChanged(int n)
 		}
 		str.chop(1);
 		ui->envUsersLineEdit->setText(str);
+	}
+}
+
+//========== Envelope ==========//
+/********** Slots **********/
+void InstrumentEditorFMForm::on_envResetCheckBox_stateChanged(int arg1)
+{
+	if (arg1 == Qt::Checked) {
+		bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, true);
+	}
+	else {
+		bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, false);
 	}
 }

@@ -109,11 +109,13 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 		if (refInstFM_[ch] != nullptr) {	// When setted instrument has been deleted
 			refInstFM_[ch]->setNumber(-1);
 			writeFMEnvelopeToRegistersFromInstrument(ch);
+			setInstrumentFMProperties(ch);
 		}
 	}
 	else {
 		refInstFM_[ch] = inst;
 		writeFMEnvelopeToRegistersFromInstrument(ch);
+		setInstrumentFMProperties(ch);
 	}
 }
 
@@ -132,9 +134,10 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 
 void OPNAController::updateInstrumentFM(int instNum)
 {
-	for (int i = 0; i < 6; ++i) {
-		if (refInstFM_[i] != nullptr && refInstFM_[i]->getNumber() == instNum) {
-			writeFMEnvelopeToRegistersFromInstrument(i);
+	for (int ch = 0; ch < 6; ++ch) {
+		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getNumber() == instNum) {
+			writeFMEnvelopeToRegistersFromInstrument(ch);
+			setInstrumentFMProperties(ch);
 		}
 	}
 }
@@ -352,6 +355,11 @@ void OPNAController::setInstrumentFMOperatorEnable(int envNum, int opNum)
 	}
 }
 
+void OPNAController::setInstrumentFMProperties(int ch)
+{
+	enableEnvResetFM_[ch] = refInstFM_[ch]->getEnvelopeResetEnabled();
+}
+
 /********** Set volume **********/
 void OPNAController::setVolumeFM(int ch, int volume)
 {
@@ -417,8 +425,8 @@ bool OPNAController::isKeyOnSSG(int ch) const
 bool OPNAController::enableEnvelopeReset(int ch) const
 {
 	return (envFM_[ch] == nullptr)
-			? false
-			: true;	// UNDONE: envelope reset selection
+			? true
+			: enableEnvResetFM_[ch];
 }
 
 ToneDetail OPNAController::getFMTone(int ch) const
@@ -468,6 +476,7 @@ void OPNAController::initChip()
 
 		toneFM_[i].octave = -1;	// Init key on note data
 		volFM_[i] = 0;	// Init volume
+		enableEnvResetFM_[i] = true;
 	}
 
 	// SSG

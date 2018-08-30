@@ -97,6 +97,7 @@ void BambooTracker::setInstrumentName(int num, std::string name)
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
 }
 
+//--- FM
 void BambooTracker::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
 {
 	instMan_.setEnvelopeFMParameter(envNum, param, value);
@@ -118,6 +119,12 @@ void BambooTracker::setInstrumentFMEnvelope(int instNum, int envNum)
 std::vector<int> BambooTracker::getEnvelopeFMUsers(int envNum) const
 {
 	return instMan_.getEnvelopeFMUsers(envNum);
+}
+
+void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
+{
+	instMan_.setinstrumentFMEnvelopeResetEnabled(instNum, enabled);
+	opnaCtrl_.updateInstrumentFM(instNum);
 }
 
 /********** Song edit **********/

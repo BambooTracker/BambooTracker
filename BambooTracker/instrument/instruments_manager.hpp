@@ -38,6 +38,8 @@ public:
 	bool getEnvelopeFMOperatorEnable(int envNum, int opNum) const;
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 
+	void setinstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
+
 private:
 	std::array<std::shared_ptr<AbstructInstrument>, 128> insts_;
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
