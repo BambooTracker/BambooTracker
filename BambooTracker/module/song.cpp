@@ -1,7 +1,7 @@
 #include "song.hpp"
 
 Song::Song(int number, SongType songType, std::string title,
-		   unsigned int tickFreq, int tempo, unsigned int stepSize,
+		   unsigned int tickFreq, int tempo, size_t stepSize,
 		   size_t defaultPatternSize)
 	: num_(number),
 	  type_(songType),

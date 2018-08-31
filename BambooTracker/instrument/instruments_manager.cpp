@@ -48,6 +48,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
+		setinstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
 	case SoundSource::SSG:
@@ -70,6 +71,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
+		setinstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
 	case SoundSource::SSG:
