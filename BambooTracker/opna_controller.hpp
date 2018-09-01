@@ -36,6 +36,7 @@ public:
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
 	void updateInstrumentFM(int instNum);
+	void updateInstrumentSSG(int instNum);
 	void updateInstrumentFMEnvelopeParameter(int envNum, FMParameter param);
 	void setInstrumentFMOperatorEnable(int envNum, int opNum);
 
@@ -84,6 +85,7 @@ private:
 	void writeFMEnvelopeToRegistersFromInstrument(int ch);
 	void writeFMEnveropeParameterToRegister(int ch, FMParameter param, int value);
 	void setInstrumentFMProperties(int ch);
+	void setInstrumentSSGProperties(int ch);
 
 	bool isCareer(int op, int al);
 

@@ -103,7 +103,7 @@ void BambooTracker::setInstrumentGateCount(int instNum, int count)
 	instMan_.setInstrumentGateCount(instNum, count);
 	switch (instMan_.getInstrumentSharedPtr(instNum)->getSoundSource()) {
 	case SoundSource::FM:	opnaCtrl_.updateInstrumentFM(instNum);	break;
-	case SoundSource::SSG:	/* UNODONE */	break;
+	case SoundSource::SSG:	opnaCtrl_.updateInstrumentSSG(instNum);	break;
 	}
 }
 
@@ -346,16 +346,11 @@ void BambooTracker::readTick(int rest)
 		for (auto& attrib : songStyle_.trackAttribs) {
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
-			switch (attrib.source) {
-			case SoundSource::FM:
-				// Channel envelope reset before next key on
-				if (step.getNoteNumber() >= 0 && opnaCtrl_.enableEnvelopeReset(attrib.channelInSource)) {
-					opnaCtrl_.resetChannelEnvelope(attrib.channelInSource);
-				}
-				break;
-
-			case SoundSource::SSG:
-				break;
+			// Channel envelope reset before next key on
+			if (attrib.source == SoundSource::FM
+					&& step.getNoteNumber() >= 0
+					&& opnaCtrl_.enableEnvelopeReset(attrib.channelInSource)) {
+				opnaCtrl_.resetChannelEnvelope(attrib.channelInSource);
 			}
 		}
 	}
@@ -374,6 +369,9 @@ void BambooTracker::readTick(int rest)
 					break;
 
 				case SoundSource::SSG:
+					if (step.getNoteNumber() >= 0) {
+						opnaCtrl_.keyOffSSG(attrib.channelInSource);
+					}
 					break;
 				}
 			}

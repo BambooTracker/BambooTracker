@@ -2,6 +2,7 @@
 #include <utility>
 #include <QListWidgetItem>
 #include <QApplication>
+#include <QClipboard>
 #include <QRegularExpression>
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"

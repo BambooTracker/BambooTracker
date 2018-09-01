@@ -122,14 +122,15 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst)
 {
 	if (inst == nullptr) {	// Error set ()
-		if (refInstSSG_[ch] != nullptr)
+		if (refInstSSG_[ch] != nullptr) {
 			refInstSSG_[ch]->setNumber(-1);
+			setInstrumentSSGProperties(ch);
+		}
 	}
 	else {
 		refInstSSG_[ch] = inst;
+		setInstrumentSSGProperties(ch);
 	}
-
-	// UNDONE: implement
 }
 
 void OPNAController::updateInstrumentFM(int instNum)
@@ -138,6 +139,15 @@ void OPNAController::updateInstrumentFM(int instNum)
 		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getNumber() == instNum) {
 			writeFMEnvelopeToRegistersFromInstrument(ch);
 			setInstrumentFMProperties(ch);
+		}
+	}
+}
+
+void OPNAController::updateInstrumentSSG(int instNum)
+{
+	for (int ch = 0; ch < 3; ++ch) {
+		if (refInstSSG_[ch] != nullptr && refInstSSG_[ch]->getNumber() == instNum) {
+			setInstrumentSSGProperties(ch);
 		}
 	}
 }
@@ -359,6 +369,11 @@ void OPNAController::setInstrumentFMProperties(int ch)
 {
 	gateCntFM_[ch] = refInstFM_[ch]->getGateCount();
 	enableEnvResetFM_[ch] = refInstFM_[ch]->getEnvelopeResetEnabled();
+}
+
+void OPNAController::setInstrumentSSGProperties(int ch)
+{
+	gateCntSSG_[ch] = refInstSSG_[ch]->getGateCount();
 }
 
 /********** Set volume **********/

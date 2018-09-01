@@ -34,7 +34,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		break;
 	}
 	case SoundSource::SSG:
-		// UNDONE
+		// UNDONE: SSG memory number registering
 		break;
 	}
 }
@@ -79,7 +79,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		break;
 	}
 	case SoundSource::SSG:
-		// UNODNE
+		// UNODNE: ssg envelope number registering
 		break;
 	}
 }
@@ -108,7 +108,7 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		break;
 	}
 	case SoundSource::SSG:
-		// UNODNE
+		// UNODNE: ssg envelope number deregistering
 		break;
 	}
 

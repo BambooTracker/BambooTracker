@@ -4,6 +4,7 @@
 #include <QPoint>
 #include <QMenu>
 #include <QApplication>
+#include <QClipboard>
 #include <QRegularExpression>
 #include "gui/event_guard.hpp"
 #include "misc.hpp"
@@ -186,14 +187,26 @@ void InstrumentEditorFMForm::setCore(std::weak_ptr<BambooTracker> core)
 	updateInstrumentParameters();
 }
 
+void InstrumentEditorFMForm::updateInstrumentParameters()
+{
+	Ui::EventGuard eg(isIgnoreEvent_);
+
+	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
+	auto name = QString::fromUtf8(instFM->getName().c_str(), instFM->getName().length());
+	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
+
+	setInstrumentEnvelopeParameters();
+
+	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled());
+	ui->gateCountSpinBox->setValue(instFM->getGateCount());
+}
+
 /********** Events **********/
 // MUST DIRECT CONNECTION
 void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 {
 	// For jam key on
-	auto focus = focusWidget();
-	if (focus == ui->envNumSpinBox) return;
-
 	// General keys
 	switch (event->key()) {
 	case Qt::Key_Asterisk:	emit octaveChanged(true);		break;
@@ -245,9 +258,6 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 {
 	// For jam key off
-	auto focus = focusWidget();
-	if (focus == ui->envNumSpinBox) return;
-
 	if (!event->isAutoRepeat()) {
 		switch (event->key()) {
 		case Qt::Key_Z:
@@ -288,21 +298,6 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 //========== Envelope ==========//
-void InstrumentEditorFMForm::updateInstrumentParameters()
-{	
-	Ui::EventGuard eg(isIgnoreEvent_);
-
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
-	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
-	auto name = QString::fromUtf8(instFM->getName().c_str(), instFM->getName().length());
-	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
-
-	setInstrumentEnvelopeParameters();
-
-	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled());
-	ui->gateCountSpinBox->setValue(instFM->getGateCount());
-}
-
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
@@ -490,9 +485,11 @@ void InstrumentEditorFMForm::on_envResetCheckBox_stateChanged(int arg1)
 	else {
 		bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, false);
 	}
+	emit modified();
 }
 
 void InstrumentEditorFMForm::on_gateCountSpinBox_valueChanged(int arg1)
 {
 	bt_.lock()->setInstrumentGateCount(instNum_, arg1);
+	emit modified();
 }

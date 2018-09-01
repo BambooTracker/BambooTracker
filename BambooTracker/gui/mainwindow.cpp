@@ -161,6 +161,15 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 		}
 	}
 
+	if (auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(watched)) {
+		// Change current instrument by activating SSG editor
+		if (event->type() == QEvent::WindowActivate) {
+			int row = findRowFromInstrumentList(ssgForm->getInstrumentNumber());
+			ui->instrumentListWidget->setCurrentRow(row);
+			return false;
+		}
+	}
+
 	if (auto orderList = qobject_cast<OrderListEditor*>(watched)) {
 		// Catch space key pressing in order list
 		if (event->type() == QEvent::KeyPress) {
@@ -608,6 +617,18 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	case SoundSource::SSG:
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOnEvent,
+						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,
+						 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::octaveChanged,
+						 this, &MainWindow::changeOctave, Qt::DirectConnection);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,
+						 this, &MainWindow::setModifiedTrue);
+
+		ssgForm->installEventFilter(this);
+		ssgForm->setCore(bt_);
+
 		break;
 	}
 	}

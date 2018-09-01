@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QKeyEvent>
-#include <QClipboard>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
@@ -40,10 +39,9 @@ private:
 
 	std::weak_ptr<BambooTracker> bt_;
 
-	//========== Envelope ==========//
-public:
 	void updateInstrumentParameters();
 
+	//========== Envelope ==========//
 signals:
 	void envelopeNumberChanged(int envNum);
 	void envelopeParameterChanged(int envNum, int fromInstNum);

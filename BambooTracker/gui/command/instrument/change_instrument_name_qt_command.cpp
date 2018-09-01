@@ -34,7 +34,8 @@ void ChangeInstrumentNameQtCommand::redo()
 		break;
 	case SoundSource::SSG:
 	{
-		// UNDONE: SSG form name change
+		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form);
+		ssgForm->setWindowTitle(title);
 	}
 		break;
 	}
@@ -56,7 +57,8 @@ void ChangeInstrumentNameQtCommand::undo()
 		break;
 	case SoundSource::SSG:
 	{
-		// UNDONE: SSG form name change
+		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form);
+		ssgForm->setWindowTitle(title);
 	}
 		break;
 	}
