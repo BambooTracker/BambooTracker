@@ -19,7 +19,8 @@ BambooTracker::BambooTracker()
 	  curInstNum_(-1),
 	  playState_(false),
 	  streamIntrRate_(60),	// NTSC
-	  ptnHlCnt_(8)
+	  ptnHlCnt_(8),
+	  isFindNextStep_(false)
 {
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
 }
@@ -97,6 +98,15 @@ void BambooTracker::setInstrumentName(int num, std::string name)
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
 }
 
+void BambooTracker::setInstrumentGateCount(int instNum, int count)
+{
+	instMan_.setInstrumentGateCount(instNum, count);
+	switch (instMan_.getInstrumentSharedPtr(instNum)->getSoundSource()) {
+	case SoundSource::FM:	opnaCtrl_.updateInstrumentFM(instNum);	break;
+	case SoundSource::SSG:	/* UNODONE */	break;
+	}
+}
+
 //--- FM
 void BambooTracker::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
 {
@@ -123,7 +133,7 @@ std::vector<int> BambooTracker::getEnvelopeFMUsers(int envNum) const
 
 void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
 {
-	instMan_.setinstrumentFMEnvelopeResetEnabled(instNum, enabled);
+	instMan_.setInstrumentFMEnvelopeResetEnabled(instNum, enabled);
 	opnaCtrl_.updateInstrumentFM(instNum);
 }
 
@@ -326,12 +336,12 @@ int BambooTracker::streamCountUp()
 }
 
 void BambooTracker::readTick(int rest)
-{
+{	
 	if (!(playState_ & 0x02)) return;	// When it has not read first step
 
-	if (rest == 1) {
-		findNextStep();
+	if (!isFindNextStep_) findNextStep();
 
+	if (rest == 1) {
 		auto& song = mod_->getSong(curSongNum_);
 		for (auto& attrib : songStyle_.trackAttribs) {
 			auto& step = song.getTrack(attrib.number)
@@ -346,6 +356,26 @@ void BambooTracker::readTick(int rest)
 
 			case SoundSource::SSG:
 				break;
+			}
+		}
+	}
+	else {
+		auto& song = mod_->getSong(curSongNum_);
+		for (auto& attrib : songStyle_.trackAttribs) {
+			// Gate count
+			if (opnaCtrl_.getGateCount(attrib.source, attrib.channelInSource) == rest) {
+				auto& step = song.getTrack(attrib.number)
+							 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
+				switch (attrib.source) {
+				case SoundSource::FM:
+					if (step.getNoteNumber() >= 0) {
+						opnaCtrl_.keyOffFM(attrib.channelInSource);
+					}
+					break;
+
+				case SoundSource::SSG:
+					break;
+				}
 			}
 		}
 	}
@@ -372,6 +402,8 @@ void BambooTracker::findNextStep()
 	else {
 		++nextReadStepStep_;
 	}
+
+	isFindNextStep_ = true;
 }
 
 void BambooTracker::stepDown()
@@ -457,6 +489,8 @@ void BambooTracker::readStep()
 		}
 		}
 	}
+
+	isFindNextStep_ = false;
 }
 
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)

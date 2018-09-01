@@ -397,10 +397,10 @@ void PatternEditorPanel::drawBorders(int maxWidth)
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, geometry().height());
 	int x, trackNum;
-	for (x = stepNumWidth_, trackNum = leftTrackNum_; x <= maxWidth; ) {
-		x += trackWidth_;
+	for (x = stepNumWidth_ + trackWidth_, trackNum = leftTrackNum_; x <= maxWidth; ) {
 		painter.drawLine(x, 0, x, geometry().height());
 		++trackNum;
+		x += trackWidth_;
 	}
 }
 

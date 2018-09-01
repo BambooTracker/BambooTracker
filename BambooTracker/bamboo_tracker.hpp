@@ -39,6 +39,7 @@ public:
 	void deepCloneInstrument(int num, int refNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
+	void setInstrumentGateCount(int instNum, int count);
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
@@ -186,6 +187,7 @@ private:
 	int ptnHlCnt_;
 
 	// Play song
+	bool isFindNextStep_;
 	void startPlay();
 	void stepDown();
 	void findNextStep();

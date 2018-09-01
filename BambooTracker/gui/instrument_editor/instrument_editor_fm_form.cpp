@@ -300,6 +300,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 	setInstrumentEnvelopeParameters();
 
 	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled());
+	ui->gateCountSpinBox->setValue(instFM->getGateCount());
 }
 
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
@@ -479,7 +480,7 @@ void InstrumentEditorFMForm::onEnvelopeNumberChanged(int n)
 	}
 }
 
-//========== Envelope ==========//
+//========== Else ==========//
 /********** Slots **********/
 void InstrumentEditorFMForm::on_envResetCheckBox_stateChanged(int arg1)
 {
@@ -489,4 +490,9 @@ void InstrumentEditorFMForm::on_envResetCheckBox_stateChanged(int arg1)
 	else {
 		bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, false);
 	}
+}
+
+void InstrumentEditorFMForm::on_gateCountSpinBox_valueChanged(int arg1)
+{
+	bt_.lock()->setInstrumentGateCount(instNum_, arg1);
 }

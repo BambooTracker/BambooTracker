@@ -29,6 +29,8 @@ public:
 
 	int findFirstFreeInstrument() const;
 
+	void setInstrumentGateCount(int instNum, int count);
+
 	//----- FM methods -----
 	void setInstrumentFMEnvelope(int instNum, int envNum);
     int getInstrumentFMEnvelope(int instNum) const;
@@ -38,7 +40,7 @@ public:
 	bool getEnvelopeFMOperatorEnable(int envNum, int opNum) const;
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 
-	void setinstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
+	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
 private:
 	std::array<std::shared_ptr<AbstructInstrument>, 128> insts_;

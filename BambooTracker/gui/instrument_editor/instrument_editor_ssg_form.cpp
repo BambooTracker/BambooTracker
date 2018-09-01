@@ -14,3 +14,10 @@ InstrumentEditorSSGForm::~InstrumentEditorSSGForm()
 {
 	delete ui;
 }
+
+//--- Else
+/********** Slots **********/
+void InstrumentEditorSSGForm::on_gateCountSpinBox_valueChanged(int arg1)
+{
+
+}

@@ -43,12 +43,14 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 {
 	std::shared_ptr<AbstructInstrument> refInst = insts_.at(refInstNum);
 	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
+
+	setInstrumentGateCount(cloneInstNum, refInst->getGateCount());
 	switch (refInst->getSoundSource()) {
 	case SoundSource::FM:
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
-		setinstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
+		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
 	case SoundSource::SSG:
@@ -61,6 +63,8 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 {
 	std::shared_ptr<AbstructInstrument> refInst = insts_.at(refInstNum);
 	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
+
+	setInstrumentGateCount(cloneInstNum, refInst->getGateCount());
 	switch (refInst->getSoundSource()) {
 	case SoundSource::FM:
 	{
@@ -71,7 +75,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
-		setinstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
+		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
 	case SoundSource::SSG:
@@ -147,6 +151,11 @@ int InstrumentsManager::findFirstFreeInstrument() const
 	return -1;
 }
 
+void InstrumentsManager::setInstrumentGateCount(int instNum, int count)
+{
+	insts_.at(instNum)->setGateCount(count);
+}
+
 //----- FM methods -----
 void InstrumentsManager::setInstrumentFMEnvelope(int instNum, int envNum)
 {
@@ -187,7 +196,7 @@ std::vector<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
 	return envFM_.at(envNum)->getUserInstruments();
 }
 
-void InstrumentsManager::setinstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
+void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
 {
 	std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->setEnvelopeResetEnabled(enabled);
 }

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0">
    <property name="verticalSpacing">
     <number>2</number>
    </property>
@@ -142,8 +142,8 @@
       <widget class="QCheckBox" name="envResetCheckBox">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>100</y>
+         <x>80</x>
+         <y>200</y>
          <width>171</width>
          <height>16</height>
         </rect>
@@ -153,6 +153,35 @@
        </property>
        <property name="checked">
         <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="gateCountSpinBox">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>110</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="maximum">
+        <number>99</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="gateCountLabel">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>110</y>
+         <width>61</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Gate count:</string>
        </property>
       </widget>
      </widget>

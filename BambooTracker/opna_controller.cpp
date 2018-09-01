@@ -357,6 +357,7 @@ void OPNAController::setInstrumentFMOperatorEnable(int envNum, int opNum)
 
 void OPNAController::setInstrumentFMProperties(int ch)
 {
+	gateCntFM_[ch] = refInstFM_[ch]->getGateCount();
 	enableEnvResetFM_[ch] = refInstFM_[ch]->getEnvelopeResetEnabled();
 }
 
@@ -422,6 +423,14 @@ bool OPNAController::isKeyOnSSG(int ch) const
 	return (((0x09 << ch) & ~mixerSSG_) > 0);
 }
 
+int OPNAController::getGateCount(SoundSource src, int ch) const
+{
+	switch (src) {
+	case SoundSource::FM:	return gateCntFM_[ch];
+	case SoundSource::SSG:	return gateCntSSG_[ch];
+	}
+}
+
 bool OPNAController::enableEnvelopeReset(int ch) const
 {
 	return (envFM_[ch] == nullptr)
@@ -476,6 +485,7 @@ void OPNAController::initChip()
 
 		toneFM_[i].octave = -1;	// Init key on note data
 		volFM_[i] = 0;	// Init volume
+		gateCntFM_[i] = 0;
 		enableEnvResetFM_[i] = true;
 	}
 
@@ -484,6 +494,8 @@ void OPNAController::initChip()
 		refInstSSG_[i].reset();	// Init envelope
 		toneSSG_[i].octave = -1;	// Init key on note data
 		volSSG_[i] = 0xf;	// Init volume
+
+		gateCntSSG_[i] = 0;
 	}
 
 	// Init FM pan

@@ -52,6 +52,7 @@ public:
 	// Chip details
 	bool isKeyOnFM(int ch) const;
 	bool isKeyOnSSG(int ch) const;
+	int getGateCount(SoundSource src, int ch) const;
 	bool enableEnvelopeReset(int ch) const;
 	ToneDetail getFMTone(int ch) const;
 	ToneDetail getSSGTone(int ch) const;
@@ -74,6 +75,7 @@ private:
 	ToneDetail toneFM_[6], toneSSG_[3];
 	int volFM_[6], volSSG_[3];
 	bool isMuteFM_[6], isMuteSSG_[3];
+	int gateCntFM_[6], gateCntSSG_[3];
 	bool enableEnvResetFM_[6];
 
 	void initChip();

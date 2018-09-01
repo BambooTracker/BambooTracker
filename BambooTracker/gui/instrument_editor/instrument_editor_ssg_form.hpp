@@ -19,6 +19,10 @@ public:
 private:
 	Ui::InstrumentEditorSSGForm *ui;
 	int instNum_;
+
+	//--- Else
+private slots:
+	void on_gateCountSpinBox_valueChanged(int arg1);
 };
 
 #endif // INSTRUMENT_EDITOR_SSG_FORM_HPP
