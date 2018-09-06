@@ -111,7 +111,9 @@ SOURCES += \
     command/order/paste_copied_data_to_order_command.cpp \
     gui/command/order/paste_copied_data_to_order_qt_command.cpp \
     gui/module_settings_dialog.cpp \
-    gui/instrument_editor/instrument_form_manager.cpp
+    gui/instrument_editor/instrument_form_manager.cpp \
+    instrument/lfo_fm.cpp \
+    instrument/abstruct_instrument_property.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -211,7 +213,9 @@ HEADERS += \
     command/order/paste_copied_data_to_order_command.hpp \
     gui/command/order/paste_copied_data_to_order_qt_command.hpp \
     gui/module_settings_dialog.hpp \
-    gui/instrument_editor/instrument_form_manager.hpp
+    gui/instrument_editor/instrument_form_manager.hpp \
+    instrument/lfo_fm.hpp \
+    instrument/abstruct_instrument_property.hpp
 
 FORMS += \
     gui/mainwindow.ui \

@@ -2,42 +2,30 @@
 
 #include <map>
 #include <memory>
-#include <vector>
-#include "instrument.hpp"
+#include "abstruct_instrument_property.hpp"
 
-enum class FMParameter;
+enum class FMEnvelopeParameter;
 
-class EnvelopeFM
+class EnvelopeFM : public AbstructInstrumentProperty
 {
 public:
 	explicit EnvelopeFM(int num);
-	~EnvelopeFM() = default;
 	EnvelopeFM(const EnvelopeFM& other);
 
 	std::unique_ptr<EnvelopeFM> clone();
 
-	void setNumber(int num);
-	int getNumber() const;
+	bool getOperatorEnabled(int num) const;
+	void setOperatorEnabled(int num, bool enabled);
 
-	bool getOperatorEnable(int num) const;
-	void setOperatorEnable(int num, bool enable);
-
-	int getParameterValue(FMParameter param) const;
-	void setParameterValue(FMParameter param, int value);
-
-	void registerUserInstrument(int instNum);
-	void deregisterUserInstrument(int instNum);
-	bool isUserInstrument() const;
-	std::vector<int> getUserInstruments() const;
+	int getParameterValue(FMEnvelopeParameter param) const;
+	void setParameterValue(FMEnvelopeParameter param, int value);
 
 private:
-	int num_;
-
 	int al_;
 	int fb_;
 	struct FMOperator
 	{
-		bool enable_;
+		bool enabled_;
 		int ar_;
 		int dr_;
 		int sr_;
@@ -50,9 +38,18 @@ private:
 		int ssgeg_;	// -1: No use
 	};
 	FMOperator op_[4];
-	std::map<FMParameter, int&> paramMap_;
-
-	std::vector<int> instsUseThis_;
+	std::map<FMEnvelopeParameter, int&> paramMap_;
 
 	void initParamMap();
+};
+
+
+enum class FMEnvelopeParameter
+{
+	AL, FB,
+	AR1, DR1, SR1, RR1, SL1, TL1, KS1, ML1, DT1,
+	AR2, DR2, SR2, RR2, SL2, TL2, KS2, ML2, DT2,
+	AR3, DR3, SR3, RR3, SL3, TL3, KS3, ML3, DT3,
+	AR4, DR4, SR4, RR4, SL4, TL4, KS4, ML4, DT4,
+	SSGEG1, SSGEG2, SSGEG3, SSGEG4
 };

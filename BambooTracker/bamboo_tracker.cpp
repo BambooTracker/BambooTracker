@@ -3,6 +3,8 @@
 #include <utility>
 #include "commands.hpp"
 
+#include <QDebug>
+
 BambooTracker::BambooTracker()
 	:
 	  #ifdef SINC_INTERPOLATION
@@ -108,7 +110,7 @@ void BambooTracker::setInstrumentGateCount(int instNum, int count)
 }
 
 //--- FM
-void BambooTracker::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
+void BambooTracker::setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value)
 {
 	instMan_.setEnvelopeFMParameter(envNum, param, value);
 	opnaCtrl_.updateInstrumentFMEnvelopeParameter(envNum, param);
@@ -116,8 +118,8 @@ void BambooTracker::setEnvelopeFMParameter(int envNum, FMParameter param, int va
 
 void BambooTracker::setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable)
 {
-	instMan_.setEnvelopeFMOperatorEnable(envNum, opNum, enable);
-	opnaCtrl_.setInstrumentFMOperatorEnable(envNum, opNum);
+	instMan_.setEnvelopeFMOperatorEnabled(envNum, opNum, enable);
+	opnaCtrl_.setInstrumentFMOperatorEnabled(envNum, opNum);
 }
 
 void BambooTracker::setInstrumentFMEnvelope(int instNum, int envNum)
@@ -129,6 +131,23 @@ void BambooTracker::setInstrumentFMEnvelope(int instNum, int envNum)
 std::vector<int> BambooTracker::getEnvelopeFMUsers(int envNum) const
 {
 	return instMan_.getEnvelopeFMUsers(envNum);
+}
+
+void BambooTracker::setLFOFMParameter(int lfoNum, FMLFOParamter param, int value)
+{
+	instMan_.setLFOFMParameter(lfoNum, param, value);
+	opnaCtrl_.updateInstrumentFMLFOParameter(lfoNum, param);
+}
+
+void BambooTracker::setInstrumentFMLFO(int instNum, int lfoNum)
+{
+	instMan_.setInstrumentFMLFO(instNum, lfoNum);
+	opnaCtrl_.updateInstrumentFM(instNum);
+}
+
+std::vector<int> BambooTracker::getLFOFMUsers(int lfoNum) const
+{
+	return instMan_.getLFOFMUsers(lfoNum);
 }
 
 void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
@@ -349,8 +368,8 @@ void BambooTracker::readTick(int rest)
 			// Channel envelope reset before next key on
 			if (attrib.source == SoundSource::FM
 					&& step.getNoteNumber() >= 0
-					&& opnaCtrl_.enableEnvelopeReset(attrib.channelInSource)) {
-				opnaCtrl_.resetChannelEnvelope(attrib.channelInSource);
+					&& opnaCtrl_.enableFMEnvelopeReset(attrib.channelInSource)) {
+				opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
 			}
 		}
 	}

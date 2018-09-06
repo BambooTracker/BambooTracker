@@ -49,6 +49,7 @@ int AbstructInstrument::getGateCount() const
 InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
 	AbstructInstrument(number, SoundSource::FM, name, owner),
 	envNum_(0),
+	lfoNum_(-1),
 	envResetEnabled_(true)
 {
 }
@@ -68,14 +69,29 @@ int InstrumentFM::getEnvelopeNumber() const
 	return envNum_;
 }
 
-int InstrumentFM::getEnvelopeParameter(FMParameter param) const
+int InstrumentFM::getEnvelopeParameter(FMEnvelopeParameter param) const
 {
 	return owner_->getEnvelopeFMParameter(envNum_, param);
 }
 
-bool InstrumentFM::getOperatorEnable(int n) const
+bool InstrumentFM::getOperatorEnabled(int n) const
 {
-	return owner_->getEnvelopeFMOperatorEnable(envNum_, n);
+	return owner_->getEnvelopeFMOperatorEnabled(envNum_, n);
+}
+
+void InstrumentFM::setLFONumber(int n)
+{
+	lfoNum_ = n;
+}
+
+int InstrumentFM::getLFONumber() const
+{
+	return lfoNum_;
+}
+
+int InstrumentFM::getLFOParameter(FMLFOParamter param) const
+{
+	return owner_->getLFOFMparameter(lfoNum_, param);
 }
 
 void InstrumentFM::setEnvelopeResetEnabled(bool enabled)

@@ -6,6 +6,8 @@ InstrumentsManager::InstrumentsManager()
 {
 	int cnt = 0;
 	std::generate(envFM_.begin(), envFM_.end(), [&]() { return std::make_shared<EnvelopeFM>(cnt++); });
+	cnt = 0;
+	std::generate(lfoFM_.begin(), lfoFM_.end(), [&]() { return std::make_shared<LFOFM>(cnt++); });
 }
 
 void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::string name)
@@ -31,6 +33,8 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[num]);
 		envFM_.at(fm->getEnvelopeNumber())->registerUserInstrument(num);
+		int lfoNum = fm->getLFONumber();
+		if (lfoNum != -1) lfoFM_.at(lfoNum)->registerUserInstrument(num);
 		break;
 	}
 	case SoundSource::SSG:
@@ -50,6 +54,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
+		setInstrumentFMLFO(cloneInstNum, refFm->getLFONumber());
 		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
@@ -75,6 +80,13 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
+
+		if (refFm->getLFONumber() != -1) {
+			int lfoNum = cloneFMLFO(refFm->getLFONumber());
+			cloneFm->setLFONumber(envNum);
+			lfoFM_[lfoNum]->registerUserInstrument(cloneInstNum);
+		}
+
 		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
@@ -98,6 +110,20 @@ int InstrumentsManager::cloneFMEnvelope(int srcNum)
 	return cloneNum;
 }
 
+int InstrumentsManager::cloneFMLFO(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& env : lfoFM_) {
+		if (!env->isUserInstrument()) {
+			env = lfoFM_.at(srcNum)->clone();
+			env->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
 std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
 	switch (insts_.at(instNum)->getSoundSource()) {
@@ -105,6 +131,8 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum]);
 		envFM_.at(fm->getEnvelopeNumber())->deregisterUserInstrument(instNum);
+		int lfoNum = fm->getLFONumber();
+		if (lfoNum != -1) lfoFM_.at(lfoNum)->deregisterUserInstrument(instNum);
 		break;
 	}
 	case SoundSource::SSG:
@@ -171,29 +199,61 @@ int InstrumentsManager::getInstrumentFMEnvelope(int instNum) const
     return std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->getEnvelopeNumber();
 }
 
-void InstrumentsManager::setEnvelopeFMParameter(int envNum, FMParameter param, int value)
+void InstrumentsManager::setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value)
 {
 	envFM_.at(envNum)->setParameterValue(param, value);
 }
 
-int InstrumentsManager::getEnvelopeFMParameter(int envNum, FMParameter param) const
+int InstrumentsManager::getEnvelopeFMParameter(int envNum, FMEnvelopeParameter param) const
 {
 	return envFM_.at(envNum)->getParameterValue(param);
 }
 
-void InstrumentsManager::setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable)
+void InstrumentsManager::setEnvelopeFMOperatorEnabled(int envNum, int opNum, bool enabled)
 {
-	envFM_.at(envNum)->setOperatorEnable(opNum, enable);
+	envFM_.at(envNum)->setOperatorEnabled(opNum, enabled);
 }
 
-bool InstrumentsManager::getEnvelopeFMOperatorEnable(int envNum, int opNum) const
+bool InstrumentsManager::getEnvelopeFMOperatorEnabled(int envNum, int opNum) const
 {
-	return envFM_.at(envNum)->getOperatorEnable(opNum);
+	return envFM_.at(envNum)->getOperatorEnabled(opNum);
 }
 
 std::vector<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
 {
 	return envFM_.at(envNum)->getUserInstruments();
+}
+
+void InstrumentsManager::setInstrumentFMLFO(int instNum, int lfoNum)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	int prevLfo = fm->getLFONumber();
+	if (prevLfo != -1)
+		lfoFM_.at(fm->getLFONumber())->deregisterUserInstrument(instNum);
+	if (lfoNum != -1)
+		lfoFM_.at(lfoNum)->registerUserInstrument(instNum);
+
+	fm->setLFONumber(lfoNum);
+}
+
+int InstrumentsManager::getInstrumentFMLFO(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->getLFONumber();
+}
+
+void InstrumentsManager::setLFOFMParameter(int lfoNum, FMLFOParamter param, int value)
+{
+	lfoFM_.at(lfoNum)->setParameterValue(param, value);
+}
+
+int InstrumentsManager::getLFOFMparameter(int lfoNum, FMLFOParamter param) const
+{
+	return lfoFM_.at(lfoNum)->getParameterValue(param);
+}
+
+std::vector<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
+{
+	return lfoFM_.at(lfoNum)->getUserInstruments();
 }
 
 void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)

@@ -41,10 +41,15 @@ public:
 	void setInstrumentName(int num, std::string name);
 	void setInstrumentGateCount(int instNum, int count);
 	//--- FM
-	void setEnvelopeFMParameter(int envNum, FMParameter param, int value);
+	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
 	void setInstrumentFMEnvelope(int instNum, int envNum);
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
+
+	void setLFOFMParameter(int lfoNum, FMLFOParamter param, int value);
+	void setInstrumentFMLFO(int instNum, int lfoNum);
+	std::vector<int> getLFOFMUsers(int lfoNum) const;
+
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
 	// Song edit

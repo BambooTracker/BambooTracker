@@ -32,7 +32,8 @@ void InstrumentFormManager::remove(int n)
 	case SoundSource::FM:
 	{
 		auto fm = qobject_cast<InstrumentEditorFMForm*>(map_.at(n).get());
-		onInstrumentFMEnvelopeNumberChanged(fm->getEnvelopeNumber());
+		onInstrumentFMEnvelopeNumberChanged();
+		onInstrumentFMLFONumberChanged();
 	}
 	case SoundSource::SSG:
 	{
@@ -88,11 +89,30 @@ void InstrumentFormManager::onInstrumentFMEnvelopeParameterChanged(int envNum, i
 	}
 }
 
-void InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged(int envNum)
+void InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged()
 {
 	for (auto& pair : map_) {
 		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
-			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onEnvelopeNumberChanged(envNum);
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onEnvelopeNumberChanged();
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentFMLFOParameterChanged(int lfoNum, int fromInstNum)
+{
+	for (auto& pair : map_) {
+		if (pair.first != fromInstNum &&
+				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onLFOParameterChanged(lfoNum);
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentFMLFONumberChanged()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onLFONumberChanged();
 		}
 	}
 }

@@ -13,124 +13,133 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0">
    <property name="verticalSpacing">
     <number>2</number>
    </property>
-   <item row="0" column="0">
+   <item row="3" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="envelopeTab">
+     <widget class="QWidget" name="tab_1">
       <attribute name="title">
-       <string>Envelope</string>
+       <string>Tab 1</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,2,2,2">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="6,4">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="1" column="0">
-            <widget class="LabeledHorizontalSlider" name="fbSlider">
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="LabeledHorizontalSlider" name="alSlider">
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item alignment="Qt::AlignRight">
-              <widget class="QLabel" name="envNumLabel">
-               <property name="text">
-                <string>Envelope: </string>
-               </property>
-              </widget>
-             </item>
-             <item alignment="Qt::AlignLeft">
-              <widget class="QSpinBox" name="envNumSpinBox">
-               <property name="maximum">
-                <number>127</number>
-               </property>
-              </widget>
-             </item>
-             <item alignment="Qt::AlignRight">
-              <widget class="QLabel" name="envUsersLabel">
-               <property name="text">
-                <string>Users:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="envUsersLineEdit">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QGraphicsView" name="graphicsView"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="FMOperatorTable" name="op1Table">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+        <widget class="QGroupBox" name="envGroupBox">
+         <property name="title">
+          <string>Envelope</string>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="FMOperatorTable" name="op2Table">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="FMOperatorTable" name="op3Table">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="FMOperatorTable" name="op4Table">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_6" rowstretch="1,2,2,2,2">
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="6,4">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_2">
+              <item row="1" column="0">
+               <widget class="LabeledHorizontalSlider" name="fbSlider">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="LabeledHorizontalSlider" name="alSlider">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="2">
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item alignment="Qt::AlignRight">
+                 <widget class="QLabel" name="envNumLabel">
+                  <property name="text">
+                   <string>Number: </string>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignLeft">
+                 <widget class="QSpinBox" name="envNumSpinBox">
+                  <property name="maximum">
+                   <number>127</number>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignRight">
+                 <widget class="QLabel" name="envUsersLabel">
+                  <property name="text">
+                   <string>Users:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="envUsersLineEdit">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QGraphicsView" name="graphicsView"/>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="FMOperatorTable" name="op1Table">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="FMOperatorTable" name="op2Table">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="FMOperatorTable" name="op3Table">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="FMOperatorTable" name="op4Table">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -139,51 +148,191 @@
       <attribute name="title">
        <string>Tab 2</string>
       </attribute>
-      <widget class="QCheckBox" name="envResetCheckBox">
-       <property name="geometry">
-        <rect>
-         <x>80</x>
-         <y>200</y>
-         <width>171</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Reset envelope before key on</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="gateCountSpinBox">
-       <property name="geometry">
-        <rect>
-         <x>230</x>
-         <y>110</y>
-         <width>42</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="maximum">
-        <number>99</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="gateCountLabel">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>110</y>
-         <width>61</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Gate count:</string>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="lfoGroupBox">
+         <property name="title">
+          <string>LFO</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="lfoNumSpinBox"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="lfoNumLabel">
+            <property name="text">
+             <string>Number:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="lfoUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLineEdit" name="lfoUsersLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="1" rowspan="4">
+             <widget class="LabeledVerticalSlider" name="pmsSlider">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2" rowspan="4">
+             <widget class="LabeledVerticalSlider" name="amsSlider">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" rowspan="4">
+             <widget class="LabeledVerticalSlider" name="lfoFreqSlider">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4" rowspan="4">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="3" rowspan="4">
+             <widget class="QGroupBox" name="amOpsGroupBox">
+              <property name="title">
+               <string>AM operators</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QCheckBox" name="amOp1CheckBox">
+                 <property name="text">
+                  <string>Operator 1</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="amOp2CheckBox">
+                 <property name="text">
+                  <string>Operator 2</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="amOp3CheckBox">
+                 <property name="text">
+                  <string>Operator 3</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="amOp4CheckBox">
+                 <property name="text">
+                  <string>Operator 4</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="0" alignment="Qt::AlignRight">
+          <widget class="QLabel" name="gateCountLabel">
+           <property name="text">
+            <string>Gate count:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="gateCountSpinBox">
+           <property name="maximum">
+            <number>99</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QCheckBox" name="envResetCheckBox">
+           <property name="text">
+            <string>Reset envelope before key on</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" rowspan="2">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
@@ -200,6 +349,12 @@
    <class>LabeledHorizontalSlider</class>
    <extends>QFrame</extends>
    <header>gui/labeled_horizontal_slider.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LabeledVerticalSlider</class>
+   <extends>QFrame</extends>
+   <header>gui/labeled_vertical_slider.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

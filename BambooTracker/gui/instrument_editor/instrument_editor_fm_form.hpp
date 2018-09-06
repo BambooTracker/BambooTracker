@@ -19,7 +19,6 @@ public:
 	InstrumentEditorFMForm(int num, QWidget *parent = nullptr);
 	~InstrumentEditorFMForm() override;
 	int getInstrumentNumber() const;
-	int getEnvelopeNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
 
 signals:
@@ -42,13 +41,16 @@ private:
 	void updateInstrumentParameters();
 
 	//========== Envelope ==========//
+public:
+	int getEnvelopeNumber() const;
+
 signals:
-	void envelopeNumberChanged(int envNum);
+	void envelopeNumberChanged();
 	void envelopeParameterChanged(int envNum, int fromInstNum);
 
 public slots:
 	void onEnvelopeParameterChanged(int envNum);
-	void onEnvelopeNumberChanged(int n);
+	void onEnvelopeNumberChanged();
 
 private:
 	void setInstrumentEnvelopeParameters();
@@ -58,7 +60,30 @@ private:
 
 private slots:
 	void on_envNumSpinBox_valueChanged(int arg1);
-	void on_envelopeTab_customContextMenuRequested(const QPoint &pos);
+	void on_envGroupBox_customContextMenuRequested(const QPoint &pos);
+
+	//========== LFO ==========//
+public:
+	int getLFONumber() const;
+
+signals:
+	void lfoNumberChanged();
+	void lfoParameterChanged(int lfoNum, int fromInstNum);
+
+public slots:
+	void onLFOParameterChanged(int lfoNum);
+	void onLFONumberChanged();
+
+private:
+	void setInstrumentLFOParameters();
+	void setInstrumentLFOParameters(QString data);
+
+	QString toLFOString() const;
+
+private slots:
+	void on_lfoGroupBox_customContextMenuRequested(const QPoint &pos);
+	void on_lfoNumSpinBox_valueChanged(int arg1);
+	void on_lfoGroupBox_toggled(bool arg1);
 
 	//========== Else ==========//
 private slots:

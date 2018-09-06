@@ -5,9 +5,12 @@
 #include <QMenu>
 #include <QApplication>
 #include <QClipboard>
+#include <QAction>
 #include <QRegularExpression>
 #include "gui/event_guard.hpp"
 #include "misc.hpp"
+
+#include <QDebug>
 
 InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -20,13 +23,13 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	installEventFilter(this);
 
 	/******************** Envelope editor ********************/
-	ui->envelopeTab->setContextMenuPolicy(Qt::CustomContextMenu);
+	ui->envGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	ui->alSlider->setText("AL");
 	ui->alSlider->setMaximum(7);
 	QObject::connect(ui->alSlider, &LabeledHorizontalSlider::valueChanged, this, [&](int value) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), FMParameter::AL, value);
+			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), FMEnvelopeParameter::AL, value);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -35,7 +38,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->fbSlider->setMaximum(7);
 	QObject::connect(ui->fbSlider, &LabeledHorizontalSlider::valueChanged, this, [&](int value) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), FMParameter::FB, value);
+			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), FMEnvelopeParameter::FB, value);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -52,18 +55,18 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->op1Table, &FMOperatorTable::operatorValueChanged,
 					 this, [&](Ui::FMOperatorParameter opParam, int value) {
 		if (!isIgnoreEvent_) {
-			FMParameter param;
+			FMEnvelopeParameter param;
 			switch (opParam) {
-			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR1;		break;
-			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR1;		break;
-			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR1;		break;
-			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR1;		break;
-			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL1;		break;
-			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL1;		break;
-			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS1;		break;
-			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML1;		break;
-			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT1;		break;
-			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG1;	break;
+			case Ui::FMOperatorParameter::AR:		param = FMEnvelopeParameter::AR1;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMEnvelopeParameter::DR1;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMEnvelopeParameter::SR1;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMEnvelopeParameter::RR1;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMEnvelopeParameter::SL1;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMEnvelopeParameter::TL1;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMEnvelopeParameter::KS1;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML1;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT1;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG1;	break;
 			default:																break;
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
@@ -83,18 +86,18 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->op2Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
 		if (!isIgnoreEvent_) {
-			FMParameter param;
+			FMEnvelopeParameter param;
 			switch (opParam) {
-			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR2;		break;
-			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR2;		break;
-			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR2;		break;
-			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR2;		break;
-			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL2;		break;
-			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL2;		break;
-			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS2;		break;
-			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML2;		break;
-			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT2;		break;
-			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG2;	break;
+			case Ui::FMOperatorParameter::AR:		param = FMEnvelopeParameter::AR2;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMEnvelopeParameter::DR2;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMEnvelopeParameter::SR2;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMEnvelopeParameter::RR2;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMEnvelopeParameter::SL2;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMEnvelopeParameter::TL2;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMEnvelopeParameter::KS2;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML2;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT2;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG2;	break;
 			default:																break;
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
@@ -114,18 +117,18 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->op3Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
 		if (!isIgnoreEvent_) {
-			FMParameter param;
+			FMEnvelopeParameter param;
 			switch (opParam) {
-			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR3;		break;
-			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR3;		break;
-			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR3;		break;
-			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR3;		break;
-			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL3;		break;
-			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL3;		break;
-			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS3;		break;
-			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML3;		break;
-			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT3;		break;
-			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG3;	break;
+			case Ui::FMOperatorParameter::AR:		param = FMEnvelopeParameter::AR3;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMEnvelopeParameter::DR3;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMEnvelopeParameter::SR3;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMEnvelopeParameter::RR3;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMEnvelopeParameter::SL3;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMEnvelopeParameter::TL3;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMEnvelopeParameter::KS3;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML3;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT3;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG3;	break;
 			default:																break;
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
@@ -145,22 +148,95 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->op4Table, &FMOperatorTable::operatorValueChanged,
 						 this, [&](Ui::FMOperatorParameter opParam, int value) {
 		if (!isIgnoreEvent_) {
-			FMParameter param;
+			FMEnvelopeParameter param;
 			switch (opParam) {
-			case Ui::FMOperatorParameter::AR:		param = FMParameter::AR4;		break;
-			case Ui::FMOperatorParameter::DR:		param = FMParameter::DR4;		break;
-			case Ui::FMOperatorParameter::SR:		param = FMParameter::SR4;		break;
-			case Ui::FMOperatorParameter::RR:		param = FMParameter::RR4;		break;
-			case Ui::FMOperatorParameter::SL:		param = FMParameter::SL4;		break;
-			case Ui::FMOperatorParameter::TL:		param = FMParameter::TL4;		break;
-			case Ui::FMOperatorParameter::KS:		param = FMParameter::KS4;		break;
-			case Ui::FMOperatorParameter::ML:		param = FMParameter::ML4;		break;
-			case Ui::FMOperatorParameter::DT:		param = FMParameter::DT4;		break;
-			case Ui::FMOperatorParameter::SSGEG:	param = FMParameter::SSGEG4;	break;
+			case Ui::FMOperatorParameter::AR:		param = FMEnvelopeParameter::AR4;		break;
+			case Ui::FMOperatorParameter::DR:		param = FMEnvelopeParameter::DR4;		break;
+			case Ui::FMOperatorParameter::SR:		param = FMEnvelopeParameter::SR4;		break;
+			case Ui::FMOperatorParameter::RR:		param = FMEnvelopeParameter::RR4;		break;
+			case Ui::FMOperatorParameter::SL:		param = FMEnvelopeParameter::SL4;		break;
+			case Ui::FMOperatorParameter::TL:		param = FMEnvelopeParameter::TL4;		break;
+			case Ui::FMOperatorParameter::KS:		param = FMEnvelopeParameter::KS4;		break;
+			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML4;		break;
+			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT4;		break;
+			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG4;	break;
 			default:																break;
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+
+	/******************** LFO editor ********************/	
+	ui->lfoGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
+
+	ui->lfoFreqSlider->setText("Freq");
+	ui->lfoFreqSlider->setMaximum(7);
+	QObject::connect(ui->lfoFreqSlider, &LabeledVerticalSlider::valueChanged,
+					 this, [&](int v) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::FREQ, v);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+
+	ui->pmsSlider->setText("PMS");
+	ui->pmsSlider->setMaximum(7);
+	QObject::connect(ui->pmsSlider, &LabeledVerticalSlider::valueChanged,
+					 this, [&](int v) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::PMS, v);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+
+	ui->amsSlider->setText("AMS");
+	ui->amsSlider->setMaximum(3);
+	QObject::connect(ui->amsSlider, &LabeledVerticalSlider::valueChanged,
+					 this, [&](int v) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AMS, v);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+
+	QObject::connect(ui->amOp1CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM1,
+										  (state == Qt::Checked) ? 1 : 0);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->amOp2CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM2,
+										  (state == Qt::Checked) ? 1 : 0);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->amOp3CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM3,
+										  (state == Qt::Checked) ? 1 : 0);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->amOp4CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM4,
+										  (state == Qt::Checked) ? 1 : 0);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
@@ -174,11 +250,6 @@ InstrumentEditorFMForm::~InstrumentEditorFMForm()
 int InstrumentEditorFMForm::getInstrumentNumber() const
 {
 	return instNum_;
-}
-
-int InstrumentEditorFMForm::getEnvelopeNumber() const
-{
-	return ui->envNumSpinBox->value();
 }
 
 void InstrumentEditorFMForm::setCore(std::weak_ptr<BambooTracker> core)
@@ -197,6 +268,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentEnvelopeParameters();
+	setInstrumentLFOParameters();
 
 	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled());
 	ui->gateCountSpinBox->setValue(instFM->getGateCount());
@@ -298,6 +370,11 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 //========== Envelope ==========//
+int InstrumentEditorFMForm::getEnvelopeNumber() const
+{
+	return ui->envNumSpinBox->value();
+}
+
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
@@ -306,49 +383,49 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
 	ui->envNumSpinBox->setValue(instFM->getEnvelopeNumber());
-	onEnvelopeNumberChanged(instFM->getEnvelopeNumber());
-	ui->alSlider->setValue(instFM->getEnvelopeParameter(FMParameter::AL));
-	ui->fbSlider->setValue(instFM->getEnvelopeParameter(FMParameter::FB));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMParameter::AR1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMParameter::DR1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMParameter::SR1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMParameter::RR1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMParameter::SL1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMParameter::TL1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMParameter::KS1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMParameter::ML1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMParameter::DT1));
-	ui->op1Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMParameter::SSGEG1));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMParameter::AR2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMParameter::DR2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMParameter::SR2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMParameter::RR2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMParameter::SL2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMParameter::TL2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMParameter::KS2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMParameter::ML2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMParameter::DT2));
-	ui->op2Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMParameter::SSGEG2));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMParameter::AR3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMParameter::DR3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMParameter::SR3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMParameter::RR3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMParameter::SL3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMParameter::TL3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMParameter::KS3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMParameter::ML3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMParameter::DT3));
-	ui->op3Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMParameter::SSGEG3));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMParameter::AR4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMParameter::DR4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMParameter::SR4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMParameter::RR4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMParameter::SL4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMParameter::TL4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMParameter::KS4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMParameter::ML4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMParameter::DT4));
-	ui->op4Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMParameter::SSGEG4));
+	onEnvelopeNumberChanged();
+	ui->alSlider->setValue(instFM->getEnvelopeParameter(FMEnvelopeParameter::AL));
+	ui->fbSlider->setValue(instFM->getEnvelopeParameter(FMEnvelopeParameter::FB));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMEnvelopeParameter::AR1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMEnvelopeParameter::DR1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMEnvelopeParameter::SR1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMEnvelopeParameter::RR1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMEnvelopeParameter::SL1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMEnvelopeParameter::TL1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMEnvelopeParameter::KS1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT1));
+	ui->op1Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG1));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMEnvelopeParameter::AR2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMEnvelopeParameter::DR2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMEnvelopeParameter::SR2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMEnvelopeParameter::RR2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMEnvelopeParameter::SL2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMEnvelopeParameter::TL2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMEnvelopeParameter::KS2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT2));
+	ui->op2Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG2));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMEnvelopeParameter::AR3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMEnvelopeParameter::DR3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMEnvelopeParameter::SR3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMEnvelopeParameter::RR3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMEnvelopeParameter::SL3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMEnvelopeParameter::TL3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMEnvelopeParameter::KS3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT3));
+	ui->op3Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG3));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMEnvelopeParameter::AR4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMEnvelopeParameter::DR4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMEnvelopeParameter::SR4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::RR, instFM->getEnvelopeParameter(FMEnvelopeParameter::RR4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::SL, instFM->getEnvelopeParameter(FMEnvelopeParameter::SL4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::TL, instFM->getEnvelopeParameter(FMEnvelopeParameter::TL4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::KS, instFM->getEnvelopeParameter(FMEnvelopeParameter::KS4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT4));
+	ui->op4Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG4));
 }
 
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
@@ -428,17 +505,17 @@ void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
 	if (!isIgnoreEvent_) {
 		bt_.lock()->setInstrumentFMEnvelope(instNum_, arg1);
 		setInstrumentEnvelopeParameters();
-		emit envelopeNumberChanged(arg1);
+		emit envelopeNumberChanged();
 		emit modified();
 	}
 
-	onEnvelopeNumberChanged(arg1);
+	onEnvelopeNumberChanged();
 }
 
-void InstrumentEditorFMForm::on_envelopeTab_customContextMenuRequested(const QPoint &pos)
+void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPoint &pos)
 {
 	QClipboard* clipboard = QApplication::clipboard();
-	QPoint globalPos = ui->envelopeTab->mapToGlobal(pos);
+	QPoint globalPos = ui->envGroupBox->mapToGlobal(pos);
 
 	QMenu menu;
 	menu.addAction("Copy envelope", this, [&, clipboard]() {
@@ -461,18 +538,146 @@ void InstrumentEditorFMForm::onEnvelopeParameterChanged(int envNum)
 	}
 }
 
-void InstrumentEditorFMForm::onEnvelopeNumberChanged(int n)
+void InstrumentEditorFMForm::onEnvelopeNumberChanged()
 {
-	if (ui->envNumSpinBox->value() == n) {
-		// Change users view
-		QString str;
-		std::vector<int> users = bt_.lock()->getEnvelopeFMUsers(ui->envNumSpinBox->value());
-		for (auto& n : users) {
-			str += (QString::number(n) + ",");
-		}
-		str.chop(1);
-		ui->envUsersLineEdit->setText(str);
+	// Change users view
+	QString str;
+	std::vector<int> users = bt_.lock()->getEnvelopeFMUsers(ui->envNumSpinBox->value());
+	for (auto& n : users) {
+		str += (QString::number(n) + ",");
 	}
+	str.chop(1);
+	ui->envUsersLineEdit->setText(str);
+}
+
+//========== LFO ==========//
+int InstrumentEditorFMForm::getLFONumber() const
+{
+	return ui->lfoGroupBox->isChecked() ? ui->lfoNumSpinBox->value() : -1;
+}
+
+void InstrumentEditorFMForm::setInstrumentLFOParameters()
+{
+	Ui::EventGuard eg(isIgnoreEvent_);
+
+	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
+
+	int num = instFM->getLFONumber();
+	if (num == -1) {
+		ui->lfoGroupBox->setChecked(false);
+	}
+	else {
+		ui->lfoGroupBox->setChecked(true);
+		ui->lfoNumSpinBox->setValue(num);
+		onLFONumberChanged();
+		ui->lfoFreqSlider->setValue(instFM->getLFOParameter(FMLFOParamter::FREQ));
+		ui->pmsSlider->setValue(instFM->getLFOParameter(FMLFOParamter::PMS));
+		ui->amsSlider->setValue(instFM->getLFOParameter(FMLFOParamter::AMS));
+		ui->amOp1CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM1));
+		ui->amOp2CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM2));
+		ui->amOp3CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM3));
+		ui->amOp4CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM4));
+	}
+}
+
+void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
+{
+	QRegularExpression re("^(?<freq>\\d+),(?<pms>\\d+),(?<ams>\\d+),"
+						  "(?<am1>\\d+),(?<am2>\\d+),(?<am3>\\d+),(?<am4>\\d+)");
+	QRegularExpressionMatch match = re.match(data);
+
+	if (match.hasMatch()) {
+		ui->lfoFreqSlider->setValue(match.captured("freq").toInt());
+		ui->pmsSlider->setValue(match.captured("pms").toInt());
+		ui->amsSlider->setValue(match.captured("ams").toInt());
+		ui->amOp1CheckBox->setChecked(match.captured("am1").toInt() == 1);
+		ui->amOp2CheckBox->setChecked(match.captured("am2").toInt() == 1);
+		ui->amOp3CheckBox->setChecked(match.captured("am3").toInt() == 1);
+		ui->amOp4CheckBox->setChecked(match.captured("am4").toInt() == 1);
+	}
+}
+
+QString InstrumentEditorFMForm::toLFOString() const
+{
+	auto str = QString("%1,%2,%3,%4,%5,%6,%7")
+			   .arg(QString::number(ui->lfoFreqSlider->value()))
+			   .arg(QString::number(ui->pmsSlider->value()))
+			   .arg(QString::number(ui->amsSlider->value()))
+			   .arg(QString::number(ui->amOp1CheckBox->isChecked() ? 1 : 0))
+			   .arg(QString::number(ui->amOp2CheckBox->isChecked() ? 1 : 0))
+			   .arg(QString::number(ui->amOp3CheckBox->isChecked() ? 1 : 0))
+			   .arg(QString::number(ui->amOp4CheckBox->isChecked() ? 1 : 0));
+	return str;
+}
+
+/********** Slots **********/
+void InstrumentEditorFMForm::onLFOParameterChanged(int lfoNum)
+{
+	if (ui->lfoNumSpinBox->value() == lfoNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentLFOParameters();
+	}
+}
+
+void InstrumentEditorFMForm::onLFONumberChanged()
+{
+	// Change users view
+	QString str;
+	std::vector<int> users = bt_.lock()->getLFOFMUsers(ui->lfoNumSpinBox->value());
+	for (auto& n : users) {
+		str += (QString::number(n) + ",");
+	}
+	str.chop(1);
+	ui->lfoUsersLineEdit->setText(str);
+}
+
+void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPoint &pos)
+{
+	QClipboard* clipboard = QApplication::clipboard();
+	QPoint globalPos = ui->lfoGroupBox->mapToGlobal(pos);
+
+	QMenu menu;
+	QAction* copy = menu.addAction("Copy LFO parameters", this, [&, clipboard]() {
+		clipboard->setText("FM_LFO:" + toLFOString());
+	});
+	QAction* paste = menu.addAction("Paste LFO parameters", this, [&, clipboard]() {
+		QString data = clipboard->text().remove("FM_LFO:");
+		setInstrumentLFOParameters(data);
+	});
+	if (!ui->lfoGroupBox->isChecked()) {
+		copy->setEnabled(false);
+		paste->setEnabled(false);
+	}
+	else if (!clipboard->text().startsWith("FM_LFO:")) {
+		paste->setEnabled(false);
+	}
+
+	menu.exec(globalPos);
+}
+
+void InstrumentEditorFMForm::on_lfoNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentFMLFO(instNum_, arg1);
+		setInstrumentLFOParameters();
+		emit lfoNumberChanged();
+		emit modified();
+	}
+
+	onLFONumberChanged();
+}
+
+void InstrumentEditorFMForm::on_lfoGroupBox_toggled(bool arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentFMLFO(instNum_, arg1 ? ui->lfoNumSpinBox->value() : -1);
+		setInstrumentLFOParameters();
+		emit lfoNumberChanged();
+		emit modified();
+	}
+
+	onLFONumberChanged();
 }
 
 //========== Else ==========//

@@ -599,6 +599,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeParameterChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::lfoNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFONumberChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::lfoParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFOParameterChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
 						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
@@ -611,7 +615,8 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		fmForm->installEventFilter(this);
 		fmForm->setCore(bt_);
 
-		instForms_->onInstrumentFMEnvelopeNumberChanged(fmForm->getEnvelopeNumber());
+		instForms_->onInstrumentFMEnvelopeNumberChanged();
+		instForms_->onInstrumentFMLFONumberChanged();
 		break;
 	}
 	case SoundSource::SSG:
