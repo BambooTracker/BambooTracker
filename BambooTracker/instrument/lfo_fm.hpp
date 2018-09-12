@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <memory>
 #include "abstruct_instrument_property.hpp"
 

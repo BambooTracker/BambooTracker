@@ -113,7 +113,8 @@ SOURCES += \
     gui/module_settings_dialog.cpp \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
-    instrument/abstruct_instrument_property.cpp
+    instrument/abstruct_instrument_property.cpp \
+    gui/instrument_editor/visualized_instrument_macro_editor.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -215,7 +216,8 @@ HEADERS += \
     gui/module_settings_dialog.hpp \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
-    instrument/abstruct_instrument_property.hpp
+    instrument/abstruct_instrument_property.hpp \
+    gui/instrument_editor/visualized_instrument_macro_editor.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -226,7 +228,8 @@ FORMS += \
     gui/order_list_editor/order_list_editor.ui \
     gui/pattern_editor/pattern_editor.ui \
     gui/instrument_editor/instrument_editor_ssg_form.ui \
-    gui/module_settings_dialog.ui
+    gui/module_settings_dialog.ui \
+    gui/instrument_editor/visualized_instrument_macro_editor.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

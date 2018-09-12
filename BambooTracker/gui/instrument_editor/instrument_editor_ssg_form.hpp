@@ -40,7 +40,9 @@ private:
 
 	void updateInstrumentParameters();
 
-	//--- Else
+	//========== Wave form ==========//
+
+	//========== Else ==========//
 private slots:
 	void on_gateCountSpinBox_valueChanged(int arg1);
 };

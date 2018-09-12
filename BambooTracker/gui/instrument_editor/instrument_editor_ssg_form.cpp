@@ -9,6 +9,32 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	instNum_(num)
 {
 	ui->setupUi(this);
+
+	//========== Wave form ==========//
+	ui->waveEditor->setMaximumDisplayedRowCount(5);
+	ui->waveEditor->setDefaultRow(0);
+	ui->waveEditor->AddRow("Sq");
+	ui->waveEditor->AddRow("Tri");
+	ui->waveEditor->AddRow("Saw");
+	ui->waveEditor->AddRow("Tri w");
+	ui->waveEditor->AddRow("Saw w");
+
+	QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+	for (int i = 0; i < 8; ++i) {
+		for (int j = 0; j < 12; ++j) {
+			for (int k = 0; k < 32; ++k) {
+				ui->squareMaskComboBox->addItem(
+							QString("%1%2+%3").arg(tn[j]).arg(i).arg(k), 12 * i + 32 * j + k);
+			}
+		}
+	}
+
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceSet,
+					 this, [&](int row, int col) {
+		if (row < 3) return;	// Set square mask frequency
+		ui->waveEditor->setText(col, ui->squareMaskComboBox->currentText());
+		ui->waveEditor->setData(col, ui->squareMaskComboBox->currentData().toInt());
+	});
 }
 
 InstrumentEditorSSGForm::~InstrumentEditorSSGForm()
