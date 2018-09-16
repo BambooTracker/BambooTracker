@@ -4,13 +4,14 @@
 #include <QFontMetrics>
 #include <QPainter>
 #include <QPoint>
+#include <utility>
 #include "gui/event_guard.hpp"
 
 VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent)
 	: QWidget(parent),
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
 	  maxDispRowCnt_(0),
-	  colCnt_(1),
+	  colCnt_(0),
 	  upperRow_(-1),
 	  defaultRow_(0),
 	  hovRow_(-1),
@@ -20,7 +21,7 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	  grabLoop_(-1),
 	  isGrabLoopHead_(false),
 	  isGrabRelease_(false),
-	  release_{ -1, 0 },
+	  release_{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 },
 	  isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
@@ -53,8 +54,6 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	cellTextColor_ = QColor::fromRgb(255, 255, 255);
 	borderColor_ = QColor::fromRgb(50, 50, 50);
 	maskColor_ = QColor::fromRgb(0, 0, 0, 128);
-
-	cols_.push_back({ defaultRow_, -1, "" });
 
 	ui->panel->setAttribute(Qt::WA_Hover);
 	ui->verticalScrollBar->setVisible(false);
@@ -106,7 +105,7 @@ int VisualizedInstrumentMacroEditor::getSequenceLength() const
 	return cols_.size();
 }
 
-void VisualizedInstrumentMacroEditor::setSequence(int row, int col, QString str, int data)
+void VisualizedInstrumentMacroEditor::setSequenceCommand(int row, int col, QString str, int data)
 {
 	cols_.at(col).row = row;
 	cols_.at(col).text = str;
@@ -114,7 +113,7 @@ void VisualizedInstrumentMacroEditor::setSequence(int row, int col, QString str,
 
 	ui->panel->update();
 
-	emit sequenceSet(row, col);
+	emit sequenceCommandChanged(row, col);
 }
 
 void VisualizedInstrumentMacroEditor::setText(int col, QString text)
@@ -135,6 +134,80 @@ int VisualizedInstrumentMacroEditor::getSequenceAt(int col) const
 int VisualizedInstrumentMacroEditor::getSequenceDataAt(int col) const
 {
 	return cols_.at(col).data;
+}
+
+void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, int data)
+{
+	++colCnt_;
+
+	updateColumnWidth(ui->panel->geometry().width());
+	cols_.push_back({ row, data, str });
+	ui->panel->update();
+
+	ui->colSizeLabel->setText("Size: " + QString::number(colCnt_));
+
+	emit sequenceCommandAdded(row, cols_.size() - 1);
+}
+
+void VisualizedInstrumentMacroEditor::removeSequenceCommand()
+{
+	if (colCnt_ == 1) return;
+
+	--colCnt_;
+
+	// Modify loop
+	for (size_t i = 0; i < loops_.size();) {
+		if (loops_[i].begin >= colCnt_) {
+			loops_.erase(loops_.begin() + i);
+		}
+		else {
+			if (loops_[i].end >= colCnt_)
+				loops_[i].end = colCnt_ - 1;
+			++i;
+		}
+	}
+
+	// Modify release
+	if (release_.point >= colCnt_)
+		release_.point = -1;
+
+	updateColumnWidth(ui->panel->geometry().width());
+	cols_.pop_back();
+	ui->panel->update();
+
+	ui->colSizeLabel->setText("Size: " + QString::number(colCnt_));
+
+	emit sequenceCommandRemoved();
+}
+
+void VisualizedInstrumentMacroEditor::addLoop(int begin, int end, int times)
+{
+	size_t inx = 0;
+
+	for (size_t i = 0; i < loops_.size(); ++i) {
+		if (loops_[i].begin > begin) {
+			break;
+		}
+		++inx;
+	}
+
+	loops_.insert(loops_.begin() + inx, { begin, end, times });
+
+	onLoopChanged();
+}
+
+void VisualizedInstrumentMacroEditor::setRelease(ReleaseType type, int point)
+{
+	release_ = { type, point };
+}
+
+void VisualizedInstrumentMacroEditor::clear()
+{
+	cols_.clear();
+	loops_.clear();
+	release_ = { VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 };
+	colCnt_ = 0;
+	updateColumnWidth(ui->panel->geometry().width());
 }
 
 /******************************/
@@ -220,9 +293,18 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 			painter.fillRect(w, releaseY_, 2, fontHeight_, releaseEdgeColor_);
 			QString type;
 			switch (release_.type) {
-			case 0:	type = "Fix";		break;
-			case 1:	type = "Absolute";	break;
-			case 2:	type = "Relative";	break;
+			case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
+				type = "";
+				break;
+			case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
+				type = "Fix";
+				break;
+			case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
+				type = "Absolute";
+				break;
+			case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
+				type = "Relative";
+				break;
 			}
 			painter.setPen(releaseFontColor_);
 			painter.drawText(w + 2, releaseBaseY_, type);
@@ -265,20 +347,6 @@ int VisualizedInstrumentMacroEditor::checkLoopRegion(int col)
 	}
 
 	return ret;
-}
-
-void VisualizedInstrumentMacroEditor::addLoop(int col)
-{
-	size_t inx = 0;
-
-	for (size_t i = 0; i < loops_.size(); ++i) {
-		if (loops_[i].begin > col) {
-			break;
-		}
-		++inx;
-	}
-
-	loops_.insert(loops_.begin() + inx, { col, col, 1 });
 }
 
 void VisualizedInstrumentMacroEditor::moveLoop()
@@ -399,6 +467,8 @@ void VisualizedInstrumentMacroEditor::resizeEventInView(QResizeEvent* event)
 
 void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 {
+	if (!colCnt_) return;
+
 	pressRow_ = hovRow_;
 	pressCol_ = hovCol_;
 
@@ -450,10 +520,11 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 				case Qt::LeftButton:
 				{
 					if (i == -1) {	// New loop
-						addLoop(pressCol_);
+						addLoop(pressCol_, pressCol_, 1);
 					}
 					else {	// Loop count up
 						++loops_[i].times;
+						onLoopChanged();
 					}
 					break;
 				}
@@ -466,6 +537,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 						else {	// Erase loop
 							loops_.erase(loops_.begin() + i);
 						}
+						onLoopChanged();
 					}
 					break;
 				}
@@ -479,18 +551,34 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 				switch (event->button()) {
 				case Qt::LeftButton:
 				{
-					if (release_.point == -1 || pressCol_ < release_.point) {	// Move release
+					if (release_.point == -1 || pressCol_ < release_.point) {	// New release
+						release_.type = (release_.type == VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE)
+										? VisualizedInstrumentMacroEditor::ReleaseType::FIX
+										: release_.type;
 						release_.point = pressCol_;
 					}
 					else {	// Change release type
-						release_.type = (release_.type + 1) % 3;
+						switch (release_.type) {
+						case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
+							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
+							break;
+						case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
+							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE;
+							break;
+						case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
+						case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
+							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::FIX;
+							break;
+						}
 					}
+					emit releaseChanged(release_.type, release_.point);
 					break;
 				}
 				case Qt::RightButton:
 				{
 					if (pressCol_ >= release_.point) {	// Erase release
 						release_.point = -1;
+						emit releaseChanged(release_.type, release_.point);
 					}
 					break;
 				}
@@ -500,7 +588,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 			}
 		}
 		else {
-			setSequence(hovRow_, hovCol_);
+			setSequenceCommand(hovRow_, hovCol_);
 		}
 	}
 
@@ -509,14 +597,20 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 
 void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event)
 {
+	if (!colCnt_) return;
+
 	if (grabLoop_ != -1) {	// Move loop
 		if (event->button() == Qt::LeftButton) {
 			moveLoop();
+			onLoopChanged();
 		}
 	}
 	else if (isGrabRelease_) {	// Move release
 		if (event->button() == Qt::LeftButton) {
-			if (hovCol_ > -1) release_.point = hovCol_;
+			if (hovCol_ > -1) {
+				release_.point = hovCol_;
+				emit releaseChanged(release_.type, release_.point);
+			}
 		}
 	}
 
@@ -531,13 +625,17 @@ void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event
 
 void VisualizedInstrumentMacroEditor::mouseMoveEventInView()
 {
+	if (!colCnt_) return;
+
 	if (pressRow_ >= 0 && pressCol_ >= 0 && hovRow_ >= 0 && hovCol_ >= 0) {
-		if (cols_[hovCol_].row != hovRow_) setSequence(hovRow_, hovCol_);
+		if (cols_[hovCol_].row != hovRow_) setSequenceCommand(hovRow_, hovCol_);
 	}
 }
 
 void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 {
+	if (!colCnt_) return;
+
 	int oldCol = hovCol_;
 	int oldRow = hovRow_;
 
@@ -583,6 +681,8 @@ void VisualizedInstrumentMacroEditor::leaveEventInView()
 
 void VisualizedInstrumentMacroEditor::wheelEventInView(QWheelEvent* event)
 {
+	if (!colCnt_) return;
+
 	Ui::EventGuard eg(isIgnoreEvent_);
 	int degree = event->angleDelta().y() / 8;
 	int pos = ui->verticalScrollBar->value() + degree / 15;
@@ -596,42 +696,12 @@ void VisualizedInstrumentMacroEditor::wheelEventInView(QWheelEvent* event)
 
 void VisualizedInstrumentMacroEditor::on_colIncrToolButton_clicked()
 {
-	++colCnt_;
-
-	updateColumnWidth(ui->panel->geometry().width());
-	cols_.push_back({ defaultRow_, -1, "" });
-	ui->panel->update();
-
-	ui->colSizeLabel->setText("Size: " + QString::number(colCnt_));
+	addSequenceCommand(defaultRow_);
 }
 
 void VisualizedInstrumentMacroEditor::on_colDecrToolButton_clicked()
 {
-	if (colCnt_ == 1) return;
-
-	--colCnt_;
-
-	// Modify loop
-	for (size_t i = 0; i < loops_.size();) {
-		if (loops_[i].begin >= colCnt_) {
-			loops_.erase(loops_.begin() + i);
-		}
-		else {
-			if (loops_[i].end >= colCnt_)
-				loops_[i].end = colCnt_ - 1;
-			++i;
-		}
-	}
-
-	// Modify release
-	if (release_.point >= colCnt_)
-		release_.point = -1;
-
-	updateColumnWidth(ui->panel->geometry().width());
-	cols_.pop_back();
-	ui->panel->update();
-
-	ui->colSizeLabel->setText("Size: " + QString::number(colCnt_));
+	removeSequenceCommand();
 }
 
 void VisualizedInstrumentMacroEditor::on_verticalScrollBar_valueChanged(int value)
@@ -640,4 +710,16 @@ void VisualizedInstrumentMacroEditor::on_verticalScrollBar_valueChanged(int valu
 		scrollUp(value);
 		ui->panel->update();
 	}
+}
+
+void VisualizedInstrumentMacroEditor::onLoopChanged()
+{
+	std::vector<int> begins, ends, times;
+	for (auto& l : loops_) {
+		begins.push_back(l.begin);
+		ends.push_back(l.end);
+		times.push_back(l.times);
+	}
+
+	emit loopChanged(std::move(begins), std::move(ends), std::move(times));
 }

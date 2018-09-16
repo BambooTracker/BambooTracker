@@ -3,8 +3,6 @@
 #include <utility>
 #include "commands.hpp"
 
-#include <QDebug>
-
 BambooTracker::BambooTracker()
 	:
 	  #ifdef SINC_INTERPOLATION
@@ -156,6 +154,43 @@ void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enable
 	opnaCtrl_.updateInstrumentFM(instNum);
 }
 
+//--- SSG
+void BambooTracker::addWaveFormSSGSequenceCommand(int wfNum, int type, int data)
+{
+	instMan_.addWaveFormSSGSequenceCommand(wfNum, type, data);
+}
+
+void BambooTracker::removeWaveFormSSGSequenceCommand(int wfNum)
+{
+	instMan_.removeWaveFormSSGSequenceCommand(wfNum);
+}
+
+void BambooTracker::setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data)
+{
+	instMan_.setWaveFormSSGSequenceCommand(wfNum, cnt, type, data);
+}
+
+void BambooTracker::setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_.setWaveFormSSGLoops(wfNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin)
+{
+	instMan_.setWaveFormSSGRelease(wfNum, type, begin);
+}
+
+void BambooTracker::setInstrumentSSGWaveForm(int instNum, int wfNum)
+{
+	instMan_.setInstrumentSSGWaveForm(instNum, wfNum);
+	opnaCtrl_.updateInstrumentSSG(instNum);
+}
+
+std::vector<int> BambooTracker::getWaveFormSSGUsers(int wfNum) const
+{
+	return instMan_.getWaveFormSSGUsers(wfNum);
+}
+
 /********** Song edit **********/
 int BambooTracker::getCurrentSongNumber() const
 {
@@ -237,8 +272,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 	if (list.size() == 2) {	// Key off
 		JamKeyData& offData = list[1];
 		switch (offData.source) {
-		case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.channelInSource);	break;
-		case SoundSource::SSG:	opnaCtrl_.keyOffSSG(offData.channelInSource);	break;
+		case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.channelInSource, true);	break;
+		case SoundSource::SSG:	opnaCtrl_.keyOffSSG(offData.channelInSource, true);	break;
 		}
 	}
 
@@ -250,14 +285,16 @@ void BambooTracker::jamKeyOn(JamKey key)
 		opnaCtrl_.keyOnFM(onData.channelInSource,
 						  JamManager::jamKeyToNote(onData.key),
 						  JamManager::calcOctave(octave_, onData.key),
-						  0);
+						  0,
+						  true);
 		break;
 	case SoundSource::SSG:
 		opnaCtrl_.setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
 		opnaCtrl_.keyOnSSG(onData.channelInSource,
 						   JamManager::jamKeyToNote(onData.key),
 						   JamManager::calcOctave(octave_, onData.key),
-						   0);
+						   0,
+						   true);
 		break;
 	}
 }
@@ -268,8 +305,12 @@ void BambooTracker::jamKeyOff(JamKey key)
 
 	if (data.channelInSource > -1) {	// Key still sound
 		switch (data.source) {
-		case SoundSource::FM:	opnaCtrl_.keyOffFM(data.channelInSource);	break;
-		case SoundSource::SSG:	opnaCtrl_.keyOffSSG(data.channelInSource);	break;
+		case SoundSource::FM:
+			opnaCtrl_.keyOffFM(data.channelInSource, true);
+			break;
+		case SoundSource::SSG:
+			opnaCtrl_.keyOffSSG(data.channelInSource, true);
+			break;
 		}
 	}
 }
@@ -350,6 +391,11 @@ int BambooTracker::streamCountUp()
 		stepDown();
 		readStep();
 	}
+	else {
+		for (auto& attrib : songStyle_.trackAttribs) {
+			opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
+		}
+	}
 
 	return state;
 }
@@ -360,9 +406,9 @@ void BambooTracker::readTick(int rest)
 
 	if (!isFindNextStep_) findNextStep();
 
-	if (rest == 1) {
-		auto& song = mod_->getSong(curSongNum_);
-		for (auto& attrib : songStyle_.trackAttribs) {
+	auto& song = mod_->getSong(curSongNum_);
+	for (auto& attrib : songStyle_.trackAttribs) {
+		if (rest == 1) {
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
 			// Channel envelope reset before next key on
@@ -371,11 +417,11 @@ void BambooTracker::readTick(int rest)
 					&& opnaCtrl_.enableFMEnvelopeReset(attrib.channelInSource)) {
 				opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
 			}
+			else {
+				opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
+			}
 		}
-	}
-	else {
-		auto& song = mod_->getSong(curSongNum_);
-		for (auto& attrib : songStyle_.trackAttribs) {
+		else {
 			// Gate count
 			if (opnaCtrl_.getGateCount(attrib.source, attrib.channelInSource) == rest) {
 				auto& step = song.getTrack(attrib.number)
@@ -385,14 +431,23 @@ void BambooTracker::readTick(int rest)
 					if (step.getNoteNumber() >= 0) {
 						opnaCtrl_.keyOffFM(attrib.channelInSource);
 					}
+					else {
+						opnaCtrl_.tickEvent(SoundSource::FM, attrib.channelInSource);
+					}
 					break;
 
 				case SoundSource::SSG:
 					if (step.getNoteNumber() >= 0) {
 						opnaCtrl_.keyOffSSG(attrib.channelInSource);
 					}
+					else {
+						opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource);
+					}
 					break;
 				}
+			}
+			else {
+				opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
 			}
 		}
 	}
@@ -459,6 +514,7 @@ void BambooTracker::readStep()
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
+				opnaCtrl_.tickEvent(SoundSource::FM, attrib.channelInSource);
 				break;
 			case -2:	// Key off
 				opnaCtrl_.keyOffFM(attrib.channelInSource);
@@ -491,6 +547,7 @@ void BambooTracker::readStep()
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
+				opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource);
 				break;
 			case -2:	// Key off
 				opnaCtrl_.keyOffSSG(attrib.channelInSource);

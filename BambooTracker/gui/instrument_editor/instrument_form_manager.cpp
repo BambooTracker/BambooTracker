@@ -116,3 +116,22 @@ void InstrumentFormManager::onInstrumentFMLFONumberChanged()
 		}
 	}
 }
+
+void InstrumentFormManager::onInstrumentSSGWaveFormParameterChanged(int wfNum, int fromInstNum)
+{
+	for (auto& pair : map_) {
+		if (pair.first != fromInstNum &&
+				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onWaveFormParameterChanged(wfNum);
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onWaveFormNumberChanged();
+		}
+	}
+}

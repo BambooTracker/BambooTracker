@@ -1,13 +1,15 @@
 #include "instruments_manager.hpp"
-#include <algorithm>
+#include <utility>
 #include "instrument.hpp"
 
 InstrumentsManager::InstrumentsManager()
 {
-	int cnt = 0;
-	std::generate(envFM_.begin(), envFM_.end(), [&]() { return std::make_shared<EnvelopeFM>(cnt++); });
-	cnt = 0;
-	std::generate(lfoFM_.begin(), lfoFM_.end(), [&]() { return std::make_shared<LFOFM>(cnt++); });
+	for (int i = 0; i < 128; ++i) {
+		envFM_[i] = std::make_shared<EnvelopeFM>(i);
+		lfoFM_[i] = std::make_shared<LFOFM>(i);
+
+		wFormSSG_[i] = std::make_shared<CommandSequence>(i);
+	}
 }
 
 void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::string name)
@@ -38,7 +40,9 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		break;
 	}
 	case SoundSource::SSG:
-		// UNDONE: SSG memory number registering
+		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[num]);
+		int wfNum = ssg->getWaveFormNumber();
+		if (wfNum != -1) wFormSSG_.at(wfNum)->registerUserInstrument(num);
 		break;
 	}
 }
@@ -59,7 +63,8 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		break;
 	}
 	case SoundSource::SSG:
-		// UNODNE
+		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
+		setInstrumentSSGWaveForm(cloneInstNum, refSsg->getWaveFormNumber());
 		break;
 	}
 }
@@ -83,7 +88,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 
 		if (refFm->getLFONumber() != -1) {
 			int lfoNum = cloneFMLFO(refFm->getLFONumber());
-			cloneFm->setLFONumber(envNum);
+			cloneFm->setLFONumber(lfoNum);
 			lfoFM_[lfoNum]->registerUserInstrument(cloneInstNum);
 		}
 
@@ -91,7 +96,14 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		break;
 	}
 	case SoundSource::SSG:
-		// UNODNE: ssg envelope number registering
+		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
+		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(cloneInstNum));
+
+		if (refSsg->getWaveFormNumber() != -1) {
+			int wfNum = cloneSSGWaveForm(refSsg->getWaveFormNumber());
+			cloneSsg->setWaveFormNumber(wfNum);
+			wFormSSG_[wfNum]->registerUserInstrument(cloneInstNum);
+		}
 		break;
 	}
 }
@@ -124,6 +136,20 @@ int InstrumentsManager::cloneFMLFO(int srcNum)
 	return cloneNum;
 }
 
+int InstrumentsManager::cloneSSGWaveForm(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& env : wFormSSG_) {
+		if (!env->isUserInstrument()) {
+			env = wFormSSG_.at(srcNum)->clone();
+			env->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
 std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
 	switch (insts_.at(instNum)->getSoundSource()) {
@@ -136,7 +162,9 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		break;
 	}
 	case SoundSource::SSG:
-		// UNODNE: ssg envelope number deregistering
+		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum]);
+		int wfNum = ssg->getWaveFormNumber();
+		if (wfNum != -1) wFormSSG_.at(wfNum)->deregisterUserInstrument(instNum);
 		break;
 	}
 
@@ -259,4 +287,72 @@ std::vector<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
 void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
 {
 	std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->setEnvelopeResetEnabled(enabled);
+}
+
+//----- SSG methods -----
+void InstrumentsManager::setInstrumentSSGWaveForm(int instNum, int wfNum)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	int prevWf = ssg->getWaveFormNumber();
+	if (prevWf != -1)
+		wFormSSG_.at(ssg->getWaveFormNumber())->deregisterUserInstrument(instNum);
+	if (wfNum != -1)
+		wFormSSG_.at(wfNum)->registerUserInstrument(instNum);
+
+	ssg->setWaveFormNumber(wfNum);
+}
+
+int InstrumentsManager::getInstrumentSSGWaveForm(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum])->getWaveFormNumber();
+}
+
+void InstrumentsManager::addWaveFormSSGSequenceCommand(int wfNum, int type, int data)
+{
+	wFormSSG_.at(wfNum)->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removeWaveFormSSGSequenceCommand(int wfNum)
+{
+	wFormSSG_.at(wfNum)->removeSequenceCommand();
+}
+
+void InstrumentsManager::setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data)
+{
+	wFormSSG_.at(wfNum)->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandInSequence> InstrumentsManager::getWaveFormSSGSequence(int wfNum)
+{
+	return wFormSSG_.at(wfNum)->getSequence();
+}
+
+void InstrumentsManager::setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	wFormSSG_.at(wfNum)->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getWaveFormSSGLoops(int wfNum) const
+{
+	return wFormSSG_.at(wfNum)->getLoops();
+}
+
+void InstrumentsManager::setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin)
+{
+	wFormSSG_.at(wfNum)->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getWaveFormSSGRelease(int wfNum) const
+{
+	return wFormSSG_.at(wfNum)->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getWaveFormSSGIterator(int wfNum) const
+{
+	return wFormSSG_.at(wfNum)->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getWaveFormSSGUsers(int wfNum) const
+{
+	return wFormSSG_.at(wfNum)->getUserInstruments();
 }

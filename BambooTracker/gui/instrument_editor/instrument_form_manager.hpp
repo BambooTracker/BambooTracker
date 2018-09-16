@@ -31,6 +31,8 @@ public slots:
 	void onInstrumentFMEnvelopeNumberChanged();
 	void onInstrumentFMLFOParameterChanged(int lfoNum, int fromInstNum);
 	void onInstrumentFMLFONumberChanged();
+	void onInstrumentSSGWaveFormParameterChanged(int wfNum, int fromInstNum);
+	void onInstrumentSSGWaveFormNumberChanged();
 
 private:
 	std::map<int, std::unique_ptr<QWidget>> map_;

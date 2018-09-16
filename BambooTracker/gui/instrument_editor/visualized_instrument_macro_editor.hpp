@@ -33,15 +33,36 @@ public:
 	void setDefaultRow(int row);
 	int getSequenceLength() const;
 
-	void setSequence(int row, int col, QString str = "", int data = -1);
+	void setSequenceCommand(int row, int col, QString str = "", int data = -1);
 	void setText(int col, QString text);
 	void setData(int col, int data);
 
 	int getSequenceAt(int col) const;
 	int getSequenceDataAt(int col) const;
 
+	void addSequenceCommand(int row, QString str = "", int data = -1);
+	void removeSequenceCommand();
+
+	void addLoop(int begin, int end, int times);
+
+	enum class ReleaseType
+	{
+		NO_RELEASE,
+		FIX,
+		ABSOLUTE,
+		RELATIVE
+	};
+
+	void setRelease(VisualizedInstrumentMacroEditor::ReleaseType type, int point);
+
+	void clear();
+
 signals:
-	void sequenceSet(int row, int col);
+	void sequenceCommandChanged(int row, int col);
+	void sequenceCommandAdded(int row, int col);
+	void sequenceCommandRemoved();
+	void loopChanged(std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void releaseChanged(VisualizedInstrumentMacroEditor::ReleaseType type, int point);
 
 protected:
 	bool eventFilter(QObject*object, QEvent* event) override;
@@ -58,6 +79,7 @@ private slots:
 	void on_colIncrToolButton_clicked();
 	void on_colDecrToolButton_clicked();
 	void on_verticalScrollBar_valueChanged(int value);
+	void onLoopChanged();
 
 private:
 	Ui::VisualizedInstrumentMacroEditor *ui;
@@ -99,7 +121,8 @@ private:
 
 	struct Release
 	{
-		int point, type;
+		VisualizedInstrumentMacroEditor::ReleaseType type;
+		int point;
 	};
 
 	std::vector<Loop> loops_;
@@ -124,7 +147,6 @@ private:
 	void drawShadow();
 
 	int checkLoopRegion(int col);
-	void addLoop(int col);
 	void moveLoop();
 
 	inline void scrollUp(int pos)
@@ -133,7 +155,7 @@ private:
 	}
 
 	inline void updateColumnWidth(int panelWidth) {
-		colWidth_ = (panelWidth - tagWidth_) / colCnt_;
+		colWidth_ = colCnt_ ? ((panelWidth - tagWidth_) / colCnt_) : 0;
 	}
 
 	inline void updateRowHeight(int panelHeight) {

@@ -1,6 +1,8 @@
 #include "opna_controller.hpp"
 #include "pitch_converter.hpp"
+
 #include <QDebug>
+
 #ifdef SINC_INTERPOLATION
 OPNAController::OPNAController(int clock, int rate, int duration) :
 	opna_(clock, rate, duration)
@@ -51,6 +53,9 @@ void OPNAController::initChip()
 		gateCntFM_[ch] = 0;
 		enableEnvResetFM_[ch] = true;
 
+		// Init sequence
+		hasPreSetTickEventFM_[ch] = false;
+
 		// Init FM pan
 		uint32_t bch = getFMChannelOffset(ch);
 		panFM_[ch] = 3;
@@ -59,11 +64,43 @@ void OPNAController::initChip()
 
 	// SSG
 	for (int ch = 0; ch < 3; ++ch) {
+		isKeyOnSSG_[ch] = false;
+
 		refInstSSG_[ch].reset();	// Init envelope
 		toneSSG_[ch].octave = -1;	// Init key on note data
-		volSSG_[ch] = 0xf;	// Init volume
+		baseVolSSG_[ch] = 0xf;	// Init volume
+		isHardEnvSSG_[ch] = false;
+
+		// Init sequence
+		hasPreSetTickEventSSG_[ch] = false;
+		wfItSSG_[ch].reset();
+		wfSSG_[ch] = { -1, -1 };
 
 		gateCntSSG_[ch] = 0;
+	}
+}
+
+/********** Forward instrument sequence **********/
+void OPNAController::tickEvent(SoundSource src, int ch)
+{
+	switch (src) {
+	case SoundSource::FM:
+		if (hasPreSetTickEventFM_[ch]) {
+			hasPreSetTickEventFM_[ch] = false;
+		}
+		else {
+			// UNDONE
+		}
+		break;
+
+	case SoundSource::SSG:
+		if (hasPreSetTickEventSSG_[ch]) {
+			hasPreSetTickEventSSG_[ch] = false;
+		}
+		else {
+			if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next());
+		}
+		break;
 	}
 }
 
@@ -95,9 +132,16 @@ int OPNAController::getDuration() const
 
 //---------- FM ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
+void OPNAController::keyOnFM(int ch, Note note, int octave, int fine, bool isJam)
 {
 	if (isMuteFM(ch)) return;
+
+	toneFM_[ch].octave = octave;
+	toneFM_[ch].note = note;
+	toneFM_[ch].fine = fine;
+
+	setFrontFMSequences(ch);
+	hasPreSetTickEventFM_[ch] = isJam;
 
 	uint16_t pitch = PitchConverter::getPitchFM(note, octave, fine);
 	uint32_t offset = getFMChannelOffset(ch);
@@ -107,13 +151,13 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int fine)
 	opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
 
 	isKeyOnFM_[ch] = true;
-	toneFM_[ch].octave = octave;
-	toneFM_[ch].note = note;
-	toneFM_[ch].fine = fine;
 }
 
-void OPNAController::keyOffFM(int ch)
+void OPNAController::keyOffFM(int ch, bool isJam)
 {
+	releaseStartFMSequences(ch);
+	hasPreSetTickEventFM_[ch] = isJam;
+
 	uint8_t chdata = getFmChannelMask(ch);
 	opna_.setRegister(0x28, chdata);
 	isKeyOnFM_[ch] = false;
@@ -753,6 +797,16 @@ void OPNAController::checkLFOUsed()
 	}
 }
 
+void OPNAController::setFrontFMSequences(int ch)
+{
+	// UNDONE
+}
+
+void OPNAController::releaseStartFMSequences(int ch)
+{
+	// UNDONE
+}
+
 void OPNAController::setInstrumentFMProperties(int ch)
 {
 	gateCntFM_[ch] = refInstFM_[ch]->getGateCount();
@@ -792,31 +846,27 @@ bool OPNAController::isCareer(int op, int al)
 
 //---------- SSG ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine)
+void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine, bool isJam)
 {
 	if (isMuteSSG(ch)) return;
 
-	uint16_t pitch = PitchConverter::getPitchSSG(note, octave, fine);
-	uint8_t offset = ch << 1;
-	opna_.setRegister(0x00 + offset, pitch & 0xff);
-	opna_.setRegister(0x01 + offset, pitch >> 8);
-
-	uint8_t mask = ~(1 << ch);
-	mixerSSG_ &= mask;
-	opna_.setRegister(0x07, mixerSSG_);
-
-	setVolumeSSG(ch, volSSG_[ch]);
+	isKeyOnSSG_[ch] = true;
 
 	toneSSG_[ch].octave = octave;
 	toneSSG_[ch].note = note;
 	toneSSG_[ch].fine = fine;
+
+	setFrontSSGSequences(ch);
+	hasPreSetTickEventSSG_[ch] = isJam;
 }
 
-void OPNAController::keyOffSSG(int ch)
+void OPNAController::keyOffSSG(int ch, bool isJam)
 {
-	uint8_t flag = 1 << ch;
-	mixerSSG_ |= flag;
-	opna_.setRegister(0x07, mixerSSG_);
+	isKeyOnSSG_[ch] = false;
+
+	releaseStartSSGSequences(ch);
+	hasPreSetTickEventSSG_[ch] = isJam;
+
 	opna_.setRegister(0x08 + ch, 0);	// Volume 0
 }
 
@@ -826,19 +876,25 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 	if (inst == nullptr) {	// Error set ()
 		if (refInstSSG_[ch] != nullptr) {
 			refInstSSG_[ch]->setNumber(-1);
-			setInstrumentSSGProperties(ch);
+		}
+		else {
+			return;
 		}
 	}
 	else {
 		refInstSSG_[ch] = inst;
-		setInstrumentSSGProperties(ch);
 	}
+
+	if (refInstSSG_[ch]->getWaveFormNumber() != -1)
+		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
+	setInstrumentSSGProperties(ch);
 }
 
 void OPNAController::updateInstrumentSSG(int instNum)
 {
 	for (int ch = 0; ch < 3; ++ch) {
 		if (refInstSSG_[ch] != nullptr && refInstSSG_[ch]->getNumber() == instNum) {
+			checkWaveFormSSGNumber(ch);
 			setInstrumentSSGProperties(ch);
 		}
 	}
@@ -849,7 +905,7 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 {
 	if (volume > 0xf) return;	// Out of range
 
-	volSSG_[ch] = volume;
+	baseVolSSG_[ch] = volume;
 
 	if (isKeyOnSSG(ch)) opna_.setRegister(0x08 + ch, volume);
 }
@@ -870,7 +926,7 @@ bool OPNAController::isMuteSSG(int ch)
 /********** Chip details **********/
 bool OPNAController::isKeyOnSSG(int ch) const
 {
-	return (((0x09 << ch) & ~mixerSSG_) > 0);
+	return isKeyOnSSG_[ch];
 }
 
 ToneDetail OPNAController::getSSGTone(int ch) const
@@ -879,6 +935,105 @@ ToneDetail OPNAController::getSSGTone(int ch) const
 }
 
 /***********************************/
+void OPNAController::setFrontSSGSequences(int ch)
+{
+	if (wfItSSG_[ch]) {
+		writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->front());
+	}
+	else {
+		isHardEnvSSG_[ch] = false;
+		setVolumeSSG(ch, baseVolSSG_[ch]);
+		writeSquareWaveForm(ch);
+	}
+}
+
+void OPNAController::releaseStartSSGSequences(int ch)
+{
+	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next(true));
+}
+
+void OPNAController::checkWaveFormSSGNumber(int ch)
+{
+	if (refInstSSG_[ch]->getWaveFormNumber() == -1)
+		wfItSSG_[ch].reset();
+}
+
+void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
+{
+	if (seqPos == -1) return;
+
+	switch (wfItSSG_[ch]->getCommandType()) {
+	case 0:	// Square
+	{
+		switch (wfSSG_[ch].type) {
+		case 0:	return;
+		default:
+			isHardEnvSSG_[ch] = false;
+			setVolumeSSG(ch, baseVolSSG_[ch]);
+		}
+
+		writeSquareWaveForm(ch);
+		return;
+	}
+	case 1:	// Triangle
+	{
+//		if (wfSSG_[ch].type == 1) return;
+
+//		if (wfSSG_[ch].type != 2) {
+//			isHardEnvSSG_[ch] = true;
+//			mixerSSG_ |= (0x1 << ch);
+//			opna_.setRegister(0x07, mixerSSG_);
+//		}
+//		opna_.setRegister(0x0d, 0x06);
+//		wfSSG_[ch] = { 1, -1 };
+		return;
+	}
+	case 2:	// Saw
+	{
+//		if (wfSSG_[ch].type == 2) return;
+
+//		if (wfSSG_[ch].type != 1) {
+//			mixerSSG_ |= (0x1 << ch);
+//			opna_.setRegister(0x07, mixerSSG_);
+//		}
+//		wfSSG_[ch] = { 2, -1 };
+		return;
+	}
+	case 3:	// Triangle with square
+	{
+//		int data = wfItSSG_[ch]->getCommandData();
+//		if (wfSSG_[ch].type == 3 && wfSSG_[ch].data == data) return;
+
+
+//		wfSSG_[ch] = { 3, data };
+		return;
+	}
+	case 4:	// Saw with square
+	{
+//		int data = wfItSSG_[ch]->getCommandData();
+//		if (wfSSG_[ch].type == 4 && wfSSG_[ch].data == data) return;
+
+
+//		wfSSG_[ch] = { 4, data };
+		return;
+	}
+	}
+}
+
+void OPNAController::writeSquareWaveForm(int ch)
+{
+	uint16_t pitch = PitchConverter::getPitchSSG(toneSSG_[ch].note,
+												 toneSSG_[ch].octave,
+												 toneSSG_[ch].fine);
+	uint8_t offset = ch << 1;
+	opna_.setRegister(0x00 + offset, pitch & 0xff);
+	opna_.setRegister(0x01 + offset, pitch >> 8);
+	uint8_t mask = ~(1 << ch);
+	mixerSSG_ &= mask;
+	opna_.setRegister(0x07, mixerSSG_);
+	wfSSG_[ch] = { 0, -1 };
+}
+
 void OPNAController::setInstrumentSSGProperties(int ch)
 {
 	gateCntSSG_[ch] = refInstSSG_[ch]->getGateCount();

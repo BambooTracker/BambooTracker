@@ -3,9 +3,11 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <vector>
 #include "instruments_manager.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
+#include "command_sequence.hpp"
 #include "misc.hpp"
 
 class InstrumentsManager;
@@ -69,4 +71,14 @@ class InstrumentSSG : public AbstructInstrument
 public:
 	InstrumentSSG(int number, std::string name, InstrumentsManager* owner);
 	std::unique_ptr<AbstructInstrument> clone() override;
+
+	void setWaveFormNumber(int n);
+	int getWaveFormNumber() const;
+	std::vector<CommandInSequence> getWaveFormSequence() const;
+	std::vector<Loop> getWaveFormLoops() const;
+	Release getWaveFormRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getWaveFormSequenceIterator() const;
+
+private:
+	int wfNum_;
 };

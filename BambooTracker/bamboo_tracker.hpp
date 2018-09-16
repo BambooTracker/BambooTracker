@@ -40,6 +40,7 @@ public:
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void setInstrumentGateCount(int instNum, int count);
+
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
@@ -51,6 +52,15 @@ public:
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
+
+	//--- SSG
+	void addWaveFormSSGSequenceCommand(int wfNum, int type, int data);
+	void removeWaveFormSSGSequenceCommand(int wfNum);
+	void setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data);
+	void setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin);
+	void setInstrumentSSGWaveForm(int instNum, int wfNum);
+	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 
 	// Song edit
 	void setCurrentSongNumber(int num);

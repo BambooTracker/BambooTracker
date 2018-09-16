@@ -622,6 +622,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	case SoundSource::SSG:
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormParameterChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOnEvent,
 						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,
@@ -634,6 +638,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		ssgForm->installEventFilter(this);
 		ssgForm->setCore(bt_);
 
+		instForms_->onInstrumentSSGWaveFormNumberChanged();
 		break;
 	}
 	}

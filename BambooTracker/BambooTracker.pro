@@ -114,7 +114,8 @@ SOURCES += \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
     instrument/abstruct_instrument_property.cpp \
-    gui/instrument_editor/visualized_instrument_macro_editor.cpp
+    gui/instrument_editor/visualized_instrument_macro_editor.cpp \
+    instrument/command_sequence.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -217,7 +218,8 @@ HEADERS += \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
     instrument/abstruct_instrument_property.hpp \
-    gui/instrument_editor/visualized_instrument_macro_editor.hpp
+    gui/instrument_editor/visualized_instrument_macro_editor.hpp \
+    instrument/command_sequence.hpp
 
 FORMS += \
     gui/mainwindow.ui \

@@ -25,6 +25,9 @@ public:
 	// Reset and initialize
 	void reset();
 
+	// Forward instrument sequence
+	void tickEvent(SoundSource src, int ch);
+
 	// Chip details
 	int getGateCount(SoundSource src, int ch) const;
 
@@ -43,8 +46,8 @@ private:
 	/*----- FM -----*/
 public:
 	// Key on-off
-	void keyOnFM(int ch, Note note, int octave, int fine);
-	void keyOffFM(int ch);
+	void keyOnFM(int ch, Note note, int octave, int fine, bool isJam = false);
+	void keyOffFM(int ch, bool isJam = false);
 	void resetFMChannelEnvelope(int ch);
 
 	// Set Instrument
@@ -77,6 +80,7 @@ private:
 	int gateCntFM_[6];
 	bool enableEnvResetFM_[6];
 	int lfoFreq_;
+	bool hasPreSetTickEventFM_[6];
 
 	/// bit0: right on/off
 	/// bit1: left on/off
@@ -89,6 +93,8 @@ private:
 	void writeFMLFOAllRegisters(int ch);
 	void writeFMLFORegister(int ch, FMLFOParamter param);
 	void checkLFOUsed();
+	void setFrontFMSequences(int ch);
+	void releaseStartFMSequences(int ch);
 	void setInstrumentFMProperties(int ch);
 
 	bool isCareer(int op, int al);
@@ -101,8 +107,8 @@ private:
 	/*----- SSG -----*/
 public:
 	// Key on-off
-	void keyOnSSG(int ch, Note note, int octave, int fine);
-	void keyOffSSG(int ch);
+	void keyOnSSG(int ch, Note note, int octave, int fine, bool isJam = false);
+	void keyOffSSG(int ch, bool isJam = false);
 
 	// Set Instrument
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
@@ -120,17 +126,26 @@ public:
 	ToneDetail getSSGTone(int ch) const;
 
 private:
+	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
+	bool isKeyOnSSG_[3];
+	uint8_t mixerSSG_;
+	ToneDetail toneSSG_[3];
+	int baseVolSSG_[3];
+	bool isHardEnvSSG_[3];
+	bool isMuteSSG_[3];
+	int gateCntSSG_[3];
+	bool hasPreSetTickEventSSG_[3];
+	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
+	CommandInSequence wfSSG_[3];
+
+	void setFrontSSGSequences(int ch);
+	void releaseStartSSGSequences(int ch);
+	void checkWaveFormSSGNumber(int ch);
+	void writeWaveFormSSGToRegister(int ch, int seqPos);
+	void writeSquareWaveForm(int ch);
 	void setInstrumentSSGProperties(int ch);
 
 	inline uint8_t judgeSSEGRegisterValue(int v) {
 		return (v == -1) ? 0 : (0x08 + v);
 	}
-
-private:
-	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
-	uint8_t mixerSSG_;
-	ToneDetail toneSSG_[3];
-	int volSSG_[3];
-	bool isMuteSSG_[3];
-	int gateCntSSG_[3];
 };

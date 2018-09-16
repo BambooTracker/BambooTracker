@@ -41,6 +41,23 @@ private:
 	void updateInstrumentParameters();
 
 	//========== Wave form ==========//
+public:
+	int getWaveFormNumber() const;
+
+signals:
+	void waveFormNumberChanged();
+	void waveFormParameterChanged(int wfNum, int fromInstNum);
+
+public slots:
+	void onWaveFormNumberChanged();
+	void onWaveFormParameterChanged(int wfNum);
+
+private:
+	void setInstrumentWaveFormParameters();
+
+private slots:
+	void on_waveEditGroupBox_toggled(bool arg1);
+	void on_waveNumSpinBox_valueChanged(int arg1);
 
 	//========== Else ==========//
 private slots:

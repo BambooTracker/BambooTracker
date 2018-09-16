@@ -1,5 +1,4 @@
 #include "instrument.hpp"
-#include <regex>
 
 AbstructInstrument::AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner)
 	: owner_(owner),
@@ -106,12 +105,43 @@ bool InstrumentFM::getEnvelopeResetEnabled() const
 
 /****************************************/
 
-InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner) :
-	AbstructInstrument(number, SoundSource::SSG, name, owner)
+InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner)
+	: AbstructInstrument(number, SoundSource::SSG, name, owner),
+	  wfNum_(-1)
 {
 }
 
 std::unique_ptr<AbstructInstrument> InstrumentSSG::clone()
 {
 	return std::unique_ptr<AbstructInstrument>(std::make_unique<InstrumentSSG>(*this));
+}
+
+void InstrumentSSG::setWaveFormNumber(int n)
+{
+	wfNum_ = n;
+}
+
+int InstrumentSSG::getWaveFormNumber() const
+{
+	return wfNum_;
+}
+
+std::vector<CommandInSequence> InstrumentSSG::getWaveFormSequence() const
+{
+	return owner_->getWaveFormSSGSequence(wfNum_);
+}
+
+std::vector<Loop> InstrumentSSG::getWaveFormLoops() const
+{
+	return owner_->getWaveFormSSGLoops(wfNum_);
+}
+
+Release InstrumentSSG::getWaveFormRelease() const
+{
+	return owner_->getWaveFormSSGRelease(wfNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getWaveFormSequenceIterator() const
+{
+	return owner_->getWaveFormSSGIterator(wfNum_);
 }

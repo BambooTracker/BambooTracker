@@ -7,6 +7,7 @@
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
+#include "command_sequence.hpp"
 #include "misc.hpp"
 
 class AbstructInstrument;
@@ -32,7 +33,11 @@ public:
 
 	void setInstrumentGateCount(int instNum, int count);
 
+private:
+	std::array<std::shared_ptr<AbstructInstrument>, 128> insts_;
+
 	//----- FM methods -----
+public:
 	void setInstrumentFMEnvelope(int instNum, int envNum);
     int getInstrumentFMEnvelope(int instNum) const;
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
@@ -50,10 +55,29 @@ public:
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
 private:
-	std::array<std::shared_ptr<AbstructInstrument>, 128> insts_;
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
 	std::array<std::shared_ptr<LFOFM>, 128> lfoFM_;
 
 	int cloneFMEnvelope(int srcNum);
 	int cloneFMLFO(int srcNum);
+
+	//----- SSG methods -----
+public:
+	void setInstrumentSSGWaveForm(int instNum, int wfNum);
+	int getInstrumentSSGWaveForm(int instNum);
+	void addWaveFormSSGSequenceCommand(int wfNum, int type, int data);
+	void removeWaveFormSSGSequenceCommand(int wfNum);
+	void setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data);
+	std::vector<CommandInSequence> getWaveFormSSGSequence(int wfNum);
+	void setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getWaveFormSSGLoops(int wfNum) const;
+	void setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin);
+	Release getWaveFormSSGRelease(int wfNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getWaveFormSSGIterator(int wfNum) const;
+	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
+
+private:
+	std::array<std::shared_ptr<CommandSequence>, 128> wFormSSG_;
+
+	int cloneSSGWaveForm(int srcNum);
 };
