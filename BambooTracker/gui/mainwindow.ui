@@ -195,12 +195,16 @@ QListWidget::item:selected:hover {
       <item row="1" column="0" alignment="Qt::AlignRight">
        <widget class="QLabel" name="songNumLabel">
         <property name="text">
-         <string>Song Number:</string>
+         <string>Song:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="LineReadOnlySpinBox" name="songNumSpinBox"/>
+       <widget class="LineReadOnlySpinBox" name="songNumSpinBox">
+        <property name="prefix">
+         <string>#</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="2">
        <spacer name="horizontalSpacer">

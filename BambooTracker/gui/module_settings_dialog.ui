@@ -92,7 +92,11 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QComboBox" name="insertTypeComboBox"/>
+          <widget class="QComboBox" name="insertTypeComboBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout">

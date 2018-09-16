@@ -59,15 +59,11 @@
               </item>
               <item row="0" column="0" colspan="2">
                <layout class="QHBoxLayout" name="horizontalLayout">
-                <item alignment="Qt::AlignRight">
-                 <widget class="QLabel" name="envNumLabel">
-                  <property name="text">
-                   <string>Number: </string>
-                  </property>
-                 </widget>
-                </item>
                 <item alignment="Qt::AlignLeft">
                  <widget class="QSpinBox" name="envNumSpinBox">
+                  <property name="prefix">
+                   <string>#</string>
+                  </property>
                   <property name="maximum">
                    <number>127</number>
                   </property>
@@ -162,12 +158,12 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="1">
-           <widget class="QSpinBox" name="lfoNumSpinBox"/>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="lfoNumLabel">
-            <property name="text">
-             <string>Number:</string>
+           <widget class="QSpinBox" name="lfoNumSpinBox">
+            <property name="prefix">
+             <string>#</string>
+            </property>
+            <property name="maximum">
+             <number>127</number>
             </property>
            </widget>
           </item>
