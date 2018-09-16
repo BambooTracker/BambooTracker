@@ -70,6 +70,7 @@ public:
 		int pos_;
 		std::vector<Loop> loopStack_;
 		bool isRelease_;
+		float relReleaseRatio_;
 	};
 
 	std::unique_ptr<CommandSequence::Iterator> getIterator();

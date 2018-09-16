@@ -76,8 +76,23 @@ public:
 	std::unique_ptr<CommandSequence::Iterator> getWaveFormSSGIterator(int wfNum) const;
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 
+	void setInstrumentSSGEnvelope(int instNum, int envNum);
+	int getInstrumentSSGEnvelope(int instNum);
+	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
+	void removeEnvelopeSSGSequenceCommand(int envNum);
+	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);
+	std::vector<CommandInSequence> getEnvelopeSSGSequence(int envNum);
+	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getEnvelopeSSGLoops(int envNum) const;
+	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
+	Release getEnvelopeSSGRelease(int envNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSSGIterator(int envNum) const;
+	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
+
 private:
 	std::array<std::shared_ptr<CommandSequence>, 128> wFormSSG_;
+	std::array<std::shared_ptr<CommandSequence>, 128> envSSG_;
 
 	int cloneSSGWaveForm(int srcNum);
+	int cloneSSGEnvelope(int srcNum);
 };

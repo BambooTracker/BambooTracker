@@ -40,6 +40,8 @@ public:
 	int getSequenceAt(int col) const;
 	int getSequenceDataAt(int col) const;
 
+	void setMultipleReleaseState(bool enabled);
+
 	void addSequenceCommand(int row, QString str = "", int data = -1);
 	void removeSequenceCommand();
 
@@ -136,6 +138,8 @@ private:
 
 	std::vector<QString> labels_;
 	std::vector<Column> cols_;
+
+	bool isMultiReleaseState_;
 
 	bool isIgnoreEvent_;
 

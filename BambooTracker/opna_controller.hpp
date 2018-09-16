@@ -131,19 +131,29 @@ private:
 	uint8_t mixerSSG_;
 	ToneDetail toneSSG_[3];
 	int baseVolSSG_[3];
+	bool isBuzzEffSSG_[3];
 	bool isHardEnvSSG_[3];
 	bool isMuteSSG_[3];
 	int gateCntSSG_[3];
 	bool hasPreSetTickEventSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
 	CommandInSequence wfSSG_[3];
+	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
+	CommandInSequence envSSG_[3];
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
+
 	void checkWaveFormSSGNumber(int ch);
 	void writeWaveFormSSGToRegister(int ch, int seqPos);
 	void writeSquareWaveForm(int ch);
+
+	void checkEnvelopeSSGNumber(int ch);
+	void writeEnvelopeSSGToRegister(int ch, int seqPos);
+
 	void setInstrumentSSGProperties(int ch);
+
+	void setRealVolumeSSG(int ch);
 
 	inline uint8_t judgeSSEGRegisterValue(int v) {
 		return (v == -1) ? 0 : (0x08 + v);

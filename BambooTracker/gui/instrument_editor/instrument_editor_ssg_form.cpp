@@ -79,23 +79,75 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t;
-			switch (type) {
-			case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
-				t = ReleaseType::NO_RELEASE;
-				break;
-			case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
-				t = ReleaseType::FIX;
-				break;
-			case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
-				t = ReleaseType::ABSOLUTE;
-				break;
-			case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
-				t = ReleaseType::RELATIVE;
-				break;
-			}
+			ReleaseType t = convertReleaseTypeForData(type);
 			bt_.lock()->setWaveFormSSGRelease(ui->waveNumSpinBox->value(), t, point);
 			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+
+	//========== Envelope ==========//
+	ui->envEditor->setMaximumDisplayedRowCount(16);
+	ui->envEditor->setDefaultRow(15);
+	for (int i = 0; i < 16; ++i) {
+		ui->envEditor->AddRow(QString::number(i));
+	}
+	for (int i = 0; i < 8; ++i) {
+		ui->envEditor->AddRow("Hard " + QString::number(i));
+	}
+	ui->envEditor->setMultipleReleaseState(true);
+
+	ui->hardFreqSpinBox->setSuffix(QString(" (%1Hz)").arg(7800 / ui->hardFreqSpinBox->value()));
+
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			if (row >= 16) {	// Set hard frequency
+				ui->envEditor->setText(col, QString::number(ui->hardFreqSpinBox->value()));
+				ui->envEditor->setData(col, ui->hardFreqSpinBox->value());
+			}
+			bt_.lock()->addEnvelopeSSGSequenceCommand(
+						ui->envNumSpinBox->value(), row, ui->envEditor->getSequenceDataAt(col));
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+					 this, [&]() {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->removeEnvelopeSSGSequenceCommand(ui->envNumSpinBox->value());
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			if (row >= 16) {	// Set hard frequency
+				ui->envEditor->setText(col, QString::number(ui->hardFreqSpinBox->value()));
+				ui->envEditor->setData(col, ui->hardFreqSpinBox->value());
+			}
+			bt_.lock()->setEnvelopeSSGSequenceCommand(
+						ui->envNumSpinBox->value(), col, row, ui->envEditor->getSequenceDataAt(col));
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopChanged,
+					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setEnvelopeSSGLoops(
+						ui->envNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
+					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+		if (!isIgnoreEvent_) {
+			ReleaseType t = convertReleaseTypeForData(type);
+			bt_.lock()->setEnvelopeSSGRelease(ui->envNumSpinBox->value(), t, point);
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
@@ -115,6 +167,34 @@ void InstrumentEditorSSGForm::setCore(std::weak_ptr<BambooTracker> core)
 {
 	bt_ = core;
 	updateInstrumentParameters();
+}
+
+ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type)
+{
+	switch (type) {
+	case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
+		return ReleaseType::NO_RELEASE;
+	case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
+		return ReleaseType::FIX;
+	case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
+		return ReleaseType::ABSOLUTE;
+	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
+		return ReleaseType::RELATIVE;
+	}
+}
+
+VisualizedInstrumentMacroEditor::ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForUI(ReleaseType type)
+{
+	switch (type) {
+	case ReleaseType::NO_RELEASE:
+		return VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE;
+	case ReleaseType::FIX:
+		return VisualizedInstrumentMacroEditor::ReleaseType::FIX;
+	case ReleaseType::ABSOLUTE:
+		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
+	case ReleaseType::RELATIVE:
+		return VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE;
+	}
 }
 
 void InstrumentEditorSSGForm::updateInstrumentParameters()
@@ -272,22 +352,8 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 		for (auto& l : instSSG->getWaveFormLoops()) {
 			ui->waveEditor->addLoop(l.begin, l.end, l.times);
 		}
-		VisualizedInstrumentMacroEditor::ReleaseType type;
-		switch (instSSG->getWaveFormRelease().type) {
-		case ReleaseType::NO_RELEASE:
-			type = VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE;
-			break;
-		case ReleaseType::FIX:
-			type = VisualizedInstrumentMacroEditor::ReleaseType::FIX;
-			break;
-		case ReleaseType::ABSOLUTE:
-			type = VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
-			break;
-		case ReleaseType::RELATIVE:
-			type = VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE;
-			break;
-		}
-		ui->waveEditor->setRelease(type, instSSG->getWaveFormRelease().begin);
+		ui->waveEditor->setRelease(convertReleaseTypeForUI(instSSG->getWaveFormRelease().type),
+								   instSSG->getWaveFormRelease().begin);
 	}
 }
 
@@ -335,6 +401,94 @@ void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
 	}
 
 	onWaveFormNumberChanged();
+}
+
+//--- Envelope
+int InstrumentEditorSSGForm::getEnvelopeNumber() const
+{
+	return ui->envEditGroupBox->isChecked() ? ui->envNumSpinBox->value() : -1;
+}
+
+void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
+{
+	Ui::EventGuard ev(isIgnoreEvent_);
+
+	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
+
+	int num = instSSG->getEnvelopeNumber();
+	if (num == -1) {
+		ui->envEditGroupBox->setChecked(false);
+	}
+	else {
+		ui->envEditGroupBox->setChecked(true);
+		ui->envNumSpinBox->setValue(num);
+		onEnvelopeNumberChanged();
+		ui->envEditor->clear();
+		for (auto& com : instSSG->getEnvelopeSequence()) {
+			QString str = "";
+			if (com.type >= 16) {
+				str = QString("%1").arg(com.data);
+			}
+			ui->envEditor->addSequenceCommand(com.type, str, com.data);
+		}
+		for (auto& l : instSSG->getEnvelopeLoops()) {
+			ui->envEditor->addLoop(l.begin, l.end, l.times);
+		}
+		ui->envEditor->setRelease(convertReleaseTypeForUI(instSSG->getEnvelopeRelease().type),
+								  instSSG->getEnvelopeRelease().begin);
+	}
+}
+
+/********** Slots **********/
+void InstrumentEditorSSGForm::onEnvelopeNumberChanged()
+{
+	// Change users view
+	QString str;
+	std::vector<int> users = bt_.lock()->getEnvelopeSSGUsers(ui->envNumSpinBox->value());
+	for (auto& n : users) {
+		str += (QString::number(n) + ",");
+	}
+	str.chop(1);
+
+	ui->envUsersLineEdit->setText(str);
+}
+
+void InstrumentEditorSSGForm::onEnvelopeParameterChanged(int envNum)
+{
+	if (ui->envNumSpinBox->value() == envNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentEnvelopeParameters();
+	}
+}
+
+void InstrumentEditorSSGForm::on_envEditGroupBox_toggled(bool arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentSSGEnvelope(instNum_, arg1 ? ui->envNumSpinBox->value() : -1);
+		setInstrumentEnvelopeParameters();
+		emit envelopeNumberChanged();
+		emit modified();
+	}
+
+	onEnvelopeNumberChanged();
+}
+
+void InstrumentEditorSSGForm::on_envNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentSSGEnvelope(instNum_, arg1);
+		setInstrumentEnvelopeParameters();
+		emit envelopeNumberChanged();
+		emit modified();
+	}
+
+	onEnvelopeNumberChanged();
+}
+
+void InstrumentEditorSSGForm::on_hardFreqSpinBox_valueChanged(int arg1)
+{
+	ui->hardFreqSpinBox->setSuffix(QString(" (%1Hz)").arg(7800 / ui->hardFreqSpinBox->value()));
 }
 
 //--- Else

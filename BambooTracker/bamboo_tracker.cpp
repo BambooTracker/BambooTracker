@@ -191,6 +191,42 @@ std::vector<int> BambooTracker::getWaveFormSSGUsers(int wfNum) const
 	return instMan_.getWaveFormSSGUsers(wfNum);
 }
 
+void BambooTracker::addEnvelopeSSGSequenceCommand(int envNum, int type, int data)
+{
+	instMan_.addEnvelopeSSGSequenceCommand(envNum, type, data);
+}
+
+void BambooTracker::removeEnvelopeSSGSequenceCommand(int envNum)
+{
+	instMan_.removeEnvelopeSSGSequenceCommand(envNum);
+}
+
+void BambooTracker::setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data)
+{
+	instMan_.setEnvelopeSSGSequenceCommand(envNum, cnt, type, data);
+}
+
+void BambooTracker::setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_.setEnvelopeSSGLoops(envNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin)
+{
+	instMan_.setEnvelopeSSGRelease(envNum, type, begin);
+}
+
+void BambooTracker::setInstrumentSSGEnvelope(int instNum, int envNum)
+{
+	instMan_.setInstrumentSSGEnvelope(instNum, envNum);
+	opnaCtrl_.updateInstrumentSSG(instNum);
+}
+
+std::vector<int> BambooTracker::getEnvelopeSSGUsers(int envNum) const
+{
+	return instMan_.getEnvelopeSSGUsers(envNum);
+}
+
 /********** Song edit **********/
 int BambooTracker::getCurrentSongNumber() const
 {

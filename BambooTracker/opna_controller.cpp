@@ -70,11 +70,14 @@ void OPNAController::initChip()
 		toneSSG_[ch].octave = -1;	// Init key on note data
 		baseVolSSG_[ch] = 0xf;	// Init volume
 		isHardEnvSSG_[ch] = false;
+		isBuzzEffSSG_[ch] = false;
 
 		// Init sequence
 		hasPreSetTickEventSSG_[ch] = false;
 		wfItSSG_[ch].reset();
 		wfSSG_[ch] = { -1, -1 };
+		envItSSG_[ch].reset();
+		envSSG_[ch] = { -1, -1 };
 
 		gateCntSSG_[ch] = 0;
 	}
@@ -99,6 +102,7 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 		}
 		else {
 			if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next());
+			if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->next());
 		}
 		break;
 	}
@@ -866,8 +870,6 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 
 	releaseStartSSGSequences(ch);
 	hasPreSetTickEventSSG_[ch] = isJam;
-
-	opna_.setRegister(0x08 + ch, 0);	// Volume 0
 }
 
 /********** Set instrument **********/
@@ -887,6 +889,8 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 
 	if (refInstSSG_[ch]->getWaveFormNumber() != -1)
 		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
+	if (refInstSSG_[ch]->getEnvelopeNumber() != -1)
+		envItSSG_[ch] = refInstSSG_[ch]->getEnvelopeSequenceIterator();
 	setInstrumentSSGProperties(ch);
 }
 
@@ -895,6 +899,7 @@ void OPNAController::updateInstrumentSSG(int instNum)
 	for (int ch = 0; ch < 3; ++ch) {
 		if (refInstSSG_[ch] != nullptr && refInstSSG_[ch]->getNumber() == instNum) {
 			checkWaveFormSSGNumber(ch);
+			checkEnvelopeSSGNumber(ch);
 			setInstrumentSSGProperties(ch);
 		}
 	}
@@ -907,7 +912,22 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 
 	baseVolSSG_[ch] = volume;
 
-	if (isKeyOnSSG(ch)) opna_.setRegister(0x08 + ch, volume);
+	if (isKeyOnSSG(ch)) setRealVolumeSSG(ch);
+}
+
+void OPNAController::setRealVolumeSSG(int ch)
+{
+	if (isBuzzEffSSG_[ch] || isHardEnvSSG_[ch]) return;
+
+	int volume = baseVolSSG_[ch];
+	if (envItSSG_[ch]) {
+		int type = envItSSG_[ch]->getCommandType();
+		if (0 <= type && type < 16) {
+			volume = volume - (15 - type);
+			if (volume < 0) volume = 0;
+		}
+	}
+	opna_.setRegister(0x08 + ch, volume);
 }
 
 /********** Mute **********/
@@ -941,15 +961,37 @@ void OPNAController::setFrontSSGSequences(int ch)
 		writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->front());
 	}
 	else {
-		isHardEnvSSG_[ch] = false;
-		setVolumeSSG(ch, baseVolSSG_[ch]);
-		writeSquareWaveForm(ch);
+		isBuzzEffSSG_[ch] = false;
+		if (wfSSG_[ch].type != 0)
+			writeSquareWaveForm(ch);
+	}
+
+	if (envItSSG_[ch]) {
+		writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
+	}
+	else {
+		setRealVolumeSSG(ch);
 	}
 }
 
 void OPNAController::releaseStartSSGSequences(int ch)
 {
 	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next(true));
+
+	if (envItSSG_[ch]) {
+		int pos = envItSSG_[ch]->next(true);
+		if (pos == -1) {
+			opna_.setRegister(0x08 + ch, 0);
+			isHardEnvSSG_[ch] = false;
+		}
+		else writeEnvelopeSSGToRegister(ch, pos);
+	}
+	else {
+		if (!hasPreSetTickEventSSG_[ch]) {
+			opna_.setRegister(0x08 + ch, 0);
+			isHardEnvSSG_[ch] = false;
+		}
+	}
 }
 
 void OPNAController::checkWaveFormSSGNumber(int ch)
@@ -965,13 +1007,8 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 	switch (wfItSSG_[ch]->getCommandType()) {
 	case 0:	// Square
 	{
-		switch (wfSSG_[ch].type) {
-		case 0:	return;
-		default:
-			isHardEnvSSG_[ch] = false;
-			setVolumeSSG(ch, baseVolSSG_[ch]);
-		}
-
+		if (wfSSG_[ch].type == 0) return;
+		isBuzzEffSSG_[ch] = false;
 		writeSquareWaveForm(ch);
 		return;
 	}
@@ -1032,6 +1069,40 @@ void OPNAController::writeSquareWaveForm(int ch)
 	mixerSSG_ &= mask;
 	opna_.setRegister(0x07, mixerSSG_);
 	wfSSG_[ch] = { 0, -1 };
+}
+
+void OPNAController::checkEnvelopeSSGNumber(int ch)
+{
+	if (refInstSSG_[ch]->getEnvelopeNumber() == -1)
+		envItSSG_[ch].reset();
+}
+
+void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
+{
+	if (seqPos == -1 || isBuzzEffSSG_[ch]) return;
+
+	int type = envItSSG_[ch]->getCommandType();
+	if (type < 16) {	// Software envelope
+		isHardEnvSSG_[ch] = false;
+		envSSG_[ch] = { type, -1 };
+		setRealVolumeSSG(ch);
+	}
+	else {	// Hardware envelope
+		unsigned int data = envItSSG_[ch]->getCommandData();
+		if (envSSG_[ch].data != data) {
+			opna_.setRegister(0x0b, 0x00ff & data);
+			opna_.setRegister(0x0c, data >> 8);
+			envSSG_[ch].data = data;
+		}
+		if (envSSG_[ch].type != type) {
+			opna_.setRegister(0x0d, type - 16 + 8);
+			envSSG_[ch].type = type;
+		}
+		if (!isHardEnvSSG_[ch]) {
+			opna_.setRegister(0x08 + ch, 0x10);
+			isHardEnvSSG_[ch] = true;
+		}
+	}
 }
 
 void OPNAController::setInstrumentSSGProperties(int ch)

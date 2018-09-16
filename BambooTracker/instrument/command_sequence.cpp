@@ -131,7 +131,8 @@ std::unique_ptr<CommandSequence::Iterator> CommandSequence::getIterator()
 CommandSequence::Iterator::Iterator(CommandSequence* seq)
 	: seq_(seq),
 	  pos_(0),
-	  isRelease_(false)
+	  isRelease_(false),
+	  relReleaseRatio_(1)
 {
 }
 
@@ -142,7 +143,11 @@ int CommandSequence::Iterator::getPosition() const
 
 int CommandSequence::Iterator::getCommandType() const
 {
-	return (pos_ == -1) ? -1 : seq_->getSequenceTypeAt(pos_);
+	return (pos_ == -1)
+			? -1
+			: isRelease_
+			  ? (seq_->getSequenceTypeAt(pos_) * relReleaseRatio_)
+			  : seq_->getSequenceTypeAt(pos_);
 }
 
 int CommandSequence::Iterator::getCommandData() const
@@ -158,7 +163,37 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 	if (isReleaseBegin) {
 		loopStack_.clear();
 		isRelease_ = true;
-		next = seq_->release_.begin;
+		switch (seq_->release_.type) {
+		case ReleaseType::NO_RELEASE:	// No release sequence
+			next = -1;
+			break;
+		case ReleaseType::FIX:
+			next = seq_->release_.begin;
+			break;
+		case ReleaseType::ABSOLUTE:
+		{
+			next = -1;
+			int prevIdx = seq_->release_.begin - 1;
+			if (prevIdx < 0) {
+				next = seq_->release_.begin;
+				break;
+			}
+			for (int i = seq_->release_.begin; i < seq_->seq_.size(); ++i) {
+				if (seq_->seq_[i].type <= seq_->seq_[prevIdx].type) {
+					next = i;
+					break;
+				}
+			}
+			break;
+		}
+		case ReleaseType::RELATIVE:
+		{
+			int prevIdx = seq_->release_.begin - 1;
+			if (prevIdx >= 0) relReleaseRatio_ = seq_->seq_[prevIdx].type / 15.0;
+			next = seq_->release_.begin;
+			break;
+		}
+		}
 	}
 	else {
 		next = pos_ + 1;
@@ -208,6 +243,7 @@ int CommandSequence::Iterator::front()
 {
 	loopStack_.clear();
 	isRelease_ = false;
+	relReleaseRatio_ = 1;
 	pos_ = 0;
 	return pos_;
 }

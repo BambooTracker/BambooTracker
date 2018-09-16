@@ -62,6 +62,14 @@ public:
 	void setInstrumentSSGWaveForm(int instNum, int wfNum);
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 
+	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
+	void removeEnvelopeSSGSequenceCommand(int envNum);
+	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);
+	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
+	void setInstrumentSSGEnvelope(int instNum, int envNum);
+	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
+
 	// Song edit
 	void setCurrentSongNumber(int num);
 	int getCurrentSongNumber() const;

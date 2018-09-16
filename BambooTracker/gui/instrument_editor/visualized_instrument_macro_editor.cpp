@@ -22,6 +22,7 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	  isGrabLoopHead_(false),
 	  isGrabRelease_(false),
 	  release_{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 },
+	  isMultiReleaseState_(false),
 	  isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
@@ -134,6 +135,11 @@ int VisualizedInstrumentMacroEditor::getSequenceAt(int col) const
 int VisualizedInstrumentMacroEditor::getSequenceDataAt(int col) const
 {
 	return cols_.at(col).data;
+}
+
+void VisualizedInstrumentMacroEditor::setMultipleReleaseState(bool enabled)
+{
+	isMultiReleaseState_ = enabled;
 }
 
 void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, int data)
@@ -557,7 +563,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 										: release_.type;
 						release_.point = pressCol_;
 					}
-					else {	// Change release type
+					else if (isMultiReleaseState_) {	// Change release type
 						switch (release_.type) {
 						case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
 							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;

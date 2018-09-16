@@ -79,6 +79,14 @@ public:
 	Release getWaveFormRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getWaveFormSequenceIterator() const;
 
+	void setEnvelopeNumber(int n);
+	int getEnvelopeNumber() const;
+	std::vector<CommandInSequence> getEnvelopeSequence() const;
+	std::vector<Loop> getEnvelopeLoops() const;
+	Release getEnvelopeRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSequenceIterator() const;
+
 private:
 	int wfNum_;
+	int envNum_;
 };

@@ -6,6 +6,7 @@
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
+#include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 
 namespace Ui {
 	class InstrumentEditorSSGForm;
@@ -38,6 +39,9 @@ private:
 
 	std::weak_ptr<BambooTracker> bt_;
 
+	ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
+	VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
+
 	void updateInstrumentParameters();
 
 	//========== Wave form ==========//
@@ -58,6 +62,26 @@ private:
 private slots:
 	void on_waveEditGroupBox_toggled(bool arg1);
 	void on_waveNumSpinBox_valueChanged(int arg1);
+
+	//========== Envelope ==========//
+public:
+	int getEnvelopeNumber() const;
+
+signals:
+	void envelopeNumberChanged();
+	void envelopeParameterChanged(int wfNum, int fromInstNum);
+
+public slots:
+	void onEnvelopeNumberChanged();
+	void onEnvelopeParameterChanged(int envNum);
+
+private:
+	void setInstrumentEnvelopeParameters();
+
+private slots:
+	void on_envEditGroupBox_toggled(bool arg1);
+	void on_envNumSpinBox_valueChanged(int arg1);
+	void on_hardFreqSpinBox_valueChanged(int arg1);
 
 	//========== Else ==========//
 private slots:
