@@ -854,22 +854,21 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine, bool isJa
 {
 	if (isMuteSSG(ch)) return;
 
-	isKeyOnSSG_[ch] = true;
-
 	toneSSG_[ch].octave = octave;
 	toneSSG_[ch].note = note;
 	toneSSG_[ch].fine = fine;
 
 	setFrontSSGSequences(ch);
+
 	hasPreSetTickEventSSG_[ch] = isJam;
+	isKeyOnSSG_[ch] = true;
 }
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
 {
-	isKeyOnSSG_[ch] = false;
-
 	releaseStartSSGSequences(ch);
 	hasPreSetTickEventSSG_[ch] = isJam;
+	isKeyOnSSG_[ch] = false;
 }
 
 /********** Set instrument **********/
@@ -962,7 +961,7 @@ void OPNAController::setFrontSSGSequences(int ch)
 	}
 	else {
 		isBuzzEffSSG_[ch] = false;
-		if (wfSSG_[ch].type != 0)
+		if (wfSSG_[ch].type != 0 || !isKeyOnSSG_[ch])
 			writeSquareWaveForm(ch);
 	}
 

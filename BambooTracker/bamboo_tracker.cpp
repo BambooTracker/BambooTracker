@@ -302,7 +302,7 @@ bool BambooTracker::isJamMode() const
 
 void BambooTracker::jamKeyOn(JamKey key)
 {
-	std::vector<JamKeyData> &&list = jamMan_.keyOn(key,
+	std::vector<JamKeyData>&& list = jamMan_.keyOn(key,
 												   songStyle_.trackAttribs[curTrackNum_].channelInSource,
 												   songStyle_.trackAttribs[curTrackNum_].source);
 	if (list.size() == 2) {	// Key off
@@ -314,7 +314,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 	}
 
 	std::shared_ptr<AbstructInstrument> tmpInst = instMan_.getInstrumentSharedPtr(curInstNum_);
-	JamKeyData& onData = list[0];
+	JamKeyData& onData = list.front();
+
 	switch (onData.source) {
 	case SoundSource::FM:
 		opnaCtrl_.setInstrumentFM(onData.channelInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
@@ -337,7 +338,7 @@ void BambooTracker::jamKeyOn(JamKey key)
 
 void BambooTracker::jamKeyOff(JamKey key)
 {
-	JamKeyData &&data = jamMan_.keyOff(key);
+	JamKeyData&& data = jamMan_.keyOff(key);
 
 	if (data.channelInSource > -1) {	// Key still sound
 		switch (data.source) {

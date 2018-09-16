@@ -164,7 +164,7 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 		loopStack_.clear();
 		isRelease_ = true;
 		switch (seq_->release_.type) {
-		case ReleaseType::NO_RELEASE:	// No release sequence
+		case ReleaseType::NO_RELEASE:
 			next = -1;
 			break;
 		case ReleaseType::FIX:
