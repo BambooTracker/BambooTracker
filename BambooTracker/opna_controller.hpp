@@ -136,12 +136,14 @@ private:
 	bool isMuteSSG_[3];
 	int gateCntSSG_[3];
 	bool hasPreSetTickEventSSG_[3];
+	bool needEnvSetSSG_[3];
+	bool needToneSetSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
 	CommandInSequence wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandInSequence envSSG_[3];
 
-	void setFrontSSGSequences(int ch);
+	void setFrontSSGSequences(int ch, Note note, int octave, int fine);
 	void releaseStartSSGSequences(int ch);
 
 	void checkWaveFormSSGNumber(int ch);
@@ -150,6 +152,8 @@ private:
 
 	void checkEnvelopeSSGNumber(int ch);
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
+
+	void writePitchSSG(int ch);
 
 	void setInstrumentSSGProperties(int ch);
 
