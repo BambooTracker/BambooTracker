@@ -97,7 +97,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	}
 	ui->envEditor->setMultipleReleaseState(true);
 
-	ui->hardFreqSpinBox->setSuffix(QString(" (%1Hz)").arg(7800 / ui->hardFreqSpinBox->value()));
+	ui->hardFreqSpinBox->setSuffix(
+				QString(" (%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
 
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -488,7 +489,10 @@ void InstrumentEditorSSGForm::on_envNumSpinBox_valueChanged(int arg1)
 
 void InstrumentEditorSSGForm::on_hardFreqSpinBox_valueChanged(int arg1)
 {
-	ui->hardFreqSpinBox->setSuffix(QString(" (%1Hz)").arg(7800 / ui->hardFreqSpinBox->value()));
+	Q_UNUSED(arg1)
+
+	ui->hardFreqSpinBox->setSuffix(
+				QString(" (%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
 }
 
 //--- Else
