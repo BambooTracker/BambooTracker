@@ -86,6 +86,62 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 		}
 	});
 
+	//========== Tone/Noise ==========//
+	ui->tnEditor->setMaximumDisplayedRowCount(16);
+	ui->tnEditor->setDefaultRow(0);
+	ui->tnEditor->AddRow("T");
+	for (int i = 0; i < 32; ++i) {
+		ui->tnEditor->AddRow("N " + QString::number(i));
+	}
+	for (int i = 0; i < 32; ++i) {
+		ui->tnEditor->AddRow("T&N " + QString::number(i));
+	}
+
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->addToneNoiseSSGSequenceCommand(
+						ui->tnNumSpinBox->value(), row, ui->tnEditor->getSequenceDataAt(col));
+			emit toneNoiseParameterChanged(ui->tnNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+					 this, [&]() {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->removeToneNoiseSSGSequenceCommand(ui->tnNumSpinBox->value());
+			emit toneNoiseParameterChanged(ui->tnNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setToneNoiseSSGSequenceCommand(
+						ui->tnNumSpinBox->value(), col, row, ui->tnEditor->getSequenceDataAt(col));
+			emit toneNoiseParameterChanged(ui->tnNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::loopChanged,
+					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setToneNoiseSSGLoops(
+						ui->tnNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
+			emit toneNoiseParameterChanged(ui->tnNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
+					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+		if (!isIgnoreEvent_) {
+			ReleaseType t = convertReleaseTypeForData(type);
+			bt_.lock()->setToneNoiseSSGRelease(ui->tnNumSpinBox->value(), t, point);
+			emit toneNoiseParameterChanged(ui->tnNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+
 	//========== Envelope ==========//
 	ui->envEditor->setMaximumDisplayedRowCount(16);
 	ui->envEditor->setDefaultRow(15);
@@ -402,6 +458,85 @@ void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
 	}
 
 	onWaveFormNumberChanged();
+}
+
+//--- Tone/Noise
+int InstrumentEditorSSGForm::getToneNoiseNumber() const
+{
+	return ui->tnEditGroupBox->isChecked() ? ui->tnNumSpinBox->value() : -1;
+}
+
+void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
+{
+	Ui::EventGuard ev(isIgnoreEvent_);
+
+	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
+
+	int num = instSSG->getToneNoiseNumber();
+	if (num == -1) {
+		ui->tnEditGroupBox->setChecked(false);
+	}
+	else {
+		ui->tnEditGroupBox->setChecked(true);
+		ui->tnNumSpinBox->setValue(num);
+		onToneNoiseNumberChanged();
+		ui->tnEditor->clear();
+		for (auto& com : instSSG->getToneNoiseSequence()) {
+			ui->tnEditor->addSequenceCommand(com.type);
+		}
+		for (auto& l : instSSG->getToneNoiseLoops()) {
+			ui->tnEditor->addLoop(l.begin, l.end, l.times);
+		}
+		ui->tnEditor->setRelease(convertReleaseTypeForUI(instSSG->getToneNoiseRelease().type),
+								 instSSG->getToneNoiseRelease().begin);
+	}
+}
+
+/********** Slots **********/
+void InstrumentEditorSSGForm::onToneNoiseNumberChanged()
+{
+	// Change users view
+	QString str;
+	std::vector<int> users = bt_.lock()->getToneNoiseSSGUsers(ui->tnNumSpinBox->value());
+	for (auto& n : users) {
+		str += (QString::number(n) + ",");
+	}
+	str.chop(1);
+
+	ui->tnUsersLineEdit->setText(str);
+}
+
+void InstrumentEditorSSGForm::onToneNoiseParameterChanged(int tnNum)
+{
+	if (ui->tnNumSpinBox->value() == tnNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentToneNoiseParameters();
+	}
+}
+
+void InstrumentEditorSSGForm::on_tnEditGroupBox_toggled(bool arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentSSGToneNoise(instNum_, arg1 ? ui->tnNumSpinBox->value() : -1);
+		setInstrumentToneNoiseParameters();
+		emit toneNoiseNumberChanged();
+		emit modified();
+	}
+
+	onToneNoiseNumberChanged();
+}
+
+void InstrumentEditorSSGForm::on_tnNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentSSGToneNoise(instNum_, arg1);
+		setInstrumentToneNoiseParameters();
+		emit toneNoiseNumberChanged();
+		emit modified();
+	}
+
+	onToneNoiseNumberChanged();
 }
 
 //--- Envelope

@@ -626,6 +626,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormParameterChanged);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGToneNoiseNumberChanged);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGToneNoiseParameterChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::envelopeNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGEnvelopeNumberChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::envelopeParameterChanged,
@@ -643,6 +647,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		ssgForm->setCore(bt_);
 
 		instForms_->onInstrumentSSGWaveFormNumberChanged();
+		instForms_->onInstrumentSSGToneNoiseNumberChanged();
 		instForms_->onInstrumentSSGEnvelopeNumberChanged();
 		break;
 	}

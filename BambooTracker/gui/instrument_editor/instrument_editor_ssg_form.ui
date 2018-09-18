@@ -98,6 +98,71 @@
       <attribute name="title">
        <string>Tab 2</string>
       </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="tnEditGroupBox">
+         <property name="title">
+          <string>Tone/Noise</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="tnUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <widget class="QSpinBox" name="tnNumSpinBox">
+            <property name="prefix">
+             <string>#</string>
+            </property>
+            <property name="maximum">
+             <number>127</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="tnUsersLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="VisualizedInstrumentMacroEditor" name="tnEditor" native="true"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Tab 3</string>
+      </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="0">
         <widget class="QGroupBox" name="envEditGroupBox">
@@ -176,9 +241,9 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tab_4">
       <attribute name="title">
-       <string>Tab 3</string>
+       <string>Tab 4</string>
       </attribute>
       <widget class="QLabel" name="gateCountLabel">
        <property name="geometry">

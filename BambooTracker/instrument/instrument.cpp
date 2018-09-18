@@ -108,6 +108,7 @@ bool InstrumentFM::getEnvelopeResetEnabled() const
 InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner)
 	: AbstructInstrument(number, SoundSource::SSG, name, owner),
 	  wfNum_(-1),
+	  tnNum_(-1),
 	  envNum_(-1)
 {
 }
@@ -145,6 +146,36 @@ Release InstrumentSSG::getWaveFormRelease() const
 std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getWaveFormSequenceIterator() const
 {
 	return owner_->getWaveFormSSGIterator(wfNum_);
+}
+
+void InstrumentSSG::setToneNoiseNumber(int n)
+{
+	tnNum_ = n;
+}
+
+int InstrumentSSG::getToneNoiseNumber() const
+{
+	return tnNum_;
+}
+
+std::vector<CommandInSequence> InstrumentSSG::getToneNoiseSequence() const
+{
+	return owner_->getToneNoiseSSGSequence(tnNum_);
+}
+
+std::vector<Loop> InstrumentSSG::getToneNoiseLoops() const
+{
+	return owner_->getToneNoiseSSGLoops(tnNum_);
+}
+
+Release InstrumentSSG::getToneNoiseRelease() const
+{
+	return owner_->getToneNoiseSSGRelease(tnNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getToneNoiseSequenceIterator() const
+{
+	return owner_->getToneNoiseSSGIterator(tnNum_);
 }
 
 void InstrumentSSG::setEnvelopeNumber(int n)

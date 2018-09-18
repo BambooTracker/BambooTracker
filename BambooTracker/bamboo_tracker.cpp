@@ -191,6 +191,42 @@ std::vector<int> BambooTracker::getWaveFormSSGUsers(int wfNum) const
 	return instMan_.getWaveFormSSGUsers(wfNum);
 }
 
+void BambooTracker::addToneNoiseSSGSequenceCommand(int tnNum, int type, int data)
+{
+	instMan_.addToneNoiseSSGSequenceCommand(tnNum, type, data);
+}
+
+void BambooTracker::removeToneNoiseSSGSequenceCommand(int tnNum)
+{
+	instMan_.removeToneNoiseSSGSequenceCommand(tnNum);
+}
+
+void BambooTracker::setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data)
+{
+	instMan_.setToneNoiseSSGSequenceCommand(tnNum, cnt, type, data);
+}
+
+void BambooTracker::setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_.setToneNoiseSSGLoops(tnNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin)
+{
+	instMan_.setToneNoiseSSGRelease(tnNum, type, begin);
+}
+
+void BambooTracker::setInstrumentSSGToneNoise(int instNum, int tnNum)
+{
+	instMan_.setInstrumentSSGToneNoise(instNum, tnNum);
+	opnaCtrl_.updateInstrumentSSG(instNum);
+}
+
+std::vector<int> BambooTracker::getToneNoiseSSGUsers(int tnNum) const
+{
+	return instMan_.getToneNoiseSSGUsers(tnNum);
+}
+
 void BambooTracker::addEnvelopeSSGSequenceCommand(int envNum, int type, int data)
 {
 	instMan_.addEnvelopeSSGSequenceCommand(envNum, type, data);

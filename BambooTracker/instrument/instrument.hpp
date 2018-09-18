@@ -79,6 +79,13 @@ public:
 	Release getWaveFormRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getWaveFormSequenceIterator() const;
 
+	void setToneNoiseNumber(int n);
+	int getToneNoiseNumber() const;
+	std::vector<CommandInSequence> getToneNoiseSequence() const;
+	std::vector<Loop> getToneNoiseLoops() const;
+	Release getToneNoiseRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSequenceIterator() const;
+
 	void setEnvelopeNumber(int n);
 	int getEnvelopeNumber() const;
 	std::vector<CommandInSequence> getEnvelopeSequence() const;
@@ -88,5 +95,6 @@ public:
 
 private:
 	int wfNum_;
+	int tnNum_;
 	int envNum_;
 };

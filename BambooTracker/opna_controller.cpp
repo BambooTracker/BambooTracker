@@ -68,6 +68,7 @@ void OPNAController::initChip()
 
 		refInstSSG_[ch].reset();	// Init envelope
 		toneSSG_[ch].octave = -1;	// Init key on note data
+		tnSSG_[ch] = { false, false, -1 };
 		baseVolSSG_[ch] = 0xf;	// Init volume
 		isHardEnvSSG_[ch] = false;
 		isBuzzEffSSG_[ch] = false;
@@ -78,7 +79,9 @@ void OPNAController::initChip()
 		wfSSG_[ch] = { -1, -1 };
 		envItSSG_[ch].reset();
 		envSSG_[ch] = { -1, -1 };
+		tnItSSG_[ch].reset();
 		needEnvSetSSG_[ch] = false;
+		needMixSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = false;
 
 		gateCntSSG_[ch] = 0;
@@ -110,6 +113,8 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 			else if (needToneSetSSG_[ch]) {
 				setRealVolumeSSG(ch);
 			}
+			if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
+			else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
 			writePitchSSG(ch);
 		}
@@ -867,7 +872,7 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine, bool isJa
 	toneSSG_[ch].note = note;
 	toneSSG_[ch].fine = fine;
 
-	setFrontSSGSequences(ch, note, octave, fine);
+	setFrontSSGSequences(ch);
 
 	hasPreSetTickEventSSG_[ch] = isJam;
 	isKeyOnSSG_[ch] = true;
@@ -897,6 +902,8 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 
 	if (refInstSSG_[ch]->getWaveFormNumber() != -1)
 		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
+	if (refInstSSG_[ch]->getToneNoiseNumber() != -1)
+		tnItSSG_[ch] = refInstSSG_[ch]->getToneNoiseSequenceIterator();
 	if (refInstSSG_[ch]->getEnvelopeNumber() != -1)
 		envItSSG_[ch] = refInstSSG_[ch]->getEnvelopeSequenceIterator();
 	setInstrumentSSGProperties(ch);
@@ -907,6 +914,7 @@ void OPNAController::updateInstrumentSSG(int instNum)
 	for (int ch = 0; ch < 3; ++ch) {
 		if (refInstSSG_[ch] != nullptr && refInstSSG_[ch]->getNumber() == instNum) {
 			checkWaveFormSSGNumber(ch);
+			checkToneNoiseSSGNumber(ch);
 			checkEnvelopeSSGNumber(ch);
 			setInstrumentSSGProperties(ch);
 		}
@@ -936,6 +944,7 @@ void OPNAController::setRealVolumeSSG(int ch)
 		}
 	}
 	opna_.setRegister(0x08 + ch, volume);
+	needEnvSetSSG_[ch] = false;
 }
 
 /********** Mute **********/
@@ -963,13 +972,16 @@ ToneDetail OPNAController::getSSGTone(int ch) const
 }
 
 /***********************************/
-void OPNAController::setFrontSSGSequences(int ch, Note note, int octave, int fine)
+void OPNAController::setFrontSSGSequences(int ch)
 {
 	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->front());
 	else writeSquareWaveForm(ch);
 
 	if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
 	else setRealVolumeSSG(ch);
+
+	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->front());
+	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
 	writePitchSSG(ch);
 }
@@ -992,6 +1004,9 @@ void OPNAController::releaseStartSSGSequences(int ch)
 			isHardEnvSSG_[ch] = false;
 		}
 	}
+
+	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
+	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 }
 
 void OPNAController::checkWaveFormSSGNumber(int ch)
@@ -1019,8 +1034,9 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case 0:
 		case 3:
 		case 4:
-			mixerSSG_ |= (0x1 << ch);
-			opna_.setRegister(0x07, mixerSSG_);
+			needMixSetSSG_[ch] = true;
+//			mixerSSG_ |= (0x1 << ch);
+//			opna_.setRegister(0x07, mixerSSG_);
 			break;
 		default:
 			break;
@@ -1063,8 +1079,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case 0:
 		case 3:
 		case 4:
-			mixerSSG_ |= (0x1 << ch);
-			opna_.setRegister(0x07, mixerSSG_);
+			needMixSetSSG_[ch] = true;
 			break;
 		default:
 			break;
@@ -1107,8 +1122,9 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case -1:
 		case 1:
 		case 2:
-			mixerSSG_ &= ~(1 << ch);
-			opna_.setRegister(0x07, mixerSSG_);
+			needMixSetSSG_[ch] = true;
+//			mixerSSG_ &= ~(1 << ch);
+//			opna_.setRegister(0x07, mixerSSG_);
 			break;
 		default:
 			break;
@@ -1158,8 +1174,9 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case -1:
 		case 1:
 		case 2:
-			mixerSSG_ &= ~(1 << ch);
-			opna_.setRegister(0x07, mixerSSG_);
+			needMixSetSSG_[ch] = true;
+//			mixerSSG_ &= ~(1 << ch);
+//			opna_.setRegister(0x07, mixerSSG_);
 			break;
 		default:
 			break;
@@ -1205,7 +1222,13 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 void OPNAController::writeSquareWaveForm(int ch)
 {
-	if (wfSSG_[ch].type == 0) return;
+	if (wfSSG_[ch].type == 0) {
+		if (!isKeyOnSSG_[ch]) {
+			needEnvSetSSG_[ch] = true;
+			needToneSetSSG_[ch] = true;
+		}
+		return;
+	}
 
 	switch (wfSSG_[ch].type) {
 	case 3:
@@ -1213,8 +1236,9 @@ void OPNAController::writeSquareWaveForm(int ch)
 		break;
 	default:
 	{
-		mixerSSG_ &= ~(1 << ch);
-		opna_.setRegister(0x07, mixerSSG_);
+		needMixSetSSG_[ch] = true;
+//		mixerSSG_ &= ~(1 << ch);
+//		opna_.setRegister(0x07, mixerSSG_);
 		break;
 	}
 	}
@@ -1224,6 +1248,199 @@ void OPNAController::writeSquareWaveForm(int ch)
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
 	wfSSG_[ch] = { 0, -1 };
+}
+
+void OPNAController::checkToneNoiseSSGNumber(int ch)
+{
+	if (refInstSSG_[ch]->getEnvelopeNumber() == -1)
+		envItSSG_[ch].reset();
+}
+
+void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
+{
+	if (seqPos == -1) {
+		if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
+		return;
+	}
+
+	int type = tnItSSG_[ch]->getCommandType();
+	if (type == 0) {	// tone
+		if (tnSSG_[ch].isTone_) {
+			if (tnSSG_[ch].isNoise_) {
+				mixerSSG_ |= (1 << (ch + 3));
+				switch (wfSSG_[ch].type) {
+				case 1:
+				case 2:
+					mixerSSG_ |= (1 << ch);
+					opna_.setRegister(0x07, mixerSSG_);
+					tnSSG_[ch] = { false, false, -1 };
+					break;
+				default:
+					opna_.setRegister(0x07, mixerSSG_);
+					tnSSG_[ch] = { true, false, -1 };
+					break;
+				}
+			}
+			else {
+				switch (wfSSG_[ch].type) {
+				case 1:
+				case 2:
+					mixerSSG_ |= (1 << ch);
+					opna_.setRegister(0x07, mixerSSG_);
+					tnSSG_[ch] = { false, false, -1 };
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		else {
+			if (tnSSG_[ch].isNoise_) {
+				mixerSSG_ |= (1 << (ch + 3));
+				switch (wfSSG_[ch].type) {
+				case 1:
+				case 2:
+					opna_.setRegister(0x07, mixerSSG_);
+					tnSSG_[ch] = { false, false, -1 };
+					break;
+				default:
+					mixerSSG_ &= ~(1 << ch);
+					opna_.setRegister(0x07, mixerSSG_);
+					tnSSG_[ch] = { true, false, -1 };
+					break;
+				}
+			}
+			else {
+				switch (wfSSG_[ch].type) {
+				case 1:
+				case 2:
+					break;
+				default:
+					mixerSSG_ &= ~(1 << ch);
+					opna_.setRegister(0x07, mixerSSG_);
+					tnSSG_[ch] = { true, false, -1 };
+					break;
+				}
+			}
+		}
+	}
+	else {
+		if (type > 32) {	// Tone&Noise
+			if (tnSSG_[ch].isNoise_) {
+				if (tnSSG_[ch].isTone_) {
+					switch (wfSSG_[ch].type) {
+					case 1:
+					case 2:
+						mixerSSG_ |= (1 << ch);
+						tnSSG_[ch].isTone_ = false;
+						opna_.setRegister(0x07, mixerSSG_);
+						break;
+					default:
+						break;
+					}
+				}
+				else {
+					switch (wfSSG_[ch].type) {
+					case 1:
+					case 2:
+						break;
+					default:
+						mixerSSG_ &= ~(1 << ch);
+						tnSSG_[ch].isTone_ = true;
+						opna_.setRegister(0x07, mixerSSG_);
+						break;
+					}
+				}
+			}
+			else {
+				if (tnSSG_[ch].isTone_) {
+					switch (wfSSG_[ch].type) {
+					case 1:
+					case 2:
+						mixerSSG_ |= (1 << ch);
+						tnSSG_[ch].isTone_ = false;
+						break;
+					default:
+						break;
+					}
+				}
+				else {
+					switch (wfSSG_[ch].type) {
+					case 1:
+					case 2:
+						break;
+					default:
+						mixerSSG_ &= ~(1 << ch);
+						tnSSG_[ch].isTone_ = true;
+						break;
+					}
+				}
+				mixerSSG_ &= ~(1 << (ch + 3));
+				opna_.setRegister(0x07, mixerSSG_);
+				tnSSG_[ch].isNoise_ = true;
+			}
+
+			if (!tnSSG_[ch].isTone_ || !tnSSG_[ch].isNoise_) {
+				mixerSSG_ &= ~(0x1001 << ch);
+				opna_.setRegister(0x07, mixerSSG_);
+				tnSSG_[ch].isTone_ = true;
+				tnSSG_[ch].isNoise_ = true;
+			}
+
+
+			int p = type - 33;
+			if (tnSSG_[ch].noisePeriod_ != p) {
+				opna_.setRegister(0x06, p);
+				tnSSG_->noisePeriod_ = p;
+			}
+		}
+		else {	// Noise
+			if (tnSSG_[ch].isNoise_) {
+				if (tnSSG_[ch].isTone_) {
+					mixerSSG_ |= (1 << ch);
+					opna_.setRegister(0x07, mixerSSG_);
+					tnSSG_[ch].isTone_ = false;
+				}
+			}
+			else {
+				if (tnSSG_[ch].isTone_) {
+					mixerSSG_ |= (1 << ch);
+					tnSSG_[ch].isTone_ = false;
+				}
+				mixerSSG_ &= ~(1 << (ch + 3));
+				opna_.setRegister(0x07, mixerSSG_);
+				tnSSG_[ch].isNoise_ = true;
+			}
+
+			int p = type - 1;
+			if (tnSSG_[ch].noisePeriod_ != p) {
+				opna_.setRegister(0x06, p);
+				tnSSG_->noisePeriod_ = p;
+			}
+		}
+	}
+
+	needMixSetSSG_[ch] = false;
+}
+
+void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
+{
+	switch (wfSSG_[ch].type) {
+	case 0:
+	case 3:
+	case 4:
+		mixerSSG_ &= ~(1 << ch);
+		tnSSG_[ch].isTone_ = true;
+		break;
+	case 1:
+	case 2:
+		mixerSSG_ |= (1 << ch);
+		tnSSG_[ch].isNoise_ = false;
+		break;
+	}
+	opna_.setRegister(0x07, mixerSSG_);
+
+	needMixSetSSG_[ch] = false;
 }
 
 void OPNAController::checkEnvelopeSSGNumber(int ch)
@@ -1258,6 +1475,8 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 			isHardEnvSSG_[ch] = true;
 		}
 	}
+
+	needEnvSetSSG_[ch] = false;
 }
 
 void OPNAController::writePitchSSG(int ch)
@@ -1275,7 +1494,7 @@ void OPNAController::writePitchSSG(int ch)
 		opna_.setRegister(0x01 + offset, pitch >> 8);
 		break;
 	}
-	case 1:
+	case 1:	// Triangle
 	case 3:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGTriangle(toneSSG_[ch].note,
@@ -1285,7 +1504,7 @@ void OPNAController::writePitchSSG(int ch)
 		opna_.setRegister(0x0c, pitch >> 8);
 		break;
 	}
-	case 2:
+	case 2:	// Saw
 	case 4:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGSaw(toneSSG_[ch].note,

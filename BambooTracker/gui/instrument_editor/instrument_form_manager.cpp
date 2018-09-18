@@ -136,6 +136,25 @@ void InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged()
 	}
 }
 
+void InstrumentFormManager::onInstrumentSSGToneNoiseParameterChanged(int tnNum, int fromInstNum)
+{
+	for (auto& pair : map_) {
+		if (pair.first != fromInstNum &&
+				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onToneNoiseParameterChanged(tnNum);
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentSSGToneNoiseNumberChanged()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onToneNoiseNumberChanged();
+		}
+	}
+}
+
 void InstrumentFormManager::onInstrumentSSGEnvelopeParameterChanged(int envNum, int fromInstNum)
 {
 	for (auto& pair : map_) {

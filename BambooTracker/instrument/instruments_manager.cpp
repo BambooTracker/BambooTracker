@@ -9,6 +9,7 @@ InstrumentsManager::InstrumentsManager()
 		lfoFM_[i] = std::make_shared<LFOFM>(i);
 
 		wFormSSG_[i] = std::make_shared<CommandSequence>(i);
+		tnSSG_[i] = std::make_shared<CommandSequence>(i);
 		envSSG_[i] = std::make_shared<CommandSequence>(i, 15);
 	}
 }
@@ -44,6 +45,8 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[num]);
 		int wfNum = ssg->getWaveFormNumber();
 		if (wfNum != -1) wFormSSG_.at(wfNum)->registerUserInstrument(num);
+		int tnNum = ssg->getToneNoiseNumber();
+		if (tnNum != -1) tnSSG_.at(tnNum)->registerUserInstrument(num);
 		int envNum = ssg->getEnvelopeNumber();
 		if (envNum != -1) envSSG_.at(envNum)->registerUserInstrument(num);
 		break;
@@ -68,6 +71,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	case SoundSource::SSG:
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		setInstrumentSSGWaveForm(cloneInstNum, refSsg->getWaveFormNumber());
+		setInstrumentSSGToneNoise(cloneInstNum, refSsg->getToneNoiseNumber());
 		setInstrumentSSGEnvelope(cloneInstNum, refSsg->getEnvelopeNumber());
 		break;
 	}
@@ -107,6 +111,11 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			int wfNum = cloneSSGWaveForm(refSsg->getWaveFormNumber());
 			cloneSsg->setWaveFormNumber(wfNum);
 			wFormSSG_[wfNum]->registerUserInstrument(cloneInstNum);
+		}
+		if (refSsg->getToneNoiseNumber() != -1) {
+			int tnNum = cloneSSGToneNoise(refSsg->getToneNoiseNumber());
+			cloneSsg->setToneNoiseNumber(tnNum);
+			tnSSG_[tnNum]->registerUserInstrument(cloneInstNum);
 		}
 		if (refSsg->getEnvelopeNumber() != -1) {
 			int envNum = cloneSSGEnvelope(refSsg->getEnvelopeNumber());
@@ -151,6 +160,20 @@ int InstrumentsManager::cloneSSGWaveForm(int srcNum)
 	for (auto& env : wFormSSG_) {
 		if (!env->isUserInstrument()) {
 			env = wFormSSG_.at(srcNum)->clone();
+			env->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
+int InstrumentsManager::cloneSSGToneNoise(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& env : tnSSG_) {
+		if (!env->isUserInstrument()) {
+			env = tnSSG_.at(srcNum)->clone();
 			env->setNumber(cloneNum);
 			break;
 		}
@@ -380,6 +403,73 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getWaveFormSSGIte
 std::vector<int> InstrumentsManager::getWaveFormSSGUsers(int wfNum) const
 {
 	return wFormSSG_.at(wfNum)->getUserInstruments();
+}
+
+void InstrumentsManager::setInstrumentSSGToneNoise(int instNum, int tnNum)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	int prevtn = ssg->getToneNoiseNumber();
+	if (prevtn != -1)
+		tnSSG_.at(ssg->getToneNoiseNumber())->deregisterUserInstrument(instNum);
+	if (tnNum != -1)
+		tnSSG_.at(tnNum)->registerUserInstrument(instNum);
+
+	ssg->setToneNoiseNumber(tnNum);
+}
+
+int InstrumentsManager::getInstrumentSSGToneNoise(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum])->getToneNoiseNumber();
+}
+
+void InstrumentsManager::addToneNoiseSSGSequenceCommand(int tnNum, int type, int data)
+{
+	tnSSG_.at(tnNum)->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removeToneNoiseSSGSequenceCommand(int tnNum)
+{
+	tnSSG_.at(tnNum)->removeSequenceCommand();
+}
+
+void InstrumentsManager::setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data)
+{
+	tnSSG_.at(tnNum)->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandInSequence> InstrumentsManager::getToneNoiseSSGSequence(int tnNum)
+{
+	return tnSSG_.at(tnNum)->getSequence();
+}
+
+void InstrumentsManager::setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	tnSSG_.at(tnNum)->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getToneNoiseSSGLoops(int tnNum) const
+{
+	return tnSSG_.at(tnNum)->getLoops();
+}
+
+void InstrumentsManager::setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin)
+{
+	tnSSG_.at(tnNum)->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getToneNoiseSSGRelease(int tnNum) const
+{
+	return tnSSG_.at(tnNum)->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getToneNoiseSSGIterator(int tnNum) const
+{
+	return tnSSG_.at(tnNum)->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getToneNoiseSSGUsers(int tnNum) const
+{
+	return tnSSG_.at(tnNum)->getUserInstruments();
 }
 
 void InstrumentsManager::setInstrumentSSGEnvelope(int instNum, int envNum)

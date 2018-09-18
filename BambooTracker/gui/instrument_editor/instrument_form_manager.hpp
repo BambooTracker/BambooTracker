@@ -33,6 +33,8 @@ public slots:
 	void onInstrumentFMLFONumberChanged();
 	void onInstrumentSSGWaveFormParameterChanged(int wfNum, int fromInstNum);
 	void onInstrumentSSGWaveFormNumberChanged();
+	void onInstrumentSSGToneNoiseParameterChanged(int tnNum, int fromInstNum);
+	void onInstrumentSSGToneNoiseNumberChanged();
 	void onInstrumentSSGEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void onInstrumentSSGEnvelopeNumberChanged();
 

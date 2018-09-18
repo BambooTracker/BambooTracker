@@ -13,6 +13,12 @@ struct ToneDetail
 	int fine;
 };
 
+struct ToneNoise
+{
+	bool isTone_, isNoise_;
+	int noisePeriod_;
+};
+
 class OPNAController
 {
 public:
@@ -130,6 +136,7 @@ private:
 	bool isKeyOnSSG_[3];
 	uint8_t mixerSSG_;
 	ToneDetail toneSSG_[3];
+	ToneNoise tnSSG_[3];
 	int baseVolSSG_[3];
 	bool isBuzzEffSSG_[3];
 	bool isHardEnvSSG_[3];
@@ -137,18 +144,24 @@ private:
 	int gateCntSSG_[3];
 	bool hasPreSetTickEventSSG_[3];
 	bool needEnvSetSSG_[3];
+	bool needMixSetSSG_[3];
 	bool needToneSetSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
 	CommandInSequence wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandInSequence envSSG_[3];
+	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
 
-	void setFrontSSGSequences(int ch, Note note, int octave, int fine);
+	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
 
 	void checkWaveFormSSGNumber(int ch);
 	void writeWaveFormSSGToRegister(int ch, int seqPos);
 	void writeSquareWaveForm(int ch);
+
+	void checkToneNoiseSSGNumber(int ch);
+	void writeToneNoiseSSGToRegister(int ch, int seqPos);
+	void writeToneNoiseSSGToRegisterNoReference(int ch);
 
 	void checkEnvelopeSSGNumber(int ch);
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);

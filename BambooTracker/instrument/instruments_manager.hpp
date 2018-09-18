@@ -76,6 +76,19 @@ public:
 	std::unique_ptr<CommandSequence::Iterator> getWaveFormSSGIterator(int wfNum) const;
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 
+	void setInstrumentSSGToneNoise(int instNum, int tnNum);
+	int getInstrumentSSGToneNoise(int instNum);
+	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
+	void removeToneNoiseSSGSequenceCommand(int tnNum);
+	void setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data);
+	std::vector<CommandInSequence> getToneNoiseSSGSequence(int tnNum);
+	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getToneNoiseSSGLoops(int tnNum) const;
+	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
+	Release getToneNoiseSSGRelease(int tnNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSSGIterator(int tnNum) const;
+	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
+
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	int getInstrumentSSGEnvelope(int instNum);
 	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
@@ -92,7 +105,9 @@ public:
 private:
 	std::array<std::shared_ptr<CommandSequence>, 128> wFormSSG_;
 	std::array<std::shared_ptr<CommandSequence>, 128> envSSG_;
+	std::array<std::shared_ptr<CommandSequence>, 128> tnSSG_;
 
 	int cloneSSGWaveForm(int srcNum);
+	int cloneSSGToneNoise(int srcNum);
 	int cloneSSGEnvelope(int srcNum);
 };

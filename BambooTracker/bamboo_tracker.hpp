@@ -62,6 +62,14 @@ public:
 	void setInstrumentSSGWaveForm(int instNum, int wfNum);
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 
+	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
+	void removeToneNoiseSSGSequenceCommand(int tnNum);
+	void setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data);
+	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
+	void setInstrumentSSGToneNoise(int instNum, int tnNum);
+	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
+
 	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
 	void removeEnvelopeSSGSequenceCommand(int envNum);
 	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);

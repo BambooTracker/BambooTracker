@@ -63,6 +63,25 @@ private slots:
 	void on_waveEditGroupBox_toggled(bool arg1);
 	void on_waveNumSpinBox_valueChanged(int arg1);
 
+	//========== Tone/Noise ==========//
+public:
+	int getToneNoiseNumber() const;
+
+signals:
+	void toneNoiseNumberChanged();
+	void toneNoiseParameterChanged(int tnNum, int fromInstNum);
+
+public slots:
+	void onToneNoiseNumberChanged();
+	void onToneNoiseParameterChanged(int tnNum);
+
+private:
+	void setInstrumentToneNoiseParameters();
+
+private slots:
+	void on_tnEditGroupBox_toggled(bool arg1);
+	void on_tnNumSpinBox_valueChanged(int arg1);
+
 	//========== Envelope ==========//
 public:
 	int getEnvelopeNumber() const;
