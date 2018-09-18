@@ -91,7 +91,8 @@ private:
 	QFont font_;
 	int fontWidth_, fontHeight_, fontAscend_, fontLeading_;
 	int tagWidth_;
-	int rowHeight_, colWidth_;
+	std::vector<int> rowHeights_, colWidths_;
+	int rowHeight_;
 	int fieldHeight_;
 
 	int maxDispRowCnt_, colCnt_;
@@ -153,25 +154,12 @@ private:
 	int checkLoopRegion(int col);
 	void moveLoop();
 
+	void updateColumnWidth();
+	void updateRowHeight();
+
 	inline void scrollUp(int pos)
 	{
 		upperRow_ = maxDispRowCnt_ + pos - 1;
-	}
-
-	inline void updateColumnWidth(int panelWidth) {
-		colWidth_ = colCnt_ ? ((panelWidth - tagWidth_) / colCnt_) : 0;
-	}
-
-	inline void updateRowHeight(int panelHeight) {
-		if (labels_.size()) {
-			int rest = panelHeight - fontHeight_ * 2;
-			rowHeight_ = (labels_.size() > maxDispRowCnt_)
-						 ? (rest / maxDispRowCnt_)
-						 : (rest / labels_.size());
-		}
-		else {
-			rowHeight_ = 0;
-		}
 	}
 };
 

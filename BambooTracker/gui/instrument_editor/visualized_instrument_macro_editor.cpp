@@ -4,6 +4,7 @@
 #include <QFontMetrics>
 #include <QPainter>
 #include <QPoint>
+#include <numeric>
 #include <utility>
 #include "gui/event_guard.hpp"
 
@@ -78,7 +79,7 @@ void VisualizedInstrumentMacroEditor::AddRow(QString label)
 		ui->verticalScrollBar->setVisible(true);
 		ui->verticalScrollBar->setMaximum(labels_.size() - maxDispRowCnt_);
 	}
-	updateRowHeight(ui->panel->geometry().height());
+	updateRowHeight();
 }
 
 void VisualizedInstrumentMacroEditor::setMaximumDisplayedRowCount(int count)
@@ -93,7 +94,7 @@ void VisualizedInstrumentMacroEditor::setMaximumDisplayedRowCount(int count)
 		ui->verticalScrollBar->setVisible(true);
 		ui->verticalScrollBar->setMaximum(labels_.size() - maxDispRowCnt_);
 	}
-	updateRowHeight(ui->panel->geometry().height());
+	updateRowHeight();
 }
 
 void VisualizedInstrumentMacroEditor::setDefaultRow(int row)
@@ -146,7 +147,7 @@ void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, i
 {
 	++colCnt_;
 
-	updateColumnWidth(ui->panel->geometry().width());
+	updateColumnWidth();
 	cols_.push_back({ row, data, str });
 	ui->panel->update();
 
@@ -177,7 +178,7 @@ void VisualizedInstrumentMacroEditor::removeSequenceCommand()
 	if (release_.point >= colCnt_)
 		release_.point = -1;
 
-	updateColumnWidth(ui->panel->geometry().width());
+	updateColumnWidth();
 	cols_.pop_back();
 	ui->panel->update();
 
@@ -213,7 +214,7 @@ void VisualizedInstrumentMacroEditor::clear()
 	loops_.clear();
 	release_ = { VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 };
 	colCnt_ = 0;
-	updateColumnWidth(ui->panel->geometry().width());
+	updateColumnWidth();
 }
 
 /******************************/
@@ -229,27 +230,30 @@ void VisualizedInstrumentMacroEditor::drawField()
 
 	// Row label
 	painter.setPen(tagColor_);
-	for (int i = 1; i <= maxDispRowCnt_; ++i) {
-		painter.drawText(1, rowHeight_ * i - fontHeight_ + fontAscend_ + fontLeading_ / 2,
-						 labels_[upperRow_ - i + 1]);
+	for (int i = 0; i < maxDispRowCnt_; ++i) {
+		painter.drawText(1,
+						 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + i + 1, 0)
+						 - fontHeight_ + fontAscend_ + fontLeading_ / 2,
+						 labels_[upperRow_ - i]);
 	}
 
 	// Sequence
 	painter.setPen(cellTextColor_);
 	for (size_t i = 0; i < cols_.size(); ++i) {
 		if (upperRow_ >= cols_[i].row && cols_[i].row > upperRow_ - maxDispRowCnt_) {
-			int x = tagWidth_ + colWidth_ * i;
-			int y = rowHeight_ * (upperRow_ - cols_[i].row);
-			painter.fillRect(x, y, colWidth_, rowHeight_, cellColor_);
+			int x = tagWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + i, 0);
+			int y = std::accumulate(rowHeights_.begin(), rowHeights_.begin() + (upperRow_ - cols_[i].row), 0);
+			painter.fillRect(x, y, colWidths_[i], rowHeights_[upperRow_ - cols_[i].row], cellColor_);
 			painter.drawText(x + 2,
-							 y + rowHeight_ - fontHeight_ + fontAscend_ + fontLeading_ / 2,
+							 y + rowHeights_[upperRow_ - cols_[i].row] - fontHeight_ + fontAscend_ + (fontLeading_ / 2),
 							 cols_[i].text);
 		}
 	}
 
 	if (hovCol_ >= 0 && hovRow_ >= 0) {
-		painter.fillRect(tagWidth_ + colWidth_ * hovCol_, rowHeight_ * (upperRow_ - hovRow_),
-						 colWidth_, rowHeight_, hovColor_);
+		painter.fillRect(tagWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + hovCol_, 0),
+						 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + hovRow_, 0),
+						 colWidths_[hovCol_], rowHeights_[hovRow_], hovColor_);
 	}
 }
 
@@ -266,20 +270,20 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 	for (int i = 0; i < colCnt_; ++i) {
 		for (size_t j = 0; j < loops_.size(); ++j) {
 			if (loops_[j].begin <= i && i <= loops_[j].end) {
-				painter.fillRect(w, loopY_, colWidth_, fontHeight_, loopColor_);
+				painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, loopColor_);
 				if (loops_[j].begin == i) {
 					painter.fillRect(w, loopY_, 2, fontHeight_, loopEdgeColor_);
 					QString times = (loops_[j].times == 1) ? "" : QString::number(loops_[j].times);
 					painter.drawText(w + 2, loopBaseY_, "Loop " + times);
 				}
 				if (loops_[j].end == i) {
-					painter.fillRect(w + colWidth_ - 2, loopY_, 2, fontHeight_, loopEdgeColor_);
+					painter.fillRect(w + colWidths_[i] - 2, loopY_, 2, fontHeight_, loopEdgeColor_);
 				}
 			}
 		}
 		if (hovRow_ == -2 && hovCol_ == i)
-			painter.fillRect(w, loopY_, colWidth_, fontHeight_, hovColor_);
-		w += colWidth_;
+			painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, hovColor_);
+		w += colWidths_[i];
 	}
 }
 
@@ -316,8 +320,8 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 			painter.drawText(w + 2, releaseBaseY_, type);
 		}
 		if (hovRow_ == -3 && hovCol_ == i)
-			painter.fillRect(w, releaseY_, colWidth_, fontHeight_, hovColor_);
-		w += colWidth_;
+			painter.fillRect(w, releaseY_, colWidths_[i], fontHeight_, hovColor_);
+		w += colWidths_[i];
 	}
 }
 
@@ -327,7 +331,8 @@ void VisualizedInstrumentMacroEditor::drawBorder()
 	painter.setPen(borderColor_);
 	painter.drawLine(tagWidth_, 0, tagWidth_, ui->panel->geometry().height());
 	for (int i = 1; i < maxDispRowCnt_; ++i) {
-		painter.drawLine(tagWidth_, rowHeight_ * i, ui->panel->geometry().width(), rowHeight_ * i);
+		painter.drawLine(tagWidth_, std::accumulate(rowHeights_.begin(), rowHeights_.begin() + i, 0),
+						 ui->panel->geometry().width(), std::accumulate(rowHeights_.begin(), rowHeights_.begin() + i, 0));
 	}
 }
 
@@ -458,8 +463,8 @@ void VisualizedInstrumentMacroEditor::paintEventInView(QPaintEvent* event)
 
 void VisualizedInstrumentMacroEditor::resizeEventInView(QResizeEvent* event)
 {
-	updateRowHeight(ui->panel->geometry().height());
-	updateColumnWidth(ui->panel->geometry().width());
+	updateRowHeight();
+	updateColumnWidth();
 
 	releaseY_ = ui->panel->geometry().height() - fontHeight_;
 	releaseBaseY_ = releaseY_ + fontAscend_ + fontLeading_ / 2;
@@ -482,7 +487,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 	int x = event->pos().x();
 	if (hovRow_ == -2) {
 		if (event->button() == Qt::LeftButton) {
-			for (int col = 0, w = tagWidth_; col < colCnt_; ++col, w += colWidth_) {
+			for (int col = 0, w = tagWidth_; col < colCnt_; ++col) {
 				if (w - 4 < x && x < w + 4) {
 					for (size_t i = 0; i < loops_.size(); ++i) {
 						if (loops_[i].begin == col) {
@@ -494,7 +499,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 						}
 					}
 				}
-				else if (w + colWidth_ - 4 < x && x < w + colWidth_ + 4) {
+				else if (w + colWidths_[col] - 4 < x && x < w + colWidths_[col] + 4) {
 					for (size_t i = 0; i < loops_.size(); ++i) {
 						if (loops_[i].end == col) {
 							grabLoop_ = i;
@@ -505,12 +510,13 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 						}
 					}
 				}
+				w += colWidths_[col];
 			}
 		}
 	}
 	else if (hovRow_ == -3 && release_.point != -1) {
 		if (event->button() == Qt::LeftButton) {
-			int w = tagWidth_ + colWidth_ * release_.point;
+			int w = tagWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + release_.point, 0);
 			if (w - 4 < x && x < w + 4) {
 				isGrabRelease_ = true;
 			}
@@ -594,7 +600,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 			}
 		}
 		else {
-			setSequenceCommand(hovRow_, hovCol_);
+			setSequenceCommand(upperRow_ - hovRow_, hovCol_);
 		}
 	}
 
@@ -634,7 +640,8 @@ void VisualizedInstrumentMacroEditor::mouseMoveEventInView()
 	if (!colCnt_) return;
 
 	if (pressRow_ >= 0 && pressCol_ >= 0 && hovRow_ >= 0 && hovCol_ >= 0) {
-		if (cols_[hovCol_].row != hovRow_) setSequenceCommand(hovRow_, hovCol_);
+		if (cols_[upperRow_ - hovCol_].row != (upperRow_ - hovRow_))
+			setSequenceCommand(upperRow_ - hovRow_, hovCol_);
 	}
 }
 
@@ -652,9 +659,13 @@ void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 		hovCol_ = -2;
 	}
 	else {
-		hovCol_ = 0;
-		for(int w = tagWidth_ + colWidth_; w < pos.x(); w += colWidth_, ++hovCol_)
-			;
+		for (int i = 0, w = tagWidth_; i < colCnt_; ++i) {
+			w += colWidths_[i];
+			if (pos.x() < w) {
+				hovCol_ = i;
+				break;
+			}
+		}
 		if (hovCol_ >= colCnt_) hovCol_ = -1;	// Out of range
 	}
 
@@ -666,9 +677,11 @@ void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 		hovRow_ = -2;
 	}
 	else {
-		for (int i = 0, w = rowHeight_; i < maxDispRowCnt_; ++i, w += rowHeight_) {
+		int cnt = (maxDispRowCnt_ > labels_.size()) ? maxDispRowCnt_ : labels_.size();
+		for (int i = 0, w = 0; i < cnt; ++i) {
+			w += rowHeights_[i];
 			if (pos.y() < w) {
-				hovRow_ = upperRow_ - i;
+				hovRow_ = i;
 				break;
 			}
 		}
@@ -728,4 +741,48 @@ void VisualizedInstrumentMacroEditor::onLoopChanged()
 	}
 
 	emit loopChanged(std::move(begins), std::move(ends), std::move(times));
+}
+
+void VisualizedInstrumentMacroEditor::updateColumnWidth()
+{
+	colWidths_.clear();
+
+	if (!colCnt_) return;
+
+	float ww = (ui->panel->geometry().width() - tagWidth_) / static_cast<float>(colCnt_);
+	int w = static_cast<int>(ww);
+	float dif = ww - w;
+	float sum = 0;
+	for (int i = 0; i < colCnt_; ++i) {
+		int width = w;
+		sum += dif;
+		if (sum >= 1.0) {
+			++width;
+			sum -= 1.0;
+		}
+		colWidths_.push_back(width);
+	}
+}
+
+void VisualizedInstrumentMacroEditor::updateRowHeight()
+{
+	rowHeights_.clear();
+
+	if (!labels_.size()) return;
+
+	int div = (labels_.size() > maxDispRowCnt_) ? maxDispRowCnt_ : labels_.size();
+	float hh = (ui->panel->geometry().height() - fontHeight_ * 2) / static_cast<float>(div);
+	int h = static_cast<int>(hh);
+	float dif = hh - h;
+	float sum = 0;
+
+	for (int i = 0; i < div; ++i) {
+		int height = h;
+		sum += dif;
+		if (sum >= 1.0) {
+			++height;
+			sum -= 1.0;
+		}
+		rowHeights_.push_back(height);
+	}
 }
