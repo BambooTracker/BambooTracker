@@ -173,13 +173,22 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 		case ReleaseType::ABSOLUTE:
 		{
 			next = -1;
-			int prevIdx = seq_->release_.begin - 1;
-			if (prevIdx < 0) {
-				next = seq_->release_.begin;
-				break;
+			int crtr;
+			if (pos_ == -1) {
+				int prevIdx = seq_->release_.begin - 1;
+				if (prevIdx < 0) {
+					next = seq_->release_.begin;
+					break;
+				}
+				else {
+					crtr = seq_->seq_[prevIdx].type;
+				}
+			}
+			else {
+				crtr = seq_->seq_[pos_].type;
 			}
 			for (int i = seq_->release_.begin; i < seq_->seq_.size(); ++i) {
-				if (seq_->seq_[i].type <= seq_->seq_[prevIdx].type) {
+				if (seq_->seq_[i].type <= crtr) {
 					next = i;
 					break;
 				}
@@ -188,8 +197,13 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 		}
 		case ReleaseType::RELATIVE:
 		{
-			int prevIdx = seq_->release_.begin - 1;
-			if (prevIdx >= 0) relReleaseRatio_ = seq_->seq_[prevIdx].type / 15.0;
+			if (pos_ == -1) {
+				int prevIdx = seq_->release_.begin - 1;
+				if (prevIdx >= 0) relReleaseRatio_ = seq_->seq_[prevIdx].type / 15.0;
+			}
+			else {
+				relReleaseRatio_ = seq_->seq_[pos_].type / 15.0;
+			}
 			next = seq_->release_.begin;
 			break;
 		}
