@@ -12,7 +12,6 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	: QWidget(parent),
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
 	  maxDispRowCnt_(0),
-	  colCnt_(0),
 	  upperRow_(-1),
 	  defaultRow_(0),
 	  hovRow_(-1),
@@ -145,44 +144,42 @@ void VisualizedInstrumentMacroEditor::setMultipleReleaseState(bool enabled)
 
 void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, int data)
 {
-	++colCnt_;
+	cols_.push_back({ row, data, str });
 
 	updateColumnWidth();
-	cols_.push_back({ row, data, str });
 	ui->panel->update();
 
-	ui->colSizeLabel->setText("Size: " + QString::number(colCnt_));
+	ui->colSizeLabel->setText("Size: " + QString::number(cols_.size()));
 
 	emit sequenceCommandAdded(row, cols_.size() - 1);
 }
 
 void VisualizedInstrumentMacroEditor::removeSequenceCommand()
 {
-	if (colCnt_ == 1) return;
+	if (cols_.size() == 1) return;
 
-	--colCnt_;
+	cols_.pop_back();
 
 	// Modify loop
 	for (size_t i = 0; i < loops_.size();) {
-		if (loops_[i].begin >= colCnt_) {
+		if (loops_[i].begin >= cols_.size()) {
 			loops_.erase(loops_.begin() + i);
 		}
 		else {
-			if (loops_[i].end >= colCnt_)
-				loops_[i].end = colCnt_ - 1;
+			if (loops_[i].end >= cols_.size())
+				loops_[i].end = cols_.size() - 1;
 			++i;
 		}
 	}
 
 	// Modify release
-	if (release_.point >= colCnt_)
+	if (release_.point >= cols_.size())
 		release_.point = -1;
 
 	updateColumnWidth();
-	cols_.pop_back();
 	ui->panel->update();
 
-	ui->colSizeLabel->setText("Size: " + QString::number(colCnt_));
+	ui->colSizeLabel->setText("Size: " + QString::number(cols_.size()));
 
 	emit sequenceCommandRemoved();
 }
@@ -213,7 +210,6 @@ void VisualizedInstrumentMacroEditor::clear()
 	cols_.clear();
 	loops_.clear();
 	release_ = { VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 };
-	colCnt_ = 0;
 	updateColumnWidth();
 }
 
@@ -267,7 +263,7 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 	painter.drawText(1, loopBaseY_, "Loop");
 
 	int w = tagWidth_;
-	for (int i = 0; i < colCnt_; ++i) {
+	for (int i = 0; i < cols_.size(); ++i) {
 		for (size_t j = 0; j < loops_.size(); ++j) {
 			if (loops_[j].begin <= i && i <= loops_[j].end) {
 				painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, loopColor_);
@@ -297,7 +293,7 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 	painter.drawText(1, releaseBaseY_, "Release");
 
 	int w = tagWidth_;
-	for (int i = 0; i < colCnt_; ++i) {
+	for (int i = 0; i < cols_.size(); ++i) {
 		if (release_.point == i) {
 			painter.fillRect(w, releaseY_, ui->panel->geometry().width() - w, fontHeight_, releaseColor_);
 			painter.fillRect(w, releaseY_, 2, fontHeight_, releaseEdgeColor_);
@@ -478,7 +474,7 @@ void VisualizedInstrumentMacroEditor::resizeEventInView(QResizeEvent* event)
 
 void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 {
-	if (!colCnt_) return;
+	if (!cols_.size()) return;
 
 	pressRow_ = hovRow_;
 	pressCol_ = hovCol_;
@@ -487,7 +483,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 	int x = event->pos().x();
 	if (hovRow_ == -2) {
 		if (event->button() == Qt::LeftButton) {
-			for (int col = 0, w = tagWidth_; col < colCnt_; ++col) {
+			for (int col = 0, w = tagWidth_; col < cols_.size(); ++col) {
 				if (w - 4 < x && x < w + 4) {
 					for (size_t i = 0; i < loops_.size(); ++i) {
 						if (loops_[i].begin == col) {
@@ -609,7 +605,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 
 void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event)
 {
-	if (!colCnt_) return;
+	if (!cols_.size()) return;
 
 	if (grabLoop_ != -1) {	// Move loop
 		if (event->button() == Qt::LeftButton) {
@@ -637,7 +633,7 @@ void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event
 
 void VisualizedInstrumentMacroEditor::mouseMoveEventInView()
 {
-	if (!colCnt_) return;
+	if (!cols_.size()) return;
 
 	if (pressRow_ >= 0 && pressCol_ >= 0 && hovRow_ >= 0 && hovCol_ >= 0) {
 		if (cols_[upperRow_ - hovCol_].row != (upperRow_ - hovRow_))
@@ -647,7 +643,7 @@ void VisualizedInstrumentMacroEditor::mouseMoveEventInView()
 
 void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 {
-	if (!colCnt_) return;
+	if (!cols_.size()) return;
 
 	int oldCol = hovCol_;
 	int oldRow = hovRow_;
@@ -659,14 +655,14 @@ void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 		hovCol_ = -2;
 	}
 	else {
-		for (int i = 0, w = tagWidth_; i < colCnt_; ++i) {
+		for (int i = 0, w = tagWidth_; i < cols_.size(); ++i) {
 			w += colWidths_[i];
 			if (pos.x() < w) {
 				hovCol_ = i;
 				break;
 			}
 		}
-		if (hovCol_ >= colCnt_) hovCol_ = -1;	// Out of range
+		if (hovCol_ >= cols_.size()) hovCol_ = -1;	// Out of range
 	}
 
 	// Detect row
@@ -700,7 +696,7 @@ void VisualizedInstrumentMacroEditor::leaveEventInView()
 
 void VisualizedInstrumentMacroEditor::wheelEventInView(QWheelEvent* event)
 {
-	if (!colCnt_) return;
+	if (!cols_.size()) return;
 
 	Ui::EventGuard eg(isIgnoreEvent_);
 	int degree = event->angleDelta().y() / 8;
@@ -747,16 +743,16 @@ void VisualizedInstrumentMacroEditor::updateColumnWidth()
 {
 	colWidths_.clear();
 
-	if (!colCnt_) return;
+	if (!cols_.size()) return;
 
-	float ww = (ui->panel->geometry().width() - tagWidth_) / static_cast<float>(colCnt_);
+	float ww = (ui->panel->geometry().width() - tagWidth_) / static_cast<float>(cols_.size());
 	int w = static_cast<int>(ww);
 	float dif = ww - w;
 	float sum = 0;
-	for (int i = 0; i < colCnt_; ++i) {
+	for (size_t i = 0; i < cols_.size(); ++i) {
 		int width = w;
 		sum += dif;
-		if (sum >= 1.0) {
+		if (sum >= 1.0f) {
 			++width;
 			sum -= 1.0;
 		}
@@ -779,7 +775,7 @@ void VisualizedInstrumentMacroEditor::updateRowHeight()
 	for (int i = 0; i < div; ++i) {
 		int height = h;
 		sum += dif;
-		if (sum >= 1.0) {
+		if (sum >= 1.0f) {
 			++height;
 			sum -= 1.0;
 		}

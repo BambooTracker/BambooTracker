@@ -95,7 +95,7 @@ private:
 	int rowHeight_;
 	int fieldHeight_;
 
-	int maxDispRowCnt_, colCnt_;
+	int maxDispRowCnt_;
 	int upperRow_, defaultRow_;
 
 	int hovRow_, hovCol_;
@@ -159,7 +159,7 @@ private:
 
 	inline void scrollUp(int pos)
 	{
-		upperRow_ = maxDispRowCnt_ + pos - 1;
+		upperRow_ = pos - 1 + ((maxDispRowCnt_ > labels_.size()) ? labels_.size() : maxDispRowCnt_);
 	}
 };
 
