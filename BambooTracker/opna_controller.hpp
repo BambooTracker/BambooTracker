@@ -155,15 +155,12 @@ private:
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
 
-	void checkWaveFormSSGNumber(int ch);
 	void writeWaveFormSSGToRegister(int ch, int seqPos);
 	void writeSquareWaveForm(int ch);
 
-	void checkToneNoiseSSGNumber(int ch);
 	void writeToneNoiseSSGToRegister(int ch, int seqPos);
 	void writeToneNoiseSSGToRegisterNoReference(int ch);
 
-	void checkEnvelopeSSGNumber(int ch);
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
 
 	void writePitchSSG(int ch);

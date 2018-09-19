@@ -900,12 +900,12 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 		refInstSSG_[ch] = inst;
 	}
 
-	if (refInstSSG_[ch]->getWaveFormNumber() != -1)
-		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
-	if (refInstSSG_[ch]->getToneNoiseNumber() != -1)
-		tnItSSG_[ch] = refInstSSG_[ch]->getToneNoiseSequenceIterator();
-	if (refInstSSG_[ch]->getEnvelopeNumber() != -1)
-		envItSSG_[ch] = refInstSSG_[ch]->getEnvelopeSequenceIterator();
+	if (refInstSSG_[ch]->getWaveFormNumber() == -1) wfItSSG_[ch].reset();
+	else wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
+	if (refInstSSG_[ch]->getToneNoiseNumber() == -1) tnItSSG_[ch].reset();
+	else tnItSSG_[ch] = refInstSSG_[ch]->getToneNoiseSequenceIterator();
+	if (refInstSSG_[ch]->getEnvelopeNumber() == -1) envItSSG_[ch].reset();
+	else envItSSG_[ch] = refInstSSG_[ch]->getEnvelopeSequenceIterator();
 	setInstrumentSSGProperties(ch);
 }
 
@@ -913,9 +913,9 @@ void OPNAController::updateInstrumentSSG(int instNum)
 {
 	for (int ch = 0; ch < 3; ++ch) {
 		if (refInstSSG_[ch] != nullptr && refInstSSG_[ch]->getNumber() == instNum) {
-			checkWaveFormSSGNumber(ch);
-			checkToneNoiseSSGNumber(ch);
-			checkEnvelopeSSGNumber(ch);
+			if (refInstSSG_[ch]->getWaveFormNumber() == -1) wfItSSG_[ch].reset();
+			if (refInstSSG_[ch]->getToneNoiseNumber() == -1) tnItSSG_[ch].reset();
+			if (refInstSSG_[ch]->getEnvelopeNumber() == -1) envItSSG_[ch].reset();
 			setInstrumentSSGProperties(ch);
 		}
 	}
@@ -1009,12 +1009,6 @@ void OPNAController::releaseStartSSGSequences(int ch)
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 }
 
-void OPNAController::checkWaveFormSSGNumber(int ch)
-{
-	if (refInstSSG_[ch]->getWaveFormNumber() == -1)
-		wfItSSG_[ch].reset();
-}
-
 void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 {
 	if (seqPos == -1) return;
@@ -1035,8 +1029,6 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case 3:
 		case 4:
 			needMixSetSSG_[ch] = true;
-//			mixerSSG_ |= (0x1 << ch);
-//			opna_.setRegister(0x07, mixerSSG_);
 			break;
 		default:
 			break;
@@ -1123,8 +1115,6 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case 1:
 		case 2:
 			needMixSetSSG_[ch] = true;
-//			mixerSSG_ &= ~(1 << ch);
-//			opna_.setRegister(0x07, mixerSSG_);
 			break;
 		default:
 			break;
@@ -1175,8 +1165,6 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case 1:
 		case 2:
 			needMixSetSSG_[ch] = true;
-//			mixerSSG_ &= ~(1 << ch);
-//			opna_.setRegister(0x07, mixerSSG_);
 			break;
 		default:
 			break;
@@ -1237,8 +1225,6 @@ void OPNAController::writeSquareWaveForm(int ch)
 	default:
 	{
 		needMixSetSSG_[ch] = true;
-//		mixerSSG_ &= ~(1 << ch);
-//		opna_.setRegister(0x07, mixerSSG_);
 		break;
 	}
 	}
@@ -1248,12 +1234,6 @@ void OPNAController::writeSquareWaveForm(int ch)
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
 	wfSSG_[ch] = { 0, -1 };
-}
-
-void OPNAController::checkToneNoiseSSGNumber(int ch)
-{
-	if (refInstSSG_[ch]->getEnvelopeNumber() == -1)
-		envItSSG_[ch].reset();
 }
 
 void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
@@ -1441,12 +1421,6 @@ void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
 	opna_.setRegister(0x07, mixerSSG_);
 
 	needMixSetSSG_[ch] = false;
-}
-
-void OPNAController::checkEnvelopeSSGNumber(int ch)
-{
-	if (refInstSSG_[ch]->getEnvelopeNumber() == -1)
-		envItSSG_[ch].reset();
 }
 
 void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
