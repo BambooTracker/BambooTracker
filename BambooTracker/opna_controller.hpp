@@ -10,7 +10,7 @@ struct ToneDetail
 {
 	int octave;
 	Note note;
-	int fine;
+	int pitch;
 };
 
 struct ToneNoise
@@ -52,7 +52,7 @@ private:
 	/*----- FM -----*/
 public:
 	// Key on-off
-	void keyOnFM(int ch, Note note, int octave, int fine, bool isJam = false);
+	void keyOnFM(int ch, Note note, int octave, int pitch, bool isJam = false);
 	void keyOffFM(int ch, bool isJam = false);
 	void resetFMChannelEnvelope(int ch);
 
@@ -92,15 +92,22 @@ private:
 	/// bit1: left on/off
 	uint8_t panFM_[6];
 
+	void initFM();
+
 	uint32_t getFmChannelMask(int ch);
 	uint32_t getFMChannelOffset(int ch);
+
 	void writeFMEnvelopeToRegistersFromInstrument(int ch);
 	void writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParameter param, int value);
+
 	void writeFMLFOAllRegisters(int ch);
 	void writeFMLFORegister(int ch, FMLFOParamter param);
 	void checkLFOUsed();
+
 	void setFrontFMSequences(int ch);
 	void releaseStartFMSequences(int ch);
+	void tickEventFM(int ch);
+
 	void setInstrumentFMProperties(int ch);
 
 	bool isCareer(int op, int al);
@@ -113,7 +120,7 @@ private:
 	/*----- SSG -----*/
 public:
 	// Key on-off
-	void keyOnSSG(int ch, Note note, int octave, int fine, bool isJam = false);
+	void keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam = false);
 	void keyOffSSG(int ch, bool isJam = false);
 
 	// Set Instrument
@@ -153,9 +160,13 @@ private:
 	CommandInSequence envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> arpItSSG_[3];
+	std::unique_ptr<CommandSequence::Iterator> ptItSSG_[3];
+
+	void initSSG();
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
+	void tickEventSSG(int ch);
 
 	void writeWaveFormSSGToRegister(int ch, int seqPos);
 	void writeSquareWaveForm(int ch);
@@ -166,6 +177,8 @@ private:
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
 
 	void checkRealToneSSGByArpeggio(int ch, int seqPos);
+
+	void checkRealToneSSGByPitch(int ch, int seqPos);
 
 	void writePitchSSG(int ch);
 

@@ -122,6 +122,26 @@ private slots:
 	void on_arpEditGroupBox_toggled(bool arg1);
 	void on_arpNumSpinBox_valueChanged(int arg1);
 
+	//========== Pitch ==========//
+public:
+	int getPitchNumber() const;
+
+signals:
+	void pitchNumberChanged();
+	void pitchParameterChanged(int ptNum, int fromInstNum);
+
+public slots:
+	void onPitchNumberChanged();
+	void onPitchParameterChanged(int arpNum);
+
+private:
+	void setInstrumentPitchParameters();
+
+private slots:
+	void onPitchTypeChanged(int type);
+	void on_ptEditGroupBox_toggled(bool arg1);
+	void on_ptNumSpinBox_valueChanged(int arg1);
+
 	//========== Else ==========//
 private slots:
 	void on_gateCountSpinBox_valueChanged(int arg1);

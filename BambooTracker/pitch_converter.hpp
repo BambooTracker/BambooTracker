@@ -6,11 +6,11 @@
 class PitchConverter
 {
 public:
-	static uint16_t getPitchFM(Note note, int octave, int fine);
-	static uint16_t getPitchSSGSquare(Note note, int octave, int fine);
+	static uint16_t getPitchFM(Note note, int octave, int pitch);
+	static uint16_t getPitchSSGSquare(Note note, int octave, int pitch);
 	static uint16_t getPitchSSGSquare(int n);
-	static uint16_t getPitchSSGTriangle(Note note, int octave, int fine);
-	static uint16_t getPitchSSGSaw(Note note, int octave, int fine);
+	static uint16_t getPitchSSGTriangle(Note note, int octave, int pitch);
+	static uint16_t getPitchSSGSaw(Note note, int octave, int pitch);
 
 private:
 	static const uint16_t centTableFM_[384];

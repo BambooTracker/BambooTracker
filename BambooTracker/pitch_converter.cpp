@@ -1,15 +1,15 @@
 #include "pitch_converter.hpp"
 
-uint16_t PitchConverter::getPitchFM(Note note, int octave, int fine)
+uint16_t PitchConverter::getPitchFM(Note note, int octave, int pitch)
 {
-	int index = static_cast<int>(note) + fine;
+	int index = static_cast<int>(note) + pitch;
 	PitchConverter::calc(index, octave);
 	return centTableFM_[index] | (octave << 11);
 }
 
-uint16_t PitchConverter::getPitchSSGSquare(Note note, int octave, int fine)
+uint16_t PitchConverter::getPitchSSGSquare(Note note, int octave, int pitch)
 {
-	int index = static_cast<int>(note) + fine;
+	int index = static_cast<int>(note) + pitch;
 	PitchConverter::calc(index, octave);
 	return centTableSSGSquare_[index] >> octave;
 }
@@ -21,16 +21,16 @@ uint16_t PitchConverter::getPitchSSGSquare(int n)
 	return centTableSSGSquare_[index] >> octave;
 }
 
-uint16_t PitchConverter::getPitchSSGTriangle(Note note, int octave, int fine)
+uint16_t PitchConverter::getPitchSSGTriangle(Note note, int octave, int pitch)
 {
-	int index = static_cast<int>(note) + fine;
+	int index = static_cast<int>(note) + pitch;
 	PitchConverter::calc(index, octave);
 	return centTableSSGTriangle_[index] >> octave;
 }
 
-uint16_t PitchConverter::getPitchSSGSaw(Note note, int octave, int fine)
+uint16_t PitchConverter::getPitchSSGSaw(Note note, int octave, int pitch)
 {
-	int index = static_cast<int>(note) + fine;
+	int index = static_cast<int>(note) + pitch;
 	PitchConverter::calc(index, octave);
 	return centTableSSGSaw_[index] >> octave;
 }

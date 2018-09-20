@@ -638,6 +638,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGArpeggioNumberChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::arpeggioParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGArpeggioParameterChanged);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchNumberChanged);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchParameterChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOnEvent,
 						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,

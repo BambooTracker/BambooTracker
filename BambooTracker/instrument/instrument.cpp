@@ -110,7 +110,8 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 	  wfNum_(-1),
 	  tnNum_(-1),
 	  envNum_(-1),
-	  arpNum_(-1)
+	  arpNum_(-1),
+	  ptNum_(-1)
 {
 }
 
@@ -242,4 +243,39 @@ Release InstrumentSSG::getArpeggioRelease() const
 std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioSSGIterator(arpNum_);
+}
+
+void InstrumentSSG::setPitchNumber(int n)
+{
+	ptNum_ = n;
+}
+
+int InstrumentSSG::getPitchNumber() const
+{
+	return ptNum_;
+}
+
+int InstrumentSSG::getPitchType() const
+{
+	return owner_->getPitchType(ptNum_);
+}
+
+std::vector<CommandInSequence> InstrumentSSG::getPitchSequence() const
+{
+	return owner_->getPitchSSGSequence(ptNum_);
+}
+
+std::vector<Loop> InstrumentSSG::getPitchLoops() const
+{
+	return owner_->getPitchSSGLoops(ptNum_);
+}
+
+Release InstrumentSSG::getPitchRelease() const
+{
+	return owner_->getPitchSSGRelease(ptNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getPitchSequenceIterator() const
+{
+	return owner_->getPitchSSGIterator(ptNum_);
 }

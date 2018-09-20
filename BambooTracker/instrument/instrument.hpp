@@ -101,9 +101,18 @@ public:
 	Release getArpeggioRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
 
+	void setPitchNumber(int n);
+	int getPitchNumber() const;
+	int getPitchType() const;
+	std::vector<CommandInSequence> getPitchSequence() const;
+	std::vector<Loop> getPitchLoops() const;
+	Release getPitchRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;
+
 private:
 	int wfNum_;
 	int tnNum_;
 	int envNum_;
 	int arpNum_;
+	int ptNum_;
 };

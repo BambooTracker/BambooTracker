@@ -32,97 +32,19 @@ void OPNAController::reset()
 void OPNAController::initChip()
 {
 	opna_.setRegister(0x29, 0x80);		// Init interrupt / YM2608 mode
-	mixerSSG_ = 0xff;
-	opna_.setRegister(0x07, mixerSSG_);	// SSG mix
+
+	initFM();
+	initSSG();
+
 	opna_.setRegister(0x11, 0x3f);		// Drum total volume
-
-	// FM
-	lfoFreq_ = -1;
-
-	for (int ch = 0; ch < 6; ++ch) {
-		// Init operators key off
-		fmOpEnables_[ch] = 0xf;
-		isKeyOnFM_[ch] = false;
-
-		// Init envelope
-		envFM_[ch] = std::make_unique<EnvelopeFM>(-1);
-		refInstFM_[ch].reset();
-
-		baseToneFM_[ch].octave = -1;	// Init key on note data
-		volFM_[ch] = 0;	// Init volume
-		gateCntFM_[ch] = 0;
-		enableEnvResetFM_[ch] = true;
-
-		// Init sequence
-		hasPreSetTickEventFM_[ch] = false;
-
-		// Init FM pan
-		uint32_t bch = getFMChannelOffset(ch);
-		panFM_[ch] = 3;
-		opna_.setRegister(0xb4 + bch, 0xc0);
-	}
-
-	// SSG
-	for (int ch = 0; ch < 3; ++ch) {
-		isKeyOnSSG_[ch] = false;
-
-		refInstSSG_[ch].reset();	// Init envelope
-		baseToneSSG_[ch].octave = -1;	// Init key on note data
-		realToneSSG_[ch].octave = -1;
-		tnSSG_[ch] = { false, false, -1 };
-		baseVolSSG_[ch] = 0xf;	// Init volume
-		isHardEnvSSG_[ch] = false;
-		isBuzzEffSSG_[ch] = false;
-
-		// Init sequence
-		hasPreSetTickEventSSG_[ch] = false;
-		wfItSSG_[ch].reset();
-		wfSSG_[ch] = { -1, -1 };
-		envItSSG_[ch].reset();
-		envSSG_[ch] = { -1, -1 };
-		tnItSSG_[ch].reset();
-		arpItSSG_[ch].reset();
-		needEnvSetSSG_[ch] = false;
-		needMixSetSSG_[ch] = false;
-		needToneSetSSG_[ch] = false;
-
-		gateCntSSG_[ch] = 0;
-	}
 }
 
 /********** Forward instrument sequence **********/
 void OPNAController::tickEvent(SoundSource src, int ch)
 {
 	switch (src) {
-	case SoundSource::FM:
-		if (hasPreSetTickEventFM_[ch]) {
-			hasPreSetTickEventFM_[ch] = false;
-		}
-		else {
-			// UNDONE
-		}
-		break;
-
-	case SoundSource::SSG:
-		if (hasPreSetTickEventSSG_[ch]) {
-			hasPreSetTickEventSSG_[ch] = false;
-		}
-		else {
-			if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next());
-			if (envItSSG_[ch]) {
-				writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->next());
-			}
-			else if (needToneSetSSG_[ch]) {
-				setRealVolumeSSG(ch);
-			}
-			if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
-			else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
-
-			if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->next());
-
-			if (needToneSetSSG_[ch]) writePitchSSG(ch);
-		}
-		break;
+	case SoundSource::FM:	tickEventFM(ch);	break;
+	case SoundSource::SSG:	tickEventSSG(ch);	break;
 	}
 }
 
@@ -154,21 +76,21 @@ int OPNAController::getDuration() const
 
 //---------- FM ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnFM(int ch, Note note, int octave, int fine, bool isJam)
+void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJam)
 {
 	if (isMuteFM(ch)) return;
 
 	baseToneFM_[ch].octave = octave;
 	baseToneFM_[ch].note = note;
-	baseToneFM_[ch].fine = fine;
+	baseToneFM_[ch].pitch = pitch;
 
 	setFrontFMSequences(ch);
 	hasPreSetTickEventFM_[ch] = isJam;
 
-	uint16_t pitch = PitchConverter::getPitchFM(note, octave, fine);
+	uint16_t p = PitchConverter::getPitchFM(note, octave, pitch);
 	uint32_t offset = getFMChannelOffset(ch);
-	opna_.setRegister(0xa4 + offset, pitch >> 8);
-	opna_.setRegister(0xa0 + offset, pitch & 0x00ff);
+	opna_.setRegister(0xa4 + offset, p >> 8);
+	opna_.setRegister(0xa0 + offset, p & 0x00ff);
 	uint32_t chdata = getFmChannelMask(ch);
 	opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
 
@@ -329,6 +251,34 @@ ToneDetail OPNAController::getFMTone(int ch) const
 }
 
 /***********************************/
+void OPNAController::initFM()
+{
+	lfoFreq_ = -1;
+
+	for (int ch = 0; ch < 6; ++ch) {
+		// Init operators key off
+		fmOpEnables_[ch] = 0xf;
+		isKeyOnFM_[ch] = false;
+
+		// Init envelope
+		envFM_[ch] = std::make_unique<EnvelopeFM>(-1);
+		refInstFM_[ch].reset();
+
+		baseToneFM_[ch].octave = -1;	// Init key on note data
+		volFM_[ch] = 0;	// Init volume
+		gateCntFM_[ch] = 0;
+		enableEnvResetFM_[ch] = true;
+
+		// Init sequence
+		hasPreSetTickEventFM_[ch] = false;
+
+		// Init FM pan
+		uint32_t bch = getFMChannelOffset(ch);
+		panFM_[ch] = 3;
+		opna_.setRegister(0xb4 + bch, 0xc0);
+	}
+}
+
 uint32_t OPNAController::getFmChannelMask(int ch)
 {
 	// UNDONE: change channel type by Effect mode
@@ -829,6 +779,16 @@ void OPNAController::releaseStartFMSequences(int ch)
 	// UNDONE
 }
 
+void OPNAController::tickEventFM(int ch)
+{
+	if (hasPreSetTickEventFM_[ch]) {
+		hasPreSetTickEventFM_[ch] = false;
+	}
+	else {
+		// UNDONE
+	}
+}
+
 void OPNAController::setInstrumentFMProperties(int ch)
 {
 	gateCntFM_[ch] = refInstFM_[ch]->getGateCount();
@@ -868,13 +828,13 @@ bool OPNAController::isCareer(int op, int al)
 
 //---------- SSG ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnSSG(int ch, Note note, int octave, int fine, bool isJam)
+void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam)
 {
 	if (isMuteSSG(ch)) return;
 
 	baseToneSSG_[ch].octave = octave;
 	baseToneSSG_[ch].note = note;
-	baseToneSSG_[ch].fine = fine;
+	baseToneSSG_[ch].pitch = pitch;
 	realToneSSG_[ch] = baseToneSSG_[ch];
 
 	setFrontSSGSequences(ch);
@@ -913,6 +873,8 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 	else envItSSG_[ch] = refInstSSG_[ch]->getEnvelopeSequenceIterator();
 	if (refInstSSG_[ch]->getArpeggioNumber() == -1) arpItSSG_[ch].reset();
 	else arpItSSG_[ch] = refInstSSG_[ch]->getArpeggioSequenceIterator();
+	if (refInstSSG_[ch]->getPitchNumber() == -1) ptItSSG_[ch].reset();
+	else ptItSSG_[ch] = refInstSSG_[ch]->getPitchSequenceIterator();
 	setInstrumentSSGProperties(ch);
 }
 
@@ -924,6 +886,7 @@ void OPNAController::updateInstrumentSSG(int instNum)
 			if (refInstSSG_[ch]->getToneNoiseNumber() == -1) tnItSSG_[ch].reset();
 			if (refInstSSG_[ch]->getEnvelopeNumber() == -1) envItSSG_[ch].reset();
 			if (refInstSSG_[ch]->getArpeggioNumber() == -1) arpItSSG_[ch].reset();
+			if (refInstSSG_[ch]->getPitchNumber() == -1) ptItSSG_[ch].reset();
 			setInstrumentSSGProperties(ch);
 		}
 	}
@@ -980,6 +943,39 @@ ToneDetail OPNAController::getSSGTone(int ch) const
 }
 
 /***********************************/
+void OPNAController::initSSG()
+{
+	mixerSSG_ = 0xff;
+	opna_.setRegister(0x07, mixerSSG_);	// SSG mix
+
+	for (int ch = 0; ch < 3; ++ch) {
+		isKeyOnSSG_[ch] = false;
+
+		refInstSSG_[ch].reset();	// Init envelope
+		baseToneSSG_[ch].octave = -1;	// Init key on note data
+		realToneSSG_[ch].octave = -1;
+		tnSSG_[ch] = { false, false, -1 };
+		baseVolSSG_[ch] = 0xf;	// Init volume
+		isHardEnvSSG_[ch] = false;
+		isBuzzEffSSG_[ch] = false;
+
+		// Init sequence
+		hasPreSetTickEventSSG_[ch] = false;
+		wfItSSG_[ch].reset();
+		wfSSG_[ch] = { -1, -1 };
+		envItSSG_[ch].reset();
+		envSSG_[ch] = { -1, -1 };
+		tnItSSG_[ch].reset();
+		arpItSSG_[ch].reset();
+		ptItSSG_[ch].reset();
+		needEnvSetSSG_[ch] = false;
+		needMixSetSSG_[ch] = false;
+		needToneSetSSG_[ch] = false;
+
+		gateCntSSG_[ch] = 0;
+	}
+}
+
 void OPNAController::setFrontSSGSequences(int ch)
 {
 	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->front());
@@ -992,6 +988,8 @@ void OPNAController::setFrontSSGSequences(int ch)
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
 	if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->front());
+
+	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->front());
 
 	writePitchSSG(ch);
 }
@@ -1018,9 +1016,35 @@ void OPNAController::releaseStartSSGSequences(int ch)
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-	if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->front());
+	if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->next(true));
+
+	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next(true));
 
 	if (needToneSetSSG_[ch]) writePitchSSG(ch);
+}
+
+void OPNAController::tickEventSSG(int ch)
+{
+	if (hasPreSetTickEventSSG_[ch]) {
+		hasPreSetTickEventSSG_[ch] = false;
+	}
+	else {
+		if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next());
+		if (envItSSG_[ch]) {
+			writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->next());
+		}
+		else if (needToneSetSSG_[ch]) {
+			setRealVolumeSSG(ch);
+		}
+		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
+		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
+
+		if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->next());
+
+		if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next());
+
+		if (needToneSetSSG_[ch]) writePitchSSG(ch);
+	}
 }
 
 void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
@@ -1502,6 +1526,22 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 	needToneSetSSG_[ch] = true;
 }
 
+void OPNAController::checkRealToneSSGByPitch(int ch, int seqPos)
+{
+	if (seqPos == -1) return;
+
+	switch (ptItSSG_[ch]->getSequenceType()) {
+	case 0:	// Absolute
+		realToneSSG_[ch].pitch = ptItSSG_[ch]->getCommandType() - 127;
+		break;
+	case 1:	// Relative
+		realToneSSG_[ch].pitch += (ptItSSG_[ch]->getCommandType() - 127);
+		break;
+	}
+
+	needToneSetSSG_[ch] = true;
+}
+
 void OPNAController::writePitchSSG(int ch)
 {
 	switch (wfSSG_[ch].type) {
@@ -1509,7 +1549,7 @@ void OPNAController::writePitchSSG(int ch)
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGSquare(realToneSSG_[ch].note,
 													 realToneSSG_[ch].octave,
-													 realToneSSG_[ch].fine);
+													 realToneSSG_[ch].pitch);
 		uint8_t offset = ch << 1;
 		opna_.setRegister(0x00 + offset, pitch & 0xff);
 		opna_.setRegister(0x01 + offset, pitch >> 8);
@@ -1520,7 +1560,7 @@ void OPNAController::writePitchSSG(int ch)
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGTriangle(realToneSSG_[ch].note,
 															 realToneSSG_[ch].octave,
-															 realToneSSG_[ch].fine);
+															 realToneSSG_[ch].pitch);
 		opna_.setRegister(0x0b, pitch & 0x00ff);
 		opna_.setRegister(0x0c, pitch >> 8);
 		break;
@@ -1530,7 +1570,7 @@ void OPNAController::writePitchSSG(int ch)
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGSaw(realToneSSG_[ch].note,
 															 realToneSSG_[ch].octave,
-															 realToneSSG_[ch].fine);
+															 realToneSSG_[ch].pitch);
 		opna_.setRegister(0x0b, pitch & 0x00ff);
 		opna_.setRegister(0x0c, pitch >> 8);
 		break;

@@ -12,6 +12,7 @@ InstrumentsManager::InstrumentsManager()
 		tnSSG_[i] = std::make_shared<CommandSequence>(i, 0);
 		envSSG_[i] = std::make_shared<CommandSequence>(i, 0, 15);
 		arpSSG_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+		ptSSG_[i] = std::make_shared<CommandSequence>(i, 0, 127);
 	}
 }
 
@@ -52,6 +53,8 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		if (envNum != -1) envSSG_.at(envNum)->registerUserInstrument(num);
 		int arpNum = ssg->getArpeggioNumber();
 		if (arpNum != -1) arpSSG_.at(arpNum)->registerUserInstrument(num);
+		int ptNum = ssg->getPitchNumber();
+		if (ptNum != -1) ptSSG_.at(ptNum)->registerUserInstrument(num);
 		break;
 	}
 }
@@ -77,6 +80,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		setInstrumentSSGToneNoise(cloneInstNum, refSsg->getToneNoiseNumber());
 		setInstrumentSSGEnvelope(cloneInstNum, refSsg->getEnvelopeNumber());
 		setInstrumentSSGArpeggio(cloneInstNum, refSsg->getArpeggioNumber());
+		setInstrumentSSGPitch(cloneInstNum, refSsg->getPitchNumber());
 		break;
 	}
 }
@@ -130,6 +134,11 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			int arpNum = cloneSSGArpeggio(refSsg->getArpeggioNumber());
 			cloneSsg->setArpeggioNumber(arpNum);
 			arpSSG_[arpNum]->registerUserInstrument(cloneInstNum);
+		}
+		if (refSsg->getPitchNumber() != -1) {
+			int ptNum = cloneSSGPitch(refSsg->getPitchNumber());
+			cloneSsg->setPitchNumber(ptNum);
+			ptSSG_[ptNum]->registerUserInstrument(cloneInstNum);
 		}
 		break;
 	}
@@ -219,6 +228,20 @@ int InstrumentsManager::cloneSSGArpeggio(int srcNum)
 	return cloneNum;
 }
 
+int InstrumentsManager::cloneSSGPitch(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& pt : ptSSG_) {
+		if (!pt->isUserInstrument()) {
+			pt = ptSSG_.at(srcNum)->clone();
+			pt->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
 std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
 	switch (insts_.at(instNum)->getSoundSource()) {
@@ -240,6 +263,8 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		if (envNum != -1) envSSG_.at(envNum)->deregisterUserInstrument(instNum);
 		int arpNum = ssg->getArpeggioNumber();
 		if (arpNum != -1) arpSSG_.at(arpNum)->deregisterUserInstrument(instNum);
+		int ptNum = ssg->getPitchNumber();
+		if (ptNum != -1) ptSSG_.at(ptNum)->deregisterUserInstrument(instNum);
 		break;
 	}
 
@@ -641,4 +666,81 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioSSGIte
 std::vector<int> InstrumentsManager::getArpeggioSSGUsers(int arpNum) const
 {
 	return arpSSG_.at(arpNum)->getUserInstruments();
+}
+
+void InstrumentsManager::setInstrumentSSGPitch(int instNum, int ptNum)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	int prevpt = ssg->getPitchNumber();
+	if (prevpt != -1)
+		ptSSG_.at(prevpt)->deregisterUserInstrument(instNum);
+	if (ptNum != -1)
+		ptSSG_.at(ptNum)->registerUserInstrument(instNum);
+
+	ssg->setPitchNumber(ptNum);
+}
+
+int InstrumentsManager::getInstrumentSSGPitch(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum])->getPitchNumber();
+}
+
+void InstrumentsManager::setPitchType(int ptNum, int type)
+{
+	ptSSG_.at(ptNum)->setType(type);
+}
+
+int InstrumentsManager::getPitchType(int ptNum) const
+{
+	return ptSSG_.at(ptNum)->getType();
+}
+
+void InstrumentsManager::addPitchSSGSequenceCommand(int ptNum, int type, int data)
+{
+	ptSSG_.at(ptNum)->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removePitchSSGSequenceCommand(int ptNum)
+{
+	ptSSG_.at(ptNum)->removeSequenceCommand();
+}
+
+void InstrumentsManager::setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data)
+{
+	ptSSG_.at(ptNum)->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandInSequence> InstrumentsManager::getPitchSSGSequence(int ptNum)
+{
+	return ptSSG_.at(ptNum)->getSequence();
+}
+
+void InstrumentsManager::setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	ptSSG_.at(ptNum)->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getPitchSSGLoops(int ptNum) const
+{
+	return ptSSG_.at(ptNum)->getLoops();
+}
+
+void InstrumentsManager::setPitchSSGRelease(int ptNum, ReleaseType type, int begin)
+{
+	ptSSG_.at(ptNum)->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getPitchSSGRelease(int ptNum) const
+{
+	return ptSSG_.at(ptNum)->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchSSGIterator(int ptNum) const
+{
+	return ptSSG_.at(ptNum)->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getPitchSSGUsers(int ptNum) const
+{
+	return ptSSG_.at(ptNum)->getUserInstruments();
 }

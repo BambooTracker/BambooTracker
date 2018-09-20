@@ -117,14 +117,31 @@ public:
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioSSGIterator(int arpNum) const;
 	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
 
+	void setInstrumentSSGPitch(int instNum, int ptNum);
+	int getInstrumentSSGPitch(int instNum);
+	void setPitchType(int ptNum, int type);
+	int getPitchType(int ptNum) const;
+	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
+	void removePitchSSGSequenceCommand(int ptNum);
+	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);
+	std::vector<CommandInSequence> getPitchSSGSequence(int ptNum);
+	void setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getPitchSSGLoops(int ptNum) const;
+	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);
+	Release getPitchSSGRelease(int ptNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getPitchSSGIterator(int ptNum) const;
+	std::vector<int> getPitchSSGUsers(int ptNum) const;
+
 private:
 	std::array<std::shared_ptr<CommandSequence>, 128> wfSSG_;
 	std::array<std::shared_ptr<CommandSequence>, 128> envSSG_;
 	std::array<std::shared_ptr<CommandSequence>, 128> tnSSG_;
 	std::array<std::shared_ptr<CommandSequence>, 128> arpSSG_;
+	std::array<std::shared_ptr<CommandSequence>, 128> ptSSG_;
 
 	int cloneSSGWaveForm(int srcNum);
 	int cloneSSGToneNoise(int srcNum);
 	int cloneSSGEnvelope(int srcNum);
 	int cloneSSGArpeggio(int srcNum);
+	int cloneSSGPitch(int srcNum);
 };
