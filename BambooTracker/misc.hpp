@@ -31,7 +31,11 @@ enum class Note : int
 
 static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
 {
+	if (num < 0) return std::pair<int, Note>(0, Note::C);
+
 	int oct = num / 12;
+	if (oct > 8) return std::pair<int, Note>(8, Note::B);
+
 	Note note;
 	switch (num % 12) {
 	case 0:		note = Note::C;		break;

@@ -173,3 +173,22 @@ void InstrumentFormManager::onInstrumentSSGEnvelopeNumberChanged()
 		}
 	}
 }
+
+void InstrumentFormManager::onInstrumentSSGArpeggioParameterChanged(int arpNum, int fromInstNum)
+{
+	for (auto& pair : map_) {
+		if (pair.first != fromInstNum &&
+				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onArpeggioParameterChanged(arpNum);
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentSSGArpeggioNumberChanged()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onArpeggioNumberChanged();
+		}
+	}
+}

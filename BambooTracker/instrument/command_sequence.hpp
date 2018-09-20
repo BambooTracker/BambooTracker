@@ -30,10 +30,13 @@ struct Release
 class CommandSequence : public AbstructInstrumentProperty
 {
 public:
-	CommandSequence(int num, int type = 0, int data = -1);
+	CommandSequence(int num, int seqType, int comType = 0, int comData = -1);
 	CommandSequence(const CommandSequence& other);
 	virtual ~CommandSequence() = default;
 	std::unique_ptr<CommandSequence> clone();
+
+	void setType(int type);
+	int getType() const;
 
 	size_t getSequenceSize() const;
 	int getSequenceTypeAt(int n);
@@ -60,6 +63,7 @@ public:
 	public:
 		explicit Iterator(CommandSequence* seq);
 		int getPosition() const;
+		int getSequenceType() const;
 		int getCommandType() const;
 		int getCommandData() const;
 		int next(bool isReleaseBegin = false);
@@ -76,6 +80,7 @@ public:
 	std::unique_ptr<CommandSequence::Iterator> getIterator();
 
 private:
+	int type_;
 	std::vector<CommandInSequence> seq_;
 	std::vector<Loop> loops_;
 	Release release_;

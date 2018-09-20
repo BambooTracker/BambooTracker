@@ -42,6 +42,9 @@
        <property name="invertedAppearance">
         <bool>true</bool>
        </property>
+       <property name="invertedControls">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
     </layout>

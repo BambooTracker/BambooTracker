@@ -78,6 +78,15 @@ public:
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
 
+	void setArpeggioSSGType(int arpNum, int type);
+	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
+	void removeArpeggioSSGSequenceCommand(int arpNum);
+	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
+	void setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
+	void setInstrumentSSGArpeggio(int instNum, int arpNum);
+	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
+
 	// Song edit
 	void setCurrentSongNumber(int num);
 	int getCurrentSongNumber() const;

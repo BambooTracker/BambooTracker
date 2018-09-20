@@ -4,6 +4,7 @@
 #include <QFontMetrics>
 #include <QPainter>
 #include <QPoint>
+#include <algorithm>
 #include <numeric>
 #include <utility>
 #include "gui/event_guard.hpp"
@@ -11,7 +12,7 @@
 VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent)
 	: QWidget(parent),
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
-	  maxDispRowCnt_(0),
+	  maxDispRowCnt_(12),
 	  upperRow_(-1),
 	  defaultRow_(0),
 	  hovRow_(-1),
@@ -23,6 +24,7 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	  isGrabRelease_(false),
 	  release_{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 },
 	  isMultiReleaseState_(false),
+	  isLabelOmitted_(false),
 	  isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
@@ -205,12 +207,38 @@ void VisualizedInstrumentMacroEditor::setRelease(ReleaseType type, int point)
 	release_ = { type, point };
 }
 
-void VisualizedInstrumentMacroEditor::clear()
+void VisualizedInstrumentMacroEditor::clearData()
 {
 	cols_.clear();
 	loops_.clear();
 	release_ = { VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 };
 	updateColumnWidth();
+}
+
+void VisualizedInstrumentMacroEditor::setUpperRow(int row)
+{
+	upperRow_ = row;
+	int pos = upperRow_ + 1 - getDisplayedRowCount();
+	ui->panel->update();
+	ui->verticalScrollBar->setValue(pos);
+}
+
+void VisualizedInstrumentMacroEditor::setLabel(int row, QString text)
+{
+	labels_.at(row) = text;
+	ui->panel->update();
+}
+
+void VisualizedInstrumentMacroEditor::clearAllLabelText()
+{
+	std::fill(labels_.begin(), labels_.end(), "");
+	ui->panel->update();
+}
+
+void VisualizedInstrumentMacroEditor::setLabelDiaplayMode(bool isOmitted)
+{
+	isLabelOmitted_ = isOmitted;
+	ui->panel->update();
 }
 
 /******************************/
@@ -226,11 +254,28 @@ void VisualizedInstrumentMacroEditor::drawField()
 
 	// Row label
 	painter.setPen(tagColor_);
-	for (int i = 0; i < maxDispRowCnt_; ++i) {
+	if (isLabelOmitted_ && !labels_.empty()) {
 		painter.drawText(1,
-						 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + i + 1, 0)
+						 rowHeights_.front() - fontHeight_ + fontAscend_ + fontLeading_ / 2,
+						 labels_[upperRow_]);
+		int c = getDisplayedRowCount() / 2;
+		painter.drawText(1,
+						 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + c + 1, 0)
 						 - fontHeight_ + fontAscend_ + fontLeading_ / 2,
-						 labels_[upperRow_ - i]);
+						 labels_[upperRow_ - c]);
+		int l = getDisplayedRowCount() - 1;
+		painter.drawText(1,
+						 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + l + 1, 0)
+						 - fontHeight_ + fontAscend_ + fontLeading_ / 2,
+						 labels_[upperRow_ - l]);
+	}
+	else {
+		for (int i = 0; i < maxDispRowCnt_; ++i) {
+			painter.drawText(1,
+							 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + i + 1, 0)
+							 - fontHeight_ + fontAscend_ + fontLeading_ / 2,
+							 labels_[upperRow_ - i]);
+		}
 	}
 
 	// Sequence
@@ -673,7 +718,7 @@ void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 		hovRow_ = -2;
 	}
 	else {
-		int cnt = (maxDispRowCnt_ > labels_.size()) ? maxDispRowCnt_ : labels_.size();
+		int cnt = getDisplayedRowCount();
 		for (int i = 0, w = 0; i < cnt; ++i) {
 			w += rowHeights_[i];
 			if (pos.y() < w) {
@@ -766,7 +811,7 @@ void VisualizedInstrumentMacroEditor::updateRowHeight()
 
 	if (!labels_.size()) return;
 
-	int div = (labels_.size() > maxDispRowCnt_) ? maxDispRowCnt_ : labels_.size();
+	int div = getDisplayedRowCount();
 	float hh = (ui->panel->geometry().height() - fontHeight_ * 2) / static_cast<float>(div);
 	int h = static_cast<int>(hh);
 	float dif = hh - h;

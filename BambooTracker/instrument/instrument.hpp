@@ -93,8 +93,17 @@ public:
 	Release getEnvelopeRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSequenceIterator() const;
 
+	void setArpeggioNumber(int n);
+	int getArpeggioNumber() const;
+	int getArpeggioType() const;
+	std::vector<CommandInSequence> getArpeggioSequence() const;
+	std::vector<Loop> getArpeggioLoops() const;
+	Release getArpeggioRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
+
 private:
 	int wfNum_;
 	int tnNum_;
 	int envNum_;
+	int arpNum_;
 };

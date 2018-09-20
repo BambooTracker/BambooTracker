@@ -208,6 +208,66 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+
+	//========== Arpeggio ==========//
+	ui->arpEditor->setMaximumDisplayedRowCount(15);
+	ui->arpEditor->setDefaultRow(48);
+	ui->arpEditor->setLabelDiaplayMode(true);
+	for (int i = 0; i < 96; ++i) {
+		ui->arpEditor->AddRow(QString::number(i - 48));
+	}
+	ui->arpEditor->setUpperRow(55);
+
+	ui->arpTypeComboBox->addItem("Absolute", 0);
+	ui->arpTypeComboBox->addItem("Fix", 1);
+	ui->arpTypeComboBox->addItem("Relative", 2);
+
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->addArpeggioSSGSequenceCommand(
+						ui->arpNumSpinBox->value(), row, ui->arpEditor->getSequenceDataAt(col));
+			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+					 this, [&]() {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->removeArpeggioSSGSequenceCommand(ui->arpNumSpinBox->value());
+			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setArpeggioSSGSequenceCommand(
+						ui->arpNumSpinBox->value(), col, row, ui->arpEditor->getSequenceDataAt(col));
+			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::loopChanged,
+					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setArpeggioSSGLoops(
+						ui->arpNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
+			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
+					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+		if (!isIgnoreEvent_) {
+			ReleaseType t = convertReleaseTypeForData(type);
+			bt_.lock()->setArpeggioSSGRelease(ui->arpNumSpinBox->value(), t, point);
+			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->arpTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
 }
 
 InstrumentEditorSSGForm::~InstrumentEditorSSGForm()
@@ -264,6 +324,9 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentWaveFormParameters();
+	setInstrumentToneNoiseParameters();
+	setInstrumentEnvelopeParameters();
+	setInstrumentArpeggioParameters();
 
 	ui->gateCountSpinBox->setValue(instSSG->getGateCount());
 }
@@ -384,7 +447,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 		ui->waveEditGroupBox->setChecked(true);
 		ui->waveNumSpinBox->setValue(num);
 		onWaveFormNumberChanged();
-		ui->waveEditor->clear();
+		ui->waveEditor->clearData();
 		for (auto& com : instSSG->getWaveFormSequence()) {
 			QString str = "";
 			if (com.type >= 3) {
@@ -481,7 +544,7 @@ void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 		ui->tnEditGroupBox->setChecked(true);
 		ui->tnNumSpinBox->setValue(num);
 		onToneNoiseNumberChanged();
-		ui->tnEditor->clear();
+		ui->tnEditor->clearData();
 		for (auto& com : instSSG->getToneNoiseSequence()) {
 			ui->tnEditor->addSequenceCommand(com.type);
 		}
@@ -560,7 +623,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 		ui->envEditGroupBox->setChecked(true);
 		ui->envNumSpinBox->setValue(num);
 		onEnvelopeNumberChanged();
-		ui->envEditor->clear();
+		ui->envEditor->clearData();
 		for (auto& com : instSSG->getEnvelopeSequence()) {
 			QString str = "";
 			if (com.type >= 16) {
@@ -628,6 +691,113 @@ void InstrumentEditorSSGForm::on_hardFreqSpinBox_valueChanged(int arg1)
 
 	ui->hardFreqSpinBox->setSuffix(
 				QString(" (%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
+}
+
+//--- Arpeggio
+int InstrumentEditorSSGForm::getArpeggioNumber() const
+{
+	return ui->arpEditGroupBox->isChecked() ? ui->arpNumSpinBox->value() : -1;
+}
+
+void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
+{
+	Ui::EventGuard ev(isIgnoreEvent_);
+
+	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
+
+	int num = instSSG->getArpeggioNumber();
+	if (num == -1) {
+		ui->arpEditGroupBox->setChecked(false);
+	}
+	else {
+		ui->arpEditGroupBox->setChecked(true);
+		ui->arpNumSpinBox->setValue(num);
+		onArpeggioNumberChanged();
+		ui->arpEditor->clearData();
+		for (auto& com : instSSG->getArpeggioSequence()) {
+			ui->arpEditor->addSequenceCommand(com.type);
+		}
+		for (auto& l : instSSG->getArpeggioLoops()) {
+			ui->arpEditor->addLoop(l.begin, l.end, l.times);
+		}
+		ui->arpEditor->setRelease(convertReleaseTypeForUI(instSSG->getArpeggioRelease().type),
+								  instSSG->getArpeggioRelease().begin);
+		ui->arpTypeComboBox->setCurrentIndex(instSSG->getArpeggioType());
+	}
+}
+
+/********** Slots **********/
+void InstrumentEditorSSGForm::onArpeggioNumberChanged()
+{
+	// Change users view
+	QString str;
+	std::vector<int> users = bt_.lock()->getArpeggioSSGUsers(ui->arpNumSpinBox->value());
+	for (auto& n : users) {
+		str += (QString::number(n) + ",");
+	}
+	str.chop(1);
+
+	ui->arpUsersLineEdit->setText(str);
+}
+
+void InstrumentEditorSSGForm::onArpeggioParameterChanged(int tnNum)
+{
+	if (ui->arpNumSpinBox->value() == tnNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentArpeggioParameters();
+	}
+}
+
+void InstrumentEditorSSGForm::onArpeggioTypeChanged(int type)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), type);
+		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
+		emit modified();
+	}
+
+	// Update labels
+	if (type == 1) {
+		QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+		for (int i = 0; i < 8; ++i) {
+			for (int j = 0; j < 12; ++j) {
+				ui->arpEditor->setLabel(i * 12 + j, tn[j] + QString::number(i));
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < 96; ++i) {
+			int d = i - 48;
+			auto text = QString::number(d);
+			if (d > 0) text = "+" + text;
+			ui->arpEditor->setLabel(i, text);
+		}
+	}
+}
+
+void InstrumentEditorSSGForm::on_arpEditGroupBox_toggled(bool arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentSSGArpeggio(instNum_, arg1 ? ui->arpNumSpinBox->value() : -1);
+		setInstrumentArpeggioParameters();
+		emit arpeggioNumberChanged();
+		emit modified();
+	}
+
+	onArpeggioNumberChanged();
+}
+
+void InstrumentEditorSSGForm::on_arpNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentSSGArpeggio(instNum_, arg1);
+		setInstrumentArpeggioParameters();
+		emit arpeggioNumberChanged();
+		emit modified();
+	}
+
+	onArpeggioNumberChanged();
 }
 
 //--- Else

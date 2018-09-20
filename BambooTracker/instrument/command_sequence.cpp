@@ -1,10 +1,11 @@
 #include "command_sequence.hpp"
 
-CommandSequence::CommandSequence(int num, int type, int data)
+CommandSequence::CommandSequence(int num, int seqType, int comType, int comData)
 	: AbstructInstrumentProperty(num),
+	  type_(seqType),
 	  release_{ ReleaseType::NO_RELEASE, -1 }
 {
-	seq_.push_back({ type, data });
+	seq_.push_back({ comType, comData });
 }
 
 CommandSequence::CommandSequence(const CommandSequence& other)
@@ -18,6 +19,16 @@ CommandSequence::CommandSequence(const CommandSequence& other)
 std::unique_ptr<CommandSequence> CommandSequence::clone()
 {
 	return std::unique_ptr<CommandSequence>(std::make_unique<CommandSequence>(*this));
+}
+
+void CommandSequence::setType(int type)
+{
+	type_ = type;
+}
+
+int CommandSequence::getType() const
+{
+	return type_;
 }
 
 size_t CommandSequence::getSequenceSize() const
@@ -139,6 +150,11 @@ CommandSequence::Iterator::Iterator(CommandSequence* seq)
 int CommandSequence::Iterator::getPosition() const
 {
 	return pos_;
+}
+
+int CommandSequence::Iterator::getSequenceType() const
+{
+	return seq_->type_;
 }
 
 int CommandSequence::Iterator::getCommandType() const

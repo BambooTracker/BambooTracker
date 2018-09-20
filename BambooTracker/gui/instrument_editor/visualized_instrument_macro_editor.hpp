@@ -57,7 +57,13 @@ public:
 
 	void setRelease(VisualizedInstrumentMacroEditor::ReleaseType type, int point);
 
-	void clear();
+	void clearData();
+
+	void setUpperRow(int row);
+
+	void setLabel(int row, QString text);
+	void clearAllLabelText();
+	void setLabelDiaplayMode(bool isOmitted);
 
 signals:
 	void sequenceCommandChanged(int row, int col);
@@ -141,6 +147,7 @@ private:
 	std::vector<Column> cols_;
 
 	bool isMultiReleaseState_;
+	bool isLabelOmitted_;
 
 	bool isIgnoreEvent_;
 
@@ -157,9 +164,14 @@ private:
 	void updateColumnWidth();
 	void updateRowHeight();
 
+	inline int getDisplayedRowCount() const
+	{
+		return (maxDispRowCnt_ > labels_.size()) ? labels_.size() : maxDispRowCnt_;
+	}
+
 	inline void scrollUp(int pos)
 	{
-		upperRow_ = pos - 1 + ((maxDispRowCnt_ > labels_.size()) ? labels_.size() : maxDispRowCnt_);
+		upperRow_ = pos - 1 + getDisplayedRowCount();
 	}
 };
 

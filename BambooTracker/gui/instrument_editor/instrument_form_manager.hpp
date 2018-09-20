@@ -37,6 +37,8 @@ public slots:
 	void onInstrumentSSGToneNoiseNumberChanged();
 	void onInstrumentSSGEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void onInstrumentSSGEnvelopeNumberChanged();
+	void onInstrumentSSGArpeggioParameterChanged(int arpNum, int fromInstNum);
+	void onInstrumentSSGArpeggioNumberChanged();
 
 private:
 	std::map<int, std::unique_ptr<QWidget>> map_;

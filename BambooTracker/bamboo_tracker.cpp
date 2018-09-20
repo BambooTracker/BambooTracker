@@ -263,6 +263,47 @@ std::vector<int> BambooTracker::getEnvelopeSSGUsers(int envNum) const
 	return instMan_.getEnvelopeSSGUsers(envNum);
 }
 
+void BambooTracker::setArpeggioSSGType(int arpNum, int type)
+{
+	instMan_.setArpeggioType(arpNum, type);
+}
+
+void BambooTracker::addArpeggioSSGSequenceCommand(int arpNum, int type, int data)
+{
+	instMan_.addArpeggioSSGSequenceCommand(arpNum, type, data);
+}
+
+void BambooTracker::removeArpeggioSSGSequenceCommand(int arpNum)
+{
+	instMan_.removeArpeggioSSGSequenceCommand(arpNum);
+}
+
+void BambooTracker::setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data)
+{
+	instMan_.setArpeggioSSGSequenceCommand(arpNum, cnt, type, data);
+}
+
+void BambooTracker::setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_.setArpeggioSSGLoops(arpNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin)
+{
+	instMan_.setArpeggioSSGRelease(arpNum, type, begin);
+}
+
+void BambooTracker::setInstrumentSSGArpeggio(int instNum, int arpNum)
+{
+	instMan_.setInstrumentSSGArpeggio(instNum, arpNum);
+	opnaCtrl_.updateInstrumentSSG(instNum);
+}
+
+std::vector<int> BambooTracker::getArpeggioSSGUsers(int arpNum) const
+{
+	return instMan_.getArpeggioSSGUsers(arpNum);
+}
+
 /********** Song edit **********/
 int BambooTracker::getCurrentSongNumber() const
 {

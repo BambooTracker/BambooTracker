@@ -102,6 +102,26 @@ private slots:
 	void on_envNumSpinBox_valueChanged(int arg1);
 	void on_hardFreqSpinBox_valueChanged(int arg1);
 
+	//========== Arpeggio ==========//
+public:
+	int getArpeggioNumber() const;
+
+signals:
+	void arpeggioNumberChanged();
+	void arpeggioParameterChanged(int arpNum, int fromInstNum);
+
+public slots:
+	void onArpeggioNumberChanged();
+	void onArpeggioParameterChanged(int arpNum);
+
+private:
+	void setInstrumentArpeggioParameters();
+
+private slots:
+	void onArpeggioTypeChanged(int type);
+	void on_arpEditGroupBox_toggled(bool arg1);
+	void on_arpNumSpinBox_valueChanged(int arg1);
+
 	//========== Else ==========//
 private slots:
 	void on_gateCountSpinBox_valueChanged(int arg1);

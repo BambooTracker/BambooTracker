@@ -109,7 +109,8 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 	: AbstructInstrument(number, SoundSource::SSG, name, owner),
 	  wfNum_(-1),
 	  tnNum_(-1),
-	  envNum_(-1)
+	  envNum_(-1),
+	  arpNum_(-1)
 {
 }
 
@@ -206,4 +207,39 @@ Release InstrumentSSG::getEnvelopeRelease() const
 std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getEnvelopeSequenceIterator() const
 {
 	return owner_->getEnvelopeSSGIterator(envNum_);
+}
+
+void InstrumentSSG::setArpeggioNumber(int n)
+{
+	arpNum_ = n;
+}
+
+int InstrumentSSG::getArpeggioNumber() const
+{
+	return arpNum_;
+}
+
+int InstrumentSSG::getArpeggioType() const
+{
+	return owner_->getArpeggioType(arpNum_);
+}
+
+std::vector<CommandInSequence> InstrumentSSG::getArpeggioSequence() const
+{
+	return owner_->getArpeggioSSGSequence(arpNum_);
+}
+
+std::vector<Loop> InstrumentSSG::getArpeggioLoops() const
+{
+	return owner_->getArpeggioSSGLoops(arpNum_);
+}
+
+Release InstrumentSSG::getArpeggioRelease() const
+{
+	return owner_->getArpeggioSSGRelease(arpNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getArpeggioSequenceIterator() const
+{
+	return owner_->getArpeggioSSGIterator(arpNum_);
 }

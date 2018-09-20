@@ -80,7 +80,7 @@ private:
 	std::unique_ptr<EnvelopeFM> envFM_[6];
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
-	ToneDetail toneFM_[6];
+	ToneDetail baseToneFM_[6];
 	int volFM_[6];
 	bool isMuteFM_[6];
 	int gateCntFM_[6];
@@ -135,7 +135,8 @@ private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
 	bool isKeyOnSSG_[3];
 	uint8_t mixerSSG_;
-	ToneDetail toneSSG_[3];
+	ToneDetail baseToneSSG_[3];
+	ToneDetail realToneSSG_[3];
 	ToneNoise tnSSG_[3];
 	int baseVolSSG_[3];
 	bool isBuzzEffSSG_[3];
@@ -151,6 +152,7 @@ private:
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandInSequence envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
+	std::unique_ptr<CommandSequence::Iterator> arpItSSG_[3];
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
@@ -162,6 +164,8 @@ private:
 	void writeToneNoiseSSGToRegisterNoReference(int ch);
 
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
+
+	void checkRealToneSSGByArpeggio(int ch, int seqPos);
 
 	void writePitchSSG(int ch);
 
