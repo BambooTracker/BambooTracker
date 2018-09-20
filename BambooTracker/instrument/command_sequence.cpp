@@ -274,6 +274,20 @@ int CommandSequence::Iterator::front()
 	loopStack_.clear();
 	isRelease_ = false;
 	relReleaseRatio_ = 1;
-	pos_ = 0;
+
+	if (seq_->release_.begin == 0) {
+		pos_ = -1;
+	}
+	else {
+		pos_ = 0;
+
+		for (auto& l : seq_->loops_) {
+			if (pos_ < l.begin) break;
+			else if (pos_ == l.begin) {
+				loopStack_.push_back({ l.begin, l.end, (l.times == 1) ? -1 : l.times - 1});
+			}
+		}
+	}
+
 	return pos_;
 }
