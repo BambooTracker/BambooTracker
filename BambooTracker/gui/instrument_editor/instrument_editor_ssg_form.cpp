@@ -5,8 +5,6 @@
 #include "gui/event_guard.hpp"
 #include "misc.hpp"
 
-#include <QDebug>
-
 InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::InstrumentEditorSSGForm),

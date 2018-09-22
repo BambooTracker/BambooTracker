@@ -4,6 +4,7 @@
 #include <memory>
 #include <array>
 #include <vector>
+#include <map>
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
@@ -52,6 +53,19 @@ public:
 	int getLFOFMparameter(int lfoNum, FMLFOParameter param) const;
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 
+	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
+	int getInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param);
+	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
+	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
+	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data);
+	std::vector<CommandInSequence> getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum);
+	void setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum) const;
+	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
+	Release getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const;
+	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
+
 	void setInstrumentFMArpeggio(int instNum, int arpNum);
 	int getInstrumentFMArpeggio(int instNum);
 	void setArpeggioFMType(int arpNum, int type);
@@ -87,11 +101,15 @@ public:
 private:
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
 	std::array<std::shared_ptr<LFOFM>, 128> lfoFM_;
+	std::map<FMEnvelopeParameter, std::array<std::shared_ptr<CommandSequence>, 128>> opSeqFM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> arpFM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> ptFM_;
 
+	std::vector<FMEnvelopeParameter> envFMParams_;
+
 	int cloneFMEnvelope(int srcNum);
 	int cloneFMLFO(int srcNum);
+	int cloneFMOperatorSequence(FMEnvelopeParameter param, int srcNum);
 	int cloneFMArpeggio(int srcNum);
 	int cloneFMPitch(int srcNum);
 

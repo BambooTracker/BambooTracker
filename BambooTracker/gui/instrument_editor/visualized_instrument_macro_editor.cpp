@@ -12,7 +12,7 @@
 VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent)
 	: QWidget(parent),
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
-	  maxDispRowCnt_(12),
+	  maxDispRowCnt_(0),
 	  upperRow_(-1),
 	  defaultRow_(0),
 	  hovRow_(-1),
@@ -213,6 +213,11 @@ void VisualizedInstrumentMacroEditor::clearData()
 	loops_.clear();
 	release_ = { VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 };
 	updateColumnWidth();
+}
+
+void VisualizedInstrumentMacroEditor::clearRow()
+{
+	labels_.clear();
 }
 
 void VisualizedInstrumentMacroEditor::setUpperRow(int row)

@@ -148,6 +148,42 @@ std::vector<int> BambooTracker::getLFOFMUsers(int lfoNum) const
 	return instMan_.getLFOFMUsers(lfoNum);
 }
 
+void BambooTracker::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data)
+{
+	instMan_.addOperatorSequenceFMSequenceCommand(param, opSeqNum, type, data);
+}
+
+void BambooTracker::removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum)
+{
+	instMan_.removeOperatorSequenceFMSequenceCommand(param, opSeqNum);
+}
+
+void BambooTracker::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data)
+{
+	instMan_.setOperatorSequenceFMSequenceCommand(param, opSeqNum, cnt, type, data);
+}
+
+void BambooTracker::setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_.setOperatorSequenceFMLoops(param, opSeqNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin)
+{
+	instMan_.setOperatorSequenceFMRelease(param, opSeqNum, type, begin);
+}
+
+void BambooTracker::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum)
+{
+	instMan_.setInstrumentFMOperatorSequence(instNum, param, opSeqNum);
+	opnaCtrl_.updateInstrumentFM(instNum);
+}
+
+std::vector<int> BambooTracker::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
+{
+	return instMan_.getOperatorSequenceFMUsers(param, opSeqNum);
+}
+
 void BambooTracker::setArpeggioFMType(int arpNum, int type)
 {
 	instMan_.setArpeggioFMType(arpNum, type);

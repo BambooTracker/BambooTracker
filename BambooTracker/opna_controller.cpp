@@ -10,16 +10,55 @@ OPNAController::OPNAController(int clock, int rate, int duration) :
 OPNAController::OPNAController(int clock, int rate) :
 	opna_(clock, rate)
 #endif
-{
+{	
+	for (int ch = 0; ch < 6; ++ch) {
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::AL, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::FB, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::AR1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DR1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SR1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::RR1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SL1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::KS1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::ML1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DT1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::AR2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DR2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SR2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::RR2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SL2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::KS2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::ML2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DT2, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::AR3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DR3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SR3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::RR3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SL3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::KS3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::ML3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DT3, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::AR4, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DR4, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SR4, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::RR4, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SL4, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::KS4, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::ML4, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DT4, nullptr);
+
+		isMuteFM_[ch] = false;
+	}
+
+	for (int ch = 0; ch < 3; ++ch) {
+		isMuteSSG_[ch] = false;
+	}
+
 	initChip();
-
-	for (int i = 0; i < 6; ++i) {
-		isMuteFM_[i] = false;
-	}
-
-	for (int i = 0; i < 3; ++i) {
-		isMuteSSG_[i] = false;
-	}
 }
 
 /********** Reset and initialize **********/
@@ -140,6 +179,12 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 
 	writeFMEnvelopeToRegistersFromInstrument(ch);
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
+	for (auto& p : opSeqItFM_[ch]) {
+		if (refInstFM_[ch]->getOperatorSequenceNumber(p.first) == -1)
+			p.second.reset();
+		else
+			p.second = refInstFM_[ch]->getOperatorSequenceSequenceIterator(p.first);
+	}
 	if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
 	else arpItFM_[ch] = refInstFM_[ch]->getArpeggioSequenceIterator();
 	if (refInstFM_[ch]->getPitchNumber() == -1) ptItFM_[ch].reset();
@@ -155,6 +200,10 @@ void OPNAController::updateInstrumentFM(int instNum)
 		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getNumber() == instNum) {
 			writeFMEnvelopeToRegistersFromInstrument(ch);
 			if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
+			for (auto& p : opSeqItFM_[ch]) {
+				if (refInstFM_[ch]->getOperatorSequenceNumber(p.first) == -1)
+					p.second.reset();
+			}
 			if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
 			if (refInstFM_[ch]->getPitchNumber() == -1) ptItFM_[ch].reset();
 			setInstrumentFMProperties(ch);
@@ -273,6 +322,9 @@ void OPNAController::initFM()
 
 		// Init sequence
 		hasPreSetTickEventFM_[ch] = false;
+		for (auto& p : opSeqItFM_[ch]) {
+			p.second.reset();
+		}
 		arpItFM_[ch].reset();
 		ptItFM_[ch].reset();
 		needToneSetFM_[ch] = false;
@@ -760,6 +812,8 @@ void OPNAController::writeFMLFORegister(int ch, FMLFOParameter param)
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR4);
 		opna_.setRegister(0x60 + bch + 12, data);
 		break;
+	default:
+		break;
 	}
 }
 
@@ -785,6 +839,8 @@ void OPNAController::setFrontFMSequences(int ch)
 		lfoStartCntFM_[ch] = -1;
 	}
 
+	checkOperatorSequenceFM(ch, 1);
+
 	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->front());
 
 	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->front());
@@ -798,6 +854,8 @@ void OPNAController::releaseStartFMSequences(int ch)
 		--lfoStartCntFM_[ch];
 		writeFMLFOAllRegisters(ch);
 	}
+
+	checkOperatorSequenceFM(ch, 2);
 
 	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next(true));
 
@@ -817,11 +875,33 @@ void OPNAController::tickEventFM(int ch)
 			writeFMLFOAllRegisters(ch);
 		}
 
+		checkOperatorSequenceFM(ch, 0);
+
 		if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next());
 
 		if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next());
 
 		if (needToneSetFM_[ch]) writePitchFM(ch);
+	}
+}
+
+void OPNAController::checkOperatorSequenceFM(int ch, int type)
+{
+	for (auto& p : opSeqItFM_[ch]) {
+		if (p.second != nullptr) {
+			int t;
+			switch (type) {
+			case 0:	t = p.second->next();		break;
+			case 1:	t = p.second->front();		break;
+			case 2:	t = p.second->next(true);	break;
+			}
+			if (t != -1) {
+				int d = p.second->getCommandType();
+				if (d != envFM_[ch]->getParameterValue(p.first)) {
+					writeFMEnveropeParameterToRegister(ch, p.first, d);
+				}
+			}
+		}
 	}
 }
 

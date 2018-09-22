@@ -58,6 +58,7 @@ public:
 	void setRelease(VisualizedInstrumentMacroEditor::ReleaseType type, int point);
 
 	void clearData();
+	void clearRow();
 
 	void setUpperRow(int row);
 

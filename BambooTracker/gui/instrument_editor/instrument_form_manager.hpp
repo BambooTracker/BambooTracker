@@ -6,6 +6,7 @@
 #include <QString>
 #include <memory>
 #include <map>
+#include "instrument/envelope_fm.hpp"
 #include "misc.hpp"
 
 class InstrumentFormManager : public QObject
@@ -31,6 +32,8 @@ public slots:
 	void onInstrumentFMEnvelopeNumberChanged();
 	void onInstrumentFMLFOParameterChanged(int lfoNum, int fromInstNum);
 	void onInstrumentFMLFONumberChanged();
+	void onInstrumentFMOperatorSequenceParameterChanged(FMEnvelopeParameter param, int opSeqNum, int fromInstNum);
+	void onInstrumentFMOperatorSequenceNumberChanged();
 	void onInstrumentFMArpeggioParameterChanged(int arpNum, int fromInstNum);
 	void onInstrumentFMArpeggioNumberChanged();
 	void onInstrumentFMPitchParameterChanged(int ptNum, int fromInstNum);

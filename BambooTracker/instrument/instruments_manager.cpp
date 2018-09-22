@@ -4,9 +4,57 @@
 
 InstrumentsManager::InstrumentsManager()
 {
+	envFMParams_ = {
+		FMEnvelopeParameter::AL,
+		FMEnvelopeParameter::FB,
+		FMEnvelopeParameter::AR1,
+		FMEnvelopeParameter::DR1,
+		FMEnvelopeParameter::SR1,
+		FMEnvelopeParameter::RR1,
+		FMEnvelopeParameter::SL1,
+		FMEnvelopeParameter::TL1,
+		FMEnvelopeParameter::KS1,
+		FMEnvelopeParameter::ML1,
+		FMEnvelopeParameter::DT1,
+		FMEnvelopeParameter::AR2,
+		FMEnvelopeParameter::DR2,
+		FMEnvelopeParameter::SR2,
+		FMEnvelopeParameter::RR2,
+		FMEnvelopeParameter::SL2,
+		FMEnvelopeParameter::TL2,
+		FMEnvelopeParameter::KS2,
+		FMEnvelopeParameter::ML2,
+		FMEnvelopeParameter::DT2,
+		FMEnvelopeParameter::AR3,
+		FMEnvelopeParameter::DR3,
+		FMEnvelopeParameter::SR3,
+		FMEnvelopeParameter::RR3,
+		FMEnvelopeParameter::SL3,
+		FMEnvelopeParameter::TL3,
+		FMEnvelopeParameter::KS3,
+		FMEnvelopeParameter::ML3,
+		FMEnvelopeParameter::DT3,
+		FMEnvelopeParameter::AR4,
+		FMEnvelopeParameter::DR4,
+		FMEnvelopeParameter::SR4,
+		FMEnvelopeParameter::RR4,
+		FMEnvelopeParameter::SL4,
+		FMEnvelopeParameter::TL4,
+		FMEnvelopeParameter::KS4,
+		FMEnvelopeParameter::ML4,
+		FMEnvelopeParameter::DT4
+	};
+
+	for (auto p : envFMParams_) {
+		opSeqFM_.emplace(p, std::array<std::shared_ptr<CommandSequence>, 128>());
+	}
+
 	for (size_t i = 0; i < 128; ++i) {
 		envFM_[i] = std::make_shared<EnvelopeFM>(i);
 		lfoFM_[i] = std::make_shared<LFOFM>(i);
+		for (auto& p : opSeqFM_) {
+			p.second[i] = std::make_shared<CommandSequence>(i, 0);
+		}
 		arpFM_[i] = std::make_shared<CommandSequence>(i, 0, 48);
 		ptFM_[i] = std::make_shared<CommandSequence>(i, 0, 127);
 
@@ -43,6 +91,10 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		envFM_.at(fm->getEnvelopeNumber())->registerUserInstrument(num);
 		int lfoNum = fm->getLFONumber();
 		if (lfoNum != -1) lfoFM_.at(lfoNum)->registerUserInstrument(num);
+		for (auto p : envFMParams_) {
+			int opSeqNum = fm->getOperatorSequenceNumber(p);
+			if (opSeqNum != -1) opSeqFM_.at(p).at(opSeqNum)->registerUserInstrument(num);
+		}
 		int arpNum = fm->getArpeggioNumber();
 		if (arpNum != -1) arpFM_.at(arpNum)->registerUserInstrument(num);
 		int ptNum = fm->getPitchNumber();
@@ -77,6 +129,9 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
 		setInstrumentFMLFO(cloneInstNum, refFm->getLFONumber());
+		for (auto p : envFMParams_) {
+			setInstrumentFMOperatorSequence(cloneInstNum, p, refFm->getOperatorSequenceNumber(p));
+		}
 		setInstrumentFMArpeggio(cloneInstNum, refFm->getArpeggioNumber());
 		setInstrumentFMPitch(cloneInstNum, refFm->getPitchNumber());
 		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
@@ -113,6 +168,13 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			int lfoNum = cloneFMLFO(refFm->getLFONumber());
 			cloneFm->setLFONumber(lfoNum);
 			lfoFM_[lfoNum]->registerUserInstrument(cloneInstNum);
+		}
+		for (auto p : envFMParams_) {
+			if (refFm->getOperatorSequenceNumber(p) != -1) {
+				int opSeqNum = cloneFMOperatorSequence(p, refFm->getOperatorSequenceNumber(p));
+				cloneFm->setOperatorSequenceNumber(p, opSeqNum);
+				opSeqFM_.at(p)[opSeqNum]->registerUserInstrument(cloneInstNum);
+			}
 		}
 		if (refFm->getArpeggioNumber() != -1) {
 			int arpNum = cloneFMArpeggio(refFm->getArpeggioNumber());
@@ -181,6 +243,20 @@ int InstrumentsManager::cloneFMLFO(int srcNum)
 		if (!lfo->isUserInstrument()) {
 			lfo = lfoFM_.at(srcNum)->clone();
 			lfo->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
+int InstrumentsManager::cloneFMOperatorSequence(FMEnvelopeParameter param, int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& opSeq : opSeqFM_.at(param)) {
+		if (!opSeq->isUserInstrument()) {
+			opSeq = opSeqFM_.at(param).at(srcNum)->clone();
+			opSeq->setNumber(cloneNum);
 			break;
 		}
 		++cloneNum;
@@ -295,6 +371,10 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		envFM_.at(fm->getEnvelopeNumber())->deregisterUserInstrument(instNum);
 		int lfoNum = fm->getLFONumber();
 		if (lfoNum != -1) lfoFM_.at(lfoNum)->deregisterUserInstrument(instNum);
+		for (auto p : envFMParams_) {
+			int opSeqNum = fm->getOperatorSequenceNumber(p);
+			if (opSeqNum != -1) opSeqFM_.at(p).at(opSeqNum)->deregisterUserInstrument(instNum);
+		}
 		int arpNum = fm->getArpeggioNumber();
 		if (arpNum != -1) arpFM_.at(arpNum)->deregisterUserInstrument(instNum);
 		int ptNum = fm->getPitchNumber();
@@ -430,6 +510,73 @@ int InstrumentsManager::getLFOFMparameter(int lfoNum, FMLFOParameter param) cons
 std::vector<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
 {
 	return lfoFM_.at(lfoNum)->getUserInstruments();
+}
+
+void InstrumentsManager::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	int prevOpSeq = fm->getOperatorSequenceNumber(param);
+	if (prevOpSeq != -1)
+		opSeqFM_.at(param).at(prevOpSeq)->deregisterUserInstrument(instNum);
+	if (opSeqNum != -1)
+		opSeqFM_.at(param).at(opSeqNum)->registerUserInstrument(instNum);
+
+	fm->setOperatorSequenceNumber(param, opSeqNum);
+}
+
+int InstrumentsManager::getInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param)
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->getOperatorSequenceNumber(param);
+}
+
+void InstrumentsManager::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data)
+{
+	opSeqFM_.at(param).at(opSeqNum)->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum)
+{
+	opSeqFM_.at(param).at(opSeqNum)->removeSequenceCommand();
+}
+
+void InstrumentsManager::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data)
+{
+	opSeqFM_.at(param).at(opSeqNum)->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandInSequence> InstrumentsManager::getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum)
+{
+	return opSeqFM_.at(param).at(opSeqNum)->getSequence();
+}
+
+void InstrumentsManager::setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	opSeqFM_.at(param).at(opSeqNum)->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum) const
+{
+	return opSeqFM_.at(param).at(opSeqNum)->getLoops();
+}
+
+void InstrumentsManager::setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin)
+{
+	opSeqFM_.at(param).at(opSeqNum)->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const
+{
+	return opSeqFM_.at(param).at(opSeqNum)->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const
+{
+	return opSeqFM_.at(param).at(opSeqNum)->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
+{
+	return opSeqFM_.at(param).at(opSeqNum)->getUserInstruments();
 }
 
 void InstrumentsManager::setInstrumentFMArpeggio(int instNum, int arpNum)

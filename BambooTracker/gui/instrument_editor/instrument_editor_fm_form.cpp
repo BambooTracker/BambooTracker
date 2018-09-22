@@ -10,8 +10,6 @@
 #include "gui/event_guard.hpp"
 #include "misc.hpp"
 
-#include <QDebug>
-
 InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::InstrumentEditorFMForm),
@@ -249,6 +247,102 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 
+	//========== OperatorSequence ==========//
+	ui->opSeqTypeComboBox->addItem("AL", static_cast<int>(FMEnvelopeParameter::AL));
+	ui->opSeqTypeComboBox->addItem("FB", static_cast<int>(FMEnvelopeParameter::FB));
+	ui->opSeqTypeComboBox->addItem("AR1", static_cast<int>(FMEnvelopeParameter::AR1));
+	ui->opSeqTypeComboBox->addItem("DR1", static_cast<int>(FMEnvelopeParameter::DR1));
+	ui->opSeqTypeComboBox->addItem("SR1", static_cast<int>(FMEnvelopeParameter::SR1));
+	ui->opSeqTypeComboBox->addItem("RR1", static_cast<int>(FMEnvelopeParameter::RR1));
+	ui->opSeqTypeComboBox->addItem("SL1", static_cast<int>(FMEnvelopeParameter::SL1));
+	ui->opSeqTypeComboBox->addItem("TL1", static_cast<int>(FMEnvelopeParameter::TL1));
+	ui->opSeqTypeComboBox->addItem("KS1", static_cast<int>(FMEnvelopeParameter::KS1));
+	ui->opSeqTypeComboBox->addItem("ML1", static_cast<int>(FMEnvelopeParameter::ML1));
+	ui->opSeqTypeComboBox->addItem("DT1", static_cast<int>(FMEnvelopeParameter::DT1));
+	ui->opSeqTypeComboBox->addItem("AR2", static_cast<int>(FMEnvelopeParameter::AR2));
+	ui->opSeqTypeComboBox->addItem("DR2", static_cast<int>(FMEnvelopeParameter::DR2));
+	ui->opSeqTypeComboBox->addItem("SR2", static_cast<int>(FMEnvelopeParameter::SR2));
+	ui->opSeqTypeComboBox->addItem("RR2", static_cast<int>(FMEnvelopeParameter::RR2));
+	ui->opSeqTypeComboBox->addItem("SL2", static_cast<int>(FMEnvelopeParameter::SL2));
+	ui->opSeqTypeComboBox->addItem("TL2", static_cast<int>(FMEnvelopeParameter::TL2));
+	ui->opSeqTypeComboBox->addItem("KS2", static_cast<int>(FMEnvelopeParameter::KS2));
+	ui->opSeqTypeComboBox->addItem("ML2", static_cast<int>(FMEnvelopeParameter::ML2));
+	ui->opSeqTypeComboBox->addItem("DT2", static_cast<int>(FMEnvelopeParameter::DT2));
+	ui->opSeqTypeComboBox->addItem("AR3", static_cast<int>(FMEnvelopeParameter::AR3));
+	ui->opSeqTypeComboBox->addItem("DR3", static_cast<int>(FMEnvelopeParameter::DR3));
+	ui->opSeqTypeComboBox->addItem("SR3", static_cast<int>(FMEnvelopeParameter::SR3));
+	ui->opSeqTypeComboBox->addItem("RR3", static_cast<int>(FMEnvelopeParameter::RR3));
+	ui->opSeqTypeComboBox->addItem("SL3", static_cast<int>(FMEnvelopeParameter::SL3));
+	ui->opSeqTypeComboBox->addItem("TL3", static_cast<int>(FMEnvelopeParameter::TL3));
+	ui->opSeqTypeComboBox->addItem("KS3", static_cast<int>(FMEnvelopeParameter::KS3));
+	ui->opSeqTypeComboBox->addItem("ML3", static_cast<int>(FMEnvelopeParameter::ML3));
+	ui->opSeqTypeComboBox->addItem("DT3", static_cast<int>(FMEnvelopeParameter::DT3));
+	ui->opSeqTypeComboBox->addItem("AR4", static_cast<int>(FMEnvelopeParameter::AR4));
+	ui->opSeqTypeComboBox->addItem("DR4", static_cast<int>(FMEnvelopeParameter::DR4));
+	ui->opSeqTypeComboBox->addItem("SR4", static_cast<int>(FMEnvelopeParameter::SR4));
+	ui->opSeqTypeComboBox->addItem("RR4", static_cast<int>(FMEnvelopeParameter::RR4));
+	ui->opSeqTypeComboBox->addItem("SL4", static_cast<int>(FMEnvelopeParameter::SL4));
+	ui->opSeqTypeComboBox->addItem("TL4", static_cast<int>(FMEnvelopeParameter::TL4));
+	ui->opSeqTypeComboBox->addItem("KS4", static_cast<int>(FMEnvelopeParameter::KS4));
+	ui->opSeqTypeComboBox->addItem("ML4", static_cast<int>(FMEnvelopeParameter::ML4));
+	ui->opSeqTypeComboBox->addItem("DT4", static_cast<int>(FMEnvelopeParameter::DT4));
+
+	ui->opSeqEditor->setDefaultRow(0);
+	ui->opSeqEditor->setLabelDiaplayMode(true);
+	setOperatorSequenceEditor();
+
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			FMEnvelopeParameter param = getOperatorSequenceParameter();
+			bt_.lock()->addOperatorSequenceFMSequenceCommand(
+						param, ui->opSeqNumSpinBox->value(), row, ui->opSeqEditor->getSequenceDataAt(col));
+			emit operatorSequenceParameterChanged(param, ui->opSeqNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
+					 this, [&]() {
+		if (!isIgnoreEvent_) {
+			FMEnvelopeParameter param = getOperatorSequenceParameter();
+			bt_.lock()->removeOperatorSequenceFMSequenceCommand(param, ui->opSeqNumSpinBox->value());
+			emit operatorSequenceParameterChanged(param, ui->opSeqNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
+					 this, [&](int row, int col) {
+		if (!isIgnoreEvent_) {
+			FMEnvelopeParameter param = getOperatorSequenceParameter();
+			bt_.lock()->setOperatorSequenceFMSequenceCommand(
+						param, ui->opSeqNumSpinBox->value(), col, row, ui->opSeqEditor->getSequenceDataAt(col));
+			emit operatorSequenceParameterChanged(param, ui->opSeqNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::loopChanged,
+					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
+		if (!isIgnoreEvent_) {
+			FMEnvelopeParameter param = getOperatorSequenceParameter();
+			bt_.lock()->setOperatorSequenceFMLoops(
+						param, ui->opSeqNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
+			emit operatorSequenceParameterChanged(param, ui->opSeqNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->opSeqEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
+					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+		if (!isIgnoreEvent_) {
+			FMEnvelopeParameter param = getOperatorSequenceParameter();
+			ReleaseType t = convertReleaseTypeForData(type);
+			bt_.lock()->setOperatorSequenceFMRelease(param, ui->opSeqNumSpinBox->value(), t, point);
+			emit operatorSequenceParameterChanged(param, ui->opSeqNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->opSeqTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
+
 	//========== Arpeggio ==========//
 	ui->arpEditor->setMaximumDisplayedRowCount(15);
 	ui->arpEditor->setDefaultRow(48);
@@ -430,6 +524,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 
 	setInstrumentEnvelopeParameters();
 	setInstrumentLFOParameters();
+	setInstrumentOperatorSequenceParameters();
 	setInstrumentArpeggioParameters();
 	setInstrumentPitchParameters();
 
@@ -741,12 +836,13 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters()
 		ui->amOp2CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM2));
 		ui->amOp3CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM3));
 		ui->amOp4CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM4));
+		ui->lfoStartSpinBox->setValue(instFM->getLFOParameter(FMLFOParameter::COUNT));
 	}
 }
 
 void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
 {
-	QRegularExpression re("^(?<freq>\\d+),(?<pms>\\d+),(?<ams>\\d+),"
+	QRegularExpression re("^(?<freq>\\d+),(?<pms>\\d+),(?<ams>\\d+),(?<cnt>\\d+),"
 						  "(?<am1>\\d+),(?<am2>\\d+),(?<am3>\\d+),(?<am4>\\d+)");
 	QRegularExpressionMatch match = re.match(data);
 
@@ -754,6 +850,7 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
 		ui->lfoFreqSlider->setValue(match.captured("freq").toInt());
 		ui->pmsSlider->setValue(match.captured("pms").toInt());
 		ui->amsSlider->setValue(match.captured("ams").toInt());
+		ui->lfoStartSpinBox->setValue(match.captured("cnt").toInt());
 		ui->amOp1CheckBox->setChecked(match.captured("am1").toInt() == 1);
 		ui->amOp2CheckBox->setChecked(match.captured("am2").toInt() == 1);
 		ui->amOp3CheckBox->setChecked(match.captured("am3").toInt() == 1);
@@ -763,10 +860,11 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
 
 QString InstrumentEditorFMForm::toLFOString() const
 {
-	auto str = QString("%1,%2,%3,%4,%5,%6,%7")
+	auto str = QString("%1,%2,%3,%4,%5,%6,%7,%8")
 			   .arg(QString::number(ui->lfoFreqSlider->value()))
 			   .arg(QString::number(ui->pmsSlider->value()))
 			   .arg(QString::number(ui->amsSlider->value()))
+			   .arg(QString::number(ui->lfoStartSpinBox->value()))
 			   .arg(QString::number(ui->amOp1CheckBox->isChecked() ? 1 : 0))
 			   .arg(QString::number(ui->amOp2CheckBox->isChecked() ? 1 : 0))
 			   .arg(QString::number(ui->amOp3CheckBox->isChecked() ? 1 : 0))
@@ -841,6 +939,181 @@ void InstrumentEditorFMForm::on_lfoGroupBox_toggled(bool arg1)
 	}
 
 	onLFONumberChanged();
+}
+
+//--- OperatorSequence
+int InstrumentEditorFMForm::getOperatorSequenceNumber() const
+{
+	return ui->opSeqEditGroupBox->isChecked() ? ui->opSeqNumSpinBox->value() : -1;
+}
+
+FMEnvelopeParameter InstrumentEditorFMForm::getOperatorSequenceParameter() const
+{
+	return static_cast<FMEnvelopeParameter>(ui->opSeqTypeComboBox->currentData(Qt::UserRole).toInt());
+}
+
+void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
+{
+	Ui::EventGuard ev(isIgnoreEvent_);
+
+	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
+
+	FMEnvelopeParameter param = getOperatorSequenceParameter();
+
+	int num = instFM->getOperatorSequenceNumber(param);
+	if (num == -1) {
+		ui->opSeqEditGroupBox->setChecked(false);
+	}
+	else {
+		ui->opSeqEditGroupBox->setChecked(true);
+		ui->opSeqNumSpinBox->setValue(num);
+		onOperatorSequenceNumberChanged();
+		ui->opSeqEditor->clearData();
+		setOperatorSequenceEditor();
+		for (auto& com : instFM->getOperatorSequenceSequence(param)) {
+			ui->opSeqEditor->addSequenceCommand(com.type);
+		}
+		for (auto& l : instFM->getOperatorSequenceLoops(param)) {
+			ui->opSeqEditor->addLoop(l.begin, l.end, l.times);
+		}
+		ui->opSeqEditor->setRelease(convertReleaseTypeForUI(instFM->getOperatorSequenceRelease(param).type),
+								  instFM->getOperatorSequenceRelease(param).begin);
+	}
+}
+
+void InstrumentEditorFMForm::setOperatorSequenceEditor()
+{
+	ui->opSeqEditor->clearRow();
+
+	FMEnvelopeParameter param = getOperatorSequenceParameter();
+	switch (param) {
+	case FMEnvelopeParameter::AL:
+	case FMEnvelopeParameter::FB:
+	case FMEnvelopeParameter::DT1:
+	case FMEnvelopeParameter::DT2:
+	case FMEnvelopeParameter::DT3:
+	case FMEnvelopeParameter::DT4:
+		ui->opSeqEditor->setMaximumDisplayedRowCount(8);
+		for (int i = 0; i < 8; ++i) {
+			ui->opSeqEditor->AddRow(QString::number(i));
+		}
+		ui->opSeqEditor->setUpperRow(7);
+		break;
+	case FMEnvelopeParameter::AR1:
+	case FMEnvelopeParameter::AR2:
+	case FMEnvelopeParameter::AR3:
+	case FMEnvelopeParameter::AR4:
+	case FMEnvelopeParameter::DR1:
+	case FMEnvelopeParameter::DR2:
+	case FMEnvelopeParameter::DR3:
+	case FMEnvelopeParameter::DR4:
+	case FMEnvelopeParameter::SR1:
+	case FMEnvelopeParameter::SR2:
+	case FMEnvelopeParameter::SR3:
+	case FMEnvelopeParameter::SR4:
+		ui->opSeqEditor->setMaximumDisplayedRowCount(16);
+		for (int i = 0; i < 32; ++i) {
+			ui->opSeqEditor->AddRow(QString::number(i));
+		}
+		ui->opSeqEditor->setUpperRow(15);
+		break;
+	case FMEnvelopeParameter::RR1:
+	case FMEnvelopeParameter::RR2:
+	case FMEnvelopeParameter::RR3:
+	case FMEnvelopeParameter::RR4:
+	case FMEnvelopeParameter::SL1:
+	case FMEnvelopeParameter::SL2:
+	case FMEnvelopeParameter::SL3:
+	case FMEnvelopeParameter::SL4:
+	case FMEnvelopeParameter::ML1:
+	case FMEnvelopeParameter::ML2:
+	case FMEnvelopeParameter::ML3:
+	case FMEnvelopeParameter::ML4:
+		ui->opSeqEditor->setMaximumDisplayedRowCount(16);
+		for (int i = 0; i < 16; ++i) {
+			ui->opSeqEditor->AddRow(QString::number(i));
+		}
+		ui->opSeqEditor->setUpperRow(15);
+		break;
+	case FMEnvelopeParameter::KS1:
+	case FMEnvelopeParameter::KS2:
+	case FMEnvelopeParameter::KS3:
+	case FMEnvelopeParameter::KS4:
+		ui->opSeqEditor->setMaximumDisplayedRowCount(4);
+		for (int i = 0; i < 4; ++i) {
+			ui->opSeqEditor->AddRow(QString::number(i));
+		}
+		ui->opSeqEditor->setUpperRow(3);
+		break;
+	case FMEnvelopeParameter::TL1:
+	case FMEnvelopeParameter::TL2:
+	case FMEnvelopeParameter::TL3:
+	case FMEnvelopeParameter::TL4:
+		ui->opSeqEditor->setMaximumDisplayedRowCount(16);
+		for (int i = 0; i < 128; ++i) {
+			ui->opSeqEditor->AddRow(QString::number(i));
+		}
+		ui->opSeqEditor->setUpperRow(15);
+		break;
+	default:
+		break;
+	}
+}
+
+/********** Slots **********/
+void InstrumentEditorFMForm::onOperatorSequenceNumberChanged()
+{
+	// Change users view
+	QString str;
+	std::vector<int> users = bt_.lock()->getOperatorSequenceFMUsers(getOperatorSequenceParameter(), ui->opSeqNumSpinBox->value());
+	for (auto& n : users) {
+		str += (QString::number(n) + ",");
+	}
+	str.chop(1);
+
+	ui->opSeqUsersLineEdit->setText(str);
+}
+
+void InstrumentEditorFMForm::onOperatorSequenceParameterChanged(FMEnvelopeParameter param, int tnNum)
+{
+	if (param == getOperatorSequenceParameter() && ui->opSeqNumSpinBox->value() == tnNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentOperatorSequenceParameters();
+	}
+}
+
+void InstrumentEditorFMForm::onOperatorSequenceTypeChanged(int type)
+{
+	Q_UNUSED(type)
+
+	if (!isIgnoreEvent_) {
+		setInstrumentOperatorSequenceParameters();
+	}
+}
+
+void InstrumentEditorFMForm::on_opSeqEditGroupBox_toggled(bool arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentFMOperatorSequence(instNum_, getOperatorSequenceParameter(), arg1 ? ui->opSeqNumSpinBox->value() : -1);
+		setInstrumentOperatorSequenceParameters();
+		emit operatorSequenceNumberChanged();
+		emit modified();
+	}
+
+	onOperatorSequenceNumberChanged();
+}
+
+void InstrumentEditorFMForm::on_opSeqNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentFMOperatorSequence(instNum_, getOperatorSequenceParameter(), arg1);
+		setInstrumentOperatorSequenceParameters();
+		emit operatorSequenceNumberChanged();
+		emit modified();
+	}
+
+	onOperatorSequenceNumberChanged();
 }
 
 //--- Arpeggio

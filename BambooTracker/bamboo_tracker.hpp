@@ -51,6 +51,14 @@ public:
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 
+	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
+	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
+	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data);
+	void setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
+	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
+	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
+
 	void setArpeggioFMType(int arpNum, int type);
 	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioFMSequenceCommand(int arpNum);

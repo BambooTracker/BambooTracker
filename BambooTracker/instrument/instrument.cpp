@@ -53,6 +53,46 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	ptNum_(-1),
 	envResetEnabled_(true)
 {
+	opSeqNum_ = {
+		{ FMEnvelopeParameter::AL,	-1 },
+		{ FMEnvelopeParameter::FB,	-1 },
+		{ FMEnvelopeParameter::AR1,	-1 },
+		{ FMEnvelopeParameter::DR1,	-1 },
+		{ FMEnvelopeParameter::SR1,	-1 },
+		{ FMEnvelopeParameter::RR1,	-1 },
+		{ FMEnvelopeParameter::SL1,	-1 },
+		{ FMEnvelopeParameter::TL1,	-1 },
+		{ FMEnvelopeParameter::KS1,	-1 },
+		{ FMEnvelopeParameter::ML1,	-1 },
+		{ FMEnvelopeParameter::DT1,	-1 },
+		{ FMEnvelopeParameter::AR2,	-1 },
+		{ FMEnvelopeParameter::DR2,	-1 },
+		{ FMEnvelopeParameter::SR2,	-1 },
+		{ FMEnvelopeParameter::RR2,	-1 },
+		{ FMEnvelopeParameter::SL2,	-1 },
+		{ FMEnvelopeParameter::TL2,	-1 },
+		{ FMEnvelopeParameter::KS2,	-1 },
+		{ FMEnvelopeParameter::ML2,	-1 },
+		{ FMEnvelopeParameter::DT2,	-1 },
+		{ FMEnvelopeParameter::AR3,	-1 },
+		{ FMEnvelopeParameter::DR3,	-1 },
+		{ FMEnvelopeParameter::SR3,	-1 },
+		{ FMEnvelopeParameter::RR3,	-1 },
+		{ FMEnvelopeParameter::SL3,	-1 },
+		{ FMEnvelopeParameter::TL3,	-1 },
+		{ FMEnvelopeParameter::KS3,	-1 },
+		{ FMEnvelopeParameter::ML3,	-1 },
+		{ FMEnvelopeParameter::DT3,	-1 },
+		{ FMEnvelopeParameter::AR4,	-1 },
+		{ FMEnvelopeParameter::DR4,	-1 },
+		{ FMEnvelopeParameter::SR4,	-1 },
+		{ FMEnvelopeParameter::RR4,	-1 },
+		{ FMEnvelopeParameter::SL4,	-1 },
+		{ FMEnvelopeParameter::TL4,	-1 },
+		{ FMEnvelopeParameter::KS4,	-1 },
+		{ FMEnvelopeParameter::ML4,	-1 },
+		{ FMEnvelopeParameter::DT4,	-1 }
+	};
 }
 
 std::unique_ptr<AbstructInstrument> InstrumentFM::clone()
@@ -103,6 +143,36 @@ void InstrumentFM::setEnvelopeResetEnabled(bool enabled)
 bool InstrumentFM::getEnvelopeResetEnabled() const
 {
 	return envResetEnabled_;
+}
+
+void InstrumentFM::setOperatorSequenceNumber(FMEnvelopeParameter param, int n)
+{
+	opSeqNum_.at(param) = n;
+}
+
+int InstrumentFM::getOperatorSequenceNumber(FMEnvelopeParameter param) const
+{
+	return opSeqNum_.at(param);
+}
+
+std::vector<CommandInSequence> InstrumentFM::getOperatorSequenceSequence(FMEnvelopeParameter param) const
+{
+	return owner_->getOperatorSequenceFMSequence(param, opSeqNum_.at(param));
+}
+
+std::vector<Loop> InstrumentFM::getOperatorSequenceLoops(FMEnvelopeParameter param) const
+{
+	return owner_->getOperatorSequenceFMLoops(param, opSeqNum_.at(param));
+}
+
+Release InstrumentFM::getOperatorSequenceRelease(FMEnvelopeParameter param) const
+{
+	return owner_->getOperatorSequenceFMRelease(param, opSeqNum_.at(param));
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const
+{
+	return owner_->getOperatorSequenceFMIterator(param, opSeqNum_.at(param));
 }
 
 void InstrumentFM::setArpeggioNumber(int n)

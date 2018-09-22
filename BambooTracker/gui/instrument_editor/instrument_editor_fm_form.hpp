@@ -89,6 +89,28 @@ private slots:
 	void on_lfoNumSpinBox_valueChanged(int arg1);
 	void on_lfoGroupBox_toggled(bool arg1);
 
+	//========== OperatorSequence ==========//
+public:
+	int getOperatorSequenceNumber() const;
+	FMEnvelopeParameter getOperatorSequenceParameter() const;
+
+signals:
+	void operatorSequenceNumberChanged();
+	void operatorSequenceParameterChanged(FMEnvelopeParameter param, int opSeqNum, int fromInstNum);
+
+public slots:
+	void onOperatorSequenceNumberChanged();
+	void onOperatorSequenceParameterChanged(FMEnvelopeParameter param, int opSeqNum);
+
+private:
+	void setInstrumentOperatorSequenceParameters();
+	void setOperatorSequenceEditor();
+
+private slots:
+	void onOperatorSequenceTypeChanged(int type);
+	void on_opSeqEditGroupBox_toggled(bool arg1);
+	void on_opSeqNumSpinBox_valueChanged(int arg1);
+
 	//========== Arpeggio ==========//
 public:
 	int getArpeggioNumber() const;

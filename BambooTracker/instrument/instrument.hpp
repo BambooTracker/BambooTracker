@@ -55,6 +55,13 @@ public:
 	int getLFONumber() const;
 	int getLFOParameter(FMLFOParameter param) const;
 
+	void setOperatorSequenceNumber(FMEnvelopeParameter param, int n);
+	int getOperatorSequenceNumber(FMEnvelopeParameter param) const;
+	std::vector<CommandInSequence> getOperatorSequenceSequence(FMEnvelopeParameter param) const;
+	std::vector<Loop> getOperatorSequenceLoops(FMEnvelopeParameter param) const;
+	Release getOperatorSequenceRelease(FMEnvelopeParameter param) const;
+	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const;
+
 	void setArpeggioNumber(int n);
 	int getArpeggioNumber() const;
 	int getArpeggioType() const;
@@ -77,6 +84,7 @@ public:
 private:
 	int envNum_;
 	int lfoNum_;
+	std::map<FMEnvelopeParameter, int> opSeqNum_;
 	int arpNum_;
 	int ptNum_;
 

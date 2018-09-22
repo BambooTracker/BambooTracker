@@ -603,6 +603,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFONumberChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::lfoParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFOParameterChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::operatorSequenceNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMOperatorSequenceNumberChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::operatorSequenceParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMOperatorSequenceParameterChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMArpeggioNumberChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioParameterChanged,
@@ -625,6 +629,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 
 		instForms_->onInstrumentFMEnvelopeNumberChanged();
 		instForms_->onInstrumentFMLFONumberChanged();
+		instForms_->onInstrumentFMOperatorSequenceNumberChanged();
 		instForms_->onInstrumentFMArpeggioNumberChanged();
 		instForms_->onInstrumentFMPitchNumberChanged();
 		break;

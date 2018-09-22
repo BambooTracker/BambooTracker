@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <map>
 #include "opna.hpp"
 #include "instrument.hpp"
 #include "misc.hpp"
@@ -90,6 +91,7 @@ private:
 	int lfoStartCntFM_[6];
 	bool hasPreSetTickEventFM_[6];
 	bool needToneSetFM_[6];
+	std::map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> arpItFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
 
@@ -112,6 +114,8 @@ private:
 	void setFrontFMSequences(int ch);
 	void releaseStartFMSequences(int ch);
 	void tickEventFM(int ch);
+
+	void checkOperatorSequenceFM(int ch, int type);
 
 	void checkRealToneFMByArpeggio(int ch, int seqPos);
 
