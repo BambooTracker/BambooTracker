@@ -131,7 +131,7 @@ std::vector<int> BambooTracker::getEnvelopeFMUsers(int envNum) const
 	return instMan_.getEnvelopeFMUsers(envNum);
 }
 
-void BambooTracker::setLFOFMParameter(int lfoNum, FMLFOParamter param, int value)
+void BambooTracker::setLFOFMParameter(int lfoNum, FMLFOParameter param, int value)
 {
 	instMan_.setLFOFMParameter(lfoNum, param, value);
 	opnaCtrl_.updateInstrumentFMLFOParameter(lfoNum, param);

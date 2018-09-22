@@ -61,7 +61,7 @@ public:
 	void updateInstrumentFM(int instNum);
 	void updateInstrumentFMEnvelopeParameter(int envNum, FMEnvelopeParameter param);
 	void setInstrumentFMOperatorEnabled(int envNum, int opNum);
-	void updateInstrumentFMLFOParameter(int lfoNum, FMLFOParamter param);
+	void updateInstrumentFMLFOParameter(int lfoNum, FMLFOParameter param);
 
 	// Set volume
 	void setVolumeFM(int ch, int volume);
@@ -87,6 +87,7 @@ private:
 	int gateCntFM_[6];
 	bool enableEnvResetFM_[6];
 	int lfoFreq_;
+	int lfoStartCntFM_[6];
 	bool hasPreSetTickEventFM_[6];
 	bool needToneSetFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> arpItFM_[6];
@@ -105,7 +106,7 @@ private:
 	void writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParameter param, int value);
 
 	void writeFMLFOAllRegisters(int ch);
-	void writeFMLFORegister(int ch, FMLFOParamter param);
+	void writeFMLFORegister(int ch, FMLFOParameter param);
 	void checkLFOUsed();
 
 	void setFrontFMSequences(int ch);

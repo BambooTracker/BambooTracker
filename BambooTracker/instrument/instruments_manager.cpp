@@ -417,12 +417,12 @@ int InstrumentsManager::getInstrumentFMLFO(int instNum) const
 	return std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->getLFONumber();
 }
 
-void InstrumentsManager::setLFOFMParameter(int lfoNum, FMLFOParamter param, int value)
+void InstrumentsManager::setLFOFMParameter(int lfoNum, FMLFOParameter param, int value)
 {
 	lfoFM_.at(lfoNum)->setParameterValue(param, value);
 }
 
-int InstrumentsManager::getLFOFMparameter(int lfoNum, FMLFOParamter param) const
+int InstrumentsManager::getLFOFMparameter(int lfoNum, FMLFOParameter param) const
 {
 	return lfoFM_.at(lfoNum)->getParameterValue(param);
 }

@@ -139,7 +139,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 	}
 
 	writeFMEnvelopeToRegistersFromInstrument(ch);
-	writeFMLFOAllRegisters(ch);
+	if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
 	if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
 	else arpItFM_[ch] = refInstFM_[ch]->getArpeggioSequenceIterator();
 	if (refInstFM_[ch]->getPitchNumber() == -1) ptItFM_[ch].reset();
@@ -154,7 +154,7 @@ void OPNAController::updateInstrumentFM(int instNum)
 	for (int ch = 0; ch < 6; ++ch) {
 		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getNumber() == instNum) {
 			writeFMEnvelopeToRegistersFromInstrument(ch);
-			writeFMLFOAllRegisters(ch);
+			if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
 			if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
 			if (refInstFM_[ch]->getPitchNumber() == -1) ptItFM_[ch].reset();
 			setInstrumentFMProperties(ch);
@@ -193,7 +193,7 @@ void OPNAController::setInstrumentFMOperatorEnabled(int envNum, int opNum)
 	}
 }
 
-void OPNAController::updateInstrumentFMLFOParameter(int lfoNum, FMLFOParamter param)
+void OPNAController::updateInstrumentFMLFOParameter(int lfoNum, FMLFOParameter param)
 {
 	for (int ch = 0; ch < 6; ++ch) {
 		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getLFONumber() == lfoNum) {
@@ -269,6 +269,7 @@ void OPNAController::initFM()
 		volFM_[ch] = 0;	// Init volume
 		gateCntFM_[ch] = 0;
 		enableEnvResetFM_[ch] = true;
+		lfoStartCntFM_[ch] = -1;
 
 		// Init sequence
 		hasPreSetTickEventFM_[ch] = false;
@@ -350,7 +351,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	data1 |= data2;
 	opna_.setRegister(0x50 + offset, data1);
 
-	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM1);
+	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM1);
 	data1 <<= 7;
 	data2 = refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::DR1);
 	envFM_[ch]->setParameterValue(FMEnvelopeParameter::DR1, data2);
@@ -397,7 +398,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	data1 |= data2;
 	opna_.setRegister(0x50 + offset, data1);
 
-	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM2);
+	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM2);
 	data1 <<= 7;
 	data2 = refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::DR2);
 	envFM_[ch]->setParameterValue(FMEnvelopeParameter::DR2, data2);
@@ -444,7 +445,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	data1 |= data2;
 	opna_.setRegister(0x50 + offset, data1);
 
-	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM3);
+	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM3);
 	data1 <<= 7;
 	data2 = refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::DR3);
 	envFM_[ch]->setParameterValue(FMEnvelopeParameter::DR3, data2);
@@ -491,7 +492,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	data1 |= data2;
 	opna_.setRegister(0x50 + offset, data1);
 
-	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM4);
+	data1 = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM4);
 	data1 <<= 7;
 	data2 = refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::DR4);
 	envFM_[ch]->setParameterValue(FMEnvelopeParameter::DR4, data2);
@@ -553,7 +554,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		opna_.setRegister(0x50 + bch, data);
 		break;
 	case FMEnvelopeParameter::DR1:
-		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM1);
+		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM1);
 		data <<= 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR1);
 		opna_.setRegister(0x60 + bch, data);
@@ -595,7 +596,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		opna_.setRegister(0x50 + bch + 8, data);
 		break;
 	case FMEnvelopeParameter::DR2:
-		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM2);
+		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM2);
 		data <<= 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR2);
 		opna_.setRegister(0x60 + bch + 8, data);
@@ -637,7 +638,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		opna_.setRegister(0x50 + bch + 4, data);
 		break;
 	case FMEnvelopeParameter::DR3:
-		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM3);
+		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM3);
 		data <<= 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR3);
 		opna_.setRegister(0x60 + bch + 4, data);
@@ -677,7 +678,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		opna_.setRegister(0x50 + bch + 12, data);
 		break;
 	case FMEnvelopeParameter::DR4:
-		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM4);
+		data = (refInstFM_[ch]->getLFONumber() == -1) ? 0 : refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM4);
 		data <<= 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR4);
 		opna_.setRegister(0x60 + bch + 12, data);
@@ -702,7 +703,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 
 void OPNAController::writeFMLFOAllRegisters(int ch)
 {
-	if (refInstFM_[ch]->getLFONumber() == -1) {	// Clear data
+	if (refInstFM_[ch]->getLFONumber() == -1 || lfoStartCntFM_[ch] > 0) {	// Clear data
 		uint32_t bch = getFMChannelOffset(ch);	// Bank and channel offset
 		opna_.setRegister(0xb4 + bch, panFM_[ch] << 6);
 		opna_.setRegister(0x60 + bch, envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR1));
@@ -711,50 +712,51 @@ void OPNAController::writeFMLFOAllRegisters(int ch)
 		opna_.setRegister(0x60 + bch + 12, envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR4));
 	}
 	else {
-		writeFMLFORegister(ch, FMLFOParamter::FREQ);
-		writeFMLFORegister(ch, FMLFOParamter::PMS);
-		writeFMLFORegister(ch, FMLFOParamter::AMS);
-		writeFMLFORegister(ch, FMLFOParamter::AM1);
-		writeFMLFORegister(ch, FMLFOParamter::AM2);
-		writeFMLFORegister(ch, FMLFOParamter::AM3);
-		writeFMLFORegister(ch, FMLFOParamter::AM4);
+		writeFMLFORegister(ch, FMLFOParameter::FREQ);
+		writeFMLFORegister(ch, FMLFOParameter::PMS);
+		writeFMLFORegister(ch, FMLFOParameter::AMS);
+		writeFMLFORegister(ch, FMLFOParameter::AM1);
+		writeFMLFORegister(ch, FMLFOParameter::AM2);
+		writeFMLFORegister(ch, FMLFOParameter::AM3);
+		writeFMLFORegister(ch, FMLFOParameter::AM4);
+		lfoStartCntFM_[ch] = -1;
 	}
 }
 
-void OPNAController::writeFMLFORegister(int ch, FMLFOParamter param)
+void OPNAController::writeFMLFORegister(int ch, FMLFOParameter param)
 {
 	uint32_t bch = getFMChannelOffset(ch);	// Bank and channel offset
 	uint8_t data;
 
 	switch (param) {
-	case FMLFOParamter::FREQ:
-		lfoFreq_ = refInstFM_[ch]->getLFOParameter(FMLFOParamter::FREQ);
+	case FMLFOParameter::FREQ:
+		lfoFreq_ = refInstFM_[ch]->getLFOParameter(FMLFOParameter::FREQ);
 		opna_.setRegister(0x22, lfoFreq_ | (1 << 3));
 		break;
-	case FMLFOParamter::PMS:
-	case FMLFOParamter::AMS:
+	case FMLFOParameter::PMS:
+	case FMLFOParameter::AMS:
 		data = panFM_[ch] << 6;
-		data |= (refInstFM_[ch]->getLFOParameter(FMLFOParamter::AMS) << 4);
-		data |= refInstFM_[ch]->getLFOParameter(FMLFOParamter::PMS);
+		data |= (refInstFM_[ch]->getLFOParameter(FMLFOParameter::AMS) << 4);
+		data |= refInstFM_[ch]->getLFOParameter(FMLFOParameter::PMS);
 		opna_.setRegister(0xb4 + bch, data);
 		break;
-	case FMLFOParamter::AM1:
-		data = refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM1) << 7;
+	case FMLFOParameter::AM1:
+		data = refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM1) << 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR1);
 		opna_.setRegister(0x60 + bch, data);
 		break;
-	case FMLFOParamter::AM2:
-		data = refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM2) << 7;
+	case FMLFOParameter::AM2:
+		data = refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM2) << 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR2);
 		opna_.setRegister(0x60 + bch + 8, data);
 		break;
-	case FMLFOParamter::AM3:
-		data = refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM3) << 7;
+	case FMLFOParameter::AM3:
+		data = refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM3) << 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR3);
 		opna_.setRegister(0x60 + bch + 4, data);
 		break;
-	case FMLFOParamter::AM4:
-		data = refInstFM_[ch]->getLFOParameter(FMLFOParamter::AM4) << 7;
+	case FMLFOParameter::AM4:
+		data = refInstFM_[ch]->getLFOParameter(FMLFOParameter::AM4) << 7;
 		data |= envFM_[ch]->getParameterValue(FMEnvelopeParameter::DR4);
 		opna_.setRegister(0x60 + bch + 12, data);
 		break;
@@ -763,8 +765,8 @@ void OPNAController::writeFMLFORegister(int ch, FMLFOParamter param)
 
 void OPNAController::checkLFOUsed()
 {
-	for (int i = 0; i < 6; ++i) {
-		if (refInstFM_[i] != nullptr &&refInstFM_[i]->getLFONumber() != -1) return;
+	for (int ch = 0; ch < 6; ++ch) {
+		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getLFONumber() != -1) return;
 	}
 
 	if (lfoFreq_ != -1) {
@@ -775,6 +777,14 @@ void OPNAController::checkLFOUsed()
 
 void OPNAController::setFrontFMSequences(int ch)
 {
+	if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getLFONumber() != -1) {
+		lfoStartCntFM_[ch] = refInstFM_[ch]->getLFOParameter(FMLFOParameter::COUNT);
+		writeFMLFOAllRegisters(ch);
+	}
+	else {
+		lfoStartCntFM_[ch] = -1;
+	}
+
 	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->front());
 
 	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->front());
@@ -784,6 +794,11 @@ void OPNAController::setFrontFMSequences(int ch)
 
 void OPNAController::releaseStartFMSequences(int ch)
 {
+	if (lfoStartCntFM_[ch] > 0) {
+		--lfoStartCntFM_[ch];
+		writeFMLFOAllRegisters(ch);
+	}
+
 	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next(true));
 
 	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next(true));
@@ -797,6 +812,11 @@ void OPNAController::tickEventFM(int ch)
 		hasPreSetTickEventFM_[ch] = false;
 	}
 	else {
+		if (lfoStartCntFM_[ch] > 0) {
+			--lfoStartCntFM_[ch];
+			writeFMLFOAllRegisters(ch);
+		}
+
 		if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next());
 
 		if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next());

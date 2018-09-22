@@ -48,8 +48,8 @@ public:
 
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	int getInstrumentFMLFO(int instNum) const;
-	void setLFOFMParameter(int lfoNum, FMLFOParamter param, int value);
-	int getLFOFMparameter(int lfoNum, FMLFOParamter param) const;
+	void setLFOFMParameter(int lfoNum, FMLFOParameter param, int value);
+	int getLFOFMparameter(int lfoNum, FMLFOParameter param) const;
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 
 	void setInstrumentFMArpeggio(int instNum, int arpNum);

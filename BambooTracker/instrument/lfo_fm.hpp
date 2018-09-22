@@ -3,7 +3,7 @@
 #include <memory>
 #include "abstruct_instrument_property.hpp"
 
-enum class FMLFOParamter;
+enum class FMLFOParameter;
 
 
 class LFOFM : public AbstructInstrumentProperty
@@ -14,19 +14,20 @@ public:
 
 	std::unique_ptr<LFOFM> clone();
 
-	void setParameterValue(FMLFOParamter param, int value);
-	int getParameterValue(FMLFOParamter param) const;
+	void setParameterValue(FMLFOParameter param, int value);
+	int getParameterValue(FMLFOParameter param) const;
 
 private:
 	int freq_;
 	int pms_;
 	int ams_;
 	int amOp_[4];
+	int cnt_;
 };
 
 
-enum class FMLFOParamter
+enum class FMLFOParameter
 {
-	FREQ, AMS, PMS,
+	FREQ, AMS, PMS, COUNT,
 	AM1, AM2, AM3, AM4
 };

@@ -47,7 +47,7 @@ public:
 	void setInstrumentFMEnvelope(int instNum, int envNum);
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 
-	void setLFOFMParameter(int lfoNum, FMLFOParamter param, int value);
+	void setLFOFMParameter(int lfoNum, FMLFOParameter param, int value);
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 

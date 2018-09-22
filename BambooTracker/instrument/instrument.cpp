@@ -90,7 +90,7 @@ int InstrumentFM::getLFONumber() const
 	return lfoNum_;
 }
 
-int InstrumentFM::getLFOParameter(FMLFOParamter param) const
+int InstrumentFM::getLFOParameter(FMLFOParameter param) const
 {
 	return owner_->getLFOFMparameter(lfoNum_, param);
 }

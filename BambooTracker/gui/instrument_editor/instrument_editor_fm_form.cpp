@@ -176,7 +176,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->lfoFreqSlider, &LabeledVerticalSlider::valueChanged,
 					 this, [&](int v) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::FREQ, v);
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::FREQ, v);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -187,7 +187,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->pmsSlider, &LabeledVerticalSlider::valueChanged,
 					 this, [&](int v) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::PMS, v);
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::PMS, v);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -198,7 +198,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->amsSlider, &LabeledVerticalSlider::valueChanged,
 					 this, [&](int v) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AMS, v);
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AMS, v);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -207,7 +207,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->amOp1CheckBox, &QCheckBox::stateChanged,
 					 this, [&](int state) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM1,
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM1,
 										  (state == Qt::Checked) ? 1 : 0);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
@@ -216,7 +216,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->amOp2CheckBox, &QCheckBox::stateChanged,
 					 this, [&](int state) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM2,
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM2,
 										  (state == Qt::Checked) ? 1 : 0);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
@@ -225,7 +225,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->amOp3CheckBox, &QCheckBox::stateChanged,
 					 this, [&](int state) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM3,
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM3,
 										  (state == Qt::Checked) ? 1 : 0);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
@@ -234,8 +234,16 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->amOp4CheckBox, &QCheckBox::stateChanged,
 					 this, [&](int state) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParamter::AM4,
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::AM4,
 										  (state == Qt::Checked) ? 1 : 0);
+			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->lfoStartSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int v) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::COUNT, v);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -726,13 +734,13 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters()
 		ui->lfoGroupBox->setChecked(true);
 		ui->lfoNumSpinBox->setValue(num);
 		onLFONumberChanged();
-		ui->lfoFreqSlider->setValue(instFM->getLFOParameter(FMLFOParamter::FREQ));
-		ui->pmsSlider->setValue(instFM->getLFOParameter(FMLFOParamter::PMS));
-		ui->amsSlider->setValue(instFM->getLFOParameter(FMLFOParamter::AMS));
-		ui->amOp1CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM1));
-		ui->amOp2CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM2));
-		ui->amOp3CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM3));
-		ui->amOp4CheckBox->setChecked(instFM->getLFOParameter(FMLFOParamter::AM4));
+		ui->lfoFreqSlider->setValue(instFM->getLFOParameter(FMLFOParameter::FREQ));
+		ui->pmsSlider->setValue(instFM->getLFOParameter(FMLFOParameter::PMS));
+		ui->amsSlider->setValue(instFM->getLFOParameter(FMLFOParameter::AMS));
+		ui->amOp1CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM1));
+		ui->amOp2CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM2));
+		ui->amOp3CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM3));
+		ui->amOp4CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM4));
 	}
 }
 

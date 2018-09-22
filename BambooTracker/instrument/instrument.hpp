@@ -53,7 +53,7 @@ public:
 
 	void setLFONumber(int n);
 	int getLFONumber() const;
-	int getLFOParameter(FMLFOParamter param) const;
+	int getLFOParameter(FMLFOParameter param) const;
 
 	void setArpeggioNumber(int n);
 	int getArpeggioNumber() const;
