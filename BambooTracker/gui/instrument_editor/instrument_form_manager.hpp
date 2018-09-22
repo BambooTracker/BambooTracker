@@ -31,6 +31,11 @@ public slots:
 	void onInstrumentFMEnvelopeNumberChanged();
 	void onInstrumentFMLFOParameterChanged(int lfoNum, int fromInstNum);
 	void onInstrumentFMLFONumberChanged();
+	void onInstrumentFMArpeggioParameterChanged(int arpNum, int fromInstNum);
+	void onInstrumentFMArpeggioNumberChanged();
+	void onInstrumentFMPitchParameterChanged(int ptNum, int fromInstNum);
+	void onInstrumentFMPitchNumberChanged();
+
 	void onInstrumentSSGWaveFormParameterChanged(int wfNum, int fromInstNum);
 	void onInstrumentSSGWaveFormNumberChanged();
 	void onInstrumentSSGToneNoiseParameterChanged(int tnNum, int fromInstNum);

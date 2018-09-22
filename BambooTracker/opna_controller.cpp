@@ -83,16 +83,10 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 	baseToneFM_[ch].octave = octave;
 	baseToneFM_[ch].note = note;
 	baseToneFM_[ch].pitch = pitch;
+	realToneFM_[ch] = baseToneFM_[ch];
 
 	setFrontFMSequences(ch);
 	hasPreSetTickEventFM_[ch] = isJam;
-
-	uint16_t p = PitchConverter::getPitchFM(note, octave, pitch);
-	uint32_t offset = getFMChannelOffset(ch);
-	opna_.setRegister(0xa4 + offset, p >> 8);
-	opna_.setRegister(0xa0 + offset, p & 0x00ff);
-	uint32_t chdata = getFmChannelMask(ch);
-	opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
 
 	isKeyOnFM_[ch] = true;
 }
@@ -146,6 +140,10 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 
 	writeFMEnvelopeToRegistersFromInstrument(ch);
 	writeFMLFOAllRegisters(ch);
+	if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
+	else arpItFM_[ch] = refInstFM_[ch]->getArpeggioSequenceIterator();
+	if (refInstFM_[ch]->getPitchNumber() == -1) ptItFM_[ch].reset();
+	else ptItFM_[ch] = refInstFM_[ch]->getPitchSequenceIterator();
 	setInstrumentFMProperties(ch);
 
 	checkLFOUsed();
@@ -157,6 +155,8 @@ void OPNAController::updateInstrumentFM(int instNum)
 		if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getNumber() == instNum) {
 			writeFMEnvelopeToRegistersFromInstrument(ch);
 			writeFMLFOAllRegisters(ch);
+			if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
+			if (refInstFM_[ch]->getPitchNumber() == -1) ptItFM_[ch].reset();
 			setInstrumentFMProperties(ch);
 		}
 	}
@@ -265,12 +265,16 @@ void OPNAController::initFM()
 		refInstFM_[ch].reset();
 
 		baseToneFM_[ch].octave = -1;	// Init key on note data
+		realToneFM_[ch].octave = -1;
 		volFM_[ch] = 0;	// Init volume
 		gateCntFM_[ch] = 0;
 		enableEnvResetFM_[ch] = true;
 
 		// Init sequence
 		hasPreSetTickEventFM_[ch] = false;
+		arpItFM_[ch].reset();
+		ptItFM_[ch].reset();
+		needToneSetFM_[ch] = false;
 
 		// Init FM pan
 		uint32_t bch = getFMChannelOffset(ch);
@@ -771,12 +775,20 @@ void OPNAController::checkLFOUsed()
 
 void OPNAController::setFrontFMSequences(int ch)
 {
-	// UNDONE
+	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->front());
+
+	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->front());
+
+	writePitchFM(ch);
 }
 
 void OPNAController::releaseStartFMSequences(int ch)
 {
-	// UNDONE
+	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next(true));
+
+	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next(true));
+
+	if (needToneSetFM_[ch]) writePitchFM(ch);
 }
 
 void OPNAController::tickEventFM(int ch)
@@ -785,8 +797,77 @@ void OPNAController::tickEventFM(int ch)
 		hasPreSetTickEventFM_[ch] = false;
 	}
 	else {
-		// UNDONE
+		if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next());
+
+		if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next());
+
+		if (needToneSetFM_[ch]) writePitchFM(ch);
 	}
+}
+
+void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
+{
+	if (seqPos == -1) return;
+
+	switch (arpItFM_[ch]->getSequenceType()) {
+	case 0:	// Absolute
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
+										octaveAndNoteToNoteNumber(baseToneFM_[ch].octave, baseToneFM_[ch].note)
+										+ arpItFM_[ch]->getCommandType() - 48);
+		realToneFM_[ch].octave = pair.first;
+		realToneFM_[ch].note = pair.second;
+		break;
+	}
+	case 1:	// Fix
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItFM_[ch]->getCommandType());
+		realToneFM_[ch].octave = pair.first;
+		realToneFM_[ch].note = pair.second;
+		break;
+	}
+	case 2:	// Relative
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
+										octaveAndNoteToNoteNumber(realToneFM_[ch].octave, realToneFM_[ch].note)
+										+ arpItFM_[ch]->getCommandType() - 48);
+		realToneFM_[ch].octave = pair.first;
+		realToneFM_[ch].note = pair.second;
+		break;
+	}
+	}
+
+	needToneSetFM_[ch] = true;
+}
+
+void OPNAController::checkRealToneFMByPitch(int ch, int seqPos)
+{
+	if (seqPos == -1) return;
+
+	switch (ptItFM_[ch]->getSequenceType()) {
+	case 0:	// Absolute
+		realToneFM_[ch].pitch = ptItFM_[ch]->getCommandType() - 127;
+		break;
+	case 1:	// Relative
+		realToneFM_[ch].pitch += (ptItFM_[ch]->getCommandType() - 127);
+		break;
+	}
+
+	needToneSetFM_[ch] = true;
+}
+
+void OPNAController::writePitchFM(int ch)
+{
+	uint16_t p = PitchConverter::getPitchFM(realToneFM_[ch].note,
+											realToneFM_[ch].octave,
+											realToneFM_[ch].pitch);
+	uint32_t offset = getFMChannelOffset(ch);
+	opna_.setRegister(0xa4 + offset, p >> 8);
+	opna_.setRegister(0xa0 + offset, p & 0x00ff);
+	uint32_t chdata = getFmChannelMask(ch);
+	opna_.setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
+
+	needToneSetFM_[ch] = false;
 }
 
 void OPNAController::setInstrumentFMProperties(int ch)

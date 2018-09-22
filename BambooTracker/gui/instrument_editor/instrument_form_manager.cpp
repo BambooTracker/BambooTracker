@@ -117,6 +117,44 @@ void InstrumentFormManager::onInstrumentFMLFONumberChanged()
 	}
 }
 
+void InstrumentFormManager::onInstrumentFMArpeggioParameterChanged(int arpNum, int fromInstNum)
+{
+	for (auto& pair : map_) {
+		if (pair.first != fromInstNum &&
+				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onArpeggioParameterChanged(arpNum);
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentFMArpeggioNumberChanged()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onArpeggioNumberChanged();
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentFMPitchParameterChanged(int ptNum, int fromInstNum)
+{
+	for (auto& pair : map_) {
+		if (pair.first != fromInstNum &&
+				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onPitchParameterChanged(ptNum);
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentFMPitchNumberChanged()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->onPitchNumberChanged();
+		}
+	}
+}
+
 void InstrumentFormManager::onInstrumentSSGWaveFormParameterChanged(int wfNum, int fromInstNum)
 {
 	for (auto& pair : map_) {

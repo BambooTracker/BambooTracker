@@ -49,6 +49,8 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	AbstructInstrument(number, SoundSource::FM, name, owner),
 	envNum_(0),
 	lfoNum_(-1),
+	arpNum_(-1),
+	ptNum_(-1),
 	envResetEnabled_(true)
 {
 }
@@ -101,6 +103,76 @@ void InstrumentFM::setEnvelopeResetEnabled(bool enabled)
 bool InstrumentFM::getEnvelopeResetEnabled() const
 {
 	return envResetEnabled_;
+}
+
+void InstrumentFM::setArpeggioNumber(int n)
+{
+	arpNum_ = n;
+}
+
+int InstrumentFM::getArpeggioNumber() const
+{
+	return arpNum_;
+}
+
+int InstrumentFM::getArpeggioType() const
+{
+	return owner_->getArpeggioFMType(arpNum_);
+}
+
+std::vector<CommandInSequence> InstrumentFM::getArpeggioSequence() const
+{
+	return owner_->getArpeggioFMSequence(arpNum_);
+}
+
+std::vector<Loop> InstrumentFM::getArpeggioLoops() const
+{
+	return owner_->getArpeggioFMLoops(arpNum_);
+}
+
+Release InstrumentFM::getArpeggioRelease() const
+{
+	return owner_->getArpeggioFMRelease(arpNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getArpeggioSequenceIterator() const
+{
+	return owner_->getArpeggioFMIterator(arpNum_);
+}
+
+void InstrumentFM::setPitchNumber(int n)
+{
+	ptNum_ = n;
+}
+
+int InstrumentFM::getPitchNumber() const
+{
+	return ptNum_;
+}
+
+int InstrumentFM::getPitchType() const
+{
+	return owner_->getPitchFMType(ptNum_);
+}
+
+std::vector<CommandInSequence> InstrumentFM::getPitchSequence() const
+{
+	return owner_->getPitchFMSequence(ptNum_);
+}
+
+std::vector<Loop> InstrumentFM::getPitchLoops() const
+{
+	return owner_->getPitchFMLoops(ptNum_);
+}
+
+Release InstrumentFM::getPitchRelease() const
+{
+	return owner_->getPitchFMRelease(ptNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterator() const
+{
+	return owner_->getPitchFMIterator(ptNum_);
 }
 
 /****************************************/
@@ -222,7 +294,7 @@ int InstrumentSSG::getArpeggioNumber() const
 
 int InstrumentSSG::getArpeggioType() const
 {
-	return owner_->getArpeggioType(arpNum_);
+	return owner_->getArpeggioSSGType(arpNum_);
 }
 
 std::vector<CommandInSequence> InstrumentSSG::getArpeggioSequence() const
@@ -257,7 +329,7 @@ int InstrumentSSG::getPitchNumber() const
 
 int InstrumentSSG::getPitchType() const
 {
-	return owner_->getPitchType(ptNum_);
+	return owner_->getPitchSSGType(ptNum_);
 }
 
 std::vector<CommandInSequence> InstrumentSSG::getPitchSequence() const

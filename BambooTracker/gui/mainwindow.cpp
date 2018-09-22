@@ -603,6 +603,14 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFONumberChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::lfoParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFOParameterChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMArpeggioNumberChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMArpeggioParameterChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::pitchNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchNumberChanged);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::pitchParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchParameterChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
 						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
@@ -617,6 +625,8 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 
 		instForms_->onInstrumentFMEnvelopeNumberChanged();
 		instForms_->onInstrumentFMLFONumberChanged();
+		instForms_->onInstrumentFMArpeggioNumberChanged();
+		instForms_->onInstrumentFMPitchNumberChanged();
 		break;
 	}
 	case SoundSource::SSG:
@@ -658,6 +668,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		instForms_->onInstrumentSSGToneNoiseNumberChanged();
 		instForms_->onInstrumentSSGEnvelopeNumberChanged();
 		instForms_->onInstrumentSSGArpeggioNumberChanged();
+		instForms_->onInstrumentSSGPitchNumberChanged();
 		break;
 	}
 	}

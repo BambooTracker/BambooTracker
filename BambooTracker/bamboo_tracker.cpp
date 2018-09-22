@@ -148,6 +148,88 @@ std::vector<int> BambooTracker::getLFOFMUsers(int lfoNum) const
 	return instMan_.getLFOFMUsers(lfoNum);
 }
 
+void BambooTracker::setArpeggioFMType(int arpNum, int type)
+{
+	instMan_.setArpeggioFMType(arpNum, type);
+}
+
+void BambooTracker::addArpeggioFMSequenceCommand(int arpNum, int type, int data)
+{
+	instMan_.addArpeggioFMSequenceCommand(arpNum, type, data);
+}
+
+void BambooTracker::removeArpeggioFMSequenceCommand(int arpNum)
+{
+	instMan_.removeArpeggioFMSequenceCommand(arpNum);
+}
+
+void BambooTracker::setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data)
+{
+	instMan_.setArpeggioFMSequenceCommand(arpNum, cnt, type, data);
+}
+
+void BambooTracker::setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_.setArpeggioFMLoops(arpNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setArpeggioFMRelease(int arpNum, ReleaseType type, int begin)
+{
+	instMan_.setArpeggioFMRelease(arpNum, type, begin);
+}
+
+void BambooTracker::setInstrumentFMArpeggio(int instNum, int arpNum)
+{
+	instMan_.setInstrumentFMArpeggio(instNum, arpNum);
+	opnaCtrl_.updateInstrumentFM(instNum);
+}
+
+std::vector<int> BambooTracker::getArpeggioFMUsers(int arpNum) const
+{
+	return instMan_.getArpeggioFMUsers(arpNum);
+}
+
+void BambooTracker::setPitchFMType(int ptNum, int type)
+{
+	instMan_.setPitchFMType(ptNum, type);
+}
+
+void BambooTracker::addPitchFMSequenceCommand(int ptNum, int type, int data)
+{
+	instMan_.addPitchFMSequenceCommand(ptNum, type, data);
+}
+
+void BambooTracker::removePitchFMSequenceCommand(int ptNum)
+{
+	instMan_.removePitchFMSequenceCommand(ptNum);
+}
+
+void BambooTracker::setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data)
+{
+	instMan_.setPitchFMSequenceCommand(ptNum, cnt, type, data);
+}
+
+void BambooTracker::setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_.setPitchFMLoops(ptNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setPitchFMRelease(int ptNum, ReleaseType type, int begin)
+{
+	instMan_.setPitchFMRelease(ptNum, type, begin);
+}
+
+void BambooTracker::setInstrumentFMPitch(int instNum, int ptNum)
+{
+	instMan_.setInstrumentFMPitch(instNum, ptNum);
+	opnaCtrl_.updateInstrumentFM(instNum);
+}
+
+std::vector<int> BambooTracker::getPitchFMUsers(int ptNum) const
+{
+	return instMan_.getPitchFMUsers(ptNum);
+}
+
 void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
 {
 	instMan_.setInstrumentFMEnvelopeResetEnabled(instNum, enabled);
@@ -265,7 +347,7 @@ std::vector<int> BambooTracker::getEnvelopeSSGUsers(int envNum) const
 
 void BambooTracker::setArpeggioSSGType(int arpNum, int type)
 {
-	instMan_.setArpeggioType(arpNum, type);
+	instMan_.setArpeggioSSGType(arpNum, type);
 }
 
 void BambooTracker::addArpeggioSSGSequenceCommand(int arpNum, int type, int data)
@@ -306,7 +388,7 @@ std::vector<int> BambooTracker::getArpeggioSSGUsers(int arpNum) const
 
 void BambooTracker::setPitchSSGType(int ptNum, int type)
 {
-	instMan_.setPitchType(ptNum, type);
+	instMan_.setPitchSSGType(ptNum, type);
 }
 
 void BambooTracker::addPitchSSGSequenceCommand(int ptNum, int type, int data)

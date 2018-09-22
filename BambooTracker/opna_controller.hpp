@@ -81,12 +81,16 @@ private:
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
 	ToneDetail baseToneFM_[6];
+	ToneDetail realToneFM_[6];
 	int volFM_[6];
 	bool isMuteFM_[6];
 	int gateCntFM_[6];
 	bool enableEnvResetFM_[6];
 	int lfoFreq_;
 	bool hasPreSetTickEventFM_[6];
+	bool needToneSetFM_[6];
+	std::unique_ptr<CommandSequence::Iterator> arpItFM_[6];
+	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
 
 	/// bit0: right on/off
 	/// bit1: left on/off
@@ -107,6 +111,12 @@ private:
 	void setFrontFMSequences(int ch);
 	void releaseStartFMSequences(int ch);
 	void tickEventFM(int ch);
+
+	void checkRealToneFMByArpeggio(int ch, int seqPos);
+
+	void checkRealToneFMByPitch(int ch, int seqPos);
+
+	void writePitchFM(int ch);
 
 	void setInstrumentFMProperties(int ch);
 

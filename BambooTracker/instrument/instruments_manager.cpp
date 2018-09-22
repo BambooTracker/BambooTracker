@@ -4,9 +4,11 @@
 
 InstrumentsManager::InstrumentsManager()
 {
-	for (int i = 0; i < 128; ++i) {
+	for (size_t i = 0; i < 128; ++i) {
 		envFM_[i] = std::make_shared<EnvelopeFM>(i);
 		lfoFM_[i] = std::make_shared<LFOFM>(i);
+		arpFM_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+		ptFM_[i] = std::make_shared<CommandSequence>(i, 0, 127);
 
 		wfSSG_[i] = std::make_shared<CommandSequence>(i, 0);
 		tnSSG_[i] = std::make_shared<CommandSequence>(i, 0);
@@ -41,6 +43,10 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		envFM_.at(fm->getEnvelopeNumber())->registerUserInstrument(num);
 		int lfoNum = fm->getLFONumber();
 		if (lfoNum != -1) lfoFM_.at(lfoNum)->registerUserInstrument(num);
+		int arpNum = fm->getArpeggioNumber();
+		if (arpNum != -1) arpFM_.at(arpNum)->registerUserInstrument(num);
+		int ptNum = fm->getPitchNumber();
+		if (ptNum != -1) ptFM_.at(ptNum)->registerUserInstrument(num);
 		break;
 	}
 	case SoundSource::SSG:
@@ -71,6 +77,8 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
 		setInstrumentFMLFO(cloneInstNum, refFm->getLFONumber());
+		setInstrumentFMArpeggio(cloneInstNum, refFm->getArpeggioNumber());
+		setInstrumentFMPitch(cloneInstNum, refFm->getPitchNumber());
 		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
@@ -101,13 +109,21 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
-
 		if (refFm->getLFONumber() != -1) {
 			int lfoNum = cloneFMLFO(refFm->getLFONumber());
 			cloneFm->setLFONumber(lfoNum);
 			lfoFM_[lfoNum]->registerUserInstrument(cloneInstNum);
 		}
-
+		if (refFm->getArpeggioNumber() != -1) {
+			int arpNum = cloneFMArpeggio(refFm->getArpeggioNumber());
+			cloneFm->setArpeggioNumber(arpNum);
+			arpFM_[arpNum]->registerUserInstrument(cloneInstNum);
+		}
+		if (refFm->getPitchNumber() != -1) {
+			int ptNum = cloneFMPitch(refFm->getPitchNumber());
+			cloneFm->setPitchNumber(ptNum);
+			ptFM_[ptNum]->registerUserInstrument(cloneInstNum);
+		}
 		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
@@ -165,6 +181,34 @@ int InstrumentsManager::cloneFMLFO(int srcNum)
 		if (!lfo->isUserInstrument()) {
 			lfo = lfoFM_.at(srcNum)->clone();
 			lfo->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
+int InstrumentsManager::cloneFMArpeggio(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& arp : arpFM_) {
+		if (!arp->isUserInstrument()) {
+			arp = arpFM_.at(srcNum)->clone();
+			arp->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
+int InstrumentsManager::cloneFMPitch(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& pt : ptFM_) {
+		if (!pt->isUserInstrument()) {
+			pt = ptFM_.at(srcNum)->clone();
+			pt->setNumber(cloneNum);
 			break;
 		}
 		++cloneNum;
@@ -251,6 +295,10 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		envFM_.at(fm->getEnvelopeNumber())->deregisterUserInstrument(instNum);
 		int lfoNum = fm->getLFONumber();
 		if (lfoNum != -1) lfoFM_.at(lfoNum)->deregisterUserInstrument(instNum);
+		int arpNum = fm->getArpeggioNumber();
+		if (arpNum != -1) arpFM_.at(arpNum)->deregisterUserInstrument(instNum);
+		int ptNum = fm->getPitchNumber();
+		if (ptNum != -1) ptFM_.at(ptNum)->deregisterUserInstrument(instNum);
 		break;
 	}
 	case SoundSource::SSG:
@@ -382,6 +430,160 @@ int InstrumentsManager::getLFOFMparameter(int lfoNum, FMLFOParamter param) const
 std::vector<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
 {
 	return lfoFM_.at(lfoNum)->getUserInstruments();
+}
+
+void InstrumentsManager::setInstrumentFMArpeggio(int instNum, int arpNum)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	int prevArp = fm->getArpeggioNumber();
+	if (prevArp != -1)
+		arpFM_.at(prevArp)->deregisterUserInstrument(instNum);
+	if (arpNum != -1)
+		arpFM_.at(arpNum)->registerUserInstrument(instNum);
+
+	fm->setArpeggioNumber(arpNum);
+}
+
+int InstrumentsManager::getInstrumentFMArpeggio(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->getArpeggioNumber();
+}
+
+void InstrumentsManager::setArpeggioFMType(int arpNum, int type)
+{
+	arpFM_.at(arpNum)->setType(type);
+}
+
+int InstrumentsManager::getArpeggioFMType(int arpNum) const
+{
+	return arpFM_.at(arpNum)->getType();
+}
+
+void InstrumentsManager::addArpeggioFMSequenceCommand(int arpNum, int type, int data)
+{
+	arpFM_.at(arpNum)->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removeArpeggioFMSequenceCommand(int arpNum)
+{
+	arpFM_.at(arpNum)->removeSequenceCommand();
+}
+
+void InstrumentsManager::setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data)
+{
+	arpFM_.at(arpNum)->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandInSequence> InstrumentsManager::getArpeggioFMSequence(int arpNum)
+{
+	return arpFM_.at(arpNum)->getSequence();
+}
+
+void InstrumentsManager::setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	arpFM_.at(arpNum)->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getArpeggioFMLoops(int arpNum) const
+{
+	return arpFM_.at(arpNum)->getLoops();
+}
+
+void InstrumentsManager::setArpeggioFMRelease(int arpNum, ReleaseType type, int begin)
+{
+	arpFM_.at(arpNum)->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getArpeggioFMRelease(int arpNum) const
+{
+	return arpFM_.at(arpNum)->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioFMIterator(int arpNum) const
+{
+	return arpFM_.at(arpNum)->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getArpeggioFMUsers(int arpNum) const
+{
+	return arpFM_.at(arpNum)->getUserInstruments();
+}
+
+void InstrumentsManager::setInstrumentFMPitch(int instNum, int ptNum)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	int prevPt = fm->getPitchNumber();
+	if (prevPt != -1)
+		ptFM_.at(prevPt)->deregisterUserInstrument(instNum);
+	if (ptNum != -1)
+		ptFM_.at(ptNum)->registerUserInstrument(instNum);
+
+	fm->setPitchNumber(ptNum);
+}
+
+int InstrumentsManager::getInstrumentFMPitch(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->getPitchNumber();
+}
+
+void InstrumentsManager::setPitchFMType(int ptNum, int type)
+{
+	ptFM_.at(ptNum)->setType(type);
+}
+
+int InstrumentsManager::getPitchFMType(int ptNum) const
+{
+	return ptFM_.at(ptNum)->getType();
+}
+
+void InstrumentsManager::addPitchFMSequenceCommand(int ptNum, int type, int data)
+{
+	ptFM_.at(ptNum)->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removePitchFMSequenceCommand(int ptNum)
+{
+	ptFM_.at(ptNum)->removeSequenceCommand();
+}
+
+void InstrumentsManager::setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data)
+{
+	ptFM_.at(ptNum)->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandInSequence> InstrumentsManager::getPitchFMSequence(int ptNum)
+{
+	return ptFM_.at(ptNum)->getSequence();
+}
+
+void InstrumentsManager::setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	ptFM_.at(ptNum)->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getPitchFMLoops(int ptNum) const
+{
+	return ptFM_.at(ptNum)->getLoops();
+}
+
+void InstrumentsManager::setPitchFMRelease(int ptNum, ReleaseType type, int begin)
+{
+	ptFM_.at(ptNum)->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getPitchFMRelease(int ptNum) const
+{
+	return ptFM_.at(ptNum)->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchFMIterator(int ptNum) const
+{
+	return ptFM_.at(ptNum)->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getPitchFMUsers(int ptNum) const
+{
+	return ptFM_.at(ptNum)->getUserInstruments();
 }
 
 void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
@@ -608,12 +810,12 @@ int InstrumentsManager::getInstrumentSSGArpeggio(int instNum)
 	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum])->getArpeggioNumber();
 }
 
-void InstrumentsManager::setArpeggioType(int arpNum, int type)
+void InstrumentsManager::setArpeggioSSGType(int arpNum, int type)
 {
 	arpSSG_.at(arpNum)->setType(type);
 }
 
-int InstrumentsManager::getArpeggioType(int arpNum) const
+int InstrumentsManager::getArpeggioSSGType(int arpNum) const
 {
 	return arpSSG_.at(arpNum)->getType();
 }
@@ -671,9 +873,9 @@ std::vector<int> InstrumentsManager::getArpeggioSSGUsers(int arpNum) const
 void InstrumentsManager::setInstrumentSSGPitch(int instNum, int ptNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
-	int prevpt = ssg->getPitchNumber();
-	if (prevpt != -1)
-		ptSSG_.at(prevpt)->deregisterUserInstrument(instNum);
+	int prevPt = ssg->getPitchNumber();
+	if (prevPt != -1)
+		ptSSG_.at(prevPt)->deregisterUserInstrument(instNum);
 	if (ptNum != -1)
 		ptSSG_.at(ptNum)->registerUserInstrument(instNum);
 
@@ -685,12 +887,12 @@ int InstrumentsManager::getInstrumentSSGPitch(int instNum)
 	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum])->getPitchNumber();
 }
 
-void InstrumentsManager::setPitchType(int ptNum, int type)
+void InstrumentsManager::setPitchSSGType(int ptNum, int type)
 {
 	ptSSG_.at(ptNum)->setType(type);
 }
 
-int InstrumentsManager::getPitchType(int ptNum) const
+int InstrumentsManager::getPitchSSGType(int ptNum) const
 {
 	return ptSSG_.at(ptNum)->getType();
 }

@@ -392,6 +392,7 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 	setInstrumentToneNoiseParameters();
 	setInstrumentEnvelopeParameters();
 	setInstrumentArpeggioParameters();
+	setInstrumentPitchParameters();
 
 	ui->gateCountSpinBox->setValue(instSSG->getGateCount());
 }

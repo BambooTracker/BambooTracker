@@ -194,7 +194,7 @@ void PitchConverter::calc(int &index, int &octave)
 		octave = 0;
 		index = 0;
 	}
-	else if (octave > 8) {
+	else if (octave > 7) {
 		octave = 7;
 		index = 383;
 	}

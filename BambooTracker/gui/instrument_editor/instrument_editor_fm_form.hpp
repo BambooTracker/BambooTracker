@@ -6,6 +6,7 @@
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
+#include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 
 namespace Ui {
 	class InstrumentEditorFMForm;
@@ -37,6 +38,9 @@ private:
 	bool isIgnoreEvent_;
 
 	std::weak_ptr<BambooTracker> bt_;
+
+	ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
+	VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
 
 	void updateInstrumentParameters();
 
@@ -84,6 +88,46 @@ private slots:
 	void on_lfoGroupBox_customContextMenuRequested(const QPoint &pos);
 	void on_lfoNumSpinBox_valueChanged(int arg1);
 	void on_lfoGroupBox_toggled(bool arg1);
+
+	//========== Arpeggio ==========//
+public:
+	int getArpeggioNumber() const;
+
+signals:
+	void arpeggioNumberChanged();
+	void arpeggioParameterChanged(int arpNum, int fromInstNum);
+
+public slots:
+	void onArpeggioNumberChanged();
+	void onArpeggioParameterChanged(int arpNum);
+
+private:
+	void setInstrumentArpeggioParameters();
+
+private slots:
+	void onArpeggioTypeChanged(int type);
+	void on_arpEditGroupBox_toggled(bool arg1);
+	void on_arpNumSpinBox_valueChanged(int arg1);
+
+	//========== Pitch ==========//
+public:
+	int getPitchNumber() const;
+
+signals:
+	void pitchNumberChanged();
+	void pitchParameterChanged(int ptNum, int fromInstNum);
+
+public slots:
+	void onPitchNumberChanged();
+	void onPitchParameterChanged(int arpNum);
+
+private:
+	void setInstrumentPitchParameters();
+
+private slots:
+	void onPitchTypeChanged(int type);
+	void on_ptEditGroupBox_toggled(bool arg1);
+	void on_ptNumSpinBox_valueChanged(int arg1);
 
 	//========== Else ==========//
 private slots:

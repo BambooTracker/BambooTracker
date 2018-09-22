@@ -51,6 +51,24 @@ public:
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 
+	void setArpeggioFMType(int arpNum, int type);
+	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
+	void removeArpeggioFMSequenceCommand(int arpNum);
+	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
+	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
+	void setInstrumentFMArpeggio(int instNum, int arpNum);
+	std::vector<int> getArpeggioFMUsers(int arpNum) const;
+
+	void setPitchFMType(int ptNum, int type);
+	void addPitchFMSequenceCommand(int ptNum, int type, int data);
+	void removePitchFMSequenceCommand(int ptNum);
+	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
+	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
+	void setInstrumentFMPitch(int instNum, int ptNum);
+	std::vector<int> getPitchFMUsers(int ptNum) const;
+
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
 	//--- SSG

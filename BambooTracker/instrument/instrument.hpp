@@ -55,12 +55,30 @@ public:
 	int getLFONumber() const;
 	int getLFOParameter(FMLFOParamter param) const;
 
+	void setArpeggioNumber(int n);
+	int getArpeggioNumber() const;
+	int getArpeggioType() const;
+	std::vector<CommandInSequence> getArpeggioSequence() const;
+	std::vector<Loop> getArpeggioLoops() const;
+	Release getArpeggioRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
+
+	void setPitchNumber(int n);
+	int getPitchNumber() const;
+	int getPitchType() const;
+	std::vector<CommandInSequence> getPitchSequence() const;
+	std::vector<Loop> getPitchLoops() const;
+	Release getPitchRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;
+
 	void setEnvelopeResetEnabled(bool enabled);
 	bool getEnvelopeResetEnabled() const;
 
 private:
 	int envNum_;
 	int lfoNum_;
+	int arpNum_;
+	int ptNum_;
 
 	bool envResetEnabled_;
 };

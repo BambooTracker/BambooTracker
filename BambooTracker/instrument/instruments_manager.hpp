@@ -52,14 +52,48 @@ public:
 	int getLFOFMparameter(int lfoNum, FMLFOParamter param) const;
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 
+	void setInstrumentFMArpeggio(int instNum, int arpNum);
+	int getInstrumentFMArpeggio(int instNum);
+	void setArpeggioFMType(int arpNum, int type);
+	int getArpeggioFMType(int arpNum) const;
+	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
+	void removeArpeggioFMSequenceCommand(int arpNum);
+	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
+	std::vector<CommandInSequence> getArpeggioFMSequence(int arpNum);
+	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getArpeggioFMLoops(int arpNum) const;
+	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
+	Release getArpeggioFMRelease(int arpNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getArpeggioFMIterator(int arpNum) const;
+	std::vector<int> getArpeggioFMUsers(int arpNum) const;
+
+	void setInstrumentFMPitch(int instNum, int ptNum);
+	int getInstrumentFMPitch(int instNum);
+	void setPitchFMType(int ptNum, int type);
+	int getPitchFMType(int ptNum) const;
+	void addPitchFMSequenceCommand(int ptNum, int type, int data);
+	void removePitchFMSequenceCommand(int ptNum);
+	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
+	std::vector<CommandInSequence> getPitchFMSequence(int ptNum);
+	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getPitchFMLoops(int ptNum) const;
+	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
+	Release getPitchFMRelease(int ptNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getPitchFMIterator(int ptNum) const;
+	std::vector<int> getPitchFMUsers(int ptNum) const;
+
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
 private:
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
 	std::array<std::shared_ptr<LFOFM>, 128> lfoFM_;
+	std::array<std::shared_ptr<CommandSequence>, 128> arpFM_;
+	std::array<std::shared_ptr<CommandSequence>, 128> ptFM_;
 
 	int cloneFMEnvelope(int srcNum);
 	int cloneFMLFO(int srcNum);
+	int cloneFMArpeggio(int srcNum);
+	int cloneFMPitch(int srcNum);
 
 	//----- SSG methods -----
 public:
@@ -104,8 +138,8 @@ public:
 
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
 	int getInstrumentSSGArpeggio(int instNum);
-	void setArpeggioType(int arpNum, int type);
-	int getArpeggioType(int arpNum) const;
+	void setArpeggioSSGType(int arpNum, int type);
+	int getArpeggioSSGType(int arpNum) const;
 	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioSSGSequenceCommand(int arpNum);
 	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
@@ -119,8 +153,8 @@ public:
 
 	void setInstrumentSSGPitch(int instNum, int ptNum);
 	int getInstrumentSSGPitch(int instNum);
-	void setPitchType(int ptNum, int type);
-	int getPitchType(int ptNum) const;
+	void setPitchSSGType(int ptNum, int type);
+	int getPitchSSGType(int ptNum) const;
 	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
 	void removePitchSSGSequenceCommand(int ptNum);
 	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);
