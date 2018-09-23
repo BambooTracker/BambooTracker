@@ -4,6 +4,8 @@
 #include <QFontMetrics>
 #include <QPainter>
 #include <QPoint>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <algorithm>
 #include <numeric>
 #include <utility>
@@ -25,6 +27,7 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	  release_{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 },
 	  isMultiReleaseState_(false),
 	  isLabelOmitted_(false),
+	  mmlBase_(0),
 	  isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
@@ -116,6 +119,8 @@ void VisualizedInstrumentMacroEditor::setSequenceCommand(int row, int col, QStri
 
 	ui->panel->update();
 
+	makeMML();
+
 	emit sequenceCommandChanged(row, col);
 }
 
@@ -127,6 +132,7 @@ void VisualizedInstrumentMacroEditor::setText(int col, QString text)
 void VisualizedInstrumentMacroEditor::setData(int col, int data)
 {
 	cols_.at(col).data = data;
+	makeMML();
 }
 
 int VisualizedInstrumentMacroEditor::getSequenceAt(int col) const
@@ -152,6 +158,8 @@ void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, i
 	ui->panel->update();
 
 	ui->colSizeLabel->setText("Size: " + QString::number(cols_.size()));
+
+	makeMML();
 
 	emit sequenceCommandAdded(row, cols_.size() - 1);
 }
@@ -183,6 +191,8 @@ void VisualizedInstrumentMacroEditor::removeSequenceCommand()
 
 	ui->colSizeLabel->setText("Size: " + QString::number(cols_.size()));
 
+	makeMML();
+
 	emit sequenceCommandRemoved();
 }
 
@@ -199,12 +209,16 @@ void VisualizedInstrumentMacroEditor::addLoop(int begin, int end, int times)
 
 	loops_.insert(loops_.begin() + inx, { begin, end, times });
 
+	makeMML();
+
 	onLoopChanged();
 }
 
 void VisualizedInstrumentMacroEditor::setRelease(ReleaseType type, int point)
 {
 	release_ = { type, point };
+
+	makeMML();
 }
 
 void VisualizedInstrumentMacroEditor::clearData()
@@ -213,6 +227,8 @@ void VisualizedInstrumentMacroEditor::clearData()
 	loops_.clear();
 	release_ = { VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 };
 	updateColumnWidth();
+
+	makeMML();
 }
 
 void VisualizedInstrumentMacroEditor::clearRow()
@@ -388,6 +404,53 @@ void VisualizedInstrumentMacroEditor::drawShadow()
 	painter.fillRect(0, 0, ui->panel->geometry().width(), ui->panel->geometry().height(), maskColor_);
 }
 
+void VisualizedInstrumentMacroEditor::makeMML()
+{
+	if (cols_.empty()) return;
+
+	QString text = "";
+	std::vector<Loop> lstack;
+
+	for (size_t cnt = 0; cnt < cols_.size(); ++cnt) {
+		if (release_.point == cnt) {
+			switch (release_.type) {
+			case ReleaseType::FIX:		text += "| ";	break;
+			case ReleaseType::ABSOLUTE:	text += "/ ";	break;
+			case ReleaseType::RELATIVE:	text += ": ";	break;
+			default:									break;
+			}
+		}
+
+		for (size_t i = 0; i < loops_.size(); ++i) {
+			if (loops_[i].begin == cnt) {
+				lstack.push_back(loops_[i]);
+				text += "[ ";
+			}
+			else if (loops_[i].begin > cnt) {
+				break;
+			}
+		}
+
+		text += (QString::number(cols_[cnt].row + mmlBase_) + " ");
+
+		while (!lstack.empty()) {
+			if (lstack.back().end == cnt) {
+				text += "]";
+				if (lstack.back().times > 1) {
+					text += QString::number(lstack.back().times);
+				}
+				text += " ";
+				lstack.pop_back();
+			}
+			else {
+				break;
+			}
+		}
+	}
+
+	ui->lineEdit->setText(text);
+}
+
 int VisualizedInstrumentMacroEditor::checkLoopRegion(int col)
 {
 	int ret = -1;
@@ -446,6 +509,13 @@ void VisualizedInstrumentMacroEditor::moveLoop()
 			}
 		}
 	}
+
+	makeMML();
+}
+
+void VisualizedInstrumentMacroEditor::setMMLDisplay0As(int n)
+{
+	mmlBase_ = n;
 }
 
 /********** Events **********/
@@ -582,6 +652,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 					}
 					else {	// Loop count up
 						++loops_[i].times;
+						makeMML();
 						onLoopChanged();
 					}
 					break;
@@ -595,6 +666,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 						else {	// Erase loop
 							loops_.erase(loops_.begin() + i);
 						}
+						makeMML();
 						onLoopChanged();
 					}
 					break;
@@ -614,6 +686,8 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 										? VisualizedInstrumentMacroEditor::ReleaseType::FIX
 										: release_.type;
 						release_.point = pressCol_;
+						makeMML();
+						emit releaseChanged(release_.type, release_.point);
 					}
 					else if (isMultiReleaseState_) {	// Change release type
 						switch (release_.type) {
@@ -628,14 +702,16 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::FIX;
 							break;
 						}
+						makeMML();
+						emit releaseChanged(release_.type, release_.point);
 					}
-					emit releaseChanged(release_.type, release_.point);
 					break;
 				}
 				case Qt::RightButton:
 				{
 					if (pressCol_ >= release_.point) {	// Erase release
 						release_.point = -1;
+						makeMML();
 						emit releaseChanged(release_.type, release_.point);
 					}
 					break;
@@ -667,6 +743,7 @@ void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event
 		if (event->button() == Qt::LeftButton) {
 			if (hovCol_ > -1) {
 				release_.point = hovCol_;
+				makeMML();
 				emit releaseChanged(release_.type, release_.point);
 			}
 		}
@@ -775,6 +852,106 @@ void VisualizedInstrumentMacroEditor::on_verticalScrollBar_valueChanged(int valu
 		scrollUp(value);
 		ui->panel->update();
 	}
+}
+
+void VisualizedInstrumentMacroEditor::on_lineEdit_editingFinished()
+{
+	if (cols_.empty()) return;
+
+	QString text = ui->lineEdit->text();
+
+	std::vector<Column> column;
+	std::vector<Loop> loop;
+	std::vector<size_t> lstack;
+	Release release = { ReleaseType::NO_RELEASE, -1 };
+
+	int cnt = 0;
+	while (!text.isEmpty()) {
+
+		QRegularExpressionMatch m = QRegularExpression("^\\[").match(text);
+		if (m.hasMatch()) {
+			loop.push_back({ cnt, cnt, 1 });
+			lstack.push_back(loop.size() - 1);
+			text.remove(QRegularExpression("^\\["));
+			continue;
+		}
+
+		m = QRegularExpression("^\\](\\d*)").match(text);
+		if (m.hasMatch()) {
+			if (lstack.empty() || cnt == 0) return;
+			loop[lstack.back()].end = cnt - 1;
+			if (!m.captured(1).isEmpty()) {
+				int t = m.captured(1).toInt();
+				if (t > 1) loop[lstack.back()].times = t;
+				else return;
+			}
+			lstack.pop_back();
+			text.remove(QRegularExpression("^\\]\\d*"));
+			continue;
+		}
+
+		m = QRegularExpression("^\\|").match(text);
+		if (m.hasMatch()) {
+			if (release.point > -1) return;
+			release = { ReleaseType::FIX, cnt };
+			text.remove(QRegularExpression("^\\|"));
+			continue;
+		}
+
+		m = QRegularExpression("^/").match(text);
+		if (m.hasMatch()) {
+			if (release.point > -1) return;
+			release = { ReleaseType::ABSOLUTE, cnt };
+			text.remove(QRegularExpression("^/"));
+			continue;
+		}
+
+		m = QRegularExpression("^:").match(text);
+		if (m.hasMatch()) {
+			if (release.point > -1) return;
+			release = { ReleaseType::RELATIVE, cnt };
+			text.remove(QRegularExpression("^:"));
+			continue;
+		}
+
+		m = QRegularExpression("^(-?\\d+)").match(text);
+		if (m.hasMatch()) {
+			int d = m.captured(1).toInt() - mmlBase_;
+			if (d < 0 || labels_.size() <= d) return;
+			column.push_back({ d, -1, "" });
+			++cnt;
+			text.remove(QRegularExpression("^-?\\d+"));
+			continue;
+		}
+
+		m = QRegularExpression("^ +").match(text);
+		if (m.hasMatch()) {
+			text.remove(QRegularExpression("^ +"));
+			continue;
+		}
+
+		return;
+	}
+
+	if (column.empty()) return;
+	if (!lstack.empty()) return;
+	if (release.point > -1 && release.point >= column.size()) return;
+
+	while (cols_.size() > 1) removeSequenceCommand();
+	setSequenceCommand(column.front().row, 0);
+	for (size_t i = 1; i < column.size(); ++i) {
+		addSequenceCommand(column[i].row);
+	}
+
+	loops_ = loop;
+	onLoopChanged();
+
+	release_ = release;
+	emit releaseChanged(release.type, release.point);
+
+	ui->panel->update();
+
+	makeMML();
 }
 
 void VisualizedInstrumentMacroEditor::onLoopChanged()

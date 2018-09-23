@@ -354,6 +354,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		ui->arpEditor->AddRow(text);
 	}
 	ui->arpEditor->setUpperRow(55);
+	ui->arpEditor->setMMLDisplay0As(-48);
 
 	ui->arpTypeComboBox->addItem("Absolute", 0);
 	ui->arpTypeComboBox->addItem("Fix", 1);
@@ -417,6 +418,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		ui->ptEditor->AddRow(text);
 	}
 	ui->ptEditor->setUpperRow(134);
+	ui->ptEditor->setMMLDisplay0As(-127);
 
 	ui->ptTypeComboBox->addItem("Absolute", 0);
 	ui->ptTypeComboBox->addItem("Relative", 1);

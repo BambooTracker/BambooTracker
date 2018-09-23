@@ -229,35 +229,49 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 		next = pos_ + 1;
 	}
 
-	if (loopStack_.empty()) {
-		for (auto& l : seq_->loops_) {
-			if (next < l.begin) break;
-			else if (next == l.begin) {
-				loopStack_.push_back({ l.begin, l.end, (l.times == 1) ? -1 : l.times - 1});
-			}
-		}
-		pos_ = next;
-	}
-	else {
+	while (!loopStack_.empty()) {
 		if (pos_ == loopStack_.back().end) {
 			if (loopStack_.back().times < 0) {	// Infinity loop
-				pos_ = loopStack_.back().begin;
+				next = loopStack_.back().begin;
+				break;
 			}
 			else {
 				if (loopStack_.back().times) {
-					pos_ = loopStack_.back().begin;
+					next = loopStack_.back().begin;
 					--loopStack_.back().times;
+					break;
 				}
 				else {
-					pos_ = next;
 					loopStack_.pop_back();
 				}
 			}
 		}
 		else {
-			pos_ = next;
+			break;
 		}
 	}
+
+	for (auto& l : seq_->loops_) {
+		if (next < l.begin) break;
+		else if (next == l.begin) {
+			if (loopStack_.empty()) {
+				loopStack_.push_back({ l.begin, l.end, (l.times == 1) ? -1 : (l.times - 1)});
+			}
+			else {
+				bool flag = true;
+				for (auto& lp : loopStack_) {
+					if (lp.begin == l.begin && lp.end == l.end) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag) {
+					loopStack_.push_back({ l.begin, l.end, (l.times == 1) ? -1 : (l.times - 1)});
+				}
+			}
+		}
+	}
+	pos_ = next;
 
 	if (!isRelease_ && pos_ == seq_->release_.begin) {
 		pos_ = -1;
@@ -284,7 +298,7 @@ int CommandSequence::Iterator::front()
 		for (auto& l : seq_->loops_) {
 			if (pos_ < l.begin) break;
 			else if (pos_ == l.begin) {
-				loopStack_.push_back({ l.begin, l.end, (l.times == 1) ? -1 : l.times - 1});
+				loopStack_.push_back({ l.begin, l.end, (l.times == 1) ? -1 : (l.times - 1)});
 			}
 		}
 	}

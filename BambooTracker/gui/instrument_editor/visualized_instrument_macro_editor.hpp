@@ -66,6 +66,8 @@ public:
 	void clearAllLabelText();
 	void setLabelDiaplayMode(bool isOmitted);
 
+	void setMMLDisplay0As(int n);
+
 signals:
 	void sequenceCommandChanged(int row, int col);
 	void sequenceCommandAdded(int row, int col);
@@ -88,6 +90,7 @@ private slots:
 	void on_colIncrToolButton_clicked();
 	void on_colDecrToolButton_clicked();
 	void on_verticalScrollBar_valueChanged(int value);
+	void on_lineEdit_editingFinished();
 	void onLoopChanged();
 
 private:
@@ -150,6 +153,8 @@ private:
 	bool isMultiReleaseState_;
 	bool isLabelOmitted_;
 
+	int mmlBase_;
+
 	bool isIgnoreEvent_;
 
 	void initDisplay();
@@ -158,6 +163,8 @@ private:
 	void drawRelease();
 	void drawBorder();
 	void drawShadow();
+
+	void makeMML();
 
 	int checkLoopRegion(int col);
 	void moveLoop();
