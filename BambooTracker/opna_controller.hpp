@@ -67,6 +67,9 @@ public:
 	// Set volume
 	void setVolumeFM(int ch, int volume);
 
+	// Set pan
+	void setPanFM(int ch, int value);
+
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
 	bool isMuteFM(int ch);
@@ -212,6 +215,9 @@ public:
 
 	// Set volume
 	void setVolumeDrum(int ch, int volume);
+
+	// Set pan
+	void setPanDrum(int ch, int value);
 
 	// Mute
 	void setMuteDrumState(int ch, bool isMute);

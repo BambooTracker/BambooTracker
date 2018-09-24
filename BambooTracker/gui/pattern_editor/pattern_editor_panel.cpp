@@ -334,8 +334,14 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 			&& isSelectedCell(trackNum, 3, orderNum, stepNum))	// Paint selected
 		painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, selCellColor_);
 	QString effStr = QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackNum, orderNum, stepNum));
-	painter.setPen((effStr == "--") ? textColor : effIDColor_);
-	painter.drawText(offset, baseY, effStr);
+	if (effStr == "--") {
+		painter.setPen(textColor);
+		painter.drawText(offset, baseY, effStr);
+	}
+	else {
+		painter.setPen(effIDColor_);
+		painter.drawText(offset, baseY, effStr);
+	}
 	if (isMuteTrack)	// Paint mute mask
 		painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, maskColor_);
 	offset += effIDWidth_;

@@ -803,7 +803,9 @@ void BambooTracker::readStep()
 					opnaCtrl_.setInstrumentFM(attrib.channelInSource, inst);
 			}
 			// Set effect
-			// TODO: FM effect set
+			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
+				readFMEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+			}
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
@@ -836,7 +838,9 @@ void BambooTracker::readStep()
 					opnaCtrl_.setInstrumentSSG(attrib.channelInSource, inst);
 			}
 			// Set effect
-			// TODO: SSG effect set
+			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
+				readSSGEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+			}
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
@@ -862,7 +866,9 @@ void BambooTracker::readStep()
 				opnaCtrl_.setVolumeDrum(attrib.channelInSource, step.getVolume());
 			}
 			// Set effect
-			// TODO: Drum effect set
+			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
+				readDrumEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+			}
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
@@ -880,6 +886,25 @@ void BambooTracker::readStep()
 	}
 
 	isFindNextStep_ = false;
+}
+
+void BambooTracker::readFMEffect(int ch, std::string id, int value)
+{
+	if (id == "08") {	// Pan
+		if (value < 4) opnaCtrl_.setPanFM(ch, value);
+	}
+}
+
+void BambooTracker::readSSGEffect(int ch, std::string id, int value)
+{
+	// UNDONE: ssg effect
+}
+
+void BambooTracker::readDrumEffect(int ch, std::string id, int value)
+{
+	if (id == "08") {	// Pan
+		if (value < 4) opnaCtrl_.setPanDrum(ch, value);
+	}
 }
 
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)

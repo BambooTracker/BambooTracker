@@ -268,4 +268,8 @@ private:
 	void findNextStep();
 	void readStep();
 	void readTick(int rest);
+
+	void readFMEffect(int ch, std::string id, int value);
+	void readSSGEffect(int ch, std::string id, int value);
+	void readDrumEffect(int ch, std::string id, int value);
 };

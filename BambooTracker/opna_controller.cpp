@@ -273,6 +273,20 @@ void OPNAController::setVolumeFM(int ch, int volume)
 	}
 }
 
+/********** Set pan **********/
+void OPNAController::setPanFM(int ch, int value)
+{
+	panFM_[ch] = value;
+
+	uint32_t bch = getFMChannelOffset(ch);	// Bank and channel offset
+	uint8_t data = value << 6;
+	if (refInstFM_[ch] != nullptr && refInstFM_[ch]->getLFONumber() != -1) {
+		data |= (refInstFM_[ch]->getLFOParameter(FMLFOParameter::AMS) << 4);
+		data |= refInstFM_[ch]->getLFOParameter(FMLFOParameter::PMS);
+	}
+	opna_.setRegister(0xb4 + bch, data);
+}
+
 /********** Mute **********/
 void OPNAController::setMuteFMState(int ch, bool isMute)
 {
@@ -1790,6 +1804,13 @@ void OPNAController::setVolumeDrum(int ch, int volume)
 
 	volDrum_[ch] = volume;
 	opna_.setRegister(0x18 + ch, (panDrum_[ch] << 6) | volume);
+}
+
+/********** Set pan **********/
+void OPNAController::setPanDrum(int ch, int value)
+{
+	panDrum_[ch] = value;
+	opna_.setRegister(0x18 + ch, (value << 6) | volDrum_[ch]);
 }
 
 /********** Mute **********/
