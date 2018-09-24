@@ -313,6 +313,9 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		case SoundSource::SSG:
 			color = (vol < 0x10) ? volColor_ : errorColor_;
 			break;
+		case SoundSource::DRUM:
+			color = (vol < 0x20) ? volColor_ : errorColor_;
+			break;
 		}
 		painter.setPen(color);
 		painter.drawText(offset, baseY, QString("%1").arg(vol, 2, 16, QChar('0')).toUpper());
@@ -375,12 +378,24 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		painter.setPen(headerTextColor_);
 		QString srcName;
 		switch (songStyle_.trackAttribs[trackNum].source) {
-		case SoundSource::FM:	srcName = "FM";		break;
-		case SoundSource::SSG:	srcName = "SSG";	break;
+		case SoundSource::FM:
+			srcName = "FM" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			break;
+		case SoundSource::SSG:
+			srcName = "SSG" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			break;
+		case SoundSource::DRUM:
+			switch (songStyle_.trackAttribs[trackNum].channelInSource) {
+			case 0:	srcName = "Bass drum";	break;
+			case 1:	srcName = "Snare drum";	break;
+			case 2:	srcName = "Top cymbal";	break;
+			case 3:	srcName = "Hi-hat";		break;
+			case 4:	srcName = "Tom";		break;
+			case 5:	srcName = "Rim shot";	break;
+			}
+			break;
 		}
-		painter.drawText(x,
-						 stepFontLeading_ + stepFontAscend_,
-						 srcName + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1));
+		painter.drawText(x, stepFontLeading_ + stepFontAscend_, srcName);
 
 		painter.fillRect(x, headerHeight_ - 4, trackWidth_ - stepFontWidth_, 2,
 						 bt_->isMute(trackNum) ? muteColor_ : unmuteColor_);
@@ -523,7 +538,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 		emit currentStepChanged(curPos_.step, bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1);
 
 	if (!isIgnoreToOrder_ && curPos_.order != oldOdr)	// Send to order list
-		emit currentOrderChanged(curPos_.order);
+		emit currentOrderChanged(curPos_.order, bt_->getOrderSize(curSongNum_) - 1);
 
 	update();
 }
@@ -582,7 +597,7 @@ void PatternEditorPanel::updatePosition()
 {
 	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 
-	emit currentOrderChanged(curPos_.order);
+	emit currentOrderChanged(curPos_.order, bt_->getOrderSize(curSongNum_) - 1);
 	emit currentStepChanged(curPos_.step, bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1);
 
 	update();

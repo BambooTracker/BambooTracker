@@ -40,7 +40,7 @@ public slots:
 
 signals:
 	void currentTrackChangedForSlider(int num);
-	void currentOrderChangedForSlider(int num);
+	void currentOrderChangedForSlider(int num, int max);
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num);
 

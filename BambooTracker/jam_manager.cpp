@@ -62,6 +62,7 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 	switch (source) {
 	case SoundSource::FM:	unusedCh = &unusedChFM_;	break;
 	case SoundSource::SSG:	unusedCh = &unusedChSSG_;	break;
+	default:	break;
 	}
 
 	if (!unusedCh->empty()) {
@@ -103,6 +104,7 @@ JamKeyData JamManager::keyOff(JamKey key)
 		switch (keyData.source) {
 		case SoundSource::FM:	unusedChFM_.push_front(keyData.channelInSource);	break;
 		case SoundSource::SSG:	unusedChSSG_.push_front(keyData.channelInSource);	break;
+		default:	break;
 		}
 		keyOnTable_.erase(it);
 	}

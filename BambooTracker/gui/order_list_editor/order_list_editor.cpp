@@ -10,7 +10,10 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 	QObject::connect(ui->panel, &OrderListPanel::currentTrackChangedForSlider,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
 	QObject::connect(ui->panel, &OrderListPanel::currentOrderChangedForSlider,
-					 ui->verticalScrollBar, &QScrollBar::setValue);
+					 this, [&](int num, int max) {
+		ui->verticalScrollBar->setMaximum(max);
+		ui->verticalScrollBar->setValue(num);
+	});
 	QObject::connect(ui->panel, &OrderListPanel::currentTrackChanged,
 					 this, [&](int num) { emit currentTrackChanged(num); });
 	QObject::connect(ui->panel, &OrderListPanel::currentOrderChanged,
@@ -56,9 +59,11 @@ void OrderListEditor::setCurrentTrack(int num)
 	ui->panel->setCurrentTrack(num);
 }
 
-void OrderListEditor::setCurrentOrder(int num)
+void OrderListEditor::setCurrentOrder(int num, int max)
 {
 	ui->panel->setCurrentOrder(num);
+	ui->verticalScrollBar->setMaximum(max);
+	ui->verticalScrollBar->setValue(num);
 }
 
 void OrderListEditor::onSongLoaded()

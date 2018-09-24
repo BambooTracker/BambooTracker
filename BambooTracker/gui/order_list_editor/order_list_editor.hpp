@@ -31,7 +31,7 @@ signals:
 
 public slots:
 	void setCurrentTrack(int num);
-	void setCurrentOrder(int num);
+	void setCurrentOrder(int num, int max);
 	void onSongLoaded();
 
 private:

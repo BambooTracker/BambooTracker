@@ -58,6 +58,10 @@ OPNAController::OPNAController(int clock, int rate) :
 		isMuteSSG_[ch] = false;
 	}
 
+	for (int ch = 0; ch < 6; ++ch) {
+		isMuteDrum_[ch] = false;
+	}
+
 	initChip();
 }
 
@@ -74,8 +78,7 @@ void OPNAController::initChip()
 
 	initFM();
 	initSSG();
-
-	opna_.setRegister(0x11, 0x3f);		// Drum total volume
+	initDrum();
 }
 
 /********** Forward instrument sequence **********/
@@ -84,6 +87,7 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 	switch (src) {
 	case SoundSource::FM:	tickEventFM(ch);	break;
 	case SoundSource::SSG:	tickEventSSG(ch);	break;
+	case SoundSource::DRUM:	break;
 	}
 }
 
@@ -93,6 +97,7 @@ int OPNAController::getGateCount(SoundSource src, int ch) const
 	switch (src) {
 	case SoundSource::FM:	return gateCntFM_[ch];
 	case SoundSource::SSG:	return gateCntSSG_[ch];
+	case SoundSource::DRUM:	return -1;
 	}
 }
 
@@ -329,7 +334,7 @@ void OPNAController::initFM()
 		ptItFM_[ch].reset();
 		needToneSetFM_[ch] = false;
 
-		// Init FM pan
+		// Init pan
 		uint32_t bch = getFMChannelOffset(ch);
 		panFM_[ch] = 3;
 		opna_.setRegister(0xb4 + bch, 0xc0);
@@ -1764,4 +1769,52 @@ void OPNAController::writePitchSSG(int ch)
 void OPNAController::setInstrumentSSGProperties(int ch)
 {
 	gateCntSSG_[ch] = refInstSSG_[ch]->getGateCount();
+}
+
+//---------- Drum ----------//
+/********** Key on-off **********/
+void OPNAController::keyOnDrum(int ch)
+{
+	opna_.setRegister(0x10, 1 << ch);
+}
+
+void OPNAController::keyOffDrum(int ch)
+{
+	opna_.setRegister(0x10, 0x80 | (1 << ch));
+}
+
+/********** Set volume **********/
+void OPNAController::setVolumeDrum(int ch, int volume)
+{
+	if (volume > 0x1f) return;	// Out of range
+
+	volDrum_[ch] = volume;
+	opna_.setRegister(0x18 + ch, (panDrum_[ch] << 6) | volume);
+}
+
+/********** Mute **********/
+void OPNAController::setMuteDrumState(int ch, bool isMute)
+{
+	isMuteDrum_[ch] = isMute;
+
+	if (isMute) keyOffDrum(ch);
+}
+
+bool OPNAController::isMuteDrum(int ch)
+{
+	return isMuteDrum_[ch];
+}
+
+/***********************************/
+void OPNAController::initDrum()
+{
+	opna_.setRegister(0x11, 0x3f);		// Drum total volume
+
+	for (int ch = 0; ch < 6; ++ch) {
+		volDrum_[ch] = 0x1f;	// Init volume
+
+		// Init pan
+		panDrum_[ch] = 3;
+		opna_.setRegister(0x18 + ch, 0xdf);
+	}
 }

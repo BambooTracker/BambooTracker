@@ -45,6 +45,9 @@ void AddInstrumentQtCommand::redo()
 		item = new QListWidgetItem(QIcon(), title);
 		form = std::make_unique<InstrumentEditorSSGForm>(num_);
 		break;
+	default:
+		item = nullptr;
+		break;
 	}
 
 	// KEEP CODE ORDER //

@@ -76,6 +76,8 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	case SoundSource::SSG:
 		insts_.at(instNum) = std::make_shared<InstrumentSSG>(instNum, name, this);
 		break;
+	default:
+		break;
 	}
 }
 
@@ -102,6 +104,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		break;
 	}
 	case SoundSource::SSG:
+	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[num]);
 		int wfNum = ssg->getWaveFormNumber();
 		if (wfNum != -1) wfSSG_.at(wfNum)->registerUserInstrument(num);
@@ -113,6 +116,9 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 		if (arpNum != -1) arpSSG_.at(arpNum)->registerUserInstrument(num);
 		int ptNum = ssg->getPitchNumber();
 		if (ptNum != -1) ptSSG_.at(ptNum)->registerUserInstrument(num);
+		break;
+	}
+	default:
 		break;
 	}
 }
@@ -138,12 +144,16 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		break;
 	}
 	case SoundSource::SSG:
+	{
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		setInstrumentSSGWaveForm(cloneInstNum, refSsg->getWaveFormNumber());
 		setInstrumentSSGToneNoise(cloneInstNum, refSsg->getToneNoiseNumber());
 		setInstrumentSSGEnvelope(cloneInstNum, refSsg->getEnvelopeNumber());
 		setInstrumentSSGArpeggio(cloneInstNum, refSsg->getArpeggioNumber());
 		setInstrumentSSGPitch(cloneInstNum, refSsg->getPitchNumber());
+		break;
+	}
+	default:
 		break;
 	}
 }
@@ -190,6 +200,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		break;
 	}
 	case SoundSource::SSG:
+	{
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(cloneInstNum));
 
@@ -218,6 +229,9 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			cloneSsg->setPitchNumber(ptNum);
 			ptSSG_[ptNum]->registerUserInstrument(cloneInstNum);
 		}
+		break;
+	}
+	default:
 		break;
 	}
 }
@@ -382,6 +396,7 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		break;
 	}
 	case SoundSource::SSG:
+	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum]);
 		int wfNum = ssg->getWaveFormNumber();
 		if (wfNum != -1) wfSSG_.at(wfNum)->deregisterUserInstrument(instNum);
@@ -393,6 +408,9 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		if (arpNum != -1) arpSSG_.at(arpNum)->deregisterUserInstrument(instNum);
 		int ptNum = ssg->getPitchNumber();
 		if (ptNum != -1) ptSSG_.at(ptNum)->deregisterUserInstrument(instNum);
+		break;
+	}
+	default:
 		break;
 	}
 

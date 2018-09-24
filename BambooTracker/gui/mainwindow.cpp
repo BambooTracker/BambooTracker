@@ -556,13 +556,20 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
     menu.addSeparator();
 	QAction* edit = menu.addAction("Edit...", this, &MainWindow::editInstrument);
 
-	// UNDONE --------------
+	// UNDONE: instrument load and save --------------
 	ldFile->setEnabled(false);
 	svFile->setEnabled(false);
-	// ---------------------
+	// -----------------------------------------------
 
-	if (bt_->findFirstFreeInstrumentNumber() == -1)    // Max size
+	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
 		add->setEnabled(false);
+	}
+	else {
+		switch (bt_->getCurrentTrackAttribute().source) {
+		case SoundSource::DRUM:	add->setEnabled(false);	break;
+		default:	break;
+		}
+	}
 	auto item = list->currentItem();
 	if (item == nullptr) {    // Not selected
 		remove->setEnabled(false);
@@ -676,6 +683,8 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		instForms_->onInstrumentSSGPitchNumberChanged();
 		break;
 	}
+	default:
+		break;
 	}
 }
 

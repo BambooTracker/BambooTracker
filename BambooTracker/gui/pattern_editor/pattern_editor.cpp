@@ -18,7 +18,7 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	QObject::connect(ui->panel, &PatternEditorPanel::currentTrackChanged,
 					 this, [&](int num) { emit currentTrackChanged(num); });
 	QObject::connect(ui->panel, &PatternEditorPanel::currentOrderChanged,
-					 this, [&](int num) { emit currentOrderChanged(num); });
+					 this, [&](int num, int max) { emit currentOrderChanged(num, max); });
 
 	auto focusSlot = [&]() { ui->panel->setFocus(); };
 

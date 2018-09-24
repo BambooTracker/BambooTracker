@@ -30,13 +30,15 @@ void ChangeInstrumentNameQtCommand::redo()
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form);
         fmForm->setWindowTitle(title);
-	}
 		break;
+	}
 	case SoundSource::SSG:
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form);
 		ssgForm->setWindowTitle(title);
+		break;
 	}
+	default:
 		break;
 	}
 }
@@ -53,13 +55,15 @@ void ChangeInstrumentNameQtCommand::undo()
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form);
         fmForm->setWindowTitle(title);
-	}
 		break;
+	}
 	case SoundSource::SSG:
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form);
 		ssgForm->setWindowTitle(title);
+		break;
 	}
+	default:
 		break;
 	}
 }

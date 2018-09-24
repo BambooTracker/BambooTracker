@@ -5,6 +5,7 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QAction>
+#include <QFontMetrics>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QPoint>
@@ -214,15 +215,31 @@ void OrderListPanel::drawHeaders(int maxWidth)
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, headerRowColor_);
 	painter.setPen(headerTextColor_);
 	int x, trackNum;
-	for (x = rowNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
+	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		QString str;
 		switch (songStyle_.trackAttribs[trackNum].source) {
-		case SoundSource::FM:	str = " FM";	break;
-		case SoundSource::SSG:	str = " SSG";	break;
+		case SoundSource::FM:
+			str = "FM" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			break;
+		case SoundSource::SSG:
+			str = "SSG" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			break;
+		case SoundSource::DRUM:
+			switch (songStyle_.trackAttribs[trackNum].channelInSource) {
+			case 0:	str = "BD";	break;
+			case 1:	str = "SD";	break;
+			case 2:	str = "TOP";	break;
+			case 3:	str = "HH";	break;
+			case 4:	str = "TOM";	break;
+			case 5:	str = "RIM";	break;
+			}
+			break;
 		}
-		painter.drawText(x,
-						 rowFontLeading_ + rowFontAscend_,
-						 str + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1));
+
+		QFontMetrics metrics(headerFont_);
+		int rw = trackWidth_ - metrics.width(str);
+		rw = (rw < 0) ? 0 : (rw / 2);
+		painter.drawText(x + rw, rowFontLeading_ + rowFontAscend_, str);
 
 		x += trackWidth_;
 		++trackNum;
@@ -301,7 +318,7 @@ void OrderListPanel::moveCursorToDown(int n)
 		}
 	}
 
-	if (!isIgnoreToSlider_) emit currentOrderChangedForSlider(curPos_.row);	// Send to slider
+	if (!isIgnoreToSlider_) emit currentOrderChangedForSlider(curPos_.row, bt_->getOrderSize(curSongNum_) - 1);	// Send to slider
 
 	if (!isIgnoreToPattern_) emit currentOrderChanged(curPos_.row);	// Send to pattern editor
 

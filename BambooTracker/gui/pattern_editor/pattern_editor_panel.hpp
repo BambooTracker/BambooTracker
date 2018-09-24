@@ -47,7 +47,7 @@ signals:
 	void currentCellInRowChanged(int num);
 	void currentStepChanged(int num, int max);
 	void currentTrackChanged(int num);
-	void currentOrderChanged(int num);
+	void currentOrderChanged(int num, int max);
 
 protected:
 	virtual bool event(QEvent *event) override;

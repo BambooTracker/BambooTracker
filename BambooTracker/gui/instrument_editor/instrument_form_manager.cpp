@@ -30,15 +30,21 @@ void InstrumentFormManager::remove(int n)
 
 	switch (getFormInstrumentSoundSource(n)) {
 	case SoundSource::FM:
-	{
-		auto fm = qobject_cast<InstrumentEditorFMForm*>(map_.at(n).get());
 		onInstrumentFMEnvelopeNumberChanged();
 		onInstrumentFMLFONumberChanged();
-	}
-	case SoundSource::SSG:
-	{
+		onInstrumentFMOperatorSequenceNumberChanged();
+		onInstrumentFMArpeggioNumberChanged();
+		onInstrumentFMPitchNumberChanged();
 		break;
-	}
+	case SoundSource::SSG:
+		onInstrumentSSGWaveFormNumberChanged();
+		onInstrumentSSGEnvelopeNumberChanged();
+		onInstrumentSSGToneNoiseNumberChanged();
+		onInstrumentSSGArpeggioNumberChanged();
+		onInstrumentSSGPitchNumberChanged();
+		break;
+	default:
+		break;
 	}
 
 	map_.erase(n);

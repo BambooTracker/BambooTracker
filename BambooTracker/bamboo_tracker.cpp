@@ -104,6 +104,7 @@ void BambooTracker::setInstrumentGateCount(int instNum, int count)
 	switch (instMan_.getInstrumentSharedPtr(instNum)->getSoundSource()) {
 	case SoundSource::FM:	opnaCtrl_.updateInstrumentFM(instNum);	break;
 	case SoundSource::SSG:	opnaCtrl_.updateInstrumentSSG(instNum);	break;
+	default:	break;
 	}
 }
 
@@ -538,52 +539,67 @@ bool BambooTracker::isJamMode() const
 
 void BambooTracker::jamKeyOn(JamKey key)
 {
-	std::vector<JamKeyData>&& list = jamMan_.keyOn(key,
-												   songStyle_.trackAttribs[curTrackNum_].channelInSource,
-												   songStyle_.trackAttribs[curTrackNum_].source);
-	if (list.size() == 2) {	// Key off
-		JamKeyData& offData = list[1];
-		switch (offData.source) {
-		case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.channelInSource, true);	break;
-		case SoundSource::SSG:	opnaCtrl_.keyOffSSG(offData.channelInSource, true);	break;
-		}
+	if (songStyle_.trackAttribs[curTrackNum_].source == SoundSource::DRUM) {
+		opnaCtrl_.keyOnDrum(songStyle_.trackAttribs[curTrackNum_].channelInSource);
 	}
+	else {
+		std::vector<JamKeyData>&& list = jamMan_.keyOn(key,
+													   songStyle_.trackAttribs[curTrackNum_].channelInSource,
+													   songStyle_.trackAttribs[curTrackNum_].source);
+		if (list.size() == 2) {	// Key off
+			JamKeyData& offData = list[1];
+			switch (offData.source) {
+			case SoundSource::FM:	opnaCtrl_.keyOffFM(offData.channelInSource, true);	break;
+			case SoundSource::SSG:	opnaCtrl_.keyOffSSG(offData.channelInSource, true);	break;
+			default:	break;
+			}
+		}
 
-	std::shared_ptr<AbstructInstrument> tmpInst = instMan_.getInstrumentSharedPtr(curInstNum_);
-	JamKeyData& onData = list.front();
+		std::shared_ptr<AbstructInstrument> tmpInst = instMan_.getInstrumentSharedPtr(curInstNum_);
+		JamKeyData& onData = list.front();
 
-	switch (onData.source) {
-	case SoundSource::FM:
-		opnaCtrl_.setInstrumentFM(onData.channelInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
-		opnaCtrl_.keyOnFM(onData.channelInSource,
-						  JamManager::jamKeyToNote(onData.key),
-						  JamManager::calcOctave(octave_, onData.key),
-						  0,
-						  true);
-		break;
-	case SoundSource::SSG:
-		opnaCtrl_.setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
-		opnaCtrl_.keyOnSSG(onData.channelInSource,
-						   JamManager::jamKeyToNote(onData.key),
-						   JamManager::calcOctave(octave_, onData.key),
-						   0,
-						   true);
-		break;
+		switch (onData.source) {
+		case SoundSource::FM:
+			opnaCtrl_.setInstrumentFM(onData.channelInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
+			opnaCtrl_.keyOnFM(onData.channelInSource,
+							  JamManager::jamKeyToNote(onData.key),
+							  JamManager::calcOctave(octave_, onData.key),
+							  0,
+							  true);
+			break;
+		case SoundSource::SSG:
+			opnaCtrl_.setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
+			opnaCtrl_.keyOnSSG(onData.channelInSource,
+							   JamManager::jamKeyToNote(onData.key),
+							   JamManager::calcOctave(octave_, onData.key),
+							   0,
+							   true);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
 void BambooTracker::jamKeyOff(JamKey key)
 {
-	JamKeyData&& data = jamMan_.keyOff(key);
+	if (songStyle_.trackAttribs[curTrackNum_].source == SoundSource::DRUM) {
+		opnaCtrl_.keyOffDrum(songStyle_.trackAttribs[curTrackNum_].channelInSource);
+	}
+	else {
+		JamKeyData&& data = jamMan_.keyOff(key);
 
-	if (data.channelInSource > -1) {	// Key still sound
-		switch (data.source) {
-		case SoundSource::FM:
-			opnaCtrl_.keyOffFM(data.channelInSource, true);
-			break;
-		case SoundSource::SSG:
-			opnaCtrl_.keyOffSSG(data.channelInSource, true);
-			break;
+		if (data.channelInSource > -1) {	// Key still sound
+			switch (data.source) {
+			case SoundSource::FM:
+				opnaCtrl_.keyOffFM(data.channelInSource, true);
+				break;
+			case SoundSource::SSG:
+				opnaCtrl_.keyOffSSG(data.channelInSource, true);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -640,6 +656,7 @@ void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 	switch (ta.source) {
 	case SoundSource::FM:	opnaCtrl_.setMuteFMState(ta.channelInSource, isMute);	break;
 	case SoundSource::SSG:	opnaCtrl_.setMuteSSGState(ta.channelInSource, isMute);	break;
+	case SoundSource::DRUM:	opnaCtrl_.setMuteDrumState(ta.channelInSource, isMute);	break;
 	}
 }
 
@@ -649,6 +666,7 @@ bool BambooTracker::isMute(int trackNum)
 	switch (ta.source) {
 	case SoundSource::FM:	return opnaCtrl_.isMuteFM(ta.channelInSource);
 	case SoundSource::SSG:	return opnaCtrl_.isMuteSSG(ta.channelInSource);
+	case SoundSource::DRUM:	return opnaCtrl_.isMuteDrum(ta.channelInSource);
 	}
 }
 
@@ -717,6 +735,8 @@ void BambooTracker::readTick(int rest)
 						opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource);
 					}
 					break;
+				case SoundSource::DRUM:
+					break;
 				}
 			}
 			else {
@@ -783,7 +803,7 @@ void BambooTracker::readStep()
 					opnaCtrl_.setInstrumentFM(attrib.channelInSource, inst);
 			}
 			// Set effect
-			// TODO: effect set
+			// TODO: FM effect set
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
@@ -792,7 +812,7 @@ void BambooTracker::readStep()
 			case -2:	// Key off
 				opnaCtrl_.keyOffFM(attrib.channelInSource);
 				break;
-			default:
+			default:	// Key on
 			{
 				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
 				opnaCtrl_.keyOnFM(attrib.channelInSource, octNote.second, octNote.first, 0);
@@ -816,7 +836,7 @@ void BambooTracker::readStep()
 					opnaCtrl_.setInstrumentSSG(attrib.channelInSource, inst);
 			}
 			// Set effect
-			// TODO: effect set
+			// TODO: SSG effect set
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
@@ -825,12 +845,34 @@ void BambooTracker::readStep()
 			case -2:	// Key off
 				opnaCtrl_.keyOffSSG(attrib.channelInSource);
 				break;
-			default:
+			default:	// Key on
 			{
 				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
 				opnaCtrl_.keyOnSSG(attrib.channelInSource, octNote.second, octNote.first, 0);
 				break;
 			}
+			}
+			break;
+		}
+		case SoundSource::DRUM:
+		{
+			// Set volume
+			int vol = step.getVolume();
+			if (0 <= vol && vol < 0x20) {
+				opnaCtrl_.setVolumeDrum(attrib.channelInSource, step.getVolume());
+			}
+			// Set effect
+			// TODO: Drum effect set
+			// Set key
+			switch (step.getNoteNumber()) {
+			case -1:	// None
+				break;
+			case -2:	// Key off
+				opnaCtrl_.keyOffDrum(attrib.channelInSource);
+				break;
+			default:	// Key on
+				opnaCtrl_.keyOnDrum(attrib.channelInSource);
+				break;
 			}
 			break;
 		}

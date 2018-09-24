@@ -84,6 +84,9 @@ private:
 	ToneDetail baseToneFM_[6];
 	ToneDetail realToneFM_[6];
 	int volFM_[6];
+	/// bit0: right on/off
+	/// bit1: left on/off
+	uint8_t panFM_[6];
 	bool isMuteFM_[6];
 	int gateCntFM_[6];
 	bool enableEnvResetFM_[6];
@@ -94,10 +97,6 @@ private:
 	std::map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> arpItFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
-
-	/// bit0: right on/off
-	/// bit1: left on/off
-	uint8_t panFM_[6];
 
 	void initFM();
 
@@ -204,4 +203,26 @@ private:
 	inline uint8_t judgeSSEGRegisterValue(int v) {
 		return (v == -1) ? 0 : (0x08 + v);
 	}
+
+	/*----- Drum -----*/
+public:
+	// Key on-off
+	void keyOnDrum(int ch);
+	void keyOffDrum(int ch);
+
+	// Set volume
+	void setVolumeDrum(int ch, int volume);
+
+	// Mute
+	void setMuteDrumState(int ch, bool isMute);
+	bool isMuteDrum(int ch);
+
+private:
+	int volDrum_[6];
+	/// bit0: right on/off
+	/// bit1: left on/off
+	uint8_t panDrum_[6];
+	bool isMuteDrum_[6];
+
+	void initDrum();
 };

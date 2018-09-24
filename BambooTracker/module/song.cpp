@@ -19,6 +19,9 @@ Song::Song(int number, SongType songType, std::string title,
 		for (int i = 0; i < 3; ++i) {
 			tracks_.emplace_back(i + 6, SoundSource::SSG, i);
 		}
+		for (int i = 0; i < 6; ++i) {
+			tracks_.emplace_back(i + 9, SoundSource::DRUM, i);
+		}
 		break;
 	case SongType::FMEX:
 		// UNDONE: FM extend mode
