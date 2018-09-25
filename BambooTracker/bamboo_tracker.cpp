@@ -3,6 +3,8 @@
 #include <utility>
 #include "commands.hpp"
 
+#include <QDebug>
+
 BambooTracker::BambooTracker()
 	:
 	  #ifdef SINC_INTERPOLATION
@@ -679,8 +681,12 @@ int BambooTracker::streamCountUp()
 		readTick(state);
 	}
 	else if (!state) {
-		stepDown();
-		readStep();
+		if (stepDown()) {
+			readStep();
+		}
+		else {
+			stopPlaySong();
+		}
 	}
 	else {
 		for (auto& attrib : songStyle_.trackAttribs) {
@@ -699,7 +705,7 @@ void BambooTracker::readTick(int rest)
 
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
-		if (rest == 1) {
+		if (rest == 1 && nextReadStepOrder_ != -1) {
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
 			// Channel envelope reset before next key on
@@ -714,7 +720,7 @@ void BambooTracker::readTick(int rest)
 		}
 		else {
 			// Gate count
-			if (opnaCtrl_.getGateCount(attrib.source, attrib.channelInSource) == rest) {
+			if (opnaCtrl_.getGateCount(attrib.source, attrib.channelInSource) == rest && nextReadStepOrder_ != -1) {
 				auto& step = song.getTrack(attrib.number)
 							 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
 				switch (attrib.source) {
@@ -771,20 +777,30 @@ void BambooTracker::findNextStep()
 	isFindNextStep_ = true;
 }
 
-void BambooTracker::stepDown()
+bool BambooTracker::stepDown()
 {
 	if (playState_ & 0x02) {	// Foward current step
-		curOrderNum_ = nextReadStepOrder_;
-		curStepNum_ = nextReadStepStep_;
+		if (nextReadStepOrder_ == -1) {
+			isFindNextStep_ = false;
+			return false;
+		}
+		else {
+			curOrderNum_ = nextReadStepOrder_;
+			curStepNum_ = nextReadStepStep_;
+		}
 	}
 	else {	// First read
 		playState_ |= 0x02;
 	}
+
+	return true;
 }
 
 /// Read order: volume -> instrument -> effect -> key on
 void BambooTracker::readStep()
 {
+	bool isNextSet = false;
+
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
@@ -804,7 +820,7 @@ void BambooTracker::readStep()
 			}
 			// Set effect
 			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
-				readFMEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+				isNextSet |= readFMEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
 			}
 			// Set key
 			switch (step.getNoteNumber()) {
@@ -839,7 +855,7 @@ void BambooTracker::readStep()
 			}
 			// Set effect
 			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
-				readSSGEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+				isNextSet |= readSSGEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
 			}
 			// Set key
 			switch (step.getNoteNumber()) {
@@ -867,7 +883,7 @@ void BambooTracker::readStep()
 			}
 			// Set effect
 			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
-				readDrumEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+				isNextSet |= readDrumEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
 			}
 			// Set key
 			switch (step.getNoteNumber()) {
@@ -885,26 +901,96 @@ void BambooTracker::readStep()
 		}
 	}
 
-	isFindNextStep_ = false;
+	isFindNextStep_ = isNextSet;
 }
 
-void BambooTracker::readFMEffect(int ch, std::string id, int value)
+bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 {
+	bool ret = false;
+
 	if (id == "08") {	// Pan
 		if (value < 4) opnaCtrl_.setPanFM(ch, value);
 	}
+	else if (id == "0B") {
+		ret = effPositionJump(value);
+	}
+	else if (id == "0C" && value != -1) {
+		effTrackEnd();
+		ret = true;
+	}
+	else if (id == "0D") {
+		ret = effPatternBreak(value);
+	}
+
+	return ret;
 }
 
-void BambooTracker::readSSGEffect(int ch, std::string id, int value)
+bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 {
-	// UNDONE: ssg effect
+	bool ret = false;
+
+	if (id == "0B") {
+		ret = effPositionJump(value);
+	}
+	else if (id == "0C" && value != -1) {
+		effTrackEnd();
+		ret = true;
+	}
+	else if (id == "0D") {
+		ret = effPatternBreak(value);
+	}
+
+	return ret;
 }
 
-void BambooTracker::readDrumEffect(int ch, std::string id, int value)
+bool BambooTracker::readDrumEffect(int ch, std::string id, int value)
 {
+	bool ret = false;
+
 	if (id == "08") {	// Pan
 		if (value < 4) opnaCtrl_.setPanDrum(ch, value);
 	}
+	else if (id == "0B") {
+		ret = effPositionJump(value);
+	}
+	else if (id == "0C" && value != -1) {
+		effTrackEnd();
+		ret = true;
+	}
+	else if (id == "0D") {
+		ret = effPatternBreak(value);
+	}
+
+	return ret;
+}
+
+bool BambooTracker::effPositionJump(int nextOrder)
+{
+	if (nextOrder < getOrderSize(curSongNum_)) {
+		nextReadStepOrder_ = nextOrder;
+		nextReadStepStep_ = 0;
+		return true;
+	}
+	return false;
+}
+
+void BambooTracker::effTrackEnd()
+{
+	nextReadStepOrder_ = -1;
+	nextReadStepStep_ = -1;
+}
+
+bool BambooTracker::effPatternBreak(int nextStep)
+{
+	if (curOrderNum_ == getOrderSize(curSongNum_) - 1) {
+		return false;
+	}
+	else if (nextStep < getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_ + 1)) {
+		nextReadStepOrder_ = curOrderNum_ + 1;
+		nextReadStepStep_ = nextStep;
+		return true;
+	}
+	return false;
 }
 
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)

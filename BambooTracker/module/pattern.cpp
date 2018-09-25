@@ -17,6 +17,12 @@ Step& Pattern::getStep(int n)
 
 size_t Pattern::getSize() const
 {
+	size_t ret = 0;
+	for (size_t i = 0; i < size_; ++i) {
+		auto id = steps_[i].getEffectID();
+		if ((id == "0B" || id == "0C" || id == "0D") && steps_[i].getEffectValue() != -1)
+			return i + 1;
+	}
 	return size_;
 }
 

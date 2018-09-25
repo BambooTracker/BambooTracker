@@ -264,12 +264,16 @@ private:
 	// Play song
 	bool isFindNextStep_;
 	void startPlay();
-	void stepDown();
+	bool stepDown();
 	void findNextStep();
 	void readStep();
 	void readTick(int rest);
 
-	void readFMEffect(int ch, std::string id, int value);
-	void readSSGEffect(int ch, std::string id, int value);
-	void readDrumEffect(int ch, std::string id, int value);
+	bool readFMEffect(int ch, std::string id, int value);
+	bool readSSGEffect(int ch, std::string id, int value);
+	bool readDrumEffect(int ch, std::string id, int value);
+
+	bool effPositionJump(int nextOrder);
+	void effTrackEnd();
+	bool effPatternBreak(int nextStep);
 };
