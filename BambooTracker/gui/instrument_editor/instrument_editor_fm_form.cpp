@@ -421,7 +421,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->ptEditor->setMMLDisplay0As(-127);
 
 	ui->ptTypeComboBox->addItem("Absolute", 0);
-	ui->ptTypeComboBox->addItem("Relative", 1);
+	ui->ptTypeComboBox->addItem("Relative", 2);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -1174,16 +1174,19 @@ void InstrumentEditorFMForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorFMForm::onArpeggioTypeChanged(int type)
+void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
 {
+	Q_UNUSED(index)
+
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(), type);
+		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(),
+									  ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
 
 	// Update labels
-	if (type == 1) {
+	if (index == 1) {
 		QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 		for (int i = 0; i < 8; ++i) {
 			for (int j = 0; j < 12; ++j) {
@@ -1281,10 +1284,13 @@ void InstrumentEditorFMForm::onPitchParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorFMForm::onPitchTypeChanged(int type)
+void InstrumentEditorFMForm::onPitchTypeChanged(int index)
 {
+	Q_UNUSED(index)
+
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(), type);
+		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(),
+								   ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}

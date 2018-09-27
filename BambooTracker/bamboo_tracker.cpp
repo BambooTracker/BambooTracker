@@ -908,7 +908,10 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 {
 	bool ret = false;
 
-	if (id == "08") {	// Pan
+	if (id == "00") {	// Arpeggio
+		if (value != -1) opnaCtrl_.setArpeggioEffectFM(ch, value >> 4, value & 0x0f);
+	}
+	else if (id == "08") {	// Pan
 		if (value < 4) opnaCtrl_.setPanFM(ch, value);
 	}
 	else if (id == "0B") {
@@ -929,7 +932,10 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 {
 	bool ret = false;
 
-	if (id == "0B") {
+	if (id == "00") {	// Arpeggio
+		if (value != -1) opnaCtrl_.setArpeggioEffectSSG(ch, value >> 4, value & 0x0f);
+	}
+	else if (id == "0B") {
 		ret = effPositionJump(value);
 	}
 	else if (id == "0C" && value != -1) {

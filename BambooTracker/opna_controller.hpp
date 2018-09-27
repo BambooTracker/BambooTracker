@@ -70,6 +70,9 @@ public:
 	// Set pan
 	void setPanFM(int ch, int value);
 
+	// Set effect
+	void setArpeggioEffectFM(int ch, int second, int third);
+
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
 	bool isMuteFM(int ch);
@@ -98,7 +101,7 @@ private:
 	bool hasPreSetTickEventFM_[6];
 	bool needToneSetFM_[6];
 	std::map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
-	std::unique_ptr<CommandSequence::Iterator> arpItFM_[6];
+	std::unique_ptr<SequenceIteratorInterface> arpItFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
 
 	void initFM();
@@ -147,6 +150,9 @@ public:
 	// Set volume
 	void setVolumeSSG(int ch, int volume);
 
+	// Set effect
+	void setArpeggioEffectSSG(int ch, int second, int third);
+
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
 	bool isMuteSSG(int ch);
@@ -176,7 +182,7 @@ private:
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandInSequence envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
-	std::unique_ptr<CommandSequence::Iterator> arpItSSG_[3];
+	std::unique_ptr<SequenceIteratorInterface> arpItSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> ptItSSG_[3];
 
 	void initSSG();

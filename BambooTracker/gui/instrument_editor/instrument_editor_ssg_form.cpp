@@ -285,7 +285,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptEditor->setMMLDisplay0As(-127);
 
 	ui->ptTypeComboBox->addItem("Absolute", 0);
-	ui->ptTypeComboBox->addItem("Relative", 1);
+	ui->ptTypeComboBox->addItem("Relative", 2);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -815,16 +815,19 @@ void InstrumentEditorSSGForm::onArpeggioParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorSSGForm::onArpeggioTypeChanged(int type)
+void InstrumentEditorSSGForm::onArpeggioTypeChanged(int index)
 {
+	Q_UNUSED(index)
+
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), type);
+		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(),
+									   ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
 
 	// Update labels
-	if (type == 1) {
+	if (index == 1) {
 		QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 		for (int i = 0; i < 8; ++i) {
 			for (int j = 0; j < 12; ++j) {
@@ -922,10 +925,13 @@ void InstrumentEditorSSGForm::onPitchParameterChanged(int tnNum)
 	}
 }
 
-void InstrumentEditorSSGForm::onPitchTypeChanged(int type)
+void InstrumentEditorSSGForm::onPitchTypeChanged(int index)
 {
+	Q_UNUSED(index)
+
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(), type);
+		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(),
+									ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}

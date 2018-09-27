@@ -115,7 +115,8 @@ SOURCES += \
     instrument/lfo_fm.cpp \
     instrument/abstruct_instrument_property.cpp \
     gui/instrument_editor/visualized_instrument_macro_editor.cpp \
-    instrument/command_sequence.cpp
+    instrument/command_sequence.cpp \
+    instrument/effect_iterator.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -219,7 +220,9 @@ HEADERS += \
     instrument/lfo_fm.hpp \
     instrument/abstruct_instrument_property.hpp \
     gui/instrument_editor/visualized_instrument_macro_editor.hpp \
-    instrument/command_sequence.hpp
+    instrument/command_sequence.hpp \
+    instrument/sequence_iterator_interface.hpp \
+    instrument/effect_iterator.hpp
 
 FORMS += \
     gui/mainwindow.ui \

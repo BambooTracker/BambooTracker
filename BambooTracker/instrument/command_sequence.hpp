@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include "abstruct_instrument_property.hpp"
+#include "sequence_iterator_interface.hpp"
 
 struct CommandInSequence
 {
@@ -58,16 +59,16 @@ public:
 	Release getRelease() const;
 	void setRelease(ReleaseType type, int begin);
 
-	class Iterator
+	class Iterator : public SequenceIteratorInterface
 	{
 	public:
 		explicit Iterator(CommandSequence* seq);
-		int getPosition() const;
-		int getSequenceType() const;
-		int getCommandType() const;
-		int getCommandData() const;
-		int next(bool isReleaseBegin = false);
-		int front();
+		int getPosition() const override;
+		int getSequenceType() const override;
+		int getCommandType() const override;
+		int getCommandData() const override;
+		int next(bool isReleaseBegin = false) override;
+		int front() override;
 
 	private:
 		CommandSequence* seq_;

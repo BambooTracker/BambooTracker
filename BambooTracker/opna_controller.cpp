@@ -1,5 +1,6 @@
 #include "opna_controller.hpp"
 #include "pitch_converter.hpp"
+#include "effect_iterator.hpp"
 
 #include <QDebug>
 
@@ -285,6 +286,12 @@ void OPNAController::setPanFM(int ch, int value)
 		data |= refInstFM_[ch]->getLFOParameter(FMLFOParameter::PMS);
 	}
 	opna_.setRegister(0xb4 + bch, data);
+}
+
+/********** Set effect **********/
+void OPNAController::setArpeggioEffectFM(int ch, int second, int third)
+{
+	arpItFM_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
 }
 
 /********** Mute **********/
@@ -967,7 +974,7 @@ void OPNAController::checkRealToneFMByPitch(int ch, int seqPos)
 	case 0:	// Absolute
 		realToneFM_[ch].pitch = ptItFM_[ch]->getCommandType() - 127;
 		break;
-	case 1:	// Relative
+	case 2:	// Relative
 		realToneFM_[ch].pitch += (ptItFM_[ch]->getCommandType() - 127);
 		break;
 	}
@@ -1116,6 +1123,12 @@ void OPNAController::setRealVolumeSSG(int ch)
 	}
 	opna_.setRegister(0x08 + ch, volume);
 	needEnvSetSSG_[ch] = false;
+}
+
+/********** Set effect **********/
+void OPNAController::setArpeggioEffectSSG(int ch, int second, int third)
+{
+	arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
 }
 
 /********** Mute **********/
@@ -1734,7 +1747,7 @@ void OPNAController::checkRealToneSSGByPitch(int ch, int seqPos)
 	case 0:	// Absolute
 		realToneSSG_[ch].pitch = ptItSSG_[ch]->getCommandType() - 127;
 		break;
-	case 1:	// Relative
+	case 2:	// Relative
 		realToneSSG_[ch].pitch += (ptItSSG_[ch]->getCommandType() - 127);
 		break;
 	}
