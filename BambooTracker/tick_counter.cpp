@@ -2,29 +2,29 @@
 
 TickCounter::TickCounter() :
 	isPlaySong_(false),
-    tempo_(150),    // Dummy set
-    tickRate_(60),	// NTSC
-    defStepSize_(6)    // Dummy set
+	tempo_(150),    // Dummy set
+	tickRate_(60),	// NTSC
+	defStepSize_(6)    // Dummy set
 {
-    updateTickDIf();
+	updateTickDIf();
 }
 
 void TickCounter::setInterruptRate(uint32_t rate)
 {
 	tickRate_ = rate;
-    updateTickDIf();
+	updateTickDIf();
 }
 
 void TickCounter::setTempo(int tempo)
 {
 	tempo_ = tempo;
-    updateTickDIf();
+	updateTickDIf();
 }
 
 void TickCounter::setStepSize(size_t size)
 {
-    defStepSize_ = size;
-    updateTickDIf();
+	defStepSize_ = size;
+	updateTickDIf();
 }
 
 void TickCounter::setPlayState(bool isPlaySong)
@@ -38,20 +38,20 @@ void TickCounter::setPlayState(bool isPlaySong)
 ///		0<: rest tick count to next step
 int TickCounter::countUp()
 {
-    int ret;
+	int ret;
 
 	if (isPlaySong_) {
-        ret = restTickToNextStep_;
+		ret = restTickToNextStep_;
 
-        if (!restTickToNextStep_) {  // When head of step, calculate real step size
-            tickDifSum_ += tickDif_;
-            int castedTickDifSum = static_cast<int>(tickDifSum_);
-            restTickToNextStep_ = defStepSize_ + castedTickDifSum;
-            tickDifSum_ -= castedTickDifSum;
-        }
+		if (!restTickToNextStep_) {  // When head of step, calculate real step size
+			tickDifSum_ += tickDif_;
+			int castedTickDifSum = static_cast<int>(tickDifSum_);
+			restTickToNextStep_ = defStepSize_ + castedTickDifSum;
+			tickDifSum_ -= castedTickDifSum;
+		}
 
-        --restTickToNextStep_;   // Count down to next step
-    }
+		--restTickToNextStep_;   // Count down to next step
+	}
 	else {
 		ret = -1;
 	}
@@ -61,12 +61,12 @@ int TickCounter::countUp()
 
 void TickCounter::updateTickDIf()
 {
-    float strictTicksPerStepByBpm = 10.0 * tickRate_ * defStepSize_ / (tempo_ << 2);
-    tickDif_ = strictTicksPerStepByBpm - static_cast<float>(defStepSize_);
+	float strictTicksPerStepByBpm = 10.0 * tickRate_ * defStepSize_ / (tempo_ << 2);
+	tickDif_ = strictTicksPerStepByBpm - static_cast<float>(defStepSize_);
 }
 
 void TickCounter::resetCount()
 {
-    restTickToNextStep_ = 0;
-    tickDifSum_ = 0;
+	restTickToNextStep_ = 0;
+	tickDifSum_ = 0;
 }

@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		int curSong = bt_->getCurrentSongNumber();
 		if (freq != bt_->getSongTickFrequency(curSong)) {
 			bt_->setSongTickFrequency(curSong, freq);
+			stream_->setInturuption(freq);
 			setModifiedTrue();
 		}
 	});

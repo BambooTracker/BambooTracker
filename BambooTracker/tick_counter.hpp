@@ -12,18 +12,18 @@ public:
 	void setStepSize(size_t size);
 	void setPlayState(bool isPlaySong);
 	int countUp();
-    void resetCount();
+	void resetCount();
 
 private:
 	bool isPlaySong_;
 	size_t tempo_;
 	size_t tickRate_;
 
-    size_t defStepSize_;
-    size_t restTickToNextStep_;
+	size_t defStepSize_;
+	size_t restTickToNextStep_;
 
-    float tickDif_;
-    float tickDifSum_;
+	float tickDif_;
+	float tickDifSum_;
 
-    void updateTickDIf();
+	void updateTickDIf();
 };
