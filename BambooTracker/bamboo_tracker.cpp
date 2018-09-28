@@ -683,6 +683,7 @@ int BambooTracker::streamCountUp()
 	else if (!state) {
 		if (stepDown()) {
 			readStep();
+			if (!isFindNextStep_) findNextStep();
 		}
 		else {
 			stopPlaySong();
@@ -700,8 +701,6 @@ int BambooTracker::streamCountUp()
 void BambooTracker::readTick(int rest)
 {	
 	if (!(playState_ & 0x02)) return;	// When it has not read first step
-
-	if (!isFindNextStep_) findNextStep();
 
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {

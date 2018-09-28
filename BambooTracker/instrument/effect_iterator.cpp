@@ -1,7 +1,7 @@
 #include "effect_iterator.hpp"
 
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
-	: pos_(0),
+	: pos_(2),
 	  second_(second + 48),
 	  third_(third + 48)
 {
