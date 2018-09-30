@@ -198,8 +198,10 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 		else
 			p.second = refInstFM_[ch]->getOperatorSequenceSequenceIterator(p.first);
 	}
-	if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
-	else arpItFM_[ch] = refInstFM_[ch]->getArpeggioSequenceIterator();
+	if (!isArpEffFM_[ch]) {
+		if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
+		else arpItFM_[ch] = refInstFM_[ch]->getArpeggioSequenceIterator();
+	}
 	if (refInstFM_[ch]->getPitchNumber() == -1) ptItFM_[ch].reset();
 	else ptItFM_[ch] = refInstFM_[ch]->getPitchSequenceIterator();
 	setInstrumentFMProperties(ch);
@@ -298,7 +300,15 @@ void OPNAController::setPanFM(int ch, int value)
 /********** Set effect **********/
 void OPNAController::setArpeggioEffectFM(int ch, int second, int third)
 {
-	arpItFM_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
+	if (second || third) {
+		arpItFM_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
+		isArpEffFM_[ch] = true;
+	}
+	else {
+		if (refInstFM_[ch]->getArpeggioNumber() == -1) arpItFM_[ch].reset();
+		else arpItFM_[ch] = refInstFM_[ch]->getArpeggioSequenceIterator();
+		isArpEffFM_[ch] = false;
+	}
 }
 
 void OPNAController::setPortamentoEffectFM(int ch, int depth, bool isTonePortamento)
@@ -377,6 +387,9 @@ void OPNAController::initFM()
 		arpItFM_[ch].reset();
 		ptItFM_[ch].reset();
 		needToneSetFM_[ch] = false;
+
+		// Effect
+		isArpEffFM_[ch] = false;
 		prtmFM_[ch] = 0;
 		isTonePrtmFM_[ch] = false;
 		vibItFM_[ch].reset();
@@ -1162,8 +1175,10 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 	else tnItSSG_[ch] = refInstSSG_[ch]->getToneNoiseSequenceIterator();
 	if (refInstSSG_[ch]->getEnvelopeNumber() == -1) envItSSG_[ch].reset();
 	else envItSSG_[ch] = refInstSSG_[ch]->getEnvelopeSequenceIterator();
-	if (refInstSSG_[ch]->getArpeggioNumber() == -1) arpItSSG_[ch].reset();
-	else arpItSSG_[ch] = refInstSSG_[ch]->getArpeggioSequenceIterator();
+	if (!isArpEffSSG_[ch]) {
+		if (refInstSSG_[ch]->getArpeggioNumber() == -1) arpItSSG_[ch].reset();
+		else arpItSSG_[ch] = refInstSSG_[ch]->getArpeggioSequenceIterator();
+	}
 	if (refInstSSG_[ch]->getPitchNumber() == -1) ptItSSG_[ch].reset();
 	else ptItSSG_[ch] = refInstSSG_[ch]->getPitchSequenceIterator();
 	setInstrumentSSGProperties(ch);
@@ -1212,7 +1227,15 @@ void OPNAController::setRealVolumeSSG(int ch)
 /********** Set effect **********/
 void OPNAController::setArpeggioEffectSSG(int ch, int second, int third)
 {
-	arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
+	if (second || third) {
+		arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
+		isArpEffSSG_[ch] = true;
+	}
+	else {
+		if (refInstSSG_[ch]->getArpeggioNumber() == -1) arpItSSG_[ch].reset();
+		else arpItSSG_[ch] = refInstSSG_[ch]->getArpeggioSequenceIterator();
+		isArpEffSSG_[ch] = false;
+	}
 }
 
 void OPNAController::setPortamentoEffectSSG(int ch, int depth, bool isTonePortamento)
@@ -1286,6 +1309,9 @@ void OPNAController::initSSG()
 		needEnvSetSSG_[ch] = false;
 		needMixSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = false;
+
+		// Effect
+		isArpEffSSG_[ch] = false;
 		prtmSSG_[ch] = 0;
 		isTonePrtmSSG_[ch] = false;
 		vibItSSG_[ch].reset();

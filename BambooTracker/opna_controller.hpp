@@ -107,6 +107,7 @@ private:
 	std::map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
 	std::unique_ptr<SequenceIteratorInterface> arpItFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
+	bool isArpEffFM_[6];
 	int prtmFM_[6];
 	bool isTonePrtmFM_[6];
 	std::unique_ptr<VibratoEffectIterator> vibItFM_[6];
@@ -192,6 +193,7 @@ private:
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
 	std::unique_ptr<SequenceIteratorInterface> arpItSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> ptItSSG_[3];
+	bool isArpEffSSG_[3];
 	int prtmSSG_[3];
 	bool isTonePrtmSSG_[3];
 	std::unique_ptr<VibratoEffectIterator> vibItSSG_[6];
