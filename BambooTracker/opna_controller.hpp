@@ -5,6 +5,7 @@
 #include <map>
 #include "opna.hpp"
 #include "instrument.hpp"
+#include "effect_iterator.hpp"
 #include "misc.hpp"
 
 struct ToneDetail
@@ -23,11 +24,11 @@ struct ToneNoise
 class OPNAController
 {
 public:
-	#ifdef SINC_INTERPOLATION
+#ifdef SINC_INTERPOLATION
 	OPNAController(int clock, int rate, int duration);
-	#else
+#else
 	OPNAController(int clock, int rate);
-	#endif
+#endif
 
 	// Reset and initialize
 	void reset();
@@ -73,6 +74,7 @@ public:
 	// Set effect
 	void setArpeggioEffectFM(int ch, int second, int third);
 	void setPortamentoEffectFM(int ch, int depth, bool isTonePortamento = false);
+	void setVibratoEffectFM(int ch, int period, int depth);
 
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
@@ -89,7 +91,8 @@ private:
 	std::unique_ptr<EnvelopeFM> envFM_[6];
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
-	ToneDetail baseToneFM_[6], realToneFM_[6], regToneFM_[6];
+	ToneDetail baseToneFM_[6], keyToneFM_[6];
+	int subPitchFM_[6];
 	int volFM_[6];
 	/// bit0: right on/off
 	/// bit1: left on/off
@@ -106,6 +109,7 @@ private:
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
 	int prtmFM_[6];
 	bool isTonePrtmFM_[6];
+	std::unique_ptr<VibratoEffectIterator> vibItFM_[6];
 
 	void initFM();
 
@@ -125,8 +129,8 @@ private:
 
 	void checkOperatorSequenceFM(int ch, int type);
 	void checkRealToneFMByArpeggio(int ch, int seqPos);
-	void checkRealToneFMByPitch(int ch, int seqPos);
 	void checkPortamentoFM(int ch);
+	void checkRealToneFMByPitch(int ch, int seqPos);
 	void writePitchFM(int ch);
 
 	void setInstrumentFMProperties(int ch);
@@ -154,6 +158,7 @@ public:
 	// Set effect
 	void setArpeggioEffectSSG(int ch, int second, int third);
 	void setPortamentoEffectSSG(int ch, int depth, bool isTonePortamento = false);
+	void setVibratoEffectSSG(int ch, int period, int depth);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
@@ -168,7 +173,8 @@ private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
 	bool isKeyOnSSG_[3];
 	uint8_t mixerSSG_;
-	ToneDetail baseToneSSG_[3], realToneSSG_[3], regToneSSG_[3];
+	ToneDetail baseToneSSG_[3], keyToneSSG_[3];
+	int subPitchSSG_[6];
 	ToneNoise tnSSG_[3];
 	int baseVolSSG_[3];
 	bool isBuzzEffSSG_[3];
@@ -188,6 +194,7 @@ private:
 	std::unique_ptr<CommandSequence::Iterator> ptItSSG_[3];
 	int prtmSSG_[3];
 	bool isTonePrtmSSG_[3];
+	std::unique_ptr<VibratoEffectIterator> vibItSSG_[6];
 
 	void initSSG();
 
@@ -203,8 +210,8 @@ private:
 
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
 	void checkRealToneSSGByArpeggio(int ch, int seqPos);
-	void checkRealToneSSGByPitch(int ch, int seqPos);
 	void checkPortamentoSSG(int ch);
+	void checkRealToneSSGByPitch(int ch, int seqPos);
 	void writePitchSSG(int ch);
 
 	void setInstrumentSSGProperties(int ch);

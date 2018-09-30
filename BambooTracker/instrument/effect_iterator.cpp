@@ -42,3 +42,51 @@ int ArpeggioEffectIterator::front()
 	pos_ = 0;
 	return 0;
 }
+
+/****************************************/
+VibratoEffectIterator::VibratoEffectIterator(int period, int depth)
+{
+	for (int i = 0; i <= period; ++i) {
+		seq_.push_back(i * depth);
+	}
+	for (int i = period - 1; i > 0; --i) {
+		seq_.push_back(seq_.at(i));
+	}
+	int p2 = period << 1;
+	for (int i = 0; i < p2; ++i) {
+		seq_.push_back(-seq_.at(i));
+	}
+
+	pos_ = seq_.size() - 1;
+}
+
+int VibratoEffectIterator::getPosition() const
+{
+	return pos_;
+}
+
+int VibratoEffectIterator::getSequenceType() const
+{
+	return 0;
+}
+
+int VibratoEffectIterator::getCommandType() const
+{
+	return seq_.at(pos_);
+}
+
+int VibratoEffectIterator::getCommandData() const
+{
+	return -1;
+}
+
+int VibratoEffectIterator::next(bool isReleaseBegin)
+{
+	pos_ = (pos_ + 1) % seq_.size();
+	return pos_;
+}
+int VibratoEffectIterator::front()
+{
+	pos_ = 0;
+	return 0;
+}
