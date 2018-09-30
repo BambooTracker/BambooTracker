@@ -710,7 +710,9 @@ void BambooTracker::readTick(int rest)
 			// Channel envelope reset before next key on
 			if (attrib.source == SoundSource::FM
 					&& step.getNoteNumber() >= 0
-					&& opnaCtrl_.enableFMEnvelopeReset(attrib.channelInSource)) {
+					&& opnaCtrl_.enableFMEnvelopeReset(attrib.channelInSource)
+					&& ((step.getEffectID() != "03" && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
+						|| (step.getEffectID() == "03" && step.getEffectValue() == 0))) {
 				opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
 			}
 			else {
@@ -724,7 +726,9 @@ void BambooTracker::readTick(int rest)
 							 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
 				switch (attrib.source) {
 				case SoundSource::FM:
-					if (step.getNoteNumber() >= 0) {
+					if (step.getNoteNumber() >= 0
+							&& ((step.getEffectID() != "03" && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
+								|| (step.getEffectID() == "03" && step.getEffectValue() == 0))) {
 						opnaCtrl_.keyOffFM(attrib.channelInSource);
 					}
 					else {
@@ -733,7 +737,9 @@ void BambooTracker::readTick(int rest)
 					break;
 
 				case SoundSource::SSG:
-					if (step.getNoteNumber() >= 0) {
+					if (step.getNoteNumber() >= 0
+							&& ((step.getEffectID() != "03" && !opnaCtrl_.isTonePortamentoSSG(attrib.channelInSource))
+								|| (step.getEffectID() == "03" && step.getEffectValue() == 0))) {
 						opnaCtrl_.keyOffSSG(attrib.channelInSource);
 					}
 					else {
@@ -824,7 +830,7 @@ void BambooTracker::readStep()
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
-				opnaCtrl_.tickEvent(SoundSource::FM, attrib.channelInSource);
+				opnaCtrl_.tickEvent(SoundSource::FM, attrib.channelInSource, true);
 				break;
 			case -2:	// Key off
 				opnaCtrl_.keyOffFM(attrib.channelInSource);
@@ -859,7 +865,7 @@ void BambooTracker::readStep()
 			// Set key
 			switch (step.getNoteNumber()) {
 			case -1:	// None
-				opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource);
+				opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource, true);
 				break;
 			case -2:	// Key off
 				opnaCtrl_.keyOffSSG(attrib.channelInSource);
@@ -907,20 +913,31 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 {
 	bool ret = false;
 
-	if (id == "00") {	// Arpeggio
+	if (id == "00") {		// Arpeggio
 		if (value != -1) opnaCtrl_.setArpeggioEffectFM(ch, value >> 4, value & 0x0f);
+	}
+	else if (id == "01") {	// Portamento up
+		if (value != -1) opnaCtrl_.setPortamentoEffectFM(ch, value);
+	}
+	else if (id == "02") {	// Portamento down
+		if (value != -1) opnaCtrl_.setPortamentoEffectFM(ch, -value);
+	}
+	else if (id == "03") {	// Tone portamento
+		if (value != -1) opnaCtrl_.setPortamentoEffectFM(ch, value, true);
 	}
 	else if (id == "08") {	// Pan
 		if (value < 4) opnaCtrl_.setPanFM(ch, value);
 	}
-	else if (id == "0B") {
+	else if (id == "0B") {	// Position jump
 		ret = effPositionJump(value);
 	}
-	else if (id == "0C" && value != -1) {
-		effTrackEnd();
-		ret = true;
+	else if (id == "0C") {	// Track end
+		if (value != -1) {
+			effTrackEnd();
+			ret = true;
+		}
 	}
-	else if (id == "0D") {
+	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
 	}
 
@@ -931,17 +948,28 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 {
 	bool ret = false;
 
-	if (id == "00") {	// Arpeggio
+	if (id == "00") {		// Arpeggio
 		if (value != -1) opnaCtrl_.setArpeggioEffectSSG(ch, value >> 4, value & 0x0f);
 	}
-	else if (id == "0B") {
+	else if (id == "01") {	// Portamento up
+		if (value != -1) opnaCtrl_.setPortamentoEffectSSG(ch, value);
+	}
+	else if (id == "02") {	// Portamento down
+		if (value != -1) opnaCtrl_.setPortamentoEffectSSG(ch, -value);
+	}
+	else if (id == "03") {	// Tone portamento
+		if (value != -1) opnaCtrl_.setPortamentoEffectSSG(ch, value, true);
+	}
+	else if (id == "0B") {	// Position jump
 		ret = effPositionJump(value);
 	}
-	else if (id == "0C" && value != -1) {
-		effTrackEnd();
-		ret = true;
+	else if (id == "0C") {	// Track end
+		if (value != -1) {
+			effTrackEnd();
+			ret = true;
+		}
 	}
-	else if (id == "0D") {
+	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
 	}
 
@@ -952,17 +980,19 @@ bool BambooTracker::readDrumEffect(int ch, std::string id, int value)
 {
 	bool ret = false;
 
-	if (id == "08") {	// Pan
+	if (id == "08") {		// Pan
 		if (value < 4) opnaCtrl_.setPanDrum(ch, value);
 	}
-	else if (id == "0B") {
+	else if (id == "0B") {	// Position jump
 		ret = effPositionJump(value);
 	}
-	else if (id == "0C" && value != -1) {
-		effTrackEnd();
-		ret = true;
+	else if (id == "0C") {	// Track end
+		if (value != -1) {
+			effTrackEnd();
+			ret = true;
+		}
 	}
-	else if (id == "0D") {
+	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
 	}
 

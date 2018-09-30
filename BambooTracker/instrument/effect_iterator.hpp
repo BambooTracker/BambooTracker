@@ -1,7 +1,7 @@
 #pragma once
 #include "sequence_iterator_interface.hpp"
 
-class ArpeggioEffectIterator: public SequenceIteratorInterface
+class ArpeggioEffectIterator : public SequenceIteratorInterface
 {
 public:
 	ArpeggioEffectIterator(int second, int third);

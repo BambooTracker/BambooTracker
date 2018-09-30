@@ -33,7 +33,7 @@ public:
 	void reset();
 
 	// Forward instrument sequence
-	void tickEvent(SoundSource src, int ch);
+	void tickEvent(SoundSource src, int ch, bool isStep = false);
 
 	// Chip details
 	int getGateCount(SoundSource src, int ch) const;
@@ -72,6 +72,7 @@ public:
 
 	// Set effect
 	void setArpeggioEffectFM(int ch, int second, int third);
+	void setPortamentoEffectFM(int ch, int depth, bool isTonePortamento = false);
 
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
@@ -79,6 +80,7 @@ public:
 
 	// Chip details
 	bool isKeyOnFM(int ch) const;
+	bool isTonePortamentoFM(int ch) const;
 	bool enableFMEnvelopeReset(int ch) const;
 	ToneDetail getFMTone(int ch) const;
 
@@ -87,8 +89,7 @@ private:
 	std::unique_ptr<EnvelopeFM> envFM_[6];
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
-	ToneDetail baseToneFM_[6];
-	ToneDetail realToneFM_[6];
+	ToneDetail baseToneFM_[6], realToneFM_[6], regToneFM_[6];
 	int volFM_[6];
 	/// bit0: right on/off
 	/// bit1: left on/off
@@ -103,6 +104,8 @@ private:
 	std::map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
 	std::unique_ptr<SequenceIteratorInterface> arpItFM_[6];
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
+	int prtmFM_[6];
+	bool isTonePrtmFM_[6];
 
 	void initFM();
 
@@ -118,14 +121,12 @@ private:
 
 	void setFrontFMSequences(int ch);
 	void releaseStartFMSequences(int ch);
-	void tickEventFM(int ch);
+	void tickEventFM(int ch, bool isStep);
 
 	void checkOperatorSequenceFM(int ch, int type);
-
 	void checkRealToneFMByArpeggio(int ch, int seqPos);
-
 	void checkRealToneFMByPitch(int ch, int seqPos);
-
+	void checkPortamentoFM(int ch);
 	void writePitchFM(int ch);
 
 	void setInstrumentFMProperties(int ch);
@@ -152,6 +153,7 @@ public:
 
 	// Set effect
 	void setArpeggioEffectSSG(int ch, int second, int third);
+	void setPortamentoEffectSSG(int ch, int depth, bool isTonePortamento = false);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
@@ -159,14 +161,14 @@ public:
 
 	// Chip details
 	bool isKeyOnSSG(int ch) const;
+	bool isTonePortamentoSSG(int ch) const;
 	ToneDetail getSSGTone(int ch) const;
 
 private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
 	bool isKeyOnSSG_[3];
 	uint8_t mixerSSG_;
-	ToneDetail baseToneSSG_[3];
-	ToneDetail realToneSSG_[3];
+	ToneDetail baseToneSSG_[3], realToneSSG_[3], regToneSSG_[3];
 	ToneNoise tnSSG_[3];
 	int baseVolSSG_[3];
 	bool isBuzzEffSSG_[3];
@@ -184,12 +186,14 @@ private:
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
 	std::unique_ptr<SequenceIteratorInterface> arpItSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> ptItSSG_[3];
+	int prtmSSG_[3];
+	bool isTonePrtmSSG_[3];
 
 	void initSSG();
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
-	void tickEventSSG(int ch);
+	void tickEventSSG(int ch, bool isStep);
 
 	void writeWaveFormSSGToRegister(int ch, int seqPos);
 	void writeSquareWaveForm(int ch);
@@ -198,11 +202,9 @@ private:
 	void writeToneNoiseSSGToRegisterNoReference(int ch);
 
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
-
 	void checkRealToneSSGByArpeggio(int ch, int seqPos);
-
 	void checkRealToneSSGByPitch(int ch, int seqPos);
-
+	void checkPortamentoSSG(int ch);
 	void writePitchSSG(int ch);
 
 	void setInstrumentSSGProperties(int ch);
