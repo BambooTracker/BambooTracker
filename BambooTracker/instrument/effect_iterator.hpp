@@ -18,10 +18,10 @@ private:
 	int second_, third_;
 };
 
-class VibratoEffectIterator : public SequenceIteratorInterface
+class WavingEffectIterator : public SequenceIteratorInterface
 {
 public:
-	VibratoEffectIterator(int period, int depth);
+	WavingEffectIterator(int period, int depth);
 	int getPosition() const override;
 	int getSequenceType() const override;
 	int getCommandType() const override;

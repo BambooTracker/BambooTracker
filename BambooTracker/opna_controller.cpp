@@ -319,8 +319,14 @@ void OPNAController::setPortamentoEffectFM(int ch, int depth, bool isTonePortame
 
 void OPNAController::setVibratoEffectFM(int ch, int period, int depth)
 {
-	if (!period || !depth) vibItFM_[ch].reset();
-	else vibItFM_[ch] = std::make_unique<VibratoEffectIterator>(period, depth);
+	if (period && depth) vibItFM_[ch] = std::make_unique<WavingEffectIterator>(period, depth);
+	else vibItFM_[ch].reset();
+}
+
+void OPNAController::setTremoloEffectFM(int ch, int period, int depth)
+{
+	if (period && depth) treItFM_[ch] = std::make_unique<WavingEffectIterator>(period, depth);
+	else treItFM_[ch].reset();
 }
 
 /********** Mute **********/
@@ -393,6 +399,7 @@ void OPNAController::initFM()
 		prtmFM_[ch] = 0;
 		isTonePrtmFM_[ch] = false;
 		vibItFM_[ch].reset();
+		treItFM_[ch].reset();
 
 		// Init pan
 		uint32_t bch = getFMChannelOffset(ch);
@@ -908,6 +915,11 @@ void OPNAController::setFrontFMSequences(int ch)
 
 	checkOperatorSequenceFM(ch, 1);
 
+	if (treItFM_[ch]) {
+		treItFM_[ch]->front();
+		checkTremoloFM(ch);
+	}
+
 	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->front());
 	checkPortamentoFM(ch);
 
@@ -930,6 +942,11 @@ void OPNAController::releaseStartFMSequences(int ch)
 	}
 
 	checkOperatorSequenceFM(ch, 2);
+
+	if (treItFM_[ch]) {
+		treItFM_[ch]->next(true);
+		checkTremoloFM(ch);
+	}
 
 	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next(true));
 	checkPortamentoFM(ch);
@@ -957,6 +974,11 @@ void OPNAController::tickEventFM(int ch, bool isStep)
 		}
 
 		checkOperatorSequenceFM(ch, 0);
+
+		if (treItFM_[ch]) {
+			treItFM_[ch]->next();
+			checkTremoloFM(ch);
+		}
 
 		if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next());
 		checkPortamentoFM(ch);
@@ -988,6 +1010,38 @@ void OPNAController::checkOperatorSequenceFM(int ch, int type)
 				}
 			}
 		}
+	}
+}
+
+void OPNAController::checkTremoloFM(int ch)
+{
+	uint32_t bch = getFMChannelOffset(ch);
+	int al = envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL);
+	int trm = treItFM_[ch]->getCommandType();
+
+	if (isCareer(0, al)) {	// Operator 1
+		int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL1) + trm;
+		if (data > 127) data = 127;
+		else if (data < 0) data = 0;
+		opna_.setRegister(0x40 + bch, data);
+	}
+	if (isCareer(1, al)) {	// Operator 2
+		int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL2) + trm;
+		if (data > 127) data = 127;
+		else if (data < 0) data = 0;
+		opna_.setRegister(0x40 + bch + 8, data);
+	}
+	if (isCareer(2, al)) {	// Operator 3
+		int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL3) + trm;
+		if (data > 127) data = 127;
+		else if (data < 0) data = 0;
+		opna_.setRegister(0x40 + bch + 4, data);
+	}
+	if (isCareer(3, al)) {	// Operator 4
+		int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL4) + trm;
+		if (data > 127) data = 127;
+		else if (data < 0) data = 0;
+		opna_.setRegister(0x40 + bch + 12, data);
 	}
 }
 
@@ -1220,6 +1274,11 @@ void OPNAController::setRealVolumeSSG(int ch)
 			if (volume < 0) volume = 0;
 		}
 	}
+	if (treItSSG_[ch]) {
+		volume += treItSSG_[ch]->getCommandType();
+		if (volume > 15) volume = 15;
+		else if (volume < 0) volume = 0;
+	}
 	opna_.setRegister(0x08 + ch, volume);
 	needEnvSetSSG_[ch] = false;
 }
@@ -1246,8 +1305,14 @@ void OPNAController::setPortamentoEffectSSG(int ch, int depth, bool isTonePortam
 
 void OPNAController::setVibratoEffectSSG(int ch, int period, int depth)
 {
-	if (!period || !depth) vibItSSG_[ch].reset();
-	else vibItSSG_[ch] = std::make_unique<VibratoEffectIterator>(period, depth);
+	if (period && depth) vibItSSG_[ch] = std::make_unique<WavingEffectIterator>(period, depth);
+	else vibItSSG_[ch].reset();
+}
+
+void OPNAController::setTremoloEffectSSG(int ch, int period, int depth)
+{
+	if (period && depth) treItSSG_[ch] = std::make_unique<WavingEffectIterator>(period, depth);
+	else treItSSG_[ch].reset();
 }
 
 /********** Mute **********/
@@ -1315,6 +1380,7 @@ void OPNAController::initSSG()
 		prtmSSG_[ch] = 0;
 		isTonePrtmSSG_[ch] = false;
 		vibItSSG_[ch].reset();
+		treItSSG_[ch].reset();
 
 		gateCntSSG_[ch] = 0;
 	}
@@ -1327,6 +1393,13 @@ void OPNAController::setFrontSSGSequences(int ch)
 	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->front());
 	else writeSquareWaveForm(ch);
 
+	if (treItSSG_[ch]) {
+		treItSSG_[ch]->front();
+		needEnvSetSSG_[ch] = true;
+	}
+	else {
+		// TODO: check volume slide up/down
+	}
 	if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
 	else setRealVolumeSSG(ch);
 
@@ -1351,6 +1424,13 @@ void OPNAController::releaseStartSSGSequences(int ch)
 
 	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next(true));
 
+	if (treItSSG_[ch]) {
+		treItSSG_[ch]->next(true);
+		needEnvSetSSG_[ch] = true;
+	}
+	else {
+		// TODO: check volume slide up/down
+	}
 	if (envItSSG_[ch]) {
 		int pos = envItSSG_[ch]->next(true);
 		if (pos == -1) {
@@ -1390,12 +1470,21 @@ void OPNAController::tickEventSSG(int ch, bool isStep)
 		if (isMuteSSG(ch)) return;
 
 		if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next());
+
+		if (treItSSG_[ch]) {
+			treItSSG_[ch]->next();
+			needEnvSetSSG_[ch] = true;
+		}
+		else {
+			// TODO: check volume slide up/down
+		}
 		if (envItSSG_[ch]) {
 			writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->next());
 		}
-		else if (needToneSetSSG_[ch]) {
+		else if (needToneSetSSG_[ch] || needEnvSetSSG_[ch]) {
 			setRealVolumeSSG(ch);
 		}
+
 		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
 		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 

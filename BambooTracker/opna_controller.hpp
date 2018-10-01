@@ -24,11 +24,11 @@ struct ToneNoise
 class OPNAController
 {
 public:
-#ifdef SINC_INTERPOLATION
+	#ifdef SINC_INTERPOLATION
 	OPNAController(int clock, int rate, int duration);
-#else
+	#else
 	OPNAController(int clock, int rate);
-#endif
+	#endif
 
 	// Reset and initialize
 	void reset();
@@ -75,6 +75,7 @@ public:
 	void setArpeggioEffectFM(int ch, int second, int third);
 	void setPortamentoEffectFM(int ch, int depth, bool isTonePortamento = false);
 	void setVibratoEffectFM(int ch, int period, int depth);
+	void setTremoloEffectFM(int ch, int period, int depth);
 
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
@@ -110,7 +111,8 @@ private:
 	bool isArpEffFM_[6];
 	int prtmFM_[6];
 	bool isTonePrtmFM_[6];
-	std::unique_ptr<VibratoEffectIterator> vibItFM_[6];
+	std::unique_ptr<WavingEffectIterator> vibItFM_[6];
+	std::unique_ptr<WavingEffectIterator> treItFM_[6];
 
 	void initFM();
 
@@ -129,6 +131,7 @@ private:
 	void tickEventFM(int ch, bool isStep);
 
 	void checkOperatorSequenceFM(int ch, int type);
+	void checkTremoloFM(int ch);
 	void checkRealToneFMByArpeggio(int ch, int seqPos);
 	void checkPortamentoFM(int ch);
 	void checkRealToneFMByPitch(int ch, int seqPos);
@@ -160,6 +163,7 @@ public:
 	void setArpeggioEffectSSG(int ch, int second, int third);
 	void setPortamentoEffectSSG(int ch, int depth, bool isTonePortamento = false);
 	void setVibratoEffectSSG(int ch, int period, int depth);
+	void setTremoloEffectSSG(int ch, int period, int depth);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
@@ -196,7 +200,8 @@ private:
 	bool isArpEffSSG_[3];
 	int prtmSSG_[3];
 	bool isTonePrtmSSG_[3];
-	std::unique_ptr<VibratoEffectIterator> vibItSSG_[6];
+	std::unique_ptr<WavingEffectIterator> vibItSSG_[6];
+	std::unique_ptr<WavingEffectIterator> treItSSG_[6];
 
 	void initSSG();
 

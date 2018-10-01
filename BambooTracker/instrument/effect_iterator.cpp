@@ -44,7 +44,7 @@ int ArpeggioEffectIterator::front()
 }
 
 /****************************************/
-VibratoEffectIterator::VibratoEffectIterator(int period, int depth)
+WavingEffectIterator::WavingEffectIterator(int period, int depth)
 {
 	for (int i = 0; i <= period; ++i) {
 		seq_.push_back(i * depth);
@@ -60,32 +60,32 @@ VibratoEffectIterator::VibratoEffectIterator(int period, int depth)
 	pos_ = seq_.size() - 1;
 }
 
-int VibratoEffectIterator::getPosition() const
+int WavingEffectIterator::getPosition() const
 {
 	return pos_;
 }
 
-int VibratoEffectIterator::getSequenceType() const
+int WavingEffectIterator::getSequenceType() const
 {
 	return 0;
 }
 
-int VibratoEffectIterator::getCommandType() const
+int WavingEffectIterator::getCommandType() const
 {
 	return seq_.at(pos_);
 }
 
-int VibratoEffectIterator::getCommandData() const
+int WavingEffectIterator::getCommandData() const
 {
 	return -1;
 }
 
-int VibratoEffectIterator::next(bool isReleaseBegin)
+int WavingEffectIterator::next(bool isReleaseBegin)
 {
 	pos_ = (pos_ + 1) % seq_.size();
 	return pos_;
 }
-int VibratoEffectIterator::front()
+int WavingEffectIterator::front()
 {
 	pos_ = 0;
 	return 0;

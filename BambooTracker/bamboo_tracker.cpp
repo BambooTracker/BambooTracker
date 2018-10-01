@@ -928,6 +928,9 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "04") {	// Vibrato
 		if (value != -1) opnaCtrl_.setVibratoEffectFM(ch, value >> 4, value & 0x0f);
 	}
+	else if (id == "07") {	// Tremolo
+		if (value != -1) opnaCtrl_.setTremoloEffectFM(ch, value >> 4, value & 0x0f);
+	}
 	else if (id == "08") {	// Pan
 		if (value < 4) opnaCtrl_.setPanFM(ch, value);
 	}
@@ -965,6 +968,9 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	}
 	else if (id == "04") {	// Vibrato
 		if (value != -1) opnaCtrl_.setVibratoEffectSSG(ch, value >> 4, value & 0x0f);
+	}
+	else if (id == "07") {	// Tremolo
+		if (value != -1) opnaCtrl_.setTremoloEffectSSG(ch, value >> 4, value & 0x0f);
 	}
 	else if (id == "0B") {	// Position jump
 		ret = effPositionJump(value);
