@@ -24,7 +24,7 @@
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
-       <string>Tab 1</string>
+       <string>Envelope</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
        <item>
@@ -142,9 +142,9 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Tab 2</string>
+       <string>LFO/Operator sequence</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_3" rowstretch="4,6,0" columnstretch="0,0,0">
+      <layout class="QGridLayout" name="gridLayout_3" rowstretch="4,6,0" columnstretch="0,0">
        <item row="0" column="0">
         <widget class="QGroupBox" name="lfoGroupBox">
          <property name="title">
@@ -419,7 +419,7 @@
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
-       <string>Tab 3</string>
+       <string>Arpeggio/Pitch</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5" rowstretch="5,5">
        <item row="0" column="0">
