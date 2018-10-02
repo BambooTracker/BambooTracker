@@ -2133,6 +2133,12 @@ void OPNAController::setVolumeDrum(int ch, int volume)
 	opna_.setRegister(0x18 + ch, (panDrum_[ch] << 6) | volume);
 }
 
+void OPNAController::setMasterVolumeDrum(int volume)
+{
+	mVolDrum_ = volume;
+	opna_.setRegister(0x11, volume);
+}
+
 /********** Set pan **********/
 void OPNAController::setPanDrum(int ch, int value)
 {
@@ -2156,7 +2162,8 @@ bool OPNAController::isMuteDrum(int ch)
 /***********************************/
 void OPNAController::initDrum()
 {
-	opna_.setRegister(0x11, 0x3f);		// Drum total volume
+	mVolDrum_ = 0x3f;
+	opna_.setRegister(0x11, 0x3f);	// Drum total volume
 
 	for (int ch = 0; ch < 6; ++ch) {
 		volDrum_[ch] = 0x1f;	// Init volume

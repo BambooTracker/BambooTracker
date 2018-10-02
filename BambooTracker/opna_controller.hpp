@@ -241,6 +241,7 @@ public:
 
 	// Set volume
 	void setVolumeDrum(int ch, int volume);
+	void setMasterVolumeDrum(int volume);
 
 	// Set pan
 	void setPanDrum(int ch, int value);
@@ -250,7 +251,7 @@ public:
 	bool isMuteDrum(int ch);
 
 private:
-	int volDrum_[6];
+	int volDrum_[6], mVolDrum_;
 	/// bit0: right on/off
 	/// bit1: left on/off
 	uint8_t panDrum_[6];
