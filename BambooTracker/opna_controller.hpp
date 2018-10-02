@@ -77,6 +77,7 @@ public:
 	void setVibratoEffectFM(int ch, int period, int depth);
 	void setTremoloEffectFM(int ch, int period, int depth);
 	void setVolumeSlideFM(int ch, int depth, bool isUp);
+	void setDetuneFM(int ch, int pitch);
 
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
@@ -115,6 +116,7 @@ private:
 	std::unique_ptr<WavingEffectIterator> vibItFM_[6];
 	std::unique_ptr<WavingEffectIterator> treItFM_[6];
 	int volSldFM_[6], sumVolSldFM_[6];
+	int detuneFM_[6];
 
 	void initFM();
 
@@ -167,6 +169,7 @@ public:
 	void setVibratoEffectSSG(int ch, int period, int depth);
 	void setTremoloEffectSSG(int ch, int period, int depth);
 	void setVolumeSlideSSG(int ch, int depth, bool isUp);
+	void setDetuneSSG(int ch, int pitch);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
@@ -182,7 +185,7 @@ private:
 	bool isKeyOnSSG_[3];
 	uint8_t mixerSSG_;
 	ToneDetail baseToneSSG_[3], keyToneSSG_[3];
-	int subPitchSSG_[6];
+	int subPitchSSG_[3];
 	ToneNoise tnSSG_[3];
 	int baseVolSSG_[3];
 	bool isBuzzEffSSG_[3];
@@ -203,9 +206,10 @@ private:
 	bool isArpEffSSG_[3];
 	int prtmSSG_[3];
 	bool isTonePrtmSSG_[3];
-	std::unique_ptr<WavingEffectIterator> vibItSSG_[6];
-	std::unique_ptr<WavingEffectIterator> treItSSG_[6];
-	int volSldSSG_[6], sumVolSldSSG_[3];
+	std::unique_ptr<WavingEffectIterator> vibItSSG_[3];
+	std::unique_ptr<WavingEffectIterator> treItSSG_[3];
+	int volSldSSG_[3], sumVolSldSSG_[3];
+	int detuneSSG_[3];
 
 	void initSSG();
 

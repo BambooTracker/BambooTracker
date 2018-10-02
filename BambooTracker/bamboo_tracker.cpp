@@ -954,6 +954,9 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
 	}
+	else if (id == "0P") {	// Detune
+		if (value != -1) opnaCtrl_.setDetuneFM(ch, value - 0x80);
+	}
 
 	return ret;
 }
@@ -999,6 +1002,9 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	}
 	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
+	}
+	else if (id == "0P") {	// Detune
+		if (value != -1) opnaCtrl_.setDetuneSSG(ch, value - 0x80);
 	}
 
 	return ret;

@@ -335,6 +335,12 @@ void OPNAController::setVolumeSlideFM(int ch, int depth, bool isUp)
 	volSldFM_[ch] = depth * (isUp ? -1 : 1);
 }
 
+void OPNAController::setDetuneFM(int ch, int pitch)
+{
+	detuneFM_[ch] = pitch;
+	needToneSetFM_[ch] = true;
+}
+
 /********** Mute **********/
 void OPNAController::setMuteFMState(int ch, bool isMute)
 {
@@ -408,6 +414,7 @@ void OPNAController::initFM()
 		treItFM_[ch].reset();
 		volSldFM_[ch] = 0;
 		sumVolSldFM_[ch] = 0;
+		detuneFM_[ch] = 0;
 
 		// Init pan
 		uint32_t bch = getFMChannelOffset(ch);
@@ -1149,7 +1156,8 @@ void OPNAController::writePitchFM(int ch)
 					 keyToneFM_[ch].note,
 					 keyToneFM_[ch].octave,
 					 keyToneFM_[ch].pitch + subPitchFM_[ch]
-					 + (vibItFM_[ch] ? vibItFM_[ch]->getCommandType() : 0));
+					 + (vibItFM_[ch] ? vibItFM_[ch]->getCommandType() : 0)
+					 + detuneFM_[ch]);
 	uint32_t offset = getFMChannelOffset(ch);
 	opna_.setRegister(0xa4 + offset, p >> 8);
 	opna_.setRegister(0xa0 + offset, p & 0x00ff);
@@ -1335,6 +1343,12 @@ void OPNAController::setVolumeSlideSSG(int ch, int depth, bool isUp)
 	volSldSSG_[ch] = depth * (isUp ? 1 : -1);
 }
 
+void OPNAController::setDetuneSSG(int ch, int pitch)
+{
+	detuneSSG_[ch] = pitch;
+	needToneSetSSG_[ch] = true;
+}
+
 /********** Mute **********/
 void OPNAController::setMuteSSGState(int ch, bool isMute)
 {
@@ -1403,6 +1417,7 @@ void OPNAController::initSSG()
 		treItSSG_[ch].reset();
 		volSldSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
+		detuneSSG_[ch] = 0;
 
 		gateCntSSG_[ch] = 0;
 	}
@@ -2072,7 +2087,8 @@ void OPNAController::writePitchSSG(int ch)
 							 keyToneSSG_[ch].note,
 							 keyToneSSG_[ch].octave,
 							 keyToneSSG_[ch].pitch + subPitchSSG_[ch]
-							 + (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0));
+							 + (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
+							 + detuneSSG_[ch]);
 		uint8_t offset = ch << 1;
 		opna_.setRegister(0x00 + offset, pitch & 0xff);
 		opna_.setRegister(0x01 + offset, pitch >> 8);
@@ -2085,7 +2101,8 @@ void OPNAController::writePitchSSG(int ch)
 							 keyToneSSG_[ch].note,
 							 keyToneSSG_[ch].octave,
 							 keyToneSSG_[ch].pitch + subPitchSSG_[ch]
-							 + (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0));
+							 + (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
+							 + detuneSSG_[ch]);
 		opna_.setRegister(0x0b, pitch & 0x00ff);
 		opna_.setRegister(0x0c, pitch >> 8);
 		break;
@@ -2097,7 +2114,8 @@ void OPNAController::writePitchSSG(int ch)
 							 keyToneSSG_[ch].note,
 							 keyToneSSG_[ch].octave,
 							 keyToneSSG_[ch].pitch + subPitchSSG_[ch]
-							 + (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0));
+							 + (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
+							 + detuneSSG_[ch]);
 		opna_.setRegister(0x0b, pitch & 0x00ff);
 		opna_.setRegister(0x0c, pitch >> 8);
 		break;
