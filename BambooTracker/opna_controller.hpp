@@ -76,6 +76,7 @@ public:
 	void setPortamentoEffectFM(int ch, int depth, bool isTonePortamento = false);
 	void setVibratoEffectFM(int ch, int period, int depth);
 	void setTremoloEffectFM(int ch, int period, int depth);
+	void setVolumeSlideFM(int ch, int depth, bool isUp);
 
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
@@ -113,6 +114,7 @@ private:
 	bool isTonePrtmFM_[6];
 	std::unique_ptr<WavingEffectIterator> vibItFM_[6];
 	std::unique_ptr<WavingEffectIterator> treItFM_[6];
+	int volSldFM_[6], sumVolSldFM_[6];
 
 	void initFM();
 
@@ -131,7 +133,7 @@ private:
 	void tickEventFM(int ch, bool isStep);
 
 	void checkOperatorSequenceFM(int ch, int type);
-	void checkTremoloFM(int ch);
+	void checkVolumeEffectFM(int ch);
 	void checkRealToneFMByArpeggio(int ch, int seqPos);
 	void checkPortamentoFM(int ch);
 	void checkRealToneFMByPitch(int ch, int seqPos);
@@ -164,6 +166,7 @@ public:
 	void setPortamentoEffectSSG(int ch, int depth, bool isTonePortamento = false);
 	void setVibratoEffectSSG(int ch, int period, int depth);
 	void setTremoloEffectSSG(int ch, int period, int depth);
+	void setVolumeSlideSSG(int ch, int depth, bool isUp);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
@@ -202,6 +205,7 @@ private:
 	bool isTonePrtmSSG_[3];
 	std::unique_ptr<WavingEffectIterator> vibItSSG_[6];
 	std::unique_ptr<WavingEffectIterator> treItSSG_[6];
+	int volSldSSG_[6], sumVolSldSSG_[3];
 
 	void initSSG();
 

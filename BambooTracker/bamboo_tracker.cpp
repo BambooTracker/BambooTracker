@@ -934,6 +934,14 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "08") {	// Pan
 		if (value < 4) opnaCtrl_.setPanFM(ch, value);
 	}
+	else if (id == "0A") {	// Volume slide
+		if (value != -1) {
+			int hi = value >> 4;
+			int low = value & 0x0f;
+			if (hi && !low) opnaCtrl_.setVolumeSlideFM(ch, hi, true);	// Slide up
+			else if (!hi) opnaCtrl_.setVolumeSlideFM(ch, low, false);	// Slide down
+		}
+	}
 	else if (id == "0B") {	// Position jump
 		ret = effPositionJump(value);
 	}
@@ -971,6 +979,14 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	}
 	else if (id == "07") {	// Tremolo
 		if (value != -1) opnaCtrl_.setTremoloEffectSSG(ch, value >> 4, value & 0x0f);
+	}
+	else if (id == "0A") {	// Volume slide
+		if (value != -1) {
+			int hi = value >> 4;
+			int low = value & 0x0f;
+			if (hi && !low) opnaCtrl_.setVolumeSlideSSG(ch, hi, true);	// Slide up
+			else if (!hi) opnaCtrl_.setVolumeSlideSSG(ch, low, false);	// Slide down
+		}
 	}
 	else if (id == "0B") {	// Position jump
 		ret = effPositionJump(value);
