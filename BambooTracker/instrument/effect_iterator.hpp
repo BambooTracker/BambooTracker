@@ -33,3 +33,19 @@ private:
 	int pos_;
 	std::vector<int> seq_;
 };
+
+class NoteSlideEffectIterator : public SequenceIteratorInterface
+{
+public:
+	NoteSlideEffectIterator(int speed, int seminote);
+	int getPosition() const override;
+	int getSequenceType() const override;
+	int getCommandType() const override;
+	int getCommandData() const override;
+	int next(bool isReleaseBegin = false) override;
+	int front() override;
+
+private:
+	int pos_;
+	std::vector<int> seq_;
+};

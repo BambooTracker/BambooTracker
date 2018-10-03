@@ -957,6 +957,12 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "0P") {	// Detune
 		if (value != -1) opnaCtrl_.setDetuneFM(ch, value - 0x80);
 	}
+	else if (id == "0Q") {	// Note slide up
+		if (value != -1) opnaCtrl_.setNoteSlideFM(ch, value >> 4, value & 0x0f);
+	}
+	else if (id == "0R") {	// Note slide down
+		if (value != -1) opnaCtrl_.setNoteSlideFM(ch, value >> 4, -(value & 0x0f));
+	}
 
 	return ret;
 }
@@ -1005,6 +1011,12 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	}
 	else if (id == "0P") {	// Detune
 		if (value != -1) opnaCtrl_.setDetuneSSG(ch, value - 0x80);
+	}
+	else if (id == "0Q") {	// Note slide up
+		if (value != -1) opnaCtrl_.setNoteSlideSSG(ch, value >> 4, value & 0x0f);
+	}
+	else if (id == "0R") {	// Note slide down
+		if (value != -1) opnaCtrl_.setNoteSlideSSG(ch, value >> 4, -(value & 0x0f));
 	}
 
 	return ret;

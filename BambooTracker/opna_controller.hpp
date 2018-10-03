@@ -78,6 +78,7 @@ public:
 	void setTremoloEffectFM(int ch, int period, int depth);
 	void setVolumeSlideFM(int ch, int depth, bool isUp);
 	void setDetuneFM(int ch, int pitch);
+	void setNoteSlideFM(int ch, int speed, int seminote);
 
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
@@ -95,7 +96,7 @@ private:
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
 	ToneDetail baseToneFM_[6], keyToneFM_[6];
-	int subPitchFM_[6];
+	int sumPitchFM_[6];
 	int volFM_[6];
 	/// bit0: right on/off
 	/// bit1: left on/off
@@ -117,6 +118,8 @@ private:
 	std::unique_ptr<WavingEffectIterator> treItFM_[6];
 	int volSldFM_[6], sumVolSldFM_[6];
 	int detuneFM_[6];
+	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[6];
+	int sumNoteSldFM_[6];
 
 	void initFM();
 
@@ -170,6 +173,7 @@ public:
 	void setTremoloEffectSSG(int ch, int period, int depth);
 	void setVolumeSlideSSG(int ch, int depth, bool isUp);
 	void setDetuneSSG(int ch, int pitch);
+	void setNoteSlideSSG(int ch, int speed, int seminote);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
@@ -185,7 +189,7 @@ private:
 	bool isKeyOnSSG_[3];
 	uint8_t mixerSSG_;
 	ToneDetail baseToneSSG_[3], keyToneSSG_[3];
-	int subPitchSSG_[3];
+	int sumPitchSSG_[3];
 	ToneNoise tnSSG_[3];
 	int baseVolSSG_[3];
 	bool isBuzzEffSSG_[3];
@@ -210,6 +214,8 @@ private:
 	std::unique_ptr<WavingEffectIterator> treItSSG_[3];
 	int volSldSSG_[3], sumVolSldSSG_[3];
 	int detuneSSG_[3];
+	std::unique_ptr<NoteSlideEffectIterator> nsItSSG_[3];
+	int sumNoteSldSSG_[6];
 
 	void initSSG();
 
