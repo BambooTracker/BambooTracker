@@ -62,6 +62,15 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->setModuleCopyright(str.toUtf8().toStdString());
 		setModifiedTrue();
 	});
+	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int freq) {
+		int curSong = bt_->getCurrentSongNumber();
+		if (freq != bt_->getModuleTickFrequency()) {
+			bt_->setModuleTickFrequency(freq);
+			stream_->setInturuption(freq);
+			setModifiedTrue();
+		}
+	});
 
 	/* Song number */
 	QObject::connect(ui->songNumSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
@@ -71,15 +80,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	});
 
 	/* Song settings */
-	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int freq) {
-		int curSong = bt_->getCurrentSongNumber();
-		if (freq != bt_->getSongTickFrequency(curSong)) {
-			bt_->setSongTickFrequency(curSong, freq);
-			stream_->setInturuption(freq);
-			setModifiedTrue();
-		}
-	});
 	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int tempo) {
 		int curSong = bt_->getCurrentSongNumber();
@@ -458,7 +458,7 @@ void MainWindow::loadSong()
 	case SongType::STD:		ui->songStyleLineEdit->setText("Standard");			break;
 	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch extension");	break;
 	}
-	ui->tickFreqSpinBox->setValue(bt_->getSongTickFrequency(bt_->getCurrentSongNumber()));
+	ui->tickFreqSpinBox->setValue(bt_->getModuleTickFrequency());
 	ui->tempoSpinBox->setValue(bt_->getSongtempo(bt_->getCurrentSongNumber()));
 	ui->stepSizeSpinBox->setValue(bt_->getSongStepSize(bt_->getCurrentSongNumber()));
 	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(bt_->getCurrentSongNumber()));

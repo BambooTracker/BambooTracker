@@ -480,7 +480,6 @@ void BambooTracker::setCurrentSongNumber(int num)
 	// Reset
 	opnaCtrl_.reset();
 	tickCounter_.resetCount();
-	tickCounter_.setInterruptRate(getSongTickFrequency(num));
 	tickCounter_.setTempo(getSongtempo(num));
 	tickCounter_.setStepSize(getSongStepSize(num));
 }
@@ -1130,6 +1129,17 @@ std::string BambooTracker::getModuleCopyright() const
 	return mod_->getCopyright();
 }
 
+void BambooTracker::setModuleTickFrequency(unsigned int freq)
+{
+	mod_->setTickFrequency(freq);
+	tickCounter_.setInterruptRate(freq);
+}
+
+unsigned int BambooTracker::getModuleTickFrequency() const
+{
+	return mod_->getTickFrequency();
+}
+
 /*----- Song -----*/
 void BambooTracker::setSongTitle(int songNum, std::string title)
 {
@@ -1139,17 +1149,6 @@ void BambooTracker::setSongTitle(int songNum, std::string title)
 std::string BambooTracker::getSongTitle(int songNum) const
 {
 	return mod_->getSong(songNum).getTitle();
-}
-
-void BambooTracker::setSongTickFrequency(int songNum, unsigned int freq)
-{
-	mod_->getSong(songNum).setTickFrequency(freq);
-	if (curSongNum_ == songNum) tickCounter_.setInterruptRate(freq);
-}
-
-unsigned int BambooTracker::getSongTickFrequency(int songNum) const
-{
-	return mod_->getSong(songNum).getTickFrequency();
 }
 
 void BambooTracker::setSongTempo(int songNum, int tempo)

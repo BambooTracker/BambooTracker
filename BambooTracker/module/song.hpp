@@ -11,8 +11,7 @@ class Song
 {
 public:
 	Song(int number, SongType songType = SongType::STD, std::string title = u8"",
-		 unsigned int tickFreq = 60, int tempo = 150, size_t stepSize = 6,
-		 size_t defaultPatternSize = 64);
+		 int tempo = 150, size_t stepSize = 6, size_t defaultPatternSize = 64);
 
 	void setNumber(int n);
 	int getNumber() const;
@@ -40,7 +39,6 @@ private:
 	int num_;
 	SongType type_;
 	std::string title_;
-	unsigned int tickFreq_;
 	int tempo_;
 	size_t stepSize_;
 	size_t defPtnSize_;

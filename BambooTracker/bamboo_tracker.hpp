@@ -171,11 +171,11 @@ public:
 	std::string getModuleAuthor() const;
 	void setModuleCopyright(std::string copyright);
 	std::string getModuleCopyright() const;
+	void setModuleTickFrequency(unsigned int freq);
+	unsigned int getModuleTickFrequency() const;
 	/*----- Song -----*/
 	void setSongTitle(int songNum, std::string title);
 	std::string getSongTitle(int songNum) const;
-	void setSongTickFrequency(int songNum, unsigned int freq);
-	unsigned int getSongTickFrequency(int songNum) const;
 	void setSongTempo(int songNum, int tempo);
 	int getSongtempo(int songNum) const;
 	SongStyle getSongStyle(int songNum) const;

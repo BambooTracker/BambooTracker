@@ -2,10 +2,11 @@
 #include <algorithm>
 #include <iterator>
 
-Module::Module(std::string title, std::string author, std::string copyright)
+Module::Module(std::string title, std::string author, std::string copyright, unsigned int tickFreq)
 	: title_(title),
 	  author_(author),
-	  copyright_(copyright)
+	  copyright_(copyright),
+	  tickFreq_(tickFreq)
 {
 	songs_.emplace_back(0);
 }
@@ -38,6 +39,16 @@ void Module::setCopyright(std::string copyright)
 std::string Module::getCopyright() const
 {
 	return copyright_;
+}
+
+void Module::setTickFrequency(unsigned int freq)
+{
+	tickFreq_ = freq;
+}
+
+unsigned int Module::getTickFrequency() const
+{
+	return tickFreq_;
 }
 
 size_t Module::getSongCount() const

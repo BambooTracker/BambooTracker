@@ -1,12 +1,10 @@
 #include "song.hpp"
 
-Song::Song(int number, SongType songType, std::string title,
-		   unsigned int tickFreq, int tempo, size_t stepSize,
+Song::Song(int number, SongType songType, std::string title, int tempo, size_t stepSize,
 		   size_t defaultPatternSize)
 	: num_(number),
 	  type_(songType),
 	  title_(title),
-	  tickFreq_(tickFreq),
 	  tempo_(tempo),
 	  stepSize_(stepSize),
 	  defPtnSize_(defaultPatternSize)
@@ -47,16 +45,6 @@ void Song::setTitle(std::string title)
 std::string Song::getTitle() const
 {
 	return title_;
-}
-
-void Song::setTickFrequency(unsigned int freq)
-{
-	tickFreq_ = freq;
-}
-
-unsigned int Song::getTickFrequency() const
-{
-	return tickFreq_;
 }
 
 void Song::setTempo(int tempo)
