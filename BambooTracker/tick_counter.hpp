@@ -9,7 +9,7 @@ public:
 	TickCounter();
 	void setInterruptRate(uint32_t rate);
 	void setTempo(int tempo);
-	void setStepSize(size_t size);
+	void setSpeed(int speed);
 	void setPlayState(bool isPlaySong);
 	int countUp();
 	void resetCount();
@@ -26,4 +26,5 @@ private:
 	float tickDifSum_;
 
 	void updateTickDIf();
+	void resetRest();
 };

@@ -1,12 +1,12 @@
 #include "song.hpp"
 
-Song::Song(int number, SongType songType, std::string title, int tempo, size_t stepSize,
+Song::Song(int number, SongType songType, std::string title, int tempo, int speed,
 		   size_t defaultPatternSize)
 	: num_(number),
 	  type_(songType),
 	  title_(title),
 	  tempo_(tempo),
-	  stepSize_(stepSize),
+	  speed(speed),
 	  defPtnSize_(defaultPatternSize)
 {
 	switch (songType) {
@@ -57,14 +57,14 @@ int Song::getTempo() const
 	return tempo_;
 }
 
-void Song::setStepSize(size_t size)
+void Song::setSpeed(int speed)
 {
-	stepSize_ = size;
+	speed = speed;
 }
 
-size_t Song::getStepSize() const
+int Song::getSpeed() const
 {
-	return stepSize_;
+	return speed;
 }
 
 void Song::setDefaultPatternSize(size_t size)

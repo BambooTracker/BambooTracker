@@ -179,8 +179,8 @@ public:
 	void setSongTempo(int songNum, int tempo);
 	int getSongtempo(int songNum) const;
 	SongStyle getSongStyle(int songNum) const;
-	void setSongStepSize(int songNum, size_t size);
-	size_t getSongStepSize(int songNum) const;
+	void setSongSpeed(int songNum, int speed);
+	size_t getSongSpeed(int songNum) const;
 	size_t getSongCount() const;
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
@@ -276,4 +276,6 @@ private:
 	bool effPositionJump(int nextOrder);
 	void effTrackEnd();
 	bool effPatternBreak(int nextStep);
+	void effSpeedChange(int speed);
+	void effTempoChange(int tempo);
 };

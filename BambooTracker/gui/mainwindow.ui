@@ -264,9 +264,9 @@ QListWidget::item:selected:hover {
           <number>3</number>
          </property>
          <item row="6" column="0" alignment="Qt::AlignRight">
-          <widget class="QLabel" name="stepSizeLabel">
+          <widget class="QLabel" name="speedLabel">
            <property name="text">
-            <string>Step Size:</string>
+            <string>Speed:</string>
            </property>
           </widget>
          </item>
@@ -278,7 +278,7 @@ QListWidget::item:selected:hover {
           </widget>
          </item>
          <item row="6" column="1">
-          <widget class="QSpinBox" name="stepSizeSpinBox">
+          <widget class="QSpinBox" name="speedSpinBox">
            <property name="minimum">
             <number>1</number>
            </property>
@@ -317,10 +317,10 @@ QListWidget::item:selected:hover {
          <item row="5" column="1">
           <widget class="QSpinBox" name="tempoSpinBox">
            <property name="minimum">
-            <number>1</number>
+            <number>32</number>
            </property>
            <property name="maximum">
-            <number>512</number>
+            <number>255</number>
            </property>
            <property name="value">
             <number>150</number>

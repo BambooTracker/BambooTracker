@@ -19,12 +19,16 @@ void TickCounter::setTempo(int tempo)
 {
 	tempo_ = tempo;
 	updateTickDIf();
+	tickDifSum_ = 0;
+	resetRest();
 }
 
-void TickCounter::setStepSize(size_t size)
+void TickCounter::setSpeed(int speed)
 {
-	defStepSize_ = size;
+	defStepSize_ = speed;
 	updateTickDIf();
+	tickDifSum_ = 0;
+	resetRest();
 }
 
 void TickCounter::setPlayState(bool isPlaySong)
@@ -44,10 +48,7 @@ int TickCounter::countUp()
 		ret = restTickToNextStep_;
 
 		if (!restTickToNextStep_) {  // When head of step, calculate real step size
-			tickDifSum_ += tickDif_;
-			int castedTickDifSum = static_cast<int>(tickDifSum_);
-			restTickToNextStep_ = defStepSize_ + castedTickDifSum;
-			tickDifSum_ -= castedTickDifSum;
+			resetRest();
 		}
 
 		--restTickToNextStep_;   // Count down to next step
@@ -69,4 +70,12 @@ void TickCounter::resetCount()
 {
 	restTickToNextStep_ = 0;
 	tickDifSum_ = 0;
+}
+
+void TickCounter::resetRest()
+{
+	tickDifSum_ += tickDif_;
+	int castedTickDifSum = static_cast<int>(tickDifSum_);
+	restTickToNextStep_ = defStepSize_ + castedTickDifSum;
+	tickDifSum_ -= castedTickDifSum;
 }

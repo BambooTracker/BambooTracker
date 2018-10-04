@@ -88,11 +88,11 @@ MainWindow::MainWindow(QWidget *parent) :
 			setModifiedTrue();
 		}
 	});
-	QObject::connect(ui->stepSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+	QObject::connect(ui->speedSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int size) {
 		int curSong = bt_->getCurrentSongNumber();
-		if (size != bt_->getSongStepSize(curSong)) {
-			bt_->setSongStepSize(curSong, size);
+		if (size != bt_->getSongSpeed(curSong)) {
+			bt_->setSongSpeed(curSong, size);
 			setModifiedTrue();
 		}
 	});
@@ -460,7 +460,7 @@ void MainWindow::loadSong()
 	}
 	ui->tickFreqSpinBox->setValue(bt_->getModuleTickFrequency());
 	ui->tempoSpinBox->setValue(bt_->getSongtempo(bt_->getCurrentSongNumber()));
-	ui->stepSizeSpinBox->setValue(bt_->getSongStepSize(bt_->getCurrentSongNumber()));
+	ui->speedSpinBox->setValue(bt_->getSongSpeed(bt_->getCurrentSongNumber()));
 	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(bt_->getCurrentSongNumber()));
 	ui->orderList->onSongLoaded();
 	ui->patternEditor->onSongLoaded();

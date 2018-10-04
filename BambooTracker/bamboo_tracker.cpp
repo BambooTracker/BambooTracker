@@ -481,7 +481,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 	opnaCtrl_.reset();
 	tickCounter_.resetCount();
 	tickCounter_.setTempo(getSongtempo(num));
-	tickCounter_.setStepSize(getSongStepSize(num));
+	tickCounter_.setSpeed(getSongSpeed(num));
 }
 
 /********** Order edit **********/
@@ -634,6 +634,8 @@ void BambooTracker::startPlay()
 {
 	opnaCtrl_.reset();
 	jamMan_.polyphonic(false, songStyle_.type);
+	tickCounter_.setTempo(mod_->getSong(curSongNum_).getTempo());
+	tickCounter_.setSpeed(mod_->getSong(curSongNum_).getSpeed());
 	tickCounter_.resetCount();
 	tickCounter_.setPlayState(true);
 }
@@ -953,6 +955,16 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
 	}
+	else if (id == "0F") {
+		if (value != -1) {
+			if (value < 0x20) {	// Speed change
+				effSpeedChange(value);
+			}
+			else {				// Tempo change
+				effTempoChange(value);
+			}
+		}
+	}
 	else if (id == "0P") {	// Detune
 		if (value != -1) opnaCtrl_.setDetuneFM(ch, value - 0x80);
 	}
@@ -1008,6 +1020,16 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
 	}
+	else if (id == "0F") {
+		if (value != -1) {
+			if (value < 0x20) {	// Speed change
+				effSpeedChange(value);
+			}
+			else {				// Tempo change
+				effTempoChange(value);
+			}
+		}
+	}
 	else if (id == "0P") {	// Detune
 		if (value != -1) opnaCtrl_.setDetuneSSG(ch, value - 0x80);
 	}
@@ -1039,6 +1061,16 @@ bool BambooTracker::readDrumEffect(int ch, std::string id, int value)
 	}
 	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
+	}
+	else if (id == "0F") {
+		if (value != -1) {
+			if (value < 0x20) {	// Speed change
+				effSpeedChange(value);
+			}
+			else {				// Tempo change
+				effTempoChange(value);
+			}
+		}
 	}
 	else if (id == "0M") {	// Master volume
 		if (-1 < value && value <64) opnaCtrl_.setMasterVolumeDrum(value);
@@ -1074,6 +1106,16 @@ bool BambooTracker::effPatternBreak(int nextStep)
 		return true;
 	}
 	return false;
+}
+
+void BambooTracker::effSpeedChange(int speed)
+{
+	tickCounter_.setSpeed(speed ? speed : 1);
+}
+
+void BambooTracker::effTempoChange(int tempo)
+{
+	tickCounter_.setTempo(tempo);
 }
 
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
@@ -1167,15 +1209,15 @@ SongStyle BambooTracker::getSongStyle(int songNum) const
 	return mod_->getSong(songNum).getStyle();
 }
 
-void BambooTracker::setSongStepSize(int songNum, size_t size)
+void BambooTracker::setSongSpeed(int songNum, int speed)
 {
-	mod_->getSong(songNum).setStepSize(size);
-	if (curSongNum_ == songNum) tickCounter_.setStepSize(size);
+	mod_->getSong(songNum).setSpeed(speed);
+	if (curSongNum_ == songNum) tickCounter_.setSpeed(speed);
 }
 
-size_t BambooTracker::getSongStepSize(int songNum) const
+size_t BambooTracker::getSongSpeed(int songNum) const
 {
-	return mod_->getSong(songNum).getStepSize();
+	return mod_->getSong(songNum).getSpeed();
 }
 
 size_t BambooTracker::getSongCount() const
