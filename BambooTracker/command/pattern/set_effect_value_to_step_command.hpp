@@ -7,7 +7,7 @@
 class SetEffectValueToStepCommand : public AbstructCommand
 {
 public:
-	SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int value);
+	SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, int value);
 	void redo() override;
 	void undo() override;
 	int getID() const override;
@@ -17,11 +17,12 @@ public:
 	int getTrack() const;
 	int getOrder() const;
 	int getStep() const;
+	int getN() const;
 	int getEffectValue() const;
 
 private:
 	std::weak_ptr<Module> mod_;
-	int song_, track_, order_, step_;
+	int song_, track_, order_, step_, n_;
 	int val_, prevVal_;
 	bool isComplete_;
 };

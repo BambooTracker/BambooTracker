@@ -20,6 +20,12 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	QObject::connect(ui->panel, &PatternEditorPanel::currentOrderChanged,
 					 this, [&](int num, int max) { emit currentOrderChanged(num, max); });
 
+	QObject::connect(ui->panel, &PatternEditorPanel::effectColsCompanded,
+					 this, [&](int num, int max) {
+		ui->horizontalScrollBar->setMaximum(max);
+		ui->horizontalScrollBar->setValue(num);
+	});
+
 	auto focusSlot = [&]() { ui->panel->setFocus(); };
 
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::valueChanged,

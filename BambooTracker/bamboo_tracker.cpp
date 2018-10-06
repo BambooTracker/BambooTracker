@@ -711,10 +711,15 @@ void BambooTracker::readTick(int rest)
 			// Channel envelope reset before next key on
 			if (attrib.source == SoundSource::FM
 					&& step.getNoteNumber() >= 0
-					&& opnaCtrl_.enableFMEnvelopeReset(attrib.channelInSource)
-					&& ((step.getEffectID() != "03" && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
-						|| (step.getEffectID() == "03" && step.getEffectValue() == 0))) {
-				opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
+					&& opnaCtrl_.enableFMEnvelopeReset(attrib.channelInSource)) {
+				int idx = step.checkEffectID("03");
+				if ((idx == -1 && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
+						|| (idx != -1 && !step.getEffectValue(idx))) {
+					opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
+				}
+				else {
+					opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
+				}
 			}
 			else {
 				opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
@@ -727,10 +732,15 @@ void BambooTracker::readTick(int rest)
 							 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
 				switch (attrib.source) {
 				case SoundSource::FM:
-					if (step.getNoteNumber() >= 0
-							&& ((step.getEffectID() != "03" && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
-								|| (step.getEffectID() == "03" && step.getEffectValue() == 0))) {
-						opnaCtrl_.keyOffFM(attrib.channelInSource);
+					if (step.getNoteNumber() >= 0) {
+						int idx = step.checkEffectID("03");
+						if ((idx == -1 && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
+								|| (idx != -1 && !step.getEffectValue(idx))) {
+							opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
+						}
+						else {
+							opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
+						}
 					}
 					else {
 						opnaCtrl_.tickEvent(SoundSource::FM, attrib.channelInSource);
@@ -738,10 +748,15 @@ void BambooTracker::readTick(int rest)
 					break;
 
 				case SoundSource::SSG:
-					if (step.getNoteNumber() >= 0
-							&& ((step.getEffectID() != "03" && !opnaCtrl_.isTonePortamentoSSG(attrib.channelInSource))
-								|| (step.getEffectID() == "03" && step.getEffectValue() == 0))) {
-						opnaCtrl_.keyOffSSG(attrib.channelInSource);
+					if (step.getNoteNumber() >= 0) {
+						int idx = step.checkEffectID("03");
+						if ((idx == -1 && !opnaCtrl_.isTonePortamentoSSG(attrib.channelInSource))
+								|| (idx != -1 && !step.getEffectValue(idx))) {
+							opnaCtrl_.keyOffSSG(attrib.channelInSource);
+						}
+						else {
+							opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
+						}
 					}
 					else {
 						opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource);
@@ -825,8 +840,12 @@ void BambooTracker::readStep()
 					opnaCtrl_.setInstrumentFM(attrib.channelInSource, inst);
 			}
 			// Set effect
-			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
-				isNextSet |= readFMEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+			for (int i = 0; i < 4; ++i) {
+				if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
+					isNextSet |= readFMEffect(attrib.channelInSource,
+											  step.getEffectID(i),
+											  step.getEffectValue(i));
+				}
 			}
 			// Set key
 			switch (step.getNoteNumber()) {
@@ -860,8 +879,12 @@ void BambooTracker::readStep()
 					opnaCtrl_.setInstrumentSSG(attrib.channelInSource, inst);
 			}
 			// Set effect
-			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
-				isNextSet |= readSSGEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+			for (int i = 0; i < 4; ++i) {
+				if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
+					isNextSet |= readSSGEffect(attrib.channelInSource,
+											   step.getEffectID(i),
+											   step.getEffectValue(i));
+				}
 			}
 			// Set key
 			switch (step.getNoteNumber()) {
@@ -888,8 +911,12 @@ void BambooTracker::readStep()
 				opnaCtrl_.setVolumeDrum(attrib.channelInSource, step.getVolume());
 			}
 			// Set effect
-			if (step.getEffectID() != "--" && step.getEffectValue() != -1) {
-				isNextSet |= readDrumEffect(attrib.channelInSource, step.getEffectID(), step.getEffectValue());
+			for (int i = 0; i < 4; ++i) {
+				if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
+					isNextSet |= readDrumEffect(attrib.channelInSource,
+												step.getEffectID(i),
+												step.getEffectValue(i));
+				}
 			}
 			// Set key
 			switch (step.getNoteNumber()) {
@@ -1346,36 +1373,36 @@ void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int
 	comMan_.invoke(std::make_unique<EraseVolumeInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
 }
 
-std::string BambooTracker::getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum) const
+std::string BambooTracker::getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const
 {
 	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).getEffectID();
+			.getStep(stepNum).getEffectID(n);
 }
 
-void BambooTracker::setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, std::string id)
+void BambooTracker::setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id)
 {
-	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, id));
+	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, id));
 }
 
-int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum) const
+int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const
 {
 	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).getEffectValue();
+			.getStep(stepNum).getEffectValue(n);
 }
 
-void BambooTracker::setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int value)
+void BambooTracker::setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n, int value)
 {
-	comMan_.invoke(std::make_unique<SetEffectValueToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, value));
+	comMan_.invoke(std::make_unique<SetEffectValueToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, value));
 }
 
-void BambooTracker::eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum)
+void BambooTracker::eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n)
 {
-	comMan_.invoke(std::make_unique<EraseEffectInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+	comMan_.invoke(std::make_unique<EraseEffectInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n));
 }
 
-void BambooTracker::eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum)
+void BambooTracker::eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n)
 {
-	comMan_.invoke(std::make_unique<EraseEffectValueInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+	comMan_.invoke(std::make_unique<EraseEffectValueInStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n));
 }
 
 void BambooTracker::insertStep(int songNum, int trackNum, int orderNum, int stepNum)
@@ -1393,7 +1420,7 @@ void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColm
 {
 	// Arrange data
 	std::vector<std::vector<std::string>> d;
-	size_t w = (songStyle_.trackAttribs.size() - beginTrack - 1) * 5 + (5 - beginColmn);
+	size_t w = (songStyle_.trackAttribs.size() - beginTrack - 1) * 11 + (11 - beginColmn);
 	size_t h = getPatternSizeFromOrderNumber(songNum, beginOrder) - beginStep;
 
 	size_t width = std::min(cells.at(0).size(), w);

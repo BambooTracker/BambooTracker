@@ -11,8 +11,10 @@ SetKeyOffToStepCommand::SetKeyOffToStepCommand(std::weak_ptr<Module> mod, int so
 	prevNote_ = st.getNoteNumber();
 	prevInst_ = st.getInstrumentNumber();
 	prevVol_ = st.getVolume();
-	prevEffID_ = st.getEffectID();
-	prevEffVal_ = st.getEffectValue();
+	for (int i = 0; i < 4; ++i) {
+		prevEffID_[i] = st.getEffectID(i);
+		prevEffVal_[i] = st.getEffectValue(i);
+	}
 }
 
 void SetKeyOffToStepCommand::redo()
@@ -21,8 +23,10 @@ void SetKeyOffToStepCommand::redo()
 	st.setNoteNumber(-2);
 	st.setInstrumentNumber(-1);
 	st.setVolume(-1);
-	st.setEffectID(u8"--");
-	st.setEffectValue(-1);
+	for (int i = 0; i < 4; ++i) {
+		st.setEffectID(i, "--");
+		st.setEffectValue(i, -1);
+	}
 }
 
 void SetKeyOffToStepCommand::undo()
@@ -31,8 +35,10 @@ void SetKeyOffToStepCommand::undo()
 	st.setNoteNumber(prevNote_);
 	st.setInstrumentNumber(prevInst_);
 	st.setVolume(prevVol_);
-	st.setEffectID(prevEffID_);
-	st.setEffectValue(prevEffVal_);
+	for (int i = 0; i < 4; ++i) {
+		st.setEffectID(i, prevEffID_[i]);
+		st.setEffectValue(i, prevEffVal_[i]);
+	}
 }
 
 int SetKeyOffToStepCommand::getID() const

@@ -15,6 +15,7 @@
 #include <QUndoStack>
 #include <QString>
 #include <memory>
+#include <vector>
 #include "bamboo_tracker.hpp"
 #include "song.hpp"
 #include "gui/pattern_editor/pattern_position.hpp"
@@ -48,6 +49,7 @@ signals:
 	void currentStepChanged(int num, int max);
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
+	void effectColsCompanded(int num, int max);
 
 protected:
 	virtual bool event(QEvent *event) override;
@@ -72,12 +74,14 @@ private:
 
 	int widthSpace_;
 	int stepNumWidth_;
-	int trackWidth_;
+	int baseTrackWidth_;
 	int toneNameWidth_, instWidth_;
 	int volWidth_;
-	int effIDWidth_, effValWidth_;
+	int effWidth_, effIDWidth_, effValWidth_;
 	int TracksWidthFromLeftToEnd_;
+	int hdMuteToggleWidth_, hdEffCompandButtonWidth_;
 	int headerHeight_;
+	int hdPlusY_, hdMinusY_;
 	int curRowBaselineY_;
 	int curRowY_;
 
@@ -93,6 +97,8 @@ private:
 	QColor borderColor_;
 	QColor muteColor_, unmuteColor_;
 
+	std::vector<int> rightEffn_;
+
 	int leftTrackNum_;
 	SongStyle songStyle_;
 
@@ -103,6 +109,8 @@ private:
 	PatternPosition shiftPressedPos_;
 
 	bool isIgnoreToSlider_, isIgnoreToOrder_;
+
+	bool isPressedPlus_, isPressedMinus_;
 
 	int entryCnt_;
 
@@ -117,12 +125,15 @@ private:
 	void drawShadow();
 
 	int calculateTracksWidthWithRowNum(int begin, int end) const;
-	int calculateColNumInRow(int trackNum, int colNumInTrack) const;
-	int calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn) const;
+	int calculateColNumInRow(int trackNum, int colNumInTrack, bool isExpanded = false) const;
+	int calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn, bool isExpanded = false) const;
 	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
+
+	void expandEffect(int trackNum);
+	void shrinkEffect(int trackNum);
 
 	bool enterToneData(int key);
 	void setStepKeyOn(Note note, int octave);
@@ -147,10 +158,5 @@ private:
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
 };
-
-inline int PatternEditorPanel::calculateColNumInRow(int trackNum, int colNumInTrack) const
-{
-	return trackNum * 5 + colNumInTrack;
-}
 
 #endif // PATTERN_EDITOR_PANEL_HPP

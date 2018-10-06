@@ -12,8 +12,10 @@ DeletePreviousStepCommand::DeletePreviousStepCommand(std::weak_ptr<Module> mod, 
 	prevNote_ = st.getNoteNumber();
 	prevInst_ = st.getInstrumentNumber();
 	prevVol_ = st.getVolume();
-	prevEffID_ = st.getEffectID();
-	prevEffVal_ = st.getEffectValue();
+	for (int i = 0; i < 4; ++i) {
+		prevEffID_[i] = st.getEffectID(i);
+		prevEffVal_[i] = st.getEffectValue(i);
+	}
 }
 
 void DeletePreviousStepCommand::redo()
@@ -30,8 +32,10 @@ void DeletePreviousStepCommand::undo()
 	st.setNoteNumber(prevNote_);
 	st.setInstrumentNumber(prevInst_);
 	st.setVolume(prevVol_);
-	st.setEffectID(prevEffID_);
-	st.setEffectValue(prevEffVal_);
+	for (int i = 0; i < 4; ++i) {
+		st.setEffectID(i, prevEffID_[i]);
+		st.setEffectValue(i, prevEffVal_[i]);
+	}
 }
 
 int DeletePreviousStepCommand::getID() const

@@ -3,10 +3,12 @@
 Step::Step()
 	: noteNum_(-1),
 	  instNum_(-1),
-	  vol_(-1),
-	  effID_("--"),
-	  effVal_(-1)
+	  vol_(-1)
 {
+	for (size_t i = 0; i < 4; ++i) {
+		effID_[i] = "--";
+		effVal_[i] = -1;
+	}
 }
 
 int Step::getNoteNumber() const
@@ -39,22 +41,30 @@ void Step::setVolume(int volume)
 	vol_ = volume;
 }
 
-std::string Step::getEffectID() const
+std::string Step::getEffectID(int n) const
 {
-	return effID_;
+	return effID_[n];
 }
 
-void Step::setEffectID(std::string str)
+void Step::setEffectID(int n, std::string str)
 {
-	effID_ = str;
+	effID_[n] = str;
 }
 
-int Step::getEffectValue() const
+int Step::getEffectValue(int n) const
 {
-	return effVal_;
+	return effVal_[n];
 }
 
-void Step::setEffectValue(int v)
+void Step::setEffectValue(int n, int v)
 {
-	effVal_ = v;
+	effVal_[n] = v;
+}
+
+int Step::checkEffectID(std::string str) const
+{
+	for (int i = 0; i < 4; ++i) {
+		if (effID_[i] == str && effVal_[i] != -1) return i;
+	}
+	return -1;
 }

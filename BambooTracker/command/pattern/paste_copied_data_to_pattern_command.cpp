@@ -33,17 +33,41 @@ PasteCopiedDataToPatternCommand::PasteCopiedDataToPatternCommand(std::weak_ptr<M
 				break;
 			case 3:
 				prevCells_.at(i).push_back(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectID());
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectID(0));
 				break;
 			case 4:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue()));
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(0)));
+				break;
+			case 5:
+				prevCells_.at(i).push_back(
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectID(1));
+				break;
+			case 6:
+				prevCells_.at(i).push_back(std::to_string(
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(1)));
+				break;
+			case 7:
+				prevCells_.at(i).push_back(
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectID(2));
+				break;
+			case 8:
+				prevCells_.at(i).push_back(std::to_string(
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(2)));
+				break;
+			case 9:
+				prevCells_.at(i).push_back(
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectID(3));
+				break;
+			case 10:
+				prevCells_.at(i).push_back(std::to_string(
+							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(3)));
 				break;
 			}
 
 			++c;
-			t = c / 5;
-			c %= 5;
+			t = c / 11;
+			c %= 11;
 		}
 		++s;
 	}
@@ -88,17 +112,41 @@ void PasteCopiedDataToPatternCommand::setCells(std::vector<std::vector<std::stri
 				break;
 			case 3:
 				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
-						.setEffectID(cells.at(i).at(j));
+						.setEffectID(0, cells.at(i).at(j));
 				break;
 			case 4:
 				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
-						.setEffectValue(std::stoi(cells.at(i).at(j)));
+						.setEffectValue(0, std::stoi(cells.at(i).at(j)));
+				break;
+			case 5:
+				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
+						.setEffectID(1, cells.at(i).at(j));
+				break;
+			case 6:
+				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
+						.setEffectValue(1, std::stoi(cells.at(i).at(j)));
+				break;
+			case 7:
+				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
+						.setEffectID(2, cells.at(i).at(j));
+				break;
+			case 8:
+				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
+						.setEffectValue(2, std::stoi(cells.at(i).at(j)));
+				break;
+			case 9:
+				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
+						.setEffectID(3, cells.at(i).at(j));
+				break;
+			case 10:
+				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)
+						.setEffectValue(3, std::stoi(cells.at(i).at(j)));
 				break;
 			}
 
 			++c;
-			t += (c / 5);
-			c %= 5;
+			t += (c / 11);
+			c %= 11;
 		}
 
 		++s;
