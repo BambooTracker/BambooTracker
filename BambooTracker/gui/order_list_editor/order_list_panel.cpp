@@ -277,15 +277,40 @@ int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
 
 void OrderListPanel::moveCursorToRight(int n)
 {
+	int prevTrack = curPos_.track;
+	int tmp = curPos_.track + n;
 	if (n > 0) {
-		curPos_.track = std::min(curPos_.track + n, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+		while (true) {
+			int sub = tmp - songStyle_.trackAttribs.size();
+			if (sub < 0) {
+				curPos_.track = tmp;
+				break;
+			}
+			else {
+				tmp = sub;
+			}
+		}
+	}
+	else {
+		while (true) {
+			int add = tmp + songStyle_.trackAttribs.size();
+			if (tmp < 0) {
+				tmp = add;
+			}
+			else {
+				curPos_.track = tmp;
+				break;
+			}
+		}
+	}
+	if (prevTrack < curPos_.track) {
 		while (calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width())
 			++leftTrackNum_;
 	}
 	else {
-		curPos_.track = std::max(curPos_.track + n, 0);
 		if (curPos_.track < leftTrackNum_) leftTrackNum_ = curPos_.track;
 	}
+
 	columnsWidthFromLeftToEnd_
 			= calculateColumnsWidthWithRowNum(leftTrackNum_, songStyle_.trackAttribs.size() - 1);
 
@@ -299,22 +324,29 @@ void OrderListPanel::moveCursorToRight(int n)
 void OrderListPanel::moveCursorToDown(int n)
 {
 	int tmp = curPos_.row + n;
-
+	int endRow = bt_->getOrderSize(curSongNum_);
 	if (n > 0) {
-		int endRow = bt_->getOrderSize(curSongNum_);
-		if (tmp < endRow) {
-			curPos_.row = tmp;
-		}
-		else {
-			curPos_.row = endRow - 1;
+		while (true) {
+			int sub = tmp - endRow;
+			if (sub < 0) {
+				curPos_.row = tmp;
+				break;
+			}
+			else {
+				tmp = sub;
+			}
 		}
 	}
 	else {
-		if (tmp < 0) {
-			curPos_.row = 0;
-		}
-		else {
-			curPos_.row = tmp;
+		while (true) {
+			int add = tmp + endRow;
+			if (tmp < 0) {
+				tmp = add;
+			}
+			else {
+				curPos_.row = tmp;
+				break;
+			}
 		}
 	}
 
@@ -591,6 +623,59 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(1);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.row == curPos_.row) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_Home:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(-curPos_.row);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.row == curPos_.row) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_End:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(
+						bt_->getOrderSize(curSongNum_) - curPos_.row - 1);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.row == curPos_.row) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_PageUp:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(-4);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.row == curPos_.row) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_PageDown:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(4);
 			if (event->modifiers().testFlag(Qt::ShiftModifier)
 					&& shiftPressedPos_.row == curPos_.row) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);

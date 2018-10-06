@@ -483,32 +483,38 @@ void PatternEditorPanel::moveCursorToRight(int n)
 			if (curPos_.colInTrack < lim) {
 				break;
 			}
-			else if (curPos_.track == songStyle_.trackAttribs.size() - 1) {
-				curPos_.colInTrack = lim - 1;
-				break;
-			}
 			else {
+				if (curPos_.track == songStyle_.trackAttribs.size() - 1) {
+					curPos_.track = 0;
+				}
+				else {
+					++curPos_.track;
+				}
 				curPos_.colInTrack -= lim;
-				++curPos_.track;
 			}
 		}
-		while (calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width())
-			++leftTrackNum_;
 	}
 	else {
 		while (true) {
 			if (curPos_.colInTrack >= 0) {
 				break;
 			}
-			else if (!curPos_.track) {
-				curPos_.colInTrack = 0;
-				break;
-			}
 			else {
-				--curPos_.track;
+				if (!curPos_.track) {
+					curPos_.track = songStyle_.trackAttribs.size() - 1;
+				}
+				else {
+					--curPos_.track;
+				}
 				curPos_.colInTrack += (5 + 2 * rightEffn_.at(curPos_.track));
 			}
 		}
+	}
+	if (oldTrackNum < curPos_.track) {
+		while (calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width())
+			++leftTrackNum_;
+	}
+	else {
 		if (curPos_.track < leftTrackNum_) leftTrackNum_ = curPos_.track;
 	}
 
@@ -541,13 +547,12 @@ void PatternEditorPanel::moveCursorToDown(int n)
 			}
 			else {
 				if (curPos_.order == bt_->getOrderSize(curSongNum_) - 1) {
-					curPos_.step = tmp - dif - 1;	// Last step
-					break;
+					curPos_.order = 0;
 				}
 				else {
 					++curPos_.order;
-					tmp = dif;
 				}
+				tmp = dif;
 			}
 		}
 	}
@@ -555,12 +560,12 @@ void PatternEditorPanel::moveCursorToDown(int n)
 		while (true) {
 			if (tmp < 0) {
 				if (curPos_.order == 0) {
-					curPos_.step = 0;
-					break;
+					curPos_.order = bt_->getOrderSize(curSongNum_) - 1;
 				}
 				else {
-					tmp += bt_->getPatternSizeFromOrderNumber(curSongNum_, --curPos_.order);
+					--curPos_.order;
 				}
+				tmp += bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
 			}
 			else {
 				curPos_.step = tmp;
@@ -1231,6 +1236,71 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(1);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.order == curPos_.order) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_Tab:
+		if (curPos_.track == songStyle_.trackAttribs.size() - 1)
+			moveCursorToRight(-calculateColNumInRow(curPos_.track, curPos_.colInTrack));
+		else
+			moveCursorToRight(5 + 2 * rightEffn_[curPos_.track] - curPos_.colInTrack);
+		return true;
+	case Qt::Key_Backtab:
+		if (curPos_.track == 0)
+			moveCursorToRight(getFullColmunSize() - 1);
+		else
+			moveCursorToRight(-5 - 2 * rightEffn_[curPos_.track - 1] - curPos_.colInTrack);
+		return true;
+	case Qt::Key_Home:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(-curPos_.step);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.order == curPos_.order) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_End:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(
+						bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - curPos_.step - 1);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.order == curPos_.order) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_PageUp:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(-4);
+			if (event->modifiers().testFlag(Qt::ShiftModifier)
+					&& shiftPressedPos_.order == curPos_.order) {
+				setSelectedRectangle(shiftPressedPos_, curPos_);
+				return true;
+			}
+			return true;
+		}
+	case Qt::Key_PageDown:
+		if (bt_->isPlaySong()) {
+			return false;
+		}
+		else {
+			moveCursorToDown(4);
 			if (event->modifiers().testFlag(Qt::ShiftModifier)
 					&& shiftPressedPos_.order == curPos_.order) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
