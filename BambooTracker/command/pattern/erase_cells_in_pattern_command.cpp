@@ -28,7 +28,7 @@ EraseCellsInPatternCommand::EraseCellsInPatternCommand(std::weak_ptr<Module> mod
 		}
 		else {
 			w += (cl + 1);
-			cl = 4;
+			cl = 10;
 			--tr;
 		}
 	}
@@ -86,7 +86,7 @@ EraseCellsInPatternCommand::EraseCellsInPatternCommand(std::weak_ptr<Module> mod
 			}
 
 			++c;
-			t = c / 11;
+			t += (c / 11);
 			c %= 11;
 		}
 		++s;

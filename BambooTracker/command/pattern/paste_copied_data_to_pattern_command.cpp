@@ -66,7 +66,7 @@ PasteCopiedDataToPatternCommand::PasteCopiedDataToPatternCommand(std::weak_ptr<M
 			}
 
 			++c;
-			t = c / 11;
+			t += (c / 11);
 			c %= 11;
 		}
 		++s;
