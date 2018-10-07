@@ -1415,7 +1415,10 @@ void OPNAController::setMuteSSGState(int ch, bool isMute)
 {
 	isMuteSSG_[ch] = isMute;
 
-	if (isMute) keyOffSSG(ch);
+	if (isMute) {
+		opna_.setRegister(0x08 + ch, 0);
+		isKeyOnSSG_[ch] = false;
+	}
 }
 
 bool OPNAController::isMuteSSG(int ch)
@@ -2203,6 +2206,8 @@ void OPNAController::setInstrumentSSGProperties(int ch)
 /********** Key on-off **********/
 void OPNAController::keyOnDrum(int ch)
 {
+	if (isMuteDrum(ch)) return;
+
 	if (tmpVolDrum_[ch] != -1)
 		setVolumeDrum(ch, volDrum_[ch]);
 
