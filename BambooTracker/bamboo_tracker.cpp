@@ -771,21 +771,28 @@ void BambooTracker::readTick(int rest)
 			break;
 		}
 
-		if (rest == 1 && nextReadStepOrder_ != -1) {
+		// Related to note delay
+		auto& curStep = song.getTrack(attrib.number)
+					 .getPatternFromOrderNumber(curOrderNum_).getStep(curStepNum_);
+		switch (attrib.source) {
+		case SoundSource::FM:
+			readTickFMForNoteDelay(curStep, attrib.channelInSource);
+			break;
+		case SoundSource::SSG:
+			readTickSSGForNoteDelay(curStep, attrib.channelInSource);
+			break;
+		case SoundSource::DRUM:
+			readTickDrumForNoteDelay(curStep, attrib.channelInSource);
+			break;
+		}
+
+		if (rest == 1 && nextReadStepOrder_ != -1 && attrib.source == SoundSource::FM) {
+			// Channel envelope reset before next key on
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
-			// Channel envelope reset before next key on
-			if (attrib.source == SoundSource::FM
-					&& step.getNoteNumber() >= 0
-					&& opnaCtrl_.enableFMEnvelopeReset(attrib.channelInSource)) {
-				int idx = step.checkEffectID("03");
-				if ((idx == -1 && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
-						|| (idx != -1 && !step.getEffectValue(idx))) {
-					opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
-				}
-				else {
-					opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
-				}
+			int n = step.checkEffectID("0G");
+			if (n == -1 || !step.getEffectValue(n)) {
+				envelopeResetEffectFM(step, attrib.channelInSource);
 			}
 			else {
 				opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
@@ -796,46 +803,116 @@ void BambooTracker::readTick(int rest)
 			if (opnaCtrl_.getGateCount(attrib.source, attrib.channelInSource) == rest && nextReadStepOrder_ != -1) {
 				auto& step = song.getTrack(attrib.number)
 							 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
-				switch (attrib.source) {
-				case SoundSource::FM:
-					if (step.getNoteNumber() >= 0) {
-						int idx = step.checkEffectID("03");
-						if ((idx == -1 && !opnaCtrl_.isTonePortamentoFM(attrib.channelInSource))
-								|| (idx != -1 && !step.getEffectValue(idx))) {
-							opnaCtrl_.resetFMChannelEnvelope(attrib.channelInSource);
-						}
-						else {
-							opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
-						}
+				int n = step.checkEffectID("0G");
+				if (n == -1 || !step.getEffectValue(n)) {
+					switch (attrib.source) {
+					case SoundSource::FM:
+						gateCountEffectFM(step, attrib.channelInSource);
+						break;
+					case SoundSource::SSG:
+						gateCountEffectSSG(step, attrib.channelInSource);
+						break;
+					case SoundSource::DRUM:
+						break;
 					}
-					else {
-						opnaCtrl_.tickEvent(SoundSource::FM, attrib.channelInSource);
-					}
-					break;
-
-				case SoundSource::SSG:
-					if (step.getNoteNumber() >= 0) {
-						int idx = step.checkEffectID("03");
-						if ((idx == -1 && !opnaCtrl_.isTonePortamentoSSG(attrib.channelInSource))
-								|| (idx != -1 && !step.getEffectValue(idx))) {
-							opnaCtrl_.keyOffSSG(attrib.channelInSource);
-						}
-						else {
-							opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
-						}
-					}
-					else {
-						opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource);
-					}
-					break;
-				case SoundSource::DRUM:
-					break;
+				}
+				else {
+					opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
 				}
 			}
 			else {
 				opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
 			}
 		}
+	}
+}
+
+void BambooTracker::readTickFMForNoteDelay(Step& step, int ch)
+{
+	int cnt = ntDlyCntFM_[ch];
+	if (!cnt) {
+		readFMStep(step, ch, true);
+	}
+	else if (cnt == 1) {
+		// Channel envelope reset before next key on
+		envelopeResetEffectFM(step, ch);
+	}
+	else if (cnt == opnaCtrl_.getGateCount(SoundSource::FM, ch)) {
+		// Gate count
+		gateCountEffectFM(step, ch);
+	}
+}
+
+void BambooTracker::readTickSSGForNoteDelay(Step& step, int ch)
+{
+	int cnt = ntDlyCntSSG_[ch];
+	if (!cnt) {
+		// Channel envelope reset before next key on
+		readSSGStep(step, ch, true);
+	}
+	else if (cnt == opnaCtrl_.getGateCount(SoundSource::SSG, ch)) {
+		// Gate count
+		gateCountEffectSSG(step, ch);
+	}
+}
+
+void BambooTracker::readTickDrumForNoteDelay(Step& step, int ch)
+{
+	if (!ntDlyCntDrum_[ch]) {
+		// Channel envelope reset before next key on
+		readDrumStep(step, ch, true);
+	}
+}
+
+void BambooTracker::envelopeResetEffectFM(Step& step, int ch)
+{
+	if (step.getNoteNumber() >= 0
+			&& opnaCtrl_.enableFMEnvelopeReset(ch)) {
+		int idx = step.checkEffectID("03");
+		if ((idx == -1 && !opnaCtrl_.isTonePortamentoFM(ch))
+				|| (idx != -1 && !step.getEffectValue(idx))) {
+			opnaCtrl_.resetFMChannelEnvelope(ch);
+		}
+		else {
+			opnaCtrl_.tickEvent(SoundSource::FM, ch);
+		}
+	}
+	else {
+		opnaCtrl_.tickEvent(SoundSource::FM, ch);
+	}
+}
+
+void BambooTracker::gateCountEffectFM(Step& step, int ch)
+{
+	if (step.getNoteNumber() >= 0) {
+		int idx = step.checkEffectID("03");
+		if ((idx == -1 && !opnaCtrl_.isTonePortamentoFM(ch))
+				|| (idx != -1 && !step.getEffectValue(idx))) {
+			opnaCtrl_.keyOffFM(ch);
+		}
+		else {
+			opnaCtrl_.tickEvent(SoundSource::FM, ch);
+		}
+	}
+	else {
+		opnaCtrl_.tickEvent(SoundSource::FM, ch);
+	}
+}
+
+void BambooTracker::gateCountEffectSSG(Step& step, int ch)
+{
+	if (step.getNoteNumber() >= 0) {
+		int idx = step.checkEffectID("03");
+		if ((idx == -1 && !opnaCtrl_.isTonePortamentoSSG(ch))
+				|| (idx != -1 && !step.getEffectValue(idx))) {
+			opnaCtrl_.keyOffSSG(ch);
+		}
+		else {
+			opnaCtrl_.tickEvent(SoundSource::SSG, ch);
+		}
+	}
+	else {
+		opnaCtrl_.tickEvent(SoundSource::SSG, ch);
 	}
 }
 
@@ -913,105 +990,44 @@ void BambooTracker::readStep()
 		switch (attrib.source) {
 		case SoundSource::FM:
 		{
-			// Set volume
-			if (step.getVolume() != -1) {
-				opnaCtrl_.setVolumeFM(attrib.channelInSource, step.getVolume());
+			int nd = step.checkEffectID("0G");
+			if (nd == -1 || !step.getEffectValue(nd)) {
+				isNextSet |= readFMStep(step, attrib.channelInSource);
 			}
-			// Set instrument
-			if (step.getInstrumentNumber() != -1) {
-				if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
-							instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
-					opnaCtrl_.setInstrumentFM(attrib.channelInSource, inst);
-			}
-			// Set effect
-			for (int i = 0; i < 4; ++i) {
-				if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
-					isNextSet |= readFMEffect(attrib.channelInSource,
-											  step.getEffectID(i),
-											  step.getEffectValue(i));
-				}
-			}
-			// Set key
-			switch (step.getNoteNumber()) {
-			case -1:	// None
-				opnaCtrl_.tickEvent(SoundSource::FM, attrib.channelInSource, true);
-				break;
-			case -2:	// Key off
-				opnaCtrl_.keyOffFM(attrib.channelInSource);
-				break;
-			default:	// Key on
-			{
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
-				opnaCtrl_.keyOnFM(attrib.channelInSource, octNote.second, octNote.first, 0);
-				break;
-			}
+			else {		// Note delay
+				ntDlyCntFM_[attrib.channelInSource] = step.getEffectValue(nd);
+				for (int i = 0; i < 4; ++i)
+					isNextSet |= readFMSpecialEffect(attrib.channelInSource, step.getEffectID(i), step.getEffectValue(i));
+				readTickFMForNoteDelay(step, attrib.channelInSource);
 			}
 			break;
 		}
 
 		case SoundSource::SSG:
 		{
-			// Set volume
-			int vol = step.getVolume();
-			if (0 <= vol && vol < 0x10) {
-				opnaCtrl_.setVolumeSSG(attrib.channelInSource, step.getVolume());
+			int nd = step.checkEffectID("0G");
+			if (nd == -1 || !step.getEffectValue(nd)) {
+				isNextSet |= readSSGStep(step, attrib.channelInSource);
 			}
-			// Set instrument
-			if (step.getInstrumentNumber() != -1) {
-				if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
-							instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
-					opnaCtrl_.setInstrumentSSG(attrib.channelInSource, inst);
-			}
-			// Set effect
-			for (int i = 0; i < 4; ++i) {
-				if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
-					isNextSet |= readSSGEffect(attrib.channelInSource,
-											   step.getEffectID(i),
-											   step.getEffectValue(i));
-				}
-			}
-			// Set key
-			switch (step.getNoteNumber()) {
-			case -1:	// None
-				opnaCtrl_.tickEvent(SoundSource::SSG, attrib.channelInSource, true);
-				break;
-			case -2:	// Key off
-				opnaCtrl_.keyOffSSG(attrib.channelInSource);
-				break;
-			default:	// Key on
-			{
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
-				opnaCtrl_.keyOnSSG(attrib.channelInSource, octNote.second, octNote.first, 0);
-				break;
-			}
+			else {		// Note delay
+				ntDlyCntSSG_[attrib.channelInSource] = step.getEffectValue(nd);
+				for (int i = 0; i < 4; ++i)
+					isNextSet |= readSSGSpecialEffect(attrib.channelInSource, step.getEffectID(i), step.getEffectValue(i));
+				readTickSSGForNoteDelay(step, attrib.channelInSource);
 			}
 			break;
 		}
 		case SoundSource::DRUM:
 		{
-			// Set volume
-			int vol = step.getVolume();
-			if (0 <= vol && vol < 0x20) {
-				opnaCtrl_.setVolumeDrum(attrib.channelInSource, step.getVolume());
+			int nd = step.checkEffectID("0G");
+			if (nd == -1 || !step.getEffectValue(nd)) {
+				isNextSet |= readDrumStep(step, attrib.channelInSource);
 			}
-			// Set effect
-			for (int i = 0; i < 4; ++i) {
-				if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
-					isNextSet |= readDrumEffect(attrib.channelInSource,
-												step.getEffectID(i),
-												step.getEffectValue(i));
-				}
-			}
-			// Set key
-			switch (step.getNoteNumber()) {
-			case -1:	// None
-				break;
-			case -2:	// Key off
-				opnaCtrl_.keyOffDrum(attrib.channelInSource);
-				break;
-			default:	// Key on
-				opnaCtrl_.keyOnDrum(attrib.channelInSource);
-				break;
+			else {		// Note delay
+				ntDlyCntDrum_[attrib.channelInSource] = step.getEffectValue(nd);
+				for (int i = 0; i < 4; ++i)
+					isNextSet |= readDrumSpecialEffect(attrib.channelInSource, step.getEffectID(i), step.getEffectValue(i));
+				readTickDrumForNoteDelay(step, attrib.channelInSource);
 			}
 			break;
 		}
@@ -1021,7 +1037,116 @@ void BambooTracker::readStep()
 	isFindNextStep_ = isNextSet;
 }
 
-bool BambooTracker::readFMEffect(int ch, std::string id, int value)
+bool BambooTracker::readFMStep(Step& step, int ch, bool isSkippedSpecial)
+{
+	bool isNextSet = false;
+
+	// Set volume
+	if (step.getVolume() != -1) {
+		opnaCtrl_.setVolumeFM(ch, step.getVolume());
+	}
+	// Set instrument
+	if (step.getInstrumentNumber() != -1) {
+		if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
+					instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
+			opnaCtrl_.setInstrumentFM(ch, inst);
+	}
+	// Set effect
+	for (int i = 0; i < 4; ++i) {
+		if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
+			isNextSet |= readFMEffect(ch, step.getEffectID(i), step.getEffectValue(i), isSkippedSpecial);
+		}
+	}
+	// Set key
+	switch (step.getNoteNumber()) {
+	case -1:	// None
+		opnaCtrl_.tickEvent(SoundSource::FM, ch, true);
+		break;
+	case -2:	// Key off
+		opnaCtrl_.keyOffFM(ch);
+		break;
+	default:	// Key on
+	{
+		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
+		opnaCtrl_.keyOnFM(ch, octNote.second, octNote.first, 0);
+		break;
+	}
+	}
+
+	return isNextSet;
+}
+
+bool BambooTracker::readSSGStep(Step& step, int ch, bool isSkippedSpecial)
+{
+	bool isNextSet = false;
+
+	// Set volume
+	int vol = step.getVolume();
+	if (0 <= vol && vol < 0x10) {
+		opnaCtrl_.setVolumeSSG(ch, step.getVolume());
+	}
+	// Set instrument
+	if (step.getInstrumentNumber() != -1) {
+		if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
+					instMan_.getInstrumentSharedPtr(step.getInstrumentNumber())))
+			opnaCtrl_.setInstrumentSSG(ch, inst);
+	}
+	// Set effect
+	for (int i = 0; i < 4; ++i) {
+		if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
+			isNextSet |= readSSGEffect(ch, step.getEffectID(i), step.getEffectValue(i), isSkippedSpecial);
+		}
+	}
+	// Set key
+	switch (step.getNoteNumber()) {
+	case -1:	// None
+		opnaCtrl_.tickEvent(SoundSource::SSG, ch, true);
+		break;
+	case -2:	// Key off
+		opnaCtrl_.keyOffSSG(ch);
+		break;
+	default:	// Key on
+	{
+		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
+		opnaCtrl_.keyOnSSG(ch, octNote.second, octNote.first, 0);
+		break;
+	}
+	}
+
+	return isNextSet;
+}
+
+bool BambooTracker::readDrumStep(Step& step, int ch, bool isSkippedSpecial)
+{
+	bool isNextSet = false;
+
+	// Set volume
+	int vol = step.getVolume();
+	if (0 <= vol && vol < 0x20) {
+		opnaCtrl_.setVolumeDrum(ch, step.getVolume());
+	}
+	// Set effect
+	for (int i = 0; i < 4; ++i) {
+		if (step.getEffectID(i) != "--" && step.getEffectValue(i) != -1) {
+			isNextSet |= readDrumEffect(ch, step.getEffectID(i), step.getEffectValue(i), isSkippedSpecial);
+		}
+	}
+	// Set key
+	switch (step.getNoteNumber()) {
+	case -1:	// None
+		break;
+	case -2:	// Key off
+		opnaCtrl_.keyOffDrum(ch);
+		break;
+	default:	// Key on
+		opnaCtrl_.keyOnDrum(ch);
+		break;
+	}
+
+	return isNextSet;
+}
+
+bool BambooTracker::readFMEffect(int ch, std::string id, int value, bool isSkippedSpecial)
 {
 	bool ret = false;
 
@@ -1054,18 +1179,6 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 			else if (!hi) opnaCtrl_.setVolumeSlideFM(ch, low, false);	// Slide down
 		}
 	}
-	else if (id == "0B") {	// Position jump
-		ret = effPositionJump(value);
-	}
-	else if (id == "0C") {	// Track end
-		if (value != -1) {
-			effTrackEnd();
-			ret = true;
-		}
-	}
-	else if (id == "0D") {	// Pattern break
-		ret = effPatternBreak(value);
-	}
 	else if (id == "0F") {
 		if (value != -1) {
 			if (value < 0x20) {	// Speed change
@@ -1085,23 +1198,14 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "0R") {	// Note slide down
 		if (value != -1) opnaCtrl_.setNoteSlideFM(ch, value >> 4, -(value & 0x0f));
 	}
-	else if (id == "0S") {	// Note cut
-		ntCutDlyCntFM_[ch] = value;
-	}
-	else if (id.front() == 'M') {	// Volume delay
-		int count = ctohex(*(id.begin() + 1));
-		if (value != -1) {
-			if (count > 0) {
-				volDlyCntFM_[ch] = count;
-				volDlyValueFM_[ch] = value;
-			}
-		}
+	else if (!isSkippedSpecial) {
+		ret = readFMSpecialEffect(ch, id, value);
 	}
 
 	return ret;
 }
 
-bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
+bool BambooTracker::readSSGEffect(int ch, std::string id, int value, bool isSkippedSpecial)
 {
 	bool ret = false;
 
@@ -1131,18 +1235,6 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 			else if (!hi) opnaCtrl_.setVolumeSlideSSG(ch, low, false);	// Slide down
 		}
 	}
-	else if (id == "0B") {	// Position jump
-		ret = effPositionJump(value);
-	}
-	else if (id == "0C") {	// Track end
-		if (value != -1) {
-			effTrackEnd();
-			ret = true;
-		}
-	}
-	else if (id == "0D") {	// Pattern break
-		ret = effPatternBreak(value);
-	}
 	else if (id == "0F") {
 		if (value != -1) {
 			if (value < 0x20) {	// Speed change
@@ -1162,6 +1254,88 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	else if (id == "0R") {	// Note slide down
 		if (value != -1) opnaCtrl_.setNoteSlideSSG(ch, value >> 4, -(value & 0x0f));
 	}
+	else if (!isSkippedSpecial) {
+		ret = readSSGSpecialEffect(ch, id, value);
+	}
+
+	return ret;
+}
+
+bool BambooTracker::readDrumEffect(int ch, std::string id, int value, bool isSkippedSpecial)
+{
+	bool ret = false;
+
+	if (id == "08") {		// Pan
+		if (-1 < value && value < 4) opnaCtrl_.setPanDrum(ch, value);
+	}
+	else if (id == "0F") {
+		if (value != -1) {
+			if (value < 0x20) {	// Speed change
+				effSpeedChange(value);
+			}
+			else {				// Tempo change
+				effTempoChange(value);
+			}
+		}
+	}
+	else if (id == "0V") {	// Master volume
+		if (-1 < value && value <64) opnaCtrl_.setMasterVolumeDrum(value);
+	}
+	else if (!isSkippedSpecial) {
+		ret = readDrumSpecialEffect(ch, id, value);
+	}
+
+	return ret;
+}
+
+bool BambooTracker::readFMSpecialEffect(int ch, std::string id, int value)
+{
+	bool ret = false;
+
+	if (id == "0B") {	// Position jump
+		ret = effPositionJump(value);
+	}
+	else if (id == "0C") {	// Track end
+		if (value != -1) {
+			effTrackEnd();
+			ret = true;
+		}
+	}
+	else if (id == "0D") {	// Pattern break
+		ret = effPatternBreak(value);
+	}
+	else if (id == "0S") {	// Note cut
+		ntCutDlyCntFM_[ch] = value;
+	}
+	else if (id.front() == 'M') {	// Volume delay
+		int count = ctohex(*(id.begin() + 1));
+		if (value != -1) {
+			if (count > 0) {
+				volDlyCntFM_[ch] = count;
+				volDlyValueFM_[ch] = value;
+			}
+		}
+	}
+
+	return ret;
+}
+
+bool BambooTracker::readSSGSpecialEffect(int ch, std::string id, int value)
+{
+	bool ret = false;
+
+	if (id == "0B") {	// Position jump
+		ret = effPositionJump(value);
+	}
+	else if (id == "0C") {	// Track end
+		if (value != -1) {
+			effTrackEnd();
+			ret = true;
+		}
+	}
+	else if (id == "0D") {	// Pattern break
+		ret = effPatternBreak(value);
+	}
 	else if (id == "0S") {	// Note cut
 		ntCutDlyCntSSG_[ch] = value;
 	}
@@ -1178,14 +1352,11 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	return ret;
 }
 
-bool BambooTracker::readDrumEffect(int ch, std::string id, int value)
+bool BambooTracker::readDrumSpecialEffect(int ch, std::string id, int value)
 {
 	bool ret = false;
 
-	if (id == "08") {		// Pan
-		if (-1 < value && value < 4) opnaCtrl_.setPanDrum(ch, value);
-	}
-	else if (id == "0B") {	// Position jump
+	if (id == "0B") {	// Position jump
 		ret = effPositionJump(value);
 	}
 	else if (id == "0C") {	// Track end
@@ -1197,21 +1368,8 @@ bool BambooTracker::readDrumEffect(int ch, std::string id, int value)
 	else if (id == "0D") {	// Pattern break
 		ret = effPatternBreak(value);
 	}
-	else if (id == "0F") {
-		if (value != -1) {
-			if (value < 0x20) {	// Speed change
-				effSpeedChange(value);
-			}
-			else {				// Tempo change
-				effTempoChange(value);
-			}
-		}
-	}
 	else if (id == "0S") {	// Note cut
 		ntCutDlyCntDrum_[ch] = value;
-	}
-	else if (id == "0V") {	// Master volume
-		if (-1 < value && value <64) opnaCtrl_.setMasterVolumeDrum(value);
 	}
 	else if (id.front() == 'M') {	// Volume delay
 		int count = ctohex(*(id.begin() + 1));

@@ -269,11 +269,26 @@ private:
 	void readStep();
 	void readTick(int rest);
 
+	void readTickFMForNoteDelay(Step& step, int ch);
+	void readTickSSGForNoteDelay(Step& step, int ch);
+	void readTickDrumForNoteDelay(Step& step, int ch);
+
+	void envelopeResetEffectFM(Step& step, int ch);
+	void gateCountEffectFM(Step& step, int ch);
+	void gateCountEffectSSG(Step& step, int ch);
+
 	void clearDelayCounts();
 
-	bool readFMEffect(int ch, std::string id, int value);
-	bool readSSGEffect(int ch, std::string id, int value);
-	bool readDrumEffect(int ch, std::string id, int value);
+	bool readFMStep(Step& step, int ch, bool isSkippedSpecial = false);
+	bool readSSGStep(Step& step, int ch, bool isSkippedSpecial = false);
+	bool readDrumStep(Step& step, int ch, bool isSkippedSpecial = false);
+
+	bool readFMEffect(int ch, std::string id, int value, bool isSkippedSpecial = false);
+	bool readSSGEffect(int ch, std::string id, int value, bool isSkippedSpecial = false);
+	bool readDrumEffect(int ch, std::string id, int value, bool isSkippedSpecial = false);
+	bool readFMSpecialEffect(int ch, std::string id, int value);
+	bool readSSGSpecialEffect(int ch, std::string id, int value);
+	bool readDrumSpecialEffect(int ch, std::string id, int value);
 
 	bool effPositionJump(int nextOrder);
 	void effTrackEnd();
