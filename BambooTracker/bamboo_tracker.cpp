@@ -720,7 +720,7 @@ int BambooTracker::streamCountUp()
 
 	return state;
 }
-#include <QDebug>
+
 void BambooTracker::readTick(int rest)
 {	
 	if (!(playState_ & 0x02)) return;	// When it has not read first step
@@ -752,6 +752,22 @@ void BambooTracker::readTick(int rest)
 		case SoundSource::DRUM:
 			if (!volDlyCntDrum_[attrib.channelInSource])
 				opnaCtrl_.setTemporaryVolumeDrum(attrib.channelInSource, volDlyValueDrum_[attrib.channelInSource]);
+			break;
+		}
+
+		// Check note cut
+		switch (attrib.source) {
+		case SoundSource::FM:
+			if (!ntCutDlyCntFM_[attrib.channelInSource])
+				opnaCtrl_.keyOffFM(attrib.channelInSource);
+			break;
+		case SoundSource::SSG:
+			if (!ntCutDlyCntSSG_[attrib.channelInSource])
+				opnaCtrl_.keyOffSSG(attrib.channelInSource);
+			break;
+		case SoundSource::DRUM:
+			if (!ntCutDlyCntDrum_[attrib.channelInSource])
+				opnaCtrl_.keyOnDrum(attrib.channelInSource);
 			break;
 		}
 
@@ -1069,7 +1085,10 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "0R") {	// Note slide down
 		if (value != -1) opnaCtrl_.setNoteSlideFM(ch, value >> 4, -(value & 0x0f));
 	}
-	else if (id.front() == 'M') {
+	else if (id == "0S") {	// Note cut
+		ntCutDlyCntFM_[ch] = value;
+	}
+	else if (id.front() == 'M') {	// Volume delay
 		int count = ctohex(*(id.begin() + 1));
 		if (value != -1) {
 			if (count > 0) {
@@ -1143,7 +1162,10 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	else if (id == "0R") {	// Note slide down
 		if (value != -1) opnaCtrl_.setNoteSlideSSG(ch, value >> 4, -(value & 0x0f));
 	}
-	else if (id.front() == 'M') {
+	else if (id == "0S") {	// Note cut
+		ntCutDlyCntSSG_[ch] = value;
+	}
+	else if (id.front() == 'M') {	// Volume delay
 		int count = ctohex(*(id.begin() + 1));
 		if (0 <= value && value < 0x10) {
 			if (count > 0) {
@@ -1185,10 +1207,13 @@ bool BambooTracker::readDrumEffect(int ch, std::string id, int value)
 			}
 		}
 	}
+	else if (id == "0S") {	// Note cut
+		ntCutDlyCntDrum_[ch] = value;
+	}
 	else if (id == "0V") {	// Master volume
 		if (-1 < value && value <64) opnaCtrl_.setMasterVolumeDrum(value);
 	}
-	else if (id.front() == 'M') {
+	else if (id.front() == 'M') {	// Volume delay
 		int count = ctohex(*(id.begin() + 1));
 		if (0 <= value && value < 0x20) {
 			if (count > 0) {
