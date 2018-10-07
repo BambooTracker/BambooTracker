@@ -67,6 +67,7 @@ public:
 
 	// Set volume
 	void setVolumeFM(int ch, int volume);
+	void setTemporaryVolumeFM(int ch, int volume);
 
 	// Set pan
 	void setPanFM(int ch, int value);
@@ -97,7 +98,7 @@ private:
 	uint8_t fmOpEnables_[6];
 	ToneDetail baseToneFM_[6], keyToneFM_[6];
 	int sumPitchFM_[6];
-	int volFM_[6];
+	int baseVolFM_[6], tmpVolFM_[6];
 	/// bit0: right on/off
 	/// bit1: left on/off
 	uint8_t panFM_[6];
@@ -150,7 +151,8 @@ private:
 
 	inline uint8_t calculateTL(int ch, uint8_t data) const
 	{
-		return (data > 127 - volFM_[ch]) ? 127 : (data + volFM_[ch]);
+		int v = (tmpVolFM_[ch] == -1) ? baseVolFM_[ch] : tmpVolFM_[ch];
+		return (data > 127 - v) ? 127 : (data + v);
 	}
 
 	/*----- SSG -----*/
@@ -165,6 +167,7 @@ public:
 
 	// Set volume
 	void setVolumeSSG(int ch, int volume);
+	void setTemporaryVolumeSSG(int ch, int volume);
 
 	// Set effect
 	void setArpeggioEffectSSG(int ch, int second, int third);
@@ -191,7 +194,7 @@ private:
 	ToneDetail baseToneSSG_[3], keyToneSSG_[3];
 	int sumPitchSSG_[3];
 	ToneNoise tnSSG_[3];
-	int baseVolSSG_[3];
+	int baseVolSSG_[3], tmpVolSSG_[3];
 	bool isBuzzEffSSG_[3];
 	bool isHardEnvSSG_[3];
 	bool isMuteSSG_[3];
@@ -252,6 +255,7 @@ public:
 	// Set volume
 	void setVolumeDrum(int ch, int volume);
 	void setMasterVolumeDrum(int volume);
+	void setTemporaryVolumeDrum(int ch, int volume);
 
 	// Set pan
 	void setPanDrum(int ch, int value);
@@ -261,7 +265,7 @@ public:
 	bool isMuteDrum(int ch);
 
 private:
-	int volDrum_[6], mVolDrum_;
+	int volDrum_[6], mVolDrum_, tmpVolDrum_[6];
 	/// bit0: right on/off
 	/// bit1: left on/off
 	uint8_t panDrum_[6];

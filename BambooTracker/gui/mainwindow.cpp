@@ -16,8 +16,6 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/module_settings_dialog.hpp"
 
-#include <QDebug>
-
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),

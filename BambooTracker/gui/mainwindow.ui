@@ -282,6 +282,9 @@ QListWidget::item:selected:hover {
            <property name="minimum">
             <number>1</number>
            </property>
+           <property name="maximum">
+            <number>31</number>
+           </property>
            <property name="value">
             <number>6</number>
            </property>

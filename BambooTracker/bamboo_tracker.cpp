@@ -3,8 +3,6 @@
 #include <utility>
 #include "commands.hpp"
 
-#include <QDebug>
-
 BambooTracker::BambooTracker()
 	:
 	  #ifdef SINC_INTERPOLATION
@@ -25,6 +23,8 @@ BambooTracker::BambooTracker()
 	  isFindNextStep_(false)
 {
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
+
+	clearDelayCounts();
 }
 
 /********** Change octave **********/
@@ -482,6 +482,26 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tickCounter_.resetCount();
 	tickCounter_.setTempo(getSongtempo(num));
 	tickCounter_.setSpeed(getSongSpeed(num));
+
+	switch (songStyle_.type) {
+	case SongType::STD:
+		ntDlyCntFM_ = std::vector<int>(6);
+		ntCutDlyCntFM_ = std::vector<int>(6);
+		volDlyCntFM_ = std::vector<int>(6);
+		volDlyValueFM_ = std::vector<int>(6, -1);
+		break;
+	case SongType::FMEX:
+		// UNDONE: extend ch4
+		break;
+	}
+	ntDlyCntSSG_ = std::vector<int>(3);
+	ntDlyCntDrum_ = std::vector<int>(6);
+	ntCutDlyCntSSG_ = std::vector<int>(3);
+	ntCutDlyCntDrum_ = std::vector<int>(6);
+	volDlyCntSSG_ = std::vector<int>(3);
+	volDlyCntDrum_ = std::vector<int>(6);
+	volDlyValueSSG_ = std::vector<int>(3, -1);
+	volDlyValueDrum_ = std::vector<int>(6, -1);
 }
 
 /********** Order edit **********/
@@ -638,6 +658,8 @@ void BambooTracker::startPlay()
 	tickCounter_.setSpeed(mod_->getSong(curSongNum_).getSpeed());
 	tickCounter_.resetCount();
 	tickCounter_.setPlayState(true);
+
+	clearDelayCounts();
 }
 
 void BambooTracker::stopPlaySong()
@@ -698,13 +720,41 @@ int BambooTracker::streamCountUp()
 
 	return state;
 }
-
+#include <QDebug>
 void BambooTracker::readTick(int rest)
 {	
 	if (!(playState_ & 0x02)) return;	// When it has not read first step
 
+	// Delay
+	auto f = [](int x) { return (x == -1) ? x : --x; };
+	std::transform(ntDlyCntFM_.begin(), ntDlyCntFM_.end(), ntDlyCntFM_.begin(), f);
+	std::transform(ntDlyCntSSG_.begin(), ntDlyCntSSG_.end(), ntDlyCntSSG_.begin(), f);
+	std::transform(ntDlyCntDrum_.begin(), ntDlyCntDrum_.end(), ntDlyCntDrum_.begin(), f);
+	std::transform(ntCutDlyCntFM_.begin(), ntCutDlyCntFM_.end(), ntCutDlyCntFM_.begin(), f);
+	std::transform(ntCutDlyCntSSG_.begin(), ntCutDlyCntSSG_.end(), ntCutDlyCntSSG_.begin(), f);
+	std::transform(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), ntCutDlyCntDrum_.begin(), f);
+	std::transform(volDlyCntFM_.begin(), volDlyCntFM_.end(), volDlyCntFM_.begin(), f);
+	std::transform(volDlyCntSSG_.begin(), volDlyCntSSG_.end(), volDlyCntSSG_.begin(), f);
+	std::transform(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), volDlyCntDrum_.begin(), f);
+
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
+		// Check volume delay
+		switch (attrib.source) {
+		case SoundSource::FM:
+			if (!volDlyCntFM_[attrib.channelInSource])
+				opnaCtrl_.setTemporaryVolumeFM(attrib.channelInSource, volDlyValueFM_[attrib.channelInSource]);
+			break;
+		case SoundSource::SSG:
+			if (!volDlyCntSSG_[attrib.channelInSource])
+				opnaCtrl_.setTemporaryVolumeSSG(attrib.channelInSource, volDlyValueSSG_[attrib.channelInSource]);
+			break;
+		case SoundSource::DRUM:
+			if (!volDlyCntDrum_[attrib.channelInSource])
+				opnaCtrl_.setTemporaryVolumeDrum(attrib.channelInSource, volDlyValueDrum_[attrib.channelInSource]);
+			break;
+		}
+
 		if (rest == 1 && nextReadStepOrder_ != -1) {
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
@@ -773,6 +823,22 @@ void BambooTracker::readTick(int rest)
 	}
 }
 
+void BambooTracker::clearDelayCounts()
+{
+	std::fill(ntDlyCntFM_.begin(), ntDlyCntFM_.end(), -1);
+	std::fill(ntCutDlyCntFM_.begin(), ntCutDlyCntFM_.end(), -1);
+	std::fill(volDlyCntFM_.begin(), volDlyCntFM_.end(), -1);
+	std::fill(volDlyValueFM_.begin(), volDlyValueFM_.end(), -1);
+	std::fill(ntDlyCntSSG_.begin(), ntDlyCntSSG_.end(), -1);
+	std::fill(ntCutDlyCntSSG_.begin(), ntCutDlyCntSSG_.end(), -1);
+	std::fill(volDlyCntSSG_.begin(), volDlyCntSSG_.end(), -1);
+	std::fill(volDlyValueSSG_.begin(), volDlyValueSSG_.end(), -1);
+	std::fill(ntDlyCntDrum_.begin(), ntDlyCntDrum_.end(), -1);
+	std::fill(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), -1);
+	std::fill(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), -1);
+	std::fill(volDlyValueDrum_.begin(), volDlyValueDrum_.end(), -1);
+}
+
 void BambooTracker::findNextStep()
 {
 	// Init
@@ -821,6 +887,8 @@ bool BambooTracker::stepDown()
 void BambooTracker::readStep()
 {
 	bool isNextSet = false;
+
+	clearDelayCounts();
 
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
@@ -1001,6 +1069,15 @@ bool BambooTracker::readFMEffect(int ch, std::string id, int value)
 	else if (id == "0R") {	// Note slide down
 		if (value != -1) opnaCtrl_.setNoteSlideFM(ch, value >> 4, -(value & 0x0f));
 	}
+	else if (id.front() == 'M') {
+		int count = ctohex(*(id.begin() + 1));
+		if (value != -1) {
+			if (count > 0) {
+				volDlyCntFM_[ch] = count;
+				volDlyValueFM_[ch] = value;
+			}
+		}
+	}
 
 	return ret;
 }
@@ -1066,6 +1143,15 @@ bool BambooTracker::readSSGEffect(int ch, std::string id, int value)
 	else if (id == "0R") {	// Note slide down
 		if (value != -1) opnaCtrl_.setNoteSlideSSG(ch, value >> 4, -(value & 0x0f));
 	}
+	else if (id.front() == 'M') {
+		int count = ctohex(*(id.begin() + 1));
+		if (0 <= value && value < 0x10) {
+			if (count > 0) {
+				volDlyCntSSG_[ch] = count;
+				volDlyValueSSG_[ch] = value;
+			}
+		}
+	}
 
 	return ret;
 }
@@ -1099,8 +1185,17 @@ bool BambooTracker::readDrumEffect(int ch, std::string id, int value)
 			}
 		}
 	}
-	else if (id == "0M") {	// Master volume
+	else if (id == "0V") {	// Master volume
 		if (-1 < value && value <64) opnaCtrl_.setMasterVolumeDrum(value);
+	}
+	else if (id.front() == 'M') {
+		int count = ctohex(*(id.begin() + 1));
+		if (0 <= value && value < 0x20) {
+			if (count > 0) {
+				volDlyCntDrum_[ch] = count;
+				volDlyValueDrum_[ch] = value;
+			}
+		}
 	}
 
 	return ret;
@@ -1143,6 +1238,16 @@ void BambooTracker::effSpeedChange(int speed)
 void BambooTracker::effTempoChange(int tempo)
 {
 	tickCounter_.setTempo(tempo);
+}
+
+void BambooTracker::effNoteDelay(int track, int count)
+{
+
+}
+
+void BambooTracker::effNoteCutDelay(int track, int count)
+{
+
 }
 
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
@@ -1476,4 +1581,25 @@ void BambooTracker::setPatternStepHighlightCount(int count)
 int BambooTracker::getPatternStepHighlightCount() const
 {
 	return ptnHlCnt_;
+}
+
+int BambooTracker::ctohex(const char c) const
+{
+	if (c == '0')		return 0;
+	else if (c == '1')	return 1;
+	else if (c == '2')	return 2;
+	else if (c == '3')	return 3;
+	else if (c == '4')	return 4;
+	else if (c == '5')	return 5;
+	else if (c == '6')	return 6;
+	else if (c == '7')	return 7;
+	else if (c == '8')	return 8;
+	else if (c == '9')	return 9;
+	else if (c == 'A')	return 10;
+	else if (c == 'B')	return 11;
+	else if (c == 'C')	return 12;
+	else if (c == 'D')	return 13;
+	else if (c == 'E')	return 14;
+	else if (c == 'F')	return 15;
+	else				return -1;
 }

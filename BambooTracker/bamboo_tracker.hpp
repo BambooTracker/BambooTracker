@@ -269,6 +269,8 @@ private:
 	void readStep();
 	void readTick(int rest);
 
+	void clearDelayCounts();
+
 	bool readFMEffect(int ch, std::string id, int value);
 	bool readSSGEffect(int ch, std::string id, int value);
 	bool readDrumEffect(int ch, std::string id, int value);
@@ -278,4 +280,12 @@ private:
 	bool effPatternBreak(int nextStep);
 	void effSpeedChange(int speed);
 	void effTempoChange(int tempo);
+	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;
+	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
+	std::vector<int> ntDlyCntDrum_, ntCutDlyCntDrum_, volDlyCntDrum_;
+	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
+	void effNoteDelay(int track, int count);
+	void effNoteCutDelay(int track, int count);
+
+	int ctohex(const char c) const;
 };

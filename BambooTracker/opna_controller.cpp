@@ -132,6 +132,9 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 		sumPitchFM_[ch] = 0;
 		sumVolSldFM_[ch] = 0;
 	}
+	if (tmpVolFM_[ch] != -1) {
+		setVolumeFM(ch, baseVolFM_[ch]);
+	}
 
 	setFrontFMSequences(ch);
 	hasPreSetTickEventFM_[ch] = isJam;
@@ -270,9 +273,26 @@ void OPNAController::updateInstrumentFMLFOParameter(int lfoNum, FMLFOParameter p
 /********** Set volume **********/
 void OPNAController::setVolumeFM(int ch, int volume)
 {
-	volFM_[ch] = volume;
+	baseVolFM_[ch] = volume;
+	tmpVolFM_[ch] = -1;
 
-	if (isKeyOnFM(ch) && refInstFM_[ch]) {	// Change TL
+	if (refInstFM_[ch]) {	// Change TL
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::TL1,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::TL1));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::TL2,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::TL2));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::TL3,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::TL3));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::TL4,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::TL4));
+	}
+}
+
+void OPNAController::setTemporaryVolumeFM(int ch, int volume)
+{
+	tmpVolFM_[ch] = volume;
+
+	if (refInstFM_[ch]) {	// Change TL
 		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::TL1,
 										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::TL1));
 		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::TL2,
@@ -398,7 +418,8 @@ void OPNAController::initFM()
 		baseToneFM_[ch].octave = -1;	// Init key on note data
 		keyToneFM_[ch].octave = -1;
 		sumPitchFM_[ch] = 0;
-		volFM_[ch] = 0;	// Init volume
+		baseVolFM_[ch] = 0;	// Init volume
+		tmpVolFM_[ch] = -1;
 		gateCntFM_[ch] = 0;
 		enableEnvResetFM_[ch] = true;
 		lfoStartCntFM_[ch] = -1;
@@ -1237,6 +1258,9 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 		sumPitchSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
 	}
+	if (tmpVolSSG_[ch] != -1 && !volSldSSG_[ch]) {
+		setVolumeSSG(ch, baseVolSSG_[ch]);
+	}
 
 	setFrontSSGSequences(ch);
 
@@ -1301,6 +1325,16 @@ void OPNAController::setVolumeSSG(int ch, int volume)
 	if (volume > 0xf) return;	// Out of range
 
 	baseVolSSG_[ch] = volume;
+	tmpVolSSG_[ch] = -1;
+
+	if (isKeyOnSSG(ch)) setRealVolumeSSG(ch);
+}
+
+void OPNAController::setTemporaryVolumeSSG(int ch, int volume)
+{
+	if (volume > 0xf) return;	// Out of range
+
+	tmpVolSSG_[ch] = volume;
 
 	if (isKeyOnSSG(ch)) setRealVolumeSSG(ch);
 }
@@ -1309,7 +1343,7 @@ void OPNAController::setRealVolumeSSG(int ch)
 {
 	if (isBuzzEffSSG_[ch] || isHardEnvSSG_[ch]) return;
 
-	int volume = baseVolSSG_[ch];
+	int volume = (tmpVolSSG_[ch] == -1) ? baseVolSSG_[ch] : tmpVolSSG_[ch];
 	if (envItSSG_[ch]) {
 		int type = envItSSG_[ch]->getCommandType();
 		if (0 <= type && type < 16) {
@@ -1420,6 +1454,7 @@ void OPNAController::initSSG()
 		sumPitchSSG_[ch] = 0;
 		tnSSG_[ch] = { false, false, -1 };
 		baseVolSSG_[ch] = 0xf;	// Init volume
+		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
 		isBuzzEffSSG_[ch] = false;
 
@@ -2168,6 +2203,9 @@ void OPNAController::setInstrumentSSGProperties(int ch)
 /********** Key on-off **********/
 void OPNAController::keyOnDrum(int ch)
 {
+	if (tmpVolDrum_[ch] != -1)
+		setVolumeDrum(ch, volDrum_[ch]);
+
 	opna_.setRegister(0x10, 1 << ch);
 }
 
@@ -2182,6 +2220,7 @@ void OPNAController::setVolumeDrum(int ch, int volume)
 	if (volume > 0x1f) return;	// Out of range
 
 	volDrum_[ch] = volume;
+	tmpVolDrum_[ch] = -1;
 	opna_.setRegister(0x18 + ch, (panDrum_[ch] << 6) | volume);
 }
 
@@ -2189,6 +2228,14 @@ void OPNAController::setMasterVolumeDrum(int volume)
 {
 	mVolDrum_ = volume;
 	opna_.setRegister(0x11, volume);
+}
+
+void OPNAController::setTemporaryVolumeDrum(int ch, int volume)
+{
+	if (volume > 0x1f) return;	// Out of range
+
+	tmpVolDrum_[ch] = volume;
+	opna_.setRegister(0x18 + ch, (panDrum_[ch] << 6) | volume);
 }
 
 /********** Set pan **********/
@@ -2219,6 +2266,7 @@ void OPNAController::initDrum()
 
 	for (int ch = 0; ch < 6; ++ch) {
 		volDrum_[ch] = 0x1f;	// Init volume
+		tmpVolDrum_[ch] = -1;
 
 		// Init pan
 		panDrum_[ch] = 3;
