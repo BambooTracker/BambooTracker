@@ -100,16 +100,6 @@ void BambooTracker::setInstrumentName(int num, std::string name)
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
 }
 
-void BambooTracker::setInstrumentGateCount(int instNum, int count)
-{
-	instMan_.setInstrumentGateCount(instNum, count);
-	switch (instMan_.getInstrumentSharedPtr(instNum)->getSoundSource()) {
-	case SoundSource::FM:	opnaCtrl_.updateInstrumentFM(instNum);	break;
-	case SoundSource::SSG:	opnaCtrl_.updateInstrumentSSG(instNum);	break;
-	default:	break;
-	}
-}
-
 //--- FM
 void BambooTracker::setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value)
 {
@@ -779,11 +769,22 @@ void BambooTracker::readTick(int rest)
 			readTickFMForNoteDelay(curStep, attrib.channelInSource);
 			break;
 		case SoundSource::SSG:
-			readTickSSGForNoteDelay(curStep, attrib.channelInSource);
+		{
+			int cnt = ntDlyCntSSG_[attrib.channelInSource];
+			if (!cnt) {
+				// Channel envelope reset before next key on
+				readSSGStep(curStep, attrib.channelInSource, true);
+			}
 			break;
+		}
 		case SoundSource::DRUM:
-			readTickDrumForNoteDelay(curStep, attrib.channelInSource);
+		{
+			if (!ntDlyCntDrum_[attrib.channelInSource]) {
+				// Channel envelope reset before next key on
+				readDrumStep(curStep, attrib.channelInSource, true);
+			}
 			break;
+		}
 		}
 
 		if (rest == 1 && nextReadStepOrder_ != -1 && attrib.source == SoundSource::FM) {
@@ -799,30 +800,7 @@ void BambooTracker::readTick(int rest)
 			}
 		}
 		else {
-			// Gate count
-			if (opnaCtrl_.getGateCount(attrib.source, attrib.channelInSource) == rest && nextReadStepOrder_ != -1) {
-				auto& step = song.getTrack(attrib.number)
-							 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
-				int n = step.checkEffectID("0G");
-				if (n == -1 || !step.getEffectValue(n)) {
-					switch (attrib.source) {
-					case SoundSource::FM:
-						gateCountEffectFM(step, attrib.channelInSource);
-						break;
-					case SoundSource::SSG:
-						gateCountEffectSSG(step, attrib.channelInSource);
-						break;
-					case SoundSource::DRUM:
-						break;
-					}
-				}
-				else {
-					opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
-				}
-			}
-			else {
-				opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
-			}
+			opnaCtrl_.tickEvent(attrib.source, attrib.channelInSource);
 		}
 	}
 }
@@ -836,31 +814,6 @@ void BambooTracker::readTickFMForNoteDelay(Step& step, int ch)
 	else if (cnt == 1) {
 		// Channel envelope reset before next key on
 		envelopeResetEffectFM(step, ch);
-	}
-	else if (cnt == opnaCtrl_.getGateCount(SoundSource::FM, ch)) {
-		// Gate count
-		gateCountEffectFM(step, ch);
-	}
-}
-
-void BambooTracker::readTickSSGForNoteDelay(Step& step, int ch)
-{
-	int cnt = ntDlyCntSSG_[ch];
-	if (!cnt) {
-		// Channel envelope reset before next key on
-		readSSGStep(step, ch, true);
-	}
-	else if (cnt == opnaCtrl_.getGateCount(SoundSource::SSG, ch)) {
-		// Gate count
-		gateCountEffectSSG(step, ch);
-	}
-}
-
-void BambooTracker::readTickDrumForNoteDelay(Step& step, int ch)
-{
-	if (!ntDlyCntDrum_[ch]) {
-		// Channel envelope reset before next key on
-		readDrumStep(step, ch, true);
 	}
 }
 
@@ -879,40 +832,6 @@ void BambooTracker::envelopeResetEffectFM(Step& step, int ch)
 	}
 	else {
 		opnaCtrl_.tickEvent(SoundSource::FM, ch);
-	}
-}
-
-void BambooTracker::gateCountEffectFM(Step& step, int ch)
-{
-	if (step.getNoteNumber() >= 0) {
-		int idx = step.checkEffectID("03");
-		if ((idx == -1 && !opnaCtrl_.isTonePortamentoFM(ch))
-				|| (idx != -1 && !step.getEffectValue(idx))) {
-			opnaCtrl_.keyOffFM(ch);
-		}
-		else {
-			opnaCtrl_.tickEvent(SoundSource::FM, ch);
-		}
-	}
-	else {
-		opnaCtrl_.tickEvent(SoundSource::FM, ch);
-	}
-}
-
-void BambooTracker::gateCountEffectSSG(Step& step, int ch)
-{
-	if (step.getNoteNumber() >= 0) {
-		int idx = step.checkEffectID("03");
-		if ((idx == -1 && !opnaCtrl_.isTonePortamentoSSG(ch))
-				|| (idx != -1 && !step.getEffectValue(idx))) {
-			opnaCtrl_.keyOffSSG(ch);
-		}
-		else {
-			opnaCtrl_.tickEvent(SoundSource::SSG, ch);
-		}
-	}
-	else {
-		opnaCtrl_.tickEvent(SoundSource::SSG, ch);
 	}
 }
 
@@ -1013,7 +932,6 @@ void BambooTracker::readStep()
 				ntDlyCntSSG_[attrib.channelInSource] = step.getEffectValue(nd);
 				for (int i = 0; i < 4; ++i)
 					isNextSet |= readSSGSpecialEffect(attrib.channelInSource, step.getEffectID(i), step.getEffectValue(i));
-				readTickSSGForNoteDelay(step, attrib.channelInSource);
 			}
 			break;
 		}
@@ -1027,7 +945,6 @@ void BambooTracker::readStep()
 				ntDlyCntDrum_[attrib.channelInSource] = step.getEffectValue(nd);
 				for (int i = 0; i < 4; ++i)
 					isNextSet |= readDrumSpecialEffect(attrib.channelInSource, step.getEffectID(i), step.getEffectValue(i));
-				readTickDrumForNoteDelay(step, attrib.channelInSource);
 			}
 			break;
 		}
@@ -1421,16 +1338,6 @@ void BambooTracker::effSpeedChange(int speed)
 void BambooTracker::effTempoChange(int tempo)
 {
 	tickCounter_.setTempo(tempo);
-}
-
-void BambooTracker::effNoteDelay(int track, int count)
-{
-
-}
-
-void BambooTracker::effNoteCutDelay(int track, int count)
-{
-
 }
 
 void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)

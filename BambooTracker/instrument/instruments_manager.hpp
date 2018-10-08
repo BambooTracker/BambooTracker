@@ -32,8 +32,6 @@ public:
 
 	int findFirstFreeInstrument() const;
 
-	void setInstrumentGateCount(int instNum, int count);
-
 private:
 	std::array<std::shared_ptr<AbstructInstrument>, 128> insts_;
 

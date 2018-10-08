@@ -39,7 +39,6 @@ public:
 	void deepCloneInstrument(int num, int refNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
-	void setInstrumentGateCount(int instNum, int count);
 
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
@@ -270,12 +269,7 @@ private:
 	void readTick(int rest);
 
 	void readTickFMForNoteDelay(Step& step, int ch);
-	void readTickSSGForNoteDelay(Step& step, int ch);
-	void readTickDrumForNoteDelay(Step& step, int ch);
-
 	void envelopeResetEffectFM(Step& step, int ch);
-	void gateCountEffectFM(Step& step, int ch);
-	void gateCountEffectSSG(Step& step, int ch);
 
 	void clearDelayCounts();
 
@@ -299,8 +293,6 @@ private:
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
 	std::vector<int> ntDlyCntDrum_, ntCutDlyCntDrum_, volDlyCntDrum_;
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
-	void effNoteDelay(int track, int count);
-	void effNoteCutDelay(int track, int count);
 
 	int ctohex(const char c) const;
 };

@@ -531,7 +531,6 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 	setInstrumentPitchParameters();
 
 	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled());
-	ui->gateCountSpinBox->setValue(instFM->getGateCount());
 }
 
 /********** Events **********/
@@ -1330,11 +1329,5 @@ void InstrumentEditorFMForm::on_envResetCheckBox_stateChanged(int arg1)
 	else {
 		bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, false);
 	}
-	emit modified();
-}
-
-void InstrumentEditorFMForm::on_gateCountSpinBox_valueChanged(int arg1)
-{
-	bt_.lock()->setInstrumentGateCount(instNum_, arg1);
 	emit modified();
 }

@@ -91,16 +91,6 @@ void OPNAController::tickEvent(SoundSource src, int ch, bool isStep)
 	}
 }
 
-/********** Chip details **********/
-int OPNAController::getGateCount(SoundSource src, int ch) const
-{
-	switch (src) {
-	case SoundSource::FM:	return gateCntFM_[ch];
-	case SoundSource::SSG:	return gateCntSSG_[ch];
-	case SoundSource::DRUM:	return -1;
-	}
-}
-
 /********** Stream samples **********/
 void OPNAController::getStreamSamples(int16_t* container, size_t nSamples)
 {
@@ -420,7 +410,6 @@ void OPNAController::initFM()
 		sumPitchFM_[ch] = 0;
 		baseVolFM_[ch] = 0;	// Init volume
 		tmpVolFM_[ch] = -1;
-		gateCntFM_[ch] = 0;
 		enableEnvResetFM_[ch] = true;
 		lfoStartCntFM_[ch] = -1;
 
@@ -1209,7 +1198,6 @@ void OPNAController::writePitchFM(int ch)
 
 void OPNAController::setInstrumentFMProperties(int ch)
 {
-	gateCntFM_[ch] = refInstFM_[ch]->getGateCount();
 	enableEnvResetFM_[ch] = refInstFM_[ch]->getEnvelopeResetEnabled();
 }
 
@@ -1302,7 +1290,6 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 	}
 	if (refInstSSG_[ch]->getPitchNumber() == -1) ptItSSG_[ch].reset();
 	else ptItSSG_[ch] = refInstSSG_[ch]->getPitchSequenceIterator();
-	setInstrumentSSGProperties(ch);
 }
 
 void OPNAController::updateInstrumentSSG(int instNum)
@@ -1314,7 +1301,6 @@ void OPNAController::updateInstrumentSSG(int instNum)
 			if (refInstSSG_[ch]->getEnvelopeNumber() == -1) envItSSG_[ch].reset();
 			if (refInstSSG_[ch]->getArpeggioNumber() == -1) arpItSSG_[ch].reset();
 			if (refInstSSG_[ch]->getPitchNumber() == -1) ptItSSG_[ch].reset();
-			setInstrumentSSGProperties(ch);
 		}
 	}
 }
@@ -1485,8 +1471,6 @@ void OPNAController::initSSG()
 		detuneSSG_[ch] = 0;
 		nsItSSG_[ch].reset();
 		sumNoteSldSSG_[ch] = 0;
-
-		gateCntSSG_[ch] = 0;
 	}
 }
 
@@ -2195,11 +2179,6 @@ void OPNAController::writePitchSSG(int ch)
 	}
 
 	needToneSetSSG_[ch] = false;
-}
-
-void OPNAController::setInstrumentSSGProperties(int ch)
-{
-	gateCntSSG_[ch] = refInstSSG_[ch]->getGateCount();
 }
 
 //---------- Drum ----------//

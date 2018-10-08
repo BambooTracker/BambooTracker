@@ -128,7 +128,6 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	std::shared_ptr<AbstructInstrument> refInst = insts_.at(refInstNum);
 	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
 
-	setInstrumentGateCount(cloneInstNum, refInst->getGateCount());
 	switch (refInst->getSoundSource()) {
 	case SoundSource::FM:
 	{
@@ -163,7 +162,6 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 	std::shared_ptr<AbstructInstrument> refInst = insts_.at(refInstNum);
 	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
 
-	setInstrumentGateCount(cloneInstNum, refInst->getGateCount());
 	switch (refInst->getSoundSource()) {
 	case SoundSource::FM:
 	{
@@ -451,11 +449,6 @@ int InstrumentsManager::findFirstFreeInstrument() const
 		++num;
 	}
 	return -1;
-}
-
-void InstrumentsManager::setInstrumentGateCount(int instNum, int count)
-{
-	insts_.at(instNum)->setGateCount(count);
 }
 
 //----- FM methods -----

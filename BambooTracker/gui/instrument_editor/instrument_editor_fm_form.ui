@@ -283,24 +283,7 @@
        </item>
        <item row="0" column="1">
         <layout class="QGridLayout" name="gridLayout_8">
-         <item row="1" column="0" alignment="Qt::AlignRight">
-          <widget class="QLabel" name="gateCountLabel">
-           <property name="text">
-            <string>Gate count:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="gateCountSpinBox">
-           <property name="maximum">
-            <number>99</number>
-           </property>
-           <property name="value">
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
+         <item row="1" column="0" colspan="2">
           <widget class="QCheckBox" name="envResetCheckBox">
            <property name="text">
             <string>Reset envelope before key on</string>

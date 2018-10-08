@@ -24,9 +24,6 @@ public:
 	void setName(std::string name);
 	virtual std::unique_ptr<AbstructInstrument> clone() = 0;
 
-	void setGateCount(int count);
-	int getGateCount() const;
-
 protected:
 	InstrumentsManager* owner_;
     std::string name_;	// UTF-8
@@ -35,8 +32,6 @@ protected:
 private:
 	int number_;
     SoundSource source_;
-
-	int gateCount_;
 };
 
 

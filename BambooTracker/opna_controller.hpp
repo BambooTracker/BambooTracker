@@ -36,9 +36,6 @@ public:
 	// Forward instrument sequence
 	void tickEvent(SoundSource src, int ch, bool isStep = false);
 
-	// Chip details
-	int getGateCount(SoundSource src, int ch) const;
-
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
 
@@ -103,7 +100,6 @@ private:
 	/// bit1: left on/off
 	uint8_t panFM_[6];
 	bool isMuteFM_[6];
-	int gateCntFM_[6];
 	bool enableEnvResetFM_[6];
 	int lfoFreq_;
 	int lfoStartCntFM_[6];
@@ -198,7 +194,6 @@ private:
 	bool isBuzzEffSSG_[3];
 	bool isHardEnvSSG_[3];
 	bool isMuteSSG_[3];
-	int gateCntSSG_[3];
 	bool hasPreSetTickEventSSG_[3];
 	bool needEnvSetSSG_[3];
 	bool needMixSetSSG_[3];
@@ -237,8 +232,6 @@ private:
 	void checkPortamentoSSG(int ch);
 	void checkRealToneSSGByPitch(int ch, int seqPos);
 	void writePitchSSG(int ch);
-
-	void setInstrumentSSGProperties(int ch);
 
 	void setRealVolumeSSG(int ch);
 

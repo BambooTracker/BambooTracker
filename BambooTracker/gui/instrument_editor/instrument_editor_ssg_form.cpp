@@ -393,8 +393,6 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 	setInstrumentEnvelopeParameters();
 	setInstrumentArpeggioParameters();
 	setInstrumentPitchParameters();
-
-	ui->gateCountSpinBox->setValue(instSSG->getGateCount());
 }
 
 /********** Events **********/
@@ -959,12 +957,4 @@ void InstrumentEditorSSGForm::on_ptNumSpinBox_valueChanged(int arg1)
 	}
 
 	onPitchNumberChanged();
-}
-
-//--- Else
-/********** Slots **********/
-void InstrumentEditorSSGForm::on_gateCountSpinBox_valueChanged(int arg1)
-{
-	bt_.lock()->setInstrumentGateCount(instNum_, arg1);
-	emit modified();
 }

@@ -154,7 +154,6 @@ private slots:
 	//========== Else ==========//
 private slots:
 	void on_envResetCheckBox_stateChanged(int arg1);
-	void on_gateCountSpinBox_valueChanged(int arg1);
 };
 
 #endif // INSTRUMENT_EDITOR_FM_FORM_HPP

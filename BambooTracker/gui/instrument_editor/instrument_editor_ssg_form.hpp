@@ -141,10 +141,6 @@ private slots:
 	void onPitchTypeChanged(int index);
 	void on_ptEditGroupBox_toggled(bool arg1);
 	void on_ptNumSpinBox_valueChanged(int arg1);
-
-	//========== Else ==========//
-private slots:
-	void on_gateCountSpinBox_valueChanged(int arg1);
 };
 
 #endif // INSTRUMENT_EDITOR_SSG_FORM_HPP

@@ -4,8 +4,7 @@ AbstructInstrument::AbstructInstrument(int number, SoundSource source, std::stri
 	: owner_(owner),
 	  name_(name),
 	  number_(number),
-	  source_(source),
-	  gateCount_(0)
+	  source_(source)
 {}
 
 int AbstructInstrument::getNumber() const
@@ -31,16 +30,6 @@ std::string AbstructInstrument::getName() const
 void AbstructInstrument::setName(std::string name)
 {
 	name_ = name;
-}
-
-void AbstructInstrument::setGateCount(int count)
-{
-	gateCount_ = count;
-}
-
-int AbstructInstrument::getGateCount() const
-{
-	return gateCount_;
 }
 
 /****************************************/
