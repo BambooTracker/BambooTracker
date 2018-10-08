@@ -18,5 +18,9 @@
 #include "paste_copied_data_to_pattern_qt_command.hpp"
 #include "erase_cells_in_pattern_qt_command.hpp"
 #include "paste_mix_copied_data_to_pattern_qt_command.hpp"
+#include "increase_note_key_in_pattern_qt_command.hpp"
+#include "decrease_note_key_in_pattern_qt_command.hpp"
+#include "increase_note_octave_in_pattern_qt_command.hpp"
+#include "decrease_note_octave_in_pattern_qt_command.hpp"
 
 #endif // PATTERN_COMMANDS_QT_HPP

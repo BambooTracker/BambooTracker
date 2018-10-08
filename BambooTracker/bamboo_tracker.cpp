@@ -1672,6 +1672,33 @@ void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColm
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
 }
 
+void BambooTracker::increaseNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+											 int endTrack, int endStep)
+{
+	comMan_.invoke(std::make_unique<IncreaseNoteKeyInPatternCommand>(
+					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep));
+}
+void BambooTracker::decreaseNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+											 int endTrack, int endStep)
+{
+	comMan_.invoke(std::make_unique<DecreaseNoteKeyInPatternCommand>(
+					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep));
+}
+
+void BambooTracker::increaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+												int endTrack, int endStep)
+{
+	comMan_.invoke(std::make_unique<IncreaseNoteOctaveInPatternCommand>(
+					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep));
+}
+
+void BambooTracker::decreaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+												int endTrack, int endStep)
+{
+	comMan_.invoke(std::make_unique<DecreaseNoteOctaveInPatternCommand>(
+					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep));
+}
+
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const
 {
 	size_t size = 0;

@@ -225,6 +225,14 @@ public:
 																  std::vector<std::vector<std::string>> cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
+	void increaseNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+								  int endTrack, int endStep);
+	void decreaseNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+								  int endTrack, int endStep);
+	void increaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+									 int endTrack, int endStep);
+	void decreaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+									 int endTrack, int endStep);
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 	void setDefaultPatternSize(int songNum, size_t size);
 	size_t getDefaultPatternSize(int songNum) const;

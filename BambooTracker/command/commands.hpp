@@ -24,6 +24,10 @@
 #include "./pattern/paste_copied_data_to_pattern_command.hpp"
 #include "./pattern/erase_cells_in_pattern_command.hpp"
 #include "./pattern/paste_mix_copied_data_to_pattern_command.hpp"
+#include "./pattern/increase_note_key_in_pattern_command.hpp"
+#include "./pattern/decrease_note_key_in_pattern_command.hpp"
+#include "./pattern/increase_note_octave_in_pattern_command.hpp"
+#include "./pattern/decrease_note_octave_in_pattern_command.hpp"
 
 /********** Order edit **********/
 #include "./order/set_pattern_to_order_command.hpp"

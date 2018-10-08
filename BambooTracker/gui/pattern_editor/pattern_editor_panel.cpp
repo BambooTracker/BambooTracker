@@ -1063,6 +1063,50 @@ void PatternEditorPanel::cutSelectedCells()
 	QApplication::clipboard()->setText(str);
 }
 
+void PatternEditorPanel::increaseNoteKey(PatternPosition& startPos, PatternPosition& endPos)
+{
+	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
+	if (beginTrack <= endPos.track) {
+		bt_->increaseNoteKeyInPattern(curSongNum_,
+									  beginTrack, startPos.order, startPos.step,
+									  endPos.track, endPos.step);
+		comStack_.lock()->push(new IncreaseNoteKeyInPatternQtCommand(this));
+	}
+}
+
+void PatternEditorPanel::decreaseNoteKey(PatternPosition& startPos, PatternPosition& endPos)
+{
+	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
+	if (beginTrack <= endPos.track) {
+		bt_->decreaseNoteKeyInPattern(curSongNum_,
+									  beginTrack, startPos.order, startPos.step,
+									  endPos.track, endPos.step);
+		comStack_.lock()->push(new DecreaseNoteKeyInPatternQtCommand(this));
+	}
+}
+
+void PatternEditorPanel::increaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos)
+{
+	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
+	if (beginTrack <= endPos.track) {
+		bt_->increaseNoteOctaveInPattern(curSongNum_,
+										 beginTrack, startPos.order, startPos.step,
+										 endPos.track, endPos.step);
+		comStack_.lock()->push(new IncreaseNoteOctaveInPatternQtCommand(this));
+	}
+}
+
+void PatternEditorPanel::decreaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos)
+{
+	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
+	if (beginTrack <= endPos.track) {
+		bt_->decreaseNoteOctaveInPattern(curSongNum_,
+										 beginTrack, startPos.order, startPos.step,
+										 endPos.track, endPos.step);
+		comStack_.lock()->push(new DecreaseNoteOctaveInPatternQtCommand(this));
+	}
+}
+
 void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, const PatternPosition& end)
 {
 	if (start.compareCols(end) > 0) {
@@ -1249,6 +1293,50 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			}
 			else {
 				pasteMixCopiedCells(curPos_);
+				return true;
+			}
+		case Qt::Key_F1:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				if (selLeftAbovePos_.order != -1)
+					decreaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
+				else
+					decreaseNoteKey(curPos_, curPos_);
+				return true;
+			}
+		case Qt::Key_F2:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				if (selLeftAbovePos_.order != -1)
+					increaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
+				else
+					increaseNoteKey(curPos_, curPos_);
+				return true;
+			}
+		case Qt::Key_F3:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				if (selLeftAbovePos_.order != -1)
+					decreaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
+				else
+					decreaseNoteOctave(curPos_, curPos_);
+				return true;
+			}
+		case Qt::Key_F4:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				if (selLeftAbovePos_.order != -1)
+					increaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
+				else
+					increaseNoteOctave(curPos_, curPos_);
 				return true;
 			}
 		default:

@@ -164,6 +164,11 @@ private:
 	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
 	void cutSelectedCells();
 
+	void increaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);
+	void decreaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);
+	void increaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos);
+	void decreaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos);
+
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
 };

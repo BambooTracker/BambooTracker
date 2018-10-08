@@ -118,7 +118,15 @@ SOURCES += \
     instrument/command_sequence.cpp \
     instrument/effect_iterator.cpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.cpp \
-    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.cpp
+    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.cpp \
+    gui/command/pattern/decrease_note_key_in_pattern_qt_command.cpp \
+    gui/command/pattern/increase_note_key_in_pattern_qt_command.cpp \
+    gui/command/pattern/increase_note_octave_in_pattern_qt_command.cpp \
+    gui/command/pattern/decrease_note_octave_in_pattern_qt_command.cpp \
+    command/pattern/increase_note_key_in_pattern_command.cpp \
+    command/pattern/decrease_note_key_in_pattern_command.cpp \
+    command/pattern/increase_note_octave_in_pattern_command.cpp \
+    command/pattern/decrease_note_octave_in_pattern_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -226,7 +234,15 @@ HEADERS += \
     instrument/sequence_iterator_interface.hpp \
     instrument/effect_iterator.hpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.hpp \
-    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.hpp
+    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.hpp \
+    gui/command/pattern/decrease_note_key_in_pattern_qt_command.hpp \
+    gui/command/pattern/increase_note_key_in_pattern_qt_command.hpp \
+    gui/command/pattern/increase_note_octave_in_pattern_qt_command.hpp \
+    gui/command/pattern/decrease_note_octave_in_pattern_qt_command.hpp \
+    command/pattern/increase_note_key_in_pattern_command.hpp \
+    command/pattern/decrease_note_key_in_pattern_command.hpp \
+    command/pattern/increase_note_octave_in_pattern_command.hpp \
+    command/pattern/decrease_note_octave_in_pattern_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \
