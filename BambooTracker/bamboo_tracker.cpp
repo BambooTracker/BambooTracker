@@ -1448,7 +1448,7 @@ void BambooTracker::setSongSpeed(int songNum, int speed)
 	if (curSongNum_ == songNum) tickCounter_.setSpeed(speed);
 }
 
-size_t BambooTracker::getSongSpeed(int songNum) const
+int BambooTracker::getSongSpeed(int songNum) const
 {
 	return mod_->getSong(songNum).getSpeed();
 }

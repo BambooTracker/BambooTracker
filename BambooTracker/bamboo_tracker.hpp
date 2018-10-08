@@ -179,7 +179,7 @@ public:
 	int getSongtempo(int songNum) const;
 	SongStyle getSongStyle(int songNum) const;
 	void setSongSpeed(int songNum, int speed);
-	size_t getSongSpeed(int songNum) const;
+	int getSongSpeed(int songNum) const;
 	size_t getSongCount() const;
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);

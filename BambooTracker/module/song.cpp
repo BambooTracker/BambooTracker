@@ -6,7 +6,7 @@ Song::Song(int number, SongType songType, std::string title, int tempo, int spee
 	  type_(songType),
 	  title_(title),
 	  tempo_(tempo),
-	  speed(speed),
+	  speed_(speed),
 	  defPtnSize_(defaultPatternSize)
 {
 	switch (songType) {
@@ -59,12 +59,12 @@ int Song::getTempo() const
 
 void Song::setSpeed(int speed)
 {
-	speed = speed;
+	speed_ = speed;
 }
 
 int Song::getSpeed() const
 {
-	return speed;
+	return speed_;
 }
 
 void Song::setDefaultPatternSize(size_t size)

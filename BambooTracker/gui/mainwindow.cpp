@@ -87,10 +87,10 @@ MainWindow::MainWindow(QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->speedSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int size) {
+					 this, [&](int speed) {
 		int curSong = bt_->getCurrentSongNumber();
-		if (size != bt_->getSongSpeed(curSong)) {
-			bt_->setSongSpeed(curSong, size);
+		if (speed != bt_->getSongSpeed(curSong)) {
+			bt_->setSongSpeed(curSong, speed);
 			setModifiedTrue();
 		}
 	});

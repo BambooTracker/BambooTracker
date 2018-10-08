@@ -40,7 +40,7 @@ private:
 	SongType type_;
 	std::string title_;
 	int tempo_;
-	int speed;
+	int speed_;
 	size_t defPtnSize_;
 
 	std::vector<Track> tracks_;
