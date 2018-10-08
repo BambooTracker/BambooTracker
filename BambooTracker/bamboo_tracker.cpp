@@ -479,18 +479,24 @@ void BambooTracker::setCurrentSongNumber(int num)
 		ntCutDlyCntFM_ = std::vector<int>(6);
 		volDlyCntFM_ = std::vector<int>(6);
 		volDlyValueFM_ = std::vector<int>(6, -1);
+		tposeDlyCntFM_ = std::vector<int>(6);
+		tposeDlyValueFM_ = std::vector<int>(6);
 		break;
 	case SongType::FMEX:
 		// UNDONE: extend ch4
 		break;
 	}
+
 	ntDlyCntSSG_ = std::vector<int>(3);
-	ntDlyCntDrum_ = std::vector<int>(6);
 	ntCutDlyCntSSG_ = std::vector<int>(3);
-	ntCutDlyCntDrum_ = std::vector<int>(6);
 	volDlyCntSSG_ = std::vector<int>(3);
-	volDlyCntDrum_ = std::vector<int>(6);
 	volDlyValueSSG_ = std::vector<int>(3, -1);
+	tposeDlyCntSSG_ = std::vector<int>(3);
+	tposeDlyValueSSG_ = std::vector<int>(3);
+
+	ntDlyCntDrum_ = std::vector<int>(6);
+	ntCutDlyCntDrum_ = std::vector<int>(6);
+	volDlyCntDrum_ = std::vector<int>(6);
 	volDlyValueDrum_ = std::vector<int>(6, -1);
 }
 
@@ -726,63 +732,56 @@ void BambooTracker::readTick(int rest)
 	std::transform(volDlyCntFM_.begin(), volDlyCntFM_.end(), volDlyCntFM_.begin(), f);
 	std::transform(volDlyCntSSG_.begin(), volDlyCntSSG_.end(), volDlyCntSSG_.begin(), f);
 	std::transform(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), volDlyCntDrum_.begin(), f);
+	std::transform(tposeDlyCntFM_.begin(), tposeDlyCntFM_.end(), tposeDlyCntFM_.begin(), f);
+	std::transform(tposeDlyCntSSG_.begin(), tposeDlyCntSSG_.end(), tposeDlyCntSSG_.begin(), f);
 
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
-		// Check volume delay
-		switch (attrib.source) {
-		case SoundSource::FM:
-			if (!volDlyCntFM_[attrib.channelInSource])
-				opnaCtrl_.setTemporaryVolumeFM(attrib.channelInSource, volDlyValueFM_[attrib.channelInSource]);
-			break;
-		case SoundSource::SSG:
-			if (!volDlyCntSSG_[attrib.channelInSource])
-				opnaCtrl_.setTemporaryVolumeSSG(attrib.channelInSource, volDlyValueSSG_[attrib.channelInSource]);
-			break;
-		case SoundSource::DRUM:
-			if (!volDlyCntDrum_[attrib.channelInSource])
-				opnaCtrl_.setTemporaryVolumeDrum(attrib.channelInSource, volDlyValueDrum_[attrib.channelInSource]);
-			break;
-		}
-
-		// Check note cut
-		switch (attrib.source) {
-		case SoundSource::FM:
-			if (!ntCutDlyCntFM_[attrib.channelInSource])
-				opnaCtrl_.keyOffFM(attrib.channelInSource);
-			break;
-		case SoundSource::SSG:
-			if (!ntCutDlyCntSSG_[attrib.channelInSource])
-				opnaCtrl_.keyOffSSG(attrib.channelInSource);
-			break;
-		case SoundSource::DRUM:
-			if (!ntCutDlyCntDrum_[attrib.channelInSource])
-				opnaCtrl_.keyOnDrum(attrib.channelInSource);
-			break;
-		}
-
-		// Related to note delay
 		auto& curStep = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(curOrderNum_).getStep(curStepNum_);
 		switch (attrib.source) {
 		case SoundSource::FM:
+		{
+			// Check volume delay
+			if (!volDlyCntFM_[attrib.channelInSource])
+				opnaCtrl_.setTemporaryVolumeFM(attrib.channelInSource, volDlyValueFM_[attrib.channelInSource]);
+			// Check note cut
+			if (!ntCutDlyCntFM_[attrib.channelInSource])
+				opnaCtrl_.keyOffFM(attrib.channelInSource);
+			// Check transpose delay
+			if (!tposeDlyCntFM_[attrib.channelInSource])
+				opnaCtrl_.setTransposeEffectFM(attrib.channelInSource, tposeDlyValueFM_[attrib.channelInSource]);
+			// Check note delay and envelope reset
 			readTickFMForNoteDelay(curStep, attrib.channelInSource);
 			break;
+		}
 		case SoundSource::SSG:
 		{
-			int cnt = ntDlyCntSSG_[attrib.channelInSource];
-			if (!cnt) {
-				// Channel envelope reset before next key on
+			// Check volume delay
+			if (!volDlyCntSSG_[attrib.channelInSource])
+				opnaCtrl_.setTemporaryVolumeSSG(attrib.channelInSource, volDlyValueSSG_[attrib.channelInSource]);
+			// Check note cut
+			if (!ntCutDlyCntSSG_[attrib.channelInSource])
+				opnaCtrl_.keyOffSSG(attrib.channelInSource);
+			// Check transpose delay
+			if (!tposeDlyCntSSG_[attrib.channelInSource])
+				opnaCtrl_.setTransposeEffectSSG(attrib.channelInSource, tposeDlyValueSSG_[attrib.channelInSource]);
+			// Check note delay
+			if (!ntDlyCntSSG_[attrib.channelInSource])
 				readSSGStep(curStep, attrib.channelInSource, true);
-			}
 			break;
 		}
 		case SoundSource::DRUM:
 		{
-			if (!ntDlyCntDrum_[attrib.channelInSource]) {
-				// Channel envelope reset before next key on
+			// Check volume delay
+			if (!volDlyCntDrum_[attrib.channelInSource])
+				opnaCtrl_.setTemporaryVolumeDrum(attrib.channelInSource, volDlyValueDrum_[attrib.channelInSource]);
+			// Check note cut
+			if (!ntCutDlyCntDrum_[attrib.channelInSource])
+				opnaCtrl_.keyOnDrum(attrib.channelInSource);
+			// Check note delay
+			if (!ntDlyCntDrum_[attrib.channelInSource])
 				readDrumStep(curStep, attrib.channelInSource, true);
-			}
 			break;
 		}
 		}
@@ -841,10 +840,14 @@ void BambooTracker::clearDelayCounts()
 	std::fill(ntCutDlyCntFM_.begin(), ntCutDlyCntFM_.end(), -1);
 	std::fill(volDlyCntFM_.begin(), volDlyCntFM_.end(), -1);
 	std::fill(volDlyValueFM_.begin(), volDlyValueFM_.end(), -1);
+	std::fill(tposeDlyCntFM_.begin(), tposeDlyCntFM_.end(), -1);
+	std::fill(tposeDlyValueFM_.begin(), tposeDlyValueFM_.end(), 0);
 	std::fill(ntDlyCntSSG_.begin(), ntDlyCntSSG_.end(), -1);
 	std::fill(ntCutDlyCntSSG_.begin(), ntCutDlyCntSSG_.end(), -1);
 	std::fill(volDlyCntSSG_.begin(), volDlyCntSSG_.end(), -1);
 	std::fill(volDlyValueSSG_.begin(), volDlyValueSSG_.end(), -1);
+	std::fill(tposeDlyCntSSG_.begin(), tposeDlyCntSSG_.end(), -1);
+	std::fill(tposeDlyValueSSG_.begin(), tposeDlyValueSSG_.end(), 0);
 	std::fill(ntDlyCntDrum_.begin(), ntDlyCntDrum_.end(), -1);
 	std::fill(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), -1);
 	std::fill(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), -1);
@@ -1224,6 +1227,10 @@ bool BambooTracker::readFMSpecialEffect(int ch, std::string id, int value)
 	else if (id == "0S") {	// Note cut
 		ntCutDlyCntFM_[ch] = value;
 	}
+	else if (id == "0T") {	// Transpose delay
+		tposeDlyCntFM_[ch] = (value & 0x70) >> 4;
+		tposeDlyValueFM_[ch] = ((value & 0x80) ? -1 : 1) * (value & 0x0f);
+	}
 	else if (id.front() == 'M') {	// Volume delay
 		int count = ctohex(*(id.begin() + 1));
 		if (value != -1) {
@@ -1255,6 +1262,10 @@ bool BambooTracker::readSSGSpecialEffect(int ch, std::string id, int value)
 	}
 	else if (id == "0S") {	// Note cut
 		ntCutDlyCntSSG_[ch] = value;
+	}
+	else if (id == "0T") {	// Transpose delay
+		tposeDlyCntSSG_[ch] = (value & 0x70) >> 4;
+		tposeDlyValueSSG_[ch] = ((value & 0x80) ? -1 : 1) * (value & 0x0f);
 	}
 	else if (id.front() == 'M') {	// Volume delay
 		int count = ctohex(*(id.begin() + 1));

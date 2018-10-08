@@ -117,7 +117,10 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 	baseToneFM_[ch].octave = octave;
 	baseToneFM_[ch].note = note;
 	baseToneFM_[ch].pitch = pitch;
-	if (!isTonePortamentoFM(ch)) {
+	if (isTonePortamentoFM(ch)) {
+		keyToneFM_[ch].pitch += (sumNoteSldFM_[ch] + transposeFM_[ch]);
+	}
+	else {
 		keyToneFM_[ch] = baseToneFM_[ch];
 		sumPitchFM_[ch] = 0;
 		sumVolSldFM_[ch] = 0;
@@ -125,6 +128,9 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 	if (tmpVolFM_[ch] != -1) {
 		setVolumeFM(ch, baseVolFM_[ch]);
 	}
+	nsItFM_[ch].reset();
+	sumNoteSldFM_[ch] = 0;
+	transposeFM_[ch] = 0;
 
 	setFrontFMSequences(ch);
 	hasPreSetTickEventFM_[ch] = isJam;
@@ -357,6 +363,13 @@ void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 	else nsItFM_[ch].reset();
 }
 
+
+void OPNAController::setTransposeEffectFM(int ch, int seminote)
+{
+	transposeFM_[ch] += (seminote * 32);
+	needToneSetFM_[ch] = true;
+}
+
 /********** Mute **********/
 void OPNAController::setMuteFMState(int ch, bool isMute)
 {
@@ -433,6 +446,7 @@ void OPNAController::initFM()
 		detuneFM_[ch] = 0;
 		nsItFM_[ch].reset();
 		sumNoteSldFM_[ch] = 0;
+		transposeFM_[ch] = 0;
 
 		// Init pan
 		uint32_t bch = getFMChannelOffset(ch);
@@ -961,7 +975,7 @@ void OPNAController::setFrontFMSequences(int ch)
 		needToneSetFM_[ch] = true;
 	}
 	if (nsItFM_[ch] && nsItFM_[ch]->front() != -1) {
-		keyToneFM_[ch].pitch += nsItFM_[ch]->getCommandType();
+		sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
 		needToneSetFM_[ch] = true;
 	}
 
@@ -992,7 +1006,7 @@ void OPNAController::releaseStartFMSequences(int ch)
 		needToneSetFM_[ch] = true;
 	}
 	if (nsItFM_[ch] && nsItFM_[ch]->next(true) != -1) {
-		keyToneFM_[ch].pitch += nsItFM_[ch]->getCommandType();
+		sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
 		needToneSetFM_[ch] = true;
 	}
 
@@ -1027,7 +1041,7 @@ void OPNAController::tickEventFM(int ch, bool isStep)
 			needToneSetFM_[ch] = true;
 		}
 		if (nsItFM_[ch] && nsItFM_[ch]->next() != -1) {
-			keyToneFM_[ch].pitch += nsItFM_[ch]->getCommandType();
+			sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
 			needToneSetFM_[ch] = true;
 		}
 
@@ -1188,7 +1202,9 @@ void OPNAController::writePitchFM(int ch)
 					 keyToneFM_[ch].pitch
 					 + sumPitchFM_[ch]
 					 + (vibItFM_[ch] ? vibItFM_[ch]->getCommandType() : 0)
-					 + detuneFM_[ch]);
+					 + detuneFM_[ch]
+					 + sumNoteSldFM_[ch]
+					 + transposeFM_[ch]);
 	uint32_t offset = getFMChannelOffset(ch);
 	opna_.setRegister(0xa4 + offset, p >> 8);
 	opna_.setRegister(0xa0 + offset, p & 0x00ff);
@@ -1241,7 +1257,10 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 	baseToneSSG_[ch].octave = octave;
 	baseToneSSG_[ch].note = note;
 	baseToneSSG_[ch].pitch = pitch;
-	if (!isTonePortamentoSSG(ch)) {
+	if (isTonePortamentoSSG(ch)) {
+		keyToneSSG_[ch].pitch += (sumNoteSldSSG_[ch] +transposeSSG_[ch]);
+	}
+	else {
 		keyToneSSG_[ch] = baseToneSSG_[ch];
 		sumPitchSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
@@ -1249,6 +1268,9 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 	if (tmpVolSSG_[ch] != -1 && !volSldSSG_[ch]) {
 		setVolumeSSG(ch, baseVolSSG_[ch]);
 	}
+	nsItSSG_[ch].reset();
+	sumNoteSldSSG_[ch] = 0;
+	transposeSSG_[ch] = 0;
 
 	setFrontSSGSequences(ch);
 
@@ -1396,6 +1418,12 @@ void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 	else nsItSSG_[ch].reset();
 }
 
+void OPNAController::setTransposeEffectSSG(int ch, int seminote)
+{
+	transposeSSG_[ch] += (seminote * 32);
+	needToneSetSSG_[ch] = true;
+}
+
 /********** Mute **********/
 void OPNAController::setMuteSSGState(int ch, bool isMute)
 {
@@ -1508,7 +1536,7 @@ void OPNAController::setFrontSSGSequences(int ch)
 		needToneSetSSG_[ch] = true;
 	}
 	if (nsItSSG_[ch] && nsItSSG_[ch]->front() != -1) {
-		keyToneSSG_[ch].pitch += nsItSSG_[ch]->getCommandType();
+		sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
 		needToneSetSSG_[ch] = true;
 	}
 
@@ -1556,7 +1584,7 @@ void OPNAController::releaseStartSSGSequences(int ch)
 		needToneSetSSG_[ch] = true;
 	}
 	if (nsItSSG_[ch] && nsItSSG_[ch]->next(true) != -1) {
-		keyToneSSG_[ch].pitch += nsItSSG_[ch]->getCommandType();
+		sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
 		needToneSetSSG_[ch] = true;
 	}
 
@@ -1600,7 +1628,7 @@ void OPNAController::tickEventSSG(int ch, bool isStep)
 			needToneSetSSG_[ch] = true;
 		}
 		if (nsItSSG_[ch] && nsItSSG_[ch]->next() != -1) {
-			keyToneSSG_[ch].pitch += nsItSSG_[ch]->getCommandType();
+			sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
 			needToneSetSSG_[ch] = true;
 		}
 
@@ -2144,9 +2172,11 @@ void OPNAController::checkRealToneSSGByPitch(int ch, int seqPos)
 void OPNAController::writePitchSSG(int ch)
 {
 	int p = keyToneSSG_[ch].pitch
-				+ sumPitchSSG_[ch]
-				+ (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
-				+ detuneSSG_[ch];
+			+ sumPitchSSG_[ch]
+			+ (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
+			+ detuneSSG_[ch]
+			+ sumNoteSldSSG_[ch]
+			+ transposeSSG_[ch];
 
 	switch (wfSSG_[ch].type) {
 	case 0:	// Square

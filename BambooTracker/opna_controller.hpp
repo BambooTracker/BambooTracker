@@ -77,6 +77,7 @@ public:
 	void setVolumeSlideFM(int ch, int depth, bool isUp);
 	void setDetuneFM(int ch, int pitch);
 	void setNoteSlideFM(int ch, int speed, int seminote);
+	void setTransposeEffectFM(int ch, int seminote);
 
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
@@ -117,6 +118,7 @@ private:
 	int detuneFM_[6];
 	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[6];
 	int sumNoteSldFM_[6];
+	int transposeFM_[3];
 
 	void initFM();
 
@@ -173,6 +175,7 @@ public:
 	void setVolumeSlideSSG(int ch, int depth, bool isUp);
 	void setDetuneSSG(int ch, int pitch);
 	void setNoteSlideSSG(int ch, int speed, int seminote);
+	void setTransposeEffectSSG(int ch, int seminote);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);
@@ -213,7 +216,8 @@ private:
 	int volSldSSG_[3], sumVolSldSSG_[3];
 	int detuneSSG_[3];
 	std::unique_ptr<NoteSlideEffectIterator> nsItSSG_[3];
-	int sumNoteSldSSG_[6];
+	int sumNoteSldSSG_[3];
+	int transposeSSG_[3];
 
 	void initSSG();
 

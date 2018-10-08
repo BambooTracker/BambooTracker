@@ -293,6 +293,8 @@ private:
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
 	std::vector<int> ntDlyCntDrum_, ntCutDlyCntDrum_, volDlyCntDrum_;
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
+	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
+	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
 
 	int ctohex(const char c) const;
 };
