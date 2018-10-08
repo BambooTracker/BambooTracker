@@ -1003,12 +1003,33 @@ void PatternEditorPanel::eraseSelectedCells()
 
 void PatternEditorPanel::pasteCopiedCells(PatternPosition& startPos)
 {
-	// Analyze text
-	QString str = QApplication::clipboard()->text().remove(QRegularExpression("PATTERN_(COPY|CUT):"));
+	int sCol = 0;
+	std::vector<std::vector<std::string>> cells
+			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
+
+	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
+						   startPos.order, startPos.step, std::move(cells));
+	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
+}
+
+void PatternEditorPanel::pasteMixCopiedCells(PatternPosition& startPos)
+{
+	int sCol = 0;
+	std::vector<std::vector<std::string>> cells
+			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
+
+	bt_->pasteMixPatternCells(curSongNum_, startPos.track, sCol,
+							  startPos.order, startPos.step, std::move(cells));
+	comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
+}
+
+std::vector<std::vector<std::string>> PatternEditorPanel::instantiateCellsFromString(QString str, int& startCol)
+{
+	str.remove(QRegularExpression("PATTERN_(COPY|CUT):"));
 	QString hdRe = "^([0-9]+),([0-9]+),([0-9]+),";
 	QRegularExpression re(hdRe);
 	QRegularExpressionMatch match = re.match(str);
-	int sCol = match.captured(1).toInt();
+	startCol = match.captured(1).toInt();
 	int w = match.captured(2).toInt();
 	int h = match.captured(3).toInt();
 	str.remove(re);
@@ -1030,10 +1051,7 @@ void PatternEditorPanel::pasteCopiedCells(PatternPosition& startPos)
 		}
 	}
 
-	// Send cells data
-	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
-						   startPos.order, startPos.step, std::move(cells));
-	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
+	return cells;
 }
 
 void PatternEditorPanel::cutSelectedCells()
@@ -1223,6 +1241,14 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			}
 			else {
 				pasteCopiedCells(curPos_);
+				return true;
+			}
+		case Qt::Key_B:
+			if (bt_->isPlaySong()) {
+				return false;
+			}
+			else {
+				pasteMixCopiedCells(curPos_);
 				return true;
 			}
 		default:
@@ -1542,18 +1568,21 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		QAction* copy = menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
 		QAction* cut = menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
 		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
+		QAction* pasteMix = menu.addAction("Paste Mix", this, [&]() { pasteMixCopiedCells(mousePressPos_); });
 		QAction* erase = menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
 
 		if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
 			copy->setEnabled(false);
 			cut->setEnabled(false);
 			paste->setEnabled(false);
+			pasteMix->setEnabled(false);
 			erase->setEnabled(false);
 		}
 		else {
 			QString clipText = QApplication::clipboard()->text();
 			if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
 					paste->setEnabled(false);
+					pasteMix->setEnabled(false);
 			}
 			if (selRightBelowPos_.order < 0
 					|| !isSelectedCell(mousePressPos_.track, mousePressPos_.colInTrack,

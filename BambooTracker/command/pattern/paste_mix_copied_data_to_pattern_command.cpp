@@ -1,43 +1,23 @@
-#include "erase_cells_in_pattern_command.hpp"
+#include "paste_mix_copied_data_to_pattern_command.hpp"
 
-EraseCellsInPatternCommand::EraseCellsInPatternCommand(std::weak_ptr<Module> mod,
-													   int songNum, int beginTrack, int beginColmn,
-													   int beginOrder, int beginStep,
-													   int endTrack, int endColumn, int endStep)
+PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColmn,
+																	   int beginOrder, int beginStep,
+																	   std::vector<std::vector<std::string>> cells)
 	: mod_(mod),
 	  song_(songNum),
-	  bTrack_(beginTrack),
-	  bCol_(beginColmn),
+	  track_(beginTrack),
+	  col_(beginColmn),
 	  order_(beginOrder),
-	  bStep_(beginStep),
-	  eTrack_(endTrack),
-	  eCol_(endColumn),
-	  eStep_(endStep)
+	  step_(beginStep),
+	  cells_(cells)
 {
 	auto& sng = mod.lock()->getSong(songNum);
 	int s = beginStep;
-
-	int h = endStep - beginStep + 1;
-	int w = 0;
-	int tr = endTrack;
-	int cl = endColumn;
-	while (true) {
-		if (tr == beginTrack) {
-			w += (cl - beginColmn + 1);
-			break;
-		}
-		else {
-			w += (cl + 1);
-			cl = 10;
-			--tr;
-		}
-	}
-
-	for (size_t i = 0; i < h; ++i) {
+	for (size_t i = 0; i < cells.size(); ++i) {
 		prevCells_.emplace_back();
 		int t = beginTrack;
 		int c = beginColmn;
-		for (size_t j = 0; j < w; ++j) {
+		for (size_t j = 0; j < cells.at(i).size(); ++j) {
 			switch (c) {
 			case 0:
 				prevCells_.at(i).push_back(std::to_string(
@@ -93,49 +73,93 @@ EraseCellsInPatternCommand::EraseCellsInPatternCommand(std::weak_ptr<Module> mod
 	}
 }
 
-void EraseCellsInPatternCommand::redo()
+void PasteMixCopiedDataToPatternCommand::redo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
-	int s = bStep_;
-	for (size_t i = 0; i < prevCells_.size(); ++i) {
-		int t = bTrack_;
-		int c = bCol_;
-		for (size_t j = 0; j < prevCells_.at(i).size(); ++j) {
+	int s = step_;
+	for (size_t i = 0; i < cells_.size(); ++i) {
+		int t = track_;
+		int c = col_;
+		for (size_t j = 0; j < cells_.at(i).size(); ++j) {
 			switch (c) {
 			case 0:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setNoteNumber(-1);
+			{
+				int n = std::stoi(cells_.at(i).at(j));
+				if (n != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setNoteNumber(n);
 				break;
+			}
 			case 1:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setInstrumentNumber(-1);
+			{
+				int n = std::stoi(cells_.at(i).at(j));
+				if (n != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setInstrumentNumber(n);
 				break;
+			}
 			case 2:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setVolume(-1);
+			{
+				int vol = std::stoi(cells_.at(i).at(j));
+				if (vol != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setVolume(vol);
 				break;
+			}
 			case 3:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(0, "--");
+			{
+				std::string id = cells_.at(i).at(j);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(0, id);
 				break;
+			}
 			case 4:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(0, -1);
+			{
+				int val = std::stoi(cells_.at(i).at(j));
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(0, val);
 				break;
+			}
 			case 5:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(1, "--");
+			{
+				std::string id = cells_.at(i).at(j);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(1, id);
 				break;
+			}
 			case 6:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(1, -1);
+			{
+				int val = std::stoi(cells_.at(i).at(j));
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(1, val);
 				break;
+			}
 			case 7:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(2, "--");
+			{
+				std::string id = cells_.at(i).at(j);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(2, id);
 				break;
+			}
 			case 8:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(2, -1);
+			{
+				int val = std::stoi(cells_.at(i).at(j));
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(2, val);
 				break;
+			}
 			case 9:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(3, "--");
+			{
+				std::string id = cells_.at(i).at(j);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(3, id);
 				break;
+			}
 			case 10:
-				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(3, -1);
+			{
+				int val = std::stoi(cells_.at(i).at(j));
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(3, val);
 				break;
+			}
 			}
 
 			++c;
@@ -147,14 +171,14 @@ void EraseCellsInPatternCommand::redo()
 	}
 }
 
-void EraseCellsInPatternCommand::undo()
+void PasteMixCopiedDataToPatternCommand::undo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
-	int s = bStep_;
+	int s = step_;
 	for (size_t i = 0; i < prevCells_.size(); ++i) {
-		int t = bTrack_;
-		int c = bCol_;
+		int t = track_;
+		int c = col_;
 		for (size_t j = 0; j < prevCells_.at(i).size(); ++j) {
 			switch (c) {
 			case 0:
@@ -212,7 +236,7 @@ void EraseCellsInPatternCommand::undo()
 	}
 }
 
-int EraseCellsInPatternCommand::getID() const
+int PasteMixCopiedDataToPatternCommand::getID() const
 {
-	return 0x2e;
+	return 0x2f;
 }

@@ -116,7 +116,9 @@ SOURCES += \
     instrument/abstruct_instrument_property.cpp \
     gui/instrument_editor/visualized_instrument_macro_editor.cpp \
     instrument/command_sequence.cpp \
-    instrument/effect_iterator.cpp
+    instrument/effect_iterator.cpp \
+    command/pattern/paste_mix_copied_data_to_pattern_command.cpp \
+    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -222,7 +224,9 @@ HEADERS += \
     gui/instrument_editor/visualized_instrument_macro_editor.hpp \
     instrument/command_sequence.hpp \
     instrument/sequence_iterator_interface.hpp \
-    instrument/effect_iterator.hpp
+    instrument/effect_iterator.hpp \
+    command/pattern/paste_mix_copied_data_to_pattern_command.hpp \
+    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

@@ -1628,7 +1628,26 @@ void BambooTracker::deletePreviousStep(int songNum, int trackNum, int orderNum, 
 void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 									  std::vector<std::vector<std::string>> cells)
 {
-	// Arrange data
+	std::vector<std::vector<std::string>> d
+			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
+
+	comMan_.invoke(std::make_unique<PasteCopiedDataToPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+}
+
+void BambooTracker::pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+										 std::vector<std::vector<std::string>> cells)
+{
+	std::vector<std::vector<std::string>> d
+			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
+
+	comMan_.invoke(std::make_unique<PasteMixCopiedDataToPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+}
+
+std::vector<std::vector<std::string>> BambooTracker::arrangePatternDataCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+																			 std::vector<std::vector<std::string>> cells)
+{
 	std::vector<std::vector<std::string>> d;
 	size_t w = (songStyle_.trackAttribs.size() - beginTrack - 1) * 11 + (11 - beginColmn);
 	size_t h = getPatternSizeFromOrderNumber(songNum, beginOrder) - beginStep;
@@ -1643,8 +1662,7 @@ void BambooTracker::pastePatternCells(int songNum, int beginTrack, int beginColm
 		}
 	}
 
-	comMan_.invoke(std::make_unique<PasteCopiedDataToPatternCommand>(
-					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+	return d;
 }
 
 void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

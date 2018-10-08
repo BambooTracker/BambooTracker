@@ -13,11 +13,11 @@ PasteCopiedDataToPatternCommand::PasteCopiedDataToPatternCommand(std::weak_ptr<M
 {
 	auto& sng = mod.lock()->getSong(songNum);
 	int s = beginStep;
-	for (int i = 0; i < cells.size(); ++i) {
+	for (size_t i = 0; i < cells.size(); ++i) {
 		prevCells_.emplace_back();
 		int t = beginTrack;
 		int c = beginColmn;
-		for (int j = 0; j < cells.at(i).size(); ++j) {
+		for (size_t j = 0; j < cells.at(i).size(); ++j) {
 			switch (c) {
 			case 0:
 				prevCells_.at(i).push_back(std::to_string(
@@ -93,10 +93,10 @@ void PasteCopiedDataToPatternCommand::setCells(std::vector<std::vector<std::stri
 	auto& sng = mod_.lock()->getSong(song_);
 
 	int s = step_;
-	for (int i = 0; i < cells.size(); ++i) {
+	for (size_t i = 0; i < cells.size(); ++i) {
 		int t = track_;
 		int c = col_;
-		for (int j = 0; j < cells.at(i).size(); ++j) {
+		for (size_t j = 0; j < cells.at(i).size(); ++j) {
 			switch (c) {
 			case 0:
 				sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s)

@@ -160,6 +160,8 @@ private:
 	void copySelectedCells();
 	void eraseSelectedCells();
 	void pasteCopiedCells(PatternPosition& startPos);
+	void pasteMixCopiedCells(PatternPosition& startPos);
+	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
 	void cutSelectedCells();
 
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
