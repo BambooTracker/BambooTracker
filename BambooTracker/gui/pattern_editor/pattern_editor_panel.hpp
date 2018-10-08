@@ -42,6 +42,8 @@ public slots:
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
 
+	void setPatternHighlightCount(int count);
+
 	void onSongLoaded();
 
 signals:
@@ -113,6 +115,11 @@ private:
 	bool isPressedPlus_, isPressedMinus_;
 
 	int entryCnt_;
+
+	int selectAllState_;
+	bool isMuteElse_;
+
+	int hlCnt_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);

@@ -96,6 +96,8 @@ private:
 
 	int entryCnt_;
 
+	int selectAllState_;
+
 	void initDisplay();
 
 	void drawList(const QRect& rect);

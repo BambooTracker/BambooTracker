@@ -84,6 +84,11 @@ void PatternEditor::onDefaultPatternSizeChanged()
 	ui->panel->onDefaultPatternSizeChanged();
 }
 
+void PatternEditor::setPatternHighlightCount(int count)
+{
+	ui->panel->setPatternHighlightCount(count);
+}
+
 void PatternEditor::onSongLoaded()
 {
 	ui->panel->onSongLoaded();

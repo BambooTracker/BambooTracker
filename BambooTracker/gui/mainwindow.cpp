@@ -102,10 +102,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	});
 
 	/* Pattern step highlight */
-	ui->stepHighrightSpinBox->setValue(bt_->getPatternStepHighlightCount());
+	ui->stepHighrightSpinBox->setValue(8);
 	QObject::connect(ui->stepHighrightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int count) {
-		bt_->setPatternStepHighlightCount(count);
+		ui->patternEditor->setPatternHighlightCount(count);
 		ui->patternEditor->update();
 	});
 
@@ -204,6 +204,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		case Qt::Key_F6:		startPlayPattern();			break;
 		case Qt::Key_F7:		startPlayFromCurrentStep();	break;
 		case Qt::Key_F8:		stopPlaySong();				break;
+		case Qt::Key_F12:		killSound();				break;
 
 		default:
 			if (!event->isAutoRepeat()) {
@@ -497,6 +498,12 @@ void MainWindow::lockControls(bool isLock)
 {
 	ui->modSetDialogOpenToolButton->setEnabled(!isLock);
 	ui->songNumSpinBox->setEnabled(!isLock);
+}
+
+/********** Kill sound **********/
+void MainWindow::killSound()
+{
+	bt_->killSound();
 }
 
 /********** Octave change **********/

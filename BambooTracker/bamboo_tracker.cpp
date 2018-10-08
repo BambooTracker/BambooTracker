@@ -19,7 +19,6 @@ BambooTracker::BambooTracker()
 	  curInstNum_(-1),
 	  playState_(false),
 	  streamIntrRate_(60),	// NTSC
-	  ptnHlCnt_(8),
 	  isFindNextStep_(false)
 {
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
@@ -1356,6 +1355,11 @@ void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 	opnaCtrl_.getStreamSamples(container, nSamples);
 }
 
+void BambooTracker::killSound()
+{
+	opnaCtrl_.reset();
+}
+
 /********** Stream details **********/
 int BambooTracker::getStreamRate() const
 {
@@ -1672,16 +1676,6 @@ void BambooTracker::setDefaultPatternSize(int songNum, size_t size)
 size_t BambooTracker::getDefaultPatternSize(int songNum) const
 {
 	return mod_->getSong(songNum).getDefaultPatternSize();
-}
-
-void BambooTracker::setPatternStepHighlightCount(int count)
-{
-	ptnHlCnt_ = count;
-}
-
-int BambooTracker::getPatternStepHighlightCount() const
-{
-	return ptnHlCnt_;
 }
 
 int BambooTracker::ctohex(const char c) const

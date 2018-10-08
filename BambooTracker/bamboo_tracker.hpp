@@ -156,6 +156,7 @@ public:
 	// Stream events
 	int streamCountUp();
 	void getStreamSamples(int16_t *container, size_t nSamples);
+	void killSound();
 
 	// Stream details
 	int getStreamRate() const;
@@ -223,8 +224,6 @@ public:
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 	void setDefaultPatternSize(int songNum, size_t size);
 	size_t getDefaultPatternSize(int songNum) const;
-	void setPatternStepHighlightCount(int count);
-	int getPatternStepHighlightCount() const;
 
 private:
 	CommandManager comMan_;
@@ -257,8 +256,6 @@ private:
 	int nextReadStepOrder_, nextReadStepStep_;
 
 	int streamIntrRate_;
-
-	int ptnHlCnt_;
 
 	// Play song
 	bool isFindNextStep_;

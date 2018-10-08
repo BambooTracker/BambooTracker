@@ -31,7 +31,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  shiftPressedPos_{ -1, -1 },
 	  isIgnoreToSlider_(false),
 	  isIgnoreToPattern_(false),
-	  entryCnt_(0)
+	  entryCnt_(0),
+	  selectAllState_(-1)
 {
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -543,6 +544,7 @@ void OrderListPanel::onSongLoaded()
 	selRightBelowPos_ = { -1, -1 };
 	shiftPressedPos_ = { -1, -1 };
 	entryCnt_ = 0;
+	selectAllState_ = -1;
 
 	update();
 }
@@ -567,6 +569,23 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 	/* General Keys (with Ctrl) */
 	if (event->modifiers().testFlag(Qt::ControlModifier)) {
 		switch (event->key()) {
+		case Qt::Key_A:
+		{
+			int max = bt_->getOrderSize(curSongNum_) - 1;
+			selectAllState_ = (selectAllState_ + 1) % 2;
+			if (!selectAllState_) {
+				OrderPosition start = { curPos_.track, 0 };
+				OrderPosition end = { curPos_.track, max };
+				setSelectedRectangle(start, end);
+			}
+			else {
+				OrderPosition start = { 0, 0 };
+				OrderPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), max };
+				setSelectedRectangle(start, end);
+			}
+			update();
+			return true;
+		}
 		case Qt::Key_C:
 			if (bt_->isPlaySong()) {
 				return false;
@@ -702,6 +721,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 	case Qt::Key_Escape:
 		selLeftAbovePos_ = { -1, -1 };
 		selRightBelowPos_ = { -1, -1 };
+		selectAllState_ = -1;
 		update();
 		break;
 	default:
@@ -750,6 +770,7 @@ void OrderListPanel::mousePressEvent(QMouseEvent *event)
 	if (event->button() == Qt::LeftButton) {
 		selLeftAbovePos_ = { -1, -1 };
 		selRightBelowPos_ = { -1, -1 };
+		selectAllState_ = -1;
 	}
 }
 

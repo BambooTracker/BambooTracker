@@ -65,6 +65,9 @@ private:
 	void stopPlaySong();
 	void lockControls(bool isLock);
 
+	// Kill sound
+	void killSound();
+
 	// Octave change
 	void changeOctave(bool upFlag);
 

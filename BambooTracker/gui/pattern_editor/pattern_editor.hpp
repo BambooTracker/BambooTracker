@@ -34,6 +34,8 @@ public slots:
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
 
+	void setPatternHighlightCount(int count);
+
 	void onSongLoaded();
 
 private:
