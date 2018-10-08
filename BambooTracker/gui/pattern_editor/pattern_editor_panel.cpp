@@ -1324,26 +1324,37 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			deletePreviousStep();
 			return true;
 		}
+	case Qt::Key_Escape:
+		selLeftAbovePos_ = { -1, -1, -1, -1 };
+		selRightBelowPos_ = { -1, -1, -1, -1 };
+		update();
+		break;
 	default:
 		if (!bt_->isJamMode()) {
-			// Pattern edit
-			switch (curPos_.colInTrack) {
-			case 0:
-				return enterToneData(event->key());
-			case 1:
-				return enterInstrumentData(event->key());
-			case 2:
-				return enterVolumeData(event->key());
-			case 3:
-			case 5:
-			case 7:
-			case 9:
-				return enterEffectID(event->key());
-			case 4:
-			case 6:
-			case 8:
-			case 10:
-				return enterEffectValue(event->key());
+			if (event->key() == Qt::Key_Delete && selLeftAbovePos_.order != -1) {
+				// Delete region
+				eraseSelectedCells();
+			}
+			else {
+				// Pattern edit
+				switch (curPos_.colInTrack) {
+				case 0:
+					return enterToneData(event->key());
+				case 1:
+					return enterInstrumentData(event->key());
+				case 2:
+					return enterVolumeData(event->key());
+				case 3:
+				case 5:
+				case 7:
+				case 9:
+					return enterEffectID(event->key());
+				case 4:
+				case 6:
+				case 8:
+				case 10:
+					return enterEffectValue(event->key());
+				}
 			}
 		}
 		return false;

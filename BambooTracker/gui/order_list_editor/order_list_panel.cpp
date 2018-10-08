@@ -699,6 +699,11 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			deleteOrder();
 			return true;
 		}
+	case Qt::Key_Escape:
+		selLeftAbovePos_ = { -1, -1 };
+		selRightBelowPos_ = { -1, -1 };
+		update();
+		break;
 	default:
 		if (!bt_->isJamMode()) {
 			return enterOrder(event->key());
