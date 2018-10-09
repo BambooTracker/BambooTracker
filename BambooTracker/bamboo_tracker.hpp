@@ -177,7 +177,11 @@ public:
 	void setSongTitle(int songNum, std::string title);
 	std::string getSongTitle(int songNum) const;
 	void setSongTempo(int songNum, int tempo);
-	int getSongtempo(int songNum) const;
+	int getSongTempo(int songNum) const;
+	void setSongGroove(int songNum, int groove);
+	int getSongGroove(int songNum) const;
+	void toggleTempoOrGrooveInSong(int songNum, bool isTempo);
+	bool isUsedTempoInSong(int songNum) const;
 	SongStyle getSongStyle(int songNum) const;
 	void setSongSpeed(int songNum, int speed);
 	int getSongSpeed(int songNum) const;

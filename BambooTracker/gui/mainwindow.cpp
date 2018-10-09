@@ -62,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	});
 	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int freq) {
-		int curSong = bt_->getCurrentSongNumber();
 		if (freq != bt_->getModuleTickFrequency()) {
 			bt_->setModuleTickFrequency(freq);
 			stream_->setInturuption(freq);
@@ -81,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int tempo) {
 		int curSong = bt_->getCurrentSongNumber();
-		if (tempo != bt_->getSongtempo(curSong)) {
+		if (tempo != bt_->getSongTempo(curSong)) {
 			bt_->setSongTempo(curSong, tempo);
 			setModifiedTrue();
 		}
@@ -98,6 +97,11 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, [&](int size) {
 		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
 		ui->patternEditor->onDefaultPatternSizeChanged();
+		setModifiedTrue();
+	});
+	QObject::connect(ui->grooveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, [&](int n) {
+		bt_->setSongGroove(bt_->getCurrentSongNumber(), n);
 		setModifiedTrue();
 	});
 
@@ -453,14 +457,30 @@ void MainWindow::loadSong()
 	ui->songNumSpinBox->setValue(curSong);
 	auto title = bt_->getSongTitle(curSong);
 	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), title.length()));
-	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
+	switch (bt_->getSongStyle(curSong).type) {
 	case SongType::STD:		ui->songStyleLineEdit->setText("Standard");			break;
 	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch extension");	break;
 	}
 	ui->tickFreqSpinBox->setValue(bt_->getModuleTickFrequency());
-	ui->tempoSpinBox->setValue(bt_->getSongtempo(bt_->getCurrentSongNumber()));
-	ui->speedSpinBox->setValue(bt_->getSongSpeed(bt_->getCurrentSongNumber()));
-	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(bt_->getCurrentSongNumber()));
+	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
+	ui->speedSpinBox->setValue(bt_->getSongSpeed(curSong));
+	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(curSong));
+	ui->grooveSpinBox->setValue(bt_->getSongGroove(curSong));
+	if (bt_->isUsedTempoInSong(curSong)) {
+		ui->tickFreqSpinBox->setEnabled(true);
+		ui->tempoSpinBox->setEnabled(true);
+		ui->speedSpinBox->setEnabled(true);
+		ui->grooveCheckBox->setChecked(false);
+		ui->grooveSpinBox->setEnabled(false);
+	}
+	else {
+
+		ui->tickFreqSpinBox->setEnabled(false);
+		ui->tempoSpinBox->setEnabled(false);
+		ui->speedSpinBox->setEnabled(false);
+		ui->grooveCheckBox->setChecked(true);
+		ui->grooveSpinBox->setEnabled(true);
+	}
 	ui->orderList->onSongLoaded();
 	ui->patternEditor->onSongLoaded();
 
@@ -710,4 +730,26 @@ void MainWindow::on_modSetDialogOpenToolButton_clicked()
 		setModifiedTrue();
 		setWindowTitle();
 	}
+}
+
+void MainWindow::on_grooveCheckBox_stateChanged(int arg1)
+{
+	if (arg1 == Qt::Checked) {
+		ui->tickFreqSpinBox->setValue(60);
+		ui->tickFreqSpinBox->setEnabled(false);
+		ui->tempoSpinBox->setValue(150);
+		ui->tempoSpinBox->setEnabled(false);
+		ui->speedSpinBox->setEnabled(false);
+		ui->grooveSpinBox->setEnabled(true);
+		bt_->toggleTempoOrGrooveInSong(bt_->getCurrentSongNumber(), false);
+	}
+	else {
+		ui->tickFreqSpinBox->setEnabled(true);
+		ui->tempoSpinBox->setEnabled(true);
+		ui->speedSpinBox->setEnabled(true);
+		ui->grooveSpinBox->setEnabled(false);
+		bt_->toggleTempoOrGrooveInSong(bt_->getCurrentSongNumber(), true);
+	}
+
+	setModifiedTrue();
 }

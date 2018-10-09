@@ -469,7 +469,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 	// Reset
 	opnaCtrl_.reset();
 	tickCounter_.resetCount();
-	tickCounter_.setTempo(getSongtempo(num));
+	tickCounter_.setTempo(getSongTempo(num));
 	tickCounter_.setSpeed(getSongSpeed(num));
 
 	switch (songStyle_.type) {
@@ -1436,9 +1436,29 @@ void BambooTracker::setSongTempo(int songNum, int tempo)
 	if (curSongNum_ == songNum) tickCounter_.setTempo(tempo);
 }
 
-int BambooTracker::getSongtempo(int songNum) const
+int BambooTracker::getSongTempo(int songNum) const
 {
 	return mod_->getSong(songNum).getTempo();
+}
+
+void BambooTracker::setSongGroove(int songNum, int groove)
+{
+	mod_->getSong(songNum).setGroove(groove);
+}
+
+int BambooTracker::getSongGroove(int songNum) const
+{
+	return mod_->getSong(songNum).getGroove();
+}
+
+void BambooTracker::toggleTempoOrGrooveInSong(int songNum, bool isTempo)
+{
+	mod_->getSong(songNum).toggleTempoOrGroove(isTempo);
+}
+
+bool BambooTracker::isUsedTempoInSong(int songNum) const
+{
+	return mod_->getSong(songNum).isUsedTempo();
 }
 
 SongStyle BambooTracker::getSongStyle(int songNum) const

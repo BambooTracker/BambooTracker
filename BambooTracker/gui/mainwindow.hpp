@@ -83,6 +83,7 @@ private slots:
 	void onInstrumentListWidgetItemAdded(const QModelIndex& parent, int start, int end);
 	void on_instrumentListWidget_itemSelectionChanged();
 	void on_modSetDialogOpenToolButton_clicked();
+	void on_grooveCheckBox_stateChanged(int arg1);
 };
 
 #endif // MAINWINDOW_HPP

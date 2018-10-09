@@ -1,11 +1,13 @@
 #include "song.hpp"
 
-Song::Song(int number, SongType songType, std::string title, int tempo, int speed,
-		   size_t defaultPatternSize)
+Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
+		   int tempo, int groove, int speed, size_t defaultPatternSize)
 	: num_(number),
 	  type_(songType),
 	  title_(title),
+	  isUsedTempo_(isUsedTempo),
 	  tempo_(tempo),
+	  groove_(groove),
 	  speed_(speed),
 	  defPtnSize_(defaultPatternSize)
 {
@@ -55,6 +57,26 @@ void Song::setTempo(int tempo)
 int Song::getTempo() const
 {
 	return tempo_;
+}
+
+void Song::setGroove(int groove)
+{
+	groove_ = groove;
+}
+
+int Song::getGroove() const
+{
+	return groove_;
+}
+
+void Song::toggleTempoOrGroove(bool isUsedTempo)
+{
+	isUsedTempo_ = isUsedTempo;
+}
+
+bool Song::isUsedTempo() const
+{
+	return isUsedTempo_;
 }
 
 void Song::setSpeed(int speed)
