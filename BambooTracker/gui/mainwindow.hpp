@@ -77,6 +77,9 @@ private:
 	void setWindowTitle();
 	void setModifiedTrue();
 
+	bool isEditedPattern_, isEditedOrder_;
+	bool isSelectedPO_;
+
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
@@ -84,6 +87,20 @@ private slots:
 	void on_instrumentListWidget_itemSelectionChanged();
 	void on_modSetDialogOpenToolButton_clicked();
 	void on_grooveCheckBox_stateChanged(int arg1);
+	void on_actionExit_triggered();
+	void on_actionUndo_triggered();
+	void on_actionRedo_triggered();
+	void on_actionCut_triggered();
+	void on_actionCopy_triggered();
+	void on_actionPaste_triggered();
+	void on_actionPaste_Mix_triggered();
+	void on_actionDelete_triggered();
+	void updateMenuByPattern();
+	void updateMenuByOrder();
+	void onPatternAndOrderFocusLost();
+	void updateMenuByPatternAndOrderSelection(bool isSelected);
+	void on_actionAll_triggered();
+	void on_actionNone_triggered();
 };
 
 #endif // MAINWINDOW_HPP

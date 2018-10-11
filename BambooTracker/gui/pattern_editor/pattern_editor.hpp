@@ -3,6 +3,7 @@
 
 #include <QFrame>
 #include <QUndoStack>
+#include <QEvent>
 #include <memory>
 #include "bamboo_tracker.hpp"
 
@@ -16,16 +17,26 @@ class PatternEditor : public QFrame
 
 public:
 	explicit PatternEditor(QWidget *parent = nullptr);
-	~PatternEditor();
+	~PatternEditor() override;
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 
 	void changeEditable();
 	void updatePosition();
 
+	void copySelectedCells();
+	void cutSelectedCells();
+
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
+
+	void focusIn();
+	void focusOut();
+	void selected(bool isSelected);
+
+protected:
+	bool eventFilter(QObject *watched, QEvent *event) override;
 
 public slots:
 	void setCurrentTrack(int num);
@@ -37,6 +48,13 @@ public slots:
 	void setPatternHighlightCount(int count);
 
 	void onSongLoaded();
+
+	void onDeletePressed();
+	void onPastePressed();
+	void onPasteMixPressed();
+	/// 0: None
+	/// 1: All
+	void onSelectPressed(int type);
 
 private:
 	Ui::PatternEditor *ui;

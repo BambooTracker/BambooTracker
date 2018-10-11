@@ -29,6 +29,9 @@ public:
 
 	void changeEditable();
 
+	void copySelectedCells();
+	void deleteOrder();
+
 public slots:
 	void setCurrentTrackForSlider(int num);
 	void setCurrentOrderForSlider(int num);
@@ -38,6 +41,11 @@ public slots:
 	void onOrderEdited();
 	void onSongLoaded();
 
+	void onPastePressed();
+	/// 0: None
+	/// 1: All
+	void onSelectPressed(int type);
+
 signals:
 	void currentTrackChangedForSlider(int num);
 	void currentOrderChangedForSlider(int num, int max);
@@ -45,6 +53,8 @@ signals:
 	void currentOrderChanged(int num);
 
 	void orderEdited();
+
+	void selected(bool isSelected);
 
 protected:
 	virtual bool event(QEvent *event) override;
@@ -114,9 +124,7 @@ private:
 	bool enterOrder(int key);
 	void setCellOrderNum(int n);
 	void insertOrderBelow();
-	void deleteOrder();
 
-	void copySelectedCells();
 	void pasteCopiedCells(OrderPosition& startPos);
 
 	void setSelectedRectangle(const OrderPosition& start, const OrderPosition& end);

@@ -405,6 +405,8 @@ void OrderListPanel::insertOrderBelow()
 
 void OrderListPanel::deleteOrder()
 {
+	if (bt_->isJamMode()) return;
+
 	if (bt_->getOrderSize(curSongNum_) > 1) {
 		bt_->deleteOrder(curSongNum_, curPos_.row);
 		comStack_.lock()->push(new DeleteOrderQtCommand(this));
@@ -413,6 +415,8 @@ void OrderListPanel::deleteOrder()
 
 void OrderListPanel::copySelectedCells()
 {
+	if (selLeftAbovePos_.row == -1) return;
+
 	int w = selRightBelowPos_.track - selLeftAbovePos_.track + 1;
 	int h = selRightBelowPos_.row - selLeftAbovePos_.row + 1;
 
@@ -484,6 +488,8 @@ void OrderListPanel::setSelectedRectangle(const OrderPosition& start, const Orde
 			selRightBelowPos_ = end;
 		}
 	}
+
+	emit selected(true);
 }
 
 bool OrderListPanel::isSelectedCell(int track, int row)
@@ -545,6 +551,45 @@ void OrderListPanel::onSongLoaded()
 	shiftPressedPos_ = { -1, -1 };
 	entryCnt_ = 0;
 	selectAllState_ = -1;
+	emit selected(false);
+
+	update();
+}
+
+void OrderListPanel::onPastePressed()
+{
+	if (!bt_->isPlaySong()) pasteCopiedCells(curPos_);
+}
+
+void OrderListPanel::onSelectPressed(int type)
+{
+	switch (type) {
+	case 0:	// None
+	{
+		selLeftAbovePos_ = { -1, -1 };
+		selRightBelowPos_ = { -1, -1 };
+		selectAllState_ = -1;
+		emit selected(false);
+		update();
+		break;
+	}
+	case 1:	// All
+	{
+		int max = bt_->getOrderSize(curSongNum_) - 1;
+		selectAllState_ = (selectAllState_ + 1) % 2;
+		if (!selectAllState_) {
+			OrderPosition start = { curPos_.track, 0 };
+			OrderPosition end = { curPos_.track, max };
+			setSelectedRectangle(start, end);
+		}
+		else {
+			OrderPosition start = { 0, 0 };
+			OrderPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), max };
+			setSelectedRectangle(start, end);
+		}
+		break;
+	}
+	}
 
 	update();
 }
@@ -566,48 +611,6 @@ bool OrderListPanel::event(QEvent *event)
 
 bool OrderListPanel::keyPressed(QKeyEvent *event)
 {	
-	/* General Keys (with Ctrl) */
-	if (event->modifiers().testFlag(Qt::ControlModifier)) {
-		switch (event->key()) {
-		case Qt::Key_A:
-		{
-			int max = bt_->getOrderSize(curSongNum_) - 1;
-			selectAllState_ = (selectAllState_ + 1) % 2;
-			if (!selectAllState_) {
-				OrderPosition start = { curPos_.track, 0 };
-				OrderPosition end = { curPos_.track, max };
-				setSelectedRectangle(start, end);
-			}
-			else {
-				OrderPosition start = { 0, 0 };
-				OrderPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), max };
-				setSelectedRectangle(start, end);
-			}
-			update();
-			return true;
-		}
-		case Qt::Key_C:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				copySelectedCells();
-				return true;
-			}
-		case Qt::Key_V:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				pasteCopiedCells(curPos_);
-				return true;
-			}
-		default:
-			return false;
-		}
-	}
-
-
 	/* General Keys */
 	switch (event->key()) {
 	case Qt::Key_Shift:
@@ -710,20 +713,6 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			insertOrderBelow();
 			return true;
 		}
-	case Qt::Key_Delete:
-		if (bt_->isJamMode()) {
-			return false;
-		}
-		else {
-			deleteOrder();
-			return true;
-		}
-	case Qt::Key_Escape:
-		selLeftAbovePos_ = { -1, -1 };
-		selRightBelowPos_ = { -1, -1 };
-		selectAllState_ = -1;
-		update();
-		break;
 	default:
 		if (!bt_->isJamMode()) {
 			return enterOrder(event->key());
@@ -771,6 +760,7 @@ void OrderListPanel::mousePressEvent(QMouseEvent *event)
 		selLeftAbovePos_ = { -1, -1 };
 		selRightBelowPos_ = { -1, -1 };
 		selectAllState_ = -1;
+		emit selected(false);
 	}
 }
 
@@ -838,7 +828,7 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 		}
 		else {
 			QString clipText = QApplication::clipboard()->text();
-			if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
+			if (!clipText.startsWith("ORDER_COPY")) {
 					paste->setEnabled(false);
 			}
 			if (selRightBelowPos_.row < 0

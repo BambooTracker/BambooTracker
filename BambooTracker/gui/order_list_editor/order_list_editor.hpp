@@ -3,6 +3,7 @@
 
 #include <QFrame>
 #include <QUndoStack>
+#include <QEvent>
 #include <memory>
 #include "bamboo_tracker.hpp"
 
@@ -16,12 +17,15 @@ class OrderListEditor : public QFrame
 
 public:
 	explicit OrderListEditor(QWidget *parent = nullptr);
-	~OrderListEditor();
+	~OrderListEditor() override;
 
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 
 	void changeEditable();
+
+	void copySelectedCells();
+	void deleteOrder();
 
 signals:
 	void currentTrackChanged(int num);
@@ -29,10 +33,22 @@ signals:
 
 	void orderEdited();
 
+	void focusIn();
+	void focusOut();
+	void selected(bool isSelected);
+
 public slots:
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num, int max);
 	void onSongLoaded();
+
+	void onPastePressed();
+	/// 0: None
+	/// 1: All
+	void onSelectPressed(int type);
+
+protected:
+	bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
 	Ui::OrderListEditor *ui;

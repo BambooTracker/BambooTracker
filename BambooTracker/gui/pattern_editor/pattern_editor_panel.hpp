@@ -33,6 +33,9 @@ public:
 	int getFullColmunSize() const;
 	void updatePosition();
 
+	void copySelectedCells();
+	void cutSelectedCells();
+
 public slots:
 	void setCurrentCellInRow(int num);
 	void setCurrentStep(int num);
@@ -46,12 +49,21 @@ public slots:
 
 	void onSongLoaded();
 
+	void onDeletePressed();
+	void onPastePressed();
+	void onPasteMixPressed();
+	/// 0: None
+	/// 1: All
+	void onSelectPressed(int type);
+
 signals:
 	void currentCellInRowChanged(int num);
 	void currentStepChanged(int num, int max);
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
 	void effectColsCompanded(int num, int max);
+
+	void selected(bool isSelected);
 
 protected:
 	virtual bool event(QEvent *event) override;
@@ -150,19 +162,16 @@ private:
 	void setStepVolume(int volume);
 	bool enterEffectID(int key);
 	void setStepEffectID(QString str);
-	void eraseStepEffect();
 	bool enterEffectValue(int key);
 	void setStepEffectValue(int value);
 
 	void insertStep();
 	void deletePreviousStep();
 
-	void copySelectedCells();
 	void eraseSelectedCells();
 	void pasteCopiedCells(PatternPosition& startPos);
 	void pasteMixCopiedCells(PatternPosition& startPos);
 	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
-	void cutSelectedCells();
 
 	void increaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);
 	void decreaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);

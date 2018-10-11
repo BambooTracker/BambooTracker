@@ -7,6 +7,8 @@ PatternEditor::PatternEditor(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	ui->panel->installEventFilter(this);
+
 	ui->panel->setFocus();
 	QObject::connect(ui->panel, &PatternEditorPanel::currentCellInRowChanged,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
@@ -25,6 +27,8 @@ PatternEditor::PatternEditor(QWidget *parent) :
 		ui->horizontalScrollBar->setMaximum(max);
 		ui->horizontalScrollBar->setValue(num);
 	});
+	QObject::connect(ui->panel, &PatternEditorPanel::selected,
+					 this, [&](bool isSelected) { emit selected(isSelected); });
 
 	auto focusSlot = [&]() { ui->panel->setFocus(); };
 
@@ -63,6 +67,27 @@ void PatternEditor::updatePosition()
 	ui->panel->updatePosition();
 }
 
+void PatternEditor::copySelectedCells()
+{
+	ui->panel->copySelectedCells();
+}
+
+void PatternEditor::cutSelectedCells()
+{
+	ui->panel->cutSelectedCells();
+}
+
+bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
+{
+	Q_UNUSED(watched)
+
+	switch (event->type()) {
+	case QEvent::FocusIn:	emit focusIn();		return false;
+	case QEvent::FocusOut:	emit focusOut();	return false;
+	default:	return false;
+	}
+}
+
 /********** Slots **********/
 void PatternEditor::setCurrentTrack(int num)
 {
@@ -98,4 +123,24 @@ void PatternEditor::onSongLoaded()
 										  bt_->getCurrentSongNumber(),
 										  bt_->getCurrentOrderNumber()) - 1);
 	ui->verticalScrollBar->setValue(0);
+}
+
+void PatternEditor::onDeletePressed()
+{
+	ui->panel->onDeletePressed();
+}
+
+void PatternEditor::onPastePressed()
+{
+	ui->panel->onPastePressed();
+}
+
+void PatternEditor::onPasteMixPressed()
+{
+	ui->panel->onPasteMixPressed();
+}
+
+void PatternEditor::onSelectPressed(int type)
+{
+	ui->panel->onSelectPressed(type);
 }

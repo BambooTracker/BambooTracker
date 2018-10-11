@@ -6,6 +6,7 @@
 #include <QAction>
 #include <QDialog>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
@@ -22,13 +23,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	bt_(std::make_shared<BambooTracker>()),
 	comStack_(std::make_shared<QUndoStack>(this)),
 	instForms_(std::make_shared<InstrumentFormManager>()),
-	isModifiedForNotCommand_(false)
+	isModifiedForNotCommand_(false),
+	isEditedPattern_(true),
+	isEditedOrder_(false),
+	isSelectedPO_(false)
 {
 	ui->setupUi(this);
 
 	/* Command stack */
 	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
-					 this, [&](int idx) { setWindowModified(idx || isModifiedForNotCommand_); });
+					 this, [&](int idx) {
+		setWindowModified(idx || isModifiedForNotCommand_);
+		ui->actionUndo->setEnabled(comStack_->canUndo());
+		ui->actionRedo->setEnabled(comStack_->canRedo());
+	});
 
 	/* Audio stream */
 	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(),
@@ -129,10 +137,17 @@ MainWindow::MainWindow(QWidget *parent) :
 	/* Pattern editor */
 	ui->patternEditor->setCore(bt_);
 	ui->patternEditor->setCommandStack(comStack_);
+	ui->patternEditor->installEventFilter(this);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 ui->orderList, &OrderListEditor::setCurrentTrack);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentOrderChanged,
 					 ui->orderList, &OrderListEditor::setCurrentOrder);
+	QObject::connect(ui->patternEditor, &PatternEditor::focusIn,
+					 this, &MainWindow::updateMenuByPattern);
+	QObject::connect(ui->patternEditor, &PatternEditor::focusOut,
+					 this, &MainWindow::onPatternAndOrderFocusLost);
+	QObject::connect(ui->patternEditor, &PatternEditor::selected,
+					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
@@ -144,6 +159,19 @@ MainWindow::MainWindow(QWidget *parent) :
 					 ui->patternEditor, &PatternEditor::setCurrentOrder);
 	QObject::connect(ui->orderList, &OrderListEditor::orderEdited,
 					 ui->patternEditor, &PatternEditor::onOrderListEdited);
+	QObject::connect(ui->orderList, &OrderListEditor::focusIn,
+					 this, &MainWindow::updateMenuByOrder);
+	QObject::connect(ui->orderList, &OrderListEditor::focusOut,
+					 this, &MainWindow::onPatternAndOrderFocusLost);
+	QObject::connect(ui->orderList, &OrderListEditor::selected,
+					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
+
+	/* Clipboard */
+	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,
+					 this, [&]() {
+		if (isEditedOrder_) updateMenuByOrder();
+		else if (isEditedPattern_) updateMenuByPattern();
+	});
 
 	loadModule();
 }
@@ -192,63 +220,54 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	int key = event->key();
 
 	/* General keys */
-	if (event->modifiers().testFlag(Qt::ControlModifier)) {	// Pressed ctrl
-		switch (key) {
-		case Qt::Key_Z:	undo();	break;
-		case Qt::Key_Y:	redo();	break;
-		default:	break;
-		}
-	}
-	else {
-		switch (key) {
-		case Qt::Key_Space:		toggleJamMode();			break;
-		case Qt::Key_Asterisk:	changeOctave(true);			break;
-		case Qt::Key_Slash:		changeOctave(false);		break;
-		case Qt::Key_F5:		startPlaySong();			break;
-		case Qt::Key_F6:		startPlayPattern();			break;
-		case Qt::Key_F7:		startPlayFromCurrentStep();	break;
-		case Qt::Key_F8:		stopPlaySong();				break;
-		case Qt::Key_F12:		killSound();				break;
+	switch (key) {
+	case Qt::Key_Space:		toggleJamMode();			break;
+	case Qt::Key_Asterisk:	changeOctave(true);			break;
+	case Qt::Key_Slash:		changeOctave(false);		break;
+	case Qt::Key_F5:		startPlaySong();			break;
+	case Qt::Key_F6:		startPlayPattern();			break;
+	case Qt::Key_F7:		startPlayFromCurrentStep();	break;
+	case Qt::Key_F8:		stopPlaySong();				break;
+	case Qt::Key_F12:		killSound();				break;
 
-		default:
-			if (!event->isAutoRepeat()) {
-				// Musical keyboard
-				switch (key) {
-				case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
-				case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
-				case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
-				case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
-				case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
-				case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
-				case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
-				case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
-				case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
-				case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
-				case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
-				case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
-				case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
-				case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
-				case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
-				case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
-				case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
-				case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
-				case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
-				case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
-				case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
-				case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
-				case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
-				case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
-				case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
-				case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
-				case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
-				case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
-				case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
-				case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
-				default:	break;
-				}
+	default:
+		if (!event->isAutoRepeat()) {
+			// Musical keyboard
+			switch (key) {
+			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
+			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
+			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
+			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
+			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
+			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
+			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
+			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
+			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
+			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
+			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
+			case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
+			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
+			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
+			case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
+			case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
+			case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
+			case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
+			case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
+			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
+			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
+			case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
+			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
+			case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
+			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
+			case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
+			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
+			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
+			case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
+			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
+			default:	break;
 			}
-			break;
 		}
+		break;
 	}
 }
 
@@ -539,6 +558,10 @@ void MainWindow::toggleJamMode()
 	bt_->toggleJamMode();
 	ui->orderList->changeEditable();
 	ui->patternEditor->changeEditable();
+
+	if (isEditedOrder_) updateMenuByOrder();
+	else if (isEditedPattern_) updateMenuByPattern();
+	updateMenuByPatternAndOrderSelection(isSelectedPO_);
 }
 
 /******************************/
@@ -752,4 +775,119 @@ void MainWindow::on_grooveCheckBox_stateChanged(int arg1)
 	}
 
 	setModifiedTrue();
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+	close();
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+	undo();
+}
+
+void MainWindow::on_actionRedo_triggered()
+{
+	redo();
+}
+
+void MainWindow::on_actionCut_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->cutSelectedCells();
+}
+
+void MainWindow::on_actionCopy_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->copySelectedCells();
+	else if (isEditedOrder_) ui->orderList->copySelectedCells();
+}
+
+void MainWindow::on_actionPaste_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onPastePressed();
+	else if (isEditedOrder_) ui->orderList->onPastePressed();
+}
+
+void MainWindow::on_actionPaste_Mix_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onPasteMixPressed();
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onDeletePressed();
+	else if (isEditedOrder_) ui->orderList->deleteOrder();
+}
+
+void MainWindow::updateMenuByPattern()
+{
+	isEditedPattern_ = true;
+	isEditedOrder_ = false;
+
+	if (bt_->isJamMode()) {
+		ui->actionPaste->setEnabled(false);
+		ui->actionPaste_Mix->setEnabled(false);
+		ui->actionDelete->setEnabled(false);
+	}
+	else {
+		bool enabled = QApplication::clipboard()->text().startsWith("PATTERN_");
+		ui->actionPaste->setEnabled(enabled);
+		ui->actionPaste_Mix->setEnabled(enabled);
+		ui->actionDelete->setEnabled(true);
+	}
+}
+
+void MainWindow::updateMenuByOrder()
+{
+	isEditedPattern_ = false;
+	isEditedOrder_ = true;
+
+	if (bt_->isJamMode()) {
+		ui->actionPaste->setEnabled(false);
+		ui->actionDelete->setEnabled(false);
+	}
+	else {
+		bool enabled = QApplication::clipboard()->text().startsWith("ORDER_");
+		ui->actionPaste->setEnabled(enabled);
+		ui->actionDelete->setEnabled(true);
+	}
+	ui->actionPaste_Mix->setEnabled(false);
+}
+
+void MainWindow::onPatternAndOrderFocusLost()
+{
+	/*
+	ui->actionCopy->setEnabled(false);
+	ui->actionCut->setEnabled(false);
+	ui->actionPaste->setEnabled(false);
+	ui->actionPaste_Mix->setEnabled(false);
+	ui->actionDelete->setEnabled(false);
+	*/
+}
+
+void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
+{
+	isSelectedPO_ = isSelected;
+
+	if (bt_->isJamMode()) {
+		ui->actionCopy->setEnabled(false);
+		ui->actionCut->setEnabled(false);
+	}
+	else {
+		ui->actionCopy->setEnabled(isSelected);
+		ui->actionCut->setEnabled(isEditedPattern_ ? isSelected : false);
+	}
+}
+
+void MainWindow::on_actionAll_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onSelectPressed(1);
+	else if (isEditedOrder_) ui->orderList->onSelectPressed(1);
+}
+
+void MainWindow::on_actionNone_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onSelectPressed(0);
+	else if (isEditedOrder_) ui->orderList->onSelectPressed(0);
 }

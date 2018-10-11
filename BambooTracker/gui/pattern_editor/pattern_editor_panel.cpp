@@ -710,11 +710,6 @@ bool PatternEditorPanel::enterToneData(int key)
 		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 		moveCursorToDown(1);
 		return true;
-	case Qt::Key_Delete:
-		bt_->eraseStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
-		comStack_.lock()->push(new EraseStepQtCommand(this));
-		moveCursorToDown(1);
-		return true;
 	default:
 		return false;
 	}
@@ -748,11 +743,6 @@ bool PatternEditorPanel::enterInstrumentData(int key)
 	case Qt::Key_D:	setStepInstrument(0xd);	return true;
 	case Qt::Key_E:	setStepInstrument(0xe);	return true;
 	case Qt::Key_F:	setStepInstrument(0xf);	return true;
-	case Qt::Key_Delete:
-		bt_->eraseStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
-		comStack_.lock()->push(new EraseInstrumentInStepQtCommand(this));
-		moveCursorToDown(1);
-		return true;
 	default:	return false;
 	}
 }
@@ -786,11 +776,6 @@ bool PatternEditorPanel::enterVolumeData(int key)
 	case Qt::Key_D:	setStepVolume(0xd);	return true;
 	case Qt::Key_E:	setStepVolume(0xe);	return true;
 	case Qt::Key_F:	setStepVolume(0xf);	return true;
-	case Qt::Key_Delete:
-		bt_->eraseStepVolume(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
-		comStack_.lock()->push(new EraseVolumeInStepQtCommand(this));
-		moveCursorToDown(1);
-		return true;
 	default:	return false;
 	}
 }
@@ -844,7 +829,6 @@ bool PatternEditorPanel::enterEffectID(int key)
 	case Qt::Key_X:			setStepEffectID("X");	return true;
 	case Qt::Key_Y:			setStepEffectID("Y");	return true;
 	case Qt::Key_Z:			setStepEffectID("Z");	return true;
-	case Qt::Key_Delete:	eraseStepEffect();		return true;
 	default:										return false;
 	}
 }
@@ -858,14 +842,6 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, editPos_));
 
 	if (!entryCnt_) moveCursorToDown(1);
-}
-
-void PatternEditorPanel::eraseStepEffect()
-{
-	bt_->eraseStepEffect(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
-						 (curPos_.colInTrack - 3) / 2);
-	comStack_.lock()->push(new EraseEffectInStepQtCommand(this));
-	moveCursorToDown(1);
 }
 
 bool PatternEditorPanel::enterEffectValue(int key)
@@ -887,12 +863,6 @@ bool PatternEditorPanel::enterEffectValue(int key)
 	case Qt::Key_D:	setStepEffectValue(0xd);	return true;
 	case Qt::Key_E:	setStepEffectValue(0xe);	return true;
 	case Qt::Key_F:	setStepEffectValue(0xf);	return true;
-	case Qt::Key_Delete:
-		bt_->eraseStepEffectValue(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
-								  (curPos_.colInTrack - 4) / 2);
-		comStack_.lock()->push(new EraseEffectValueInStepQtCommand(this));
-		moveCursorToDown(1);
-		return true;
 	default:	return false;
 	}
 }
@@ -926,6 +896,8 @@ void PatternEditorPanel::deletePreviousStep()
 
 void PatternEditorPanel::copySelectedCells()
 {
+	if (selLeftAbovePos_.order == -1) return;
+
 	int w = 1 + calculateColumnDistance(selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
 										selRightBelowPos_.track, selRightBelowPos_.colInTrack, true);
 	int h = 1 + calculateStepDistance(selLeftAbovePos_.order, selLeftAbovePos_.step,
@@ -1056,6 +1028,8 @@ std::vector<std::vector<std::string>> PatternEditorPanel::instantiateCellsFromSt
 
 void PatternEditorPanel::cutSelectedCells()
 {
+	if (selLeftAbovePos_.order == -1) return;
+
 	copySelectedCells();
 	eraseSelectedCells();
 	QString str = QApplication::clipboard()->text();
@@ -1129,6 +1103,8 @@ void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, cons
 			selRightBelowPos_ = end;
 		}
 	}
+
+	emit selected(true);
 }
 
 bool PatternEditorPanel::isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum)
@@ -1181,6 +1157,7 @@ void PatternEditorPanel::onOrderListEdited()
 	selRightBelowPos_ = { -1, -1, -1, -1 };
 	shiftPressedPos_ = { -1, -1, -1, -1 };
 	selectAllState_ = -1;
+	emit selected(false);
 
 	update();
 }
@@ -1221,6 +1198,96 @@ void PatternEditorPanel::onSongLoaded()
 	shiftPressedPos_ = { -1, -1, -1, -1 };
 	entryCnt_ = 0;
 	selectAllState_ = -1;
+	emit selected(false);
+
+	update();
+}
+
+void PatternEditorPanel::onDeletePressed()
+{
+	if (bt_->isJamMode()) return;
+
+	if (selLeftAbovePos_.order != -1) {	// Delete region
+		eraseSelectedCells();
+	}
+	else {
+		switch (curPos_.colInTrack) {
+		case 0:
+			bt_->eraseStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			comStack_.lock()->push(new EraseStepQtCommand(this));
+			moveCursorToDown(1);
+			break;
+		case 1:
+			bt_->eraseStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			comStack_.lock()->push(new EraseInstrumentInStepQtCommand(this));
+			moveCursorToDown(1);
+			break;
+		case 2:
+			bt_->eraseStepVolume(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			comStack_.lock()->push(new EraseVolumeInStepQtCommand(this));
+			moveCursorToDown(1);
+			break;
+		case 3:
+		case 5:
+		case 7:
+		case 9:
+			bt_->eraseStepEffect(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
+								 (curPos_.colInTrack - 3) / 2);
+			comStack_.lock()->push(new EraseEffectInStepQtCommand(this));
+			moveCursorToDown(1);
+			break;
+		case 4:
+		case 6:
+		case 8:
+		case 10:
+			bt_->eraseStepEffectValue(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
+									  (curPos_.colInTrack - 4) / 2);
+			comStack_.lock()->push(new EraseEffectValueInStepQtCommand(this));
+			moveCursorToDown(1);
+			break;
+		}
+	}
+}
+
+void PatternEditorPanel::onPastePressed()
+{
+	if (!bt_->isPlaySong()) pasteCopiedCells(curPos_);
+}
+
+void PatternEditorPanel::onPasteMixPressed()
+{
+	if (!bt_->isPlaySong()) pasteMixCopiedCells(curPos_);
+}
+
+void PatternEditorPanel::onSelectPressed(int type)
+{
+	switch (type) {
+	case 0:	// None
+	{
+		selLeftAbovePos_ = { -1, -1, -1, -1 };
+		selRightBelowPos_ = { -1, -1, -1, -1 };
+		selectAllState_ = -1;
+		emit selected(false);
+		break;
+	}
+	case 1:	// All
+	{
+		selectAllState_ = (selectAllState_ + 1) % 2;
+		int max = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1;
+		if (!selectAllState_) {
+			PatternPosition start = { curPos_.track, 0, curPos_.order, 0 };
+			PatternPosition end = { curPos_.track, 10, curPos_.order, max };
+			setSelectedRectangle(start, end);
+		}
+		else {
+			PatternPosition start = { 0, 0, curPos_.order, 0 };
+			PatternPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), 10,
+									curPos_.order, max };
+			setSelectedRectangle(start, end);
+		}
+		break;
+	}
+	}
 
 	update();
 }
@@ -1245,56 +1312,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	/* General Keys (with Ctrl) */
 	if (event->modifiers().testFlag(Qt::ControlModifier)) {
 		switch (event->key()) {
-		case Qt::Key_A:
-		{
-			selectAllState_ = (selectAllState_ + 1) % 2;
-			int max = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1;
-			if (!selectAllState_) {
-				PatternPosition start = { curPos_.track, 0, curPos_.order, 0 };
-				PatternPosition end = { curPos_.track, 10, curPos_.order, max };
-				setSelectedRectangle(start, end);
-			}
-			else {
-				PatternPosition start = { 0, 0, curPos_.order, 0 };
-				PatternPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), 10,
-										curPos_.order, max };
-				setSelectedRectangle(start, end);
-			}
-			update();
-			return true;
-		}
-		case Qt::Key_C:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				copySelectedCells();
-				return true;
-			}
-		case Qt::Key_X:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				cutSelectedCells();
-				return true;
-			}
-		case Qt::Key_V:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				pasteCopiedCells(curPos_);
-				return true;
-			}
-		case Qt::Key_B:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				pasteMixCopiedCells(curPos_);
-				return true;
-			}
 		case Qt::Key_F1:
 			if (bt_->isPlaySong()) {
 				return false;
@@ -1485,38 +1502,26 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			deletePreviousStep();
 			return true;
 		}
-	case Qt::Key_Escape:
-		selLeftAbovePos_ = { -1, -1, -1, -1 };
-		selRightBelowPos_ = { -1, -1, -1, -1 };
-		selectAllState_ = -1;
-		update();
-		break;
 	default:
 		if (!bt_->isJamMode()) {
-			if (event->key() == Qt::Key_Delete && selLeftAbovePos_.order != -1) {
-				// Delete region
-				eraseSelectedCells();
-			}
-			else {
-				// Pattern edit
-				switch (curPos_.colInTrack) {
-				case 0:
-					return enterToneData(event->key());
-				case 1:
-					return enterInstrumentData(event->key());
-				case 2:
-					return enterVolumeData(event->key());
-				case 3:
-				case 5:
-				case 7:
-				case 9:
-					return enterEffectID(event->key());
-				case 4:
-				case 6:
-				case 8:
-				case 10:
-					return enterEffectValue(event->key());
-				}
+			// Pattern edit
+			switch (curPos_.colInTrack) {
+			case 0:
+				return enterToneData(event->key());
+			case 1:
+				return enterInstrumentData(event->key());
+			case 2:
+				return enterVolumeData(event->key());
+			case 3:
+			case 5:
+			case 7:
+			case 9:
+				return enterEffectID(event->key());
+			case 4:
+			case 6:
+			case 8:
+			case 10:
+				return enterEffectValue(event->key());
 			}
 		}
 		return false;
@@ -1577,6 +1582,7 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 		selLeftAbovePos_ = { -1, -1, -1, -1 };
 		selRightBelowPos_ = { -1, -1, -1, -1 };
 		selectAllState_ = -1;
+		emit selected(false);
 	}
 }
 

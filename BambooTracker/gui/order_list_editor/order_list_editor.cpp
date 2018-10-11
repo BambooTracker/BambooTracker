@@ -7,6 +7,8 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	ui->panel->installEventFilter(this);
+
 	QObject::connect(ui->panel, &OrderListPanel::currentTrackChangedForSlider,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
 	QObject::connect(ui->panel, &OrderListPanel::currentOrderChangedForSlider,
@@ -20,6 +22,8 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 					 this, [&](int num) { emit currentOrderChanged(num); });
 	QObject::connect(ui->panel, &OrderListPanel::orderEdited,
 					 this, [&]() { emit orderEdited(); });
+	QObject::connect(ui->panel, &OrderListPanel::selected,
+					 this, [&](bool isSelected) { emit selected(isSelected); });
 
 	auto focusSlot = [&]() { ui->panel->setFocus(); };
 
@@ -53,6 +57,27 @@ void OrderListEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
+void OrderListEditor::copySelectedCells()
+{
+	ui->panel->copySelectedCells();
+}
+
+void OrderListEditor::deleteOrder()
+{
+	ui->panel->deleteOrder();
+}
+
+bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
+{
+	Q_UNUSED(watched)
+
+	switch (event->type()) {
+	case QEvent::FocusIn:	emit focusIn();		return false;
+	case QEvent::FocusOut:	emit focusOut();	return false;
+	default:	return false;
+	}
+}
+
 /********** Slots **********/
 void OrderListEditor::setCurrentTrack(int num)
 {
@@ -72,4 +97,14 @@ void OrderListEditor::onSongLoaded()
 	int song = bt_->getCurrentSongNumber();
 	ui->horizontalScrollBar->setMaximum(bt_->getSongStyle(song).trackAttribs.size() - 1);
 	ui->verticalScrollBar->setMaximum(bt_->getOrderSize(song) - 1);
+}
+
+void OrderListEditor::onPastePressed()
+{
+	ui->panel->onPastePressed();
+}
+
+void OrderListEditor::onSelectPressed(int type)
+{
+	ui->panel->onSelectPressed(type);
 }
