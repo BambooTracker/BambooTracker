@@ -423,11 +423,26 @@ QListWidget::item:selected:hover {
     <property name="title">
      <string>Pattern</string>
     </property>
+    <widget class="QMenu" name="menuTranspose">
+     <property name="title">
+      <string>Transpose</string>
+     </property>
+     <addaction name="actionDecrease_Note"/>
+     <addaction name="actionIncrease_Note"/>
+     <addaction name="actionDecrease_Octave"/>
+     <addaction name="actionIncrease_Octave"/>
+    </widget>
+    <addaction name="actionExpand"/>
+    <addaction name="actionShrink"/>
+    <addaction name="separator"/>
+    <addaction name="menuTranspose"/>
    </widget>
    <widget class="QMenu" name="menuSong">
     <property name="title">
      <string>Song</string>
     </property>
+    <addaction name="actionInsert_Order"/>
+    <addaction name="actionRemove_Order"/>
    </widget>
    <widget class="QMenu" name="menuModule">
     <property name="title">
@@ -589,6 +604,64 @@ QListWidget::item:selected:hover {
    </property>
    <property name="shortcut">
     <string>Esc</string>
+   </property>
+  </action>
+  <action name="actionExpand">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Expand</string>
+   </property>
+  </action>
+  <action name="actionShrink">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Shrink</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Note">
+   <property name="text">
+    <string>Decrease Note</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F1</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Note">
+   <property name="text">
+    <string>Increase Note</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F2</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Octave">
+   <property name="text">
+    <string>Decrease Octave</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F3</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Octave">
+   <property name="text">
+    <string>Increase Octave</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F4</string>
+   </property>
+  </action>
+  <action name="actionInsert_Order">
+   <property name="text">
+    <string>Insert Order</string>
+   </property>
+  </action>
+  <action name="actionRemove_Order">
+   <property name="text">
+    <string>Remove Order</string>
    </property>
   </action>
  </widget>

@@ -826,16 +826,33 @@ void MainWindow::updateMenuByPattern()
 	isEditedOrder_ = false;
 
 	if (bt_->isJamMode()) {
+		// Edit
 		ui->actionPaste->setEnabled(false);
 		ui->actionPaste_Mix->setEnabled(false);
 		ui->actionDelete->setEnabled(false);
+
+		// Pattern
+		ui->actionDecrease_Note->setEnabled(false);
+		ui->actionIncrease_Note->setEnabled(false);
+		ui->actionDecrease_Octave->setEnabled(false);
+		ui->actionIncrease_Octave->setEnabled(false);
 	}
 	else {
+		// Pattern
 		bool enabled = QApplication::clipboard()->text().startsWith("PATTERN_");
 		ui->actionPaste->setEnabled(enabled);
 		ui->actionPaste_Mix->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
+
+		ui->actionDecrease_Note->setEnabled(true);
+		ui->actionIncrease_Note->setEnabled(true);
+		ui->actionDecrease_Octave->setEnabled(true);
+		ui->actionIncrease_Octave->setEnabled(true);
 	}
+
+	// Song
+	ui->actionInsert_Order->setEnabled(false);
+	ui->actionRemove_Order->setEnabled(false);
 }
 
 void MainWindow::updateMenuByOrder()
@@ -844,15 +861,32 @@ void MainWindow::updateMenuByOrder()
 	isEditedOrder_ = true;
 
 	if (bt_->isJamMode()) {
+		// Edit
 		ui->actionPaste->setEnabled(false);
 		ui->actionDelete->setEnabled(false);
+
+		// Song
+		ui->actionInsert_Order->setEnabled(false);
+		ui->actionRemove_Order->setEnabled(false);
 	}
 	else {
+		// Edit
 		bool enabled = QApplication::clipboard()->text().startsWith("ORDER_");
 		ui->actionPaste->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
+
+		// Song
+		ui->actionInsert_Order->setEnabled(true);
+		ui->actionRemove_Order->setEnabled(true);
 	}
+	// Edit
 	ui->actionPaste_Mix->setEnabled(false);
+
+	// Pattern
+	ui->actionDecrease_Note->setEnabled(false);
+	ui->actionIncrease_Note->setEnabled(false);
+	ui->actionDecrease_Octave->setEnabled(false);
+	ui->actionIncrease_Octave->setEnabled(false);
 }
 
 void MainWindow::onPatternAndOrderFocusLost()
@@ -871,10 +905,12 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 	isSelectedPO_ = isSelected;
 
 	if (bt_->isJamMode()) {
+		// Edit
 		ui->actionCopy->setEnabled(false);
 		ui->actionCut->setEnabled(false);
 	}
 	else {
+		// Edit
 		ui->actionCopy->setEnabled(isSelected);
 		ui->actionCut->setEnabled(isEditedPattern_ ? isSelected : false);
 	}
@@ -890,4 +926,34 @@ void MainWindow::on_actionNone_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onSelectPressed(0);
 	else if (isEditedOrder_) ui->orderList->onSelectPressed(0);
+}
+
+void MainWindow::on_actionDecrease_Note_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onTransposePressed(false, false);
+}
+
+void MainWindow::on_actionIncrease_Note_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onTransposePressed(false, true);
+}
+
+void MainWindow::on_actionDecrease_Octave_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onTransposePressed(true, false);
+}
+
+void MainWindow::on_actionIncrease_Octave_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onTransposePressed(true, true);
+}
+
+void MainWindow::on_actionInsert_Order_triggered()
+{
+	if (isEditedOrder_) ui->orderList->insertOrderBelow();
+}
+
+void MainWindow::on_actionRemove_Order_triggered()
+{
+	if (isEditedOrder_) ui->orderList->deleteOrder();
 }

@@ -1292,6 +1292,40 @@ void PatternEditorPanel::onSelectPressed(int type)
 	update();
 }
 
+void PatternEditorPanel::onTransposePressed(bool isOctave, bool isIncreased)
+{
+	if (bt_->isJamMode()) return;
+
+	if (isOctave) {
+		if (isIncreased) {
+			if (selLeftAbovePos_.order != -1)
+				increaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
+			else
+				increaseNoteOctave(curPos_, curPos_);
+		}
+		else {
+			if (selLeftAbovePos_.order != -1)
+				decreaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
+			else
+				decreaseNoteOctave(curPos_, curPos_);
+		}
+	}
+	else {
+		if (isIncreased) {
+			if (selLeftAbovePos_.order != -1)
+				increaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
+			else
+				increaseNoteKey(curPos_, curPos_);
+		}
+		else {
+			if (selLeftAbovePos_.order != -1)
+				decreaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
+			else
+				decreaseNoteKey(curPos_, curPos_);
+		}
+	}
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -1309,58 +1343,6 @@ bool PatternEditorPanel::event(QEvent *event)
 
 bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
-	/* General Keys (with Ctrl) */
-	if (event->modifiers().testFlag(Qt::ControlModifier)) {
-		switch (event->key()) {
-		case Qt::Key_F1:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				if (selLeftAbovePos_.order != -1)
-					decreaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
-				else
-					decreaseNoteKey(curPos_, curPos_);
-				return true;
-			}
-		case Qt::Key_F2:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				if (selLeftAbovePos_.order != -1)
-					increaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
-				else
-					increaseNoteKey(curPos_, curPos_);
-				return true;
-			}
-		case Qt::Key_F3:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				if (selLeftAbovePos_.order != -1)
-					decreaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
-				else
-					decreaseNoteOctave(curPos_, curPos_);
-				return true;
-			}
-		case Qt::Key_F4:
-			if (bt_->isPlaySong()) {
-				return false;
-			}
-			else {
-				if (selLeftAbovePos_.order != -1)
-					increaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
-				else
-					increaseNoteOctave(curPos_, curPos_);
-				return true;
-			}
-		default:
-			return false;
-		}
-	}
-
 	/* General Keys (with Alt) */
 	if (event->modifiers().testFlag(Qt::AltModifier)) {
 		switch (event->key()) {

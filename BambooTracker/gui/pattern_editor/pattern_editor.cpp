@@ -144,3 +144,8 @@ void PatternEditor::onSelectPressed(int type)
 {
 	ui->panel->onSelectPressed(type);
 }
+
+void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
+{
+	ui->panel->onTransposePressed(isOctave, isIncreased);
+}

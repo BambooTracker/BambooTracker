@@ -101,6 +101,12 @@ private slots:
 	void updateMenuByPatternAndOrderSelection(bool isSelected);
 	void on_actionAll_triggered();
 	void on_actionNone_triggered();
+	void on_actionDecrease_Note_triggered();
+	void on_actionIncrease_Note_triggered();
+	void on_actionDecrease_Octave_triggered();
+	void on_actionIncrease_Octave_triggered();
+	void on_actionInsert_Order_triggered();
+	void on_actionRemove_Order_triggered();
 };
 
 #endif // MAINWINDOW_HPP

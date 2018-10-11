@@ -26,6 +26,7 @@ public:
 
 	void copySelectedCells();
 	void deleteOrder();
+	void insertOrderBelow();
 
 signals:
 	void currentTrackChanged(int num);

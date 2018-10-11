@@ -31,6 +31,7 @@ public:
 
 	void copySelectedCells();
 	void deleteOrder();
+	void insertOrderBelow();
 
 public slots:
 	void setCurrentTrackForSlider(int num);
@@ -123,7 +124,6 @@ private:
 
 	bool enterOrder(int key);
 	void setCellOrderNum(int n);
-	void insertOrderBelow();
 
 	void pasteCopiedCells(OrderPosition& startPos);
 

@@ -398,6 +398,8 @@ void OrderListPanel::setCellOrderNum(int n)
 
 void OrderListPanel::insertOrderBelow()
 {
+	if (bt_->isJamMode()) return;
+
 	bt_->insertOrderBelow(curSongNum_, curPos_.row);
 	comStack_.lock()->push(new InsertOrderBelowQtCommand(this));
 	moveCursorToDown(1);
@@ -706,13 +708,8 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Insert:
-		if (bt_->isJamMode()) {
-			return false;
-		}
-		else {
-			insertOrderBelow();
-			return true;
-		}
+		insertOrderBelow();
+		return true;
 	default:
 		if (!bt_->isJamMode()) {
 			return enterOrder(event->key());

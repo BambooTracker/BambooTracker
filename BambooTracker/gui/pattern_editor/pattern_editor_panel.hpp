@@ -55,6 +55,7 @@ public slots:
 	/// 0: None
 	/// 1: All
 	void onSelectPressed(int type);
+	void onTransposePressed(bool isOctave, bool isIncreased);
 
 signals:
 	void currentCellInRowChanged(int num);

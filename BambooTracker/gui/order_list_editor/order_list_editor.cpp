@@ -67,6 +67,11 @@ void OrderListEditor::deleteOrder()
 	ui->panel->deleteOrder();
 }
 
+void OrderListEditor::insertOrderBelow()
+{
+	ui->panel->insertOrderBelow();
+}
+
 bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
