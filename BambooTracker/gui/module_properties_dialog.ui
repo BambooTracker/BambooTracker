@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ModuleSettingsDialog</class>
- <widget class="QDialog" name="ModuleSettingsDialog">
+ <class>ModulePropertiesDialog</class>
+ <widget class="QDialog" name="ModulePropertiesDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Module settings</string>
+   <string>Module properties</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -187,7 +187,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ModuleSettingsDialog</receiver>
+   <receiver>ModulePropertiesDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -203,7 +203,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ModuleSettingsDialog</receiver>
+   <receiver>ModulePropertiesDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

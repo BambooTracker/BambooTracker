@@ -110,7 +110,6 @@ SOURCES += \
     gui/command/pattern/erase_cells_in_pattern_qt_command.cpp \
     command/order/paste_copied_data_to_order_command.cpp \
     gui/command/order/paste_copied_data_to_order_qt_command.cpp \
-    gui/module_settings_dialog.cpp \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
     instrument/abstruct_instrument_property.cpp \
@@ -126,7 +125,8 @@ SOURCES += \
     command/pattern/increase_note_key_in_pattern_command.cpp \
     command/pattern/decrease_note_key_in_pattern_command.cpp \
     command/pattern/increase_note_octave_in_pattern_command.cpp \
-    command/pattern/decrease_note_octave_in_pattern_command.cpp
+    command/pattern/decrease_note_octave_in_pattern_command.cpp \
+    gui/module_properties_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -225,7 +225,6 @@ HEADERS += \
     gui/command/pattern/erase_cells_in_pattern_qt_command.hpp \
     command/order/paste_copied_data_to_order_command.hpp \
     gui/command/order/paste_copied_data_to_order_qt_command.hpp \
-    gui/module_settings_dialog.hpp \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
     instrument/abstruct_instrument_property.hpp \
@@ -242,7 +241,8 @@ HEADERS += \
     command/pattern/increase_note_key_in_pattern_command.hpp \
     command/pattern/decrease_note_key_in_pattern_command.hpp \
     command/pattern/increase_note_octave_in_pattern_command.hpp \
-    command/pattern/decrease_note_octave_in_pattern_command.hpp
+    command/pattern/decrease_note_octave_in_pattern_command.hpp \
+    gui/module_properties_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -253,8 +253,8 @@ FORMS += \
     gui/order_list_editor/order_list_editor.ui \
     gui/pattern_editor/pattern_editor.ui \
     gui/instrument_editor/instrument_editor_ssg_form.ui \
-    gui/module_settings_dialog.ui \
-    gui/instrument_editor/visualized_instrument_macro_editor.ui
+    gui/instrument_editor/visualized_instrument_macro_editor.ui \
+    gui/module_properties_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

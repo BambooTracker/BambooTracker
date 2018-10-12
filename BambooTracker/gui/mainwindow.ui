@@ -448,11 +448,21 @@ QListWidget::item:selected:hover {
     <property name="title">
      <string>Module</string>
     </property>
+    <addaction name="actionModule_Properties"/>
    </widget>
    <widget class="QMenu" name="menuInstrument">
     <property name="title">
      <string>Instrument</string>
     </property>
+    <addaction name="actionNew_Instrument"/>
+    <addaction name="actionRemove_Instrument"/>
+    <addaction name="actionClone_Instrument"/>
+    <addaction name="actionDeep_Clone_Instrument"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad_From_File"/>
+    <addaction name="actionSave_To_File"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit"/>
    </widget>
    <widget class="QMenu" name="menuTracker">
     <property name="title">
@@ -662,6 +672,70 @@ QListWidget::item:selected:hover {
   <action name="actionRemove_Order">
    <property name="text">
     <string>Remove Order</string>
+   </property>
+  </action>
+  <action name="actionModule_Properties">
+   <property name="text">
+    <string>Module Properties...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionNew_Instrument">
+   <property name="text">
+    <string>New Instrument</string>
+   </property>
+  </action>
+  <action name="actionRemove_Instrument">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Remove Instrument</string>
+   </property>
+  </action>
+  <action name="actionClone_Instrument">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Clone Instrument</string>
+   </property>
+  </action>
+  <action name="actionDeep_Clone_Instrument">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Deep Clone Instrument</string>
+   </property>
+  </action>
+  <action name="actionLoad_From_File">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Load From File...</string>
+   </property>
+  </action>
+  <action name="actionSave_To_File">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save To File...</string>
+   </property>
+  </action>
+  <action name="actionEdit">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Edit...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

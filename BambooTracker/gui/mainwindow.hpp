@@ -85,7 +85,6 @@ private slots:
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
 	void onInstrumentListWidgetItemAdded(const QModelIndex& parent, int start, int end);
 	void on_instrumentListWidget_itemSelectionChanged();
-	void on_modSetDialogOpenToolButton_clicked();
 	void on_grooveCheckBox_stateChanged(int arg1);
 	void on_actionExit_triggered();
 	void on_actionUndo_triggered();
@@ -107,6 +106,12 @@ private slots:
 	void on_actionIncrease_Octave_triggered();
 	void on_actionInsert_Order_triggered();
 	void on_actionRemove_Order_triggered();
+	void on_actionModule_Properties_triggered();
+	void on_actionNew_Instrument_triggered();
+	void on_actionRemove_Instrument_triggered();
+	void on_actionClone_Instrument_triggered();
+	void on_actionDeep_Clone_Instrument_triggered();
+	void on_actionEdit_triggered();
 };
 
 #endif // MAINWINDOW_HPP

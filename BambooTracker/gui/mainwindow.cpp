@@ -15,7 +15,7 @@
 #include "./command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
-#include "gui/module_settings_dialog.hpp"
+#include "gui/module_properties_dialog.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -76,6 +76,8 @@ MainWindow::MainWindow(QWidget *parent) :
 			setModifiedTrue();
 		}
 	});
+	QObject::connect(ui->modSetDialogOpenToolButton, &QToolButton::clicked,
+					 this, &MainWindow::on_actionModule_Properties_triggered);
 
 	/* Song number */
 	QObject::connect(ui->songNumSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
@@ -345,7 +347,7 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 /********** Instrument list **********/
 void MainWindow::addInstrument()
 {
-    auto& list = ui->instrumentListWidget;
+	auto& list = ui->instrumentListWidget;
 
 	int num = bt_->findFirstFreeInstrumentNumber();
 	QString name = "Instrument " + QString::number(num);
@@ -743,16 +745,12 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 			  ? -1
 			  : ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	bt_->setCurrentInstrument(num);
-}
 
-void MainWindow::on_modSetDialogOpenToolButton_clicked()
-{
-	ModuleSettingsDialog dialog(bt_);
-	if (dialog.exec() == QDialog::Accepted) {
-		loadModule();
-		setModifiedTrue();
-		setWindowTitle();
-	}
+	bool isEnabled = (num != -1);
+	ui->actionRemove_Instrument->setEnabled(isEnabled);
+	ui->actionClone_Instrument->setEnabled(isEnabled);
+	ui->actionDeep_Clone_Instrument->setEnabled(isEnabled);
+	ui->actionEdit->setEnabled(isEnabled);
 }
 
 void MainWindow::on_grooveCheckBox_stateChanged(int arg1)
@@ -956,4 +954,39 @@ void MainWindow::on_actionInsert_Order_triggered()
 void MainWindow::on_actionRemove_Order_triggered()
 {
 	if (isEditedOrder_) ui->orderList->deleteOrder();
+}
+
+void MainWindow::on_actionModule_Properties_triggered()
+{
+	ModulePropertiesDialog dialog(bt_);
+	if (dialog.exec() == QDialog::Accepted) {
+		loadModule();
+		setModifiedTrue();
+		setWindowTitle();
+	}
+}
+
+void MainWindow::on_actionNew_Instrument_triggered()
+{
+	addInstrument();
+}
+
+void MainWindow::on_actionRemove_Instrument_triggered()
+{
+	removeInstrument();
+}
+
+void MainWindow::on_actionClone_Instrument_triggered()
+{
+	cloneInstrument();
+}
+
+void MainWindow::on_actionDeep_Clone_Instrument_triggered()
+{
+	deepCloneInstrument();
+}
+
+void MainWindow::on_actionEdit_triggered()
+{
+	editInstrument();
 }

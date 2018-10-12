@@ -1,11 +1,11 @@
-#include "module_settings_dialog.hpp"
-#include "ui_module_settings_dialog.h"
+#include "module_properties_dialog.hpp"
+#include "ui_module_properties_dialog.h"
 #include <vector>
 #include <utility>
 
-ModuleSettingsDialog::ModuleSettingsDialog(std::weak_ptr<BambooTracker> core, QWidget *parent) :
+ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::ModuleSettingsDialog),
+	ui(new Ui::ModulePropertiesDialog),
 	bt_(core)
 {
 	ui->setupUi(this);
@@ -25,12 +25,12 @@ ModuleSettingsDialog::ModuleSettingsDialog(std::weak_ptr<BambooTracker> core, QW
 	// ui->insertTypeComboBox->addItem("FM3ch extension", static_cast<int>(SongType::FMEX));
 }
 
-ModuleSettingsDialog::~ModuleSettingsDialog()
+ModulePropertiesDialog::~ModulePropertiesDialog()
 {
 	delete ui;
 }
 
-void ModuleSettingsDialog::insertSong(int row, QString title, SongType type, int prevNum)
+void ModulePropertiesDialog::insertSong(int row, QString title, SongType type, int prevNum)
 {
 	QTreeWidgetItem* item = new QTreeWidgetItem();
 	item->setText(0, QString::number(row));
@@ -50,7 +50,7 @@ void ModuleSettingsDialog::insertSong(int row, QString title, SongType type, int
 	checkButtonsEnabled();
 }
 
-void ModuleSettingsDialog::checkButtonsEnabled()
+void ModulePropertiesDialog::checkButtonsEnabled()
 {
 	if (ui->songTreeWidget->currentItem() != nullptr
 			&& ui->songTreeWidget->topLevelItemCount() > 1) {
@@ -65,7 +65,7 @@ void ModuleSettingsDialog::checkButtonsEnabled()
 	}
 }
 
-void ModuleSettingsDialog::swapset(int aboveRow, int belowRow)
+void ModulePropertiesDialog::swapset(int aboveRow, int belowRow)
 {
 	auto* tree = ui->songTreeWidget;
 	QTreeWidgetItem* below = tree->takeTopLevelItem(belowRow);
@@ -84,7 +84,7 @@ void ModuleSettingsDialog::swapset(int aboveRow, int belowRow)
 }
 
 /******************************/
-void ModuleSettingsDialog::on_upToolButton_clicked()
+void ModulePropertiesDialog::on_upToolButton_clicked()
 {
 	int curRow = ui->songTreeWidget->currentIndex().row();
 	if (!curRow) return;
@@ -93,7 +93,7 @@ void ModuleSettingsDialog::on_upToolButton_clicked()
 	ui->songTreeWidget->setCurrentItem(ui->songTreeWidget->topLevelItem(curRow - 1));
 }
 
-void ModuleSettingsDialog::on_downToolButton_clicked()
+void ModulePropertiesDialog::on_downToolButton_clicked()
 {
 	int curRow = ui->songTreeWidget->currentIndex().row();
 	if (curRow == ui->songTreeWidget->topLevelItemCount() - 1) return;
@@ -102,7 +102,7 @@ void ModuleSettingsDialog::on_downToolButton_clicked()
 	ui->songTreeWidget->setCurrentItem(ui->songTreeWidget->topLevelItem(curRow + 1));
 }
 
-void ModuleSettingsDialog::on_removePushButton_clicked()
+void ModulePropertiesDialog::on_removePushButton_clicked()
 {
 	int row = ui->songTreeWidget->currentIndex().row();
 	auto del = ui->songTreeWidget->takeTopLevelItem(row);
@@ -114,7 +114,7 @@ void ModuleSettingsDialog::on_removePushButton_clicked()
 	checkButtonsEnabled();
 }
 
-void ModuleSettingsDialog::on_insertPushButton_clicked()
+void ModulePropertiesDialog::on_insertPushButton_clicked()
 {
 	int row = ui->songTreeWidget->currentIndex().row();
 	if (row == -1) row = ui->songTreeWidget->topLevelItemCount();
@@ -125,19 +125,19 @@ void ModuleSettingsDialog::on_insertPushButton_clicked()
 	ui->songTreeWidget->setCurrentItem(ui->songTreeWidget->topLevelItem(row));
 }
 
-void ModuleSettingsDialog::on_songTreeWidget_itemSelectionChanged()
+void ModulePropertiesDialog::on_songTreeWidget_itemSelectionChanged()
 {
 	ui->editTitleLineEdit->setText(ui->songTreeWidget->currentItem()->text(1));
 	checkButtonsEnabled();
 }
 
-void ModuleSettingsDialog::on_editTitleLineEdit_textEdited(const QString &arg1)
+void ModulePropertiesDialog::on_editTitleLineEdit_textEdited(const QString &arg1)
 {
 	if (ui->songTreeWidget->currentItem() != nullptr)
 		ui->songTreeWidget->currentItem()->setText(1, arg1);
 }
 
-void ModuleSettingsDialog::on_buttonBox_accepted()
+void ModulePropertiesDialog::on_buttonBox_accepted()
 {
 	auto* tree = ui->songTreeWidget;
 	std::vector<int> newSongNums;

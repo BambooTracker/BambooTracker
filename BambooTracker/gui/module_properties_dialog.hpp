@@ -1,5 +1,5 @@
-#ifndef MODULE_SETTINGS_DIALOG_HPP
-#define MODULE_SETTINGS_DIALOG_HPP
+#ifndef MODULE_PROPERTIES_DIALOG_HPP
+#define MODULE_PROPERTIES_DIALOG_HPP
 
 #include <QDialog>
 #include <QString>
@@ -9,16 +9,16 @@
 #include "misc.hpp"
 
 namespace Ui {
-	class ModuleSettingsDialog;
+	class ModulePropertiesDialog;
 }
 
-class ModuleSettingsDialog : public QDialog
+class ModulePropertiesDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	ModuleSettingsDialog(std::weak_ptr<BambooTracker> core, QWidget *parent = nullptr);
-	~ModuleSettingsDialog() override;
+	ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, QWidget *parent = nullptr);
+	~ModulePropertiesDialog() override;
 
 private slots:
 	void on_upToolButton_clicked();
@@ -31,7 +31,7 @@ private slots:
 	void on_buttonBox_accepted();
 
 private:
-	Ui::ModuleSettingsDialog *ui;
+	Ui::ModulePropertiesDialog *ui;
 	std::weak_ptr<BambooTracker> bt_;
 
 	void insertSong(int row, QString title, SongType type, int prevNum = -1);
@@ -39,4 +39,4 @@ private:
 	void swapset(int aboveRow, int belowRow);
 };
 
-#endif // MODULE_SETTINGS_DIALOG_HPP
+#endif // MODULE_PROPERTIES_DIALOG_HPP
