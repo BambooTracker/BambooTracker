@@ -1326,6 +1326,21 @@ void PatternEditorPanel::onTransposePressed(bool isOctave, bool isIncreased)
 	}
 }
 
+void PatternEditorPanel::onMuteTrackPressed()
+{
+	bt_->setTrackMuteState(curPos_.track, !bt_->isMute(curPos_.track));
+	isMuteElse_ = false;
+	update();
+}
+
+void PatternEditorPanel::onSoloTrackPressed()
+{
+	isMuteElse_ = !isMuteElse_;
+	for (int track = 0; track < songStyle_.trackAttribs.size(); ++track)
+		bt_->setTrackMuteState(track, (track == curPos_.track) ? false : isMuteElse_);
+	update();
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -1343,25 +1358,6 @@ bool PatternEditorPanel::event(QEvent *event)
 
 bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
-	/* General Keys (with Alt) */
-	if (event->modifiers().testFlag(Qt::AltModifier)) {
-		switch (event->key()) {
-		case Qt::Key_F9:
-			bt_->setTrackMuteState(curPos_.track, !bt_->isMute(curPos_.track));
-			isMuteElse_ = false;
-			update();
-			return true;
-		case Qt::Key_F10:
-			isMuteElse_ = !isMuteElse_;
-			for (int track = 0; track < songStyle_.trackAttribs.size(); ++track)
-				bt_->setTrackMuteState(track, (track == curPos_.track) ? false : isMuteElse_);
-			update();
-			return true;
-		default:
-			return false;
-		}
-	}
-
 	/* General Keys */
 	switch (event->key()) {
 	case Qt::Key_Shift:

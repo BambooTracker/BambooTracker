@@ -146,6 +146,7 @@ public:
 
 	// Play song
 	void startPlaySong();
+	void startPlayFromStart();
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
@@ -261,9 +262,7 @@ private:
 	///	-1: not set
 	int curInstNum_;
 	/// High nibble - play type
-	///		bit 4: play song
-	///		bit 5: play pattern
-	///		bit 6: play from current step
+	///		bit 4: If high, loop pattern
 	/// Low nibble - read state
 	///		bit 0: playing
 	///		bit 1: have read first step data

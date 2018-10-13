@@ -56,6 +56,8 @@ public slots:
 	/// 1: All
 	void onSelectPressed(int type);
 	void onTransposePressed(bool isOctave, bool isIncreased);
+	void onMuteTrackPressed();
+	void onSoloTrackPressed();
 
 private:
 	Ui::PatternEditor *ui;

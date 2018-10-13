@@ -60,19 +60,14 @@ private:
 
 	// Play song
 	void startPlaySong();
+	void startPlayFromStart();
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
 	void lockControls(bool isLock);
 
-	// Kill sound
-	void killSound();
-
 	// Octave change
 	void changeOctave(bool upFlag);
-
-	// Toggle Jam mode
-	void toggleJamMode();
 
 	void setWindowTitle();
 	void setModifiedTrue();
@@ -112,6 +107,16 @@ private slots:
 	void on_actionClone_Instrument_triggered();
 	void on_actionDeep_Clone_Instrument_triggered();
 	void on_actionEdit_triggered();
+	void on_actionPlay_triggered();
+	void on_actionPlay_Pattern_triggered();
+	void on_actionPlay_From_Start_triggered();
+	void on_actionPlay_From_Cursor_triggered();
+	void on_actionStop_triggered();
+	void on_actionToggle_Edit_Mode_triggered();
+	void on_actionMute_Track_triggered();
+	void on_actionSolo_Track_triggered();
+	void on_actionKill_Sound_triggered();
+	void on_actionAbout_triggered();
 };
 
 #endif // MAINWINDOW_HPP

@@ -149,3 +149,13 @@ void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
 {
 	ui->panel->onTransposePressed(isOctave, isIncreased);
 }
+
+void PatternEditor::onMuteTrackPressed()
+{
+	ui->panel->onMuteTrackPressed();
+}
+
+void PatternEditor::onSoloTrackPressed()
+{
+	ui->panel->onSoloTrackPressed();
+}

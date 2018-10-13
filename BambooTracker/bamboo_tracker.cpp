@@ -17,7 +17,7 @@ BambooTracker::BambooTracker()
 	  curOrderNum_(0),
 	  curStepNum_(0),
 	  curInstNum_(-1),
-	  playState_(false),
+	  playState_(0),
 	  streamIntrRate_(60),	// NTSC
 	  isFindNextStep_(false)
 {
@@ -624,7 +624,15 @@ void BambooTracker::jamKeyOff(JamKey key)
 void BambooTracker::startPlaySong()
 {
 	startPlay();
-	playState_ = 0x11;
+	playState_ = 0x01;
+	curStepNum_ = 0;
+	findNextStep();
+}
+
+void BambooTracker::startPlayFromStart()
+{
+	startPlay();
+	playState_ = 0x01;
 	curOrderNum_ = 0;
 	curStepNum_ = 0;
 	findNextStep();
@@ -633,7 +641,7 @@ void BambooTracker::startPlaySong()
 void BambooTracker::startPlayPattern()
 {
 	startPlay();
-	playState_ = 0x21;
+	playState_ = 0x11;
 	curStepNum_ = 0;
 	findNextStep();
 }
@@ -641,7 +649,7 @@ void BambooTracker::startPlayPattern()
 void BambooTracker::startPlayFromCurrentStep()
 {
 	startPlay();
-	playState_ = 0x41;
+	playState_ = 0x01;
 	findNextStep();
 }
 
@@ -861,7 +869,7 @@ void BambooTracker::findNextStep()
 
 	// Search
 	if (nextReadStepStep_ == getPatternSizeFromOrderNumber(curSongNum_, nextReadStepOrder_) - 1) {
-		if (!(playState_ & 0x20)) {	// Not play pattern
+		if (!(playState_ & 0x10)) {	// Not play pattern
 			if (nextReadStepOrder_ == getOrderSize(curSongNum_) - 1) {
 				nextReadStepOrder_ = 0;
 			}

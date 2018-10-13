@@ -223,14 +223,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 	/* General keys */
 	switch (key) {
-	case Qt::Key_Space:		toggleJamMode();			break;
 	case Qt::Key_Asterisk:	changeOctave(true);			break;
 	case Qt::Key_Slash:		changeOctave(false);		break;
-	case Qt::Key_F5:		startPlaySong();			break;
-	case Qt::Key_F6:		startPlayPattern();			break;
-	case Qt::Key_F7:		startPlayFromCurrentStep();	break;
-	case Qt::Key_F8:		stopPlaySong();				break;
-	case Qt::Key_F12:		killSound();				break;
 
 	default:
 		if (!event->isAutoRepeat()) {
@@ -516,6 +510,13 @@ void MainWindow::startPlaySong()
 	lockControls(true);
 }
 
+void MainWindow::startPlayFromStart()
+{
+	bt_->startPlayFromStart();
+	ui->patternEditor->updatePosition();
+	lockControls(true);
+}
+
 void MainWindow::startPlayPattern()
 {
 	bt_->startPlayPattern();
@@ -541,29 +542,11 @@ void MainWindow::lockControls(bool isLock)
 	ui->songNumSpinBox->setEnabled(!isLock);
 }
 
-/********** Kill sound **********/
-void MainWindow::killSound()
-{
-	bt_->killSound();
-}
-
 /********** Octave change **********/
 void MainWindow::changeOctave(bool upFlag)
 {
 	if (upFlag) ui->octaveSpinBox->stepUp();
 	else ui->octaveSpinBox->stepDown();
-}
-
-/********** Toggle jam mode **********/
-void MainWindow::toggleJamMode()
-{
-	bt_->toggleJamMode();
-	ui->orderList->changeEditable();
-	ui->patternEditor->changeEditable();
-
-	if (isEditedOrder_) updateMenuByOrder();
-	else if (isEditedPattern_) updateMenuByPattern();
-	updateMenuByPatternAndOrderSelection(isSelectedPO_);
 }
 
 /******************************/
@@ -989,4 +972,68 @@ void MainWindow::on_actionDeep_Clone_Instrument_triggered()
 void MainWindow::on_actionEdit_triggered()
 {
 	editInstrument();
+}
+
+void MainWindow::on_actionPlay_triggered()
+{
+	startPlaySong();
+}
+
+void MainWindow::on_actionPlay_Pattern_triggered()
+{
+	startPlayPattern();
+}
+
+void MainWindow::on_actionPlay_From_Start_triggered()
+{
+	startPlayFromStart();
+}
+
+void MainWindow::on_actionPlay_From_Cursor_triggered()
+{
+	startPlayFromCurrentStep();
+}
+
+void MainWindow::on_actionStop_triggered()
+{
+	stopPlaySong();
+}
+
+void MainWindow::on_actionToggle_Edit_Mode_triggered()
+{
+	bt_->toggleJamMode();
+	ui->orderList->changeEditable();
+	ui->patternEditor->changeEditable();
+
+	if (isEditedOrder_) updateMenuByOrder();
+	else if (isEditedPattern_) updateMenuByPattern();
+	updateMenuByPatternAndOrderSelection(isSelectedPO_);
+}
+
+void MainWindow::on_actionMute_Track_triggered()
+{
+	ui->patternEditor->onMuteTrackPressed();
+}
+
+void MainWindow::on_actionSolo_Track_triggered()
+{
+	ui->patternEditor->onSoloTrackPressed();
+}
+
+void MainWindow::on_actionKill_Sound_triggered()
+{
+	bt_->killSound();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+	QMessageBox::about(this, "About",
+					   "BambooTracker v0.1.0\n"
+					   "Copyright (C) 2018 Rerrah\n"
+					   "\n"
+					   "Libraries:\n"
+					   "- Qt (GPL v2+ or LGPL v3)\n"
+					   "- VGMPlay by (C) Valley Bell (GPL v2)\n"
+					   "- MAME (MAME License)\n"
+					   "- EMU2149 by (C) Mitsutaka Okazaki (MIT)");
 }

@@ -468,11 +468,24 @@ QListWidget::item:selected:hover {
     <property name="title">
      <string>Tracker</string>
     </property>
+    <addaction name="actionPlay"/>
+    <addaction name="actionPlay_Pattern"/>
+    <addaction name="actionPlay_From_Start"/>
+    <addaction name="actionPlay_From_Cursor"/>
+    <addaction name="actionStop"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggle_Edit_Mode"/>
+    <addaction name="separator"/>
+    <addaction name="actionMute_Track"/>
+    <addaction name="actionSolo_Track"/>
+    <addaction name="separator"/>
+    <addaction name="actionKill_Sound"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -736,6 +749,83 @@ QListWidget::item:selected:hover {
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionPlay">
+   <property name="text">
+    <string>Play</string>
+   </property>
+   <property name="shortcut">
+    <string>Return</string>
+   </property>
+  </action>
+  <action name="actionPlay_Pattern">
+   <property name="text">
+    <string>Play Pattern</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionPlay_From_Start">
+   <property name="text">
+    <string>Play From Start</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionPlay_From_Cursor">
+   <property name="text">
+    <string>Play From Cursor</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionToggle_Edit_Mode">
+   <property name="text">
+    <string>Toggle Edit Mode</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionMute_Track">
+   <property name="text">
+    <string>Mute Track</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F9</string>
+   </property>
+  </action>
+  <action name="actionSolo_Track">
+   <property name="text">
+    <string>Solo Track</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F10</string>
+   </property>
+  </action>
+  <action name="actionKill_Sound">
+   <property name="text">
+    <string>Kill Sound</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About...</string>
    </property>
   </action>
  </widget>
