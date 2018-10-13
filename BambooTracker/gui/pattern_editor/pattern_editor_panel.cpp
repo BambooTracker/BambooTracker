@@ -74,6 +74,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	curRowColor_ = QColor::fromRgb(110, 90, 140);
 	curRowColorEditable_ = QColor::fromRgb(140, 90, 110);
 	curCellColor_ = QColor::fromRgb(255, 255, 255, 127);
+	playTextColor_ = curTextColor_;
+	playRowColor_ = QColor::fromRgb(90, 90, 140);
 	selCellColor_ = QColor::fromRgb(100, 100, 200, 192);
 	hovCellColor_ = QColor::fromRgb(255, 255, 255, 64);
 	defStepNumColor_ = QColor::fromRgb(255, 200, 180);
@@ -152,6 +154,8 @@ void PatternEditorPanel::drawRows(int maxWidth)
 
 	int stepNum, odrNum;
 	int rowY, baseY;
+	int playOdrNum = bt_->getPlayingOrderNumber();
+	int playStepNum = bt_->getPlayingStepNumber();
 
 	/* Previous rows */
 	for (rowY = curRowY_ - stepFontHeight_, baseY = curRowBaselineY_ - stepFontHeight_,
@@ -168,15 +172,25 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			}
 		}
 
+		QColor rowColor, textColor;
+		if (odrNum == playOdrNum && stepNum == playStepNum) {
+			rowColor = playRowColor_;
+			textColor = playTextColor_;
+		}
+		else {
+			rowColor = (stepNum % hlCnt_) ? defRowColor_ : mkRowColor_;
+			textColor = defTextColor_;
+		}
+
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, (stepNum % hlCnt_) ? defRowColor_ : mkRowColor_);
+		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
 		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
 			painter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, hovCellColor_);	// Paint hover
 		painter.setPen((stepNum % hlCnt_) ? defStepNumColor_ : mkStepNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
 		// Step data
-		painter.setPen(defTextColor_);
+		painter.setPen(textColor);
 		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			x += drawStep(painter, trackNum, odrNum, stepNum, x, baseY, rowY);
 			++trackNum;
@@ -203,15 +217,25 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			}
 		}
 
+		QColor rowColor, textColor;
+		if (odrNum == playOdrNum && stepNum == playStepNum) {
+			rowColor = playRowColor_;
+			textColor = playTextColor_;
+		}
+		else {
+			rowColor = (stepNum % hlCnt_) ? defRowColor_ : mkRowColor_;
+			textColor = defTextColor_;
+		}
+
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, (stepNum % hlCnt_) ? defRowColor_ : mkRowColor_);
+		painter.fillRect(0, rowY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
 		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
 			painter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, hovCellColor_);	// Paint hover
 		painter.setPen((stepNum % hlCnt_) ? defStepNumColor_ : mkStepNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
 		// Step data
-		painter.setPen(defTextColor_);
+		painter.setPen(textColor);
 		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			x += drawStep(painter, trackNum, odrNum, stepNum, x, baseY, rowY);
 			++trackNum;

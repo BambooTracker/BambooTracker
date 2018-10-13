@@ -474,7 +474,8 @@ QListWidget::item:selected:hover {
     <addaction name="actionPlay_From_Cursor"/>
     <addaction name="actionStop"/>
     <addaction name="separator"/>
-    <addaction name="actionToggle_Edit_Mode"/>
+    <addaction name="actionFollow_Mode"/>
+    <addaction name="actionEdit_Mode"/>
     <addaction name="separator"/>
     <addaction name="actionMute_Track"/>
     <addaction name="actionSolo_Track"/>
@@ -791,9 +792,12 @@ QListWidget::item:selected:hover {
     <string>F8</string>
    </property>
   </action>
-  <action name="actionToggle_Edit_Mode">
+  <action name="actionEdit_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Toggle Edit Mode</string>
+    <string>Edit Mode</string>
    </property>
    <property name="shortcut">
     <string>Space</string>
@@ -826,6 +830,20 @@ QListWidget::item:selected:hover {
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="actionFollow_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Follow Mode</string>
+   </property>
+   <property name="shortcut">
+    <string>ScrollLock</string>
    </property>
   </action>
  </widget>

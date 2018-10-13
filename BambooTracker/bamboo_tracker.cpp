@@ -15,9 +15,12 @@ BambooTracker::BambooTracker()
 	  curSongNum_(0),
 	  curTrackNum_(0),
 	  curOrderNum_(0),
+	  playOrderNum_(-1),
 	  curStepNum_(0),
+	  playStepNum_(-1),
 	  curInstNum_(-1),
 	  playState_(0),
+	  isFollowPlay_(true),
 	  streamIntrRate_(60),	// NTSC
 	  isFindNextStep_(false)
 {
@@ -625,7 +628,9 @@ void BambooTracker::startPlaySong()
 {
 	startPlay();
 	playState_ = 0x01;
-	curStepNum_ = 0;
+	playStepNum_ = 0;
+	playOrderNum_ = curOrderNum_;
+	if (isFollowPlay_) curStepNum_ = 0;
 	findNextStep();
 }
 
@@ -633,8 +638,12 @@ void BambooTracker::startPlayFromStart()
 {
 	startPlay();
 	playState_ = 0x01;
-	curOrderNum_ = 0;
-	curStepNum_ = 0;
+	playOrderNum_ = 0;
+	playStepNum_ = 0;
+	if (isFollowPlay_) {
+		curOrderNum_ = 0;
+		curStepNum_ = 0;
+	}
 	findNextStep();
 }
 
@@ -642,7 +651,9 @@ void BambooTracker::startPlayPattern()
 {
 	startPlay();
 	playState_ = 0x11;
-	curStepNum_ = 0;
+	playStepNum_ = 0;
+	playOrderNum_ = curOrderNum_;
+	if (isFollowPlay_) curStepNum_ = 0;
 	findNextStep();
 }
 
@@ -650,6 +661,8 @@ void BambooTracker::startPlayFromCurrentStep()
 {
 	startPlay();
 	playState_ = 0x01;
+	playOrderNum_ = curOrderNum_;
+	playStepNum_ = curStepNum_;
 	findNextStep();
 }
 
@@ -671,6 +684,8 @@ void BambooTracker::stopPlaySong()
 	jamMan_.polyphonic(true, songStyle_.type);
 	tickCounter_.setPlayState(false);
 	playState_ = 0;
+	playOrderNum_ = -1;
+	playStepNum_ = -1;
 }
 
 bool BambooTracker::isPlaySong() const
@@ -696,6 +711,26 @@ bool BambooTracker::isMute(int trackNum)
 	case SoundSource::SSG:	return opnaCtrl_.isMuteSSG(ta.channelInSource);
 	case SoundSource::DRUM:	return opnaCtrl_.isMuteDrum(ta.channelInSource);
 	}
+}
+
+void BambooTracker::setFollowPlay(bool isFollowed)
+{
+	isFollowPlay_ = isFollowed;
+}
+
+bool BambooTracker::isFollowPlay() const
+{
+	return isFollowPlay_;
+}
+
+int BambooTracker::getPlayingOrderNumber() const
+{
+	return playOrderNum_;
+}
+
+int BambooTracker::getPlayingStepNumber() const
+{
+	return playStepNum_;
 }
 
 /********** Stream events **********/
@@ -745,7 +780,7 @@ void BambooTracker::readTick(int rest)
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& curStep = song.getTrack(attrib.number)
-					 .getPatternFromOrderNumber(curOrderNum_).getStep(curStepNum_);
+					 .getPatternFromOrderNumber(curOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
 		case SoundSource::FM:
 		{
@@ -793,10 +828,10 @@ void BambooTracker::readTick(int rest)
 		}
 		}
 
-		if (rest == 1 && nextReadStepOrder_ != -1 && attrib.source == SoundSource::FM) {
+		if (rest == 1 && nextReadOrder_ != -1 && attrib.source == SoundSource::FM) {
 			// Channel envelope reset before next key on
 			auto& step = song.getTrack(attrib.number)
-						 .getPatternFromOrderNumber(nextReadStepOrder_).getStep(nextReadStepStep_);
+						 .getPatternFromOrderNumber(nextReadOrder_).getStep(nextReadStep_);
 			int n = step.checkEffectID("0G");
 			if (n == -1 || !step.getEffectValue(n)) {
 				envelopeResetEffectFM(step, attrib.channelInSource);
@@ -864,23 +899,23 @@ void BambooTracker::clearDelayCounts()
 void BambooTracker::findNextStep()
 {
 	// Init
-	nextReadStepOrder_ = curOrderNum_;
-	nextReadStepStep_ = curStepNum_;
+	nextReadOrder_ = playOrderNum_;
+	nextReadStep_ = playStepNum_;
 
 	// Search
-	if (nextReadStepStep_ == getPatternSizeFromOrderNumber(curSongNum_, nextReadStepOrder_) - 1) {
+	if (nextReadStep_ == getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_) - 1) {
 		if (!(playState_ & 0x10)) {	// Not play pattern
-			if (nextReadStepOrder_ == getOrderSize(curSongNum_) - 1) {
-				nextReadStepOrder_ = 0;
+			if (nextReadOrder_ == getOrderSize(curSongNum_) - 1) {
+				nextReadOrder_ = 0;
 			}
 			else {
-				++nextReadStepOrder_;
+				++nextReadOrder_;
 			}
 		}
-		nextReadStepStep_ = 0;
+		nextReadStep_ = 0;
 	}
 	else {
-		++nextReadStepStep_;
+		++nextReadStep_;
 	}
 
 	isFindNextStep_ = true;
@@ -889,13 +924,17 @@ void BambooTracker::findNextStep()
 bool BambooTracker::stepDown()
 {
 	if (playState_ & 0x02) {	// Foward current step
-		if (nextReadStepOrder_ == -1) {
+		if (nextReadOrder_ == -1) {
 			isFindNextStep_ = false;
 			return false;
 		}
 		else {
-			curOrderNum_ = nextReadStepOrder_;
-			curStepNum_ = nextReadStepStep_;
+			playOrderNum_ = nextReadOrder_;
+			playStepNum_ = nextReadStep_;
+			if (isFollowPlay_) {
+				curOrderNum_ = nextReadOrder_;
+				curStepNum_ = nextReadStep_;
+			}
 		}
 	}
 	else {	// First read
@@ -915,7 +954,7 @@ void BambooTracker::readStep()
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
-					 .getPatternFromOrderNumber(curOrderNum_).getStep(curStepNum_);
+					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
 		case SoundSource::FM:
 		{
@@ -1322,8 +1361,8 @@ bool BambooTracker::readDrumSpecialEffect(int ch, std::string id, int value)
 bool BambooTracker::effPositionJump(int nextOrder)
 {
 	if (nextOrder < getOrderSize(curSongNum_)) {
-		nextReadStepOrder_ = nextOrder;
-		nextReadStepStep_ = 0;
+		nextReadOrder_ = nextOrder;
+		nextReadStep_ = 0;
 		return true;
 	}
 	return false;
@@ -1331,18 +1370,18 @@ bool BambooTracker::effPositionJump(int nextOrder)
 
 void BambooTracker::effTrackEnd()
 {
-	nextReadStepOrder_ = -1;
-	nextReadStepStep_ = -1;
+	nextReadOrder_ = -1;
+	nextReadStep_ = -1;
 }
 
 bool BambooTracker::effPatternBreak(int nextStep)
 {
-	if (curOrderNum_ == getOrderSize(curSongNum_) - 1) {
+	if (playOrderNum_ == getOrderSize(curSongNum_) - 1) {
 		return false;
 	}
-	else if (nextStep < getPatternSizeFromOrderNumber(curSongNum_, curOrderNum_ + 1)) {
-		nextReadStepOrder_ = curOrderNum_ + 1;
-		nextReadStepStep_ = nextStep;
+	else if (nextStep < getPatternSizeFromOrderNumber(curSongNum_, playOrderNum_ + 1)) {
+		nextReadOrder_ = playOrderNum_ + 1;
+		nextReadStep_ = nextStep;
 		return true;
 	}
 	return false;

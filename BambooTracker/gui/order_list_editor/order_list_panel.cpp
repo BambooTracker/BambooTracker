@@ -60,6 +60,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	curRowColor_ = QColor::fromRgb(110, 90, 140);
 	curRowColorEditable_ = QColor::fromRgb(140, 90, 110);
 	curCellColor_ = QColor::fromRgb(255, 255, 255, 127);
+	playTextColor_ = curTextColor_;
+	playRowColor_ = QColor::fromRgb(90, 90, 140);
 	selCellColor_ = QColor::fromRgb(100, 100, 200, 192);
 	hovCellColor_ = QColor::fromRgb(255, 255, 255, 64);
 	rowNumColor_ = QColor::fromRgb(255, 200, 180);
@@ -143,20 +145,31 @@ void OrderListPanel::drawRows(int maxWidth)
 
 	int rowNum;
 	int rowY, baseY, endY;
+	int playOdrNum = bt_->getPlayingOrderNumber();
 
 	/* Previous rows */
 	endY = std::max(headerHeight_ - rowFontHeight_, curRowY_ - rowFontHeight_ * curPos_.row);
 	for (rowY = curRowY_ - rowFontHeight_, baseY = curRowBaselineY_ - rowFontHeight_, rowNum = curPos_.row - 1;
 		 rowY >= endY;
 		 rowY -= rowFontHeight_, baseY -= rowFontHeight_, --rowNum) {
+		QColor rowColor, textColor;
+		if (rowNum == playOdrNum) {
+			rowColor = playRowColor_;
+			textColor = playTextColor_;
+		}
+		else {
+			rowColor = defRowColor_;
+			textColor = defTextColor_;
+		}
+
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, defRowColor_);
+		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
 		// Row number
 		painter.setPen(rowNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
-		painter.setPen(defTextColor_);
+		painter.setPen(textColor);
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
@@ -181,14 +194,24 @@ void OrderListPanel::drawRows(int maxWidth)
 	for (rowY = curRowY_ + rowFontHeight_, baseY = curRowBaselineY_ + rowFontHeight_, rowNum = curPos_.row + 1;
 		 rowY <= endY;
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
+		QColor rowColor, textColor;
+		if (rowNum == playOdrNum) {
+			rowColor = playRowColor_;
+			textColor = playTextColor_;
+		}
+		else {
+			rowColor = defRowColor_;
+			textColor = defTextColor_;
+		}
+
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, defRowColor_);
+		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
 		// Row number
 		painter.setPen(rowNumColor_);
 		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
-		painter.setPen(defTextColor_);
+		painter.setPen(textColor);
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover

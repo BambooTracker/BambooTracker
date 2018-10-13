@@ -153,6 +153,10 @@ public:
 	bool isPlaySong() const;
 	void setTrackMuteState(int trackNum, bool isMute);
 	bool isMute(int trackNum);
+	void setFollowPlay(bool isFollowed);
+	bool isFollowPlay() const;
+	int getPlayingOrderNumber() const;
+	int getPlayingStepNumber() const;
 
 	// Stream events
 	int streamCountUp();
@@ -257,8 +261,8 @@ private:
 	int curSongNum_;
 	SongStyle songStyle_;
 	int curTrackNum_;
-	int curOrderNum_;
-	int curStepNum_;
+	int curOrderNum_, playOrderNum_;
+	int curStepNum_, playStepNum_;
 	///	-1: not set
 	int curInstNum_;
 	/// High nibble - play type
@@ -268,7 +272,9 @@ private:
 	///		bit 1: have read first step data
 	unsigned int playState_;
 
-	int nextReadStepOrder_, nextReadStepStep_;
+	int nextReadOrder_, nextReadStep_;
+
+	bool isFollowPlay_;
 
 	int streamIntrRate_;
 

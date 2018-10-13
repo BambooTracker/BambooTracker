@@ -44,7 +44,10 @@ MainWindow::MainWindow(QWidget *parent) :
 											bt_->getStreamInterruptRate());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, [&]() {
-		if (!bt_->streamCountUp()) ui->patternEditor->updatePosition();
+		if (!bt_->streamCountUp()) {
+			ui->orderList->update();
+			ui->patternEditor->updatePosition();
+		}
 	}, Qt::DirectConnection);
 	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
 					 this, [&](int16_t *container, size_t nSamples) {
@@ -534,6 +537,8 @@ void MainWindow::stopPlaySong()
 {
 	bt_->stopPlaySong();
 	lockControls(false);
+	ui->patternEditor->update();
+	ui->orderList->update();
 }
 
 void MainWindow::lockControls(bool isLock)
@@ -999,7 +1004,7 @@ void MainWindow::on_actionStop_triggered()
 	stopPlaySong();
 }
 
-void MainWindow::on_actionToggle_Edit_Mode_triggered()
+void MainWindow::on_actionEdit_Mode_triggered()
 {
 	bt_->toggleJamMode();
 	ui->orderList->changeEditable();
@@ -1036,4 +1041,9 @@ void MainWindow::on_actionAbout_triggered()
 					   "- VGMPlay by (C) Valley Bell (GPL v2)\n"
 					   "- MAME (MAME License)\n"
 					   "- EMU2149 by (C) Mitsutaka Okazaki (MIT)");
+}
+
+void MainWindow::on_actionFollow_Mode_triggered()
+{
+	bt_->setFollowPlay(ui->actionFollow_Mode->isChecked());
 }

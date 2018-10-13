@@ -88,6 +88,7 @@ private:
 
 	QColor defTextColor_, defRowColor_;
 	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
+	QColor playTextColor_, playRowColor_;
 	QColor selCellColor_;
 	QColor hovCellColor_;
 	QColor rowNumColor_;
