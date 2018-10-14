@@ -44,7 +44,7 @@ void GrooveSettingsDialog::on_addButton_clicked()
 	seqs_.push_back({ 6, 6});
 	ui->removeButton->setEnabled(true);
 }
-#include <QDebug>
+
 void GrooveSettingsDialog::on_removeButton_clicked()
 {
 	int row = ui->listWidget->currentRow();

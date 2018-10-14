@@ -17,6 +17,7 @@
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/module_properties_dialog.hpp"
 #include "gui/groove_settings_dialog.hpp"
+#include "gui/configuration_dialog.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -40,9 +41,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	});
 
 	/* Audio stream */
-	stream_ = std::make_unique<AudioStream>(bt_->getStreamRate(),
+	stream_ = std::make_shared<AudioStream>(bt_->getStreamRate(),
 											bt_->getStreamDuration(),
-											bt_->getStreamInterruptRate());
+											bt_->getModuleTickFrequency());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, [&]() {
 		if (!bt_->streamCountUp()) {
@@ -1063,4 +1064,9 @@ void MainWindow::on_actionGroove_Settings_triggered()
 		bt_->setGrooves(diag.getGrooveSequences());
 		ui->grooveSpinBox->setMaximum(bt_->getGrooveCount() - 1);
 	}
+}
+
+void MainWindow::on_actionConfiguration_triggered()
+{
+	ConfigurationDialog(bt_, stream_).exec();
 }

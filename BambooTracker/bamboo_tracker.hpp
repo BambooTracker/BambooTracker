@@ -165,8 +165,9 @@ public:
 
 	// Stream details
 	int getStreamRate() const;
+	void setStreamRate(int rate);
 	int getStreamDuration() const;
-	int getStreamInterruptRate() const;
+	void setStreamDuration(int duration);
 
 	// Module details
 	/*----- Module -----*/

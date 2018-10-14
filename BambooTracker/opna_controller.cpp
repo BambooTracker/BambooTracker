@@ -1,14 +1,14 @@
 #include "opna_controller.hpp"
 #include "pitch_converter.hpp"
 
-#include <QDebug>
-
 #ifdef SINC_INTERPOLATION
 OPNAController::OPNAController(int clock, int rate, int duration) :
-	opna_(clock, rate, duration)
+	opna_(clock, rate, duration),
+	duration_(duration)
 #else
 OPNAController::OPNAController(int clock, int rate) :
-	opna_(clock, rate)
+	opna_(clock, rate),
+	duration_(40)	// Dummy set
 #endif
 {	
 	for (int ch = 0; ch < 6; ++ch) {
@@ -103,9 +103,22 @@ int OPNAController::getRate() const
 	return opna_.getRate();
 }
 
+void OPNAController::setRate(int rate)
+{
+	opna_.setRate(rate);
+}
+
 int OPNAController::getDuration() const
 {
-	return 40;	// dummy set
+	return duration_;
+}
+
+void OPNAController::setDuration(int duration)
+{
+	duration_ = duration;
+	#ifdef SINC_INTERPOLATION
+	opnaCtrl_.setMaxDuration(duration);
+	#endif
 }
 
 //---------- FM ----------//

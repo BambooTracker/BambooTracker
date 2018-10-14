@@ -36,7 +36,7 @@ private:
 	Ui::MainWindow *ui;
 
 	std::shared_ptr<BambooTracker> bt_;
-	std::unique_ptr<AudioStream> stream_;
+	std::shared_ptr<AudioStream> stream_;
 	std::shared_ptr<QUndoStack> comStack_;
 
 	// Instrument list
@@ -119,6 +119,7 @@ private slots:
 	void on_actionAbout_triggered();
 	void on_actionFollow_Mode_triggered();
 	void on_actionGroove_Settings_triggered();
+	void on_actionConfiguration_triggered();
 };
 
 #endif // MAINWINDOW_HPP

@@ -398,6 +398,8 @@ QListWidget::item:selected:hover {
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
     <addaction name="separator"/>
+    <addaction name="actionConfiguration"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -854,6 +856,11 @@ QListWidget::item:selected:hover {
   <action name="actionGroove_Settings">
    <property name="text">
     <string>Groove Settings...</string>
+   </property>
+  </action>
+  <action name="actionConfiguration">
+   <property name="text">
+    <string>Configuration...</string>
    </property>
   </action>
  </widget>

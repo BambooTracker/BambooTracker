@@ -41,10 +41,13 @@ public:
 
 	// Stream details
 	int getRate() const;
+	void setRate(int rate);
 	int getDuration() const;
+	void setDuration(int duration);
 
 private:
 	chip::OPNA opna_;
+	int duration_;
 
 	void initChip();
 

@@ -128,7 +128,8 @@ SOURCES += \
     command/pattern/decrease_note_octave_in_pattern_command.cpp \
     gui/module_properties_dialog.cpp \
     module/groove.cpp \
-    gui/groove_settings_dialog.cpp
+    gui/groove_settings_dialog.cpp \
+    gui/configuration_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -246,7 +247,8 @@ HEADERS += \
     command/pattern/decrease_note_octave_in_pattern_command.hpp \
     gui/module_properties_dialog.hpp \
     module/groove.hpp \
-    gui/groove_settings_dialog.hpp
+    gui/groove_settings_dialog.hpp \
+    gui/configuration_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -259,7 +261,8 @@ FORMS += \
     gui/instrument_editor/instrument_editor_ssg_form.ui \
     gui/instrument_editor/visualized_instrument_macro_editor.ui \
     gui/module_properties_dialog.ui \
-    gui/groove_settings_dialog.ui
+    gui/groove_settings_dialog.ui \
+    gui/configuration_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

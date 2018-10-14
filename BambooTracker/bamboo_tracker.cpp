@@ -1437,14 +1437,19 @@ int BambooTracker::getStreamRate() const
 	return opnaCtrl_.getRate();
 }
 
+void BambooTracker::setStreamRate(int rate)
+{
+	opnaCtrl_.setRate(rate);
+}
+
 int BambooTracker::getStreamDuration() const
 {
 	return opnaCtrl_.getDuration();
 }
 
-int BambooTracker::getStreamInterruptRate() const
+void BambooTracker::setStreamDuration(int duration)
 {
-	return streamIntrRate_;
+	opnaCtrl_.setDuration(duration);
 }
 
 /********** Module details **********/
