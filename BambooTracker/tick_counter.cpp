@@ -4,6 +4,7 @@ TickCounter::TickCounter() :
 	isPlaySong_(false),
 	tempo_(150),    // Dummy set
 	tickRate_(60),	// NTSC
+	nextGroovePos_(-1),
 	defStepSize_(6)    // Dummy set
 {
 	updateTickDIf();
@@ -28,6 +29,18 @@ void TickCounter::setSpeed(int speed)
 	defStepSize_ = speed;
 	updateTickDIf();
 	tickDifSum_ = 0;
+	resetRest();
+}
+
+void TickCounter::setGroove(std::vector<int> seq)
+{
+	grooves_ = seq;
+	if (nextGroovePos_ != -1) nextGroovePos_ = 0;
+}
+
+void TickCounter::setGrooveEnebled(bool enabled)
+{
+	nextGroovePos_ = enabled ? (grooves_.size() - 1) : -1;
 	resetRest();
 }
 
@@ -74,8 +87,14 @@ void TickCounter::resetCount()
 
 void TickCounter::resetRest()
 {
-	tickDifSum_ += tickDif_;
-	int castedTickDifSum = static_cast<int>(tickDifSum_);
-	restTickToNextStep_ = defStepSize_ + castedTickDifSum;
-	tickDifSum_ -= castedTickDifSum;
+	if (nextGroovePos_ == -1) {
+		tickDifSum_ += tickDif_;
+		int castedTickDifSum = static_cast<int>(tickDifSum_);
+		restTickToNextStep_ = defStepSize_ + castedTickDifSum;
+		tickDifSum_ -= castedTickDifSum;
+	}
+	else {
+		restTickToNextStep_ = grooves_.at(nextGroovePos_);
+		nextGroovePos_ = (nextGroovePos_ + 1) % grooves_.size();
+	}
 }

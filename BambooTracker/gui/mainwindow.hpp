@@ -118,6 +118,7 @@ private slots:
 	void on_actionKill_Sound_triggered();
 	void on_actionAbout_triggered();
 	void on_actionFollow_Mode_triggered();
+	void on_actionGroove_Settings_triggered();
 };
 
 #endif // MAINWINDOW_HPP

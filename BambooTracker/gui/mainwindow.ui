@@ -365,6 +365,9 @@ QListWidget::item:selected:hover {
            <property name="enabled">
             <bool>false</bool>
            </property>
+           <property name="prefix">
+            <string>#</string>
+           </property>
            <property name="maximum">
             <number>127</number>
            </property>
@@ -449,6 +452,8 @@ QListWidget::item:selected:hover {
      <string>Module</string>
     </property>
     <addaction name="actionModule_Properties"/>
+    <addaction name="separator"/>
+    <addaction name="actionGroove_Settings"/>
    </widget>
    <widget class="QMenu" name="menuInstrument">
     <property name="title">
@@ -844,6 +849,11 @@ QListWidget::item:selected:hover {
    </property>
    <property name="shortcut">
     <string>ScrollLock</string>
+   </property>
+  </action>
+  <action name="actionGroove_Settings">
+   <property name="text">
+    <string>Groove Settings...</string>
    </property>
   </action>
  </widget>

@@ -9,6 +9,7 @@ Module::Module(std::string title, std::string author, std::string copyright, uns
 	  tickFreq_(tickFreq)
 {
 	songs_.emplace_back(0);
+	grooves_.emplace_back();
 }
 
 void Module::setTitle(std::string title)
@@ -56,6 +57,11 @@ size_t Module::getSongCount() const
 	return songs_.size();
 }
 
+size_t Module::getGrooveCount() const
+{
+	return grooves_.size();
+}
+
 void Module::addSong(SongType songType, std::string title)
 {
 	int n = songs_.size();
@@ -82,4 +88,32 @@ Song& Module::getSong(int num)
 	auto it = std::find_if(songs_.begin(), songs_.end(),
 						   [num](Song& s) { return s.getNumber() == num; });
 	return *it;
+}
+
+void Module::addGroove()
+{
+	grooves_.emplace_back();
+}
+
+void Module::removeGroove(int num)
+{
+	grooves_.erase(grooves_.begin() + num);
+}
+
+void Module::setGroove(int num, std::vector<int> seq)
+{
+	grooves_.at(num).setSequrnce(seq);
+}
+
+void Module::setGrooves(std::vector<std::vector<int>> seqs)
+{
+	grooves_.clear();
+	for (auto& seq : seqs) {
+		grooves_.emplace_back(seq);
+	}
+}
+
+Groove& Module::getGroove(int num)
+{
+	return grooves_.at(num);
 }

@@ -178,6 +178,10 @@ public:
 	std::string getModuleCopyright() const;
 	void setModuleTickFrequency(unsigned int freq);
 	unsigned int getModuleTickFrequency() const;
+	size_t getGrooveCount() const;
+	void setGroove(int num, std::vector<int> seq);
+	void setGrooves(std::vector<std::vector<int>> seqs);
+	std::vector<int> getGroove(int num) const;
 	/*----- Song -----*/
 	void setSongTitle(int songNum, std::string title);
 	std::string getSongTitle(int songNum) const;
@@ -307,6 +311,7 @@ private:
 	bool effPatternBreak(int nextStep);
 	void effSpeedChange(int speed);
 	void effTempoChange(int tempo);
+	void effGrooveChange(int num);
 	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
 	std::vector<int> ntDlyCntDrum_, ntCutDlyCntDrum_, volDlyCntDrum_;

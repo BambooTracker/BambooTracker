@@ -16,6 +16,7 @@
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/module_properties_dialog.hpp"
+#include "gui/groove_settings_dialog.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -484,6 +485,7 @@ void MainWindow::loadSong()
 	ui->speedSpinBox->setValue(bt_->getSongSpeed(curSong));
 	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(curSong));
 	ui->grooveSpinBox->setValue(bt_->getSongGroove(curSong));
+	ui->grooveSpinBox->setMaximum(bt_->getGrooveCount() - 1);
 	if (bt_->isUsedTempoInSong(curSong)) {
 		ui->tickFreqSpinBox->setEnabled(true);
 		ui->tempoSpinBox->setEnabled(true);
@@ -1046,4 +1048,19 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionFollow_Mode_triggered()
 {
 	bt_->setFollowPlay(ui->actionFollow_Mode->isChecked());
+}
+
+void MainWindow::on_actionGroove_Settings_triggered()
+{
+	std::vector<std::vector<int>> seqs;
+	for (size_t i = 0; i < bt_->getGrooveCount(); ++i) {
+		seqs.push_back(bt_->getGroove(i));
+	}
+
+	GrooveSettingsDialog diag;
+	diag.setGrooveSquences(seqs);
+	if (diag.exec() == QDialog::Accepted) {
+		bt_->setGrooves(diag.getGrooveSequences());
+		ui->grooveSpinBox->setMaximum(bt_->getGrooveCount() - 1);
+	}
 }

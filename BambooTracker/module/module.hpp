@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "song.hpp"
+#include "groove.hpp"
 
 class Module
 {
@@ -19,10 +20,17 @@ public:
 	void setTickFrequency(unsigned int freq);
 	unsigned int getTickFrequency() const;
 	size_t getSongCount() const;
+	size_t getGrooveCount() const;
 
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
 	Song& getSong(int num);
+
+	void addGroove();
+	void removeGroove(int num);
+	void setGroove(int num, std::vector<int> seq);
+	void setGrooves(std::vector<std::vector<int>> seqs);
+	Groove& getGroove(int num);
 
 private:
 	std::string title_;
@@ -30,4 +38,5 @@ private:
 	std::string copyright_;
 	unsigned int tickFreq_;
 	std::vector<Song> songs_;
+	std::vector<Groove> grooves_;
 };
