@@ -1003,6 +1003,9 @@ void PatternEditorPanel::pasteCopiedCells(PatternPosition& startPos)
 	std::vector<std::vector<std::string>> cells
 			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
 
+	if (sCol > 2 && cells.front().size() <= 11 - curPos_.colInTrack)
+		sCol = curPos_.colInTrack;
+
 	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
 						   startPos.order, startPos.step, std::move(cells));
 	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
@@ -1013,6 +1016,9 @@ void PatternEditorPanel::pasteMixCopiedCells(PatternPosition& startPos)
 	int sCol = 0;
 	std::vector<std::vector<std::string>> cells
 			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
+
+	if (sCol > 2 && cells.front().size() <= 11 - curPos_.colInTrack)
+		sCol = curPos_.colInTrack;
 
 	bt_->pasteMixPatternCells(curSongNum_, startPos.track, sCol,
 							  startPos.order, startPos.step, std::move(cells));
