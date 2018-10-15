@@ -1003,7 +1003,7 @@ void PatternEditorPanel::pasteCopiedCells(PatternPosition& startPos)
 	std::vector<std::vector<std::string>> cells
 			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
 
-	if (sCol > 2 && cells.front().size() <= 11 - curPos_.colInTrack)
+	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2) && cells.front().size() <= 11 - curPos_.colInTrack)
 		sCol = curPos_.colInTrack;
 
 	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
@@ -1017,7 +1017,7 @@ void PatternEditorPanel::pasteMixCopiedCells(PatternPosition& startPos)
 	std::vector<std::vector<std::string>> cells
 			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
 
-	if (sCol > 2 && cells.front().size() <= 11 - curPos_.colInTrack)
+	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2) && cells.front().size() <= 11 - curPos_.colInTrack)
 		sCol = curPos_.colInTrack;
 
 	bt_->pasteMixPatternCells(curSongNum_, startPos.track, sCol,

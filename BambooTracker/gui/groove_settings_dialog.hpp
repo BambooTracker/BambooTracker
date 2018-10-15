@@ -2,6 +2,7 @@
 #define GROOVE_SETTINGS_DIALOG_HPP
 
 #include <QDialog>
+#include <QKeyEvent>
 #include <vector>
 
 namespace Ui {
@@ -17,6 +18,9 @@ public:
 	~GrooveSettingsDialog() override;
 	void setGrooveSquences(std::vector<std::vector<int>> seqs);
 	std::vector<std::vector<int>> getGrooveSequences();
+
+protected:
+	void keyPressEvent(QKeyEvent* event) override;
 
 private slots:
 	void on_addButton_clicked();

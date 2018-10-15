@@ -38,6 +38,19 @@ std::vector<std::vector<int>> GrooveSettingsDialog::getGrooveSequences()
 	return seqs_;
 }
 
+void GrooveSettingsDialog::keyPressEvent(QKeyEvent* event)
+{
+	switch (event->key()) {
+	case Qt::Key_Return:
+	case Qt::Key_Enter:
+		// Prevent dialog from closing when it finished line edit
+		break;
+	default:
+		QDialog::keyPressEvent(event);
+		break;
+	}
+}
+
 void GrooveSettingsDialog::on_addButton_clicked()
 {
 	ui->listWidget->addItem(QString::number(seqs_.size()) + ": 6 6 ");

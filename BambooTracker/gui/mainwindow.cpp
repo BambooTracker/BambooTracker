@@ -951,6 +951,8 @@ void MainWindow::on_actionModule_Properties_triggered()
 {
 	ModulePropertiesDialog dialog(bt_);
 	if (dialog.exec() == QDialog::Accepted) {
+		bt_->stopPlaySong();
+		lockControls(false);
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
@@ -1061,6 +1063,8 @@ void MainWindow::on_actionGroove_Settings_triggered()
 	GrooveSettingsDialog diag;
 	diag.setGrooveSquences(seqs);
 	if (diag.exec() == QDialog::Accepted) {
+		bt_->stopPlaySong();
+		lockControls(false);
 		bt_->setGrooves(diag.getGrooveSequences());
 		ui->grooveSpinBox->setMaximum(bt_->getGrooveCount() - 1);
 	}
@@ -1068,5 +1072,8 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	ConfigurationDialog(bt_, stream_).exec();
+	if (ConfigurationDialog(bt_, stream_).exec() == QDialog::Accepted) {
+		bt_->stopPlaySong();
+		lockControls(false);
+	}
 }
