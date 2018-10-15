@@ -112,7 +112,6 @@ SOURCES += \
     gui/command/order/paste_copied_data_to_order_qt_command.cpp \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
-    instrument/abstruct_instrument_property.cpp \
     gui/instrument_editor/visualized_instrument_macro_editor.cpp \
     instrument/command_sequence.cpp \
     instrument/effect_iterator.cpp \
@@ -129,7 +128,12 @@ SOURCES += \
     gui/module_properties_dialog.cpp \
     module/groove.cpp \
     gui/groove_settings_dialog.cpp \
-    gui/configuration_dialog.cpp
+    gui/configuration_dialog.cpp \
+    command/pattern/expand_pattern_command.cpp \
+    gui/command/pattern/expand_pattern_qt_command.cpp \
+    command/pattern/shrink_pattern_command.cpp \
+    gui/command/pattern/shrink_pattern_qt_command.cpp \
+    instrument/abstract_instrument_property.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -165,7 +169,6 @@ HEADERS += \
     gui/slider_style.hpp \
     gui/command/instrument/change_instrument_name_qt_command.hpp \
     command/instrument/change_instrument_name_command.hpp \
-    command/abstruct_command.hpp \
     opna_controller.hpp \
     instrument/instrument.hpp \
     instrument/envelope_fm.hpp \
@@ -230,7 +233,6 @@ HEADERS += \
     gui/command/order/paste_copied_data_to_order_qt_command.hpp \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
-    instrument/abstruct_instrument_property.hpp \
     gui/instrument_editor/visualized_instrument_macro_editor.hpp \
     instrument/command_sequence.hpp \
     instrument/sequence_iterator_interface.hpp \
@@ -248,7 +250,13 @@ HEADERS += \
     gui/module_properties_dialog.hpp \
     module/groove.hpp \
     gui/groove_settings_dialog.hpp \
-    gui/configuration_dialog.hpp
+    gui/configuration_dialog.hpp \
+    command/pattern/expand_pattern_command.hpp \
+    gui/command/pattern/expand_pattern_qt_command.hpp \
+    command/pattern/shrink_pattern_command.hpp \
+    gui/command/pattern/shrink_pattern_qt_command.hpp \
+    command/abstract_command.hpp \
+    instrument/abstract_instrument_property.hpp
 
 FORMS += \
     gui/mainwindow.ui \

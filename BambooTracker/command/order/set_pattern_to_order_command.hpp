@@ -1,17 +1,17 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include "module.hpp"
 
-class SetPatternToOrderCommand : public AbstructCommand
+class SetPatternToOrderCommand : public AbstractCommand
 {
 public:
 	SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int patternNum);
 	void redo() override;
 	void undo() override;
 	int getID() const override;
-	bool mergeWith(const AbstructCommand* other) override;
+	bool mergeWith(const AbstractCommand* other) override;
 
 	int getSong() const;
 	int getTrack() const;

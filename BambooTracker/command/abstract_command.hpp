@@ -1,12 +1,12 @@
 #pragma once
 
-struct AbstructCommand
+struct AbstractCommand
 {
-	virtual ~AbstructCommand() {}
+	virtual ~AbstractCommand() {}
 	virtual void redo() = 0;
 	virtual void undo() = 0;
 	virtual int getID() const = 0;
-	virtual bool mergeWith(const AbstructCommand* other)
+	virtual bool mergeWith(const AbstractCommand* other)
 	{
 		return false;
 	}

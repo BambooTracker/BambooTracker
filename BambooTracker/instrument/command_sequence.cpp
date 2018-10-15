@@ -1,7 +1,7 @@
 #include "command_sequence.hpp"
 
 CommandSequence::CommandSequence(int num, int seqType, int comType, int comData)
-	: AbstructInstrumentProperty(num),
+	: AbstractInstrumentProperty(num),
 	  type_(seqType),
 	  release_{ ReleaseType::NO_RELEASE, -1 }
 {
@@ -9,7 +9,7 @@ CommandSequence::CommandSequence(int num, int seqType, int comType, int comData)
 }
 
 CommandSequence::CommandSequence(const CommandSequence& other)
-	: AbstructInstrumentProperty(other)
+	: AbstractInstrumentProperty(other)
 {
 	seq_ = other.seq_;
 	loops_ = other.loops_;

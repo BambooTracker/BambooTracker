@@ -1,12 +1,12 @@
 #pragma once
 
 #include <string>
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include "instrument.hpp"
 #include "instruments_manager.hpp"
 #include "misc.hpp"
 
-class AddInstrumentCommand : public AbstructCommand
+class AddInstrumentCommand : public AbstractCommand
 {
 public:
 	AddInstrumentCommand(InstrumentsManager &manager, int num, SoundSource source, std::string name);

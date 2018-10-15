@@ -1,18 +1,18 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include <string>
 #include "module.hpp"
 
-class SetEffectIDToStepCommand : public AbstructCommand
+class SetEffectIDToStepCommand : public AbstractCommand
 {
 public:
 	SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id);
 	void redo() override;
 	void undo() override;
 	int getID() const override;
-	bool mergeWith(const AbstructCommand* other) override;
+	bool mergeWith(const AbstractCommand* other) override;
 
 	int getSong() const;
 	int getTrack() const;

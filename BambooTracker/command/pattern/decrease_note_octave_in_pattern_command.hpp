@@ -1,11 +1,11 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
 #include "module.hpp"
 
-class DecreaseNoteOctaveInPatternCommand : public AbstructCommand
+class DecreaseNoteOctaveInPatternCommand : public AbstractCommand
 {
 public:
 	DecreaseNoteOctaveInPatternCommand(std::weak_ptr<Module> mod, int songNum,

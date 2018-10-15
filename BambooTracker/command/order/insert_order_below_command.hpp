@@ -1,10 +1,10 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include "module.hpp"
 
-class InsertOrderBelowCommand : public AbstructCommand
+class InsertOrderBelowCommand : public AbstractCommand
 {
 public:
 	InsertOrderBelowCommand(std::weak_ptr<Module> mod, int songNum, int orderNum);

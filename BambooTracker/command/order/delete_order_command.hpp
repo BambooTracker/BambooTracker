@@ -1,12 +1,12 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
 #include "module.hpp"
 #include "track.hpp"
 
-class DeleteOrderCommand : public AbstructCommand
+class DeleteOrderCommand : public AbstractCommand
 {
 public:
 	DeleteOrderCommand(std::weak_ptr<Module> mod, int songNum, int orderNum);

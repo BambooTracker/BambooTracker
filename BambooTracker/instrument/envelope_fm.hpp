@@ -2,11 +2,11 @@
 
 #include <map>
 #include <memory>
-#include "abstruct_instrument_property.hpp"
+#include "abstract_instrument_property.hpp"
 
 enum class FMEnvelopeParameter;
 
-class EnvelopeFM : public AbstructInstrumentProperty
+class EnvelopeFM : public AbstractInstrumentProperty
 {
 public:
 	explicit EnvelopeFM(int num);

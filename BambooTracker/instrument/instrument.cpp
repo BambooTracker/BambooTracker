@@ -1,33 +1,33 @@
 #include "instrument.hpp"
 
-AbstructInstrument::AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner)
+AbstractInstrument::AbstractInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner)
 	: owner_(owner),
 	  name_(name),
 	  number_(number),
 	  source_(source)
 {}
 
-int AbstructInstrument::getNumber() const
+int AbstractInstrument::getNumber() const
 {
 	return number_;
 }
 
-void AbstructInstrument::setNumber(int n)
+void AbstractInstrument::setNumber(int n)
 {
 	number_ = n;
 }
 
-SoundSource AbstructInstrument::getSoundSource() const
+SoundSource AbstractInstrument::getSoundSource() const
 {
 	return source_;
 }
 
-std::string AbstructInstrument::getName() const
+std::string AbstractInstrument::getName() const
 {
 	return name_;
 }
 
-void AbstructInstrument::setName(std::string name)
+void AbstractInstrument::setName(std::string name)
 {
 	name_ = name;
 }
@@ -35,7 +35,7 @@ void AbstructInstrument::setName(std::string name)
 /****************************************/
 
 InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
-	AbstructInstrument(number, SoundSource::FM, name, owner),
+	AbstractInstrument(number, SoundSource::FM, name, owner),
 	envNum_(0),
 	lfoNum_(-1),
 	arpNum_(-1),
@@ -84,7 +84,7 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	};
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentFM::clone()
+std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
 {
 	return std::unique_ptr<InstrumentFM>(std::make_unique<InstrumentFM>(*this));
 }
@@ -237,7 +237,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterato
 /****************************************/
 
 InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner)
-	: AbstructInstrument(number, SoundSource::SSG, name, owner),
+	: AbstractInstrument(number, SoundSource::SSG, name, owner),
 	  wfNum_(-1),
 	  tnNum_(-1),
 	  envNum_(-1),
@@ -246,9 +246,9 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 {
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentSSG::clone()
+std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
 {
-	return std::unique_ptr<AbstructInstrument>(std::make_unique<InstrumentSSG>(*this));
+	return std::unique_ptr<AbstractInstrument>(std::make_unique<InstrumentSSG>(*this));
 }
 
 void InstrumentSSG::setWaveFormNumber(int n)

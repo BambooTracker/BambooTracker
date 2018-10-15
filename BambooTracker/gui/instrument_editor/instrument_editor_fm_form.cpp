@@ -519,7 +519,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 	auto name = QString::fromUtf8(instFM->getName().c_str(), instFM->getName().length());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
@@ -638,7 +638,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
 	ui->envNumSpinBox->setValue(instFM->getEnvelopeNumber());
@@ -819,7 +819,7 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
 	int num = instFM->getLFONumber();
@@ -957,7 +957,7 @@ void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
 	FMEnvelopeParameter param = getOperatorSequenceParameter();
@@ -1127,7 +1127,7 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
 	int num = instFM->getArpeggioNumber();
@@ -1237,7 +1237,7 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
 	int num = instFM->getPitchNumber();

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <memory>
-#include "abstruct_instrument_property.hpp"
+#include "abstract_instrument_property.hpp"
 
 enum class FMLFOParameter;
 
 
-class LFOFM : public AbstructInstrumentProperty
+class LFOFM : public AbstractInstrumentProperty
 {
 public:
 	explicit LFOFM(int n);

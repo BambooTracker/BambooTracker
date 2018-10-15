@@ -1,10 +1,10 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include "module.hpp"
 
-class EraseEffectValueInStepCommand : public AbstructCommand
+class EraseEffectValueInStepCommand : public AbstractCommand
 {
 public:
 	EraseEffectValueInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n);

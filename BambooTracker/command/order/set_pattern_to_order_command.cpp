@@ -27,7 +27,7 @@ int SetPatternToOrderCommand::getID() const
 	return 0x40;
 }
 
-bool SetPatternToOrderCommand::mergeWith(const AbstructCommand* other)
+bool SetPatternToOrderCommand::mergeWith(const AbstractCommand* other)
 {
 	if (other->getID() == getID() && !isComplete_) {
 		auto com = dynamic_cast<const SetPatternToOrderCommand*>(other);

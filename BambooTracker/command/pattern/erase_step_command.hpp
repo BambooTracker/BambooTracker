@@ -1,11 +1,11 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <string>
 #include <memory>
 #include "module.hpp"
 
-class EraseStepCommand : public AbstructCommand
+class EraseStepCommand : public AbstractCommand
 {
 public:
 	EraseStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);

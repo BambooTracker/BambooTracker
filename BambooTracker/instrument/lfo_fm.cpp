@@ -1,7 +1,7 @@
 #include "lfo_fm.hpp"
 
 LFOFM::LFOFM(int n)
-	: AbstructInstrumentProperty (n),
+	: AbstractInstrumentProperty (n),
 	  freq_(0),
 	  pms_(0),
 	  ams_(0),
@@ -12,7 +12,7 @@ LFOFM::LFOFM(int n)
 }
 
 LFOFM::LFOFM(const LFOFM& other)
-	: AbstructInstrumentProperty (other)
+	: AbstractInstrumentProperty (other)
 {
 	freq_ = other.freq_;
 	ams_ = other.ams_;

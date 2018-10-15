@@ -34,7 +34,7 @@ public:
 	// Instrument edit
 	void addInstrument(int num, std::string name);
 	void removeInstrument(int num);
-	std::unique_ptr<AbstructInstrument> getInstrument(int num);
+	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
 	int findFirstFreeInstrumentNumber() const;
@@ -247,6 +247,10 @@ public:
 									 int endTrack, int endStep);
 	void decreaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
 									 int endTrack, int endStep);
+	void expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+					   int endTrack, int endColmn, int endStep);
+	void shrinkPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+					   int endTrack, int endColmn, int endStep);
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 	void setDefaultPatternSize(int songNum, size_t size);
 	size_t getDefaultPatternSize(int songNum) const;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include "module.hpp"
 
-class InsertStepCommand : public AbstructCommand
+class InsertStepCommand : public AbstractCommand
 {
 public:
 	InsertStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);

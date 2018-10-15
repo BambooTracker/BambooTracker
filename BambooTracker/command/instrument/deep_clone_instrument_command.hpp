@@ -1,9 +1,9 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include "instruments_manager.hpp"
 
-class DeepCloneInstrumentCommand : public AbstructCommand
+class DeepCloneInstrumentCommand : public AbstractCommand
 {
 public:
 	DeepCloneInstrumentCommand(InstrumentsManager &manager, int num, int refNum);

@@ -81,7 +81,7 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	}
 }
 
-void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
+void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 {	
 	int num = inst->getNumber();
 	insts_.at(num) = std::move(inst);
@@ -125,7 +125,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstructInstrument> inst)
 
 void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 {
-	std::shared_ptr<AbstructInstrument> refInst = insts_.at(refInstNum);
+	std::shared_ptr<AbstractInstrument> refInst = insts_.at(refInstNum);
 	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
 
 	switch (refInst->getSoundSource()) {
@@ -159,7 +159,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 
 void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 {
-	std::shared_ptr<AbstructInstrument> refInst = insts_.at(refInstNum);
+	std::shared_ptr<AbstractInstrument> refInst = insts_.at(refInstNum);
 	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
 
 	switch (refInst->getSoundSource()) {
@@ -374,7 +374,7 @@ int InstrumentsManager::cloneSSGPitch(int srcNum)
 	return cloneNum;
 }
 
-std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int instNum)
+std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
 	switch (insts_.at(instNum)->getSoundSource()) {
 	case SoundSource::FM:
@@ -412,19 +412,19 @@ std::unique_ptr<AbstructInstrument> InstrumentsManager::removeInstrument(int ins
 		break;
 	}
 
-	std::unique_ptr<AbstructInstrument> clone = insts_[instNum]->clone();
+	std::unique_ptr<AbstractInstrument> clone = insts_[instNum]->clone();
 	insts_[instNum]->setNumber(-1);	// Unregistered number
 	insts_[instNum].reset();
 	return clone;
 }
 
-std::shared_ptr<AbstructInstrument> InstrumentsManager::getInstrumentSharedPtr(int instNum)
+std::shared_ptr<AbstractInstrument> InstrumentsManager::getInstrumentSharedPtr(int instNum)
 {
 	if (0 <= instNum && instNum < 128 && insts_.at(instNum) != nullptr) {
 		return insts_[instNum];
 	}
 	else {
-		return std::shared_ptr<AbstructInstrument>();	// Throw nullptr
+		return std::shared_ptr<AbstractInstrument>();	// Throw nullptr
 	}
 }
 

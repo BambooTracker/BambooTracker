@@ -31,7 +31,7 @@ int SetVolumeToStepCommand::getID() const
 	return 0x25;
 }
 
-bool SetVolumeToStepCommand::mergeWith(const AbstructCommand* other)
+bool SetVolumeToStepCommand::mergeWith(const AbstractCommand* other)
 {
 	if (other->getID() == getID() && !isComplete_) {
 		auto com = dynamic_cast<const SetVolumeToStepCommand*>(other);

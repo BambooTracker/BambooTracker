@@ -12,22 +12,22 @@
 
 class InstrumentsManager;
 
-class AbstructInstrument
+class AbstractInstrument
 {
 public:
-	virtual ~AbstructInstrument() = default;
+	virtual ~AbstractInstrument() = default;
 
 	int getNumber() const;
 	void setNumber(int n);
 	SoundSource getSoundSource() const;
 	std::string getName() const;
 	void setName(std::string name);
-	virtual std::unique_ptr<AbstructInstrument> clone() = 0;
+	virtual std::unique_ptr<AbstractInstrument> clone() = 0;
 
 protected:
 	InstrumentsManager* owner_;
     std::string name_;	// UTF-8
-	AbstructInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner);
+	AbstractInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner);
 
 private:
 	int number_;
@@ -35,11 +35,11 @@ private:
 };
 
 
-class InstrumentFM : public AbstructInstrument
+class InstrumentFM : public AbstractInstrument
 {
 public:
 	InstrumentFM(int number, std::string name, InstrumentsManager* owner);
-	std::unique_ptr<AbstructInstrument> clone() override;
+	std::unique_ptr<AbstractInstrument> clone() override;
 
 	void setEnvelopeNumber(int n);
 	int getEnvelopeNumber() const;
@@ -87,11 +87,11 @@ private:
 };
 
 
-class InstrumentSSG : public AbstructInstrument
+class InstrumentSSG : public AbstractInstrument
 {
 public:
 	InstrumentSSG(int number, std::string name, InstrumentsManager* owner);
-	std::unique_ptr<AbstructInstrument> clone() override;
+	std::unique_ptr<AbstractInstrument> clone() override;
 
 	void setWaveFormNumber(int n);
 	int getWaveFormNumber() const;

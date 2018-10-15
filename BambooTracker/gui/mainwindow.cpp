@@ -819,20 +819,23 @@ void MainWindow::updateMenuByPattern()
 		ui->actionPaste->setEnabled(false);
 		ui->actionPaste_Mix->setEnabled(false);
 		ui->actionDelete->setEnabled(false);
-
 		// Pattern
+		ui->actionExpand->setEnabled(false);
+		ui->actionShrink->setEnabled(false);
 		ui->actionDecrease_Note->setEnabled(false);
 		ui->actionIncrease_Note->setEnabled(false);
 		ui->actionDecrease_Octave->setEnabled(false);
 		ui->actionIncrease_Octave->setEnabled(false);
 	}
 	else {
-		// Pattern
+		// Edit
 		bool enabled = QApplication::clipboard()->text().startsWith("PATTERN_");
 		ui->actionPaste->setEnabled(enabled);
 		ui->actionPaste_Mix->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
-
+		// Pattern
+		ui->actionExpand->setEnabled(isSelectedPO_);
+		ui->actionShrink->setEnabled(isSelectedPO_);
 		ui->actionDecrease_Note->setEnabled(true);
 		ui->actionIncrease_Note->setEnabled(true);
 		ui->actionDecrease_Octave->setEnabled(true);
@@ -853,7 +856,6 @@ void MainWindow::updateMenuByOrder()
 		// Edit
 		ui->actionPaste->setEnabled(false);
 		ui->actionDelete->setEnabled(false);
-
 		// Song
 		ui->actionInsert_Order->setEnabled(false);
 		ui->actionRemove_Order->setEnabled(false);
@@ -863,7 +865,6 @@ void MainWindow::updateMenuByOrder()
 		bool enabled = QApplication::clipboard()->text().startsWith("ORDER_");
 		ui->actionPaste->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
-
 		// Song
 		ui->actionInsert_Order->setEnabled(true);
 		ui->actionRemove_Order->setEnabled(true);
@@ -872,6 +873,8 @@ void MainWindow::updateMenuByOrder()
 	ui->actionPaste_Mix->setEnabled(false);
 
 	// Pattern
+	ui->actionExpand->setEnabled(false);
+	ui->actionShrink->setEnabled(false);
 	ui->actionDecrease_Note->setEnabled(false);
 	ui->actionIncrease_Note->setEnabled(false);
 	ui->actionDecrease_Octave->setEnabled(false);
@@ -897,11 +900,18 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		// Edit
 		ui->actionCopy->setEnabled(false);
 		ui->actionCut->setEnabled(false);
+		// Pattern
+		ui->actionExpand->setEnabled(false);
+		ui->actionShrink->setEnabled(false);
 	}
 	else {
 		// Edit
 		ui->actionCopy->setEnabled(isSelected);
 		ui->actionCut->setEnabled(isEditedPattern_ ? isSelected : false);
+		// Pattern
+		bool enabled = (isEditedPattern_ && isEditedPattern_) ? isSelected : false;
+		ui->actionExpand->setEnabled(enabled);
+		ui->actionShrink->setEnabled(enabled);
 	}
 }
 
@@ -1076,4 +1086,14 @@ void MainWindow::on_actionConfiguration_triggered()
 		bt_->stopPlaySong();
 		lockControls(false);
 	}
+}
+
+void MainWindow::on_actionExpand_triggered()
+{
+	ui->patternEditor->onExpandPressed();
+}
+
+void MainWindow::on_actionShrink_triggered()
+{
+	ui->patternEditor->onShrinkPressed();
 }

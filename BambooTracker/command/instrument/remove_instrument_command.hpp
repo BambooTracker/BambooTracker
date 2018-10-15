@@ -1,11 +1,11 @@
 #pragma once
 
 #include <memory>
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include "instruments_manager.hpp"
 #include "instrument.hpp"
 
-class RemoveInstrumentCommand : public AbstructCommand
+class RemoveInstrumentCommand : public AbstractCommand
 {
 public:
 	RemoveInstrumentCommand(InstrumentsManager &manager, int number);
@@ -17,5 +17,5 @@ public:
 private:
 	InstrumentsManager &manager_;
 	int number_;
-	std::unique_ptr<AbstructInstrument> inst_;
+	std::unique_ptr<AbstractInstrument> inst_;
 };

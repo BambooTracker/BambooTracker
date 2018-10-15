@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include "instruments_manager.hpp"
 
-class ChangeInstrumentNameCommand : public AbstructCommand
+class ChangeInstrumentNameCommand : public AbstractCommand
 {
 public:
 	ChangeInstrumentNameCommand(InstrumentsManager &manager, int num, std::string name);

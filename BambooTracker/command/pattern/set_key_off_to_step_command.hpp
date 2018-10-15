@@ -1,11 +1,11 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <string>
 #include <memory>
 #include "module.hpp"
 
-class SetKeyOffToStepCommand : public AbstructCommand
+class SetKeyOffToStepCommand : public AbstractCommand
 {
 public:
 	SetKeyOffToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);

@@ -30,7 +30,7 @@ int SetInstrumentToStepCommand::getID() const
 	return 0x23;
 }
 
-bool SetInstrumentToStepCommand::mergeWith(const AbstructCommand* other)
+bool SetInstrumentToStepCommand::mergeWith(const AbstractCommand* other)
 {
 	if (other->getID() == getID() && !isComplete_) {
 		auto com = dynamic_cast<const SetInstrumentToStepCommand*>(other);

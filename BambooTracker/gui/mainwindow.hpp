@@ -120,6 +120,8 @@ private slots:
 	void on_actionFollow_Mode_triggered();
 	void on_actionGroove_Settings_triggered();
 	void on_actionConfiguration_triggered();
+	void on_actionExpand_triggered();
+	void on_actionShrink_triggered();
 };
 
 #endif // MAINWINDOW_HPP

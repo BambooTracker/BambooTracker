@@ -159,3 +159,13 @@ void PatternEditor::onSoloTrackPressed()
 {
 	ui->panel->onSoloTrackPressed();
 }
+
+void PatternEditor::onExpandPressed()
+{
+	ui->panel->onExpandPressed();
+}
+
+void PatternEditor::onShrinkPressed()
+{
+	ui->panel->onShrinkPressed();
+}

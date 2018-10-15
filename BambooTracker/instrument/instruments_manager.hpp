@@ -11,7 +11,7 @@
 #include "command_sequence.hpp"
 #include "misc.hpp"
 
-class AbstructInstrument;
+class AbstractInstrument;
 enum class FMEnvelopeParameter;
 class EnvelopeFM;
 
@@ -21,11 +21,11 @@ public:
 	InstrumentsManager();
 
 	void addInstrument(int instNum, SoundSource source, std::string name);
-	void addInstrument(std::unique_ptr<AbstructInstrument> inst);
-	std::unique_ptr<AbstructInstrument> removeInstrument(int instNum);
+	void addInstrument(std::unique_ptr<AbstractInstrument> inst);
+	std::unique_ptr<AbstractInstrument> removeInstrument(int instNum);
 	void cloneInstrument(int cloneInstNum, int resInstNum);
 	void deepCloneInstrument(int cloneInstNum, int resInstNum);
-	std::shared_ptr<AbstructInstrument> getInstrumentSharedPtr(int instNum);
+	std::shared_ptr<AbstractInstrument> getInstrumentSharedPtr(int instNum);
 
 	void setInstrumentName(int instNum, std::string name);
 	std::string getInstrumentName(int instNum) const;
@@ -33,7 +33,7 @@ public:
 	int findFirstFreeInstrument() const;
 
 private:
-	std::array<std::shared_ptr<AbstructInstrument>, 128> insts_;
+	std::array<std::shared_ptr<AbstractInstrument>, 128> insts_;
 
 	//----- FM methods -----
 public:

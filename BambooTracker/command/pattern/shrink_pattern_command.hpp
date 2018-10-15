@@ -6,12 +6,12 @@
 #include <string>
 #include "module.hpp"
 
-class EraseCellsInPatternCommand : public AbstractCommand
+class ShrinkPatternCommand : public AbstractCommand
 {
 public:
-	EraseCellsInPatternCommand(std::weak_ptr<Module> mod, int songNum,
-							   int beginTrack, int beginColmn, int beginOrder, int beginStep,
-							   int endTrack, int endColumn, int endStep);
+	ShrinkPatternCommand(std::weak_ptr<Module> mod, int songNum,
+						 int beginTrack, int beginColmn, int beginOrder, int beginStep,
+						 int endTrack, int endColumn, int endStep);
 	void redo() override;
 	void undo() override;
 	int getID() const override;

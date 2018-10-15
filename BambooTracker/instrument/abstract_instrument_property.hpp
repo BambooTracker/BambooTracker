@@ -3,10 +3,10 @@
 #include <memory>
 #include <vector>
 
-class AbstructInstrumentProperty
+class AbstractInstrumentProperty
 {
 public:
-	virtual ~AbstructInstrumentProperty() = default;
+	virtual ~AbstractInstrumentProperty() = default;
 
 	void setNumber(int num);
 	int getNumber() const;
@@ -17,8 +17,8 @@ public:
 	std::vector<int> getUserInstruments() const;
 
 protected:
-	explicit AbstructInstrumentProperty(int num);
-	AbstructInstrumentProperty(const AbstructInstrumentProperty& other);
+	explicit AbstractInstrumentProperty(int num);
+	AbstractInstrumentProperty(const AbstractInstrumentProperty& other);
 
 private:
 	int num_;

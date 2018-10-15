@@ -2,12 +2,12 @@
 
 #include <stack>
 #include <memory>
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 
 class CommandManager
 {
 public:
-	using CommandIPtr = std::unique_ptr<AbstructCommand>;
+	using CommandIPtr = std::unique_ptr<AbstractCommand>;
 
 	CommandManager();
 	void invoke(CommandIPtr command);

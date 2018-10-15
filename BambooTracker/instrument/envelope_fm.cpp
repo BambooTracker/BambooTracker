@@ -1,7 +1,7 @@
 #include "envelope_fm.hpp"
 
 EnvelopeFM::EnvelopeFM(int num)
-	: AbstructInstrumentProperty (num),
+	: AbstractInstrumentProperty (num),
 	  al_(4),
 	  fb_(0)
 {
@@ -62,7 +62,7 @@ void EnvelopeFM::initParamMap()
 }
 
 EnvelopeFM::EnvelopeFM(const EnvelopeFM &other)
-	: AbstructInstrumentProperty (other)
+	: AbstractInstrumentProperty (other)
 {
 	al_ = other.al_;
 	fb_ = other.fb_;

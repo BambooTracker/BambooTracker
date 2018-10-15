@@ -1,9 +1,9 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include "instruments_manager.hpp"
 
-class cloneInstrumentCommand : public AbstructCommand
+class cloneInstrumentCommand : public AbstractCommand
 {
 public:
 	cloneInstrumentCommand(InstrumentsManager &manager, int num, int refNum);

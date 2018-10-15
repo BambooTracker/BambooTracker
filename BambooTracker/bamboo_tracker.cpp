@@ -75,10 +75,10 @@ void BambooTracker::removeInstrument(int num)
 	comMan_.invoke(std::make_unique<RemoveInstrumentCommand>(instMan_, num));
 }
 
-std::unique_ptr<AbstructInstrument> BambooTracker::getInstrument(int num)
+std::unique_ptr<AbstractInstrument> BambooTracker::getInstrument(int num)
 {
-	std::shared_ptr<AbstructInstrument> inst = instMan_.getInstrumentSharedPtr(num);
-	if (inst == nullptr) return std::unique_ptr<AbstructInstrument>();
+	std::shared_ptr<AbstractInstrument> inst = instMan_.getInstrumentSharedPtr(num);
+	if (inst == nullptr) return std::unique_ptr<AbstractInstrument>();
 	else return inst->clone();
 }
 
@@ -574,7 +574,7 @@ void BambooTracker::jamKeyOn(JamKey key)
 			}
 		}
 
-		std::shared_ptr<AbstructInstrument> tmpInst = instMan_.getInstrumentSharedPtr(curInstNum_);
+		std::shared_ptr<AbstractInstrument> tmpInst = instMan_.getInstrumentSharedPtr(curInstNum_);
 		JamKeyData& onData = list.front();
 
 		switch (onData.source) {
@@ -1815,6 +1815,20 @@ void BambooTracker::decreaseNoteOctaveInPattern(int songNum, int beginTrack, int
 {
 	comMan_.invoke(std::make_unique<DecreaseNoteOctaveInPatternCommand>(
 					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep));
+}
+
+void BambooTracker::expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+								  int endTrack, int endColmn, int endStep)
+{
+	comMan_.invoke(std::make_unique<ExpandPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
+}
+
+void BambooTracker::shrinkPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+								  int endTrack, int endColmn, int endStep)
+{
+	comMan_.invoke(std::make_unique<ShrinkPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
 }
 
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const

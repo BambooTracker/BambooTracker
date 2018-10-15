@@ -1,12 +1,12 @@
 #pragma once
 
-#include "abstruct_command.hpp"
+#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
 #include <string>
 #include "module.hpp"
 
-class PasteCopiedDataToOrderCommand : public AbstructCommand
+class PasteCopiedDataToOrderCommand : public AbstractCommand
 {
 public:
 	PasteCopiedDataToOrderCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginOrder,

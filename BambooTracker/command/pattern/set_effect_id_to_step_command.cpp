@@ -32,7 +32,7 @@ int SetEffectIDToStepCommand::getID() const
 	return 0x27;
 }
 
-bool SetEffectIDToStepCommand::mergeWith(const AbstructCommand* other)
+bool SetEffectIDToStepCommand::mergeWith(const AbstractCommand* other)
 {
 	if (other->getID() == getID() && !isComplete_) {
 		auto com = dynamic_cast<const SetEffectIDToStepCommand*>(other);

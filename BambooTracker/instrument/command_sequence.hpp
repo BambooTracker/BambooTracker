@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "abstruct_instrument_property.hpp"
+#include "abstract_instrument_property.hpp"
 #include "sequence_iterator_interface.hpp"
 
 struct CommandInSequence
@@ -28,7 +28,7 @@ struct Release
 	int begin;
 };
 
-class CommandSequence : public AbstructInstrumentProperty
+class CommandSequence : public AbstractInstrumentProperty
 {
 public:
 	CommandSequence(int num, int seqType, int comType = 0, int comData = -1);

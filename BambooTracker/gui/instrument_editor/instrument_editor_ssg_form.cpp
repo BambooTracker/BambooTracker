@@ -383,7 +383,7 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 	auto name = QString::fromUtf8(instSSG->getName().c_str(), instSSG->getName().length());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
@@ -500,7 +500,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
 	int num = instSSG->getWaveFormNumber();
@@ -597,7 +597,7 @@ void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
 	int num = instSSG->getToneNoiseNumber();
@@ -676,7 +676,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
 	int num = instSSG->getEnvelopeNumber();
@@ -767,7 +767,7 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
 	int num = instSSG->getArpeggioNumber();
@@ -877,7 +877,7 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	std::unique_ptr<AbstructInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
 	int num = instSSG->getPitchNumber();

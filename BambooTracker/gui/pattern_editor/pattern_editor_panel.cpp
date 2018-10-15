@@ -315,7 +315,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		painter.drawText(offset, baseY, "--");
 	}
 	else {
-		std::unique_ptr<AbstructInstrument> inst = bt_->getInstrument(instNum);
+		std::unique_ptr<AbstractInstrument> inst = bt_->getInstrument(instNum);
 		painter.setPen((inst != nullptr && src == inst->getSoundSource())
 					   ? instColor_
 					   : errorColor_);
@@ -1369,6 +1369,26 @@ void PatternEditorPanel::onSoloTrackPressed()
 	for (int track = 0; track < songStyle_.trackAttribs.size(); ++track)
 		bt_->setTrackMuteState(track, (track == curPos_.track) ? false : isMuteElse_);
 	update();
+}
+
+void PatternEditorPanel::onExpandPressed()
+{
+	if (selLeftAbovePos_.order == -1) return;
+
+	bt_->expandPattern(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+					   selLeftAbovePos_.order, selLeftAbovePos_.step,
+					   selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+	comStack_.lock()->push(new ExpandPatternQtCommand(this));
+}
+
+void PatternEditorPanel::onShrinkPressed()
+{
+	if (selLeftAbovePos_.order == -1) return;
+
+	bt_->shrinkPattern(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+					   selLeftAbovePos_.order, selLeftAbovePos_.step,
+					   selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+	comStack_.lock()->push(new ShrinkPatternQtCommand(this));
 }
 
 /********** Events **********/
