@@ -274,6 +274,22 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		painter.fillRect(offset, rowY + stepFontHeight_ * 2 / 5,
 						 toneNameWidth_, stepFontHeight_ / 5, toneColor_);
 		break;
+	case -3:	// Echo 0
+		painter.setPen(toneColor_);
+		painter.drawText(offset + widthSpace_, baseY, "^0");
+		break;
+	case -4:	// Echo 1
+		painter.setPen(toneColor_);
+		painter.drawText(offset + widthSpace_, baseY, "^1");
+		break;
+	case -5:	// Echo 2
+		painter.setPen(toneColor_);
+		painter.drawText(offset + widthSpace_, baseY, "^2");
+		break;
+	case -6:	// Echo 3
+		painter.setPen(toneColor_);
+		painter.drawText(offset + widthSpace_, baseY, "^3");
+		break;
 	default:	// Convert tone name
 	{
 		QString toneStr;
@@ -734,6 +750,15 @@ bool PatternEditorPanel::enterToneData(int key)
 		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 		moveCursorToDown(1);
 		return true;
+	case Qt::Key_AsciiCircum:
+	{
+		int n = bt_->getCurrentOctave();
+		if (n > 3) n = 3;
+		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
+		comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
+		moveCursorToDown(1);
+		return true;
+	}
 	default:
 		return false;
 	}

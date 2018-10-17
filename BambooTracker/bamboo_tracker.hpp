@@ -214,6 +214,7 @@ public:
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
+	void setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum);
 	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);
 	int getStepInstrument(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepInstrument(int songNum, int trackNum, int orderNum, int stepNum, int instNum);

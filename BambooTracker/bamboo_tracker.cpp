@@ -1035,6 +1035,18 @@ bool BambooTracker::readFMStep(Step& step, int ch, bool isSkippedSpecial)
 	case -2:	// Key off
 		opnaCtrl_.keyOffFM(ch);
 		break;
+	case -3:	// Echo 0
+		opnaCtrl_.keyOnFM(ch, 0);
+		break;
+	case -4:	// Echo 1
+		opnaCtrl_.keyOnFM(ch, 1);
+		break;
+	case -5:	// Echo 2
+		opnaCtrl_.keyOnFM(ch, 2);
+		break;
+	case -6:	// Echo 3
+		opnaCtrl_.keyOnFM(ch, 3);
+		break;
 	default:	// Key on
 	{
 		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
@@ -1075,6 +1087,18 @@ bool BambooTracker::readSSGStep(Step& step, int ch, bool isSkippedSpecial)
 	case -2:	// Key off
 		opnaCtrl_.keyOffSSG(ch);
 		break;
+	case -3:	// Echo 0
+		opnaCtrl_.keyOnSSG(ch, 0);
+		break;
+	case -4:	// Echo 1
+		opnaCtrl_.keyOnSSG(ch, 1);
+		break;
+	case -5:	// Echo 2
+		opnaCtrl_.keyOnSSG(ch, 2);
+		break;
+	case -6:	// Echo 3
+		opnaCtrl_.keyOnSSG(ch, 3);
+		break;
 	default:	// Key on
 	{
 		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
@@ -1106,6 +1130,10 @@ bool BambooTracker::readDrumStep(Step& step, int ch, bool isSkippedSpecial)
 	case -1:	// None
 		break;
 	case -2:	// Key off
+	case -3:	// Echo 0
+	case -4:	// Echo 1
+	case -5:	// Echo 2
+	case -6:	// Echo 3
 		opnaCtrl_.keyOffDrum(ch);
 		break;
 	default:	// Key on
@@ -1682,6 +1710,11 @@ void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int ste
 void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum)
 {
 	comMan_.invoke(std::make_unique<SetKeyOffToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum));
+}
+
+void BambooTracker::setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum)
+{
+	comMan_.invoke(std::make_unique<SetEchoBufferAccessCommand>(mod_, songNum, trackNum, orderNum, stepNum, bufNum));
 }
 
 void BambooTracker::eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum)

@@ -24,5 +24,6 @@
 #include "decrease_note_octave_in_pattern_qt_command.hpp"
 #include "expand_pattern_qt_command.hpp"
 #include "shrink_pattern_qt_command.hpp"
+#include "set_echo_buffer_access_qt_command.hpp"
 
 #endif // PATTERN_COMMANDS_QT_HPP

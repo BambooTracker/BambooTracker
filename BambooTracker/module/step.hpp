@@ -31,6 +31,10 @@ private:
 	///		0<=: note number (key on)
 	///		 -1: none
 	///		 -2: key off
+	///		 -3: echo previous note
+	///		 -4: echo 2 notes before
+	///		 -5: echo 3 notes before
+	///		 -6: echo 4 notes before
 	int noteNum_;
 	/// instNum_
 	///		0<=: instrument number

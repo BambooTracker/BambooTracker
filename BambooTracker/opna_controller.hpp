@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <map>
+#include <deque>
 #include "opna.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
@@ -55,6 +56,7 @@ private:
 public:
 	// Key on-off
 	void keyOnFM(int ch, Note note, int octave, int pitch, bool isJam = false);
+	void keyOnFM(int ch, int echoBuf);
 	void keyOffFM(int ch, bool isJam = false);
 	void resetFMChannelEnvelope(int ch);
 
@@ -97,7 +99,8 @@ private:
 	std::unique_ptr<EnvelopeFM> envFM_[6];
 	bool isKeyOnFM_[6];
 	uint8_t fmOpEnables_[6];
-	ToneDetail baseToneFM_[6], keyToneFM_[6];
+	std::deque<ToneDetail> baseToneFM_[6];
+	ToneDetail keyToneFM_[6];
 	int sumPitchFM_[6];
 	int baseVolFM_[6], tmpVolFM_[6];
 	/// bit0: right on/off
@@ -127,6 +130,8 @@ private:
 
 	uint32_t getFmChannelMask(int ch);
 	uint32_t getFMChannelOffset(int ch);
+
+	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
 
 	void writeFMEnvelopeToRegistersFromInstrument(int ch);
 	void writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParameter param, int value);
@@ -160,6 +165,7 @@ private:
 public:
 	// Key on-off
 	void keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam = false);
+	void keyOnSSG(int ch, int echoBuf);
 	void keyOffSSG(int ch, bool isJam = false);
 
 	// Set Instrument
@@ -193,7 +199,8 @@ private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
 	bool isKeyOnSSG_[3];
 	uint8_t mixerSSG_;
-	ToneDetail baseToneSSG_[3], keyToneSSG_[3];
+	std::deque<ToneDetail> baseToneSSG_[3];
+	ToneDetail keyToneSSG_[3];
 	int sumPitchSSG_[3];
 	ToneNoise tnSSG_[3];
 	int baseVolSSG_[3], tmpVolSSG_[3];
@@ -223,6 +230,8 @@ private:
 	int transposeSSG_[3];
 
 	void initSSG();
+
+	void updateEchoBufferSSG(int ch, int octave, Note note, int pitch);
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);

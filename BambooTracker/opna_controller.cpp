@@ -127,14 +127,13 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 {
 	if (isMuteFM(ch)) return;
 
-	baseToneFM_[ch].octave = octave;
-	baseToneFM_[ch].note = note;
-	baseToneFM_[ch].pitch = pitch;
+	updateEchoBufferFM(ch, octave, note, pitch);
+
 	if (isTonePortamentoFM(ch)) {
 		keyToneFM_[ch].pitch += (sumNoteSldFM_[ch] + transposeFM_[ch]);
 	}
 	else {
-		keyToneFM_[ch] = baseToneFM_[ch];
+		keyToneFM_[ch] = baseToneFM_[ch].front();
 		sumPitchFM_[ch] = 0;
 		sumVolSldFM_[ch] = 0;
 	}
@@ -154,6 +153,13 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 	}
 
 	isKeyOnFM_[ch] = true;
+}
+
+void OPNAController::keyOnFM(int ch, int echoBuf)
+{
+	ToneDetail& td = baseToneFM_[ch].at(echoBuf);
+	if (td.octave == -1) return;
+	keyOnFM(ch, td.note, td.octave, td.pitch);
 }
 
 void OPNAController::keyOffFM(int ch, bool isJam)
@@ -414,7 +420,7 @@ bool OPNAController::enableFMEnvelopeReset(int ch) const
 
 ToneDetail OPNAController::getFMTone(int ch) const
 {
-	return baseToneFM_[ch];
+	return baseToneFM_[ch].front();
 }
 
 /***********************************/
@@ -431,7 +437,12 @@ void OPNAController::initFM()
 		envFM_[ch] = std::make_unique<EnvelopeFM>(-1);
 		refInstFM_[ch].reset();
 
-		baseToneFM_[ch].octave = -1;	// Init key on note data
+		// Init echo buffer
+		baseToneFM_[ch] = std::deque<ToneDetail>(3);
+		for (auto& td : baseToneFM_[ch]) {
+			td.octave = -1;
+		}
+
 		keyToneFM_[ch].octave = -1;
 		sumPitchFM_[ch] = 0;
 		baseVolFM_[ch] = 0;	// Init volume
@@ -496,6 +507,12 @@ uint32_t OPNAController::getFMChannelOffset(int ch)
 	default:
 		return 0;
 	}
+}
+
+void OPNAController::updateEchoBufferFM(int ch, int octave, Note note, int pitch)
+{
+	baseToneFM_[ch].pop_back();
+	baseToneFM_[ch].push_front({ octave, note, pitch });
 }
 
 void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
@@ -1130,7 +1147,8 @@ void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
 	case 0:	// Absolute
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(baseToneFM_[ch].octave, baseToneFM_[ch].note)
+										octaveAndNoteToNoteNumber(baseToneFM_[ch].front().octave,
+																  baseToneFM_[ch].front().note)
 										+ arpItFM_[ch]->getCommandType() - 48);
 		keyToneFM_[ch].octave = pair.first;
 		keyToneFM_[ch].note = pair.second;
@@ -1161,13 +1179,13 @@ void OPNAController::checkPortamentoFM(int ch)
 {
 	if ((!arpItFM_[ch] || arpItFM_[ch]->getPosition() == -1) && prtmFM_[ch]) {
 		if (isTonePrtmFM_[ch]) {
-			int dif = ( octaveAndNoteToNoteNumber(baseToneFM_[ch].octave, baseToneFM_[ch].note) * 32
-						+ baseToneFM_[ch].pitch )
+			int dif = ( octaveAndNoteToNoteNumber(baseToneFM_[ch].front().octave, baseToneFM_[ch].front().note) * 32
+						+ baseToneFM_[ch].front().pitch )
 					  - ( octaveAndNoteToNoteNumber(keyToneFM_[ch].octave, keyToneFM_[ch].note) * 32
 						  + keyToneFM_[ch].pitch );
 			if (dif > 0) {
 				if (dif - prtmFM_[ch] < 0) {
-					keyToneFM_[ch] = baseToneFM_[ch];
+					keyToneFM_[ch] = baseToneFM_[ch].front();
 				}
 				else {
 					keyToneFM_[ch].pitch += prtmFM_[ch];
@@ -1176,7 +1194,7 @@ void OPNAController::checkPortamentoFM(int ch)
 			}
 			else if (dif < 0) {
 				if (dif + prtmFM_[ch] > 0) {
-					keyToneFM_[ch] = baseToneFM_[ch];
+					keyToneFM_[ch] = baseToneFM_[ch].front();
 				}
 				else {
 					keyToneFM_[ch].pitch -= prtmFM_[ch];
@@ -1267,14 +1285,13 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 {
 	if (isMuteSSG(ch)) return;
 
-	baseToneSSG_[ch].octave = octave;
-	baseToneSSG_[ch].note = note;
-	baseToneSSG_[ch].pitch = pitch;
+	updateEchoBufferSSG(ch, octave, note, pitch);
+
 	if (isTonePortamentoSSG(ch)) {
 		keyToneSSG_[ch].pitch += (sumNoteSldSSG_[ch] +transposeSSG_[ch]);
 	}
 	else {
-		keyToneSSG_[ch] = baseToneSSG_[ch];
+		keyToneSSG_[ch] = baseToneSSG_[ch].front();
 		sumPitchSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
 	}
@@ -1289,6 +1306,13 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 
 	hasPreSetTickEventSSG_[ch] = isJam;
 	isKeyOnSSG_[ch] = true;
+}
+
+void OPNAController::keyOnSSG(int ch, int echoBuf)
+{
+	ToneDetail& td = baseToneSSG_[ch].at(echoBuf);
+	if (td.octave == -1) return;
+	keyOnSSG(ch, td.note, td.octave, td.pitch);
 }
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
@@ -1466,7 +1490,7 @@ bool OPNAController::isTonePortamentoSSG(int ch) const
 
 ToneDetail OPNAController::getSSGTone(int ch) const
 {
-	return baseToneSSG_[ch];
+	return baseToneSSG_[ch].front();
 }
 
 /***********************************/
@@ -1479,7 +1503,13 @@ void OPNAController::initSSG()
 		isKeyOnSSG_[ch] = false;
 
 		refInstSSG_[ch].reset();	// Init envelope
-		baseToneSSG_[ch].octave = -1;	// Init key on note data
+
+		// Init echo buffer
+		baseToneSSG_[ch] = std::deque<ToneDetail>(3);
+		for (auto& td : baseToneSSG_[ch]) {
+			td.octave = -1;
+		}
+
 		keyToneSSG_[ch].octave = -1;
 		sumPitchSSG_[ch] = 0;
 		tnSSG_[ch] = { false, false, -1 };
@@ -1513,6 +1543,13 @@ void OPNAController::initSSG()
 		nsItSSG_[ch].reset();
 		sumNoteSldSSG_[ch] = 0;
 	}
+}
+
+
+void OPNAController::updateEchoBufferSSG(int ch, int octave, Note note, int pitch)
+{
+	baseToneSSG_[ch].pop_back();
+	baseToneSSG_[ch].push_front({ octave, note, pitch });
 }
 
 void OPNAController::setFrontSSGSequences(int ch)
@@ -2105,7 +2142,8 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 	case 0:	// Absolute
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(baseToneSSG_[ch].octave, baseToneSSG_[ch].note)
+										octaveAndNoteToNoteNumber(baseToneSSG_[ch].front().octave,
+																  baseToneSSG_[ch].front().note)
 										+ arpItSSG_[ch]->getCommandType() - 48);
 		keyToneSSG_[ch].octave = pair.first;
 		keyToneSSG_[ch].note = pair.second;
@@ -2136,13 +2174,13 @@ void OPNAController::checkPortamentoSSG(int ch)
 {
 	if ((!arpItSSG_[ch] || arpItSSG_[ch]->getPosition() == -1) && prtmSSG_[ch]) {
 		if (isTonePrtmSSG_[ch]) {
-			int dif = ( octaveAndNoteToNoteNumber(baseToneSSG_[ch].octave, baseToneSSG_[ch].note) * 32
-						+ baseToneSSG_[ch].pitch )
+			int dif = ( octaveAndNoteToNoteNumber(baseToneSSG_[ch].front().octave, baseToneSSG_[ch].front().note) * 32
+						+ baseToneSSG_[ch].front().pitch )
 					  - ( octaveAndNoteToNoteNumber(keyToneSSG_[ch].octave, keyToneSSG_[ch].note) * 32
 						  + keyToneSSG_[ch].pitch );
 			if (dif > 0) {
 				if (dif - prtmSSG_[ch] < 0) {
-					keyToneSSG_[ch] = baseToneSSG_[ch];
+					keyToneSSG_[ch] = baseToneSSG_[ch].front();
 				}
 				else {
 					keyToneSSG_[ch].pitch += prtmSSG_[ch];
@@ -2151,7 +2189,7 @@ void OPNAController::checkPortamentoSSG(int ch)
 			}
 			else if (dif < 0) {
 				if (dif + prtmSSG_[ch] > 0) {
-					keyToneSSG_[ch] = baseToneSSG_[ch];
+					keyToneSSG_[ch] = baseToneSSG_[ch].front();
 				}
 				else {
 					keyToneSSG_[ch].pitch -= prtmSSG_[ch];
