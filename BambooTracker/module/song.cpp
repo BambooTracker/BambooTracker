@@ -153,3 +153,10 @@ void Song::deleteOrder(int order)
 		track.deleteOrder(order);
 	}
 }
+
+void Song::swapOrder(int a, int b)
+{
+	for (auto& track : tracks_) {
+		track.swapOrder(a, b);
+	}
+}

@@ -205,6 +205,10 @@ public:
 	void deleteOrder(int songNum, int orderNum);
 	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
 						   std::vector<std::vector<std::string>> cells);
+	void duplicateOrder(int songNum, int orderNum);
+	void MoveOrder(int songNum, int orderNum, bool isUp);
+	void clonePatterns(int songNum, int beginOrder, int beginTrack, int endOrder, int endTrack);
+	void cloneOrder(int songNum, int orderNum);
 	size_t getOrderSize(int songNum) const;
 	/*----- Pattern -----*/
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;

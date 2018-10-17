@@ -122,6 +122,11 @@ private slots:
 	void on_actionConfiguration_triggered();
 	void on_actionExpand_triggered();
 	void on_actionShrink_triggered();
+	void on_actionDuplicate_Order_triggered();
+	void on_actionMove_Order_Up_triggered();
+	void on_actionMove_Order_Down_triggered();
+	void on_actionClone_Patterns_triggered();
+	void on_actionClone_Order_triggered();
 };
 
 #endif // MAINWINDOW_HPP

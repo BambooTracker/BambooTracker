@@ -17,10 +17,13 @@ public:
 	size_t getOrderSize() const;
 	Pattern& getPattern(int num);
 	Pattern& getPatternFromOrderNumber(int num);
+	int searchFirstUneditedUnusedPattern() const;
+	int clonePattern(int num);
 
 	void registerPatternToOrder(int order, int pattern);
 	void insertOrderBelow(int order);
 	void deleteOrder(int order);
+	void swapOrder(int a, int b);
 
 	void changeDefaultPatternSize(size_t size);
 

@@ -24,6 +24,8 @@ public:
 
 	int checkEffectID(std::string str) const;
 
+	bool existCommand() const;
+
 private:
 	/// noteNum_
 	///		0<=: note number (key on)

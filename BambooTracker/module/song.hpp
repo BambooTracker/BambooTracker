@@ -38,6 +38,7 @@ public:
 	size_t getOrderSize() const;
 	void insertOrderBelow(int order);
 	void deleteOrder(int order);
+	void swapOrder(int a, int b);
 
 private:
 	int num_;

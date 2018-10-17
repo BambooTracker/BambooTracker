@@ -1,13 +1,38 @@
 #include "pattern.hpp"
 
 Pattern::Pattern(int n)
-	: num_(n), size_(64), steps_(64)
+	: num_(n), size_(64), steps_(64), usedCnt_(0)
 {
+}
+
+Pattern::Pattern(int n, size_t size, std::vector<Step> steps)
+	: num_(n), size_(size), steps_(steps), usedCnt_(0)
+{
+}
+
+int Pattern::setNumber(int n)
+{
+	num_ = n;
 }
 
 int Pattern::getNumber() const
 {
 	return num_;
+}
+
+int Pattern::usedCountUp()
+{
+	return ++usedCnt_;
+}
+
+int Pattern::usedCountDown()
+{
+	return --usedCnt_;
+}
+
+int Pattern::getUsedCount() const
+{
+	return usedCnt_;
 }
 
 Step& Pattern::getStep(int n)
@@ -46,4 +71,23 @@ void Pattern::deletePreviousStep(int n)
 	steps_.erase(steps_.begin() + n - 1);
 	if (steps_.size() < size_)
 		steps_.resize(size_);
+}
+
+bool Pattern::existCommand() const
+{
+	for (size_t i = 0; i < size_; ++i) {
+		if (steps_.at(i).existCommand())
+			return true;
+	}
+	return false;
+}
+
+Pattern Pattern::clone(int asNumber)
+{
+	return Pattern(asNumber, size_, steps_);
+}
+
+void Pattern::clear()
+{
+	steps_ = std::vector<Step>(size_);
 }

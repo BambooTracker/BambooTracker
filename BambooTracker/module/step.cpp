@@ -68,3 +68,15 @@ int Step::checkEffectID(std::string str) const
 	}
 	return -1;
 }
+
+bool Step::existCommand() const
+{
+	if (noteNum_ != -1) return true;
+	if (instNum_ != -1) return true;
+	if (vol_ != -1) return true;
+	for (int i = 0; i < 4; ++i) {
+		if (effID_[i] != "--") return true;
+		if (effVal_[i] != -1) return true;
+	}
+	return false;
+}

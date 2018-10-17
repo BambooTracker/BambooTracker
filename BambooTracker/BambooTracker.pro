@@ -133,7 +133,15 @@ SOURCES += \
     gui/command/pattern/expand_pattern_qt_command.cpp \
     command/pattern/shrink_pattern_command.cpp \
     gui/command/pattern/shrink_pattern_qt_command.cpp \
-    instrument/abstract_instrument_property.cpp
+    instrument/abstract_instrument_property.cpp \
+    command/order/duplicate_order_command.cpp \
+    command/order/move_order_command.cpp \
+    command/order/clone_patterns_command.cpp \
+    command/order/clone_order_command.cpp \
+    gui/command/order/duplicate_order_qt_command.cpp \
+    gui/command/order/move_order_qt_command.cpp \
+    gui/command/order/clone_patterns_qt_command.cpp \
+    gui/command/order/clone_order_qt_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -256,7 +264,15 @@ HEADERS += \
     command/pattern/shrink_pattern_command.hpp \
     gui/command/pattern/shrink_pattern_qt_command.hpp \
     command/abstract_command.hpp \
-    instrument/abstract_instrument_property.hpp
+    instrument/abstract_instrument_property.hpp \
+    command/order/duplicate_order_command.hpp \
+    command/order/move_order_command.hpp \
+    command/order/clone_patterns_command.hpp \
+    command/order/clone_order_command.hpp \
+    gui/command/order/duplicate_order_qt_command.hpp \
+    gui/command/order/move_order_qt_command.hpp \
+    gui/command/order/clone_patterns_qt_command.hpp \
+    gui/command/order/clone_order_qt_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

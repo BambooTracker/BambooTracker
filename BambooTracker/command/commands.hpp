@@ -36,3 +36,7 @@
 #include "./order/insert_order_below_command.hpp"
 #include "./order/delete_order_command.hpp"
 #include "./order/paste_copied_data_to_order_command.hpp"
+#include "./order/duplicate_order_command.hpp"
+#include "./order/move_order_command.hpp"
+#include "./order/clone_patterns_command.hpp"
+#include "./order/clone_order_command.hpp"

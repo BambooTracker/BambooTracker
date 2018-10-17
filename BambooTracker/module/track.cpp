@@ -1,4 +1,5 @@
 #include "track.hpp"
+#include <utility>
 
 Track::Track(int number, SoundSource source, int channelInSource)
 	: attrib_(std::make_unique<TrackAttribute>())
@@ -7,11 +8,12 @@ Track::Track(int number, SoundSource source, int channelInSource)
 	attrib_->source = source;
 	attrib_->channelInSource = channelInSource;
 
-	order_.push_back(0);	// Set first order
-
 	for (int i = 0; i < 128; ++i) {
 		patterns_.emplace_back(i);
 	}
+
+	patterns_[0].usedCountUp();
+	order_.push_back(0);	// Set first order
 }
 
 TrackAttribute Track::getAttribute() const
@@ -43,8 +45,29 @@ Pattern& Track::getPatternFromOrderNumber(int num)
 	return getPattern(order_.at(num));
 }
 
+int Track::searchFirstUneditedUnusedPattern() const
+{
+	for (size_t i = 0; i < patterns_.size(); ++i) {
+		if (!patterns_[i].existCommand() && !patterns_[i].getUsedCount())
+			return i;
+	}
+	return -1;
+}
+
+int Track::clonePattern(int num)
+{
+	int n = searchFirstUneditedUnusedPattern();
+	if (n == -1) return num;
+	else {
+		patterns_.at(n) = patterns_.at(num).clone(n);
+		return n;
+	}
+}
+
 void Track::registerPatternToOrder(int order, int pattern)
 {
+	patterns_.at(pattern).usedCountUp();
+	patterns_.at(order_.at(order)).usedCountDown();
 	order_.at(order) = pattern;
 }
 
@@ -52,11 +75,18 @@ void Track::insertOrderBelow(int order)
 {
 	if (order == order_.size() - 1) order_.push_back(0);
 	else order_.insert(order_.begin() + order + 1, 0);
+	patterns_[0].usedCountUp();
 }
 
 void Track::deleteOrder(int order)
 {
+	patterns_.at(order_.at(order)).usedCountDown();
 	order_.erase(order_.begin() + order);
+}
+
+void Track::swapOrder(int a, int b)
+{
+	std::swap(order_.at(a), order_.at((b)));
 }
 
 void Track::changeDefaultPatternSize(size_t size)

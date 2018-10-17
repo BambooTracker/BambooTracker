@@ -346,14 +346,23 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 /********** Instrument list **********/
 void MainWindow::addInstrument()
 {
-	auto& list = ui->instrumentListWidget;
+	switch (bt_->getCurrentTrackAttribute().source) {
+	case SoundSource::FM:
+	case SoundSource::SSG:
+	{
+		auto& list = ui->instrumentListWidget;
 
-	int num = bt_->findFirstFreeInstrumentNumber();
-	QString name = "Instrument " + QString::number(num);
-	bt_->addInstrument(num, name.toUtf8().toStdString());
+		int num = bt_->findFirstFreeInstrumentNumber();
+		QString name = "Instrument " + QString::number(num);
+		bt_->addInstrument(num, name.toUtf8().toStdString());
 
-	TrackAttribute attrib = bt_->getCurrentTrackAttribute();
-	comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instForms_));
+		TrackAttribute attrib = bt_->getCurrentTrackAttribute();
+		comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instForms_));
+		break;
+	}
+	case SoundSource::DRUM:
+		break;
+	}
 }
 
 void MainWindow::removeInstrument()
@@ -410,6 +419,8 @@ void MainWindow::editInstrumentName()
 void MainWindow::cloneInstrument()
 {
 	int num = bt_->findFirstFreeInstrumentNumber();
+	if (num == -1) return;
+
 	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	// KEEP CODE ORDER //
 	bt_->cloneInstrument(num, refNum);
@@ -421,6 +432,8 @@ void MainWindow::cloneInstrument()
 void MainWindow::deepCloneInstrument()
 {
 	int num = bt_->findFirstFreeInstrumentNumber();
+	if (num == -1) return;
+
 	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	// KEEP CODE ORDER //
 	bt_->deepCloneInstrument(num, refNum);
@@ -845,6 +858,11 @@ void MainWindow::updateMenuByPattern()
 	// Song
 	ui->actionInsert_Order->setEnabled(false);
 	ui->actionRemove_Order->setEnabled(false);
+	ui->actionDuplicate_Order->setEnabled(false);
+	ui->actionMove_Order_Up->setEnabled(false);
+	ui->actionMove_Order_Down->setEnabled(false);
+	ui->actionClone_Patterns->setEnabled(false);
+	ui->actionClone_Order->setEnabled(false);
 }
 
 void MainWindow::updateMenuByOrder()
@@ -859,6 +877,11 @@ void MainWindow::updateMenuByOrder()
 		// Song
 		ui->actionInsert_Order->setEnabled(false);
 		ui->actionRemove_Order->setEnabled(false);
+		ui->actionDuplicate_Order->setEnabled(false);
+		ui->actionMove_Order_Up->setEnabled(false);
+		ui->actionMove_Order_Down->setEnabled(false);
+		ui->actionClone_Patterns->setEnabled(false);
+		ui->actionClone_Order->setEnabled(false);
 	}
 	else {
 		// Edit
@@ -868,6 +891,11 @@ void MainWindow::updateMenuByOrder()
 		// Song
 		ui->actionInsert_Order->setEnabled(true);
 		ui->actionRemove_Order->setEnabled(true);
+		ui->actionDuplicate_Order->setEnabled(true);
+		ui->actionMove_Order_Up->setEnabled(true);
+		ui->actionMove_Order_Down->setEnabled(true);
+		ui->actionClone_Patterns->setEnabled(true);
+		ui->actionClone_Order->setEnabled(true);
 	}
 	// Edit
 	ui->actionPaste_Mix->setEnabled(false);
@@ -1096,4 +1124,29 @@ void MainWindow::on_actionExpand_triggered()
 void MainWindow::on_actionShrink_triggered()
 {
 	ui->patternEditor->onShrinkPressed();
+}
+
+void MainWindow::on_actionDuplicate_Order_triggered()
+{
+	ui->orderList->onDuplicatePressed();
+}
+
+void MainWindow::on_actionMove_Order_Up_triggered()
+{
+	ui->orderList->onMoveOrderPressed(true);
+}
+
+void MainWindow::on_actionMove_Order_Down_triggered()
+{
+	ui->orderList->onMoveOrderPressed(false);
+}
+
+void MainWindow::on_actionClone_Patterns_triggered()
+{
+	ui->orderList->onClonePatternsPressed();
+}
+
+void MainWindow::on_actionClone_Order_triggered()
+{
+	ui->orderList->onCloneOrderPressed();
 }

@@ -1632,6 +1632,26 @@ void BambooTracker::pasteOrderCells(int songNum, int beginTrack, int beginOrder,
 	comMan_.invoke(std::make_unique<PasteCopiedDataToOrderCommand>(mod_, songNum, beginTrack, beginOrder, std::move(d)));
 }
 
+void BambooTracker::duplicateOrder(int songNum, int orderNum)
+{
+	comMan_.invoke(std::make_unique<DuplicateOrderCommand>(mod_, songNum, orderNum));
+}
+
+void BambooTracker::MoveOrder(int songNum, int orderNum, bool isUp)
+{
+	comMan_.invoke(std::make_unique<MoveOrderCommand>(mod_, songNum, orderNum, isUp));
+}
+
+void BambooTracker::clonePatterns(int songNum, int beginOrder, int beginTrack, int endOrder, int endTrack)
+{
+	comMan_.invoke(std::make_unique<ClonePatternsCommand>(mod_, songNum, beginOrder, beginTrack, endOrder, endTrack));
+}
+
+void BambooTracker::cloneOrder(int songNum, int orderNum)
+{
+	comMan_.invoke(std::make_unique<CloneOrderCommand>(mod_, songNum, orderNum));
+}
+
 size_t BambooTracker::getOrderSize(int songNum) const
 {
 	return  mod_->getSong(songNum).getOrderSize();

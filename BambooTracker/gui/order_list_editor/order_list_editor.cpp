@@ -113,3 +113,23 @@ void OrderListEditor::onSelectPressed(int type)
 {
 	ui->panel->onSelectPressed(type);
 }
+
+void OrderListEditor::onDuplicatePressed()
+{
+	ui->panel->onDuplicatePressed();
+}
+
+void OrderListEditor::onMoveOrderPressed(bool isUp)
+{
+	ui->panel->onMoveOrderPressed(isUp);
+}
+
+void OrderListEditor::onClonePatternsPressed()
+{
+	ui->panel->onClonePatternsPressed();
+}
+
+void OrderListEditor::onCloneOrderPressed()
+{
+	ui->panel->onCloneOrderPressed();
+}

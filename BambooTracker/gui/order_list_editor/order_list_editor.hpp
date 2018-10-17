@@ -47,6 +47,10 @@ public slots:
 	/// 0: None
 	/// 1: All
 	void onSelectPressed(int type);
+	void onDuplicatePressed();
+	void onMoveOrderPressed(bool isUp);
+	void onClonePatternsPressed();
+	void onCloneOrderPressed();
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;

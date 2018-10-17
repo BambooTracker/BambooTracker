@@ -46,6 +46,10 @@ public slots:
 	/// 0: None
 	/// 1: All
 	void onSelectPressed(int type);
+	void onDuplicatePressed();
+	void onMoveOrderPressed(bool isUp);
+	void onClonePatternsPressed();
+	void onCloneOrderPressed();
 
 signals:
 	void currentTrackChangedForSlider(int num);

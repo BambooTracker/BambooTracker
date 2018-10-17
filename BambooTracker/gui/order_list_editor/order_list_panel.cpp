@@ -619,6 +619,37 @@ void OrderListPanel::onSelectPressed(int type)
 	update();
 }
 
+void OrderListPanel::onDuplicatePressed()
+{
+	bt_->duplicateOrder(curSongNum_, curPos_.row);
+	comStack_.lock()->push(new DuplicateOrderQtCommand(this));
+}
+
+void OrderListPanel::onMoveOrderPressed(bool isUp)
+{
+	if ((isUp && curPos_.row == 0)
+			|| (!isUp && curPos_.row == bt_->getOrderSize(curSongNum_) - 1))
+		return;
+
+	bt_->MoveOrder(curSongNum_, curPos_.row, isUp);
+	comStack_.lock()->push(new MoveOrderQtCommand(this));
+}
+
+void OrderListPanel::onClonePatternsPressed()
+{
+	if (selLeftAbovePos_.row == -1) return;
+
+	bt_->clonePatterns(curSongNum_, selLeftAbovePos_.row, selLeftAbovePos_.track,
+					   selRightBelowPos_.row, selRightBelowPos_.track);
+	comStack_.lock()->push(new ClonePatternsQtCommand(this));
+}
+
+void OrderListPanel::onCloneOrderPressed()
+{
+	bt_->cloneOrder(curSongNum_, curPos_.row);
+	comStack_.lock()->push(new CloneOrderQtCommand(this));
+}
+
 /********** Events **********/
 bool OrderListPanel::event(QEvent *event)
 {
@@ -839,10 +870,26 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::RightButton:
 	{
 		QMenu menu;
+		QAction* insert = menu.addAction("Insert Order", this, [&]() { insertOrderBelow(); });
+		QAction* remove = menu.addAction("Remove Order", this, [&]() { deleteOrder(); });
+		QAction* duplicate = menu.addAction("Duplicate Order", this, &OrderListPanel::onDuplicatePressed);
+		QAction* clonep = menu.addAction("Clone Patterns", this, &OrderListPanel::onClonePatternsPressed);
+		QAction* cloneo = menu.addAction("Clone Order", this, &OrderListPanel::onCloneOrderPressed);
+		menu.addSeparator();
+		QAction* moveUp = menu.addAction("Move Order Up", this, [&]() { onMoveOrderPressed(true); });
+		QAction* moveDown = menu.addAction("Move Order Down", this, [&]() { onMoveOrderPressed(false); });
+		menu.addSeparator();
 		QAction* copy = menu.addAction("Copy", this, &OrderListPanel::copySelectedCells);
 		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
 
 		if (bt_->isJamMode() || mousePressPos_.row < 0 || mousePressPos_.track < 0) {
+			insert->setEnabled(false);
+			remove->setEnabled(false);
+			duplicate->setEnabled(false);
+			clonep->setEnabled(false);
+			cloneo->setEnabled(false);
+			moveUp->setEnabled(false);
+			moveDown->setEnabled(false);
 			copy->setEnabled(false);
 			paste->setEnabled(false);
 		}
@@ -851,9 +898,19 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 			if (!clipText.startsWith("ORDER_COPY")) {
 					paste->setEnabled(false);
 			}
+			if (bt_->getOrderSize(curSongNum_) == 1) {
+				remove->setEnabled(false);
+			}
 			if (selRightBelowPos_.row < 0
 					|| !isSelectedCell(mousePressPos_.track, mousePressPos_.row)) {
+				clonep->setEnabled(false);
 				copy->setEnabled(false);
+			}
+			if (mousePressPos_.row == 0) {
+				moveUp->setEnabled(false);
+			}
+			if (mousePressPos_.row == bt_->getOrderSize(curSongNum_) - 1) {
+				moveDown->setEnabled(false);
 			}
 		}
 

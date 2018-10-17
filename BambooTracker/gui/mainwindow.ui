@@ -448,6 +448,12 @@ QListWidget::item:selected:hover {
     </property>
     <addaction name="actionInsert_Order"/>
     <addaction name="actionRemove_Order"/>
+    <addaction name="actionDuplicate_Order"/>
+    <addaction name="actionClone_Patterns"/>
+    <addaction name="actionClone_Order"/>
+    <addaction name="separator"/>
+    <addaction name="actionMove_Order_Up"/>
+    <addaction name="actionMove_Order_Down"/>
    </widget>
    <widget class="QMenu" name="menuModule">
     <property name="title">
@@ -861,6 +867,37 @@ QListWidget::item:selected:hover {
   <action name="actionConfiguration">
    <property name="text">
     <string>Configuration...</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_Order">
+   <property name="text">
+    <string>Duplicate Order</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionMove_Order_Up">
+   <property name="text">
+    <string>Move Order Up</string>
+   </property>
+  </action>
+  <action name="actionMove_Order_Down">
+   <property name="text">
+    <string>Move Order Down</string>
+   </property>
+  </action>
+  <action name="actionClone_Patterns">
+   <property name="text">
+    <string>Clone Patterns</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+D</string>
+   </property>
+  </action>
+  <action name="actionClone_Order">
+   <property name="text">
+    <string>Clone Order</string>
    </property>
   </action>
  </widget>
