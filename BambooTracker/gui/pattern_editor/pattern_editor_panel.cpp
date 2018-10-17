@@ -1687,11 +1687,36 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::RightButton:	// Show context menu
 	{
 		QMenu menu;
+		QAction* undo = menu.addAction("Undo", this, [&]() {
+			bt_->undo();
+			comStack_.lock()->undo();
+		});
+		QAction* redo = menu.addAction("Redo", this, [&]() {
+			bt_->redo();
+			comStack_.lock()->redo();
+		});
+		menu.addSeparator();
 		QAction* copy = menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
 		QAction* cut = menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
 		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
 		QAction* pasteMix = menu.addAction("Paste Mix", this, [&]() { pasteMixCopiedCells(mousePressPos_); });
 		QAction* erase = menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
+		QAction* select = menu.addAction("Select All", this, [&]() { onSelectPressed(1); });
+		menu.addSeparator();
+		auto pattern = new QMenu("Pattern");
+		menu.addMenu(pattern);
+		QAction* expand = pattern->addAction("Expand", this, &PatternEditorPanel::onExpandPressed);
+		QAction* shrink = pattern->addAction("Shrink", this, &PatternEditorPanel::onShrinkPressed);
+		pattern->addSeparator();
+		auto transpose = new QMenu("Transpose");
+		pattern->addMenu(transpose);
+		QAction* deNote = transpose->addAction("Decrease Note", this, [&]() { onTransposePressed(false, false); });
+		QAction* inNote = transpose->addAction("Increase Note", this, [&]() { onTransposePressed(false, true); });
+		QAction* deOct = transpose->addAction("Decrease Octave", this, [&]() { onTransposePressed(true, false); });
+		QAction* inOct = transpose->addAction("Increase Octave", this, [&]() { onTransposePressed(true, true); });
+		menu.addSeparator();
+		QAction* mute = menu.addAction("Mute Track", this, &PatternEditorPanel::onMuteTrackPressed);
+		QAction* solo = menu.addAction("Solo Track", this, &PatternEditorPanel::onSoloTrackPressed);
 
 		if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
 			copy->setEnabled(false);
@@ -1699,6 +1724,12 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			paste->setEnabled(false);
 			pasteMix->setEnabled(false);
 			erase->setEnabled(false);
+			expand->setEnabled(false);
+			shrink->setEnabled(false);
+			deNote->setEnabled(false);
+			inNote->setEnabled(false);
+			deOct->setEnabled(false);
+			inOct->setEnabled(false);
 		}
 		else {
 			QString clipText = QApplication::clipboard()->text();
@@ -1712,7 +1743,19 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 				copy->setEnabled(false);
 				cut->setEnabled(false);
 				erase->setEnabled(false);
+				expand->setEnabled(false);
+				shrink->setEnabled(false);
+				deNote->setEnabled(false);
+				inNote->setEnabled(false);
+				deOct->setEnabled(false);
+				inOct->setEnabled(false);
 			}
+		}
+		if (!comStack_.lock()->canUndo()) {
+			undo->setEnabled(false);
+		}
+		if (!comStack_.lock()->canRedo()) {
+			redo->setEnabled(false);
 		}
 
 		menu.exec(mapToGlobal(event->pos()));
