@@ -25,11 +25,7 @@ struct ToneNoise
 class OPNAController
 {
 public:
-	#ifdef SINC_INTERPOLATION
 	OPNAController(int clock, int rate, int duration);
-	#else
-	OPNAController(int clock, int rate);
-	#endif
 
 	// Reset and initialize
 	void reset();

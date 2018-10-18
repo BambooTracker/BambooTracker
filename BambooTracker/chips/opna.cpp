@@ -19,12 +19,10 @@ namespace chip
 	/*const int OPNA::DEF_AMP_FM_ = 11722;*/
 	/*const int OPNA::DEF_AMP_SSG_ = 7250;*/
 
-	#ifdef SINC_INTERPOLATION
-	OPNA::OPNA(int clock, int rate, size_t maxDuration) :
-	#else
-	OPNA::OPNA(int clock, int rate) :
-	#endif
-		Chip(count_++, clock, rate, 110933)	// autoRate = 110933: FM internal rate
+	OPNA::OPNA(int clock, int rate, size_t maxDuration,
+			   std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2)
+		: Chip(count_++, clock, rate, 110933, maxDuration,
+			   std::move(resampler1), std::move(resampler2))	// autoRate = 110933: FM internal rate
 	{
 		funcSetRate(rate);
 
@@ -35,12 +33,7 @@ namespace chip
 		UINT8 AYFlags = 0;		// None
 		internalRate_[FM] = device_start_ym2608(id_, clock, AYDisable, AYFlags, reinterpret_cast<int*>(&internalRate_[SSG]));
 
-		// Init resampler
-		#ifdef SINC_INTERPOLATION
-		initResampler(maxDuration);
-		#else
 		initResampler();
-		#endif
 
 		setVolume(0, 0);
 
@@ -113,9 +106,9 @@ namespace chip
 			bufFM = buffer_[FM];
 		}
 		else {
-			size_t intrSize = resampler_[FM].calculateInternalSampleSize(nSamples);
+			size_t intrSize = resampler_[FM]->calculateInternalSampleSize(nSamples);
 			ym2608_stream_update(id_, buffer_[FM], intrSize);
-			bufFM = resampler_[FM].interpolate(buffer_[FM], nSamples, intrSize);
+			bufFM = resampler_[FM]->interpolate(buffer_[FM], nSamples, intrSize);
 		}
 
 		// Set SSG buffer
@@ -124,9 +117,9 @@ namespace chip
 			bufSSG = buffer_[SSG];
 		}
 		else {
-			size_t intrSize = resampler_[SSG].calculateInternalSampleSize(nSamples);
+			size_t intrSize = resampler_[SSG]->calculateInternalSampleSize(nSamples);
 			ym2608_stream_update_ay(id_, buffer_[SSG], intrSize);
-			bufSSG = resampler_[SSG].interpolate(buffer_[SSG], nSamples, intrSize);
+			bufSSG = resampler_[SSG]->interpolate(buffer_[SSG], nSamples, intrSize);
 		}
 		for (size_t i = 0; i < nSamples; ++i) {
 			for (int pan = LEFT; pan <= RIGHT; ++pan) {

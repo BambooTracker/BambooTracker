@@ -1150,3 +1150,31 @@ void MainWindow::on_actionClone_Order_triggered()
 {
 	ui->orderList->onCloneOrderPressed();
 }
+
+void MainWindow::on_actionNew_triggered()
+{
+	if (isWindowModified()) {
+		auto modTitleStd = bt_->getModuleTitle();
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		if (modTitle.isEmpty()) modTitle = "Untitled";
+		QMessageBox dialog(QMessageBox::Warning,
+						   "BambooTracker",
+						   "Save changes to " + modTitle + "?",
+						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+		switch (dialog.exec()) {
+		case QMessageBox::Yes:
+			// UNDONE: save file
+			break;
+		case QMessageBox::No:
+			break;
+		case QMessageBox::Cancel:
+			return;
+		default:
+			break;
+		}
+	}
+
+	instForms_->closeAll();
+
+	//
+}

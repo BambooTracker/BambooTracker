@@ -1,4 +1,5 @@
 #include "chip.hpp"
+#include <utility>
 #include "chip_misc.h"
 
 #ifdef  __cplusplus
@@ -20,11 +21,16 @@ namespace chip
 {
 	//const int Chip::MAX_AMP_ = 32767;	// half-max of int16
 
-	Chip::Chip(int id, int clock, int rate, int autoRate) :
-		id_(id),
-		rate_(1),	// Dummy set
-		autoRate_(autoRate)
+	Chip::Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
+			   std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2)
+		: id_(id),
+		  rate_(rate),	// Dummy set
+		  autoRate_(autoRate),
+		  maxDuration_(maxDuration)
 	{
+		resampler_[0] = std::move(resampler1);
+		resampler_[1] = std::move(resampler2);
+
 		for (int pan = LEFT; pan <= RIGHT; ++pan) {
 			for (auto& buf : buffer_) {
 				buf[pan] = new stream_sample_t[SMPL_BUF_SIZE_];
@@ -41,18 +47,10 @@ namespace chip
 		}
 	}
 
-	#ifdef SINC_INTERPOLATION
-	void Chip::initResampler(size_t maxDuration)
-	#else
 	void Chip::initResampler()
-	#endif
 	{
 		for (int snd = 0; snd < 2; ++snd) {
-			#ifdef SINC_INTERPOLATION
-			resampler_[snd].init(internalRate_[snd], rate_, maxDuration);
-			#else
-			resampler_[snd].init(internalRate_[snd], rate_);
-			#endif
+			resampler_[snd]->init(internalRate_[snd], rate_, maxDuration_);
 		}
 	}
 
@@ -63,7 +61,7 @@ namespace chip
 		funcSetRate(rate);
 
 		for (auto& rsmp : resampler_) {
-			rsmp.setDestRate(rate);
+			rsmp->setDestributionRate(rate);
 		}
 	}
 
@@ -77,12 +75,16 @@ namespace chip
 		return rate_;
 	}
 
-	#ifdef SINC_INTERPOLATION
 	void Chip::setMaxDuration(size_t maxDuration)
 	{
+		maxDuration_ = maxDuration;
 		for (int snd = 0; snd < 2; ++snd) {
-			resampler_[snd].setMaxDuration(maxDuration);
+			resampler_[snd]->setMaxDuration(maxDuration);
 		}
 	}
-	#endif
+
+	size_t Chip::getMaxDuration() const
+	{
+		return maxDuration_;
+	}
 }

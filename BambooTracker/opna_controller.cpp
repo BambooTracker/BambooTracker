@@ -1,15 +1,10 @@
 #include "opna_controller.hpp"
 #include "pitch_converter.hpp"
 
-#ifdef SINC_INTERPOLATION
 OPNAController::OPNAController(int clock, int rate, int duration) :
-	opna_(clock, rate, duration),
-	duration_(duration)
-#else
-OPNAController::OPNAController(int clock, int rate) :
-	opna_(clock, rate),
-	duration_(40)	// Dummy set
-#endif
+	opna_(clock, rate, duration,
+		  std::make_unique<chip::LinearResampler>(),
+		  std::make_unique<chip::LinearResampler>())
 {	
 	for (int ch = 0; ch < 6; ++ch) {
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::AL, nullptr);
@@ -110,15 +105,13 @@ void OPNAController::setRate(int rate)
 
 int OPNAController::getDuration() const
 {
-	return duration_;
+	return opna_.getMaxDuration();
 }
 
 void OPNAController::setDuration(int duration)
 {
 	duration_ = duration;
-	#ifdef SINC_INTERPOLATION
-	opnaCtrl_.setMaxDuration(duration);
-	#endif
+	opna_.setMaxDuration(duration);
 }
 
 //---------- FM ----------//

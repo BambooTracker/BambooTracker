@@ -4,12 +4,7 @@
 #include "commands.hpp"
 
 BambooTracker::BambooTracker()
-	:
-	  #ifdef SINC_INTERPOLATION
-	  opnaCtrl_(3993600 * 2, 44100, 40),
-	  #else
-	  opnaCtrl_(3993600 * 2, 44100),
-	  #endif
+	: opnaCtrl_(3993600 * 2, 44100, 40),
 	  mod_(std::make_shared<Module>()),
 	  octave_(4),
 	  curSongNum_(0),

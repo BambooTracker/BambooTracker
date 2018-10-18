@@ -9,11 +9,8 @@ namespace chip
 	public:
 		// [rate]
 		// 0 = rate is 110933 (internal FM sample rate in 3993600 * 2 clock)
-		#ifdef SINC_INTERPOLATION
-		OPNA(int clock, int rate, size_t maxDuration);
-		#else
-		OPNA(int clock, int rate);
-		#endif
+		OPNA(int clock, int rate, size_t maxDuration,
+			 std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2);
 		~OPNA() override;
 
 		void reset() override;

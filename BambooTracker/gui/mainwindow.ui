@@ -521,7 +521,7 @@ QListWidget::item:selected:hover {
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>New...</string>

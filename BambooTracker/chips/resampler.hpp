@@ -1,33 +1,21 @@
 #pragma once
 
 #include "chip_def.h"
-#ifdef SINC_INTERPOLATION
 #include <vector>
 #include <cmath>
-#else
 #include <cstddef>
-#endif
 
 namespace chip
 {
-	class Resampler
+	class AbstractResampler
 	{
 	public:
-		Resampler();
-		~Resampler();
-
-		#ifdef SINC_INTERPOLATION
-		void init(int srcRate, int destRate, size_t maxDuration);
-		#else
-		void init(int srcRate, int destRate);
-		#endif
-
-		void setDestRate(int destRate);
-		#ifdef SINC_INTERPOLATION
-		void setMaxDuration(size_t maxDuration);
-		#endif
-
-		sample** interpolate(sample** src, size_t nSamples, size_t intrSize);
+		AbstractResampler();
+		virtual ~AbstractResampler();
+		virtual void init(int srcRate, int destRate, size_t maxDuration);
+		virtual void setDestributionRate(int destRate);
+		virtual void setMaxDuration(size_t maxDuration);
+		virtual sample** interpolate(sample** src, size_t nSamples, size_t intrSize) = 0;
 
 		inline size_t calculateInternalSampleSize(size_t nSamples)
 		{
@@ -36,14 +24,35 @@ namespace chip
 			return ((f - i) ? (i + 1) : i);
 		}
 
-	private:
-		int srcRate_, destRate_;
-		float rateRatio_;
-		
-		sample* destBuf_[2];
+	protected:
+		inline void updateRateRatio() {
+			rateRatio_ = static_cast<float>(srcRate_) / destRate_;
+		}
 
-		#ifdef SINC_INTERPOLATION
+	protected:
+		int srcRate_, destRate_;
 		size_t maxDuration_;
+		float rateRatio_;
+		sample* destBuf_[2];
+	};
+
+
+	class LinearResampler : public AbstractResampler
+	{
+	public:
+		sample** interpolate(sample** src, size_t nSamples, size_t intrSize) override;
+	};
+
+
+	class SincResampler : public AbstractResampler
+	{
+	public:
+		void init(int srcRate, int destRate, size_t maxDuration) override;
+		void setDestributionRate(int destRate) override;
+		void setMaxDuration(size_t maxDuration) override;
+		sample** interpolate(sample** src, size_t nSamples, size_t intrSize) override;
+
+	private:
 		std::vector<float> sincTable_;
 
 		static const float F_PI_;
@@ -55,6 +64,5 @@ namespace chip
 		{
 			return ((!x) ? 1.0f : (std::sin(x) / x));
 		}
-		#endif
 	};
 }

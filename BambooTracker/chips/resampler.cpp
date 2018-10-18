@@ -3,56 +3,107 @@
 
 namespace chip
 {
-	#ifdef SINC_INTERPOLATION
-	const float Resampler::F_PI_ = 3.14159265f;
-	const int Resampler::SINC_OFFSET_ = 16;
-	#endif
-
-	Resampler::Resampler()
+	AbstractResampler::AbstractResampler()
 	{
 		for (int pan = LEFT; pan <= RIGHT; ++pan) {
 			destBuf_[pan] = new sample[SMPL_BUF_SIZE_]();
 		}
 	}
 
-	Resampler::~Resampler()
+	AbstractResampler::~AbstractResampler()
 	{
 		for (int pan = LEFT; pan <= RIGHT; ++pan) {
 			delete[] destBuf_[pan];
 		}
 	}
 
-	#ifdef SINC_INTERPOLATION
-	void Resampler::init(int srcRate, int destRate, size_t maxDuration)
-	#else
-	void Resampler::init(int srcRate, int destRate)
-	#endif
+	void AbstractResampler::init(int srcRate, int destRate, size_t maxDuration)
 	{
 		srcRate_ = srcRate;
-		#ifdef SINC_INTERPOLATION
 		maxDuration_ = maxDuration;
-		#endif
-		setDestRate(destRate);
+		destRate_ = destRate;
+		updateRateRatio();
 	}
 
-	void Resampler::setDestRate(int destRate)
+	void AbstractResampler::setDestributionRate(int destRate)
 	{
 		destRate_ = destRate;
-		rateRatio_ = static_cast<float>(srcRate_) / destRate;
-
-		#ifdef SINC_INTERPOLATION
-		initSincTables();
-		#endif
+		updateRateRatio();
 	}
 
-	#ifdef SINC_INTERPOLATION
-	void Resampler::setMaxDuration(size_t maxDuration)
+	void AbstractResampler::setMaxDuration(size_t maxDuration)
 	{
 		maxDuration_ = maxDuration;
+	}
+
+	/****************************************/
+	sample** LinearResampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
+	{
+		// Linear interplation
+		for (int pan = LEFT; pan <= RIGHT; ++pan) {
+			for (size_t n = 0; n < nSamples; ++n) {
+				float curnf = n * rateRatio_;
+				int curni = static_cast<int>(curnf);
+				float sub = curnf - curni;
+				if (sub) {
+					destBuf_[pan][n] = static_cast<sample>(src[pan][curni] + (src[pan][curni + 1] - src[pan][curni]) * sub);
+				}
+				else /* if (sub == 0) */ {
+					destBuf_[pan][n] = src[pan][curni];
+				}
+			}
+		}
+
+		return destBuf_;
+	}
+
+	/****************************************/
+	const float SincResampler::F_PI_ = 3.14159265f;
+	const int SincResampler::SINC_OFFSET_ = 16;
+
+	void SincResampler::init(int srcRate, int destRate, size_t maxDuration)
+	{
+		AbstractResampler::init(srcRate, destRate, maxDuration);
 		initSincTables();
 	}
 
-	void Resampler::initSincTables()
+	void SincResampler::setDestributionRate(int destRate)
+	{
+		AbstractResampler::setDestributionRate(destRate);
+		initSincTables();
+	}
+
+	void SincResampler::setMaxDuration(size_t maxDuration)
+	{
+		AbstractResampler::setMaxDuration(maxDuration);
+		initSincTables();
+	}
+
+	sample** SincResampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
+	{
+		// Sinc interpolation
+		size_t offsetx2 = SINC_OFFSET_ << 1;
+
+		for (int pan = LEFT; pan <= RIGHT; ++pan) {
+			for (size_t n = 0; n < nSamples; ++n) {
+				size_t seg = n * offsetx2;
+				int curn = static_cast<int>(n * rateRatio_);
+				int k = curn - SINC_OFFSET_;
+				if (k < 0) k = 0;
+				int end = curn + SINC_OFFSET_;
+				if (static_cast<size_t>(end) > intrSize) end = static_cast<int>(intrSize);
+				sample samp = 0;
+				for (; k < end; ++k) {
+					samp += static_cast<sample>(src[pan][k] * sincTable_[seg + SINC_OFFSET_ + (k - curn)]);
+				}
+				destBuf_[pan][n] = samp;
+			}
+		}
+
+		return destBuf_;
+	}
+
+	void SincResampler::initSincTables()
 	{
 		size_t maxSamples = destRate_ * maxDuration_ / 1000;
 
@@ -73,47 +124,5 @@ namespace chip
 				}
 			}
 		}
-	}
-	#endif
-
-	sample** Resampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
-	{
-		#ifdef SINC_INTERPOLATION
-		// Sinc interpolation
-		size_t offsetx2 = SINC_OFFSET_ << 1;
-		
-		for (int pan = LEFT; pan <= RIGHT; ++pan) {
-			for (size_t n = 0; n < nSamples; ++n) {
-				size_t seg = n * offsetx2;
-				int curn = static_cast<int>(n * rateRatio_);
-				int k = curn - SINC_OFFSET_;
-				if (k < 0) k = 0;
-				int end = curn + SINC_OFFSET_;
-				if (static_cast<size_t>(end) > intrSize) end = static_cast<int>(intrSize);
-				sample samp = 0;
-				for (; k < end; ++k) {
-					samp += static_cast<sample>(src[pan][k] * sincTable_[seg + SINC_OFFSET_ + (k - curn)]);
-				}
-				destBuf_[pan][n] = samp;
-			}
-		}
-		#else
-		// Linear interplation
-		for (int pan = LEFT; pan <= RIGHT; ++pan) {
-			for (size_t n = 0; n < nSamples; ++n) {
-				float curnf = n * rateRatio_;
-				int curni = static_cast<int>(curnf);
-				float sub = curnf - curni;
-				if (sub) {
-					destBuf_[pan][n] = static_cast<sample>(src[pan][curni] + (src[pan][curni + 1] - src[pan][curni]) * sub);
-				}
-				else /* if (sub == 0) */ {
-					destBuf_[pan][n] = src[pan][curni];
-				}
-			}
-		}
-		#endif
-
-		return destBuf_;
 	}
 }
