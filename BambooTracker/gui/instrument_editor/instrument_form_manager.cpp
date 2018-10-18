@@ -69,6 +69,12 @@ void InstrumentFormManager::closeAll()
 	}
 }
 
+void InstrumentFormManager::clearAll()
+{
+	closeAll();
+	map_.clear();
+}
+
 QString InstrumentFormManager::getFormInstrumentName(int n) const
 {
 	return map_.at(n)->property("Name").toString();

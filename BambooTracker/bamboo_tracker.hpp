@@ -39,6 +39,7 @@ public:
 	void deepCloneInstrument(int num, int refNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
+	void clearAllInstrument();
 
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
@@ -171,6 +172,7 @@ public:
 
 	// Module details
 	/*----- Module -----*/
+	void makeNewModule();
 	void setModuleTitle(std::string title);
 	std::string getModuleTitle() const;
 	void setModuleAuthor(std::string author);

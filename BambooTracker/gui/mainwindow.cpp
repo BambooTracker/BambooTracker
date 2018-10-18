@@ -1174,7 +1174,8 @@ void MainWindow::on_actionNew_triggered()
 		}
 	}
 
-	instForms_->closeAll();
-
-	//
+	instForms_->clearAll();
+	ui->instrumentListWidget->clear();
+	bt_->makeNewModule();
+	loadModule();
 }

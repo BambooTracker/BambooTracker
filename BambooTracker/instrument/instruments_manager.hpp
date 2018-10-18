@@ -26,6 +26,7 @@ public:
 	void cloneInstrument(int cloneInstNum, int resInstNum);
 	void deepCloneInstrument(int cloneInstNum, int resInstNum);
 	std::shared_ptr<AbstractInstrument> getInstrumentSharedPtr(int instNum);
+	void clearAll();
 
 	void setInstrumentName(int instNum, std::string name);
 	std::string getInstrumentName(int instNum) const;

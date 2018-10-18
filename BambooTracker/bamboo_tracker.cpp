@@ -32,7 +32,7 @@ void BambooTracker::setCurrentOctave(int octave)
 
 int BambooTracker::getCurrentOctave() const
 {
-	return  octave_;
+	return octave_;
 }
 
 /********** Current track **********/
@@ -95,6 +95,11 @@ int BambooTracker::findFirstFreeInstrumentNumber() const
 void BambooTracker::setInstrumentName(int num, std::string name)
 {
 	comMan_.invoke(std::make_unique<ChangeInstrumentNameCommand>(instMan_, num, name));
+}
+
+void BambooTracker::clearAllInstrument()
+{
+	instMan_.clearAll();
 }
 
 //--- FM
@@ -689,7 +694,7 @@ void BambooTracker::stopPlaySong()
 
 bool BambooTracker::isPlaySong() const
 {
-	return  ((playState_ & 0x01) > 0);
+	return ((playState_ & 0x01) > 0);
 }
 
 void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
@@ -1477,6 +1482,34 @@ void BambooTracker::setStreamDuration(int duration)
 
 /********** Module details **********/
 /*----- Module -----*/
+void BambooTracker::makeNewModule()
+{
+	stopPlaySong();
+
+	clearAllInstrument();
+
+	opnaCtrl_.reset();
+
+	mod_ = std::make_shared<Module>();
+	curSongNum_ = 0;
+	curTrackNum_ = 0;
+	curOrderNum_ = 0;
+	curStepNum_ = 0;
+	curInstNum_ = -1;
+
+	auto& song = mod_->getSong(curSongNum_);
+	songStyle_ = song.getStyle();
+
+	tickCounter_.resetCount();
+	tickCounter_.setInterruptRate(mod_->getTickFrequency());
+	tickCounter_.setTempo(song.getTempo());
+	tickCounter_.setSpeed(song.getSpeed());
+	tickCounter_.setGroove(mod_->getGroove(song.getGroove()).getSequence());
+	tickCounter_.setGrooveEnebled(song.isUsedTempo());
+
+	clearDelayCounts();
+}
+
 void BambooTracker::setModuleTitle(std::string title)
 {
 	mod_->setTitle(title);
@@ -1677,7 +1710,7 @@ void BambooTracker::cloneOrder(int songNum, int orderNum)
 
 size_t BambooTracker::getOrderSize(int songNum) const
 {
-	return  mod_->getSong(songNum).getOrderSize();
+	return mod_->getSong(songNum).getOrderSize();
 }
 
 /*----- Pattern -----*/

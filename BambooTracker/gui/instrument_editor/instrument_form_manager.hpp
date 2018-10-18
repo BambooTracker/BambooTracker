@@ -22,6 +22,7 @@ public:
 
 	void showForm(int n);
 	void closeAll();
+	void clearAll();
 
 	QString getFormInstrumentName(int n) const;
 	void setFormInstrumentName(int n, QString name);

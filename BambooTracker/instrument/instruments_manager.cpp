@@ -45,25 +45,7 @@ InstrumentsManager::InstrumentsManager()
 		FMEnvelopeParameter::DT4
 	};
 
-	for (auto p : envFMParams_) {
-		opSeqFM_.emplace(p, std::array<std::shared_ptr<CommandSequence>, 128>());
-	}
-
-	for (size_t i = 0; i < 128; ++i) {
-		envFM_[i] = std::make_shared<EnvelopeFM>(i);
-		lfoFM_[i] = std::make_shared<LFOFM>(i);
-		for (auto& p : opSeqFM_) {
-			p.second[i] = std::make_shared<CommandSequence>(i, 0);
-		}
-		arpFM_[i] = std::make_shared<CommandSequence>(i, 0, 48);
-		ptFM_[i] = std::make_shared<CommandSequence>(i, 0, 127);
-
-		wfSSG_[i] = std::make_shared<CommandSequence>(i, 0);
-		tnSSG_[i] = std::make_shared<CommandSequence>(i, 0);
-		envSSG_[i] = std::make_shared<CommandSequence>(i, 0, 15);
-		arpSSG_[i] = std::make_shared<CommandSequence>(i, 0, 48);
-		ptSSG_[i] = std::make_shared<CommandSequence>(i, 0, 127);
-	}
+	clearAll();
 }
 
 void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::string name)
@@ -425,6 +407,31 @@ std::shared_ptr<AbstractInstrument> InstrumentsManager::getInstrumentSharedPtr(i
 	}
 	else {
 		return std::shared_ptr<AbstractInstrument>();	// Throw nullptr
+	}
+}
+
+void InstrumentsManager::clearAll()
+{
+	for (auto p : envFMParams_) {
+		opSeqFM_.emplace(p, std::array<std::shared_ptr<CommandSequence>, 128>());
+	}
+
+	for (size_t i = 0; i < 128; ++i) {
+		insts_[i].reset();
+
+		envFM_[i] = std::make_shared<EnvelopeFM>(i);
+		lfoFM_[i] = std::make_shared<LFOFM>(i);
+		for (auto& p : opSeqFM_) {
+			p.second[i] = std::make_shared<CommandSequence>(i, 0);
+		}
+		arpFM_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+		ptFM_[i] = std::make_shared<CommandSequence>(i, 0, 127);
+
+		wfSSG_[i] = std::make_shared<CommandSequence>(i, 0);
+		tnSSG_[i] = std::make_shared<CommandSequence>(i, 0);
+		envSSG_[i] = std::make_shared<CommandSequence>(i, 0, 15);
+		arpSSG_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+		ptSSG_[i] = std::make_shared<CommandSequence>(i, 0, 127);
 	}
 }
 
