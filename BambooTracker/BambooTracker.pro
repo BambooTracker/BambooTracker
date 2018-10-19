@@ -143,7 +143,8 @@ SOURCES += \
     gui/command/order/clone_patterns_qt_command.cpp \
     gui/command/order/clone_order_qt_command.cpp \
     gui/command/pattern/set_echo_buffer_access_qt_command.cpp \
-    command/pattern/set_echo_buffer_access_command.cpp
+    command/pattern/set_echo_buffer_access_command.cpp \
+    gui/comment_edit_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -276,7 +277,8 @@ HEADERS += \
     gui/command/order/clone_patterns_qt_command.hpp \
     gui/command/order/clone_order_qt_command.hpp \
     gui/command/pattern/set_echo_buffer_access_qt_command.hpp \
-    command/pattern/set_echo_buffer_access_command.hpp
+    command/pattern/set_echo_buffer_access_command.hpp \
+    gui/comment_edit_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -290,7 +292,8 @@ FORMS += \
     gui/instrument_editor/visualized_instrument_macro_editor.ui \
     gui/module_properties_dialog.ui \
     gui/groove_settings_dialog.ui \
-    gui/configuration_dialog.ui
+    gui/configuration_dialog.ui \
+    gui/comment_edit_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

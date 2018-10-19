@@ -1540,6 +1540,16 @@ std::string BambooTracker::getModuleCopyright() const
 	return mod_->getCopyright();
 }
 
+void BambooTracker::setModuleComment(std::string comment)
+{
+	mod_->setComment(comment);
+}
+
+std::string BambooTracker::getModuleComment() const
+{
+	return mod_->getComment();
+}
+
 void BambooTracker::setModuleTickFrequency(unsigned int freq)
 {
 	mod_->setTickFrequency(freq);

@@ -9,7 +9,7 @@ class Module
 {
 public:
 	Module(std::string title = u8"", std::string author = u8"",
-		   std::string copyright = u8"", unsigned int tickFreq = 60);
+		   std::string copyright = u8"", std::string comment = u8"", unsigned int tickFreq = 60);
 
 	void setTitle(std::string title);
 	std::string getTitle() const;
@@ -17,6 +17,8 @@ public:
 	std::string getAuthor() const;
 	void setCopyright(std::string copyright);
 	std::string getCopyright() const;
+	void setComment(std::string comment);
+	std::string getComment() const;
 	void setTickFrequency(unsigned int freq);
 	unsigned int getTickFrequency() const;
 	size_t getSongCount() const;
@@ -36,6 +38,7 @@ private:
 	std::string title_;
 	std::string author_;
 	std::string copyright_;
+	std::string comment_;
 	unsigned int tickFreq_;
 	std::vector<Song> songs_;
 	std::vector<Groove> grooves_;

@@ -460,6 +460,7 @@ QListWidget::item:selected:hover {
      <string>Module</string>
     </property>
     <addaction name="actionModule_Properties"/>
+    <addaction name="actionComments"/>
     <addaction name="separator"/>
     <addaction name="actionGroove_Settings"/>
    </widget>
@@ -898,6 +899,11 @@ QListWidget::item:selected:hover {
   <action name="actionClone_Order">
    <property name="text">
     <string>Clone Order</string>
+   </property>
+  </action>
+  <action name="actionComments">
+   <property name="text">
+    <string>Comments...</string>
    </property>
   </action>
  </widget>

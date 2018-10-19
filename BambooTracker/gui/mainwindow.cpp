@@ -18,6 +18,7 @@
 #include "gui/module_properties_dialog.hpp"
 #include "gui/groove_settings_dialog.hpp"
 #include "gui/configuration_dialog.hpp"
+#include "gui/comment_edit_dialog.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -1105,6 +1106,7 @@ void MainWindow::on_actionGroove_Settings_triggered()
 		lockControls(false);
 		bt_->setGrooves(diag.getGrooveSequences());
 		ui->grooveSpinBox->setMaximum(bt_->getGrooveCount() - 1);
+		setModifiedTrue();
 	}
 }
 
@@ -1178,4 +1180,14 @@ void MainWindow::on_actionNew_triggered()
 	ui->instrumentListWidget->clear();
 	bt_->makeNewModule();
 	loadModule();
+}
+
+void MainWindow::on_actionComments_triggered()
+{
+	auto comment = bt_->getModuleComment();
+	CommentEditDialog diag(QString::fromUtf8(comment.c_str(), comment.length()));
+	if (diag.exec() == QDialog::Accepted) {
+		bt_->setModuleComment(diag.getComment().toUtf8().toStdString());
+		setModifiedTrue();
+	}
 }

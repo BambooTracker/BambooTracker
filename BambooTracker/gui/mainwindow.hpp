@@ -128,6 +128,7 @@ private slots:
 	void on_actionClone_Patterns_triggered();
 	void on_actionClone_Order_triggered();
 	void on_actionNew_triggered();
+	void on_actionComments_triggered();
 };
 
 #endif // MAINWINDOW_HPP

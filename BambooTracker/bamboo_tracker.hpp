@@ -179,6 +179,8 @@ public:
 	std::string getModuleAuthor() const;
 	void setModuleCopyright(std::string copyright);
 	std::string getModuleCopyright() const;
+	void setModuleComment(std::string comment);
+	std::string getModuleComment() const;
 	void setModuleTickFrequency(unsigned int freq);
 	unsigned int getModuleTickFrequency() const;
 	size_t getGrooveCount() const;
