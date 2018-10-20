@@ -359,7 +359,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		QColor color;
 		switch (src) {
 		case SoundSource::FM:
-			color = volColor_;
+			color = (vol < 0x80) ? volColor_ : errorColor_;
 			break;
 		case SoundSource::SSG:
 			color = (vol < 0x10) ? volColor_ : errorColor_;

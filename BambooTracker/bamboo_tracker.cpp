@@ -1012,7 +1012,8 @@ bool BambooTracker::readFMStep(Step& step, int ch, bool isSkippedSpecial)
 	bool isNextSet = false;
 
 	// Set volume
-	if (step.getVolume() != -1) {
+	int vol = step.getVolume();
+	if (0 <= vol && vol < 0x80) {
 		opnaCtrl_.setVolumeFM(ch, step.getVolume());
 	}
 	// Set instrument
