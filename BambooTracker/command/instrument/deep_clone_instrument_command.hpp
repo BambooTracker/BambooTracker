@@ -1,18 +1,19 @@
 #pragma once
 
+#include <memory>
 #include "abstract_command.hpp"
 #include "instruments_manager.hpp"
 
 class DeepCloneInstrumentCommand : public AbstractCommand
 {
 public:
-	DeepCloneInstrumentCommand(InstrumentsManager &manager, int num, int refNum);
+	DeepCloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, int refNum);
 
 	void redo() override;
 	void undo() override;
 	int getID() const override;
 
 private:
-	InstrumentsManager& manager_;
+	std::weak_ptr<InstrumentsManager> manager_;
 	int cloneInstNum_, refInstNum_;
 };

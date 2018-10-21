@@ -8,14 +8,14 @@
 class RemoveInstrumentCommand : public AbstractCommand
 {
 public:
-	RemoveInstrumentCommand(InstrumentsManager &manager, int number);
+	RemoveInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int number);
 
 	void redo() override;
 	void undo() override;
 	int getID() const override;
 
 private:
-	InstrumentsManager &manager_;
+	std::weak_ptr<InstrumentsManager> manager_;
 	int number_;
 	std::unique_ptr<AbstractInstrument> inst_;
 };

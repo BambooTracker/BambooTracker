@@ -120,7 +120,7 @@ private:
 	int detuneFM_[6];
 	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[6];
 	int sumNoteSldFM_[6];
-	int transposeFM_[3];
+	int transposeFM_[6];
 
 	void initFM();
 

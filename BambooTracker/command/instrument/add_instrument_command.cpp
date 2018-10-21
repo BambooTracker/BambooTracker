@@ -1,6 +1,6 @@
 #include "add_instrument_command.hpp"
 
-AddInstrumentCommand::AddInstrumentCommand(InstrumentsManager &manager, int num, SoundSource source, std::string name) :
+AddInstrumentCommand::AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, SoundSource source, std::string name) :
 	manager_(manager),
 	num_(num),
 	source_(source),
@@ -9,12 +9,12 @@ AddInstrumentCommand::AddInstrumentCommand(InstrumentsManager &manager, int num,
 
 void AddInstrumentCommand::redo()
 {
-	manager_.addInstrument(num_, source_, name_);
+	manager_.lock()->addInstrument(num_, source_, name_);
 }
 
 void AddInstrumentCommand::undo()
 {
-	manager_.removeInstrument(num_);
+	manager_.lock()->removeInstrument(num_);
 }
 
 int AddInstrumentCommand::getID() const

@@ -50,6 +50,8 @@ InstrumentsManager::InstrumentsManager()
 
 void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::string name)
 {
+	if (instNum < 0 || 127 < instNum) return;
+
 	switch (source) {
 	case SoundSource::FM:
 		insts_.at(instNum) = std::make_shared<InstrumentFM>(instNum, name, this);
@@ -452,7 +454,7 @@ int InstrumentsManager::findFirstFreeInstrument() const
 {
 	int num = 0;
 	for (auto& inst : insts_) {
-		if (inst == nullptr) return num;
+		if (!inst) return num;
 		++num;
 	}
 	return -1;

@@ -266,9 +266,9 @@ public:
 
 private:
 	CommandManager comMan_;
-	InstrumentsManager instMan_;
+	std::shared_ptr<InstrumentsManager> instMan_;
 	JamManager jamMan_;
-	OPNAController opnaCtrl_;
+	std::unique_ptr<OPNAController> opnaCtrl_;
 
     TickCounter tickCounter_;
 

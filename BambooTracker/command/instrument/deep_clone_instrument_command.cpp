@@ -1,18 +1,18 @@
 #include "deep_clone_instrument_command.hpp"
 
-DeepCloneInstrumentCommand::DeepCloneInstrumentCommand(InstrumentsManager& manager, int num, int refNum)
+DeepCloneInstrumentCommand::DeepCloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, int refNum)
 	: manager_(manager), cloneInstNum_(num), refInstNum_(refNum)
 {
 }
 
 void DeepCloneInstrumentCommand::redo()
 {
-	manager_.deepCloneInstrument(cloneInstNum_, refInstNum_);
+	manager_.lock()->deepCloneInstrument(cloneInstNum_, refInstNum_);
 }
 
 void DeepCloneInstrumentCommand::undo()
 {
-	manager_.removeInstrument(cloneInstNum_);
+	manager_.lock()->removeInstrument(cloneInstNum_);
 }
 
 int DeepCloneInstrumentCommand::getID() const

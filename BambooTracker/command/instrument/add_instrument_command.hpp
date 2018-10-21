@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include "abstract_command.hpp"
 #include "instrument.hpp"
@@ -9,14 +10,14 @@
 class AddInstrumentCommand : public AbstractCommand
 {
 public:
-	AddInstrumentCommand(InstrumentsManager &manager, int num, SoundSource source, std::string name);
+	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, SoundSource source, std::string name);
 
 	void redo() override;
 	void undo() override;
 	int getID() const override;
 
 private:
-	InstrumentsManager &manager_;
+	std::weak_ptr<InstrumentsManager> manager_;
 	int num_;
 	SoundSource source_;
 	std::string name_;
