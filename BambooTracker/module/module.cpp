@@ -2,16 +2,28 @@
 #include <algorithm>
 #include <iterator>
 
-Module::Module(std::string title, std::string author, std::string copyright,
+Module::Module(std::string filePath, std::string title, std::string author, std::string copyright,
 			   std::string comment, unsigned int tickFreq)
-	: title_(title),
+	: filePath_(filePath),
+	  title_(title),
 	  author_(author),
 	  copyright_(copyright),
 	  comment_(comment),
-	  tickFreq_(tickFreq)
+	  tickFreq_(tickFreq),
+	  stepHlDist_(8)
 {
 	songs_.emplace_back(0);
 	grooves_.emplace_back();
+}
+
+void Module::setFilePath(std::string path)
+{
+	filePath_ = path;
+}
+
+std::string Module::getFilePath() const
+{
+	return filePath_;
 }
 
 void Module::setTitle(std::string title)
@@ -62,6 +74,16 @@ void Module::setTickFrequency(unsigned int freq)
 unsigned int Module::getTickFrequency() const
 {
 	return tickFreq_;
+}
+
+void Module::setStepHighlightDistance(size_t dist)
+{
+	stepHlDist_ = dist;
+}
+
+size_t Module::getStepHighlightDistance() const
+{
+	return stepHlDist_;
 }
 
 size_t Module::getSongCount() const

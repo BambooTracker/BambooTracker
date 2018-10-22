@@ -20,6 +20,8 @@ public:
 	int getParameterValue(FMEnvelopeParameter param) const;
 	void setParameterValue(FMEnvelopeParameter param, int value);
 
+	bool isEdited() const;
+
 private:
 	int al_;
 	int fb_;
@@ -38,11 +40,20 @@ private:
 		int ssgeg_;	// -1: No use
 	};
 	FMOperator op_[4];
+
+	static constexpr int DEF_AL = 4;
+	static constexpr int DEF_FB = 0;
+	static constexpr FMOperator DEF_OP[4] = {
+		{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, -1 },
+		{ true, 31, 0, 0, 7, 0,  0, 0, 0, 0, -1 },
+		{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, -1 },
+		{ true, 31, 0, 0, 7, 0,  0, 0, 0, 0, -1 }
+	};
+
 	std::map<FMEnvelopeParameter, int&> paramMap_;
 
 	void initParamMap();
 };
-
 
 enum class FMEnvelopeParameter
 {

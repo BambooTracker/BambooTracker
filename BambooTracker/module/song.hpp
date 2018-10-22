@@ -17,8 +17,6 @@ public:
 	int getNumber() const;
 	void setTitle(std::string title);
 	std::string getTitle() const;
-	void setTickFrequency(unsigned int freq);
-	unsigned int getTickFrequency() const;
 	void setTempo(int tempo);
 	int getTempo() const;
 	void setGroove(int groove);

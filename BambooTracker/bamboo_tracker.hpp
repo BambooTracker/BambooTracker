@@ -173,6 +173,9 @@ public:
 	// Module details
 	/*----- Module -----*/
 	void makeNewModule();
+	bool saveModule(std::string path);
+	void setModulePath(std::string path);
+	std::string getModulePath() const;
 	void setModuleTitle(std::string title);
 	std::string getModuleTitle() const;
 	void setModuleAuthor(std::string author);
@@ -183,6 +186,8 @@ public:
 	std::string getModuleComment() const;
 	void setModuleTickFrequency(unsigned int freq);
 	unsigned int getModuleTickFrequency() const;
+	void setModuleStepHighlightDistance(size_t dist);
+	size_t getModuleStepHighlightDistance() const;
 	size_t getGrooveCount() const;
 	void setGroove(int num, std::vector<int> seq);
 	void setGrooves(std::vector<std::vector<int>> seqs);

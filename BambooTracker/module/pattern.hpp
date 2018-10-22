@@ -25,6 +25,7 @@ public:
 	void deletePreviousStep(int n);
 
 	bool existCommand() const;
+	std::vector<int> getEditedStepIndices() const;
 
 	Pattern clone(int asNumber);
 

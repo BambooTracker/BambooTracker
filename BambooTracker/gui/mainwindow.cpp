@@ -7,12 +7,15 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QRegularExpression>
+#include <QFileDialog>
+#include <QFileInfo>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
 #include "instrument.hpp"
-#include "./command/commands_qt.hpp"
+#include "version.hpp"
+#include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/module_properties_dialog.hpp"
@@ -125,6 +128,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->stepHighrightSpinBox->setValue(8);
 	QObject::connect(ui->stepHighrightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
 					 this, [&](int count) {
+		bt_->setModuleStepHighlightDistance(count);
 		ui->patternEditor->setPatternHighlightCount(count);
 		ui->patternEditor->update();
 	});
@@ -327,7 +331,7 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		switch (dialog.exec()) {
 		case QMessageBox::Yes:
-			// UNDONE: save file
+			if (!on_actionSave_triggered()) return;
 			break;
 		case QMessageBox::No:
 			break;
@@ -466,6 +470,7 @@ void MainWindow::loadModule()
 	auto modCopyright = bt_->getModuleCopyright();
 	ui->copyrightLineEdit->setText(QString::fromUtf8(modCopyright.c_str(), modCopyright.length()));
 	ui->songNumSpinBox->setMaximum(bt_->getSongCount() - 1);
+	ui->stepHighrightSpinBox->setValue(bt_->getModuleStepHighlightDistance());
 
 	loadSong();
 
@@ -1076,15 +1081,17 @@ void MainWindow::on_actionKill_Sound_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QMessageBox::about(this, "About",
-					   "BambooTracker v0.1.0\n"
+	QMessageBox::about(this, "About", QString(
+					   "BambooTracker v")
+					   + QString::fromStdString(Version::ofApplicationInString())
+					   + QString("\n"
 					   "Copyright (C) 2018 Rerrah\n"
 					   "\n"
 					   "Libraries:\n"
 					   "- Qt (GPL v2+ or LGPL v3)\n"
 					   "- VGMPlay by (C) Valley Bell (GPL v2)\n"
 					   "- MAME (MAME License)\n"
-					   "- EMU2149 by (C) Mitsutaka Okazaki (MIT)");
+					   "- EMU2149 by (C) Mitsutaka Okazaki (MIT)"));
 }
 
 void MainWindow::on_actionFollow_Mode_triggered()
@@ -1165,7 +1172,7 @@ void MainWindow::on_actionNew_triggered()
 						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		switch (dialog.exec()) {
 		case QMessageBox::Yes:
-			// UNDONE: save file
+			if (!on_actionSave_triggered()) return;
 			break;
 		case QMessageBox::No:
 			break;
@@ -1179,6 +1186,8 @@ void MainWindow::on_actionNew_triggered()
 	instForms_->clearAll();
 	ui->instrumentListWidget->clear();
 	bt_->makeNewModule();
+	isModifiedForNotCommand_ = false;
+	setWindowModified(false);
 	loadModule();
 }
 
@@ -1189,5 +1198,45 @@ void MainWindow::on_actionComments_triggered()
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->setModuleComment(diag.getComment().toUtf8().toStdString());
 		setModifiedTrue();
+	}
+}
+
+bool MainWindow::on_actionSave_triggered()
+{
+	auto path = QString::fromStdString(bt_->getModulePath());
+	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
+		if (bt_->saveModule(bt_->getModulePath())) {
+			isModifiedForNotCommand_ = false;
+			setWindowModified(false);
+			setWindowTitle();
+			return true;
+		}
+		else {
+			QMessageBox::critical(this, "Error", "Failed to save module.");
+			return false;
+		}
+	}
+	else {
+		return on_actionSave_As_triggered();
+	}
+}
+
+bool MainWindow::on_actionSave_As_triggered()
+{
+	QString file = QFileDialog::getSaveFileName(this, "Save module", "./",
+												"BambooTracker module file (*.btm)");
+	if (file.isNull()) return false;
+	if (!file.endsWith(".btm")) file += ".btm";	// For linux
+
+	bt_->setModulePath(file.toStdString());
+	if (bt_->saveModule(bt_->getModulePath())) {
+		isModifiedForNotCommand_ = false;
+		setWindowModified(false);
+		setWindowTitle();
+		return true;
+	}
+	else {
+		QMessageBox::critical(this, "Error", "Failed to save module.");
+		return false;
 	}
 }

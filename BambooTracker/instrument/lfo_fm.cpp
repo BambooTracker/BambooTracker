@@ -1,14 +1,16 @@
 #include "lfo_fm.hpp"
 
+constexpr int LFOFM::DEF_AM_OP[4];
+
 LFOFM::LFOFM(int n)
 	: AbstractInstrumentProperty (n),
-	  freq_(0),
-	  pms_(0),
-	  ams_(0),
-	  cnt_(0)
+	  freq_(DEF_FREQ),
+	  pms_(DEF_PMS),
+	  ams_(DEF_AMS),
+	  cnt_(DEF_CNT)
 {
 	for (int i = 0; i < 4; ++i)
-		amOp_[i] = 0;
+		amOp_[i] = DEF_AM_OP[i];
 }
 
 LFOFM::LFOFM(const LFOFM& other)
@@ -53,4 +55,17 @@ int LFOFM::getParameterValue(FMLFOParameter param) const
 	case FMLFOParameter::AM3:	return amOp_[2];
 	case FMLFOParameter::AM4:	return amOp_[3];
 	}
+}
+
+bool LFOFM::isEdited() const
+{
+	if (freq_ != DEF_FREQ
+			|| pms_ != DEF_PMS
+			|| ams_ != DEF_AMS
+			|| cnt_ != DEF_CNT)
+		return true;
+	for (int i = 0; i < 4; ++i) {
+		if (amOp_[i] != DEF_AM_OP[i]) return true;
+	}
+	return false;
 }

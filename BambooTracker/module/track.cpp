@@ -64,6 +64,15 @@ int Track::clonePattern(int num)
 	}
 }
 
+std::vector<int> Track::getEditedPatternIndices() const
+{
+	std::vector<int> list;
+	for (size_t i = 0; i < 128; ++i) {
+		if (patterns_[i].existCommand()) list.push_back(i);
+	}
+	return list;
+}
+
 void Track::registerPatternToOrder(int order, int pattern)
 {
 	patterns_.at(pattern).usedCountUp();

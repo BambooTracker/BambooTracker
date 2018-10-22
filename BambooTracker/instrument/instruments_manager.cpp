@@ -447,6 +447,17 @@ std::string InstrumentsManager::getInstrumentName(int instNum) const
 	return insts_.at(instNum)->getName();
 }
 
+std::vector<int> InstrumentsManager::getEntriedInstrumentIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& inst : insts_) {
+		if (inst) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
 /// Return:
 ///		-1: no free instrument
 ///		else: first free instrument number
@@ -500,6 +511,17 @@ std::vector<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
 	return envFM_.at(envNum)->getUserInstruments();
 }
 
+std::vector<int> InstrumentsManager::getEnvelopeFMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& env : envFM_) {
+		if (env->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
 void InstrumentsManager::setInstrumentFMLFO(int instNum, int lfoNum)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
@@ -530,6 +552,17 @@ int InstrumentsManager::getLFOFMparameter(int lfoNum, FMLFOParameter param) cons
 std::vector<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
 {
 	return lfoFM_.at(lfoNum)->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getLFOFMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& lfo : lfoFM_) {
+		if (lfo->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
 }
 
 void InstrumentsManager::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum)
@@ -597,6 +630,17 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getOperatorSequen
 std::vector<int> InstrumentsManager::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
 {
 	return opSeqFM_.at(param).at(opSeqNum)->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& seq : opSeqFM_.at(param)) {
+		if (seq->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
 }
 
 void InstrumentsManager::setInstrumentFMArpeggio(int instNum, int arpNum)
@@ -674,6 +718,17 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioFMIter
 std::vector<int> InstrumentsManager::getArpeggioFMUsers(int arpNum) const
 {
 	return arpFM_.at(arpNum)->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& arp : arpFM_) {
+		if (arp->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
 }
 
 void InstrumentsManager::setInstrumentFMPitch(int instNum, int ptNum)
@@ -758,6 +813,17 @@ void InstrumentsManager::setInstrumentFMEnvelopeResetEnabled(int instNum, bool e
 	std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum])->setEnvelopeResetEnabled(enabled);
 }
 
+std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& pt : ptFM_) {
+		if (pt->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
 //----- SSG methods -----
 void InstrumentsManager::setInstrumentSSGWaveForm(int instNum, int wfNum)
 {
@@ -824,6 +890,17 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getWaveFormSSGIte
 std::vector<int> InstrumentsManager::getWaveFormSSGUsers(int wfNum) const
 {
 	return wfSSG_.at(wfNum)->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getWaveFormSSGEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& wf : wfSSG_) {
+		if (wf->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
 }
 
 void InstrumentsManager::setInstrumentSSGToneNoise(int instNum, int tnNum)
@@ -893,6 +970,17 @@ std::vector<int> InstrumentsManager::getToneNoiseSSGUsers(int tnNum) const
 	return tnSSG_.at(tnNum)->getUserInstruments();
 }
 
+std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& tn : tnSSG_) {
+		if (tn->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
 void InstrumentsManager::setInstrumentSSGEnvelope(int instNum, int envNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
@@ -958,6 +1046,17 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getEnvelopeSSGIte
 std::vector<int> InstrumentsManager::getEnvelopeSSGUsers(int envNum) const
 {
 	return envSSG_.at(envNum)->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& env : envSSG_) {
+		if (env->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
 }
 
 void InstrumentsManager::setInstrumentSSGArpeggio(int instNum, int arpNum)
@@ -1037,6 +1136,17 @@ std::vector<int> InstrumentsManager::getArpeggioSSGUsers(int arpNum) const
 	return arpSSG_.at(arpNum)->getUserInstruments();
 }
 
+std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& arp : arpSSG_) {
+		if (arp->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
 void InstrumentsManager::setInstrumentSSGPitch(int instNum, int ptNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
@@ -1112,4 +1222,15 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchSSGIterat
 std::vector<int> InstrumentsManager::getPitchSSGUsers(int ptNum) const
 {
 	return ptSSG_.at(ptNum)->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getPitchSSGEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& pt : ptSSG_) {
+		if (pt->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
 }

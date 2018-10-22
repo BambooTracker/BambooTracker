@@ -17,14 +17,21 @@ public:
 	void setParameterValue(FMLFOParameter param, int value);
 	int getParameterValue(FMLFOParameter param) const;
 
+	bool isEdited() const;
+
 private:
 	int freq_;
 	int pms_;
 	int ams_;
 	int amOp_[4];
 	int cnt_;
-};
 
+	static constexpr int DEF_FREQ = 0;
+	static constexpr int DEF_PMS = 0;
+	static constexpr int DEF_AMS = 0;
+	static constexpr int DEF_AM_OP[4] = { 0, 0, 0, 0 };
+	static constexpr int DEF_CNT = 0;
+};
 
 enum class FMLFOParameter
 {

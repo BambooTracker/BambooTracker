@@ -144,7 +144,9 @@ SOURCES += \
     gui/command/order/clone_order_qt_command.cpp \
     gui/command/pattern/set_echo_buffer_access_qt_command.cpp \
     command/pattern/set_echo_buffer_access_command.cpp \
-    gui/comment_edit_dialog.cpp
+    gui/comment_edit_dialog.cpp \
+    io/file_io.cpp \
+    io/binary_container.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -278,7 +280,10 @@ HEADERS += \
     gui/command/order/clone_order_qt_command.hpp \
     gui/command/pattern/set_echo_buffer_access_qt_command.hpp \
     command/pattern/set_echo_buffer_access_command.hpp \
-    gui/comment_edit_dialog.hpp
+    gui/comment_edit_dialog.hpp \
+    io/file_io.hpp \
+    io/binary_container.hpp \
+    version.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -300,4 +305,5 @@ INCLUDEPATH += \
     $$PWD/stream \
     $$PWD/instrument \
     $$PWD/command \
-    $$PWD/module
+    $$PWD/module \
+    $$PWD/io

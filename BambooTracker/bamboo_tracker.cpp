@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <utility>
 #include "commands.hpp"
+#include "file_io.hpp"
 
 BambooTracker::BambooTracker()
 	: instMan_(std::make_shared<InstrumentsManager>()),
@@ -1512,6 +1513,21 @@ void BambooTracker::makeNewModule()
 	clearDelayCounts();
 }
 
+bool BambooTracker::saveModule(std::string path)
+{
+	return FileIO::saveModule(path, mod_, instMan_);
+}
+
+void BambooTracker::setModulePath(std::string path)
+{
+	mod_->setFilePath(path);
+}
+
+std::string BambooTracker::getModulePath() const
+{
+	return mod_->getFilePath();
+}
+
 void BambooTracker::setModuleTitle(std::string title)
 {
 	mod_->setTitle(title);
@@ -1561,6 +1577,16 @@ void BambooTracker::setModuleTickFrequency(unsigned int freq)
 unsigned int BambooTracker::getModuleTickFrequency() const
 {
 	return mod_->getTickFrequency();
+}
+
+void BambooTracker::setModuleStepHighlightDistance(size_t dist)
+{
+	mod_->setStepHighlightDistance(dist);
+}
+
+size_t BambooTracker::getModuleStepHighlightDistance() const
+{
+	return mod_->getStepHighlightDistance();
 }
 
 size_t BambooTracker::getGrooveCount() const

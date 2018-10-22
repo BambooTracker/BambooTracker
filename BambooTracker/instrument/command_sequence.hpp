@@ -80,7 +80,12 @@ public:
 
 	std::unique_ptr<CommandSequence::Iterator> getIterator();
 
+	bool isEdited() const;
+
 private:
+	const int DEF_COM_TYPE;
+	const int DEF_COM_DATA;
+
 	int type_;
 	std::vector<CommandInSequence> seq_;
 	std::vector<Loop> loops_;

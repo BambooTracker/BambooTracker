@@ -1,14 +1,16 @@
 #include "envelope_fm.hpp"
 
+constexpr EnvelopeFM::FMOperator EnvelopeFM::DEF_OP[4];
+
 EnvelopeFM::EnvelopeFM(int num)
 	: AbstractInstrumentProperty (num),
-	  al_(4),
-	  fb_(0)
+	  al_(DEF_AL),
+	  fb_(DEF_FB)
 {
-	op_[0] = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, -1 };
-	op_[1] = FMOperator{ true, 31, 0, 0, 7, 0, 0, 0, 0, 0, -1 };
-	op_[2] = FMOperator{ true, 31, 0, 0, 7, 0, 32, 0, 0, 0, -1 };
-	op_[3] = FMOperator{ true, 31, 0, 0, 7, 0, 0, 0, 0, 0, -1 };
+	op_[0] = DEF_OP[0];
+	op_[1] = DEF_OP[1];
+	op_[2] = DEF_OP[2];
+	op_[3] = DEF_OP[3];
 
 	initParamMap();
 }
@@ -67,19 +69,8 @@ EnvelopeFM::EnvelopeFM(const EnvelopeFM &other)
 	al_ = other.al_;
 	fb_ = other.fb_;
 
-	for (int i = 0; i < 4; ++i) {
-		op_[i].enabled_ = other.op_[i].enabled_;
-		op_[i].ar_ = other.op_[i].ar_;
-		op_[i].dr_ = other.op_[i].dr_;
-		op_[i].sr_ = other.op_[i].sr_;
-		op_[i].rr_ = other.op_[i].rr_;
-		op_[i].sl_ = other.op_[i].sl_;
-		op_[i].tl_ = other.op_[i].tl_;
-		op_[i].ks_ = other.op_[i].ks_;
-		op_[i].ml_ = other.op_[i].ml_;
-		op_[i].dt_ = other.op_[i].dt_;
-		op_[i].ssgeg_ = other.op_[i].ssgeg_;
-	}
+	for (int i = 0; i < 4; ++i)
+		op_[i] = other.op_[i];
 
 	initParamMap();
 }
@@ -107,4 +98,23 @@ int EnvelopeFM::getParameterValue(FMEnvelopeParameter param) const
 void EnvelopeFM::setParameterValue(FMEnvelopeParameter param, int value)
 {
 	paramMap_.at(param) = value;
+}
+
+bool EnvelopeFM::isEdited() const
+{
+	if (al_ != DEF_AL || fb_ != DEF_FB) return true;
+	for (int i = 0; i < 4; ++i) {
+		if (op_[i].enabled_ != DEF_OP[i].enabled_
+				|| op_[i].ar_ != DEF_OP[i].ar_
+				|| op_[i].dr_ != DEF_OP[i].dr_
+				|| op_[i].sr_ != DEF_OP[i].sr_
+				|| op_[i].rr_ != DEF_OP[i].rr_
+				|| op_[i].sl_ != DEF_OP[i].sl_
+				|| op_[i].tl_ != DEF_OP[i].tl_
+				|| op_[i].ks_ != DEF_OP[i].ks_
+				|| op_[i].ml_ != DEF_OP[i].ml_
+				|| op_[i].dt_ != DEF_OP[i].dt_)
+			return true;
+	}
+	return false;
 }

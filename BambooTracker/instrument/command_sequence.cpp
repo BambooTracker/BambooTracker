@@ -2,6 +2,8 @@
 
 CommandSequence::CommandSequence(int num, int seqType, int comType, int comData)
 	: AbstractInstrumentProperty(num),
+	  DEF_COM_TYPE(comType),
+	  DEF_COM_DATA(comData),
 	  type_(seqType),
 	  release_{ ReleaseType::NO_RELEASE, -1 }
 {
@@ -9,11 +11,13 @@ CommandSequence::CommandSequence(int num, int seqType, int comType, int comData)
 }
 
 CommandSequence::CommandSequence(const CommandSequence& other)
-	: AbstractInstrumentProperty(other)
+	: AbstractInstrumentProperty(other),
+	  DEF_COM_TYPE(other.DEF_COM_TYPE),
+	  DEF_COM_DATA(other.DEF_COM_DATA),
+	  seq_(other.seq_),
+	  loops_(other.loops_),
+	  release_(other.release_)
 {
-	seq_ = other.seq_;
-	loops_ = other.loops_;
-	release_ = other.release_;
 }
 
 std::unique_ptr<CommandSequence> CommandSequence::clone()
@@ -136,6 +140,12 @@ void CommandSequence::setRelease(ReleaseType type, int begin)
 std::unique_ptr<CommandSequence::Iterator> CommandSequence::getIterator()
 {
 	return std::unique_ptr<Iterator>(std::make_unique<Iterator>(this));
+}
+
+bool CommandSequence::isEdited() const
+{
+	return  (seq_.size() != 1 || seq_.front().type != DEF_COM_TYPE || seq_.front().data != DEF_COM_DATA
+			|| loops_.size() || release_.begin > -1);
 }
 
 /****************************************/

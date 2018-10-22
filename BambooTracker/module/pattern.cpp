@@ -82,6 +82,16 @@ bool Pattern::existCommand() const
 	return false;
 }
 
+std::vector<int> Pattern::getEditedStepIndices() const
+{
+	std::vector<int> list;
+	for (size_t i = 0; i < size_; ++i) {
+		if (steps_.at(i).existCommand())
+			list.push_back(i);
+	}
+	return list;
+}
+
 Pattern Pattern::clone(int asNumber)
 {
 	return Pattern(asNumber, size_, steps_);

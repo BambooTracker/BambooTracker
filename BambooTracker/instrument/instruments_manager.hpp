@@ -31,6 +31,8 @@ public:
 	void setInstrumentName(int instNum, std::string name);
 	std::string getInstrumentName(int instNum) const;
 
+	std::vector<int> getEntriedInstrumentIndices() const;
+
 	int findFirstFreeInstrument() const;
 
 private:
@@ -45,12 +47,14 @@ public:
 	void setEnvelopeFMOperatorEnabled(int envNum, int opNum, bool enabled);
 	bool getEnvelopeFMOperatorEnabled(int envNum, int opNum) const;
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
+	std::vector<int> getEnvelopeFMEntriedIndices() const;
 
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	int getInstrumentFMLFO(int instNum) const;
 	void setLFOFMParameter(int lfoNum, FMLFOParameter param, int value);
 	int getLFOFMparameter(int lfoNum, FMLFOParameter param) const;
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
+	std::vector<int> getLFOFMEntriedIndices() const;
 
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
 	int getInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param);
@@ -64,6 +68,7 @@ public:
 	Release getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const;
 	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
+	std::vector<int> getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const;
 
 	void setInstrumentFMArpeggio(int instNum, int arpNum);
 	int getInstrumentFMArpeggio(int instNum);
@@ -79,6 +84,7 @@ public:
 	Release getArpeggioFMRelease(int arpNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioFMIterator(int arpNum) const;
 	std::vector<int> getArpeggioFMUsers(int arpNum) const;
+	std::vector<int> getArpeggioFMEntriedIndices() const;
 
 	void setInstrumentFMPitch(int instNum, int ptNum);
 	int getInstrumentFMPitch(int instNum);
@@ -94,6 +100,7 @@ public:
 	Release getPitchFMRelease(int ptNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getPitchFMIterator(int ptNum) const;
 	std::vector<int> getPitchFMUsers(int ptNum) const;
+	std::vector<int> getPitchFMEntriedIndices() const;
 
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
@@ -126,6 +133,7 @@ public:
 	Release getWaveFormSSGRelease(int wfNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getWaveFormSSGIterator(int wfNum) const;
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
+	std::vector<int> getWaveFormSSGEntriedIndices() const;
 
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
 	int getInstrumentSSGToneNoise(int instNum);
@@ -139,6 +147,7 @@ public:
 	Release getToneNoiseSSGRelease(int tnNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSSGIterator(int tnNum) const;
 	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
+	std::vector<int> getToneNoiseSSGEntriedIndices() const;
 
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	int getInstrumentSSGEnvelope(int instNum);
@@ -152,6 +161,7 @@ public:
 	Release getEnvelopeSSGRelease(int envNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSSGIterator(int envNum) const;
 	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
+	std::vector<int> getEnvelopeSSGEntriedIndices() const;
 
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
 	int getInstrumentSSGArpeggio(int instNum);
@@ -167,6 +177,7 @@ public:
 	Release getArpeggioSSGRelease(int arpNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioSSGIterator(int arpNum) const;
 	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
+	std::vector<int> getArpeggioSSGEntriedIndices() const;
 
 	void setInstrumentSSGPitch(int instNum, int ptNum);
 	int getInstrumentSSGPitch(int instNum);
@@ -182,6 +193,7 @@ public:
 	Release getPitchSSGRelease(int ptNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getPitchSSGIterator(int ptNum) const;
 	std::vector<int> getPitchSSGUsers(int ptNum) const;
+	std::vector<int> getPitchSSGEntriedIndices() const;
 
 private:
 	std::array<std::shared_ptr<CommandSequence>, 128> wfSSG_;
