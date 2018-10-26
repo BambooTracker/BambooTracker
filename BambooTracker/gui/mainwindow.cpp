@@ -463,6 +463,9 @@ void MainWindow::redo()
 /********** Load data **********/
 void MainWindow::loadModule()
 {
+	instForms_->clearAll();
+	ui->instrumentListWidget->clear();
+
 	auto modTitle = bt_->getModuleTitle();
 	ui->modTitleLineEdit->setText(QString::fromUtf8(modTitle.c_str(), modTitle.length()));
 	auto modAuthor = bt_->getModuleAuthor();
@@ -471,6 +474,14 @@ void MainWindow::loadModule()
 	ui->copyrightLineEdit->setText(QString::fromUtf8(modCopyright.c_str(), modCopyright.length()));
 	ui->songNumSpinBox->setMaximum(bt_->getSongCount() - 1);
 	ui->stepHighrightSpinBox->setValue(bt_->getModuleStepHighlightDistance());
+
+	for (auto& idx : bt_->getInstrumentIndices()) {
+		auto inst = bt_->getInstrument(idx);
+		auto name = inst->getName();
+		comStack_->push(new AddInstrumentQtCommand(
+							ui->instrumentListWidget, idx, QString::fromUtf8(name.c_str(), name.length()),
+							inst->getSoundSource(), instForms_));
+	}
 
 	loadSong();
 
@@ -1183,8 +1194,6 @@ void MainWindow::on_actionNew_triggered()
 		}
 	}
 
-	instForms_->clearAll();
-	ui->instrumentListWidget->clear();
 	bt_->makeNewModule();
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
@@ -1238,5 +1247,42 @@ bool MainWindow::on_actionSave_As_triggered()
 	else {
 		QMessageBox::critical(this, "Error", "Failed to save module.");
 		return false;
+	}
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+	if (isWindowModified()) {
+		auto modTitleStd = bt_->getModuleTitle();
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		if (modTitle.isEmpty()) modTitle = "Untitled";
+		QMessageBox dialog(QMessageBox::Warning,
+						   "BambooTracker",
+						   "Save changes to " + modTitle + "?",
+						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+		switch (dialog.exec()) {
+		case QMessageBox::Yes:
+			if (!on_actionSave_triggered()) return;
+			break;
+		case QMessageBox::No:
+			break;
+		case QMessageBox::Cancel:
+			return;
+		default:
+			break;
+		}
+	}
+
+	QString file = QFileDialog::getOpenFileName(this, "Open module", "./",
+												"BambooTracker module file (*.btm)");
+	if (file.isNull()) return;
+
+	if (bt_->loadModule(file.toStdString())) {
+		isModifiedForNotCommand_ = false;
+		setWindowModified(false);
+		loadModule();
+	}
+	else {
+		QMessageBox::critical(this, "Error", "Failed to load module.");
 	}
 }

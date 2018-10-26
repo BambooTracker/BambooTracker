@@ -533,7 +533,7 @@ QListWidget::item:selected:hover {
   </action>
   <action name="actionOpen">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Open...</string>

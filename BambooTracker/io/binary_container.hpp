@@ -15,6 +15,7 @@ public:
 	void setEndian(bool isLittleEndian);
 	bool isLittleEndian() const;
 
+	bool load(std::string path);
 	bool save(std::string path);
 
 	void appendInt8(const int8_t v);
@@ -35,10 +36,20 @@ public:
 	void writeChar(size_t offset, const char c);
 	void writeString(size_t offset, const std::string str);
 
+	int8_t readInt8(size_t offset);
+	uint8_t readUint8(size_t offset);
+	int16_t readInt16(size_t offset);
+	uint16_t readUint16(size_t offset);
+	int32_t readInt32(size_t offset);
+	uint32_t readUint32(size_t offset);
+	char readChar(size_t offset);
+	std::string readString(size_t offset, size_t length);
+
 private:
 	std::vector<char> buf_;
 	bool isLE_;
 
 	void append(std::vector<char> a);
 	void write(size_t offset, std::vector<char> a);
+	std::vector<unsigned char> read(size_t offset, size_t size);
 };

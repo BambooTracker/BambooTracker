@@ -40,6 +40,7 @@ public:
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void clearAllInstrument();
+	std::vector<int> getInstrumentIndices() const;
 
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
@@ -48,6 +49,7 @@ public:
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 
 	void setLFOFMParameter(int lfoNum, FMLFOParameter param, int value);
+	void setInstrumentFMLFOEnabled(int instNum, bool enabled);
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 
@@ -57,6 +59,7 @@ public:
 	void setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
+	void setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
 	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 
 	void setArpeggioFMType(int arpNum, int type);
@@ -66,6 +69,7 @@ public:
 	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
 	void setInstrumentFMArpeggio(int instNum, int arpNum);
+	void setInstrumentFMArpeggioEnabled(int instNum, bool enabled);
 	std::vector<int> getArpeggioFMUsers(int arpNum) const;
 
 	void setPitchFMType(int ptNum, int type);
@@ -75,6 +79,7 @@ public:
 	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
 	void setInstrumentFMPitch(int instNum, int ptNum);
+	void setInstrumentFMPitchEnabled(int instNum, bool enabled);
 	std::vector<int> getPitchFMUsers(int ptNum) const;
 
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
@@ -86,6 +91,7 @@ public:
 	void setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin);
 	void setInstrumentSSGWaveForm(int instNum, int wfNum);
+	void setInstrumentSSGWaveFormEnabled(int instNum, bool enabled);
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 
 	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
@@ -94,6 +100,7 @@ public:
 	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
+	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
 	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
 
 	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
@@ -102,6 +109,7 @@ public:
 	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
+	void setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled);
 	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
 
 	void setArpeggioSSGType(int arpNum, int type);
@@ -111,6 +119,7 @@ public:
 	void setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
+	void setInstrumentSSGArpeggioEnabled(int instNum, bool enabled);
 	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
 
 	void setPitchSSGType(int ptNum, int type);
@@ -120,6 +129,7 @@ public:
 	void setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);
 	void setInstrumentSSGPitch(int instNum, int ptNum);
+	void setInstrumentSSGPitchEnabled(int instNum, bool enabled);
 	std::vector<int> getPitchSSGUsers(int ptNum) const;
 
 	// Song edit
@@ -173,6 +183,7 @@ public:
 	// Module details
 	/*----- Module -----*/
 	void makeNewModule();
+	bool loadModule(std::string path);
 	bool saveModule(std::string path);
 	void setModulePath(std::string path);
 	std::string getModulePath() const;

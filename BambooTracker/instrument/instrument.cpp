@@ -37,50 +37,93 @@ void AbstractInstrument::setName(std::string name)
 InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
 	AbstractInstrument(number, SoundSource::FM, name, owner),
 	envNum_(0),
-	lfoNum_(-1),
-	arpNum_(-1),
-	ptNum_(-1),
+	lfoEnabled_(false),
+	lfoNum_(0),
+	arpEnabled_(false),
+	arpNum_(0),
+	ptEnabled_(false),
+	ptNum_(0),
 	envResetEnabled_(true)
 {
+	opSeqEnabled_ = {
+		{ FMEnvelopeParameter::AL,	false },
+		{ FMEnvelopeParameter::FB,	false },
+		{ FMEnvelopeParameter::AR1,	false },
+		{ FMEnvelopeParameter::DR1,	false },
+		{ FMEnvelopeParameter::SR1,	false },
+		{ FMEnvelopeParameter::RR1,	false },
+		{ FMEnvelopeParameter::SL1,	false },
+		{ FMEnvelopeParameter::TL1,	false },
+		{ FMEnvelopeParameter::KS1,	false },
+		{ FMEnvelopeParameter::ML1,	false },
+		{ FMEnvelopeParameter::DT1,	false },
+		{ FMEnvelopeParameter::AR2,	false },
+		{ FMEnvelopeParameter::DR2,	false },
+		{ FMEnvelopeParameter::SR2,	false },
+		{ FMEnvelopeParameter::RR2,	false },
+		{ FMEnvelopeParameter::SL2,	false },
+		{ FMEnvelopeParameter::TL2,	false },
+		{ FMEnvelopeParameter::KS2,	false },
+		{ FMEnvelopeParameter::ML2,	false },
+		{ FMEnvelopeParameter::DT2,	false },
+		{ FMEnvelopeParameter::AR3,	false },
+		{ FMEnvelopeParameter::DR3,	false },
+		{ FMEnvelopeParameter::SR3,	false },
+		{ FMEnvelopeParameter::RR3,	false },
+		{ FMEnvelopeParameter::SL3,	false },
+		{ FMEnvelopeParameter::TL3,	false },
+		{ FMEnvelopeParameter::KS3,	false },
+		{ FMEnvelopeParameter::ML3,	false },
+		{ FMEnvelopeParameter::DT3,	false },
+		{ FMEnvelopeParameter::AR4,	false },
+		{ FMEnvelopeParameter::DR4,	false },
+		{ FMEnvelopeParameter::SR4,	false },
+		{ FMEnvelopeParameter::RR4,	false },
+		{ FMEnvelopeParameter::SL4,	false },
+		{ FMEnvelopeParameter::TL4,	false },
+		{ FMEnvelopeParameter::KS4,	false },
+		{ FMEnvelopeParameter::ML4,	false },
+		{ FMEnvelopeParameter::DT4,	false }
+	};
 	opSeqNum_ = {
-		{ FMEnvelopeParameter::AL,	-1 },
-		{ FMEnvelopeParameter::FB,	-1 },
-		{ FMEnvelopeParameter::AR1,	-1 },
-		{ FMEnvelopeParameter::DR1,	-1 },
-		{ FMEnvelopeParameter::SR1,	-1 },
-		{ FMEnvelopeParameter::RR1,	-1 },
-		{ FMEnvelopeParameter::SL1,	-1 },
-		{ FMEnvelopeParameter::TL1,	-1 },
-		{ FMEnvelopeParameter::KS1,	-1 },
-		{ FMEnvelopeParameter::ML1,	-1 },
-		{ FMEnvelopeParameter::DT1,	-1 },
-		{ FMEnvelopeParameter::AR2,	-1 },
-		{ FMEnvelopeParameter::DR2,	-1 },
-		{ FMEnvelopeParameter::SR2,	-1 },
-		{ FMEnvelopeParameter::RR2,	-1 },
-		{ FMEnvelopeParameter::SL2,	-1 },
-		{ FMEnvelopeParameter::TL2,	-1 },
-		{ FMEnvelopeParameter::KS2,	-1 },
-		{ FMEnvelopeParameter::ML2,	-1 },
-		{ FMEnvelopeParameter::DT2,	-1 },
-		{ FMEnvelopeParameter::AR3,	-1 },
-		{ FMEnvelopeParameter::DR3,	-1 },
-		{ FMEnvelopeParameter::SR3,	-1 },
-		{ FMEnvelopeParameter::RR3,	-1 },
-		{ FMEnvelopeParameter::SL3,	-1 },
-		{ FMEnvelopeParameter::TL3,	-1 },
-		{ FMEnvelopeParameter::KS3,	-1 },
-		{ FMEnvelopeParameter::ML3,	-1 },
-		{ FMEnvelopeParameter::DT3,	-1 },
-		{ FMEnvelopeParameter::AR4,	-1 },
-		{ FMEnvelopeParameter::DR4,	-1 },
-		{ FMEnvelopeParameter::SR4,	-1 },
-		{ FMEnvelopeParameter::RR4,	-1 },
-		{ FMEnvelopeParameter::SL4,	-1 },
-		{ FMEnvelopeParameter::TL4,	-1 },
-		{ FMEnvelopeParameter::KS4,	-1 },
-		{ FMEnvelopeParameter::ML4,	-1 },
-		{ FMEnvelopeParameter::DT4,	-1 }
+		{ FMEnvelopeParameter::AL,	0 },
+		{ FMEnvelopeParameter::FB,	0 },
+		{ FMEnvelopeParameter::AR1,	0 },
+		{ FMEnvelopeParameter::DR1,	0 },
+		{ FMEnvelopeParameter::SR1,	0 },
+		{ FMEnvelopeParameter::RR1,	0 },
+		{ FMEnvelopeParameter::SL1,	0 },
+		{ FMEnvelopeParameter::TL1,	0 },
+		{ FMEnvelopeParameter::KS1,	0 },
+		{ FMEnvelopeParameter::ML1,	0 },
+		{ FMEnvelopeParameter::DT1,	0 },
+		{ FMEnvelopeParameter::AR2,	0 },
+		{ FMEnvelopeParameter::DR2,	0 },
+		{ FMEnvelopeParameter::SR2,	0 },
+		{ FMEnvelopeParameter::RR2,	0 },
+		{ FMEnvelopeParameter::SL2,	0 },
+		{ FMEnvelopeParameter::TL2,	0 },
+		{ FMEnvelopeParameter::KS2,	0 },
+		{ FMEnvelopeParameter::ML2,	0 },
+		{ FMEnvelopeParameter::DT2,	0 },
+		{ FMEnvelopeParameter::AR3,	0 },
+		{ FMEnvelopeParameter::DR3,	0 },
+		{ FMEnvelopeParameter::SR3,	0 },
+		{ FMEnvelopeParameter::RR3,	0 },
+		{ FMEnvelopeParameter::SL3,	0 },
+		{ FMEnvelopeParameter::TL3,	0 },
+		{ FMEnvelopeParameter::KS3,	0 },
+		{ FMEnvelopeParameter::ML3,	0 },
+		{ FMEnvelopeParameter::DT3,	0 },
+		{ FMEnvelopeParameter::AR4,	0 },
+		{ FMEnvelopeParameter::DR4,	0 },
+		{ FMEnvelopeParameter::SR4,	0 },
+		{ FMEnvelopeParameter::RR4,	0 },
+		{ FMEnvelopeParameter::SL4,	0 },
+		{ FMEnvelopeParameter::TL4,	0 },
+		{ FMEnvelopeParameter::KS4,	0 },
+		{ FMEnvelopeParameter::ML4,	0 },
+		{ FMEnvelopeParameter::DT4,	0 }
 	};
 }
 
@@ -109,6 +152,16 @@ bool InstrumentFM::getOperatorEnabled(int n) const
 	return owner_->getEnvelopeFMOperatorEnabled(envNum_, n);
 }
 
+void InstrumentFM::setLFOEnabled(bool enabled)
+{
+	lfoEnabled_ = enabled;
+}
+
+bool InstrumentFM::getLFOEnabled() const
+{
+	return lfoEnabled_;
+}
+
 void InstrumentFM::setLFONumber(int n)
 {
 	lfoNum_ = n;
@@ -132,6 +185,16 @@ void InstrumentFM::setEnvelopeResetEnabled(bool enabled)
 bool InstrumentFM::getEnvelopeResetEnabled() const
 {
 	return envResetEnabled_;
+}
+
+void InstrumentFM::setOperatorSequenceEnabled(FMEnvelopeParameter param, bool enabled)
+{
+	opSeqEnabled_.at(param) = enabled;
+}
+
+bool InstrumentFM::getOperatorSequenceEnabled(FMEnvelopeParameter param) const
+{
+	return opSeqEnabled_.at(param);
 }
 
 void InstrumentFM::setOperatorSequenceNumber(FMEnvelopeParameter param, int n)
@@ -162,6 +225,16 @@ Release InstrumentFM::getOperatorSequenceRelease(FMEnvelopeParameter param) cons
 std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const
 {
 	return owner_->getOperatorSequenceFMIterator(param, opSeqNum_.at(param));
+}
+
+void InstrumentFM::setArpeggioEnabled(bool enabled)
+{
+	arpEnabled_ = enabled;
+}
+
+bool InstrumentFM::getArpeggioEnabled() const
+{
+	return arpEnabled_;
 }
 
 void InstrumentFM::setArpeggioNumber(int n)
@@ -197,6 +270,16 @@ Release InstrumentFM::getArpeggioRelease() const
 std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioFMIterator(arpNum_);
+}
+
+void InstrumentFM::setPitchEnabled(bool enabled)
+{
+	ptEnabled_ = enabled;
+}
+
+bool InstrumentFM::getPitchEnabled() const
+{
+	return ptEnabled_;
 }
 
 void InstrumentFM::setPitchNumber(int n)
@@ -238,17 +321,32 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterato
 
 InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner)
 	: AbstractInstrument(number, SoundSource::SSG, name, owner),
-	  wfNum_(-1),
-	  tnNum_(-1),
-	  envNum_(-1),
-	  arpNum_(-1),
-	  ptNum_(-1)
+	  wfEnabled_(false),
+	  wfNum_(0),
+	  tnEnabled_(false),
+	  tnNum_(0),
+	  envEnabled_(false),
+	  envNum_(0),
+	  arpEnabled_(false),
+	  arpNum_(0),
+	  ptEnabled_(false),
+	  ptNum_(0)
 {
 }
 
 std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
 {
 	return std::unique_ptr<AbstractInstrument>(std::make_unique<InstrumentSSG>(*this));
+}
+
+void InstrumentSSG::setWaveFormEnabled(bool enabled)
+{
+	wfEnabled_ = enabled;
+}
+
+bool InstrumentSSG::getWaveFormEnabled() const
+{
+	return wfEnabled_;
 }
 
 void InstrumentSSG::setWaveFormNumber(int n)
@@ -281,6 +379,16 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getWaveFormSequenceIte
 	return owner_->getWaveFormSSGIterator(wfNum_);
 }
 
+void InstrumentSSG::setToneNoiseEnabled(bool enabled)
+{
+	tnEnabled_ = enabled;
+}
+
+bool InstrumentSSG::getToneNoiseEnabled() const
+{
+	return tnEnabled_;
+}
+
 void InstrumentSSG::setToneNoiseNumber(int n)
 {
 	tnNum_ = n;
@@ -311,6 +419,16 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getToneNoiseSequenceIt
 	return owner_->getToneNoiseSSGIterator(tnNum_);
 }
 
+void InstrumentSSG::setEnvelopeEnabled(bool enabled)
+{
+	envEnabled_ = enabled;
+}
+
+bool InstrumentSSG::getEnvelopeEnabled() const
+{
+	return envEnabled_;
+}
+
 void InstrumentSSG::setEnvelopeNumber(int n)
 {
 	envNum_ = n;
@@ -339,6 +457,16 @@ Release InstrumentSSG::getEnvelopeRelease() const
 std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getEnvelopeSequenceIterator() const
 {
 	return owner_->getEnvelopeSSGIterator(envNum_);
+}
+
+void InstrumentSSG::setArpeggioEnabled(bool enabled)
+{
+	arpEnabled_ = enabled;
+}
+
+bool InstrumentSSG::getArpeggioEnabled() const
+{
+	return arpEnabled_;
 }
 
 void InstrumentSSG::setArpeggioNumber(int n)
@@ -374,6 +502,16 @@ Release InstrumentSSG::getArpeggioRelease() const
 std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioSSGIterator(arpNum_);
+}
+
+void InstrumentSSG::setPitchEnabled(bool enabled)
+{
+	ptEnabled_ = enabled;
+}
+
+bool InstrumentSSG::getPitchEnabled() const
+{
+	return ptEnabled_;
 }
 
 void InstrumentSSG::setPitchNumber(int n)

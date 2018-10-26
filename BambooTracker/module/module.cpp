@@ -102,6 +102,16 @@ void Module::addSong(SongType songType, std::string title)
 	songs_.emplace_back(n, songType, title);
 }
 
+void Module::addSong(int n, SongType songType, std::string title, bool isUsedTempo,
+					 int tempo, int groove, int speed, size_t defaultPatternSize)
+{
+	if (n < songs_.size())
+		songs_.at(n) = Song(n, songType, title, isUsedTempo, tempo, groove, speed, defaultPatternSize);
+	else
+		songs_.emplace_back(
+					n, songType, title, isUsedTempo, tempo, groove, speed, defaultPatternSize);
+}
+
 void Module::sortSongs(std::vector<int> numbers)
 {
 	std::vector<Song> newSongs;

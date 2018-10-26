@@ -104,6 +104,11 @@ void BambooTracker::clearAllInstrument()
 	instMan_->clearAll();
 }
 
+std::vector<int> BambooTracker::getInstrumentIndices() const
+{
+	return instMan_->getInstrumentIndices();
+}
+
 //--- FM
 void BambooTracker::setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value)
 {
@@ -132,6 +137,12 @@ void BambooTracker::setLFOFMParameter(int lfoNum, FMLFOParameter param, int valu
 {
 	instMan_->setLFOFMParameter(lfoNum, param, value);
 	opnaCtrl_->updateInstrumentFMLFOParameter(lfoNum, param);
+}
+
+void BambooTracker::setInstrumentFMLFOEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentFMLFOEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
 void BambooTracker::setInstrumentFMLFO(int instNum, int lfoNum)
@@ -176,6 +187,12 @@ void BambooTracker::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParam
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
+void BambooTracker::setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
+{
+	instMan_->setInstrumentFMOperatorEnabled(instNum, param, enabled);
+	opnaCtrl_->updateInstrumentFM(instNum);
+}
+
 std::vector<int> BambooTracker::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
 {
 	return instMan_->getOperatorSequenceFMUsers(param, opSeqNum);
@@ -217,6 +234,12 @@ void BambooTracker::setInstrumentFMArpeggio(int instNum, int arpNum)
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
+void BambooTracker::setInstrumentFMArpeggioEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentFMArpeggioEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentFM(instNum);
+}
+
 std::vector<int> BambooTracker::getArpeggioFMUsers(int arpNum) const
 {
 	return instMan_->getArpeggioFMUsers(arpNum);
@@ -255,6 +278,12 @@ void BambooTracker::setPitchFMRelease(int ptNum, ReleaseType type, int begin)
 void BambooTracker::setInstrumentFMPitch(int instNum, int ptNum)
 {
 	instMan_->setInstrumentFMPitch(instNum, ptNum);
+	opnaCtrl_->updateInstrumentFM(instNum);
+}
+
+void BambooTracker::setInstrumentFMPitchEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentFMPitchEnabled(instNum, enabled);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
@@ -301,6 +330,12 @@ void BambooTracker::setInstrumentSSGWaveForm(int instNum, int wfNum)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
+void BambooTracker::setInstrumentSSGWaveFormEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentSSGWaveFormEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentSSG(instNum);
+}
+
 std::vector<int> BambooTracker::getWaveFormSSGUsers(int wfNum) const
 {
 	return instMan_->getWaveFormSSGUsers(wfNum);
@@ -337,6 +372,12 @@ void BambooTracker::setInstrumentSSGToneNoise(int instNum, int tnNum)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
+void BambooTracker::setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentSSGToneNoiseEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentSSG(instNum);
+}
+
 std::vector<int> BambooTracker::getToneNoiseSSGUsers(int tnNum) const
 {
 	return instMan_->getToneNoiseSSGUsers(tnNum);
@@ -370,6 +411,12 @@ void BambooTracker::setEnvelopeSSGRelease(int envNum, ReleaseType type, int begi
 void BambooTracker::setInstrumentSSGEnvelope(int instNum, int envNum)
 {
 	instMan_->setInstrumentSSGEnvelope(instNum, envNum);
+	opnaCtrl_->updateInstrumentSSG(instNum);
+}
+
+void BambooTracker::setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentSSGEnvelopeEnabled(instNum, enabled);
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
@@ -414,6 +461,12 @@ void BambooTracker::setInstrumentSSGArpeggio(int instNum, int arpNum)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
+void BambooTracker::setInstrumentSSGArpeggioEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentSSGArpeggioEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentSSG(instNum);
+}
+
 std::vector<int> BambooTracker::getArpeggioSSGUsers(int arpNum) const
 {
 	return instMan_->getArpeggioSSGUsers(arpNum);
@@ -452,6 +505,12 @@ void BambooTracker::setPitchSSGRelease(int ptNum, ReleaseType type, int begin)
 void BambooTracker::setInstrumentSSGPitch(int instNum, int ptNum)
 {
 	instMan_->setInstrumentSSGPitch(instNum, ptNum);
+	opnaCtrl_->updateInstrumentSSG(instNum);
+}
+
+void BambooTracker::setInstrumentSSGPitchEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentSSGPitchEnabled(instNum, enabled);
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
@@ -1511,6 +1570,15 @@ void BambooTracker::makeNewModule()
 	tickCounter_.setGrooveEnebled(song.isUsedTempo());
 
 	clearDelayCounts();
+	clearCommandHistory();
+}
+
+bool BambooTracker::loadModule(std::string path)
+{
+	makeNewModule();
+	bool ret = FileIO::loadModuel(path, mod_, instMan_);
+	clearCommandHistory();
+	return ret;
 }
 
 bool BambooTracker::saveModule(std::string path)

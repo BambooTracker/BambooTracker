@@ -27,6 +27,7 @@ public:
 	void deepCloneInstrument(int cloneInstNum, int resInstNum);
 	std::shared_ptr<AbstractInstrument> getInstrumentSharedPtr(int instNum);
 	void clearAll();
+	std::vector<int> getInstrumentIndices() const;
 
 	void setInstrumentName(int instNum, std::string name);
 	std::string getInstrumentName(int instNum) const;
@@ -49,6 +50,8 @@ public:
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 	std::vector<int> getEnvelopeFMEntriedIndices() const;
 
+	void setInstrumentFMLFOEnabled(int instNum, bool enabled);
+	bool getInstrumentFMLFOEnabled(int instNum) const;
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	int getInstrumentFMLFO(int instNum) const;
 	void setLFOFMParameter(int lfoNum, FMLFOParameter param, int value);
@@ -56,6 +59,8 @@ public:
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 	std::vector<int> getLFOFMEntriedIndices() const;
 
+	void setInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
+	bool getInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param) const;
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
 	int getInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param);
 	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
@@ -70,6 +75,8 @@ public:
 	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 	std::vector<int> getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const;
 
+	void setInstrumentFMArpeggioEnabled(int instNum, bool enabled);
+	bool getInstrumentFMArpeggioEnabled(int instNum) const;
 	void setInstrumentFMArpeggio(int instNum, int arpNum);
 	int getInstrumentFMArpeggio(int instNum);
 	void setArpeggioFMType(int arpNum, int type);
@@ -86,6 +93,8 @@ public:
 	std::vector<int> getArpeggioFMUsers(int arpNum) const;
 	std::vector<int> getArpeggioFMEntriedIndices() const;
 
+	void setInstrumentFMPitchEnabled(int instNum, bool enabled);
+	bool getInstrumentFMPitchEnabled(int instNum) const;
 	void setInstrumentFMPitch(int instNum, int ptNum);
 	int getInstrumentFMPitch(int instNum);
 	void setPitchFMType(int ptNum, int type);
@@ -121,6 +130,8 @@ private:
 
 	//----- SSG methods -----
 public:
+	void setInstrumentSSGWaveFormEnabled(int instNum, bool enabled);
+	bool getInstrumentSSGWaveFormEnabled(int instNum) const;
 	void setInstrumentSSGWaveForm(int instNum, int wfNum);
 	int getInstrumentSSGWaveForm(int instNum);
 	void addWaveFormSSGSequenceCommand(int wfNum, int type, int data);
@@ -135,6 +146,8 @@ public:
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 	std::vector<int> getWaveFormSSGEntriedIndices() const;
 
+	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
+	bool getInstrumentSSGToneNoiseEnabled(int instNum) const;
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
 	int getInstrumentSSGToneNoise(int instNum);
 	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
@@ -149,6 +162,8 @@ public:
 	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
 	std::vector<int> getToneNoiseSSGEntriedIndices() const;
 
+	void setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled);
+	bool getInstrumentSSGEnvelopeEnabled(int instNum) const;
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	int getInstrumentSSGEnvelope(int instNum);
 	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
@@ -163,6 +178,8 @@ public:
 	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
 	std::vector<int> getEnvelopeSSGEntriedIndices() const;
 
+	void setInstrumentSSGArpeggioEnabled(int instNum, bool enabled);
+	bool getInstrumentSSGArpeggioEnabled(int instNum) const;
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
 	int getInstrumentSSGArpeggio(int instNum);
 	void setArpeggioSSGType(int arpNum, int type);
@@ -179,6 +196,8 @@ public:
 	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
 	std::vector<int> getArpeggioSSGEntriedIndices() const;
 
+	void setInstrumentSSGPitchEnabled(int instNum, bool enabled);
+	bool getInstrumentSSGPitchEnabled(int instNum) const;
 	void setInstrumentSSGPitch(int instNum, int ptNum);
 	int getInstrumentSSGPitch(int instNum);
 	void setPitchSSGType(int ptNum, int type);

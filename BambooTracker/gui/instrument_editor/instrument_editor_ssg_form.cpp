@@ -491,11 +491,6 @@ void InstrumentEditorSSGForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 //--- Wave form
-int InstrumentEditorSSGForm::getWaveFormNumber() const
-{
-	return ui->waveEditGroupBox->isChecked() ? ui->waveNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -503,41 +498,40 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
-	int num = instSSG->getWaveFormNumber();
-	if (num == -1) {
-		ui->waveEditGroupBox->setChecked(false);
+	ui->waveNumSpinBox->setValue(instSSG->getWaveFormNumber());
+	ui->waveEditor->clearData();
+	for (auto& com : instSSG->getWaveFormSequence()) {
+		QString str = "";
+		if (com.type >= 3) {
+			switch (com.data / 32 % 12) {
+				case 0:		str = "C";	break;
+				case 1:		str = "C#";	break;
+				case 2:		str = "D";	break;
+				case 3:		str = "D#";	break;
+				case 4:		str = "E";	break;
+				case 5:		str = "F";	break;
+				case 6:		str = "F#";	break;
+				case 7:		str = "G";	break;
+				case 8:		str = "G#";	break;
+				case 9:		str = "A";	break;
+				case 10:	str = "A#";	break;
+				case 11:	str = "B";	break;
+			}
+			str += QString("%1+%2").arg(com.data / 32 / 12).arg(com.data % 32);
+		}
+		ui->waveEditor->addSequenceCommand(com.type, str, com.data);
+	}
+	for (auto& l : instSSG->getWaveFormLoops()) {
+		ui->waveEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->waveEditor->setRelease(convertReleaseTypeForUI(instSSG->getWaveFormRelease().type),
+							   instSSG->getWaveFormRelease().begin);
+	if (instSSG->getWaveFormEnabled()) {
+		ui->waveEditGroupBox->setChecked(true);
+		onWaveFormNumberChanged();
 	}
 	else {
-		ui->waveEditGroupBox->setChecked(true);
-		ui->waveNumSpinBox->setValue(num);
-		onWaveFormNumberChanged();
-		ui->waveEditor->clearData();
-		for (auto& com : instSSG->getWaveFormSequence()) {
-			QString str = "";
-			if (com.type >= 3) {
-				switch (com.data / 32 % 12) {
-					case 0:		str = "C";	break;
-					case 1:		str = "C#";	break;
-					case 2:		str = "D";	break;
-					case 3:		str = "D#";	break;
-					case 4:		str = "E";	break;
-					case 5:		str = "F";	break;
-					case 6:		str = "F#";	break;
-					case 7:		str = "G";	break;
-					case 8:		str = "G#";	break;
-					case 9:		str = "A";	break;
-					case 10:	str = "A#";	break;
-					case 11:	str = "B";	break;
-				}
-				str += QString("%1+%2").arg(com.data / 32 / 12).arg(com.data % 32);
-			}
-			ui->waveEditor->addSequenceCommand(com.type, str, com.data);
-		}
-		for (auto& l : instSSG->getWaveFormLoops()) {
-			ui->waveEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->waveEditor->setRelease(convertReleaseTypeForUI(instSSG->getWaveFormRelease().type),
-								   instSSG->getWaveFormRelease().begin);
+		ui->waveEditGroupBox->setChecked(false);
 	}
 }
 
@@ -566,7 +560,7 @@ void InstrumentEditorSSGForm::onWaveFormParameterChanged(int wfNum)
 void InstrumentEditorSSGForm::on_waveEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentSSGWaveForm(instNum_, arg1 ? ui->waveNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentSSGWaveFormEnabled(instNum_, arg1);
 		setInstrumentWaveFormParameters();
 		emit waveFormNumberChanged();
 		emit modified();
@@ -588,11 +582,6 @@ void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Tone/Noise
-int InstrumentEditorSSGForm::getToneNoiseNumber() const
-{
-	return ui->tnEditGroupBox->isChecked() ? ui->tnNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -600,23 +589,22 @@ void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
-	int num = instSSG->getToneNoiseNumber();
-	if (num == -1) {
-		ui->tnEditGroupBox->setChecked(false);
+	ui->tnNumSpinBox->setValue(instSSG->getToneNoiseNumber());
+	ui->tnEditor->clearData();
+	for (auto& com : instSSG->getToneNoiseSequence()) {
+		ui->tnEditor->addSequenceCommand(com.type);
+	}
+	for (auto& l : instSSG->getToneNoiseLoops()) {
+		ui->tnEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->tnEditor->setRelease(convertReleaseTypeForUI(instSSG->getToneNoiseRelease().type),
+							 instSSG->getToneNoiseRelease().begin);
+	if (instSSG->getToneNoiseEnabled()) {
+		ui->tnEditGroupBox->setChecked(true);
+		onToneNoiseNumberChanged();
 	}
 	else {
-		ui->tnEditGroupBox->setChecked(true);
-		ui->tnNumSpinBox->setValue(num);
-		onToneNoiseNumberChanged();
-		ui->tnEditor->clearData();
-		for (auto& com : instSSG->getToneNoiseSequence()) {
-			ui->tnEditor->addSequenceCommand(com.type);
-		}
-		for (auto& l : instSSG->getToneNoiseLoops()) {
-			ui->tnEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->tnEditor->setRelease(convertReleaseTypeForUI(instSSG->getToneNoiseRelease().type),
-								 instSSG->getToneNoiseRelease().begin);
+		ui->tnEditGroupBox->setChecked(false);
 	}
 }
 
@@ -645,7 +633,7 @@ void InstrumentEditorSSGForm::onToneNoiseParameterChanged(int tnNum)
 void InstrumentEditorSSGForm::on_tnEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentSSGToneNoise(instNum_, arg1 ? ui->tnNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentSSGToneNoiseEnabled(instNum_, arg1);
 		setInstrumentToneNoiseParameters();
 		emit toneNoiseNumberChanged();
 		emit modified();
@@ -667,11 +655,6 @@ void InstrumentEditorSSGForm::on_tnNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Envelope
-int InstrumentEditorSSGForm::getEnvelopeNumber() const
-{
-	return ui->envEditGroupBox->isChecked() ? ui->envNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -679,27 +662,26 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
-	int num = instSSG->getEnvelopeNumber();
-	if (num == -1) {
-		ui->envEditGroupBox->setChecked(false);
+	ui->envNumSpinBox->setValue(instSSG->getEnvelopeNumber());
+	ui->envEditor->clearData();
+	for (auto& com : instSSG->getEnvelopeSequence()) {
+		QString str = "";
+		if (com.type >= 16) {
+			str = QString("%1").arg(com.data);
+		}
+		ui->envEditor->addSequenceCommand(com.type, str, com.data);
+	}
+	for (auto& l : instSSG->getEnvelopeLoops()) {
+		ui->envEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->envEditor->setRelease(convertReleaseTypeForUI(instSSG->getEnvelopeRelease().type),
+							  instSSG->getEnvelopeRelease().begin);
+	if (instSSG->getEnvelopeEnabled()) {
+		ui->envEditGroupBox->setChecked(true);
+		onEnvelopeNumberChanged();
 	}
 	else {
-		ui->envEditGroupBox->setChecked(true);
-		ui->envNumSpinBox->setValue(num);
-		onEnvelopeNumberChanged();
-		ui->envEditor->clearData();
-		for (auto& com : instSSG->getEnvelopeSequence()) {
-			QString str = "";
-			if (com.type >= 16) {
-				str = QString("%1").arg(com.data);
-			}
-			ui->envEditor->addSequenceCommand(com.type, str, com.data);
-		}
-		for (auto& l : instSSG->getEnvelopeLoops()) {
-			ui->envEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->envEditor->setRelease(convertReleaseTypeForUI(instSSG->getEnvelopeRelease().type),
-								  instSSG->getEnvelopeRelease().begin);
+		ui->envEditGroupBox->setChecked(false);
 	}
 }
 
@@ -728,7 +710,7 @@ void InstrumentEditorSSGForm::onEnvelopeParameterChanged(int envNum)
 void InstrumentEditorSSGForm::on_envEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentSSGEnvelope(instNum_, arg1 ? ui->envNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentSSGEnvelopeEnabled(instNum_, arg1);
 		setInstrumentEnvelopeParameters();
 		emit envelopeNumberChanged();
 		emit modified();
@@ -758,11 +740,6 @@ void InstrumentEditorSSGForm::on_hardFreqSpinBox_valueChanged(int arg1)
 }
 
 //--- Arpeggio
-int InstrumentEditorSSGForm::getArpeggioNumber() const
-{
-	return ui->arpEditGroupBox->isChecked() ? ui->arpNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -770,24 +747,23 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
-	int num = instSSG->getArpeggioNumber();
-	if (num == -1) {
-		ui->arpEditGroupBox->setChecked(false);
+	ui->arpNumSpinBox->setValue(instSSG->getArpeggioNumber());
+	ui->arpEditor->clearData();
+	for (auto& com : instSSG->getArpeggioSequence()) {
+		ui->arpEditor->addSequenceCommand(com.type);
+	}
+	for (auto& l : instSSG->getArpeggioLoops()) {
+		ui->arpEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->arpEditor->setRelease(convertReleaseTypeForUI(instSSG->getArpeggioRelease().type),
+							  instSSG->getArpeggioRelease().begin);
+	ui->arpTypeComboBox->setCurrentIndex(instSSG->getArpeggioType());
+	if (instSSG->getArpeggioEnabled()) {
+		ui->arpEditGroupBox->setChecked(true);
+		onArpeggioNumberChanged();
 	}
 	else {
-		ui->arpEditGroupBox->setChecked(true);
-		ui->arpNumSpinBox->setValue(num);
-		onArpeggioNumberChanged();
-		ui->arpEditor->clearData();
-		for (auto& com : instSSG->getArpeggioSequence()) {
-			ui->arpEditor->addSequenceCommand(com.type);
-		}
-		for (auto& l : instSSG->getArpeggioLoops()) {
-			ui->arpEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->arpEditor->setRelease(convertReleaseTypeForUI(instSSG->getArpeggioRelease().type),
-								  instSSG->getArpeggioRelease().begin);
-		ui->arpTypeComboBox->setCurrentIndex(instSSG->getArpeggioType());
+		ui->arpEditGroupBox->setChecked(false);
 	}
 }
 
@@ -846,7 +822,7 @@ void InstrumentEditorSSGForm::onArpeggioTypeChanged(int index)
 void InstrumentEditorSSGForm::on_arpEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentSSGArpeggio(instNum_, arg1 ? ui->arpNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentSSGArpeggioEnabled(instNum_, arg1);
 		setInstrumentArpeggioParameters();
 		emit arpeggioNumberChanged();
 		emit modified();
@@ -868,11 +844,6 @@ void InstrumentEditorSSGForm::on_arpNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pitch
-int InstrumentEditorSSGForm::getPitchNumber() const
-{
-	return ui->ptEditGroupBox->isChecked() ? ui->ptNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -880,24 +851,23 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
-	int num = instSSG->getPitchNumber();
-	if (num == -1) {
-		ui->ptEditGroupBox->setChecked(false);
+	ui->ptNumSpinBox->setValue(instSSG->getPitchNumber());
+	ui->ptEditor->clearData();
+	for (auto& com : instSSG->getPitchSequence()) {
+		ui->ptEditor->addSequenceCommand(com.type);
+	}
+	for (auto& l : instSSG->getPitchLoops()) {
+		ui->ptEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->ptEditor->setRelease(convertReleaseTypeForUI(instSSG->getPitchRelease().type),
+							  instSSG->getPitchRelease().begin);
+	ui->ptTypeComboBox->setCurrentIndex(instSSG->getPitchType());
+	if (instSSG->getPitchEnabled()) {
+		ui->ptEditGroupBox->setChecked(true);
+		onPitchNumberChanged();
 	}
 	else {
-		ui->ptEditGroupBox->setChecked(true);
-		ui->ptNumSpinBox->setValue(num);
-		onPitchNumberChanged();
-		ui->ptEditor->clearData();
-		for (auto& com : instSSG->getPitchSequence()) {
-			ui->ptEditor->addSequenceCommand(com.type);
-		}
-		for (auto& l : instSSG->getPitchLoops()) {
-			ui->ptEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->ptEditor->setRelease(convertReleaseTypeForUI(instSSG->getPitchRelease().type),
-								  instSSG->getPitchRelease().begin);
-		ui->ptTypeComboBox->setCurrentIndex(instSSG->getPitchType());
+		ui->ptEditGroupBox->setChecked(false);
 	}
 }
 
@@ -938,7 +908,7 @@ void InstrumentEditorSSGForm::onPitchTypeChanged(int index)
 void InstrumentEditorSSGForm::on_ptEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentSSGPitch(instNum_, arg1 ? ui->ptNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentSSGPitchEnabled(instNum_, arg1);
 		setInstrumentPitchParameters();
 		emit pitchNumberChanged();
 		emit modified();

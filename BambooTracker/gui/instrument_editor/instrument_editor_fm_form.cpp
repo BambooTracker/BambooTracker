@@ -629,11 +629,6 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 //========== Envelope ==========//
-int InstrumentEditorFMForm::getEnvelopeNumber() const
-{
-	return ui->envNumSpinBox->value();
-}
-
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
@@ -810,11 +805,6 @@ void InstrumentEditorFMForm::onEnvelopeNumberChanged()
 }
 
 //========== LFO ==========//
-int InstrumentEditorFMForm::getLFONumber() const
-{
-	return ui->lfoGroupBox->isChecked() ? ui->lfoNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorFMForm::setInstrumentLFOParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
@@ -822,22 +812,21 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
-	int num = instFM->getLFONumber();
-	if (num == -1) {
-		ui->lfoGroupBox->setChecked(false);
+	ui->lfoNumSpinBox->setValue(instFM->getLFONumber());
+	ui->lfoFreqSlider->setValue(instFM->getLFOParameter(FMLFOParameter::FREQ));
+	ui->pmsSlider->setValue(instFM->getLFOParameter(FMLFOParameter::PMS));
+	ui->amsSlider->setValue(instFM->getLFOParameter(FMLFOParameter::AMS));
+	ui->amOp1CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM1));
+	ui->amOp2CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM2));
+	ui->amOp3CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM3));
+	ui->amOp4CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM4));
+	ui->lfoStartSpinBox->setValue(instFM->getLFOParameter(FMLFOParameter::COUNT));
+	if (instFM->getLFOEnabled()) {
+		ui->lfoGroupBox->setChecked(true);
+		onLFONumberChanged();
 	}
 	else {
-		ui->lfoGroupBox->setChecked(true);
-		ui->lfoNumSpinBox->setValue(num);
-		onLFONumberChanged();
-		ui->lfoFreqSlider->setValue(instFM->getLFOParameter(FMLFOParameter::FREQ));
-		ui->pmsSlider->setValue(instFM->getLFOParameter(FMLFOParameter::PMS));
-		ui->amsSlider->setValue(instFM->getLFOParameter(FMLFOParameter::AMS));
-		ui->amOp1CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM1));
-		ui->amOp2CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM2));
-		ui->amOp3CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM3));
-		ui->amOp4CheckBox->setChecked(instFM->getLFOParameter(FMLFOParameter::AM4));
-		ui->lfoStartSpinBox->setValue(instFM->getLFOParameter(FMLFOParameter::COUNT));
+		ui->lfoGroupBox->setChecked(false);
 	}
 }
 
@@ -933,7 +922,7 @@ void InstrumentEditorFMForm::on_lfoNumSpinBox_valueChanged(int arg1)
 void InstrumentEditorFMForm::on_lfoGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMLFO(instNum_, arg1 ? ui->lfoNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentFMLFOEnabled(instNum_, arg1);
 		setInstrumentLFOParameters();
 		emit lfoNumberChanged();
 		emit modified();
@@ -943,11 +932,6 @@ void InstrumentEditorFMForm::on_lfoGroupBox_toggled(bool arg1)
 }
 
 //--- OperatorSequence
-int InstrumentEditorFMForm::getOperatorSequenceNumber() const
-{
-	return ui->opSeqEditGroupBox->isChecked() ? ui->opSeqNumSpinBox->value() : -1;
-}
-
 FMEnvelopeParameter InstrumentEditorFMForm::getOperatorSequenceParameter() const
 {
 	return static_cast<FMEnvelopeParameter>(ui->opSeqTypeComboBox->currentData(Qt::UserRole).toInt());
@@ -962,24 +946,23 @@ void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
 
 	FMEnvelopeParameter param = getOperatorSequenceParameter();
 
-	int num = instFM->getOperatorSequenceNumber(param);
-	if (num == -1) {
-		ui->opSeqEditGroupBox->setChecked(false);
+	ui->opSeqNumSpinBox->setValue(instFM->getOperatorSequenceNumber(param));
+	ui->opSeqEditor->clearData();
+	setOperatorSequenceEditor();
+	for (auto& com : instFM->getOperatorSequenceSequence(param)) {
+		ui->opSeqEditor->addSequenceCommand(com.type);
+	}
+	for (auto& l : instFM->getOperatorSequenceLoops(param)) {
+		ui->opSeqEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->opSeqEditor->setRelease(convertReleaseTypeForUI(instFM->getOperatorSequenceRelease(param).type),
+							  instFM->getOperatorSequenceRelease(param).begin);
+	if (instFM->getOperatorSequenceEnabled(param)) {
+		ui->opSeqEditGroupBox->setChecked(true);
+		onOperatorSequenceNumberChanged();
 	}
 	else {
-		ui->opSeqEditGroupBox->setChecked(true);
-		ui->opSeqNumSpinBox->setValue(num);
-		onOperatorSequenceNumberChanged();
-		ui->opSeqEditor->clearData();
-		setOperatorSequenceEditor();
-		for (auto& com : instFM->getOperatorSequenceSequence(param)) {
-			ui->opSeqEditor->addSequenceCommand(com.type);
-		}
-		for (auto& l : instFM->getOperatorSequenceLoops(param)) {
-			ui->opSeqEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->opSeqEditor->setRelease(convertReleaseTypeForUI(instFM->getOperatorSequenceRelease(param).type),
-								  instFM->getOperatorSequenceRelease(param).begin);
+		ui->opSeqEditGroupBox->setChecked(false);
 	}
 }
 
@@ -1096,7 +1079,7 @@ void InstrumentEditorFMForm::onOperatorSequenceTypeChanged(int type)
 void InstrumentEditorFMForm::on_opSeqEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMOperatorSequence(instNum_, getOperatorSequenceParameter(), arg1 ? ui->opSeqNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentFMOperatorSequenceEnabled(instNum_, getOperatorSequenceParameter(), arg1);
 		setInstrumentOperatorSequenceParameters();
 		emit operatorSequenceNumberChanged();
 		emit modified();
@@ -1118,11 +1101,6 @@ void InstrumentEditorFMForm::on_opSeqNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Arpeggio
-int InstrumentEditorFMForm::getArpeggioNumber() const
-{
-	return ui->arpEditGroupBox->isChecked() ? ui->arpNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -1130,24 +1108,23 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
-	int num = instFM->getArpeggioNumber();
-	if (num == -1) {
-		ui->arpEditGroupBox->setChecked(false);
+	ui->arpNumSpinBox->setValue(instFM->getArpeggioNumber());
+	ui->arpEditor->clearData();
+	for (auto& com : instFM->getArpeggioSequence()) {
+		ui->arpEditor->addSequenceCommand(com.type);
+	}
+	for (auto& l : instFM->getArpeggioLoops()) {
+		ui->arpEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->arpEditor->setRelease(convertReleaseTypeForUI(instFM->getArpeggioRelease().type),
+							  instFM->getArpeggioRelease().begin);
+	ui->arpTypeComboBox->setCurrentIndex(instFM->getArpeggioType());
+	if (instFM->getArpeggioEnabled()) {
+		ui->arpEditGroupBox->setChecked(true);
+		onArpeggioNumberChanged();
 	}
 	else {
-		ui->arpEditGroupBox->setChecked(true);
-		ui->arpNumSpinBox->setValue(num);
-		onArpeggioNumberChanged();
-		ui->arpEditor->clearData();
-		for (auto& com : instFM->getArpeggioSequence()) {
-			ui->arpEditor->addSequenceCommand(com.type);
-		}
-		for (auto& l : instFM->getArpeggioLoops()) {
-			ui->arpEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->arpEditor->setRelease(convertReleaseTypeForUI(instFM->getArpeggioRelease().type),
-								  instFM->getArpeggioRelease().begin);
-		ui->arpTypeComboBox->setCurrentIndex(instFM->getArpeggioType());
+		ui->arpEditGroupBox->setChecked(false);
 	}
 }
 
@@ -1206,7 +1183,7 @@ void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
 void InstrumentEditorFMForm::on_arpEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMArpeggio(instNum_, arg1 ? ui->arpNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentFMArpeggioEnabled(instNum_, arg1);
 		setInstrumentArpeggioParameters();
 		emit arpeggioNumberChanged();
 		emit modified();
@@ -1228,11 +1205,6 @@ void InstrumentEditorFMForm::on_arpNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pitch
-int InstrumentEditorFMForm::getPitchNumber() const
-{
-	return ui->ptEditGroupBox->isChecked() ? ui->ptNumSpinBox->value() : -1;
-}
-
 void InstrumentEditorFMForm::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -1240,24 +1212,23 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
-	int num = instFM->getPitchNumber();
-	if (num == -1) {
-		ui->ptEditGroupBox->setChecked(false);
+	ui->ptNumSpinBox->setValue(instFM->getPitchNumber());
+	ui->ptEditor->clearData();
+	for (auto& com : instFM->getPitchSequence()) {
+		ui->ptEditor->addSequenceCommand(com.type);
+	}
+	for (auto& l : instFM->getPitchLoops()) {
+		ui->ptEditor->addLoop(l.begin, l.end, l.times);
+	}
+	ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease().type),
+							  instFM->getPitchRelease().begin);
+	ui->ptTypeComboBox->setCurrentIndex(instFM->getPitchType());
+	if (instFM->getPitchEnabled()) {
+		ui->ptEditGroupBox->setChecked(true);
+		onPitchNumberChanged();
 	}
 	else {
-		ui->ptEditGroupBox->setChecked(true);
-		ui->ptNumSpinBox->setValue(num);
-		onPitchNumberChanged();
-		ui->ptEditor->clearData();
-		for (auto& com : instFM->getPitchSequence()) {
-			ui->ptEditor->addSequenceCommand(com.type);
-		}
-		for (auto& l : instFM->getPitchLoops()) {
-			ui->ptEditor->addLoop(l.begin, l.end, l.times);
-		}
-		ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease().type),
-								  instFM->getPitchRelease().begin);
-		ui->ptTypeComboBox->setCurrentIndex(instFM->getPitchType());
+		ui->ptEditGroupBox->setChecked(false);
 	}
 }
 
@@ -1298,7 +1269,7 @@ void InstrumentEditorFMForm::onPitchTypeChanged(int index)
 void InstrumentEditorFMForm::on_ptEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMPitch(instNum_, arg1 ? ui->ptNumSpinBox->value() : -1);
+		bt_.lock()->setInstrumentFMPitchEnabled(instNum_, arg1);
 		setInstrumentPitchParameters();
 		emit pitchNumberChanged();
 		emit modified();

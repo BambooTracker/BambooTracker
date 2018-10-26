@@ -75,31 +75,23 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[num]);
 		envFM_.at(fm->getEnvelopeNumber())->registerUserInstrument(num);
-		int lfoNum = fm->getLFONumber();
-		if (lfoNum != -1) lfoFM_.at(lfoNum)->registerUserInstrument(num);
+		if (fm->getLFOEnabled()) lfoFM_.at(fm->getLFONumber())->registerUserInstrument(num);
 		for (auto p : envFMParams_) {
-			int opSeqNum = fm->getOperatorSequenceNumber(p);
-			if (opSeqNum != -1) opSeqFM_.at(p).at(opSeqNum)->registerUserInstrument(num);
+			if (fm->getOperatorSequenceEnabled(p))
+				opSeqFM_.at(p).at(fm->getOperatorSequenceNumber(p))->registerUserInstrument(num);
 		}
-		int arpNum = fm->getArpeggioNumber();
-		if (arpNum != -1) arpFM_.at(arpNum)->registerUserInstrument(num);
-		int ptNum = fm->getPitchNumber();
-		if (ptNum != -1) ptFM_.at(ptNum)->registerUserInstrument(num);
+		if (fm->getArpeggioEnabled()) arpFM_.at(fm->getArpeggioNumber())->registerUserInstrument(num);
+		if (fm->getPitchEnabled()) ptFM_.at(fm->getPitchNumber())->registerUserInstrument(num);
 		break;
 	}
 	case SoundSource::SSG:
 	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[num]);
-		int wfNum = ssg->getWaveFormNumber();
-		if (wfNum != -1) wfSSG_.at(wfNum)->registerUserInstrument(num);
-		int tnNum = ssg->getToneNoiseNumber();
-		if (tnNum != -1) tnSSG_.at(tnNum)->registerUserInstrument(num);
-		int envNum = ssg->getEnvelopeNumber();
-		if (envNum != -1) envSSG_.at(envNum)->registerUserInstrument(num);
-		int arpNum = ssg->getArpeggioNumber();
-		if (arpNum != -1) arpSSG_.at(arpNum)->registerUserInstrument(num);
-		int ptNum = ssg->getPitchNumber();
-		if (ptNum != -1) ptSSG_.at(ptNum)->registerUserInstrument(num);
+		if (ssg->getWaveFormEnabled()) wfSSG_.at(ssg->getWaveFormNumber())->registerUserInstrument(num);
+		if (ssg->getToneNoiseEnabled()) tnSSG_.at(ssg->getToneNoiseNumber())->registerUserInstrument(num);
+		if (ssg->getEnvelopeEnabled()) envSSG_.at(ssg->getEnvelopeNumber())->registerUserInstrument(num);
+		if (ssg->getArpeggioEnabled()) arpSSG_.at(ssg->getArpeggioNumber())->registerUserInstrument(num);
+		if (ssg->getPitchEnabled()) ptSSG_.at(ssg->getPitchNumber())->registerUserInstrument(num);
 		break;
 	}
 	default:
@@ -156,24 +148,25 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
-		if (refFm->getLFONumber() != -1) {
+		if (refFm->getLFOEnabled()) {
 			int lfoNum = cloneFMLFO(refFm->getLFONumber());
 			cloneFm->setLFONumber(lfoNum);
 			lfoFM_[lfoNum]->registerUserInstrument(cloneInstNum);
+			cloneFm->setLFOEnabled(true);
 		}
 		for (auto p : envFMParams_) {
-			if (refFm->getOperatorSequenceNumber(p) != -1) {
+			if (refFm->getOperatorSequenceEnabled(p)) {
 				int opSeqNum = cloneFMOperatorSequence(p, refFm->getOperatorSequenceNumber(p));
 				cloneFm->setOperatorSequenceNumber(p, opSeqNum);
 				opSeqFM_.at(p)[opSeqNum]->registerUserInstrument(cloneInstNum);
 			}
 		}
-		if (refFm->getArpeggioNumber() != -1) {
+		if (refFm->getArpeggioEnabled()) {
 			int arpNum = cloneFMArpeggio(refFm->getArpeggioNumber());
 			cloneFm->setArpeggioNumber(arpNum);
 			arpFM_[arpNum]->registerUserInstrument(cloneInstNum);
 		}
-		if (refFm->getPitchNumber() != -1) {
+		if (refFm->getPitchEnabled()) {
 			int ptNum = cloneFMPitch(refFm->getPitchNumber());
 			cloneFm->setPitchNumber(ptNum);
 			ptFM_[ptNum]->registerUserInstrument(cloneInstNum);
@@ -186,27 +179,27 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(cloneInstNum));
 
-		if (refSsg->getWaveFormNumber() != -1) {
+		if (refSsg->getWaveFormEnabled()) {
 			int wfNum = cloneSSGWaveForm(refSsg->getWaveFormNumber());
 			cloneSsg->setWaveFormNumber(wfNum);
 			wfSSG_[wfNum]->registerUserInstrument(cloneInstNum);
 		}
-		if (refSsg->getToneNoiseNumber() != -1) {
+		if (refSsg->getToneNoiseEnabled()) {
 			int tnNum = cloneSSGToneNoise(refSsg->getToneNoiseNumber());
 			cloneSsg->setToneNoiseNumber(tnNum);
 			tnSSG_[tnNum]->registerUserInstrument(cloneInstNum);
 		}
-		if (refSsg->getEnvelopeNumber() != -1) {
+		if (refSsg->getEnvelopeEnabled()) {
 			int envNum = cloneSSGEnvelope(refSsg->getEnvelopeNumber());
 			cloneSsg->setEnvelopeNumber(envNum);
 			envSSG_[envNum]->registerUserInstrument(cloneInstNum);
 		}
-		if (refSsg->getArpeggioNumber() != -1) {
+		if (refSsg->getArpeggioEnabled()) {
 			int arpNum = cloneSSGArpeggio(refSsg->getArpeggioNumber());
 			cloneSsg->setArpeggioNumber(arpNum);
 			arpSSG_[arpNum]->registerUserInstrument(cloneInstNum);
 		}
-		if (refSsg->getPitchNumber() != -1) {
+		if (refSsg->getPitchEnabled()) {
 			int ptNum = cloneSSGPitch(refSsg->getPitchNumber());
 			cloneSsg->setPitchNumber(ptNum);
 			ptSSG_[ptNum]->registerUserInstrument(cloneInstNum);
@@ -365,31 +358,23 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[instNum]);
 		envFM_.at(fm->getEnvelopeNumber())->deregisterUserInstrument(instNum);
-		int lfoNum = fm->getLFONumber();
-		if (lfoNum != -1) lfoFM_.at(lfoNum)->deregisterUserInstrument(instNum);
+		if (fm->getLFOEnabled()) lfoFM_.at(fm->getLFONumber())->deregisterUserInstrument(instNum);
 		for (auto p : envFMParams_) {
-			int opSeqNum = fm->getOperatorSequenceNumber(p);
-			if (opSeqNum != -1) opSeqFM_.at(p).at(opSeqNum)->deregisterUserInstrument(instNum);
+			if (fm->getOperatorSequenceEnabled(p))
+				opSeqFM_.at(p).at(fm->getOperatorSequenceNumber(p))->deregisterUserInstrument(instNum);
 		}
-		int arpNum = fm->getArpeggioNumber();
-		if (arpNum != -1) arpFM_.at(arpNum)->deregisterUserInstrument(instNum);
-		int ptNum = fm->getPitchNumber();
-		if (ptNum != -1) ptFM_.at(ptNum)->deregisterUserInstrument(instNum);
+		if (fm->getArpeggioEnabled()) arpFM_.at(fm->getArpeggioNumber())->deregisterUserInstrument(instNum);
+		if (fm->getPitchEnabled()) ptFM_.at(fm->getPitchNumber())->deregisterUserInstrument(instNum);
 		break;
 	}
 	case SoundSource::SSG:
 	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[instNum]);
-		int wfNum = ssg->getWaveFormNumber();
-		if (wfNum != -1) wfSSG_.at(wfNum)->deregisterUserInstrument(instNum);
-		int tnNum = ssg->getToneNoiseNumber();
-		if (tnNum != -1) tnSSG_.at(tnNum)->deregisterUserInstrument(instNum);
-		int envNum = ssg->getEnvelopeNumber();
-		if (envNum != -1) envSSG_.at(envNum)->deregisterUserInstrument(instNum);
-		int arpNum = ssg->getArpeggioNumber();
-		if (arpNum != -1) arpSSG_.at(arpNum)->deregisterUserInstrument(instNum);
-		int ptNum = ssg->getPitchNumber();
-		if (ptNum != -1) ptSSG_.at(ptNum)->deregisterUserInstrument(instNum);
+		if (ssg->getWaveFormEnabled()) wfSSG_.at(ssg->getWaveFormNumber())->deregisterUserInstrument(instNum);
+		if (ssg->getToneNoiseEnabled()) tnSSG_.at(ssg->getToneNoiseNumber())->deregisterUserInstrument(instNum);
+		if (ssg->getEnvelopeEnabled()) envSSG_.at(ssg->getEnvelopeNumber())->deregisterUserInstrument(instNum);
+		if (ssg->getArpeggioEnabled()) arpSSG_.at(ssg->getArpeggioNumber())->deregisterUserInstrument(instNum);
+		if (ssg->getPitchEnabled()) ptSSG_.at(ssg->getPitchNumber())->deregisterUserInstrument(instNum);
 		break;
 	}
 	default:
@@ -435,6 +420,15 @@ void InstrumentsManager::clearAll()
 		arpSSG_[i] = std::make_shared<CommandSequence>(i, 0, 48);
 		ptSSG_[i] = std::make_shared<CommandSequence>(i, 0, 127);
 	}
+}
+
+std::vector<int> InstrumentsManager::getInstrumentIndices() const
+{
+	std::vector<int> idcs;
+	for (size_t i = 0; i < insts_.size(); ++i) {
+		if (insts_[i]) idcs.push_back(i);
+	}
+	return idcs;
 }
 
 void InstrumentsManager::setInstrumentName(int instNum, std::string name)
@@ -522,15 +516,25 @@ std::vector<int> InstrumentsManager::getEnvelopeFMEntriedIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentFMLFOEnabled(int instNum, bool enabled)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	fm->setLFOEnabled(enabled);
+	if (enabled) lfoFM_.at(fm->getLFONumber())->registerUserInstrument(instNum);
+	else lfoFM_.at(fm->getLFONumber())->deregisterUserInstrument(instNum);
+}
+bool InstrumentsManager::getInstrumentFMLFOEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum))->getLFOEnabled();
+}
+
 void InstrumentsManager::setInstrumentFMLFO(int instNum, int lfoNum)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
-	int prevLfo = fm->getLFONumber();
-	if (prevLfo != -1)
-		lfoFM_.at(prevLfo)->deregisterUserInstrument(instNum);
-	if (lfoNum != -1)
+	if (fm->getLFOEnabled()) {
+		lfoFM_.at(fm->getLFONumber())->deregisterUserInstrument(instNum);
 		lfoFM_.at(lfoNum)->registerUserInstrument(instNum);
-
+	}
 	fm->setLFONumber(lfoNum);
 }
 
@@ -565,15 +569,28 @@ std::vector<int> InstrumentsManager::getLFOFMEntriedIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	fm->setOperatorSequenceEnabled(param, enabled);
+	if (enabled)
+		opSeqFM_.at(param).at(fm->getOperatorSequenceNumber(param))->registerUserInstrument(instNum);
+	else
+		opSeqFM_.at(param).at(fm->getOperatorSequenceNumber(param))->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param) const
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum))->getOperatorSequenceEnabled(param);
+}
+
 void InstrumentsManager::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
-	int prevOpSeq = fm->getOperatorSequenceNumber(param);
-	if (prevOpSeq != -1)
-		opSeqFM_.at(param).at(prevOpSeq)->deregisterUserInstrument(instNum);
-	if (opSeqNum != -1)
+	if (fm->getOperatorSequenceEnabled(param)) {
+		opSeqFM_.at(param).at(fm->getOperatorSequenceNumber(param))->deregisterUserInstrument(instNum);
 		opSeqFM_.at(param).at(opSeqNum)->registerUserInstrument(instNum);
-
+	}
 	fm->setOperatorSequenceNumber(param, opSeqNum);
 }
 
@@ -643,15 +660,28 @@ std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvel
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentFMArpeggioEnabled(int instNum, bool enabled)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	fm->setArpeggioEnabled(enabled);
+	if (enabled)
+		arpFM_.at(fm->getArpeggioNumber())->registerUserInstrument(instNum);
+	else
+		arpFM_.at(fm->getArpeggioNumber())->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentFMArpeggioEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum))->getArpeggioEnabled();
+}
+
 void InstrumentsManager::setInstrumentFMArpeggio(int instNum, int arpNum)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
-	int prevArp = fm->getArpeggioNumber();
-	if (prevArp != -1)
-		arpFM_.at(prevArp)->deregisterUserInstrument(instNum);
-	if (arpNum != -1)
+	if (fm->getArpeggioEnabled()) {
+		arpFM_.at(fm->getArpeggioNumber())->deregisterUserInstrument(instNum);
 		arpFM_.at(arpNum)->registerUserInstrument(instNum);
-
+	}
 	fm->setArpeggioNumber(arpNum);
 }
 
@@ -731,15 +761,28 @@ std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentFMPitchEnabled(int instNum, bool enabled)
+{
+	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
+	fm->setPitchEnabled(enabled);
+	if (enabled)
+		ptFM_.at(fm->getPitchNumber())->registerUserInstrument(instNum);
+	else
+		ptFM_.at(fm->getPitchNumber())->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentFMPitchEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum))->getPitchEnabled();
+}
+
 void InstrumentsManager::setInstrumentFMPitch(int instNum, int ptNum)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
-	int prevPt = fm->getPitchNumber();
-	if (prevPt != -1)
-		ptFM_.at(prevPt)->deregisterUserInstrument(instNum);
-	if (ptNum != -1)
+	if (fm->getPitchEnabled()) {
+		ptFM_.at(fm->getPitchNumber())->deregisterUserInstrument(instNum);
 		ptFM_.at(ptNum)->registerUserInstrument(instNum);
-
+	}
 	fm->setPitchNumber(ptNum);
 }
 
@@ -825,15 +868,28 @@ std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 }
 
 //----- SSG methods -----
+void InstrumentsManager::setInstrumentSSGWaveFormEnabled(int instNum, bool enabled)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	ssg->setWaveFormEnabled(enabled);
+	if (enabled)
+		wfSSG_.at(ssg->getWaveFormNumber())->registerUserInstrument(instNum);
+	else
+		wfSSG_.at(ssg->getWaveFormNumber())->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentSSGWaveFormEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum))->getWaveFormEnabled();
+}
+
 void InstrumentsManager::setInstrumentSSGWaveForm(int instNum, int wfNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
-	int prevWf = ssg->getWaveFormNumber();
-	if (prevWf != -1)
-		wfSSG_.at(prevWf)->deregisterUserInstrument(instNum);
-	if (wfNum != -1)
+	if (ssg->getWaveFormEnabled()) {
+		wfSSG_.at(ssg->getWaveFormNumber())->deregisterUserInstrument(instNum);
 		wfSSG_.at(wfNum)->registerUserInstrument(instNum);
-
+	}
 	ssg->setWaveFormNumber(wfNum);
 }
 
@@ -903,15 +959,28 @@ std::vector<int> InstrumentsManager::getWaveFormSSGEntriedIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	ssg->setToneNoiseEnabled(enabled);
+	if (enabled)
+		tnSSG_.at(ssg->getToneNoiseNumber())->registerUserInstrument(instNum);
+	else
+		tnSSG_.at(ssg->getToneNoiseNumber())->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentSSGToneNoiseEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum))->getToneNoiseEnabled();
+}
+
 void InstrumentsManager::setInstrumentSSGToneNoise(int instNum, int tnNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
-	int prevTn = ssg->getToneNoiseNumber();
-	if (prevTn != -1)
-		tnSSG_.at(prevTn)->deregisterUserInstrument(instNum);
-	if (tnNum != -1)
+	if (ssg->getToneNoiseEnabled()) {
+		tnSSG_.at(ssg->getToneNoiseNumber())->deregisterUserInstrument(instNum);
 		tnSSG_.at(tnNum)->registerUserInstrument(instNum);
-
+	}
 	ssg->setToneNoiseNumber(tnNum);
 }
 
@@ -981,15 +1050,28 @@ std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	ssg->setEnvelopeEnabled(enabled);
+	if (enabled)
+		envSSG_.at(ssg->getEnvelopeNumber())->registerUserInstrument(instNum);
+	else
+		envSSG_.at(ssg->getEnvelopeNumber())->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentSSGEnvelopeEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum))->getEnvelopeEnabled();
+}
+
 void InstrumentsManager::setInstrumentSSGEnvelope(int instNum, int envNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
-	int prevEnv = ssg->getEnvelopeNumber();
-	if (prevEnv != -1)
-		envSSG_.at(prevEnv)->deregisterUserInstrument(instNum);
-	if (envNum != -1)
+	if (ssg->getEnvelopeEnabled()) {
+		envSSG_.at(ssg->getEnvelopeNumber())->deregisterUserInstrument(instNum);
 		envSSG_.at(envNum)->registerUserInstrument(instNum);
-
+	}
 	ssg->setEnvelopeNumber(envNum);
 }
 
@@ -1059,15 +1141,28 @@ std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentSSGArpeggioEnabled(int instNum, bool enabled)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	ssg->setArpeggioEnabled(enabled);
+	if (enabled)
+		arpSSG_.at(ssg->getArpeggioNumber())->registerUserInstrument(instNum);
+	else
+		arpSSG_.at(ssg->getArpeggioNumber())->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentSSGArpeggioEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum))->getArpeggioEnabled();
+}
+
 void InstrumentsManager::setInstrumentSSGArpeggio(int instNum, int arpNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
-	int prevArp = ssg->getArpeggioNumber();
-	if (prevArp != -1)
-		arpSSG_.at(prevArp)->deregisterUserInstrument(instNum);
-	if (arpNum != -1)
+	if (ssg->getArpeggioEnabled()) {
+		arpSSG_.at(ssg->getArpeggioNumber())->deregisterUserInstrument(instNum);
 		arpSSG_.at(arpNum)->registerUserInstrument(instNum);
-
+	}
 	ssg->setArpeggioNumber(arpNum);
 }
 
@@ -1147,15 +1242,28 @@ std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::setInstrumentSSGPitchEnabled(int instNum, bool enabled)
+{
+	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
+	ssg->setPitchEnabled(enabled);
+	if (enabled)
+		ptSSG_.at(ssg->getPitchNumber())->registerUserInstrument(instNum);
+	else
+		ptSSG_.at(ssg->getPitchNumber())->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentSSGPitchEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum))->getPitchEnabled();
+}
+
 void InstrumentsManager::setInstrumentSSGPitch(int instNum, int ptNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
-	int prevPt = ssg->getPitchNumber();
-	if (prevPt != -1)
-		ptSSG_.at(prevPt)->deregisterUserInstrument(instNum);
-	if (ptNum != -1)
+	if (ssg->getPitchEnabled()) {
+		ptSSG_.at(ssg->getPitchNumber())->deregisterUserInstrument(instNum);
 		ptSSG_.at(ptNum)->registerUserInstrument(instNum);
-
+	}
 	ssg->setPitchNumber(ptNum);
 }
 

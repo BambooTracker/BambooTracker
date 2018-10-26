@@ -131,6 +131,7 @@ private slots:
 	void on_actionComments_triggered();
 	bool on_actionSave_triggered();
 	bool on_actionSave_As_triggered();
+	void on_actionOpen_triggered();
 };
 
 #endif // MAINWINDOW_HPP

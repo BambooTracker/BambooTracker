@@ -29,6 +29,8 @@ public:
 	size_t getGrooveCount() const;
 
 	void addSong(SongType songType, std::string title);
+	void addSong(int n, SongType songType, std::string title, bool isUsedTempo,
+				 int tempo, int groove, int speed, size_t defaultPatternSize);
 	void sortSongs(std::vector<int> numbers);
 	Song& getSong(int num);
 

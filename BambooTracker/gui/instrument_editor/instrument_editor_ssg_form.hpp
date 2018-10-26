@@ -45,9 +45,6 @@ private:
 	void updateInstrumentParameters();
 
 	//========== Wave form ==========//
-public:
-	int getWaveFormNumber() const;
-
 signals:
 	void waveFormNumberChanged();
 	void waveFormParameterChanged(int wfNum, int fromInstNum);
@@ -64,9 +61,6 @@ private slots:
 	void on_waveNumSpinBox_valueChanged(int arg1);
 
 	//========== Tone/Noise ==========//
-public:
-	int getToneNoiseNumber() const;
-
 signals:
 	void toneNoiseNumberChanged();
 	void toneNoiseParameterChanged(int tnNum, int fromInstNum);
@@ -83,9 +77,6 @@ private slots:
 	void on_tnNumSpinBox_valueChanged(int arg1);
 
 	//========== Envelope ==========//
-public:
-	int getEnvelopeNumber() const;
-
 signals:
 	void envelopeNumberChanged();
 	void envelopeParameterChanged(int wfNum, int fromInstNum);
@@ -103,9 +94,6 @@ private slots:
 	void on_hardFreqSpinBox_valueChanged(int arg1);
 
 	//========== Arpeggio ==========//
-public:
-	int getArpeggioNumber() const;
-
 signals:
 	void arpeggioNumberChanged();
 	void arpeggioParameterChanged(int arpNum, int fromInstNum);
@@ -123,9 +111,6 @@ private slots:
 	void on_arpNumSpinBox_valueChanged(int arg1);
 
 	//========== Pitch ==========//
-public:
-	int getPitchNumber() const;
-
 signals:
 	void pitchNumberChanged();
 	void pitchParameterChanged(int ptNum, int fromInstNum);
