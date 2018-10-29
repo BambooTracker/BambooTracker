@@ -516,6 +516,15 @@ std::vector<int> InstrumentsManager::getEnvelopeFMEntriedIndices() const
 	return idcs;
 }
 
+int InstrumentsManager::findFirstFreeEnvelopeFM() const
+{
+	size_t i = 0;
+	for (size_t i = 0; i < envFM_.size(); ++i) {
+		if (!envFM_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
 void InstrumentsManager::setInstrumentFMLFOEnabled(int instNum, bool enabled)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
@@ -567,6 +576,14 @@ std::vector<int> InstrumentsManager::getLFOFMEntriedIndices() const
 		++n;
 	}
 	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeLFOFM() const
+{
+	for (size_t i = 0; i < lfoFM_.size(); ++i) {
+		if (!lfoFM_[i]->isUserInstrument()) return i;
+	}
+	return -1;
 }
 
 void InstrumentsManager::setInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
@@ -658,6 +675,14 @@ std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvel
 		++n;
 	}
 	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeOperatorSequenceFM(FMEnvelopeParameter param) const
+{
+	for (size_t i = 0; i < opSeqFM_.at(param).size(); ++i) {
+		if (!opSeqFM_.at(param)[i]->isUserInstrument()) return i;
+	}
+	return -1;
 }
 
 void InstrumentsManager::setInstrumentFMArpeggioEnabled(int instNum, bool enabled)
@@ -759,6 +784,14 @@ std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
 		++n;
 	}
 	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeArpeggioFM() const
+{
+	for (size_t i = 0; i < arpFM_.size(); ++i) {
+		if (!arpFM_[i]->isUserInstrument()) return i;
+	}
+	return -1;
 }
 
 void InstrumentsManager::setInstrumentFMPitchEnabled(int instNum, bool enabled)
@@ -867,6 +900,14 @@ std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 	return idcs;
 }
 
+int InstrumentsManager::findFirstFreePitchFM() const
+{
+	for (size_t i = 0; i < ptFM_.size(); ++i) {
+		if (!ptFM_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
 //----- SSG methods -----
 void InstrumentsManager::setInstrumentSSGWaveFormEnabled(int instNum, bool enabled)
 {
@@ -957,6 +998,14 @@ std::vector<int> InstrumentsManager::getWaveFormSSGEntriedIndices() const
 		++n;
 	}
 	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeWaveFormSSG() const
+{
+	for (size_t i = 0; i < wfSSG_.size(); ++i) {
+		if (!wfSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
 }
 
 void InstrumentsManager::setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled)
@@ -1050,6 +1099,14 @@ std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
 	return idcs;
 }
 
+int InstrumentsManager::findFirstFreeToneNoiseSSG() const
+{
+	for (size_t i = 0; i < tnSSG_.size(); ++i) {
+		if (!tnSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
 void InstrumentsManager::setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
@@ -1139,6 +1196,14 @@ std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
 		++n;
 	}
 	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeEnvelopeSSG() const
+{
+	for (size_t i = 0; i < envSSG_.size(); ++i) {
+		if (!envSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
 }
 
 void InstrumentsManager::setInstrumentSSGArpeggioEnabled(int instNum, bool enabled)
@@ -1242,6 +1307,14 @@ std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
 	return idcs;
 }
 
+int InstrumentsManager::findFirstFreeArpeggioSSG() const
+{
+	for (size_t i = 0; i < arpSSG_.size(); ++i) {
+		if (!arpSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
 void InstrumentsManager::setInstrumentSSGPitchEnabled(int instNum, bool enabled)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
@@ -1341,4 +1414,12 @@ std::vector<int> InstrumentsManager::getPitchSSGEntriedIndices() const
 		++n;
 	}
 	return idcs;
+}
+
+int InstrumentsManager::findFirstFreePitchSSG() const
+{
+	for (size_t i = 0; i < ptSSG_.size(); ++i) {
+		if (!ptSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
 }

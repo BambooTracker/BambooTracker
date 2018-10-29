@@ -91,6 +91,10 @@ void BambooTracker::deepCloneInstrument(int num, int refNum)
 
 bool BambooTracker::loadInstrument(std::string path, int instNum)
 {
+	auto inst = FileIO::loadInstrument(path, instMan_, instNum);
+	if (!inst) return false;
+	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
+					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 	return true;
 }
 

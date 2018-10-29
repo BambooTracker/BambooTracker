@@ -455,9 +455,11 @@ void MainWindow::loadInstrument()
 
 	int n = bt_->findFirstFreeInstrumentNumber();
 	if (n != -1 && bt_->loadInstrument(file.toStdString(), n)) {
-		/*isModifiedForNotCommand_ = false;
-		setWindowModified(false);
-		loadModule();*/
+		auto inst = bt_->getInstrument(n);
+		auto name = inst->getName();
+		comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
+												   QString::fromUtf8(name.c_str(), name.length()),
+												   inst->getSoundSource(), instForms_));
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Failed to load instrument.");
