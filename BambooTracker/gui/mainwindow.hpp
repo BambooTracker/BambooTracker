@@ -48,6 +48,8 @@ private:
 	void editInstrumentName();
 	void cloneInstrument();
     void deepCloneInstrument();
+	void loadInstrument();
+	void saveInstrument();
 
 	// Undo-Redo
 	void undo();
@@ -132,6 +134,8 @@ private slots:
 	bool on_actionSave_triggered();
 	bool on_actionSave_As_triggered();
 	void on_actionOpen_triggered();
+	void on_actionLoad_From_File_triggered();
+	void on_actionSave_To_File_triggered();
 };
 
 #endif // MAINWINDOW_HPP

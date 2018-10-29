@@ -14,6 +14,7 @@ public:
 						   std::weak_ptr<InstrumentsManager> instMan);
 	static bool loadModuel(std::string path, std::weak_ptr<Module> mod,
 						   std::weak_ptr<InstrumentsManager> instMan);
+	static bool saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum);
 
 private:
 	FileIO() {}

@@ -89,6 +89,16 @@ void BambooTracker::deepCloneInstrument(int num, int refNum)
 	comMan_.invoke(std::make_unique<DeepCloneInstrumentCommand>(instMan_, num, refNum));
 }
 
+bool BambooTracker::loadInstrument(std::string path, int instNum)
+{
+	return true;
+}
+
+bool BambooTracker::saveInstrument(std::string path, int instNum)
+{
+	return FileIO::saveInstrument(path, instMan_, instNum);
+}
+
 int BambooTracker::findFirstFreeInstrumentNumber() const
 {
 	return instMan_->findFirstFreeInstrument();

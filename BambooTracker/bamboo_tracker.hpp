@@ -37,6 +37,8 @@ public:
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
+	bool loadInstrument(std::string path, int instNum);
+	bool saveInstrument(std::string path, int instNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void clearAllInstrument();

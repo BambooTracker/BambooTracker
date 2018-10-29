@@ -741,7 +741,7 @@ QListWidget::item:selected:hover {
   </action>
   <action name="actionLoad_From_File">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Load From File...</string>

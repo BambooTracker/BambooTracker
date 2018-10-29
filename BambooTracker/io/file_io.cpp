@@ -1886,3 +1886,492 @@ size_t FileIO::loadInstrumentMemoryOperatorSequence(FMEnvelopeParameter param,
 
 	return ofs;
 }
+
+bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum)
+{
+	BinaryContainer ctr;
+
+	ctr.appendString("BambooTrackerIst");
+	ctr.appendUint32(0);	// Dummy EOF offset
+	ctr.appendUint32(Version::ofInstrumentFileInBCD());
+
+
+	/***** Instrument section *****/
+	ctr.appendString("INSTRMNT");
+	size_t instOfs = ctr.size();
+	ctr.appendUint32(0);	// Dummy instrument section offset
+	std::shared_ptr<AbstractInstrument> inst = instMan.lock()->getInstrumentSharedPtr(instNum);
+	if (inst) {
+		std::string name = inst->getName();
+		ctr.appendUint32(name.length());
+		if (!name.empty()) ctr.appendString(name);
+		switch (inst->getSoundSource()) {
+		case SoundSource::FM:
+		{
+			ctr.appendUint8(0x00);
+			auto instFM = std::dynamic_pointer_cast<InstrumentFM>(inst);
+			ctr.appendUint8(instFM->getEnvelopeResetEnabled());
+			break;
+		}
+		case SoundSource::SSG:
+		{
+			ctr.appendUint8(0x01);
+			break;
+		}
+		}
+	}
+	ctr.writeUint32(instOfs, ctr.size() - instOfs);
+
+
+	/***** Instrument memory section *****/
+	ctr.appendString("INSTMEM ");
+	size_t instMemOfs = ctr.size();
+	ctr.appendUint32(0);	// Dummy instrument memory section offset
+
+	switch (inst->getSoundSource()) {
+	case SoundSource::FM:
+	{
+		auto instFM = std::dynamic_pointer_cast<InstrumentFM>(inst);
+
+		// FM envelope
+		int envNum = instFM->getEnvelopeNumber();
+		{
+			ctr.appendUint8(0x00);
+			size_t ofs = ctr.size();
+			ctr.appendUint8(0);	// Dummy offset
+			uint8_t tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL) << 4)
+						  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB);
+			ctr.appendUint8(tmp);
+			// Operator 1
+			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 0);
+			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1) << 4)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1);
+			ctr.appendUint8(tmp);
+			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1);
+			ctr.appendUint8(tmp);
+			int tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1);
+			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1);
+			ctr.appendUint8(tmp);
+			// Operator 2
+			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 1);
+			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2) << 4)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2);
+			ctr.appendUint8(tmp);
+			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2);
+			ctr.appendUint8(tmp);
+			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2);
+			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2);
+			ctr.appendUint8(tmp);
+			// Operator 3
+			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 2);
+			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3) << 4)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3);
+			ctr.appendUint8(tmp);
+			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3);
+			ctr.appendUint8(tmp);
+			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3);
+			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3);
+			ctr.appendUint8(tmp);
+			// Operator 4
+			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 3);
+			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4) << 5)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4) << 4)
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4);
+			ctr.appendUint8(tmp);
+			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4);
+			ctr.appendUint8(tmp);
+			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4);
+			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
+				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4);
+			ctr.appendUint8(tmp);
+			ctr.writeUint8(ofs, ctr.size() - ofs);
+		}
+
+		// FM LFO
+		if (instFM->getLFOEnabled()) {
+			int lfoNum = instFM->getLFONumber();
+			ctr.appendUint8(0x01);
+			size_t ofs = ctr.size();
+			ctr.appendUint8(0);	// Dummy offset
+			uint8_t tmp = (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::FREQ) << 4)
+						  | instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::PMS);
+			ctr.appendUint8(tmp);
+			tmp = (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM4) << 7)
+				  | (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM3) << 6)
+				  | (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM2) << 5)
+				  | (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM1) << 4)
+				  | instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AMS);
+			ctr.appendUint8(tmp);
+			tmp = instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::COUNT);
+			ctr.appendUint8(tmp);
+			ctr.writeUint8(ofs, ctr.size() - ofs);
+		}
+
+		// FM envelope parameter
+		for (size_t i = 0; i < 38; ++i) {
+			if (instFM->getOperatorSequenceEnabled(ENV_FM_PARAMS[i])) {
+				int seqNum = instFM->getOperatorSequenceNumber(ENV_FM_PARAMS[i]);
+				ctr.appendUint8(0x02 + i);
+				size_t ofs = ctr.size();
+				ctr.appendUint16(0);	// Dummy offset
+				auto seq = instMan.lock()->getOperatorSequenceFMSequence(ENV_FM_PARAMS[i], seqNum);
+				ctr.appendUint16(seq.size());
+				for (auto& com : seq) {
+					ctr.appendUint16(com.type);
+					ctr.appendInt16(com.data);
+				}
+				auto loop = instMan.lock()->getOperatorSequenceFMLoops(ENV_FM_PARAMS[i], seqNum);
+				ctr.appendUint16(loop.size());
+				for (auto& l : loop) {
+					ctr.appendUint16(l.begin);
+					ctr.appendUint16(l.end);
+					ctr.appendUint16(l.times);
+				}
+				auto release = instMan.lock()->getOperatorSequenceFMRelease(ENV_FM_PARAMS[i], seqNum);
+				switch (release.type) {
+				case ReleaseType::NO_RELEASE:
+					ctr.appendUint8(0x00);
+					break;
+				case ReleaseType::FIX:
+					ctr.appendUint8(0x01);
+					ctr.appendUint16(release.begin);
+					break;
+				case ReleaseType::ABSOLUTE:
+					ctr.appendUint8(0x02);
+					ctr.appendUint16(release.begin);
+					break;
+				case ReleaseType::RELATIVE:
+					ctr.appendUint8(0x03);
+					ctr.appendUint16(release.begin);
+					break;
+				}
+				ctr.writeUint16(ofs, ctr.size() - ofs);
+			}
+		}
+
+		// FM arpeggio
+		if (instFM->getArpeggioEnabled()) {
+			int arpNum = instFM->getArpeggioNumber();
+			ctr.appendUint8(0x28);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getArpeggioFMSequence(arpNum);
+			ctr.appendUint16(seq.size());
+			for (auto& com : seq) {
+				ctr.appendUint16(com.type);
+				ctr.appendInt16(com.data);
+			}
+			auto loop = instMan.lock()->getArpeggioFMLoops(arpNum);
+			ctr.appendUint16(loop.size());
+			for (auto& l : loop) {
+				ctr.appendUint16(l.begin);
+				ctr.appendUint16(l.end);
+				ctr.appendUint16(l.times);
+			}
+			auto release = instMan.lock()->getArpeggioFMRelease(arpNum);
+			switch (release.type) {
+			case ReleaseType::NO_RELEASE:
+				ctr.appendUint8(0x00);
+				break;
+			case ReleaseType::FIX:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::ABSOLUTE:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::RELATIVE:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(release.begin);
+				break;
+			}
+			ctr.writeUint16(ofs, ctr.size() - ofs);
+		}
+
+		// FM pitch
+		if (instFM->getPitchEnabled()) {
+			int ptNum = instFM->getPitchNumber();
+			ctr.appendUint8(0x29);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getPitchFMSequence(ptNum);
+			ctr.appendUint16(seq.size());
+			for (auto& com : seq) {
+				ctr.appendUint16(com.type);
+				ctr.appendInt16(com.data);
+			}
+			auto loop = instMan.lock()->getPitchFMLoops(ptNum);
+			ctr.appendUint16(loop.size());
+			for (auto& l : loop) {
+				ctr.appendUint16(l.begin);
+				ctr.appendUint16(l.end);
+				ctr.appendUint16(l.times);
+			}
+			auto release = instMan.lock()->getPitchFMRelease(ptNum);
+			switch (release.type) {
+			case ReleaseType::NO_RELEASE:
+				ctr.appendUint8(0x00);
+				break;
+			case ReleaseType::FIX:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::ABSOLUTE:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::RELATIVE:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(release.begin);
+				break;
+			}
+			ctr.writeUint16(ofs, ctr.size() - ofs);
+		}
+		break;
+	}
+	case SoundSource::SSG:
+	{
+		auto instSSG = std::dynamic_pointer_cast<InstrumentSSG>(inst);
+
+		// SSG wave form
+		if (instSSG->getWaveFormEnabled()) {
+			int wfNum = instSSG->getWaveFormNumber();
+			ctr.appendUint8(0x30);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getWaveFormSSGSequence(wfNum);
+			ctr.appendUint16(seq.size());
+			for (auto& com : seq) {
+				ctr.appendUint16(com.type);
+				ctr.appendInt16(com.data);
+			}
+			auto loop = instMan.lock()->getWaveFormSSGLoops(wfNum);
+			ctr.appendUint16(loop.size());
+			for (auto& l : loop) {
+				ctr.appendUint16(l.begin);
+				ctr.appendUint16(l.end);
+				ctr.appendUint16(l.times);
+			}
+			auto release = instMan.lock()->getWaveFormSSGRelease(wfNum);
+			switch (release.type) {
+			case ReleaseType::NO_RELEASE:
+				ctr.appendUint8(0x00);
+				break;
+			case ReleaseType::FIX:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::ABSOLUTE:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::RELATIVE:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(release.begin);
+				break;
+			}
+			ctr.writeUint16(ofs, ctr.size() - ofs);
+		}
+
+		// SSG tone/noise
+		if (instSSG->getToneNoiseEnabled()) {
+			int tnNum = instSSG->getToneNoiseNumber();
+			ctr.appendUint8(0x31);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getToneNoiseSSGSequence(tnNum);
+			ctr.appendUint16(seq.size());
+			for (auto& com : seq) {
+				ctr.appendUint16(com.type);
+				ctr.appendInt16(com.data);
+			}
+			auto loop = instMan.lock()->getToneNoiseSSGLoops(tnNum);
+			ctr.appendUint16(loop.size());
+			for (auto& l : loop) {
+				ctr.appendUint16(l.begin);
+				ctr.appendUint16(l.end);
+				ctr.appendUint16(l.times);
+			}
+			auto release = instMan.lock()->getToneNoiseSSGRelease(tnNum);
+			switch (release.type) {
+			case ReleaseType::NO_RELEASE:
+				ctr.appendUint8(0x00);
+				break;
+			case ReleaseType::FIX:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::ABSOLUTE:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::RELATIVE:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(release.begin);
+				break;
+			}
+			ctr.writeUint16(ofs, ctr.size() - ofs);
+		}
+
+		// SSG envelope
+		if (instSSG->getEnvelopeEnabled()) {
+			int envNum = instSSG->getEnvelopeNumber();
+			ctr.appendUint8(0x32);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getEnvelopeSSGSequence(envNum);
+			ctr.appendUint16(seq.size());
+			for (auto& com : seq) {
+				ctr.appendUint16(com.type);
+				ctr.appendInt16(com.data);
+			}
+			auto loop = instMan.lock()->getEnvelopeSSGLoops(envNum);
+			ctr.appendUint16(loop.size());
+			for (auto& l : loop) {
+				ctr.appendUint16(l.begin);
+				ctr.appendUint16(l.end);
+				ctr.appendUint16(l.times);
+			}
+			auto release = instMan.lock()->getEnvelopeSSGRelease(envNum);
+			switch (release.type) {
+			case ReleaseType::NO_RELEASE:
+				ctr.appendUint8(0x00);
+				break;
+			case ReleaseType::FIX:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::ABSOLUTE:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::RELATIVE:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(release.begin);
+				break;
+			}
+			ctr.writeUint16(ofs, ctr.size() - ofs);
+		}
+
+		// SSG arpeggio
+		if (instSSG->getArpeggioEnabled()) {
+			int arpNum = instSSG->getArpeggioNumber();
+			ctr.appendUint8(0x33);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getArpeggioSSGSequence(arpNum);
+			ctr.appendUint16(seq.size());
+			for (auto& com : seq) {
+				ctr.appendUint16(com.type);
+				ctr.appendInt16(com.data);
+			}
+			auto loop = instMan.lock()->getArpeggioSSGLoops(arpNum);
+			ctr.appendUint16(loop.size());
+			for (auto& l : loop) {
+				ctr.appendUint16(l.begin);
+				ctr.appendUint16(l.end);
+				ctr.appendUint16(l.times);
+			}
+			auto release = instMan.lock()->getArpeggioSSGRelease(arpNum);
+			switch (release.type) {
+			case ReleaseType::NO_RELEASE:
+				ctr.appendUint8(0x00);
+				break;
+			case ReleaseType::FIX:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::ABSOLUTE:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::RELATIVE:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(release.begin);
+				break;
+			}
+			ctr.writeUint16(ofs, ctr.size() - ofs);
+		}
+
+		// SSG pitch
+		if (instSSG->getPitchEnabled()) {
+			int ptNum = instSSG->getPitchNumber();
+			ctr.appendUint8(0x34);
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getPitchSSGSequence(ptNum);
+			ctr.appendUint16(seq.size());
+			for (auto& com : seq) {
+				ctr.appendUint16(com.type);
+				ctr.appendInt16(com.data);
+			}
+			auto loop = instMan.lock()->getPitchSSGLoops(ptNum);
+			ctr.appendUint16(loop.size());
+			for (auto& l : loop) {
+				ctr.appendUint16(l.begin);
+				ctr.appendUint16(l.end);
+				ctr.appendUint16(l.times);
+			}
+			auto release = instMan.lock()->getPitchSSGRelease(ptNum);
+			switch (release.type) {
+			case ReleaseType::NO_RELEASE:
+				ctr.appendUint8(0x00);
+				break;
+			case ReleaseType::FIX:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::ABSOLUTE:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(release.begin);
+				break;
+			case ReleaseType::RELATIVE:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(release.begin);
+				break;
+			}
+			ctr.writeUint16(ofs, ctr.size() - ofs);
+		}
+		break;
+	}
+	}
+
+	ctr.writeUint32(instMemOfs, ctr.size() - instMemOfs);
+
+	return ctr.save(path);
+}

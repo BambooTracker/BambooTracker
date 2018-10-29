@@ -83,7 +83,7 @@ After FB sequence number, it repeats 9 operator's parameters for each operator (
 |uint8 |Pitch sequence number      |Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses pitch sequence.           |
 
 
-## Instrument memory Section
+## Instrument Memory Section
 |Type            |Field                            |Description                                          |
 |----------------|---------------------------------|-----------------------------------------------------|
 |string (8bytes) |Seciton identifier               |Must be `INSTMEM `.                                  |
@@ -118,7 +118,7 @@ Subsection identifier is defined as:
 
  And repeats sequence data block.
 
-### FM envelope
+### FM Envelope
 |Type  |Field  |Description                                           |
 |------|-------|------------------------------------------------------|
 |uint8 |Index  |Envelope index number.                                |

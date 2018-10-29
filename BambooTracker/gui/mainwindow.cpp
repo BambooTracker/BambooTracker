@@ -447,6 +447,35 @@ void MainWindow::deepCloneInstrument()
 	//----------//
 }
 
+void MainWindow::loadInstrument()
+{
+	QString file = QFileDialog::getOpenFileName(this, "Open instrument", "./",
+												"BambooTracker instrument file (*.bti)");
+	if (file.isNull()) return;
+
+	int n = bt_->findFirstFreeInstrumentNumber();
+	if (n != -1 && bt_->loadInstrument(file.toStdString(), n)) {
+		/*isModifiedForNotCommand_ = false;
+		setWindowModified(false);
+		loadModule();*/
+	}
+	else {
+		QMessageBox::critical(this, "Error", "Failed to load instrument.");
+	}
+}
+
+void MainWindow::saveInstrument()
+{
+	QString file = QFileDialog::getSaveFileName(this, "Save instrument", "./",
+												"BambooTracker instrument file (*.bti)");
+	if (file.isNull()) return;
+	if (!file.endsWith(".bti")) file += ".bti";	// For linux
+
+	if (!bt_->saveInstrument(file.toStdString(),
+							 ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt()))
+		QMessageBox::critical(this, "Error", "Failed to save instrument.");
+}
+
 /********** Undo-Redo **********/
 void MainWindow::undo()
 {
@@ -623,18 +652,14 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QAction* clone = menu.addAction("Clone", this, &MainWindow::cloneInstrument);
 	QAction* dClone = menu.addAction("Deep clone", this, &MainWindow::deepCloneInstrument);
     menu.addSeparator();
-	QAction* ldFile = menu.addAction("Load from file...");
-	QAction* svFile = menu.addAction("Save to file...");
+	QAction* ldFile = menu.addAction("Load from file...", this, &MainWindow::loadInstrument);
+	QAction* svFile = menu.addAction("Save to file...", this, &MainWindow::saveInstrument);
     menu.addSeparator();
 	QAction* edit = menu.addAction("Edit...", this, &MainWindow::editInstrument);
 
-	// UNDONE: instrument load and save --------------
-	ldFile->setEnabled(false);
-	svFile->setEnabled(false);
-	// -----------------------------------------------
-
 	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
 		add->setEnabled(false);
+		ldFile->setEnabled(false);
 	}
 	else {
 		switch (bt_->getCurrentTrackAttribute().source) {
@@ -646,6 +671,7 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	if (item == nullptr) {    // Not selected
 		remove->setEnabled(false);
 		name->setEnabled(false);
+		svFile->setEnabled(false);
 		edit->setEnabled(false);
     }
 	if (item == nullptr || bt_->findFirstFreeInstrumentNumber() == -1) {
@@ -771,6 +797,7 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 	ui->actionRemove_Instrument->setEnabled(isEnabled);
 	ui->actionClone_Instrument->setEnabled(isEnabled);
 	ui->actionDeep_Clone_Instrument->setEnabled(isEnabled);
+	ui->actionSave_To_File->setEnabled(isEnabled);
 	ui->actionEdit->setEnabled(isEnabled);
 }
 
@@ -1285,4 +1312,14 @@ void MainWindow::on_actionOpen_triggered()
 	else {
 		QMessageBox::critical(this, "Error", "Failed to load module.");
 	}
+}
+
+void MainWindow::on_actionLoad_From_File_triggered()
+{
+	loadInstrument();
+}
+
+void MainWindow::on_actionSave_To_File_triggered()
+{
+	saveInstrument();
 }
