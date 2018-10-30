@@ -9,6 +9,8 @@
 #include <QWidget>
 #include <QUndoStack>
 #include <QCloseEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
@@ -29,8 +31,9 @@ protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
-
-	void closeEvent(QCloseEvent* ce) override;
+	void dragEnterEvent(QDragEnterEvent* event) override;
+	void dropEvent(QDropEvent* event) override;
+	void closeEvent(QCloseEvent* event) override;
 
 private:
 	Ui::MainWindow *ui;

@@ -9,6 +9,7 @@
 #include <QRegularExpression>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMimeData>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
@@ -319,7 +320,15 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
-void MainWindow::closeEvent(QCloseEvent *ce)
+void MainWindow::dragEnterEvent(QDragEnterEvent* event)
+{
+	auto mime = event->mimeData();
+	if (mime->hasUrls() && mime->urls().length() == 1
+			&& mime->urls().first().toLocalFile().endsWith(".btm"))
+		event->acceptProposedAction();
+}
+
+void MainWindow::dropEvent(QDropEvent* event)
 {
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
@@ -336,7 +345,40 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 		case QMessageBox::No:
 			break;
 		case QMessageBox::Cancel:
-			ce->ignore();
+			return;
+		default:
+			break;
+		}
+	}
+
+	if (bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toStdString())) {
+		isModifiedForNotCommand_ = false;
+		setWindowModified(false);
+		loadModule();
+	}
+	else {
+		QMessageBox::critical(this, "Error", "Failed to load module.");
+	}
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	if (isWindowModified()) {
+		auto modTitleStd = bt_->getModuleTitle();
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		if (modTitle.isEmpty()) modTitle = "Untitled";
+		QMessageBox dialog(QMessageBox::Warning,
+						   "BambooTracker",
+						   "Save changes to " + modTitle + "?",
+						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+		switch (dialog.exec()) {
+		case QMessageBox::Yes:
+			if (!on_actionSave_triggered()) return;
+			break;
+		case QMessageBox::No:
+			break;
+		case QMessageBox::Cancel:
+			event->ignore();
 			return;
 		default:
 			break;
@@ -345,7 +387,7 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 
 	instForms_->closeAll();
 
-	ce->accept();
+	event->accept();
 }
 
 /********** Instrument list **********/
