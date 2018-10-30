@@ -60,6 +60,7 @@ public slots:
 	void onSoloTrackPressed();
 	void onExpandPressed();
 	void onShrinkPressed();
+	void onInterpolatePressed();
 
 private:
 	Ui::PatternEditor *ui;

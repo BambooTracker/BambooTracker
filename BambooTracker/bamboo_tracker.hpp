@@ -278,6 +278,8 @@ public:
 					   int endTrack, int endColmn, int endStep);
 	void shrinkPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 					   int endTrack, int endColmn, int endStep);
+	void interpolatePattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+							int endTrack, int endColmn, int endStep);
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 	void setDefaultPatternSize(int songNum, size_t size);
 	size_t getDefaultPatternSize(int songNum) const;

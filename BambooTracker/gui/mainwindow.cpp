@@ -921,6 +921,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionPaste_Mix->setEnabled(false);
 		ui->actionDelete->setEnabled(false);
 		// Pattern
+		ui->actionInterpolate->setEnabled(false);
 		ui->actionExpand->setEnabled(false);
 		ui->actionShrink->setEnabled(false);
 		ui->actionDecrease_Note->setEnabled(false);
@@ -935,6 +936,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionPaste_Mix->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
 		// Pattern
+		ui->actionInterpolate->setEnabled(isSelectedPO_);
 		ui->actionExpand->setEnabled(isSelectedPO_);
 		ui->actionShrink->setEnabled(isSelectedPO_);
 		ui->actionDecrease_Note->setEnabled(true);
@@ -989,6 +991,7 @@ void MainWindow::updateMenuByOrder()
 	ui->actionPaste_Mix->setEnabled(false);
 
 	// Pattern
+	ui->actionInterpolate->setEnabled(false);
 	ui->actionExpand->setEnabled(false);
 	ui->actionShrink->setEnabled(false);
 	ui->actionDecrease_Note->setEnabled(false);
@@ -1017,6 +1020,7 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		ui->actionCopy->setEnabled(false);
 		ui->actionCut->setEnabled(false);
 		// Pattern
+		ui->actionInterpolate->setEnabled(false);
 		ui->actionExpand->setEnabled(false);
 		ui->actionShrink->setEnabled(false);
 	}
@@ -1026,6 +1030,7 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		ui->actionCut->setEnabled(isEditedPattern_ ? isSelected : false);
 		// Pattern
 		bool enabled = (isEditedPattern_ && isEditedPattern_) ? isSelected : false;
+		ui->actionInterpolate->setEnabled(enabled);
 		ui->actionExpand->setEnabled(enabled);
 		ui->actionShrink->setEnabled(enabled);
 	}
@@ -1366,4 +1371,9 @@ void MainWindow::on_actionLoad_From_File_triggered()
 void MainWindow::on_actionSave_To_File_triggered()
 {
 	saveInstrument();
+}
+
+void MainWindow::on_actionInterpolate_triggered()
+{
+	ui->patternEditor->onInterpolatePressed();
 }

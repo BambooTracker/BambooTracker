@@ -2032,6 +2032,13 @@ void BambooTracker::shrinkPattern(int songNum, int beginTrack, int beginColmn, i
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
 }
 
+void BambooTracker::interpolatePattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
+									   int endTrack, int endColmn, int endStep)
+{
+	comMan_.invoke(std::make_unique<InterpolatePatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
+}
+
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const
 {
 	size_t size = 0;

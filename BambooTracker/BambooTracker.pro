@@ -146,7 +146,9 @@ SOURCES += \
     command/pattern/set_echo_buffer_access_command.cpp \
     gui/comment_edit_dialog.cpp \
     io/file_io.cpp \
-    io/binary_container.cpp
+    io/binary_container.cpp \
+    gui/command/pattern/interpolate_pattern_qt_command.cpp \
+    command/pattern/interpolate_pattern_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -283,7 +285,9 @@ HEADERS += \
     gui/comment_edit_dialog.hpp \
     io/file_io.hpp \
     io/binary_container.hpp \
-    version.hpp
+    version.hpp \
+    gui/command/pattern/interpolate_pattern_qt_command.hpp \
+    command/pattern/interpolate_pattern_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

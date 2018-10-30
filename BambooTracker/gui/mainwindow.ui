@@ -440,6 +440,8 @@ QListWidget::item:selected:hover {
      <addaction name="actionDecrease_Octave"/>
      <addaction name="actionIncrease_Octave"/>
     </widget>
+    <addaction name="actionInterpolate"/>
+    <addaction name="separator"/>
     <addaction name="actionExpand"/>
     <addaction name="actionShrink"/>
     <addaction name="separator"/>
@@ -907,6 +909,17 @@ QListWidget::item:selected:hover {
   <action name="actionComments">
    <property name="text">
     <string>Comments...</string>
+   </property>
+  </action>
+  <action name="actionInterpolate">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Interpolate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>

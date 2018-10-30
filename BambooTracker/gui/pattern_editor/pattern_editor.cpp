@@ -169,3 +169,8 @@ void PatternEditor::onShrinkPressed()
 {
 	ui->panel->onShrinkPressed();
 }
+
+void PatternEditor::onInterpolatePressed()
+{
+	ui->panel->onInterpolatePressed();
+}
