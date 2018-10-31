@@ -141,6 +141,7 @@ private slots:
 	void on_actionSave_To_File_triggered();
 	void on_actionInterpolate_triggered();
 	void on_actionReverse_triggered();
+	void on_actionReplace_Instrument_triggered();
 };
 
 #endif // MAINWINDOW_HPP

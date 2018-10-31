@@ -179,3 +179,8 @@ void PatternEditor::onReversePressed()
 {
 	ui->panel->onReversePressed();
 }
+
+void PatternEditor::onReplaceInstrumentPressed()
+{
+	ui->panel->onReplaceInstrumentPressed();
+}

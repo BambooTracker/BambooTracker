@@ -442,6 +442,7 @@ QListWidget::item:selected:hover {
     </widget>
     <addaction name="actionInterpolate"/>
     <addaction name="actionReverse"/>
+    <addaction name="actionReplace_Instrument"/>
     <addaction name="separator"/>
     <addaction name="actionExpand"/>
     <addaction name="actionShrink"/>
@@ -932,6 +933,17 @@ QListWidget::item:selected:hover {
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionReplace_Instrument">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Replace Instrument</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
    </property>
   </action>
  </widget>

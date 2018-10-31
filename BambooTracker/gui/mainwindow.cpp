@@ -923,6 +923,7 @@ void MainWindow::updateMenuByPattern()
 		// Pattern
 		ui->actionInterpolate->setEnabled(false);
 		ui->actionReverse->setEnabled(false);
+		ui->actionReplace_Instrument->setEnabled(false);
 		ui->actionExpand->setEnabled(false);
 		ui->actionShrink->setEnabled(false);
 		ui->actionDecrease_Note->setEnabled(false);
@@ -939,6 +940,8 @@ void MainWindow::updateMenuByPattern()
 		// Pattern
 		ui->actionInterpolate->setEnabled(isSelectedPO_);
 		ui->actionReverse->setEnabled(isSelectedPO_);
+		ui->actionReplace_Instrument->setEnabled(
+					isSelectedPO_ && ui->instrumentListWidget->currentRow() != -1);
 		ui->actionExpand->setEnabled(isSelectedPO_);
 		ui->actionShrink->setEnabled(isSelectedPO_);
 		ui->actionDecrease_Note->setEnabled(true);
@@ -995,6 +998,7 @@ void MainWindow::updateMenuByOrder()
 	// Pattern
 	ui->actionInterpolate->setEnabled(false);
 	ui->actionReverse->setEnabled(false);
+	ui->actionReplace_Instrument->setEnabled(false);
 	ui->actionExpand->setEnabled(false);
 	ui->actionShrink->setEnabled(false);
 	ui->actionDecrease_Note->setEnabled(false);
@@ -1025,6 +1029,7 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		// Pattern
 		ui->actionInterpolate->setEnabled(false);
 		ui->actionReverse->setEnabled(false);
+		ui->actionReplace_Instrument->setEnabled(false);
 		ui->actionExpand->setEnabled(false);
 		ui->actionShrink->setEnabled(false);
 	}
@@ -1036,6 +1041,8 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		bool enabled = (isEditedPattern_ && isEditedPattern_) ? isSelected : false;
 		ui->actionInterpolate->setEnabled(enabled);
 		ui->actionReverse->setEnabled(enabled);
+		ui->actionReplace_Instrument->setEnabled(
+					enabled && ui->instrumentListWidget->currentRow() != -1);
 		ui->actionExpand->setEnabled(enabled);
 		ui->actionShrink->setEnabled(enabled);
 	}
@@ -1386,4 +1393,9 @@ void MainWindow::on_actionInterpolate_triggered()
 void MainWindow::on_actionReverse_triggered()
 {
 	ui->patternEditor->onReversePressed();
+}
+
+void MainWindow::on_actionReplace_Instrument_triggered()
+{
+	ui->patternEditor->onReplaceInstrumentPressed();
 }

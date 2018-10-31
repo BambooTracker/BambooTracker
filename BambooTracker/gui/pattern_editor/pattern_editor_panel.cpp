@@ -1436,6 +1436,23 @@ void PatternEditorPanel::onReversePressed()
 	comStack_.lock()->push(new ReversePatternQtCommand(this));
 }
 
+void PatternEditorPanel::onReplaceInstrumentPressed()
+{
+	if (selLeftAbovePos_.order == -1) return;
+
+	int curInst = bt_->getCurrentInstrumentNumber();
+	if (curInst == -1) return;
+
+	int beginTrack = (selLeftAbovePos_.colInTrack < 2) ? selLeftAbovePos_.track : (selLeftAbovePos_.track + 1);
+	int endTrack = (selRightBelowPos_.colInTrack == 0) ? (selRightBelowPos_.track - 1) : selRightBelowPos_.track;
+	if (beginTrack <= endTrack) {
+		bt_->replaceInstrumentInPattern(curSongNum_,
+										beginTrack, selLeftAbovePos_.order, selLeftAbovePos_.step,
+										endTrack, selRightBelowPos_.step, curInst);
+		comStack_.lock()->push(new ReplaceInstrumentInPatternQtCommand(this));
+	}
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -1752,6 +1769,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		menu.addMenu(pattern);
 		QAction* interpolate = pattern->addAction("Interpolate", this, &PatternEditorPanel::onInterpolatePressed);
 		QAction* reverse = pattern->addAction("Reverse", this, &PatternEditorPanel::onReversePressed);
+		QAction* replace = pattern->addAction("Replace Instrument", this, &PatternEditorPanel::onReplaceInstrumentPressed);
 		pattern->addSeparator();
 		QAction* expand = pattern->addAction("Expand", this, &PatternEditorPanel::onExpandPressed);
 		QAction* shrink = pattern->addAction("Shrink", this, &PatternEditorPanel::onShrinkPressed);
@@ -1774,6 +1792,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			erase->setEnabled(false);
 			interpolate->setEnabled(false);
 			reverse->setEnabled(false);
+			replace->setEnabled(false);
 			expand->setEnabled(false);
 			shrink->setEnabled(false);
 			deNote->setEnabled(false);
@@ -1795,6 +1814,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 				erase->setEnabled(false);
 				interpolate->setEnabled(false);
 				reverse->setEnabled(false);
+				replace->setEnabled(false);
 				expand->setEnabled(false);
 				shrink->setEnabled(false);
 				deNote->setEnabled(false);

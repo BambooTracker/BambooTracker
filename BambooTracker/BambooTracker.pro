@@ -150,7 +150,9 @@ SOURCES += \
     gui/command/pattern/interpolate_pattern_qt_command.cpp \
     command/pattern/interpolate_pattern_command.cpp \
     gui/command/pattern/reverse_pattern_qt_command.cpp \
-    command/pattern/reverse_pattern_command.cpp
+    command/pattern/reverse_pattern_command.cpp \
+    gui/command/pattern/replace_instrument_in_pattern_qt_command.cpp \
+    command/pattern/replace_instrument_in_pattern_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -291,7 +293,9 @@ HEADERS += \
     gui/command/pattern/interpolate_pattern_qt_command.hpp \
     command/pattern/interpolate_pattern_command.hpp \
     gui/command/pattern/reverse_pattern_qt_command.hpp \
-    command/pattern/reverse_pattern_command.hpp
+    command/pattern/reverse_pattern_command.hpp \
+    gui/command/pattern/replace_instrument_in_pattern_qt_command.hpp \
+    command/pattern/replace_instrument_in_pattern_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

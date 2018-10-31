@@ -2046,6 +2046,13 @@ void BambooTracker::reversePattern(int songNum, int beginTrack, int beginColmn, 
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
 }
 
+void BambooTracker::replaceInstrumentInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+											   int endTrack, int endStep, int newInstNum)
+{
+	comMan_.invoke(std::make_unique<ReplaceInstrumentInPatternCommand>(
+					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep, newInstNum));
+}
+
 size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) const
 {
 	size_t size = 0;

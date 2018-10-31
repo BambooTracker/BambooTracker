@@ -62,6 +62,7 @@ public slots:
 	void onShrinkPressed();
 	void onInterpolatePressed();
 	void onReversePressed();
+	void onReplaceInstrumentPressed();
 
 private:
 	Ui::PatternEditor *ui;

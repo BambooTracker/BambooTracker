@@ -282,6 +282,8 @@ public:
 							int endTrack, int endColmn, int endStep);
 	void reversePattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						int endTrack, int endColmn, int endStep);
+	void replaceInstrumentInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+									int endTrack, int endStep, int newInstNum);
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 	void setDefaultPatternSize(int songNum, size_t size);
 	size_t getDefaultPatternSize(int songNum) const;
