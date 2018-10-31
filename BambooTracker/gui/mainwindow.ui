@@ -415,6 +415,12 @@ QListWidget::item:selected:hover {
      </property>
      <addaction name="actionAll"/>
      <addaction name="actionNone"/>
+     <addaction name="separator"/>
+     <addaction name="actionRow"/>
+     <addaction name="actionColumn"/>
+     <addaction name="separator"/>
+     <addaction name="actionPattern"/>
+     <addaction name="actionOrder"/>
     </widget>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
@@ -944,6 +950,26 @@ QListWidget::item:selected:hover {
    </property>
    <property name="shortcut">
     <string>Alt+S</string>
+   </property>
+  </action>
+  <action name="actionRow">
+   <property name="text">
+    <string>Row</string>
+   </property>
+  </action>
+  <action name="actionColumn">
+   <property name="text">
+    <string>Column</string>
+   </property>
+  </action>
+  <action name="actionPattern">
+   <property name="text">
+    <string>Pattern</string>
+   </property>
+  </action>
+  <action name="actionOrder">
+   <property name="text">
+    <string>Order</string>
    </property>
   </action>
  </widget>

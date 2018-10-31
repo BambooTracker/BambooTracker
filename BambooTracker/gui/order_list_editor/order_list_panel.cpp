@@ -614,6 +614,33 @@ void OrderListPanel::onSelectPressed(int type)
 		}
 		break;
 	}
+	case 2:	// Row
+	{
+		selectAllState_ = -1;
+		OrderPosition start = { 0, curPos_.row };
+		OrderPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), curPos_.row };
+		setSelectedRectangle(start, end);
+		break;
+	}
+	case 3:	// Column
+	{
+		selectAllState_ = -1;
+		OrderPosition start = { curPos_.track, 0 };
+		OrderPosition end = { curPos_.track, static_cast<int>(bt_->getOrderSize(curSongNum_) - 1) };
+		setSelectedRectangle(start, end);
+		break;
+	}
+	case 4:	// Pattern
+	{
+		selectAllState_ = -1;
+		setSelectedRectangle(curPos_, curPos_);
+		break;
+	}
+	case 5:	// Order
+	{
+		onSelectPressed(2);
+		break;
+	}
 	}
 
 	update();

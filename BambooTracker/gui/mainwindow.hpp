@@ -142,6 +142,10 @@ private slots:
 	void on_actionInterpolate_triggered();
 	void on_actionReverse_triggered();
 	void on_actionReplace_Instrument_triggered();
+	void on_actionRow_triggered();
+	void on_actionColumn_triggered();
+	void on_actionPattern_triggered();
+	void on_actionOrder_triggered();
 };
 
 #endif // MAINWINDOW_HPP

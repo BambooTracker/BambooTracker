@@ -1399,3 +1399,27 @@ void MainWindow::on_actionReplace_Instrument_triggered()
 {
 	ui->patternEditor->onReplaceInstrumentPressed();
 }
+
+void MainWindow::on_actionRow_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onSelectPressed(2);
+	else if (isEditedOrder_) ui->orderList->onSelectPressed(2);
+}
+
+void MainWindow::on_actionColumn_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onSelectPressed(3);
+	else if (isEditedOrder_) ui->orderList->onSelectPressed(3);
+}
+
+void MainWindow::on_actionPattern_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onSelectPressed(4);
+	else if (isEditedOrder_) ui->orderList->onSelectPressed(4);
+}
+
+void MainWindow::on_actionOrder_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onSelectPressed(5);
+	else if (isEditedOrder_) ui->orderList->onSelectPressed(5);
+}

@@ -46,6 +46,10 @@ public slots:
 	void onPastePressed();
 	/// 0: None
 	/// 1: All
+	/// 2: Row
+	/// 3: Column
+	/// 4: Pattern
+	/// 5: Order
 	void onSelectPressed(int type);
 	void onDuplicatePressed();
 	void onMoveOrderPressed(bool isUp);

@@ -1342,6 +1342,54 @@ void PatternEditorPanel::onSelectPressed(int type)
 		}
 		break;
 	}
+	case 2:	// Row
+	{
+		selectAllState_ = -1;
+		PatternPosition start = { 0, 0, curPos_.order, curPos_.step };
+		PatternPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), 10,
+								curPos_.order, curPos_.step };
+		setSelectedRectangle(start, end);
+		break;
+	}
+	case 3:	// Column
+	{
+		selectAllState_ = -1;
+		PatternPosition start = { curPos_.track, curPos_.colInTrack, curPos_.order, 0 };
+		PatternPosition end = {
+			curPos_.track,
+			curPos_.colInTrack,
+			curPos_.order,
+			static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1)
+		};
+		setSelectedRectangle(start, end);
+		break;
+	}
+	case 4:	// Pattern
+	{
+		selectAllState_ = -1;
+		PatternPosition start = { curPos_.track, 0, curPos_.order, 0 };
+		PatternPosition end = {
+			curPos_.track,
+			10,
+			curPos_.order,
+			static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1)
+		};
+		setSelectedRectangle(start, end);
+		break;
+	}
+	case 5:	// Order
+	{
+		selectAllState_ = -1;
+		PatternPosition start = { 0, 0, curPos_.order, 0 };
+		PatternPosition end = {
+			static_cast<int>(songStyle_.trackAttribs.size() - 1),
+			10,
+			curPos_.order,
+			static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1)
+		};
+		setSelectedRectangle(start, end);
+		break;
+	}
 	}
 
 	update();
