@@ -441,6 +441,7 @@ QListWidget::item:selected:hover {
      <addaction name="actionIncrease_Octave"/>
     </widget>
     <addaction name="actionInterpolate"/>
+    <addaction name="actionReverse"/>
     <addaction name="separator"/>
     <addaction name="actionExpand"/>
     <addaction name="actionShrink"/>
@@ -920,6 +921,17 @@ QListWidget::item:selected:hover {
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionReverse">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Reverse</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

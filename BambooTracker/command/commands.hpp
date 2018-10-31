@@ -32,6 +32,7 @@
 #include "./pattern/shrink_pattern_command.hpp"
 #include "./pattern/set_echo_buffer_access_command.hpp"
 #include "./pattern/interpolate_pattern_command.hpp"
+#include "./pattern/reverse_pattern_command.hpp"
 
 /********** Order edit **********/
 #include "./order/set_pattern_to_order_command.hpp"

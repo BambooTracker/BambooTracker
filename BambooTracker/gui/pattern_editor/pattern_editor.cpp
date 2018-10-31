@@ -174,3 +174,8 @@ void PatternEditor::onInterpolatePressed()
 {
 	ui->panel->onInterpolatePressed();
 }
+
+void PatternEditor::onReversePressed()
+{
+	ui->panel->onReversePressed();
+}

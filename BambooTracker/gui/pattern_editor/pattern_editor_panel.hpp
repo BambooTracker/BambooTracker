@@ -61,6 +61,7 @@ public slots:
 	void onExpandPressed();
 	void onShrinkPressed();
 	void onInterpolatePressed();
+	void onReversePressed();
 
 signals:
 	void currentCellInRowChanged(int num);

@@ -26,5 +26,6 @@
 #include "shrink_pattern_qt_command.hpp"
 #include "set_echo_buffer_access_qt_command.hpp"
 #include "interpolate_pattern_qt_command.hpp"
+#include "reverse_pattern_qt_command.hpp"
 
 #endif // PATTERN_COMMANDS_QT_HPP

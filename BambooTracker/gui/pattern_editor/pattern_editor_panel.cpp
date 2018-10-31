@@ -1426,6 +1426,16 @@ void PatternEditorPanel::onInterpolatePressed()
 	comStack_.lock()->push(new InterpolatePatternQtCommand(this));
 }
 
+void PatternEditorPanel::onReversePressed()
+{
+	if (selLeftAbovePos_.order == -1) return;
+
+	bt_->reversePattern(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+							selLeftAbovePos_.order, selLeftAbovePos_.step,
+							selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+	comStack_.lock()->push(new ReversePatternQtCommand(this));
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -1741,6 +1751,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		auto pattern = new QMenu("Pattern");
 		menu.addMenu(pattern);
 		QAction* interpolate = pattern->addAction("Interpolate", this, &PatternEditorPanel::onInterpolatePressed);
+		QAction* reverse = pattern->addAction("Reverse", this, &PatternEditorPanel::onReversePressed);
 		pattern->addSeparator();
 		QAction* expand = pattern->addAction("Expand", this, &PatternEditorPanel::onExpandPressed);
 		QAction* shrink = pattern->addAction("Shrink", this, &PatternEditorPanel::onShrinkPressed);
@@ -1762,6 +1773,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			pasteMix->setEnabled(false);
 			erase->setEnabled(false);
 			interpolate->setEnabled(false);
+			reverse->setEnabled(false);
 			expand->setEnabled(false);
 			shrink->setEnabled(false);
 			deNote->setEnabled(false);
@@ -1782,6 +1794,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 				cut->setEnabled(false);
 				erase->setEnabled(false);
 				interpolate->setEnabled(false);
+				reverse->setEnabled(false);
 				expand->setEnabled(false);
 				shrink->setEnabled(false);
 				deNote->setEnabled(false);

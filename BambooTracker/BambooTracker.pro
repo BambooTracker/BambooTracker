@@ -148,7 +148,9 @@ SOURCES += \
     io/file_io.cpp \
     io/binary_container.cpp \
     gui/command/pattern/interpolate_pattern_qt_command.cpp \
-    command/pattern/interpolate_pattern_command.cpp
+    command/pattern/interpolate_pattern_command.cpp \
+    gui/command/pattern/reverse_pattern_qt_command.cpp \
+    command/pattern/reverse_pattern_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -287,7 +289,9 @@ HEADERS += \
     io/binary_container.hpp \
     version.hpp \
     gui/command/pattern/interpolate_pattern_qt_command.hpp \
-    command/pattern/interpolate_pattern_command.hpp
+    command/pattern/interpolate_pattern_command.hpp \
+    gui/command/pattern/reverse_pattern_qt_command.hpp \
+    command/pattern/reverse_pattern_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

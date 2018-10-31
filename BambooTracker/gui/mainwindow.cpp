@@ -922,6 +922,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionDelete->setEnabled(false);
 		// Pattern
 		ui->actionInterpolate->setEnabled(false);
+		ui->actionReverse->setEnabled(false);
 		ui->actionExpand->setEnabled(false);
 		ui->actionShrink->setEnabled(false);
 		ui->actionDecrease_Note->setEnabled(false);
@@ -937,6 +938,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionDelete->setEnabled(true);
 		// Pattern
 		ui->actionInterpolate->setEnabled(isSelectedPO_);
+		ui->actionReverse->setEnabled(isSelectedPO_);
 		ui->actionExpand->setEnabled(isSelectedPO_);
 		ui->actionShrink->setEnabled(isSelectedPO_);
 		ui->actionDecrease_Note->setEnabled(true);
@@ -992,6 +994,7 @@ void MainWindow::updateMenuByOrder()
 
 	// Pattern
 	ui->actionInterpolate->setEnabled(false);
+	ui->actionReverse->setEnabled(false);
 	ui->actionExpand->setEnabled(false);
 	ui->actionShrink->setEnabled(false);
 	ui->actionDecrease_Note->setEnabled(false);
@@ -1021,6 +1024,7 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		ui->actionCut->setEnabled(false);
 		// Pattern
 		ui->actionInterpolate->setEnabled(false);
+		ui->actionReverse->setEnabled(false);
 		ui->actionExpand->setEnabled(false);
 		ui->actionShrink->setEnabled(false);
 	}
@@ -1031,6 +1035,7 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		// Pattern
 		bool enabled = (isEditedPattern_ && isEditedPattern_) ? isSelected : false;
 		ui->actionInterpolate->setEnabled(enabled);
+		ui->actionReverse->setEnabled(enabled);
 		ui->actionExpand->setEnabled(enabled);
 		ui->actionShrink->setEnabled(enabled);
 	}
@@ -1376,4 +1381,9 @@ void MainWindow::on_actionSave_To_File_triggered()
 void MainWindow::on_actionInterpolate_triggered()
 {
 	ui->patternEditor->onInterpolatePressed();
+}
+
+void MainWindow::on_actionReverse_triggered()
+{
+	ui->patternEditor->onReversePressed();
 }
