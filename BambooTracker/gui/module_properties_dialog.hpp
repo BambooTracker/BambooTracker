@@ -27,7 +27,6 @@ private slots:
 	void on_insertPushButton_clicked();
 	void on_songTreeWidget_itemSelectionChanged();
 	void on_editTitleLineEdit_textEdited(const QString &arg1);
-
 	void on_buttonBox_accepted();
 
 private:

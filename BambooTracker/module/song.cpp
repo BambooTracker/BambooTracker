@@ -160,3 +160,19 @@ void Song::swapOrder(int a, int b)
 		track.swapOrder(a, b);
 	}
 }
+
+std::set<int> Song::getRegisteredInstruments() const
+{
+	std::set<int> set;
+	for (auto& track : tracks_) {
+		for (auto& n : track.getRegisteredInstruments()) {
+			set.insert(n);
+		}
+	}
+	return set;
+}
+
+void Song::clearUnusedPatterns()
+{
+	for (auto& track : tracks_) track.clearUnusedPatterns();
+}

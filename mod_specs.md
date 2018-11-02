@@ -249,6 +249,7 @@ After pattern count, repeat pattern subblocks.
 |uint32    |Step count     |Number of steps stored event.               |
 
 And repeat step unit.
+
 |Type   |Field      |Description                                                 |
 |-------|-----------|------------------------------------------------------------|
 |uint32 |Step index |Index of the step.                                          |

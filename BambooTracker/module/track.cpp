@@ -73,6 +73,17 @@ std::vector<int> Track::getEditedPatternIndices() const
 	return list;
 }
 
+std::set<int> Track::getRegisteredInstruments() const
+{
+	std::set<int> set;
+	for (auto& pattern : patterns_) {
+		for (auto& n : pattern.getRegisteredInstruments()) {
+			set.insert(n);
+		}
+	}
+	return set;
+}
+
 void Track::registerPatternToOrder(int order, int pattern)
 {
 	patterns_.at(pattern).usedCountUp();
@@ -102,5 +113,13 @@ void Track::changeDefaultPatternSize(size_t size)
 {
 	for (auto& ptn : patterns_) {
 		ptn.changeSize(size);
+	}
+}
+
+void Track::clearUnusedPatterns()
+{
+	for (size_t i = 0; i < 128; ++i) {
+		if (!patterns_[i].getUsedCount() && patterns_[i].existCommand())
+			patterns_[i].clear();
 	}
 }

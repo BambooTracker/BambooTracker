@@ -452,6 +452,35 @@ std::vector<int> InstrumentsManager::getEntriedInstrumentIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::clearUnusedInstrumentProperties()
+{
+	for (size_t i = 0; i < 128; ++i) {
+		if (!envFM_[i]->isUserInstrument())
+			envFM_[i] = std::make_shared<EnvelopeFM>(i);
+		if (!lfoFM_[i]->isUserInstrument())
+			lfoFM_[i] = std::make_shared<LFOFM>(i);
+		for (auto& p : opSeqFM_) {
+			if (!p.second[i]->isUserInstrument())
+				p.second[i] = std::make_shared<CommandSequence>(i, 0);
+		}
+		if (!arpFM_[i]->isUserInstrument())
+			arpFM_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+		if (!ptFM_[i]->isUserInstrument())
+			ptFM_[i] = std::make_shared<CommandSequence>(i, 0, 127);
+
+		if (!wfSSG_[i]->isUserInstrument())
+			wfSSG_[i] = std::make_shared<CommandSequence>(i, 0);
+		if (!tnSSG_[i]->isUserInstrument())
+			tnSSG_[i] = std::make_shared<CommandSequence>(i, 0);
+		if (!envSSG_[i]->isUserInstrument())
+			envSSG_[i] = std::make_shared<CommandSequence>(i, 0, 15);
+		if (!arpSSG_[i]->isUserInstrument())
+			arpSSG_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+		if (!ptSSG_[i]->isUserInstrument())
+			ptSSG_[i] = std::make_shared<CommandSequence>(i, 0, 127);
+	}
+}
+
 /// Return:
 ///		-1: no free instrument
 ///		else: first free instrument number

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 #include <memory>
 #include "pattern.hpp"
 #include "misc.hpp"
@@ -20,6 +21,7 @@ public:
 	int searchFirstUneditedUnusedPattern() const;
 	int clonePattern(int num);
 	std::vector<int> getEditedPatternIndices() const;
+	std::set<int> getRegisteredInstruments() const;
 
 	void registerPatternToOrder(int order, int pattern);
 	void insertOrderBelow(int order);
@@ -27,6 +29,8 @@ public:
 	void swapOrder(int a, int b);
 
 	void changeDefaultPatternSize(size_t size);
+
+	void clearUnusedPatterns();
 
 private:
 	std::unique_ptr<TrackAttribute> attrib_;

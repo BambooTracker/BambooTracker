@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 #include <string>
 #include "track.hpp"
 #include "misc.hpp"
@@ -37,6 +38,10 @@ public:
 	void insertOrderBelow(int order);
 	void deleteOrder(int order);
 	void swapOrder(int a, int b);
+
+	std::set<int> getRegisteredInstruments() const;
+
+	void clearUnusedPatterns();
 
 private:
 	int num_;

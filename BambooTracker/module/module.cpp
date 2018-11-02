@@ -161,3 +161,19 @@ Groove& Module::getGroove(int num)
 {
 	return grooves_.at(num);
 }
+
+std::set<int> Module::getRegisterdInstruments() const
+{
+	std::set<int> set;
+	for (auto& song : songs_) {
+		for (auto& n : song.getRegisteredInstruments()) {
+			set.insert(n);
+		}
+	}
+	return set;
+}
+
+void Module::clearUnusedPatterns()
+{
+	for (auto& song : songs_) song.clearUnusedPatterns();
+}

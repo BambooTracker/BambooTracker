@@ -34,6 +34,8 @@ public:
 
 	std::vector<int> getEntriedInstrumentIndices() const;
 
+	void clearUnusedInstrumentProperties();
+
 	int findFirstFreeInstrument() const;
 
 private:

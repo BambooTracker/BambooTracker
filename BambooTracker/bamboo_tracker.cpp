@@ -1,6 +1,7 @@
 #include "bamboo_tracker.hpp"
 #include <algorithm>
 #include <utility>
+#include <set>
 #include "commands.hpp"
 #include "file_io.hpp"
 
@@ -121,6 +122,22 @@ void BambooTracker::clearAllInstrument()
 std::vector<int> BambooTracker::getInstrumentIndices() const
 {
 	return instMan_->getInstrumentIndices();
+}
+
+std::vector<int> BambooTracker::getUnusedInstrumentIndices() const
+{
+	std::vector<int> unused;
+	std::set<int> regdInsts = mod_->getRegisterdInstruments();
+	for (auto& inst : instMan_->getInstrumentIndices()) {
+		if (regdInsts.find(inst) == regdInsts.end())
+			unused.push_back(inst);
+	}
+	return unused;
+}
+
+void BambooTracker::clearUnusedInstrumentProperties()
+{
+	instMan_->clearUnusedInstrumentProperties();
 }
 
 //--- FM
@@ -1689,6 +1706,11 @@ void BambooTracker::setGrooves(std::vector<std::vector<int>> seqs)
 std::vector<int> BambooTracker::getGroove(int num) const
 {
 	return mod_->getGroove(num).getSequence();
+}
+
+void BambooTracker::clearUnusedPatterns()
+{
+	mod_->clearUnusedPatterns();
 }
 
 /*----- Song -----*/

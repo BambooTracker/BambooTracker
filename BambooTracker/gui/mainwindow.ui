@@ -472,10 +472,19 @@ QListWidget::item:selected:hover {
     <property name="title">
      <string>Module</string>
     </property>
+    <widget class="QMenu" name="menuCleanup">
+     <property name="title">
+      <string>Cleanup</string>
+     </property>
+     <addaction name="actionRemove_Unused_Instruments"/>
+     <addaction name="actionRemove_Unused_Patterns"/>
+    </widget>
     <addaction name="actionModule_Properties"/>
     <addaction name="actionComments"/>
     <addaction name="separator"/>
     <addaction name="actionGroove_Settings"/>
+    <addaction name="separator"/>
+    <addaction name="menuCleanup"/>
    </widget>
    <widget class="QMenu" name="menuInstrument">
     <property name="title">
@@ -970,6 +979,16 @@ QListWidget::item:selected:hover {
   <action name="actionOrder">
    <property name="text">
     <string>Order</string>
+   </property>
+  </action>
+  <action name="actionRemove_Unused_Instruments">
+   <property name="text">
+    <string>Remove Unused Instruments</string>
+   </property>
+  </action>
+  <action name="actionRemove_Unused_Patterns">
+   <property name="text">
+    <string>Remove Unused Patterns</string>
    </property>
   </action>
  </widget>

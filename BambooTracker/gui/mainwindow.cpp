@@ -5,7 +5,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QDialog>
-#include <QMessageBox>
 #include <QRegularExpression>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -351,6 +350,8 @@ void MainWindow::dropEvent(QDropEvent* event)
 		}
 	}
 
+	bt_->stopPlaySong();
+	lockControls(false);
 	if (bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toStdString())) {
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
@@ -412,10 +413,9 @@ void MainWindow::addInstrument()
 	}
 }
 
-void MainWindow::removeInstrument()
+void MainWindow::removeInstrument(int row)
 {
 	auto& list = ui->instrumentListWidget;
-	int row = list->currentRow();
 	int num = list->item(row)->data(Qt::UserRole).toInt();
 
 	bt_->removeInstrument(num);
@@ -689,7 +689,9 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QMenu menu;
 
 	QAction* add = menu.addAction("Add", this, &MainWindow::addInstrument);
-	QAction* remove = menu.addAction("Remove", this, &MainWindow::removeInstrument);
+	QAction* remove = menu.addAction("Remove", this, [&]() {
+		removeInstrument(ui->instrumentListWidget->currentRow());
+	});
     menu.addSeparator();
 	QAction* name = menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
     menu.addSeparator();
@@ -1093,7 +1095,8 @@ void MainWindow::on_actionRemove_Order_triggered()
 void MainWindow::on_actionModule_Properties_triggered()
 {
 	ModulePropertiesDialog dialog(bt_);
-	if (dialog.exec() == QDialog::Accepted) {
+	if (dialog.exec() == QDialog::Accepted
+			&& showUndoResetWarningDialog("Do you want to change song properties?")) {
 		bt_->stopPlaySong();
 		lockControls(false);
 		loadModule();
@@ -1109,7 +1112,7 @@ void MainWindow::on_actionNew_Instrument_triggered()
 
 void MainWindow::on_actionRemove_Instrument_triggered()
 {
-	removeInstrument();
+	removeInstrument(ui->instrumentListWidget->currentRow());
 }
 
 void MainWindow::on_actionClone_Instrument_triggered()
@@ -1282,6 +1285,8 @@ void MainWindow::on_actionNew_triggered()
 		}
 	}
 
+	bt_->stopPlaySong();
+	lockControls(false);
 	bt_->makeNewModule();
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
@@ -1365,6 +1370,8 @@ void MainWindow::on_actionOpen_triggered()
 												"BambooTracker module file (*.btm)");
 	if (file.isNull()) return;
 
+	bt_->stopPlaySong();
+	lockControls(false);
 	if (bt_->loadModule(file.toStdString())) {
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
@@ -1422,4 +1429,40 @@ void MainWindow::on_actionOrder_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onSelectPressed(5);
 	else if (isEditedOrder_) ui->orderList->onSelectPressed(5);
+}
+
+void MainWindow::on_actionRemove_Unused_Instruments_triggered()
+{
+	if (showUndoResetWarningDialog("Do you want to remove all unused instruments?"))
+	{
+		bt_->stopPlaySong();
+		lockControls(false);
+
+		auto list = ui->instrumentListWidget;
+		for (auto& n : bt_->getUnusedInstrumentIndices()) {
+			for (int i = 0; i < list->count(); ++i) {
+				if (list->item(i)->data(Qt::UserRole).toInt() == n) {
+					removeInstrument(i);
+				}
+			}
+		}
+		bt_->clearUnusedInstrumentProperties();
+		bt_->clearCommandHistory();
+		comStack_->clear();
+		setModifiedTrue();
+	}
+}
+
+void MainWindow::on_actionRemove_Unused_Patterns_triggered()
+{
+	if (showUndoResetWarningDialog("Do you want to remove all unused patterns?"))
+	{
+		bt_->stopPlaySong();
+		lockControls(false);
+
+		bt_->clearUnusedPatterns();
+		bt_->clearCommandHistory();
+		comStack_->clear();
+		setModifiedTrue();
+	}
 }

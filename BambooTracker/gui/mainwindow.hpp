@@ -11,6 +11,7 @@
 #include <QCloseEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QMessageBox>
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
@@ -45,7 +46,7 @@ private:
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
 	void addInstrument();
-	void removeInstrument();
+	void removeInstrument(int row);
 	void editInstrument();
 	int findRowFromInstrumentList(int instNum);
 	void editInstrumentName();
@@ -146,6 +147,16 @@ private slots:
 	void on_actionColumn_triggered();
 	void on_actionPattern_triggered();
 	void on_actionOrder_triggered();
+	void on_actionRemove_Unused_Instruments_triggered();
+	void on_actionRemove_Unused_Patterns_triggered();
+
+	inline bool showUndoResetWarningDialog(QString text)
+	{
+		return (QMessageBox::warning(this, "Warning",
+									text + " If you execute this command, the command history is reset.",
+									QMessageBox::Yes | QMessageBox::No,
+									QMessageBox::No) == QMessageBox::Yes);
+	}
 };
 
 #endif // MAINWINDOW_HPP

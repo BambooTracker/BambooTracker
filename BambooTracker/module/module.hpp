@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 #include <string>
 #include "song.hpp"
 #include "groove.hpp"
@@ -39,6 +40,10 @@ public:
 	void setGroove(int num, std::vector<int> seq);
 	void setGrooves(std::vector<std::vector<int>> seqs);
 	Groove& getGroove(int num);
+
+	std::set<int> getRegisterdInstruments() const;
+
+	void clearUnusedPatterns();
 
 private:
 	std::string filePath_;

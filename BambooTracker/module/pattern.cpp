@@ -92,6 +92,16 @@ std::vector<int> Pattern::getEditedStepIndices() const
 	return list;
 }
 
+std::set<int> Pattern::getRegisteredInstruments() const
+{
+	std::set<int> set;
+	for (size_t i = 0; i < size_; ++i) {
+		int n = steps_.at(i).getInstrumentNumber();
+		if (n > -1) set.insert(n);
+	}
+	return set;
+}
+
 Pattern Pattern::clone(int asNumber)
 {
 	return Pattern(asNumber, size_, steps_);
