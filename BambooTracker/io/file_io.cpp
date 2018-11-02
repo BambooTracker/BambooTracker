@@ -131,8 +131,8 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 
 
 	/***** Instrument memory section *****/
-	ctr.appendString("INSTMEM ");
-	size_t instMemOfs = ctr.size();
+	ctr.appendString("INSTPROP");
+	size_t instPropOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy instrument memory section offset
 
 	// FM envelope
@@ -605,7 +605,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 		}
 	}
 
-	ctr.writeUint32(instMemOfs, ctr.size() - instMemOfs);
+	ctr.writeUint32(instPropOfs, ctr.size() - instPropOfs);
 
 
 	/***** Groove section *****/
@@ -867,21 +867,21 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 
 
 	/***** Instrument memory section *****/
-	if (ctr.readString(globCsr, 8) != "INSTMEM ") return false;
+	if (ctr.readString(globCsr, 8) != "INSTPROP") return false;
 	else {
 		globCsr += 8;
-		size_t instMemOfs = ctr.readUint32(globCsr);
-		size_t instMemCsr = globCsr + 4;
-		globCsr += instMemOfs;
-		while (instMemCsr < globCsr) {
-			switch (ctr.readUint8(instMemCsr++)) {
+		size_t instPropOfs = ctr.readUint32(globCsr);
+		size_t instPropCsr = globCsr + 4;
+		globCsr += instPropOfs;
+		while (instPropCsr < globCsr) {
+			switch (ctr.readUint8(instPropCsr++)) {
 			case 0x00:	// FM envelope
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint8_t ofs = ctr.readUint8(instMemCsr);
-					uint8_t csr = instMemCsr + 1;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint8_t ofs = ctr.readUint8(instPropCsr);
+					uint8_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
@@ -961,17 +961,17 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
 														   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x01:	// FM LFO
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint8_t ofs = ctr.readUint8(instMemCsr);
-					uint8_t csr = instMemCsr + 1;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint8_t ofs = ctr.readUint8(instPropCsr);
+					uint8_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
@@ -983,321 +983,321 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
 					tmp = ctr.readUint8(csr++);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::COUNT, tmp);
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x02:	// FM AL
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::AL, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::AL, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x03:	// FM FB
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::FB, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::FB, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x04:	// FM AR1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::AR1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::AR1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x05:	// FM DR1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DR1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DR1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x06:	// FM SR1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SR1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SR1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x07:	// FM RR1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::RR1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::RR1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x08:	// FM SL1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SL1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SL1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x09:	// FM TL1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::TL1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::TL1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x0a:	// FM KS1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::KS1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::KS1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x0b:	// FM ML1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::ML1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::ML1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x0c:	// FM DT1
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DT1, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DT1, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x0d:	// FM AR2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::AR2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::AR2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x0e:	// FM DR2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DR2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x0f:	// FM SR2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SR2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x10:	// FM RR2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::RR2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x11:	// FM SL2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SL2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x12:	// FM TL2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::TL2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x13:	// FM KS2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::KS2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x14:	// FM ML2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::ML2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x15:	// FM DT2
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DT2, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x16:	// FM AR3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::AR3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x17:	// FM DR3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DR3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x18:	// FM SR3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SR3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x19:	// FM RR3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::RR3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x1a:	// FM SL3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SL3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x1b:	// FM TL3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::TL3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x1c:	// FM KS3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::KS3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x1d:	// FM ML3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::ML3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x1e:	// FM DT3
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DT3, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x1f:	// FM AR4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::AR4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x20:	// FM DR4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DR4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x21:	// FM SR4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SR4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x22:	// FM RR4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::RR4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x23:	// FM SL4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::SL4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x24:	// FM TL4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::TL4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x25:	// FM KS4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::KS4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x26:	// FM ML4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::ML4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x27:	// FM DT4
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i)
-					instMemCsr += loadInstrumentMemoryOperatorSequence(
-									  FMEnvelopeParameter::DT4, instMemCsr, instMan, ctr);
+					instPropCsr += loadInstrumentMemoryOperatorSequence(
+									  FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr);
 				break;
 			}
 			case 0x28:	// FM arpeggio
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -1345,17 +1345,17 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x29:	// FM pitch
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -1403,17 +1403,17 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x30:	// SSG wave form
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -1461,17 +1461,17 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x31:	// SSG tone/noise
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -1519,17 +1519,17 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x32:	// SSG envelope
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -1577,17 +1577,17 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x33:	// SSG arpeggio
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -1635,17 +1635,17 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
 			case 0x34:	// SSG pitch
 			{
-				uint8_t cnt = ctr.readUint8(instMemCsr++);
+				uint8_t cnt = ctr.readUint8(instPropCsr++);
 				for (size_t i = 0; i < cnt; ++i) {
-					uint8_t idx = ctr.readUint8(instMemCsr++);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint8_t idx = ctr.readUint8(instPropCsr++);
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -1693,7 +1693,7 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 				}
 				break;
 			}
@@ -1924,8 +1924,8 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 
 
 	/***** Instrument memory section *****/
-	ctr.appendString("INSTMEM ");
-	size_t instMemOfs = ctr.size();
+	ctr.appendString("INSTPROP");
+	size_t instPropOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy instrument memory section offset
 
 	switch (inst->getSoundSource()) {
@@ -2371,7 +2371,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 	}
 	}
 
-	ctr.writeUint32(instMemOfs, ctr.size() - instMemOfs);
+	ctr.writeUint32(instPropOfs, ctr.size() - instPropOfs);
 
 	return ctr.save(path);
 }
@@ -2423,359 +2423,359 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 
 
 		/***** Instrument memory section *****/
-		if (ctr.readString(globCsr, 8) != "INSTMEM ") return nullptr;
+		if (ctr.readString(globCsr, 8) != "INSTPROP") return nullptr;
 		else {
 			globCsr += 8;
-			size_t instMemOfs = ctr.readUint32(globCsr);
-			size_t instMemCsr = globCsr + 4;
-			size_t instMemCsrTmp = instMemCsr;
-			globCsr += instMemOfs;
+			size_t instPropOfs = ctr.readUint32(globCsr);
+			size_t instPropCsr = globCsr + 4;
+			size_t instPropCsrTmp = instPropCsr;
+			globCsr += instPropOfs;
 			std::vector<int> nums;
 			// Check memory range
-			while (instMemCsr < globCsr) {
-				switch (ctr.readUint8(instMemCsr++)) {
+			while (instPropCsr < globCsr) {
+				switch (ctr.readUint8(instPropCsr++)) {
 				case 0x00:	// FM envelope
 				{
 					nums.push_back(instMan.lock()->findFirstFreeEnvelopeFM());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint8(instMemCsr);
+					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x01:	// FM LFO
 				{
 					nums.push_back(instMan.lock()->findFirstFreeLFOFM());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint8(instMemCsr);
+					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x02:	// FM AL
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::AL));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x03:	// FM FB
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::FB));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x04:	// FM AR1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::AR1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x05:	// FM DR1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DR1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x06:	// FM SR1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SR1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x07:	// FM RR1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::RR1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x08:	// FM SL1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SL1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x09:	// FM TL1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::TL1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0a:	// FM KS1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::KS1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0b:	// FM ML1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::ML1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0c:	// FM DT1
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DT1));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0d:	// FM AR2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::AR2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0e:	// FM DR2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DR2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0f:	// FM SR2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SR2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x10:	// FM RR2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::RR2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x11:	// FM SL2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SL2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x12:	// FM TL2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::TL2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x13:	// FM KS2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::KS2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x14:	// FM ML2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::ML2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x15:	// FM DT2
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DT2));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x16:	// FM AR3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::AR3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x17:	// FM DR3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DR3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x18:	// FM SR3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SR3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x19:	// FM RR3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::RR3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1a:	// FM SL3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SL3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1b:	// FM TL3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::TL3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1c:	// FM KS3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::KS3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1d:	// FM ML3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::ML3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1e:	// FM DT3
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DT3));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1f:	// FM AR4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::AR4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x20:	// FM DR4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DR4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x21:	// FM SR4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SR4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x22:	// FM RR4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::RR4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x23:	// FM SL4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::SL4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x24:	// FM TL4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::TL4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x25:	// FM KS4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::KS4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x26:	// FM ML4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::ML4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x27:	// FM DT4
 				{
 					nums.push_back(instMan.lock()->findFirstFreeOperatorSequenceFM(FMEnvelopeParameter::DT4));
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x28:	// FM arpeggio
 				{
 					nums.push_back(instMan.lock()->findFirstFreeArpeggioFM());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x29:	// FM pitch
 				{
 					nums.push_back(instMan.lock()->findFirstFreePitchFM());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x30:	// SSG wave form
 				{
 					nums.push_back(instMan.lock()->findFirstFreeWaveFormSSG());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x31:	// SSG tone/noise
 				{
 					nums.push_back(instMan.lock()->findFirstFreeToneNoiseSSG());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x32:	// SSG envelope
 				{
 					nums.push_back(instMan.lock()->findFirstFreeEnvelopeSSG());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x33:	// SSG arpeggio
 				{
 					nums.push_back(instMan.lock()->findFirstFreeArpeggioSSG());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x34:	// SSG pitch
 				{
 					nums.push_back(instMan.lock()->findFirstFreePitchSSG());
 					if (nums.back() == -1) return nullptr;
-					instMemCsr += ctr.readUint16(instMemCsr);
+					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				}
 			}
 			// Read data
-			instMemCsr = instMemCsrTmp;
+			instPropCsr = instPropCsrTmp;
 			auto numIt = nums.begin();
-			while (instMemCsr < globCsr) {
-				switch (ctr.readUint8(instMemCsr++)) {
+			while (instPropCsr < globCsr) {
+				switch (ctr.readUint8(instPropCsr++)) {
 				case 0x00:	// FM envelope
 				{
 					int idx = *numIt++;
 					dynamic_cast<InstrumentFM*>(inst)->setEnvelopeNumber(idx);
-					uint8_t ofs = ctr.readUint8(instMemCsr);
-					uint8_t csr = instMemCsr + 1;
+					uint8_t ofs = ctr.readUint8(instPropCsr);
+					uint8_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
@@ -2855,7 +2855,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
 														   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x01:	// FM LFO
@@ -2864,8 +2864,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto fm = dynamic_cast<InstrumentFM*>(inst);
 					fm->setLFOEnabled(true);
 					fm->setLFONumber(idx);
-					uint8_t ofs = ctr.readUint8(instMemCsr);
-					uint8_t csr = instMemCsr + 1;
+					uint8_t ofs = ctr.readUint8(instPropCsr);
+					uint8_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
@@ -2877,270 +2877,270 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
 					tmp = ctr.readUint8(csr++);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::COUNT, tmp);
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x02:	// FM AL
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AL, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::AL, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x03:	// FM FB
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::FB, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::FB, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x04:	// FM AR1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::AR1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x05:	// FM DR1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DR1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x06:	// FM SR1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SR1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x07:	// FM RR1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::RR1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x08:	// FM SL1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SL1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x09:	// FM TL1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::TL1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x0a:	// FM KS1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::KS1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x0b:	// FM ML1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::ML1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x0c:	// FM DT1
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT1, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DT1, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x0d:	// FM AR2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR2, instMemCsr, instMan,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::AR2, instPropCsr, instMan,
 									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x0e:	// FM DR2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x0f:	// FM SR2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x10:	// FM RR2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x11:	// FM SL2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x12:	// FM TL2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x13:	// FM KS2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x14:	// FM ML2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x15:	// FM DT2
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT2, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x16:	// FM AR3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR3, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x17:	// FM DR3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR3, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x18:	// FM SR3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR3, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x19:	// FM RR3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR3, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x1a:	// FM SL3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL3, instMemCsr, instMan, ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x1b:	// FM TL3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL3, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x1c:	// FM KS3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS3, instMemCsr, instMan, ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x1d:	// FM ML3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML3, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x1e:	// FM DT3
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT3, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x1f:	// FM AR4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x20:	// FM DR4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x21:	// FM SR4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x22:	// FM RR4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x23:	// FM SL4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x24:	// FM TL4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x25:	// FM KS4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x26:	// FM ML4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
 				case 0x27:	// FM DT4
 				{
-					instMemCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT4, instMemCsr, instMan, ctr,
+					instPropCsr += loadInstrumentMemoryOperatorSequenceForInstrument(
+									  FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr,
 									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
 					break;
 				}
@@ -3150,8 +3150,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto fm = dynamic_cast<InstrumentFM*>(inst);
 					fm->setArpeggioEnabled(true);
 					fm->setArpeggioNumber(idx);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3199,7 +3199,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x29:	// FM pitch
@@ -3208,8 +3208,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto fm = dynamic_cast<InstrumentFM*>(inst);
 					fm->setPitchEnabled(true);
 					fm->setPitchNumber(idx);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3257,7 +3257,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x30:	// SSG wave form
@@ -3266,8 +3266,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto ssg = dynamic_cast<InstrumentSSG*>(inst);
 					ssg->setWaveFormEnabled(true);
 					ssg->setWaveFormNumber(idx);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3315,7 +3315,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x31:	// SSG tone/noise
@@ -3324,8 +3324,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto ssg = dynamic_cast<InstrumentSSG*>(inst);
 					ssg->setToneNoiseEnabled(true);
 					ssg->setToneNoiseNumber(idx);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3373,7 +3373,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x32:	// SSG envelope
@@ -3382,8 +3382,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto ssg = dynamic_cast<InstrumentSSG*>(inst);
 					ssg->setEnvelopeEnabled(true);
 					ssg->setEnvelopeNumber(idx);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3431,7 +3431,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x33:	// SSG arpeggio
@@ -3440,8 +3440,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto ssg = dynamic_cast<InstrumentSSG*>(inst);
 					ssg->setArpeggioEnabled(true);
 					ssg->setArpeggioNumber(idx);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3489,7 +3489,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				case 0x34:	// SSG pitch
@@ -3498,8 +3498,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					auto ssg = dynamic_cast<InstrumentSSG*>(inst);
 					ssg->setPitchEnabled(true);
 					ssg->setPitchNumber(idx);
-					uint16_t ofs = ctr.readUint16(instMemCsr);
-					uint8_t csr = instMemCsr + 2;
+					uint16_t ofs = ctr.readUint16(instPropCsr);
+					uint8_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3547,7 +3547,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
-					instMemCsr += ofs;
+					instPropCsr += ofs;
 					break;
 				}
 				}

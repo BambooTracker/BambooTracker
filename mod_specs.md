@@ -83,18 +83,18 @@ After FB sequence number, it repeats 9 operator's parameters for each operator (
 |uint8 |Pitch sequence number      |Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses pitch sequence.           |
 
 
-## Instrument Memory Section
-|Type            |Field                            |Description                                          |
-|----------------|---------------------------------|-----------------------------------------------------|
-|string (8bytes) |Seciton identifier               |Must be `INSTMEM `.                                  |
-|uint32          |Instrument memory section offset |Relative offset to end of instrument memory section. |
+## Instrument Property Section
+|Type            |Field                              |Description                                            |
+|----------------|-----------------------------------|-------------------------------------------------------|
+|string (8bytes) |Seciton identifier                 |Must be `INSTPROP`.                                    |
+|uint32          |Instrument property section offset |Relative offset to end of instrument property section. |
 
-This section contains subsections of each instrument memory.
+This section contains subsections of each instrument property.
 
 |Type  |Field                 |Description                                            |
 |------|----------------------|-------------------------------------------------------|
 |uint8 |Subsection identifier |Identify subsection type. See table below for details. |
-|uint8 |block count           |Number of memory blocks.                               |
+|uint8 |block count           |Number of property blocks.                             |
 
 Subsection identifier is defined as:
 

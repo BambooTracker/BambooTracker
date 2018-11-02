@@ -24,18 +24,18 @@ The following data change depending on sound source of the instrument.
 |------|-------------------------|------------------------------------------------------------------------------------------------------|
 |uint8 |Envelope reset flag      |Flag for envelope reset. If bit 0 is set, envelope reset is enabled.                                  |
 
-## Instrument Memory Section
-|Type            |Field                            |Description                                          |
-|----------------|---------------------------------|-----------------------------------------------------|
-|string (8bytes) |Seciton identifier               |Must be `INSTMEM `.                                  |
-|uint32          |Instrument memory section offset |Relative offset to end of instrument memory section. |
+## Instrument Property Section
+|Type            |Field                              |Description                                            |
+|----------------|-----------------------------------|-------------------------------------------------------|
+|string (8bytes) |Seciton identifier                 |Must be `INSTPROP`.                                    |
+|uint32          |Instrument property section offset |Relative offset to end of instrument property section. |
 
-This section contains subsections of each instrument memory.
+This section contains subsections of each instrument property.
 
 |Type  |Field                 |Description                                            |
 |------|----------------------|-------------------------------------------------------|
 |uint8 |Subsection identifier |Identify subsection type. See table below for details. |
-|uint8 |block count           |Number of memory blocks.                               |
+|uint8 |block count           |Number of property blocks.                             |
 
 Subsection identifier is defined as:
 
