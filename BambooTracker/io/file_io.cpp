@@ -1,4 +1,5 @@
 #include "file_io.hpp"
+#include <fstream>
 #include "version.hpp"
 #include "misc.hpp"
 
@@ -3618,4 +3619,44 @@ size_t FileIO::loadInstrumentMemoryOperatorSequenceForInstrument(FMEnvelopeParam
 	}
 
 	return ofs;
+}
+
+bool FileIO::writeWave(std::string path, std::vector<int16_t> samples, uint32_t sampRate)
+{
+	try {
+		std::ofstream ofs(path, std::ios::binary);
+
+		// RIFF header
+		ofs.write("RIFF", 4);
+		uint32_t offset = samples.size() * sizeof(short) + 36;
+		ofs.write(reinterpret_cast<char*>(&offset), 4);
+		ofs.write("WAVE", 4);
+
+		// fmt chunk
+		ofs.write("fmt ", 4);
+		uint32_t chunkOfs = 16;
+		ofs.write(reinterpret_cast<char*>(&chunkOfs), 4);
+		uint16_t fmtId = 1;
+		ofs.write(reinterpret_cast<char*>(&fmtId), 2);
+		uint16_t chCnt = 2;
+		ofs.write(reinterpret_cast<char*>(&chCnt), 2);
+		ofs.write(reinterpret_cast<char*>(&sampRate), 4);
+		uint16_t bitSize = sizeof(int16_t) * 8;
+		uint16_t blockSize = bitSize / 8 * chCnt;
+		uint32_t byteRate = blockSize * sampRate;
+		ofs.write(reinterpret_cast<char*>(&byteRate), 4);
+		ofs.write(reinterpret_cast<char*>(&blockSize), 2);
+		ofs.write(reinterpret_cast<char*>(&bitSize), 2);
+
+		// Data chunk
+		ofs.write("data", 4);
+		uint32_t dataSize = samples.size() * bitSize / 8;
+		ofs.write(reinterpret_cast<char*>(&dataSize), 4);
+		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(dataSize));
+
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
 }

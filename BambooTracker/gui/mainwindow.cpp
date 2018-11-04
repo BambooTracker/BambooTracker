@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMimeData>
+#include <QProgressDialog>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
@@ -22,6 +23,7 @@
 #include "gui/groove_settings_dialog.hpp"
 #include "gui/configuration_dialog.hpp"
 #include "gui/comment_edit_dialog.hpp"
+#include "gui/wave_export_setting_dialog.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -1465,4 +1467,40 @@ void MainWindow::on_actionRemove_Unused_Patterns_triggered()
 		comStack_->clear();
 		setModifiedTrue();
 	}
+}
+
+void MainWindow::on_actionWAV_triggered()
+{
+	WaveExportSettingDialog diag;
+	if (diag.exec() != QDialog::Accepted) return;
+
+	QString file = QFileDialog::getSaveFileName(this, "Export to wav", "./",
+												"WAV signed 16-bit PCM (*.wav)");
+	if (file.isNull()) return;
+	if (!file.endsWith(".wav")) file += ".wav";	// For linux
+
+	QProgressDialog progress(
+				"Export to Wav",
+				"Cancel",
+				0,
+				bt_->getAllStepCount(bt_->getCurrentSongNumber()) * diag.getLoopCount() + 3
+				);
+	progress.setValue(0);
+	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
+	progress.show();
+
+	bt_->stopPlaySong();
+	lockControls(false);
+	stream_->stop();
+
+	bool res = bt_->exportToWav(file.toStdString(), diag.getLoopCount(),
+								[&progress]() -> bool {
+									QApplication::processEvents();
+									progress.setValue(progress.value() + 1);
+									return progress.wasCanceled();
+								});
+	if (!res) QMessageBox::critical(this, "Error", "Failed to export to wav file.");
+
+	stream_->start();
 }

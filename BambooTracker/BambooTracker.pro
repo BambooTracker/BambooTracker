@@ -152,7 +152,8 @@ SOURCES += \
     gui/command/pattern/reverse_pattern_qt_command.cpp \
     command/pattern/reverse_pattern_command.cpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.cpp \
-    command/pattern/replace_instrument_in_pattern_command.cpp
+    command/pattern/replace_instrument_in_pattern_command.cpp \
+    gui/wave_export_setting_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -295,7 +296,8 @@ HEADERS += \
     gui/command/pattern/reverse_pattern_qt_command.hpp \
     command/pattern/reverse_pattern_command.hpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.hpp \
-    command/pattern/replace_instrument_in_pattern_command.hpp
+    command/pattern/replace_instrument_in_pattern_command.hpp \
+    gui/wave_export_setting_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -310,7 +312,8 @@ FORMS += \
     gui/module_properties_dialog.ui \
     gui/groove_settings_dialog.ui \
     gui/configuration_dialog.ui \
-    gui/comment_edit_dialog.ui
+    gui/comment_edit_dialog.ui \
+    gui/wave_export_setting_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

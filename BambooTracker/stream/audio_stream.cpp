@@ -27,6 +27,18 @@ AudioStream::~AudioStream()
 	stop();
 }
 
+void AudioStream::start()
+{
+	if (!mixer_->hasRun()) mixer_->start();
+	if (audio_->state() != QAudio::ActiveState) audio_->start(mixer_.get());
+}
+
+void AudioStream::stop()
+{
+	if (mixer_->hasRun()) mixer_->stop();
+	if (audio_->state() != QAudio::StoppedState) audio_->stop();
+}
+
 void AudioStream::setRate(uint32_t rate)
 {
 	stop();
@@ -48,16 +60,4 @@ void AudioStream::setInturuption(uint32_t rate)
 	stop();
 	mixer_->setInterruption(rate);
 	start();
-}
-
-void AudioStream::start()
-{
-	if (!mixer_->hasRun()) mixer_->start();
-	if (audio_->state() != QAudio::ActiveState) audio_->start(mixer_.get());
-}
-
-void AudioStream::stop()
-{
-	if (mixer_->hasRun()) mixer_->stop();
-	if (audio_->state() != QAudio::StoppedState) audio_->stop();
 }

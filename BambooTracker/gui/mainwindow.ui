@@ -396,10 +396,18 @@ QListWidget::item:selected:hover {
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="actionWAV"/>
+    </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="menuExport"/>
     <addaction name="separator"/>
     <addaction name="actionConfiguration"/>
     <addaction name="separator"/>
@@ -989,6 +997,11 @@ QListWidget::item:selected:hover {
   <action name="actionRemove_Unused_Patterns">
    <property name="text">
     <string>Remove Unused Patterns</string>
+   </property>
+  </action>
+  <action name="actionWAV">
+   <property name="text">
+    <string>WAV...</string>
    </property>
   </action>
  </widget>

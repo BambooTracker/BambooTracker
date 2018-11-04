@@ -15,6 +15,9 @@ public:
 	AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate);
 	~AudioStream();
 
+	void start();
+	void stop();
+
 	void setRate(uint32_t rate);
 	void setDuration(uint32_t duration);
 	void setInturuption(uint32_t rate);
@@ -27,7 +30,4 @@ private:
 	QAudioFormat format_;
 	std::unique_ptr<QAudioOutput> audio_;
 	std::unique_ptr<AudioStreamMixier> mixer_;
-
-	void start();
-	void stop();
 };

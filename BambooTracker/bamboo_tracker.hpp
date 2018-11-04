@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <functional>
 #include "opna_controller.hpp"
 #include "jam_manager.hpp"
 #include "command_manager.hpp"
@@ -173,6 +174,9 @@ public:
 	int getPlayingOrderNumber() const;
 	int getPlayingStepNumber() const;
 
+	// Export
+	bool exportToWav(std::string file, int loopCnt, std::function<bool()> f);
+
 	// Stream events
 	int streamCountUp();
 	void getStreamSamples(int16_t *container, size_t nSamples);
@@ -223,6 +227,7 @@ public:
 	size_t getSongCount() const;
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
+	size_t getAllStepCount(int songNum) const;
 	/*----- Order -----*/
 	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
@@ -359,6 +364,9 @@ private:
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
+
+	// Export
+	std::vector<int16_t> getSongSamples(int loopCnt, std::function<bool()> f);
 
 	int ctohex(const char c) const;
 };

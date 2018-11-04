@@ -829,6 +829,71 @@ int BambooTracker::getPlayingStepNumber() const
 	return playStepNum_;
 }
 
+/********** Export **********/
+bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<bool()> f)
+{
+	std::vector<int16_t> samples = getSongSamples(loopCnt, f);
+	if (samples.empty()) return false;
+
+	bool ret = FileIO::writeWave(file, samples, opnaCtrl_->getRate());
+	f();
+
+	return ret;
+}
+
+std::vector<int16_t> BambooTracker::getSongSamples(int loopCnt, std::function<bool()> f)
+{
+	size_t sampCnt = opnaCtrl_->getRate() * opnaCtrl_->getDuration() / 1000;
+	size_t intrCnt = opnaCtrl_->getRate() / mod_->getTickFrequency();
+	size_t intrCntRest = 0;
+	std::vector<int16_t> samples;
+	std::vector<int16_t> tmpSamps(sampCnt << 1);
+
+	bool endFlag = false;
+	bool tmpFollow = isFollowPlay_;
+	isFollowPlay_ = false;
+	startPlayFromStart();
+
+	while (true) {
+		size_t sampCntRest = sampCnt;
+		int16_t* tmpPtr = &tmpSamps[0];
+		while (sampCntRest) {
+			if (!intrCntRest) {	// Interruption
+				intrCntRest = intrCnt;    // Set counts to next interruption
+
+				if (!streamCountUp()) {
+					if (f()) {	// Update lambda function
+						stopPlaySong();
+						isFollowPlay_ = tmpFollow;
+						return std::vector<int16_t>();
+					}
+
+					if ((playOrderNum_ == -1 && playStepNum_ == -1)
+							|| (playOrderNum_ == 0 && playStepNum_ == 0 && !(loopCnt--))){
+						endFlag = true;
+						break;
+					}
+				}
+			}
+
+			size_t count = std::min(intrCntRest, sampCntRest);
+			sampCntRest -= count;
+			intrCntRest -= count;
+
+			opnaCtrl_->getStreamSamples(tmpPtr, count);
+
+			tmpPtr += (count << 1);	// Move head
+		}
+
+		std::copy(tmpSamps.begin(), tmpSamps.end() - (sampCntRest << 1), std::back_inserter(samples));
+		if (endFlag) break;
+	}
+
+	stopPlaySong();
+	isFollowPlay_ = tmpFollow;
+	return samples;
+}
+
 /********** Stream events **********/
 int BambooTracker::streamCountUp()
 {
@@ -1786,6 +1851,16 @@ void BambooTracker::addSong(SongType songType, std::string title)
 void BambooTracker::sortSongs(std::vector<int> numbers)
 {
 	mod_->sortSongs(std::move(numbers));
+}
+
+size_t BambooTracker::getAllStepCount(int songNum) const
+{
+	size_t cnt = 0;
+	size_t os = getOrderSize(songNum);
+	for (size_t i = 0; i < os; ++i) {
+		cnt += getPatternSizeFromOrderNumber(songNum, i);
+	}
+	return cnt;
 }
 
 /*----- Order -----*/

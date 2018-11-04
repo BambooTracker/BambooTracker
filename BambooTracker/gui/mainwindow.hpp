@@ -149,6 +149,7 @@ private slots:
 	void on_actionOrder_triggered();
 	void on_actionRemove_Unused_Instruments_triggered();
 	void on_actionRemove_Unused_Patterns_triggered();
+	void on_actionWAV_triggered();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

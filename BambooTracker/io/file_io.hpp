@@ -17,6 +17,7 @@ public:
 	static bool saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum);
 	static AbstractInstrument* loadInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum);
+	static bool writeWave(std::string path, std::vector<int16_t> samples, uint32_t rate);
 
 private:
 	FileIO() {}
