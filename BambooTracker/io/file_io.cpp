@@ -708,7 +708,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 						tmp = step.getEffectValue(i);
 						if (tmp != -1) {
 							eventFlag |= (0x0010 << (i << 1));
-							ctr.appendUint16(tmp);
+							ctr.appendUint8(tmp);
 						}
 					}
 					ctr.writeUint16(evFlagOfs, eventFlag);
@@ -1732,7 +1732,6 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 		uint8_t cnt = ctr.readUint8(songCsr++);
 		for (uint8_t i = 0; i < cnt; ++i) {
 			uint8_t idx = ctr.readUint8(songCsr++);
-			auto& song = mod.lock()->getSong(idx);
 			size_t sOfs = ctr.readUint32(songCsr);
 			size_t scsr = songCsr + 4;
 			songCsr += sOfs;
@@ -1758,6 +1757,7 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 				break;
 			}
 			}
+			auto& song = mod.lock()->getSong(idx);
 			while (scsr < songCsr) {
 				// Song
 				uint8_t trackIdx = ctr.readUint8(scsr++);
