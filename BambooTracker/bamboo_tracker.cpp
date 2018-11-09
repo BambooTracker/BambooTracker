@@ -886,7 +886,7 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 	return ret;
 }
 
-bool BambooTracker::exportToVgm(std::string file, std::function<bool()> f)
+bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -967,7 +967,7 @@ bool BambooTracker::exportToVgm(std::string file, std::function<bool()> f)
 
 	bool ret = FileIO::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
 								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
-								exCntr->getSampleLength());
+								exCntr->getSampleLength(), gd3TagEnabled, tag);
 	f();
 
 	return ret;

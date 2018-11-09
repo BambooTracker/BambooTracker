@@ -301,7 +301,8 @@ HEADERS += \
     command/pattern/replace_instrument_in_pattern_command.hpp \
     chips/export_container.hpp \
     gui/vgm_export_settings_dialog.hpp \
-    gui/wave_export_settings_dialog.hpp
+    gui/wave_export_settings_dialog.hpp \
+    io/gd3_tag.hpp
 
 FORMS += \
     gui/mainwindow.ui \

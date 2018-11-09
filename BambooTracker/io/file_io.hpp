@@ -6,6 +6,7 @@
 #include "module.hpp"
 #include "instruments_manager.hpp"
 #include "binary_container.hpp"
+#include "gd3_tag.hpp"
 
 class FileIO
 {
@@ -20,7 +21,8 @@ public:
 	static bool writeWave(std::string path, std::vector<int16_t> samples, uint32_t rate);
 
 	static bool writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
-						 bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples);
+						 bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
+						 bool gd3TagEnabled, GD3Tag tag);
 
 private:
 	FileIO() {}

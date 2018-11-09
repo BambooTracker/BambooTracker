@@ -24,6 +24,7 @@
 #include "gui/configuration_dialog.hpp"
 #include "gui/comment_edit_dialog.hpp"
 #include "gui/wave_export_settings_dialog.hpp"
+#include "gui/vgm_export_settings_dialog.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -1507,6 +1508,10 @@ void MainWindow::on_actionWAV_triggered()
 
 void MainWindow::on_actionVGM_triggered()
 {
+	VgmExportSettingsDialog diag;
+	if (diag.exec() != QDialog::Accepted) return;
+	GD3Tag tag = diag.getGD3Tag();
+
 	QString file = QFileDialog::getSaveFileName(this, "Export to vgm", "./",
 												"VGM file (*.vgm)");
 	if (file.isNull()) return;
@@ -1528,6 +1533,8 @@ void MainWindow::on_actionVGM_triggered()
 	stream_->stop();
 
 	bool res = bt_->exportToVgm(file.toStdString(),
+								diag.enabledGD3(),
+								tag,
 								[&progress]() -> bool {
 									QApplication::processEvents();
 									progress.setValue(progress.value() + 1);
