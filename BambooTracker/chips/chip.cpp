@@ -22,11 +22,13 @@ namespace chip
 	//const int Chip::MAX_AMP_ = 32767;	// half-max of int16
 
 	Chip::Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
-			   std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2)
+			   std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2,
+			   std::shared_ptr<ExportContainerInterface> exportContainer)
 		: id_(id),
 		  rate_(rate),	// Dummy set
 		  autoRate_(autoRate),
-		  maxDuration_(maxDuration)
+		  maxDuration_(maxDuration),
+		  exCntr_(exportContainer)
 	{
 		resampler_[0] = std::move(resampler1);
 		resampler_[1] = std::move(resampler2);
@@ -86,5 +88,10 @@ namespace chip
 	size_t Chip::getMaxDuration() const
 	{
 		return maxDuration_;
+	}
+
+	void Chip::setExportContainer(std::shared_ptr<ExportContainerInterface> cntr)
+	{
+		exCntr_ = cntr;
 	}
 }

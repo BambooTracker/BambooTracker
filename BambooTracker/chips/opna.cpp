@@ -20,9 +20,11 @@ namespace chip
 	/*const int OPNA::DEF_AMP_SSG_ = 7250;*/
 
 	OPNA::OPNA(int clock, int rate, size_t maxDuration,
-			   std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2)
+			   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
+			   std::shared_ptr<ExportContainerInterface> exportContainer)
 		: Chip(count_++, clock, rate, 110933, maxDuration,
-			   std::move(resampler1), std::move(resampler2))	// autoRate = 110933: FM internal rate
+			   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
+			   exportContainer)
 	{
 		funcSetRate(rate);
 
@@ -67,6 +69,8 @@ namespace chip
 			ym2608_control_port_a_w(id_, 0, offset & 0xff);
 			ym2608_data_port_a_w(id_, 1, value & 0xff);
 		}
+
+		if (exCntr_) exCntr_->recordRegisterChange(offset, value);
 	}
 
 	uint8_t OPNA::getRegister(uint32_t offset) const
@@ -121,11 +125,14 @@ namespace chip
 			ym2608_stream_update_ay(id_, buffer_[SSG], intrSize);
 			bufSSG = resampler_[SSG]->interpolate(buffer_[SSG], nSamples, intrSize);
 		}
+		int16_t* p = stream;
 		for (size_t i = 0; i < nSamples; ++i) {
 			for (int pan = LEFT; pan <= RIGHT; ++pan) {
 				float s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
-				*stream++ = static_cast<int16_t>(clamp(s, -32768.0f, 32767.0f));
+				*p++ = static_cast<int16_t>(clamp(s, -32768.0f, 32767.0f));
 			}
 		}
+
+		if (exCntr_) exCntr_->recordStream(stream, nSamples);
 	}
 }

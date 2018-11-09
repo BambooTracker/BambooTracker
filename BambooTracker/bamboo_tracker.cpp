@@ -5,9 +5,11 @@
 #include "commands.hpp"
 #include "file_io.hpp"
 
+const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
+
 BambooTracker::BambooTracker()
 	: instMan_(std::make_shared<InstrumentsManager>()),
-	  opnaCtrl_(std::make_unique<OPNAController>(3993600 * 2, 44100, 40)),
+	  opnaCtrl_(std::make_unique<OPNAController>(CHIP_CLOCK, 44100, 40)),
 	  mod_(std::make_shared<Module>()),
 	  octave_(4),
 	  curSongNum_(0),
@@ -19,7 +21,6 @@ BambooTracker::BambooTracker()
 	  curInstNum_(-1),
 	  playState_(0),
 	  isFollowPlay_(true),
-	  streamIntrRate_(60),	// NTSC
 	  isFindNextStep_(false)
 {
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
@@ -832,31 +833,20 @@ int BambooTracker::getPlayingStepNumber() const
 /********** Export **********/
 bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<bool()> f)
 {
-	std::vector<int16_t> samples = getSongSamples(loopCnt, f);
-	if (samples.empty()) return false;
-
-	bool ret = FileIO::writeWave(file, samples, opnaCtrl_->getRate());
-	f();
-
-	return ret;
-}
-
-std::vector<int16_t> BambooTracker::getSongSamples(int loopCnt, std::function<bool()> f)
-{
 	size_t sampCnt = opnaCtrl_->getRate() * opnaCtrl_->getDuration() / 1000;
 	size_t intrCnt = opnaCtrl_->getRate() / mod_->getTickFrequency();
 	size_t intrCntRest = 0;
-	std::vector<int16_t> samples;
-	std::vector<int16_t> tmpSamps(sampCnt << 1);
+	std::vector<int16_t> dumbuf(sampCnt << 1);
 
 	bool endFlag = false;
 	bool tmpFollow = isFollowPlay_;
 	isFollowPlay_ = false;
+	std::shared_ptr<chip::WavExportContainer> exCntr = std::make_shared<chip::WavExportContainer>();
+	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
 
 	while (true) {
 		size_t sampCntRest = sampCnt;
-		int16_t* tmpPtr = &tmpSamps[0];
 		while (sampCntRest) {
 			if (!intrCntRest) {	// Interruption
 				intrCntRest = intrCnt;    // Set counts to next interruption
@@ -865,7 +855,7 @@ std::vector<int16_t> BambooTracker::getSongSamples(int loopCnt, std::function<bo
 					if (f()) {	// Update lambda function
 						stopPlaySong();
 						isFollowPlay_ = tmpFollow;
-						return std::vector<int16_t>();
+						return false;
 					}
 
 					if ((playOrderNum_ == -1 && playStepNum_ == -1)
@@ -880,18 +870,107 @@ std::vector<int16_t> BambooTracker::getSongSamples(int loopCnt, std::function<bo
 			sampCntRest -= count;
 			intrCntRest -= count;
 
-			opnaCtrl_->getStreamSamples(tmpPtr, count);
-
-			tmpPtr += (count << 1);	// Move head
+			opnaCtrl_->getStreamSamples(&dumbuf[0], count);
 		}
 
-		std::copy(tmpSamps.begin(), tmpSamps.end() - (sampCntRest << 1), std::back_inserter(samples));
 		if (endFlag) break;
 	}
 
+	opnaCtrl_->setExportContainer();
 	stopPlaySong();
 	isFollowPlay_ = tmpFollow;
-	return samples;
+
+	bool ret = FileIO::writeWave(file, exCntr->getStream(), opnaCtrl_->getRate());
+	f();
+
+	return ret;
+}
+
+bool BambooTracker::exportToVgm(std::string file, std::function<bool()> f)
+{
+	int tmpRate = opnaCtrl_->getRate();
+	opnaCtrl_->setRate(44100);
+	size_t intrCnt = 44100 / mod_->getTickFrequency();
+	std::vector<int16_t> dumbuf(intrCnt << 1);
+
+	int lastOrder = getOrderSize(curSongNum_) - 1;
+	int lastStep = getPatternSizeFromOrderNumber(curSongNum_, lastOrder) - 1;
+	bool loopFlag = true;
+	int loopOrder = 0;
+	int loopStep = 0;
+	auto& song = mod_->getSong(curSongNum_);
+	for (auto attrib : songStyle_.trackAttribs) {
+		auto& step = song.getTrack(attrib.number).getPatternFromOrderNumber(lastOrder).getStep(lastStep);
+		for (int i = 0; i < 4; ++i) {
+			auto id = step.getEffectID(i);
+			if (id == "0B") {	// Position jump
+				int nextOrder = step.getEffectValue(i);
+				if (nextOrder <= lastOrder) {
+					loopFlag = true;
+					loopOrder = nextOrder;
+					loopStep = 0;
+				}
+			}
+			else if (id == "0C") {	// Track end
+				loopFlag = false;
+				loopOrder = -1;
+				loopStep = -1;
+			}
+			else if (id == "0D") {	// Pattern break
+				int nextStep = step.getEffectValue(i);
+				if (nextStep < getPatternSizeFromOrderNumber(curSongNum_, 0)) {
+					loopFlag = true;
+					nextReadOrder_ = 0;
+					nextReadStep_ = nextStep;
+				}
+			}
+		}
+	}
+
+	int endCnt = 1;
+	bool tmpFollow = isFollowPlay_;
+	isFollowPlay_ = false;
+	uint32_t loopPoint = 0;
+	uint32_t loopPointSamples = 0;
+	std::shared_ptr<chip::VgmExportContainer> exCntr
+			= std::make_shared<chip::VgmExportContainer>(mod_->getTickFrequency());
+	opnaCtrl_->setExportContainer(exCntr);
+	startPlayFromStart();
+
+	while (true) {
+		uint32_t tmp = exCntr->getData().size();
+		if (!streamCountUp()) {
+			if (f()) {	// Update lambda function
+				stopPlaySong();
+				isFollowPlay_ = tmpFollow;
+				return false;
+			}
+
+			if ((playOrderNum_ == -1 && playStepNum_ == -1)
+					|| (playOrderNum_ == 0 && playStepNum_ == 0 && !(endCnt--))){
+				break;
+			}
+
+			if (loopFlag && loopOrder == playOrderNum_ && loopStep == playStepNum_) {
+				loopPoint = tmp;
+				loopPointSamples = exCntr->getSampleLength();
+			}
+		}
+
+		opnaCtrl_->getStreamSamples(&dumbuf[0], intrCnt);
+	}
+
+	opnaCtrl_->setExportContainer();
+	stopPlaySong();
+	isFollowPlay_ = tmpFollow;
+	opnaCtrl_->setRate(tmpRate);
+
+	bool ret = FileIO::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
+								exCntr->getSampleLength());
+	f();
+
+	return ret;
 }
 
 /********** Stream events **********/
@@ -1288,13 +1367,9 @@ bool BambooTracker::readDrumStep(Step& step, int ch, bool isSkippedSpecial)
 	case -1:	// None
 		break;
 	case -2:	// Key off
-	case -3:	// Echo 0
-	case -4:	// Echo 1
-	case -5:	// Echo 2
-	case -6:	// Echo 3
 		opnaCtrl_->keyOffDrum(ch);
 		break;
-	default:	// Key on
+	default:	// Key on & Echo
 		opnaCtrl_->keyOnDrum(ch);
 		break;
 	}
@@ -1578,8 +1653,11 @@ void BambooTracker::effTrackEnd()
 
 bool BambooTracker::effPatternBreak(int nextStep)
 {
-	if (playOrderNum_ == getOrderSize(curSongNum_) - 1) {
-		return false;
+	if (playOrderNum_ == getOrderSize(curSongNum_) - 1
+			&& nextStep < getPatternSizeFromOrderNumber(curSongNum_, 0)) {
+		nextReadOrder_ = 0;
+		nextReadStep_ = nextStep;
+		return true;
 	}
 	else if (nextStep < getPatternSizeFromOrderNumber(curSongNum_, playOrderNum_ + 1)) {
 		nextReadOrder_ = playOrderNum_ + 1;

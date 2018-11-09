@@ -23,7 +23,7 @@
 #include "gui/groove_settings_dialog.hpp"
 #include "gui/configuration_dialog.hpp"
 #include "gui/comment_edit_dialog.hpp"
-#include "gui/wave_export_setting_dialog.hpp"
+#include "gui/wave_export_settings_dialog.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -1471,7 +1471,7 @@ void MainWindow::on_actionRemove_Unused_Patterns_triggered()
 
 void MainWindow::on_actionWAV_triggered()
 {
-	WaveExportSettingDialog diag;
+	WaveExportSettingsDialog diag;
 	if (diag.exec() != QDialog::Accepted) return;
 
 	QString file = QFileDialog::getSaveFileName(this, "Export to wav", "./",
@@ -1480,7 +1480,7 @@ void MainWindow::on_actionWAV_triggered()
 	if (!file.endsWith(".wav")) file += ".wav";	// For linux
 
 	QProgressDialog progress(
-				"Export to Wav",
+				"Export to WAV",
 				"Cancel",
 				0,
 				bt_->getAllStepCount(bt_->getCurrentSongNumber()) * diag.getLoopCount() + 3
@@ -1501,6 +1501,39 @@ void MainWindow::on_actionWAV_triggered()
 									return progress.wasCanceled();
 								});
 	if (!res) QMessageBox::critical(this, "Error", "Failed to export to wav file.");
+
+	stream_->start();
+}
+
+void MainWindow::on_actionVGM_triggered()
+{
+	QString file = QFileDialog::getSaveFileName(this, "Export to vgm", "./",
+												"VGM file (*.vgm)");
+	if (file.isNull()) return;
+	if (!file.endsWith(".vgm")) file += ".vgm";	// For linux
+
+	QProgressDialog progress(
+				"Export to VGM",
+				"Cancel",
+				0,
+				bt_->getAllStepCount(bt_->getCurrentSongNumber()) + 3
+				);
+	progress.setValue(0);
+	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
+	progress.show();
+
+	bt_->stopPlaySong();
+	lockControls(false);
+	stream_->stop();
+
+	bool res = bt_->exportToVgm(file.toStdString(),
+								[&progress]() -> bool {
+									QApplication::processEvents();
+									progress.setValue(progress.value() + 1);
+									return progress.wasCanceled();
+								});
+	if (!res) QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
 
 	stream_->start();
 }

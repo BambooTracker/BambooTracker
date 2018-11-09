@@ -42,6 +42,10 @@ public:
 	int getDuration() const;
 	void setDuration(int duration);
 
+	// Export
+	void setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr = nullptr);
+
+
 private:
 	chip::OPNA opna_;
 	int duration_;

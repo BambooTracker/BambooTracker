@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include "resampler.hpp"
+#include "export_container.hpp"
 
 namespace chip
 {
@@ -14,7 +15,8 @@ namespace chip
 		// [rate]
 		// 0 = auto-set mode (set internal chip rate)
 		Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
-			 std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2);
+			 std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2,
+			 std::shared_ptr<ExportContainerInterface> exportContainer);
 		virtual ~Chip();
 
 		virtual void reset() = 0;
@@ -27,6 +29,8 @@ namespace chip
 		void setMaxDuration(size_t maxDuration);
 		size_t getMaxDuration() const;
 		
+		void setExportContainer(std::shared_ptr<ExportContainerInterface> cntr = nullptr);
+
 		/*virtual void setVolume(float db) = 0;*/
 		virtual void mix(int16_t* stream, size_t nSamples) = 0;
 
@@ -45,6 +49,8 @@ namespace chip
 
 		sample* buffer_[2][2];
 		std::unique_ptr<AbstractResampler> resampler_[2];
+
+		std::shared_ptr<ExportContainerInterface> exCntr_;
 
 		void initResampler();
 

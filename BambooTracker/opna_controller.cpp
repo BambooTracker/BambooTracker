@@ -1,10 +1,10 @@
 #include "opna_controller.hpp"
 #include "pitch_converter.hpp"
 
-OPNAController::OPNAController(int clock, int rate, int duration) :
-	opna_(clock, rate, duration,
-		  std::make_unique<chip::LinearResampler>(),
-		  std::make_unique<chip::LinearResampler>())
+OPNAController::OPNAController(int clock, int rate, int duration)
+	: opna_(clock, rate, duration,
+			std::make_unique<chip::LinearResampler>(),
+			std::make_unique<chip::LinearResampler>())
 {	
 	for (int ch = 0; ch < 6; ++ch) {
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::AL, nullptr);
@@ -112,6 +112,11 @@ void OPNAController::setDuration(int duration)
 {
 	duration_ = duration;
 	opna_.setMaxDuration(duration);
+}
+
+void OPNAController::setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr)
+{
+	opna_.setExportContainer(cntr);
 }
 
 //---------- FM ----------//

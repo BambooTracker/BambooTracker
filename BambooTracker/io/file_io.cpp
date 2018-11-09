@@ -3660,3 +3660,57 @@ bool FileIO::writeWave(std::string path, std::vector<int16_t> samples, uint32_t 
 		return false;
 	}
 }
+
+bool FileIO::writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+					  bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples)
+{
+	try {
+		std::ofstream ofs(path, std::ios::binary);
+
+		// Header
+		// 0x00: "Vgm " ident
+		ofs.write("Vgm ", 4);
+		// 0x04: EOF offset
+		uint32_t offset = 0x100 + samples.size() + 1 - 4;
+		ofs.write(reinterpret_cast<char*>(&offset), 4);
+		// 0x08: Version [v1.71]
+		uint32_t version = 0x171;
+		ofs.write(reinterpret_cast<char*>(&version), 4);
+		// 0x0c-0x03: unused
+		uint32_t zero = 0;
+		for (int i = 0; i < 2; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+		// 0x14: GD3 offset
+		uint32_t gd3Offset = 0;
+		ofs.write(reinterpret_cast<char*>(&gd3Offset), 4);
+		// 0x18: Total # samples
+		ofs.write(reinterpret_cast<char*>(&totalSamples), 4);
+		// 0x1c: Loop offset
+		uint32_t loopOffset = loopFlag ? (loopPoint + 0x100 - 0x1c) : 0;
+		ofs.write(reinterpret_cast<char*>(&loopOffset), 4);
+		// 0x20: Loop # samples
+		uint32_t loopSamps = loopFlag ? loopSamples : 0;
+		ofs.write(reinterpret_cast<char*>(&loopSamps), 4);
+		// 0x24: Rate
+		ofs.write(reinterpret_cast<char*>(&rate), 4);
+		// 0x28-0x33: unused
+		ofs.write(reinterpret_cast<char*>(&zero), 12);
+		// 0x34: VGM data offset
+		uint32_t dataOffset = 0xcc;
+		ofs.write(reinterpret_cast<char*>(&dataOffset), 4);
+		// 0x38-0x47: unused
+		for (int i = 0; i < 4; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+		// 0x48: YM2608 clock
+		ofs.write(reinterpret_cast<char*>(&clock), 4);
+		// 0x4c-0xff: unused
+		for (int i = 0; i < 45; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+
+		// Commands
+		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(samples.size()));
+		uint8_t end = 0x66;
+		ofs.write(reinterpret_cast<char*>(&end), 1);
+
+		return true;
+	} catch (...) {
+		return false;
+	}
+}

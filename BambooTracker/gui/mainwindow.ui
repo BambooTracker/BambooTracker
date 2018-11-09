@@ -401,6 +401,7 @@ QListWidget::item:selected:hover {
       <string>Export</string>
      </property>
      <addaction name="actionWAV"/>
+     <addaction name="actionVGM"/>
     </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
@@ -1002,6 +1003,11 @@ QListWidget::item:selected:hover {
   <action name="actionWAV">
    <property name="text">
     <string>WAV...</string>
+   </property>
+  </action>
+  <action name="actionVGM">
+   <property name="text">
+    <string>VGM...</string>
    </property>
   </action>
  </widget>

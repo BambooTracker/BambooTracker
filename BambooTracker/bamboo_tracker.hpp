@@ -176,6 +176,7 @@ public:
 
 	// Export
 	bool exportToWav(std::string file, int loopCnt, std::function<bool()> f);
+	bool exportToVgm(std::string file, std::function<bool()> f);
 
 	// Stream events
 	int streamCountUp();
@@ -326,7 +327,7 @@ private:
 
 	bool isFollowPlay_;
 
-	int streamIntrRate_;
+	static const uint32_t CHIP_CLOCK;
 
 	// Play song
 	bool isFindNextStep_;
@@ -364,9 +365,6 @@ private:
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
-
-	// Export
-	std::vector<int16_t> getSongSamples(int loopCnt, std::function<bool()> f);
 
 	int ctohex(const char c) const;
 };

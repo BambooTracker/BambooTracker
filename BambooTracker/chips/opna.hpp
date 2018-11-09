@@ -10,7 +10,9 @@ namespace chip
 		// [rate]
 		// 0 = rate is 110933 (internal FM sample rate in 3993600 * 2 clock)
 		OPNA(int clock, int rate, size_t maxDuration,
-			 std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2);
+			 std::unique_ptr<AbstractResampler> fmResampler = std::make_unique<LinearResampler>(),
+			 std::unique_ptr<AbstractResampler> ssgResampler = std::make_unique<LinearResampler>(),
+			 std::shared_ptr<ExportContainerInterface> exportContainer = nullptr);
 		~OPNA() override;
 
 		void reset() override;
