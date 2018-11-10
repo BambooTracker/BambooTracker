@@ -44,8 +44,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	QFontMetrics metrics(rowFont_);
 	rowFontWidth_ = metrics.width('0');
 	rowFontAscend_ = metrics.ascent();
-	rowFontHeight_ = metrics.height();
-	rowFontLeading_ = metrics.leading();
+	rowFontLeading_ = metrics.descent() / 2;
+	rowFontHeight_ = rowFontAscend_ + rowFontLeading_;
 
 	/* Width & height */
 	widthSpace_ = rowFontWidth_ / 2;
@@ -821,7 +821,7 @@ void OrderListPanel::resizeEvent(QResizeEvent *event)
 
 	// Recalculate center row position
 	curRowBaselineY_ = (geometry().height() - headerHeight_) / 2 + headerHeight_;
-	curRowY_ = curRowBaselineY_ - (rowFontAscend_ + rowFontLeading_ / 2);
+	curRowY_ = curRowBaselineY_ + rowFontLeading_ / 2 - rowFontAscend_;
 	initDisplay();
 }
 

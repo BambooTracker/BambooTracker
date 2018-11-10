@@ -45,8 +45,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	QFontMetrics metrics(stepFont_);
 	stepFontWidth_ = metrics.width('0');
 	stepFontAscend_ = metrics.ascent();
-	stepFontHeight_ = metrics.height();
-	stepFontLeading_ = metrics.leading();
+	stepFontLeading_ = metrics.descent() / 2;
+	stepFontHeight_ = stepFontAscend_ + stepFontLeading_;
 	QFontMetrics m(headerFont_);
 
 	/* Width & height */
@@ -1694,7 +1694,7 @@ void PatternEditorPanel::resizeEvent(QResizeEvent *event)
 
 	// Recalculate center row position
 	curRowBaselineY_ = (geometry().height() - headerHeight_) / 2 + headerHeight_;
-	curRowY_ = curRowBaselineY_ - (stepFontAscend_ + stepFontLeading_ / 2);
+	curRowY_ = curRowBaselineY_ + stepFontLeading_ / 2 - stepFontAscend_;
 
 	initDisplay();
 }
