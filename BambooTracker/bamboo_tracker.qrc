@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file alias="redo">res/icon/if_arrow_redo_4989.png</file>
+        <file alias="undo">res/icon/if_arrow_undo_4998.png</file>
+        <file alias="config">res/icon/if_cog_5175.png</file>
+        <file alias="cut">res/icon/if_cut_red_5249.png</file>
+        <file alias="save">res/icon/if_disk_5276.png</file>
+        <file alias="open">res/icon/if_folder_5362.png</file>
+        <file alias="new">res/icon/if_page_white_5568.png</file>
+        <file alias="copy">res/icon/if_page_white_copy_5579.png</file>
+        <file alias="paste">res/icon/if_paste_plain_5629.png</file>
+        <file alias="play_pattern">res/icon/if_resultset_last_5687.png</file>
+        <file alias="play">res/icon/if_resultset_next_5688.png</file>
+        <file alias="stop">res/icon/if_shape_square_5750.png</file>
+        <file alias="property">res/icon/if_table_edit_5800.png</file>
+    </qresource>
+</RCC>
