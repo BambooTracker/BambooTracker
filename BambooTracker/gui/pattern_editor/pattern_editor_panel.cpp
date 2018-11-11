@@ -116,6 +116,11 @@ void PatternEditorPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
 	comStack_ = stack;
 }
 
+void PatternEditorPanel::setConfiguration(std::weak_ptr<Configuration> config)
+{
+	config_ = config;
+}
+
 void PatternEditorPanel::drawPattern(const QRect &rect)
 {
 	int maxWidth = std::min(geometry().width(), TracksWidthFromLeftToEnd_);
@@ -1603,7 +1608,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-4);
+			moveCursorToDown(-config_.lock()->getPageJumpLength());
 			if (event->modifiers().testFlag(Qt::ShiftModifier)
 					&& shiftPressedPos_.order == curPos_.order) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
@@ -1616,7 +1621,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(4);
+			moveCursorToDown(config_.lock()->getPageJumpLength());
 			if (event->modifiers().testFlag(Qt::ShiftModifier)
 					&& shiftPressedPos_.order == curPos_.order) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);

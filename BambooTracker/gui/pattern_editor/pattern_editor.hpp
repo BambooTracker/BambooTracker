@@ -6,6 +6,7 @@
 #include <QEvent>
 #include <memory>
 #include "bamboo_tracker.hpp"
+#include "configuration.hpp"
 
 namespace Ui {
 	class PatternEditor;
@@ -20,6 +21,7 @@ public:
 	~PatternEditor() override;
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
+	void setConfiguration(std::weak_ptr<Configuration> config);
 
 	void changeEditable();
 	void updatePosition();

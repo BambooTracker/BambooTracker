@@ -57,6 +57,11 @@ void PatternEditor::setCommandStack(std::weak_ptr<QUndoStack> stack)
 	ui->panel->setCommandStack(stack);
 }
 
+void PatternEditor::setConfiguration(std::weak_ptr<Configuration> config)
+{
+	ui->panel->setConfiguration(config);
+}
+
 void PatternEditor::changeEditable()
 {
 	ui->panel->changeEditable();

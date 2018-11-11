@@ -3,8 +3,7 @@
 
 #include <QDialog>
 #include <memory>
-#include "bamboo_tracker.hpp"
-#include "audio_stream.hpp"
+#include "configuration.hpp"
 
 namespace Ui {
 	class ConfigurationDialog;
@@ -15,8 +14,7 @@ class ConfigurationDialog : public QDialog
 	Q_OBJECT
 
 public:
-	ConfigurationDialog(std::weak_ptr<BambooTracker> core, std::weak_ptr<AudioStream> stream,
-						QWidget *parent = nullptr);
+	ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent = nullptr);
 	~ConfigurationDialog() override;
 
 private slots:
@@ -24,8 +22,7 @@ private slots:
 
 private:
 	Ui::ConfigurationDialog *ui;
-	std::weak_ptr<BambooTracker> core_;
-	std::weak_ptr<AudioStream> stream_;
+	std::weak_ptr<Configuration> config_;
 };
 
 #endif // CONFIGURATION_DIALOG_HPP

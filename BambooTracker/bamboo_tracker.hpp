@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include "configuration.hpp"
 #include "opna_controller.hpp"
 #include "jam_manager.hpp"
 #include "command_manager.hpp"
@@ -19,7 +20,10 @@
 class BambooTracker
 {
 public:
-	BambooTracker();
+	BambooTracker(std::weak_ptr<Configuration> config);
+
+	// Change confuguration
+	void changeConfiguration(std::weak_ptr<Configuration> config);
 
 	// Change octave
 	void setCurrentOctave(int octave);

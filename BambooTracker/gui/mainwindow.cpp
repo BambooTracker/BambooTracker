@@ -29,7 +29,8 @@
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	bt_(std::make_shared<BambooTracker>()),
+	config_(std::make_shared<Configuration>()),
+	bt_(std::make_shared<BambooTracker>(config_)),
 	comStack_(std::make_shared<QUndoStack>(this)),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	isModifiedForNotCommand_(false),
@@ -152,6 +153,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	/* Pattern editor */
 	ui->patternEditor->setCore(bt_);
 	ui->patternEditor->setCommandStack(comStack_);
+	ui->patternEditor->setConfiguration(config_);
 	ui->patternEditor->installEventFilter(this);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 ui->orderList, &OrderListEditor::setCurrentTrack);
@@ -167,6 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	/* Order List */
 	ui->orderList->setCore(bt_);
 	ui->orderList->setCommandStack(comStack_);
+	ui->orderList->setConfiguration(config_);
 	ui->orderList->installEventFilter(this);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 ui->patternEditor, &PatternEditor::setCurrentTrack);
@@ -1196,7 +1199,7 @@ void MainWindow::on_actionAbout_triggered()
 					   "- Qt (GPL v2+ or LGPL v3)\n"
 					   "- VGMPlay by (C) Valley Bell (GPL v2)\n"
 					   "- MAME (MAME License)\n"
-					   "- EMU2149 by (C) Mitsutaka Okazaki (MIT)"));
+					   "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)"));
 }
 
 void MainWindow::on_actionFollow_Mode_triggered()
@@ -1224,8 +1227,13 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	if (ConfigurationDialog(bt_, stream_).exec() == QDialog::Accepted) {
+	if (ConfigurationDialog(config_).exec() == QDialog::Accepted) {
 		bt_->stopPlaySong();
+
+		stream_->setRate(config_->getSampleRate());
+		stream_->setDuration(config_->getBufferLength());
+		bt_->changeConfiguration(config_);
+
 		lockControls(false);
 	}
 }

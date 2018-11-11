@@ -17,6 +17,7 @@
 #include <memory>
 #include <vector>
 #include "bamboo_tracker.hpp"
+#include "configuration.hpp"
 #include "song.hpp"
 #include "gui/pattern_editor/pattern_position.hpp"
 #include "misc.hpp"
@@ -28,6 +29,7 @@ public:
 	explicit PatternEditorPanel(QWidget *parent = nullptr);
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
+	void setConfiguration(std::weak_ptr<Configuration> config);
 
 	void changeEditable();
 	int getFullColmunSize() const;
@@ -94,6 +96,7 @@ private:
 	std::unique_ptr<QPixmap> pixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
+	std::weak_ptr<Configuration> config_;
 
 	QFont stepFont_, headerFont_;
 	int stepFontWidth_, stepFontHeight_, stepFontAscend_, stepFontLeading_;

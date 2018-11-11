@@ -12,6 +12,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMessageBox>
+#include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
@@ -39,6 +40,7 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
+	std::shared_ptr<Configuration> config_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::shared_ptr<AudioStream> stream_;
 	std::shared_ptr<QUndoStack> comStack_;

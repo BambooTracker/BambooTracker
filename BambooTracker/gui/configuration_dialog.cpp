@@ -2,21 +2,25 @@
 #include "ui_configuration_dialog.h"
 #include "slider_style.hpp"
 
-ConfigurationDialog::ConfigurationDialog(std::weak_ptr<BambooTracker> core, std::weak_ptr<AudioStream> stream, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::ConfigurationDialog),
-	core_(core),
-	stream_(stream)
+ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
+	: QDialog(parent),
+	  ui(new Ui::ConfigurationDialog),
+	  config_(config)
 {
 	ui->setupUi(this);
 
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
-	// Sound
+	// General //
+	// General settings
+
+	// Edit settings
+	ui->pageJumpLengthSpinBox->setValue(config.lock()->getPageJumpLength());
+	// Sound //
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
 	ui->sampleRateComboBox->addItem("110933Hz", 110933);
-	switch (core_.lock()->getStreamRate()) {
+	switch (config.lock()->getSampleRate()) {
 	case 44100:		ui->sampleRateComboBox->setCurrentIndex(0);	break;
 	case 48000:		ui->sampleRateComboBox->setCurrentIndex(1);	break;
 	case 110933:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
@@ -26,7 +30,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<BambooTracker> core, std:
 					 this, [&](int value) {
 		ui->bufferLengthLabel->setText(QString::number(value) + "ms");
 	});
-	ui->bufferLengthHorizontalSlider->setValue(core_.lock()->getStreamDuration());
+	ui->bufferLengthHorizontalSlider->setValue(config.lock()->getBufferLength());
 }
 
 ConfigurationDialog::~ConfigurationDialog()
@@ -36,11 +40,12 @@ ConfigurationDialog::~ConfigurationDialog()
 
 void ConfigurationDialog::on_ConfigurationDialog_accepted()
 {
-	// Sound
-	int rate = ui->sampleRateComboBox->currentData(Qt::UserRole).toInt();
-	stream_.lock()->setRate(rate);
-	core_.lock()->setStreamRate(rate);
-	int bufLen = ui->bufferLengthHorizontalSlider->value();
-	stream_.lock()->setDuration(bufLen);
-	core_.lock()->setStreamDuration(bufLen);
+	// General //
+	// General settings
+
+	// Edit settings
+	config_.lock()->setPageJumpLength(ui->pageJumpLengthSpinBox->value());
+	// Sound //
+	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toInt());
+	config_.lock()->setBufferLength(ui->bufferLengthHorizontalSlider->value());
 }

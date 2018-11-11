@@ -7,9 +7,10 @@
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
-BambooTracker::BambooTracker()
+BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	: instMan_(std::make_shared<InstrumentsManager>()),
-	  opnaCtrl_(std::make_unique<OPNAController>(CHIP_CLOCK, 44100, 40)),
+	  opnaCtrl_(std::make_unique<OPNAController>(
+					CHIP_CLOCK, config.lock()->getSampleRate(), config.lock()->getBufferLength())),
 	  mod_(std::make_shared<Module>()),
 	  octave_(4),
 	  curSongNum_(0),
@@ -26,6 +27,13 @@ BambooTracker::BambooTracker()
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
 
 	clearDelayCounts();
+}
+
+/********** Change confuguration **********/
+void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
+{
+	setStreamRate(config.lock()->getSampleRate());
+	setStreamDuration(config.lock()->getBufferLength());
 }
 
 /********** Change octave **********/

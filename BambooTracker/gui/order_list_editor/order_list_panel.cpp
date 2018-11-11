@@ -85,6 +85,11 @@ void OrderListPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
 	comStack_ = stack;
 }
 
+void OrderListPanel::setConfiguration(std::weak_ptr<Configuration> config)
+{
+	config_ = config;
+}
+
 void OrderListPanel::initDisplay()
 {
 	pixmap_ = std::make_unique<QPixmap>(geometry().size());
@@ -767,7 +772,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-4);
+			moveCursorToDown(-config_.lock()->getPageJumpLength());
 			if (event->modifiers().testFlag(Qt::ShiftModifier)
 					&& shiftPressedPos_.row == curPos_.row) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
@@ -780,7 +785,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(4);
+			moveCursorToDown(config_.lock()->getPageJumpLength());
 			if (event->modifiers().testFlag(Qt::ShiftModifier)
 					&& shiftPressedPos_.row == curPos_.row) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
