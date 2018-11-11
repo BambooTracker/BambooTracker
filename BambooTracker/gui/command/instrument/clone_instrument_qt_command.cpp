@@ -23,11 +23,11 @@ void CloneInstrumentQtCommand::redo()
 				 .arg(refName);
 	switch (source_) {
 	case SoundSource::FM:
-		item = new QListWidgetItem(QIcon(), title);
+		item = new QListWidgetItem(QIcon(":/icon/inst_fm"), title);
 		form = std::make_unique<InstrumentEditorFMForm>(cloneNum_);
 		break;
 	case SoundSource::SSG:
-		item = new QListWidgetItem(QIcon(), title);
+		item = new QListWidgetItem(QIcon(":/icon/inst_ssg"), title);
 		form = std::make_unique<InstrumentEditorSSGForm>(cloneNum_);
 		break;
 	default:

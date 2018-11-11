@@ -25,11 +25,11 @@ void RemoveInstrumentQtCommand::undo()
 	auto title = QString("%1: %2").arg(num_, 2, 16, QChar('0')).toUpper().arg(name_);
 	switch (source_) {
 	case SoundSource::FM:
-		item = new QListWidgetItem(QIcon(), title);
+		item = new QListWidgetItem(QIcon(":/icon/inst_fm"), title);
 		form = std::make_unique<InstrumentEditorFMForm>(num_);
 		break;
 	case SoundSource::SSG:
-		item = new QListWidgetItem(QIcon(), title);
+		item = new QListWidgetItem(QIcon(":/icon/inst_ssg"), title);
 		form = std::make_unique<InstrumentEditorSSGForm>(num_);
 		break;
 	default:
