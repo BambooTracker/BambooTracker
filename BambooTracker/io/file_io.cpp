@@ -3770,3 +3770,15 @@ bool FileIO::writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t c
 		return false;
 	}
 }
+
+bool FileIO::backupModule(std::string path)
+{
+	try {
+		std::ifstream ifs(path, std::ios::binary);
+		std::ofstream ofs(path + ".bak", std::ios::binary);
+		ofs << ifs.rdbuf();
+		return true;
+	} catch (...) {
+		return false;
+	}
+}

@@ -981,6 +981,11 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	return ret;
 }
 
+bool BambooTracker::backupModule(std::string file)
+{
+	return FileIO::backupModule(file);
+}
+
 /********** Stream events **********/
 int BambooTracker::streamCountUp()
 {

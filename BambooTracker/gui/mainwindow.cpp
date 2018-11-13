@@ -1,4 +1,5 @@
 #include "mainwindow.hpp"
+#include <fstream>
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
@@ -561,6 +562,8 @@ void MainWindow::loadModule()
 							ui->instrumentListWidget, idx, QString::fromUtf8(name.c_str(), name.length()),
 							inst->getSoundSource(), instForms_));
 	}
+
+	isSavedModBefore_ = false;
 
 	loadSong();
 
@@ -1227,12 +1230,21 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	if (ConfigurationDialog(config_).exec() == QDialog::Accepted) {
-		bt_->stopPlaySong();
-
+	auto f = [&] {
 		stream_->setRate(config_->getSampleRate());
 		stream_->setDuration(config_->getBufferLength());
 		bt_->changeConfiguration(config_);
+	};
+
+	ConfigurationDialog diag(config_);
+	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, f);
+
+	if (diag.exec() == QDialog::Accepted) {
+		bt_->stopPlaySong();
+
+		f();
+
+		// TODO: save config
 
 		lockControls(false);
 	}
@@ -1318,8 +1330,16 @@ bool MainWindow::on_actionSave_triggered()
 {
 	auto path = QString::fromStdString(bt_->getModulePath());
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
+		if (!isSavedModBefore_ && config_->getBackupModules()) {
+			if (!bt_->backupModule(path.toStdString())) {
+				QMessageBox::critical(this, "Error", "Failed to backup module.");
+				return false;
+			}
+		}
+
 		if (bt_->saveModule(bt_->getModulePath())) {
 			isModifiedForNotCommand_ = false;
+			isSavedModBefore_ = true;
 			setWindowModified(false);
 			setWindowTitle();
 			return true;
@@ -1341,9 +1361,19 @@ bool MainWindow::on_actionSave_As_triggered()
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
+	if (std::ifstream(file.toStdString()).is_open()) {	// Already exists
+		if (!isSavedModBefore_ && config_->getBackupModules()) {
+			if (!bt_->backupModule(file.toStdString())) {
+				QMessageBox::critical(this, "Error", "Failed to backup module.");
+				return false;
+			}
+		}
+	}
+
 	bt_->setModulePath(file.toStdString());
 	if (bt_->saveModule(bt_->getModulePath())) {
 		isModifiedForNotCommand_ = false;
+		isSavedModBefore_ = true;
 		setWindowModified(false);
 		setWindowTitle();
 		return true;

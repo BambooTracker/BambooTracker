@@ -88,6 +88,7 @@ protected:
 	virtual void mousePressEvent(QMouseEvent* event) override;
 	virtual void mouseMoveEvent(QMouseEvent* event) override;
 	virtual void mouseReleaseEvent(QMouseEvent* event) override;
+	virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
 	bool mouseHoverd(QHoverEvent* event);
 	virtual void wheelEvent(QWheelEvent* event) override;
 	virtual void leaveEvent(QEvent* event) override;
@@ -137,6 +138,7 @@ private:
 	PatternPosition mousePressPos_, mouseReleasePos_;
 	PatternPosition selLeftAbovePos_, selRightBelowPos_;
 	PatternPosition shiftPressedPos_;
+	PatternPosition doubleClickPos_;
 
 	bool isIgnoreToSlider_, isIgnoreToOrder_;
 

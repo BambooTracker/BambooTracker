@@ -124,7 +124,9 @@ void OrderListPanel::drawRows(int maxWidth)
 					 bt_->isJamMode() ? curRowColor_ : curRowColorEditable_);
 	// Row number
 	painter.setPen(rowNumColor_);
-	painter.drawText(1, curRowBaselineY_, QString("%1").arg(curPos_.row, 2, 16, QChar('0')).toUpper());
+	painter.drawText(1, curRowBaselineY_, QString("%1").arg(
+						 curPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+						 ).toUpper());
 	// Order data
 	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
 	painter.setPen(curTextColor_);
@@ -316,7 +318,13 @@ void OrderListPanel::moveCursorToRight(int n)
 				break;
 			}
 			else {
-				tmp = sub;
+				if (config_.lock()->getWarpCursor()) {
+					tmp = sub;
+				}
+				else {
+					curPos_.track = songStyle_.trackAttribs.size() - 1;
+					break;
+				}
 			}
 		}
 	}
@@ -324,7 +332,13 @@ void OrderListPanel::moveCursorToRight(int n)
 		while (true) {
 			int add = tmp + songStyle_.trackAttribs.size();
 			if (tmp < 0) {
-				tmp = add;
+				if (config_.lock()->getWarpCursor()) {
+					tmp = add;
+				}
+				else {
+					curPos_.track = 0;
+					break;
+				}
 			}
 			else {
 				curPos_.track = tmp;
@@ -421,7 +435,7 @@ void OrderListPanel::setCellOrderNum(int n)
 	bt_->setOrderPattern(curSongNum_, editPos_.track, editPos_.row, n);
 	comStack_.lock()->push(new SetPatternToOrderQtCommand(this, editPos_));
 
-	if (!entryCnt_) moveCursorToDown(1);
+	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
 }
 
 void OrderListPanel::insertOrderBelow()
@@ -430,7 +444,7 @@ void OrderListPanel::insertOrderBelow()
 
 	bt_->insertOrderBelow(curSongNum_, curPos_.row);
 	comStack_.lock()->push(new InsertOrderBelowQtCommand(this));
-	moveCursorToDown(1);
+	if (!bt_->isPlaySong()) moveCursorToDown(1);
 }
 
 void OrderListPanel::deleteOrder()

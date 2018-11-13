@@ -8,12 +8,25 @@ class Configuration
 public:
 	Configuration();
 
-
 	// General //
 	// General settings
 public:
-
+	void setWarpCursor(bool enabled);
+	bool getWarpCursor() const;
+	void setWarpAcrossOrders(bool enabled);
+	bool getWarpAcrossOrders() const;
+	void setShowRowNumberInHex(bool enabled);
+	bool getShowRowNumberInHex() const;
+	void setShowPrevNextOrders(bool enabled);
+	bool getShowPrevNextOrders() const;
+	void setBackupModules(bool enabled);
+	bool getBackupModules() const;
+	void setDontSelectOnDoubleClick(bool enabled);
+	bool getDontSelectOnDoubleClick() const;
 private:
+	bool warpCursor_, warpAcrossOrders_;
+	bool showRowNumHex_, showPrevNextOrders_;
+	bool backupModules_, dontSelectOnDoubleClick_;
 
 	// Edit settings
 public:

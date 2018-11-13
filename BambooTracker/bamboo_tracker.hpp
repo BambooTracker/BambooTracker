@@ -183,6 +183,9 @@ public:
 	bool exportToWav(std::string file, int loopCnt, std::function<bool()> f);
 	bool exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f);
 
+	// Backup
+	bool backupModule(std::string file);
+
 	// Stream events
 	int streamCountUp();
 	void getStreamSamples(int16_t *container, size_t nSamples);

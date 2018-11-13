@@ -24,6 +24,8 @@ public:
 						 bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
 						 bool gd3TagEnabled, GD3Tag tag);
 
+	static bool backupModule(std::string path);
+
 private:
 	FileIO() {}
 

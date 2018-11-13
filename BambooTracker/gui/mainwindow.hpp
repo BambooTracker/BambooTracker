@@ -83,6 +83,8 @@ private:
 	bool isEditedPattern_, isEditedOrder_;
 	bool isSelectedPO_;
 
+	bool isSavedModBefore_;
+
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);

@@ -4,6 +4,11 @@ Configuration::Configuration()
 {
 	// General //
 	// General settings
+	warpCursor_ = true;
+	warpAcrossOrders_ = true;
+	showRowNumHex_ = true;
+	showPrevNextOrders_ = true;
+	backupModules_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -15,6 +20,65 @@ Configuration::Configuration()
 
 // General //
 // General settings
+void Configuration::setWarpCursor(bool enabled)
+{
+	warpCursor_ = enabled;
+}
+
+bool Configuration::getWarpCursor() const
+{
+	return warpCursor_;
+}
+
+void Configuration::setWarpAcrossOrders(bool enabled)
+{
+	warpAcrossOrders_ = enabled;
+}
+
+bool Configuration::getWarpAcrossOrders() const
+{
+	return warpAcrossOrders_;
+}
+
+void Configuration::setShowRowNumberInHex(bool enabled)
+{
+	showRowNumHex_ = enabled;
+}
+
+bool Configuration::getShowRowNumberInHex() const
+{
+	return showRowNumHex_;
+}
+
+void Configuration::setShowPrevNextOrders(bool enabled)
+{
+	showPrevNextOrders_ = enabled;
+}
+
+bool Configuration::getShowPrevNextOrders() const
+{
+	return showPrevNextOrders_;
+}
+
+void Configuration::setBackupModules(bool enabled)
+{
+	backupModules_ = enabled;
+}
+
+bool Configuration::getBackupModules() const
+{
+	return backupModules_;
+}
+
+void Configuration::setDontSelectOnDoubleClick(bool enabled)
+{
+	dontSelectOnDoubleClick_ = enabled;
+}
+
+bool Configuration::getDontSelectOnDoubleClick() const
+{
+	return dontSelectOnDoubleClick_;
+}
 
 // Edit settings
 void Configuration::setPageJumpLength(size_t length)
