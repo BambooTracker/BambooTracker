@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>933</width>
-    <height>783</height>
+    <width>930</width>
+    <height>780</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -388,7 +388,7 @@ QListWidget::item:selected:hover {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>933</width>
+     <width>930</width>
      <height>21</height>
     </rect>
    </property>

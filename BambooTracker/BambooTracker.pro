@@ -156,7 +156,8 @@ SOURCES += \
     chips/export_container.cpp \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
-    configuration.cpp
+    configuration.cpp \
+    gui/json.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -304,7 +305,8 @@ HEADERS += \
     gui/vgm_export_settings_dialog.hpp \
     gui/wave_export_settings_dialog.hpp \
     io/gd3_tag.hpp \
-    configuration.hpp
+    configuration.hpp \
+    gui/json.hpp
 
 FORMS += \
     gui/mainwindow.ui \

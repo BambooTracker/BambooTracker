@@ -11,6 +11,8 @@
 #include <QFileInfo>
 #include <QMimeData>
 #include <QProgressDialog>
+#include <QRect>
+#include <QDesktopWidget>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
@@ -26,6 +28,7 @@
 #include "gui/comment_edit_dialog.hpp"
 #include "gui/wave_export_settings_dialog.hpp"
 #include "gui/vgm_export_settings_dialog.hpp"
+#include "gui/json.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -40,6 +43,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	isSelectedPO_(false)
 {
 	ui->setupUi(this);
+
+	Json::loadConfiguration(config_);
+	if (config_->getMainWindowX() == -1) {	// When unset
+		QRect rec = geometry();
+		rec.moveCenter(QApplication::desktop()->availableGeometry().center());
+		setGeometry(rec);
+		config_->setMainWindowX(x());
+		config_->setMainWindowY(y());
+	}
+	else {
+		move(config_->getMainWindowX(), config_->getMainWindowY());
+	}
+	resize(config_->getMainWindowWidth(), config_->getMainWindowHeight());
+	if (config_->getMainWindowMaximized()) showMaximized();
 
 	/* Command stack */
 	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
@@ -209,6 +226,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 			ui->instrumentListWidget->setCurrentRow(row);
 			return false;
 		}
+		else if (event->type() == QEvent::Resize) {
+			config_->setInstrumentFMWindowWidth(fmForm->width());
+			config_->setInstrumentFMWindowHeight(fmForm->height());
+			return false;
+		}
 	}
 
 	if (auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(watched)) {
@@ -216,6 +238,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(ssgForm->getInstrumentNumber());
 			ui->instrumentListWidget->setCurrentRow(row);
+			return false;
+		}
+		else if (event->type() == QEvent::Resize) {
+			config_->setInstrumentSSGWindowWidth(ssgForm->width());
+			config_->setInstrumentSSGWindowHeight(ssgForm->height());
 			return false;
 		}
 	}
@@ -369,6 +396,26 @@ void MainWindow::dropEvent(QDropEvent* event)
 	}
 }
 
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+	QWidget::resizeEvent(event);
+
+	if (!isMaximized()) {	// Check previous size
+		config_->setMainWindowWidth(event->oldSize().width());
+		config_->setMainWindowHeight(event->oldSize().height());
+	}
+}
+
+void MainWindow::moveEvent(QMoveEvent* event)
+{
+	QWidget::moveEvent(event);
+
+	if (!isMaximized()) {	// Check previous position
+		config_->setMainWindowX(event->oldPos().x());
+		config_->setMainWindowY(event->oldPos().y());
+	}
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (isWindowModified()) {
@@ -393,7 +440,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		}
 	}
 
+	if (isMaximized()) {
+		config_->setMainWindowMaximized(true);
+	}
+	else {
+		config_->setMainWindowMaximized(false);
+		config_->setMainWindowWidth(width());
+		config_->setMainWindowHeight(height());
+		config_->setMainWindowX(x());
+		config_->setMainWindowY(y());
+	}
+
 	instForms_->closeAll();
+	Json::saveConfiguration(config_);
 
 	event->accept();
 }
@@ -669,6 +728,14 @@ void MainWindow::changeOctave(bool upFlag)
 	else ui->octaveSpinBox->stepDown();
 }
 
+/********** Configuration change **********/
+void MainWindow::changeConfiguration()
+{
+	stream_->setRate(config_->getSampleRate());
+	stream_->setDuration(config_->getBufferLength());
+	bt_->changeConfiguration(config_);
+}
+
 /******************************/
 void MainWindow::setWindowTitle()
 {
@@ -755,6 +822,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	case SoundSource::FM:
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
+		fmForm->resize(config_->getInstrumentFMWindowWidth(), config_->getInstrumentFMWindowHeight());
 		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeParameterChanged,
@@ -797,6 +865,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	case SoundSource::SSG:
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
+		ssgForm->resize(config_->getInstrumentSSGWindowWidth(), config_->getInstrumentSSGWindowHeight());
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormParameterChanged,
@@ -1230,22 +1299,13 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	auto f = [&] {
-		stream_->setRate(config_->getSampleRate());
-		stream_->setDuration(config_->getBufferLength());
-		bt_->changeConfiguration(config_);
-	};
-
 	ConfigurationDialog diag(config_);
-	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, f);
+	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->stopPlaySong();
-
-		f();
-
-		// TODO: save config
-
+		changeConfiguration();
+		Json::saveConfiguration(config_);
 		lockControls(false);
 	}
 }

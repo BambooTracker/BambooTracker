@@ -22,7 +22,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(0)->setCheckState(toCheckState(config.lock()->getWarpCursor()));
 	ui->generalSettingsListWidget->item(1)->setCheckState(toCheckState(config.lock()->getWarpAcrossOrders()));
 	ui->generalSettingsListWidget->item(2)->setCheckState(toCheckState(config.lock()->getShowRowNumberInHex()));
-	ui->generalSettingsListWidget->item(3)->setCheckState(toCheckState(config.lock()->getShowPrevNextOrders()));
+	ui->generalSettingsListWidget->item(3)->setCheckState(toCheckState(config.lock()->getShowPreviousNextOrders()));
 	ui->generalSettingsListWidget->item(4)->setCheckState(toCheckState(config.lock()->getBackupModules()));
 	ui->generalSettingsListWidget->item(5)->setCheckState(toCheckState(config.lock()->getDontSelectOnDoubleClick()));
 
@@ -58,7 +58,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setWarpCursor(fromCheckState(ui->generalSettingsListWidget->item(0)->checkState()));
 	config_.lock()->setWarpAcrossOrders(fromCheckState(ui->generalSettingsListWidget->item(1)->checkState()));
 	config_.lock()->setShowRowNumberInHex(fromCheckState(ui->generalSettingsListWidget->item(2)->checkState()));
-	config_.lock()->setShowPrevNextOrders(fromCheckState(ui->generalSettingsListWidget->item(3)->checkState()));
+	config_.lock()->setShowPreviousNextOrders(fromCheckState(ui->generalSettingsListWidget->item(3)->checkState()));
 	config_.lock()->setBackupModules(fromCheckState(ui->generalSettingsListWidget->item(4)->checkState()));
 	config_.lock()->setDontSelectOnDoubleClick(fromCheckState(ui->generalSettingsListWidget->item(5)->checkState()));
 

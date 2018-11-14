@@ -172,7 +172,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			if (odrNum == 0) {
 				break;
 			}
-			else if (config_.lock()->getShowPrevNextOrders()) {
+			else if (config_.lock()->getShowPreviousNextOrders()) {
 				--odrNum;
 				stepNum = bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum) - 1;
 			}
@@ -219,7 +219,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			if (odrNum == bt_->getOrderSize(curSongNum_) - 1) {
 				break;
 			}
-			else if (config_.lock()->getShowPrevNextOrders()) {
+			else if (config_.lock()->getShowPreviousNextOrders()) {
 				++odrNum;
 				stepNum = 0;
 				stepEnd = bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum);

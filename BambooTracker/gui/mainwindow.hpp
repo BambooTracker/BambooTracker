@@ -12,6 +12,8 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMessageBox>
+#include <QResizeEvent>
+#include <QMoveEvent>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -35,6 +37,8 @@ protected:
 	void keyReleaseEvent(QKeyEvent* event) override;
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dropEvent(QDropEvent* event) override;
+	void resizeEvent(QResizeEvent* event) override;
+	void moveEvent(QMoveEvent* event) override;
 	void closeEvent(QCloseEvent* event) override;
 
 private:
@@ -76,6 +80,9 @@ private:
 
 	// Octave change
 	void changeOctave(bool upFlag);
+
+	// Configuration change
+	void changeConfiguration();
 
 	void setWindowTitle();
 	void setModifiedTrue();
