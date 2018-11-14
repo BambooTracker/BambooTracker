@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <string>
 
 class Configuration
 {
@@ -64,11 +65,14 @@ private:
 
 	// Sound //
 public:
+	void setSoundDevice(std::string device);
+	std::string getSoundDevice() const;
 	void setSampleRate(uint32_t rate);
 	uint32_t getSampleRate() const;
 	void setBufferLength(size_t length);
 	size_t getBufferLength() const;
 private:
+	std::string sndDevice_;
 	uint32_t sampleRate_;
 	size_t bufferLength_;
 };

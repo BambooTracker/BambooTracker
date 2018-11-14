@@ -13,6 +13,7 @@
 #include <QProgressDialog>
 #include <QRect>
 #include <QDesktopWidget>
+#include <QAudioDeviceInfo>
 #include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
@@ -67,9 +68,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	});
 
 	/* Audio stream */
+	if (config_->getSoundDevice() == u8"") {
+		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
+		config_->setSoundDevice(sndDev.toUtf8().toStdString());
+	}
 	stream_ = std::make_shared<AudioStream>(bt_->getStreamRate(),
 											bt_->getStreamDuration(),
-											bt_->getModuleTickFrequency());
+											bt_->getModuleTickFrequency(),
+											QString::fromUtf8(config_->getSoundDevice().c_str(),
+															  config_->getSoundDevice().length()));
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, [&]() {
 		if (!bt_->streamCountUp()) {
@@ -733,6 +740,8 @@ void MainWindow::changeConfiguration()
 {
 	stream_->setRate(config_->getSampleRate());
 	stream_->setDuration(config_->getBufferLength());
+	stream_->setDevice(
+				QString::fromUtf8(config_->getSoundDevice().c_str(), config_->getSoundDevice().length()));
 	bt_->changeConfiguration(config_);
 }
 

@@ -1,6 +1,8 @@
 #include "configuration_dialog.hpp"
 #include "ui_configuration_dialog.h"
 #include <QPushButton>
+#include <QAudio>
+#include <QAudioDeviceInfo>
 #include "slider_style.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
@@ -30,6 +32,19 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->pageJumpLengthSpinBox->setValue(config.lock()->getPageJumpLength());
 
 	// Sound //
+	int devRow = -1;
+	int defDevRow = 0;
+	for (auto& info : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+		ui->soundDeviceComboBox->addItem(info.deviceName());
+		if (info.deviceName() == QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+												   config.lock()->getSoundDevice().length()))
+			devRow = ui->soundDeviceComboBox->count() - 1;
+		if (info.deviceName() == QAudioDeviceInfo::defaultOutputDevice().deviceName()) {
+			defDevRow = ui->soundDeviceComboBox->count() - 1;
+		}
+	}
+	ui->soundDeviceComboBox->setCurrentIndex((devRow == -1) ? defDevRow : devRow);
+
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
 	ui->sampleRateComboBox->addItem("110933Hz", 110933);
@@ -66,6 +81,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setPageJumpLength(ui->pageJumpLengthSpinBox->value());
 
 	// Sound //
+	config_.lock()->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
 	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toInt());
 	config_.lock()->setBufferLength(ui->bufferLengthHorizontalSlider->value());
 }

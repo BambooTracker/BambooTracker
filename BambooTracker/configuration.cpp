@@ -26,6 +26,7 @@ Configuration::Configuration()
 	pageJumpLength_ = 4;
 
 	// Sonud //
+	sndDevice_ = u8"";
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
 }
@@ -195,6 +196,16 @@ size_t Configuration::getPageJumpLength() const
 }
 
 // Sound //
+void Configuration::setSoundDevice(std::string device)
+{
+	sndDevice_ = device;
+}
+
+std::string Configuration::getSoundDevice() const
+{
+	return sndDevice_;
+}
+
 void Configuration::setSampleRate(uint32_t rate)
 {
 	sampleRate_ = rate;

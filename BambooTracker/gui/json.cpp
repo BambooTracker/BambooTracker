@@ -36,6 +36,8 @@ bool Json::saveConfiguration(std::weak_ptr<Configuration> config)
 		obj["pageJumpLength"] = static_cast<int>(config.lock()->getPageJumpLength());
 
 		// Sound //
+		obj["soundDevice"] = QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+											   config.lock()->getSoundDevice().length());
 		obj["sampleRate"] = static_cast<int>(config.lock()->getSampleRate());
 		obj["bufferLength"] = static_cast<int>(config.lock()->getBufferLength());
 
@@ -82,6 +84,7 @@ bool Json::loadConfiguration(std::weak_ptr<Configuration> config)
 		config.lock()->setPageJumpLength(static_cast<size_t>(obj["pageJumpLength"].toInt()));
 
 		// Sound //
+		config.lock()->setSoundDevice(obj["soundDevice"].toString().toUtf8().toStdString());
 		config.lock()->setSampleRate(static_cast<uint32_t>(obj["sampleRate"].toInt()));
 		config.lock()->setBufferLength(static_cast<size_t>(obj["bufferLength"].toInt()));
 
