@@ -59,6 +59,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	}
 	resize(config_->getMainWindowWidth(), config_->getMainWindowHeight());
 	if (config_->getMainWindowMaximized()) showMaximized();
+	ui->actionFollow_Mode->setChecked(config_->getFollowMode());
+	bt_->setFollowPlay(config_->getFollowMode());
 
 	/* Command stack */
 	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
@@ -498,6 +500,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		config_->setMainWindowX(x());
 		config_->setMainWindowY(y());
 	}
+	config_->setFollowMode(bt_->isFollowPlay());
 
 	instForms_->closeAll();
 	Json::saveConfiguration(config_);

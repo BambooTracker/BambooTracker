@@ -12,6 +12,7 @@ Configuration::Configuration()
 	instFMH_ = 680;
 	instSSGW_ = 500;
 	instSSGH_ = 390;
+	followMode_ = true;
 
 	// General //
 	// General settings
@@ -120,6 +121,16 @@ void Configuration::setInstrumentSSGWindowHeight(int h)
 int Configuration::getInstrumentSSGWindowHeight() const
 {
 	return instSSGH_;
+}
+
+void Configuration::setFollowMode(bool enabled)
+{
+	followMode_ = enabled;
+}
+
+bool Configuration::getFollowMode() const
+{
+	return followMode_;
 }
 
 // General //

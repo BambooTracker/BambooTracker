@@ -29,12 +29,15 @@ public:
 	int getInstrumentSSGWindowWidth() const;
 	void setInstrumentSSGWindowHeight(int h);
 	int getInstrumentSSGWindowHeight() const;
+	void setFollowMode(bool enabled);
+	bool getFollowMode() const;
 private:
 	int mainW_, mainH_;
 	bool mainMax_;
 	int mainX_, mainY_;
 	int instFMW_, instFMH_;
 	int instSSGW_, instSSGH_;
+	bool followMode_;
 
 	// General //
 	// General settings
