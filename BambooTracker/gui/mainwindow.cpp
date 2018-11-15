@@ -793,14 +793,14 @@ void MainWindow::changeConfiguration()
 void MainWindow::setWindowTitle()
 {
 	int n = bt_->getCurrentSongNumber();
-	auto modTitleStd = bt_->getModuleTitle();
+	auto filePathStd = bt_->getModulePath();
 	auto songTitleStd = bt_->getSongTitle(n);
-	QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
-	if (modTitle.isEmpty()) modTitle = "Untitled";
+	QString filePath = QString::fromUtf8(filePathStd.c_str(), filePathStd.length());
+	QString fileName = filePath.isEmpty() ? "Untitled" : QFileInfo(filePath).fileName();
 	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), songTitleStd.length());
 	if (songTitle.isEmpty()) songTitle = "Untitled";
 	QMainWindow::setWindowTitle(QString("%1[*] [#%2 %3] - BambooTracker")
-								.arg(modTitle).arg(QString::number(n)).arg(songTitle));
+								.arg(fileName).arg(QString::number(n)).arg(songTitle));
 }
 
 void MainWindow::setModifiedTrue()
