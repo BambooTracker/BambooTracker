@@ -51,6 +51,11 @@ private:
 
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
+	QColor instTextColor_, instBackColor_;
+	QColor instSelTextColor_, instSelBackColor_;
+	QColor instHovTextColor_, instHovBackColor_;
+	QColor instHovSelTextColor_, instHovSelBackColor_;
+
 	void addInstrument();
 	void removeInstrument(int row);
 	void editInstrument();

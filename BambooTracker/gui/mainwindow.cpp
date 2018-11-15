@@ -168,6 +168,52 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, [&](int octave) { bt_->setCurrentOctave(octave); });
 
 	/* Instrument list */
+	instTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	instBackColor_ = QColor::fromRgb(0, 0, 0, 255);
+	instSelTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	instSelBackColor_ = QColor::fromRgb(110, 90, 140, 255);
+	instHovTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	instHovBackColor_ = QColor::fromRgb(255, 255, 255, 75);
+	instHovSelTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	instHovSelBackColor_ = QColor::fromRgb(140, 120, 170, 255);
+	ui->instrumentListWidget->setStyleSheet(
+				QString(
+					"QListWidget {"
+					"	color: rgba(%1, %2, %3, %4);"
+					"	background: rgba(%5, %6, %7, %8);"
+					"}"
+				).arg(instTextColor_.red()).arg(instTextColor_.green())
+				.arg(instTextColor_.blue()).arg(instTextColor_.alpha())
+				.arg(instBackColor_.red()).arg(instBackColor_.green())
+				.arg(instBackColor_.blue()).arg(instBackColor_.alpha())
+				+ QString(
+					"QListWidget::item:hover {"
+					"	color: rgba(%1, %2, %3, %4);"
+					"	background: rgba(%5, %6, %7, %8);"
+					"}"
+				).arg(instHovTextColor_.red()).arg(instHovTextColor_.green())
+				.arg(instHovTextColor_.blue()).arg(instHovTextColor_.alpha())
+				.arg(instHovBackColor_.red()).arg(instHovBackColor_.green())
+				.arg(instHovBackColor_.blue()).arg(instHovBackColor_.alpha())
+				+ QString(
+					"QListWidget::item:selected {"
+					"	color: rgba(%1, %2, %3, %4);"
+					"	background: rgba(%5, %6, %7, %8);"
+					"}"
+				).arg(instSelTextColor_.red()).arg(instSelTextColor_.green())
+				.arg(instSelTextColor_.blue()).arg(instSelTextColor_.alpha())
+				.arg(instSelBackColor_.red()).arg(instSelBackColor_.green())
+				.arg(instSelBackColor_.blue()).arg(instSelBackColor_.alpha())
+				+ QString(
+					"QListWidget::item:selected:hover {"
+					"	color: rgba(%1, %2, %3, %4);"
+					"	background: rgba(%5, %6, %7, %8);"
+					"}"
+				).arg(instHovSelTextColor_.red()).arg(instHovSelTextColor_.green())
+				.arg(instHovSelTextColor_.blue()).arg(instHovSelTextColor_.alpha())
+				.arg(instHovSelBackColor_.red()).arg(instHovSelBackColor_.green())
+				.arg(instHovSelBackColor_.blue()).arg(instHovSelBackColor_.alpha())
+				);
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	ui->instrumentListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 	ui->instrumentListWidget->setFocusPolicy(Qt::NoFocus);

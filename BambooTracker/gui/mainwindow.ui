@@ -17,8 +17,8 @@
    <string>BambooTracker</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="2,2,4,2">
-    <item row="0" column="2">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="4,2,2,2">
+    <item row="0" column="0">
      <widget class="QGroupBox" name="orderListGroupBox">
       <property name="title">
        <string>Order List</string>
@@ -42,59 +42,7 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QGroupBox" name="instrumentListGroupBox">
-      <property name="title">
-       <string>Instruments</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <property name="leftMargin">
-        <number>3</number>
-       </property>
-       <property name="topMargin">
-        <number>3</number>
-       </property>
-       <property name="rightMargin">
-        <number>3</number>
-       </property>
-       <property name="bottomMargin">
-        <number>3</number>
-       </property>
-       <property name="horizontalSpacing">
-        <number>6</number>
-       </property>
-       <item row="0" column="2">
-        <widget class="QListWidget" name="instrumentListWidget">
-         <property name="styleSheet">
-          <string notr="true">QListWidget {
-	color: white;
-	background-color: black;
-}
-
-QListWidget::item:hover {
-	color: white;
-	background: rgb(255, 255, 255, 30%);
-}
-
-QListWidget::item:selected {
-	color: white;
-	background: rgb(110, 90, 140);
-}
-
-QListWidget::item:selected:hover {
-	color: white;
-	background: rgb(140, 120, 170);
-}</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="4">
-     <widget class="PatternEditor" name="patternEditor"/>
-    </item>
-    <item row="0" column="0">
+    <item row="0" column="1">
      <layout class="QGridLayout" name="gridLayout_4">
       <property name="spacing">
        <number>3</number>
@@ -213,7 +161,7 @@ QListWidget::item:selected:hover {
       </item>
      </layout>
     </item>
-    <item row="0" column="1">
+    <item row="0" column="2">
      <layout class="QGridLayout" name="gridLayout_7">
       <property name="spacing">
        <number>3</number>
@@ -380,6 +328,40 @@ QListWidget::item:selected:hover {
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="0" column="3">
+     <widget class="QGroupBox" name="instrumentListGroupBox">
+      <property name="title">
+       <string>Instruments</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>6</number>
+       </property>
+       <item row="0" column="2">
+        <widget class="QListWidget" name="instrumentListWidget">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="4">
+     <widget class="PatternEditor" name="patternEditor"/>
     </item>
    </layout>
   </widget>

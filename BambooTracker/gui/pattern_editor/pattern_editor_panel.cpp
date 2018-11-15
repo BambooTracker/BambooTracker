@@ -68,31 +68,31 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	hdMinusY_ = headerHeight_ / 2 + hdPlusY_;
 
 	/* Color */
-	defTextColor_ = QColor::fromRgb(180, 180, 180);
-	defRowColor_ = QColor::fromRgb(0, 0, 40);
-	mkRowColor_ = QColor::fromRgb(40, 40, 80);
-	curTextColor_ = QColor::fromRgb(255, 255, 255);
-	curRowColor_ = QColor::fromRgb(110, 90, 140);
-	curRowColorEditable_ = QColor::fromRgb(140, 90, 110);
+	defTextColor_ = QColor::fromRgb(180, 180, 180, 255);
+	defRowColor_ = QColor::fromRgb(0, 0, 40, 255);
+	mkRowColor_ = QColor::fromRgb(40, 40, 80, 255);
+	curTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	curRowColor_ = QColor::fromRgb(110, 90, 140, 255);
+	curRowColorEditable_ = QColor::fromRgb(140, 90, 110, 255);
 	curCellColor_ = QColor::fromRgb(255, 255, 255, 127);
-	playTextColor_ = curTextColor_;
-	playRowColor_ = QColor::fromRgb(90, 90, 140);
+	playTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	playRowColor_ = QColor::fromRgb(90, 90, 140, 255);
 	selCellColor_ = QColor::fromRgb(100, 100, 200, 192);
 	hovCellColor_ = QColor::fromRgb(255, 255, 255, 64);
-	defStepNumColor_ = QColor::fromRgb(255, 200, 180);
-	mkStepNumColor_ = QColor::fromRgb(255, 140, 160);
-	toneColor_ = QColor::fromRgb(210, 230, 64);
-	instColor_ = QColor::fromRgb(82, 179, 217);
-	volColor_ = QColor::fromRgb(226, 156, 80);
-	effIDColor_ = QColor::fromRgb(42, 187, 155);
-	effValColor_ = QColor::fromRgb(42, 187, 155);
-	errorColor_ = QColor::fromRgb(255, 0, 0);
-	headerTextColor_ = QColor::fromRgb(240, 240, 200);
-	headerRowColor_ = QColor::fromRgb(60, 60, 60);
+	defStepNumColor_ = QColor::fromRgb(255, 200, 180, 255);
+	mkStepNumColor_ = QColor::fromRgb(255, 140, 160, 255);
+	toneColor_ = QColor::fromRgb(210, 230, 64, 255);
+	instColor_ = QColor::fromRgb(82, 179, 217, 255);
+	volColor_ = QColor::fromRgb(226, 156, 80, 255);
+	effIDColor_ = QColor::fromRgb(42, 187, 155, 255);
+	effValColor_ = QColor::fromRgb(42, 187, 155, 255);
+	errorColor_ = QColor::fromRgb(255, 0, 0, 255);
+	headerTextColor_ = QColor::fromRgb(240, 240, 200, 255);
+	headerRowColor_ = QColor::fromRgb(60, 60, 60, 255);
 	maskColor_ = QColor::fromRgb(0, 0, 0, 128);
-	borderColor_ = QColor::fromRgb(120, 120, 120);
-	muteColor_ = QColor::fromRgb(255, 0, 0);
-	unmuteColor_ = QColor::fromRgb(0, 255, 0);
+	borderColor_ = QColor::fromRgb(120, 120, 120, 255);
+	muteColor_ = QColor::fromRgb(255, 0, 0, 255);
+	unmuteColor_ = QColor::fromRgb(0, 255, 0, 255);
 
 	rightEffn_ = std::vector<int>(15);
 
@@ -1727,7 +1727,7 @@ void PatternEditorPanel::resizeEvent(QResizeEvent *event)
 	QWidget::resizeEvent(event);
 
 	// Recalculate center row position
-	curRowBaselineY_ = (geometry().height() - headerHeight_) / 2 + headerHeight_;
+	curRowBaselineY_ = (geometry().height() + headerHeight_) / 2;
 	curRowY_ = curRowBaselineY_ + stepFontLeading_ / 2 - stepFontAscend_;
 
 	initDisplay();

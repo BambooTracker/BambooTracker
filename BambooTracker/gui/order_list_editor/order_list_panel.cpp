@@ -54,20 +54,20 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	headerHeight_ = rowFontHeight_;
 
 	/* Color */
-	defTextColor_ = QColor::fromRgb(180, 180, 180);
-	defRowColor_ = QColor::fromRgb(40, 40, 80);
-	curTextColor_ = QColor::fromRgb(255, 255, 255);
-	curRowColor_ = QColor::fromRgb(110, 90, 140);
-	curRowColorEditable_ = QColor::fromRgb(140, 90, 110);
+	defTextColor_ = QColor::fromRgb(180, 180, 180, 255);
+	defRowColor_ = QColor::fromRgb(40, 40, 80, 255);
+	curTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	curRowColor_ = QColor::fromRgb(110, 90, 140, 255);
+	curRowColorEditable_ = QColor::fromRgb(140, 90, 110, 255);
 	curCellColor_ = QColor::fromRgb(255, 255, 255, 127);
-	playTextColor_ = curTextColor_;
-	playRowColor_ = QColor::fromRgb(90, 90, 140);
+	playTextColor_ = QColor::fromRgb(255, 255, 255, 255);
+	playRowColor_ = QColor::fromRgb(90, 90, 140, 255);
 	selCellColor_ = QColor::fromRgb(100, 100, 200, 192);
 	hovCellColor_ = QColor::fromRgb(255, 255, 255, 64);
-	rowNumColor_ = QColor::fromRgb(255, 200, 180);
-	headerTextColor_ = QColor::fromRgb(240, 240, 200);
-	headerRowColor_ = QColor::fromRgb(60, 60, 60);
-	borderColor_ = QColor::fromRgb(120, 120, 120);
+	rowNumColor_ = QColor::fromRgb(255, 200, 180, 255);
+	headerTextColor_ = QColor::fromRgb(240, 240, 200, 255);
+	headerRowColor_ = QColor::fromRgb(60, 60, 60, 255);
+	borderColor_ = QColor::fromRgb(120, 120, 120, 255);
 
 
 	initDisplay();
@@ -839,7 +839,7 @@ void OrderListPanel::resizeEvent(QResizeEvent *event)
 	QWidget::resizeEvent(event);
 
 	// Recalculate center row position
-	curRowBaselineY_ = (geometry().height() - headerHeight_) / 2 + headerHeight_;
+	curRowBaselineY_ = (geometry().height() + headerHeight_) / 2;
 	curRowY_ = curRowBaselineY_ + rowFontLeading_ / 2 - rowFontAscend_;
 	initDisplay();
 }
