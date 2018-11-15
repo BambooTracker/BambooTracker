@@ -18,6 +18,7 @@
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
+#include "gui/color_palette.hpp"
 
 namespace Ui {
 	class MainWindow;
@@ -45,17 +46,13 @@ private:
 	Ui::MainWindow *ui;
 
 	std::shared_ptr<Configuration> config_;
+	std::shared_ptr<ColorPalette> palette_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::shared_ptr<AudioStream> stream_;
 	std::shared_ptr<QUndoStack> comStack_;
 
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
-	QColor instTextColor_, instBackColor_;
-	QColor instSelTextColor_, instSelBackColor_;
-	QColor instHovTextColor_, instHovBackColor_;
-	QColor instHovSelTextColor_, instHovSelBackColor_;
-
 	void addInstrument();
 	void removeInstrument(int row);
 	void editInstrument();

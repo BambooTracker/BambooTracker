@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	config_(std::make_shared<Configuration>()),
+	palette_(std::make_shared<ColorPalette>()),
 	bt_(std::make_shared<BambooTracker>(config_)),
 	comStack_(std::make_shared<QUndoStack>(this)),
 	instForms_(std::make_shared<InstrumentFormManager>()),
@@ -168,51 +169,43 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, [&](int octave) { bt_->setCurrentOctave(octave); });
 
 	/* Instrument list */
-	instTextColor_ = QColor::fromRgb(255, 255, 255, 255);
-	instBackColor_ = QColor::fromRgb(0, 0, 0, 255);
-	instSelTextColor_ = QColor::fromRgb(255, 255, 255, 255);
-	instSelBackColor_ = QColor::fromRgb(110, 90, 140, 255);
-	instHovTextColor_ = QColor::fromRgb(255, 255, 255, 255);
-	instHovBackColor_ = QColor::fromRgb(255, 255, 255, 75);
-	instHovSelTextColor_ = QColor::fromRgb(255, 255, 255, 255);
-	instHovSelBackColor_ = QColor::fromRgb(140, 120, 170, 255);
 	ui->instrumentListWidget->setStyleSheet(
 				QString(
 					"QListWidget {"
 					"	color: rgba(%1, %2, %3, %4);"
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
-				).arg(instTextColor_.red()).arg(instTextColor_.green())
-				.arg(instTextColor_.blue()).arg(instTextColor_.alpha())
-				.arg(instBackColor_.red()).arg(instBackColor_.green())
-				.arg(instBackColor_.blue()).arg(instBackColor_.alpha())
+				).arg(palette_->ilistTextColor.red()).arg(palette_->ilistTextColor.green())
+				.arg(palette_->ilistTextColor.blue()).arg(palette_->ilistTextColor.alpha())
+				.arg(palette_->ilistBackColor.red()).arg(palette_->ilistBackColor.green())
+				.arg(palette_->ilistBackColor.blue()).arg(palette_->ilistBackColor.alpha())
 				+ QString(
 					"QListWidget::item:hover {"
 					"	color: rgba(%1, %2, %3, %4);"
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
-				).arg(instHovTextColor_.red()).arg(instHovTextColor_.green())
-				.arg(instHovTextColor_.blue()).arg(instHovTextColor_.alpha())
-				.arg(instHovBackColor_.red()).arg(instHovBackColor_.green())
-				.arg(instHovBackColor_.blue()).arg(instHovBackColor_.alpha())
+					).arg(palette_->ilistHovTextColor.red()).arg(palette_->ilistHovTextColor.green())
+					.arg(palette_->ilistHovTextColor.blue()).arg(palette_->ilistHovTextColor.alpha())
+					.arg(palette_->ilistHovBackColor.red()).arg(palette_->ilistHovBackColor.green())
+					.arg(palette_->ilistHovBackColor.blue()).arg(palette_->ilistHovBackColor.alpha())
 				+ QString(
 					"QListWidget::item:selected {"
 					"	color: rgba(%1, %2, %3, %4);"
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
-				).arg(instSelTextColor_.red()).arg(instSelTextColor_.green())
-				.arg(instSelTextColor_.blue()).arg(instSelTextColor_.alpha())
-				.arg(instSelBackColor_.red()).arg(instSelBackColor_.green())
-				.arg(instSelBackColor_.blue()).arg(instSelBackColor_.alpha())
+					).arg(palette_->ilistSelTextColor.red()).arg(palette_->ilistSelTextColor.green())
+					.arg(palette_->ilistSelTextColor.blue()).arg(palette_->ilistSelTextColor.alpha())
+					.arg(palette_->ilistSelBackColor.red()).arg(palette_->ilistSelBackColor.green())
+					.arg(palette_->ilistSelBackColor.blue()).arg(palette_->ilistSelBackColor.alpha())
 				+ QString(
 					"QListWidget::item:selected:hover {"
 					"	color: rgba(%1, %2, %3, %4);"
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
-				).arg(instHovSelTextColor_.red()).arg(instHovSelTextColor_.green())
-				.arg(instHovSelTextColor_.blue()).arg(instHovSelTextColor_.alpha())
-				.arg(instHovSelBackColor_.red()).arg(instHovSelBackColor_.green())
-				.arg(instHovSelBackColor_.blue()).arg(instHovSelBackColor_.alpha())
+					).arg(palette_->ilistHovSelTextColor.red()).arg(palette_->ilistHovSelTextColor.green())
+					.arg(palette_->ilistHovSelTextColor.blue()).arg(palette_->ilistHovSelTextColor.alpha())
+					.arg(palette_->ilistHovSelBackColor.red()).arg(palette_->ilistHovSelBackColor.green())
+					.arg(palette_->ilistHovSelBackColor.blue()).arg(palette_->ilistHovSelBackColor.alpha())
 				);
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	ui->instrumentListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -225,6 +218,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->patternEditor->setCore(bt_);
 	ui->patternEditor->setCommandStack(comStack_);
 	ui->patternEditor->setConfiguration(config_);
+	ui->patternEditor->setColorPallete(palette_);
 	ui->patternEditor->installEventFilter(this);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 ui->orderList, &OrderListEditor::setCurrentTrack);
@@ -241,6 +235,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->orderList->setCore(bt_);
 	ui->orderList->setCommandStack(comStack_);
 	ui->orderList->setConfiguration(config_);
+	ui->orderList->setColorPallete(palette_);
 	ui->orderList->installEventFilter(this);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 ui->patternEditor, &PatternEditor::setCurrentTrack);

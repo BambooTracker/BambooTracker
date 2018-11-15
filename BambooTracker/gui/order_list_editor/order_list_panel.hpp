@@ -19,6 +19,7 @@
 #include "configuration.hpp"
 #include "gui/order_list_editor/order_position.hpp"
 #include "song.hpp"
+#include "gui/color_palette.hpp"
 
 class OrderListPanel : public QWidget
 {
@@ -28,6 +29,7 @@ public:
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 	void setConfiguration(std::weak_ptr<Configuration> config);
+	void setColorPallete(std::weak_ptr<ColorPalette> palette);
 
 	void changeEditable();
 
@@ -85,6 +87,7 @@ private:
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::weak_ptr<Configuration> config_;
+	std::weak_ptr<ColorPalette> palette_;
 
 	QFont rowFont_, headerFont_;
 	int rowFontWidth_, rowFontHeight_, rowFontAscend_, rowFontLeading_;
@@ -96,15 +99,6 @@ private:
 	int headerHeight_;
 	int curRowBaselineY_;
 	int curRowY_;
-
-	QColor defTextColor_, defRowColor_;
-	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
-	QColor playTextColor_, playRowColor_;
-	QColor selCellColor_;
-	QColor hovCellColor_;
-	QColor rowNumColor_;
-	QColor headerTextColor_, headerRowColor_;
-	QColor borderColor_;
 
 	int leftTrackNum_;
 	SongStyle songStyle_;

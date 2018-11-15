@@ -20,6 +20,7 @@
 #include "configuration.hpp"
 #include "song.hpp"
 #include "gui/pattern_editor/pattern_position.hpp"
+#include "gui/color_palette.hpp"
 #include "misc.hpp"
 
 class PatternEditorPanel : public QWidget
@@ -30,6 +31,7 @@ public:
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 	void setConfiguration(std::weak_ptr<Configuration> config);
+	void setColorPallete(std::weak_ptr<ColorPalette> palette);
 
 	void changeEditable();
 	int getFullColmunSize() const;
@@ -98,6 +100,7 @@ private:
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::weak_ptr<Configuration> config_;
+	std::weak_ptr<ColorPalette> palette_;
 
 	QFont stepFont_, headerFont_;
 	int stepFontWidth_, stepFontHeight_, stepFontAscend_, stepFontLeading_;
@@ -114,19 +117,6 @@ private:
 	int hdPlusY_, hdMinusY_;
 	int curRowBaselineY_;
 	int curRowY_;
-
-	QColor defTextColor_, defRowColor_, mkRowColor_;
-	QColor curTextColor_, curRowColor_, curRowColorEditable_, curCellColor_;
-	QColor playTextColor_, playRowColor_;
-	QColor selCellColor_;
-	QColor hovCellColor_;
-	QColor defStepNumColor_, mkStepNumColor_;
-	QColor toneColor_, instColor_, volColor_, effIDColor_, effValColor_;
-	QColor errorColor_;
-	QColor headerTextColor_, headerRowColor_;
-	QColor maskColor_;
-	QColor borderColor_;
-	QColor muteColor_, unmuteColor_;
 
 	std::vector<int> rightEffn_;
 

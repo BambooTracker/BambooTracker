@@ -157,7 +157,8 @@ SOURCES += \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
-    gui/json.cpp
+    gui/json.cpp \
+    gui/color_palette.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -306,7 +307,8 @@ HEADERS += \
     gui/wave_export_settings_dialog.hpp \
     io/gd3_tag.hpp \
     configuration.hpp \
-    gui/json.hpp
+    gui/json.hpp \
+    gui/color_palette.hpp
 
 FORMS += \
     gui/mainwindow.ui \
