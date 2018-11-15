@@ -31,9 +31,17 @@ private:
 
 	static const FMEnvelopeParameter ENV_FM_PARAMS[38];
 
-	static size_t loadInstrumentMemoryOperatorSequence(FMEnvelopeParameter param,
+	static size_t loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
+	static size_t loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
+												BinaryContainer& ctr, size_t globCsr);
+	static size_t loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsManager> instMan,
+														BinaryContainer& ctr, size_t globCsr);
+	static size_t loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 			size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan, BinaryContainer& ctr);
-	static size_t loadInstrumentMemoryOperatorSequenceForInstrument(FMEnvelopeParameter param,
+	static size_t loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
+	static size_t loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
+
+	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopeParameter param,
 			size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan, BinaryContainer& ctr,
 																	InstrumentFM* inst, int idx);
 };
