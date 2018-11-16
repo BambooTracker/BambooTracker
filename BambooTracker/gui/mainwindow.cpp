@@ -82,9 +82,12 @@ MainWindow::MainWindow(QWidget *parent) :
 															  config_->getSoundDevice().length()));
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, [&]() {
-		if (!bt_->streamCountUp()) {
+		if (bt_->streamCountUp() > 0) {
 			ui->orderList->update();
 			ui->patternEditor->updatePosition();
+			statusPlayPos_->setText(
+						QString("%1/%2").arg(bt_->getPlayingOrderNumber(), 2, 16, QChar('0'))
+						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
 		}
 	}, Qt::DirectConnection);
 	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
@@ -114,6 +117,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		if (freq != bt_->getModuleTickFrequency()) {
 			bt_->setModuleTickFrequency(freq);
 			stream_->setInturuption(freq);
+			statusIntr_->setText(QString::number(freq) + QString("Hz"));
 			setModifiedTrue();
 		}
 	});
@@ -251,6 +255,22 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, &MainWindow::onPatternAndOrderFocusLost);
 	QObject::connect(ui->orderList, &OrderListEditor::selected,
 					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
+
+	/* Status bar */
+	statusDetail_ = new QLabel();
+	statusStyle_ = new QLabel();
+	statusInst_ = new QLabel();
+	statusOctave_ = new QLabel();
+	statusIntr_ = new QLabel();
+	statusPlayPos_ = new QLabel();
+	ui->statusBar->addWidget(statusDetail_, 5);
+	ui->statusBar->addPermanentWidget(statusStyle_, 1);
+	ui->statusBar->addPermanentWidget(statusInst_, 1);
+	ui->statusBar->addPermanentWidget(statusOctave_, 1);
+	ui->statusBar->addPermanentWidget(statusIntr_, 1);
+	ui->statusBar->addPermanentWidget(statusPlayPos_, 1);
+	statusOctave_->setText(QString("Octave: ") + QString::number(bt_->getCurrentOctave()));
+	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 
 	/* Clipboard */
 	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,
@@ -672,6 +692,15 @@ void MainWindow::loadModule()
 							ui->instrumentListWidget, idx, QString::fromUtf8(name.c_str(), name.length()),
 							inst->getSoundSource(), instForms_));
 	}
+	bt_->setCurrentInstrument(-1);
+	statusInst_->setText("No instrument");
+
+	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
+	case SongType::STD:		statusStyle_->setText("Standard");			break;
+	case SongType::FMEX:	statusStyle_->setText("FM3ch expanded");	break;
+	}
+
+	statusPlayPos_->setText("00/00");
 
 	isSavedModBefore_ = false;
 
@@ -701,7 +730,7 @@ void MainWindow::loadSong()
 	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), title.length()));
 	switch (bt_->getSongStyle(curSong).type) {
 	case SongType::STD:		ui->songStyleLineEdit->setText("Standard");			break;
-	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch extension");	break;
+	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch expanded");	break;
 	}
 	ui->tickFreqSpinBox->setValue(bt_->getModuleTickFrequency());
 	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
@@ -777,6 +806,8 @@ void MainWindow::changeOctave(bool upFlag)
 {
 	if (upFlag) ui->octaveSpinBox->stepUp();
 	else ui->octaveSpinBox->stepDown();
+
+	statusOctave_->setText(QString("Octave: ") + QString::number(bt_->getCurrentOctave()));
 }
 
 /********** Configuration change **********/
@@ -787,6 +818,8 @@ void MainWindow::changeConfiguration()
 	stream_->setDevice(
 				QString::fromUtf8(config_->getSoundDevice().c_str(), config_->getSoundDevice().length()));
 	bt_->changeConfiguration(config_);
+
+	update();
 }
 
 /******************************/
@@ -969,6 +1002,10 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 			  ? -1
 			  : ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	bt_->setCurrentInstrument(num);
+
+	if (num == -1) statusInst_->setText("No instrument");
+	else statusInst_->setText(
+				QString("Instrument: ") + QString("%1").arg(num, 2, 16, QChar('0')).toUpper());
 
 	bool isEnabled = (num != -1);
 	ui->actionRemove_Instrument->setEnabled(isEnabled);

@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QMoveEvent>
+#include <QLabel>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -93,6 +94,14 @@ private:
 	bool isSelectedPO_;
 
 	bool isSavedModBefore_;
+
+	// Status bar
+	QLabel* statusDetail_;
+	QLabel* statusStyle_;
+	QLabel* statusInst_;
+	QLabel* statusOctave_;
+	QLabel* statusIntr_;
+	QLabel* statusPlayPos_;
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);

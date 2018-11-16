@@ -14,9 +14,16 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">OrderListEditor {
-	border: 0;
-}</string>
+   <string notr="true"/>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::Panel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Sunken</enum>
+  </property>
+  <property name="lineWidth">
+   <number>1</number>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">

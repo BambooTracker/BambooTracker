@@ -38,7 +38,7 @@ void ModulePropertiesDialog::insertSong(int row, QString title, SongType type, i
 	item->setText(1, title);
 	switch (type) {
 	case SongType::STD:		item->setText(2, "Standard");		break;
-	case SongType::FMEX:	item->setText(2, "FM3ch extnsion");	break;
+	case SongType::FMEX:	item->setText(2, "FM3ch expanded");	break;
 	}
 	item->setData(2, Qt::UserRole, static_cast<int>(type));
 	ui->songTreeWidget->insertTopLevelItem(row, item);

@@ -160,7 +160,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		}
 
 		QColor rowColor, textColor;
-		if (odrNum == playOdrNum && stepNum == playStepNum) {
+		if (!config_.lock()->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
 			rowColor = palette_.lock()->ptnPlayRowColor;
 			textColor = palette_.lock()->ptnPlayTextColor;
 		}
@@ -208,7 +208,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		}
 
 		QColor rowColor, textColor;
-		if (odrNum == playOdrNum && stepNum == playStepNum) {
+		if (!config_.lock()->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
 			rowColor = palette_.lock()->ptnPlayRowColor;
 			textColor = palette_.lock()->ptnPlayTextColor;
 		}

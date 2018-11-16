@@ -148,7 +148,7 @@ void OrderListPanel::drawRows(int maxWidth)
 		 rowY >= endY;
 		 rowY -= rowFontHeight_, baseY -= rowFontHeight_, --rowNum) {
 		QColor rowColor, textColor;
-		if (rowNum == playOdrNum) {
+		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum) {
 			rowColor = palette_.lock()->odrPlayRowColor;
 			textColor = palette_.lock()->odrPlayTextColor;
 		}
@@ -190,7 +190,7 @@ void OrderListPanel::drawRows(int maxWidth)
 		 rowY <= endY;
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
 		QColor rowColor, textColor;
-		if (rowNum == playOdrNum) {
+		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum) {
 			rowColor = palette_.lock()->odrPlayRowColor;
 			textColor = palette_.lock()->odrPlayTextColor;
 		}

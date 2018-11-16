@@ -14,9 +14,13 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">PatternEditor {
-	border: 0;
-}</string>
+   <string notr="true"/>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::Panel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Sunken</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
