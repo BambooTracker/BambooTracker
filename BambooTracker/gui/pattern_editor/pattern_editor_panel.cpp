@@ -1910,13 +1910,18 @@ void PatternEditorPanel::mouseDoubleClickEvent(QMouseEvent* event)
 			if (doubleClickPos_.order >= 0) {
 				if (doubleClickPos_.track >= 0) {
 					onSelectPressed(4);
+					return;
 				}
 				else if (doubleClickPos_.track == -2) {
 					onSelectPressed(5);
+					return;
 				}
 			}
 		}
 	}
+
+	// Else
+	mousePressEvent(event);
 }
 
 bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
