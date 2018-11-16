@@ -8,6 +8,7 @@
 #include <QResizeEvent>
 #include <QString>
 #include "gui/labeled_vertical_slider.hpp"
+#include "gui/color_palette.hpp"
 
 namespace Ui {
 	class FMOperatorTable;
@@ -21,6 +22,8 @@ class FMOperatorTable : public QFrame
 public:
 	explicit FMOperatorTable(QWidget *parent = nullptr);
 	~FMOperatorTable() override;
+
+	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
 	void setOperatorNumber(int n);
 	int operatorNumber() const;
@@ -43,6 +46,7 @@ private slots:
 
 private:
 	Ui::FMOperatorTable *ui;
+	std::shared_ptr<ColorPalette> palette_;
 	int number_;
 	std::map<Ui::FMOperatorParameter, LabeledVerticalSlider*> sliderMap_;
 

@@ -351,6 +351,15 @@ void InstrumentEditorSSGForm::setCore(std::weak_ptr<BambooTracker> core)
 	updateInstrumentParameters();
 }
 
+void InstrumentEditorSSGForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
+{
+	ui->waveEditor->setColorPalette(palette);
+	ui->tnEditor->setColorPalette(palette);
+	ui->envEditor->setColorPalette(palette);
+	ui->arpEditor->setColorPalette(palette);
+	ui->ptEditor->setColorPalette(palette);
+}
+
 ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type)
 {
 	switch (type) {

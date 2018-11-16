@@ -487,6 +487,18 @@ void InstrumentEditorFMForm::setCore(std::weak_ptr<BambooTracker> core)
 	updateInstrumentParameters();
 }
 
+void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
+{
+	ui->op1Table->setColorPalette(palette);
+	ui->op2Table->setColorPalette(palette);
+	ui->op3Table->setColorPalette(palette);
+	ui->op4Table->setColorPalette(palette);
+
+	ui->opSeqEditor->setColorPalette(palette);
+	ui->arpEditor->setColorPalette(palette);
+	ui->ptEditor->setColorPalette(palette);
+}
+
 ReleaseType InstrumentEditorFMForm::convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type)
 {
 	switch (type) {

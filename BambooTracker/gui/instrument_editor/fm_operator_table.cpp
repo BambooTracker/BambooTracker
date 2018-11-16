@@ -49,13 +49,18 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	});
 
 	// Init graph
-	auto scene = new QGraphicsScene(0, 0,201, 128, ui->envelopeGraphicsView);
+	auto scene = new QGraphicsScene(0, 0, 201, 128, ui->envelopeGraphicsView);
 	ui->envelopeGraphicsView->setScene(scene);
 }
 
 FMOperatorTable::~FMOperatorTable()
 {
 	delete ui;
+}
+
+void FMOperatorTable::setColorPalette(std::shared_ptr<ColorPalette> palette)
+{
+	palette_ = palette;
 }
 
 void FMOperatorTable::setOperatorNumber(int n)
@@ -123,10 +128,10 @@ void FMOperatorTable::resizeGraph()
 
 void FMOperatorTable::repaintGraph()
 {
+	if (!palette_) return;
+
 	auto scene = ui->envelopeGraphicsView->scene();
 	double envHeight = ui->ssgegCheckBox->isChecked() ? (scene->height() - 40) : scene->height();
-	int linew = 2;
-	QBrush lineColor = Qt::red;
 	double startx = 0;
 
 	double tly, tlx;
@@ -186,84 +191,89 @@ void FMOperatorTable::repaintGraph()
 	endy = envHeight - endy;
 
 	scene->clear();
+	scene->addRect(0, 0, scene->width(), scene->height(),
+				   QPen(palette_->instFMEnvBackColor_), QBrush(palette_->instFMEnvBackColor_));
 
-	scene->addLine(startx, envHeight, tlx, tly, QPen(lineColor, linew));
-	scene->addLine(tlx, tly, slx, sly, QPen(lineColor, linew));
-	scene->addLine(slx, sly, rrx, rry, QPen(lineColor, linew));
-	scene->addLine(rrx, rry, endx, endy, QPen(lineColor, linew));
+	auto linePen = QPen(QBrush(palette_->instFMEnvLine1Color_), 2);
+	scene->addLine(startx, envHeight, tlx, tly, linePen);
+	scene->addLine(tlx, tly, slx, sly, linePen);
+	scene->addLine(slx, sly, rrx, rry, linePen);
+	scene->addLine(rrx, rry, endx, endy, linePen);
 
-	scene->addEllipse(tlx-1, tly, 4, 4, QPen(), Qt::white);
-	scene->addEllipse(slx-1, sly, 4, 4, QPen(), Qt::white);
-	scene->addEllipse(rrx-1, rry, 4, 4, QPen(), Qt::white);
+	auto cclPen = QPen(palette_->instFmEnvCirclePenColor);
+	auto cclBrush = QBrush(palette_->instFmEnvCircleBrushColor);
+	scene->addEllipse(tlx-1, tly, 4, 4, cclPen, cclBrush);
+	scene->addEllipse(slx-1, sly, 4, 4, cclPen, cclBrush);
+	scene->addEllipse(rrx-1, rry, 4, 4, cclPen, cclBrush);
 
 	if (ui->ssgegCheckBox->isChecked()) {
 		double seph = scene->height() - 39;
-		scene->addLine(0, seph, 200, seph, QPen(Qt::gray));
+		scene->addLine(0, seph, 200, seph, QPen(palette_->instFMEnvBorderColor_));
 		double toph = seph + 2;
 		double both = scene->height();
-		lineColor = Qt::blue;
+		linePen.setBrush(palette_->instFMEnvLine2Color_);
 		switch (ui->ssgegSlider->value()) {
 		case 0:
 		{
 			for (int i = 0; i < 5; ++i) {
-				scene->addLine(40 * i, both, 40 * i, toph, QPen(lineColor, linew));
-				scene->addLine(40 * i, toph, 40 * (i + 1), both, QPen(lineColor, linew));
+				scene->addLine(40 * i, both, 40 * i, toph, linePen);
+				scene->addLine(40 * i, toph, 40 * (i + 1), both, linePen);
 			}
 		}
 			break;
 		case 1:
 		{
-			scene->addLine(0, both, 0, toph, QPen(lineColor, linew));
-			scene->addLine(0, toph, 40, both, QPen(lineColor, linew));
-			scene->addLine(40, both, 200, both, QPen(lineColor, linew));
+			scene->addLine(0, both, 0, toph, linePen);
+			scene->addLine(0, toph, 40, both, linePen);
+			scene->addLine(40, both, 200, both, linePen);
 		}
 			break;
 		case 2:
 		{
-			scene->addLine(0, both, 0, toph, QPen(lineColor, linew));
-			scene->addLine(0, toph, 40, both, QPen(lineColor, linew));
+			scene->addLine(0, both, 0, toph, linePen);
+			scene->addLine(0, toph, 40, both, linePen);
 			for (int i = 0; i < 2; ++i) {
-				scene->addLine(40 + 80 * i, both, 80 + 80 * i, toph, QPen(lineColor, linew));
-				scene->addLine(80 + 80 * i, toph, 40 + 80 * (i + 1), both, QPen(lineColor, linew));
+				scene->addLine(40 + 80 * i, both, 80 + 80 * i, toph, linePen);
+				scene->addLine(80 + 80 * i, toph, 40 + 80 * (i + 1), both, linePen);
 			}
 		}
 			break;
 		case 3:
 		{
-			scene->addLine(0, both, 0, toph, QPen(lineColor, linew));
-			scene->addLine(0, toph, 40, both, QPen(lineColor, linew));
-			scene->addLine(40, both, 40, toph, QPen(lineColor, linew));
-			scene->addLine(40, toph, 200, toph, QPen(lineColor, linew));
+			scene->addLine(0, both, 0, toph, linePen);
+			scene->addLine(0, toph, 40, both, linePen);
+			scene->addLine(40, both, 40, toph, linePen);
+			scene->addLine(40, toph, 200, toph, linePen);
 		}
 			break;
 		case 4:
 		{
 			for (int i = 0; i < 5; ++i) {
-				scene->addLine(40 * i, both, 40 * (i + 1), toph, QPen(lineColor, linew));
-				scene->addLine(40 * (i + 1), toph, 40 * (i + 1), both, QPen(lineColor, linew));
+				scene->addLine(40 * i, both, 40 * (i + 1), toph, linePen);
+				scene->addLine(40 * (i + 1), toph, 40 * (i + 1), both, linePen);
 			}
 		}
 			break;
 		case 5:
 		{
-			scene->addLine(0, both, 40, toph, QPen(lineColor, linew));
-			scene->addLine(40, toph, 200, toph, QPen(lineColor, linew));
+			scene->addLine(0, both, 40, toph, linePen);
+			scene->addLine(40, toph, 200, toph, linePen);
 		}
 			break;
 		case 6:
 		{
 			for (int i = 0; i < 2; ++i) {
-				scene->addLine(80 * i, both, 40 + 80 * i, toph, QPen(lineColor, linew));
-				scene->addLine(40 + 80 * i, toph, 80 * (i + 1), both, QPen(lineColor, linew));
+				scene->addLine(80 * i, both, 40 + 80 * i, toph, linePen);
+				scene->addLine(40 + 80 * i, toph, 80 * (i + 1), both, linePen);
 			}
-			scene->addLine(160, both, 200, toph, QPen(lineColor, linew));
+			scene->addLine(160, both, 200, toph, linePen);
 		}
 			break;
 		case 7:
 		{
-			scene->addLine(0, both, 40, toph, QPen(lineColor, linew));
-			scene->addLine(40, toph, 40, both, QPen(lineColor, linew));
-			scene->addLine(40, both, 200, both, QPen(lineColor, linew));
+			scene->addLine(0, both, 40, toph, linePen);
+			scene->addLine(40, toph, 40, both, linePen);
+			scene->addLine(40, both, 200, both, linePen);
 		}
 			break;
 		}

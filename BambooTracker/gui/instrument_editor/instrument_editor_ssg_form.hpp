@@ -7,6 +7,7 @@
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
+#include "gui/color_palette.hpp"
 
 namespace Ui {
 	class InstrumentEditorSSGForm;
@@ -21,6 +22,7 @@ public:
 	~InstrumentEditorSSGForm() override;
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
+	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
 signals:
 	void jamKeyOnEvent(QKeyEvent* event);

@@ -14,6 +14,19 @@ public:
 	QColor ilistHovTextColor, ilistHovBackColor;
 	QColor ilistHovSelTextColor, ilistHovSelBackColor;
 
+	// Instrument editor
+	QColor instFMEnvLine1Color_, instFMEnvLine2Color_;
+	QColor instFMEnvBackColor_, instFMEnvBorderColor_;
+	QColor instFmEnvCirclePenColor, instFmEnvCircleBrushColor;
+	QColor instSeqTagColor;
+	QColor instSeqHovColor;
+	QColor instSeqLoopBackColor, instSeqLoopColor, instSeqLoopEdgeColor;
+	QColor instSeqReleaseBackColor, instSeqReleaseColor, instSeqReleaseEdgeColor;
+	QColor instSeqLoopTextColor, instSeqReleaseTextColor;
+	QColor instSeqCellColor, instSeqCellTextColor;
+	QColor instSeqBorderColor;
+	QColor instSeqMaskColor;
+
 	// Order list
 	QColor odrDefTextColor, odrDefRowColor;
 	QColor odrCurTextColor, odrCurRowColor;

@@ -908,7 +908,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	case SoundSource::FM:
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
+		fmForm->setCore(bt_);
+		fmForm->setColorPalette(palette_);
 		fmForm->resize(config_->getInstrumentFMWindowWidth(), config_->getInstrumentFMWindowHeight());
+
 		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeParameterChanged,
@@ -939,7 +942,6 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 this, &MainWindow::setModifiedTrue);
 
 		fmForm->installEventFilter(this);
-		fmForm->setCore(bt_);
 
 		instForms_->onInstrumentFMEnvelopeNumberChanged();
 		instForms_->onInstrumentFMLFONumberChanged();
@@ -951,7 +953,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	case SoundSource::SSG:
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
+		ssgForm->setCore(bt_);
+		ssgForm->setColorPalette(palette_);
 		ssgForm->resize(config_->getInstrumentSSGWindowWidth(), config_->getInstrumentSSGWindowHeight());
+
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormParameterChanged,
@@ -982,7 +987,6 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 this, &MainWindow::setModifiedTrue);
 
 		ssgForm->installEventFilter(this);
-		ssgForm->setCore(bt_);
 
 		instForms_->onInstrumentSSGWaveFormNumberChanged();
 		instForms_->onInstrumentSSGToneNoiseNumberChanged();

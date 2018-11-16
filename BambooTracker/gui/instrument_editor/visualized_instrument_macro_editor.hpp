@@ -15,6 +15,7 @@
 #include <QString>
 #include <vector>
 #include <memory>
+#include "gui/color_palette.hpp"
 
 namespace Ui {
 	class VisualizedInstrumentMacroEditor;
@@ -27,6 +28,8 @@ class VisualizedInstrumentMacroEditor : public QWidget
 public:
 	explicit VisualizedInstrumentMacroEditor(QWidget *parent = nullptr);
 	~VisualizedInstrumentMacroEditor() override;
+
+	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
 	void AddRow(QString label = "");
 	void setMaximumDisplayedRowCount(int count);
@@ -98,6 +101,8 @@ private:
 
 	std::unique_ptr<QPixmap> pixmap_;
 
+	std::shared_ptr<ColorPalette> palette_;
+
 	QFont font_;
 	int fontWidth_, fontHeight_, fontAscend_, fontLeading_;
 	int tagWidth_;
@@ -113,15 +118,6 @@ private:
 
 	int loopY_, releaseY_;
 	int loopBaseY_, releaseBaseY_;
-
-	QColor tagColor_;
-	QColor hovColor_;
-	QColor loopBackColor_, loopColor_, loopEdgeColor_;
-	QColor releaseBackColor_, releaseColor_, releaseEdgeColor_;
-	QColor loopFontColor_, releaseFontColor_;
-	QColor cellColor_, cellTextColor_;
-	QColor borderColor_;
-	QColor maskColor_;
 
 	int grabLoop_;
 	bool isGrabLoopHead_;

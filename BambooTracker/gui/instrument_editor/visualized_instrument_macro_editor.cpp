@@ -45,22 +45,6 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	/* Width & height */
 	tagWidth_ = metrics.width("Release ");
 
-	/* Color */
-	loopBackColor_ = QColor::fromRgb(25, 25, 25);
-	releaseBackColor_ = QColor::fromRgb(0, 0, 0);
-	loopColor_ = QColor::fromRgb(210, 40, 180, 127);
-	releaseColor_ = QColor::fromRgb(40, 170, 200, 127);
-	loopEdgeColor_ = QColor::fromRgb(180, 20, 180, 127);
-	releaseEdgeColor_ = QColor::fromRgb(40, 170, 150, 127);
-	tagColor_ = QColor::fromRgb(255, 255, 255);
-	hovColor_ = QColor::fromRgb(255, 255, 255, 63);
-	loopFontColor_ = QColor::fromRgb(24,223,172);
-	releaseFontColor_ = QColor::fromRgb(24,223,172);
-	cellColor_ = QColor::fromRgb(38, 183, 173);
-	cellTextColor_ = QColor::fromRgb(255, 255, 255);
-	borderColor_ = QColor::fromRgb(50, 50, 50);
-	maskColor_ = QColor::fromRgb(0, 0, 0, 128);
-
 	ui->panel->setAttribute(Qt::WA_Hover);
 	ui->verticalScrollBar->setVisible(false);
 	ui->panel->installEventFilter(this);
@@ -69,6 +53,11 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 VisualizedInstrumentMacroEditor::~VisualizedInstrumentMacroEditor()
 {
 	delete ui;
+}
+
+void VisualizedInstrumentMacroEditor::setColorPalette(std::shared_ptr<ColorPalette> palette)
+{
+	palette_ = palette;
 }
 
 void VisualizedInstrumentMacroEditor::AddRow(QString label)
@@ -274,7 +263,7 @@ void VisualizedInstrumentMacroEditor::drawField()
 	painter.setFont(font_);
 
 	// Row label
-	painter.setPen(tagColor_);
+	painter.setPen(palette_->instSeqTagColor);
 	if (isLabelOmitted_ && !labels_.empty()) {
 		painter.drawText(1,
 						 rowHeights_.front() - fontHeight_ + fontAscend_ + fontLeading_ / 2,
@@ -300,12 +289,12 @@ void VisualizedInstrumentMacroEditor::drawField()
 	}
 
 	// Sequence
-	painter.setPen(cellTextColor_);
+	painter.setPen(palette_->instSeqCellTextColor);
 	for (size_t i = 0; i < cols_.size(); ++i) {
 		if (upperRow_ >= cols_[i].row && cols_[i].row > upperRow_ - maxDispRowCnt_) {
 			int x = tagWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + i, 0);
 			int y = std::accumulate(rowHeights_.begin(), rowHeights_.begin() + (upperRow_ - cols_[i].row), 0);
-			painter.fillRect(x, y, colWidths_[i], rowHeights_[upperRow_ - cols_[i].row], cellColor_);
+			painter.fillRect(x, y, colWidths_[i], rowHeights_[upperRow_ - cols_[i].row], palette_->instSeqCellColor);
 			painter.drawText(x + 2,
 							 y + rowHeights_[upperRow_ - cols_[i].row] - fontHeight_ + fontAscend_ + (fontLeading_ / 2),
 							 cols_[i].text);
@@ -315,7 +304,7 @@ void VisualizedInstrumentMacroEditor::drawField()
 	if (hovCol_ >= 0 && hovRow_ >= 0) {
 		painter.fillRect(tagWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + hovCol_, 0),
 						 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + hovRow_, 0),
-						 colWidths_[hovCol_], rowHeights_[hovRow_], hovColor_);
+						 colWidths_[hovCol_], rowHeights_[hovRow_], palette_->instSeqHovColor);
 	}
 }
 
@@ -324,27 +313,27 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 	QPainter painter(pixmap_.get());
 	painter.setFont(font_);
 
-	painter.fillRect(0, loopY_, ui->panel->geometry().width(), fontHeight_, loopBackColor_);
-	painter.setPen(loopFontColor_);
+	painter.fillRect(0, loopY_, ui->panel->geometry().width(), fontHeight_, palette_->instSeqLoopBackColor);
+	painter.setPen(palette_->instSeqLoopTextColor);
 	painter.drawText(1, loopBaseY_, "Loop");
 
 	int w = tagWidth_;
 	for (int i = 0; i < cols_.size(); ++i) {
 		for (size_t j = 0; j < loops_.size(); ++j) {
 			if (loops_[j].begin <= i && i <= loops_[j].end) {
-				painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, loopColor_);
+				painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, palette_->instSeqLoopColor);
 				if (loops_[j].begin == i) {
-					painter.fillRect(w, loopY_, 2, fontHeight_, loopEdgeColor_);
+					painter.fillRect(w, loopY_, 2, fontHeight_, palette_->instSeqLoopEdgeColor);
 					QString times = (loops_[j].times == 1) ? "" : QString::number(loops_[j].times);
 					painter.drawText(w + 2, loopBaseY_, "Loop " + times);
 				}
 				if (loops_[j].end == i) {
-					painter.fillRect(w + colWidths_[i] - 2, loopY_, 2, fontHeight_, loopEdgeColor_);
+					painter.fillRect(w + colWidths_[i] - 2, loopY_, 2, fontHeight_, palette_->instSeqLoopEdgeColor);
 				}
 			}
 		}
 		if (hovRow_ == -2 && hovCol_ == i)
-			painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, hovColor_);
+			painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, palette_->instSeqHovColor);
 		w += colWidths_[i];
 	}
 }
@@ -354,15 +343,15 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 	QPainter painter(pixmap_.get());
 	painter.setFont(font_);
 
-	painter.fillRect(0, releaseY_, ui->panel->geometry().width(), fontHeight_, releaseBackColor_);
-	painter.setPen(releaseFontColor_);
+	painter.fillRect(0, releaseY_, ui->panel->geometry().width(), fontHeight_, palette_->instSeqReleaseBackColor);
+	painter.setPen(palette_->instSeqReleaseTextColor);
 	painter.drawText(1, releaseBaseY_, "Release");
 
 	int w = tagWidth_;
 	for (int i = 0; i < cols_.size(); ++i) {
 		if (release_.point == i) {
-			painter.fillRect(w, releaseY_, ui->panel->geometry().width() - w, fontHeight_, releaseColor_);
-			painter.fillRect(w, releaseY_, 2, fontHeight_, releaseEdgeColor_);
+			painter.fillRect(w, releaseY_, ui->panel->geometry().width() - w, fontHeight_, palette_->instSeqReleaseColor);
+			painter.fillRect(w, releaseY_, 2, fontHeight_, palette_->instSeqReleaseEdgeColor);
 			QString type;
 			switch (release_.type) {
 			case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
@@ -378,11 +367,11 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 				type = "Relative";
 				break;
 			}
-			painter.setPen(releaseFontColor_);
+			painter.setPen(palette_->instSeqReleaseTextColor);
 			painter.drawText(w + 2, releaseBaseY_, type);
 		}
 		if (hovRow_ == -3 && hovCol_ == i)
-			painter.fillRect(w, releaseY_, colWidths_[i], fontHeight_, hovColor_);
+			painter.fillRect(w, releaseY_, colWidths_[i], fontHeight_, palette_->instSeqHovColor);
 		w += colWidths_[i];
 	}
 }
@@ -390,7 +379,7 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 void VisualizedInstrumentMacroEditor::drawBorder()
 {
 	QPainter painter(pixmap_.get());
-	painter.setPen(borderColor_);
+	painter.setPen(palette_->instSeqBorderColor);
 	painter.drawLine(tagWidth_, 0, tagWidth_, ui->panel->geometry().height());
 	for (int i = 1; i < maxDispRowCnt_; ++i) {
 		painter.drawLine(tagWidth_, std::accumulate(rowHeights_.begin(), rowHeights_.begin() + i, 0),
@@ -401,7 +390,7 @@ void VisualizedInstrumentMacroEditor::drawBorder()
 void VisualizedInstrumentMacroEditor::drawShadow()
 {
 	QPainter painter(pixmap_.get());
-	painter.fillRect(0, 0, ui->panel->geometry().width(), ui->panel->geometry().height(), maskColor_);
+	painter.fillRect(0, 0, ui->panel->geometry().width(), ui->panel->geometry().height(), palette_->instSeqMaskColor);
 }
 
 void VisualizedInstrumentMacroEditor::makeMML()
@@ -564,6 +553,8 @@ bool VisualizedInstrumentMacroEditor::eventFilter(QObject*object, QEvent* event)
 
 void VisualizedInstrumentMacroEditor::paintEventInView(QPaintEvent* event)
 {
+	if (!palette_) return;
+
 	pixmap_->fill(Qt::black);
 
 	drawField();

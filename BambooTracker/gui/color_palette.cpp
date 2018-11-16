@@ -12,6 +12,28 @@ ColorPalette::ColorPalette()
 	ilistHovSelTextColor = QColor::fromRgb(255, 255, 255, 255);
 	ilistHovSelBackColor = QColor::fromRgb(140, 120, 170, 255);
 
+	// Instrument editor
+	instFMEnvLine1Color_ = QColor::fromRgb(255, 0, 0, 255);
+	instFMEnvLine2Color_ = QColor::fromRgb(0, 0, 255, 255);
+	instFMEnvBackColor_ = QColor::fromRgb(255, 255, 255, 255);
+	instFMEnvBorderColor_ = QColor::fromRgb(64, 64, 64, 255);
+	instFmEnvCirclePenColor = QColor::fromRgb(0, 0, 0, 255);
+	instFmEnvCircleBrushColor = QColor::fromRgb(255, 255, 255, 255);
+	instSeqLoopBackColor = QColor::fromRgb(25, 25, 25);
+	instSeqReleaseBackColor = QColor::fromRgb(0, 0, 0);
+	instSeqLoopColor = QColor::fromRgb(210, 40, 180, 127);
+	instSeqReleaseColor = QColor::fromRgb(40, 170, 200, 127);
+	instSeqLoopEdgeColor = QColor::fromRgb(180, 20, 180, 127);
+	instSeqReleaseEdgeColor = QColor::fromRgb(40, 170, 150, 127);
+	instSeqTagColor = QColor::fromRgb(255, 255, 255);
+	instSeqHovColor = QColor::fromRgb(255, 255, 255, 63);
+	instSeqLoopTextColor = QColor::fromRgb(24,223,172);
+	instSeqReleaseTextColor = QColor::fromRgb(24,223,172);
+	instSeqCellColor = QColor::fromRgb(38, 183, 173);
+	instSeqCellTextColor = QColor::fromRgb(255, 255, 255);
+	instSeqBorderColor = QColor::fromRgb(50, 50, 50);
+	instSeqMaskColor = QColor::fromRgb(0, 0, 0, 128);
+
 	// Order list
 	odrDefTextColor = QColor::fromRgb(180, 180, 180, 255);
 	odrDefRowColor = QColor::fromRgb(40, 40, 80, 255);
