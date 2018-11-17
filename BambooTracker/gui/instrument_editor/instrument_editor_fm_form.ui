@@ -91,7 +91,11 @@
              </layout>
             </item>
             <item>
-             <widget class="QGraphicsView" name="graphicsView"/>
+             <widget class="QGraphicsView" name="alGraphicsView">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -549,6 +553,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>LabeledVerticalSlider</class>
+   <extends>QFrame</extends>
+   <header>gui/labeled_vertical_slider.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>FMOperatorTable</class>
    <extends>QFrame</extends>
    <header>gui/instrument_editor/fm_operator_table.hpp</header>
@@ -558,12 +568,6 @@
    <class>LabeledHorizontalSlider</class>
    <extends>QFrame</extends>
    <header>gui/labeled_horizontal_slider.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LabeledVerticalSlider</class>
-   <extends>QFrame</extends>
-   <header>gui/labeled_vertical_slider.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

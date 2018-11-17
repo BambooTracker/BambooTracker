@@ -7,6 +7,8 @@
 #include <QClipboard>
 #include <QAction>
 #include <QRegularExpression>
+#include <QGraphicsScene>
+#include <QGraphicsSimpleTextItem>
 #include "gui/event_guard.hpp"
 #include "misc.hpp"
 
@@ -23,6 +25,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	/******************** Envelope editor ********************/
 	ui->envGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
+	auto scene = new QGraphicsScene(ui->alGraphicsView);
+	ui->alGraphicsView->setScene(scene);
+
 	ui->alSlider->setText("AL");
 	ui->alSlider->setMaximum(7);
 	QObject::connect(ui->alSlider, &LabeledHorizontalSlider::valueChanged, this, [&](int value) {
@@ -31,6 +36,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
+		paintAlgorithmDiagram();
+		resizeAlgorithmDiagram();
 	});
 	ui->fbSlider->setText("FB");
 	ui->fbSlider->setMaximum(7);
@@ -489,6 +496,8 @@ void InstrumentEditorFMForm::setCore(std::weak_ptr<BambooTracker> core)
 
 void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
+	palette_ = palette;
+
 	ui->op1Table->setColorPalette(palette);
 	ui->op2Table->setColorPalette(palette);
 	ui->op3Table->setColorPalette(palette);
@@ -640,6 +649,21 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
+void InstrumentEditorFMForm::showEvent(QShowEvent* event)
+{
+	Q_UNUSED(event)
+
+	paintAlgorithmDiagram();
+	resizeAlgorithmDiagram();
+}
+
+void InstrumentEditorFMForm::resizeEvent(QResizeEvent* event)
+{
+	Q_UNUSED(event)
+
+	resizeAlgorithmDiagram();
+}
+
 //========== Envelope ==========//
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 {
@@ -763,6 +787,196 @@ QString InstrumentEditorFMForm::toEnvelopeString() const
 			   .arg(ui->op3Table->toString())
 			   .arg(ui->op4Table->toString());
 	return str;
+}
+
+void InstrumentEditorFMForm::paintAlgorithmDiagram()
+{
+	if (!palette_) return;
+
+	ui->alGraphicsView->setBackgroundBrush(QBrush(palette_->instFMAlBackColor));
+	QGraphicsScene* scene = ui->alGraphicsView->scene();	// 200 * 70
+	scene->clear();
+
+	QPen pen(palette_->instFMAlForeColor);
+	QBrush brush(palette_->instFMAlForeColor);
+	auto one = new QGraphicsSimpleTextItem();
+	one->setBrush(brush);
+	one->setText("1");
+	auto two = new QGraphicsSimpleTextItem();
+	two->setBrush(brush);
+	two->setText("2");
+	auto three = new QGraphicsSimpleTextItem();
+	three->setBrush(brush);
+	three->setText("3");
+	auto four = new QGraphicsSimpleTextItem();
+	four->setBrush(brush);
+	four->setText("4");
+	switch (ui->alSlider->value()) {
+	case 0:
+	{
+		scene->addRect(8, -4, 16, 8, pen, brush);
+		scene->addRect(40, -4, 16, 8, pen, brush);
+		scene->addRect(72, -4, 16, 8, pen, brush);
+		scene->addRect(104, -4, 16, 8, pen, brush);
+		scene->addLine(0, 0, 128, 0, pen);
+		scene->addLine(0, -8, 32, -8, pen);
+		scene->addLine(0, 0, 0, -8, pen);
+		scene->addLine(32, 0, 32, -8, pen);
+		one->setPos(14, 8);
+		two->setPos(46, 8);
+		three->setPos(78, 8);
+		four->setPos(110, 8);
+		break;
+	}
+	case 1:
+	{
+		scene->addRect(8, -12, 16, 8, pen, brush);
+		scene->addRect(8, 4, 16, 8, pen, brush);
+		scene->addRect(40, -4, 16, 8, pen, brush);
+		scene->addRect(72, -4, 16, 8, pen, brush);
+		scene->addLine(0, -8, 35, -8, pen);
+		scene->addLine(24, 8, 35, 8, pen);
+		scene->addLine(0, -16, 29, -16, pen);
+		scene->addLine(0, -8, 0, -16, pen);
+		scene->addLine(29, -8, 29, -16, pen);
+		scene->addLine(35, -8, 35, 8, pen);
+		scene->addLine(35, 0, 96, 0, pen);
+		one->setPos(-8, -12);
+		two->setPos(-8, 4);
+		three->setPos(46, 8);
+		four->setPos(78, 8);
+		break;
+	}
+	case 2:
+	{
+		scene->addRect(40, -12, 16, 8, pen, brush);
+		scene->addRect(8, 4, 16, 8, pen, brush);
+		scene->addRect(40, 4, 16, 8, pen, brush);
+		scene->addRect(72, -4, 16, 8, pen, brush);
+		scene->addLine(32, -8, 67, -8, pen);
+		scene->addLine(32, -8, 32, -16, pen);
+		scene->addLine(61, -8, 61, -16, pen);
+		scene->addLine(32, -16, 61, -16, pen);
+		scene->addLine(24, 8, 67, 8, pen);
+		scene->addLine(67, -8, 67, 8, pen);
+		scene->addLine(67, 0, 96, 0, pen);
+		one->setPos(24, -12);
+		two->setPos(14, 16);
+		three->setPos(46, 16);
+		four->setPos(78, 8);
+		break;
+	}
+	case 3:
+	{
+		scene->addRect(8, -12, 16, 8, pen, brush);
+		scene->addRect(40, -12, 16, 8, pen, brush);
+		scene->addRect(40, 4, 16, 8, pen, brush);
+		scene->addRect(72, -4, 16, 8, pen, brush);
+		scene->addLine(0, -8, 64, -8, pen);
+		scene->addLine(0, -8, 0, -16, pen);
+		scene->addLine(32, -8, 32, -16, pen);
+		scene->addLine(0, -16, 32, -16, pen);
+		scene->addLine(56, 8, 64, 8, pen);
+		scene->addLine(64, -8, 64, 8, pen);
+		scene->addLine(64, 0, 96, 0, pen);
+		one->setPos(-8, -12);
+		two->setPos(46, -24);
+		three->setPos(46, 16);
+		four->setPos(78, 8);
+		break;
+	}
+	case 4:
+	{
+		scene->addRect(8, -12, 16, 8, pen, brush);
+		scene->addRect(40, -12, 16, 8, pen, brush);
+		scene->addRect(8, 4, 16, 8, pen, brush);
+		scene->addRect(40, 4, 16, 8, pen, brush);
+		scene->addLine(0, -8, 64, -8, pen);
+		scene->addLine(0, -8, 0, -16, pen);
+		scene->addLine(32, -8, 32, -16, pen);
+		scene->addLine(0, -16, 32, -16, pen);
+		scene->addLine(24, 8, 64, 8, pen);
+		scene->addLine(64, -8, 64, 8, pen);
+		scene->addLine(64, 0, 72, 0, pen);
+		one->setPos(-8, -12);
+		two->setPos(46, -24);
+		three->setPos(14, 16);
+		four->setPos(46, 16);
+		break;
+	}
+	case 5:
+	{
+		scene->addRect(8, -4, 16, 8, pen, brush);
+		scene->addRect(40, -20, 16, 8, pen, brush);
+		scene->addRect(40, -4, 16, 8, pen, brush);
+		scene->addRect(40, 12, 16, 8, pen, brush);
+		scene->addLine(0, 0, 72, 0, pen);
+		scene->addLine(0, 0, 0, -8, pen);
+		scene->addLine(29, 0, 29, -8, pen);
+		scene->addLine(0, -8, 29, -8, pen);
+		scene->addLine(35, -16, 35, 16, pen);
+		scene->addLine(64, -16, 64, 16, pen);
+		scene->addLine(35, -16, 64, -16, pen);
+		scene->addLine(35, 16, 64, 16, pen);
+		one->setPos(14, 8);
+		two->setPos(76, -20);
+		three->setPos(76, -4);
+		four->setPos(76, 12);
+		break;
+	}
+	case 6:
+	{
+		scene->addRect(8, -20, 16, 8, pen, brush);
+		scene->addRect(40, -20, 16, 8, pen, brush);
+		scene->addRect(40, -4, 16, 8, pen, brush);
+		scene->addRect(40, 12, 16, 8, pen, brush);
+		scene->addLine(0, -16, 64, -16, pen);
+		scene->addLine(0, -16, 0, -24, pen);
+		scene->addLine(32, -16, 32, -24, pen);
+		scene->addLine(0, -24, 32, -24, pen);
+		scene->addLine(56, 0, 72, 0, pen);
+		scene->addLine(56, 16, 64, 16, pen);
+		scene->addLine(64, -16, 64, 16, pen);
+		one->setPos(14, -8);
+		two->setPos(76, -20);
+		three->setPos(76, -4);
+		four->setPos(76, 12);
+		break;
+	}
+	case 7:
+	{
+		scene->addRect(-28, 8, 8, 16, pen, brush);
+		scene->addRect(-12, 8, 8, 16, pen, brush);
+		scene->addRect(4, 8, 8, 16, pen, brush);
+		scene->addRect(20, 8, 8, 16, pen, brush);
+		scene->addLine(-24, 0, -24, 35, pen);
+		scene->addLine(-24, 0, -32, 0, pen);
+		scene->addLine(-24, 29, -32, 29, pen);
+		scene->addLine(-32, 0, -32, 29, pen);
+		scene->addLine(-8, 24, -8, 35, pen);
+		scene->addLine(8, 24, 8, 35, pen);
+		scene->addLine(24, 24, 24, 35, pen);
+		scene->addLine(-24, 35, 24, 35, pen);
+		scene->addLine(0, 35, 0, 40, pen);
+		one->setPos(-26, -12);
+		two->setPos(-10, -12);
+		three->setPos(6, -12);
+		four->setPos(22, -12);
+		break;
+	}
+	}
+	scene->addItem(one);
+	scene->addItem(two);
+	scene->addItem(three);
+	scene->addItem(four);
+
+	scene->setSceneRect(scene->itemsBoundingRect());
+}
+
+void InstrumentEditorFMForm::resizeAlgorithmDiagram()
+{
+	ui->alGraphicsView->fitInView(ui->alGraphicsView->scene()->itemsBoundingRect(),
+								  Qt::AspectRatioMode::KeepAspectRatio);
 }
 
 /********** Slots **********/

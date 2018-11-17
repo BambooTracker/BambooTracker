@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QKeyEvent>
+#include <QResizeEvent>
+#include <QShowEvent>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
@@ -33,6 +35,8 @@ signals:
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
+	void showEvent(QShowEvent* event) override;
+	void resizeEvent(QResizeEvent* event) override;
 
 private:
 	Ui::InstrumentEditorFMForm *ui;
@@ -40,6 +44,7 @@ private:
 	bool isIgnoreEvent_;
 
 	std::weak_ptr<BambooTracker> bt_;
+	std::shared_ptr<ColorPalette> palette_;
 
 	ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
 	VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
@@ -60,6 +65,9 @@ private:
 	void setInstrumentEnvelopeParameters(QString data);
 
 	QString toEnvelopeString() const;
+
+	void paintAlgorithmDiagram();
+	void resizeAlgorithmDiagram();
 
 private slots:
 	void on_envNumSpinBox_valueChanged(int arg1);

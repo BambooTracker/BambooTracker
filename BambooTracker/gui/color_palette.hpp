@@ -15,9 +15,10 @@ public:
 	QColor ilistHovSelTextColor, ilistHovSelBackColor;
 
 	// Instrument editor
-	QColor instFMEnvLine1Color_, instFMEnvLine2Color_;
-	QColor instFMEnvBackColor_, instFMEnvBorderColor_;
-	QColor instFmEnvCirclePenColor, instFmEnvCircleBrushColor;
+	QColor instFMEnvLine1Color, instFMEnvLine2Color;
+	QColor instFMEnvBackColor, instFMEnvBorderColor;
+	QColor instFMEnvCirclePenColor, instFMEnvCircleBrushColor;
+	QColor instFMAlForeColor, instFMAlBackColor;
 	QColor instSeqTagColor;
 	QColor instSeqHovColor;
 	QColor instSeqLoopBackColor, instSeqLoopColor, instSeqLoopEdgeColor;

@@ -192,26 +192,26 @@ void FMOperatorTable::repaintGraph()
 
 	scene->clear();
 	scene->addRect(0, 0, scene->width(), scene->height(),
-				   QPen(palette_->instFMEnvBackColor_), QBrush(palette_->instFMEnvBackColor_));
+				   QPen(palette_->instFMEnvBackColor), QBrush(palette_->instFMEnvBackColor));
 
-	auto linePen = QPen(QBrush(palette_->instFMEnvLine1Color_), 2);
+	auto linePen = QPen(QBrush(palette_->instFMEnvLine1Color), 2);
 	scene->addLine(startx, envHeight, tlx, tly, linePen);
 	scene->addLine(tlx, tly, slx, sly, linePen);
 	scene->addLine(slx, sly, rrx, rry, linePen);
 	scene->addLine(rrx, rry, endx, endy, linePen);
 
-	auto cclPen = QPen(palette_->instFmEnvCirclePenColor);
-	auto cclBrush = QBrush(palette_->instFmEnvCircleBrushColor);
+	auto cclPen = QPen(palette_->instFMEnvCirclePenColor);
+	auto cclBrush = QBrush(palette_->instFMEnvCircleBrushColor);
 	scene->addEllipse(tlx-1, tly, 4, 4, cclPen, cclBrush);
 	scene->addEllipse(slx-1, sly, 4, 4, cclPen, cclBrush);
 	scene->addEllipse(rrx-1, rry, 4, 4, cclPen, cclBrush);
 
 	if (ui->ssgegCheckBox->isChecked()) {
 		double seph = scene->height() - 39;
-		scene->addLine(0, seph, 200, seph, QPen(palette_->instFMEnvBorderColor_));
+		scene->addLine(0, seph, 200, seph, QPen(palette_->instFMEnvBorderColor));
 		double toph = seph + 2;
 		double both = scene->height();
-		linePen.setBrush(palette_->instFMEnvLine2Color_);
+		linePen.setBrush(palette_->instFMEnvLine2Color);
 		switch (ui->ssgegSlider->value()) {
 		case 0:
 		{
