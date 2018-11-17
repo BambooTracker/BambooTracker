@@ -747,6 +747,7 @@ bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
 	size_t eof = globCsr + eofOfs;
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
+	if (fileVersion > Version::ofModuleFileInBCD()) return false;
 	globCsr += 4;
 
 	while (globCsr < eof) {
@@ -2402,6 +2403,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 	size_t eofOfs = ctr.readUint32(globCsr);
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
+	if (fileVersion > Version::ofInstrumentFileInBCD()) return nullptr;
 	globCsr += 4;
 
 
