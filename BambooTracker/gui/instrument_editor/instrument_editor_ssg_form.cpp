@@ -551,7 +551,7 @@ void InstrumentEditorSSGForm::onWaveFormNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getWaveFormSSGUsers(ui->waveNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 
@@ -624,7 +624,7 @@ void InstrumentEditorSSGForm::onToneNoiseNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getToneNoiseSSGUsers(ui->tnNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 
@@ -701,7 +701,7 @@ void InstrumentEditorSSGForm::onEnvelopeNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getEnvelopeSSGUsers(ui->envNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 
@@ -783,7 +783,7 @@ void InstrumentEditorSSGForm::onArpeggioNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getArpeggioSSGUsers(ui->arpNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 
@@ -887,7 +887,7 @@ void InstrumentEditorSSGForm::onPitchNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getPitchSSGUsers(ui->ptNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 

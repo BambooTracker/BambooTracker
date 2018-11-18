@@ -1024,7 +1024,7 @@ void InstrumentEditorFMForm::onEnvelopeNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getEnvelopeFMUsers(ui->envNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 	ui->envUsersLineEdit->setText(str);
@@ -1103,7 +1103,7 @@ void InstrumentEditorFMForm::onLFONumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getLFOFMUsers(ui->lfoNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 	ui->lfoUsersLineEdit->setText(str);
@@ -1278,7 +1278,7 @@ void InstrumentEditorFMForm::onOperatorSequenceNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getOperatorSequenceFMUsers(getOperatorSequenceParameter(), ui->opSeqNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 
@@ -1361,7 +1361,7 @@ void InstrumentEditorFMForm::onArpeggioNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getArpeggioFMUsers(ui->arpNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 
@@ -1465,7 +1465,7 @@ void InstrumentEditorFMForm::onPitchNumberChanged()
 	QString str;
 	std::vector<int> users = bt_.lock()->getPitchFMUsers(ui->ptNumSpinBox->value());
 	for (auto& n : users) {
-		str += (QString::number(n) + ",");
+		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
 	}
 	str.chop(1);
 
