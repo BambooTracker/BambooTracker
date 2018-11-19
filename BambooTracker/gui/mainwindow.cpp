@@ -1158,13 +1158,14 @@ void MainWindow::updateMenuByOrder()
 		ui->actionPaste->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
 		// Song
-		ui->actionInsert_Order->setEnabled(true);
+		bool canAdd = bt_->canAddNewOrder(bt_->getCurrentSongNumber());
+		ui->actionInsert_Order->setEnabled(canAdd);
 		ui->actionRemove_Order->setEnabled(true);
-		ui->actionDuplicate_Order->setEnabled(true);
+		ui->actionDuplicate_Order->setEnabled(canAdd);
 		ui->actionMove_Order_Up->setEnabled(true);
 		ui->actionMove_Order_Down->setEnabled(true);
-		ui->actionClone_Patterns->setEnabled(true);
-		ui->actionClone_Order->setEnabled(true);
+		ui->actionClone_Patterns->setEnabled(canAdd);
+		ui->actionClone_Order->setEnabled(canAdd);
 	}
 	// Edit
 	ui->actionPaste_Mix->setEnabled(false);

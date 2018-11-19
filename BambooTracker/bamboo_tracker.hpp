@@ -249,6 +249,7 @@ public:
 	void clonePatterns(int songNum, int beginOrder, int beginTrack, int endOrder, int endTrack);
 	void cloneOrder(int songNum, int orderNum);
 	size_t getOrderSize(int songNum) const;
+	bool canAddNewOrder(int songNum) const;
 	/*----- Pattern -----*/
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
 	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);

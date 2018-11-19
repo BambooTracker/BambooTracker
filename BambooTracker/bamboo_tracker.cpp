@@ -2021,6 +2021,11 @@ size_t BambooTracker::getOrderSize(int songNum) const
 	return mod_->getSong(songNum).getOrderSize();
 }
 
+bool BambooTracker::canAddNewOrder(int songNum) const
+{
+	return mod_->getSong(songNum).canAddNewOrder();
+}
+
 /*----- Pattern -----*/
 int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const
 {

@@ -429,6 +429,7 @@ void OrderListPanel::setCellOrderNum(int n)
 void OrderListPanel::insertOrderBelow()
 {
 	if (bt_->isJamMode()) return;
+	if (!bt_->canAddNewOrder(curSongNum_)) return;
 
 	bt_->insertOrderBelow(curSongNum_, curPos_.row);
 	comStack_.lock()->push(new InsertOrderBelowQtCommand(this));
@@ -928,6 +929,14 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 			paste->setEnabled(false);
 		}
 		else {
+			if (!bt_->canAddNewOrder(curSongNum_)) {
+				insert->setEnabled(false);
+				duplicate->setEnabled(false);
+				moveUp->setEnabled(false);
+				moveDown->setEnabled(false);
+				copy->setEnabled(false);
+				paste->setEnabled(false);
+			}
 			QString clipText = QApplication::clipboard()->text();
 			if (!clipText.startsWith("ORDER_COPY")) {
 					paste->setEnabled(false);

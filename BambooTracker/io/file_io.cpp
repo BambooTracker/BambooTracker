@@ -663,7 +663,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 
 			// Order
 			size_t odrSize = track.getOrderSize();
-			ctr.appendUint8(odrSize);
+			ctr.appendUint8(odrSize - 1);
 			for (size_t o = 0; o < odrSize; ++o)
 				ctr.appendUint8(track.getOrderData(o).patten);
 
@@ -1836,7 +1836,7 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 			size_t trackOfs = ctr.readUint32(scsr);
 			size_t trackEnd = scsr + trackOfs;
 			size_t tcsr = scsr + 4;
-			uint8_t odrLen = ctr.readUint8(tcsr++);
+			uint8_t odrLen = ctr.readUint8(tcsr++) + 1;
 			for (uint8_t oi = 0; oi < odrLen; ++oi) {
 				if (!oi)
 					track.registerPatternToOrder(oi, ctr.readUint8(tcsr++));

@@ -140,8 +140,14 @@ size_t Song::getOrderSize() const
 	return tracks_[0].getOrderSize();
 }
 
+bool Song::canAddNewOrder() const
+{
+	return getOrderSize() < 256;
+}
+
 void Song::insertOrderBelow(int order)
 {
+	if (!canAddNewOrder()) return;
 	for (auto& track : tracks_) {
 		track.insertOrderBelow(order);
 	}

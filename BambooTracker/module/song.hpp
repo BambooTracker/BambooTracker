@@ -35,6 +35,7 @@ public:
 
 	std::vector<OrderData> getOrderData(int order);
 	size_t getOrderSize() const;
+	bool canAddNewOrder() const;
 	void insertOrderBelow(int order);
 	void deleteOrder(int order);
 	void swapOrder(int a, int b);

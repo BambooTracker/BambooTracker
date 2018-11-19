@@ -232,12 +232,12 @@ Current version (v1.0.0) is only stored as `0x00`.
 
 Song section includes some track subblock.
 
-| Type      | Field         | Description                               |
-| --------- | ------------- | ----------------------------------------- |
-| uint8     | Track number  | Number of the track.                      |
-| uint32    | Track offset  | Relative offset to end of track subblock. |
-| uint8     | Order length  | Length of order.                          |
-| uint8 x N | Order data    | Stored order data list.                   |
+| Type      | Field        | Description                               |
+| --------- | ------------ | ----------------------------------------- |
+| uint8     | Track number | Number of the track.                      |
+| uint32    | Track offset | Relative offset to end of track subblock. |
+| uint8     | Order length | Set Length of order - 1.                  |
+| uint8 x N | Order data   | Stored order data list.                   |
 
 After order data, repeat pattern subblocks.
 
