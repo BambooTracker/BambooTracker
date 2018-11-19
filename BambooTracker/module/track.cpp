@@ -8,7 +8,7 @@ Track::Track(int number, SoundSource source, int channelInSource)
 	attrib_->source = source;
 	attrib_->channelInSource = channelInSource;
 
-	for (int i = 0; i < 128; ++i) {
+	for (int i = 0; i < 256; ++i) {
 		patterns_.emplace_back(i);
 	}
 
@@ -67,7 +67,7 @@ int Track::clonePattern(int num)
 std::vector<int> Track::getEditedPatternIndices() const
 {
 	std::vector<int> list;
-	for (size_t i = 0; i < 128; ++i) {
+	for (size_t i = 0; i < 256; ++i) {
 		if (patterns_[i].existCommand()) list.push_back(i);
 	}
 	return list;
@@ -118,7 +118,7 @@ void Track::changeDefaultPatternSize(size_t size)
 
 void Track::clearUnusedPatterns()
 {
-	for (size_t i = 0; i < 128; ++i) {
+	for (size_t i = 0; i < 256; ++i) {
 		if (!patterns_[i].getUsedCount() && patterns_[i].existCommand())
 			patterns_[i].clear();
 	}

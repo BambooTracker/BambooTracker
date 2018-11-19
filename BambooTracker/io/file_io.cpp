@@ -668,9 +668,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint8(track.getOrderData(o).patten);
 
 			// Pattern
-			std::vector<int> ptnIdcs = track.getEditedPatternIndices();
-			ctr.appendUint8(ptnIdcs.size());
-			for (auto& idx : ptnIdcs) {
+			for (auto& idx : track.getEditedPatternIndices()) {
 				ctr.appendUint8(idx);
 				size_t ptnOfs = ctr.size();
 				ctr.appendUint32(0);	// Dummy pattern subblock offset
@@ -1836,6 +1834,7 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 			uint8_t trackIdx = ctr.readUint8(scsr++);
 			auto& track = song.getTrack(trackIdx);
 			size_t trackOfs = ctr.readUint32(scsr);
+			size_t trackEnd = scsr + trackOfs;
 			size_t tcsr = scsr + 4;
 			uint8_t odrLen = ctr.readUint8(tcsr++);
 			for (uint8_t oi = 0; oi < odrLen; ++oi) {
@@ -1848,8 +1847,7 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 			}
 
 			// Pattern
-			uint8_t ptnCnt = ctr.readUint8(tcsr++);
-			for (uint8_t pi = 0; pi < ptnCnt; ++pi) {
+			while (tcsr < trackEnd) {
 				uint8_t ptnIdx = ctr.readUint8(tcsr++);
 				auto& pattern = track.getPattern(ptnIdx);
 				size_t ptnOfs = ctr.readUint32(tcsr);
