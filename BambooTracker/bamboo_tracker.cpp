@@ -25,6 +25,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  isFindNextStep_(false)
 {
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
+	jamMan_ = std::make_unique<JamManager>(songStyle_.type);
 
 	clearDelayCounts();
 }
@@ -568,13 +569,22 @@ int BambooTracker::getCurrentSongNumber() const
 void BambooTracker::setCurrentSongNumber(int num)
 {
 	curSongNum_ = num;
-	songStyle_ = mod_->getSong(num).getStyle();
+	curTrackNum_ = 0;
+	curOrderNum_ = 0;
+	curStepNum_ = 0;
+
+	auto& song = mod_->getSong(curSongNum_);
+	songStyle_ = song.getStyle();
+
+	jamMan_->clear(songStyle_.type);
 
 	// Reset
 	opnaCtrl_->reset();
 	tickCounter_.resetCount();
-	tickCounter_.setTempo(getSongTempo(num));
-	tickCounter_.setSpeed(getSongSpeed(num));
+	tickCounter_.setTempo(song.getTempo());
+	tickCounter_.setSpeed(song.getSpeed());
+	tickCounter_.setGroove(mod_->getGroove(song.getGroove()).getSequence());
+	tickCounter_.setGrooveEnebled(song.isUsedTempo());
 
 	switch (songStyle_.type) {
 	case SongType::STD:
@@ -644,17 +654,17 @@ void BambooTracker::clearCommandHistory()
 /********** Jam mode **********/
 void BambooTracker::toggleJamMode()
 {
-	if (jamMan_.toggleJamMode() && !isPlaySong()) {
-		jamMan_.polyphonic(true, songStyle_.type);
+	if (jamMan_->toggleJamMode() && !isPlaySong()) {
+		jamMan_->polyphonic(true, songStyle_.type);
 	}
 	else {
-		jamMan_.polyphonic(false, songStyle_.type);
+		jamMan_->polyphonic(false, songStyle_.type);
 	}
 }
 
 bool BambooTracker::isJamMode() const
 {
-	return jamMan_.isJamMode();
+	return jamMan_->isJamMode();
 }
 
 void BambooTracker::jamKeyOn(JamKey key)
@@ -663,9 +673,9 @@ void BambooTracker::jamKeyOn(JamKey key)
 		opnaCtrl_->keyOnDrum(songStyle_.trackAttribs[curTrackNum_].channelInSource);
 	}
 	else {
-		std::vector<JamKeyData>&& list = jamMan_.keyOn(key,
-													   songStyle_.trackAttribs[curTrackNum_].channelInSource,
-													   songStyle_.trackAttribs[curTrackNum_].source);
+		std::vector<JamKeyData>&& list = jamMan_->keyOn(key,
+														songStyle_.trackAttribs[curTrackNum_].channelInSource,
+														songStyle_.trackAttribs[curTrackNum_].source);
 		if (list.size() == 2) {	// Key off
 			JamKeyData& offData = list[1];
 			switch (offData.source) {
@@ -682,18 +692,18 @@ void BambooTracker::jamKeyOn(JamKey key)
 		case SoundSource::FM:
 			opnaCtrl_->setInstrumentFM(onData.channelInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
 			opnaCtrl_->keyOnFM(onData.channelInSource,
-							  JamManager::jamKeyToNote(onData.key),
-							  JamManager::calcOctave(octave_, onData.key),
-							  0,
-							  true);
-			break;
-		case SoundSource::SSG:
-			opnaCtrl_->setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
-			opnaCtrl_->keyOnSSG(onData.channelInSource,
 							   JamManager::jamKeyToNote(onData.key),
 							   JamManager::calcOctave(octave_, onData.key),
 							   0,
 							   true);
+			break;
+		case SoundSource::SSG:
+			opnaCtrl_->setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
+			opnaCtrl_->keyOnSSG(onData.channelInSource,
+								JamManager::jamKeyToNote(onData.key),
+								JamManager::calcOctave(octave_, onData.key),
+								0,
+								true);
 			break;
 		default:
 			break;
@@ -707,7 +717,7 @@ void BambooTracker::jamKeyOff(JamKey key)
 		opnaCtrl_->keyOffDrum(songStyle_.trackAttribs[curTrackNum_].channelInSource);
 	}
 	else {
-		JamKeyData&& data = jamMan_.keyOff(key);
+		JamKeyData&& data = jamMan_->keyOff(key);
 
 		if (data.channelInSource > -1) {	// Key still sound
 			switch (data.source) {
@@ -770,7 +780,7 @@ void BambooTracker::startPlayFromCurrentStep()
 void BambooTracker::startPlay()
 {
 	opnaCtrl_->reset();
-	jamMan_.polyphonic(false, songStyle_.type);
+	jamMan_->polyphonic(false, songStyle_.type);
 
 	Song& song = mod_->getSong(curSongNum_);
 	tickCounter_.setTempo(song.getTempo());
@@ -786,7 +796,7 @@ void BambooTracker::startPlay()
 void BambooTracker::stopPlaySong()
 {
 	opnaCtrl_->reset();
-	jamMan_.polyphonic(true, songStyle_.type);
+	jamMan_->polyphonic(true, songStyle_.type);
 	tickCounter_.setPlayState(false);
 	playState_ = 0;
 	playOrderNum_ = -1;
@@ -1033,7 +1043,7 @@ void BambooTracker::readTick(int rest)
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& curStep = song.getTrack(attrib.number)
-					 .getPatternFromOrderNumber(curOrderNum_).getStep(playStepNum_);
+						.getPatternFromOrderNumber(curOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
 		case SoundSource::FM:
 		{
@@ -1705,6 +1715,7 @@ void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 
 void BambooTracker::killSound()
 {
+	jamMan_->clear(songStyle_.type);
 	opnaCtrl_->reset();
 }
 
@@ -1740,23 +1751,12 @@ void BambooTracker::makeNewModule()
 	opnaCtrl_->reset();
 
 	mod_ = std::make_shared<Module>();
-	curSongNum_ = 0;
-	curTrackNum_ = 0;
-	curOrderNum_ = 0;
-	curStepNum_ = 0;
+
+	tickCounter_.setInterruptRate(mod_->getTickFrequency());
+
+	setCurrentSongNumber(0);
 	curInstNum_ = -1;
 
-	auto& song = mod_->getSong(curSongNum_);
-	songStyle_ = song.getStyle();
-
-	tickCounter_.resetCount();
-	tickCounter_.setInterruptRate(mod_->getTickFrequency());
-	tickCounter_.setTempo(song.getTempo());
-	tickCounter_.setSpeed(song.getSpeed());
-	tickCounter_.setGroove(mod_->getGroove(song.getGroove()).getSequence());
-	tickCounter_.setGrooveEnebled(song.isUsedTempo());
-
-	clearDelayCounts();
 	clearCommandHistory();
 }
 
@@ -1764,6 +1764,8 @@ bool BambooTracker::loadModule(std::string path)
 {
 	makeNewModule();
 	bool ret = FileIO::loadModuel(path, mod_, instMan_);
+	tickCounter_.setInterruptRate(mod_->getTickFrequency());
+	setCurrentSongNumber(0);
 	clearCommandHistory();
 	return ret;
 }
@@ -2268,25 +2270,4 @@ void BambooTracker::setDefaultPatternSize(int songNum, size_t size)
 size_t BambooTracker::getDefaultPatternSize(int songNum) const
 {
 	return mod_->getSong(songNum).getDefaultPatternSize();
-}
-
-int BambooTracker::ctohex(const char c) const
-{
-	if (c == '0')		return 0;
-	else if (c == '1')	return 1;
-	else if (c == '2')	return 2;
-	else if (c == '3')	return 3;
-	else if (c == '4')	return 4;
-	else if (c == '5')	return 5;
-	else if (c == '6')	return 6;
-	else if (c == '7')	return 7;
-	else if (c == '8')	return 8;
-	else if (c == '9')	return 9;
-	else if (c == 'A')	return 10;
-	else if (c == 'B')	return 11;
-	else if (c == 'C')	return 12;
-	else if (c == 'D')	return 13;
-	else if (c == 'E')	return 14;
-	else if (c == 'F')	return 15;
-	else				return -1;
 }

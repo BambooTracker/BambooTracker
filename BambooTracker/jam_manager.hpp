@@ -12,7 +12,7 @@ enum class JamKey;
 class JamManager
 {
 public:
-	JamManager();
+	JamManager(SongType type);
 	bool toggleJamMode();
 	bool isJamMode() const;
 	void polyphonic(bool flag, SongType type);
@@ -21,6 +21,8 @@ public:
 
 	static Note jamKeyToNote(JamKey& key);
 	static int calcOctave(int baseOctave, JamKey& key);
+
+	void clear(SongType type);
 
 private:
 	bool isJamMode_;

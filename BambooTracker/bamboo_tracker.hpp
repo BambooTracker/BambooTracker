@@ -309,7 +309,7 @@ public:
 private:
 	CommandManager comMan_;
 	std::shared_ptr<InstrumentsManager> instMan_;
-	JamManager jamMan_;
+	std::unique_ptr<JamManager> jamMan_;
 	std::unique_ptr<OPNAController> opnaCtrl_;
 
     TickCounter tickCounter_;
@@ -374,6 +374,4 @@ private:
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
-
-	int ctohex(const char c) const;
 };

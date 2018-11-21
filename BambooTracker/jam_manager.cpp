@@ -1,18 +1,11 @@
 #include "jam_manager.hpp"
 #include <algorithm>
 
-JamManager::JamManager() :
-	isJamMode_(true),
-	isPoly_(true),
-	unusedChFM_(6),
-	unusedChSSG_(3)
+JamManager::JamManager(SongType type)
+	: isJamMode_(true),
+	  isPoly_(true)
 {
-	for (int i = 0; i < unusedChFM_.size(); ++i) {
-		unusedChFM_[i] = i;
-	}
-	for (int i = 0; i < unusedChSSG_.size(); ++i) {
-		unusedChSSG_[i] = i;
-	}
+	clear(type);
 }
 
 bool JamManager::toggleJamMode()
@@ -28,29 +21,8 @@ bool JamManager::isJamMode() const
 
 void JamManager::polyphonic(bool flag, SongType type)
 {
-	if (flag) {
-		isPoly_ = true;
-		switch (type) {
-		case SongType::STD:
-			unusedChFM_.resize(6);
-			unusedChSSG_.resize(3);
-			break;
-		case SongType::FMEX:
-			// UNDONE: change channel size by Effect mode
-			break;
-		}
-		for (int i = 0; i < unusedChFM_.size(); ++i) {
-			unusedChFM_[i] = i;
-		}
-		for (int i = 0; i < unusedChSSG_.size(); ++i) {
-			unusedChSSG_[i] = i;
-		}
-	}
-	else {
-		isPoly_ = false;
-		unusedChFM_.resize(1);
-		unusedChSSG_.resize(1);
-	}
+	isPoly_ = flag;
+	clear(type);
 }
 
 std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource source)
@@ -181,5 +153,31 @@ int JamManager::calcOctave(int baseOctave, JamKey &key)
 	case JamKey::HIGH_C_H:
 	case JamKey::HIGH_CS_H:
 	case JamKey::HIGH_D_H:	return (baseOctave + 2);
+	}
+}
+
+void JamManager::clear(SongType type)
+{
+	if (isPoly_) {
+		switch (type) {
+		case SongType::STD:
+			unusedChFM_ = std::deque<int>(6);
+			unusedChSSG_= std::deque<int>(3);
+			break;
+		case SongType::FMEX:
+			// UNDONE: change channel size by Effect mode
+			break;
+		}
+
+		for (int i = 0; i < unusedChFM_.size(); ++i) {
+			unusedChFM_[i] = i;
+		}
+		for (int i = 0; i < unusedChSSG_.size(); ++i) {
+			unusedChSSG_[i] = i;
+		}
+	}
+	else {
+		unusedChFM_.resize(1);
+		unusedChSSG_.resize(1);
 	}
 }
