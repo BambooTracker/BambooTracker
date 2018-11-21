@@ -23,6 +23,7 @@ bool Json::saveConfiguration(std::weak_ptr<Configuration> config)
 		obj["instrumentSSGWindowWidth"] = config.lock()->getInstrumentSSGWindowWidth();
 		obj["instrumentSSGWindowHeight"] = config.lock()->getInstrumentSSGWindowHeight();
 		obj["followMode"] = config.lock()->getFollowMode();
+		obj["workingDirectory"] = QString::fromStdString(config.lock()->getWorkingDirectory());
 
 		// General //
 		// General settings
@@ -72,6 +73,7 @@ bool Json::loadConfiguration(std::weak_ptr<Configuration> config)
 		config.lock()->setInstrumentSSGWindowWidth(obj["instrumentSSGWindowWidth"].toInt());
 		config.lock()->setInstrumentSSGWindowHeight(obj["instrumentSSGWindowHeight"].toInt());
 		config.lock()->setFollowMode(obj["followMode"].toBool());
+		config.lock()->setWorkingDirectory(obj["workingDirectory"].toString().toStdString());
 
 		// General //
 		// General settings

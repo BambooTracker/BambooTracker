@@ -31,6 +31,8 @@ public:
 	int getInstrumentSSGWindowHeight() const;
 	void setFollowMode(bool enabled);
 	bool getFollowMode() const;
+	void setWorkingDirectory(std::string path);
+	std::string getWorkingDirectory() const;
 private:
 	int mainW_, mainH_;
 	bool mainMax_;
@@ -38,6 +40,7 @@ private:
 	int instFMW_, instFMH_;
 	int instSSGW_, instSSGH_;
 	bool followMode_;
+	std::string workDir_;
 
 	// General //
 	// General settings

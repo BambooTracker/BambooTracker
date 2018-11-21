@@ -13,6 +13,7 @@ Configuration::Configuration()
 	instSSGW_ = 500;
 	instSSGH_ = 390;
 	followMode_ = true;
+	workDir_ = "";
 
 	// General //
 	// General settings
@@ -131,6 +132,16 @@ void Configuration::setFollowMode(bool enabled)
 bool Configuration::getFollowMode() const
 {
 	return followMode_;
+}
+
+void Configuration::setWorkingDirectory(std::string path)
+{
+	workDir_ = path;
+}
+
+std::string Configuration::getWorkingDirectory() const
+{
+	return workDir_;
 }
 
 // General //

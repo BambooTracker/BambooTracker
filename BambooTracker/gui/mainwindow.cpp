@@ -1511,7 +1511,8 @@ bool MainWindow::on_actionSave_triggered()
 
 bool MainWindow::on_actionSave_As_triggered()
 {
-	QString file = QFileDialog::getSaveFileName(this, "Save module", "./",
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getSaveFileName(this, "Save module", (dir.isEmpty() ? "./" : dir),
 												"BambooTracker module file (*.btm)");
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
@@ -1531,6 +1532,7 @@ bool MainWindow::on_actionSave_As_triggered()
 		isSavedModBefore_ = true;
 		setWindowModified(false);
 		setWindowTitle();
+		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 		return true;
 	}
 	else {
@@ -1562,7 +1564,8 @@ void MainWindow::on_actionOpen_triggered()
 		}
 	}
 
-	QString file = QFileDialog::getOpenFileName(this, "Open module", "./",
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getOpenFileName(this, "Open module", (dir.isEmpty() ? "./" : dir),
 												"BambooTracker module file (*.btm)");
 	if (file.isNull()) return;
 
@@ -1572,6 +1575,8 @@ void MainWindow::on_actionOpen_triggered()
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
 		loadModule();
+
+		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Failed to load module.");
