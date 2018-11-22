@@ -1466,9 +1466,9 @@ void MainWindow::on_actionNew_triggered()
 	bt_->stopPlaySong();
 	lockControls(false);
 	bt_->makeNewModule();
+	loadModule();
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
-	loadModule();
 }
 
 void MainWindow::on_actionComments_triggered()
@@ -1572,11 +1572,11 @@ void MainWindow::on_actionOpen_triggered()
 	bt_->stopPlaySong();
 	lockControls(false);
 	if (bt_->loadModule(file.toStdString())) {
-		isModifiedForNotCommand_ = false;
-		setWindowModified(false);
 		loadModule();
 
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		isModifiedForNotCommand_ = false;
+		setWindowModified(false);
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Failed to load module.");

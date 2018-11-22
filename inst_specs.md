@@ -35,7 +35,6 @@ This section contains subsections of each instrument property.
 | Type  | Field                 | Description                                            |
 | ----- | --------------------- | ------------------------------------------------------ |
 | uint8 | Subsection identifier | Identify subsection type. See table below for details. |
-| uint8 | block count           | Number of property blocks.                             |
 
 Subsection identifier is defined as:
 

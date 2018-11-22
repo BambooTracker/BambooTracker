@@ -274,7 +274,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				for (auto& l : loop) {
 					ctr.appendUint16(l.begin);
 					ctr.appendUint16(l.end);
-					ctr.appendUint16(l.times);
+					ctr.appendUint8(l.times);
 				}
 				auto release = instMan.lock()->getOperatorSequenceFMRelease(ENV_FM_PARAMS[i], idx);
 				switch (release.type) {
@@ -319,7 +319,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getArpeggioFMRelease(idx);
 			switch (release.type) {
@@ -363,7 +363,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getPitchFMRelease(idx);
 			switch (release.type) {
@@ -407,7 +407,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getWaveFormSSGRelease(idx);
 			switch (release.type) {
@@ -451,7 +451,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getToneNoiseSSGRelease(idx);
 			switch (release.type) {
@@ -495,9 +495,10 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getEnvelopeSSGRelease(idx);
+
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
@@ -539,7 +540,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getArpeggioSSGRelease(idx);
 			switch (release.type) {
@@ -583,7 +584,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getPitchSSGRelease(idx);
 			switch (release.type) {
@@ -848,7 +849,7 @@ size_t FileIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> i
 			instFM->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
 			tmp = ctr.readUint8(iCsr);
-			instFM->setEnvelopeResetEnabled(tmp ? false : true);
+			instFM->setEnvelopeResetEnabled(tmp ? true : false);
 			iCsr += 1;
 			instMan.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(instFM));
 			break;
@@ -900,7 +901,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint8_t ofs = ctr.readUint8(instPropCsr);
-				uint8_t csr = instPropCsr + 1;
+				size_t csr = instPropCsr + 1;
 				uint8_t tmp = ctr.readUint8(csr++);
 				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
 				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
@@ -990,7 +991,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint8_t ofs = ctr.readUint8(instPropCsr);
-				uint8_t csr = instPropCsr + 1;
+				size_t csr = instPropCsr + 1;
 				uint8_t tmp = ctr.readUint8(csr++);
 				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
 				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
@@ -1316,7 +1317,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint16_t ofs = ctr.readUint16(instPropCsr);
-				uint8_t csr = instPropCsr + 2;
+				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
 				csr += 2;
@@ -1344,7 +1345,6 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					}
 					instMan.lock()->setArpeggioFMLoops(idx, begins, ends, times);
 				}
-
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
 					instMan.lock()->setArpeggioFMRelease(
@@ -1352,15 +1352,18 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					break;
 				case 0x01:	// Fix
 					instMan.lock()->setArpeggioFMRelease(
-								idx, ReleaseType::FIX, ctr.readUint8(csr++));
+								idx, ReleaseType::FIX, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x02:	// Absolute
 					instMan.lock()->setArpeggioFMRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x03:	// Relative
 					instMan.lock()->setArpeggioFMRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				}
 
@@ -1374,7 +1377,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint16_t ofs = ctr.readUint16(instPropCsr);
-				uint8_t csr = instPropCsr + 2;
+				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
 				csr += 2;
@@ -1410,15 +1413,18 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					break;
 				case 0x01:	// Fix
 					instMan.lock()->setPitchFMRelease(
-								idx, ReleaseType::FIX, ctr.readUint8(csr++));
+								idx, ReleaseType::FIX, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x02:	// Absolute
 					instMan.lock()->setPitchFMRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x03:	// Relative
 					instMan.lock()->setPitchFMRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				}
 
@@ -1432,7 +1438,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint16_t ofs = ctr.readUint16(instPropCsr);
-				uint8_t csr = instPropCsr + 2;
+				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
 				csr += 2;
@@ -1468,15 +1474,18 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					break;
 				case 0x01:	// Fix
 					instMan.lock()->setWaveFormSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint8(csr++));
+								idx, ReleaseType::FIX, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x02:	// Absolute
 					instMan.lock()->setWaveFormSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x03:	// Relative
 					instMan.lock()->setWaveFormSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				}
 
@@ -1490,7 +1499,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint16_t ofs = ctr.readUint16(instPropCsr);
-				uint8_t csr = instPropCsr + 2;
+				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
 				csr += 2;
@@ -1526,15 +1535,18 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					break;
 				case 0x01:	// Fix
 					instMan.lock()->setToneNoiseSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint8(csr++));
+								idx, ReleaseType::FIX, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x02:	// Absolute
 					instMan.lock()->setToneNoiseSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x03:	// Relative
 					instMan.lock()->setToneNoiseSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				}
 
@@ -1548,7 +1560,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint16_t ofs = ctr.readUint16(instPropCsr);
-				uint8_t csr = instPropCsr + 2;
+				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
 				csr += 2;
@@ -1584,15 +1596,18 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					break;
 				case 0x01:	// Fix
 					instMan.lock()->setEnvelopeSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint8(csr++));
+								idx, ReleaseType::FIX, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x02:	// Absolute
 					instMan.lock()->setEnvelopeSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x03:	// Relative
 					instMan.lock()->setEnvelopeSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				}
 
@@ -1606,7 +1621,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint16_t ofs = ctr.readUint16(instPropCsr);
-				uint8_t csr = instPropCsr + 2;
+				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
 				csr += 2;
@@ -1642,15 +1657,18 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					break;
 				case 0x01:	// Fix
 					instMan.lock()->setArpeggioSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint8(csr++));
+								idx, ReleaseType::FIX, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x02:	// Absolute
 					instMan.lock()->setArpeggioSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x03:	// Relative
 					instMan.lock()->setArpeggioSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				}
 
@@ -1664,7 +1682,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			for (size_t i = 0; i < cnt; ++i) {
 				uint8_t idx = ctr.readUint8(instPropCsr++);
 				uint16_t ofs = ctr.readUint16(instPropCsr);
-				uint8_t csr = instPropCsr + 2;
+				size_t csr = instPropCsr + 2;
 
 				uint16_t seqLen = ctr.readUint16(csr);
 				csr += 2;
@@ -1700,15 +1718,18 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					break;
 				case 0x01:	// Fix
 					instMan.lock()->setPitchSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint8(csr++));
+								idx, ReleaseType::FIX, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x02:	// Absolute
 					instMan.lock()->setPitchSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				case 0x03:	// Relative
 					instMan.lock()->setPitchSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+					csr += 2;
 					break;
 				}
 
@@ -1727,7 +1748,7 @@ size_t FileIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 {
 	uint8_t idx = ctr.readUint8(instMemCsr++);
 	uint16_t ofs = ctr.readUint16(instMemCsr);
-	uint8_t csr = instMemCsr + 2;
+	size_t csr = instMemCsr + 2;
 
 	uint16_t seqLen = ctr.readUint16(csr);
 	csr += 2;
@@ -1763,15 +1784,18 @@ size_t FileIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 		break;
 	case 0x01:	// Fix
 		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::FIX, ctr.readUint8(csr++));
+					param, idx, ReleaseType::FIX, ctr.readUint16(csr));
+		csr += 2;
 		break;
 	case 0x02:	// Absolute
 		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+					param, idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+		csr += 2;
 		break;
 	case 0x03:	// Relative
 		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+					param, idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+		csr += 2;
 		break;
 	}
 
@@ -2070,7 +2094,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				for (auto& l : loop) {
 					ctr.appendUint16(l.begin);
 					ctr.appendUint16(l.end);
-					ctr.appendUint16(l.times);
+					ctr.appendUint8(l.times);
 				}
 				auto release = instMan.lock()->getOperatorSequenceFMRelease(ENV_FM_PARAMS[i], seqNum);
 				switch (release.type) {
@@ -2111,7 +2135,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getArpeggioFMRelease(arpNum);
 			switch (release.type) {
@@ -2151,7 +2175,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getPitchFMRelease(ptNum);
 			switch (release.type) {
@@ -2196,7 +2220,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getWaveFormSSGRelease(wfNum);
 			switch (release.type) {
@@ -2236,7 +2260,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getToneNoiseSSGRelease(tnNum);
 			switch (release.type) {
@@ -2276,7 +2300,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getEnvelopeSSGRelease(envNum);
 			switch (release.type) {
@@ -2316,7 +2340,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getArpeggioSSGRelease(arpNum);
 			switch (release.type) {
@@ -2356,7 +2380,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 			for (auto& l : loop) {
 				ctr.appendUint16(l.begin);
 				ctr.appendUint16(l.end);
-				ctr.appendUint16(l.times);
+				ctr.appendUint8(l.times);
 			}
 			auto release = instMan.lock()->getPitchSSGRelease(ptNum);
 			switch (release.type) {
@@ -2789,7 +2813,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					int idx = *numIt++;
 					dynamic_cast<InstrumentFM*>(inst)->setEnvelopeNumber(idx);
 					uint8_t ofs = ctr.readUint8(instPropCsr);
-					uint8_t csr = instPropCsr + 1;
+					size_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
 					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
@@ -2879,7 +2903,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					fm->setLFOEnabled(true);
 					fm->setLFONumber(idx);
 					uint8_t ofs = ctr.readUint8(instPropCsr);
-					uint8_t csr = instPropCsr + 1;
+					size_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
 					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
@@ -3165,7 +3189,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					fm->setArpeggioEnabled(true);
 					fm->setArpeggioNumber(idx);
 					uint16_t ofs = ctr.readUint16(instPropCsr);
-					uint8_t csr = instPropCsr + 2;
+					size_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3201,15 +3225,18 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					case 0x01:	// Fix
 						instMan.lock()->setArpeggioFMRelease(
-									idx, ReleaseType::FIX, ctr.readUint8(csr++));
+									idx, ReleaseType::FIX, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x02:	// Absolute
 						instMan.lock()->setArpeggioFMRelease(
-									idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+									idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x03:	// Relative
 						instMan.lock()->setArpeggioFMRelease(
-									idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					}
 
@@ -3223,7 +3250,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					fm->setPitchEnabled(true);
 					fm->setPitchNumber(idx);
 					uint16_t ofs = ctr.readUint16(instPropCsr);
-					uint8_t csr = instPropCsr + 2;
+					size_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3259,15 +3286,18 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					case 0x01:	// Fix
 						instMan.lock()->setPitchFMRelease(
-									idx, ReleaseType::FIX, ctr.readUint8(csr++));
+									idx, ReleaseType::FIX, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x02:	// Absolute
 						instMan.lock()->setPitchFMRelease(
-									idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+									idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x03:	// Relative
 						instMan.lock()->setPitchFMRelease(
-									idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					}
 
@@ -3281,7 +3311,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					ssg->setWaveFormEnabled(true);
 					ssg->setWaveFormNumber(idx);
 					uint16_t ofs = ctr.readUint16(instPropCsr);
-					uint8_t csr = instPropCsr + 2;
+					size_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3317,15 +3347,18 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					case 0x01:	// Fix
 						instMan.lock()->setWaveFormSSGRelease(
-									idx, ReleaseType::FIX, ctr.readUint8(csr++));
+									idx, ReleaseType::FIX, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x02:	// Absolute
 						instMan.lock()->setWaveFormSSGRelease(
-									idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+									idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x03:	// Relative
 						instMan.lock()->setWaveFormSSGRelease(
-									idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					}
 
@@ -3339,7 +3372,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					ssg->setToneNoiseEnabled(true);
 					ssg->setToneNoiseNumber(idx);
 					uint16_t ofs = ctr.readUint16(instPropCsr);
-					uint8_t csr = instPropCsr + 2;
+					size_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3375,15 +3408,18 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					case 0x01:	// Fix
 						instMan.lock()->setToneNoiseSSGRelease(
-									idx, ReleaseType::FIX, ctr.readUint8(csr++));
+									idx, ReleaseType::FIX, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x02:	// Absolute
 						instMan.lock()->setToneNoiseSSGRelease(
-									idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+									idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x03:	// Relative
 						instMan.lock()->setToneNoiseSSGRelease(
-									idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					}
 
@@ -3397,7 +3433,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					ssg->setEnvelopeEnabled(true);
 					ssg->setEnvelopeNumber(idx);
 					uint16_t ofs = ctr.readUint16(instPropCsr);
-					uint8_t csr = instPropCsr + 2;
+					size_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3433,15 +3469,18 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					case 0x01:	// Fix
 						instMan.lock()->setEnvelopeSSGRelease(
-									idx, ReleaseType::FIX, ctr.readUint8(csr++));
+									idx, ReleaseType::FIX, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x02:	// Absolute
 						instMan.lock()->setEnvelopeSSGRelease(
-									idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+									idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x03:	// Relative
 						instMan.lock()->setEnvelopeSSGRelease(
-									idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					}
 
@@ -3455,7 +3494,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					ssg->setArpeggioEnabled(true);
 					ssg->setArpeggioNumber(idx);
 					uint16_t ofs = ctr.readUint16(instPropCsr);
-					uint8_t csr = instPropCsr + 2;
+					size_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3491,15 +3530,18 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					case 0x01:	// Fix
 						instMan.lock()->setArpeggioSSGRelease(
-									idx, ReleaseType::FIX, ctr.readUint8(csr++));
+									idx, ReleaseType::FIX, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x02:	// Absolute
 						instMan.lock()->setArpeggioSSGRelease(
-									idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+									idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x03:	// Relative
 						instMan.lock()->setArpeggioSSGRelease(
-									idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					}
 
@@ -3513,7 +3555,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 					ssg->setPitchEnabled(true);
 					ssg->setPitchNumber(idx);
 					uint16_t ofs = ctr.readUint16(instPropCsr);
-					uint8_t csr = instPropCsr + 2;
+					size_t csr = instPropCsr + 2;
 
 					uint16_t seqLen = ctr.readUint16(csr);
 					csr += 2;
@@ -3549,15 +3591,18 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					case 0x01:	// Fix
 						instMan.lock()->setPitchSSGRelease(
-									idx, ReleaseType::FIX, ctr.readUint8(csr++));
+									idx, ReleaseType::FIX, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x02:	// Absolute
 						instMan.lock()->setPitchSSGRelease(
-									idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+									idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					case 0x03:	// Relative
 						instMan.lock()->setPitchSSGRelease(
-									idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+						csr += 2;
 						break;
 					}
 
@@ -3583,7 +3628,7 @@ size_t FileIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopePar
 	inst->setOperatorSequenceEnabled(param, true);
 	inst->setOperatorSequenceNumber(param, idx);
 	uint16_t ofs = ctr.readUint16(instMemCsr);
-	uint8_t csr = instMemCsr + 2;
+	size_t csr = instMemCsr + 2;
 
 	uint16_t seqLen = ctr.readUint16(csr);
 	csr += 2;
@@ -3619,15 +3664,18 @@ size_t FileIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopePar
 		break;
 	case 0x01:	// Fix
 		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::FIX, ctr.readUint8(csr++));
+					param, idx, ReleaseType::FIX, ctr.readUint16(csr));
+		csr += 2;
 		break;
 	case 0x02:	// Absolute
 		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::ABSOLUTE, ctr.readUint8(csr++));
+					param, idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+		csr += 2;
 		break;
 	case 0x03:	// Relative
 		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::RELATIVE, ctr.readUint8(csr++));
+					param, idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+		csr += 2;
 		break;
 	}
 
