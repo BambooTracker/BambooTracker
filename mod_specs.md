@@ -188,7 +188,7 @@ There is release details in the end of subsequence block.
 | --------------- | --------------------- | ----------------------------------------- |
 | string (8bytes) | Seciton identifier    | Must be `GROOVE  `.                       |
 | uint32          | Groove section offset | Relative offset to end of groove section. |
-| uint8           | Groove count          | Number of groove sequences.               |
+| uint8           | Groove count          | Number of groove sequences - 1.           |
 
 Groove sequences are repeated after groove count.
 
@@ -209,18 +209,17 @@ And sequence are stored after sequence length as uint8.
 
 Each song block is defined as:
 
-| Type             | Field             | Description                                                                         |
-| ---------------- | ----------------- | ----------------------------------------------------------------------------------- |
-| uint8            | Index             | Index number.                                                                       |
-| uint32           | Offset            | Relative offset to end of the song block.                                           |
-| uint32           | Title length      | Length of song title.                                                               |
-| string (N bytes) | Title             | Song title string. Character encoding is UTF-8. If song is untitled, it is omitted. |
-| uint32           | Tempo             | Tempo.                                                                              |
-| uint8            | Groove index      | index of using groove.                                                              |
-| uint8            | Tempo/Groove flag | If bit 0 is set, Tempo is enabled. If bit 0 is cleared, groove is enabled.          |
-| uint32           | Speed             | Speed.                                                                              |
-| uint8            | Pattern size      | Stored default pattern size - 1.                                                    |
-| uint8            | Song type         | Type of tracks. See table below for details.                                        |
+| Type             | Field                           | Description                                                                                                  |
+| ---------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| uint8            | Index                           | Index number.                                                                                                |
+| uint32           | Offset                          | Relative offset to end of the song block.                                                                    |
+| uint32           | Title length                    | Length of song title.                                                                                        |
+| string (N bytes) | Title                           | Song title string. Character encoding is UTF-8. If song is untitled, it is omitted.                          |
+| uint32           | Tempo                           | Tempo.                                                                                                       |
+| uint8            | Groove index, Tempo/Groove flag | Bit 0-6 is index of using groove. If bit 7 is set, Tempo is enabled. If bit 7 is cleared, groove is enabled. |
+| uint32           | Speed                           | Speed.                                                                                                       |
+| uint8            | Pattern size                    | Stored default pattern size - 1.                                                                             |
+| uint8            | Song type                       | Type of tracks. See table below for details.                                                                 |
 
 Song type defined number and order of tracks.
 

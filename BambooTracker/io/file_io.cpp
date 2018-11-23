@@ -616,7 +616,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 	size_t grooveOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy groove section offset
 	size_t grooveCnt = mod.lock()->getGrooveCount();
-	ctr.appendUint8(grooveCnt);
+	ctr.appendUint8(grooveCnt - 1);
 	for (size_t i = 0; i < grooveCnt; ++i) {
 		ctr.appendUint8(i);
 		auto seq = mod.lock()->getGroove(i).getSequence();
@@ -645,8 +645,8 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 		ctr.appendUint32(title.length());
 		if (!title.empty()) ctr.appendString(title);
 		ctr.appendUint32(sng.getTempo());
-		ctr.appendUint8(sng.getGroove());
-		ctr.appendUint8(sng.isUsedTempo());
+		uint8_t tmp = sng.getGroove();
+		ctr.appendUint8(sng.isUsedTempo() ? (0x80 | tmp) : tmp);
 		ctr.appendUint32(sng.getSpeed());
 		ctr.appendUint8(sng.getDefaultPatternSize() - 1);
 		auto style = sng.getStyle();
@@ -1743,7 +1743,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 }
 
 size_t FileIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
-		size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan, BinaryContainer& ctr)
+													  size_t instMemCsr,
+													  std::weak_ptr<InstrumentsManager> instMan,
+													  BinaryContainer& ctr)
 {
 	uint8_t idx = ctr.readUint8(instMemCsr++);
 	uint16_t ofs = ctr.readUint16(instMemCsr);
@@ -1805,7 +1807,7 @@ size_t FileIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 {
 	size_t grvOfs = ctr.readUint32(globCsr);
 	size_t grvCsr = globCsr + 4;
-	uint8_t cnt = ctr.readUint8(grvCsr++);
+	uint8_t cnt = ctr.readUint8(grvCsr++) + 1;
 	for (uint8_t i = 0; i < cnt; ++i) {
 		uint8_t idx = ctr.readUint8(grvCsr++);
 		uint8_t seqLen = ctr.readUint8(grvCsr++);
@@ -1813,6 +1815,8 @@ size_t FileIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 		for (uint8_t l = 0; l < seqLen; ++l) {
 			seq.push_back(ctr.readUint8(grvCsr++));
 		}
+
+		if (idx > 0) mod.lock()->addGroove();
 		mod.lock()->setGroove(idx, seq);
 	}
 
@@ -1838,8 +1842,8 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 		scsr += 4;
 		uint8_t groove = ctr.readUint8(scsr);
 		scsr += 1;
-		bool isTempo = ctr.readUint8(scsr) ? true : false;
-		scsr += 1;
+		bool isTempo = (groove & 0x80) ? true : false;
+		groove &= 0x7f;
 		uint32_t speed = ctr.readUint32(scsr);
 		scsr += 4;
 		size_t ptnSize = ctr.readUint8(scsr) + 1;

@@ -37,7 +37,9 @@ private:
 	static size_t loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsManager> instMan,
 														BinaryContainer& ctr, size_t globCsr);
 	static size_t loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
-			size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan, BinaryContainer& ctr);
+														 size_t instMemCsr,
+														 std::weak_ptr<InstrumentsManager> instMan,
+														 BinaryContainer& ctr);
 	static size_t loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
 	static size_t loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
 

@@ -56,6 +56,7 @@ void GrooveSettingsDialog::on_addButton_clicked()
 	ui->listWidget->addItem(QString::number(seqs_.size()) + ": 6 6 ");
 	seqs_.push_back({ 6, 6});
 	ui->removeButton->setEnabled(true);
+	if (ui->listWidget->count() == 128) ui->addButton->setEnabled(false);
 }
 
 void GrooveSettingsDialog::on_removeButton_clicked()
@@ -75,6 +76,7 @@ void GrooveSettingsDialog::on_removeButton_clicked()
 
 	on_listWidget_currentRowChanged(ui->listWidget->currentRow());
 
+	ui->addButton->setEnabled(true);
 	if (ui->listWidget->count() == 1)
 		ui->removeButton->setEnabled(false);
 }
