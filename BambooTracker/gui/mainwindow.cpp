@@ -1073,11 +1073,6 @@ void MainWindow::on_actionPaste_triggered()
 	else if (isEditedOrder_) ui->orderList->onPastePressed();
 }
 
-void MainWindow::on_actionPaste_Mix_triggered()
-{
-	if (isEditedPattern_) ui->patternEditor->onPasteMixPressed();
-}
-
 void MainWindow::on_actionDelete_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onDeletePressed();
@@ -1092,7 +1087,8 @@ void MainWindow::updateMenuByPattern()
 	if (bt_->isJamMode()) {
 		// Edit
 		ui->actionPaste->setEnabled(false);
-		ui->actionPaste_Mix->setEnabled(false);
+		ui->actionMix->setEnabled(false);
+		ui->actionOverwrite->setEnabled(false);
 		ui->actionDelete->setEnabled(false);
 		// Pattern
 		ui->actionInterpolate->setEnabled(false);
@@ -1109,7 +1105,8 @@ void MainWindow::updateMenuByPattern()
 		// Edit
 		bool enabled = QApplication::clipboard()->text().startsWith("PATTERN_");
 		ui->actionPaste->setEnabled(enabled);
-		ui->actionPaste_Mix->setEnabled(enabled);
+		ui->actionMix->setEnabled(enabled);
+		ui->actionOverwrite->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
 		// Pattern
 		ui->actionInterpolate->setEnabled(isSelectedPO_);
@@ -1168,7 +1165,8 @@ void MainWindow::updateMenuByOrder()
 		ui->actionClone_Order->setEnabled(canAdd);
 	}
 	// Edit
-	ui->actionPaste_Mix->setEnabled(false);
+	ui->actionMix->setEnabled(false);
+	ui->actionOverwrite->setEnabled(false);
 
 	// Pattern
 	ui->actionInterpolate->setEnabled(false);
@@ -1188,7 +1186,8 @@ void MainWindow::onPatternAndOrderFocusLost()
 	ui->actionCopy->setEnabled(false);
 	ui->actionCut->setEnabled(false);
 	ui->actionPaste->setEnabled(false);
-	ui->actionPaste_Mix->setEnabled(false);
+	ui->actionMix->setEnabled(false);
+	ui->actionOverwrite->setEnabled(false);
 	ui->actionDelete->setEnabled(false);
 	*/
 }
@@ -1741,4 +1740,14 @@ void MainWindow::on_actionVGM_triggered()
 	if (!res) QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
 
 	stream_->start();
+}
+
+void MainWindow::on_actionMix_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onPasteMixPressed();
+}
+
+void MainWindow::on_actionOverwrite_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onPasteOverwritePressed();
 }

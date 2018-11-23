@@ -17,7 +17,7 @@
    <string>BambooTracker</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="4,2,2,2,0">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="4,2,2,2">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -451,13 +451,21 @@
      <addaction name="actionPattern"/>
      <addaction name="actionOrder"/>
     </widget>
+    <widget class="QMenu" name="menuPaste_Special">
+     <property name="title">
+      <string>Paste Special</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionMix"/>
+     <addaction name="actionOverwrite"/>
+    </widget>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
-    <addaction name="actionPaste_Mix"/>
+    <addaction name="menuPaste_Special"/>
     <addaction name="actionDelete"/>
     <addaction name="separator"/>
     <addaction name="menuSelect"/>
@@ -723,7 +731,7 @@
   </action>
   <action name="actionPaste_Mix">
    <property name="text">
-    <string>Paste Mix</string>
+    <string>Paste And Mix</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
@@ -1106,6 +1114,24 @@
   <action name="actionVGM">
    <property name="text">
     <string>VGM...</string>
+   </property>
+  </action>
+  <action name="actionPaste_Overwrite">
+   <property name="text">
+    <string>Paste Overwrite</string>
+   </property>
+  </action>
+  <action name="actionMix">
+   <property name="text">
+    <string>Mix</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionOverwrite">
+   <property name="text">
+    <string>Overwrite</string>
    </property>
   </action>
  </widget>

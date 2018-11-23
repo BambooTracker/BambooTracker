@@ -150,6 +150,11 @@ void PatternEditor::onPasteMixPressed()
 	ui->panel->onPasteMixPressed();
 }
 
+void PatternEditor::onPasteOverwritePressed()
+{
+	ui->panel->onPasteOverwritePressed();
+}
+
 void PatternEditor::onSelectPressed(int type)
 {
 	ui->panel->onSelectPressed(type);

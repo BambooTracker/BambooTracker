@@ -433,7 +433,6 @@ void OrderListPanel::insertOrderBelow()
 
 	bt_->insertOrderBelow(curSongNum_, curPos_.row);
 	comStack_.lock()->push(new InsertOrderBelowQtCommand(this));
-	if (!bt_->isPlaySong()) moveCursorToDown(1);
 }
 
 void OrderListPanel::deleteOrder()

@@ -56,6 +56,7 @@ public slots:
 	void onDeletePressed();
 	void onPastePressed();
 	void onPasteMixPressed();
+	void onPasteOverwritePressed();
 	/// 0: None
 	/// 1: All
 	/// 2: Row
@@ -179,6 +180,7 @@ private:
 	void eraseSelectedCells();
 	void pasteCopiedCells(PatternPosition& startPos);
 	void pasteMixCopiedCells(PatternPosition& startPos);
+	void pasteOverwriteCopiedCells(PatternPosition& startPos);
 	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
 
 	void increaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);

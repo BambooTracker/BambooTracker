@@ -28,5 +28,6 @@
 #include "interpolate_pattern_qt_command.hpp"
 #include "reverse_pattern_qt_command.hpp"
 #include "replace_instrument_in_pattern_qt_command.hpp"
+#include "paste_overwrite_copied_data_to_pattern_qt_command.hpp"
 
 #endif // PATTERN_COMMANDS_QT_HPP

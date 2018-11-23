@@ -280,6 +280,8 @@ public:
 						   std::vector<std::vector<std::string>> cells);
 	void pasteMixPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 							  std::vector<std::vector<std::string>> cells);
+	void pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
+									int beginStep, std::vector<std::vector<std::string>> cells);
 	std::vector<std::vector<std::string>> arrangePatternDataCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 																  std::vector<std::vector<std::string>> cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

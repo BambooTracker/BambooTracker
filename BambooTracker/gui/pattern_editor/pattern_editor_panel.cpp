@@ -1055,6 +1055,20 @@ void PatternEditorPanel::pasteMixCopiedCells(PatternPosition& startPos)
 	comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
 }
 
+void PatternEditorPanel::pasteOverwriteCopiedCells(PatternPosition& startPos)
+{
+	int sCol = 0;
+	std::vector<std::vector<std::string>> cells
+			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
+
+	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2) && cells.front().size() <= 11 - curPos_.colInTrack)
+		sCol = curPos_.colInTrack;
+
+	bt_->pasteOverwritePatternCells(curSongNum_, startPos.track, sCol,
+							  startPos.order, startPos.step, std::move(cells));
+	comStack_.lock()->push(new PasteOverwriteCopiedDataToPatternQtCommand(this));
+}
+
 std::vector<std::vector<std::string>> PatternEditorPanel::instantiateCellsFromString(QString str, int& startCol)
 {
 	str.remove(QRegularExpression("PATTERN_(COPY|CUT):"));
@@ -1317,6 +1331,11 @@ void PatternEditorPanel::onPastePressed()
 void PatternEditorPanel::onPasteMixPressed()
 {
 	if (!bt_->isPlaySong()) pasteMixCopiedCells(curPos_);
+}
+
+void PatternEditorPanel::onPasteOverwritePressed()
+{
+	if (!bt_->isPlaySong()) pasteOverwriteCopiedCells(curPos_);
 }
 
 void PatternEditorPanel::onSelectPressed(int type)
@@ -1821,7 +1840,10 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		QAction* copy = menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
 		QAction* cut = menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
 		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
-		QAction* pasteMix = menu.addAction("Paste Mix", this, [&]() { pasteMixCopiedCells(mousePressPos_); });
+		auto pasteSp = new QMenu("Paste Special");
+		menu.addMenu(pasteSp);
+		QAction* pasteMix = pasteSp->addAction("Mix", this, [&]() { pasteMixCopiedCells(mousePressPos_); });
+		QAction* pasteOver = pasteSp->addAction("Overwrite", this, [&]() { pasteOverwriteCopiedCells(mousePressPos_); });
 		QAction* erase = menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
 		QAction* select = menu.addAction("Select All", this, [&]() { onSelectPressed(1); });
 		menu.addSeparator();
@@ -1849,6 +1871,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			cut->setEnabled(false);
 			paste->setEnabled(false);
 			pasteMix->setEnabled(false);
+			pasteOver->setEnabled(false);
 			erase->setEnabled(false);
 			interpolate->setEnabled(false);
 			reverse->setEnabled(false);
@@ -1865,6 +1888,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
 					paste->setEnabled(false);
 					pasteMix->setEnabled(false);
+					pasteOver->setEnabled(false);
 			}
 			if (selRightBelowPos_.order < 0
 					|| !isSelectedCell(mousePressPos_.track, mousePressPos_.colInTrack,

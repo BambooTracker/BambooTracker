@@ -115,7 +115,6 @@ private slots:
 	void on_actionCut_triggered();
 	void on_actionCopy_triggered();
 	void on_actionPaste_triggered();
-	void on_actionPaste_Mix_triggered();
 	void on_actionDelete_triggered();
 	void updateMenuByPattern();
 	void updateMenuByOrder();
@@ -173,6 +172,8 @@ private slots:
 	void on_actionRemove_Unused_Patterns_triggered();
 	void on_actionWAV_triggered();
 	void on_actionVGM_triggered();
+	void on_actionMix_triggered();
+	void on_actionOverwrite_triggered();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

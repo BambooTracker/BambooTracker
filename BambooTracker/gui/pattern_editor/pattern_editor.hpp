@@ -56,6 +56,7 @@ public slots:
 	void onDeletePressed();
 	void onPastePressed();
 	void onPasteMixPressed();
+	void onPasteOverwritePressed();
 	/// 0: None
 	/// 1: All
 	/// 2: Row

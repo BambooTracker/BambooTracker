@@ -1,8 +1,8 @@
-#include "paste_mix_copied_data_to_pattern_command.hpp"
+#include "paste_overwrite_copied_data_to_pattern_command.hpp"
 
-PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColmn,
-																	   int beginOrder, int beginStep,
-																	   std::vector<std::vector<std::string>> cells)
+PasteOverwriteCopiedDataToPatternCommand::PasteOverwriteCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColmn,
+																				   int beginOrder, int beginStep,
+																				   std::vector<std::vector<std::string>> cells)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(beginTrack),
@@ -21,15 +21,15 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 			switch (c) {
 			case 0:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getNoteNumber()));
+											   sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getNoteNumber()));
 				break;
 			case 1:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getInstrumentNumber()));
+											   sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getInstrumentNumber()));
 				break;
 			case 2:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getVolume()));
+											   sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getVolume()));
 				break;
 			case 3:
 				prevCells_.at(i).push_back(
@@ -37,7 +37,7 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 				break;
 			case 4:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(0)));
+											   sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(0)));
 				break;
 			case 5:
 				prevCells_.at(i).push_back(
@@ -45,7 +45,7 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 				break;
 			case 6:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(1)));
+											   sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(1)));
 				break;
 			case 7:
 				prevCells_.at(i).push_back(
@@ -53,7 +53,7 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 				break;
 			case 8:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(2)));
+											   sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(2)));
 				break;
 			case 9:
 				prevCells_.at(i).push_back(
@@ -61,7 +61,7 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 				break;
 			case 10:
 				prevCells_.at(i).push_back(std::to_string(
-							sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(3)));
+											   sng.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s).getEffectValue(3)));
 				break;
 			}
 
@@ -73,7 +73,7 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 	}
 }
 
-void PasteMixCopiedDataToPatternCommand::redo()
+void PasteOverwriteCopiedDataToPatternCommand::redo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
@@ -82,72 +82,82 @@ void PasteMixCopiedDataToPatternCommand::redo()
 		int t = track_;
 		int c = col_;
 		for (size_t j = 0; j < cells_.at(i).size(); ++j) {
-			auto& step = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
 			switch (c) {
 			case 0:
 			{
 				int n = std::stoi(cells_.at(i).at(j));
-				if (n != -1 && step.getNoteNumber() == -1) step.setNoteNumber(n);
+				if (n != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setNoteNumber(n);
 				break;
 			}
 			case 1:
 			{
 				int n = std::stoi(cells_.at(i).at(j));
-				if (n != -1 && step.getInstrumentNumber() == -1) step.setInstrumentNumber(n);
+				if (n != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setInstrumentNumber(n);
 				break;
 			}
 			case 2:
 			{
 				int vol = std::stoi(cells_.at(i).at(j));
-				if (vol != -1 && step.getVolume() == -1) step.setVolume(vol);
+				if (vol != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setVolume(vol);
 				break;
 			}
 			case 3:
 			{
 				std::string id = cells_.at(i).at(j);
-				if (id != "--" && step.getEffectID(0) == "--") step.setEffectID(0, id);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(0, id);
 				break;
 			}
 			case 4:
 			{
 				int val = std::stoi(cells_.at(i).at(j));
-				if (val != -1 && step.getEffectValue(0) == -1) step.setEffectValue(0, val);
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(0, val);
 				break;
 			}
 			case 5:
 			{
 				std::string id = cells_.at(i).at(j);
-				if (id != "--" && step.getEffectID(1) == "--") step.setEffectID(1, id);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(1, id);
 				break;
 			}
 			case 6:
 			{
 				int val = std::stoi(cells_.at(i).at(j));
-				if (val != -1 && step.getEffectValue(1) == -1) step.setEffectValue(1, val);
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(1, val);
 				break;
 			}
 			case 7:
 			{
 				std::string id = cells_.at(i).at(j);
-				if (id != "--" && step.getEffectID(2) == "--") step.setEffectID(2, id);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(2, id);
 				break;
 			}
 			case 8:
 			{
 				int val = std::stoi(cells_.at(i).at(j));
-				if (val != -1 && step.getEffectValue(2) == -1) step.setEffectValue(2, val);
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(2, val);
 				break;
 			}
 			case 9:
 			{
 				std::string id = cells_.at(i).at(j);
-				if (id != "--" && step.getEffectID(3) == "--") step.setEffectID(3, id);
+				if (id != "--")
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectID(3, id);
 				break;
 			}
 			case 10:
 			{
 				int val = std::stoi(cells_.at(i).at(j));
-				if (val != -1 && step.getEffectValue(3) == -1) step.setEffectValue(3, val);
+				if (val != -1)
+					sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s).setEffectValue(3, val);
 				break;
 			}
 			}
@@ -161,7 +171,7 @@ void PasteMixCopiedDataToPatternCommand::redo()
 	}
 }
 
-void PasteMixCopiedDataToPatternCommand::undo()
+void PasteOverwriteCopiedDataToPatternCommand::undo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
@@ -226,7 +236,7 @@ void PasteMixCopiedDataToPatternCommand::undo()
 	}
 }
 
-int PasteMixCopiedDataToPatternCommand::getID() const
+int PasteOverwriteCopiedDataToPatternCommand::getID() const
 {
-	return 0x2f;
+	return 0x3a;
 }

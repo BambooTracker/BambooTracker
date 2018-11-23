@@ -2110,7 +2110,7 @@ void BambooTracker::setStepEffectID(int songNum, int trackNum, int orderNum, int
 
 int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const
 {
-	mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
+	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
 			.getStep(stepNum).getEffectValue(n);
 }
 
@@ -2156,6 +2156,16 @@ void BambooTracker::pasteMixPatternCells(int songNum, int beginTrack, int beginC
 			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
 
 	comMan_.invoke(std::make_unique<PasteMixCopiedDataToPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+}
+
+void BambooTracker::pasteOverwritePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
+											   int beginStep, std::vector<std::vector<std::string>> cells)
+{
+	std::vector<std::vector<std::string>> d
+			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
+
+	comMan_.invoke(std::make_unique<PasteOverwriteCopiedDataToPatternCommand>(
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
 }
 

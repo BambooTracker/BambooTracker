@@ -158,7 +158,9 @@ SOURCES += \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
     gui/json.cpp \
-    gui/color_palette.cpp
+    gui/color_palette.cpp \
+    gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.cpp \
+    command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -308,7 +310,9 @@ HEADERS += \
     io/gd3_tag.hpp \
     configuration.hpp \
     gui/json.hpp \
-    gui/color_palette.hpp
+    gui/color_palette.hpp \
+    gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.hpp \
+    command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp
 
 FORMS += \
     gui/mainwindow.ui \

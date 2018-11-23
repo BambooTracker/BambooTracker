@@ -34,6 +34,7 @@
 #include "./pattern/interpolate_pattern_command.hpp"
 #include "./pattern/reverse_pattern_command.hpp"
 #include "./pattern/replace_instrument_in_pattern_command.hpp"
+#include "./pattern/paste_overwrite_copied_data_to_pattern_command.hpp"
 
 /********** Order edit **********/
 #include "./order/set_pattern_to_order_command.hpp"

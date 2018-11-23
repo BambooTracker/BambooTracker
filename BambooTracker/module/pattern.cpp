@@ -10,7 +10,7 @@ Pattern::Pattern(int n, size_t size, std::vector<Step> steps)
 {
 }
 
-int Pattern::setNumber(int n)
+void Pattern::setNumber(int n)
 {
 	num_ = n;
 }

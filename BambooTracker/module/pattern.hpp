@@ -10,7 +10,7 @@ class Pattern
 public:
 	explicit Pattern(int n);
 
-	int setNumber(int n);
+	void setNumber(int n);
 	int getNumber() const;
 
 	int usedCountUp();
