@@ -937,7 +937,6 @@ void PatternEditorPanel::insertStep()
 {
 	bt_->insertStep(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 	comStack_.lock()->push(new InsertStepQtCommand(this));
-	if (!bt_->isPlaySong()) moveCursorToDown(1);
 }
 
 void PatternEditorPanel::deletePreviousStep()

@@ -219,7 +219,7 @@ Each song block is defined as:
 | uint8            | Groove index      | index of using groove.                                                              |
 | uint8            | Tempo/Groove flag | If bit 0 is set, Tempo is enabled. If bit 0 is cleared, groove is enabled.          |
 | uint32           | Speed             | Speed.                                                                              |
-| uint32           | Pattern size      | Default pattern size.                                                               |
+| uint8            | Pattern size      | Stored default pattern size - 1.                                                    |
 | uint8            | Song type         | Type of tracks. See table below for details.                                        |
 
 Song type defined number and order of tracks.
@@ -245,13 +245,12 @@ After order data, repeat pattern subblocks.
 | ------ | -------------- | ------------------------------------------- |
 | uint8  | Pattern number | Number of the pattern.                      |
 | uint32 | Pattern offset | Relative offset to end of pattern subblock. |
-| uint32 | Step count     | Number of steps stored event.               |
 
-And repeat step unit.
+And repeat step unit which is stored event.
 
 | Type   | Field      | Description                                                 |
 | ------ | ---------- | ----------------------------------------------------------- |
-| uint32 | Step index | Index of the step.                                          |
+| uint8  | Step index | Index of the step.                                          |
 | uint16 | Event flag | Flag whether event is entried. See table below for details. |
 
 Event flag is flags of step events. If flag is set (1), the event is described after event flag.

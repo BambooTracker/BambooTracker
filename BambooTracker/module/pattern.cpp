@@ -53,9 +53,10 @@ size_t Pattern::getSize() const
 
 void Pattern::changeSize(size_t size)
 {
-	size_ = size;
-	if (steps_.size() < size)
-		steps_.resize(size);
+	if (0 < size && size <= 256) {
+		size_ = size;
+		if (steps_.size() < size) steps_.resize(size);
+	}
 }
 
 void Pattern::insertStep(int n)

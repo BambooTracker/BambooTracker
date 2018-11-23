@@ -648,7 +648,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 		ctr.appendUint8(sng.getGroove());
 		ctr.appendUint8(sng.isUsedTempo());
 		ctr.appendUint32(sng.getSpeed());
-		ctr.appendUint32(sng.getDefaultPatternSize());
+		ctr.appendUint8(sng.getDefaultPatternSize() - 1);
 		auto style = sng.getStyle();
 		switch (style.type) {
 		case SongType::STD:	ctr.appendUint8(0x00);	break;
@@ -677,9 +677,8 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 
 				// Step
 				std::vector<int> stepIdcs = pattern.getEditedStepIndices();
-				ctr.appendUint32(stepIdcs.size());
 				for (auto& sidx : stepIdcs) {
-					ctr.appendUint32(sidx);
+					ctr.appendUint8(sidx);
 					size_t evFlagOfs = ctr.size();
 					ctr.appendUint16(0);	// Dummy set event flag
 					auto& step = pattern.getStep(sidx);
@@ -1843,8 +1842,8 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 		scsr += 1;
 		uint32_t speed = ctr.readUint32(scsr);
 		scsr += 4;
-		size_t ptnSize =ctr.readUint32(scsr);
-		scsr += 4;
+		size_t ptnSize = ctr.readUint8(scsr) + 1;
+		scsr += 1;
 		switch (ctr.readUint8(scsr++)) {
 		case 0x00:	// Standard
 		{
@@ -1876,13 +1875,11 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 				auto& pattern = track.getPattern(ptnIdx);
 				size_t ptnOfs = ctr.readUint32(tcsr);
 				size_t pcsr = tcsr + 4;
+				tcsr += ptnOfs;
 
 				// Step
-				size_t stepCnt = ctr.readUint32(pcsr);
-				pcsr += 4;
-				for (size_t si = 0; si < stepCnt; ++si) {
-					uint32_t stepIdx = ctr.readUint32(pcsr);
-					pcsr += 4;
+				while (pcsr < tcsr) {
+					uint32_t stepIdx = ctr.readUint8(pcsr++);
 					auto& step = pattern.getStep(stepIdx);
 					uint16_t eventFlag = ctr.readUint16(pcsr);
 					pcsr += 2;
@@ -1910,8 +1907,6 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 					}
 					if (eventFlag & 0x0400)	step.setEffectValue(3, ctr.readUint8(pcsr++));
 				}
-
-				tcsr += ptnOfs;
 			}
 
 			scsr += trackOfs;
