@@ -14,8 +14,8 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
 	QObject::connect(ui->panel, &PatternEditorPanel::currentStepChanged,
 					 this, [&](int num, int max) {
-		ui->verticalScrollBar->setValue(num);
 		ui->verticalScrollBar->setMaximum(max);
+		ui->verticalScrollBar->setValue(num);
 	});
 	QObject::connect(ui->panel, &PatternEditorPanel::currentTrackChanged,
 					 this, [&](int num) { emit currentTrackChanged(num); });
