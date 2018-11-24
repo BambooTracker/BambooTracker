@@ -93,9 +93,12 @@ void Track::registerPatternToOrder(int order, int pattern)
 
 void Track::insertOrderBelow(int order)
 {
-	if (order == order_.size() - 1) order_.push_back(0);
-	else order_.insert(order_.begin() + order + 1, 0);
-	patterns_[0].usedCountUp();
+	int n = searchFirstUneditedUnusedPattern();
+	if (n == -1) n = 255;
+
+	if (order == order_.size() - 1) order_.push_back(n);
+	else order_.insert(order_.begin() + order + 1, n);
+	patterns_[n].usedCountUp();
 }
 
 void Track::deleteOrder(int order)
