@@ -124,6 +124,7 @@ private:
 	int detuneFM_[6];
 	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[6];
 	int sumNoteSldFM_[6];
+	bool noteSldFMSetFlag_;
 	int transposeFM_[6];
 
 	void initFM();
@@ -227,6 +228,7 @@ private:
 	int detuneSSG_[3];
 	std::unique_ptr<NoteSlideEffectIterator> nsItSSG_[3];
 	int sumNoteSldSSG_[3];
+	bool noteSldSSGSetFlag_;
 	int transposeSSG_[3];
 
 	void initSSG();

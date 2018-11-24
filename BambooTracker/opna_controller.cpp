@@ -138,7 +138,10 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 	if (tmpVolFM_[ch] != -1) {
 		setVolumeFM(ch, baseVolFM_[ch]);
 	}
-	nsItFM_[ch].reset();
+	if (!noteSldFMSetFlag_) {
+		nsItFM_[ch].reset();
+	}
+	noteSldFMSetFlag_ = false;
 	sumNoteSldFM_[ch] = 0;
 	transposeFM_[ch] = 0;
 
@@ -381,7 +384,10 @@ void OPNAController::setDetuneFM(int ch, int pitch)
 
 void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 {
-	if (speed && seminote) nsItFM_[ch] = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+	if (speed && seminote) {
+		nsItFM_[ch] = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+		noteSldFMSetFlag_ = true;
+	}
 	else nsItFM_[ch].reset();
 }
 
@@ -473,6 +479,7 @@ void OPNAController::initFM()
 		detuneFM_[ch] = 0;
 		nsItFM_[ch].reset();
 		sumNoteSldFM_[ch] = 0;
+		noteSldFMSetFlag_ = false;
 		transposeFM_[ch] = 0;
 
 		// Init pan
@@ -1301,7 +1308,10 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 	if (tmpVolSSG_[ch] != -1 && !volSldSSG_[ch]) {
 		setVolumeSSG(ch, baseVolSSG_[ch]);
 	}
-	nsItSSG_[ch].reset();
+	if (!noteSldSSGSetFlag_) {
+		nsItSSG_[ch].reset();
+	}
+	noteSldSSGSetFlag_ = false;
 	sumNoteSldSSG_[ch] = 0;
 	transposeSSG_[ch] = 0;
 
@@ -1464,7 +1474,10 @@ void OPNAController::setDetuneSSG(int ch, int pitch)
 
 void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 {
-	if (speed && seminote) nsItSSG_[ch] = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+	if (speed && seminote) {
+		nsItSSG_[ch] = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+		noteSldSSGSetFlag_ = true;
+	}
 	else nsItSSG_[ch].reset();
 }
 
@@ -1555,6 +1568,8 @@ void OPNAController::initSSG()
 		detuneSSG_[ch] = 0;
 		nsItSSG_[ch].reset();
 		sumNoteSldSSG_[ch] = 0;
+		noteSldFMSetFlag_ = false;
+		transposeSSG_[ch] = 0;
 	}
 }
 
