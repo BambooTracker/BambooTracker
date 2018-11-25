@@ -1,5 +1,5 @@
 # BambooTracker
-<!--[![GitHub release](https://img.shields.io/badge/release-v0.1.0-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)-->
+[![GitHub release](https://img.shields.io/badge/release-v0.1.0-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: win-32](https://img.shields.io/badge/platform-win--32-lightgrey.svg)
 [![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
@@ -172,6 +172,13 @@ Q W ER T Y UI O
 Z X CV B N M, .
 ```
 
+## 音量値
+|      | 最大 | 最小 |
+| ---- | ---- | ---- |
+| FM   | 7F   | 00   |
+| SSG  | 00   | 0F   |
+| Drum | 00   | 1F   |
+
 ## パターンエフェクト
 | エフェクト | FM                                                                                                                        | PSG                        | ドラム                               |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------ |
@@ -198,8 +205,8 @@ Z X CV B N M, .
 | 0Vxx       | -                                                                                                                         | -                          | マスターボリューム (xx[00-3f]: 音量) |
 | Mxyy       | ボリューム・ディレイ (x[1-f]: ディレイカウント, yy[00-ff]: 音量)                                                          | ボリューム・ディレイ       | ボリューム・ディレイ                 |
 
-<!--## Changelog
-*[CHANGELOG.md](./CHANGELOG.md)を参照してください。*-->
+## Changelog
+*[CHANGELOG.md](./CHANGELOG.md)を参照してください。*
 
 ## License
 このプログラム及びソースコードのライセンスははGNU General License Version 2です。

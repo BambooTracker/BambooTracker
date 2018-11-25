@@ -1,5 +1,5 @@
 # BambooTracker
-<!--[![GitHub release](https://img.shields.io/badge/release-v0.1.0-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)-->
+[![GitHub release](https://img.shields.io/badge/release-v0.1.0-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: win-32](https://img.shields.io/badge/platform-win--32-lightgrey.svg)
 [![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
@@ -83,6 +83,13 @@ Current octave
 Z X CV B N M, .
 ```
 
+## Volume range
+|      | Minimum | Maximum |
+| ---- | ------- | ------- |
+| FM   | 7F      | 00      |
+| SSG  | 00      | 0F      |
+| Drum | 00      | 1F      |
+
 ## Effect list
 | Effect | FM                                                                                      | PSG                | Drum                              |
 | ------ | --------------------------------------------------------------------------------------- | ------------------ | --------------------------------- |
@@ -109,8 +116,8 @@ Z X CV B N M, .
 | 0Vxx   | -                                                                                       | -                  | Master volume (xx[00-3f]: volume) |
 | Mxyy   | Volume delay (x[1-f]: count, yy[00-ff]: volume)                                         | Volume delay       | Volume delay                      |
 
-<!--## Changelog
-*See [CHANGELOG.md](./CHANGELOG.md).*-->
+## Changelog
+*See [CHANGELOG.md](./CHANGELOG.md).*
 
 ## License
 This program and its source code are licensed under the GNU General License Version 2.
