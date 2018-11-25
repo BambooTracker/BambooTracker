@@ -38,6 +38,7 @@ signals:
 	void focusIn();
 	void focusOut();
 	void selected(bool isSelected);
+	void returnPressed();
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;

@@ -68,6 +68,7 @@ signals:
 	void orderEdited();
 
 	void selected(bool isSelected);
+	void returnPressed();
 
 protected:
 	virtual bool event(QEvent *event) override;

@@ -29,6 +29,12 @@ signals:
 	void jamKeyOffEvent(QKeyEvent* event);
 	void octaveChanged(bool upFlag);
 	void modified();
+	/// 0: play song
+	/// 1: play from start
+	/// 2: play pattern
+	/// 3: play from cursor
+	/// -1: stop
+	void playStatusChanged(int stat);
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;

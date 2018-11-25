@@ -81,6 +81,7 @@ signals:
 	void effectColsCompanded(int num, int max);
 
 	void selected(bool isSelected);
+	void returnPressed();
 
 protected:
 	virtual bool event(QEvent *event) override;

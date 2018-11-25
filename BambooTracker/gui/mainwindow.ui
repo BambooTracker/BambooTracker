@@ -895,9 +895,6 @@
    <property name="text">
     <string>Play</string>
    </property>
-   <property name="shortcut">
-    <string>Return</string>
-   </property>
   </action>
   <action name="actionPlay_Pattern">
    <property name="icon">

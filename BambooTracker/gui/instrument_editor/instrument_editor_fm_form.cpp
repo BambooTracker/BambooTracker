@@ -561,8 +561,13 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 	// For jam key on
 	// General keys
 	switch (event->key()) {
-	case Qt::Key_Asterisk:	emit octaveChanged(true);		break;
-	case Qt::Key_Slash:		emit octaveChanged(false);		break;
+	case Qt::Key_Asterisk:	emit octaveChanged(true);	break;
+	case Qt::Key_Slash:		emit octaveChanged(false);	break;
+	//case Qt::Key_Return:	emit playStatusChanged(0);	break;
+	case Qt::Key_F5:		emit playStatusChanged(1);	break;
+	case Qt::Key_F6:		emit playStatusChanged(2);	break;
+	case Qt::Key_F7:		emit playStatusChanged(3);	break;
+	case Qt::Key_F8:		emit playStatusChanged(-1);	break;
 	default:
 		if (!event->isAutoRepeat()) {
 			// Musical keyboard

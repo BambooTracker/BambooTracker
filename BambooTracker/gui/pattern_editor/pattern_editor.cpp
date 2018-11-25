@@ -29,8 +29,10 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	});
 	QObject::connect(ui->panel, &PatternEditorPanel::selected,
 					 this, [&](bool isSelected) { emit selected(isSelected); });
+	QObject::connect(ui->panel, &PatternEditorPanel::returnPressed,
+					 this, [&] { emit returnPressed(); });
 
-	auto focusSlot = [&]() { ui->panel->setFocus(); };
+	auto focusSlot = [&] { ui->panel->setFocus(); };
 
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::valueChanged,
 					 ui->panel, &PatternEditorPanel::setCurrentCellInRow);

@@ -21,11 +21,13 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 	QObject::connect(ui->panel, &OrderListPanel::currentOrderChanged,
 					 this, [&](int num) { emit currentOrderChanged(num); });
 	QObject::connect(ui->panel, &OrderListPanel::orderEdited,
-					 this, [&]() { emit orderEdited(); });
+					 this, [&] { emit orderEdited(); });
 	QObject::connect(ui->panel, &OrderListPanel::selected,
 					 this, [&](bool isSelected) { emit selected(isSelected); });
+	QObject::connect(ui->panel, &OrderListPanel::returnPressed,
+					 this, [&] { emit returnPressed(); });
 
-	auto focusSlot = [&]() { ui->panel->setFocus(); };
+	auto focusSlot = [&] { ui->panel->setFocus(); };
 
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::valueChanged,
 					 ui->panel, &OrderListPanel::setCurrentTrackForSlider);

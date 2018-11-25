@@ -236,6 +236,8 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, &MainWindow::onPatternAndOrderFocusLost);
 	QObject::connect(ui->patternEditor, &PatternEditor::selected,
 					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
+	QObject::connect(ui->patternEditor, &PatternEditor::returnPressed,
+					 this, &MainWindow::startPlaySong);
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
@@ -255,6 +257,8 @@ MainWindow::MainWindow(QWidget *parent) :
 					 this, &MainWindow::onPatternAndOrderFocusLost);
 	QObject::connect(ui->orderList, &OrderListEditor::selected,
 					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
+	QObject::connect(ui->orderList, &OrderListEditor::returnPressed,
+					 this, &MainWindow::startPlaySong);
 
 	/* Status bar */
 	statusDetail_ = new QLabel();
@@ -457,9 +461,9 @@ void MainWindow::dropEvent(QDropEvent* event)
 	bt_->stopPlaySong();
 	lockControls(false);
 	if (bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toStdString())) {
+		loadModule();
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
-		loadModule();
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Failed to load module.");
@@ -904,6 +908,16 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	// Set core data to editor when add insrument
 	int n = ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt();
 	auto& form = instForms_->getForm(n);
+	auto playFunc = [&](int stat) {
+		switch (stat) {
+		case -1:	stopPlaySong();				break;
+		case 0:		startPlaySong();			break;
+		case 1:		startPlayFromStart();		break;
+		case 2:		startPlayPattern();			break;
+		case 3:		startPlayFromCurrentStep();	break;
+		default:	break;
+		}
+	};
 	switch (instForms_->getFormInstrumentSoundSource(n)) {
 	case SoundSource::FM:
 	{
@@ -940,6 +954,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 this, &MainWindow::changeOctave, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
 						 this, &MainWindow::setModifiedTrue);
+		QObject::connect(fmForm, &InstrumentEditorFMForm::playStatusChanged, this, playFunc);
 
 		fmForm->installEventFilter(this);
 
@@ -985,6 +1000,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 this, &MainWindow::changeOctave, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,
 						 this, &MainWindow::setModifiedTrue);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::playStatusChanged, this, playFunc);
 
 		ssgForm->installEventFilter(this);
 
