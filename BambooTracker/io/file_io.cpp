@@ -1800,7 +1800,7 @@ size_t FileIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 		break;
 	}
 
-	return ofs;
+	return ofs + 1;
 }
 
 size_t FileIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr)
