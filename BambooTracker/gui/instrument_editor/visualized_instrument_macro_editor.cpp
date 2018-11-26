@@ -70,7 +70,9 @@ void VisualizedInstrumentMacroEditor::AddRow(QString label)
 	}
 	else {
 		ui->verticalScrollBar->setVisible(true);
-		ui->verticalScrollBar->setMaximum(labels_.size() - maxDispRowCnt_);
+		int max = labels_.size() - maxDispRowCnt_;
+		ui->verticalScrollBar->setMaximum(max);
+		ui->verticalScrollBar->setValue(max);
 	}
 	updateRowHeight();
 }
@@ -85,7 +87,9 @@ void VisualizedInstrumentMacroEditor::setMaximumDisplayedRowCount(int count)
 	}
 	else {
 		ui->verticalScrollBar->setVisible(true);
-		ui->verticalScrollBar->setMaximum(labels_.size() - maxDispRowCnt_);
+		int max = labels_.size() - maxDispRowCnt_;
+		ui->verticalScrollBar->setMaximum(max);
+		ui->verticalScrollBar->setValue(max);
 	}
 	updateRowHeight();
 }
@@ -230,7 +234,7 @@ void VisualizedInstrumentMacroEditor::setUpperRow(int row)
 	upperRow_ = row;
 	int pos = upperRow_ + 1 - getDisplayedRowCount();
 	ui->panel->update();
-	ui->verticalScrollBar->setValue(pos);
+	ui->verticalScrollBar->setValue(ui->verticalScrollBar->maximum() - pos);
 }
 
 void VisualizedInstrumentMacroEditor::setLabel(int row, QString text)
@@ -817,13 +821,12 @@ void VisualizedInstrumentMacroEditor::wheelEventInView(QWheelEvent* event)
 	if (!cols_.size()) return;
 
 	Ui::EventGuard eg(isIgnoreEvent_);
-	int degree = event->angleDelta().y() / 8;
+	int degree = - event->angleDelta().y() / 8;
 	int pos = ui->verticalScrollBar->value() + degree / 15;
 	if (0 > pos) pos = 0;
 	else if (pos > labels_.size() - maxDispRowCnt_) pos = labels_.size() - maxDispRowCnt_;
-	scrollUp(pos);
+	scrollUp(ui->verticalScrollBar->maximum() - pos);
 	ui->panel->update();
-
 	ui->verticalScrollBar->setValue(pos);
 }
 
@@ -840,7 +843,7 @@ void VisualizedInstrumentMacroEditor::on_colDecrToolButton_clicked()
 void VisualizedInstrumentMacroEditor::on_verticalScrollBar_valueChanged(int value)
 {
 	if (!isIgnoreEvent_) {
-		scrollUp(value);
+		scrollUp(ui->verticalScrollBar->maximum() - value);
 		ui->panel->update();
 	}
 }
