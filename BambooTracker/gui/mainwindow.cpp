@@ -71,7 +71,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	});
 
 	/* Audio stream */
-	if (config_->getSoundDevice() == u8"") {
+	bool savedDeviceExists = false;
+	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+		if (audioDevice.deviceName().toUtf8().toStdString() == config_->getSoundDevice()) {
+			savedDeviceExists = true;
+			break;
+		}
+	}
+	if (!savedDeviceExists) {
 		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
 		config_->setSoundDevice(sndDev.toUtf8().toStdString());
 	}
