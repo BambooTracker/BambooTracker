@@ -116,6 +116,28 @@ Z X CV B N M, .
 | 0Vxx   | -                                                                                       | -                  | Master volume (xx[00-3f]: volume) |
 | Mxyy   | Volume delay (x[1-f]: count, yy[00-ff]: volume)                                         | Volume delay       | Volume delay                      |
 
+## Build on Linux
+On Ubuntu 18.04:
+
+### Dependencies
+> make  
+> Qt5 (including qmake)  
+> Qt5 Multimedia  
+> Qt5 Multimedia plugins
+
+```bash
+sudo apt-get install \
+  build-essential \
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins
+```
+
+### Compilation
+```bash
+cd BambooTracker
+qmake
+make
+```
+
 ## Changelog
 *See [CHANGELOG.md](./CHANGELOG.md).*
 
