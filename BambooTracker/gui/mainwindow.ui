@@ -1152,6 +1152,24 @@
    <header>gui/line_read_only_spin_box.hpp</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>modTitleLineEdit</tabstop>
+  <tabstop>authorLineEdit</tabstop>
+  <tabstop>copyrightLineEdit</tabstop>
+  <tabstop>tickFreqSpinBox</tabstop>
+  <tabstop>modSetDialogOpenToolButton</tabstop>
+  <tabstop>stepHighrightSpinBox</tabstop>
+  <tabstop>octaveSpinBox</tabstop>
+  <tabstop>songNumSpinBox</tabstop>
+  <tabstop>songTitleLineEdit</tabstop>
+  <tabstop>songStyleLineEdit</tabstop>
+  <tabstop>tempoSpinBox</tabstop>
+  <tabstop>speedSpinBox</tabstop>
+  <tabstop>patternSizeSpinBox</tabstop>
+  <tabstop>grooveCheckBox</tabstop>
+  <tabstop>grooveSpinBox</tabstop>
+  <tabstop>instrumentListWidget</tabstop>
+ </tabstops>
  <resources>
   <include location="../bamboo_tracker.qrc"/>
  </resources>
