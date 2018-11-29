@@ -456,7 +456,7 @@ void OPNAController::initFM()
 		sumPitchFM_[ch] = 0;
 		baseVolFM_[ch] = 0;	// Init volume
 		tmpVolFM_[ch] = -1;
-		enableEnvResetFM_[ch] = true;
+		enableEnvResetFM_[ch] = false;
 		lfoStartCntFM_[ch] = -1;
 
 		// Init sequence
