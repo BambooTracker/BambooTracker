@@ -1,7 +1,7 @@
 #include "pattern.hpp"
 
-Pattern::Pattern(int n)
-	: num_(n), size_(64), steps_(64), usedCnt_(0)
+Pattern::Pattern(int n, size_t defSize)
+	: num_(n), size_(defSize), steps_(defSize), usedCnt_(0)
 {
 }
 

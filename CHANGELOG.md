@@ -1,14 +1,18 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- Fix module load error by missing pattern size initialization (thanks [@maakmusic])
+
+[@maakmusic]: https://twitter.com/maakmusic
 
 ## v0.1.1 (2018-11-27)
-### Add
+### Added
 - [#8] - Add dependencies and compile instructions on linux to readme (thanks [@OPNA2608])
 
 ### Fixed
 - [#5] - Fix scroll directions of scroll bar arrow in instrument sequence editor (thanks [@Xyz39808])
-- [#4] - Fix wrong offset jump when opening file with operator sequence (thanks [@9001])
+- [#4] - Fix wrong offset jump when opening file with operator sequence (thanks [@9001], [@nabetaqz])
 - [#9] - Check if saved soundOutput exists ([#7]; thanks [@OPNA2608], [@marysiamzawka])
 
 [#5]: https://github.com/rerrahkr/BambooTracker/issues/5
@@ -21,6 +25,7 @@
 [@9001]: https://github.com/9001
 [@OPNA2608]: https://github.com/OPNA2608
 [@marysiamzawka]: https://github.com/marysiamzawka
+[@nabetaqz]: https://twitter.com/nabetaqz
 
 ## v0.1.0 (2018-11-25)
 ### Added

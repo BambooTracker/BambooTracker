@@ -12,7 +12,7 @@ struct OrderData;
 class Track
 {
 public:
-	Track(int number, SoundSource source, int channelInSource);
+	Track(int number, SoundSource source, int channelInSource, int defPattenSize);
 	TrackAttribute getAttribute() const;
 	OrderData getOrderData(int order);
 	size_t getOrderSize() const;
