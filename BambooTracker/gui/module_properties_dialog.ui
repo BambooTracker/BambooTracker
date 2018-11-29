@@ -182,6 +182,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>songTreeWidget</tabstop>
+  <tabstop>upToolButton</tabstop>
+  <tabstop>downToolButton</tabstop>
+  <tabstop>removePushButton</tabstop>
+  <tabstop>editTitleLineEdit</tabstop>
+  <tabstop>insertTitleLineEdit</tabstop>
+  <tabstop>insertTypeComboBox</tabstop>
+  <tabstop>insertPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

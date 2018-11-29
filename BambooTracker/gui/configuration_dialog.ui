@@ -216,6 +216,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>generalSettingsListWidget</tabstop>
+  <tabstop>pageJumpLengthSpinBox</tabstop>
+  <tabstop>soundDeviceComboBox</tabstop>
+  <tabstop>sampleRateComboBox</tabstop>
+  <tabstop>bufferLengthHorizontalSlider</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

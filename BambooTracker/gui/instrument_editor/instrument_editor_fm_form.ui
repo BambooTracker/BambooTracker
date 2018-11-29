@@ -577,6 +577,33 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>envNumSpinBox</tabstop>
+  <tabstop>envUsersLineEdit</tabstop>
+  <tabstop>alGraphicsView</tabstop>
+  <tabstop>lfoGroupBox</tabstop>
+  <tabstop>lfoNumSpinBox</tabstop>
+  <tabstop>lfoUsersLineEdit</tabstop>
+  <tabstop>amOp1CheckBox</tabstop>
+  <tabstop>amOp2CheckBox</tabstop>
+  <tabstop>amOp3CheckBox</tabstop>
+  <tabstop>amOp4CheckBox</tabstop>
+  <tabstop>lfoStartSpinBox</tabstop>
+  <tabstop>envResetCheckBox</tabstop>
+  <tabstop>opSeqTypeComboBox</tabstop>
+  <tabstop>opSeqEditGroupBox</tabstop>
+  <tabstop>opSeqNumSpinBox</tabstop>
+  <tabstop>opSeqUsersLineEdit</tabstop>
+  <tabstop>arpEditGroupBox</tabstop>
+  <tabstop>arpNumSpinBox</tabstop>
+  <tabstop>arpUsersLineEdit</tabstop>
+  <tabstop>arpTypeComboBox</tabstop>
+  <tabstop>ptEditGroupBox</tabstop>
+  <tabstop>ptNumSpinBox</tabstop>
+  <tabstop>ptUsersLineEdit</tabstop>
+  <tabstop>ptTypeComboBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -403,6 +403,28 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>waveEditGroupBox</tabstop>
+  <tabstop>waveNumSpinBox</tabstop>
+  <tabstop>waveUsersLineEdit</tabstop>
+  <tabstop>squareMaskComboBox</tabstop>
+  <tabstop>tnEditGroupBox</tabstop>
+  <tabstop>tnNumSpinBox</tabstop>
+  <tabstop>tnUsersLineEdit</tabstop>
+  <tabstop>envEditGroupBox</tabstop>
+  <tabstop>envNumSpinBox</tabstop>
+  <tabstop>envUsersLineEdit</tabstop>
+  <tabstop>hardFreqSpinBox</tabstop>
+  <tabstop>arpEditGroupBox</tabstop>
+  <tabstop>arpNumSpinBox</tabstop>
+  <tabstop>arpUsersLineEdit</tabstop>
+  <tabstop>arpTypeComboBox</tabstop>
+  <tabstop>ptEditGroupBox</tabstop>
+  <tabstop>ptNumSpinBox</tabstop>
+  <tabstop>ptUsersLineEdit</tabstop>
+  <tabstop>ptTypeComboBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
