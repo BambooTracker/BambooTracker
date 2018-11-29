@@ -8,7 +8,7 @@
 class Pattern
 {
 public:
-	explicit Pattern(int n);
+	Pattern(int n, size_t defSize);
 
 	void setNumber(int n);
 	int getNumber() const;

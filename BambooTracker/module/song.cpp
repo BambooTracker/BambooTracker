@@ -13,14 +13,15 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 {
 	switch (songType) {
 	case SongType::STD:
+		tracks_.reserve(15);
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i, SoundSource::FM, i);
+			tracks_.emplace_back(i, SoundSource::FM, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 3; ++i) {
-			tracks_.emplace_back(i + 6, SoundSource::SSG, i);
+			tracks_.emplace_back(i + 6, SoundSource::SSG, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i + 9, SoundSource::DRUM, i);
+			tracks_.emplace_back(i + 9, SoundSource::DRUM, i, defaultPatternSize);
 		}
 		break;
 	case SongType::FMEX:
