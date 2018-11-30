@@ -725,16 +725,16 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
 {
-	QRegularExpression re("^(?<fb>\\d+),(?<al>\\d+),"
+	QRegularExpression re("^(?<fb>\\d+),(?<al>\\d+),\\s*"
 						  "(?<ar1>\\d+),(?<dr1>\\d+),(?<sr1>\\d+),(?<rr1>\\d+),(?<sl1>\\d+),"
-						  "(?<tl1>\\d+),(?<ks1>\\d+),(?<ml1>\\d+),(?<dt1>\\d+),(?<ssgeg1>-?\\d+),"
+						  "(?<tl1>\\d+),(?<ks1>\\d+),(?<ml1>\\d+),(?<dt1>\\d+),(?<ssgeg1>-?\\d+),\\s*"
 						  "(?<ar2>\\d+),(?<dr2>\\d+),(?<sr2>\\d+),(?<rr2>\\d+),(?<sl2>\\d+),"
-						  "(?<tl2>\\d+),(?<ks2>\\d+),(?<ml2>\\d+),(?<dt2>\\d+),(?<ssgeg2>-?\\d+),"
+						  "(?<tl2>\\d+),(?<ks2>\\d+),(?<ml2>\\d+),(?<dt2>\\d+),(?<ssgeg2>-?\\d+),\\s*"
 						  "(?<ar3>\\d+),(?<dr3>\\d+),(?<sr3>\\d+),(?<rr3>\\d+),(?<sl3>\\d+),"
-						  "(?<tl3>\\d+),(?<ks3>\\d+),(?<ml3>\\d+),(?<dt3>\\d+),(?<ssgeg3>-?\\d+),"
+						  "(?<tl3>\\d+),(?<ks3>\\d+),(?<ml3>\\d+),(?<dt3>\\d+),(?<ssgeg3>-?\\d+),\\s*"
 						  "(?<ar4>\\d+),(?<dr4>\\d+),(?<sr4>\\d+),(?<rr4>\\d+),(?<sl4>\\d+),"
-						  "(?<tl4>\\d+),(?<ks4>\\d+),(?<ml4>\\d+),(?<dt4>\\d+),(?<ssgeg4>-?\\d+)");
-	QRegularExpressionMatch match = re.match(data);
+						  "(?<tl4>\\d+),(?<ks4>\\d+),(?<ml4>\\d+),(?<dt4>\\d+),(?<ssgeg4>-?\\d+),?\\s*");
+QRegularExpressionMatch match = re.match(data);
 
 	if (match.hasMatch()) {
 		ui->fbSlider->setValue(match.captured("fb").toInt());
@@ -784,7 +784,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
 
 QString InstrumentEditorFMForm::toEnvelopeString() const
 {
-	auto str = QString("%1,%2,%3,%4,%5,%6")
+	auto str = QString("%1,%2,\n%3,\n%4,\n%5,\n%6,")
 			   .arg(QString::number(ui->fbSlider->value()))
 			   .arg(QString::number(ui->alSlider->value()))
 			   .arg(ui->op1Table->toString())
