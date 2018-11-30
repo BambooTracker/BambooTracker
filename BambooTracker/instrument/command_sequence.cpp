@@ -22,7 +22,9 @@ CommandSequence::CommandSequence(const CommandSequence& other)
 
 std::unique_ptr<CommandSequence> CommandSequence::clone()
 {
-	return std::unique_ptr<CommandSequence>(std::make_unique<CommandSequence>(*this));
+	std::unique_ptr<CommandSequence> clone = std::make_unique<CommandSequence>(*this);
+	clone->clearUserInstruments();
+	return clone;
 }
 
 void CommandSequence::setType(int type)

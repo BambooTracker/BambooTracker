@@ -230,7 +230,7 @@ void BambooTracker::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParam
 
 void BambooTracker::setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
 {
-	instMan_->setInstrumentFMOperatorEnabled(instNum, param, enabled);
+	instMan_->setInstrumentFMOperatorSequenceEnabled(instNum, param, enabled);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 

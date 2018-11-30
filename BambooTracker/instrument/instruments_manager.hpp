@@ -63,8 +63,8 @@ public:
 	std::vector<int> getLFOFMEntriedIndices() const;
 	int findFirstFreeLFOFM() const;
 
-	void setInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
-	bool getInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param) const;
+	void setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
+	bool getInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param) const;
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
 	int getInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param);
 	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);

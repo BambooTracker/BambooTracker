@@ -42,3 +42,8 @@ std::vector<int> AbstractInstrumentProperty::getUserInstruments() const
 {
 	return users_;
 }
+
+void AbstractInstrumentProperty::clearUserInstruments()
+{
+	users_.clear();
+}

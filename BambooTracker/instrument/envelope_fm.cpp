@@ -77,7 +77,9 @@ EnvelopeFM::EnvelopeFM(const EnvelopeFM &other)
 
 std::unique_ptr<EnvelopeFM> EnvelopeFM::clone()
 {
-	return std::unique_ptr<EnvelopeFM>(std::make_unique<EnvelopeFM>(*this));
+	std::unique_ptr<EnvelopeFM> clone = std::make_unique<EnvelopeFM>(*this);
+	clone->clearUserInstruments();
+	return clone;
 }
 
 bool EnvelopeFM::getOperatorEnabled(int num) const

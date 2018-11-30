@@ -26,7 +26,9 @@ LFOFM::LFOFM(const LFOFM& other)
 
 std::unique_ptr<LFOFM> LFOFM::clone()
 {
-	return std::unique_ptr<LFOFM>(std::make_unique<LFOFM>(*this));
+	std::unique_ptr<LFOFM> clone = std::make_unique<LFOFM>(*this);
+	clone->clearUserInstruments();
+	return clone;
 }
 
 void LFOFM::setParameterValue(FMLFOParameter param, int value)

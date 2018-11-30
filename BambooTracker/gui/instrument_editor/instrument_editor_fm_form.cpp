@@ -1453,7 +1453,12 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 	}
 	ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease().type),
 							  instFM->getPitchRelease().begin);
-	ui->ptTypeComboBox->setCurrentIndex(instFM->getPitchType());
+	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
+		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instFM->getPitchType()) {
+			ui->ptTypeComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
 	if (instFM->getPitchEnabled()) {
 		ui->ptEditGroupBox->setChecked(true);
 		onPitchNumberChanged();

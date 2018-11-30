@@ -875,7 +875,12 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 	}
 	ui->ptEditor->setRelease(convertReleaseTypeForUI(instSSG->getPitchRelease().type),
 							  instSSG->getPitchRelease().begin);
-	ui->ptTypeComboBox->setCurrentIndex(instSSG->getPitchType());
+	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
+		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instSSG->getPitchType()) {
+			ui->ptTypeComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
 	if (instSSG->getPitchEnabled()) {
 		ui->ptEditGroupBox->setChecked(true);
 		onPitchNumberChanged();

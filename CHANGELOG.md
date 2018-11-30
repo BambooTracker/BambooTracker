@@ -3,8 +3,15 @@
 ## Unreleased
 ### Fixed
 - Fix module load error by missing pattern size initialization (thanks [@maakmusic])
+- [#10] - Rearrange tab stops for better keyboard navigation (thanks [@Pigu-A])
+- [#11] - Change envelope reset behavior (thanks [@Pigu-A])
+- Fix instrument property used/unused inheritance by cloning
+
+[#10]: https://github.com/rerrahkr/BambooTracker/pull/10
+[#11]: https://github.com/rerrahkr/BambooTracker/pull/16
 
 [@maakmusic]: https://twitter.com/maakmusic
+[@Pigu-A]: https://github.com/Pigu-A
 
 ## v0.1.1 (2018-11-27)
 ### Added
