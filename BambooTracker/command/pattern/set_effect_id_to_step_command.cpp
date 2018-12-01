@@ -16,7 +16,7 @@ SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, in
 
 void SetEffectIDToStepCommand::redo()
 {
-	std::string str = isComplete_ ? effID_ : (effID_ + "0");
+	std::string str = isComplete_ ? effID_ : ("0" + effID_);
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
 					.getStep(step_).setEffectID(n_, str);
 }
@@ -38,7 +38,7 @@ bool SetEffectIDToStepCommand::mergeWith(const AbstractCommand* other)
 		auto com = dynamic_cast<const SetEffectIDToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
 				&& com->getOrder() == order_ && com->getStep() == step_ && com->getN() == n_) {
-			effID_ += com->getEffectID();
+			effID_ = effID_ + com->getEffectID();
 			isComplete_ = true;
 			redo();
 			return true;

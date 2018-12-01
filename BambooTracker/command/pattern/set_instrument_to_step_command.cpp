@@ -6,7 +6,7 @@ SetInstrumentToStepCommand::SetInstrumentToStepCommand(std::weak_ptr<Module> mod
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
-	  inst_(instNum << 4),
+	  inst_(instNum),
 	  isComplete_(false)
 {
 	prevInst_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
@@ -36,7 +36,7 @@ bool SetInstrumentToStepCommand::mergeWith(const AbstractCommand* other)
 		auto com = dynamic_cast<const SetInstrumentToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
 				&& com->getOrder() == order_ && com->getStep() == step_) {
-			inst_ += (com->getInst() >> 4);
+			inst_ = (inst_ << 4) + com->getInst();
 			redo();
 			isComplete_ = true;
 			return true;

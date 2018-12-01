@@ -8,15 +8,18 @@
 - Fix instrument property used/unused inheritance by cloning
 - [#20] - Split FM envelope copy/paste to multiple lines (thanks [@jimbo1qaz])
 - [#21] - Fix selection range in pattern editor (thanks [@jimbo1qaz])
+- [#2] - Fix the order of input for columns (thanks [@pedipanol])
 
 [#10]: https://github.com/rerrahkr/BambooTracker/pull/10
 [#11]: https://github.com/rerrahkr/BambooTracker/pull/16
 [#20]: https://github.com/rerrahkr/BambooTracker/pull/20
 [#21]: https://github.com/rerrahkr/BambooTracker/issues/21
+[#2]: https://github.com/rerrahkr/BambooTracker/issues/2
 
 [@maakmusic]: https://twitter.com/maakmusic
 [@Pigu-A]: https://github.com/Pigu-A
 [@jimbo1qaz]: https://github.com/jimbo1qaz
+[@pedipanol]: https://github.com/pedipanol
 
 ## v0.1.1 (2018-11-27)
 ### Added
