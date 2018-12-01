@@ -1832,6 +1832,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::RightButton:	// Show context menu
 	{
 		QMenu menu;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 		QAction* undo = menu.addAction("Undo", this, [&]() {
 			bt_->undo();
 			comStack_.lock()->undo();
@@ -1869,6 +1870,65 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		menu.addSeparator();
 		QAction* mute = menu.addAction("Mute Track", this, &PatternEditorPanel::onMuteTrackPressed);
 		QAction* solo = menu.addAction("Solo Track", this, &PatternEditorPanel::onSoloTrackPressed);
+#else
+		QAction* undo = menu.addAction("Undo");
+		QObject::connect(undo, &QAction::triggered, this, [&]() {
+			bt_->undo();
+			comStack_.lock()->undo();
+		});
+		QAction* redo = menu.addAction("Redo");
+		QObject::connect(redo, &QAction::triggered, this, [&]() {
+			bt_->redo();
+			comStack_.lock()->redo();
+		});
+		menu.addSeparator();
+		QAction* copy = menu.addAction("Copy");
+		QObject::connect(copy, &QAction::triggered, this, &PatternEditorPanel::copySelectedCells);
+		QAction* cut = menu.addAction("Cut");
+		QObject::connect(cut, &QAction::triggered, this, &PatternEditorPanel::cutSelectedCells);
+		QAction* paste = menu.addAction("Paste");
+		QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(mousePressPos_); });
+		auto pasteSp = new QMenu("Paste Special");
+		menu.addMenu(pasteSp);
+		QAction* pasteMix = pasteSp->addAction("Mix");
+		QObject::connect(pasteMix, &QAction::triggered, this, [&]() { pasteMixCopiedCells(mousePressPos_); });
+		QAction* pasteOver = pasteSp->addAction("Overwrite");
+		QObject::connect(pasteOver, &QAction::triggered, this, [&]() { pasteOverwriteCopiedCells(mousePressPos_); });
+		QAction* erase = menu.addAction("Erase");
+		QObject::connect(erase, &QAction::triggered, this, &PatternEditorPanel::eraseSelectedCells);
+		QAction* select = menu.addAction("Select All");
+		QObject::connect(select, &QAction::triggered, this, [&]() { onSelectPressed(1); });
+		menu.addSeparator();
+		auto pattern = new QMenu("Pattern");
+		menu.addMenu(pattern);
+		QAction* interpolate = pattern->addAction("Interpolate");
+		QObject::connect(interpolate, &QAction::triggered, this, &PatternEditorPanel::onInterpolatePressed);
+		QAction* reverse = pattern->addAction("Reverse");
+		QObject::connect(reverse, &QAction::triggered, this, &PatternEditorPanel::onReversePressed);
+		QAction* replace = pattern->addAction("Replace Instrument");
+		QObject::connect(replace, &QAction::triggered, this, &PatternEditorPanel::onReplaceInstrumentPressed);
+		pattern->addSeparator();
+		QAction* expand = pattern->addAction("Expand");
+		QObject::connect(expand, &QAction::triggered, this, &PatternEditorPanel::onExpandPressed);
+		QAction* shrink = pattern->addAction("Shrink");
+		QObject::connect(shrink, &QAction::triggered, this, &PatternEditorPanel::onShrinkPressed);
+		pattern->addSeparator();
+		auto transpose = new QMenu("Transpose");
+		pattern->addMenu(transpose);
+		QAction* deNote = transpose->addAction("Decrease Note");
+		QObject::connect(deNote, &QAction::triggered, this, [&]() { onTransposePressed(false, false); });
+		QAction* inNote = transpose->addAction("Increase Note");
+		QObject::connect(inNote, &QAction::triggered, this, [&]() { onTransposePressed(false, true); });
+		QAction* deOct = transpose->addAction("Decrease Octave");
+		QObject::connect(deOct, &QAction::triggered, this, [&]() { onTransposePressed(true, false); });
+		QAction* inOct = transpose->addAction("Increase Octave");
+		QObject::connect(inOct, &QAction::triggered, this, [&]() { onTransposePressed(true, true); });
+		menu.addSeparator();
+		QAction* mute = menu.addAction("Mute Track");
+		QObject::connect(mute, &QAction::triggered, this, &PatternEditorPanel::onMuteTrackPressed);
+		QAction* solo = menu.addAction("Solo Track");
+		QObject::connect(solo, &QAction::triggered, this, &PatternEditorPanel::onSoloTrackPressed);
+#endif
 
 		if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
 			copy->setEnabled(false);

@@ -245,14 +245,19 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	QObject::connect(ui->lfoStartSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int v) {
+	auto lfoFunc = [&](int v) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::COUNT, v);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
-	});
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->lfoStartSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, lfoFunc);
+#else
+	QObject::connect(ui->lfoStartSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, lfoFunc);
+#endif
 
 	//========== OperatorSequence ==========//
 	ui->opSeqTypeComboBox->addItem("AL", static_cast<int>(FMEnvelopeParameter::AL));
@@ -347,8 +352,13 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 	QObject::connect(ui->opSeqTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
+#else
+	QObject::connect(ui->opSeqTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
+#endif
 
 	//========== Arpeggio ==========//
 	ui->arpEditor->setMaximumDisplayedRowCount(15);
@@ -411,8 +421,13 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 	QObject::connect(ui->arpTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
+#else
+	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
+#endif
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -474,8 +489,13 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 	QObject::connect(ui->ptTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
+#else
+	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
+#endif
 }
 
 InstrumentEditorFMForm::~InstrumentEditorFMForm()
@@ -1003,14 +1023,23 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	QPoint globalPos = ui->envGroupBox->mapToGlobal(pos);
 
 	QMenu menu;
-	menu.addAction("Copy envelope", this, [&, clipboard]() {
+	auto copyFunc = [&, clipboard]() {
 		clipboard->setText("FM_ENVELOPE:" + toEnvelopeString());
-	});
-	menu.addAction("Paste envelope", this, [&, clipboard]() {
+	};
+	auto pasteFunc = [&, clipboard]() {
 		QString data = clipboard->text().remove("FM_ENVELOPE:");
 		setInstrumentEnvelopeParameters(data);
-	});
-	if (!clipboard->text().startsWith("FM_ENVELOPE:")) menu.actions().at(1)->setEnabled(false);
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QAction* copy = menu.addAction("Copy envelope", this, copyFunc);
+	QAction* paste = menu.addAction("Paste envelope", this, pasteFunc);
+#else
+	QAction* copy = menu.addAction("Copy envelope");
+	QObject::connect(copy, &QAction::triggered, this, copyFunc);
+	QAction* paste = menu.addAction("Paste envelope");
+	QObject::connect(paste, &QAction::triggered, this, pasteFunc);
+#endif
+	if (!clipboard->text().startsWith("FM_ENVELOPE:")) paste->setEnabled(false);
 
 	menu.exec(globalPos);
 }
@@ -1120,13 +1149,22 @@ void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPo
 	QPoint globalPos = ui->lfoGroupBox->mapToGlobal(pos);
 
 	QMenu menu;
-	QAction* copy = menu.addAction("Copy LFO parameters", this, [&, clipboard]() {
+	auto copyFunc = [&, clipboard]() {
 		clipboard->setText("FM_LFO:" + toLFOString());
-	});
-	QAction* paste = menu.addAction("Paste LFO parameters", this, [&, clipboard]() {
+	};
+	auto pasteFunc = [&, clipboard]() {
 		QString data = clipboard->text().remove("FM_LFO:");
 		setInstrumentLFOParameters(data);
-	});
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QAction* copy = menu.addAction("Copy LFO parameters", this, copyFunc);
+	QAction* paste = menu.addAction("Paste LFO parameters", this, pasteFunc);
+#else
+	QAction* copy = menu.addAction("Copy LFO parameters");
+	QObject::connect(copy, &QAction::triggered, this, copyFunc);
+	QAction* paste = menu.addAction("Paste LFO parameters");
+	QObject::connect(paste, &QAction::triggered, this, pasteFunc);
+#endif
 	if (!ui->lfoGroupBox->isChecked()) {
 		copy->setEnabled(false);
 		paste->setEnabled(false);
