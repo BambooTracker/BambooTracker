@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#2], [#6] - Add selection whether the order of FM volume is reversed (thanks [@pedipanol], [@ScoopJohn])
+
 ### Fixed
 - Fix module load error by missing pattern size initialization (thanks [@maakmusic])
 - [#10] - Rearrange tab stops for better keyboard navigation (thanks [@Pigu-A])
@@ -15,11 +18,13 @@
 [#20]: https://github.com/rerrahkr/BambooTracker/pull/20
 [#21]: https://github.com/rerrahkr/BambooTracker/issues/21
 [#2]: https://github.com/rerrahkr/BambooTracker/issues/2
+[#6]: https://github.com/rerrahkr/BambooTracker/issues/6
 
 [@maakmusic]: https://twitter.com/maakmusic
 [@Pigu-A]: https://github.com/Pigu-A
 [@jimbo1qaz]: https://github.com/jimbo1qaz
 [@pedipanol]: https://github.com/pedipanol
+[@ScoopJohn]: https://github.com/ScoopJohn
 
 ## v0.1.1 (2018-11-27)
 ### Added

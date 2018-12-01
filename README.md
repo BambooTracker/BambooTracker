@@ -90,6 +90,8 @@ Z X CV B N M, .
 | SSG  | 00      | 0F      |
 | Drum | 00      | 1F      |
 
+It is able to reverse the order of FM volume (Configuration -> General -> Reverse FM volume order).
+
 ## Effect list
 | Effect | FM                                                                                      | PSG                | Drum                              |
 | ------ | --------------------------------------------------------------------------------------- | ------------------ | --------------------------------- |

@@ -346,19 +346,17 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		painter.drawText(offset, baseY, "--");
 	}
 	else {
-		QColor color;
+		int volLim;
 		switch (src) {
-		case SoundSource::FM:
-			color = (vol < 0x80) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor;
-			break;
-		case SoundSource::SSG:
-			color = (vol < 0x10) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor;
-			break;
-		case SoundSource::DRUM:
-			color = (vol < 0x20) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor;
-			break;
+		case SoundSource::FM:	volLim = 0x80;	break;
+		case SoundSource::SSG:	volLim = 0x10;	break;
+		case SoundSource::DRUM:	volLim = 0x20;	break;
 		}
-		painter.setPen(color);
+		painter.setPen((vol < volLim) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor);
+		if (src == SoundSource::FM && vol < volLim && config_.lock()->getReverseFMVolumeOrder()) {
+
+			vol = volLim - vol - 1;
+		}
 		painter.drawText(offset, baseY, QString("%1").arg(vol, 2, 16, QChar('0')).toUpper());
 	}
 	if (isMuteTrack)	// Paint mute mask
@@ -839,7 +837,9 @@ void PatternEditorPanel::setStepVolume(int volume)
 {
 	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
 	editPos_ = curPos_;
-	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume);
+	bool isReversed = (songStyle_.trackAttribs[curPos_.track].source == SoundSource::FM
+					  && config_.lock()->getReverseFMVolumeOrder());
+	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume, isReversed);
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_));
 
 	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);

@@ -7,7 +7,8 @@
 class SetVolumeToStepCommand : public AbstractCommand
 {
 public:
-	SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int volume);
+        SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
+                               int orderNum, int stepNum, int volume, bool isFMReversed);
 	void redo() override;
 	void undo() override;
 	int getID() const override;
@@ -24,4 +25,5 @@ private:
 	int song_, track_, order_, step_, vol_;
 	int prevVol_;
 	bool isComplete_;
+        bool isFMReserved_;
 };
