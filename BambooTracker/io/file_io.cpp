@@ -1,5 +1,6 @@
 #include "file_io.hpp"
 #include <fstream>
+#include <locale>
 #include "version.hpp"
 #include "misc.hpp"
 
@@ -731,7 +732,7 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 	return ctr.save(path);
 }
 
-bool FileIO::loadModuel(std::string path, std::weak_ptr<Module> mod,
+bool FileIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 						std::weak_ptr<InstrumentsManager> instMan)
 {
 	BinaryContainer ctr;
@@ -2414,6 +2415,12 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 
 AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
+	std::string ext = path.substr(path.find_last_of(".")+1);
+	for (auto& i : ext) i = std::tolower(i, std::locale());
+	if (ext.compare("dmp") == 0) return FileIO::loadDMPFile(path, instMan, instNum);
+	if (ext.compare("tfi") == 0) return FileIO::loadTFIFile(path, instMan, instNum);
+	if (ext.compare("vgi") == 0) return FileIO::loadVGIFile(path, instMan, instNum);
+
 	BinaryContainer ctr;
 
 	if (!ctr.load(path)) return nullptr;
@@ -3615,6 +3622,312 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 
 		return inst;
 	}
+}
+
+AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+	BinaryContainer ctr;
+	if (!ctr.load(path)) return nullptr;
+	size_t fnpos = path.find_last_of("/");
+	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
+	size_t csr = 0;
+
+	uint8_t insType = 1; // default to FM
+	uint8_t fileVersion = ctr.readUint8(csr++);
+	if (fileVersion == 0) { // older, unversioned dmp
+		if (ctr.size() != 49) return nullptr;
+	}
+	else {
+		if (fileVersion < 9) return nullptr;
+		if (fileVersion == 9 && ctr.size() != 51) return nullptr; // make sure it's not for that discontinued chip
+		uint8_t system = 2; // default to genesis
+		if (fileVersion >= 11) system = ctr.readUint8(csr++);
+		if (system != 2 && system != 3 && system != 8) return nullptr; // genesis, sms and arcade only
+		insType = ctr.readUint8(csr++);
+	}
+	AbstractInstrument* inst = nullptr;
+	switch (insType) {
+	case 0x00:	// SSG
+	{
+		inst = new InstrumentSSG(instNum, name, instMan.lock().get());
+		auto ssg = dynamic_cast<InstrumentSSG*>(inst);
+		uint8_t envSize = ctr.readUint8(csr++);
+		if (envSize > 0) {
+			int idx = instMan.lock()->findFirstFreeEnvelopeSSG();
+			if (idx < 0) return nullptr;
+			ssg->setEnvelopeEnabled(true);
+			ssg->setEnvelopeNumber(idx);
+			for (uint8_t l = 0; l < envSize; ++l) {
+				int data = ctr.readInt32(csr);
+				// compensate SN76489's envelope step of 2dB to SSG's 3dB
+				if (data > 0) data = 15 - (15 - data) * 2 / 3;
+				csr += 4;
+				if (l == 0) instMan.lock()->setEnvelopeSSGSequenceCommand(idx, 0, data, 0);
+				else instMan.lock()->addEnvelopeSSGSequenceCommand(idx, data, 0);
+			}
+			int8_t loop = ctr.readInt8(csr++);
+			if (loop >= 0) instMan.lock()->setEnvelopeSSGLoops(idx, {loop}, {envSize - 1}, {1});
+		}
+		uint8_t arpSize = ctr.readUint8(csr++);
+		if (arpSize > 0) {
+			int idx = instMan.lock()->findFirstFreeArpeggioSSG();
+			if (idx < 0) return nullptr;
+			ssg->setArpeggioEnabled(true);
+			ssg->setArpeggioNumber(idx);
+			uint8_t arpType = ctr.readUint8(csr + arpSize * 4 + 1);
+			if (arpType == 1) instMan.lock()->setArpeggioSSGType(idx, 1);
+			for (uint8_t l = 0; l < arpSize; ++l) {
+				int data = ctr.readInt32(csr) + 36;
+				csr += 4;
+				if (arpType == 1) data -= 24;
+				if (l == 0) instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
+				else instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, 0);
+			}
+			int8_t loop = ctr.readInt8(csr++);
+			if (loop >= 0) instMan.lock()->setArpeggioSSGLoops(idx, {loop}, {arpSize - 1}, {1});
+		}
+		break;
+	}
+	case 0x01:	// FM
+	{
+		int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
+		if (envIdx < 0) return nullptr;
+		inst = new InstrumentFM(instNum, name, instMan.lock().get());
+		auto fm = dynamic_cast<InstrumentFM*>(inst);
+		fm->setEnvelopeNumber(envIdx);
+		if (fileVersion == 9) csr++; // skip version 9's total operators field
+		uint8_t pms = ctr.readUint8(csr++);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
+		uint8_t ams = ctr.readUint8(csr++);
+		
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
+		uint8_t am1 = ctr.readUint8(csr++);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, ctr.readUint8(csr++) & 15); // mask out OPM's DT2
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
+		int ssgeg1 = ctr.readUint8(csr++);
+		ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
+		uint8_t am3 = ctr.readUint8(csr++);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, ctr.readUint8(csr++) & 15);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+		int ssgeg3 = ctr.readUint8(csr++);
+		ssgeg3 = ssgeg3 & 8 ? ssgeg3 & 7 : -1;
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+		
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
+		uint8_t am2 = ctr.readUint8(csr++);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, ctr.readUint8(csr++) & 15);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+		int ssgeg2 = ctr.readUint8(csr++);
+		ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+		
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
+		uint8_t am4 = ctr.readUint8(csr++);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, ctr.readUint8(csr++) & 15);
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
+		int ssgeg4 = ctr.readUint8(csr++);
+		ssgeg4 = ssgeg4 & 8 ? ssgeg4 & 7 : -1;
+		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+
+		if (pms || ams) {
+			int lfoIdx = instMan.lock()->findFirstFreeLFOFM();
+			if (lfoIdx < 0) return nullptr;
+			fm->setLFOEnabled(true);
+			fm->setLFONumber(lfoIdx);
+			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pms);
+			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, ams);
+			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am1);
+			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am2);
+			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am3);
+			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
+		}
+		break;
+	}
+	}
+	return inst;
+}
+
+AbstractInstrument* FileIO::loadTFIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+	BinaryContainer ctr;
+	if (!ctr.load(path)) return nullptr;
+	if (ctr.size() != 42) return nullptr;
+	int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
+	if (envIdx < 0) return nullptr;
+	size_t fnpos = path.find_last_of("/");
+	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
+	size_t csr = 0;
+
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	inst->setEnvelopeNumber(envIdx);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
+	int ssgeg1 = ctr.readUint8(csr++);
+	ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
+	int ssgeg3 = ctr.readUint8(csr++);
+	ssgeg3 = ssgeg3 & 8 ? ssgeg1 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
+	int ssgeg2 = ctr.readUint8(csr++);
+	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
+	int ssgeg4 = ctr.readUint8(csr++);
+	ssgeg4 = ssgeg4 & 8 ? ssgeg4 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+	return inst;
+}
+
+AbstractInstrument* FileIO::loadVGIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+	BinaryContainer ctr;
+	if (!ctr.load(path)) return nullptr;
+	if (ctr.size() != 43) return nullptr;
+	int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
+	if (envIdx < 0) return nullptr;
+	size_t fnpos = path.find_last_of("/");
+	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
+	size_t csr = 0;
+
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	inst->setEnvelopeNumber(envIdx);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
+	uint8_t pams = ctr.readUint8(csr++);
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
+	uint8_t drams1 = ctr.readUint8(csr++);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, drams1 & 31);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
+	int ssgeg1 = ctr.readUint8(csr++);
+	ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
+	uint8_t drams3 = ctr.readUint8(csr++);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, drams3 & 31);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
+	int ssgeg3 = ctr.readUint8(csr++);
+	ssgeg3 = ssgeg3 & 8 ? ssgeg1 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
+	uint8_t drams2 = ctr.readUint8(csr++);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, drams2 & 31);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
+	int ssgeg2 = ctr.readUint8(csr++);
+	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
+	uint8_t drams4 = ctr.readUint8(csr++);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, drams4 & 31);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
+	int ssgeg4 = ctr.readUint8(csr++);
+	ssgeg4 = ssgeg4 & 8 ? ssgeg4 & 7 : -1;
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+
+	if (pams != 0) {
+		int lfoIdx = instMan.lock()->findFirstFreeLFOFM();
+		if (lfoIdx < 0) return nullptr;
+		inst->setLFOEnabled(true);
+		inst->setLFONumber(lfoIdx);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pams & 7);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, pams >> 4);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, drams1 >> 7);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, drams2 >> 7);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, drams3 >> 7);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, drams4 >> 7);
+	}
+	return inst;
 }
 
 size_t FileIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopeParameter param,

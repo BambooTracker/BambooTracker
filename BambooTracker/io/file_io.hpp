@@ -13,7 +13,7 @@ class FileIO
 public:
 	static bool saveModule(std::string path, std::weak_ptr<Module> mod,
 						   std::weak_ptr<InstrumentsManager> instMan);
-	static bool loadModuel(std::string path, std::weak_ptr<Module> mod,
+	static bool loadModule(std::string path, std::weak_ptr<Module> mod,
 						   std::weak_ptr<InstrumentsManager> instMan);
 	static bool saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum);
 	static AbstractInstrument* loadInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan,
@@ -31,6 +31,15 @@ private:
 
 	static const FMEnvelopeParameter ENV_FM_PARAMS[38];
 
+	static AbstractInstrument* loadDMPFile(std::string path,
+										   std::weak_ptr<InstrumentsManager> instMan,
+										   int instNum);
+	static AbstractInstrument* loadTFIFile(std::string path,
+										   std::weak_ptr<InstrumentsManager> instMan,
+										   int instNum);
+	static AbstractInstrument* loadVGIFile(std::string path,
+										   std::weak_ptr<InstrumentsManager> instMan,
+										   int instNum);
 	static size_t loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
 	static size_t loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
 												BinaryContainer& ctr, size_t globCsr);

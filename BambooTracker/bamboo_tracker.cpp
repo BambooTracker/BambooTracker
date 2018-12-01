@@ -1767,7 +1767,7 @@ void BambooTracker::makeNewModule()
 bool BambooTracker::loadModule(std::string path)
 {
 	makeNewModule();
-	bool ret = FileIO::loadModuel(path, mod_, instMan_);
+	bool ret = FileIO::loadModule(path, mod_, instMan_);
 	tickCounter_.setInterruptRate(mod_->getTickFrequency());
 	setCurrentSongNumber(0);
 	clearCommandHistory();

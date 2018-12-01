@@ -640,7 +640,7 @@ void MainWindow::deepCloneInstrument()
 void MainWindow::loadInstrument()
 {
 	QString file = QFileDialog::getOpenFileName(this, "Open instrument", "./",
-												"BambooTracker instrument file (*.bti)");
+												"BambooTracker instrument file (*.bti);;DefleMask preset file (*.dmp);;TFM Music Maker instrument (*.tfi);;VGM Music Maker instrument (*.vgi)");
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();
