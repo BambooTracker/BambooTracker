@@ -230,7 +230,7 @@ void BambooTracker::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParam
 
 void BambooTracker::setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
 {
-	instMan_->setInstrumentFMOperatorEnabled(instNum, param, enabled);
+	instMan_->setInstrumentFMOperatorSequenceEnabled(instNum, param, enabled);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
@@ -2091,9 +2091,9 @@ int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int st
 			.getStep(stepNum).getVolume();
 }
 
-void BambooTracker::setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume)
+void BambooTracker::setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed)
 {	
-	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume));
+	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, isFMReversed));
 }
 
 void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum)

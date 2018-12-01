@@ -1,14 +1,15 @@
 #include "set_volume_to_step_command.hpp"
 #include "misc.hpp"
 
-SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int volume)
+SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
-	  vol_(volume << 4),
-	  isComplete_(false)
+	  vol_(volume),
+	  isComplete_(false),
+	  isFMReserved_(isFMReversed)
 {
 	prevVol_ = mod_.lock()->getSong(songNum).getTrack(trackNum)
 			   .getPatternFromOrderNumber(orderNum).getStep(stepNum).getVolume();
@@ -16,8 +17,9 @@ SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int so
 
 void SetVolumeToStepCommand::redo()
 {
+	int volume = (isFMReserved_ && vol_ < 0x80) ? (0x7f - vol_) : vol_;
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-			.getStep(step_).setVolume(vol_);
+			.getStep(step_).setVolume(volume);
 }
 
 void SetVolumeToStepCommand::undo()
@@ -37,7 +39,7 @@ bool SetVolumeToStepCommand::mergeWith(const AbstractCommand* other)
 		auto com = dynamic_cast<const SetVolumeToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
 				&& com->getOrder() == order_ && com->getStep() == step_) {
-			vol_ += (com->getVol() >> 4);
+			vol_ = (vol_ << 4) + com->getVol();
 			redo();
 			isComplete_ = true;
 			return true;

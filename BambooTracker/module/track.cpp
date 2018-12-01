@@ -16,6 +16,21 @@ Track::Track(int number, SoundSource source, int channelInSource, int defPattenS
 	order_.push_back(0);	// Set first order
 }
 
+Track::Track(const Track& other)
+	: attrib_(std::make_unique<TrackAttribute>())
+{
+	attrib_->number = other.attrib_->number;
+	attrib_->source = other.attrib_->source;
+	attrib_->channelInSource = other.attrib_->channelInSource;
+
+	for (int i = 0; i < other.patterns_.size(); ++i) {
+		patterns_.emplace_back(i, other.patterns_[i].getSize());
+	}
+
+//	patterns_[0].usedCountUp();
+//	order_.push_back(0);	// Set first order
+}
+
 TrackAttribute Track::getAttribute() const
 {
 	return *attrib_;

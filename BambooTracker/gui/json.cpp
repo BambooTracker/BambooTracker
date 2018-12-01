@@ -33,6 +33,7 @@ bool Json::saveConfiguration(std::weak_ptr<Configuration> config)
 		obj["showPreviousNextOrders"] = config.lock()->getShowPreviousNextOrders();
 		obj["backupModule"] = config.lock()->getBackupModules();
 		obj["dontSelectOnDoubleClick"] = config.lock()->getDontSelectOnDoubleClick();
+		obj["reverseFMVolumeOrder"] = config.lock()->getReverseFMVolumeOrder();
 
 		// Edit settings
 		obj["pageJumpLength"] = static_cast<int>(config.lock()->getPageJumpLength());
@@ -83,6 +84,7 @@ bool Json::loadConfiguration(std::weak_ptr<Configuration> config)
 		config.lock()->setShowPreviousNextOrders(obj["showPreviousNextOrders"].toBool());
 		config.lock()->setBackupModules(obj["backupModule"].toBool());
 		config.lock()->setDontSelectOnDoubleClick(obj["dontSelectOnDoubleClick"].toBool());
+		config.lock()->setReverseFMVolumeOrder(obj["reverseFMVolumeOrder"].toBool());
 
 		// Edit settings
 		config.lock()->setPageJumpLength(static_cast<size_t>(obj["pageJumpLength"].toInt()));

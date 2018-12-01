@@ -7,7 +7,7 @@ SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> m
 	  order_(orderNum),
 	  step_(stepNum),
 	  n_(n),
-	  val_(value << 4),
+	  val_(value),
 	  isComplete_(false)
 {
 	prevVal_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
@@ -37,7 +37,7 @@ bool SetEffectValueToStepCommand::mergeWith(const AbstractCommand* other)
 		auto com = dynamic_cast<const SetEffectValueToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
 				&& com->getOrder() == order_ && com->getStep() == step_ && com->getN() == n_) {
-			val_ += (com->getEffectValue() >> 4);
+			val_ = (val_ << 4) + com->getEffectValue();
 			redo();
 			isComplete_ = true;
 			return true;

@@ -132,6 +132,14 @@
               <enum>Unchecked</enum>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Reverse FM volume order</string>
+             </property>
+             <property name="checkState">
+              <enum>Checked</enum>
+             </property>
+            </item>
            </widget>
           </item>
          </layout>

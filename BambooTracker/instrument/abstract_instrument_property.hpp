@@ -15,6 +15,7 @@ public:
 	void deregisterUserInstrument(int instNum);
 	bool isUserInstrument() const;
 	std::vector<int> getUserInstruments() const;
+	void clearUserInstruments();
 
 protected:
 	explicit AbstractInstrumentProperty(int num);

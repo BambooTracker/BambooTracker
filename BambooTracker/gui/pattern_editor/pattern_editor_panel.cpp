@@ -346,19 +346,17 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		painter.drawText(offset, baseY, "--");
 	}
 	else {
-		QColor color;
+		int volLim;
 		switch (src) {
-		case SoundSource::FM:
-			color = (vol < 0x80) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor;
-			break;
-		case SoundSource::SSG:
-			color = (vol < 0x10) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor;
-			break;
-		case SoundSource::DRUM:
-			color = (vol < 0x20) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor;
-			break;
+		case SoundSource::FM:	volLim = 0x80;	break;
+		case SoundSource::SSG:	volLim = 0x10;	break;
+		case SoundSource::DRUM:	volLim = 0x20;	break;
 		}
-		painter.setPen(color);
+		painter.setPen((vol < volLim) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor);
+		if (src == SoundSource::FM && vol < volLim && config_.lock()->getReverseFMVolumeOrder()) {
+
+			vol = volLim - vol - 1;
+		}
 		painter.drawText(offset, baseY, QString("%1").arg(vol, 2, 16, QChar('0')).toUpper());
 	}
 	if (isMuteTrack)	// Paint mute mask
@@ -839,7 +837,9 @@ void PatternEditorPanel::setStepVolume(int volume)
 {
 	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
 	editPos_ = curPos_;
-	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume);
+	bool isReversed = (songStyle_.trackAttribs[curPos_.track].source == SoundSource::FM
+					  && config_.lock()->getReverseFMVolumeOrder());
+	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume, isReversed);
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_));
 
 	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
@@ -1157,23 +1157,30 @@ void PatternEditorPanel::decreaseNoteOctave(PatternPosition& startPos, PatternPo
 
 void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, const PatternPosition& end)
 {
+	int patMax = bt_->getPatternSizeFromOrderNumber(curSongNum_, end.order) - 1;
 	if (start.compareCols(end) > 0) {
-		if (start.compareRows(end) > 0) {
+		if (start.step > end.step) {
 			selLeftAbovePos_ = end;
-			selRightBelowPos_ = start;
+			selRightBelowPos_ = {
+				start.track, start.colInTrack,
+				end.order, (start.step > patMax) ? patMax : start.step
+			};
 		}
 		else {
-			selLeftAbovePos_ = { end.track, end.colInTrack, start.order, start.step };
+			selLeftAbovePos_ = { end.track, end.colInTrack, end.order, start.step };
 			selRightBelowPos_ = { start.track, start.colInTrack, end.order, end.step };
 		}
 	}
 	else {
-		if (start.compareRows(end) > 0) {
+		if (start.step > end.step) {
 			selLeftAbovePos_ = { start.track, start.colInTrack, end.order, end.step };
-			selRightBelowPos_ = { end.track, end.colInTrack, start.order, start.step };
+			selRightBelowPos_ = {
+				end.track, end.colInTrack,
+				end.order, (start.step > patMax) ? patMax : start.step
+			};
 		}
 		else {
-			selLeftAbovePos_ = start;
+			selLeftAbovePos_ = { start.track, start.colInTrack, end.order, start.step };
 			selRightBelowPos_ = end;
 		}
 	}
@@ -1566,8 +1573,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1579,8 +1585,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1610,8 +1615,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-curPos_.step);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1624,8 +1628,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		else {
 			moveCursorToDown(
 						bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - curPos_.step - 1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1637,8 +1640,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-config_.lock()->getPageJumpLength());
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1650,8 +1652,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(config_.lock()->getPageJumpLength());
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1763,7 +1764,7 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 	if (event->buttons() & Qt::LeftButton) {
 		if (mousePressPos_.track < 0 || mousePressPos_.order < 0) return;	// Start point is out f range
 
-		if (mousePressPos_.order == hovPos_.order && hovPos_.track >= 0) {
+		if (hovPos_.track >= 0 && hovPos_.order >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
 			update();
 		}
@@ -1831,6 +1832,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::RightButton:	// Show context menu
 	{
 		QMenu menu;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 		QAction* undo = menu.addAction("Undo", this, [&]() {
 			bt_->undo();
 			comStack_.lock()->undo();
@@ -1868,6 +1870,65 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		menu.addSeparator();
 		QAction* mute = menu.addAction("Mute Track", this, &PatternEditorPanel::onMuteTrackPressed);
 		QAction* solo = menu.addAction("Solo Track", this, &PatternEditorPanel::onSoloTrackPressed);
+#else
+		QAction* undo = menu.addAction("Undo");
+		QObject::connect(undo, &QAction::triggered, this, [&]() {
+			bt_->undo();
+			comStack_.lock()->undo();
+		});
+		QAction* redo = menu.addAction("Redo");
+		QObject::connect(redo, &QAction::triggered, this, [&]() {
+			bt_->redo();
+			comStack_.lock()->redo();
+		});
+		menu.addSeparator();
+		QAction* copy = menu.addAction("Copy");
+		QObject::connect(copy, &QAction::triggered, this, &PatternEditorPanel::copySelectedCells);
+		QAction* cut = menu.addAction("Cut");
+		QObject::connect(cut, &QAction::triggered, this, &PatternEditorPanel::cutSelectedCells);
+		QAction* paste = menu.addAction("Paste");
+		QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(mousePressPos_); });
+		auto pasteSp = new QMenu("Paste Special");
+		menu.addMenu(pasteSp);
+		QAction* pasteMix = pasteSp->addAction("Mix");
+		QObject::connect(pasteMix, &QAction::triggered, this, [&]() { pasteMixCopiedCells(mousePressPos_); });
+		QAction* pasteOver = pasteSp->addAction("Overwrite");
+		QObject::connect(pasteOver, &QAction::triggered, this, [&]() { pasteOverwriteCopiedCells(mousePressPos_); });
+		QAction* erase = menu.addAction("Erase");
+		QObject::connect(erase, &QAction::triggered, this, &PatternEditorPanel::eraseSelectedCells);
+		QAction* select = menu.addAction("Select All");
+		QObject::connect(select, &QAction::triggered, this, [&]() { onSelectPressed(1); });
+		menu.addSeparator();
+		auto pattern = new QMenu("Pattern");
+		menu.addMenu(pattern);
+		QAction* interpolate = pattern->addAction("Interpolate");
+		QObject::connect(interpolate, &QAction::triggered, this, &PatternEditorPanel::onInterpolatePressed);
+		QAction* reverse = pattern->addAction("Reverse");
+		QObject::connect(reverse, &QAction::triggered, this, &PatternEditorPanel::onReversePressed);
+		QAction* replace = pattern->addAction("Replace Instrument");
+		QObject::connect(replace, &QAction::triggered, this, &PatternEditorPanel::onReplaceInstrumentPressed);
+		pattern->addSeparator();
+		QAction* expand = pattern->addAction("Expand");
+		QObject::connect(expand, &QAction::triggered, this, &PatternEditorPanel::onExpandPressed);
+		QAction* shrink = pattern->addAction("Shrink");
+		QObject::connect(shrink, &QAction::triggered, this, &PatternEditorPanel::onShrinkPressed);
+		pattern->addSeparator();
+		auto transpose = new QMenu("Transpose");
+		pattern->addMenu(transpose);
+		QAction* deNote = transpose->addAction("Decrease Note");
+		QObject::connect(deNote, &QAction::triggered, this, [&]() { onTransposePressed(false, false); });
+		QAction* inNote = transpose->addAction("Increase Note");
+		QObject::connect(inNote, &QAction::triggered, this, [&]() { onTransposePressed(false, true); });
+		QAction* deOct = transpose->addAction("Decrease Octave");
+		QObject::connect(deOct, &QAction::triggered, this, [&]() { onTransposePressed(true, false); });
+		QAction* inOct = transpose->addAction("Increase Octave");
+		QObject::connect(inOct, &QAction::triggered, this, [&]() { onTransposePressed(true, true); });
+		menu.addSeparator();
+		QAction* mute = menu.addAction("Mute Track");
+		QObject::connect(mute, &QAction::triggered, this, &PatternEditorPanel::onMuteTrackPressed);
+		QAction* solo = menu.addAction("Solo Track");
+		QObject::connect(solo, &QAction::triggered, this, &PatternEditorPanel::onSoloTrackPressed);
+#endif
 
 		if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
 			copy->setEnabled(false);

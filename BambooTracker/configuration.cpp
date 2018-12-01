@@ -23,6 +23,7 @@ Configuration::Configuration()
 	showPrevNextOrders_ = true;
 	backupModules_ = true;
 	dontSelectOnDoubleClick_ = false;
+	reverseFMVolumeOrder_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -204,6 +205,16 @@ void Configuration::setDontSelectOnDoubleClick(bool enabled)
 bool Configuration::getDontSelectOnDoubleClick() const
 {
 	return dontSelectOnDoubleClick_;
+}
+
+void Configuration::setReverseFMVolumeOrder(bool enabled)
+{
+	reverseFMVolumeOrder_= enabled;
+}
+
+bool Configuration::getReverseFMVolumeOrder() const
+{
+	return reverseFMVolumeOrder_;
 }
 
 // Edit settings

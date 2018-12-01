@@ -907,6 +907,7 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::RightButton:
 	{
 		QMenu menu;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 		QAction* insert = menu.addAction("Insert Order", this, [&]() { insertOrderBelow(); });
 		QAction* remove = menu.addAction("Remove Order", this, [&]() { deleteOrder(); });
 		QAction* duplicate = menu.addAction("Duplicate Order", this, &OrderListPanel::onDuplicatePressed);
@@ -918,6 +919,28 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 		menu.addSeparator();
 		QAction* copy = menu.addAction("Copy", this, &OrderListPanel::copySelectedCells);
 		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
+#else
+		QAction* insert = menu.addAction("Insert Order");
+		QObject::connect(insert, &QAction::triggered, this, [&]() { insertOrderBelow(); });
+		QAction* remove = menu.addAction("Remove Order");
+		QObject::connect(remove, &QAction::triggered, this, [&]() { deleteOrder(); });
+		QAction* duplicate = menu.addAction("Duplicate Order");
+		QObject::connect(duplicate, &QAction::triggered, this, &OrderListPanel::onDuplicatePressed);
+		QAction* clonep = menu.addAction("Clone Patterns");
+		QAction::connect(clonep, &QAction::triggered, this, &OrderListPanel::onClonePatternsPressed);
+		QAction* cloneo = menu.addAction("Clone Order");
+		QObject::connect(cloneo, &QAction::triggered, this, &OrderListPanel::onCloneOrderPressed);
+		menu.addSeparator();
+		QAction* moveUp = menu.addAction("Move Order Up");
+		QObject::connect(moveUp, &QAction::triggered, this, [&]() { onMoveOrderPressed(true); });
+		QAction* moveDown = menu.addAction("Move Order Down");
+		QObject::connect(moveDown, &QAction::triggered, this, [&]() { onMoveOrderPressed(false); });
+		menu.addSeparator();
+		QAction* copy = menu.addAction("Copy");
+		QObject::connect(copy, &QAction::triggered, this, &OrderListPanel::copySelectedCells);
+		QAction* paste = menu.addAction("Paste");
+		QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(mousePressPos_); });
+#endif
 
 		if (bt_->isJamMode() || mousePressPos_.row < 0 || mousePressPos_.track < 0) {
 			insert->setEnabled(false);

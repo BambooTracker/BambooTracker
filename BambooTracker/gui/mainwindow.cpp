@@ -119,67 +119,99 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->setModuleCopyright(str.toUtf8().toStdString());
 		setModifiedTrue();
 	});
-	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int freq) {
+	auto tickFreqFunc = [&](int freq) {
 		if (freq != bt_->getModuleTickFrequency()) {
 			bt_->setModuleTickFrequency(freq);
 			stream_->setInturuption(freq);
 			statusIntr_->setText(QString::number(freq) + QString("Hz"));
 			setModifiedTrue();
 		}
-	});
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, tickFreqFunc);
+#else
+	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tickFreqFunc);
+#endif
 	QObject::connect(ui->modSetDialogOpenToolButton, &QToolButton::clicked,
 					 this, &MainWindow::on_actionModule_Properties_triggered);
 
 	/* Song number */
-	QObject::connect(ui->songNumSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int num) {
+	auto songNumFunc = [&](int num) {
 		bt_->setCurrentSongNumber(num);
 		loadSong();
-	});
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->songNumSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, songNumFunc);
+#else
+	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, songNumFunc);
+#endif
 
 	/* Song settings */
-	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int tempo) {
+	auto tempoFunc = [&](int tempo) {
 		int curSong = bt_->getCurrentSongNumber();
 		if (tempo != bt_->getSongTempo(curSong)) {
 			bt_->setSongTempo(curSong, tempo);
 			setModifiedTrue();
 		}
-	});
-	QObject::connect(ui->speedSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int speed) {
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, tempoFunc);
+#else
+	QObject::connect(ui->tempoSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tempoFunc);
+#endif
+	auto speedFunc = [&](int speed) {
 		int curSong = bt_->getCurrentSongNumber();
 		if (speed != bt_->getSongSpeed(curSong)) {
 			bt_->setSongSpeed(curSong, speed);
 			setModifiedTrue();
 		}
-	});
-	QObject::connect(ui->patternSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int size) {
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->speedSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, speedFunc);
+#else
+	QObject::connect(ui->speedSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, speedFunc);
+#endif
+	auto ptnSizeFunc = [&](int size) {
 		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
 		ui->patternEditor->onDefaultPatternSizeChanged();
 		setModifiedTrue();
-	});
-	QObject::connect(ui->grooveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int n) {
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->patternSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, ptnSizeFunc);
+#else
+	QObject::connect(ui->patternSizeSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, ptnSizeFunc);
+#endif
+	auto grooveFunc = [&](int n) {
 		bt_->setSongGroove(bt_->getCurrentSongNumber(), n);
 		setModifiedTrue();
-	});
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->grooveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, grooveFunc);
+#else
+	QObject::connect(ui->grooveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, grooveFunc);
+#endif
 
 	/* Pattern step highlight */
 	ui->stepHighrightSpinBox->setValue(8);
-	QObject::connect(ui->stepHighrightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int count) {
+	auto hlFunc = [&](int count) {
 		bt_->setModuleStepHighlightDistance(count);
 		ui->patternEditor->setPatternHighlightCount(count);
 		ui->patternEditor->update();
-	});
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->stepHighrightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, hlFunc);
+#else
+	QObject::connect(ui->stepHighrightSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, hlFunc);
+#endif
 
 	/* Octave */
 	ui->octaveSpinBox->setValue(bt_->getCurrentOctave());
-	QObject::connect(ui->octaveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, [&](int octave) { bt_->setCurrentOctave(octave); });
+	auto octFunc = [&](int octave) { bt_->setCurrentOctave(octave); };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->octaveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, octFunc);
+#else
+	QObject::connect(ui->octaveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, octFunc);
+#endif
 
 	/* Instrument list */
 	ui->instrumentListWidget->setStyleSheet(
@@ -861,7 +893,8 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QPoint globalPos = list->mapToGlobal(pos);
 	QMenu menu;
 
-	QAction* add = menu.addAction("Add", this, &MainWindow::addInstrument);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QAction* add = menu.addAction(QString("Add"), this, &MainWindow::addInstrument);
 	QAction* remove = menu.addAction("Remove", this, [&]() {
 		removeInstrument(ui->instrumentListWidget->currentRow());
 	});
@@ -875,6 +908,30 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QAction* svFile = menu.addAction("Save to file...", this, &MainWindow::saveInstrument);
     menu.addSeparator();
 	QAction* edit = menu.addAction("Edit...", this, &MainWindow::editInstrument);
+#else
+	QAction* add = menu.addAction("Add");
+	QObject::connect(add, &QAction::triggered, this, &MainWindow::addInstrument);
+	QAction* remove = menu.addAction("Remove");
+	QObject::connect(remove, &QAction::triggered, this, [&]() {
+		removeInstrument(ui->instrumentListWidget->currentRow());
+	});
+	menu.addSeparator();
+	QAction* name = menu.addAction("Edit name");
+	QObject::connect(name, &QAction::triggered, this, &MainWindow::editInstrumentName);
+	menu.addSeparator();
+	QAction* clone = menu.addAction("Clone");
+	QObject::connect(clone, &QAction::triggered, this, &MainWindow::cloneInstrument);
+	QAction* dClone = menu.addAction("Deep clone");
+	QObject::connect(dClone, &QAction::triggered, this, &MainWindow::deepCloneInstrument);
+	menu.addSeparator();
+	QAction* ldFile = menu.addAction("Load from file...");
+	QObject::connect(ldFile, &QAction::triggered, this, &MainWindow::loadInstrument);
+	QAction* svFile = menu.addAction("Save to file...");
+	QObject::connect(svFile, &QAction::triggered, this, &MainWindow::saveInstrument);
+	menu.addSeparator();
+	QAction* edit = menu.addAction("Edit...");
+	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
+#endif
 
 	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
 		add->setEnabled(false);
@@ -1707,8 +1764,9 @@ void MainWindow::on_actionWAV_triggered()
 				bt_->getAllStepCount(bt_->getCurrentSongNumber()) * diag.getLoopCount() + 3
 				);
 	progress.setValue(0);
-	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
-	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
+	progress.setWindowFlags(progress.windowFlags()
+							& ~Qt::WindowContextHelpButtonHint
+							& ~Qt::WindowCloseButtonHint);
 	progress.show();
 
 	bt_->stopPlaySong();
@@ -1744,8 +1802,9 @@ void MainWindow::on_actionVGM_triggered()
 				bt_->getAllStepCount(bt_->getCurrentSongNumber()) + 3
 				);
 	progress.setValue(0);
-	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
-	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
+	progress.setWindowFlags(progress.windowFlags()
+							& ~Qt::WindowContextHelpButtonHint
+							& ~Qt::WindowCloseButtonHint);
 	progress.show();
 
 	bt_->stopPlaySong();

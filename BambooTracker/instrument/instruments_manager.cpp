@@ -108,24 +108,35 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	case SoundSource::FM:
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
+		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(cloneInstNum));
 		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
 		setInstrumentFMLFO(cloneInstNum, refFm->getLFONumber());
+		if (refFm->getLFOEnabled()) setInstrumentFMLFOEnabled(cloneInstNum, true);
 		for (auto p : envFMParams_) {
 			setInstrumentFMOperatorSequence(cloneInstNum, p, refFm->getOperatorSequenceNumber(p));
+			if (refFm->getOperatorSequenceEnabled(p)) setInstrumentFMOperatorSequenceEnabled(cloneInstNum, p, true);
 		}
 		setInstrumentFMArpeggio(cloneInstNum, refFm->getArpeggioNumber());
+		if (refFm->getArpeggioEnabled()) setInstrumentFMArpeggioEnabled(cloneInstNum, true);
 		setInstrumentFMPitch(cloneInstNum, refFm->getPitchNumber());
+		if (refFm->getPitchEnabled()) setInstrumentFMPitchEnabled(cloneInstNum, true);
 		setInstrumentFMEnvelopeResetEnabled(cloneInstNum, refFm->getEnvelopeResetEnabled());
 		break;
 	}
 	case SoundSource::SSG:
 	{
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
+		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(cloneInstNum));
 		setInstrumentSSGWaveForm(cloneInstNum, refSsg->getWaveFormNumber());
+		if (refSsg->getWaveFormEnabled()) setInstrumentSSGWaveFormEnabled(cloneInstNum, true);
 		setInstrumentSSGToneNoise(cloneInstNum, refSsg->getToneNoiseNumber());
+		if (refSsg->getToneNoiseEnabled()) setInstrumentSSGToneNoiseEnabled(cloneInstNum, true);
 		setInstrumentSSGEnvelope(cloneInstNum, refSsg->getEnvelopeNumber());
+		if (refSsg->getEnvelopeEnabled()) setInstrumentSSGEnvelopeEnabled(cloneInstNum, true);
 		setInstrumentSSGArpeggio(cloneInstNum, refSsg->getArpeggioNumber());
+		if (refSsg->getArpeggioEnabled()) setInstrumentSSGArpeggioEnabled(cloneInstNum, true);
 		setInstrumentSSGPitch(cloneInstNum, refSsg->getPitchNumber());
+		if (refSsg->getPitchEnabled()) setInstrumentSSGPitchEnabled(cloneInstNum, true);
 		break;
 	}
 	default:
@@ -149,24 +160,27 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
 		if (refFm->getLFOEnabled()) {
+			cloneFm->setLFOEnabled(true);
 			int lfoNum = cloneFMLFO(refFm->getLFONumber());
 			cloneFm->setLFONumber(lfoNum);
 			lfoFM_[lfoNum]->registerUserInstrument(cloneInstNum);
-			cloneFm->setLFOEnabled(true);
 		}
 		for (auto p : envFMParams_) {
 			if (refFm->getOperatorSequenceEnabled(p)) {
+				cloneFm->setOperatorSequenceEnabled(p, true);
 				int opSeqNum = cloneFMOperatorSequence(p, refFm->getOperatorSequenceNumber(p));
 				cloneFm->setOperatorSequenceNumber(p, opSeqNum);
 				opSeqFM_.at(p)[opSeqNum]->registerUserInstrument(cloneInstNum);
 			}
 		}
 		if (refFm->getArpeggioEnabled()) {
+			cloneFm->setArpeggioEnabled(true);
 			int arpNum = cloneFMArpeggio(refFm->getArpeggioNumber());
 			cloneFm->setArpeggioNumber(arpNum);
 			arpFM_[arpNum]->registerUserInstrument(cloneInstNum);
 		}
 		if (refFm->getPitchEnabled()) {
+			cloneFm->setPitchEnabled(true);
 			int ptNum = cloneFMPitch(refFm->getPitchNumber());
 			cloneFm->setPitchNumber(ptNum);
 			ptFM_[ptNum]->registerUserInstrument(cloneInstNum);
@@ -180,26 +194,31 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(cloneInstNum));
 
 		if (refSsg->getWaveFormEnabled()) {
+			cloneSsg->setWaveFormEnabled(true);
 			int wfNum = cloneSSGWaveForm(refSsg->getWaveFormNumber());
 			cloneSsg->setWaveFormNumber(wfNum);
 			wfSSG_[wfNum]->registerUserInstrument(cloneInstNum);
 		}
 		if (refSsg->getToneNoiseEnabled()) {
+			cloneSsg->setToneNoiseEnabled(true);
 			int tnNum = cloneSSGToneNoise(refSsg->getToneNoiseNumber());
 			cloneSsg->setToneNoiseNumber(tnNum);
 			tnSSG_[tnNum]->registerUserInstrument(cloneInstNum);
 		}
 		if (refSsg->getEnvelopeEnabled()) {
+			cloneSsg->setEnvelopeEnabled(true);
 			int envNum = cloneSSGEnvelope(refSsg->getEnvelopeNumber());
 			cloneSsg->setEnvelopeNumber(envNum);
 			envSSG_[envNum]->registerUserInstrument(cloneInstNum);
 		}
 		if (refSsg->getArpeggioEnabled()) {
+			cloneSsg->setArpeggioEnabled(true);
 			int arpNum = cloneSSGArpeggio(refSsg->getArpeggioNumber());
 			cloneSsg->setArpeggioNumber(arpNum);
 			arpSSG_[arpNum]->registerUserInstrument(cloneInstNum);
 		}
 		if (refSsg->getPitchEnabled()) {
+			cloneSsg->setPitchEnabled(true);
 			int ptNum = cloneSSGPitch(refSsg->getPitchNumber());
 			cloneSsg->setPitchNumber(ptNum);
 			ptSSG_[ptNum]->registerUserInstrument(cloneInstNum);
@@ -615,7 +634,7 @@ int InstrumentsManager::findFirstFreeLFOFM() const
 	return -1;
 }
 
-void InstrumentsManager::setInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
+void InstrumentsManager::setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
 	fm->setOperatorSequenceEnabled(param, enabled);
@@ -625,7 +644,7 @@ void InstrumentsManager::setInstrumentFMOperatorEnabled(int instNum, FMEnvelopeP
 		opSeqFM_.at(param).at(fm->getOperatorSequenceNumber(param))->deregisterUserInstrument(instNum);
 }
 
-bool InstrumentsManager::getInstrumentFMOperatorEnabled(int instNum, FMEnvelopeParameter param) const
+bool InstrumentsManager::getInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param) const
 {
 	return std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum))->getOperatorSequenceEnabled(param);
 }

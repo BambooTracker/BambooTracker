@@ -268,8 +268,13 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 	QObject::connect(ui->arpTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
+#else
+	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
+#endif
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -331,8 +336,13 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 	QObject::connect(ui->ptTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
+#else
+	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
+#endif
 }
 
 InstrumentEditorSSGForm::~InstrumentEditorSSGForm()
@@ -875,7 +885,12 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 	}
 	ui->ptEditor->setRelease(convertReleaseTypeForUI(instSSG->getPitchRelease().type),
 							  instSSG->getPitchRelease().begin);
-	ui->ptTypeComboBox->setCurrentIndex(instSSG->getPitchType());
+	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
+		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instSSG->getPitchType()) {
+			ui->ptTypeComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
 	if (instSSG->getPitchEnabled()) {
 		ui->ptEditGroupBox->setChecked(true);
 		onPitchNumberChanged();
