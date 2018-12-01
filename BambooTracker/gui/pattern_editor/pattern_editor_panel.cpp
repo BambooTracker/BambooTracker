@@ -1157,23 +1157,30 @@ void PatternEditorPanel::decreaseNoteOctave(PatternPosition& startPos, PatternPo
 
 void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, const PatternPosition& end)
 {
+	int patMax = bt_->getPatternSizeFromOrderNumber(curSongNum_, end.order) - 1;
 	if (start.compareCols(end) > 0) {
-		if (start.compareRows(end) > 0) {
+		if (start.step > end.step) {
 			selLeftAbovePos_ = end;
-			selRightBelowPos_ = start;
+			selRightBelowPos_ = {
+				start.track, start.colInTrack,
+				end.order, (start.step > patMax) ? patMax : start.step
+			};
 		}
 		else {
-			selLeftAbovePos_ = { end.track, end.colInTrack, start.order, start.step };
+			selLeftAbovePos_ = { end.track, end.colInTrack, end.order, start.step };
 			selRightBelowPos_ = { start.track, start.colInTrack, end.order, end.step };
 		}
 	}
 	else {
-		if (start.compareRows(end) > 0) {
+		if (start.step > end.step) {
 			selLeftAbovePos_ = { start.track, start.colInTrack, end.order, end.step };
-			selRightBelowPos_ = { end.track, end.colInTrack, start.order, start.step };
+			selRightBelowPos_ = {
+				end.track, end.colInTrack,
+				end.order, (start.step > patMax) ? patMax : start.step
+			};
 		}
 		else {
-			selLeftAbovePos_ = start;
+			selLeftAbovePos_ = { start.track, start.colInTrack, end.order, start.step };
 			selRightBelowPos_ = end;
 		}
 	}
@@ -1566,8 +1573,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1579,8 +1585,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1610,8 +1615,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-curPos_.step);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1624,8 +1628,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		else {
 			moveCursorToDown(
 						bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - curPos_.step - 1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1637,8 +1640,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-config_.lock()->getPageJumpLength());
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1650,8 +1652,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(config_.lock()->getPageJumpLength());
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.order == curPos_.order) {
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
 			}
@@ -1763,7 +1764,7 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 	if (event->buttons() & Qt::LeftButton) {
 		if (mousePressPos_.track < 0 || mousePressPos_.order < 0) return;	// Start point is out f range
 
-		if (mousePressPos_.order == hovPos_.order && hovPos_.track >= 0) {
+		if (hovPos_.track >= 0 && hovPos_.order >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
 			update();
 		}
