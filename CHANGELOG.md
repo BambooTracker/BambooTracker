@@ -11,18 +11,23 @@
 - Fix instrument property used/unused inheritance by cloning
 - [#20] - Split FM envelope copy/paste to multiple lines (thanks [@jimbo1qaz])
 - [#21] - Fix selection range in pattern editor (thanks [@jimbo1qaz])
+- [#1] - Make compatible with WinXP (thanks [@JonKaruzu])
 - [#2] - Fix the order of input for columns (thanks [@pedipanol])
+- [#23] - Fix tick event to be loaded from playing step (thanks [@pedipanol])
 
 [#10]: https://github.com/rerrahkr/BambooTracker/pull/10
 [#11]: https://github.com/rerrahkr/BambooTracker/pull/16
 [#20]: https://github.com/rerrahkr/BambooTracker/pull/20
 [#21]: https://github.com/rerrahkr/BambooTracker/issues/21
+[#1]: https://github.com/rerrahkr/BambooTracker/issues/1
 [#2]: https://github.com/rerrahkr/BambooTracker/issues/2
 [#6]: https://github.com/rerrahkr/BambooTracker/issues/6
+[#23]: https://github.com/rerrahkr/BambooTracker/issues/23
 
 [@maakmusic]: https://twitter.com/maakmusic
 [@Pigu-A]: https://github.com/Pigu-A
 [@jimbo1qaz]: https://github.com/jimbo1qaz
+[@JonKaruzu]: https://github.com/JonKaruzu
 [@pedipanol]: https://github.com/pedipanol
 [@ScoopJohn]: https://github.com/ScoopJohn
 

@@ -1752,7 +1752,8 @@ void MainWindow::on_actionWAV_triggered()
 	WaveExportSettingsDialog diag;
 	if (diag.exec() != QDialog::Accepted) return;
 
-	QString file = QFileDialog::getSaveFileName(this, "Export to wav", "./",
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getSaveFileName(this, "Export to wav", (dir.isEmpty() ? "./" : dir),
 												"WAV signed 16-bit PCM (*.wav)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".wav")) file += ".wav";	// For linux
@@ -1779,7 +1780,8 @@ void MainWindow::on_actionWAV_triggered()
 									progress.setValue(progress.value() + 1);
 									return progress.wasCanceled();
 								});
-	if (!res) QMessageBox::critical(this, "Error", "Failed to export to wav file.");
+	if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	else QMessageBox::critical(this, "Error", "Failed to export to wav file.");
 
 	stream_->start();
 }
@@ -1790,7 +1792,8 @@ void MainWindow::on_actionVGM_triggered()
 	if (diag.exec() != QDialog::Accepted) return;
 	GD3Tag tag = diag.getGD3Tag();
 
-	QString file = QFileDialog::getSaveFileName(this, "Export to vgm", "./",
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getSaveFileName(this, "Export to vgm", (dir.isEmpty() ? "./" : dir),
 												"VGM file (*.vgm)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".vgm")) file += ".vgm";	// For linux
@@ -1819,7 +1822,8 @@ void MainWindow::on_actionVGM_triggered()
 									progress.setValue(progress.value() + 1);
 									return progress.wasCanceled();
 								});
-	if (!res) QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
+	if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	else QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
 
 	stream_->start();
 }

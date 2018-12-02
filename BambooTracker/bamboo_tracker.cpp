@@ -1043,7 +1043,7 @@ void BambooTracker::readTick(int rest)
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& curStep = song.getTrack(attrib.number)
-						.getPatternFromOrderNumber(curOrderNum_).getStep(playStepNum_);
+						.getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
 		case SoundSource::FM:
 		{
