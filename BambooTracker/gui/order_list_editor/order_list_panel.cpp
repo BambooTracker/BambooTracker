@@ -942,7 +942,7 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 		QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(mousePressPos_); });
 #endif
 
-		if (bt_->isJamMode() || mousePressPos_.row < 0 || mousePressPos_.track < 0) {
+		if (bt_->isJamMode()) {
 			insert->setEnabled(false);
 			remove->setEnabled(false);
 			duplicate->setEnabled(false);
@@ -954,6 +954,13 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 			paste->setEnabled(false);
 		}
 		else {
+			if (mousePressPos_.row < 0 || mousePressPos_.track < 0) {
+				remove->setEnabled(false);
+				moveUp->setEnabled(false);
+				moveDown->setEnabled(false);
+				copy->setEnabled(false);
+				paste->setEnabled(false);
+			}
 			if (!bt_->canAddNewOrder(curSongNum_)) {
 				insert->setEnabled(false);
 				duplicate->setEnabled(false);
