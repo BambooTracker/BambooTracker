@@ -4,6 +4,7 @@
 ### Added
 - [#2], [#6] - Add selection whether the order of FM volume is reversed (thanks [@pedipanol], [@ScoopJohn])
 - [#22] - Add .dmp, .tfi and .vgi instrument file importing support ([#2], [#6]; thanks [@Pigu-A])
+- [#12] - Add order/pattern focus shortcut (thanks [@jimbo1qaz])
 
 ### Fixed
 - Fix module load error by missing pattern size initialization (thanks [@maakmusic])
@@ -26,6 +27,7 @@
 [#6]: https://github.com/rerrahkr/BambooTracker/issues/6
 [#23]: https://github.com/rerrahkr/BambooTracker/issues/23
 [#22]: https://github.com/rerrahkr/BambooTracker/pull/22
+[#12]: https://github.com/rerrahkr/BambooTracker/issues/12
 
 [@maakmusic]: https://twitter.com/maakmusic
 [@Pigu-A]: https://github.com/Pigu-A

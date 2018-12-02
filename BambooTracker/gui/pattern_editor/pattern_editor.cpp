@@ -7,6 +7,7 @@ PatternEditor::PatternEditor(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	installEventFilter(this);
 	ui->panel->installEventFilter(this);
 
 	ui->panel->setFocus();
@@ -93,10 +94,19 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
 
-	switch (event->type()) {
-	case QEvent::FocusIn:	emit focusIn();		return false;
-	case QEvent::FocusOut:	emit focusOut();	return false;
-	default:	return false;
+	if (watched == this) {
+		if (event->type() == QEvent::FocusIn) {
+			ui->panel->setFocus();
+		}
+		return false;
+	}
+
+	if (watched == ui->panel) {
+		switch (event->type()) {
+		case QEvent::FocusIn:	emit focusIn();		return false;
+		case QEvent::FocusOut:	emit focusOut();	return false;
+		default:	return false;
+		}
 	}
 }
 

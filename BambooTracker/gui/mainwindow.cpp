@@ -384,6 +384,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
 	int key = event->key();
 
+	/* Pressed alt */
+	if (event->modifiers().testFlag(Qt::AltModifier)) {
+		switch (key) {
+		case Qt::Key_O:		ui->orderList->setFocus();		break;
+		case Qt::Key_P:		ui->patternEditor->setFocus();	break;
+		}
+	}
+
 	/* General keys */
 	switch (key) {
 	case Qt::Key_Asterisk:	changeOctave(true);			break;

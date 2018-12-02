@@ -21,6 +21,8 @@ BambooTracker is a tracker for YM2608 (OPNA) which was used in NEC PC-8801/9801 
 | F7     | Play from current position     |
 | F8     | Stop song                      |
 | Space  | Toggle jam/edit mode           |
+| Alt+O  | Focus on order list            |
+| Alt+P  | Focus on pattern editor        |
 | F12    | Kill sound                     |
 
 ### Order list
