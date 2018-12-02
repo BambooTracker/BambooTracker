@@ -13,6 +13,8 @@ void CloneOrderCommand::redo()
 	sng.insertOrderBelow(order_);
 	for (auto& t : sng.getTrackAttributes()) {
 		auto& track = sng.getTrack(t.number);
+		// Set previous pattern to avoid leaving unused pattern
+		track.registerPatternToOrder(order_ + 1, track.getPatternFromOrderNumber(order_).getNumber());
 		track.registerPatternToOrder(order_ + 1, track.clonePattern(track.getOrderData(order_).patten));
 	}
 }

@@ -18,6 +18,7 @@
 - [#23] - Fix tick event to be loaded from playing step (thanks [@pedipanol])
 - Fix play/stop song when pressing return key
 - [#12] - Fix insert/clone order selection when clicking above or below orders (thanks [@jimbo1qaz])
+- Fix clone order to assign first free patterns
 
 [#10]: https://github.com/rerrahkr/BambooTracker/pull/10
 [#11]: https://github.com/rerrahkr/BambooTracker/pull/16
