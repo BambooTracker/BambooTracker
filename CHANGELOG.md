@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.1.2 (2018-12-02)
 ### Added
 - [#2], [#6] - Add selection whether the order of FM volume is reversed (thanks [@pedipanol], [@ScoopJohn])
 - [#22] - Add .dmp, .tfi and .vgi instrument file importing support ([#2], [#6]; thanks [@Pigu-A])
