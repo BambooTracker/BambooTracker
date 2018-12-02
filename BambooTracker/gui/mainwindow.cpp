@@ -276,7 +276,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(ui->patternEditor, &PatternEditor::selected,
 					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
 	QObject::connect(ui->patternEditor, &PatternEditor::returnPressed,
-					 this, &MainWindow::startPlaySong);
+					 this, [&] {
+		if (bt_->isPlaySong()) stopPlaySong();
+		else startPlaySong();
+	});
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
@@ -297,7 +300,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(ui->orderList, &OrderListEditor::selected,
 					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
 	QObject::connect(ui->orderList, &OrderListEditor::returnPressed,
-					 this, &MainWindow::startPlaySong);
+					 this, [&] {
+		if (bt_->isPlaySong()) stopPlaySong();
+		else startPlaySong();
+	});
 
 	/* Status bar */
 	statusDetail_ = new QLabel();

@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#2], [#6] - Add selection whether the order of FM volume is reversed (thanks [@pedipanol], [@ScoopJohn])
+- [#22] - Add .dmp, .tfi and .vgi instrument file importing support ([#2], [#6]; thanks [@Pigu-A])
 
 ### Fixed
 - Fix module load error by missing pattern size initialization (thanks [@maakmusic])
@@ -14,6 +15,7 @@
 - [#1] - Make compatible with WinXP (thanks [@JonKaruzu])
 - [#2] - Fix the order of input for columns (thanks [@pedipanol])
 - [#23] - Fix tick event to be loaded from playing step (thanks [@pedipanol])
+- Fix play/stop song when pressing return key
 
 [#10]: https://github.com/rerrahkr/BambooTracker/pull/10
 [#11]: https://github.com/rerrahkr/BambooTracker/pull/16
@@ -23,6 +25,7 @@
 [#2]: https://github.com/rerrahkr/BambooTracker/issues/2
 [#6]: https://github.com/rerrahkr/BambooTracker/issues/6
 [#23]: https://github.com/rerrahkr/BambooTracker/issues/23
+[#22]: https://github.com/rerrahkr/BambooTracker/pull/22
 
 [@maakmusic]: https://twitter.com/maakmusic
 [@Pigu-A]: https://github.com/Pigu-A

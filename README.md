@@ -15,7 +15,7 @@ BambooTracker is a tracker for YM2608 (OPNA) which was used in NEC PC-8801/9801 
 | Ctrl+S | Save module                    |
 | Ctrl+P | Open module property dialog    |
 | Ctrl+I | Open current instrument editor |
-| Return | Play song                      |
+| Return | Play/stop song                 |
 | F5     | Play from start                |
 | F6     | Play pattern                   |
 | F7     | Play from current position     |
