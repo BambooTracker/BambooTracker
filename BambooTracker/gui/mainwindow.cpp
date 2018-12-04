@@ -685,7 +685,8 @@ void MainWindow::deepCloneInstrument()
 
 void MainWindow::loadInstrument()
 {
-	QString file = QFileDialog::getOpenFileName(this, "Open instrument", "./",
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getOpenFileName(this, "Open instrument", (dir.isEmpty() ? "./" : dir),
 												"BambooTracker instrument file (*.bti);;DefleMask preset file (*.dmp);;TFM Music Maker instrument (*.tfi);;VGM Music Maker instrument (*.vgi)");
 	if (file.isNull()) return;
 
@@ -696,6 +697,7 @@ void MainWindow::loadInstrument()
 		comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
 												   QString::fromUtf8(name.c_str(), name.length()),
 												   inst->getSoundSource(), instForms_));
+		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Failed to load instrument.");
@@ -704,14 +706,19 @@ void MainWindow::loadInstrument()
 
 void MainWindow::saveInstrument()
 {
-	QString file = QFileDialog::getSaveFileName(this, "Save instrument", "./",
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getSaveFileName(this, "Save instrument", (dir.isEmpty() ? "./" : dir),
 												"BambooTracker instrument file (*.bti)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
-	if (!bt_->saveInstrument(file.toStdString(),
-							 ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt()))
+	if (bt_->saveInstrument(file.toStdString(),
+							ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt())) {
+		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	}
+	else {
 		QMessageBox::critical(this, "Error", "Failed to save instrument.");
+	}
 }
 
 /********** Undo-Redo **********/

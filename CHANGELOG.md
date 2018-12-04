@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- Fix default place of load/save instrument
 
 ## v0.1.2 (2018-12-02)
 ### Added
