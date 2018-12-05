@@ -48,11 +48,11 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
-	ui->sampleRateComboBox->addItem("110933Hz", 110933);
+	ui->sampleRateComboBox->addItem("55466Hz", 55466);
 	switch (config.lock()->getSampleRate()) {
-	case 44100:		ui->sampleRateComboBox->setCurrentIndex(0);	break;
-	case 48000:		ui->sampleRateComboBox->setCurrentIndex(1);	break;
-	case 110933:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
+	case 44100:	ui->sampleRateComboBox->setCurrentIndex(0);	break;
+	case 48000:	ui->sampleRateComboBox->setCurrentIndex(1);	break;
+	case 55466:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
 	}
 	ui->bufferLengthHorizontalSlider->setStyle(new SliderStyle());
 	QObject::connect(ui->bufferLengthHorizontalSlider, &QSlider::valueChanged,

@@ -3,6 +3,11 @@
 ## Unreleased
 ### Fixed
 - Fix default place of load/save instrument
+- [#25] - Change FM synthesis frequency from 110933Hz to 55466Hz (thanks [@papiezak])
+
+[#25]: https://github.com/rerrahkr/BambooTracker/issues/25
+
+[@papiezak]: https://github.com/papiezak
 
 ## v0.1.2 (2018-12-02)
 ### Added

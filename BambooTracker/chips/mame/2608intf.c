@@ -263,7 +263,8 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 		return 0;
 	
 	info = &YM2608Data[ChipID];
-	rate = clock/72;
+	rate = clock / 144;	// FM synthesis rate is clock / 2 / 72
+	/*rate = clock/72;*/
 	if ((CHIP_SAMPLING_MODE == 0x01 && rate < CHIP_SAMPLE_RATE) ||
 		CHIP_SAMPLING_MODE == 0x02)
 		rate = CHIP_SAMPLE_RATE;
