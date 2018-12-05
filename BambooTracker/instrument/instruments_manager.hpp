@@ -52,6 +52,7 @@ public:
 	std::vector<int> getEnvelopeFMUsers(int envNum) const;
 	std::vector<int> getEnvelopeFMEntriedIndices() const;
 	int findFirstFreeEnvelopeFM() const;
+	int findFirstFreePlainEnvelopeFM() const;
 
 	void setInstrumentFMLFOEnabled(int instNum, bool enabled);
 	bool getInstrumentFMLFOEnabled(int instNum) const;
@@ -62,6 +63,7 @@ public:
 	std::vector<int> getLFOFMUsers(int lfoNum) const;
 	std::vector<int> getLFOFMEntriedIndices() const;
 	int findFirstFreeLFOFM() const;
+	int findFirstFreePlainLFOFM() const;
 
 	void setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
 	bool getInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param) const;
@@ -79,6 +81,7 @@ public:
 	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 	std::vector<int> getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const;
 	int findFirstFreeOperatorSequenceFM(FMEnvelopeParameter param) const;
+	int findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter param) const;
 
 	void setInstrumentFMArpeggioEnabled(int instNum, bool enabled);
 	bool getInstrumentFMArpeggioEnabled(int instNum) const;
@@ -98,6 +101,7 @@ public:
 	std::vector<int> getArpeggioFMUsers(int arpNum) const;
 	std::vector<int> getArpeggioFMEntriedIndices() const;
 	int findFirstFreeArpeggioFM() const;
+	int findFirstFreePlainArpeggioFM() const;
 
 	void setInstrumentFMPitchEnabled(int instNum, bool enabled);
 	bool getInstrumentFMPitchEnabled(int instNum) const;
@@ -117,6 +121,7 @@ public:
 	std::vector<int> getPitchFMUsers(int ptNum) const;
 	std::vector<int> getPitchFMEntriedIndices() const;
 	int findFirstFreePitchFM() const;
+	int findFirstFreePlainPitchFM() const;
 
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
 
@@ -153,6 +158,7 @@ public:
 	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
 	std::vector<int> getWaveFormSSGEntriedIndices() const;
 	int findFirstFreeWaveFormSSG() const;
+	int findFirstFreePlainWaveFormSSG() const;
 
 	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
 	bool getInstrumentSSGToneNoiseEnabled(int instNum) const;
@@ -170,6 +176,7 @@ public:
 	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
 	std::vector<int> getToneNoiseSSGEntriedIndices() const;
 	int findFirstFreeToneNoiseSSG() const;
+	int findFirstFreePlainToneNoiseSSG() const;
 
 	void setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled);
 	bool getInstrumentSSGEnvelopeEnabled(int instNum) const;
@@ -187,6 +194,7 @@ public:
 	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
 	std::vector<int> getEnvelopeSSGEntriedIndices() const;
 	int findFirstFreeEnvelopeSSG() const;
+	int findFirstFreePlainEnvelopeSSG() const;
 
 	void setInstrumentSSGArpeggioEnabled(int instNum, bool enabled);
 	bool getInstrumentSSGArpeggioEnabled(int instNum) const;
@@ -206,6 +214,7 @@ public:
 	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
 	std::vector<int> getArpeggioSSGEntriedIndices() const;
 	int findFirstFreeArpeggioSSG() const;
+	int findFirstFreePlainArpeggioSSG() const;
 
 	void setInstrumentSSGPitchEnabled(int instNum, bool enabled);
 	bool getInstrumentSSGPitchEnabled(int instNum) const;
@@ -225,6 +234,7 @@ public:
 	std::vector<int> getPitchSSGUsers(int ptNum) const;
 	std::vector<int> getPitchSSGEntriedIndices() const;
 	int findFirstFreePitchSSG() const;
+	int findFirstFreePlainPitchSSG() const;
 
 private:
 	std::array<std::shared_ptr<CommandSequence>, 128> wfSSG_;
