@@ -69,13 +69,16 @@ public slots:
 private:
 	void setInstrumentEnvelopeParameters();
 	void setInstrumentEnvelopeParameters(QString data);
-
-	QString toEnvelopeString() const;
+	void setInstrumentOperatorParameters(int opNum, QString data);
 
 	void paintAlgorithmDiagram();
 	void resizeAlgorithmDiagram();
 
 private slots:
+	void copyEnvelope();
+	void pasteEnvelope();
+	void copyOperator(int opNum);
+	void pasteOperator(int opNum);
 	void on_envNumSpinBox_valueChanged(int arg1);
 	void on_envGroupBox_customContextMenuRequested(const QPoint &pos);
 

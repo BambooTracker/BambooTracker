@@ -39,10 +39,15 @@ protected:
 signals:
 	void operatorValueChanged(Ui::FMOperatorParameter param, int value);
 	void operatorEnableChanged(bool enable);
+	void copyEnvelopePressed();
+	void pasteEnvelopePressed();
+	void copyOperatorPressed(int num);
+	void pasteOperatorPressed(int num);
 
 private slots:
 	void on_ssgegCheckBox_stateChanged(int arg1);
 	void on_groupBox_toggled(bool arg1);
+	void on_groupBox_customContextMenuRequested(const QPoint &pos);
 
 private:
 	Ui::FMOperatorTable *ui;

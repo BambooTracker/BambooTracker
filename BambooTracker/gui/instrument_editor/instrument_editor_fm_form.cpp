@@ -79,6 +79,14 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op1Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op1Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op1Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op1Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
 
 	ui->op2Table->setOperatorNumber(1);
 	QObject::connect(ui->op2Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -110,6 +118,14 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op2Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op2Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op2Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op2Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
 
 	ui->op3Table->setOperatorNumber(2);
 	QObject::connect(ui->op3Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -141,6 +157,14 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op3Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op3Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op3Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op3Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
 
 	ui->op4Table->setOperatorNumber(3);
 	QObject::connect(ui->op4Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -172,6 +196,14 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op4Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op4Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op4Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op4Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
 
 	/******************** LFO editor ********************/	
 	ui->lfoGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -754,7 +786,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
 						  "(?<tl3>\\d+),(?<ks3>\\d+),(?<ml3>\\d+),(?<dt3>\\d+),(?<ssgeg3>-?\\d+),\\s*"
 						  "(?<ar4>\\d+),(?<dr4>\\d+),(?<sr4>\\d+),(?<rr4>\\d+),(?<sl4>\\d+),"
 						  "(?<tl4>\\d+),(?<ks4>\\d+),(?<ml4>\\d+),(?<dt4>\\d+),(?<ssgeg4>-?\\d+),?\\s*");
-QRegularExpressionMatch match = re.match(data);
+	QRegularExpressionMatch match = re.match(data);
 
 	if (match.hasMatch()) {
 		ui->fbSlider->setValue(match.captured("fb").toInt());
@@ -802,16 +834,64 @@ QRegularExpressionMatch match = re.match(data);
 	}
 }
 
-QString InstrumentEditorFMForm::toEnvelopeString() const
+void InstrumentEditorFMForm::setInstrumentOperatorParameters(int opNum, QString data)
 {
-	auto str = QString("%1,%2,\n%3,\n%4,\n%5,\n%6,")
-			   .arg(QString::number(ui->fbSlider->value()))
-			   .arg(QString::number(ui->alSlider->value()))
-			   .arg(ui->op1Table->toString())
-			   .arg(ui->op2Table->toString())
-			   .arg(ui->op3Table->toString())
-			   .arg(ui->op4Table->toString());
-	return str;
+	QRegularExpression re("^(?<ar>\\d+),(?<dr>\\d+),(?<sr>\\d+),(?<rr>\\d+),(?<sl>\\d+),"
+						  "(?<tl>\\d+),(?<ks>\\d+),(?<ml>\\d+),(?<dt>\\d+),(?<ssgeg>-?\\d+)");
+	QRegularExpressionMatch match = re.match(data);
+
+	if (match.hasMatch()) {
+		switch (opNum) {
+		case 0:
+			ui->op1Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		case 1:
+			ui->op2Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		case 2:
+			ui->op3Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		case 3:
+			ui->op4Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		}
+	}
 }
 
 void InstrumentEditorFMForm::paintAlgorithmDiagram()
@@ -1005,6 +1085,42 @@ void InstrumentEditorFMForm::resizeAlgorithmDiagram()
 }
 
 /********** Slots **********/
+void InstrumentEditorFMForm::copyEnvelope()
+{
+	QApplication::clipboard()->setText(QString("FM_ENVELOPE:%1,%2,\n%3,\n%4,\n%5,\n%6,")
+									   .arg(QString::number(ui->fbSlider->value()))
+									   .arg(QString::number(ui->alSlider->value()))
+									   .arg(ui->op1Table->toString())
+									   .arg(ui->op2Table->toString())
+									   .arg(ui->op3Table->toString())
+									   .arg(ui->op4Table->toString()));
+}
+
+void InstrumentEditorFMForm::pasteEnvelope()
+{
+	QString data = QApplication::clipboard()->text().remove("FM_ENVELOPE:");
+	setInstrumentEnvelopeParameters(data);
+}
+
+void InstrumentEditorFMForm::copyOperator(int opNum)
+{
+	QString text;
+	switch (opNum) {
+	case 0:	text = ui->op1Table->toString();	break;
+	case 1:	text = ui->op2Table->toString();	break;
+	case 2:	text = ui->op3Table->toString();	break;
+	case 3:	text = ui->op4Table->toString();	break;
+	}
+
+	QApplication::clipboard()->setText(QString("FM_OPERATOR:") + text);
+}
+
+void InstrumentEditorFMForm::pasteOperator(int opNum)
+{
+	QString data = QApplication::clipboard()->text().remove("FM_OPERATOR:");
+	setInstrumentOperatorParameters(opNum, data);
+}
+
 void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
@@ -1019,27 +1135,18 @@ void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
 
 void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPoint &pos)
 {
-	QClipboard* clipboard = QApplication::clipboard();
 	QPoint globalPos = ui->envGroupBox->mapToGlobal(pos);
-
 	QMenu menu;
-	auto copyFunc = [&, clipboard]() {
-		clipboard->setText("FM_ENVELOPE:" + toEnvelopeString());
-	};
-	auto pasteFunc = [&, clipboard]() {
-		QString data = clipboard->text().remove("FM_ENVELOPE:");
-		setInstrumentEnvelopeParameters(data);
-	};
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* copy = menu.addAction("Copy envelope", this, copyFunc);
-	QAction* paste = menu.addAction("Paste envelope", this, pasteFunc);
+	QAction* copy = menu.addAction("Copy envelope", this, &InstrumentEditorFMForm::copyEnvelope);
+	QAction* paste = menu.addAction("Paste envelope", this, &InstrumentEditorFMForm::pasteEnvelope);
 #else
 	QAction* copy = menu.addAction("Copy envelope");
-	QObject::connect(copy, &QAction::triggered, this, copyFunc);
+	QObject::connect(copy, &QAction::triggered, this, &InstrumentEditorFMForm::copyEnvelope);
 	QAction* paste = menu.addAction("Paste envelope");
-	QObject::connect(paste, &QAction::triggered, this, pasteFunc);
+	QObject::connect(paste, &QAction::triggered, this, &InstrumentEditorFMForm::pasteEnvelope);
 #endif
-	if (!clipboard->text().startsWith("FM_ENVELOPE:")) paste->setEnabled(false);
+	paste->setEnabled(QApplication::clipboard()->text().startsWith("FM_ENVELOPE:"));
 
 	menu.exec(globalPos);
 }

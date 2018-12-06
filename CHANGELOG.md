@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#18] - Add FM operator copy/paste (thanks [@jimbo1qaz])
+
 ### Fixed
 - Fix default place of load/save instrument
 - [#25] - Change FM synthesis frequency from 110933Hz to 55466Hz (thanks [@papiezak])
@@ -9,6 +12,7 @@
 
 [#25]: https://github.com/rerrahkr/BambooTracker/issues/25
 [#14]: https://github.com/rerrahkr/BambooTracker/issues/14
+[#18]: https://github.com/rerrahkr/BambooTracker/issues/18
 
 [@papiezak]: https://github.com/papiezak
 

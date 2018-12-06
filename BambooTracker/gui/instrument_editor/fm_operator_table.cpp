@@ -4,12 +4,16 @@
 #include <QGraphicsScene>
 #include <QPen>
 #include <QBrush>
+#include <QMenu>
+#include <QClipboard>
 
 FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::FMOperatorTable)
 {
 	ui->setupUi(this);
+
+	ui->groupBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Init sliders
 	sliderMap_ = {
@@ -300,4 +304,36 @@ void FMOperatorTable::on_ssgegCheckBox_stateChanged(int arg1)
 void FMOperatorTable::on_groupBox_toggled(bool arg1)
 {
 	emit operatorEnableChanged(arg1);
+}
+
+void FMOperatorTable::on_groupBox_customContextMenuRequested(const QPoint &pos)
+{
+	QPoint globalPos = ui->groupBox->mapToGlobal(pos);
+	QMenu menu;
+	auto copyEnvFunc = [&] { emit copyEnvelopePressed(); };
+	auto pasteEnvFunc = [&] { emit pasteEnvelopePressed(); };
+	auto copyOpFunc = [&] { emit copyOperatorPressed(number_); };
+	auto pasteOpFunc = [&] { emit pasteOperatorPressed(number_); };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QAction* copyEnv = menu.addAction("Copy envelope", this, copyEnvFunc);
+	QAction* pasteEnv = menu.addAction("Paste envelope", this, pasteEnvFunc);
+	menu.addSeparator();
+	QAction* copyOp = menu.addAction("Copy operator", this, copyOpFunc);
+	QAction* pasteOp = menu.addAction("Paste operator", this, pasteOpFunc);
+#else
+	QAction* copyEnv = menu.addAction("Copy envelope");
+	QObject::connect(copyEnv, &QAction::triggered, this, copyEnvFunc);
+	QAction* pasteEnv = menu.addAction("Paste envelope");
+	QObject::connect(pasteEnv, &QAction::triggered, this, pasteEnvFunc);
+	menu.addSeparator();
+	QAction* copyOp = menu.addAction("Copy operator");
+	QObject::connect(copyOp, &QAction::triggered, this, copyOpFunc);
+	QAction* pasteOp = menu.addAction("Paste operator");
+	QObject::connect(pasteOp, &QAction::triggered, this, pasteOpFunc);
+#endif
+	QClipboard* clipboard = QApplication::clipboard();
+	pasteEnv->setEnabled(clipboard->text().startsWith("FM_ENVELOPE:"));
+	pasteOp->setEnabled(clipboard->text().startsWith("FM_OPERATOR:"));
+
+	menu.exec(globalPos);
 }
