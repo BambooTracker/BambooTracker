@@ -3,6 +3,7 @@
 
 #include <QFrame>
 #include <QString>
+#include <QEvent>
 
 namespace Ui {
 	class LabeledVerticalSlider;
@@ -15,7 +16,7 @@ class LabeledVerticalSlider : public QFrame
 public:
 	explicit LabeledVerticalSlider(QWidget *parent = nullptr);
 	LabeledVerticalSlider(QString text, QWidget *parent = nullptr);
-	~LabeledVerticalSlider();
+	~LabeledVerticalSlider() override;
 
 	int value() const;
 	void setValue(int value);
@@ -30,6 +31,9 @@ public:
 
 signals:
 	void valueChanged(int value);
+
+protected:
+	bool eventFilter(QObject* watched, QEvent* event) override;
 
 private slots:
 	void on_slider_valueChanged(int value);
