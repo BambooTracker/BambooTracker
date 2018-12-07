@@ -513,7 +513,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 	bt_->stopPlaySong();
 	lockControls(false);
-	if (bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toStdString())) {
+	if (bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toLocal8Bit().toStdString())) {
 		loadModule();
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
@@ -691,7 +691,7 @@ void MainWindow::loadInstrument()
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();
-	if (n != -1 && bt_->loadInstrument(file.toStdString(), n)) {
+	if (n != -1 && bt_->loadInstrument(file.toLocal8Bit().toStdString(), n)) {
 		auto inst = bt_->getInstrument(n);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
@@ -712,7 +712,7 @@ void MainWindow::saveInstrument()
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
-	if (bt_->saveInstrument(file.toStdString(),
+	if (bt_->saveInstrument(file.toLocal8Bit().toStdString(),
 							ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt())) {
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
@@ -892,7 +892,7 @@ void MainWindow::setWindowTitle()
 	int n = bt_->getCurrentSongNumber();
 	auto filePathStd = bt_->getModulePath();
 	auto songTitleStd = bt_->getSongTitle(n);
-	QString filePath = QString::fromUtf8(filePathStd.c_str(), filePathStd.length());
+	QString filePath = QString::fromLocal8Bit(filePathStd.c_str(), filePathStd.length());
 	QString fileName = filePath.isEmpty() ? "Untitled" : QFileInfo(filePath).fileName();
 	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), songTitleStd.length());
 	if (songTitle.isEmpty()) songTitle = "Untitled";
@@ -1583,10 +1583,10 @@ void MainWindow::on_actionComments_triggered()
 
 bool MainWindow::on_actionSave_triggered()
 {
-	auto path = QString::fromStdString(bt_->getModulePath());
+	auto path = QString::fromLocal8Bit(bt_->getModulePath().c_str(), bt_->getModulePath().length());
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
 		if (!isSavedModBefore_ && config_->getBackupModules()) {
-			if (!bt_->backupModule(path.toStdString())) {
+			if (!bt_->backupModule(path.toLocal8Bit().toStdString())) {
 				QMessageBox::critical(this, "Error", "Failed to backup module.");
 				return false;
 			}
@@ -1619,14 +1619,14 @@ bool MainWindow::on_actionSave_As_triggered()
 
 	if (std::ifstream(file.toStdString()).is_open()) {	// Already exists
 		if (!isSavedModBefore_ && config_->getBackupModules()) {
-			if (!bt_->backupModule(file.toStdString())) {
+			if (!bt_->backupModule(file.toLocal8Bit().toStdString())) {
 				QMessageBox::critical(this, "Error", "Failed to backup module.");
 				return false;
 			}
 		}
 	}
 
-	bt_->setModulePath(file.toStdString());
+	bt_->setModulePath(file.toLocal8Bit().toStdString());
 	if (bt_->saveModule(bt_->getModulePath())) {
 		isModifiedForNotCommand_ = false;
 		isSavedModBefore_ = true;
@@ -1671,7 +1671,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	bt_->stopPlaySong();
 	lockControls(false);
-	if (bt_->loadModule(file.toStdString())) {
+	if (bt_->loadModule(file.toLocal8Bit().toStdString())) {
 		loadModule();
 
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
