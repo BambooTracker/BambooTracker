@@ -11,6 +11,7 @@
 - [#2] - Fix wheel step in slider (thanks [@pedipanol])
 - Fix file load/save to use local encoding (thanks [@maakmusic])
 - Fix loop point check when exporting to wav and vgm (thanks [@nabetaqz])
+- Fix support mod/inst file v1.0.1
 
 [#25]: https://github.com/rerrahkr/BambooTracker/issues/25
 [#14]: https://github.com/rerrahkr/BambooTracker/issues/14

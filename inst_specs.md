@@ -1,4 +1,4 @@
-# BambooTracker Instrument File (.bti) Format Specification v1.0.0
+# BambooTracker Instrument File (.bti) Format Specification v1.0.1
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
 
@@ -6,7 +6,7 @@
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
 | string (16 bytes) | File identifier | Format string, must be `BambooTrackerIst`.                                |
 | uint32            | EOF offset      | Relative offset to end of file. i.e. File length - 18.                    |
-| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.0.0 is stored as `0x00010000`. |
+| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.0.1 is stored as `0x00010001`. |
 
 ## Instrument Section
 | Type             | Field                     | Description                                                                                                   |
@@ -118,3 +118,17 @@ There is release details in the end of subsequence block.
 | ------ | ------------- | ------------------------------------------------------------------------------------------------ |
 | uint8  | Release type  | `0x00`: no release, `0x01`: fix, `0x02`: absolute, `0x03`: releative.                            |
 | uint16 | Release point | Count from head of sequence where loop starts. If release type is `0x00`, this field is omitted. |
+
+| Type  | Field         | Description                                    |
+| ----- | ------------- | ---------------------------------------------- |
+| uint8 | Sequence type | Type of sequence. See table below for details. |
+
+Sequence type is defined as:
+
+| Value  | Type      |
+| ------ | --------- |
+| `0x00` | Absolute. |
+| `0x01` | Fix.      |
+| `0x02` | Relative. |
+
+FM/SSG arpeggio can be selected from all of these, FM/SSG pitch can be absolute or relative, and other properties must be set to `0x00`.

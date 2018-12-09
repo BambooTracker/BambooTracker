@@ -54,7 +54,8 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 	ctr.appendString("BambooTrackerMod");
 	size_t eofOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy EOF offset
-	ctr.appendUint32(Version::ofModuleFileInBCD());
+	uint32_t fileVersion = Version::ofModuleFileInBCD();
+	ctr.appendUint32(fileVersion);
 
 
 	/***** Module section *****/
@@ -296,6 +297,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 					ctr.appendUint16(release.begin);
 					break;
 				}
+				if (fileVersion >= Version::toBCD(1, 0, 1)) {
+					ctr.appendUint8(0);	// Skip sequence type
+				}
 				ctr.writeUint16(ofs, ctr.size() - ofs);
 			}
 		}
@@ -341,6 +345,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getArpeggioFMType(idx));
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 	}
@@ -384,6 +391,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(release.begin);
 				break;
+			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getPitchFMType(idx));
 			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
@@ -429,6 +439,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(0);	// Skip sequence type
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 	}
@@ -472,6 +485,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(release.begin);
 				break;
+			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(0);	// Skip sequence type
 			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
@@ -518,6 +534,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(0);	// Skip sequence type
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 	}
@@ -562,6 +581,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getArpeggioSSGType(idx));
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 	}
@@ -605,6 +627,9 @@ void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(release.begin);
 				break;
+			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getPitchSSGType(idx));
 			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
@@ -753,15 +778,15 @@ void FileIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 
 	while (globCsr < eof) {
 		if (ctr.readString(globCsr, 8) == "MODULE  ")
-			globCsr = loadModuleSectionInModule(mod, ctr, globCsr + 8);
+			globCsr = loadModuleSectionInModule(mod, ctr, globCsr + 8, fileVersion);
 		else if (ctr.readString(globCsr, 8) == "INSTRMNT")
-			globCsr = loadInstrumentSectionInModule(instMan, ctr, globCsr + 8);
+			globCsr = loadInstrumentSectionInModule(instMan, ctr, globCsr + 8, fileVersion);
 		else if (ctr.readString(globCsr, 8) == "INSTPROP")
-			globCsr = loadInstrumentPropertySectionInModule(instMan, ctr, globCsr + 8);
+			globCsr = loadInstrumentPropertySectionInModule(instMan, ctr, globCsr + 8, fileVersion);
 		else if (ctr.readString(globCsr, 8) == "GROOVE  ")
-			globCsr = loadGrooveSectionInModule(mod, ctr, globCsr + 8);
+			globCsr = loadGrooveSectionInModule(mod, ctr, globCsr + 8, fileVersion);
 		else if (ctr.readString(globCsr, 8) == "SONG    ")
-			globCsr = loadSongSectionInModule(mod, ctr, globCsr + 8);
+			globCsr = loadSongSectionInModule(mod, ctr, globCsr + 8, fileVersion);
 		else
 			throw FileCorruptionError(FileIOError::FileType::MOD);
 	}
@@ -769,7 +794,8 @@ void FileIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 	mod.lock()->setFilePath(path);
 }
 
-size_t FileIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr)
+size_t FileIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+										 size_t globCsr, uint32_t version)
 {
 	size_t modOfs = ctr.readUint32(globCsr);
 	size_t modCsr = globCsr + 4;
@@ -806,7 +832,7 @@ size_t FileIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 }
 
 size_t FileIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-											 BinaryContainer& ctr, size_t globCsr)
+											 BinaryContainer& ctr, size_t globCsr, uint32_t version)
 {
 	size_t instOfs = ctr.readUint32(globCsr);
 	size_t instCsr = globCsr + 4;
@@ -888,7 +914,8 @@ size_t FileIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> i
 }
 
 size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-													 BinaryContainer& ctr, size_t globCsr)
+													 BinaryContainer& ctr, size_t globCsr,
+													 uint32_t version)
 {
 	size_t instPropOfs = ctr.readUint32(globCsr);
 	size_t instPropCsr = globCsr + 4;
@@ -1012,7 +1039,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::AL, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::AL, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x03:	// FM FB
@@ -1020,7 +1047,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::FB, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::FB, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x04:	// FM AR1
@@ -1028,7 +1055,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::AR1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::AR1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x05:	// FM DR1
@@ -1036,7 +1063,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DR1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DR1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x06:	// FM SR1
@@ -1044,7 +1071,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SR1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SR1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x07:	// FM RR1
@@ -1052,7 +1079,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::RR1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::RR1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x08:	// FM SL1
@@ -1060,7 +1087,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SL1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SL1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x09:	// FM TL1
@@ -1068,7 +1095,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::TL1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::TL1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x0a:	// FM KS1
@@ -1076,7 +1103,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::KS1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::KS1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x0b:	// FM ML1
@@ -1084,7 +1111,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::ML1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::ML1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x0c:	// FM DT1
@@ -1092,7 +1119,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DT1, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DT1, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x0d:	// FM AR2
@@ -1100,7 +1127,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::AR2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::AR2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x0e:	// FM DR2
@@ -1108,7 +1135,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x0f:	// FM SR2
@@ -1116,7 +1143,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x10:	// FM RR2
@@ -1124,7 +1151,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x11:	// FM SL2
@@ -1132,7 +1159,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x12:	// FM TL2
@@ -1140,7 +1167,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x13:	// FM KS2
@@ -1148,7 +1175,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x14:	// FM ML2
@@ -1156,7 +1183,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x15:	// FM DT2
@@ -1164,7 +1191,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x16:	// FM AR3
@@ -1172,7 +1199,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x17:	// FM DR3
@@ -1180,7 +1207,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x18:	// FM SR3
@@ -1188,7 +1215,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x19:	// FM RR3
@@ -1196,7 +1223,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x1a:	// FM SL3
@@ -1204,7 +1231,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x1b:	// FM TL3
@@ -1212,7 +1239,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x1c:	// FM KS3
@@ -1220,7 +1247,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x1d:	// FM ML3
@@ -1228,7 +1255,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x1e:	// FM DT3
@@ -1236,7 +1263,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x1f:	// FM AR4
@@ -1244,7 +1271,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x20:	// FM DR4
@@ -1252,7 +1279,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x21:	// FM SR4
@@ -1260,7 +1287,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x22:	// FM RR4
@@ -1268,7 +1295,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x23:	// FM SL4
@@ -1276,7 +1303,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x24:	// FM TL4
@@ -1284,7 +1311,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x25:	// FM KS4
@@ -1292,7 +1319,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x26:	// FM ML4
@@ -1300,7 +1327,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x27:	// FM DT4
@@ -1308,7 +1335,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								  FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr);
+								  FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr, version);
 			break;
 		}
 		case 0x28:	// FM arpeggio
@@ -1365,6 +1392,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 					csr += 2;
 					break;
+				}
+				if (version >= Version::toBCD(1, 0, 1)) {
+					instMan.lock()->setArpeggioFMType(idx, ctr.readUint8(csr++));
 				}
 
 				instPropCsr += ofs;
@@ -1427,6 +1457,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					csr += 2;
 					break;
 				}
+				if (version >= Version::toBCD(1, 0, 1)) {
+					instMan.lock()->setPitchFMType(idx, ctr.readUint8(csr++));
+				}
 
 				instPropCsr += ofs;
 			}
@@ -1487,6 +1520,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 					csr += 2;
 					break;
+				}
+				if (version >= Version::toBCD(1, 0, 1)) {
+					++csr;	// Skip sequence type
 				}
 
 				instPropCsr += ofs;
@@ -1549,6 +1585,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					csr += 2;
 					break;
 				}
+				if (version >= Version::toBCD(1, 0, 1)) {
+					++csr;	// Skip sequence type
+				}
 
 				instPropCsr += ofs;
 			}
@@ -1609,6 +1648,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 					csr += 2;
 					break;
+				}
+				if (version >= Version::toBCD(1, 0, 1)) {
+					++csr;	// Skip sequence type
 				}
 
 				instPropCsr += ofs;
@@ -1671,6 +1713,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					csr += 2;
 					break;
 				}
+				if (version >= Version::toBCD(1, 0, 1)) {
+					instMan.lock()->setArpeggioSSGType(idx, ctr.readUint8(csr++));
+				}
 
 				instPropCsr += ofs;
 			}
@@ -1732,6 +1777,9 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 					csr += 2;
 					break;
 				}
+				if (version >= Version::toBCD(1, 0, 1)) {
+					instMan.lock()->setPitchSSGType(idx, ctr.readUint8(csr++));
+				}
 
 				instPropCsr += ofs;
 			}
@@ -1746,7 +1794,7 @@ size_t FileIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMa
 size_t FileIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 													  size_t instMemCsr,
 													  std::weak_ptr<InstrumentsManager> instMan,
-													  BinaryContainer& ctr)
+													  BinaryContainer& ctr, uint32_t version)
 {
 	uint8_t idx = ctr.readUint8(instMemCsr++);
 	uint16_t ofs = ctr.readUint16(instMemCsr);
@@ -1801,10 +1849,15 @@ size_t FileIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 		break;
 	}
 
+	if (version >= Version::toBCD(1, 0, 1)) {
+		++csr;	// Skip sequence type
+	}
+
 	return ofs + 1;
 }
 
-size_t FileIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr)
+size_t FileIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+										 size_t globCsr, uint32_t version)
 {
 	size_t grvOfs = ctr.readUint32(globCsr);
 	size_t grvCsr = globCsr + 4;
@@ -1824,7 +1877,7 @@ size_t FileIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 	return globCsr + grvOfs;
 }
 
-size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr)
+size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr, uint32_t version)
 {
 	size_t songOfs = ctr.readUint32(globCsr);
 	size_t songCsr = globCsr + 4;
@@ -1928,7 +1981,8 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 	ctr.appendString("BambooTrackerIst");
 	size_t eofOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy EOF offset
-	ctr.appendUint32(Version::ofInstrumentFileInBCD());
+	uint32_t fileVersion = Version::ofInstrumentFileInBCD();
+	ctr.appendUint32(fileVersion);
 
 
 	/***** Instrument section *****/
@@ -2114,6 +2168,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 					ctr.appendUint16(release.begin);
 					break;
 				}
+				if (fileVersion >= Version::toBCD(1, 0, 1)) {
+					ctr.appendUint8(0);	// Skip sequence type
+				}
 				ctr.writeUint16(ofs, ctr.size() - ofs);
 			}
 		}
@@ -2155,6 +2212,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getArpeggioFMType(arpNum));
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 
@@ -2194,6 +2254,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(release.begin);
 				break;
+			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getPitchFMType(ptNum));
 			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
@@ -2240,6 +2303,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(0);	// Skip sequence type
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 
@@ -2279,6 +2345,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(release.begin);
 				break;
+			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(0);	// Skip sequence type
 			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
@@ -2320,6 +2389,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(0);	// Skip sequence type
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 
@@ -2360,6 +2432,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				ctr.appendUint16(release.begin);
 				break;
 			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getArpeggioSSGType(arpNum));
+			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
 
@@ -2399,6 +2474,9 @@ void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(release.begin);
 				break;
+			}
+			if (fileVersion >= Version::toBCD(1, 0, 1)) {
+				ctr.appendUint8(instMan.lock()->getPitchSSGType(ptNum));
 			}
 			ctr.writeUint16(ofs, ctr.size() - ofs);
 		}
@@ -2931,265 +3009,267 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 				case 0x02:	// FM AL
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AL, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::AL, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x03:	// FM FB
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::FB, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::FB, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x04:	// FM AR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::AR1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x05:	// FM DR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DR1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x06:	// FM SR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SR1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x07:	// FM RR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::RR1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x08:	// FM SL1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SL1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x09:	// FM TL1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::TL1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0a:	// FM KS1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::KS1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0b:	// FM ML1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::ML1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0c:	// FM DT1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT1, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DT1, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0d:	// FM AR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR2, instPropCsr, instMan,
-									  ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::AR2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0e:	// FM DR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0f:	// FM SR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x10:	// FM RR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x11:	// FM SL2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x12:	// FM TL2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x13:	// FM KS2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x14:	// FM ML2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x15:	// FM DT2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x16:	// FM AR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x17:	// FM DR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x18:	// FM SR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x19:	// FM RR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1a:	// FM SL3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1b:	// FM TL3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1c:	// FM KS3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr, dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1d:	// FM ML3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1e:	// FM DT3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1f:	// FM AR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x20:	// FM DR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x21:	// FM SR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x22:	// FM RR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x23:	// FM SL4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x24:	// FM TL4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x25:	// FM KS4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x26:	// FM ML4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x27:	// FM DT4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									  FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr,
-									  dynamic_cast<InstrumentFM*>(inst), *numIt++);
+									   FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr,
+									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x28:	// FM arpeggio
@@ -3248,6 +3328,10 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 						csr += 2;
 						break;
+					}
+
+					if (fileVersion >= Version::toBCD(1, 0, 1)) {
+						instMan.lock()->setArpeggioFMType(idx, ctr.readUint8(csr++));
 					}
 
 					instPropCsr += ofs;
@@ -3311,6 +3395,10 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
+					if (fileVersion >= Version::toBCD(1, 0, 1)) {
+						instMan.lock()->setPitchFMType(idx, ctr.readUint8(csr++));
+					}
+
 					instPropCsr += ofs;
 					break;
 				}
@@ -3370,6 +3458,10 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 						csr += 2;
 						break;
+					}
+
+					if (fileVersion >= Version::toBCD(1, 0, 1)) {
+						++csr;	// Skip sequence type
 					}
 
 					instPropCsr += ofs;
@@ -3433,6 +3525,10 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
+					if (fileVersion >= Version::toBCD(1, 0, 1)) {
+						++csr;	// Skip sequence type
+					}
+
 					instPropCsr += ofs;
 					break;
 				}
@@ -3492,6 +3588,10 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 						csr += 2;
 						break;
+					}
+
+					if (fileVersion >= Version::toBCD(1, 0, 1)) {
+						++csr;	// Skip sequence type
 					}
 
 					instPropCsr += ofs;
@@ -3555,6 +3655,10 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 						break;
 					}
 
+					if (fileVersion >= Version::toBCD(1, 0, 1)) {
+						instMan.lock()->setArpeggioSSGType(idx, ctr.readUint8(csr++));
+					}
+
 					instPropCsr += ofs;
 					break;
 				}
@@ -3614,6 +3718,10 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 									idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 						csr += 2;
 						break;
+					}
+
+					if (fileVersion >= Version::toBCD(1, 0, 1)) {
+						instMan.lock()->setPitchSSGType(idx, ctr.readUint8(csr++));
 					}
 
 					instPropCsr += ofs;
@@ -3943,7 +4051,8 @@ size_t FileIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopePar
 																 std::weak_ptr<InstrumentsManager> instMan,
 																 BinaryContainer& ctr,
 																 InstrumentFM* inst,
-																 int idx)
+																 int idx,
+																 uint32_t version)
 {
 	inst->setOperatorSequenceEnabled(param, true);
 	inst->setOperatorSequenceNumber(param, idx);
@@ -3997,6 +4106,10 @@ size_t FileIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopePar
 					param, idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
 		csr += 2;
 		break;
+	}
+
+	if (version >= Version::toBCD(1, 0, 1)) {
+		++csr;	// Skip sequence type
 	}
 
 	return ofs;

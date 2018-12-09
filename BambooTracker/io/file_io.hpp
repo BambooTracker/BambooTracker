@@ -40,19 +40,23 @@ private:
 	static AbstractInstrument* loadVGIFile(std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static size_t loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
+	static size_t loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+											size_t globCsr, uint32_t version);
 	static size_t loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-												BinaryContainer& ctr, size_t globCsr);
+												BinaryContainer& ctr, size_t globCsr, uint32_t version);
 	static size_t loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-														BinaryContainer& ctr, size_t globCsr);
+														BinaryContainer& ctr, size_t globCsr,
+														uint32_t version);
 	static size_t loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 														 size_t instMemCsr,
 														 std::weak_ptr<InstrumentsManager> instMan,
-														 BinaryContainer& ctr);
-	static size_t loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
-	static size_t loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr);
+														 BinaryContainer& ctr, uint32_t version);
+	static size_t loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+											size_t globCsr, uint32_t version);
+	static size_t loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+										  size_t globCsr, uint32_t version);
 
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
 			FMEnvelopeParameter param, size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan,
-			BinaryContainer& ctr, InstrumentFM* inst, int idx);
+			BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
 };

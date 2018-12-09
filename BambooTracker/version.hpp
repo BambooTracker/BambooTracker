@@ -16,6 +16,9 @@ public:
 	static uint32_t ofInstrumentFileInBCD();
 	static std::string ofInstrumentFileInString();
 
+	static uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
+	static std::string toString(unsigned int major, unsigned int minor, unsigned int revision);
+
 private:
 	// Application version
 	static constexpr unsigned int appMajor			= 0;
@@ -25,15 +28,12 @@ private:
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;
 	static constexpr unsigned int modFileMinor		= 0;
-	static constexpr unsigned int modFileRevision	= 0;
+	static constexpr unsigned int modFileRevision	= 1;
 
 	// Instrument file version
 	static constexpr unsigned int instFileMajor		= 1;
 	static constexpr unsigned int instFileMinor		= 0;
-	static constexpr unsigned int instFileRevision	= 0;
-
-	static uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
-	static std::string toString(unsigned int major, unsigned int minor, unsigned int revision);
+	static constexpr unsigned int instFileRevision	= 1;
 
 	Version() {}
 };
