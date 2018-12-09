@@ -10,6 +10,7 @@
 - [#6], [#14] - Fix to set new property when adding instrument (thanks [@ScoopJohn], [@jimbo1qaz])
 - [#2] - Fix wheel step in slider (thanks [@pedipanol])
 - Fix file load/save to use local encoding (thanks [@maakmusic])
+- Fix loop point check when exporting to wav and vgm (thanks [@nabetaqz])
 
 [#25]: https://github.com/rerrahkr/BambooTracker/issues/25
 [#14]: https://github.com/rerrahkr/BambooTracker/issues/14

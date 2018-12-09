@@ -236,7 +236,7 @@ public:
 	size_t getSongCount() const;
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
-	size_t getAllStepCount(int songNum) const;
+	size_t getAllStepCount(int songNum, int loopCnt) const;
 	/*----- Order -----*/
 	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
@@ -376,4 +376,6 @@ private:
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
+
+	void checkNextPositionOfLastStep(int& endOrder, int& endStep) const;
 };

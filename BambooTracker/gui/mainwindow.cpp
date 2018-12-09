@@ -1783,7 +1783,7 @@ void MainWindow::on_actionWAV_triggered()
 				"Export to WAV",
 				"Cancel",
 				0,
-				bt_->getAllStepCount(bt_->getCurrentSongNumber()) * diag.getLoopCount() + 3
+				bt_->getAllStepCount(bt_->getCurrentSongNumber(), diag.getLoopCount()) + 3
 				);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
@@ -1823,7 +1823,7 @@ void MainWindow::on_actionVGM_triggered()
 				"Export to VGM",
 				"Cancel",
 				0,
-				bt_->getAllStepCount(bt_->getCurrentSongNumber()) + 3
+				bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1) + 3
 				);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
