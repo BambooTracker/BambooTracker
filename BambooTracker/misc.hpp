@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <stdexcept>
 
 enum class SoundSource : int
 {
@@ -96,4 +97,20 @@ static int ctohex(const char c)
 	else if (c == 'E')	return 14;
 	else if (c == 'F')	return 15;
 	else				return -1;
+}
+
+static uint8_t uitobcd(const uint8_t v)
+{
+	if (v > 99) throw std::out_of_range("out of range");
+
+	uint8_t high = v / 10;
+	uint8_t low = v % 10;
+	return (high << 4) + low;
+}
+
+static uint8_t bcdtoui(const uint8_t v)
+{
+	uint8_t high = v >> 4;
+	uint8_t low = v & 0x0f;
+	return high * 10 + low;
 }

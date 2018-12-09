@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include "misc.hpp"
 
 class Version
 {
@@ -69,7 +70,10 @@ inline std::string Version::ofInstrumentFileInString()
 
 inline uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)
 {
-	return (major << 16) + (minor << 8) + revision;
+	uint32_t maj = uitobcd(major);
+	uint32_t min = uitobcd(minor);
+	uint32_t rev = uitobcd(revision);
+	return (maj << 16) + (min << 8) + rev;
 }
 
 inline std::string Version::toString(unsigned int major, unsigned int minor, unsigned int revision)

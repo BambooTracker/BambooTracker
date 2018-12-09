@@ -513,13 +513,15 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 	bt_->stopPlaySong();
 	lockControls(false);
-	if (bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toLocal8Bit().toStdString())) {
+
+	try {
+		bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toLocal8Bit().toStdString());
 		loadModule();
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
 	}
-	else {
-		QMessageBox::critical(this, "Error", "Failed to load module.");
+	catch (std::exception& e) {
+		QMessageBox::critical(this, "Error", e.what());
 	}
 }
 
@@ -691,7 +693,10 @@ void MainWindow::loadInstrument()
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();
-	if (n != -1 && bt_->loadInstrument(file.toLocal8Bit().toStdString(), n)) {
+	if (n == -1) QMessageBox::critical(this, "Error", "Failed to load instrument.");
+
+	try {
+		bt_->loadInstrument(file.toLocal8Bit().toStdString(), n);
 		auto inst = bt_->getInstrument(n);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
@@ -699,8 +704,8 @@ void MainWindow::loadInstrument()
 												   inst->getSoundSource(), instForms_));
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	else {
-		QMessageBox::critical(this, "Error", "Failed to load instrument.");
+	catch (std::exception& e) {
+		QMessageBox::critical(this, "Error", e.what());
 	}
 }
 
@@ -712,12 +717,13 @@ void MainWindow::saveInstrument()
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
-	if (bt_->saveInstrument(file.toLocal8Bit().toStdString(),
-							ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt())) {
+	try {
+		bt_->saveInstrument(file.toLocal8Bit().toStdString(),
+							ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt());
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	else {
-		QMessageBox::critical(this, "Error", "Failed to save instrument.");
+	catch (std::exception& e) {
+		QMessageBox::critical(this, "Error", e.what());
 	}
 }
 
@@ -1586,21 +1592,25 @@ bool MainWindow::on_actionSave_triggered()
 	auto path = QString::fromLocal8Bit(bt_->getModulePath().c_str(), bt_->getModulePath().length());
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
 		if (!isSavedModBefore_ && config_->getBackupModules()) {
-			if (!bt_->backupModule(path.toLocal8Bit().toStdString())) {
+			try {
+				bt_->backupModule(path.toLocal8Bit().toStdString());
+			}
+			catch (...) {
 				QMessageBox::critical(this, "Error", "Failed to backup module.");
 				return false;
 			}
 		}
 
-		if (bt_->saveModule(bt_->getModulePath())) {
+		try {
+			bt_->saveModule(bt_->getModulePath());
 			isModifiedForNotCommand_ = false;
 			isSavedModBefore_ = true;
 			setWindowModified(false);
 			setWindowTitle();
 			return true;
 		}
-		else {
-			QMessageBox::critical(this, "Error", "Failed to save module.");
+		catch (std::exception& e) {
+			QMessageBox::critical(this, "Error", e.what());
 			return false;
 		}
 	}
@@ -1619,7 +1629,10 @@ bool MainWindow::on_actionSave_As_triggered()
 
 	if (std::ifstream(file.toStdString()).is_open()) {	// Already exists
 		if (!isSavedModBefore_ && config_->getBackupModules()) {
-			if (!bt_->backupModule(file.toLocal8Bit().toStdString())) {
+			try {
+				bt_->backupModule(file.toLocal8Bit().toStdString());
+			}
+			catch (...) {
 				QMessageBox::critical(this, "Error", "Failed to backup module.");
 				return false;
 			}
@@ -1627,7 +1640,8 @@ bool MainWindow::on_actionSave_As_triggered()
 	}
 
 	bt_->setModulePath(file.toLocal8Bit().toStdString());
-	if (bt_->saveModule(bt_->getModulePath())) {
+	try {
+		bt_->saveModule(bt_->getModulePath());
 		isModifiedForNotCommand_ = false;
 		isSavedModBefore_ = true;
 		setWindowModified(false);
@@ -1635,8 +1649,8 @@ bool MainWindow::on_actionSave_As_triggered()
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 		return true;
 	}
-	else {
-		QMessageBox::critical(this, "Error", "Failed to save module.");
+	catch (std::exception& e) {
+		QMessageBox::critical(this, "Error", e.what());
 		return false;
 	}
 }
@@ -1671,15 +1685,16 @@ void MainWindow::on_actionOpen_triggered()
 
 	bt_->stopPlaySong();
 	lockControls(false);
-	if (bt_->loadModule(file.toLocal8Bit().toStdString())) {
+	try {
+		bt_->loadModule(file.toLocal8Bit().toStdString());
 		loadModule();
 
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
 	}
-	else {
-		QMessageBox::critical(this, "Error", "Failed to load module.");
+	catch (std::exception& e) {
+		QMessageBox::critical(this, "Error", e.what());
 	}
 }
 
@@ -1795,14 +1810,18 @@ void MainWindow::on_actionWAV_triggered()
 	lockControls(false);
 	stream_->stop();
 
-	bool res = bt_->exportToWav(file.toStdString(), diag.getLoopCount(),
-								[&progress]() -> bool {
-									QApplication::processEvents();
-									progress.setValue(progress.value() + 1);
-									return progress.wasCanceled();
-								});
-	if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
-	else QMessageBox::critical(this, "Error", "Failed to export to wav file.");
+	try {
+		bool res = bt_->exportToWav(file.toStdString(), diag.getLoopCount(),
+									[&progress]() -> bool {
+										QApplication::processEvents();
+										progress.setValue(progress.value() + 1);
+										return progress.wasCanceled();
+									});
+		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	}
+	catch (...) {
+		QMessageBox::critical(this, "Error", "Failed to export to wav file.");
+	}
 
 	stream_->start();
 }
@@ -1835,16 +1854,20 @@ void MainWindow::on_actionVGM_triggered()
 	lockControls(false);
 	stream_->stop();
 
-	bool res = bt_->exportToVgm(file.toStdString(),
-								diag.enabledGD3(),
-								tag,
-								[&progress]() -> bool {
-									QApplication::processEvents();
-									progress.setValue(progress.value() + 1);
-									return progress.wasCanceled();
-								});
-	if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
-	else QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
+	try {
+		bool res = bt_->exportToVgm(file.toStdString(),
+									diag.enabledGD3(),
+									tag,
+									[&progress]() -> bool {
+										QApplication::processEvents();
+										progress.setValue(progress.value() + 1);
+										return progress.wasCanceled();
+									});
+		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	}
+	catch (...) {
+		QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
+	}
 
 	stream_->start();
 }

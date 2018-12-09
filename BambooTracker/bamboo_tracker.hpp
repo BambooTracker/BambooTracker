@@ -43,8 +43,8 @@ public:
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
-	bool loadInstrument(std::string path, int instNum);
-	bool saveInstrument(std::string path, int instNum);
+	void loadInstrument(std::string path, int instNum);
+	void saveInstrument(std::string path, int instNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void clearAllInstrument();
@@ -184,7 +184,7 @@ public:
 	bool exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f);
 
 	// Backup
-	bool backupModule(std::string file);
+	void backupModule(std::string file);
 
 	// Stream events
 	int streamCountUp();
@@ -200,8 +200,8 @@ public:
 	// Module details
 	/*----- Module -----*/
 	void makeNewModule();
-	bool loadModule(std::string path);
-	bool saveModule(std::string path);
+	void loadModule(std::string path);
+	void saveModule(std::string path);
 	void setModulePath(std::string path);
 	std::string getModulePath() const;
 	void setModuleTitle(std::string title);

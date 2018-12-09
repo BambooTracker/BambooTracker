@@ -160,7 +160,8 @@ SOURCES += \
     gui/json.cpp \
     gui/color_palette.cpp \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.cpp \
-    command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp
+    command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp \
+    io/file_io_error.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -312,7 +313,8 @@ HEADERS += \
     gui/json.hpp \
     gui/color_palette.hpp \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.hpp \
-    command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp
+    command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp \
+    io/file_io_error.hpp
 
 FORMS += \
     gui/mainwindow.ui \

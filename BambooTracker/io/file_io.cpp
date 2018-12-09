@@ -2,6 +2,7 @@
 #include <fstream>
 #include <locale>
 #include "version.hpp"
+#include "file_io_error.hpp"
 #include "misc.hpp"
 
 const FMEnvelopeParameter FileIO::ENV_FM_PARAMS[38] = {
@@ -45,7 +46,7 @@ const FMEnvelopeParameter FileIO::ENV_FM_PARAMS[38] = {
 	FMEnvelopeParameter::DT4
 };
 
-bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
+void FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 						std::weak_ptr<InstrumentsManager> instMan)
 {
 	BinaryContainer ctr;
@@ -728,25 +729,26 @@ bool FileIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 
 	mod.lock()->setFilePath(path);
 
-
-	return ctr.save(path);
+	if (!ctr.save(path)) throw FileOutputError(FileIOError::FileType::MOD);
 }
 
-bool FileIO::loadModule(std::string path, std::weak_ptr<Module> mod,
+void FileIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 						std::weak_ptr<InstrumentsManager> instMan)
 {
 	BinaryContainer ctr;
 
-	if (!ctr.load(path)) return false;
+	if (!ctr.load(path)) throw FileInputError(FileIOError::FileType::MOD);
 
 	size_t globCsr = 0;
-	if (ctr.readString(globCsr, 16) != "BambooTrackerMod") return false;
+	if (ctr.readString(globCsr, 16) != "BambooTrackerMod")
+		throw FileCorruptionError(FileIOError::FileType::MOD);
 	globCsr += 16;
 	size_t eofOfs = ctr.readUint32(globCsr);
 	size_t eof = globCsr + eofOfs;
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
-	if (fileVersion > Version::ofModuleFileInBCD()) return false;
+	if (fileVersion > Version::ofModuleFileInBCD())
+		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIOError::FileType::MOD);
 	globCsr += 4;
 
 	while (globCsr < eof) {
@@ -761,12 +763,10 @@ bool FileIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 		else if (ctr.readString(globCsr, 8) == "SONG    ")
 			globCsr = loadSongSectionInModule(mod, ctr, globCsr + 8);
 		else
-			return false;
+			throw FileCorruptionError(FileIOError::FileType::MOD);
 	}
 
 	mod.lock()->setFilePath(path);
-
-	return true;
 }
 
 size_t FileIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr)
@@ -1921,7 +1921,7 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 	return globCsr + songOfs;
 }
 
-bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum)
+void FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
 	BinaryContainer ctr;
 
@@ -2410,7 +2410,7 @@ bool FileIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> 
 
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
 
-	return ctr.save(path);
+	if (!ctr.save(path)) throw FileOutputError(FileIOError::FileType::INST);
 }
 
 AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum)
@@ -2423,20 +2423,23 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 
 	BinaryContainer ctr;
 
-	if (!ctr.load(path)) return nullptr;
+	if (!ctr.load(path)) throw FileInputError(FileIOError::FileType::INST);
 
 	size_t globCsr = 0;
-	if (ctr.readString(globCsr, 16) != "BambooTrackerIst") return nullptr;
+	if (ctr.readString(globCsr, 16) != "BambooTrackerIst")
+		throw FileCorruptionError(FileIOError::FileType::INST);
 	globCsr += 16;
 	size_t eofOfs = ctr.readUint32(globCsr);
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
-	if (fileVersion > Version::ofInstrumentFileInBCD()) return nullptr;
+	if (fileVersion > Version::ofInstrumentFileInBCD())
+		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIOError::FileType::INST);
 	globCsr += 4;
 
 
 	/***** Instrument section *****/
-	if (ctr.readString(globCsr, 8) != "INSTRMNT") return nullptr;
+	if (ctr.readString(globCsr, 8) != "INSTRMNT")
+		throw FileCorruptionError(FileIOError::FileType::INST);
 	else {
 		globCsr += 8;
 		size_t instOfs = ctr.readUint32(globCsr);
@@ -2467,7 +2470,8 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 
 
 		/***** Instrument property section *****/
-		if (ctr.readString(globCsr, 8) != "INSTPROP") return nullptr;
+		if (ctr.readString(globCsr, 8) != "INSTPROP")
+			throw FileCorruptionError(FileIOError::FileType::INST);
 		else {
 			globCsr += 8;
 			size_t instPropOfs = ctr.readUint32(globCsr);
@@ -3626,7 +3630,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 
 AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	BinaryContainer ctr;
-	if (!ctr.load(path)) return nullptr;
+	if (!ctr.load(path)) throw FileInputError(FileIOError::FileType::INST);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
@@ -3634,14 +3638,18 @@ AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<Instrume
 	uint8_t insType = 1; // default to FM
 	uint8_t fileVersion = ctr.readUint8(csr++);
 	if (fileVersion == 0) { // older, unversioned dmp
-		if (ctr.size() != 49) return nullptr;
+		if (ctr.size() != 49) throw FileCorruptionError(FileIOError::FileType::INST);
 	}
 	else {
-		if (fileVersion < 9) return nullptr;
-		if (fileVersion == 9 && ctr.size() != 51) return nullptr; // make sure it's not for that discontinued chip
+		if (fileVersion < 9) throw FileCorruptionError(FileIOError::FileType::INST);
+		if (fileVersion == 9 && ctr.size() != 51) { // make sure it's not for that discontinued chip
+			throw FileCorruptionError(FileIOError::FileType::INST);
+		}
 		uint8_t system = 2; // default to genesis
 		if (fileVersion >= 11) system = ctr.readUint8(csr++);
-		if (system != 2 && system != 3 && system != 8) return nullptr; // genesis, sms and arcade only
+		if (system != 2 && system != 3 && system != 8) { // genesis, sms and arcade only
+			throw FileCorruptionError(FileIOError::FileType::INST);
+		}
 		insType = ctr.readUint8(csr++);
 	}
 	AbstractInstrument* inst = nullptr;
@@ -3653,7 +3661,7 @@ AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<Instrume
 		uint8_t envSize = ctr.readUint8(csr++);
 		if (envSize > 0) {
 			int idx = instMan.lock()->findFirstFreeEnvelopeSSG();
-			if (idx < 0) return nullptr;
+			if (idx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
 			ssg->setEnvelopeEnabled(true);
 			ssg->setEnvelopeNumber(idx);
 			for (uint8_t l = 0; l < envSize; ++l) {
@@ -3670,7 +3678,7 @@ AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<Instrume
 		uint8_t arpSize = ctr.readUint8(csr++);
 		if (arpSize > 0) {
 			int idx = instMan.lock()->findFirstFreeArpeggioSSG();
-			if (idx < 0) return nullptr;
+			if (idx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
 			ssg->setArpeggioEnabled(true);
 			ssg->setArpeggioNumber(idx);
 			uint8_t arpType = ctr.readUint8(csr + arpSize * 4 + 1);
@@ -3690,7 +3698,7 @@ AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<Instrume
 	case 0x01:	// FM
 	{
 		int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
-		if (envIdx < 0) return nullptr;
+		if (envIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
 		inst = new InstrumentFM(instNum, name, instMan.lock().get());
 		auto fm = dynamic_cast<InstrumentFM*>(inst);
 		fm->setEnvelopeNumber(envIdx);
@@ -3758,7 +3766,7 @@ AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<Instrume
 
 		if (pms || ams) {
 			int lfoIdx = instMan.lock()->findFirstFreeLFOFM();
-			if (lfoIdx < 0) return nullptr;
+			if (lfoIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
 			fm->setLFOEnabled(true);
 			fm->setLFONumber(lfoIdx);
 			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pms);
@@ -3776,10 +3784,10 @@ AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<Instrume
 
 AbstractInstrument* FileIO::loadTFIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	BinaryContainer ctr;
-	if (!ctr.load(path)) return nullptr;
-	if (ctr.size() != 42) return nullptr;
+	if (!ctr.load(path)) throw FileInputError(FileIOError::FileType::INST);
+	if (ctr.size() != 42) throw FileCorruptionError(FileIOError::FileType::INST);
 	int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
-	if (envIdx < 0) return nullptr;
+	if (envIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
@@ -3845,10 +3853,10 @@ AbstractInstrument* FileIO::loadTFIFile(std::string path, std::weak_ptr<Instrume
 
 AbstractInstrument* FileIO::loadVGIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	BinaryContainer ctr;
-	if (!ctr.load(path)) return nullptr;
-	if (ctr.size() != 43) return nullptr;
+	if (!ctr.load(path)) throw FileInputError(FileIOError::FileType::INST);
+	if (ctr.size() != 43) throw FileCorruptionError(FileIOError::FileType::INST);
 	int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
-	if (envIdx < 0) return nullptr;
+	if (envIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
@@ -3917,7 +3925,7 @@ AbstractInstrument* FileIO::loadVGIFile(std::string path, std::weak_ptr<Instrume
 
 	if (pams != 0) {
 		int lfoIdx = instMan.lock()->findFirstFreeLFOFM();
-		if (lfoIdx < 0) return nullptr;
+		if (lfoIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
 		inst->setLFOEnabled(true);
 		inst->setLFONumber(lfoIdx);
 		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pams & 7);
@@ -3994,7 +4002,7 @@ size_t FileIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopePar
 	return ofs;
 }
 
-bool FileIO::writeWave(std::string path, std::vector<int16_t> samples, uint32_t sampRate)
+void FileIO::writeWave(std::string path, std::vector<int16_t> samples, uint32_t sampRate)
 {
 	try {
 		std::ofstream ofs(path, std::ios::binary);
@@ -4026,15 +4034,13 @@ bool FileIO::writeWave(std::string path, std::vector<int16_t> samples, uint32_t 
 		uint32_t dataSize = samples.size() * bitSize / 8;
 		ofs.write(reinterpret_cast<char*>(&dataSize), 4);
 		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(dataSize));
-
-		return true;
 	}
 	catch (...) {
-		return false;
+		throw FileOutputError(FileIOError::FileType::WAV);
 	}
 }
 
-bool FileIO::writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+void FileIO::writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
 					  bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
 					  bool gd3TagEnabled, GD3Tag tag)
 {
@@ -4137,21 +4143,18 @@ bool FileIO::writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t c
 			ofs.write(reinterpret_cast<char*>(&tag.notes[0]),
 					static_cast<std::streamsize>(tag.notes.length()));
 		}
-
-		return true;
 	} catch (...) {
-		return false;
+		throw FileOutputError(FileIOError::FileType::VGM);
 	}
 }
 
-bool FileIO::backupModule(std::string path)
+void FileIO::backupModule(std::string path)
 {
 	try {
 		std::ifstream ifs(path, std::ios::binary);
 		std::ofstream ofs(path + ".bak", std::ios::binary);
 		ofs << ifs.rdbuf();
-		return true;
 	} catch (...) {
-		return false;
+		throw FileOutputError(FileIOError::FileType::MOD);
 	}
 }

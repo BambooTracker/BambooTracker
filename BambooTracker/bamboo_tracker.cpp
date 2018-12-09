@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <utility>
 #include <set>
+#include <exception>
 #include "commands.hpp"
 #include "file_io.hpp"
 
@@ -100,18 +101,16 @@ void BambooTracker::deepCloneInstrument(int num, int refNum)
 	comMan_.invoke(std::make_unique<DeepCloneInstrumentCommand>(instMan_, num, refNum));
 }
 
-bool BambooTracker::loadInstrument(std::string path, int instNum)
+void BambooTracker::loadInstrument(std::string path, int instNum)
 {
 	auto inst = FileIO::loadInstrument(path, instMan_, instNum);
-	if (!inst) return false;
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
-	return true;
 }
 
-bool BambooTracker::saveInstrument(std::string path, int instNum)
+void BambooTracker::saveInstrument(std::string path, int instNum)
 {
-	return FileIO::saveInstrument(path, instMan_, instNum);
+	FileIO::saveInstrument(path, instMan_, instNum);
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const
@@ -901,10 +900,14 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 	stopPlaySong();
 	isFollowPlay_ = tmpFollow;
 
-	bool ret = FileIO::writeWave(file, exCntr->getStream(), opnaCtrl_->getRate());
-	f();
-
-	return ret;
+	try {
+		FileIO::writeWave(file, exCntr->getStream(), opnaCtrl_->getRate());
+		f();
+		return true;
+	}
+	catch (...) {
+		throw;
+	}
 }
 
 bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f)
@@ -956,12 +959,15 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	isFollowPlay_ = tmpFollow;
 	opnaCtrl_->setRate(tmpRate);
 
-	bool ret = FileIO::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
-								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
-								exCntr->getSampleLength(), gd3TagEnabled, tag);
-	f();
-
-	return ret;
+	try {
+		FileIO::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+						 loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
+						 exCntr->getSampleLength(), gd3TagEnabled, tag);
+		f();
+		return true;
+	} catch (...) {
+		throw;
+	}
 }
 
 void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) const
@@ -994,9 +1000,9 @@ void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) con
 	}
 }
 
-bool BambooTracker::backupModule(std::string file)
+void BambooTracker::backupModule(std::string file)
 {
-	return FileIO::backupModule(file);
+	FileIO::backupModule(file);
 }
 
 /********** Stream events **********/
@@ -1767,19 +1773,28 @@ void BambooTracker::makeNewModule()
 	clearCommandHistory();
 }
 
-bool BambooTracker::loadModule(std::string path)
+void BambooTracker::loadModule(std::string path)
 {
 	makeNewModule();
-	bool ret = FileIO::loadModule(path, mod_, instMan_);
+
+	std::exception_ptr ep;
+	try {
+		FileIO::loadModule(path, mod_, instMan_);
+	}
+	catch (...) {
+		ep = std::current_exception();
+	}
+
 	tickCounter_.setInterruptRate(mod_->getTickFrequency());
 	setCurrentSongNumber(0);
 	clearCommandHistory();
-	return ret;
+
+	if (ep) std::rethrow_exception(ep);
 }
 
-bool BambooTracker::saveModule(std::string path)
+void BambooTracker::saveModule(std::string path)
 {
-	return FileIO::saveModule(path, mod_, instMan_);
+	FileIO::saveModule(path, mod_, instMan_);
 }
 
 void BambooTracker::setModulePath(std::string path)
