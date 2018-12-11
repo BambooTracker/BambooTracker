@@ -254,7 +254,6 @@ MainWindow::MainWindow(QWidget *parent) :
 				);
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	ui->instrumentListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-	ui->instrumentListWidget->setFocusPolicy(Qt::NoFocus);
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
 					 this, &MainWindow::onInstrumentListWidgetItemAdded);
@@ -645,7 +644,7 @@ void MainWindow::editInstrumentName()
     auto line = new QLineEdit(oldName);
 
 	QObject::connect(line, &QLineEdit::editingFinished,
-                     this, [&, item, list, num, oldName]() {
+					 this, [&, item, list, num, oldName] {
 		QString newName = qobject_cast<QLineEdit*>(list->itemWidget(item))->text();
 		list->removeItemWidget(item);
 		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
