@@ -137,7 +137,7 @@ void ModulePropertiesDialog::on_editTitleLineEdit_textEdited(const QString &arg1
 		ui->songTreeWidget->currentItem()->setText(1, arg1);
 }
 
-void ModulePropertiesDialog::on_buttonBox_accepted()
+void ModulePropertiesDialog::onAccepted()
 {
 	auto* tree = ui->songTreeWidget;
 	std::vector<int> newSongNums;

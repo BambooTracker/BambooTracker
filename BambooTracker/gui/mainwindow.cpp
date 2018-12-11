@@ -794,6 +794,9 @@ void MainWindow::loadSong()
 	bt_->setCurrentStepNumber(0);
 
 	// Init ui
+	ui->orderList->onSongLoaded();
+	ui->patternEditor->onSongLoaded();
+
 	int curSong = bt_->getCurrentSongNumber();
 	ui->songNumSpinBox->setValue(curSong);
 	auto title = bt_->getSongTitle(curSong);
@@ -823,8 +826,6 @@ void MainWindow::loadSong()
 		ui->grooveCheckBox->setChecked(true);
 		ui->grooveSpinBox->setEnabled(true);
 	}
-	ui->orderList->onSongLoaded();
-	ui->patternEditor->onSongLoaded();
 
 	setWindowTitle();
 }
@@ -1378,6 +1379,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 			&& showUndoResetWarningDialog("Do you want to change song properties?")) {
 		bt_->stopPlaySong();
 		lockControls(false);
+		dialog.onAccepted();
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();

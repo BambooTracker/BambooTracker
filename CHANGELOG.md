@@ -12,12 +12,15 @@
 - Fix file load/save to use local encoding (thanks [@maakmusic])
 - Fix loop point check when exporting to wav and vgm (thanks [@nabetaqz])
 - Fix support mod/inst file v1.0.1
+- [#24] - Fix crash when adding song (thanks [@JonKaruzu])
 
 [#25]: https://github.com/rerrahkr/BambooTracker/issues/25
 [#14]: https://github.com/rerrahkr/BambooTracker/issues/14
 [#18]: https://github.com/rerrahkr/BambooTracker/issues/18
+[#24]: https://github.com/rerrahkr/BambooTracker/issues/24
 
 [@papiezak]: https://github.com/papiezak
+[@JonKaruzu]: https://github.com/JonKaruzu
 
 ## v0.1.2 (2018-12-02)
 ### Added
