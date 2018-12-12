@@ -921,44 +921,46 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QMenu menu;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* add = menu.addAction(QString("Add"), this, &MainWindow::addInstrument);
-	QAction* remove = menu.addAction("Remove", this, [&]() {
+	QAction* add = menu.addAction(QString("&Add"), this, &MainWindow::addInstrument);
+	QAction* remove = menu.addAction("&Remove", this, [&]() {
 		removeInstrument(ui->instrumentListWidget->currentRow());
 	});
     menu.addSeparator();
-	QAction* name = menu.addAction("Edit name", this, &MainWindow::editInstrumentName);
+	QAction* name = menu.addAction("Edit &name", this, &MainWindow::editInstrumentName);
     menu.addSeparator();
-	QAction* clone = menu.addAction("Clone", this, &MainWindow::cloneInstrument);
-	QAction* dClone = menu.addAction("Deep clone", this, &MainWindow::deepCloneInstrument);
+	QAction* clone = menu.addAction("&Clone", this, &MainWindow::cloneInstrument);
+	QAction* dClone = menu.addAction("&Deep clone", this, &MainWindow::deepCloneInstrument);
     menu.addSeparator();
-	QAction* ldFile = menu.addAction("Load from file...", this, &MainWindow::loadInstrument);
-	QAction* svFile = menu.addAction("Save to file...", this, &MainWindow::saveInstrument);
+	QAction* ldFile = menu.addAction("&Load from file...", this, &MainWindow::loadInstrument);
+	QAction* svFile = menu.addAction("&Save to file...", this, &MainWindow::saveInstrument);
     menu.addSeparator();
-	QAction* edit = menu.addAction("Edit...", this, &MainWindow::editInstrument);
+	QAction* edit = menu.addAction("&Edit...", this, &MainWindow::editInstrument);
 #else
-	QAction* add = menu.addAction("Add");
+	QAction* add = menu.addAction("&Add");
 	QObject::connect(add, &QAction::triggered, this, &MainWindow::addInstrument);
-	QAction* remove = menu.addAction("Remove");
+	QAction* remove = menu.addAction("&Remove");
 	QObject::connect(remove, &QAction::triggered, this, [&]() {
 		removeInstrument(ui->instrumentListWidget->currentRow());
 	});
 	menu.addSeparator();
-	QAction* name = menu.addAction("Edit name");
+	QAction* name = menu.addAction("Edit &name");
 	QObject::connect(name, &QAction::triggered, this, &MainWindow::editInstrumentName);
 	menu.addSeparator();
-	QAction* clone = menu.addAction("Clone");
+	QAction* clone = menu.addAction("&Clone");
 	QObject::connect(clone, &QAction::triggered, this, &MainWindow::cloneInstrument);
-	QAction* dClone = menu.addAction("Deep clone");
+	QAction* dClone = menu.addAction("&Deep clone");
 	QObject::connect(dClone, &QAction::triggered, this, &MainWindow::deepCloneInstrument);
 	menu.addSeparator();
-	QAction* ldFile = menu.addAction("Load from file...");
+	QAction* ldFile = menu.addAction("&Load from file...");
 	QObject::connect(ldFile, &QAction::triggered, this, &MainWindow::loadInstrument);
-	QAction* svFile = menu.addAction("Save to file...");
+	QAction* svFile = menu.addAction("&Save to file...");
 	QObject::connect(svFile, &QAction::triggered, this, &MainWindow::saveInstrument);
 	menu.addSeparator();
-	QAction* edit = menu.addAction("Edit...");
+	QAction* edit = menu.addAction("&Edit...");
 	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
 #endif
+	edit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+	edit->setShortcutVisibleInContextMenu(true);
 
 	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
 		add->setEnabled(false);
