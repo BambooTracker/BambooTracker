@@ -40,6 +40,8 @@ public:
 	void copySelectedCells();
 	void cutSelectedCells();
 
+	int getCurrentTrack() const;
+
 public slots:
 	void setCurrentCellInRow(int num);
 	void setCurrentStep(int num);
@@ -65,8 +67,9 @@ public slots:
 	/// 5: Order
 	void onSelectPressed(int type);
 	void onTransposePressed(bool isOctave, bool isIncreased);
-	void onMuteTrackPressed();
-	void onSoloTrackPressed();
+	void onMuteTrackPressed(int track);
+	void onSoloTrackPressed(int track);
+	void onUnmuteAllPressed();
 	void onExpandPressed();
 	void onShrinkPressed();
 	void onInterpolatePressed();

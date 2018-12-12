@@ -14,11 +14,13 @@
 - Fix support mod/inst file v1.0.1
 - [#24] - Fix crash when adding song (thanks [@JonKaruzu])
 - Fix focus in instrument list
+- [#26] - Fix mute actions in pattern editor (thanks [@jimbo1qaz])
 
 [#25]: https://github.com/rerrahkr/BambooTracker/issues/25
 [#14]: https://github.com/rerrahkr/BambooTracker/issues/14
 [#18]: https://github.com/rerrahkr/BambooTracker/issues/18
 [#24]: https://github.com/rerrahkr/BambooTracker/issues/24
+[#26]: https://github.com/rerrahkr/BambooTracker/issues/26
 
 [@papiezak]: https://github.com/papiezak
 

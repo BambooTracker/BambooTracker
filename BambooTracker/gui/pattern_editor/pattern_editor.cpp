@@ -179,12 +179,12 @@ void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
 
 void PatternEditor::onMuteTrackPressed()
 {
-	ui->panel->onMuteTrackPressed();
+	ui->panel->onMuteTrackPressed(ui->panel->getCurrentTrack());
 }
 
 void PatternEditor::onSoloTrackPressed()
 {
-	ui->panel->onSoloTrackPressed();
+	ui->panel->onSoloTrackPressed(ui->panel->getCurrentTrack());
 }
 
 void PatternEditor::onExpandPressed()
