@@ -620,6 +620,7 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_F6:		emit playStatusChanged(2);	break;
 	case Qt::Key_F7:		emit playStatusChanged(3);	break;
 	case Qt::Key_F8:		emit playStatusChanged(-1);	break;
+	case Qt::Key_Escape:	close();					break;
 	default:
 		if (!event->isAutoRepeat()) {
 			// Musical keyboard
