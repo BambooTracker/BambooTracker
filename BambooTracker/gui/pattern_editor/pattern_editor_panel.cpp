@@ -699,6 +699,25 @@ int PatternEditorPanel::calculateStepDistance(int beginOrder, int beginStep, int
 	return flag ? d : -d;
 }
 
+QPoint PatternEditorPanel::calculateCurrentCursorPosition() const
+{
+	int w = calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track - 1);
+	if (curPos_.colInTrack > 0) {
+		w = w + toneNameWidth_ + stepFontWidth_;
+		if (curPos_.colInTrack > 1) {
+			w = w + instWidth_ + stepFontWidth_;
+			if (curPos_.colInTrack > 2) {
+				w = w + volWidth_ + stepFontWidth_;
+				for (int i = 3; i < 11; ++i) {
+					if (curPos_.colInTrack == i) break;
+					w = w + widthSpace_ + ((i % 2) ? effIDWidth_ : effValWidth_);
+				}
+			}
+		}
+	}
+	return QPoint(w, curRowY_);
+}
+
 void PatternEditorPanel::changeEditable()
 {
 	update();
@@ -1032,7 +1051,7 @@ void PatternEditorPanel::eraseSelectedCells()
 	comStack_.lock()->push(new EraseCellsInPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteCopiedCells(PatternPosition& startPos)
+void PatternEditorPanel::pasteCopiedCells(const PatternPosition& startPos)
 {
 	int sCol = 0;
 	std::vector<std::vector<std::string>> cells
@@ -1046,7 +1065,7 @@ void PatternEditorPanel::pasteCopiedCells(PatternPosition& startPos)
 	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteMixCopiedCells(PatternPosition& startPos)
+void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& startPos)
 {
 	int sCol = 0;
 	std::vector<std::vector<std::string>> cells
@@ -1060,7 +1079,7 @@ void PatternEditorPanel::pasteMixCopiedCells(PatternPosition& startPos)
 	comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteOverwriteCopiedCells(PatternPosition& startPos)
+void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& startPos)
 {
 	int sCol = 0;
 	std::vector<std::vector<std::string>> cells
@@ -1116,7 +1135,7 @@ void PatternEditorPanel::cutSelectedCells()
 	QApplication::clipboard()->setText(str);
 }
 
-void PatternEditorPanel::increaseNoteKey(PatternPosition& startPos, PatternPosition& endPos)
+void PatternEditorPanel::increaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos)
 {
 	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
 	if (beginTrack <= endPos.track) {
@@ -1127,7 +1146,7 @@ void PatternEditorPanel::increaseNoteKey(PatternPosition& startPos, PatternPosit
 	}
 }
 
-void PatternEditorPanel::decreaseNoteKey(PatternPosition& startPos, PatternPosition& endPos)
+void PatternEditorPanel::decreaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos)
 {
 	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
 	if (beginTrack <= endPos.track) {
@@ -1138,7 +1157,7 @@ void PatternEditorPanel::decreaseNoteKey(PatternPosition& startPos, PatternPosit
 	}
 }
 
-void PatternEditorPanel::increaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos)
+void PatternEditorPanel::increaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos)
 {
 	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
 	if (beginTrack <= endPos.track) {
@@ -1149,7 +1168,7 @@ void PatternEditorPanel::increaseNoteOctave(PatternPosition& startPos, PatternPo
 	}
 }
 
-void PatternEditorPanel::decreaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos)
+void PatternEditorPanel::decreaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos)
 {
 	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
 	if (beginTrack <= endPos.track) {
@@ -1198,6 +1217,198 @@ bool PatternEditorPanel::isSelectedCell(int trackNum, int colNum, int orderNum, 
 	PatternPosition pos{ trackNum, colNum, orderNum, stepNum };
 	return (selLeftAbovePos_.compareCols(pos) <= 0 && selRightBelowPos_.compareCols(pos) >= 0
 			&& selLeftAbovePos_.compareRows(pos) <= 0 && selRightBelowPos_.compareRows(pos) >= 0);
+}
+
+void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, const QPoint& point)
+{
+	QMenu menu;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QAction* undo = menu.addAction("Undo", this, [&]() {
+		bt_->undo();
+		comStack_.lock()->undo();
+	});
+	QAction* redo = menu.addAction("Redo", this, [&]() {
+		bt_->redo();
+		comStack_.lock()->redo();
+	});
+	menu.addSeparator();
+	QAction* copy = menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
+	QAction* cut = menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
+	QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(pos); });
+	auto pasteSp = new QMenu("Paste Special");
+	menu.addMenu(pasteSp);
+	QAction* pasteMix = pasteSp->addAction("Mix", this, [&]() { pasteMixCopiedCells(pos); });
+	QAction* pasteOver = pasteSp->addAction("Overwrite", this, [&]() { pasteOverwriteCopiedCells(pos); });
+	QAction* erase = menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
+	QAction* select = menu.addAction("Select All", this, [&]() { onSelectPressed(1); });
+	menu.addSeparator();
+	auto pattern = new QMenu("Pattern");
+	menu.addMenu(pattern);
+	QAction* interpolate = pattern->addAction("Interpolate", this, &PatternEditorPanel::onInterpolatePressed);
+	QAction* reverse = pattern->addAction("Reverse", this, &PatternEditorPanel::onReversePressed);
+	QAction* replace = pattern->addAction("Replace Instrument", this, &PatternEditorPanel::onReplaceInstrumentPressed);
+	pattern->addSeparator();
+	QAction* expand = pattern->addAction("Expand", this, &PatternEditorPanel::onExpandPressed);
+	QAction* shrink = pattern->addAction("Shrink", this, &PatternEditorPanel::onShrinkPressed);
+	pattern->addSeparator();
+	auto transpose = new QMenu("Transpose");
+	pattern->addMenu(transpose);
+	QAction* deNote = transpose->addAction("Decrease Note", this, [&]() { onTransposePressed(false, false); });
+	QAction* inNote = transpose->addAction("Increase Note", this, [&]() { onTransposePressed(false, true); });
+	QAction* deOct = transpose->addAction("Decrease Octave", this, [&]() { onTransposePressed(true, false); });
+	QAction* inOct = transpose->addAction("Increase Octave", this, [&]() { onTransposePressed(true, true); });
+	menu.addSeparator();
+	QAction* mute = menu.addAction("Mute Track", this, [&] { onMuteTrackPressed(pos.track); });
+	QAction* solo = menu.addAction("Solo Track", this, [&] { onSoloTrackPressed(pos.track); });
+#else
+	QAction* undo = menu.addAction("Undo");
+	QObject::connect(undo, &QAction::triggered, this, [&]() {
+		bt_->undo();
+		comStack_.lock()->undo();
+	});
+	QAction* redo = menu.addAction("Redo");
+	QObject::connect(redo, &QAction::triggered, this, [&]() {
+		bt_->redo();
+		comStack_.lock()->redo();
+	});
+	menu.addSeparator();
+	QAction* copy = menu.addAction("Copy");
+	QObject::connect(copy, &QAction::triggered, this, &PatternEditorPanel::copySelectedCells);
+	QAction* cut = menu.addAction("Cut");
+	QObject::connect(cut, &QAction::triggered, this, &PatternEditorPanel::cutSelectedCells);
+	QAction* paste = menu.addAction("Paste");
+	QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(pos); });
+	auto pasteSp = new QMenu("Paste Special");
+	menu.addMenu(pasteSp);
+	QAction* pasteMix = pasteSp->addAction("Mix");
+	QObject::connect(pasteMix, &QAction::triggered, this, [&]() { pasteMixCopiedCells(pos); });
+	QAction* pasteOver = pasteSp->addAction("Overwrite");
+	QObject::connect(pasteOver, &QAction::triggered, this, [&]() { pasteOverwriteCopiedCells(pos); });
+	QAction* erase = menu.addAction("Erase");
+	QObject::connect(erase, &QAction::triggered, this, &PatternEditorPanel::eraseSelectedCells);
+	QAction* select = menu.addAction("Select All");
+	QObject::connect(select, &QAction::triggered, this, [&]() { onSelectPressed(1); });
+	menu.addSeparator();
+	auto pattern = new QMenu("Pattern");
+	menu.addMenu(pattern);
+	QAction* interpolate = pattern->addAction("Interpolate");
+	QObject::connect(interpolate, &QAction::triggered, this, &PatternEditorPanel::onInterpolatePressed);
+	QAction* reverse = pattern->addAction("Reverse");
+	QObject::connect(reverse, &QAction::triggered, this, &PatternEditorPanel::onReversePressed);
+	QAction* replace = pattern->addAction("Replace Instrument");
+	QObject::connect(replace, &QAction::triggered, this, &PatternEditorPanel::onReplaceInstrumentPressed);
+	pattern->addSeparator();
+	QAction* expand = pattern->addAction("Expand");
+	QObject::connect(expand, &QAction::triggered, this, &PatternEditorPanel::onExpandPressed);
+	QAction* shrink = pattern->addAction("Shrink");
+	QObject::connect(shrink, &QAction::triggered, this, &PatternEditorPanel::onShrinkPressed);
+	pattern->addSeparator();
+	auto transpose = new QMenu("Transpose");
+	pattern->addMenu(transpose);
+	QAction* deNote = transpose->addAction("Decrease Note");
+	QObject::connect(deNote, &QAction::triggered, this, [&]() { onTransposePressed(false, false); });
+	QAction* inNote = transpose->addAction("Increase Note");
+	QObject::connect(inNote, &QAction::triggered, this, [&]() { onTransposePressed(false, true); });
+	QAction* deOct = transpose->addAction("Decrease Octave");
+	QObject::connect(deOct, &QAction::triggered, this, [&]() { onTransposePressed(true, false); });
+	QAction* inOct = transpose->addAction("Increase Octave");
+	QObject::connect(inOct, &QAction::triggered, this, [&]() { onTransposePressed(true, true); });
+	menu.addSeparator();
+	QAction* mute = menu.addAction("Mute Track");
+	QObject::connect(mute, &QAction::triggered, this, [&] { onMuteTrackPressed(pos.track); });
+	QAction* solo = menu.addAction("Solo Track");
+	QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(pos.track); });
+#endif
+	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+	undo->setShortcutVisibleInContextMenu(true);
+	redo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
+	redo->setShortcutVisibleInContextMenu(true);
+	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+	undo->setShortcutVisibleInContextMenu(true);
+	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+	copy->setShortcutVisibleInContextMenu(true);
+	cut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
+	cut->setShortcutVisibleInContextMenu(true);
+	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
+	paste->setShortcutVisibleInContextMenu(true);
+	pasteMix->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+	pasteMix->setShortcutVisibleInContextMenu(true);
+	erase->setShortcut(QKeySequence(Qt::Key_Delete));
+	erase->setShortcutVisibleInContextMenu(true);
+	select->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
+	select->setShortcutVisibleInContextMenu(true);
+	interpolate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
+	interpolate->setShortcutVisibleInContextMenu(true);
+	reverse->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+	reverse->setShortcutVisibleInContextMenu(true);
+	replace->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
+	replace->setShortcutVisibleInContextMenu(true);
+	deNote->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F1));
+	deNote->setShortcutVisibleInContextMenu(true);
+	inNote->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F2));
+	inNote->setShortcutVisibleInContextMenu(true);
+	deOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F3));
+	deOct->setShortcutVisibleInContextMenu(true);
+	inOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4));
+	inOct->setShortcutVisibleInContextMenu(true);
+	mute->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
+	mute->setShortcutVisibleInContextMenu(true);
+	solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
+	solo->setShortcutVisibleInContextMenu(true);
+
+	if (bt_->isJamMode() || pos.order < 0 || pos.track < 0) {
+		copy->setEnabled(false);
+		cut->setEnabled(false);
+		paste->setEnabled(false);
+		pasteMix->setEnabled(false);
+		pasteOver->setEnabled(false);
+		erase->setEnabled(false);
+		interpolate->setEnabled(false);
+		reverse->setEnabled(false);
+		replace->setEnabled(false);
+		expand->setEnabled(false);
+		shrink->setEnabled(false);
+		deNote->setEnabled(false);
+		inNote->setEnabled(false);
+		deOct->setEnabled(false);
+		inOct->setEnabled(false);
+	}
+	else {
+		QString clipText = QApplication::clipboard()->text();
+		if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
+			paste->setEnabled(false);
+			pasteMix->setEnabled(false);
+			pasteOver->setEnabled(false);
+		}
+		if (selRightBelowPos_.order < 0
+				|| !isSelectedCell(pos.track, pos.colInTrack,
+								   pos.order, pos.step)) {
+			copy->setEnabled(false);
+			cut->setEnabled(false);
+			erase->setEnabled(false);
+			interpolate->setEnabled(false);
+			reverse->setEnabled(false);
+			replace->setEnabled(false);
+			expand->setEnabled(false);
+			shrink->setEnabled(false);
+			deNote->setEnabled(false);
+			inNote->setEnabled(false);
+			deOct->setEnabled(false);
+			inOct->setEnabled(false);
+		}
+	}
+	if (!comStack_.lock()->canUndo()) {
+		undo->setEnabled(false);
+	}
+	if (!comStack_.lock()->canRedo()) {
+		redo->setEnabled(false);
+	}
+	if (pos.track < 0) {
+		mute->setEnabled(false);
+		solo->setEnabled(false);
+	}
+
+	menu.exec(mapToGlobal(point));
 }
 
 /********** Slots **********/
@@ -1700,6 +1911,14 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			deletePreviousStep();
 			return true;
 		}
+	case Qt::Key_Menu:
+	{
+		QPoint point = calculateCurrentCursorPosition();
+		point.setX(point.x() + 24);
+		point.setY(point.y() - 16);
+		showPatternContextMenu(curPos_, point);
+		return true;
+	}
 	default:
 		if (!bt_->isJamMode()) {
 			// Pattern edit
@@ -1768,6 +1987,8 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 	mousePressPos_ = hovPos_;
 	doubleClickPos_ = mousePressPos_;
 	mouseReleasePos_ = { -1, -1, -1, -1 };
+	isPressedPlus_ = false;
+	isPressedMinus_ = false;
 
 	if (event->button() == Qt::LeftButton) {
 		if (mousePressPos_.order == -2 && mousePressPos_.track >= 0) {
@@ -1830,11 +2051,9 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			else if (hovPos_.order == -2 && hovPos_.track >= 0) {	// Header
 				if (isPressedPlus_) {
 					expandEffect(hovPos_.track);
-					isPressedPlus_ = false;
 				}
 				else if (isPressedMinus_) {
 					shrinkEffect(hovPos_.track);
-					isPressedMinus_ = false;
 				}
 				else {
 					bt_->setTrackMuteState(hovPos_.track, !bt_->isMute(hovPos_.track));	// Toggle mute
@@ -1857,9 +2076,8 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 
 	case Qt::RightButton:	// Show context menu
 	{
-		QMenu menu;
-
 		if (mousePressPos_.order == -2) {	// Header
+			QMenu menu;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 			QAction* mute = menu.addAction("Mute Track", this, [&] { onMuteTrackPressed(mousePressPos_.track); });
 			QAction* solo = menu.addAction("Solo Track", this, [&] { onSoloTrackPressed(mousePressPos_.track); });
@@ -1872,166 +2090,17 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			QAction* unmute = menu.addAction("Unmute All Tracks");
 			QObject::connect(unmute, &QAction::triggered, this, &PatternEditorPanel::onUnmuteAllPressed);
 #endif
-
 			if (mousePressPos_.track < 0) {
 				mute->setEnabled(false);
 				solo->setEnabled(false);
 				unmute->setEnabled(false);
 			}
+			menu.exec(mapToGlobal(event->pos()));
 		}
 		else {	// Pattern
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-			QAction* undo = menu.addAction("Undo", this, [&]() {
-				bt_->undo();
-				comStack_.lock()->undo();
-			});
-			QAction* redo = menu.addAction("Redo", this, [&]() {
-				bt_->redo();
-				comStack_.lock()->redo();
-			});
-			menu.addSeparator();
-			QAction* copy = menu.addAction("Copy", this, &PatternEditorPanel::copySelectedCells);
-			QAction* cut = menu.addAction("Cut", this, &PatternEditorPanel::cutSelectedCells);
-			QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
-			auto pasteSp = new QMenu("Paste Special");
-			menu.addMenu(pasteSp);
-			QAction* pasteMix = pasteSp->addAction("Mix", this, [&]() { pasteMixCopiedCells(mousePressPos_); });
-			QAction* pasteOver = pasteSp->addAction("Overwrite", this, [&]() { pasteOverwriteCopiedCells(mousePressPos_); });
-			QAction* erase = menu.addAction("Erase", this, &PatternEditorPanel::eraseSelectedCells);
-			QAction* select = menu.addAction("Select All", this, [&]() { onSelectPressed(1); });
-			menu.addSeparator();
-			auto pattern = new QMenu("Pattern");
-			menu.addMenu(pattern);
-			QAction* interpolate = pattern->addAction("Interpolate", this, &PatternEditorPanel::onInterpolatePressed);
-			QAction* reverse = pattern->addAction("Reverse", this, &PatternEditorPanel::onReversePressed);
-			QAction* replace = pattern->addAction("Replace Instrument", this, &PatternEditorPanel::onReplaceInstrumentPressed);
-			pattern->addSeparator();
-			QAction* expand = pattern->addAction("Expand", this, &PatternEditorPanel::onExpandPressed);
-			QAction* shrink = pattern->addAction("Shrink", this, &PatternEditorPanel::onShrinkPressed);
-			pattern->addSeparator();
-			auto transpose = new QMenu("Transpose");
-			pattern->addMenu(transpose);
-			QAction* deNote = transpose->addAction("Decrease Note", this, [&]() { onTransposePressed(false, false); });
-			QAction* inNote = transpose->addAction("Increase Note", this, [&]() { onTransposePressed(false, true); });
-			QAction* deOct = transpose->addAction("Decrease Octave", this, [&]() { onTransposePressed(true, false); });
-			QAction* inOct = transpose->addAction("Increase Octave", this, [&]() { onTransposePressed(true, true); });
-			menu.addSeparator();
-			QAction* mute = menu.addAction("Mute Track", this, [&] { onMuteTrackPressed(mousePressPos_.track); });
-			QAction* solo = menu.addAction("Solo Track", this, [&] { onSoloTrackPressed(mousePressPos_.track); });
-#else
-			QAction* undo = menu.addAction("Undo");
-			QObject::connect(undo, &QAction::triggered, this, [&]() {
-				bt_->undo();
-				comStack_.lock()->undo();
-			});
-			QAction* redo = menu.addAction("Redo");
-			QObject::connect(redo, &QAction::triggered, this, [&]() {
-				bt_->redo();
-				comStack_.lock()->redo();
-			});
-			menu.addSeparator();
-			QAction* copy = menu.addAction("Copy");
-			QObject::connect(copy, &QAction::triggered, this, &PatternEditorPanel::copySelectedCells);
-			QAction* cut = menu.addAction("Cut");
-			QObject::connect(cut, &QAction::triggered, this, &PatternEditorPanel::cutSelectedCells);
-			QAction* paste = menu.addAction("Paste");
-			QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(mousePressPos_); });
-			auto pasteSp = new QMenu("Paste Special");
-			menu.addMenu(pasteSp);
-			QAction* pasteMix = pasteSp->addAction("Mix");
-			QObject::connect(pasteMix, &QAction::triggered, this, [&]() { pasteMixCopiedCells(mousePressPos_); });
-			QAction* pasteOver = pasteSp->addAction("Overwrite");
-			QObject::connect(pasteOver, &QAction::triggered, this, [&]() { pasteOverwriteCopiedCells(mousePressPos_); });
-			QAction* erase = menu.addAction("Erase");
-			QObject::connect(erase, &QAction::triggered, this, &PatternEditorPanel::eraseSelectedCells);
-			QAction* select = menu.addAction("Select All");
-			QObject::connect(select, &QAction::triggered, this, [&]() { onSelectPressed(1); });
-			menu.addSeparator();
-			auto pattern = new QMenu("Pattern");
-			menu.addMenu(pattern);
-			QAction* interpolate = pattern->addAction("Interpolate");
-			QObject::connect(interpolate, &QAction::triggered, this, &PatternEditorPanel::onInterpolatePressed);
-			QAction* reverse = pattern->addAction("Reverse");
-			QObject::connect(reverse, &QAction::triggered, this, &PatternEditorPanel::onReversePressed);
-			QAction* replace = pattern->addAction("Replace Instrument");
-			QObject::connect(replace, &QAction::triggered, this, &PatternEditorPanel::onReplaceInstrumentPressed);
-			pattern->addSeparator();
-			QAction* expand = pattern->addAction("Expand");
-			QObject::connect(expand, &QAction::triggered, this, &PatternEditorPanel::onExpandPressed);
-			QAction* shrink = pattern->addAction("Shrink");
-			QObject::connect(shrink, &QAction::triggered, this, &PatternEditorPanel::onShrinkPressed);
-			pattern->addSeparator();
-			auto transpose = new QMenu("Transpose");
-			pattern->addMenu(transpose);
-			QAction* deNote = transpose->addAction("Decrease Note");
-			QObject::connect(deNote, &QAction::triggered, this, [&]() { onTransposePressed(false, false); });
-			QAction* inNote = transpose->addAction("Increase Note");
-			QObject::connect(inNote, &QAction::triggered, this, [&]() { onTransposePressed(false, true); });
-			QAction* deOct = transpose->addAction("Decrease Octave");
-			QObject::connect(deOct, &QAction::triggered, this, [&]() { onTransposePressed(true, false); });
-			QAction* inOct = transpose->addAction("Increase Octave");
-			QObject::connect(inOct, &QAction::triggered, this, [&]() { onTransposePressed(true, true); });
-			menu.addSeparator();
-			QAction* mute = menu.addAction("Mute Track");
-			QObject::connect(mute, &QAction::triggered, this, [&] { onMuteTrackPressed(mousePressPos_.track); });
-			QAction* solo = menu.addAction("Solo Track");
-			QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(mousePressPos_.track); });
-#endif
-
-			if (bt_->isJamMode() || mousePressPos_.order < 0 || mousePressPos_.track < 0) {
-				copy->setEnabled(false);
-				cut->setEnabled(false);
-				paste->setEnabled(false);
-				pasteMix->setEnabled(false);
-				pasteOver->setEnabled(false);
-				erase->setEnabled(false);
-				interpolate->setEnabled(false);
-				reverse->setEnabled(false);
-				replace->setEnabled(false);
-				expand->setEnabled(false);
-				shrink->setEnabled(false);
-				deNote->setEnabled(false);
-				inNote->setEnabled(false);
-				deOct->setEnabled(false);
-				inOct->setEnabled(false);
-			}
-			else {
-				QString clipText = QApplication::clipboard()->text();
-				if (!clipText.startsWith("PATTERN_COPY") && !clipText.startsWith("PATTERN_CUT")) {
-					paste->setEnabled(false);
-					pasteMix->setEnabled(false);
-					pasteOver->setEnabled(false);
-				}
-				if (selRightBelowPos_.order < 0
-						|| !isSelectedCell(mousePressPos_.track, mousePressPos_.colInTrack,
-										   mousePressPos_.order, mousePressPos_.step)) {
-					copy->setEnabled(false);
-					cut->setEnabled(false);
-					erase->setEnabled(false);
-					interpolate->setEnabled(false);
-					reverse->setEnabled(false);
-					replace->setEnabled(false);
-					expand->setEnabled(false);
-					shrink->setEnabled(false);
-					deNote->setEnabled(false);
-					inNote->setEnabled(false);
-					deOct->setEnabled(false);
-					inOct->setEnabled(false);
-				}
-			}
-			if (!comStack_.lock()->canUndo()) {
-				undo->setEnabled(false);
-			}
-			if (!comStack_.lock()->canRedo()) {
-				redo->setEnabled(false);
-			}
-			if (mousePressPos_.track < 0) {
-				mute->setEnabled(false);
-				solo->setEnabled(false);
-			}
+			showPatternContextMenu(mousePressPos_, event->pos());
 		}
 
-		menu.exec(mapToGlobal(event->pos()));
 		break;
 	}
 
@@ -2059,7 +2128,7 @@ void PatternEditorPanel::mouseDoubleClickEvent(QMouseEvent* event)
 			}
 		}
 		else if (doubleClickPos_.order == -2) {
-			if (doubleClickPos_.track >= 0) {
+			if (doubleClickPos_.track >= 0 && !isPressedPlus_ && !isPressedMinus_) {
 				bool flag = true;
 				for (int t = 0; t < songStyle_.trackAttribs.size(); ++t) {
 					if (t != doubleClickPos_.track) flag &= bt_->isMute(t);

@@ -14,6 +14,7 @@
 #include <QColor>
 #include <QUndoStack>
 #include <QString>
+#include <QPoint>
 #include <memory>
 #include <vector>
 #include "bamboo_tracker.hpp"
@@ -160,6 +161,7 @@ private:
 	int calculateColNumInRow(int trackNum, int colNumInTrack, bool isExpanded = false) const;
 	int calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn, bool isExpanded = false) const;
 	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
+	QPoint calculateCurrentCursorPosition() const;
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
@@ -182,18 +184,20 @@ private:
 	void deletePreviousStep();
 
 	void eraseSelectedCells();
-	void pasteCopiedCells(PatternPosition& startPos);
-	void pasteMixCopiedCells(PatternPosition& startPos);
-	void pasteOverwriteCopiedCells(PatternPosition& startPos);
+	void pasteCopiedCells(const PatternPosition& startPos);
+	void pasteMixCopiedCells(const PatternPosition& startPos);
+	void pasteOverwriteCopiedCells(const PatternPosition& startPos);
 	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
 
-	void increaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);
-	void decreaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);
-	void increaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos);
-	void decreaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos);
+	void increaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos);
+	void decreaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos);
+	void increaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos);
+	void decreaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos);
 
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
+
+	void showPatternContextMenu(const PatternPosition& pos, const QPoint& point);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

@@ -14,6 +14,7 @@
 #include <QEvent>
 #include <QRect>
 #include <QColor>
+#include <QPoint>
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
@@ -132,10 +133,12 @@ private:
 	bool enterOrder(int key);
 	void setCellOrderNum(int n);
 
-	void pasteCopiedCells(OrderPosition& startPos);
+	void pasteCopiedCells(const OrderPosition& startPos);
 
 	void setSelectedRectangle(const OrderPosition& start, const OrderPosition& end);
 	bool isSelectedCell(int track, int row);
+
+	void showContextMenu(const OrderPosition& pos, const QPoint& point);
 };
 
 #endif // ORDER_LIST_PANEL_HPP

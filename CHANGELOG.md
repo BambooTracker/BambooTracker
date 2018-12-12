@@ -15,6 +15,7 @@
 - [#24] - Fix crash when adding song (thanks [@JonKaruzu])
 - Fix focus in instrument list
 - [#26] - Fix mute actions in pattern editor (thanks [@jimbo1qaz])
+- [#26] - Fix pattern and order context menu shortcuts (thanks [@jimbo1qaz])
 
 [#25]: https://github.com/rerrahkr/BambooTracker/issues/25
 [#14]: https://github.com/rerrahkr/BambooTracker/issues/14
