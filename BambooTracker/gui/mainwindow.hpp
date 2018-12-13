@@ -140,7 +140,7 @@ private slots:
 	void on_actionPlay_From_Cursor_triggered();
 	void on_actionStop_triggered();
 	void on_actionEdit_Mode_triggered();
-	void on_actionMute_Track_triggered();
+	void on_actionToggle_Track_triggered();
 	void on_actionSolo_Track_triggered();
 	void on_actionKill_Sound_triggered();
 	void on_actionAbout_triggered();

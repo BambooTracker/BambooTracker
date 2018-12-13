@@ -177,9 +177,9 @@ void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
 	ui->panel->onTransposePressed(isOctave, isIncreased);
 }
 
-void PatternEditor::onMuteTrackPressed()
+void PatternEditor::onToggleTrackPressed()
 {
-	ui->panel->onMuteTrackPressed(ui->panel->getCurrentTrack());
+	ui->panel->onToggleTrackPressed(ui->panel->getCurrentTrack());
 }
 
 void PatternEditor::onSoloTrackPressed()

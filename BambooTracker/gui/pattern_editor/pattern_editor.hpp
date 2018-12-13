@@ -66,7 +66,7 @@ public slots:
 	/// 5: Order
 	void onSelectPressed(int type);
 	void onTransposePressed(bool isOctave, bool isIncreased);
-	void onMuteTrackPressed();
+	void onToggleTrackPressed();
 	void onSoloTrackPressed();
 	void onExpandPressed();
 	void onShrinkPressed();

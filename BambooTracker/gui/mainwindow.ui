@@ -550,7 +550,7 @@
     <addaction name="actionFollow_Mode"/>
     <addaction name="actionEdit_Mode"/>
     <addaction name="separator"/>
-    <addaction name="actionMute_Track"/>
+    <addaction name="actionToggle_Track"/>
     <addaction name="actionSolo_Track"/>
     <addaction name="separator"/>
     <addaction name="actionKill_Sound"/>
@@ -947,9 +947,9 @@
     <string>Space</string>
    </property>
   </action>
-  <action name="actionMute_Track">
+  <action name="actionToggle_Track">
    <property name="text">
-    <string>&amp;Mute Track</string>
+    <string>To&amp;ggle Track</string>
    </property>
    <property name="shortcut">
     <string>Alt+F9</string>

@@ -1227,26 +1227,37 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 		bt_->undo();
 		comStack_.lock()->undo();
 	});
+	undo->setShortcutVisibleInContextMenu(true);
 	QAction* redo = menu.addAction("&Redo", this, [&]() {
 		bt_->redo();
 		comStack_.lock()->redo();
 	});
+	redo->setShortcutVisibleInContextMenu(true);
 	menu.addSeparator();
 	QAction* copy = menu.addAction("&Copy", this, &PatternEditorPanel::copySelectedCells);
-	QAction* cut = menu.addAction("Cu&t", this, &PatternEditorPanel::cutSelectedCells);
+	copy->setShortcutVisibleInContextMenu(true);
+	QAction* cut = menu.addAction("Cu&t", this, &PatternEditorPanel::cutSelectedCells);;
+	cut->setShortcutVisibleInContextMenu(true);
 	QAction* paste = menu.addAction("&Paste", this, [&]() { pasteCopiedCells(pos); });
+	paste->setShortcutVisibleInContextMenu(true);
 	auto pasteSp = new QMenu("Paste Specia&l");
 	menu.addMenu(pasteSp);
 	QAction* pasteMix = pasteSp->addAction("&Mix", this, [&]() { pasteMixCopiedCells(pos); });
+	pasteMix->setShortcutVisibleInContextMenu(true);
 	QAction* pasteOver = pasteSp->addAction("&Overwrite", this, [&]() { pasteOverwriteCopiedCells(pos); });
 	QAction* erase = menu.addAction("&Erase", this, &PatternEditorPanel::eraseSelectedCells);
+	erase->setShortcutVisibleInContextMenu(true);
 	QAction* select = menu.addAction("Select &All", this, [&]() { onSelectPressed(1); });
+	select->setShortcutVisibleInContextMenu(true);
 	menu.addSeparator();
 	auto pattern = new QMenu("Patter&n");
 	menu.addMenu(pattern);
 	QAction* interpolate = pattern->addAction("&Interpolate", this, &PatternEditorPanel::onInterpolatePressed);
+	interpolate->setShortcutVisibleInContextMenu(true);
 	QAction* reverse = pattern->addAction("&Reverse", this, &PatternEditorPanel::onReversePressed);
+	reverse->setShortcutVisibleInContextMenu(true);
 	QAction* replace = pattern->addAction("R&eplace Instrument", this, &PatternEditorPanel::onReplaceInstrumentPressed);
+	replace->setShortcutVisibleInContextMenu(true);
 	pattern->addSeparator();
 	QAction* expand = pattern->addAction("E&xpand", this, &PatternEditorPanel::onExpandPressed);
 	QAction* shrink = pattern->addAction("S&hrink", this, &PatternEditorPanel::onShrinkPressed);
@@ -1254,12 +1265,18 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	auto transpose = new QMenu("&Transpose");
 	pattern->addMenu(transpose);
 	QAction* deNote = transpose->addAction("&Decrease Note", this, [&]() { onTransposePressed(false, false); });
+	deNote->setShortcutVisibleInContextMenu(true);
 	QAction* inNote = transpose->addAction("&Increase Note", this, [&]() { onTransposePressed(false, true); });
+	inNote->setShortcutVisibleInContextMenu(true);
 	QAction* deOct = transpose->addAction("D&ecrease Octave", this, [&]() { onTransposePressed(true, false); });
+	deOct->setShortcutVisibleInContextMenu(true);
 	QAction* inOct = transpose->addAction("I&ncrease Octave", this, [&]() { onTransposePressed(true, true); });
+	inOct->setShortcutVisibleInContextMenu(true);
 	menu.addSeparator();
-	QAction* mute = menu.addAction("&Mute Track", this, [&] { onMuteTrackPressed(pos.track); });
+	QAction* toggle = menu.addAction("To&ggle Track", this, [&] { onToggleTrackPressed(pos.track); });
+	toggle->setShortcutVisibleInContextMenu(true);
 	QAction* solo = menu.addAction("&Solo Track", this, [&] { onSoloTrackPressed(pos.track); });
+	solo->setShortcutVisibleInContextMenu(true);
 #else
 	QAction* undo = menu.addAction("&Undo");
 	QObject::connect(undo, &QAction::triggered, this, [&]() {
@@ -1314,47 +1331,29 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QAction* inOct = transpose->addAction("I&ncrease Octave");
 	QObject::connect(inOct, &QAction::triggered, this, [&]() { onTransposePressed(true, true); });
 	menu.addSeparator();
-	QAction* mute = menu.addAction("&Mute Track");
-	QObject::connect(mute, &QAction::triggered, this, [&] { onMuteTrackPressed(pos.track); });
+	QAction* toggle = menu.addAction("To&ggle Track");
+	QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(pos.track); });
 	QAction* solo = menu.addAction("&Solo Track");
 	QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(pos.track); });
 #endif
 	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
-	undo->setShortcutVisibleInContextMenu(true);
 	redo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
-	redo->setShortcutVisibleInContextMenu(true);
 	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
-	undo->setShortcutVisibleInContextMenu(true);
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-	copy->setShortcutVisibleInContextMenu(true);
 	cut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
-	cut->setShortcutVisibleInContextMenu(true);
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
-	paste->setShortcutVisibleInContextMenu(true);
 	pasteMix->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
-	pasteMix->setShortcutVisibleInContextMenu(true);
 	erase->setShortcut(QKeySequence(Qt::Key_Delete));
-	erase->setShortcutVisibleInContextMenu(true);
 	select->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
-	select->setShortcutVisibleInContextMenu(true);
 	interpolate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
-	interpolate->setShortcutVisibleInContextMenu(true);
 	reverse->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-	reverse->setShortcutVisibleInContextMenu(true);
 	replace->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
-	replace->setShortcutVisibleInContextMenu(true);
 	deNote->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F1));
-	deNote->setShortcutVisibleInContextMenu(true);
 	inNote->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F2));
-	inNote->setShortcutVisibleInContextMenu(true);
 	deOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F3));
-	deOct->setShortcutVisibleInContextMenu(true);
 	inOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4));
-	inOct->setShortcutVisibleInContextMenu(true);
-	mute->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
-	mute->setShortcutVisibleInContextMenu(true);
+	toggle->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
 	solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
-	solo->setShortcutVisibleInContextMenu(true);
 
 	if (bt_->isJamMode() || pos.order < 0 || pos.track < 0) {
 		copy->setEnabled(false);
@@ -1404,7 +1403,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 		redo->setEnabled(false);
 	}
 	if (pos.track < 0) {
-		mute->setEnabled(false);
+		toggle->setEnabled(false);
 		solo->setEnabled(false);
 	}
 
@@ -1676,7 +1675,7 @@ void PatternEditorPanel::onTransposePressed(bool isOctave, bool isIncreased)
 	}
 }
 
-void PatternEditorPanel::onMuteTrackPressed(int track)
+void PatternEditorPanel::onToggleTrackPressed(int track)
 {
 	bt_->setTrackMuteState(track, !bt_->isMute(track));
 	isMuteElse_ = false;
@@ -2079,19 +2078,23 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		if (mousePressPos_.order == -2) {	// Header
 			QMenu menu;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-			QAction* mute = menu.addAction("Mute Track", this, [&] { onMuteTrackPressed(mousePressPos_.track); });
-			QAction* solo = menu.addAction("Solo Track", this, [&] { onSoloTrackPressed(mousePressPos_.track); });
-			QAction* unmute = menu.addAction("Unmute All Tracks", this, &PatternEditorPanel::onUnmuteAllPressed);
+			QAction* toggle = menu.addAction("To&ggle Track", this, [&] { onToggleTrackPressed(mousePressPos_.track); });
+			toggle->setShortcutVisibleInContextMenu(true);
+			QAction* solo = menu.addAction("&Solo Track", this, [&] { onSoloTrackPressed(mousePressPos_.track); });
+			solo->setShortcutVisibleInContextMenu(true);
+			QAction* unmute = menu.addAction("&Unmute All Tracks", this, &PatternEditorPanel::onUnmuteAllPressed);
 #else
-			QAction* mute = menu.addAction("Mute Track");
-			QObject::connect(mute, &QAction::triggered, this, [&] { onMuteTrackPressed(mousePressPos_.track); });
-			QAction* solo = menu.addAction("Solo Track");
+			QAction* toggle = menu.addAction("To&ggle Track");
+			QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(mousePressPos_.track); });
+			QAction* solo = menu.addAction("&Solo Track");
 			QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(mousePressPos_.track); });
-			QAction* unmute = menu.addAction("Unmute All Tracks");
+			QAction* unmute = menu.addAction("&Unmute All Tracks");
 			QObject::connect(unmute, &QAction::triggered, this, &PatternEditorPanel::onUnmuteAllPressed);
 #endif
+			toggle->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
+			solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
 			if (mousePressPos_.track < 0) {
-				mute->setEnabled(false);
+				toggle->setEnabled(false);
 				solo->setEnabled(false);
 				unmute->setEnabled(false);
 			}

@@ -935,6 +935,7 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QAction* svFile = menu.addAction("&Save to file...", this, &MainWindow::saveInstrument);
     menu.addSeparator();
 	QAction* edit = menu.addAction("&Edit...", this, &MainWindow::editInstrument);
+	edit->setShortcutVisibleInContextMenu(true);
 #else
 	QAction* add = menu.addAction("&Add");
 	QObject::connect(add, &QAction::triggered, this, &MainWindow::addInstrument);
@@ -960,7 +961,6 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
 #endif
 	edit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
-	edit->setShortcutVisibleInContextMenu(true);
 
 	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
 		add->setEnabled(false);
@@ -1448,9 +1448,9 @@ void MainWindow::on_actionEdit_Mode_triggered()
 	updateMenuByPatternAndOrderSelection(isSelectedPO_);
 }
 
-void MainWindow::on_actionMute_Track_triggered()
+void MainWindow::on_actionToggle_Track_triggered()
 {
-	ui->patternEditor->onMuteTrackPressed();
+	ui->patternEditor->onToggleTrackPressed();
 }
 
 void MainWindow::on_actionSolo_Track_triggered()
