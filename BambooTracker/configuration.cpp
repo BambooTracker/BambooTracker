@@ -28,6 +28,12 @@ Configuration::Configuration()
 	// Edit settings
 	pageJumpLength_ = 4;
 
+	// Keys
+	keyOffKey_ = u8"-";
+	octUpKey_ = u8"*";
+	octDownKey_ = u8"/";
+	echoKey_ = u8"^";
+
 	// Sonud //
 	sndDevice_ = u8"";
 	sampleRate_ = 44100;
@@ -226,6 +232,47 @@ void Configuration::setPageJumpLength(size_t length)
 size_t Configuration::getPageJumpLength() const
 {
 	return pageJumpLength_;
+}
+
+// Keys
+void Configuration::setKeyOffKey(std::string key)
+{
+	keyOffKey_ = key;
+}
+
+std::string Configuration::getKeyOffKey() const
+{
+	return keyOffKey_;
+}
+
+void Configuration::setOctaveUpKey(std::string key)
+{
+	octUpKey_ = key;
+}
+
+std::string Configuration::getOctaveUpKey() const
+{
+	return octUpKey_;
+}
+
+void Configuration::setOctaveDownKey(std::string key)
+{
+	octDownKey_ = key;
+}
+
+std::string Configuration::getOctaveDownKey() const
+{
+	return octDownKey_;
+}
+
+void Configuration::setEchoBufferKey(std::string key)
+{
+	echoKey_ = key;
+}
+
+std::string Configuration::getEchoBufferKey() const
+{
+	return echoKey_;
 }
 
 // Sound //

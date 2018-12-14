@@ -72,6 +72,20 @@ public:
 private:
 	size_t pageJumpLength_;
 
+	// Keys
+public:
+	void setKeyOffKey(std::string key);
+	std::string getKeyOffKey() const;
+	void setOctaveUpKey(std::string key);
+	std::string getOctaveUpKey() const;
+	void setOctaveDownKey(std::string key);
+	std::string getOctaveDownKey() const;
+	void setEchoBufferKey(std::string key);
+	std::string getEchoBufferKey() const;
+
+private:
+	std::string keyOffKey_, octUpKey_, octDownKey_, echoKey_;
+
 	// Sound //
 public:
 	void setSoundDevice(std::string device);

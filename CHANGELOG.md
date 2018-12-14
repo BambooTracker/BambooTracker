@@ -5,6 +5,7 @@
 - [#18] - Add FM operator copy/paste (thanks [@jimbo1qaz])
 - [#14] - Assign instrument editor close shortcut to escape key (thanks [@jimbo1qaz])
 - [#26] - Add menu shortcuts (thanks [@jimbo1qaz])
+- [#2] - Add simple key shortcut settings (thanks [@pedipanol])
 
 ### Fixed
 - Fix default place of load/save instrument

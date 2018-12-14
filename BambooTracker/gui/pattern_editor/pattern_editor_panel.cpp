@@ -738,11 +738,29 @@ void PatternEditorPanel::updatePosition()
 	update();
 }
 
-bool PatternEditorPanel::enterToneData(int key)
+bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 {
+	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
+	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getKeyOffKey().c_str(),
+											  config_.lock()->getKeyOffKey().length())).toString()) {
+		bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
+		if (!bt_->isPlaySong()) moveCursorToDown(1);
+		return true;
+	}
+	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getEchoBufferKey().c_str(),
+												   config_.lock()->getEchoBufferKey().length())).toString()) {
+		int n = bt_->getCurrentOctave();
+		if (n > 3) n = 3;
+		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
+		comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
+		if (!bt_->isPlaySong()) moveCursorToDown(1);
+		return true;
+	}
+
 	int baseOct = bt_->getCurrentOctave();
 
-	switch (key) {
+	switch (event->key()) {
 	case Qt::Key_Z:			setStepKeyOn(Note::C, baseOct);			return false;
 	case Qt::Key_S:			setStepKeyOn(Note::CS, baseOct);		return false;
 	case Qt::Key_X:			setStepKeyOn(Note::D, baseOct);			return false;
@@ -773,20 +791,6 @@ bool PatternEditorPanel::enterToneData(int key)
 	case Qt::Key_I:			setStepKeyOn(Note::C, baseOct + 2);		return false;
 	case Qt::Key_9:			setStepKeyOn(Note::CS, baseOct + 2);	return false;
 	case Qt::Key_O:			setStepKeyOn(Note::D, baseOct + 2);		return false;
-	case Qt::Key_Minus:
-		bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
-		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(1);
-		return true;
-	case Qt::Key_AsciiCircum:
-	{
-		int n = bt_->getCurrentOctave();
-		if (n > 3) n = 3;
-		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
-		comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(1);
-		return true;
-	}
 	default:
 		return false;
 	}
@@ -1923,7 +1927,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			// Pattern edit
 			switch (curPos_.colInTrack) {
 			case 0:
-				return enterToneData(event->key());
+				return enterToneData(event);
 			case 1:
 				return enterInstrumentData(event->key());
 			case 2:

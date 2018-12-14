@@ -361,6 +361,11 @@ void InstrumentEditorSSGForm::setCore(std::weak_ptr<BambooTracker> core)
 	updateInstrumentParameters();
 }
 
+void InstrumentEditorSSGForm::setConfiguration(std::weak_ptr<Configuration> config)
+{
+	config_ = config;
+}
+
 void InstrumentEditorSSGForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	ui->waveEditor->setColorPalette(palette);
@@ -419,10 +424,22 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
 {
 	// For jam key on
+
+	// Check keys
+	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
+	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
+											  config_.lock()->getOctaveUpKey().length())).toString()) {
+		emit octaveChanged(true);
+		return;
+	}
+	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
+												   config_.lock()->getOctaveDownKey().length())).toString()) {
+		emit octaveChanged(false);
+		return;
+	}
+
 	// General keys
 	switch (event->key()) {
-	case Qt::Key_Asterisk:	emit octaveChanged(true);	break;
-	case Qt::Key_Slash:		emit octaveChanged(false);	break;
 	//case Qt::Key_Return:	emit playStatusChanged(0);	break;
 	case Qt::Key_F5:		emit playStatusChanged(1);	break;
 	case Qt::Key_F6:		emit playStatusChanged(2);	break;

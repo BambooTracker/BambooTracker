@@ -169,7 +169,7 @@ private:
 	void expandEffect(int trackNum);
 	void shrinkEffect(int trackNum);
 
-	bool enterToneData(int key);
+	bool enterToneData(QKeyEvent* event);
 	void setStepKeyOn(Note note, int octave);
 	bool enterInstrumentData(int key);
 	void setStepInstrument(int num);

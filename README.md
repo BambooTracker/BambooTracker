@@ -55,7 +55,7 @@ BambooTracker is a tracker for YM2608 (OPNA) which was used in NEC PC-8801/9801 
 | Ctrl+F2   | Increase note                      |
 | Ctrl+F3   | Decrease octave                    |
 | Ctrl+F4   | Increase octave                    |
-| Alt+F9    | Mute track                         |
+| Alt+F9    | Toggle track                       |
 | Alt+F10   | Solo track                         |
 | Alt+S     | Replace instrument                 |
 | Tab       | Jump to right track                |

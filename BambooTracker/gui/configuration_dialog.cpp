@@ -32,6 +32,16 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(config.lock()->getPageJumpLength());
 
+	// Keys
+	ui->keyOffKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getKeyOffKey().c_str(),
+																config.lock()->getKeyOffKey().length()));
+	ui->octaveUpKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getOctaveUpKey().c_str(),
+																  config.lock()->getOctaveUpKey().length()));
+	ui->octaveDownKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getOctaveDownKey().c_str(),
+																	config.lock()->getOctaveDownKey().length()));
+	ui->echoBufferKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getEchoBufferKey().c_str(),
+																	config.lock()->getEchoBufferKey().length()));
+
 	// Sound //
 	int devRow = -1;
 	int defDevRow = 0;
@@ -81,6 +91,12 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 
 	// Edit settings
 	config_.lock()->setPageJumpLength(ui->pageJumpLengthSpinBox->value());
+
+	// Keys
+	config_.lock()->setKeyOffKey(ui->keyOffKeySequenceEdit->keySequence().toString().toStdString());
+	config_.lock()->setOctaveUpKey(ui->octaveUpKeySequenceEdit->keySequence().toString().toStdString());
+	config_.lock()->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
+	config_.lock()->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
 
 	// Sound //
 	config_.lock()->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());

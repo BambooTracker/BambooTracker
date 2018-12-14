@@ -38,6 +38,16 @@ bool Json::saveConfiguration(std::weak_ptr<Configuration> config)
 		// Edit settings
 		obj["pageJumpLength"] = static_cast<int>(config.lock()->getPageJumpLength());
 
+		// Keys
+		obj["keyOffKey"] = QString::fromUtf8(config.lock()->getKeyOffKey().c_str(),
+											 config.lock()->getKeyOffKey().length());
+		obj["octaveUpKey"] = QString::fromUtf8(config.lock()->getOctaveUpKey().c_str(),
+											 config.lock()->getOctaveUpKey().length());
+		obj["octaveDownKey"] = QString::fromUtf8(config.lock()->getOctaveDownKey().c_str(),
+											 config.lock()->getOctaveDownKey().length());
+		obj["echoBufferKey"] = QString::fromUtf8(config.lock()->getEchoBufferKey().c_str(),
+											 config.lock()->getEchoBufferKey().length());
+
 		// Sound //
 		obj["soundDevice"] = QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
 											   config.lock()->getSoundDevice().length());
@@ -88,6 +98,12 @@ bool Json::loadConfiguration(std::weak_ptr<Configuration> config)
 
 		// Edit settings
 		config.lock()->setPageJumpLength(static_cast<size_t>(obj["pageJumpLength"].toInt()));
+
+		// Keys
+		config.lock()->setKeyOffKey(obj["keyOffKey"].toString().toUtf8().toStdString());
+		config.lock()->setOctaveUpKey(obj["octaveUpKey"].toString().toUtf8().toStdString());
+		config.lock()->setOctaveDownKey(obj["octaveDownKey"].toString().toUtf8().toStdString());
+		config.lock()->setEchoBufferKey(obj["echoBufferKey"].toString().toUtf8().toStdString());
 
 		// Sound //
 		config.lock()->setSoundDevice(obj["soundDevice"].toString().toUtf8().toStdString());

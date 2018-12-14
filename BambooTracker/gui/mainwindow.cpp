@@ -383,57 +383,63 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
 	int key = event->key();
 
+	/* Key check */
+	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
+	if (seq == QKeySequence(QString::fromUtf8(config_->getOctaveUpKey().c_str(),
+											  config_->getOctaveUpKey().length())).toString()) {
+		changeOctave(true);
+		return;
+	}
+	else if (seq == QKeySequence(QString::fromUtf8(config_->getOctaveDownKey().c_str(),
+												   config_->getOctaveDownKey().length())).toString()) {
+		changeOctave(false);
+		return;
+	}
+
 	/* Pressed alt */
 	if (event->modifiers().testFlag(Qt::AltModifier)) {
 		switch (key) {
-		case Qt::Key_O:		ui->orderList->setFocus();		break;
-		case Qt::Key_P:		ui->patternEditor->setFocus();	break;
+		case Qt::Key_O:		ui->orderList->setFocus();		return;
+		case Qt::Key_P:		ui->patternEditor->setFocus();	return;
 		}
 	}
 
 	/* General keys */
-	switch (key) {
-	case Qt::Key_Asterisk:	changeOctave(true);			break;
-	case Qt::Key_Slash:		changeOctave(false);		break;
-
-	default:
-		if (!event->isAutoRepeat()) {
-			// Musical keyboard
-			switch (key) {
-			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
-			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
-			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
-			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
-			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
-			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
-			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
-			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
-			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
-			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
-			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
-			case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
-			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
-			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
-			case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
-			case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
-			case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
-			case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
-			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
-			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
-			case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
-			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
-			case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
-			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
-			case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
-			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
-			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
-			case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
-			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
-			default:	break;
-			}
+	if (!event->isAutoRepeat()) {
+		// Musical keyboard
+		switch (key) {
+		case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
+		case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
+		case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
+		case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
+		case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
+		case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
+		case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
+		case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
+		case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
+		case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
+		case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
+		case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
+		case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
+		case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
+		case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
+		case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
+		case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
+		case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
+		case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
+		case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
+		case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
+		case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
+		case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
+		case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
+		case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
+		case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
+		case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
+		case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
+		case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
+		case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
+		default:	break;
 		}
-		break;
 	}
 }
 
@@ -1016,6 +1022,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
 		fmForm->setCore(bt_);
+		fmForm->setConfiguration(config_);
 		fmForm->setColorPalette(palette_);
 		fmForm->resize(config_->getInstrumentFMWindowWidth(), config_->getInstrumentFMWindowHeight());
 
@@ -1062,6 +1069,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
 		ssgForm->setCore(bt_);
+		ssgForm->setConfiguration(config_);
 		ssgForm->setColorPalette(palette_);
 		ssgForm->resize(config_->getInstrumentSSGWindowWidth(), config_->getInstrumentSSGWindowHeight());
 
