@@ -20,7 +20,7 @@ ColorPalette::ColorPalette()
 	instFMEnvCirclePenColor = QColor::fromRgb(0, 0, 0, 255);
 	instFMEnvCircleBrushColor = QColor::fromRgb(255, 255, 255, 255);
 	instFMAlForeColor = QColor::fromRgb(107, 185, 240, 255);
-	instFMAlBackColor = QColor::fromRgb(255, 255, 255, 255);
+	instFMAlBackColor = QColor::fromRgb(255, 255, 255, 0);
 	instSeqLoopBackColor = QColor::fromRgb(25, 25, 25, 255);
 	instSeqReleaseBackColor = QColor::fromRgb(0, 0, 0, 255);
 	instSeqLoopColor = QColor::fromRgb(210, 40, 180, 127);

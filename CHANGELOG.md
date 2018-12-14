@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.1.3 (2018-12-14)
 ### Added
 - [#18] - Add FM operator copy/paste (thanks [@jimbo1qaz])
 - [#14] - Assign instrument editor close shortcut to escape key (thanks [@jimbo1qaz])

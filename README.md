@@ -1,5 +1,5 @@
 # BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.1.2-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.1.3-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: win-32](https://img.shields.io/badge/platform-win--32-lightgrey.svg)
 [![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
