@@ -15,5 +15,6 @@
         <file alias="property">res/icon/if_table_edit_5800.png</file>
         <file alias="inst_ssg">res/icon/inst_ssg.png</file>
         <file alias="inst_fm">res/icon/inst_fm.png</file>
+        <file alias="app_icon">res/icon/BambooTracker.ico</file>
     </qresource>
 </RCC>

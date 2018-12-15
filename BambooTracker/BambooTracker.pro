@@ -343,3 +343,5 @@ INCLUDEPATH += \
 
 RESOURCES += \
     bamboo_tracker.qrc
+
+RC_ICONS = res/icon/BambooTracker.ico

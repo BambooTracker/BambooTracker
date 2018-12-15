@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Added
+- #27 - Add application icon (thanks @Decidetto)
 
 ## v0.1.3 (2018-12-14)
 ### Added
