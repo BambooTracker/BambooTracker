@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=BambooTracker
+Comment=BambooTracker
+Exec=BambooTracker
+Icon=BambooTracker
+Terminal=false
+Type=Application
+Categories=AudioVideo;AudioVideoEditing;
+Keywords=tracker;music;
