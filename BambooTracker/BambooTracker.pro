@@ -157,7 +157,7 @@ SOURCES += \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
-    gui/json.cpp \
+    gui/configuration_handler.cpp \
     gui/color_palette.cpp \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.cpp \
     command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp \
@@ -310,7 +310,7 @@ HEADERS += \
     gui/wave_export_settings_dialog.hpp \
     io/gd3_tag.hpp \
     configuration.hpp \
-    gui/json.hpp \
+    gui/configuration_handler.hpp \
     gui/color_palette.hpp \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.hpp \
     command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp \
