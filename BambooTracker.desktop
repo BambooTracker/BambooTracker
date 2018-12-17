@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=BambooTracker
+GenericName=OPNA Tracker
+GenericName[jp]=OPNAのトラッカーです
 Comment=Tracker for YM2608 (OPNA) which was used in NEC PC-8801/9801 series computers
 Exec=BambooTracker
 Icon=BambooTracker
