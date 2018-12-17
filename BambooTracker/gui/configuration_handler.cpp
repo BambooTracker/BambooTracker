@@ -1,5 +1,4 @@
 #include "configuration_handler.hpp"
-#include <QFile>
 #include <QSettings>
 
 // config path (*nix): ~/.config/<organization>/<application>.ini
