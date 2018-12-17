@@ -6,6 +6,95 @@
 
 BambooTracker is a tracker for YM2608 (OPNA) which was used in NEC PC-8801/9801 series computers.
 
+## Glossary
+The files created by this tracker are called "modules". One such module contains songs (song data), instruments (tone data) and settings common to each song.
+In a song, the channel of each sound source is assigned to a track, and the track holds multiple patterns (performance patterns).
+The patterns are played by registering them in the order they appear the song. (from beginning to end)
+A pattern describes a structure in which steps are arranged in chronological order. Key On / off and most effects are described in step units.
+A tick ​​is the minimum performance unit, one step = n ticks. The effects (such as vibrato) which change with the count unit are based on ticks.
+
+## Interface Overview
+### Instrument List
+In the Instrument List, you control the instruments (tone data) used in the module. All songs in the module share the instruments registered here. Up to 128 instruments can be registered (`$00` - `$7F`).
+
+### Instrument Editor
+Double-clicking an instrument opens the Instrument Editor and allows you to edit said instrument.
+Instruments can share their settings (properties) with other instruments. For instruments that share properties, a list of all users (instruments) of each property are displayed.
+
+Some instrument editors can set performance sequences. One column corresponds to one tick in the sequence editor.
+It also corresponds to specifying the sequence loop / release point. Left click to create point or increase count / type change, right click to delete point or decrease count. You can move the position by dragging the edge of the point.
+For the release type, you can select from the following three types only for envelope setting of SSG.
+
+- Fix: Run at specified volume from release point at Key Off
+- Absolute: Run from the first point after the release point to reach the volume at Key Off
+- Relative: Execute from the release point with the volume set as the maximum volume at Key Off
+
+#### FM Editor
+In the FM Editor, you can configure the
+
+1. Envelope
+2. LFO
+3. Operator Sequence
+4. Arpeggio
+5. Pitch
+
+of an FM instrument.
+
+#### SSG Editor
+In the SSG Editor, you can configure the
+
+1. Waveform
+2. Tone / noise
+3. Envelope
+4. Arpeggio
+5. Pitch
+
+of an SSG instrument.
+The software envelope will be invalid while using waveforms other than rectangular waves.
+
+### Order List
+In the Order List, we will register the pattern numbers in the order in which they will be played. The rows correspond to the order, and the columns correspond to tracks.
+The maximum length of the list is 256 (`$FF`).
+
+### Pattern Editor
+In the pattern Editor, events such as Key On are registered in chronological order. One line represents one step. The columns of each track, from left to right, are:
+
+1.  Notes
+2.  Instrument numbers
+3.  Volume
+4.  Two characters before effect 1
+5.  Two characters after effect 1
+6.  Two characters before effect 2
+7.  Two characters after effect 2
+8.  Two characters before effect 3
+9.  Two characters after effect 3
+10. Two characters before effect 4
+11. Two characters after effect 4
+
+Effects 2-3 can be displayed and hidden by pressing the + and - buttons on the header.
+Up to 256 patterns (`$00` - `$FF`) can be created for each track.
+
+### Settings Field
+In the Settings Field you can adjust the module's metadata and performance settings of the song.
+
+#### Tick Frequency
+Sets the frequency of the tick. NTSC is 60 Hz, PAL is 50 Hz.
+
+#### Tempo
+Specify the tempo of the song. The tempo here is different from bpm, it is simply an indicator of speed.
+It can also be specified with the `0Fxx` effect.
+
+#### Speed
+Set the number of ticks for rough estimate in 1 step. Tempo may cause this value to change at run time.
+It can also be specified with the `0Fxx` effect.
+
+#### Pattern Size
+Sets the number of steps in the default pattern. The minimum value is 1, the maximum value is 256.
+
+#### Groove
+Specify the groove number set in the Groove Editor. When using groove, all other performance speed settings are fixed. 
+It can also be specified with `0Oxx` effect.
+
 ## Key commands
 ### General
 | Key    | Command                        |
