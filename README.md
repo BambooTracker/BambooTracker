@@ -210,7 +210,7 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | Mxyy   | Volume delay (x[1-f]: count, yy[00-ff]: volume)                                         | Volume delay       | Volume delay                      |
 
 ## Build on Linux
-On Ubuntu 18.04:
+On Ubuntu 18.10: (18.04. is lacking the minimum currently required version of Qt: Qt 5.10)
 
 ### Dependencies
 > make  
