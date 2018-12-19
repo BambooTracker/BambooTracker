@@ -941,7 +941,6 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QAction* svFile = menu.addAction("&Save to file...", this, &MainWindow::saveInstrument);
     menu.addSeparator();
 	QAction* edit = menu.addAction("&Edit...", this, &MainWindow::editInstrument);
-	edit->setShortcutVisibleInContextMenu(true);
 #else
 	QAction* add = menu.addAction("&Add");
 	QObject::connect(add, &QAction::triggered, this, &MainWindow::addInstrument);
@@ -965,6 +964,9 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	menu.addSeparator();
 	QAction* edit = menu.addAction("&Edit...");
 	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+	edit->setShortcutVisibleInContextMenu(true);
 #endif
 	edit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
 

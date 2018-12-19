@@ -1231,37 +1231,26 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 		bt_->undo();
 		comStack_.lock()->undo();
 	});
-	undo->setShortcutVisibleInContextMenu(true);
 	QAction* redo = menu.addAction("&Redo", this, [&]() {
 		bt_->redo();
 		comStack_.lock()->redo();
 	});
-	redo->setShortcutVisibleInContextMenu(true);
 	menu.addSeparator();
 	QAction* copy = menu.addAction("&Copy", this, &PatternEditorPanel::copySelectedCells);
-	copy->setShortcutVisibleInContextMenu(true);
 	QAction* cut = menu.addAction("Cu&t", this, &PatternEditorPanel::cutSelectedCells);;
-	cut->setShortcutVisibleInContextMenu(true);
 	QAction* paste = menu.addAction("&Paste", this, [&]() { pasteCopiedCells(pos); });
-	paste->setShortcutVisibleInContextMenu(true);
 	auto pasteSp = new QMenu("Paste Specia&l");
 	menu.addMenu(pasteSp);
 	QAction* pasteMix = pasteSp->addAction("&Mix", this, [&]() { pasteMixCopiedCells(pos); });
-	pasteMix->setShortcutVisibleInContextMenu(true);
 	QAction* pasteOver = pasteSp->addAction("&Overwrite", this, [&]() { pasteOverwriteCopiedCells(pos); });
 	QAction* erase = menu.addAction("&Erase", this, &PatternEditorPanel::eraseSelectedCells);
-	erase->setShortcutVisibleInContextMenu(true);
 	QAction* select = menu.addAction("Select &All", this, [&]() { onSelectPressed(1); });
-	select->setShortcutVisibleInContextMenu(true);
 	menu.addSeparator();
 	auto pattern = new QMenu("Patter&n");
 	menu.addMenu(pattern);
 	QAction* interpolate = pattern->addAction("&Interpolate", this, &PatternEditorPanel::onInterpolatePressed);
-	interpolate->setShortcutVisibleInContextMenu(true);
 	QAction* reverse = pattern->addAction("&Reverse", this, &PatternEditorPanel::onReversePressed);
-	reverse->setShortcutVisibleInContextMenu(true);
 	QAction* replace = pattern->addAction("R&eplace Instrument", this, &PatternEditorPanel::onReplaceInstrumentPressed);
-	replace->setShortcutVisibleInContextMenu(true);
 	pattern->addSeparator();
 	QAction* expand = pattern->addAction("E&xpand", this, &PatternEditorPanel::onExpandPressed);
 	QAction* shrink = pattern->addAction("S&hrink", this, &PatternEditorPanel::onShrinkPressed);
@@ -1269,18 +1258,12 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	auto transpose = new QMenu("&Transpose");
 	pattern->addMenu(transpose);
 	QAction* deNote = transpose->addAction("&Decrease Note", this, [&]() { onTransposePressed(false, false); });
-	deNote->setShortcutVisibleInContextMenu(true);
 	QAction* inNote = transpose->addAction("&Increase Note", this, [&]() { onTransposePressed(false, true); });
-	inNote->setShortcutVisibleInContextMenu(true);
 	QAction* deOct = transpose->addAction("D&ecrease Octave", this, [&]() { onTransposePressed(true, false); });
-	deOct->setShortcutVisibleInContextMenu(true);
 	QAction* inOct = transpose->addAction("I&ncrease Octave", this, [&]() { onTransposePressed(true, true); });
-	inOct->setShortcutVisibleInContextMenu(true);
 	menu.addSeparator();
 	QAction* toggle = menu.addAction("To&ggle Track", this, [&] { onToggleTrackPressed(pos.track); });
-	toggle->setShortcutVisibleInContextMenu(true);
 	QAction* solo = menu.addAction("&Solo Track", this, [&] { onSoloTrackPressed(pos.track); });
-	solo->setShortcutVisibleInContextMenu(true);
 #else
 	QAction* undo = menu.addAction("&Undo");
 	QObject::connect(undo, &QAction::triggered, this, [&]() {
@@ -1339,6 +1322,25 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(pos.track); });
 	QAction* solo = menu.addAction("&Solo Track");
 	QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(pos.track); });
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+	undo->setShortcutVisibleInContextMenu(true);
+	redo->setShortcutVisibleInContextMenu(true);
+	copy->setShortcutVisibleInContextMenu(true);
+	cut->setShortcutVisibleInContextMenu(true);
+	paste->setShortcutVisibleInContextMenu(true);
+	pasteMix->setShortcutVisibleInContextMenu(true);
+	erase->setShortcutVisibleInContextMenu(true);
+	select->setShortcutVisibleInContextMenu(true);
+	interpolate->setShortcutVisibleInContextMenu(true);
+	reverse->setShortcutVisibleInContextMenu(true);
+	replace->setShortcutVisibleInContextMenu(true);
+	deNote->setShortcutVisibleInContextMenu(true);
+	inNote->setShortcutVisibleInContextMenu(true);
+	deOct->setShortcutVisibleInContextMenu(true);
+	inOct->setShortcutVisibleInContextMenu(true);
+	toggle->setShortcutVisibleInContextMenu(true);
+	solo->setShortcutVisibleInContextMenu(true);
 #endif
 	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
 	redo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));

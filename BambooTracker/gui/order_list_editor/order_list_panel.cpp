@@ -538,18 +538,14 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	QAction* insert = menu.addAction("&Insert Order", this, [&]() { insertOrderBelow(); });
 	QAction* remove = menu.addAction("&Remove Order", this, [&]() { deleteOrder(); });
 	QAction* duplicate = menu.addAction("&Duplicate Order", this, &OrderListPanel::onDuplicatePressed);
-	duplicate->setShortcutVisibleInContextMenu(true);
 	QAction* clonep = menu.addAction("&Clone Patterns", this, &OrderListPanel::onClonePatternsPressed);
-	clonep->setShortcutVisibleInContextMenu(true);
 	QAction* cloneo = menu.addAction("Clone &Order", this, &OrderListPanel::onCloneOrderPressed);
 	menu.addSeparator();
 	QAction* moveUp = menu.addAction("Move Order &Up", this, [&]() { onMoveOrderPressed(true); });
 	QAction* moveDown = menu.addAction("Move Order Do&wn", this, [&]() { onMoveOrderPressed(false); });
 	menu.addSeparator();
 	QAction* copy = menu.addAction("Cop&y", this, &OrderListPanel::copySelectedCells);
-	copy->setShortcutVisibleInContextMenu(true);
 	QAction* paste = menu.addAction("&Paste", this, [&]() { pasteCopiedCells(pos); });
-	paste->setShortcutVisibleInContextMenu(true);
 #else
 	QAction* insert = menu.addAction("&Insert Order");
 	QObject::connect(insert, &QAction::triggered, this, [&]() { insertOrderBelow(); });
@@ -571,6 +567,12 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	QObject::connect(copy, &QAction::triggered, this, &OrderListPanel::copySelectedCells);
 	QAction* paste = menu.addAction("&Paste");
 	QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(pos); });
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+	duplicate->setShortcutVisibleInContextMenu(true);
+	clonep->setShortcutVisibleInContextMenu(true);
+	copy->setShortcutVisibleInContextMenu(true);
+	paste->setShortcutVisibleInContextMenu(true);
 #endif
 	duplicate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
 	clonep->setShortcut(QKeySequence(Qt::ALT + Qt::Key_D));

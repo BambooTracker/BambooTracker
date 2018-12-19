@@ -2,7 +2,11 @@
 
 ## Unreleased
 ### Added
-- #27 - Add application icon (thanks @Decidetto)
+- [#27] - Add application icon (thanks [@Decidetto])
+
+[#27]: https://github.com/rerrahkr/BambooTracker/issues/27
+
+[@Decidetto]: https://github.com/Decidetto
 
 ## v0.1.3 (2018-12-14)
 ### Added
