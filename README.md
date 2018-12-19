@@ -1,7 +1,6 @@
 # BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.1.3-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
-![Platform: win-32](https://img.shields.io/badge/platform-win--32-lightgrey.svg)
-![Platform: linux](https://img.shields.io/badge/platform-linux-lightgrey.svg)
+![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20liunx-lightgrey.svg)
 [![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
@@ -12,7 +11,7 @@ The files created by this tracker are called "modules". One such module contains
 In a song, the channel of each sound source is assigned to a track, and the track holds multiple patterns (performance patterns).
 The patterns are played by registering them in the order they appear the song. (from beginning to end)
 A pattern describes a structure in which steps are arranged in chronological order. Key On / off and most effects are described in step units.
-A tick ​​is the minimum performance unit, one step = n ticks. The effects (such as vibrato) which change with the count unit are based on ticks.
+A tick is the minimum performance unit, one step = n ticks. The effects (such as vibrato) which change with the count unit are based on ticks.
 
 ## Interface Overview
 ### Instrument List
@@ -248,3 +247,5 @@ I would like to thank the following people for making it:
 - Mark James for the tool bar icons
 - VGMRips team for the VGM file format documentation.
 - Some tracker creators, especially HertzDevil of 0CC-FamiTracker, Leonardo Demartino (delek) of Deflemask Tracker and Lasse Öörni (Cadaver) of GoatTracker for UI and routines of the tracker.
+- Decidetto for the application icon.
+- And everyone who helps this project!

@@ -1,7 +1,6 @@
 # BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.1.3-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
-![Platform: win-32](https://img.shields.io/badge/platform-win--32-lightgrey.svg)
-![Platform: linux](https://img.shields.io/badge/platform-linux-lightgrey.svg)
+![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20liunx-lightgrey.svg)
 [![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
@@ -210,6 +209,28 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 | 0Vxx       | -                                                                                                                         | -                          | マスターボリューム (xx[00-3f]: 音量) |
 | Mxyy       | ボリューム・ディレイ (x[1-f]: ディレイカウント, yy[00-ff]: 音量)                                                          | ボリューム・ディレイ       | ボリューム・ディレイ                 |
 
+## Linuxでのビルド方法
+Ubuntu 18.10: (18.04ではQt5.10以降のバージョンが以下の方法では入手できません)
+
+### 必要なパッケージ
+> make  
+> Qt5 (qmake)  
+> Qt5 Multimedia  
+> Qt5 Multimedia plugins
+
+```bash
+sudo apt-get install \
+  build-essential \
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins
+```
+
+### コンパイル
+```bash
+cd BambooTracker
+qmake
+make
+```
+
 ## Changelog
 *[CHANGELOG.md](./CHANGELOG.md)を参照してください。*
 
@@ -226,3 +247,5 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 - ツールバーに使用しているアイコンに関してMark Jamesさん
 - VGMファイルのフォーマットのドキュメントに関してVGMRipsチームさん
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
+- トラッカーのアイコンに関してDecidettoさん
+- そしてこのプロジェクトに手助けしてくださるみなさん!

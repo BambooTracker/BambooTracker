@@ -3,10 +3,23 @@
 ## Unreleased
 ### Added
 - [#27] - Add application icon (thanks [@Decidetto])
+- [#29], [#36] - Create BambooTracker.desktop (thanks [@alexmyczko], [@trebmuh], [@OPNA2608])
+- [#30] - Create BambooTracker.1 (thanks [@alexmyczko], [@OPNA2608])
+
+### Fixed
+- [#28] - Fix error when compilung before Qt5.10 (thanks [@papiezak] and others)
+- [#33] - Revise README (thanks [@OPNA2608])
 
 [#27]: https://github.com/rerrahkr/BambooTracker/issues/27
+[#28]: https://github.com/rerrahkr/BambooTracker/issues/28
+[#29]: https://github.com/rerrahkr/BambooTracker/pull/29
+[#30]: https://github.com/rerrahkr/BambooTracker/pull/30
+[#33]: https://github.com/rerrahkr/BambooTracker/pull/33
+[#36]: https://github.com/rerrahkr/BambooTracker/pull/36
 
 [@Decidetto]: https://github.com/Decidetto
+[@alexmyczko]: https://github.com/alexmyczko
+[@trebmuh]: https://github.com/trebmuh
 
 ## v0.1.3 (2018-12-14)
 ### Added
