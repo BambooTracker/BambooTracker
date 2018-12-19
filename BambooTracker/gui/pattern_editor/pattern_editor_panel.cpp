@@ -2085,9 +2085,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			QMenu menu;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 			QAction* toggle = menu.addAction("To&ggle Track", this, [&] { onToggleTrackPressed(mousePressPos_.track); });
-			toggle->setShortcutVisibleInContextMenu(true);
 			QAction* solo = menu.addAction("&Solo Track", this, [&] { onSoloTrackPressed(mousePressPos_.track); });
-			solo->setShortcutVisibleInContextMenu(true);
 			QAction* unmute = menu.addAction("&Unmute All Tracks", this, &PatternEditorPanel::onUnmuteAllPressed);
 #else
 			QAction* toggle = menu.addAction("To&ggle Track");
@@ -2096,6 +2094,10 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(mousePressPos_.track); });
 			QAction* unmute = menu.addAction("&Unmute All Tracks");
 			QObject::connect(unmute, &QAction::triggered, this, &PatternEditorPanel::onUnmuteAllPressed);
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+			toggle->setShortcutVisibleInContextMenu(true);
+			solo->setShortcutVisibleInContextMenu(true);
 #endif
 			toggle->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
 			solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
