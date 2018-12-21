@@ -29,7 +29,7 @@
 #include "gui/comment_edit_dialog.hpp"
 #include "gui/wave_export_settings_dialog.hpp"
 #include "gui/vgm_export_settings_dialog.hpp"
-#include "gui/json.hpp"
+#include "gui/configuration_handler.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	Json::loadConfiguration(config_);
+	ConfigurationHandler::loadConfiguration(config_);
 	if (config_->getMainWindowX() == -1) {	// When unset
 		QRect rec = geometry();
 		rec.moveCenter(QApplication::desktop()->availableGeometry().center());
@@ -587,7 +587,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	config_->setFollowMode(bt_->isFollowPlay());
 
 	instForms_->closeAll();
-	Json::saveConfiguration(config_);
+	ConfigurationHandler::saveConfiguration(config_);
 
 	event->accept();
 }
@@ -1519,7 +1519,7 @@ void MainWindow::on_actionConfiguration_triggered()
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->stopPlaySong();
 		changeConfiguration();
-		Json::saveConfiguration(config_);
+		ConfigurationHandler::saveConfiguration(config_);
 		lockControls(false);
 	}
 }
