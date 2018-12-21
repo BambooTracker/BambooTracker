@@ -123,7 +123,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setSoundDevice(settings.value("soundDevice", QString::fromStdString(configLocked->getSoundDevice())).toString().toUtf8().toStdString());
 		QVariant sampleRateWorkaround;
 		sampleRateWorkaround.setValue(configLocked->getSampleRate());
-		configLocked->setSampleRate(static_cast<uint32_t>(settings.value("sampleRate", "44100").toInt()));
+		configLocked->setSampleRate(static_cast<uint32_t>(settings.value("sampleRate", sampleRateWorkaround).toInt()));
 		QVariant bufferLengthWorkaround;
 		bufferLengthWorkaround.setValue(configLocked->getBufferLength());
 		configLocked->setBufferLength(static_cast<size_t>(settings.value("bufferLength", "40").toInt()));
