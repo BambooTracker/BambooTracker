@@ -126,7 +126,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setSampleRate(static_cast<uint32_t>(settings.value("sampleRate", sampleRateWorkaround).toInt()));
 		QVariant bufferLengthWorkaround;
 		bufferLengthWorkaround.setValue(configLocked->getBufferLength());
-		configLocked->setBufferLength(static_cast<size_t>(settings.value("bufferLength", "40").toInt()));
+		configLocked->setBufferLength(static_cast<size_t>(settings.value("bufferLength", bufferLengthWorkaround).toInt()));
 		settings.endGroup();
 
 		return true;
