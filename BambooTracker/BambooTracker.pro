@@ -164,7 +164,7 @@ SOURCES += \
     io/file_io_error.cpp \
     format/wopn_file.c \
     instrument/bank.cpp \
-    gui/instrument_selection_dialog.cpp
+    gui/instrument_selection_dialog.cpp \
     gui/s98_export_settings_dialog.cpp
 
 HEADERS += \
@@ -321,7 +321,7 @@ HEADERS += \
     io/file_io_error.hpp \
     format/wopn_file.h \
     instrument/bank.hpp \
-    gui/instrument_selection_dialog.hpp
+    gui/instrument_selection_dialog.hpp \
     io/s98_tag.hpp \
     gui/s98_export_settings_dialog.hpp
 
@@ -341,7 +341,7 @@ FORMS += \
     gui/comment_edit_dialog.ui \
     gui/vgm_export_settings_dialog.ui \
     gui/wave_export_settings_dialog.ui \
-    gui/instrument_selection_dialog.ui
+    gui/instrument_selection_dialog.ui \
     gui/s98_export_settings_dialog.ui
 
 INCLUDEPATH += \
