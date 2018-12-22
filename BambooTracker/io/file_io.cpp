@@ -4,6 +4,7 @@
 #include "version.hpp"
 #include "file_io_error.hpp"
 #include "misc.hpp"
+#include "format/wopn_file.h"
 
 const FMEnvelopeParameter FileIO::ENV_FM_PARAMS[38] = {
 	FMEnvelopeParameter::AL,
@@ -2498,6 +2499,7 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 	if (ext.compare("dmp") == 0) return FileIO::loadDMPFile(path, instMan, instNum);
 	if (ext.compare("tfi") == 0) return FileIO::loadTFIFile(path, instMan, instNum);
 	if (ext.compare("vgi") == 0) return FileIO::loadVGIFile(path, instMan, instNum);
+	if (ext.compare("opni") == 0) return FileIO::loadOPNIFile(path, instMan, instNum);
 
 	BinaryContainer ctr;
 
@@ -4043,6 +4045,79 @@ AbstractInstrument* FileIO::loadVGIFile(std::string path, std::weak_ptr<Instrume
 		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, drams3 >> 7);
 		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, drams4 >> 7);
 	}
+	return inst;
+}
+
+AbstractInstrument* FileIO::loadOPNIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+	OPNIFile opni;
+
+	std::ifstream in(path, std::ios::binary);
+	in.seekg(0, std::ios::end);
+	std::streampos size = in.tellg();
+
+	if (!in)
+		throw FileInputError(FileIOError::FileType::INST);
+	else {
+		std::unique_ptr<char[]> buf(new char[size]);
+		in.seekg(0, std::ios::beg);
+		if (!in.read(buf.get(), size) || in.gcount() != size)
+			throw FileInputError(FileIOError::FileType::INST);
+		if (WOPN_LoadInstFromMem(&opni, buf.get(), size) != 0)
+			throw FileCorruptionError(FileIOError::FileType::INST);
+	}
+
+	int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
+	if (envIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
+	const WOPNInstrument &srcInst = opni.inst;
+	const char *name = srcInst.inst_name;
+
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	inst->setEnvelopeNumber(envIdx);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, srcInst.fbalg & 7);
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, (srcInst.fbalg >> 3) & 7);
+
+	const WOPNOperator *op[4] = {
+		&srcInst.operators[0],
+		&srcInst.operators[2],
+		&srcInst.operators[1],
+		&srcInst.operators[3],
+	};
+
+#define LOAD_OPERATOR(n)						\
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML##n, op[n - 1]->dtfm_30 & 15); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT##n, (op[n - 1]->dtfm_30 >> 4) & 7); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL##n, op[n - 1]->level_40); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS##n, op[n - 1]->rsatk_50 >> 6); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR##n, op[n - 1]->rsatk_50 & 31); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR##n, op[n - 1]->amdecay1_60 & 31); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR##n, op[n - 1]->decay2_70 & 31); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR##n, op[n - 1]->susrel_80 & 15); \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL##n, op[n - 1]->susrel_80 >> 4); \
+	int ssgeg##n = op[n - 1]->ssgeg_90; \
+	ssgeg##n = ssgeg##n & 8 ? ssgeg##n & 7 : -1; \
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG##n, ssgeg##n); \
+	int am##n = op[n - 1]->amdecay1_60 >> 7;
+
+	LOAD_OPERATOR(1);
+	LOAD_OPERATOR(2);
+	LOAD_OPERATOR(3);
+	LOAD_OPERATOR(4);
+
+#undef LOAD_OPERATOR
+
+	if (srcInst.lfosens != 0) {
+		int lfoIdx = instMan.lock()->findFirstFreeLFOFM();
+		if (lfoIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
+		inst->setLFOEnabled(true);
+		inst->setLFONumber(lfoIdx);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, srcInst.lfosens & 7);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, (srcInst.lfosens >> 4) & 3);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am1);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am2);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am3);
+		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
+	}
+
 	return inst;
 }
 

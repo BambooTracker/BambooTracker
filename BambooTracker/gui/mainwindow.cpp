@@ -694,7 +694,7 @@ void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, "Open instrument", (dir.isEmpty() ? "./" : dir),
-												"BambooTracker instrument file (*.bti);;DefleMask preset file (*.dmp);;TFM Music Maker instrument (*.tfi);;VGM Music Maker instrument (*.vgi)");
+												"BambooTracker instrument file (*.bti);;DefleMask preset file (*.dmp);;TFM Music Maker instrument (*.tfi);;VGM Music Maker instrument (*.vgi);;WOPN instrument (*.opni)");
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();

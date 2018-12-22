@@ -40,6 +40,9 @@ private:
 	static AbstractInstrument* loadVGIFile(std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
+	static AbstractInstrument* loadOPNIFile(std::string path,
+										   std::weak_ptr<InstrumentsManager> instMan,
+										   int instNum);
 	static size_t loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
 											size_t globCsr, uint32_t version);
 	static size_t loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
