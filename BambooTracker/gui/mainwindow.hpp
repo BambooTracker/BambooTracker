@@ -21,6 +21,8 @@
 #include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "gui/color_palette.hpp"
 
+class AbstractBank;
+
 namespace Ui {
 	class MainWindow;
 }
@@ -63,6 +65,7 @@ private:
     void deepCloneInstrument();
 	void loadInstrument();
 	void saveInstrument();
+	void importInstrumentsFromBank();
 
 	// Undo-Redo
 	void undo();
@@ -161,6 +164,7 @@ private slots:
 	void on_actionOpen_triggered();
 	void on_actionLoad_From_File_triggered();
 	void on_actionSave_To_File_triggered();
+	void on_actionImport_From_Bank_File_triggered();
 	void on_actionInterpolate_triggered();
 	void on_actionReverse_triggered();
 	void on_actionReplace_Instrument_triggered();

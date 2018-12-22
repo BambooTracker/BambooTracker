@@ -9,7 +9,7 @@ class FileIOError
 public:
 	enum class FileType
 	{
-		MOD, INST, WAV, VGM, S98
+		MOD, INST, WAV, VGM, BANK, S98
 	};
 
 	static std::string fileTypeToString(const FileType type);

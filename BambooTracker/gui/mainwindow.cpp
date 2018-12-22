@@ -19,6 +19,8 @@
 #include "song.hpp"
 #include "track.hpp"
 #include "instrument.hpp"
+#include "bank.hpp"
+#include "file_io.hpp"
 #include "version.hpp"
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -29,6 +31,7 @@
 #include "gui/comment_edit_dialog.hpp"
 #include "gui/wave_export_settings_dialog.hpp"
 #include "gui/vgm_export_settings_dialog.hpp"
+#include "gui/instrument_selection_dialog.hpp"
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 
@@ -727,6 +730,51 @@ void MainWindow::saveInstrument()
 		bt_->saveInstrument(file.toLocal8Bit().toStdString(),
 							ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt());
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	}
+	catch (std::exception& e) {
+		QMessageBox::critical(this, "Error", e.what());
+	}
+}
+
+void MainWindow::importInstrumentsFromBank()
+{
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getOpenFileName(this, "Open bank", (dir.isEmpty() ? "./" : dir),
+												"WOPN bank (*.wopn)");
+	if (file.isNull()) return;
+
+	std::unique_ptr<AbstractBank> bank;
+	try {
+		bank.reset(FileIO::loadBank(file.toLocal8Bit().toStdString()));
+		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	}
+	catch (std::exception& e) {
+		QMessageBox::critical(this, "Error", e.what());
+		return;
+	}
+
+	InstrumentSelectionDialog dlg(*bank, tr("Select instruments to load:"), this);
+	if (dlg.exec() != QDialog::Accepted)
+		return;
+
+	QVector<size_t> selection = dlg.currentInstrumentSelection();
+
+	try {
+		for (size_t index : selection) {
+			int n = bt_->findFirstFreeInstrumentNumber();
+			if (n == -1){
+				QMessageBox::critical(this, "Error", "Failed to load instrument.");
+				return;
+			}
+
+			bt_->importInstrument(*bank, index, n);
+
+			auto inst = bt_->getInstrument(n);
+			auto name = inst->getName();
+			comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
+													   QString::fromUtf8(name.c_str(), name.length()),
+													   inst->getSoundSource(), instForms_));
+		}
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(this, "Error", e.what());
@@ -1720,6 +1768,11 @@ void MainWindow::on_actionLoad_From_File_triggered()
 void MainWindow::on_actionSave_To_File_triggered()
 {
 	saveInstrument();
+}
+
+void MainWindow::on_actionImport_From_Bank_File_triggered()
+{
+	importInstrumentsFromBank();
 }
 
 void MainWindow::on_actionInterpolate_triggered()

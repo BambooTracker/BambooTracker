@@ -18,6 +18,8 @@
 #include "s98_tag.hpp"
 #include "misc.hpp"
 
+class AbstractBank;
+
 class BambooTracker
 {
 public:
@@ -46,6 +48,7 @@ public:
 	void deepCloneInstrument(int num, int refNum);
 	void loadInstrument(std::string path, int instNum);
 	void saveInstrument(std::string path, int instNum);
+	void importInstrument(const AbstractBank &bank, size_t index, int instNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void clearAllInstrument();
