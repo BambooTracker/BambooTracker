@@ -332,7 +332,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-	delete ui;
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
