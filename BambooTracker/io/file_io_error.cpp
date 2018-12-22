@@ -8,6 +8,7 @@ std::string FileIOError::fileTypeToString(const FileType type)
 	case FileType::INST:	return "instrument";
 	case FileType::WAV:		return "wav";
 	case FileType::VGM:		return "vgm";
+	case FileType::BANK:		return "bank";
 	}
 }
 

@@ -5,6 +5,7 @@
 #include <exception>
 #include "commands.hpp"
 #include "file_io.hpp"
+#include "bank.hpp"
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
@@ -111,6 +112,13 @@ void BambooTracker::loadInstrument(std::string path, int instNum)
 void BambooTracker::saveInstrument(std::string path, int instNum)
 {
 	FileIO::saveInstrument(path, instMan_, instNum);
+}
+
+void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)
+{
+	auto inst = bank.loadInstrument(index, instMan_, instNum);
+	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
+					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const

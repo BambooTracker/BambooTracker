@@ -409,7 +409,7 @@
      <x>0</x>
      <y>0</y>
      <width>930</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -534,6 +534,8 @@
     <addaction name="separator"/>
     <addaction name="actionLoad_From_File"/>
     <addaction name="actionSave_To_File"/>
+    <addaction name="separator"/>
+    <addaction name="actionImport_From_Bank_File"/>
     <addaction name="separator"/>
     <addaction name="actionEdit"/>
    </widget>
@@ -1129,6 +1131,11 @@
   <action name="actionOverwrite">
    <property name="text">
     <string>&amp;Overwrite</string>
+   </property>
+  </action>
+  <action name="actionImport_From_Bank_File">
+   <property name="text">
+    <string>&amp;Import From Bank File...</string>
    </property>
   </action>
  </widget>

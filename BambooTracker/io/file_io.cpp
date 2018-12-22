@@ -4,6 +4,7 @@
 #include "version.hpp"
 #include "file_io_error.hpp"
 #include "misc.hpp"
+#include "bank.hpp"
 #include "format/wopn_file.h"
 
 const FMEnvelopeParameter FileIO::ENV_FM_PARAMS[38] = {
@@ -3738,6 +3739,13 @@ AbstractInstrument* FileIO::loadInstrument(std::string path, std::weak_ptr<Instr
 	}
 }
 
+AbstractBank* FileIO::loadBank(std::string path)
+{
+	std::string ext = path.substr(path.find_last_of(".")+1);
+	if (ext.compare("wopn") == 0) return FileIO::loadWOPNFile(path);
+	throw FileInputError(FileIOError::FileType::BANK);
+}
+
 AbstractInstrument* FileIO::loadDMPFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	BinaryContainer ctr;
 	if (!ctr.load(path)) throw FileInputError(FileIOError::FileType::INST);
@@ -4066,9 +4074,14 @@ AbstractInstrument* FileIO::loadOPNIFile(std::string path, std::weak_ptr<Instrum
 			throw FileCorruptionError(FileIOError::FileType::INST);
 	}
 
+	return loadWOPNInstrument(opni.inst, instMan, instNum);
+}
+
+AbstractInstrument* FileIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
+											   std::weak_ptr<InstrumentsManager> instMan,
+											   int instNum) {
 	int envIdx = instMan.lock()->findFirstFreeEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIOError::FileType::INST);
-	const WOPNInstrument &srcInst = opni.inst;
 	const char *name = srcInst.inst_name;
 
 	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
@@ -4119,6 +4132,35 @@ AbstractInstrument* FileIO::loadOPNIFile(std::string path, std::weak_ptr<Instrum
 	}
 
 	return inst;
+}
+
+AbstractBank* FileIO::loadWOPNFile(std::string path)
+{
+	struct WOPNDeleter {
+		void operator()(WOPNFile *x) { WOPN_Free(x); }
+	};
+
+	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
+
+	std::ifstream in(path, std::ios::binary);
+	in.seekg(0, std::ios::end);
+	std::streampos size = in.tellg();
+
+	if (!in)
+		throw FileInputError(FileIOError::FileType::BANK);
+	else {
+		std::unique_ptr<char[]> buf(new char[size]);
+		in.seekg(0, std::ios::beg);
+		if (!in.read(buf.get(), size) || in.gcount() != size)
+			throw FileInputError(FileIOError::FileType::BANK);
+		wopn.reset(WOPN_LoadBankFromMem(buf.get(), size, nullptr));
+		if (!wopn)
+			throw FileCorruptionError(FileIOError::FileType::BANK);
+	}
+
+	WopnBank *bank = new WopnBank(wopn.get());
+	wopn.release();
+	return bank;
 }
 
 size_t FileIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopeParameter param,

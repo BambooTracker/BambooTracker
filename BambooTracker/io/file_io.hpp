@@ -8,6 +8,9 @@
 #include "binary_container.hpp"
 #include "gd3_tag.hpp"
 
+class AbstractBank;
+struct WOPNInstrument;
+
 class FileIO
 {
 public:
@@ -18,6 +21,7 @@ public:
 	static void saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum);
 	static AbstractInstrument* loadInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum);
+	static AbstractBank* loadBank(std::string path);
 	static void writeWave(std::string path, std::vector<int16_t> samples, uint32_t rate);
 
 	static void writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
@@ -43,6 +47,14 @@ private:
 	static AbstractInstrument* loadOPNIFile(std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
+
+public:
+	static AbstractInstrument* loadWOPNInstrument(const WOPNInstrument &srcInst,
+										   std::weak_ptr<InstrumentsManager> instMan,
+										   int instNum);
+
+private:
+	static AbstractBank* loadWOPNFile(std::string path);
 	static size_t loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
 											size_t globCsr, uint32_t version);
 	static size_t loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
