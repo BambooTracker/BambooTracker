@@ -248,4 +248,6 @@ make
 - VGMファイルのフォーマットのドキュメントに関してVGMRipsチームさん
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
 - トラッカーのアイコンに関してDecidettoさん
+- WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
+- S98ファイルのフォーマットのドキュメントに関してRu^3さん
 - そしてこのプロジェクトに手助けしてくださるみなさん!

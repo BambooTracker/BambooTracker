@@ -176,6 +176,7 @@ private slots:
 	void on_actionRemove_Unused_Patterns_triggered();
 	void on_actionWAV_triggered();
 	void on_actionVGM_triggered();
+	void on_actionS98_triggered();
 	void on_actionMix_triggered();
 	void on_actionOverwrite_triggered();
 

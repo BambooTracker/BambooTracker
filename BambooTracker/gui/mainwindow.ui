@@ -421,7 +421,9 @@
       <string>&amp;Export</string>
      </property>
      <addaction name="actionWAV"/>
+     <addaction name="separator"/>
      <addaction name="actionVGM"/>
+     <addaction name="actionS98"/>
     </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
@@ -1136,6 +1138,11 @@
   <action name="actionImport_From_Bank_File">
    <property name="text">
     <string>&amp;Import From Bank File...</string>
+   </property>
+  </action>
+  <action name="actionS98">
+   <property name="text">
+    <string>&amp;S98...</string>
    </property>
   </action>
  </widget>

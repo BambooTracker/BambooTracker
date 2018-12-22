@@ -4378,6 +4378,120 @@ void FileIO::writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t c
 	}
 }
 
+void FileIO::writeS98(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+					  bool loopFlag, uint32_t loopPoint, bool tagEnabled, S98Tag tag)
+{
+	try {
+		std::ofstream ofs(path, std::ios::binary);
+
+		// Header
+		// 0x00: Magic "S98"
+		ofs.write("S98", 3);
+		// 0x03: Format version 3
+		uint8_t version = 0x33;
+		ofs.write(reinterpret_cast<char*>(&version), 1);
+		// 0x04: Timer info (sync numerator)
+		uint32_t timeNum = 1;
+		ofs.write(reinterpret_cast<char*>(&timeNum), 4);
+		// 0x08: Timer info 2 (sync denominator)
+		ofs.write(reinterpret_cast<char*>(&rate), 4);
+		// 0x0c: Deprecated
+		uint32_t zero = 0;
+		ofs.write(reinterpret_cast<char*>(&zero), 4);
+		// 0x10: Tag offset
+		uint32_t tagOffset = tagEnabled ? (0x80 + samples.size() + 1) : 0;
+		ofs.write(reinterpret_cast<char*>(&tagOffset), 4);
+		// 0x14: Dump data offset
+		uint32_t dumpOffset = 0x80;
+		ofs.write(reinterpret_cast<char*>(&dumpOffset), 4);
+		// 0x18: Loop offset
+		uint32_t loopOffset = loopFlag ? (0x80 + loopPoint) : 0;
+		ofs.write(reinterpret_cast<char*>(&loopOffset), 4);
+		// 0x1c: Device count
+		uint32_t deviceCnt = 1;
+		ofs.write(reinterpret_cast<char*>(&deviceCnt), 4);
+		// 0x20-0x2f: Device info
+		// 0x20: Device type
+		uint32_t deviceType = 4;	// OPNA
+		ofs.write(reinterpret_cast<char*>(&deviceType), 4);
+		// 0x24: Clock
+		ofs.write(reinterpret_cast<char*>(&clock), 4);
+		// 0x28: Pan (Unused)
+		ofs.write(reinterpret_cast<char*>(&zero), 4);
+		// 0x28: Reserved
+		ofs.write(reinterpret_cast<char*>(&zero), 4);
+		// 0x30-0x7f: Unused
+		for (int i = 0; i < 20; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+
+		// Commands
+		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(samples.size()));
+		uint8_t end = 0xfd;
+		ofs.write(reinterpret_cast<char*>(&end), 1);
+
+		// GD3 tag
+		if (tagEnabled) {
+			// Tag ident
+			ofs.write("[S98]", 5);
+			// BOM
+			uint8_t bom[] = { 0xef, 0xbb, 0xbf };
+			ofs.write(reinterpret_cast<char*>(bom), 3);
+
+			uint8_t nl = 0x0a;
+
+			// Title
+			ofs.write("title=", 6);
+			ofs.write(reinterpret_cast<char*>(&tag.title[0]),
+					static_cast<std::streamsize>(tag.title.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// Artist
+			ofs.write("artist=", 7);
+			ofs.write(reinterpret_cast<char*>(&tag.artist[0]),
+					static_cast<std::streamsize>(tag.artist.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// Game
+			ofs.write("game=", 5);
+			ofs.write(reinterpret_cast<char*>(&tag.game[0]),
+					static_cast<std::streamsize>(tag.game.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// Year
+			ofs.write("year=", 5);
+			ofs.write(reinterpret_cast<char*>(&tag.year[0]),
+					static_cast<std::streamsize>(tag.year.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// Genre
+			ofs.write("genre=", 6);
+			ofs.write(reinterpret_cast<char*>(&tag.genre[0]),
+					static_cast<std::streamsize>(tag.genre.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// Comment
+			ofs.write("comment=", 8);
+			ofs.write(reinterpret_cast<char*>(&tag.comment[0]),
+					static_cast<std::streamsize>(tag.comment.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// Copyright
+			ofs.write("copyright=", 10);
+			ofs.write(reinterpret_cast<char*>(&tag.copyright[0]),
+					static_cast<std::streamsize>(tag.copyright.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// S98by
+			ofs.write("s98by=", 6);
+			ofs.write(reinterpret_cast<char*>(&tag.s98by[0]),
+					static_cast<std::streamsize>(tag.s98by.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			// System
+			ofs.write("system=", 7);
+			ofs.write(reinterpret_cast<char*>(&tag.system[0]),
+					static_cast<std::streamsize>(tag.system.length()));
+			ofs.write(reinterpret_cast<char*>(&nl), 1);
+
+			uint8_t end = 0;
+			ofs.write(reinterpret_cast<char*>(&end), 1);
+		}
+	} catch (...) {
+		throw FileOutputError(FileIOError::FileType::S98);
+	}
+}
+
 void FileIO::backupModule(std::string path)
 {
 	try {

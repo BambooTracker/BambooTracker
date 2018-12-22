@@ -32,6 +32,7 @@
 #include "gui/wave_export_settings_dialog.hpp"
 #include "gui/vgm_export_settings_dialog.hpp"
 #include "gui/instrument_selection_dialog.hpp"
+#include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -1933,6 +1934,52 @@ void MainWindow::on_actionVGM_triggered()
 	}
 	catch (...) {
 		QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
+	}
+
+	stream_->start();
+}
+
+void MainWindow::on_actionS98_triggered()
+{
+	S98ExportSettingsDialog diag;
+	if (diag.exec() != QDialog::Accepted) return;
+	S98Tag tag = diag.getS98Tag();
+
+	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString file = QFileDialog::getSaveFileName(this, "Export to s98", (dir.isEmpty() ? "./" : dir),
+												"S98 file (*.s98)");
+	if (file.isNull()) return;
+	if (!file.endsWith(".s98")) file += ".s98";	// For linux
+
+	QProgressDialog progress(
+				"Export to S98",
+				"Cancel",
+				0,
+				bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1) + 3
+				);
+	progress.setValue(0);
+	progress.setWindowFlags(progress.windowFlags()
+							& ~Qt::WindowContextHelpButtonHint
+							& ~Qt::WindowCloseButtonHint);
+	progress.show();
+
+	bt_->stopPlaySong();
+	lockControls(false);
+	stream_->stop();
+
+	try {
+		bool res = bt_->exportToS98(file.toStdString(),
+									diag.enabledTag(),
+									tag,
+									[&progress]() -> bool {
+										QApplication::processEvents();
+										progress.setValue(progress.value() + 1);
+										return progress.wasCanceled();
+									});
+		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	}
+	catch (...) {
+		QMessageBox::critical(this, "Error", "Failed to export to s98 file.");
 	}
 
 	stream_->start();
