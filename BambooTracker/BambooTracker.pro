@@ -162,7 +162,8 @@ SOURCES += \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.cpp \
     command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp \
     io/file_io_error.cpp \
-    format/wopn_file.c
+    format/wopn_file.c \
+    gui/s98_export_settings_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -316,7 +317,9 @@ HEADERS += \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.hpp \
     command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp \
     io/file_io_error.hpp \
-    format/wopn_file.h
+    format/wopn_file.h \
+    io/s98_tag.hpp \
+    gui/s98_export_settings_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -333,7 +336,8 @@ FORMS += \
     gui/configuration_dialog.ui \
     gui/comment_edit_dialog.ui \
     gui/vgm_export_settings_dialog.ui \
-    gui/wave_export_settings_dialog.ui
+    gui/wave_export_settings_dialog.ui \
+    gui/s98_export_settings_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \

@@ -5,10 +5,13 @@
 - [#27] - Add application icon (thanks [@Decidetto])
 - [#29], [#36] - Create BambooTracker.desktop (thanks [@alexmyczko], [@trebmuh], [@OPNA2608])
 - [#30] - Create BambooTracker.1 (thanks [@alexmyczko], [@OPNA2608])
+- [#37] - Support the WOPN instrument format (thanks [@jpcima])
+- Add S98 export
 
 ### Fixed
 - [#28] - Fix error when compilung before Qt5.10 (thanks [@papiezak] and others)
 - [#33] - Revise README (thanks [@OPNA2608])
+- [#31] - Replacing Json config with QSettings ([#17]; thanks [@OPNA2608])
 
 [#27]: https://github.com/rerrahkr/BambooTracker/issues/27
 [#28]: https://github.com/rerrahkr/BambooTracker/issues/28
@@ -16,10 +19,14 @@
 [#30]: https://github.com/rerrahkr/BambooTracker/pull/30
 [#33]: https://github.com/rerrahkr/BambooTracker/pull/33
 [#36]: https://github.com/rerrahkr/BambooTracker/pull/36
+[#31]: https://github.com/rerrahkr/BambooTracker/pull/31
+[#17]: https://github.com/rerrahkr/BambooTracker/issues/17
+[#37]: https://github.com/rerrahkr/BambooTracker/pull/37
 
 [@Decidetto]: https://github.com/Decidetto
 [@alexmyczko]: https://github.com/alexmyczko
 [@trebmuh]: https://github.com/trebmuh
+[@jpcima]: https://github.com/jpcima
 
 ## v0.1.3 (2018-12-14)
 ### Added

@@ -970,6 +970,62 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	}
 }
 
+bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, std::function<bool()> f)
+{
+	int tmpRate = opnaCtrl_->getRate();
+	opnaCtrl_->setRate(44100);
+	size_t intrCnt = 44100 / mod_->getTickFrequency();
+	std::vector<int16_t> dumbuf(intrCnt << 1);
+
+	int loopOrder = 0;
+	int loopStep = 0;
+	checkNextPositionOfLastStep(loopOrder, loopStep);
+	bool loopFlag = (loopOrder != -1);
+	int endCnt = 1;
+	bool tmpFollow = isFollowPlay_;
+	isFollowPlay_ = false;
+	uint32_t loopPoint = 0;
+	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>();
+	opnaCtrl_->setExportContainer(exCntr);
+	startPlayFromStart();
+
+	while (true) {
+		uint32_t tmp = exCntr->getData().size();
+		if (!streamCountUp()) {
+			if (f()) {	// Update lambda function
+				stopPlaySong();
+				isFollowPlay_ = tmpFollow;
+				return false;
+			}
+
+			if ((playOrderNum_ == -1 && playStepNum_ == -1)
+					|| (playOrderNum_ == loopOrder && playStepNum_ == loopStep && !(endCnt--))){
+				break;
+			}
+
+			if (loopFlag && loopOrder == playOrderNum_ && loopStep == playStepNum_) {
+				loopPoint = tmp;
+			}
+		}
+
+		opnaCtrl_->getStreamSamples(&dumbuf[0], intrCnt);
+	}
+
+	opnaCtrl_->setExportContainer();
+	stopPlaySong();
+	isFollowPlay_ = tmpFollow;
+	opnaCtrl_->setRate(tmpRate);
+
+	try {
+		FileIO::writeS98(file, exCntr->getData(), CHIP_CLOCK, 44100,
+						 loopFlag, loopPoint, tagEnabled, tag);
+		f();
+		return true;
+	} catch (...) {
+		throw;
+	}
+}
+
 void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) const
 {
 	Song& song = mod_->getSong(curSongNum_);

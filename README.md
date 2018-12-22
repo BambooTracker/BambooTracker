@@ -245,7 +245,9 @@ I would like to thank the following people for making it:
 - Qt team for Qt framework
 - MAME team, and Valley Bell for the codes of YM2608 chip emuration
 - Mark James for the tool bar icons
-- VGMRips team for the VGM file format documentation.
-- Some tracker creators, especially HertzDevil of 0CC-FamiTracker, Leonardo Demartino (delek) of Deflemask Tracker and Lasse Öörni (Cadaver) of GoatTracker for UI and routines of the tracker.
-- Decidetto for the application icon.
+- VGMRips team for the VGM file format documentation
+- Some tracker creators, especially HertzDevil of 0CC-FamiTracker, Leonardo Demartino (delek) of Deflemask Tracker and Lasse Öörni (Cadaver) of GoatTracker for UI and routines of the tracker
+- Decidetto for the application icon
+- Vitaly Novichkov (Wohlstand) for WOPN instrument format files
+- Ru^3 for S98 file format documentation
 - And everyone who helps this project!
