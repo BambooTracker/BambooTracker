@@ -46,8 +46,7 @@ protected:
 	void closeEvent(QCloseEvent* event) override;
 
 private:
-	Ui::MainWindow *ui;
-
+	std::unique_ptr<Ui::MainWindow> ui;
 	std::shared_ptr<Configuration> config_;
 	std::shared_ptr<ColorPalette> palette_;
 	std::shared_ptr<BambooTracker> bt_;
