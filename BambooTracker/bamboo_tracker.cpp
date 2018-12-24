@@ -929,7 +929,7 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	int loopStep = 0;
 	checkNextPositionOfLastStep(loopOrder, loopStep);
 	bool loopFlag = (loopOrder != -1);
-	int endCnt = 1;
+	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = isFollowPlay_;
 	isFollowPlay_ = false;
 	uint32_t loopPoint = 0;
@@ -938,9 +938,9 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 			= std::make_shared<chip::VgmExportContainer>(mod_->getTickFrequency());
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
+	exCntr->forceMoveLoopPoint();
 
 	while (true) {
-		uint32_t tmp = exCntr->getData().size();
 		if (!streamCountUp()) {
 			if (f()) {	// Update lambda function
 				stopPlaySong();
@@ -948,13 +948,10 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 				return false;
 			}
 
-			if ((playOrderNum_ == -1 && playStepNum_ == -1)
-					|| (playOrderNum_ == loopOrder && playStepNum_ == loopStep && !(endCnt--))){
-				break;
-			}
+			if (playOrderNum_ == loopOrder && playStepNum_ == loopStep && !(endCnt--)) break;
 
 			if (loopFlag && loopOrder == playOrderNum_ && loopStep == playStepNum_) {
-				loopPoint = tmp;
+				loopPoint = exCntr->setLoopPoint();
 				loopPointSamples = exCntr->getSampleLength();
 			}
 		}
@@ -989,13 +986,14 @@ bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, s
 	int loopStep = 0;
 	checkNextPositionOfLastStep(loopOrder, loopStep);
 	bool loopFlag = (loopOrder != -1);
-	int endCnt = 1;
+	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = isFollowPlay_;
 	isFollowPlay_ = false;
 	uint32_t loopPoint = 0;
 	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>();
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
+	exCntr->forceMoveLoopPoint();
 
 	while (true) {
 		uint32_t tmp = exCntr->getData().size();
@@ -1006,13 +1004,10 @@ bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, s
 				return false;
 			}
 
-			if ((playOrderNum_ == -1 && playStepNum_ == -1)
-					|| (playOrderNum_ == loopOrder && playStepNum_ == loopStep && !(endCnt--))){
-				break;
-			}
+			if (playOrderNum_ == loopOrder && playStepNum_ == loopStep && !(endCnt--)) break;
 
 			if (loopFlag && loopOrder == playOrderNum_ && loopStep == playStepNum_) {
-				loopPoint = tmp;
+				loopPoint = exCntr->setLoopPoint();
 			}
 		}
 

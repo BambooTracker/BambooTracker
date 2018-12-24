@@ -40,11 +40,15 @@ namespace chip
 		bool empty() const override;
 		std::vector<uint8_t> getData();
 		size_t getSampleLength() const;
+		size_t setLoopPoint();
+		size_t forceMoveLoopPoint();
 
 	private:
 		std::vector<uint8_t> buf_;
 		uint64_t lastWait_, totalSampCnt_;
 		uint32_t intrRate_;
+		bool isSetLoop_;
+		uint32_t loopPoint_;
 
 		void setWait();
 	};
@@ -59,10 +63,14 @@ namespace chip
 		bool empty() const override;
 		std::vector<uint8_t> getData();
 		size_t getSampleLength() const;
+		size_t setLoopPoint();
+		size_t forceMoveLoopPoint();
 
 	private:
 		std::vector<uint8_t> buf_;
 		uint64_t lastWait_, totalSampCnt_;
+		bool isSetLoop_;
+		uint32_t loopPoint_;
 
 		void setWait();
 	};

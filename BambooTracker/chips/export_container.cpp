@@ -38,7 +38,9 @@ namespace chip
 	VgmExportContainer::VgmExportContainer(uint32_t intrRate)
 		: lastWait_(0),
 		  totalSampCnt_(0),
-		  intrRate_(intrRate)
+		  intrRate_(intrRate),
+		  isSetLoop_(false),
+		  loopPoint_(0)
 	{
 	}
 
@@ -67,6 +69,8 @@ namespace chip
 		buf_.clear();
 		lastWait_ = 0;
 		totalSampCnt_ = 0;
+		isSetLoop_ = false;
+		loopPoint_ = 0;
 	}
 
 	bool VgmExportContainer::empty() const
@@ -83,6 +87,19 @@ namespace chip
 	size_t VgmExportContainer::getSampleLength() const
 	{
 		return totalSampCnt_;
+	}
+
+	size_t VgmExportContainer::setLoopPoint()
+	{
+		if (lastWait_) setWait();
+		isSetLoop_ = true;
+		return loopPoint_;
+	}
+
+	size_t VgmExportContainer::forceMoveLoopPoint()
+	{
+		loopPoint_ = buf_.size();
+		return loopPoint_;
 	}
 
 	void VgmExportContainer::setWait()
@@ -217,12 +234,16 @@ namespace chip
 
 			lastWait_ -= sub;
 		}
+
+		if (!isSetLoop_) loopPoint_ = buf_.size();
 	}
 
 	//******************************//
 	S98ExportContainer::S98ExportContainer()
 		: lastWait_(0),
-		  totalSampCnt_(0)
+		  totalSampCnt_(0),
+		  isSetLoop_(false),
+		  loopPoint_(0)
 	{
 	}
 
@@ -251,6 +272,8 @@ namespace chip
 		buf_.clear();
 		lastWait_ = 0;
 		totalSampCnt_ = 0;
+		isSetLoop_ = false;
+		loopPoint_ = 0;
 	}
 
 	bool S98ExportContainer::empty() const
@@ -267,6 +290,19 @@ namespace chip
 	size_t S98ExportContainer::getSampleLength() const
 	{
 		return totalSampCnt_;
+	}
+
+	size_t S98ExportContainer::setLoopPoint()
+	{
+		if (lastWait_) setWait();
+		isSetLoop_ = true;
+		return loopPoint_;
+	}
+
+	size_t S98ExportContainer::forceMoveLoopPoint()
+	{
+		loopPoint_ = buf_.size();
+		return loopPoint_;
 	}
 
 	void S98ExportContainer::setWait()

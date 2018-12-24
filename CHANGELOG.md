@@ -3,15 +3,17 @@
 ## Unreleased
 ### Added
 - [#27] - Add application icon (thanks [@Decidetto])
-- [#29], [#36] - Create BambooTracker.desktop (thanks [@alexmyczko], [@trebmuh], [@OPNA2608])
+- [#29], [#36], [#41] - Create BambooTracker.desktop (thanks [@alexmyczko], [@trebmuh], [@OPNA2608])
 - [#30] - Create BambooTracker.1 (thanks [@alexmyczko], [@OPNA2608])
-- [#37] - Support the WOPN instrument format (thanks [@jpcima])
+- [#37], [#38] - Support WOPN bank and instrument format (thanks [@jpcima])
 - Add S98 export
 
 ### Fixed
-- [#28] - Fix error when compilung before Qt5.10 (thanks [@papiezak] and others)
+- [#28] - Fix error when compiling before Qt5.10 (thanks [@papiezak] and others)
 - [#33] - Revise README (thanks [@OPNA2608])
 - [#31] - Replacing Json config with QSettings ([#17]; thanks [@OPNA2608])
+- [#39] - Fix invalid memory access on main window destruction (thanks [@jpcima])
+- Optimize wait data of exported VGM and S98
 
 [#27]: https://github.com/rerrahkr/BambooTracker/issues/27
 [#28]: https://github.com/rerrahkr/BambooTracker/issues/28
@@ -22,6 +24,9 @@
 [#31]: https://github.com/rerrahkr/BambooTracker/pull/31
 [#17]: https://github.com/rerrahkr/BambooTracker/issues/17
 [#37]: https://github.com/rerrahkr/BambooTracker/pull/37
+[#38]: https://github.com/rerrahkr/BambooTracker/pull/38
+[#39]: https://github.com/rerrahkr/BambooTracker/pull/39
+[#41]: https://github.com/rerrahkr/BambooTracker/pull/41
 
 [@Decidetto]: https://github.com/Decidetto
 [@alexmyczko]: https://github.com/alexmyczko
