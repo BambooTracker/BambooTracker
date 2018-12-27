@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
-BambooTracker is a tracker for YM2608 (OPNA) which was used in NEC PC-8801/9801 series computers.
+BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which was used in NEC PC-8801/9801 series computers.
 
 ## Glossary
 The files created by this tracker are called "modules". One such module contains songs (song data), instruments (tone data) and settings common to each song.
