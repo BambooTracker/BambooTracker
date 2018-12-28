@@ -59,11 +59,13 @@ public:
 	bool getDontSelectOnDoubleClick() const;
 	void setReverseFMVolumeOrder(bool enabled);
 	bool getReverseFMVolumeOrder() const;
+	void setMoveCursorToRight(bool enabled);
+	bool getMoveCursorToRight() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
 	bool backupModules_, dontSelectOnDoubleClick_;
-	bool reverseFMVolumeOrder_;
+	bool reverseFMVolumeOrder_, moveCursorToRight_;
 
 	// Edit settings
 public:

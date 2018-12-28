@@ -924,7 +924,10 @@ void PatternEditorPanel::setStepEffectID(QString str)
 						 (editPos_.colInTrack - 3) / 2, str.toStdString());
 	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, editPos_));
 
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
+	if (!bt_->isPlaySong() && !entryCnt_) {
+		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
+		else moveCursorToDown(1);
+	}
 }
 
 bool PatternEditorPanel::enterEffectValue(int key)
@@ -958,7 +961,10 @@ void PatternEditorPanel::setStepEffectValue(int value)
 							(editPos_.colInTrack - 4) / 2, value);
 	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, editPos_));
 
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
+	if (!bt_->isPlaySong() && !entryCnt_) {
+		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
+		else moveCursorToDown(1);
+	}
 }
 
 void PatternEditorPanel::insertStep()

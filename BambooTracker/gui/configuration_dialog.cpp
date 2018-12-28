@@ -28,6 +28,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(4)->setCheckState(toCheckState(config.lock()->getBackupModules()));
 	ui->generalSettingsListWidget->item(5)->setCheckState(toCheckState(config.lock()->getDontSelectOnDoubleClick()));
 	ui->generalSettingsListWidget->item(6)->setCheckState(toCheckState(config.lock()->getReverseFMVolumeOrder()));
+	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(config.lock()->getMoveCursorToRight()));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(config.lock()->getPageJumpLength());
@@ -88,6 +89,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setBackupModules(fromCheckState(ui->generalSettingsListWidget->item(4)->checkState()));
 	config_.lock()->setDontSelectOnDoubleClick(fromCheckState(ui->generalSettingsListWidget->item(5)->checkState()));
 	config_.lock()->setReverseFMVolumeOrder(fromCheckState(ui->generalSettingsListWidget->item(6)->checkState()));
+	config_.lock()->setMoveCursorToRight(fromCheckState(ui->generalSettingsListWidget->item(7)->checkState()));
 
 	// Edit settings
 	config_.lock()->setPageJumpLength(ui->pageJumpLengthSpinBox->value());

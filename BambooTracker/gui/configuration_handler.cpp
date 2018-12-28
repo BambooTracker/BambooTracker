@@ -38,6 +38,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("backupModule",            configLocked->getBackupModules());
 		settings.setValue("dontSelectOnDoubleClick", configLocked->getDontSelectOnDoubleClick());
 		settings.setValue("reverseFMVolumeOrder",    configLocked->getReverseFMVolumeOrder());
+		settings.setValue("moveCursorToRight",       configLocked->getMoveCursorToRight());
 		settings.endGroup();
 
 		// Edit settings
@@ -101,6 +102,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setBackupModules(settings.value("backupModule", configLocked->getBackupModules()).toBool());
 		configLocked->setDontSelectOnDoubleClick(settings.value("dontSelectOnDoubleClick", configLocked->getDontSelectOnDoubleClick()).toBool());
 		configLocked->setReverseFMVolumeOrder(settings.value("reverseFMVolumeOrder", configLocked->getReverseFMVolumeOrder()).toBool());
+		configLocked->setMoveCursorToRight(settings.value("moveCursorToRight", configLocked->getMoveCursorToRight()).toBool());
 		settings.endGroup();
 
 		// Edit settings

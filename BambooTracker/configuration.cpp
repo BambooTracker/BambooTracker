@@ -24,6 +24,7 @@ Configuration::Configuration()
 	backupModules_ = true;
 	dontSelectOnDoubleClick_ = false;
 	reverseFMVolumeOrder_ = true;
+	moveCursorToRight_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -221,6 +222,16 @@ void Configuration::setReverseFMVolumeOrder(bool enabled)
 bool Configuration::getReverseFMVolumeOrder() const
 {
 	return reverseFMVolumeOrder_;
+}
+
+void Configuration::setMoveCursorToRight(bool enabled)
+{
+	moveCursorToRight_ = enabled;
+}
+
+bool Configuration::getMoveCursorToRight() const
+{
+	return moveCursorToRight_;
 }
 
 // Edit settings

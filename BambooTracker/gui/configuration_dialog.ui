@@ -127,6 +127,14 @@
               <enum>Checked</enum>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Move cursor to right</string>
+             </property>
+             <property name="checkState">
+              <enum>Unchecked</enum>
+             </property>
+            </item>
            </widget>
           </item>
          </layout>
