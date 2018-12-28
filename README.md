@@ -1,8 +1,9 @@
 # BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.1.3-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20linux-lightgrey.svg)
-[![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
+
+![Example](./img/overview.gif)
 
 BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which was used in NEC PC-8801/9801 series computers.
 
