@@ -1820,7 +1820,17 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-1);
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				size_t base = (curPos_.step) ? curPos_.step
+											 : bt_->getPatternSizeFromOrderNumber(
+												   curSongNum_,
+												   (curPos_.order) ? (curPos_.order - 1)
+																   : (bt_->getOrderSize(curSongNum_) - 1));
+				moveCursorToDown((base - 1) / hlCnt_ * hlCnt_ - base);
+			}
+			else {
+				moveCursorToDown(-1);
+			}
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;
@@ -1832,7 +1842,15 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(1);
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				int next = (curPos_.step / hlCnt_ + 1) * hlCnt_;
+				size_t size = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
+				if (next < size) moveCursorToDown(next - curPos_.step);
+				else moveCursorToDown(size - curPos_.step);
+			}
+			else {
+				moveCursorToDown(1);
+			}
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
 				return true;

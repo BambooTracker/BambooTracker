@@ -153,6 +153,8 @@ It can also be specified with `0Oxx` effect.
 | End       | Jump to last step                  |
 | PageUp    | Jump to upper step                 |
 | PageDown  | Jump to lower step                 |
+| Ctrl+Up   | Jump to upper highlighted step     |
+| Ctrl+Down | Jump to lower highlighted step     |
 | Insert    | Insert step                        |
 | BackSpace | Delete the step above              |
 | Delete    | Delete commands                    |

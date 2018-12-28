@@ -7,6 +7,8 @@
 - [#30] - Create BambooTracker.1 (thanks [@alexmyczko], [@OPNA2608])
 - [#37], [#38] - Support WOPN bank and instrument format (thanks [@jpcima])
 - Add S98 export
+- [#13] - Add selection to move the cursor to right in the effect columns (thanks [@jimbo1qaz])
+- [#13] - Add highlighted step jump shortcuts (thanks [@jimbo1qaz])
 
 ### Fixed
 - [#28] - Fix error when compiling before Qt5.10 (thanks [@papiezak] and others)
@@ -27,6 +29,7 @@
 [#38]: https://github.com/rerrahkr/BambooTracker/pull/38
 [#39]: https://github.com/rerrahkr/BambooTracker/pull/39
 [#41]: https://github.com/rerrahkr/BambooTracker/pull/41
+[#13]: https://github.com/rerrahkr/BambooTracker/issues/13
 
 [@Decidetto]: https://github.com/Decidetto
 [@alexmyczko]: https://github.com/alexmyczko
