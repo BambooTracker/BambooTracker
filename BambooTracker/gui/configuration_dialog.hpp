@@ -22,6 +22,7 @@ signals:
 
 private slots:
 	void on_ConfigurationDialog_accepted();
+	void on_generalSettingsListWidget_itemSelectionChanged();
 
 private:
 	Ui::ConfigurationDialog *ui;

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>290</height>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,6 +34,55 @@
        <string>Genaral</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="keysGroupBox">
+         <property name="title">
+          <string>Keys</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="keyOffLabel">
+            <property name="text">
+             <string>Key off</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QKeySequenceEdit" name="keyOffKeySequenceEdit"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="octaveUpLabel">
+            <property name="text">
+             <string>Octave up</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QKeySequenceEdit" name="octaveUpKeySequenceEdit"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="octaveDownLabel">
+            <property name="text">
+             <string>Octave down</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QKeySequenceEdit" name="octaveDownKeySequenceEdit"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="echoBufferLabel">
+            <property name="text">
+             <string>Echo buffer</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QKeySequenceEdit" name="echoBufferKeySequenceEdit"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QGroupBox" name="editSettingsGroupBox">
          <property name="title">
@@ -63,12 +112,25 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="0" rowspan="2">
+       <item row="2" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0" rowspan="3">
         <widget class="QGroupBox" name="generalSettingsGroupBox">
          <property name="title">
           <string>General settings</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_5">
+         <layout class="QGridLayout" name="gridLayout_5" rowstretch="9,1">
           <item row="0" column="0">
            <widget class="QListWidget" name="generalSettingsListWidget">
             <item>
@@ -137,54 +199,18 @@
             </item>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="keysGroupBox">
-         <property name="title">
-          <string>Keys</string>
-         </property>
-         <layout class="QFormLayout" name="formLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="keyOffLabel">
-            <property name="text">
-             <string>Key off</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QKeySequenceEdit" name="keyOffKeySequenceEdit"/>
-          </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="octaveUpLabel">
-            <property name="text">
-             <string>Octave up</string>
+           <widget class="QPlainTextEdit" name="descPlainTextEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="plainText">
+             <string>Description:</string>
             </property>
            </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QKeySequenceEdit" name="octaveUpKeySequenceEdit"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="octaveDownLabel">
-            <property name="text">
-             <string>Octave down</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QKeySequenceEdit" name="octaveDownKeySequenceEdit"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="echoBufferLabel">
-            <property name="text">
-             <string>Echo buffer</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QKeySequenceEdit" name="echoBufferKeySequenceEdit"/>
           </item>
          </layout>
         </widget>

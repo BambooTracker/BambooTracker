@@ -9,6 +9,7 @@
 - Add S98 export
 - [#13] - Add selection to move the cursor to right in the effect columns (thanks [@jimbo1qaz])
 - [#13] - Add highlighted step jump shortcuts (thanks [@jimbo1qaz])
+- Add general settings descriptions in configuration dialog
 
 ### Fixed
 - [#28] - Fix error when compiling before Qt5.10 (thanks [@papiezak] and others)
@@ -127,4 +128,4 @@
 
 ## v0.1.0 (2018-11-25)
 ### Added
-- First release.
+- First release
