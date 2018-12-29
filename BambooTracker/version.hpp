@@ -28,7 +28,7 @@ private:
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;
 	static constexpr unsigned int modFileMinor		= 0;
-	static constexpr unsigned int modFileRevision	= 1;
+	static constexpr unsigned int modFileRevision	= 2;
 
 	// Instrument file version
 	static constexpr unsigned int instFileMajor		= 1;

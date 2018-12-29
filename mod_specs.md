@@ -1,6 +1,10 @@
-# BambooTracker Module File (.btm) Format Specification v1.0.1
+# BambooTracker Module File (.btm) Format Specification
+ v1.0.2 - 2018-12-29
+
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
+
+---
 
 | Type              | Field           | Description                                                               |
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
@@ -236,9 +240,9 @@ Each song block is defined as:
 
 Song type defined number and order of tracks.
 
-| Type              | Track1 | Track2 | Track3 | Track4 | Track5 | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 | Track15 |
-| ----------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- | ------- |
-| `0x00` (Standard) | FM1ch  | FM2ch  | FM3ch  | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch | SSG3ch | BD      | SD      | TOP     | HH      | TOM     | RIM     |
+| Type              | Track0 | Track1 | Track2 | Track3 | Track4 | Track5 | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 |
+| ----------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- |
+| `0x00` (Standard) | FM1ch  | FM2ch  | FM3ch  | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     |
 
 Current version (v1.0.0) is only stored as `0x00`.
 
@@ -301,3 +305,12 @@ Key event details:
 | -4    | Echo buffer 1 access.                                                               |
 | -5    | Echo buffer 2 access.                                                               |
 | -6    | Echo buffer 3 access.                                                               |
+
+---
+
+## History
+| Version | Date       | Detail                                     |
+| ------- | ---------- | ------------------------------------------ |
+| 1.0.2   | 2018-12-29 | Revised for the change of FM octave range. |
+| 1.0.1   | 2018-12-10 | Added instrument sequence type.            |
+| 1.0.0   | 2018-11-23 | Initial release.                           |

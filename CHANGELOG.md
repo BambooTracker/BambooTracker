@@ -16,6 +16,7 @@
 - [#31] - Replacing Json config with QSettings ([#17]; thanks [@OPNA2608])
 - [#39] - Fix invalid memory access on main window destruction (thanks [@jpcima])
 - Optimize wait data of exported VGM and S98
+- [#40] - Change FM octave lower (thanks [@papiezak])
 
 [#27]: https://github.com/rerrahkr/BambooTracker/issues/27
 [#28]: https://github.com/rerrahkr/BambooTracker/issues/28
@@ -30,6 +31,7 @@
 [#39]: https://github.com/rerrahkr/BambooTracker/pull/39
 [#41]: https://github.com/rerrahkr/BambooTracker/pull/41
 [#13]: https://github.com/rerrahkr/BambooTracker/issues/13
+[#40]: https://github.com/rerrahkr/BambooTracker/issues/40
 
 [@Decidetto]: https://github.com/Decidetto
 [@alexmyczko]: https://github.com/alexmyczko

@@ -1910,6 +1910,8 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 			mod.lock()->addSong(idx, SongType::STD, title, isTempo, tempo, groove, speed, ptnSize);
 			break;
 		}
+		default:
+			throw FileCorruptionError(FileIOError::FileType::MOD);
 		}
 		auto& song = mod.lock()->getSong(idx);
 		while (scsr < songCsr) {
@@ -1943,7 +1945,19 @@ size_t FileIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContaine
 					auto& step = pattern.getStep(stepIdx);
 					uint16_t eventFlag = ctr.readUint16(pcsr);
 					pcsr += 2;
-					if (eventFlag & 0x0001)	step.setNoteNumber(ctr.readInt8(pcsr++));
+					if (eventFlag & 0x0001)	{
+						if (version >= Version::toBCD(1, 0, 2)) {
+							step.setNoteNumber(ctr.readInt8(pcsr++));
+						}
+						else {
+							// Change FM octave (song type is only 0x00 before v1.0.2)
+							int8_t nn = ctr.readInt8(pcsr++);
+							if (trackIdx < 6 && 0 <= nn && nn < 84)
+								step.setNoteNumber(nn + 12);
+							else
+								step.setNoteNumber(nn);
+						}
+					}
 					if (eventFlag & 0x0002)	step.setInstrumentNumber(ctr.readUint8(pcsr++));
 					if (eventFlag & 0x0004)	step.setVolume(ctr.readUint8(pcsr++));
 					if (eventFlag & 0x0008)	{

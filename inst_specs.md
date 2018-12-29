@@ -1,6 +1,10 @@
-# BambooTracker Instrument File (.bti) Format Specification v1.0.1
+# BambooTracker Instrument File (.bti) Format Specification
+v1.0.1 - 2018-12-10
+
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
+
+---
 
 | Type              | Field           | Description                                                               |
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
@@ -132,3 +136,11 @@ Sequence type is defined as:
 | `0x02` | Relative. |
 
 FM/SSG arpeggio can be selected from all of these, FM/SSG pitch can be absolute or relative, and other properties must be set to `0x00`.
+
+---
+
+## History
+| Version | Date       | Detail                          |
+| ------- | ---------- | ------------------------------- |
+| 1.0.1   | 2018-12-10 | Added instrument sequence type. |
+| 1.0.0   | 2018-11-23 | Initial release.                |
