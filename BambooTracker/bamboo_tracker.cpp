@@ -11,8 +11,6 @@ const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
 BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	: instMan_(std::make_shared<InstrumentsManager>()),
-	  opnaCtrl_(std::make_unique<OPNAController>(
-					CHIP_CLOCK, config.lock()->getSampleRate(), config.lock()->getBufferLength())),
 	  mod_(std::make_shared<Module>()),
 	  octave_(4),
 	  curSongNum_(0),
@@ -26,6 +24,11 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  isFollowPlay_(true),
 	  isFindNextStep_(false)
 {
+	opnaCtrl_ = std::make_unique<OPNAController>(
+					CHIP_CLOCK,
+					config.lock()->getSampleRate(),
+					config.lock()->getBufferLength());
+
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
 	jamMan_ = std::make_unique<JamManager>(songStyle_.type);
 
@@ -1059,9 +1062,16 @@ void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) con
 	}
 }
 
+/********** Backup **********/
 void BambooTracker::backupModule(std::string file)
 {
 	FileIO::backupModule(file);
+}
+
+/********** Stream type **********/
+void BambooTracker::useSCCI(SoundInterfaceManager* manager)
+{
+	opnaCtrl_->useSCCI(manager);
 }
 
 /********** Stream events **********/

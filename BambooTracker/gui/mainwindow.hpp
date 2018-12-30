@@ -15,6 +15,8 @@
 #include <QResizeEvent>
 #include <QMoveEvent>
 #include <QLabel>
+#include <QTimer>
+#include <QLibrary>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -51,7 +53,10 @@ private:
 	std::shared_ptr<ColorPalette> palette_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::shared_ptr<AudioStream> stream_;
+	std::unique_ptr<QTimer> timer_;
 	std::shared_ptr<QUndoStack> comStack_;
+
+	std::unique_ptr<QLibrary> scciDll_;
 
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
@@ -178,6 +183,7 @@ private slots:
 	void on_actionS98_triggered();
 	void on_actionMix_triggered();
 	void on_actionOverwrite_triggered();
+	void onNewTickSignaled();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

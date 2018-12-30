@@ -57,6 +57,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	}
 	ui->soundDeviceComboBox->setCurrentIndex((devRow == -1) ? defDevRow : devRow);
 
+	ui->useSCCICheckBox->setCheckState(config.lock()->getUseSCCI() ? Qt::Checked : Qt::Unchecked);
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
 	ui->sampleRateComboBox->addItem("55466Hz", 55466);
@@ -102,6 +103,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 
 	// Sound //
 	config_.lock()->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
+	config_.lock()->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
 	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toInt());
 	config_.lock()->setBufferLength(ui->bufferLengthHorizontalSlider->value());
 }

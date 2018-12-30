@@ -285,6 +285,13 @@
           <item row="0" column="0">
            <widget class="QComboBox" name="soundDeviceComboBox"/>
           </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="useSCCICheckBox">
+            <property name="text">
+             <string>Use SCCI</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

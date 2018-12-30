@@ -62,6 +62,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.beginGroup("Sound");
 		settings.setValue("soundDevice",  QString::fromUtf8(configLocked->getSoundDevice().c_str(),
 											   configLocked->getSoundDevice().length()));
+		settings.setValue("useSCCI",		configLocked->getUseSCCI());
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
 		settings.endGroup();
@@ -123,6 +124,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		// Sound //
 		settings.beginGroup("Sound");
 		configLocked->setSoundDevice(settings.value("soundDevice", QString::fromStdString(configLocked->getSoundDevice())).toString().toUtf8().toStdString());
+		configLocked->setUseSCCI(settings.value("useSCCI", configLocked->getUseSCCI()).toBool());
 		QVariant sampleRateWorkaround;
 		sampleRateWorkaround.setValue(configLocked->getSampleRate());
 		configLocked->setSampleRate(static_cast<uint32_t>(settings.value("sampleRate", sampleRateWorkaround).toInt()));

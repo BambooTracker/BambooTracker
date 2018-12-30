@@ -8,4 +8,7 @@
 - [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand)
   - MIT
     - BambooTracker/format/wopn_file.*
+- [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) - [scci_license.txt](./scci_license.txt)
+  - BambooTracker/chips/scci/*
+  - scci.dll
 - [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3

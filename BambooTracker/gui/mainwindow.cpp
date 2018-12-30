@@ -34,6 +34,7 @@
 #include "gui/instrument_selection_dialog.hpp"
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
+#include "chips/scci/SCCIDefines.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	palette_(std::make_shared<ColorPalette>()),
 	bt_(std::make_shared<BambooTracker>(config_)),
 	comStack_(std::make_shared<QUndoStack>(this)),
+	scciDll_(std::make_unique<QLibrary>("scci")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	isModifiedForNotCommand_(false),
 	isEditedPattern_(true),
@@ -92,19 +94,29 @@ MainWindow::MainWindow(QWidget *parent) :
 											QString::fromUtf8(config_->getSoundDevice().c_str(),
 															  config_->getSoundDevice().length()));
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
-					 this, [&]() {
-		if (bt_->streamCountUp() > 0) {
-			ui->orderList->update();
-			ui->patternEditor->updatePosition();
-			statusPlayPos_->setText(
-						QString("%1/%2").arg(bt_->getPlayingOrderNumber(), 2, 16, QChar('0'))
-						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
-		}
-	}, Qt::DirectConnection);
+					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
 	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
 					 this, [&](int16_t *container, size_t nSamples) {
 		bt_->getStreamSamples(container, nSamples);
 	}, Qt::DirectConnection);
+	if (config_->getUseSCCI()) {
+		stream_->stop();
+		timer_ = std::make_unique<QTimer>(this);
+		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+		timer_->setSingleShot(false);
+		QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
+
+		scciDll_->load();
+		SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
+												scciDll_->resolve("getSoundInterfaceManager"));
+		if (getSoundInterfaceManager) bt_->useSCCI(getSoundInterfaceManager());
+
+		timer_->start();
+	}
+	else {
+		bt_->useSCCI(nullptr);
+		stream_->start();
+	}
 
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
@@ -127,6 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		if (freq != bt_->getModuleTickFrequency()) {
 			bt_->setModuleTickFrequency(freq);
 			stream_->setInturuption(freq);
+			if (timer_) timer_->setInterval(1000 / freq);
 			statusIntr_->setText(QString::number(freq) + QString("Hz"));
 			setModifiedTrue();
 		}
@@ -937,10 +950,31 @@ void MainWindow::changeOctave(bool upFlag)
 /********** Configuration change **********/
 void MainWindow::changeConfiguration()
 {
-	stream_->setRate(config_->getSampleRate());
-	stream_->setDuration(config_->getBufferLength());
-	stream_->setDevice(
-				QString::fromUtf8(config_->getSoundDevice().c_str(), config_->getSoundDevice().length()));
+	if (config_->getUseSCCI()) {
+		stream_->stop();
+		if (!timer_) {
+			timer_ = std::make_unique<QTimer>(this);
+			timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+			timer_->setSingleShot(false);
+			QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
+
+			scciDll_->load();
+			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
+													scciDll_->resolve("getSoundInterfaceManager"));
+			if (getSoundInterfaceManager) bt_->useSCCI(getSoundInterfaceManager());
+
+			timer_->start();
+		}
+	}
+	else {
+		timer_.reset();
+		bt_->useSCCI(nullptr);
+		stream_->setRate(config_->getSampleRate());
+		stream_->setDuration(config_->getBufferLength());
+		stream_->setDevice(
+					QString::fromUtf8(config_->getSoundDevice().c_str(), config_->getSoundDevice().length()));
+		stream_->start();
+	}
 	bt_->changeConfiguration(config_);
 
 	update();
@@ -1992,4 +2026,15 @@ void MainWindow::on_actionMix_triggered()
 void MainWindow::on_actionOverwrite_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onPasteOverwritePressed();
+}
+
+void MainWindow::onNewTickSignaled()
+{
+	if (bt_->streamCountUp() > 0) {
+		ui->orderList->update();
+		ui->patternEditor->updatePosition();
+		statusPlayPos_->setText(
+					QString("%1/%2").arg(bt_->getPlayingOrderNumber(), 2, 16, QChar('0'))
+					.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
+	}
 }
