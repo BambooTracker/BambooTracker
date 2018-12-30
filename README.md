@@ -253,4 +253,5 @@ I would like to thank the following people for making it:
 - Decidetto for the application icon
 - Vitaly Novichkov (Wohlstand) for WOPN instrument format files
 - Ru^3 for S98 file format documentation
+- SCCI team for SCCI libraries
 - And everyone who helps this project!
