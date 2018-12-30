@@ -7,6 +7,7 @@
 #include "opna.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
+#include "chips/scci/scci.h"
 #include "misc.hpp"
 
 struct ToneDetail
@@ -33,6 +34,10 @@ public:
 	// Forward instrument sequence
 	void tickEvent(SoundSource src, int ch, bool isStep = false);
 
+	// Stream type
+	void useSCCI(SoundInterfaceManager* manager);
+	bool isUsedSCCI() const;
+
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
 
@@ -47,8 +52,7 @@ public:
 
 
 private:
-	chip::OPNA opna_;
-	int duration_;
+	std::unique_ptr<chip::OPNA> opna_;
 
 	void initChip();
 

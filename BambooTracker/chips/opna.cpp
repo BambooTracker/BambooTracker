@@ -11,7 +11,7 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-
+#include <QDebug>
 namespace chip
 {
 	size_t OPNA::count_ = 0;
@@ -24,7 +24,9 @@ namespace chip
 			   std::shared_ptr<ExportContainerInterface> exportContainer)
 		: Chip(count_++, clock, rate, 110933, maxDuration,
 			   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
-			   exportContainer)
+			   exportContainer),
+		  scciManager_(nullptr),
+		  scciChip_(nullptr)
 	{
 		funcSetRate(rate);
 
@@ -47,6 +49,8 @@ namespace chip
 		device_stop_ym2608(id_);
 
 		--count_;
+
+		useSCCI(nullptr);
 	}
 
 	void OPNA::reset()
@@ -54,6 +58,8 @@ namespace chip
 		std::lock_guard<std::mutex> lg(mutex_);
 
 		device_reset_ym2608(id_);
+
+		if (scciChip_) scciChip_->init();
 	}
 
 	void OPNA::setRegister(uint32_t offset, uint8_t value)
@@ -69,6 +75,8 @@ namespace chip
 			ym2608_control_port_a_w(id_, 0, offset & 0xff);
 			ym2608_data_port_a_w(id_, 1, value & 0xff);
 		}
+
+		if (scciChip_) scciChip_->setRegister(offset, value);
 
 		if (exCntr_) exCntr_->recordRegisterChange(offset, value);
 	}
@@ -134,5 +142,33 @@ namespace chip
 		}
 
 		if (exCntr_) exCntr_->recordStream(stream, nSamples);
+	}
+
+	void OPNA::useSCCI(SoundInterfaceManager* manager)
+	{
+		if (manager) {
+			scciManager_ = manager;
+			scciManager_->initializeInstance();
+			scciManager_->reset();
+
+			scciChip_ = scciManager_->getSoundChip(SC_TYPE_YM2608, SC_CLOCK_7987200);
+			if (!scciChip_) {
+				scciManager_->releaseInstance();
+				scciManager_ = nullptr;
+			}
+		}
+		else {
+			if (!scciChip_) return;
+			scciManager_->releaseSoundChip(scciChip_);
+			scciChip_ = nullptr;
+
+			scciManager_->releaseInstance();
+			scciManager_ = nullptr;
+		}
+	}
+
+	bool OPNA::isUsedSCCI() const
+	{
+		return (scciManager_ != nullptr);
 	}
 }

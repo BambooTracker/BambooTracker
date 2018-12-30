@@ -37,6 +37,7 @@ Configuration::Configuration()
 
 	// Sonud //
 	sndDevice_ = u8"";
+	useSCCI_ = false;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
 }
@@ -295,6 +296,16 @@ void Configuration::setSoundDevice(std::string device)
 std::string Configuration::getSoundDevice() const
 {
 	return sndDevice_;
+}
+
+void Configuration::setUseSCCI(bool enabled)
+{
+	useSCCI_ = enabled;
+}
+
+bool Configuration::getUseSCCI() const
+{
+	return useSCCI_;
 }
 
 void Configuration::setSampleRate(uint32_t rate)

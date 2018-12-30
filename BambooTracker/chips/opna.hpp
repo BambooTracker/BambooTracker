@@ -1,6 +1,8 @@
 #pragma once
 
 #include "chip.hpp"
+#include "scci/scci.h"
+#include "scci/SCCIDefines.h"
 
 namespace chip
 {
@@ -20,9 +22,15 @@ namespace chip
 		uint8_t getRegister(uint32_t offset) const override;
 		void setVolume(float dBFM, float dBSSG);	// NOT work
 		void mix(int16_t* stream, size_t nSamples) override;
+		void useSCCI(SoundInterfaceManager* manager);
+		bool isUsedSCCI() const;
 
 	private:
 		static size_t count_;
+
+		// For SCCI
+		SoundInterfaceManager* scciManager_;
+		SoundChip* scciChip_;
 
 		/*static const int DEF_AMP_FM_, DEF_AMP_SSG_;*/
 

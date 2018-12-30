@@ -16,6 +16,7 @@
 #include "song.hpp"
 #include "gd3_tag.hpp"
 #include "s98_tag.hpp"
+#include "chips/scci/scci.h"
 #include "misc.hpp"
 
 class AbstractBank;
@@ -190,6 +191,9 @@ public:
 
 	// Backup
 	void backupModule(std::string file);
+
+	// Stream type
+	void useSCCI(SoundInterfaceManager* manager);
 
 	// Stream events
 	int streamCountUp();

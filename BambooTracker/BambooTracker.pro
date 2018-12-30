@@ -165,7 +165,8 @@ SOURCES += \
     format/wopn_file.c \
     instrument/bank.cpp \
     gui/instrument_selection_dialog.cpp \
-    gui/s98_export_settings_dialog.cpp
+    gui/s98_export_settings_dialog.cpp \
+    stream/timer.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -323,7 +324,10 @@ HEADERS += \
     instrument/bank.hpp \
     gui/instrument_selection_dialog.hpp \
     io/s98_tag.hpp \
-    gui/s98_export_settings_dialog.hpp
+    gui/s98_export_settings_dialog.hpp \
+    chips/scci/scci.h \
+    chips/scci/SCCIDefines.h \
+    stream/timer.hpp
 
 FORMS += \
     gui/mainwindow.ui \
