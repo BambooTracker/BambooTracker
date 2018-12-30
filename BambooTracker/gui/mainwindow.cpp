@@ -101,7 +101,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	}, Qt::DirectConnection);
 	if (config_->getUseSCCI()) {
 		stream_->stop();
+		/*
+		timer_ = std::make_unique<Timer>();
+		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+		timer_->setFunction([&]{ onNewTickSignaled(); });
+		*/
 		timer_ = std::make_unique<QTimer>(this);
+		timer_->setTimerType(Qt::PreciseTimer);
 		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
 		timer_->setSingleShot(false);
 		QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
@@ -953,7 +959,13 @@ void MainWindow::changeConfiguration()
 	if (config_->getUseSCCI()) {
 		stream_->stop();
 		if (!timer_) {
+			/*
+			timer_ = std::make_unique<Timer>();
+			timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+			timer_->setFunction([&]{ onNewTickSignaled(); });
+			*/
 			timer_ = std::make_unique<QTimer>(this);
+			timer_->setTimerType(Qt::PreciseTimer);
 			timer_->setInterval(1000 / bt_->getModuleTickFrequency());
 			timer_->setSingleShot(false);
 			QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
