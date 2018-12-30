@@ -153,8 +153,8 @@ namespace chip
 
 			scciChip_ = scciManager_->getSoundChip(SC_TYPE_YM2608, SC_CLOCK_7987200);
 			if (!scciChip_) {
-				manager->releaseInstance();
-				manager = nullptr;
+				scciManager_->releaseInstance();
+				scciManager_ = nullptr;
 			}
 		}
 		else {
