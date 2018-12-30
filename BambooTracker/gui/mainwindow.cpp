@@ -106,6 +106,43 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->getStreamSamples(container, nSamples);
 	}, Qt::DirectConnection);
 
+	/* Sub tool bar */
+	auto octLab = new QLabel("Octave");
+	octLab->setMargin(6);
+	ui->subToolBar->addWidget(octLab);
+	octave_ = new QSpinBox();
+	octave_->setMinimum(0);
+	octave_->setMaximum(7);
+	octave_->setValue(bt_->getCurrentOctave());
+	auto octFunc = [&](int octave) { bt_->setCurrentOctave(octave); };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(octave_, QOverload<int>::of(&QSpinBox::valueChanged), this, octFunc);
+#else
+	QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, octFunc);
+#endif
+	ui->subToolBar->addWidget(octave_);
+	ui->subToolBar->addSeparator();
+	ui->subToolBar->addAction(ui->actionFollow_Mode);
+	ui->subToolBar->addSeparator();
+	auto hlLab = new QLabel("Step highlight");
+	hlLab->setMargin(6);
+	ui->subToolBar->addWidget(hlLab);
+	highlight_ = new QSpinBox();
+	highlight_->setMinimum(1);
+	highlight_->setMaximum(256);
+	highlight_->setValue(8);
+	auto hlFunc = [&](int count) {
+		bt_->setModuleStepHighlightDistance(count);
+		ui->patternEditor->setPatternHighlightCount(count);
+		ui->patternEditor->update();
+	};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(highlight_, QOverload<int>::of(&QSpinBox::valueChanged), this, hlFunc);
+#else
+	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, hlFunc);
+#endif
+	ui->subToolBar->addWidget(highlight_);
+
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
 					 this, [&](QString str) {
@@ -138,6 +175,16 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 	QObject::connect(ui->modSetDialogOpenToolButton, &QToolButton::clicked,
 					 this, &MainWindow::on_actionModule_Properties_triggered);
+
+	/* Edit settings */
+	auto editableStepFunc = [&](int n) { ui->patternEditor->setEditableStep(n); };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+	QObject::connect(ui->editableStepSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+					 this, editableStepFunc);
+#else
+	QObject::connect(ui->editableStepSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, editableStepFunc);
+#endif
 
 	/* Song number */
 	auto songNumFunc = [&](int num) {
@@ -193,28 +240,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(ui->grooveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, grooveFunc);
 #else
 	QObject::connect(ui->grooveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, grooveFunc);
-#endif
-
-	/* Pattern step highlight */
-	ui->stepHighrightSpinBox->setValue(8);
-	auto hlFunc = [&](int count) {
-		bt_->setModuleStepHighlightDistance(count);
-		ui->patternEditor->setPatternHighlightCount(count);
-		ui->patternEditor->update();
-	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->stepHighrightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, hlFunc);
-#else
-	QObject::connect(ui->stepHighrightSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, hlFunc);
-#endif
-
-	/* Octave */
-	ui->octaveSpinBox->setValue(bt_->getCurrentOctave());
-	auto octFunc = [&](int octave) { bt_->setCurrentOctave(octave); };
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->octaveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, octFunc);
-#else
-	QObject::connect(ui->octaveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, octFunc);
 #endif
 
 	/* Instrument list */
@@ -806,7 +831,7 @@ void MainWindow::loadModule()
 	auto modCopyright = bt_->getModuleCopyright();
 	ui->copyrightLineEdit->setText(QString::fromUtf8(modCopyright.c_str(), modCopyright.length()));
 	ui->songNumSpinBox->setMaximum(bt_->getSongCount() - 1);
-	ui->stepHighrightSpinBox->setValue(bt_->getModuleStepHighlightDistance());
+	highlight_->setValue(bt_->getModuleStepHighlightDistance());
 
 	for (auto& idx : bt_->getInstrumentIndices()) {
 		auto inst = bt_->getInstrument(idx);
@@ -928,8 +953,8 @@ void MainWindow::lockControls(bool isLock)
 /********** Octave change **********/
 void MainWindow::changeOctave(bool upFlag)
 {
-	if (upFlag) ui->octaveSpinBox->stepUp();
-	else ui->octaveSpinBox->stepDown();
+	if (upFlag) octave_->stepUp();
+	else octave_->stepDown();
 
 	statusOctave_->setText(QString("Octave: ") + QString::number(bt_->getCurrentOctave()));
 }

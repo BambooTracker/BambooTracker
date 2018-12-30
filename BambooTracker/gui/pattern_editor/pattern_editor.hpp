@@ -51,6 +51,7 @@ public slots:
 	void onDefaultPatternSizeChanged();
 
 	void setPatternHighlightCount(int count);
+	void setEditableStep(int n);
 
 	void onSongLoaded();
 

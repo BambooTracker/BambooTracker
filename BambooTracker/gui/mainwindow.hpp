@@ -15,6 +15,7 @@
 #include <QResizeEvent>
 #include <QMoveEvent>
 #include <QLabel>
+#include <QSpinBox>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -96,6 +97,10 @@ private:
 	bool isSelectedPO_;
 
 	bool isSavedModBefore_;
+
+	// Sub tool bar
+	QSpinBox* octave_;
+	QSpinBox* highlight_;
 
 	// Status bar
 	QLabel* statusDetail_;

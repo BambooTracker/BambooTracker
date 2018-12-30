@@ -53,6 +53,7 @@ public slots:
 	void onDefaultPatternSizeChanged();
 
 	void setPatternHighlightCount(int count);
+	void setEditableStep(int n);
 
 	void onSongLoaded();
 
@@ -146,6 +147,7 @@ private:
 	bool isMuteElse_;
 
 	int hlCnt_;
+	int editableStepCnt_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);

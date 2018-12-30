@@ -76,43 +76,6 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <item row="2" column="0" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="octaveLabel">
-          <property name="text">
-           <string>Octave:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="stepHighrightSpinBox">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>256</number>
-          </property>
-          <property name="value">
-           <number>8</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="LineReadOnlySpinBox" name="octaveSpinBox">
-          <property name="maximum">
-           <number>7</number>
-          </property>
-          <property name="value">
-           <number>4</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="stepHighlightLabel">
-          <property name="text">
-           <string>Step Highlight:</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0" colspan="2">
          <widget class="QGroupBox" name="moduleSettingsGroupBox">
           <property name="title">
@@ -160,7 +123,7 @@
            <item row="4" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="tickFreqLabel">
              <property name="text">
-              <string>Tick Freq:</string>
+              <string>Tick Freq</string>
              </property>
             </widget>
            </item>
@@ -188,6 +151,32 @@
           </layout>
          </widget>
         </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QGroupBox" name="editSettingsGroupBox">
+          <property name="title">
+           <string>Edit settings</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="0" alignment="Qt::AlignRight">
+            <widget class="QLabel" name="editableStepLabel">
+             <property name="text">
+              <string>Editable step</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="editableStepSpinBox">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>256</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -198,7 +187,7 @@
         <item row="1" column="0" alignment="Qt::AlignRight">
          <widget class="QLabel" name="songNumLabel">
           <property name="text">
-           <string>Song:</string>
+           <string>Song</string>
           </property>
          </widget>
         </item>
@@ -246,7 +235,7 @@
            <item row="6" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="speedLabel">
              <property name="text">
-              <string>Speed:</string>
+              <string>Speed</string>
              </property>
             </widget>
            </item>
@@ -260,7 +249,7 @@
            <item row="5" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="tempoLabel">
              <property name="text">
-              <string>Tempo:</string>
+              <string>Tempo</string>
              </property>
             </widget>
            </item>
@@ -293,7 +282,7 @@
            <item row="3" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="songStyleLabel">
              <property name="text">
-              <string>Style:</string>
+              <string>Style</string>
              </property>
             </widget>
            </item>
@@ -336,7 +325,7 @@
            <item row="8" column="0">
             <widget class="QCheckBox" name="grooveCheckBox">
              <property name="text">
-              <string>Groove:</string>
+              <string>Groove</string>
              </property>
             </widget>
            </item>
@@ -409,7 +398,7 @@
      <x>0</x>
      <y>0</y>
      <width>930</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -604,11 +593,20 @@
    <addaction name="actionPlay_Pattern"/>
    <addaction name="actionStop"/>
    <addaction name="separator"/>
-   <addaction name="actionFollow_Mode"/>
-   <addaction name="separator"/>
    <addaction name="actionConfiguration"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="subToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
   <action name="actionNew">
    <property name="enabled">
     <bool>true</bool>
@@ -1172,8 +1170,6 @@
   <tabstop>copyrightLineEdit</tabstop>
   <tabstop>tickFreqSpinBox</tabstop>
   <tabstop>modSetDialogOpenToolButton</tabstop>
-  <tabstop>stepHighrightSpinBox</tabstop>
-  <tabstop>octaveSpinBox</tabstop>
   <tabstop>songNumSpinBox</tabstop>
   <tabstop>songTitleLineEdit</tabstop>
   <tabstop>songStyleLineEdit</tabstop>

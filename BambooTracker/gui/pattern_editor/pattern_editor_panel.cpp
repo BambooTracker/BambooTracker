@@ -34,7 +34,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  entryCnt_(0),
 	  selectAllState_(-1),
 	  isMuteElse_(false),
-	  hlCnt_(8)
+	  hlCnt_(8),
+	  editableStepCnt_(1)
 {	
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -1485,6 +1486,11 @@ void PatternEditorPanel::setPatternHighlightCount(int count)
 	update();
 }
 
+void PatternEditorPanel::setEditableStep(int n)
+{
+	editableStepCnt_ = n;
+}
+
 void PatternEditorPanel::onSongLoaded()
 {
 	curSongNum_ = bt_->getCurrentSongNumber();
@@ -1829,7 +1835,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				moveCursorToDown((base - 1) / hlCnt_ * hlCnt_ - base);
 			}
 			else {
-				moveCursorToDown(-1);
+				moveCursorToDown(-editableStepCnt_);
 			}
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
@@ -1849,7 +1855,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				else moveCursorToDown(size - curPos_.step);
 			}
 			else {
-				moveCursorToDown(1);
+				moveCursorToDown(editableStepCnt_);
 			}
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);

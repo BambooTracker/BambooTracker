@@ -136,6 +136,11 @@ void PatternEditor::setPatternHighlightCount(int count)
 	ui->panel->setPatternHighlightCount(count);
 }
 
+void PatternEditor::setEditableStep(int n)
+{
+	ui->panel->setEditableStep(n);
+}
+
 void PatternEditor::onSongLoaded()
 {
 	ui->panel->onSongLoaded();
