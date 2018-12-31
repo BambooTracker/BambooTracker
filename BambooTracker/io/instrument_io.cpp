@@ -2233,5 +2233,14 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
 	}
 
+	if (srcInst.note_offset != 0) {
+		int arpIdx = instMan.lock()->findFirstFreeArpeggioFM();
+		if (arpIdx < 0) throw FileCorruptionError(FileIO::FileType::INST);
+		inst->setArpeggioEnabled(true);
+		inst->setArpeggioNumber(arpIdx);
+		instMan.lock()->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
+		instMan.lock()->setArpeggioFMType(arpIdx, 0);  // Absolute
+	}
+
 	return inst;
 }

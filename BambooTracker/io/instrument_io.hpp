@@ -35,6 +35,7 @@ public:
 	static AbstractInstrument* loadWOPNInstrument(const WOPNInstrument &srcInst,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
+
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
 			FMEnvelopeParameter param, size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan,
