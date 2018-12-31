@@ -836,6 +836,9 @@ void PatternEditorPanel::setStepInstrument(int num)
 	bt_->setStepInstrument(curSongNum_, editPos_.track, editPos_.order, editPos_.step, num);
 	comStack_.lock()->push(new SetInstrumentToStepQtCommand(this, editPos_));
 
+	emit instrumentEntered(
+				bt_->getStepInstrument(curSongNum_, editPos_.track, editPos_.order, editPos_.step));
+
 	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
 }
 

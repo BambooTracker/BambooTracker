@@ -21,6 +21,7 @@
 - [#39] - Fix invalid memory access on main window destruction (thanks [@jpcima])
 - Optimize wait data of exported VGM and S98
 - [#40] - Change FM octave lower (thanks [@papiezak])
+- Fix to set the current instrument when entering instrument number in pattern editor
 
 [#27]: https://github.com/rerrahkr/BambooTracker/issues/27
 [#28]: https://github.com/rerrahkr/BambooTracker/issues/28

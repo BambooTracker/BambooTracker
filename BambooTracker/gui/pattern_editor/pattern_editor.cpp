@@ -32,6 +32,8 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 this, [&](bool isSelected) { emit selected(isSelected); });
 	QObject::connect(ui->panel, &PatternEditorPanel::returnPressed,
 					 this, [&] { emit returnPressed(); });
+	QObject::connect(ui->panel, &PatternEditorPanel::instrumentEntered,
+					 this, [&](int num) { emit instrumentEntered(num); });
 
 	auto focusSlot = [&] { ui->panel->setFocus(); };
 

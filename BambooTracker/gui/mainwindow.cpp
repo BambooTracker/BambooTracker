@@ -343,6 +343,18 @@ MainWindow::MainWindow(QWidget *parent) :
 		if (bt_->isPlaySong()) stopPlaySong();
 		else startPlaySong();
 	});
+	QObject::connect(ui->patternEditor, &PatternEditor::instrumentEntered,
+					 this, [&](int num) {
+		auto list = ui->instrumentListWidget;
+		if (num != -1) {
+			for (int i = 0; i < list->count(); ++i) {
+				if (list->item(i)->data(Qt::UserRole).toInt() == num) {
+					list->setCurrentRow(i);
+					return ;
+				}
+			}
+		}
+	});
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
