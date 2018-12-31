@@ -166,7 +166,11 @@ SOURCES += \
     instrument/bank.cpp \
     gui/instrument_selection_dialog.cpp \
     gui/s98_export_settings_dialog.cpp \
-    stream/timer.cpp
+    stream/timer.cpp \
+    io/module_io.cpp \
+    io/export_handler.cpp \
+    io/instrument_io.cpp \
+    io/bank_io.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -327,7 +331,12 @@ HEADERS += \
     gui/s98_export_settings_dialog.hpp \
     chips/scci/scci.h \
     chips/scci/SCCIDefines.h \
-    stream/timer.hpp
+    stream/timer.hpp \
+    io/module_io.hpp \
+    io/io_handlers.hpp \
+    io/export_handler.hpp \
+    io/instrument_io.hpp \
+    io/bank_io.hpp
 
 FORMS += \
     gui/mainwindow.ui \

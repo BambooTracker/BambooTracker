@@ -20,7 +20,7 @@
 #include "track.hpp"
 #include "instrument.hpp"
 #include "bank.hpp"
-#include "file_io.hpp"
+#include "bank_io.hpp"
 #include "version.hpp"
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -816,7 +816,7 @@ void MainWindow::importInstrumentsFromBank()
 
 	std::unique_ptr<AbstractBank> bank;
 	try {
-		bank.reset(FileIO::loadBank(file.toLocal8Bit().toStdString()));
+		bank.reset(BankIO::loadBank(file.toLocal8Bit().toStdString()));
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {

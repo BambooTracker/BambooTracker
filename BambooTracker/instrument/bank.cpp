@@ -1,5 +1,5 @@
 #include "bank.hpp"
-#include "file_io.hpp"
+#include "instrument_io.hpp"
 #include "format/wopn_file.h"
 #include <stdio.h>
 
@@ -62,5 +62,5 @@ std::string WopnBank::getInstrumentName(size_t index) const {
 
 AbstractInstrument* WopnBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const {
 	const InstEntry &ent = entries_.at(index);
-	return FileIO::loadWOPNInstrument(*ent.inst, instMan, instNum);
+	return InstrumentIO::loadWOPNInstrument(*ent.inst, instMan, instNum);
 }

@@ -4,7 +4,7 @@
 #include <set>
 #include <exception>
 #include "commands.hpp"
-#include "file_io.hpp"
+#include "io_handlers.hpp"
 #include "bank.hpp"
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
@@ -107,14 +107,14 @@ void BambooTracker::deepCloneInstrument(int num, int refNum)
 
 void BambooTracker::loadInstrument(std::string path, int instNum)
 {
-	auto inst = FileIO::loadInstrument(path, instMan_, instNum);
+	auto inst = InstrumentIO::loadInstrument(path, instMan_, instNum);
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
 void BambooTracker::saveInstrument(std::string path, int instNum)
 {
-	FileIO::saveInstrument(path, instMan_, instNum);
+	InstrumentIO::saveInstrument(path, instMan_, instNum);
 }
 
 void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)
@@ -912,7 +912,7 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 	isFollowPlay_ = tmpFollow;
 
 	try {
-		FileIO::writeWave(file, exCntr->getStream(), opnaCtrl_->getRate());
+		ExportHandler::writeWave(file, exCntr->getStream(), opnaCtrl_->getRate());
 		f();
 		return true;
 	}
@@ -968,9 +968,9 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		FileIO::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
-						 loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
-						 exCntr->getSampleLength(), gd3TagEnabled, tag);
+		ExportHandler::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
+								exCntr->getSampleLength(), gd3TagEnabled, tag);
 		f();
 		return true;
 	} catch (...) {
@@ -1023,8 +1023,8 @@ bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, s
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		FileIO::writeS98(file, exCntr->getData(), CHIP_CLOCK, 44100,
-						 loopFlag, loopPoint, tagEnabled, tag);
+		ExportHandler::writeS98(file, exCntr->getData(), CHIP_CLOCK, 44100,
+								loopFlag, loopPoint, tagEnabled, tag);
 		f();
 		return true;
 	} catch (...) {
@@ -1065,7 +1065,7 @@ void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) con
 /********** Backup **********/
 void BambooTracker::backupModule(std::string file)
 {
-	FileIO::backupModule(file);
+	ModuleIO::backupModule(file);
 }
 
 /********** Stream type **********/
@@ -1848,7 +1848,7 @@ void BambooTracker::loadModule(std::string path)
 
 	std::exception_ptr ep;
 	try {
-		FileIO::loadModule(path, mod_, instMan_);
+		ModuleIO::loadModule(path, mod_, instMan_);
 	}
 	catch (...) {
 		ep = std::current_exception();
@@ -1863,7 +1863,7 @@ void BambooTracker::loadModule(std::string path)
 
 void BambooTracker::saveModule(std::string path)
 {
-	FileIO::saveModule(path, mod_, instMan_);
+	ModuleIO::saveModule(path, mod_, instMan_);
 }
 
 void BambooTracker::setModulePath(std::string path)
