@@ -11,7 +11,7 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#include <QDebug>
+
 namespace chip
 {
 	size_t OPNA::count_ = 0;

@@ -12,6 +12,7 @@
 - Add general settings descriptions in configuration dialog
 - [#13] - Add editable step (thanks [@jimbo1qaz])
 - Support SCCI (beta)
+- Add tool bar in instrument list
 
 ### Fixed
 - [#28] - Fix error when compiling before Qt5.10 (thanks [@papiezak] and others)

@@ -5,6 +5,7 @@
   - BambooTracker/chips/mame/*
 - [Silk icon](https://www.iconfinder.com/iconsets/silk2) set 1.3 by Mark James - CC BY 2.5
   - BambooTracker/res/icon/if_*.png
+  - BambooTracker/res/icon/iconfinder_*.png
 - [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand)
   - MIT
     - BambooTracker/format/wopn_file.*

@@ -113,9 +113,14 @@ MainWindow::MainWindow(QWidget *parent) :
 		QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
 
 		scciDll_->load();
-		SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
-												scciDll_->resolve("getSoundInterfaceManager"));
-		if (getSoundInterfaceManager) bt_->useSCCI(getSoundInterfaceManager());
+		if (scciDll_->isLoaded()) {
+			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
+													scciDll_->resolve("getSoundInterfaceManager"));
+			bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
+		}
+		else {
+			bt_->useSCCI(nullptr);
+		}
 
 		timer_->start();
 	}
@@ -305,6 +310,17 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
 					 this, &MainWindow::onInstrumentListWidgetItemAdded);
+	auto instToolBar = new QToolBar();
+	instToolBar->setIconSize(QSize(16, 16));
+	instToolBar->addAction(ui->actionNew_Instrument);
+	instToolBar->addAction(ui->actionRemove_Instrument);
+	instToolBar->addAction(ui->actionClone_Instrument);
+	instToolBar->addSeparator();
+	instToolBar->addAction(ui->actionLoad_From_File);
+	instToolBar->addAction(ui->actionSave_To_File);
+	instToolBar->addSeparator();
+	instToolBar->addAction(ui->actionEdit);
+	ui->instrumentListGroupBox->layout()->addWidget(instToolBar);
 
 	/* Pattern editor */
 	ui->patternEditor->setCore(bt_);
@@ -995,10 +1011,14 @@ void MainWindow::changeConfiguration()
 			timer_->setSingleShot(false);
 			QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
 
-			scciDll_->load();
-			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
-													scciDll_->resolve("getSoundInterfaceManager"));
-			if (getSoundInterfaceManager) bt_->useSCCI(getSoundInterfaceManager());
+			if (scciDll_->isLoaded()) {
+				SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
+														scciDll_->resolve("getSoundInterfaceManager"));
+				bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
+			}
+			else {
+				bt_->useSCCI(nullptr);
+			}
 
 			timer_->start();
 		}

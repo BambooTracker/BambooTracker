@@ -352,7 +352,10 @@
         <property name="title">
          <string>Instruments</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <property name="leftMargin">
           <number>3</number>
          </property>
@@ -365,10 +368,7 @@
          <property name="bottomMargin">
           <number>3</number>
          </property>
-         <property name="horizontalSpacing">
-          <number>6</number>
-         </property>
-         <item row="0" column="2">
+         <item>
           <widget class="QListWidget" name="instrumentListWidget">
            <property name="styleSheet">
             <string notr="true"/>
@@ -834,6 +834,10 @@
    </property>
   </action>
   <action name="actionNew_Instrument">
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/add_inst</normaloff>:/icon/add_inst</iconset>
+   </property>
    <property name="text">
     <string>&amp;New Instrument</string>
    </property>
@@ -842,6 +846,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/remove_inst</normaloff>:/icon/remove_inst</iconset>
+   </property>
    <property name="text">
     <string>&amp;Remove Instrument</string>
    </property>
@@ -849,6 +857,10 @@
   <action name="actionClone_Instrument">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/clone_inst</normaloff>:/icon/clone_inst</iconset>
    </property>
    <property name="text">
     <string>&amp;Clone Instrument</string>
@@ -866,6 +878,10 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/load_inst</normaloff>:/icon/load_inst</iconset>
+   </property>
    <property name="text">
     <string>&amp;Load From File...</string>
    </property>
@@ -874,6 +890,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/save_inst</normaloff>:/icon/save_inst</iconset>
+   </property>
    <property name="text">
     <string>&amp;Save To File...</string>
    </property>
@@ -881,6 +901,10 @@
   <action name="actionEdit">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/edit_inst</normaloff>:/icon/edit_inst</iconset>
    </property>
    <property name="text">
     <string>&amp;Edit...</string>
