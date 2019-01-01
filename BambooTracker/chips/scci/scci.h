@@ -7,6 +7,9 @@
 using DWORD = uint32_t;
 using BOOL = bool;
 using BYTE = uint8_t;
+#ifndef WIN32
+#define __stdcall
+#endif
 
 // Sound Interface Infomation
 typedef struct {
