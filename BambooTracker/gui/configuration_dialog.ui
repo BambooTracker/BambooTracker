@@ -31,7 +31,7 @@
      </property>
      <widget class="QWidget" name="generalTab">
       <attribute name="title">
-       <string>Genaral</string>
+       <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
        <item row="1" column="1">
