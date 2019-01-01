@@ -273,7 +273,7 @@ MainWindow::MainWindow(QWidget *parent) :
 					"	color: rgba(%1, %2, %3, %4);"
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
-				).arg(palette_->ilistTextColor.red()).arg(palette_->ilistTextColor.green())
+					).arg(palette_->ilistTextColor.red()).arg(palette_->ilistTextColor.green())
 				.arg(palette_->ilistTextColor.blue()).arg(palette_->ilistTextColor.alpha())
 				.arg(palette_->ilistBackColor.red()).arg(palette_->ilistBackColor.green())
 				.arg(palette_->ilistBackColor.blue()).arg(palette_->ilistBackColor.alpha())
@@ -283,27 +283,27 @@ MainWindow::MainWindow(QWidget *parent) :
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
 					).arg(palette_->ilistHovTextColor.red()).arg(palette_->ilistHovTextColor.green())
-					.arg(palette_->ilistHovTextColor.blue()).arg(palette_->ilistHovTextColor.alpha())
-					.arg(palette_->ilistHovBackColor.red()).arg(palette_->ilistHovBackColor.green())
-					.arg(palette_->ilistHovBackColor.blue()).arg(palette_->ilistHovBackColor.alpha())
+				.arg(palette_->ilistHovTextColor.blue()).arg(palette_->ilistHovTextColor.alpha())
+				.arg(palette_->ilistHovBackColor.red()).arg(palette_->ilistHovBackColor.green())
+				.arg(palette_->ilistHovBackColor.blue()).arg(palette_->ilistHovBackColor.alpha())
 				+ QString(
 					"QListWidget::item:selected {"
 					"	color: rgba(%1, %2, %3, %4);"
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
 					).arg(palette_->ilistSelTextColor.red()).arg(palette_->ilistSelTextColor.green())
-					.arg(palette_->ilistSelTextColor.blue()).arg(palette_->ilistSelTextColor.alpha())
-					.arg(palette_->ilistSelBackColor.red()).arg(palette_->ilistSelBackColor.green())
-					.arg(palette_->ilistSelBackColor.blue()).arg(palette_->ilistSelBackColor.alpha())
+				.arg(palette_->ilistSelTextColor.blue()).arg(palette_->ilistSelTextColor.alpha())
+				.arg(palette_->ilistSelBackColor.red()).arg(palette_->ilistSelBackColor.green())
+				.arg(palette_->ilistSelBackColor.blue()).arg(palette_->ilistSelBackColor.alpha())
 				+ QString(
 					"QListWidget::item:selected:hover {"
 					"	color: rgba(%1, %2, %3, %4);"
 					"	background: rgba(%5, %6, %7, %8);"
 					"}"
 					).arg(palette_->ilistHovSelTextColor.red()).arg(palette_->ilistHovSelTextColor.green())
-					.arg(palette_->ilistHovSelTextColor.blue()).arg(palette_->ilistHovSelTextColor.alpha())
-					.arg(palette_->ilistHovSelBackColor.red()).arg(palette_->ilistHovSelBackColor.green())
-					.arg(palette_->ilistHovSelBackColor.blue()).arg(palette_->ilistHovSelBackColor.alpha())
+				.arg(palette_->ilistHovSelTextColor.blue()).arg(palette_->ilistHovSelTextColor.alpha())
+				.arg(palette_->ilistHovSelBackColor.red()).arg(palette_->ilistHovSelBackColor.green())
+				.arg(palette_->ilistHovSelBackColor.blue()).arg(palette_->ilistHovSelBackColor.alpha())
 				);
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	ui->instrumentListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -722,7 +722,7 @@ void MainWindow::editInstrumentName()
 	auto item = list->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
 	QString oldName = instForms_->getFormInstrumentName(num);
-    auto line = new QLineEdit(oldName);
+	auto line = new QLineEdit(oldName);
 
 	QObject::connect(line, &QLineEdit::editingFinished,
 					 this, [&, item, list, num, oldName] {
@@ -733,7 +733,7 @@ void MainWindow::editInstrumentName()
 		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
 	});
 
-    ui->instrumentListWidget->setItemWidget(item, line);
+	ui->instrumentListWidget->setItemWidget(item, line);
 
 	line->selectAll();
 	line->setFocus();
@@ -1082,15 +1082,15 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QAction* remove = menu.addAction("&Remove", this, [&]() {
 		removeInstrument(ui->instrumentListWidget->currentRow());
 	});
-    menu.addSeparator();
+	menu.addSeparator();
 	QAction* name = menu.addAction("Edit &name", this, &MainWindow::editInstrumentName);
-    menu.addSeparator();
+	menu.addSeparator();
 	QAction* clone = menu.addAction("&Clone", this, &MainWindow::cloneInstrument);
 	QAction* dClone = menu.addAction("&Deep clone", this, &MainWindow::deepCloneInstrument);
-    menu.addSeparator();
+	menu.addSeparator();
 	QAction* ldFile = menu.addAction("&Load from file...", this, &MainWindow::loadInstrument);
 	QAction* svFile = menu.addAction("&Save to file...", this, &MainWindow::saveInstrument);
-    menu.addSeparator();
+	menu.addSeparator();
 	QAction* edit = menu.addAction("&Edit...", this, &MainWindow::editInstrument);
 #else
 	QAction* add = menu.addAction("&Add");
@@ -1137,7 +1137,7 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 		name->setEnabled(false);
 		svFile->setEnabled(false);
 		edit->setEnabled(false);
-    }
+	}
 	if (item == nullptr || bt_->findFirstFreeInstrumentNumber() == -1) {
 		clone->setEnabled(false);
 		dClone->setEnabled(false);
@@ -1626,17 +1626,27 @@ void MainWindow::on_actionKill_Sound_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QMessageBox::about(this, "About", QString(
-					   "BambooTracker v")
-					   + QString::fromStdString(Version::ofApplicationInString())
-					   + QString("\n"
-					   "Copyright (C) 2018 Rerrah\n"
-					   "\n"
-					   "Libraries:\n"
-					   "- Qt (GPL v2+ or LGPL v3)\n"
-					   "- VGMPlay by (C) Valley Bell (GPL v2)\n"
-					   "- MAME (MAME License)\n"
-					   "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)"));
+	QMessageBox box(QMessageBox::NoIcon,
+					"About",
+					QString("<h2>BambooTracker v")
+					+ QString::fromStdString(Version::ofApplicationInString())
+					+ QString("</h2>"
+							  "<b>YM2608 (OPNA) Music Tracker<br>"
+							  "Copyright (C) 2018, 2019 Rerrah</b><br>"
+							  "<hr>"
+							  "Libraries:<br>"
+							  "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
+							  "- MAME (MAME License)<br>"
+							  "- SCCI (SCCI License)<br>"
+							  "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
+							  "- Qt (GPL v2+ or LGPL v3)<br>"
+							  "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
+							  "<br>"
+							  "Also see changelog which lists contributors."),
+					QMessageBox::Ok,
+					this);
+	box.setIconPixmap(QIcon(":/icon/app_icon").pixmap(QSize(44, 44)));
+	box.exec();
 }
 
 void MainWindow::on_actionFollow_Mode_triggered()

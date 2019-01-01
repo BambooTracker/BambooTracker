@@ -1,15 +1,14 @@
 # List of libraries
-- [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
-  - BambooTracker/chips/mame/*
-- [VGMPlay](https://github.com/vgmrips/vgmplay) by Valley Bell - GPL v2
-  - BambooTracker/chips/mame/*
-- [Silk icon](https://www.iconfinder.com/iconsets/silk2) set 1.3 by Mark James - CC BY 2.5
-  - BambooTracker/res/icon/if_*.png
-  - BambooTracker/res/icon/iconfinder_*.png
 - [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand)
   - MIT
     - BambooTracker/format/wopn_file.*
+- [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
+  - BambooTracker/chips/mame/*
+- [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3
 - [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) - [scci_license.txt](./scci_license.txt)
   - BambooTracker/chips/scci/*
-  - scci.dll
-- [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3
+- [Silk icon](https://www.iconfinder.com/iconsets/silk2) set 1.3 by Mark James - CC BY 2.5
+  - BambooTracker/res/icon/if_*.png
+  - BambooTracker/res/icon/iconfinder_*.png
+- [VGMPlay](https://github.com/vgmrips/vgmplay) by Valley Bell - GPL v2
+  - BambooTracker/chips/mame/*

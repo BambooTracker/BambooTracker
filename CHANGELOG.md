@@ -22,6 +22,8 @@
 - Optimize wait data of exported VGM and S98
 - [#40] - Change FM octave lower (thanks [@papiezak])
 - Fix to set the current instrument when entering instrument number in pattern editor
+- [#45] - Update README Linux build instructions, Fix typo in config dialogue (thanks [@OPNA2608])
+- Rewrite about dialog
 
 [#27]: https://github.com/rerrahkr/BambooTracker/issues/27
 [#28]: https://github.com/rerrahkr/BambooTracker/issues/28
@@ -37,6 +39,7 @@
 [#41]: https://github.com/rerrahkr/BambooTracker/pull/41
 [#13]: https://github.com/rerrahkr/BambooTracker/issues/13
 [#40]: https://github.com/rerrahkr/BambooTracker/issues/40
+[#45]: https://github.com/rerrahkr/BambooTracker/pull/45
 
 [@Decidetto]: https://github.com/Decidetto
 [@alexmyczko]: https://github.com/alexmyczko
