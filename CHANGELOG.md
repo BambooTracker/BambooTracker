@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.1.4 (2019-01-01)
 ### Added
 - [#27] - Add application icon (thanks [@Decidetto])
 - [#29], [#36], [#41] - Create BambooTracker.desktop (thanks [@alexmyczko], [@trebmuh], [@OPNA2608])
@@ -11,7 +13,7 @@
 - [#13] - Add highlighted step jump shortcuts (thanks [@jimbo1qaz])
 - Add general settings descriptions in configuration dialog
 - [#13] - Add editable step (thanks [@jimbo1qaz])
-- Support SCCI (beta)
+- Support SCCI (beta) ([#46], [#47]; thanks [@papiezak])
 - Add tool bar in instrument list
 
 ### Fixed
@@ -40,6 +42,8 @@
 [#13]: https://github.com/rerrahkr/BambooTracker/issues/13
 [#40]: https://github.com/rerrahkr/BambooTracker/issues/40
 [#45]: https://github.com/rerrahkr/BambooTracker/pull/45
+[#46]: https://github.com/rerrahkr/BambooTracker/issues/46
+[#47]: https://github.com/rerrahkr/BambooTracker/pull/47
 
 [@Decidetto]: https://github.com/Decidetto
 [@alexmyczko]: https://github.com/alexmyczko

@@ -1,5 +1,5 @@
 # BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.1.3-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.1.4-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20linux-lightgrey.svg)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
@@ -248,7 +248,7 @@ make
 - Qt
 - YM2608のエミュレーションコードに関してMAME開発チームさんとValley Bellさん
 - ツールバーに使用しているアイコンに関してMark Jamesさん
-- VGMファイルのフォーマットのドキュメントに関してVGMRipsチームさん
+- VGMファイルのフォーマットのドキュメントに関してVGMRipsチームの方々
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
 - トラッカーのアイコンに関してDecidettoさん
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
