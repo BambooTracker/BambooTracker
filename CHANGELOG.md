@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
+
+[#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 
 ## v0.1.4 (2019-01-01)
 ### Added

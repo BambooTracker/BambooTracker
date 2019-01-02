@@ -269,7 +269,7 @@
           <item row="1" column="0" alignment="Qt::AlignHCenter">
            <widget class="QLabel" name="bufferLengthLabel">
             <property name="text">
-             <string>TextLabel</string>
+             <string>1ms</string>
             </property>
            </widget>
           </item>
