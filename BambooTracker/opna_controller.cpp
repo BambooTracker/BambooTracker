@@ -125,6 +125,11 @@ void OPNAController::setDuration(int duration)
 	opna_->setMaxDuration(duration);
 }
 
+void OPNAController::setMasterVolume(int percentage)
+{
+	opna_->setMasterVolume(percentage);
+}
+
 void OPNAController::setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr)
 {
 	opna_->setExportContainer(cntr);
@@ -334,6 +339,11 @@ void OPNAController::setTemporaryVolumeFM(int ch, int volume)
 		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::TL4,
 										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::TL4));
 	}
+}
+
+void OPNAController::setMasterVolumeFM(double dB)
+{
+	opna_->setVolumeFM(dB);
 }
 
 /********** Set pan **********/
@@ -1438,6 +1448,11 @@ void OPNAController::setRealVolumeSSG(int ch)
 
 	opna_->setRegister(0x08 + ch, volume);
 	needEnvSetSSG_[ch] = false;
+}
+
+void OPNAController::setMasterVolumeSSG(double dB)
+{
+	opna_->setVolumeSSG(dB);
 }
 
 /********** Set effect **********/

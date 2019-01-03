@@ -72,6 +72,35 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 		ui->bufferLengthLabel->setText(QString::number(value) + "ms");
 	});
 	ui->bufferLengthHorizontalSlider->setValue(config.lock()->getBufferLength());
+
+	// Mixer //
+	ui->masterMixerSlider->setText("Master");
+	ui->masterMixerSlider->setSuffix("%");
+	ui->masterMixerSlider->setMaximum(100);
+	ui->masterMixerSlider->setMinimum(0);
+	ui->masterMixerSlider->setTickPosition(QSlider::TicksBothSides);
+	ui->masterMixerSlider->setTickInterval(20);
+	ui->masterMixerSlider->setValue(config.lock()->getMixerVolumeMaster());
+
+	ui->fmMixerSlider->setText("FM");
+	ui->fmMixerSlider->setSuffix("dB");
+	ui->fmMixerSlider->setMaximum(120);
+	ui->fmMixerSlider->setMinimum(-120);
+	ui->fmMixerSlider->setValueRate(0.1);
+	ui->fmMixerSlider->setSign(true);
+	ui->fmMixerSlider->setTickPosition(QSlider::TicksBothSides);
+	ui->fmMixerSlider->setTickInterval(20);
+	ui->fmMixerSlider->setValue(static_cast<int>(config.lock()->getMixerVolumeFM() * 10));
+
+	ui->ssgMixerSlider->setText("SSG");
+	ui->ssgMixerSlider->setSuffix("dB");
+	ui->ssgMixerSlider->setMaximum(120);
+	ui->ssgMixerSlider->setMinimum(-120);
+	ui->ssgMixerSlider->setValueRate(0.1);
+	ui->ssgMixerSlider->setSign(true);
+	ui->ssgMixerSlider->setTickPosition(QSlider::TicksBothSides);
+	ui->ssgMixerSlider->setTickInterval(20);
+	ui->ssgMixerSlider->setValue(static_cast<int>(config.lock()->getMixerVolumeSSG() * 10));
 }
 
 ConfigurationDialog::~ConfigurationDialog()
@@ -106,6 +135,11 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
 	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toInt());
 	config_.lock()->setBufferLength(ui->bufferLengthHorizontalSlider->value());
+
+	// Mixer //
+	config_.lock()->setMixerVolumeMaster(ui->masterMixerSlider->value());
+	config_.lock()->setMixerVolumeFM(ui->fmMixerSlider->value() * 0.1);
+	config_.lock()->setMixerVolumeSSG(ui->ssgMixerSlider->value() * 0.1);
 }
 
 void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
@@ -141,4 +175,10 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		break;
 	}
 	ui->descPlainTextEdit->setPlainText(QString("Description: ") + text);
+}
+
+void ConfigurationDialog::on_mixerResetPushButton_clicked()
+{
+	ui->fmMixerSlider->setValue(0);
+	ui->ssgMixerSlider->setValue(0);
 }

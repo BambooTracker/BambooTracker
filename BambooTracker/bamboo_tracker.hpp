@@ -205,6 +205,9 @@ public:
 	void setStreamRate(int rate);
 	int getStreamDuration() const;
 	void setStreamDuration(int duration);
+	void setMasterVolume(int percentage);
+	void setMasterVolumeFM(double dB);
+	void setMasterVolumeSSG(double dB);
 
 	// Module details
 	/*----- Module -----*/

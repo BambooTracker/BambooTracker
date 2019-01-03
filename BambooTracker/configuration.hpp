@@ -103,4 +103,16 @@ private:
 	bool useSCCI_;
 	uint32_t sampleRate_;
 	size_t bufferLength_;
+
+	// Mixer //
+public:
+	void setMixerVolumeMaster(int percentage);
+	int getMixerVolumeMaster() const;
+	void setMixerVolumeFM(double dB);
+	double getMixerVolumeFM() const;
+	void setMixerVolumeSSG(double dB);
+	double getMixerVolumeSSG() const;
+private:
+	int mixerVolumeMaster_;
+	double mixerVolumeFM_, mixerVolumeSSG_;
 };

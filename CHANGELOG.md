@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Added
+- Add mix settings
+
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
 

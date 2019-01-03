@@ -28,6 +28,9 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 					CHIP_CLOCK,
 					config.lock()->getSampleRate(),
 					config.lock()->getBufferLength());
+	setMasterVolume(config.lock()->getMixerVolumeMaster());
+	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
+	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
 
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
 	jamMan_ = std::make_unique<JamManager>(songStyle_.type);
@@ -40,6 +43,9 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 {
 	setStreamRate(config.lock()->getSampleRate());
 	setStreamDuration(config.lock()->getBufferLength());
+	setMasterVolume(config.lock()->getMixerVolumeMaster());
+	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
+	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
 }
 
 /********** Change octave **********/
@@ -1820,6 +1826,21 @@ int BambooTracker::getStreamDuration() const
 void BambooTracker::setStreamDuration(int duration)
 {
 	opnaCtrl_->setDuration(duration);
+}
+
+void BambooTracker::setMasterVolume(int percentage)
+{
+	opnaCtrl_->setMasterVolume(percentage);
+}
+
+void BambooTracker::setMasterVolumeFM(double dB)
+{
+	opnaCtrl_->setMasterVolumeFM(dB);
+}
+
+void BambooTracker::setMasterVolumeSSG(double dB)
+{
+	opnaCtrl_->setMasterVolumeSSG(dB);
 }
 
 /********** Module details **********/

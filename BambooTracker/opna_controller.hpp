@@ -46,6 +46,7 @@ public:
 	void setRate(int rate);
 	int getDuration() const;
 	void setDuration(int duration);
+	void setMasterVolume(int percentage);
 
 	// Export
 	void setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr = nullptr);
@@ -74,6 +75,7 @@ public:
 	// Set volume
 	void setVolumeFM(int ch, int volume);
 	void setTemporaryVolumeFM(int ch, int volume);
+	void setMasterVolumeFM(double dB);
 
 	// Set pan
 	void setPanFM(int ch, int value);
@@ -180,6 +182,7 @@ public:
 	// Set volume
 	void setVolumeSSG(int ch, int volume);
 	void setTemporaryVolumeSSG(int ch, int volume);
+	void setMasterVolumeSSG(double dB);
 
 	// Set effect
 	void setArpeggioEffectSSG(int ch, int second, int third);

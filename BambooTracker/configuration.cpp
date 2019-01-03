@@ -40,6 +40,11 @@ Configuration::Configuration()
 	useSCCI_ = false;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
+
+	// Mixer //
+	mixerVolumeMaster_ = 100;
+	mixerVolumeFM_ = 0;
+	mixerVolumeSSG_ = 0;
 }
 
 // Internal //
@@ -326,4 +331,35 @@ void Configuration::setBufferLength(size_t length)
 size_t Configuration::getBufferLength() const
 {
 	return bufferLength_;
+}
+
+// Mixer //
+void Configuration::setMixerVolumeMaster(int percentage)
+{
+	mixerVolumeMaster_ = percentage;
+}
+
+int Configuration::getMixerVolumeMaster() const
+{
+	return mixerVolumeMaster_;
+}
+
+void Configuration::setMixerVolumeFM(double dB)
+{
+	mixerVolumeFM_ = dB;
+}
+
+double Configuration::getMixerVolumeFM() const
+{
+	return mixerVolumeFM_;
+}
+
+void Configuration::setMixerVolumeSSG(double dB)
+{
+	mixerVolumeSSG_ = dB;
+}
+
+double Configuration::getMixerVolumeSSG() const
+{
+	return mixerVolumeSSG_;
 }

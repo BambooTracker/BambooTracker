@@ -24,6 +24,8 @@ private slots:
 	void on_ConfigurationDialog_accepted();
 	void on_generalSettingsListWidget_itemSelectionChanged();
 
+	void on_mixerResetPushButton_clicked();
+
 private:
 	Ui::ConfigurationDialog *ui;
 	std::weak_ptr<Configuration> config_;

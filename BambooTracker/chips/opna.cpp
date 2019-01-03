@@ -1,4 +1,5 @@
 #include "opna.hpp"
+#include <cmath>
 #include "chip_misc.h"
 
 #ifdef  __cplusplus
@@ -16,8 +17,7 @@ namespace chip
 {
 	size_t OPNA::count_ = 0;
 	
-	/*const int OPNA::DEF_AMP_FM_ = 11722;*/
-	/*const int OPNA::DEF_AMP_SSG_ = 7250;*/
+	const double OPNA::VOL_REDUC = 7.5;
 
 	OPNA::OPNA(int clock, int rate, size_t maxDuration,
 			   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
@@ -39,7 +39,8 @@ namespace chip
 
 		initResampler();
 
-		setVolume(0, 0);
+		setVolumeFM(0);
+		setVolumeSSG(0);
 
 		reset();
 	}
@@ -93,18 +94,17 @@ namespace chip
 		return ym2608_read_port_r(id_, 1);
 	}
 
-	// TODO: Volume settings
-	void OPNA::setVolume(float dBFM, float dBSSG)
+
+	void OPNA::setVolumeFM(double dB)
 	{
 		std::lock_guard<std::mutex> lg(mutex_);
+		volumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC) / 20.0);
+	}
 
-		/*dB_[FM] = dBFM;*/
-		/*dB_[SSG] = dBFM;*/
-
-		/*VolumeRatio_[FM] = maxAmplitude_ / defaultFMAmplitude_ * std::pow(10, fmdB / 20);
-		VolumeRatio_[SSG] = maxAmplitude_ / defaultSSGAmplitude_ * std::pow(10, ssgdB / 20);*/
-		volumeRatio_[FM] = 0.25;
-		volumeRatio_[SSG] = 0.25;
+	void OPNA::setVolumeSSG(double dB)
+	{
+		std::lock_guard<std::mutex> lg(mutex_);
+		volumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC) / 20.0);
 	}
 
 	void OPNA::mix(int16_t* stream, size_t nSamples)
@@ -136,8 +136,8 @@ namespace chip
 		int16_t* p = stream;
 		for (size_t i = 0; i < nSamples; ++i) {
 			for (int pan = LEFT; pan <= RIGHT; ++pan) {
-				float s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
-				*p++ = static_cast<int16_t>(clamp(s, -32768.0f, 32767.0f));
+				double s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
+				*p++ = static_cast<int16_t>(clamp(s * masterVolumeRatio_, -32768.0, 32767.0));
 			}
 		}
 

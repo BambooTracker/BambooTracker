@@ -3,6 +3,7 @@
 
 #include <QFrame>
 #include <QString>
+#include <QSlider>
 #include <QEvent>
 
 namespace Ui {
@@ -15,7 +16,7 @@ class LabeledHorizontalSlider : public QFrame
 
 public:
 	explicit LabeledHorizontalSlider(QWidget *parent = nullptr);
-	LabeledHorizontalSlider(QString text, QWidget *parent = nullptr);
+	LabeledHorizontalSlider(QString text, QString prefix = "", QString suffix = "", QWidget *parent = nullptr);
 	~LabeledHorizontalSlider() override;
 
 	int value() const;
@@ -26,8 +27,18 @@ public:
 	int minimum() const;
 	void setMinimum(int value);
 
+	void setValueRate(double rate, int precision = 1);
+	void setSign(bool enabled);
+
+	void setTickPosition(QSlider::TickPosition position);
+	void setTickInterval(int ti);
+
 	QString text() const;
 	void setText(QString text);
+	QString suffix() const;
+	void setSuffix(QString suffix);
+	QString prefix() const;
+	void setprefix(QString prefix);
 
 signals:
 	void valueChanged(int value);
@@ -40,8 +51,13 @@ private slots:
 
 private:
 	Ui::LabeledHorizontalSlider *ui;
+	QString suffix_, prefix_;
+	double rate_;
+	int precision_;
+	bool isSigned_;
 
-	void init(QString text);
+	void init(QString text, QString prefix, QString suffix);
+	void updateValueLabel();
 };
 
 #endif // LABALED_HORIZONTAL_SLIDER_HPP

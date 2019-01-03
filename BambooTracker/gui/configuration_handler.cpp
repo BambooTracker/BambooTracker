@@ -66,6 +66,14 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
 		settings.endGroup();
+
+		// Mixer //
+		settings.beginGroup("Mixer");
+		settings.setValue("mixerVolumeMaster",	configLocked->getMixerVolumeMaster());
+		settings.setValue("mixerVolumeFM",		configLocked->getMixerVolumeFM());
+		settings.setValue("mixerVolumeSSG",		configLocked->getMixerVolumeSSG());
+		settings.endGroup();
+
 		return true;
 	} catch (...) {
 		return false;
@@ -131,6 +139,13 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		QVariant bufferLengthWorkaround;
 		bufferLengthWorkaround.setValue(configLocked->getBufferLength());
 		configLocked->setBufferLength(static_cast<size_t>(settings.value("bufferLength", bufferLengthWorkaround).toInt()));
+		settings.endGroup();
+
+		// Mixer //
+		settings.beginGroup("Mixer");
+		configLocked->setMixerVolumeMaster(settings.value("mixerVolumeMaster", configLocked->getMixerVolumeMaster()).toInt());
+		configLocked->setMixerVolumeFM(settings.value("mixerVolumeFM", configLocked->getMixerVolumeFM()).toDouble());
+		configLocked->setMixerVolumeFM(settings.value("mixerVolumeSSG", configLocked->getMixerVolumeSSG()).toDouble());
 		settings.endGroup();
 
 		return true;
