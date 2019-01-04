@@ -2109,7 +2109,7 @@ void MainWindow::on_actionOverwrite_triggered()
 
 void MainWindow::onNewTickSignaled()
 {
-	if (bt_->streamCountUp() > 0) {
+	if (!bt_->streamCountUp()) {	// New step
 		ui->orderList->update();
 		ui->patternEditor->updatePosition();
 		statusPlayPos_->setText(

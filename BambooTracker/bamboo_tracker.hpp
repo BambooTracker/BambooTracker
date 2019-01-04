@@ -196,6 +196,9 @@ public:
 	void useSCCI(SoundInterfaceManager* manager);
 
 	// Stream events
+	/// 0<: Tick
+	///  0: Step
+	/// -1: Stop
 	int streamCountUp();
 	void getStreamSamples(int16_t *container, size_t nSamples);
 	void killSound();
