@@ -234,6 +234,21 @@ qmake
 make
 ```
 
+## Install package or build on FreeBSD
+
+### Build
+To build the BambooTracker via FreeBSD ports
+```bash
+cd /usr/ports/audio/bambootracker
+make install clean
+```
+
+### Package
+To install the package
+```bash
+pkg install bambootracker
+```
+
 ## Changelog
 *See [CHANGELOG.md](./CHANGELOG.md).*
 
