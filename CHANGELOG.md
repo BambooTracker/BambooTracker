@@ -6,8 +6,12 @@
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
+- [#51] - Add png icon (thanks [@ehaupt])
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
+[#51]: https://github.com/rerrahkr/BambooTracker/issues/51
+
+[@ehaupt]: https://github.com/ehaupt
 
 ## v0.1.4 (2019-01-01)
 ### Added
