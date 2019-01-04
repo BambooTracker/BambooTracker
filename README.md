@@ -249,6 +249,10 @@ To install the package
 pkg install bambootracker
 ```
 
+## Install package on Debian or Ubuntu
+
+`apt-get install bambootracker`
+
 ## Changelog
 *See [CHANGELOG.md](./CHANGELOG.md).*
 
