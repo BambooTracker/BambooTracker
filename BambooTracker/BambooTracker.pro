@@ -368,4 +368,7 @@ INCLUDEPATH += \
 RESOURCES += \
     bamboo_tracker.qrc
 
+TRANSLATIONS += \
+    res/lang/bamboo_tracker_ja.ts
+
 RC_ICONS = res/icon/BambooTracker.ico
