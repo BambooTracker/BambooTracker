@@ -731,14 +731,6 @@
     <string>Ctrl+V</string>
    </property>
   </action>
-  <action name="actionPaste_Mix">
-   <property name="text">
-    <string>Paste And Mix</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+M</string>
-   </property>
-  </action>
   <action name="actionDelete">
    <property name="text">
     <string>&amp;Delete</string>
@@ -1137,11 +1129,6 @@
   <action name="actionVGM">
    <property name="text">
     <string>&amp;VGM...</string>
-   </property>
-  </action>
-  <action name="actionPaste_Overwrite">
-   <property name="text">
-    <string>Paste Overwrite</string>
    </property>
   </action>
   <action name="actionMix">

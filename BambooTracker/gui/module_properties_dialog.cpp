@@ -13,7 +13,7 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
 	ui->songTreeWidget->setColumnCount(2);
-	ui->songTreeWidget->setHeaderLabels({ "Number", "Title", "Song type" });
+	ui->songTreeWidget->setHeaderLabels({ tr("Number"), tr("Title"), tr("Song type") });
 	ui->songTreeWidget->header()->resizeSection(0, 52);
 	size_t songCnt = core.lock()->getSongCount();
 	for (size_t i = 0; i < songCnt; ++i) {
@@ -21,8 +21,8 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 		insertSong(i, QString::fromUtf8(title.c_str(), title.length()), core.lock()->getSongStyle(i).type, i);
 	}
 
-	ui->insertTypeComboBox->addItem("Standard", static_cast<int>(SongType::STD));
-	// ui->insertTypeComboBox->addItem("FM3ch extension", static_cast<int>(SongType::FMEX));
+	ui->insertTypeComboBox->addItem(tr("Standard"), static_cast<int>(SongType::STD));
+	// ui->insertTypeComboBox->addItem(tr("FM3ch extension"), static_cast<int>(SongType::FMEX));
 }
 
 ModulePropertiesDialog::~ModulePropertiesDialog()
@@ -37,8 +37,8 @@ void ModulePropertiesDialog::insertSong(int row, QString title, SongType type, i
 	item->setData(0, Qt::UserRole, prevNum);
 	item->setText(1, title);
 	switch (type) {
-	case SongType::STD:		item->setText(2, "Standard");		break;
-	case SongType::FMEX:	item->setText(2, "FM3ch expanded");	break;
+	case SongType::STD:		item->setText(2, tr("Standard"));		break;
+	case SongType::FMEX:	item->setText(2, tr("FM3ch expanded"));	break;
 	}
 	item->setData(2, Qt::UserRole, static_cast<int>(type));
 	ui->songTreeWidget->insertTopLevelItem(row, item);

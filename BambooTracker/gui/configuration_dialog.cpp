@@ -74,7 +74,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->bufferLengthHorizontalSlider->setValue(config.lock()->getBufferLength());
 
 	// Mixer //
-	ui->masterMixerSlider->setText("Master");
+	ui->masterMixerSlider->setText(tr("Master"));
 	ui->masterMixerSlider->setSuffix("%");
 	ui->masterMixerSlider->setMaximum(100);
 	ui->masterMixerSlider->setMinimum(0);
@@ -147,34 +147,34 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 	QString text;
 	switch (ui->generalSettingsListWidget->currentRow()) {
 	case 0:	// Warp cursor
-		text = "Warp the cursor around the edges of the pattern editor.";
+		text = tr("Warp the cursor around the edges of the pattern editor.");
 		break;
 	case 1:	// Warp across orders
-		text = "Move to previous or next order when reaching top or bottom in the pattern editor.";
+		text = tr("Move to previous or next order when reaching top or bottom in the pattern editor.");
 		break;
 	case 2:	// Show row numbers in hex
-		text = "Display order numbers and the order count on the status bar in hexadecimal.";
+		text = tr("Display order numbers and the order count on the status bar in hexadecimal.");
 		break;
 	case 3:	// Preview previous/next orders
-		text = "Preview previous and next orders in the pattern editor.";
+		text = tr("Preview previous and next orders in the pattern editor.");
 		break;
 	case 4:	// Backup modeles
-		text = "Create a backup copy of the existing file when saving a module.";
+		text = tr("Create a backup copy of the existing file when saving a module.");
 		break;
 	case 5:	// Don't select on double click
-		text = "Don't select the whole track when double-clicking in the pattern editor.";
+		text = tr("Don't select the whole track when double-clicking in the pattern editor.");
 		break;
 	case 6:	// Reverse FM volume order
-		text = "Reverse the order of FM volume so that 00 is the quietest in the pattern editor";
+		text = tr("Reverse the order of FM volume so that 00 is the quietest in the pattern editor.");
 		break;
 	case 7:	// Move cursor to right
-		text = "Move the cursor to right after entering effects in the pattern editor.";
+		text = tr("Move the cursor to right after entering effects in the pattern editor.");
 		break;
 	default:
 		text = "";
 		break;
 	}
-	ui->descPlainTextEdit->setPlainText(QString("Description: ") + text);
+	ui->descPlainTextEdit->setPlainText(tr("Description: ") + text);
 }
 
 void ConfigurationDialog::on_mixerResetPushButton_clicked()

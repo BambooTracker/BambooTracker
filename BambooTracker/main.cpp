@@ -1,6 +1,7 @@
 #include "./gui/mainwindow.hpp"
 #include <QApplication>
 #include <QMessageBox>
+#include <QObject>
 #include <memory>
 
 int main(int argc, char *argv[])
@@ -11,7 +12,7 @@ int main(int argc, char *argv[])
 		w->show();
 		return a->exec();
 	} catch (...) {
-		QMessageBox::critical(nullptr, "Error", "An unknown error occured.");
+		QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occured."));
 		return -1;
 	}
 }

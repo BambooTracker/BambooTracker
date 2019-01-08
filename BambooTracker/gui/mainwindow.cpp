@@ -130,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	}
 
 	/* Sub tool bar */
-	auto octLab = new QLabel("Octave");
+	auto octLab = new QLabel(tr("Octave"));
 	octLab->setMargin(6);
 	ui->subToolBar->addWidget(octLab);
 	octave_ = new QSpinBox();
@@ -138,16 +138,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	octave_->setMaximum(7);
 	octave_->setValue(bt_->getCurrentOctave());
 	auto octFunc = [&](int octave) { bt_->setCurrentOctave(octave); };
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(octave_, QOverload<int>::of(&QSpinBox::valueChanged), this, octFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, octFunc);
-#endif
 	ui->subToolBar->addWidget(octave_);
 	ui->subToolBar->addSeparator();
 	ui->subToolBar->addAction(ui->actionFollow_Mode);
 	ui->subToolBar->addSeparator();
-	auto hlLab = new QLabel("Step highlight");
+	auto hlLab = new QLabel(tr("Step highlight"));
 	hlLab->setMargin(6);
 	ui->subToolBar->addWidget(hlLab);
 	highlight_ = new QSpinBox();
@@ -159,11 +156,8 @@ MainWindow::MainWindow(QWidget *parent) :
 		ui->patternEditor->setPatternHighlightCount(count);
 		ui->patternEditor->update();
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(highlight_, QOverload<int>::of(&QSpinBox::valueChanged), this, hlFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, hlFunc);
-#endif
 	ui->subToolBar->addWidget(highlight_);
 
 	/* Module settings */
@@ -192,34 +186,24 @@ MainWindow::MainWindow(QWidget *parent) :
 			setModifiedTrue();
 		}
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->tickFreqSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, tickFreqFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tickFreqFunc);
-#endif
 	QObject::connect(ui->modSetDialogOpenToolButton, &QToolButton::clicked,
 					 this, &MainWindow::on_actionModule_Properties_triggered);
 
 	/* Edit settings */
 	auto editableStepFunc = [&](int n) { ui->patternEditor->setEditableStep(n); };
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->editableStepSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-					 this, editableStepFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->editableStepSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, editableStepFunc);
-#endif
 
 	/* Song number */
 	auto songNumFunc = [&](int num) {
 		bt_->setCurrentSongNumber(num);
 		loadSong();
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->songNumSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, songNumFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, songNumFunc);
-#endif
 
 	/* Song settings */
 	auto tempoFunc = [&](int tempo) {
@@ -229,11 +213,8 @@ MainWindow::MainWindow(QWidget *parent) :
 			setModifiedTrue();
 		}
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->tempoSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, tempoFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->tempoSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tempoFunc);
-#endif
 	auto speedFunc = [&](int speed) {
 		int curSong = bt_->getCurrentSongNumber();
 		if (speed != bt_->getSongSpeed(curSong)) {
@@ -241,30 +222,21 @@ MainWindow::MainWindow(QWidget *parent) :
 			setModifiedTrue();
 		}
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->speedSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, speedFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->speedSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, speedFunc);
-#endif
 	auto ptnSizeFunc = [&](int size) {
 		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
 		ui->patternEditor->onDefaultPatternSizeChanged();
 		setModifiedTrue();
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->patternSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, ptnSizeFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->patternSizeSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, ptnSizeFunc);
-#endif
 	auto grooveFunc = [&](int n) {
 		bt_->setSongGroove(bt_->getCurrentSongNumber(), n);
 		setModifiedTrue();
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->grooveSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, grooveFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->grooveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, grooveFunc);
-#endif
 
 	/* Instrument list */
 	ui->instrumentListWidget->setStyleSheet(
@@ -393,7 +365,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->statusBar->addPermanentWidget(statusOctave_, 1);
 	ui->statusBar->addPermanentWidget(statusIntr_, 1);
 	ui->statusBar->addPermanentWidget(statusPlayPos_, 1);
-	statusOctave_->setText(QString("Octave: ") + QString::number(bt_->getCurrentOctave()));
+	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 
 	/* Clipboard */
@@ -573,10 +545,10 @@ void MainWindow::dropEvent(QDropEvent* event)
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
 		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
-		if (modTitle.isEmpty()) modTitle = "Untitled";
+		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
-						   "Save changes to " + modTitle + "?",
+						   tr("Save changes to %1?").arg(modTitle),
 						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		switch (dialog.exec()) {
 		case QMessageBox::Yes:
@@ -601,7 +573,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 		setWindowModified(false);
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, "Error", e.what());
+		QMessageBox::critical(this, tr("Error"), e.what());
 	}
 }
 
@@ -630,10 +602,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
 		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
-		if (modTitle.isEmpty()) modTitle = "Untitled";
+		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
-						   "Save changes to " + modTitle + "?",
+						   tr("Save changes to %1?").arg(modTitle),
 						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		switch (dialog.exec()) {
 		case QMessageBox::Yes:
@@ -677,7 +649,7 @@ void MainWindow::addInstrument()
 		auto& list = ui->instrumentListWidget;
 
 		int num = bt_->findFirstFreeInstrumentNumber();
-		QString name = "Instrument " + QString::number(num);
+		QString name = tr("Instrument %1").arg(num);
 		bt_->addInstrument(num, name.toUtf8().toStdString());
 
 		TrackAttribute attrib = bt_->getCurrentTrackAttribute();
@@ -768,12 +740,16 @@ void MainWindow::deepCloneInstrument()
 void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getOpenFileName(this, "Open instrument", (dir.isEmpty() ? "./" : dir),
-												"BambooTracker instrument file (*.bti);;DefleMask preset file (*.dmp);;TFM Music Maker instrument (*.tfi);;VGM Music Maker instrument (*.vgi);;WOPN instrument (*.opni)");
+	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
+												"BambooTracker instrument file (*.bti);;"
+												"DefleMask preset file (*.dmp);;"
+												"TFM Music Maker instrument (*.tfi);;"
+												"VGM Music Maker instrument (*.vgi);;"
+												"WOPN instrument (*.opni)");
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();
-	if (n == -1) QMessageBox::critical(this, "Error", "Failed to load instrument.");
+	if (n == -1) QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
 
 	try {
 		bt_->loadInstrument(file.toLocal8Bit().toStdString(), n);
@@ -785,14 +761,14 @@ void MainWindow::loadInstrument()
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, "Error", e.what());
+		QMessageBox::critical(this, tr("Error"), e.what());
 	}
 }
 
 void MainWindow::saveInstrument()
 {
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, "Save instrument", (dir.isEmpty() ? "./" : dir),
+	QString file = QFileDialog::getSaveFileName(this, tr("Save instrument"), (dir.isEmpty() ? "./" : dir),
 												"BambooTracker instrument file (*.bti)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
@@ -803,14 +779,14 @@ void MainWindow::saveInstrument()
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, "Error", e.what());
+		QMessageBox::critical(this, tr("Error"), e.what());
 	}
 }
 
 void MainWindow::importInstrumentsFromBank()
 {
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getOpenFileName(this, "Open bank", (dir.isEmpty() ? "./" : dir),
+	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
 												"WOPN bank (*.wopn)");
 	if (file.isNull()) return;
 
@@ -820,7 +796,7 @@ void MainWindow::importInstrumentsFromBank()
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, "Error", e.what());
+		QMessageBox::critical(this, tr("Error"), e.what());
 		return;
 	}
 
@@ -834,7 +810,7 @@ void MainWindow::importInstrumentsFromBank()
 		for (size_t index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
-				QMessageBox::critical(this, "Error", "Failed to load instrument.");
+				QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
 				return;
 			}
 
@@ -848,7 +824,7 @@ void MainWindow::importInstrumentsFromBank()
 		}
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, "Error", e.what());
+		QMessageBox::critical(this, tr("Error"), e.what());
 	}
 }
 
@@ -888,11 +864,11 @@ void MainWindow::loadModule()
 							inst->getSoundSource(), instForms_));
 	}
 	bt_->setCurrentInstrument(-1);
-	statusInst_->setText("No instrument");
+	statusInst_->setText(tr("No instrument"));
 
 	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
-	case SongType::STD:		statusStyle_->setText("Standard");			break;
-	case SongType::FMEX:	statusStyle_->setText("FM3ch expanded");	break;
+	case SongType::STD:		statusStyle_->setText(tr("Standard"));			break;
+	case SongType::FMEX:	statusStyle_->setText(tr("FM3ch expanded"));	break;
 	}
 
 	statusPlayPos_->setText("00/00");
@@ -927,8 +903,8 @@ void MainWindow::loadSong()
 	auto title = bt_->getSongTitle(curSong);
 	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), title.length()));
 	switch (bt_->getSongStyle(curSong).type) {
-	case SongType::STD:		ui->songStyleLineEdit->setText("Standard");			break;
-	case SongType::FMEX:	ui->songStyleLineEdit->setText("FM3ch expanded");	break;
+	case SongType::STD:		ui->songStyleLineEdit->setText(tr("Standard"));			break;
+	case SongType::FMEX:	ui->songStyleLineEdit->setText(tr("FM3ch expanded"));	break;
 	}
 	ui->tickFreqSpinBox->setValue(bt_->getModuleTickFrequency());
 	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
@@ -1003,7 +979,7 @@ void MainWindow::changeOctave(bool upFlag)
 	if (upFlag) octave_->stepUp();
 	else octave_->stepDown();
 
-	statusOctave_->setText(QString("Octave: ") + QString::number(bt_->getCurrentOctave()));
+	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
 }
 
 /********** Configuration change **********/
@@ -1056,9 +1032,9 @@ void MainWindow::setWindowTitle()
 	auto filePathStd = bt_->getModulePath();
 	auto songTitleStd = bt_->getSongTitle(n);
 	QString filePath = QString::fromLocal8Bit(filePathStd.c_str(), filePathStd.length());
-	QString fileName = filePath.isEmpty() ? "Untitled" : QFileInfo(filePath).fileName();
+	QString fileName = filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).fileName();
 	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), songTitleStd.length());
-	if (songTitle.isEmpty()) songTitle = "Untitled";
+	if (songTitle.isEmpty()) songTitle = tr("Untitled");
 	QMainWindow::setWindowTitle(QString("%1[*] [#%2 %3] - BambooTracker")
 								.arg(fileName).arg(QString::number(n)).arg(songTitle));
 }
@@ -1077,45 +1053,29 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QPoint globalPos = list->mapToGlobal(pos);
 	QMenu menu;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* add = menu.addAction(QString("&Add"), this, &MainWindow::addInstrument);
-	QAction* remove = menu.addAction("&Remove", this, [&]() {
-		removeInstrument(ui->instrumentListWidget->currentRow());
-	});
-	menu.addSeparator();
-	QAction* name = menu.addAction("Edit &name", this, &MainWindow::editInstrumentName);
-	menu.addSeparator();
-	QAction* clone = menu.addAction("&Clone", this, &MainWindow::cloneInstrument);
-	QAction* dClone = menu.addAction("&Deep clone", this, &MainWindow::deepCloneInstrument);
-	menu.addSeparator();
-	QAction* ldFile = menu.addAction("&Load from file...", this, &MainWindow::loadInstrument);
-	QAction* svFile = menu.addAction("&Save to file...", this, &MainWindow::saveInstrument);
-	menu.addSeparator();
-	QAction* edit = menu.addAction("&Edit...", this, &MainWindow::editInstrument);
-#else
-	QAction* add = menu.addAction("&Add");
+	// Leave Before Qt5.7.0 style due to windows xp
+	QAction* add = menu.addAction(tr("&Add"));
 	QObject::connect(add, &QAction::triggered, this, &MainWindow::addInstrument);
-	QAction* remove = menu.addAction("&Remove");
+	QAction* remove = menu.addAction(tr("&Remove"));
 	QObject::connect(remove, &QAction::triggered, this, [&]() {
 		removeInstrument(ui->instrumentListWidget->currentRow());
 	});
 	menu.addSeparator();
-	QAction* name = menu.addAction("Edit &name");
+	QAction* name = menu.addAction(tr("Edit &name"));
 	QObject::connect(name, &QAction::triggered, this, &MainWindow::editInstrumentName);
 	menu.addSeparator();
-	QAction* clone = menu.addAction("&Clone");
+	QAction* clone = menu.addAction(tr("&Clone"));
 	QObject::connect(clone, &QAction::triggered, this, &MainWindow::cloneInstrument);
-	QAction* dClone = menu.addAction("&Deep clone");
+	QAction* dClone = menu.addAction(tr("&Deep clone"));
 	QObject::connect(dClone, &QAction::triggered, this, &MainWindow::deepCloneInstrument);
 	menu.addSeparator();
-	QAction* ldFile = menu.addAction("&Load from file...");
+	QAction* ldFile = menu.addAction(tr("&Load from file..."));
 	QObject::connect(ldFile, &QAction::triggered, this, &MainWindow::loadInstrument);
-	QAction* svFile = menu.addAction("&Save to file...");
+	QAction* svFile = menu.addAction(tr("&Save to file..."));
 	QObject::connect(svFile, &QAction::triggered, this, &MainWindow::saveInstrument);
 	menu.addSeparator();
-	QAction* edit = menu.addAction("&Edit...");
+	QAction* edit = menu.addAction(tr("&Edit..."));
 	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
-#endif
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	edit->setShortcutVisibleInContextMenu(true);
 #endif
@@ -1277,9 +1237,9 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 			  : ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	bt_->setCurrentInstrument(num);
 
-	if (num == -1) statusInst_->setText("No instrument");
+	if (num == -1) statusInst_->setText(tr("No instrument"));
 	else statusInst_->setText(
-				QString("Instrument: ") + QString("%1").arg(num, 2, 16, QChar('0')).toUpper());
+				tr("Instrument: %1").arg(num, 2, 16, QChar('0')).toUpper());
 
 	bool isEnabled = (num != -1);
 	ui->actionRemove_Instrument->setEnabled(isEnabled);
@@ -1538,7 +1498,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 {
 	ModulePropertiesDialog dialog(bt_);
 	if (dialog.exec() == QDialog::Accepted
-			&& showUndoResetWarningDialog("Do you want to change song properties?")) {
+			&& showUndoResetWarningDialog(tr("Do you want to change song properties?"))) {
 		bt_->stopPlaySong();
 		lockControls(false);
 		dialog.onAccepted();
@@ -1627,7 +1587,7 @@ void MainWindow::on_actionKill_Sound_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
 	QMessageBox box(QMessageBox::NoIcon,
-					"About",
+					tr("About"),
 					QString("<h2>BambooTracker v")
 					+ QString::fromStdString(Version::ofApplicationInString())
 					+ QString("</h2>"
@@ -1725,10 +1685,10 @@ void MainWindow::on_actionNew_triggered()
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
 		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
-		if (modTitle.isEmpty()) modTitle = "Untitled";
+		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
-						   "Save changes to " + modTitle + "?",
+						   tr("Save changes to %1?").arg(modTitle),
 						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		switch (dialog.exec()) {
 		case QMessageBox::Yes:
@@ -1770,7 +1730,7 @@ bool MainWindow::on_actionSave_triggered()
 				bt_->backupModule(path.toLocal8Bit().toStdString());
 			}
 			catch (...) {
-				QMessageBox::critical(this, "Error", "Failed to backup module.");
+				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
 				return false;
 			}
 		}
@@ -1784,7 +1744,7 @@ bool MainWindow::on_actionSave_triggered()
 			return true;
 		}
 		catch (std::exception& e) {
-			QMessageBox::critical(this, "Error", e.what());
+			QMessageBox::critical(this, tr("Error"), e.what());
 			return false;
 		}
 	}
@@ -1796,7 +1756,7 @@ bool MainWindow::on_actionSave_triggered()
 bool MainWindow::on_actionSave_As_triggered()
 {
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, "Save module", (dir.isEmpty() ? "./" : dir),
+	QString file = QFileDialog::getSaveFileName(this, tr("Save module"), (dir.isEmpty() ? "./" : dir),
 												"BambooTracker module file (*.btm)");
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
@@ -1807,7 +1767,7 @@ bool MainWindow::on_actionSave_As_triggered()
 				bt_->backupModule(file.toLocal8Bit().toStdString());
 			}
 			catch (...) {
-				QMessageBox::critical(this, "Error", "Failed to backup module.");
+				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
 				return false;
 			}
 		}
@@ -1824,7 +1784,7 @@ bool MainWindow::on_actionSave_As_triggered()
 		return true;
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, "Error", e.what());
+		QMessageBox::critical(this, tr("Error"), e.what());
 		return false;
 	}
 }
@@ -1834,10 +1794,10 @@ void MainWindow::on_actionOpen_triggered()
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
 		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
-		if (modTitle.isEmpty()) modTitle = "Untitled";
+		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
-						   "Save changes to " + modTitle + "?",
+						   tr("Save changes to %1?").arg(modTitle),
 						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		switch (dialog.exec()) {
 		case QMessageBox::Yes:
@@ -1853,7 +1813,7 @@ void MainWindow::on_actionOpen_triggered()
 	}
 
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getOpenFileName(this, "Open module", (dir.isEmpty() ? "./" : dir),
+	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
 												"BambooTracker module file (*.btm)");
 	if (file.isNull()) return;
 
@@ -1868,7 +1828,7 @@ void MainWindow::on_actionOpen_triggered()
 		setWindowModified(false);
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, "Error", e.what());
+		QMessageBox::critical(this, tr("Error"), e.what());
 	}
 }
 
@@ -1928,7 +1888,7 @@ void MainWindow::on_actionOrder_triggered()
 
 void MainWindow::on_actionRemove_Unused_Instruments_triggered()
 {
-	if (showUndoResetWarningDialog("Do you want to remove all unused instruments?"))
+	if (showUndoResetWarningDialog(tr("Do you want to remove all unused instruments?")))
 	{
 		bt_->stopPlaySong();
 		lockControls(false);
@@ -1950,7 +1910,7 @@ void MainWindow::on_actionRemove_Unused_Instruments_triggered()
 
 void MainWindow::on_actionRemove_Unused_Patterns_triggered()
 {
-	if (showUndoResetWarningDialog("Do you want to remove all unused patterns?"))
+	if (showUndoResetWarningDialog(tr("Do you want to remove all unused patterns?")))
 	{
 		bt_->stopPlaySong();
 		lockControls(false);
@@ -1968,14 +1928,14 @@ void MainWindow::on_actionWAV_triggered()
 	if (diag.exec() != QDialog::Accepted) return;
 
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, "Export to wav", (dir.isEmpty() ? "./" : dir),
+	QString file = QFileDialog::getSaveFileName(this, tr("Export to wav"), (dir.isEmpty() ? "./" : dir),
 												"WAV signed 16-bit PCM (*.wav)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".wav")) file += ".wav";	// For linux
 
 	QProgressDialog progress(
-				"Export to WAV",
-				"Cancel",
+				tr("Export to WAV"),
+				tr("Cancel"),
 				0,
 				bt_->getAllStepCount(bt_->getCurrentSongNumber(), diag.getLoopCount()) + 3
 				);
@@ -1999,7 +1959,7 @@ void MainWindow::on_actionWAV_triggered()
 		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (...) {
-		QMessageBox::critical(this, "Error", "Failed to export to wav file.");
+		QMessageBox::critical(this, tr("Error"), tr("Failed to export to wav file."));
 	}
 
 	stream_->start();
@@ -2012,14 +1972,14 @@ void MainWindow::on_actionVGM_triggered()
 	GD3Tag tag = diag.getGD3Tag();
 
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, "Export to vgm", (dir.isEmpty() ? "./" : dir),
+	QString file = QFileDialog::getSaveFileName(this, tr("Export to vgm"), (dir.isEmpty() ? "./" : dir),
 												"VGM file (*.vgm)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".vgm")) file += ".vgm";	// For linux
 
 	QProgressDialog progress(
-				"Export to VGM",
-				"Cancel",
+				tr("Export to VGM"),
+				tr("Cancel"),
 				0,
 				bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1) + 3
 				);
@@ -2045,7 +2005,7 @@ void MainWindow::on_actionVGM_triggered()
 		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (...) {
-		QMessageBox::critical(this, "Error", "Failed to export to vgm file.");
+		QMessageBox::critical(this, tr("Error"), tr("Failed to export to vgm file."));
 	}
 
 	stream_->start();
@@ -2058,14 +2018,14 @@ void MainWindow::on_actionS98_triggered()
 	S98Tag tag = diag.getS98Tag();
 
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, "Export to s98", (dir.isEmpty() ? "./" : dir),
+	QString file = QFileDialog::getSaveFileName(this, tr("Export to s98"), (dir.isEmpty() ? "./" : dir),
 												"S98 file (*.s98)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".s98")) file += ".s98";	// For linux
 
 	QProgressDialog progress(
-				"Export to S98",
-				"Cancel",
+				tr("Export to S98"),
+				tr("Cancel"),
 				0,
 				bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1) + 3
 				);
@@ -2091,7 +2051,7 @@ void MainWindow::on_actionS98_triggered()
 		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (...) {
-		QMessageBox::critical(this, "Error", "Failed to export to s98 file.");
+		QMessageBox::critical(this, tr("Error"), tr("Failed to export to s98 file."));
 	}
 
 	stream_->start();

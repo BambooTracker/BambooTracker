@@ -220,9 +220,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->arpEditor->setUpperRow(55);
 	ui->arpEditor->setMMLDisplay0As(-48);
 
-	ui->arpTypeComboBox->addItem("Absolute", 0);
-	ui->arpTypeComboBox->addItem("Fix", 1);
-	ui->arpTypeComboBox->addItem("Relative", 2);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), 0);
+	ui->arpTypeComboBox->addItem(tr("Fix"), 1);
+	ui->arpTypeComboBox->addItem(tr("Relative"), 2);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -268,13 +268,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->arpTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
-#else
+// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
-#endif
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -289,8 +285,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem("Absolute", 0);
-	ui->ptTypeComboBox->addItem("Relative", 2);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), 0);
+	ui->ptTypeComboBox->addItem(tr("Relative"), 2);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -336,13 +332,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->ptTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
-#else
+// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
-#endif
 }
 
 InstrumentEditorSSGForm::~InstrumentEditorSSGForm()

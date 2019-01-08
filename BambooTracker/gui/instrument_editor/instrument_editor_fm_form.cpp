@@ -284,12 +284,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->lfoStartSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, lfoFunc);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->lfoStartSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, lfoFunc);
-#endif
 
 	//========== OperatorSequence ==========//
 	ui->opSeqTypeComboBox->addItem("AL", static_cast<int>(FMEnvelopeParameter::AL));
@@ -384,13 +381,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->opSeqTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->opSeqTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
-#endif
 
 	//========== Arpeggio ==========//
 	ui->arpEditor->setMaximumDisplayedRowCount(15);
@@ -405,9 +398,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->arpEditor->setUpperRow(55);
 	ui->arpEditor->setMMLDisplay0As(-48);
 
-	ui->arpTypeComboBox->addItem("Absolute", 0);
-	ui->arpTypeComboBox->addItem("Fix", 1);
-	ui->arpTypeComboBox->addItem("Relative", 2);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), 0);
+	ui->arpTypeComboBox->addItem(tr("Fix"), 1);
+	ui->arpTypeComboBox->addItem(tr("Relative"), 2);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -453,13 +446,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->arpTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
-#endif
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -521,13 +510,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->ptTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
-#endif
 }
 
 InstrumentEditorFMForm::~InstrumentEditorFMForm()
@@ -1155,15 +1140,11 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 {
 	QPoint globalPos = ui->envGroupBox->mapToGlobal(pos);
 	QMenu menu;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* copy = menu.addAction("Copy envelope", this, &InstrumentEditorFMForm::copyEnvelope);
-	QAction* paste = menu.addAction("Paste envelope", this, &InstrumentEditorFMForm::pasteEnvelope);
-#else
-	QAction* copy = menu.addAction("Copy envelope");
+	// Leave Before Qt5.7.0 style due to windows xp
+	QAction* copy = menu.addAction(tr("Copy envelope"));
 	QObject::connect(copy, &QAction::triggered, this, &InstrumentEditorFMForm::copyEnvelope);
-	QAction* paste = menu.addAction("Paste envelope");
+	QAction* paste = menu.addAction(tr("Paste envelope"));
 	QObject::connect(paste, &QAction::triggered, this, &InstrumentEditorFMForm::pasteEnvelope);
-#endif
 	paste->setEnabled(QApplication::clipboard()->text().startsWith("FM_ENVELOPE:"));
 
 	menu.exec(globalPos);
@@ -1281,15 +1262,11 @@ void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPo
 		QString data = clipboard->text().remove("FM_LFO:");
 		setInstrumentLFOParameters(data);
 	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* copy = menu.addAction("Copy LFO parameters", this, copyFunc);
-	QAction* paste = menu.addAction("Paste LFO parameters", this, pasteFunc);
-#else
-	QAction* copy = menu.addAction("Copy LFO parameters");
+	// Leave Before Qt5.7.0 style due to windows xp
+	QAction* copy = menu.addAction(tr("Copy LFO parameters"));
 	QObject::connect(copy, &QAction::triggered, this, copyFunc);
-	QAction* paste = menu.addAction("Paste LFO parameters");
+	QAction* paste = menu.addAction(tr("Paste LFO parameters"));
 	QObject::connect(paste, &QAction::triggered, this, pasteFunc);
-#endif
 	if (!ui->lfoGroupBox->isChecked()) {
 		copy->setEnabled(false);
 		paste->setEnabled(false);

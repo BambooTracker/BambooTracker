@@ -44,7 +44,7 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	}
 
 	ui->ssgegSlider->setEnabled(false);
-	ui->ssgegSlider->setText("TYPE");
+	ui->ssgegSlider->setText(tr("Type"));
 	ui->ssgegSlider->setMaximum(7);
 	QObject::connect(ui->ssgegSlider, &LabeledVerticalSlider::valueChanged,
 					 this, [&](int value) {
@@ -314,23 +314,17 @@ void FMOperatorTable::on_groupBox_customContextMenuRequested(const QPoint &pos)
 	auto pasteEnvFunc = [&] { emit pasteEnvelopePressed(); };
 	auto copyOpFunc = [&] { emit copyOperatorPressed(number_); };
 	auto pasteOpFunc = [&] { emit pasteOperatorPressed(number_); };
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* copyEnv = menu.addAction("Copy envelope", this, copyEnvFunc);
-	QAction* pasteEnv = menu.addAction("Paste envelope", this, pasteEnvFunc);
-	menu.addSeparator();
-	QAction* copyOp = menu.addAction("Copy operator", this, copyOpFunc);
-	QAction* pasteOp = menu.addAction("Paste operator", this, pasteOpFunc);
-#else
-	QAction* copyEnv = menu.addAction("Copy envelope");
+	// Leave Before Qt5.7.0 style due to windows xp
+	QAction* copyEnv = menu.addAction(tr("Copy envelope"));
 	QObject::connect(copyEnv, &QAction::triggered, this, copyEnvFunc);
-	QAction* pasteEnv = menu.addAction("Paste envelope");
+	QAction* pasteEnv = menu.addAction(tr("Paste envelope"));
 	QObject::connect(pasteEnv, &QAction::triggered, this, pasteEnvFunc);
 	menu.addSeparator();
-	QAction* copyOp = menu.addAction("Copy operator");
+	QAction* copyOp = menu.addAction(tr("Copy operator"));
 	QObject::connect(copyOp, &QAction::triggered, this, copyOpFunc);
-	QAction* pasteOp = menu.addAction("Paste operator");
+	QAction* pasteOp = menu.addAction(tr("Paste operator"));
 	QObject::connect(pasteOp, &QAction::triggered, this, pasteOpFunc);
-#endif
+
 	QClipboard* clipboard = QApplication::clipboard();
 	pasteEnv->setEnabled(clipboard->text().startsWith("FM_ENVELOPE:"));
 	pasteOp->setEnabled(clipboard->text().startsWith("FM_OPERATOR:"));

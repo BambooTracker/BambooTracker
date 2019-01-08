@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>S98 export settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -26,7 +26,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="titleLabel">
         <property name="text">
-         <string>Title:</string>
+         <string>Title</string>
         </property>
        </widget>
       </item>
@@ -36,7 +36,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="artistLabel">
         <property name="text">
-         <string>Artist:</string>
+         <string>Artist</string>
         </property>
        </widget>
       </item>
@@ -46,7 +46,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="gameLabel">
         <property name="text">
-         <string>Game:</string>
+         <string>Game</string>
         </property>
        </widget>
       </item>
@@ -56,7 +56,7 @@
       <item row="3" column="0">
        <widget class="QLabel" name="yearLabel">
         <property name="text">
-         <string>Year:</string>
+         <string>Year</string>
         </property>
        </widget>
       </item>
@@ -66,7 +66,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="genreLabel">
         <property name="text">
-         <string>Genre:</string>
+         <string>Genre</string>
         </property>
        </widget>
       </item>
@@ -86,7 +86,7 @@
       <item row="6" column="0">
        <widget class="QLabel" name="copyrightLabel">
         <property name="text">
-         <string>Copyright:</string>
+         <string>Copyright</string>
         </property>
        </widget>
       </item>
@@ -96,7 +96,7 @@
       <item row="7" column="0">
        <widget class="QLabel" name="s98byLabel">
         <property name="text">
-         <string>S98by:</string>
+         <string>S98by</string>
         </property>
        </widget>
       </item>
@@ -106,7 +106,7 @@
       <item row="8" column="0">
        <widget class="QLabel" name="systemLabel">
         <property name="text">
-         <string>System:</string>
+         <string>System</string>
         </property>
        </widget>
       </item>

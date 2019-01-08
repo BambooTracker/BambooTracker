@@ -92,7 +92,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="pageJumpLengthLabel">
             <property name="text">
-             <string>Page jump length:</string>
+             <string>Page jump length</string>
             </property>
            </widget>
           </item>
