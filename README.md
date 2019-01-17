@@ -132,38 +132,38 @@ It can also be specified with `0Oxx` effect.
 | Escape   | Deselect            |
 
 ### Pattern editor
-| Key       | Command                            |
-| --------- | ---------------------------------- |
-| Ctrl+C    | Copy                               |
-| Ctrl+X    | Cut                                |
-| Ctrl+V    | Paste                              |
-| Ctrl+M    | Paste and mix                      |
-| Ctrl+A    | Select track/all                   |
-| Ctrl+G    | Interpolate                        |
-| Ctrl+R    | Reverse                            |
-| Ctrl+F1   | Decrease note                      |
-| Ctrl+F2   | Increase note                      |
-| Ctrl+F3   | Decrease octave                    |
-| Ctrl+F4   | Increase octave                    |
-| Alt+F9    | Toggle track                       |
-| Alt+F10   | Solo track                         |
-| Alt+S     | Replace instrument                 |
-| Tab       | Jump to right track                |
-| BackTab   | Jump to left track                 |
-| Home      | Jump to first step                 |
-| End       | Jump to last step                  |
-| PageUp    | Jump to upper step                 |
-| PageDown  | Jump to lower step                 |
-| Ctrl+Up   | Jump to upper highlighted step     |
-| Ctrl+Down | Jump to lower highlighted step     |
-| Insert    | Insert step                        |
-| BackSpace | Delete the step above              |
-| Delete    | Delete commands                    |
-| Escape    | Deselection                        |
-| -         | Key off                            |
-| \*        | Increase octave/echo buffer number |
-| /         | Decrease octave/echo buffer number |
-| ^         | Echo buffer access                 |
+| Key         | Command                            |
+| ----------- | ---------------------------------- |
+| Ctrl+C      | Copy                               |
+| Ctrl+X      | Cut                                |
+| Ctrl+V      | Paste                              |
+| Ctrl+M      | Paste and mix                      |
+| Ctrl+A      | Select track/all                   |
+| Ctrl+G      | Interpolate                        |
+| Ctrl+R      | Reverse                            |
+| Ctrl+F1     | Decrease note                      |
+| Ctrl+F2     | Increase note                      |
+| Ctrl+F3     | Decrease octave                    |
+| Ctrl+F4     | Increase octave                    |
+| Alt+F9      | Toggle track                       |
+| Alt+F10     | Solo track                         |
+| Alt+S       | Replace instrument                 |
+| Tab         | Jump to right track                |
+| BackTab     | Jump to left track                 |
+| Home        | Jump to first step                 |
+| End         | Jump to last step                  |
+| PageUp      | Jump to upper step                 |
+| PageDown    | Jump to lower step                 |
+| Ctrl+Up     | Jump to upper highlighted step     |
+| Ctrl+Down   | Jump to lower highlighted step     |
+| Insert      | Insert step                        |
+| BackSpace   | Delete the step above              |
+| Delete      | Delete commands                    |
+| Escape      | Deselection                        |
+| -           | Key off                            |
+| \* (numpad) | Increase octave/echo buffer number |
+| / (numpad)  | Decrease octave/echo buffer number |
+| ^           | Echo buffer access                 |
 
 There are two rows of a piano keyboard:
 

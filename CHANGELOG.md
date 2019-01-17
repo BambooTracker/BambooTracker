@@ -8,13 +8,16 @@
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
 - [#51] - Add png icon (thanks [@ehaupt])
 - [#52], [#54] - Fix install instructions for FreeBSD, Debian and Ubuntu (thanks [@ehaupt], [@alexmyczko])
+- [#55] - Change default octave up/down keys (thanks [@galap-1])
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51
 [#52]: https://github.com/rerrahkr/BambooTracker/pull/52
 [#54]: https://github.com/rerrahkr/BambooTracker/pull/54
+[#55]: https://github.com/rerrahkr/BambooTracker/issues/55
 
 [@ehaupt]: https://github.com/ehaupt
+[@galap-1]: https://github.com/galap-1
 
 ## v0.1.4 (2019-01-01)
 ### Added

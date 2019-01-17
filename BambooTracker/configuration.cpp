@@ -31,8 +31,8 @@ Configuration::Configuration()
 
 	// Keys
 	keyOffKey_ = u8"-";
-	octUpKey_ = u8"*";
-	octDownKey_ = u8"/";
+	octUpKey_ = u8"Num+*";
+	octDownKey_ = u8"Num+/";
 	echoKey_ = u8"^";
 
 	// Sonud //
