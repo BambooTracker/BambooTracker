@@ -9,6 +9,7 @@
 - [#51] - Add png icon (thanks [@ehaupt])
 - [#52], [#54] - Fix install instructions for FreeBSD, Debian and Ubuntu (thanks [@ehaupt], [@alexmyczko])
 - [#55] - Change default octave up/down keys (thanks [@galap-1])
+- Fix instrument deep clone corruption by deregistering FM envelope user (thanks [@maakmusic])
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51

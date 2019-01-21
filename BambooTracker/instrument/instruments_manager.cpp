@@ -202,7 +202,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(cloneInstNum));
 		
-		envFM_[0]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
+		envFM_[cloneFm->getEnvelopeNumber()]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
