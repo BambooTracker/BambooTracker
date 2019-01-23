@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui multimedia
+CONFIG   += lrelease
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,6 +22,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+
+# This produces the installation rule for the program and resources.
+# Use a default destination prefix if none is given.
+isEmpty(PREFIX) {
+    win32:PREFIX = C:/BambooTracker
+    else:PREFIX = /usr/local
+}
+INSTALLS += target
+win32 {
+    QM_FILES_INSTALL_PATH = $$PREFIX/lang
+    target.path = $$PREFIX
+}
+else {
+    QM_FILES_INSTALL_PATH = $$PREFIX/share/BambooTracker/lang
+    target.path = $$PREFIX/bin
+}
 
 CONFIG += c++14
 
@@ -367,5 +384,8 @@ INCLUDEPATH += \
 
 RESOURCES += \
     bamboo_tracker.qrc
+
+TRANSLATIONS += \
+    res/lang/bamboo_tracker_fr.ts
 
 RC_ICONS = res/icon/BambooTracker.ico
