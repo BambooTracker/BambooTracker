@@ -151,13 +151,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	highlight_->setMinimum(1);
 	highlight_->setMaximum(256);
 	highlight_->setValue(8);
-	auto hlFunc = [&](int count) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int count) {
 		bt_->setModuleStepHighlightDistance(count);
 		ui->patternEditor->setPatternHighlightCount(count);
 		ui->patternEditor->update();
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, hlFunc);
+	});
 	ui->subToolBar->addWidget(highlight_);
 
 	/* Module settings */
@@ -177,7 +177,9 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->setModuleCopyright(str.toUtf8().toStdString());
 		setModifiedTrue();
 	});
-	auto tickFreqFunc = [&](int freq) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int freq) {
 		if (freq != bt_->getModuleTickFrequency()) {
 			bt_->setModuleTickFrequency(freq);
 			stream_->setInturuption(freq);
@@ -185,58 +187,60 @@ MainWindow::MainWindow(QWidget *parent) :
 			statusIntr_->setText(QString::number(freq) + QString("Hz"));
 			setModifiedTrue();
 		}
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tickFreqFunc);
+	});
 	QObject::connect(ui->modSetDialogOpenToolButton, &QToolButton::clicked,
 					 this, &MainWindow::on_actionModule_Properties_triggered);
 
 	/* Edit settings */
-	auto editableStepFunc = [&](int n) { ui->patternEditor->setEditableStep(n); };
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->editableStepSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, editableStepFunc);
+					 this, [&](int n) {
+		ui->patternEditor->setEditableStep(n);
+		config_->setEditableStep(n);
+	});
+	ui->editableStepSpinBox->setValue(config_->getEditableStep());
+	ui->patternEditor->setEditableStep(config_->getEditableStep());
 
 	/* Song number */
-	auto songNumFunc = [&](int num) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int num) {
 		bt_->setCurrentSongNumber(num);
 		loadSong();
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, songNumFunc);
+	});
 
 	/* Song settings */
-	auto tempoFunc = [&](int tempo) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->tempoSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int tempo) {
 		int curSong = bt_->getCurrentSongNumber();
 		if (tempo != bt_->getSongTempo(curSong)) {
 			bt_->setSongTempo(curSong, tempo);
 			setModifiedTrue();
 		}
-	};
+	});
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->tempoSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tempoFunc);
-	auto speedFunc = [&](int speed) {
+	QObject::connect(ui->speedSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int speed) {
 		int curSong = bt_->getCurrentSongNumber();
 		if (speed != bt_->getSongSpeed(curSong)) {
 			bt_->setSongSpeed(curSong, speed);
 			setModifiedTrue();
 		}
-	};
+	});
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->speedSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, speedFunc);
-	auto ptnSizeFunc = [&](int size) {
+	QObject::connect(ui->patternSizeSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int size) {
 		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
 		ui->patternEditor->onDefaultPatternSizeChanged();
 		setModifiedTrue();
-	};
+	});
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->patternSizeSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, ptnSizeFunc);
-	auto grooveFunc = [&](int n) {
+	QObject::connect(ui->grooveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int n) {
 		bt_->setSongGroove(bt_->getCurrentSongNumber(), n);
 		setModifiedTrue();
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->grooveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, grooveFunc);
+	});
 
 	/* Instrument list */
 	ui->instrumentListWidget->setStyleSheet(

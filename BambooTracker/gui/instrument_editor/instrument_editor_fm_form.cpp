@@ -277,16 +277,15 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	auto lfoFunc = [&](int v) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->lfoStartSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int v) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::COUNT, v);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->lfoStartSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, lfoFunc);
+	});
 
 	//========== OperatorSequence ==========//
 	ui->opSeqTypeComboBox->addItem("AL", static_cast<int>(FMEnvelopeParameter::AL));
@@ -1255,18 +1254,16 @@ void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPo
 	QPoint globalPos = ui->lfoGroupBox->mapToGlobal(pos);
 
 	QMenu menu;
-	auto copyFunc = [&, clipboard]() {
-		clipboard->setText("FM_LFO:" + toLFOString());
-	};
-	auto pasteFunc = [&, clipboard]() {
-		QString data = clipboard->text().remove("FM_LFO:");
-		setInstrumentLFOParameters(data);
-	};
 	// Leave Before Qt5.7.0 style due to windows xp
 	QAction* copy = menu.addAction(tr("Copy LFO parameters"));
-	QObject::connect(copy, &QAction::triggered, this, copyFunc);
+	QObject::connect(copy, &QAction::triggered, this, [&, clipboard]() {
+		clipboard->setText("FM_LFO:" + toLFOString());
+	});
 	QAction* paste = menu.addAction(tr("Paste LFO parameters"));
-	QObject::connect(paste, &QAction::triggered, this, pasteFunc);
+	QObject::connect(paste, &QAction::triggered, this, [&, clipboard]() {
+		QString data = clipboard->text().remove("FM_LFO:");
+		setInstrumentLFOParameters(data);
+	});
 	if (!ui->lfoGroupBox->isChecked()) {
 		copy->setEnabled(false);
 		paste->setEnabled(false);

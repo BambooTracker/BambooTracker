@@ -251,6 +251,16 @@ size_t Configuration::getPageJumpLength() const
 	return pageJumpLength_;
 }
 
+void Configuration::setEditableStep(size_t step)
+{
+	editableStep_ = step;
+}
+
+size_t Configuration::getEditableStep() const
+{
+	return editableStep_;
+}
+
 // Keys
 void Configuration::setKeyOffKey(std::string key)
 {

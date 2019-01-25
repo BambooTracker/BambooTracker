@@ -71,8 +71,10 @@ private:
 public:
 	void setPageJumpLength(size_t length);
 	size_t getPageJumpLength() const;
+	void setEditableStep(size_t step);
+	size_t getEditableStep() const;
 private:
-	size_t pageJumpLength_;
+	size_t pageJumpLength_, editableStep_;
 
 	// Keys
 public:

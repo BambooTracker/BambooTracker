@@ -44,6 +44,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		// Edit settings
 		settings.beginGroup("Editing");
 		settings.setValue("pageJumpLength", static_cast<int>(configLocked->getPageJumpLength()));
+		settings.setValue("editableStep", static_cast<int>(configLocked->getEditableStep()));
 		settings.endGroup();
 
 		// Keys
@@ -119,6 +120,9 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		QVariant pageJumpLengthWorkaround;
 		pageJumpLengthWorkaround.setValue(configLocked->getPageJumpLength());
 		configLocked->setPageJumpLength(static_cast<size_t>(settings.value("pageJumpLength", pageJumpLengthWorkaround).toInt()));
+		QVariant editableStepWorkaround;
+		editableStepWorkaround.setValue(configLocked->getEditableStep());
+		configLocked->setEditableStep(static_cast<size_t>(settings.value("editableStep", editableStepWorkaround).toInt()));
 		settings.endGroup();
 
 		// Keys

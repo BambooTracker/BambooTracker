@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - Add mix settings
+- [#56] - Add installation rules and loader for translations (thanks [@jpcima])
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
@@ -10,12 +11,14 @@
 - [#52], [#54] - Fix install instructions for FreeBSD, Debian and Ubuntu (thanks [@ehaupt], [@alexmyczko])
 - [#55] - Change default octave up/down keys (thanks [@galap-1])
 - Fix instrument deep clone corruption by deregistering FM envelope user (thanks [@maakmusic])
+- Fix editable step to apply entering events and be "0" selectable (thanks [@maakmusic])
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51
 [#52]: https://github.com/rerrahkr/BambooTracker/pull/52
 [#54]: https://github.com/rerrahkr/BambooTracker/pull/54
 [#55]: https://github.com/rerrahkr/BambooTracker/issues/55
+[#56]: https://github.com/rerrahkr/BambooTracker/pull/56
 
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1

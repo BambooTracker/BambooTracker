@@ -746,7 +746,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 											  config_.lock()->getKeyOffKey().length())).toString()) {
 		bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(1);
+		if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 		return true;
 	}
 	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getEchoBufferKey().c_str(),
@@ -755,7 +755,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 		if (n > 3) n = 3;
 		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
 		comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(1);
+		if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 		return true;
 	}
 
@@ -802,7 +802,7 @@ void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 	if (octave < 8) {
 		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note);
 		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(1);
+		if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 	}
 }
 
@@ -839,7 +839,7 @@ void PatternEditorPanel::setStepInstrument(int num)
 	emit instrumentEntered(
 				bt_->getStepInstrument(curSongNum_, editPos_.track, editPos_.order, editPos_.step));
 
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
+	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterVolumeData(int key)
@@ -874,7 +874,7 @@ void PatternEditorPanel::setStepVolume(int volume)
 	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume, isReversed);
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_));
 
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
+	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterEffectID(int key)
@@ -930,7 +930,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 
 	if (!bt_->isPlaySong() && !entryCnt_) {
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
-		else moveCursorToDown(1);
+		else moveCursorToDown(editableStepCnt_);
 	}
 }
 
@@ -967,7 +967,7 @@ void PatternEditorPanel::setStepEffectValue(int value)
 
 	if (!bt_->isPlaySong() && !entryCnt_) {
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
-		else moveCursorToDown(1);
+		else moveCursorToDown(editableStepCnt_);
 	}
 }
 
@@ -1493,17 +1493,17 @@ void PatternEditorPanel::onDeletePressed()
 		case 0:
 			bt_->eraseStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(1);
+			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 1:
 			bt_->eraseStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseInstrumentInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(1);
+			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 2:
 			bt_->eraseStepVolume(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseVolumeInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(1);
+			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 3:
 		case 5:
@@ -1512,7 +1512,7 @@ void PatternEditorPanel::onDeletePressed()
 			bt_->eraseStepEffect(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
 								 (curPos_.colInTrack - 3) / 2);
 			comStack_.lock()->push(new EraseEffectInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(1);
+			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 4:
 		case 6:
@@ -1521,7 +1521,7 @@ void PatternEditorPanel::onDeletePressed()
 			bt_->eraseStepEffectValue(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
 									  (curPos_.colInTrack - 4) / 2);
 			comStack_.lock()->push(new EraseEffectValueInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(1);
+			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 			break;
 		}
 	}
