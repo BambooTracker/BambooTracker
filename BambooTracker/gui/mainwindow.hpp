@@ -36,7 +36,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = nullptr);
+	MainWindow(QString filePath, QWidget *parent = nullptr);
 	~MainWindow() override;
 
 protected:

@@ -36,7 +36,7 @@
 #include "gui/configuration_handler.hpp"
 #include "chips/scci/SCCIDefines.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	config_(std::make_shared<Configuration>()),
@@ -379,7 +379,22 @@ MainWindow::MainWindow(QWidget *parent) :
 		else if (isEditedPattern_) updateMenuByPattern();
 	});
 
-	loadModule();
+	if (filePath == "") {
+		loadModule();
+	}
+	else {
+		try {
+			bt_->loadModule(filePath.toLocal8Bit().toStdString());
+			loadModule();
+
+			config_->setWorkingDirectory(QFileInfo(filePath).dir().path().toStdString());
+			isModifiedForNotCommand_ = false;
+			setWindowModified(false);
+		}
+		catch (std::exception& e) {
+			QMessageBox::critical(this, tr("Error"), e.what());
+		}
+	}
 }
 
 MainWindow::~MainWindow()

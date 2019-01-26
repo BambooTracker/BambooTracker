@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QObject>
 #include <QDebug>
+#include <QString>
 #include <memory>
 
 // Localization
@@ -16,9 +17,10 @@ static QString findAppTranslationsDir();
 int main(int argc, char *argv[])
 {
 	try {
+		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
 		std::unique_ptr<QApplication> a(std::make_unique<QApplication>(argc, argv));
 		setupTranslations();
-		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>());
+		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(filePath));
 		w->show();
 		return a->exec();
 	} catch (...) {

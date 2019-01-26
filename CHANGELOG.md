@@ -4,6 +4,7 @@
 ### Added
 - Add mix settings
 - [#56] - Add installation rules and loader for translations (thanks [@jpcima])
+- Load module from command line argument
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
