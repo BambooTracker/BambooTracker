@@ -6,6 +6,7 @@
 - [#56] - Add installation rules and loader for translations (thanks [@jpcima])
 - Load module from command line argument
 - [#57] - Add FM envelope paste from plain text like MML (thanks [@pedipanol])
+- Support .y12 and .ins instrument file importing
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])

@@ -765,7 +765,8 @@ void MainWindow::loadInstrument()
 												"TFM Music Maker instrument (*.tfi);;"
 												"VGM Music Maker instrument (*.vgi);;"
 												"WOPN instrument (*.opni);;"
-												"Gens KMod dump (*.y12)");
+												"Gens KMod dump (*.y12);;"
+												"MVSTracker instrument (*.ins)");
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();

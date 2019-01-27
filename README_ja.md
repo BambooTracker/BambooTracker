@@ -228,6 +228,8 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 - .vgi (VGM Music Maker instrument file)
 - .opni (WOPN instrument file)
 - .wopn (WOPN bank file)
+- .y12 (Gens KMod dump file)
+- .ins (MVSTracker instrument file)
 
 また、FMエンベロープはプレーンテキストの読み込みにも対応しています。
 

@@ -228,6 +228,8 @@ The tracker can load instrument from the following files.
 - .vgi (VGM Music Maker instrument file)
 - .opni (WOPN instrument file)
 - .wopn (WOPN bank file)
+- .y12 (Gens KMod dump file)
+- .ins (MVSTracker instrument file)
 
 It also supports loading plain text of FM envelope.
 
