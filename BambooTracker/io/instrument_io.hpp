@@ -30,6 +30,9 @@ private:
 	static AbstractInstrument* loadOPNIFile(std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
+	static AbstractInstrument* loadY12File(std::string path,
+										   std::weak_ptr<InstrumentsManager> instMan,
+										   int instNum);
 
 public:
 	static AbstractInstrument* loadWOPNInstrument(const WOPNInstrument &srcInst,
