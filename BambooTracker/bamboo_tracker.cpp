@@ -604,6 +604,9 @@ void BambooTracker::setCurrentSongNumber(int num)
 
 	switch (songStyle_.type) {
 	case SongType::STD:
+		muteStateFM_ = std::vector<bool>(6, false);
+		for (int i = 0; i < 6; ++i) opnaCtrl_->setMuteFMState(i, false);
+
 		ntDlyCntFM_ = std::vector<int>(6);
 		ntCutDlyCntFM_ = std::vector<int>(6);
 		volDlyCntFM_ = std::vector<int>(6);
@@ -616,6 +619,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 		break;
 	}
 
+	muteStateSSG_ = std::vector<bool>(3, false);
+	for (int i = 0; i < 3; ++i) opnaCtrl_->setMuteSSGState(i, false);
 	ntDlyCntSSG_ = std::vector<int>(3);
 	ntCutDlyCntSSG_ = std::vector<int>(3);
 	volDlyCntSSG_ = std::vector<int>(3);
@@ -623,6 +628,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tposeDlyCntSSG_ = std::vector<int>(3);
 	tposeDlyValueSSG_ = std::vector<int>(3);
 
+	muteStateDrum_ = std::vector<bool>(6, false);
+	for (int i = 0; i < 6; ++i) opnaCtrl_->setMuteDrumState(i, false);
 	ntDlyCntDrum_ = std::vector<int>(6);
 	ntCutDlyCntDrum_ = std::vector<int>(6);
 	volDlyCntDrum_ = std::vector<int>(6);
@@ -806,6 +813,10 @@ void BambooTracker::startPlay()
 	tickCounter_.resetCount();
 	tickCounter_.setPlayState(true);
 
+	for (int i = 0; i < muteStateFM_.size(); ++i) opnaCtrl_->setMuteFMState(i, muteStateFM_[i]);
+	for (int i = 0; i < muteStateSSG_.size(); ++i) opnaCtrl_->setMuteSSGState(i, muteStateSSG_[i]);
+	for (int i = 0; i < muteStateDrum_.size(); ++i) opnaCtrl_->setMuteDrumState(i, muteStateDrum_[i]);
+
 	clearDelayCounts();
 }
 
@@ -817,6 +828,10 @@ void BambooTracker::stopPlaySong()
 	playState_ = 0;
 	playOrderNum_ = -1;
 	playStepNum_ = -1;
+
+	for (int i = 0; i < muteStateFM_.size(); ++i) opnaCtrl_->setMuteFMState(i, false);
+	for (int i = 0; i < muteStateSSG_.size(); ++i) opnaCtrl_->setMuteSSGState(i, false);
+	for (int i = 0; i < muteStateDrum_.size(); ++i) opnaCtrl_->setMuteDrumState(i, false);
 }
 
 bool BambooTracker::isPlaySong() const
@@ -828,9 +843,18 @@ void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 {
 	auto& ta = songStyle_.trackAttribs[trackNum];
 	switch (ta.source) {
-	case SoundSource::FM:	opnaCtrl_->setMuteFMState(ta.channelInSource, isMute);	break;
-	case SoundSource::SSG:	opnaCtrl_->setMuteSSGState(ta.channelInSource, isMute);	break;
-	case SoundSource::DRUM:	opnaCtrl_->setMuteDrumState(ta.channelInSource, isMute);	break;
+	case SoundSource::FM:
+		muteStateFM_.at(ta.channelInSource) = isMute;
+		if (isPlaySong()) opnaCtrl_->setMuteFMState(ta.channelInSource, isMute);
+		break;
+	case SoundSource::SSG:
+		muteStateSSG_.at(ta.channelInSource) = isMute;
+		if (isPlaySong()) opnaCtrl_->setMuteSSGState(ta.channelInSource, isMute);
+		break;
+	case SoundSource::DRUM:
+		muteStateDrum_.at(ta.channelInSource) = isMute;
+		if (isPlaySong()) opnaCtrl_->setMuteDrumState(ta.channelInSource, isMute);
+		break;
 	}
 }
 
@@ -838,9 +862,9 @@ bool BambooTracker::isMute(int trackNum)
 {
 	auto& ta = songStyle_.trackAttribs[trackNum];
 	switch (ta.source) {
-	case SoundSource::FM:	return opnaCtrl_->isMuteFM(ta.channelInSource);
-	case SoundSource::SSG:	return opnaCtrl_->isMuteSSG(ta.channelInSource);
-	case SoundSource::DRUM:	return opnaCtrl_->isMuteDrum(ta.channelInSource);
+	case SoundSource::FM:	return muteStateFM_.at(ta.channelInSource);
+	case SoundSource::SSG:	return muteStateSSG_.at(ta.channelInSource);
+	case SoundSource::DRUM:	return muteStateDrum_.at(ta.channelInSource);
 	}
 }
 

@@ -348,6 +348,7 @@ private:
 	///		bit 0: playing
 	///		bit 1: have read first step data
 	unsigned int playState_;
+	std::vector<bool> muteStateFM_, muteStateSSG_, muteStateDrum_;
 
 	int nextReadOrder_, nextReadStep_;
 

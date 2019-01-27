@@ -15,6 +15,7 @@
 - [#55] - Change default octave up/down keys (thanks [@galap-1])
 - Fix instrument deep clone corruption by deregistering FM envelope user (thanks [@maakmusic])
 - Fix editable step to apply entering events and be "0" selectable (thanks [@maakmusic])
+- Fix to unmute track on jam mode (thanks [@maakmusic])
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51
