@@ -5,6 +5,7 @@
 - Add mix settings
 - [#56] - Add installation rules and loader for translations (thanks [@jpcima])
 - Load module from command line argument
+- [#57] - Add FM envelope paste from plain text like MML (thanks [@pedipanol])
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
@@ -20,6 +21,7 @@
 [#54]: https://github.com/rerrahkr/BambooTracker/pull/54
 [#55]: https://github.com/rerrahkr/BambooTracker/issues/55
 [#56]: https://github.com/rerrahkr/BambooTracker/pull/56
+[#57]: https://github.com/rerrahkr/BambooTracker/issues/57
 
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1

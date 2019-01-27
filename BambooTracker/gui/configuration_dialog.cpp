@@ -4,6 +4,7 @@
 #include <QAudio>
 #include <QAudioDeviceInfo>
 #include "slider_style.hpp"
+#include "fm_envelope_set_edit_dialog.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
 	: QDialog(parent),
@@ -101,6 +102,10 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->ssgMixerSlider->setTickPosition(QSlider::TicksBothSides);
 	ui->ssgMixerSlider->setTickInterval(20);
 	ui->ssgMixerSlider->setValue(static_cast<int>(config.lock()->getMixerVolumeSSG() * 10));
+
+	// Input //
+	fmEnvelopeTextMap_ = config.lock()->getFMEnvelopeTextMap();
+	updateEnvelopeSetUi();
 }
 
 ConfigurationDialog::~ConfigurationDialog()
@@ -140,8 +145,12 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setMixerVolumeMaster(ui->masterMixerSlider->value());
 	config_.lock()->setMixerVolumeFM(ui->fmMixerSlider->value() * 0.1);
 	config_.lock()->setMixerVolumeSSG(ui->ssgMixerSlider->value() * 0.1);
+
+	// Input //
+	config_.lock()->setFMEnvelopeTextMap(fmEnvelopeTextMap_);
 }
 
+/***** General *****/
 void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 {
 	QString text;
@@ -177,8 +186,69 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 	ui->descPlainTextEdit->setPlainText(tr("Description: ") + text);
 }
 
+/***** Mixer *****/
 void ConfigurationDialog::on_mixerResetPushButton_clicked()
 {
 	ui->fmMixerSlider->setValue(0);
 	ui->ssgMixerSlider->setValue(0);
+}
+
+/***** Input *****/
+void ConfigurationDialog::updateEnvelopeSetUi()
+{
+	ui->envelopeTypeListWidget->clear();
+	for (auto& pair : fmEnvelopeTextMap_)
+		ui->envelopeTypeListWidget->addItem(QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+}
+
+void ConfigurationDialog::on_addEnvelopeSetPushButton_clicked()
+{
+	auto name = QString("Set %1").arg(fmEnvelopeTextMap_.size() + 1);
+	fmEnvelopeTextMap_.emplace(name.toUtf8().toStdString(), std::vector<FMEnvelopeTextType>());
+	updateEnvelopeSetUi();
+	for (int i = 0; i < ui->envelopeTypeListWidget->count(); ++i) {
+		if (ui->envelopeTypeListWidget->item(i)->text() == name) {
+			ui->envelopeTypeListWidget->setCurrentRow(i);
+			break;
+		}
+	}
+}
+
+void ConfigurationDialog::on_removeEnvelopeSetpushButton_clicked()
+{
+	int row = ui->envelopeTypeListWidget->currentRow();
+	fmEnvelopeTextMap_.erase(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString());
+	updateEnvelopeSetUi();
+}
+
+void ConfigurationDialog::on_editEnvelopeSetPushButton_clicked()
+{
+	FMEnvelopeSetEditDialog diag(fmEnvelopeTextMap_.at(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString()));
+	if (diag.exec() == QDialog::Accepted) {
+		fmEnvelopeTextMap_.at(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString()) = diag.getSet();
+	}
+}
+
+void ConfigurationDialog::on_envelopeSetNameLineEdit_textChanged(const QString &arg1)
+{
+	QString prev = ui->envelopeTypeListWidget->currentItem()->text();
+	auto data = fmEnvelopeTextMap_.at(prev.toUtf8().toStdString());
+	fmEnvelopeTextMap_.erase(prev.toUtf8().toStdString());
+	fmEnvelopeTextMap_.emplace(arg1.toUtf8().toStdString(), data);
+	ui->envelopeTypeListWidget->currentItem()->setText(arg1);
+}
+
+void ConfigurationDialog::on_envelopeTypeListWidget_currentRowChanged(int currentRow)
+{
+	if (currentRow == -1) {
+		ui->editEnvelopeSetPushButton->setEnabled(false);
+		ui->removeEnvelopeSetpushButton->setEnabled(false);
+		ui->envelopeSetNameLineEdit->setEnabled(false);
+	}
+	else {
+		ui->editEnvelopeSetPushButton->setEnabled(true);
+		ui->removeEnvelopeSetpushButton->setEnabled(true);
+		ui->envelopeSetNameLineEdit->setEnabled(true);
+		ui->envelopeSetNameLineEdit->setText(ui->envelopeTypeListWidget->item(currentRow)->text());
+	}
 }

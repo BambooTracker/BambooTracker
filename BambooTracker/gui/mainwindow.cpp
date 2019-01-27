@@ -1,4 +1,5 @@
 #include "mainwindow.hpp"
+#include "ui_mainwindow.h"
 #include <fstream>
 #include <QString>
 #include <QLineEdit>
@@ -14,7 +15,6 @@
 #include <QRect>
 #include <QDesktopWidget>
 #include <QAudioDeviceInfo>
-#include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"

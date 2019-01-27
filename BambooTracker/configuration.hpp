@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <cstddef>
 #include <string>
+#include <map>
+#include <vector>
+#include "misc.hpp"
 
 class Configuration
 {
@@ -117,4 +120,12 @@ public:
 private:
 	int mixerVolumeMaster_;
 	double mixerVolumeFM_, mixerVolumeSSG_;
+
+	// Input //
+public:
+	void setFMEnvelopeTextMap(std::map<std::string, std::vector<FMEnvelopeTextType>> map);
+	std::map<std::string, std::vector<FMEnvelopeTextType>> getFMEnvelopeTextMap() const;
+
+private:
+	std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap_;
 };

@@ -12,7 +12,7 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
-	ui->songTreeWidget->setColumnCount(2);
+	ui->songTreeWidget->setColumnCount(3);
 	ui->songTreeWidget->setHeaderLabels({ tr("Number"), tr("Title"), tr("Song type") });
 	ui->songTreeWidget->header()->resizeSection(0, 52);
 	size_t songCnt = core.lock()->getSongCount();

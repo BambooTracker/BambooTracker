@@ -75,6 +75,23 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("mixerVolumeSSG",		configLocked->getMixerVolumeSSG());
 		settings.endGroup();
 
+		// Input //
+		settings.beginGroup("Input");
+		settings.beginWriteArray("fmEnvelopeTextMap");
+		int n = 0;
+		for (auto pair : config.lock()->getFMEnvelopeTextMap()) {
+			settings.setArrayIndex(n++);
+			settings.setValue("type", QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+			QString data;
+			for (auto type : pair.second) {
+				data += QString(",%1").arg(static_cast<int>(type));
+			}
+			if (!data.isEmpty()) data.remove(0, 1);
+			settings.setValue("order", data);
+		}
+		settings.endArray();
+		settings.endGroup();
+
 		return true;
 	} catch (...) {
 		return false;
@@ -150,6 +167,23 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setMixerVolumeMaster(settings.value("mixerVolumeMaster", configLocked->getMixerVolumeMaster()).toInt());
 		configLocked->setMixerVolumeFM(settings.value("mixerVolumeFM", configLocked->getMixerVolumeFM()).toDouble());
 		configLocked->setMixerVolumeFM(settings.value("mixerVolumeSSG", configLocked->getMixerVolumeSSG()).toDouble());
+		settings.endGroup();
+
+		// Input //
+		settings.beginGroup("Input");
+		int size = settings.beginReadArray("fmEnvelopeTextMap");
+		std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap;
+		for (int i = 0; i < size; ++i) {
+			settings.setArrayIndex(i);
+			std::string type = settings.value("type").toString().toUtf8().toStdString();
+			std::vector<FMEnvelopeTextType> data;
+			for (auto d : settings.value("order").toString().split(",")) {
+				data.push_back(static_cast<FMEnvelopeTextType>(d.toInt()));
+			}
+			fmEnvelopeTextMap.emplace(type, data);
+		}
+		if (!fmEnvelopeTextMap.empty()) config.lock()->setFMEnvelopeTextMap(fmEnvelopeTextMap);
+		settings.endArray();
 		settings.endGroup();
 
 		return true;

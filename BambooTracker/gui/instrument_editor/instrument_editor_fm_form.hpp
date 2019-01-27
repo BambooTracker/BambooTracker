@@ -72,6 +72,7 @@ public slots:
 private:
 	void setInstrumentEnvelopeParameters();
 	void setInstrumentEnvelopeParameters(QString data);
+	void setInstrumentEnvelopeParameters(QString envType, QString data);
 	void setInstrumentOperatorParameters(int opNum, QString data);
 
 	void paintAlgorithmDiagram();
@@ -80,6 +81,7 @@ private:
 private slots:
 	void copyEnvelope();
 	void pasteEnvelope();
+	void pasteEnvelopeFrom(QString type);
 	void copyOperator(int opNum);
 	void pasteOperator(int opNum);
 	void on_envNumSpinBox_valueChanged(int arg1);

@@ -41,6 +41,9 @@ In the FM Editor, you can configure the
 
 of an FM instrument.
 
+It enables to paste plain text of envelope like MML. You can add and fix text formats in configuration. There are 8 default formats: FMP, FMP7, MMLDRV, MUCOM88, MXDRV, NRTDRV(`VOICE_MODE=0`), PMD, VOPM.  
+Note the tracker reads digits from text in the order of appearance. Please remove needless digits contained in tone name or comments upon using default format.
+
 #### SSG Editor
 In the SSG Editor, you can configure the
 
@@ -212,6 +215,31 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Vxx   | -                                                                                       | -                  | Master volume (xx[00-3f]: volume) |
 | Mxyy   | Volume delay (x[1-f]: count, yy[00-ff]: volume)                                         | Volume delay       | Volume delay                      |
 
+## File I/O
+### Module
+The tracker enables to open and save to .btm (BambooTracker module file).
+
+### Instrument
+The tracker can load instrument from the following files.
+
+- .bti (BambooTracker instrument file)
+- .dmp (DefleMask preset file)
+- .tfi (TFM Music Maker instrument file)
+- .vgi (VGM Music Maker instrument file)
+- .opni (WOPN instrument file)
+- .wopn (WOPN bank file)
+
+It also supports loading plain text of FM envelope.
+
+A instrument save as .bti file.
+
+### Export
+The tracker can export a song to the following files.
+
+- .wav (WAVE file)
+- .vgm (VGM file)
+- .s98 (S98 file)
+
 ## Build on Linux
 On Ubuntu 18.04:
 
@@ -235,7 +263,6 @@ make
 ```
 
 ## Install package or build on FreeBSD
-
 ### Build
 To build the BambooTracker via FreeBSD ports
 ```bash
@@ -250,7 +277,6 @@ pkg install bambootracker
 ```
 
 ## Install package on Debian or Ubuntu
-
 `apt-get install bambootracker`
 
 ## Changelog

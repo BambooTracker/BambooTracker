@@ -41,6 +41,9 @@ FMエディタでは、
 
 のプロパティを設定できます。
 
+エンベロープはMMLなどのテキストデータを貼り付けして読み込むことができます。テキストフォーマットは設定で追加・変更を行うことができます。デフォルトではFMP、FMP7、MMLDRV、MUCOM88、MXDRV、NRTDRV(`VOICE_MODE=0`)、PMD、VOPMが登録されています。  
+この機能ではテキスト中の数字を出現順に読み込んでいきます。デフォルトのフォーマットを使用する際には予め音色名、コメントに含まれる数字を削除する必要があります。
+
 #### SSGエディタ
 SSGエディタでは、
 
@@ -212,6 +215,31 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 | 0Vxx       | -                                                                                                                         | -                          | マスターボリューム (xx[00-3f]: 音量) |
 | Mxyy       | ボリューム・ディレイ (x[1-f]: ディレイカウント, yy[00-ff]: 音量)                                                          | ボリューム・ディレイ       | ボリューム・ディレイ                 |
 
+## ファイル入出力
+### モジュール
+.btm (BambooTracker module file)の読み込み・書き出しに対応しています。
+
+### インストゥルメント
+以下のフォーマットの読み込み対応しています。
+
+- .bti (BambooTracker instrument file)
+- .dmp (DefleMask preset file)
+- .tfi (TFM Music Maker instrument file)
+- .vgi (VGM Music Maker instrument file)
+- .opni (WOPN instrument file)
+- .wopn (WOPN bank file)
+
+また、FMエンベロープはプレーンテキストの読み込みにも対応しています。
+
+書き出しは.btiのみ可能です。
+
+### エクスポート
+以下のファイルにエクスポートが可能です。
+
+- .wav (WAVE file)
+- .vgm (VGM file)
+- .s98 (S98 file)
+
 ## Linuxでのビルド方法
 Ubuntu 18.04:
 
@@ -233,6 +261,23 @@ cd BambooTracker
 qmake
 make
 ```
+
+## FreeBSDでのパッケージのインストールまたはビルド
+### ビルド
+To build the BambooTracker via FreeBSD ports
+```bash
+cd /usr/ports/audio/bambootracker
+make install clean
+```
+
+### パッケージ
+To install the package
+```bash
+pkg install bambootracker
+```
+
+## DebianまたはUbuntuでのパッケージのインストール
+`apt-get install bambootracker`
 
 ## Changelog
 *[CHANGELOG.md](./CHANGELOG.md)を参照してください。*

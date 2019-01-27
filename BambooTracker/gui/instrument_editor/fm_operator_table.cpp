@@ -62,6 +62,11 @@ FMOperatorTable::~FMOperatorTable()
 	delete ui;
 }
 
+void FMOperatorTable::setEnvelopeSetNames(std::vector<QString> list)
+{
+	envelopeTypes_ = list;
+}
+
 void FMOperatorTable::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
@@ -315,6 +320,12 @@ void FMOperatorTable::on_groupBox_customContextMenuRequested(const QPoint &pos)
 	QObject::connect(copyEnv, &QAction::triggered, this, [&] { emit copyEnvelopePressed(); });
 	QAction* pasteEnv = menu.addAction(tr("Paste envelope"));
 	QObject::connect(pasteEnv, &QAction::triggered, this, [&] { emit pasteEnvelopePressed(); });
+	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
+	for (auto type : envelopeTypes_) {
+		QAction* action = pasteFrom->addAction(type);
+		QObject::connect(action, &QAction::triggered,
+						 this, [&, action]{ pasteEnvelopeFromPressed(action->text()); });
+	}
 	menu.addSeparator();
 	QAction* copyOp = menu.addAction(tr("Copy operator"));
 	QObject::connect(copyOp, &QAction::triggered, this, [&] { emit copyOperatorPressed(number_); });

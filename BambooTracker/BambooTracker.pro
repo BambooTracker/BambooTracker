@@ -187,7 +187,8 @@ SOURCES += \
     io/module_io.cpp \
     io/export_handler.cpp \
     io/instrument_io.cpp \
-    io/bank_io.cpp
+    io/bank_io.cpp \
+    gui/fm_envelope_set_edit_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -353,7 +354,8 @@ HEADERS += \
     io/io_handlers.hpp \
     io/export_handler.hpp \
     io/instrument_io.hpp \
-    io/bank_io.hpp
+    io/bank_io.hpp \
+    gui/fm_envelope_set_edit_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -372,7 +374,8 @@ FORMS += \
     gui/vgm_export_settings_dialog.ui \
     gui/wave_export_settings_dialog.ui \
     gui/instrument_selection_dialog.ui \
-    gui/s98_export_settings_dialog.ui
+    gui/s98_export_settings_dialog.ui \
+    gui/fm_envelope_set_edit_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \
