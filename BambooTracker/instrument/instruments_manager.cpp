@@ -448,7 +448,6 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	}
 
 	std::unique_ptr<AbstractInstrument> clone = insts_[instNum]->clone();
-	insts_[instNum]->setNumber(-1);	// Unregistered number
 	insts_[instNum].reset();
 	return clone;
 }

@@ -212,19 +212,10 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 }
 
 /********** Set instrument **********/
+/// TODO: inst != nullptr
 void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 {
-	if (!inst) {	// Error set ()
-		if (refInstFM_[ch]) {	// When setted instrument has been deleted
-			refInstFM_[ch]->setNumber(-1);
-		}
-		else {
-			return;
-		}
-	}
-	else {
-		refInstFM_[ch] = inst;
-	}
+	refInstFM_[ch] = inst;
 
 	writeFMEnvelopeToRegistersFromInstrument(ch);
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
@@ -252,7 +243,8 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 void OPNAController::updateInstrumentFM(int instNum)
 {
 	for (int ch = 0; ch < 6; ++ch) {
-		if (refInstFM_[ch] && refInstFM_[ch]->getNumber() == instNum) {
+		if (refInstFM_[ch] && refInstFM_[ch]->isRegisteredWithManager()
+				&& refInstFM_[ch]->getNumber() == instNum) {
 			writeFMEnvelopeToRegistersFromInstrument(ch);
 			if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
 			for (auto& p : opSeqItFM_[ch]) {
@@ -1357,19 +1349,10 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 }
 
 /********** Set instrument **********/
+/// TODO: inst != nullptr
 void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst)
 {
-	if (!inst) {	// Error set ()
-		if (refInstSSG_[ch]) {
-			refInstSSG_[ch]->setNumber(-1);
-		}
-		else {
-			return;
-		}
-	}
-	else {
-		refInstSSG_[ch] = inst;
-	}
+	refInstSSG_[ch] = inst;
 
 	if (refInstSSG_[ch]->getWaveFormEnabled())
 		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
@@ -1398,7 +1381,8 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 void OPNAController::updateInstrumentSSG(int instNum)
 {
 	for (int ch = 0; ch < 3; ++ch) {
-		if (refInstSSG_[ch] && refInstSSG_[ch]->getNumber() == instNum) {
+		if (refInstSSG_[ch] && refInstSSG_[ch]->isRegisteredWithManager()
+				&& refInstSSG_[ch]->getNumber() == instNum) {
 			if (!refInstSSG_[ch]->getWaveFormEnabled()) wfItSSG_[ch].reset();
 			if (!refInstSSG_[ch]->getToneNoiseEnabled()) tnItSSG_[ch].reset();
 			if (!refInstSSG_[ch]->getEnvelopeEnabled()) envItSSG_[ch].reset();

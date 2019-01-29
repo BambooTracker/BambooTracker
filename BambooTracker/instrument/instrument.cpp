@@ -32,6 +32,11 @@ void AbstractInstrument::setName(std::string name)
 	name_ = name;
 }
 
+bool AbstractInstrument::isRegisteredWithManager() const
+{
+	return (this == owner_->getInstrumentSharedPtr(number_).get());
+}
+
 /****************************************/
 
 InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
