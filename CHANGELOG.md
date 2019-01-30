@@ -16,7 +16,6 @@
 - Fix instrument deep clone corruption by deregistering FM envelope user (thanks [@maakmusic])
 - Fix editable step to apply entering events and be "0" selectable (thanks [@maakmusic])
 - Fix to unmute track on jam mode (thanks [@maakmusic])
-- [#44], [#59] - Divide instrument owned check from its number (thanks [@papiezak], [@djtuBIG-MaliceX])
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51
@@ -25,12 +24,9 @@
 [#55]: https://github.com/rerrahkr/BambooTracker/issues/55
 [#56]: https://github.com/rerrahkr/BambooTracker/pull/56
 [#57]: https://github.com/rerrahkr/BambooTracker/issues/57
-[#44]: https://github.com/rerrahkr/BambooTracker/issues/44
-[#59]: https://github.com/rerrahkr/BambooTracker/issues/59
 
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1
-[@djtuBIG-MaliceX]: https://github.com/djtuBIG-MaliceX
 
 ## v0.1.4 (2019-01-01)
 ### Added
