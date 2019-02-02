@@ -22,6 +22,7 @@ public:
 	SoundSource getSoundSource() const;
 	std::string getName() const;
 	void setName(std::string name);
+	bool isRegisteredWithManager() const;
 	virtual std::unique_ptr<AbstractInstrument> clone() = 0;
 
 protected:
