@@ -26,12 +26,12 @@ public:
 
 protected:
 	InstrumentsManager* owner_;
-    std::string name_;	// UTF-8
+	int number_;
+	std::string name_;	// UTF-8
 	AbstractInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner);
 
 private:
-	int number_;
-    SoundSource source_;
+	SoundSource source_;
 };
 
 
