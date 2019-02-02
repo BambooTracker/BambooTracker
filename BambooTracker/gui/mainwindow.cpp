@@ -431,17 +431,6 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 		}
 	}
 
-	if (auto orderList = qobject_cast<OrderListEditor*>(watched)) {
-		// Catch space key pressing in order list
-		if (event->type() == QEvent::KeyPress) {
-			auto keyEvent = dynamic_cast<QKeyEvent*>(event);
-			if (keyEvent->key() == Qt::Key_Space) {
-				keyPressEvent(keyEvent);
-				return true;
-			}
-		}
-	}
-
 	return false;
 }
 
@@ -1260,7 +1249,7 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 
 	if (num == -1) statusInst_->setText(tr("No instrument"));
 	else statusInst_->setText(
-				tr("Instrument: %1").arg(num, 2, 16, QChar('0')).toUpper());
+				tr("Instrument: ") + QString("%1").arg(num, 2, 16, QChar('0')).toUpper());
 
 	bool isEnabled = (num != -1);
 	ui->actionRemove_Instrument->setEnabled(isEnabled);
