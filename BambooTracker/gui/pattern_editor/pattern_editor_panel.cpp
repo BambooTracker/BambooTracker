@@ -1799,7 +1799,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				moveCursorToDown((base - 1) / hlCnt_ * hlCnt_ - base);
 			}
 			else {
-				moveCursorToDown(-editableStepCnt_);
+				moveCursorToDown(editableStepCnt_ ? -editableStepCnt_ : -1);
 			}
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);
@@ -1819,7 +1819,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				else moveCursorToDown(size - curPos_.step);
 			}
 			else {
-				moveCursorToDown(editableStepCnt_);
+				moveCursorToDown(editableStepCnt_ ? editableStepCnt_ : 1);
 			}
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) {
 				setSelectedRectangle(shiftPressedPos_, curPos_);

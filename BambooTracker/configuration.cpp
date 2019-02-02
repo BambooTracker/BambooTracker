@@ -28,6 +28,7 @@ Configuration::Configuration()
 
 	// Edit settings
 	pageJumpLength_ = 4;
+	editableStep_ = 1;
 
 	// Keys
 	keyOffKey_ = u8"-";
