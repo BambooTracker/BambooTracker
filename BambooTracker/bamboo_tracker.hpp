@@ -394,4 +394,7 @@ private:
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
 
 	void checkNextPositionOfLastStep(int& endOrder, int& endStep) const;
+
+	bool isRetrieveChannel_;
+	void retrieveChannelStates();
 };

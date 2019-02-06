@@ -7,6 +7,7 @@
 - Load module from command line argument
 - [#57] - Add FM envelope paste from plain text like MML (thanks [@pedipanol])
 - Support .y12 and .ins instrument file importing
+- [#58] - Implement retrieving channel state during playback (thanks [@papiezak])
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
@@ -27,6 +28,7 @@
 [#57]: https://github.com/rerrahkr/BambooTracker/issues/57
 [#44]: https://github.com/rerrahkr/BambooTracker/issues/44
 [#59]: https://github.com/rerrahkr/BambooTracker/issues/59
+[#58]: https://github.com/rerrahkr/BambooTracker/issues/58
 
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1

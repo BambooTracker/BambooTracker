@@ -30,6 +30,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(5)->setCheckState(toCheckState(config.lock()->getDontSelectOnDoubleClick()));
 	ui->generalSettingsListWidget->item(6)->setCheckState(toCheckState(config.lock()->getReverseFMVolumeOrder()));
 	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(config.lock()->getMoveCursorToRight()));
+	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(config.lock()->getRetrieveChannelState()));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(config.lock()->getPageJumpLength());
@@ -125,6 +126,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setDontSelectOnDoubleClick(fromCheckState(ui->generalSettingsListWidget->item(5)->checkState()));
 	config_.lock()->setReverseFMVolumeOrder(fromCheckState(ui->generalSettingsListWidget->item(6)->checkState()));
 	config_.lock()->setMoveCursorToRight(fromCheckState(ui->generalSettingsListWidget->item(7)->checkState()));
+	config_.lock()->setRetrieveChannelState(fromCheckState(ui->generalSettingsListWidget->item(8)->checkState()));
 
 	// Edit settings
 	config_.lock()->setPageJumpLength(ui->pageJumpLengthSpinBox->value());
@@ -178,6 +180,9 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		break;
 	case 7:	// Move cursor to right
 		text = tr("Move the cursor to right after entering effects in the pattern editor.");
+		break;
+	case 8:	// Retrieve channel state
+		text = tr("Reconstruct the current channel's state from previous orders upon playing.");
 		break;
 	default:
 		text = "";

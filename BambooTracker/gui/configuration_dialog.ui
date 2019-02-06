@@ -197,6 +197,14 @@
               <enum>Unchecked</enum>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Retrieve channel state</string>
+             </property>
+             <property name="checkState">
+              <enum>Unchecked</enum>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="1" column="0">

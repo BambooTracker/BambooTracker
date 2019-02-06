@@ -39,6 +39,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("dontSelectOnDoubleClick", configLocked->getDontSelectOnDoubleClick());
 		settings.setValue("reverseFMVolumeOrder",    configLocked->getReverseFMVolumeOrder());
 		settings.setValue("moveCursorToRight",       configLocked->getMoveCursorToRight());
+		settings.setValue("retrieveChannelState",	configLocked->getRetrieveChannelState());
 		settings.endGroup();
 
 		// Edit settings
@@ -130,6 +131,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setDontSelectOnDoubleClick(settings.value("dontSelectOnDoubleClick", configLocked->getDontSelectOnDoubleClick()).toBool());
 		configLocked->setReverseFMVolumeOrder(settings.value("reverseFMVolumeOrder", configLocked->getReverseFMVolumeOrder()).toBool());
 		configLocked->setMoveCursorToRight(settings.value("moveCursorToRight", configLocked->getMoveCursorToRight()).toBool());
+		configLocked->setRetrieveChannelState(settings.value("retrieveChannelState", configLocked->getRetrieveChannelState()).toBool());
 		settings.endGroup();
 
 		// Edit settings

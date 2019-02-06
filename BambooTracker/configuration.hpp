@@ -64,11 +64,14 @@ public:
 	bool getReverseFMVolumeOrder() const;
 	void setMoveCursorToRight(bool enabled);
 	bool getMoveCursorToRight() const;
+	void setRetrieveChannelState(bool enabled);
+	bool getRetrieveChannelState() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
 	bool backupModules_, dontSelectOnDoubleClick_;
 	bool reverseFMVolumeOrder_, moveCursorToRight_;
+	bool retrieveChannelState_;
 
 	// Edit settings
 public:

@@ -25,6 +25,7 @@ Configuration::Configuration()
 	dontSelectOnDoubleClick_ = false;
 	reverseFMVolumeOrder_ = true;
 	moveCursorToRight_ = false;
+	retrieveChannelState_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -655,6 +656,16 @@ void Configuration::setMoveCursorToRight(bool enabled)
 bool Configuration::getMoveCursorToRight() const
 {
 	return moveCursorToRight_;
+}
+
+void Configuration::setRetrieveChannelState(bool enabled)
+{
+	retrieveChannelState_ = enabled;
+}
+
+bool Configuration::getRetrieveChannelState() const
+{
+	return retrieveChannelState_;
 }
 
 // Edit settings

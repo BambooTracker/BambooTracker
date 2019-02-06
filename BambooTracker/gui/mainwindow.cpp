@@ -41,7 +41,6 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	ui(new Ui::MainWindow),
 	config_(std::make_shared<Configuration>()),
 	palette_(std::make_shared<ColorPalette>()),
-	bt_(std::make_shared<BambooTracker>(config_)),
 	comStack_(std::make_shared<QUndoStack>(this)),
 	scciDll_(std::make_unique<QLibrary>("scci")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
@@ -53,6 +52,8 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	ui->setupUi(this);
 
 	ConfigurationHandler::loadConfiguration(config_);
+	bt_ = std::make_shared<BambooTracker>(config_);
+
 	if (config_->getMainWindowX() == -1) {	// When unset
 		QRect rec = geometry();
 		rec.moveCenter(QApplication::desktop()->availableGeometry().center());
