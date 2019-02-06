@@ -49,7 +49,7 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	arpNum_(0),
 	ptEnabled_(false),
 	ptNum_(0),
-	envResetEnabled_(true)
+	envResetEnabled_(false)
 {
 	opSeqEnabled_ = {
 		{ FMEnvelopeParameter::AL,	false },
