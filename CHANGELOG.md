@@ -18,6 +18,7 @@
 - Fix editable step to apply entering events and be "0" selectable (thanks [@maakmusic])
 - Fix to unmute track on jam mode (thanks [@maakmusic])
 - [#44], [#59] - Divide instrument owned check from its number (thanks [@papiezak], [@djtuBIG-MaliceX])
+- Fix echo buffer size and FM envelope reset before echo buffer access
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51

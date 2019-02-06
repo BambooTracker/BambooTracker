@@ -1236,7 +1236,8 @@ void BambooTracker::readTickFMForNoteDelay(Step& step, int ch)
 
 void BambooTracker::envelopeResetEffectFM(Step& step, int ch)
 {
-	if (step.getNoteNumber() >= 0) {
+	int n = step.getNoteNumber();
+	if (n >= 0 || n < -2) {	// Key on or echo buffer access
 		int idx = step.checkEffectID("03");
 		if ((idx == -1 && !opnaCtrl_->isTonePortamentoFM(ch))
 				|| (idx != -1 && !step.getEffectValue(idx))) {
