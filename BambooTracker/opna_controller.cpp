@@ -460,7 +460,7 @@ void OPNAController::initFM()
 		refInstFM_[ch].reset();
 
 		// Init echo buffer
-		baseToneFM_[ch] = std::deque<ToneDetail>(3);
+		baseToneFM_[ch] = std::deque<ToneDetail>(4);
 		for (auto& td : baseToneFM_[ch]) {
 			td.octave = -1;
 		}
@@ -1541,7 +1541,7 @@ void OPNAController::initSSG()
 		refInstSSG_[ch].reset();	// Init envelope
 
 		// Init echo buffer
-		baseToneSSG_[ch] = std::deque<ToneDetail>(3);
+		baseToneSSG_[ch] = std::deque<ToneDetail>(4);
 		for (auto& td : baseToneSSG_[ch]) {
 			td.octave = -1;
 		}
