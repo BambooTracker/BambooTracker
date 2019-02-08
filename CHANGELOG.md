@@ -20,6 +20,7 @@
 - [#44], [#59] - Divide instrument owned check from its number (thanks [@papiezak], [@djtuBIG-MaliceX])
 - Fix echo buffer size and FM envelope reset before echo buffer access
 - Change default FM envelope reset state to unused
+- Fix wait time of VGM
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51

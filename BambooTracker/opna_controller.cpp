@@ -215,9 +215,11 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 /// TODO: inst != nullptr
 void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 {
-	refInstFM_[ch] = inst;
-
-	writeFMEnvelopeToRegistersFromInstrument(ch);
+	if (!refInstFM_[ch] || !refInstFM_[ch]->isRegisteredWithManager()
+			|| refInstFM_[ch]->getNumber() != inst->getNumber()) {
+		refInstFM_[ch] = inst;
+		writeFMEnvelopeToRegistersFromInstrument(ch);
+	}
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
 	for (auto& p : opSeqItFM_[ch]) {
 		if (refInstFM_[ch]->getOperatorSequenceEnabled(p.first))

@@ -159,8 +159,8 @@ namespace chip
 						buf_.push_back(lastWait_ & 0x00ff);
 						buf_.push_back(lastWait_ >> 8);
 					}
+					sub = lastWait_;
 				}
-				sub = lastWait_;
 			}
 			else if (intrRate_ == 60) {
 				if (lastWait_ > 65535) {
@@ -214,8 +214,8 @@ namespace chip
 						buf_.push_back(lastWait_ & 0x00ff);
 						buf_.push_back(lastWait_ >> 8);
 					}
+					sub = lastWait_;
 				}
-				sub = lastWait_;
 			}
 			else {
 				if (lastWait_ > 65535) {
