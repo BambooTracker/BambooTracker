@@ -319,6 +319,7 @@ namespace chip
 				buf_.push_back(b);
 			} while (lastWait_ > 0);
 		}
+		if (!isSetLoop_) loopPoint_ = buf_.size();
 		lastWait_ = 0;
 	}
 }

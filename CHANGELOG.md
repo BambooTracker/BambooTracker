@@ -21,6 +21,7 @@
 - Fix echo buffer size and FM envelope reset before echo buffer access
 - Change default FM envelope reset state to unused
 - Fix wait time of VGM
+- [#60] - Fix loop point of S98 (thanks [@scarletbullgon])
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51
@@ -32,10 +33,12 @@
 [#44]: https://github.com/rerrahkr/BambooTracker/issues/44
 [#59]: https://github.com/rerrahkr/BambooTracker/issues/59
 [#58]: https://github.com/rerrahkr/BambooTracker/issues/58
+[#60]: https://github.com/rerrahkr/BambooTracker/issues/60
 
 [@ehaupt]: https://github.com/ehaupt
 [@galap-1]: https://github.com/galap-1
 [@djtuBIG-MaliceX]: https://github.com/djtuBIG-MaliceX
+[@scarletbullgon]: https://github.com/scarletbullgon
 
 ## v0.1.4 (2019-01-01)
 ### Added
