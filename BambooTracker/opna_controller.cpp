@@ -42,7 +42,7 @@ OPNAController::OPNAController(int clock, int rate, int duration)
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SR4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::RR4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SL4, nullptr);
-		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::KS4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::ML4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DT4, nullptr);
