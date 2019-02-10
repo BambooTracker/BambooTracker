@@ -1307,7 +1307,7 @@ void BambooTracker::retrieveChannelStates()
 
 	int o = playOrderNum_;
 	int s = playStepNum_;
-	bool isPrevPos = true;
+	bool isPrevPos = false;
 	Song& song = mod_->getSong(curSongNum_);
 
 	while (true) {
