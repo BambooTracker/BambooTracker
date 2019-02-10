@@ -88,6 +88,7 @@ signals:
 	void selected(bool isSelected);
 	void returnPressed();
 	void instrumentEntered(int num);
+	void effectEntered(QString text);
 
 protected:
 	virtual bool event(QEvent *event) override;

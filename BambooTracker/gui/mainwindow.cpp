@@ -332,6 +332,8 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 			}
 		}
 	});
+	QObject::connect(ui->patternEditor, &PatternEditor::effectEntered,
+					 this, [&](QString text) { statusDetail_->setText(text); });
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
@@ -1578,6 +1580,9 @@ void MainWindow::on_actionEdit_Mode_triggered()
 	if (isEditedOrder_) updateMenuByOrder();
 	else if (isEditedPattern_) updateMenuByPattern();
 	updateMenuByPatternAndOrderSelection(isSelectedPO_);
+
+	if (bt_->isJamMode()) statusDetail_->setText(tr("Change to jam mode"));
+	else statusDetail_->setText(tr("Change to edit mode"));
 }
 
 void MainWindow::on_actionToggle_Track_triggered()

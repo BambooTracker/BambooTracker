@@ -932,6 +932,171 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
 	}
+
+	// Send effect description
+	QString effDetail = tr("Invalid effect");
+	std::string id = bt_->getStepEffectID(curSongNum_, editPos_.track, editPos_.order,
+										  editPos_.step, (editPos_.colInTrack - 3) / 2);
+	if (id == "00") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("00xy - Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "01") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("01xx - Portamento up, xx: depth (00-FF)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "02") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("02xx - Portamento down, xx: depth (00-FF)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "03") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("03xx - Tone portamento, xx: depth (00-FF)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "04") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("04xy - Vibrato, x: period (0-F), y: depth (0-F)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "07") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("07xx - Tremolo, x: period (0-F), y: depth (0-F)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "08") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::DRUM:
+			effDetail = tr("08xx - Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center");
+			break;
+		case SoundSource::SSG:
+			break;
+		}
+	}
+	else if (id == "0A") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("0Axy - Volume slide, x: up (0-F), y: down (0-F)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "0B") {
+		effDetail = tr("0Bxx - Jump to begginning of order xx");
+	}
+	else if (id == "0C") {
+		effDetail = tr("0Cxx - End of song");
+	}
+	else if (id == "0D") {
+		effDetail = tr("0Dxx - Jump to step xx of next order");
+	}
+	else if (id == "0F") {
+		effDetail = tr("0Dxx - Change speed (x: 00-1f), change tempo (x: 20-ff)");
+	}
+	else if (id == "0G") {
+		effDetail = tr("0Gxx - Note delay, xx: count (00-ff)");
+	}
+	else if (id == "0O") {
+		effDetail = tr("0Oxx - Set groove xx");
+	}
+	else if (id == "0P") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("0Pxx - Detune, xx: pitch (00-FF)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "0Q") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "0R") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("0Rxy - Note slide down, x: count (0-F), y: seminote (0-F)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "0S") {
+		effDetail = tr("0Sxx - Note cut, xx: count (01-0F)");
+	}
+	else if (id == "0T") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			effDetail = tr("0Txy - Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)");
+			break;
+		case SoundSource::DRUM:
+			break;
+		}
+	}
+	else if (id == "0V") {
+		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		case SoundSource::DRUM:
+			effDetail = tr("0Vxx - Master volume, xx: volume");
+			break;
+		case SoundSource::FM:
+		case SoundSource::SSG:
+			break;
+		}
+	}
+	else if (id == "0S") {
+		effDetail = tr("0Sxx - Note cut, xx: count (01-0F)");
+	}
+	else if (id.front() == 'M') {
+		if (ctohex(*(id.begin() + 1)) > 0)
+			effDetail = tr("Mxyy - Volume delay, x: count (1-F), yy: volume (00-FF)");
+	}
+
+	emit effectEntered(effDetail);
 }
 
 bool PatternEditorPanel::enterEffectValue(int key)

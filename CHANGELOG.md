@@ -8,6 +8,7 @@
 - [#57] - Add FM envelope paste from plain text like MML (thanks [@pedipanol])
 - Support .y12 and .ins instrument file importing
 - [#58] - Implement retrieving channel state during playback (thanks [@papiezak])
+- Add effect description in status bar
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
