@@ -211,6 +211,12 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 	envFM_[ch]->setParameterValue(FMEnvelopeParameter::RR4, prev);
 }
 
+void OPNAController::updateEchoBufferFM(int ch, int octave, Note note, int pitch)
+{
+	baseToneFM_[ch].pop_back();
+	baseToneFM_[ch].push_front({ octave, note, pitch });
+}
+
 /********** Set instrument **********/
 /// TODO: inst != nullptr
 void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
@@ -544,12 +550,6 @@ uint32_t OPNAController::getFMChannelOffset(int ch)
 	default:
 		return 0;
 	}
-}
-
-void OPNAController::updateEchoBufferFM(int ch, int octave, Note note, int pitch)
-{
-	baseToneFM_[ch].pop_back();
-	baseToneFM_[ch].push_front({ octave, note, pitch });
 }
 
 void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
@@ -1362,6 +1362,12 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 	isKeyOnSSG_[ch] = false;
 }
 
+void OPNAController::updateEchoBufferSSG(int ch, int octave, Note note, int pitch)
+{
+	baseToneSSG_[ch].pop_back();
+	baseToneSSG_[ch].push_front({ octave, note, pitch });
+}
+
 /********** Set instrument **********/
 /// TODO: inst != nullptr
 void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst)
@@ -1595,13 +1601,6 @@ void OPNAController::initSSG()
 		noteSldFMSetFlag_ = false;
 		transposeSSG_[ch] = 0;
 	}
-}
-
-
-void OPNAController::updateEchoBufferSSG(int ch, int octave, Note note, int pitch)
-{
-	baseToneSSG_[ch].pop_back();
-	baseToneSSG_[ch].push_front({ octave, note, pitch });
 }
 
 void OPNAController::setFrontSSGSequences(int ch)

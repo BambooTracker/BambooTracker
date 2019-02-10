@@ -33,7 +33,7 @@ std::vector<FMEnvelopeTextType> FMEnvelopeSetEditDialog::getSet()
 	}
 	return set;
 }
-#include <QDebug>
+
 void FMEnvelopeSetEditDialog::swapset(int aboveRow, int belowRow)
 {
 	auto* tree = ui->treeWidget;

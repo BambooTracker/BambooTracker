@@ -1545,19 +1545,17 @@ void BambooTracker::retrieveChannelStates()
 		for (int j = 0; j < 3; ++j) {
 			if (toneFM.at(i).at(j) >= 0) {
 				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneFM[i][j]);
-				opnaCtrl_->keyOnFM(i, octNote.second, octNote.first, 0);
+				opnaCtrl_->updateEchoBufferFM(i, octNote.first, octNote.second, 0);
 			}
 		}
-		opnaCtrl_->keyOffFM(i);
 	}
 	for (int i = 0; i < 3; ++i) {
 		for (int j = 0; j < 3; ++j) {
 			if (toneSSG.at(i).at(j) >= 0) {
 				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneSSG[i][j]);
-				opnaCtrl_->keyOnSSG(i, octNote.second, octNote.first, 0);
+				opnaCtrl_->updateEchoBufferSSG(i, octNote.first, octNote.second, 0);
 			}
 		}
-		opnaCtrl_->keyOffSSG(i);
 	}
 }
 

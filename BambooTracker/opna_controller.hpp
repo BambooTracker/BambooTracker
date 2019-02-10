@@ -64,6 +64,7 @@ public:
 	void keyOnFM(int ch, int echoBuf);
 	void keyOffFM(int ch, bool isJam = false);
 	void resetFMChannelEnvelope(int ch);
+	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
 
 	// Set Instrument
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
@@ -138,8 +139,6 @@ private:
 	uint32_t getFmChannelMask(int ch);
 	uint32_t getFMChannelOffset(int ch);
 
-	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
-
 	void writeFMEnvelopeToRegistersFromInstrument(int ch);
 	void writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParameter param, int value);
 
@@ -174,6 +173,7 @@ public:
 	void keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam = false);
 	void keyOnSSG(int ch, int echoBuf);
 	void keyOffSSG(int ch, bool isJam = false);
+	void updateEchoBufferSSG(int ch, int octave, Note note, int pitch);
 
 	// Set Instrument
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
@@ -239,8 +239,6 @@ private:
 	int transposeSSG_[3];
 
 	void initSSG();
-
-	void updateEchoBufferSSG(int ch, int octave, Note note, int pitch);
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
