@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## v0.1.5 (2019-02-10)
+## v0.1.5 (2019-02-11)
 ### Added
 - Add mix settings
 - [#56] - Add installation rules and loader for translations (thanks [@jpcima])
