@@ -26,6 +26,8 @@
 - Fix wait time of VGM
 - [#60] - Fix loop point of S98 (thanks [@scarletbullgon])
 - Fix to work FM TL4 sequence macro (thanks [@maakmusic])
+- Fix to skip instrument redefinition
+- Fix FM TL3 calculation in instrument definition event
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51
