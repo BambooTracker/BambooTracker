@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- Fix corruption in jamming (thanks [@maakmusic])
 
 ## v0.1.5 (2019-02-11)
 ### Added

@@ -715,7 +715,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 
 		switch (onData.source) {
 		case SoundSource::FM:
-			if (tmpInst) opnaCtrl_->setInstrumentFM(onData.channelInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
+			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
+				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
 			opnaCtrl_->keyOnFM(onData.channelInSource,
 							   JamManager::jamKeyToNote(onData.key),
 							   JamManager::calcOctave(octave_, onData.key),
@@ -723,7 +724,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 							   true);
 			break;
 		case SoundSource::SSG:
-			if (tmpInst) opnaCtrl_->setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
+			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(tmpInst))
+				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
 			opnaCtrl_->keyOnSSG(onData.channelInSource,
 								JamManager::jamKeyToNote(onData.key),
 								JamManager::calcOctave(octave_, onData.key),
