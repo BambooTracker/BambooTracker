@@ -29,17 +29,17 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="46"/>
         <source>Key off</source>
-        <translation>Relâchement</translation>
+        <translation>Relâchement de touche</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="56"/>
         <source>Octave up</source>
-        <translation>Octave supérieur</translation>
+        <translation>Octave supérieure</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="66"/>
         <source>Octave down</source>
-        <translation>Octave inférieur</translation>
+        <translation>Octave inférieure</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="76"/>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="95"/>
         <source>Page jump length</source>
-        <translation>Hauteur du saut de page</translation>
+        <translation>Longueur du saut de page</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="131"/>
@@ -84,12 +84,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="170"/>
         <source>Backup modules</source>
-        <translation>Faire une sauvegarde des modules</translation>
+        <translation>Sauvegarder les modules</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="178"/>
         <source>Don&apos;t select on double click</source>
-        <translation>Ne pas sélectionner si double clic</translation>
+        <translation>Ne pas sélectionner avec un double clic</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="186"/>
@@ -124,7 +124,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="272"/>
         <source>1ms</source>
-        <translation type="unfinished"></translation>
+        <translation>1ms</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="282"/>
@@ -179,22 +179,22 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="162"/>
         <source>Create a backup copy of the existing file when saving a module.</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer une copie de sauvegarde du fichier existant lors de la sauvegarde d&apos;un module.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="165"/>
         <source>Don&apos;t select the whole track when double-clicking in the pattern editor.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne pas sélectionner la piste entière lors d&apos;un double-clic dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="168"/>
         <source>Reverse the order of FM volume so that 00 is the quietest in the pattern editor.</source>
-        <translation type="unfinished"></translation>
+        <translation>Inverser l&apos;ordre du volume FM pour que 00 soit le plus calme dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="171"/>
         <source>Move the cursor to right after entering effects in the pattern editor.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déplacer le curseur vers la droite après être entré dans les effets dans l&apos;éditeur de motif.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="177"/>
@@ -207,7 +207,7 @@
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.ui" line="14"/>
         <source>Frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Trame</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.ui" line="37"/>
@@ -217,7 +217,7 @@
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.ui" line="131"/>
         <source>SSGEG</source>
-        <translation></translation>
+        <translation>SSGEG</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="47"/>
@@ -250,7 +250,7 @@
     <message>
         <location filename="../../gui/groove_settings_dialog.ui" line="14"/>
         <source>Groove Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres du groove</translation>
     </message>
     <message>
         <location filename="../../gui/groove_settings_dialog.ui" line="42"/>
@@ -283,7 +283,7 @@
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="450"/>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="518"/>
         <source>#</source>
-        <translation></translation>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="75"/>
@@ -297,12 +297,12 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="149"/>
         <source>LFO/Operator sequence</source>
-        <translation type="unfinished">OBF/Séquence d&apos;opérateurs</translation>
+        <translation type="unfinished">LFO/Séquence d&apos;opérateurs</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="155"/>
         <source>LFO</source>
-        <translation>OBF</translation>
+        <translation>LFO</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="196"/>
@@ -357,12 +357,12 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="409"/>
         <source>Arpeggio/Pitch</source>
-        <translation>Arpeggio/Hauteur tonale</translation>
+        <translation>Arpège / hauteur tonale</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="415"/>
         <source>Arpeggio</source>
-        <translation>Arpeggio</translation>
+        <translation>Arpège</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="470"/>
@@ -403,12 +403,12 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1266"/>
         <source>Copy LFO parameters</source>
-        <translation>Copier les paramètres d&apos;OBF</translation>
+        <translation>Copier les paramètres du LFO</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1268"/>
         <source>Paste LFO parameters</source>
-        <translation>Coller les paramètres d&apos;OBF</translation>
+        <translation>Coller les paramètres du LFO</translation>
     </message>
 </context>
 <context>
@@ -431,7 +431,7 @@
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="287"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="362"/>
         <source>#</source>
-        <translation></translation>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="75"/>
@@ -451,7 +451,7 @@
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="99"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="105"/>
         <source>Tone/Noise</source>
-        <translation type="unfinished"></translation>
+        <translation>Tonalité/bruit</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="164"/>
@@ -462,13 +462,13 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="215"/>
         <source>Hard frequency:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fréquence dure :</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="246"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="252"/>
         <source>Arpeggio</source>
-        <translation>Arpeggio</translation>
+        <translation>Arpège</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="307"/>
@@ -513,17 +513,17 @@
     <message>
         <location filename="../../gui/labeled_horizontal_slider.ui" line="14"/>
         <source>Frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Trame</translation>
     </message>
     <message>
         <location filename="../../gui/labeled_horizontal_slider.ui" line="40"/>
         <source>Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte</translation>
     </message>
     <message>
         <location filename="../../gui/labeled_horizontal_slider.ui" line="54"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
 </context>
 <context>
@@ -531,17 +531,17 @@
     <message>
         <location filename="../../gui/labeled_vertical_slider.ui" line="14"/>
         <source>Frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Trame</translation>
     </message>
     <message>
         <location filename="../../gui/labeled_vertical_slider.ui" line="40"/>
         <source>Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte</translation>
     </message>
     <message>
         <location filename="../../gui/labeled_vertical_slider.ui" line="54"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
 </context>
 <context>
@@ -549,7 +549,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="17"/>
         <source>BambooTracker</source>
-        <translation></translation>
+        <translation>BambooTracker</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="53"/>
@@ -569,12 +569,12 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="119"/>
         <source>...</source>
-        <translation></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="126"/>
         <source>Tick Freq</source>
-        <translation>Fréq. Horloge</translation>
+        <translation>Fréq. horloge</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="133"/>
@@ -589,7 +589,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="147"/>
         <source>Module Title</source>
-        <translation>Intitulé du module</translation>
+        <translation>Titre du module</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="157"/>
@@ -610,7 +610,7 @@
         <location filename="../../gui/mainwindow.ui" line="197"/>
         <location filename="../../gui/mainwindow.ui" line="338"/>
         <source>#</source>
-        <translation></translation>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="217"/>
@@ -651,7 +651,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="328"/>
         <source>Groove</source>
-        <translation type="unfinished"></translation>
+        <translation>Groove</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="353"/>
@@ -687,7 +687,7 @@
         <location filename="../../gui/mainwindow.ui" line="466"/>
         <location filename="../../gui/mainwindow.ui" line="1106"/>
         <source>&amp;Pattern</source>
-        <translation type="unfinished">Motif</translation>
+        <translation>&amp;Motif</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="470"/>
@@ -697,7 +697,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="488"/>
         <source>&amp;Song</source>
-        <translation type="unfinished"></translation>
+        <translation>Mor&amp;ceau</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="501"/>
@@ -707,7 +707,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="505"/>
         <source>Clean&amp;up</source>
-        <translation type="unfinished">Nettoyer</translation>
+        <translation>&amp;Nettoyer</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="519"/>
@@ -722,12 +722,12 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="553"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">Aide</translation>
+        <translation>&amp;Aide</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="601"/>
         <source>toolBar</source>
-        <translation type="unfinished"></translation>
+        <translation>barre d'outil</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="619"/>
@@ -737,7 +737,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="622"/>
         <source>Ctrl+N</source>
-        <translation></translation>
+        <translation>Ctrl+N</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="634"/>
@@ -747,27 +747,27 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="637"/>
         <source>Ctrl+O</source>
-        <translation></translation>
+        <translation>Ctrl+O</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="649"/>
         <source>&amp;Save</source>
-        <translation type="unfinished">Enregistrer</translation>
+        <translation type="unfinished">&amp;Sauvegarder</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="652"/>
         <source>Ctrl+S</source>
-        <translation></translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="660"/>
         <source>Save &amp;As...</source>
-        <translation type="unfinished">Enregistrer sous...</translation>
+        <translation type="unfinished">S&amp;auvegarder sous...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="665"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished">Quitter</translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="677"/>
@@ -777,7 +777,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="680"/>
         <source>Ctrl+Z</source>
-        <translation></translation>
+        <translation>Ctrl+Z</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="692"/>
@@ -787,17 +787,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="695"/>
         <source>Ctrl+Y</source>
-        <translation></translation>
+        <translation>Ctrl+Y</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="704"/>
         <source>Cu&amp;t</source>
-        <translation type="unfinished">Couper</translation>
+        <translation>Cou&amp;per</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="707"/>
         <source>Ctrl+X</source>
-        <translation></translation>
+        <translation>Ctrl+X</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="716"/>
@@ -807,22 +807,22 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="719"/>
         <source>Ctrl+C</source>
-        <translation></translation>
+        <translation>Ctrl+C</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="728"/>
         <source>&amp;Paste</source>
-        <translation type="unfinished">Coller</translation>
+        <translation>Co&amp;ller</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="731"/>
         <source>Ctrl+V</source>
-        <translation></translation>
+        <translation>Ctrl+V</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="736"/>
         <source>&amp;Delete</source>
-        <translation type="unfinished">Supprimer</translation>
+        <translation>&amp;Supprimer</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="739"/>
@@ -832,17 +832,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="744"/>
         <source>&amp;All</source>
-        <translation type="unfinished">Tout</translation>
+        <translation>&amp;Tout</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="747"/>
         <source>Ctrl+A</source>
-        <translation></translation>
+        <translation>Ctrl+A</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="752"/>
         <source>&amp;None</source>
-        <translation type="unfinished">Rien</translation>
+        <translation>&amp;Aucun</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="755"/>
@@ -852,12 +852,12 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="763"/>
         <source>E&amp;xpand</source>
-        <translation type="unfinished">Étendre</translation>
+        <translation>É&amp;tendre</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="771"/>
         <source>S&amp;hrink</source>
-        <translation type="unfinished">Réduire</translation>
+        <translation>&amp;Réduire</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="776"/>
@@ -867,17 +867,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="779"/>
         <source>Ctrl+F1</source>
-        <translation></translation>
+        <translation>Ctrl+F1</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="784"/>
         <source>&amp;Increase Note</source>
-        <translation type="unfinished">Hausser la note</translation>
+        <translation>&amp;Augmenter la note</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="787"/>
         <source>Ctrl+F2</source>
-        <translation></translation>
+        <translation>Ctrl+F2</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="792"/>
@@ -887,17 +887,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="795"/>
         <source>Ctrl+F3</source>
-        <translation></translation>
+        <translation>Ctrl+F3</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="800"/>
         <source>I&amp;ncrease Octave</source>
-        <translation type="unfinished">Hausser l&apos;octave</translation>
+        <translation>Augme&amp;nter l&apos;octave</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="803"/>
         <source>Ctrl+F4</source>
-        <translation></translation>
+        <translation>Ctrl+F4</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="808"/>
@@ -917,7 +917,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="825"/>
         <source>Ctrl+P</source>
-        <translation></translation>
+        <translation>Ctrl+P</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="834"/>
@@ -927,7 +927,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="846"/>
         <source>&amp;Remove Instrument</source>
-        <translation type="unfinished">Supprimer l&apos;instrument</translation>
+        <translation>Supp&amp;rimer l&apos;instrument</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="858"/>
@@ -937,17 +937,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="866"/>
         <source>&amp;Deep Clone Instrument</source>
-        <translation type="unfinished">Cloner l&apos;instrument en profondeur</translation>
+        <translation>Cloner l&apos;instrument en profon&amp;deur</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="878"/>
         <source>&amp;Load From File...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Charger depuis un fichier...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="890"/>
         <source>&amp;Save To File...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sauvegarder vers un fichier...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="902"/>
@@ -958,52 +958,52 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="905"/>
         <source>Ctrl+I</source>
-        <translation></translation>
+        <translation>Ctrl+I</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="914"/>
         <source>&amp;Play</source>
-        <translation type="unfinished">Jouer</translation>
+        <translation>&amp;Jouer</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="923"/>
         <source>Play P&amp;attern</source>
-        <translation type="unfinished">Jouer le motif</translation>
+        <translation>Jouer le &amp;motif</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="926"/>
         <source>F6</source>
-        <translation></translation>
+        <translation>F6</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="931"/>
         <source>Play &amp;From Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Jouer &amp;depuis le début</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="934"/>
         <source>F5</source>
-        <translation></translation>
+        <translation>F5</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="939"/>
         <source>Play From C&amp;ursor</source>
-        <translation type="unfinished"></translation>
+        <translation>Jouer depuis le c&amp;urseur</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="942"/>
         <source>F7</source>
-        <translation></translation>
+        <translation>F7</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="951"/>
         <source>&amp;Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Stop</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="954"/>
         <source>F8</source>
-        <translation></translation>
+        <translation>f8</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="962"/>
@@ -1018,42 +1018,42 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="970"/>
         <source>To&amp;ggle Track</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Basculer la piste</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="973"/>
         <source>Alt+F9</source>
-        <translation></translation>
+        <translation>Alt+F9</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="978"/>
         <source>S&amp;olo Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Mettre la piste en s&amp;olo</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="981"/>
         <source>Alt+F10</source>
-        <translation></translation>
+        <translation>Alt+F10</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="986"/>
         <source>&amp;Kill Sound</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tuer le son</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="989"/>
         <source>F12</source>
-        <translation></translation>
+        <translation>F12</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="994"/>
         <source>&amp;About...</source>
-        <translation>&amp;À propos...</translation>
+        <translation>À &amp;propos...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1005"/>
         <source>Fo&amp;llow Mode</source>
-        <translation type="unfinished">Mode suivi</translation>
+        <translation>Mode &amp;suivi</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1008"/>
@@ -1063,7 +1063,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1013"/>
         <source>&amp;Groove Settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres du &amp;groove...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1022"/>
@@ -1078,7 +1078,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1030"/>
         <source>Ctrl+D</source>
-        <translation></translation>
+        <translation>Ctrl+D</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1035"/>
@@ -1093,12 +1093,12 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1045"/>
         <source>&amp;Clone Patterns</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cloner les motifs</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1048"/>
         <source>Alt+D</source>
-        <translation></translation>
+        <translation>Alt+D</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1053"/>
@@ -1118,17 +1118,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1069"/>
         <source>Ctrl+G</source>
-        <translation></translation>
+        <translation>Ctrl+G</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1077"/>
         <source>&amp;Reverse</source>
-        <translation type="unfinished"></translation>
+        <translation>Inve&amp;rser</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1080"/>
         <source>Ctrl+R</source>
-        <translation></translation>
+        <translation>Ctrl+R</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1088"/>
@@ -1138,7 +1138,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1091"/>
         <source>Alt+S</source>
-        <translation></translation>
+        <translation>Alt+S</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1096"/>
@@ -1158,12 +1158,12 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1116"/>
         <source>Remove Unused &amp;Instruments</source>
-        <translation>Supprimer les &amp;instruments inutiles</translation>
+        <translation>Supprimer les &amp;instruments inutilisés</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1121"/>
         <source>Remove Unused &amp;Patterns</source>
-        <translation type="unfinished">Supprimer les motifs inutiles</translation>
+        <translation>Sup&amp;primer les motifs inutilisés</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1126"/>
@@ -1183,17 +1183,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1139"/>
         <source>Ctrl+M</source>
-        <translation></translation>
+        <translation>Ctrl+M</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1144"/>
         <source>&amp;Overwrite</source>
-        <translation type="unfinished"></translation>
+        <translation>É&amp;craser</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1149"/>
         <source>&amp;Import From Bank File...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Importer depuis un fichier de banque...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1154"/>
@@ -1222,7 +1222,7 @@
         <location filename="../../gui/mainwindow.cpp" line="1691"/>
         <location filename="../../gui/mainwindow.cpp" line="1800"/>
         <source>Save changes to %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauvegarder les modifications dans %1 ?</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="576"/>
@@ -1262,7 +1262,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="771"/>
         <source>Save instrument</source>
-        <translation>Enregistrer l&apos;instrument</translation>
+        <translation>Sauvegarder l&apos;instrument</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="789"/>
@@ -1315,17 +1315,17 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1069"/>
         <source>&amp;Deep clone</source>
-        <translation type="unfinished">Cloner en profondeur</translation>
+        <translation>Cloner en &amp;profondeur</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1072"/>
         <source>&amp;Load from file...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Charger depuis un fichier...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1074"/>
         <source>&amp;Save to file...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sauvegarder dans le fichier...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1242"/>
@@ -1351,7 +1351,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1759"/>
         <source>Save module</source>
-        <translation>Enregistrer le module</translation>
+        <translation>Sauvegarder le module</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1816"/>
@@ -1442,7 +1442,7 @@
         <location filename="../../gui/module_properties_dialog.ui" line="58"/>
         <location filename="../../gui/module_properties_dialog.ui" line="153"/>
         <source>...</source>
-        <translation></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="77"/>
@@ -1502,7 +1502,7 @@
     <message>
         <location filename="../../gui/order_list_editor/order_list_editor.ui" line="14"/>
         <source>Frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Trame</translation>
     </message>
 </context>
 <context>
@@ -1525,7 +1525,7 @@
     <message>
         <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="544"/>
         <source>&amp;Clone Patterns</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Cloner les motifs</translation>
     </message>
     <message>
         <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="546"/>
@@ -1545,12 +1545,12 @@
     <message>
         <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="554"/>
         <source>Cop&amp;y</source>
-        <translation type="unfinished"></translation>
+        <translation>Cop&amp;ier</translation>
     </message>
     <message>
         <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="556"/>
         <source>&amp;Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Co&amp;ller</translation>
     </message>
 </context>
 <context>
@@ -1558,7 +1558,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor.ui" line="14"/>
         <source>Frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Trame</translation>
     </message>
 </context>
 <context>
@@ -1581,12 +1581,12 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1253"/>
         <source>Cu&amp;t</source>
-        <translation type="unfinished">Couper</translation>
+        <translation>Cou&amp;per</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1255"/>
         <source>&amp;Paste</source>
-        <translation type="unfinished">Coller</translation>
+        <translation>C&amp;oller</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1257"/>
@@ -1601,7 +1601,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1261"/>
         <source>&amp;Overwrite</source>
-        <translation>&amp;Écrasement</translation>
+        <translation>&amp;Écraser</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1263"/>
@@ -1611,12 +1611,12 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1265"/>
         <source>Select &amp;All</source>
-        <translation type="unfinished">Sélectionner tout</translation>
+        <translation>Sélectionner &amp;tout</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1268"/>
         <source>Patter&amp;n</source>
-        <translation type="unfinished">Motif</translation>
+        <translation>&amp;Motif</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1270"/>
@@ -1626,7 +1626,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1272"/>
         <source>&amp;Reverse</source>
-        <translation type="unfinished">Inverser</translation>
+        <translation>Inve&amp;rser</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1274"/>
@@ -1636,12 +1636,12 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1277"/>
         <source>E&amp;xpand</source>
-        <translation type="unfinished">Étendre</translation>
+        <translation>É&amp;tendre</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1279"/>
         <source>S&amp;hrink</source>
-        <translation type="unfinished">Réduire</translation>
+        <translation>Réd&amp;uire</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1282"/>
@@ -1656,7 +1656,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1286"/>
         <source>&amp;Increase Note</source>
-        <translation type="unfinished">Hausser la note</translation>
+        <translation>Aug&amp;menter la note</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1288"/>
@@ -1666,13 +1666,13 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1290"/>
         <source>I&amp;ncrease Octave</source>
-        <translation type="unfinished">Hausser l&apos;octave</translation>
+        <translation>A&amp;ugmenter l&apos;octave</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1293"/>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2081"/>
         <source>To&amp;ggle Track</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Basculer la piste</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1295"/>
@@ -1683,7 +1683,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2085"/>
         <source>&amp;Unmute All Tracks</source>
-        <translation type="unfinished">Rendre a&amp;udibles toutes les pistes</translation>
+        <translation>Rendre a&amp;udibles toutes les pistes</translation>
     </message>
 </context>
 <context>
@@ -1749,7 +1749,7 @@
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="99"/>
         <source>S98by</source>
-        <translation type="unfinished"></translation>
+        <translation>S98par</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="109"/>
@@ -1759,7 +1759,7 @@
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="116"/>
         <source>NEC PC-9801</source>
-        <translation></translation>
+        <translation>NEC PC-9801</translation>
     </message>
 </context>
 <context>
@@ -1813,7 +1813,7 @@
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="172"/>
         <source>NEC PC-9801</source>
-        <translation></translation>
+        <translation>NEC PC-9801</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="185"/>
@@ -1856,22 +1856,22 @@
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.ui" line="55"/>
         <source>-</source>
-        <translation></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.ui" line="62"/>
         <source>+</source>
-        <translation></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.ui" line="69"/>
         <source>Size: 1</source>
-        <translation>Taille: 1</translation>
+        <translation>Taille : 1</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="46"/>
         <source>Release </source>
-        <translation type="unfinished"></translation>
+        <translation>Relâche </translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="153"/>
@@ -1892,7 +1892,7 @@
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="352"/>
         <source>Release</source>
-        <translation type="unfinished"></translation>
+        <translation>Relâche</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="365"/>
