@@ -15,7 +15,11 @@
 #include "module.hpp"
 #include "song.hpp"
 #include "gd3_tag.hpp"
+#include "s98_tag.hpp"
+#include "chips/scci/scci.h"
 #include "misc.hpp"
+
+class AbstractBank;
 
 class BambooTracker
 {
@@ -43,8 +47,9 @@ public:
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
-	bool loadInstrument(std::string path, int instNum);
-	bool saveInstrument(std::string path, int instNum);
+	void loadInstrument(std::string path, int instNum);
+	void saveInstrument(std::string path, int instNum);
+	void importInstrument(const AbstractBank &bank, size_t index, int instNum);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void clearAllInstrument();
@@ -182,11 +187,18 @@ public:
 	// Export
 	bool exportToWav(std::string file, int loopCnt, std::function<bool()> f);
 	bool exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f);
+	bool exportToS98(std::string file, bool tagEnabled, S98Tag tag, std::function<bool()> f);
 
 	// Backup
-	bool backupModule(std::string file);
+	void backupModule(std::string file);
+
+	// Stream type
+	void useSCCI(SoundInterfaceManager* manager);
 
 	// Stream events
+	/// 0<: Tick
+	///  0: Step
+	/// -1: Stop
 	int streamCountUp();
 	void getStreamSamples(int16_t *container, size_t nSamples);
 	void killSound();
@@ -196,12 +208,15 @@ public:
 	void setStreamRate(int rate);
 	int getStreamDuration() const;
 	void setStreamDuration(int duration);
+	void setMasterVolume(int percentage);
+	void setMasterVolumeFM(double dB);
+	void setMasterVolumeSSG(double dB);
 
 	// Module details
 	/*----- Module -----*/
 	void makeNewModule();
-	bool loadModule(std::string path);
-	bool saveModule(std::string path);
+	void loadModule(std::string path);
+	void saveModule(std::string path);
 	void setModulePath(std::string path);
 	std::string getModulePath() const;
 	void setModuleTitle(std::string title);
@@ -236,7 +251,7 @@ public:
 	size_t getSongCount() const;
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
-	size_t getAllStepCount(int songNum) const;
+	size_t getAllStepCount(int songNum, int loopCnt) const;
 	/*----- Order -----*/
 	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
@@ -333,6 +348,7 @@ private:
 	///		bit 0: playing
 	///		bit 1: have read first step data
 	unsigned int playState_;
+	std::vector<bool> muteStateFM_, muteStateSSG_, muteStateDrum_;
 
 	int nextReadOrder_, nextReadStep_;
 
@@ -376,4 +392,9 @@ private:
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
+
+	void checkNextPositionOfLastStep(int& endOrder, int& endStep) const;
+
+	bool isRetrieveChannel_;
+	void retrieveChannelStates();
 };

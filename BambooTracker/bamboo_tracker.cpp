@@ -2,15 +2,15 @@
 #include <algorithm>
 #include <utility>
 #include <set>
+#include <exception>
 #include "commands.hpp"
-#include "file_io.hpp"
+#include "io_handlers.hpp"
+#include "bank.hpp"
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
 BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	: instMan_(std::make_shared<InstrumentsManager>()),
-	  opnaCtrl_(std::make_unique<OPNAController>(
-					CHIP_CLOCK, config.lock()->getSampleRate(), config.lock()->getBufferLength())),
 	  mod_(std::make_shared<Module>()),
 	  octave_(4),
 	  curSongNum_(0),
@@ -24,6 +24,15 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  isFollowPlay_(true),
 	  isFindNextStep_(false)
 {
+	opnaCtrl_ = std::make_unique<OPNAController>(
+					CHIP_CLOCK,
+					config.lock()->getSampleRate(),
+					config.lock()->getBufferLength());
+	setMasterVolume(config.lock()->getMixerVolumeMaster());
+	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
+	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
+	isRetrieveChannel_ = config.lock()->getRetrieveChannelState();
+
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
 	jamMan_ = std::make_unique<JamManager>(songStyle_.type);
 
@@ -35,6 +44,10 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 {
 	setStreamRate(config.lock()->getSampleRate());
 	setStreamDuration(config.lock()->getBufferLength());
+	setMasterVolume(config.lock()->getMixerVolumeMaster());
+	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
+	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
+	isRetrieveChannel_ = config.lock()->getRetrieveChannelState();
 }
 
 /********** Change octave **********/
@@ -100,18 +113,23 @@ void BambooTracker::deepCloneInstrument(int num, int refNum)
 	comMan_.invoke(std::make_unique<DeepCloneInstrumentCommand>(instMan_, num, refNum));
 }
 
-bool BambooTracker::loadInstrument(std::string path, int instNum)
+void BambooTracker::loadInstrument(std::string path, int instNum)
 {
-	auto inst = FileIO::loadInstrument(path, instMan_, instNum);
-	if (!inst) return false;
+	auto inst = InstrumentIO::loadInstrument(path, instMan_, instNum);
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
-	return true;
 }
 
-bool BambooTracker::saveInstrument(std::string path, int instNum)
+void BambooTracker::saveInstrument(std::string path, int instNum)
 {
-	return FileIO::saveInstrument(path, instMan_, instNum);
+	InstrumentIO::saveInstrument(path, instMan_, instNum);
+}
+
+void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)
+{
+	auto inst = bank.loadInstrument(index, instMan_, instNum);
+	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
+					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const
@@ -588,6 +606,9 @@ void BambooTracker::setCurrentSongNumber(int num)
 
 	switch (songStyle_.type) {
 	case SongType::STD:
+		muteStateFM_ = std::vector<bool>(6, false);
+		for (int i = 0; i < 6; ++i) opnaCtrl_->setMuteFMState(i, false);
+
 		ntDlyCntFM_ = std::vector<int>(6);
 		ntCutDlyCntFM_ = std::vector<int>(6);
 		volDlyCntFM_ = std::vector<int>(6);
@@ -600,6 +621,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 		break;
 	}
 
+	muteStateSSG_ = std::vector<bool>(3, false);
+	for (int i = 0; i < 3; ++i) opnaCtrl_->setMuteSSGState(i, false);
 	ntDlyCntSSG_ = std::vector<int>(3);
 	ntCutDlyCntSSG_ = std::vector<int>(3);
 	volDlyCntSSG_ = std::vector<int>(3);
@@ -607,6 +630,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tposeDlyCntSSG_ = std::vector<int>(3);
 	tposeDlyValueSSG_ = std::vector<int>(3);
 
+	muteStateDrum_ = std::vector<bool>(6, false);
+	for (int i = 0; i < 6; ++i) opnaCtrl_->setMuteDrumState(i, false);
 	ntDlyCntDrum_ = std::vector<int>(6);
 	ntCutDlyCntDrum_ = std::vector<int>(6);
 	volDlyCntDrum_ = std::vector<int>(6);
@@ -690,7 +715,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 
 		switch (onData.source) {
 		case SoundSource::FM:
-			opnaCtrl_->setInstrumentFM(onData.channelInSource, std::dynamic_pointer_cast<InstrumentFM>(tmpInst));
+			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
+				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
 			opnaCtrl_->keyOnFM(onData.channelInSource,
 							   JamManager::jamKeyToNote(onData.key),
 							   JamManager::calcOctave(octave_, onData.key),
@@ -698,7 +724,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 							   true);
 			break;
 		case SoundSource::SSG:
-			opnaCtrl_->setInstrumentSSG(onData.channelInSource, std::dynamic_pointer_cast<InstrumentSSG>(tmpInst));
+			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(tmpInst))
+				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
 			opnaCtrl_->keyOnSSG(onData.channelInSource,
 								JamManager::jamKeyToNote(onData.key),
 								JamManager::calcOctave(octave_, onData.key),
@@ -743,6 +770,7 @@ void BambooTracker::startPlaySong()
 	playOrderNum_ = curOrderNum_;
 	if (isFollowPlay_) curStepNum_ = 0;
 	findNextStep();
+	if (isRetrieveChannel_) retrieveChannelStates();
 }
 
 void BambooTracker::startPlayFromStart()
@@ -766,6 +794,7 @@ void BambooTracker::startPlayPattern()
 	playOrderNum_ = curOrderNum_;
 	if (isFollowPlay_) curStepNum_ = 0;
 	findNextStep();
+	if (isRetrieveChannel_) retrieveChannelStates();
 }
 
 void BambooTracker::startPlayFromCurrentStep()
@@ -775,6 +804,7 @@ void BambooTracker::startPlayFromCurrentStep()
 	playOrderNum_ = curOrderNum_;
 	playStepNum_ = curStepNum_;
 	findNextStep();
+	if (isRetrieveChannel_) retrieveChannelStates();
 }
 
 void BambooTracker::startPlay()
@@ -790,6 +820,10 @@ void BambooTracker::startPlay()
 	tickCounter_.resetCount();
 	tickCounter_.setPlayState(true);
 
+	for (int i = 0; i < muteStateFM_.size(); ++i) opnaCtrl_->setMuteFMState(i, muteStateFM_[i]);
+	for (int i = 0; i < muteStateSSG_.size(); ++i) opnaCtrl_->setMuteSSGState(i, muteStateSSG_[i]);
+	for (int i = 0; i < muteStateDrum_.size(); ++i) opnaCtrl_->setMuteDrumState(i, muteStateDrum_[i]);
+
 	clearDelayCounts();
 }
 
@@ -801,6 +835,10 @@ void BambooTracker::stopPlaySong()
 	playState_ = 0;
 	playOrderNum_ = -1;
 	playStepNum_ = -1;
+
+	for (int i = 0; i < muteStateFM_.size(); ++i) opnaCtrl_->setMuteFMState(i, false);
+	for (int i = 0; i < muteStateSSG_.size(); ++i) opnaCtrl_->setMuteSSGState(i, false);
+	for (int i = 0; i < muteStateDrum_.size(); ++i) opnaCtrl_->setMuteDrumState(i, false);
 }
 
 bool BambooTracker::isPlaySong() const
@@ -812,9 +850,18 @@ void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 {
 	auto& ta = songStyle_.trackAttribs[trackNum];
 	switch (ta.source) {
-	case SoundSource::FM:	opnaCtrl_->setMuteFMState(ta.channelInSource, isMute);	break;
-	case SoundSource::SSG:	opnaCtrl_->setMuteSSGState(ta.channelInSource, isMute);	break;
-	case SoundSource::DRUM:	opnaCtrl_->setMuteDrumState(ta.channelInSource, isMute);	break;
+	case SoundSource::FM:
+		muteStateFM_.at(ta.channelInSource) = isMute;
+		if (isPlaySong()) opnaCtrl_->setMuteFMState(ta.channelInSource, isMute);
+		break;
+	case SoundSource::SSG:
+		muteStateSSG_.at(ta.channelInSource) = isMute;
+		if (isPlaySong()) opnaCtrl_->setMuteSSGState(ta.channelInSource, isMute);
+		break;
+	case SoundSource::DRUM:
+		muteStateDrum_.at(ta.channelInSource) = isMute;
+		if (isPlaySong()) opnaCtrl_->setMuteDrumState(ta.channelInSource, isMute);
+		break;
 	}
 }
 
@@ -822,9 +869,9 @@ bool BambooTracker::isMute(int trackNum)
 {
 	auto& ta = songStyle_.trackAttribs[trackNum];
 	switch (ta.source) {
-	case SoundSource::FM:	return opnaCtrl_->isMuteFM(ta.channelInSource);
-	case SoundSource::SSG:	return opnaCtrl_->isMuteSSG(ta.channelInSource);
-	case SoundSource::DRUM:	return opnaCtrl_->isMuteDrum(ta.channelInSource);
+	case SoundSource::FM:	return muteStateFM_.at(ta.channelInSource);
+	case SoundSource::SSG:	return muteStateSSG_.at(ta.channelInSource);
+	case SoundSource::DRUM:	return muteStateDrum_.at(ta.channelInSource);
 	}
 }
 
@@ -856,6 +903,9 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 	size_t intrCntRest = 0;
 	std::vector<int16_t> dumbuf(sampCnt << 1);
 
+	int endOrder = 0;
+	int endStep = 0;
+	checkNextPositionOfLastStep(endOrder, endStep);
 	bool endFlag = false;
 	bool tmpFollow = isFollowPlay_;
 	isFollowPlay_ = false;
@@ -877,7 +927,7 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 					}
 
 					if ((playOrderNum_ == -1 && playStepNum_ == -1)
-							|| (playOrderNum_ == 0 && playStepNum_ == 0 && !(loopCnt--))){
+							|| (playOrderNum_ == endOrder && playStepNum_ == endStep && !(loopCnt--))){
 						endFlag = true;
 						break;
 					}
@@ -898,10 +948,14 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 	stopPlaySong();
 	isFollowPlay_ = tmpFollow;
 
-	bool ret = FileIO::writeWave(file, exCntr->getStream(), opnaCtrl_->getRate());
-	f();
-
-	return ret;
+	try {
+		ExportHandler::writeWave(file, exCntr->getStream(), opnaCtrl_->getRate());
+		f();
+		return true;
+	}
+	catch (...) {
+		throw;
+	}
 }
 
 bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f)
@@ -911,41 +965,11 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	size_t intrCnt = 44100 / mod_->getTickFrequency();
 	std::vector<int16_t> dumbuf(intrCnt << 1);
 
-	int lastOrder = getOrderSize(curSongNum_) - 1;
-	int lastStep = getPatternSizeFromOrderNumber(curSongNum_, lastOrder) - 1;
-	bool loopFlag = true;
 	int loopOrder = 0;
 	int loopStep = 0;
-	auto& song = mod_->getSong(curSongNum_);
-	for (auto attrib : songStyle_.trackAttribs) {
-		auto& step = song.getTrack(attrib.number).getPatternFromOrderNumber(lastOrder).getStep(lastStep);
-		for (int i = 0; i < 4; ++i) {
-			auto id = step.getEffectID(i);
-			if (id == "0B") {	// Position jump
-				int nextOrder = step.getEffectValue(i);
-				if (nextOrder <= lastOrder) {
-					loopFlag = true;
-					loopOrder = nextOrder;
-					loopStep = 0;
-				}
-			}
-			else if (id == "0C") {	// Track end
-				loopFlag = false;
-				loopOrder = -1;
-				loopStep = -1;
-			}
-			else if (id == "0D") {	// Pattern break
-				int nextStep = step.getEffectValue(i);
-				if (nextStep < getPatternSizeFromOrderNumber(curSongNum_, 0)) {
-					loopFlag = true;
-					nextReadOrder_ = 0;
-					nextReadStep_ = nextStep;
-				}
-			}
-		}
-	}
-
-	int endCnt = 1;
+	checkNextPositionOfLastStep(loopOrder, loopStep);
+	bool loopFlag = (loopOrder != -1);
+	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = isFollowPlay_;
 	isFollowPlay_ = false;
 	uint32_t loopPoint = 0;
@@ -954,9 +978,9 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 			= std::make_shared<chip::VgmExportContainer>(mod_->getTickFrequency());
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
+	exCntr->forceMoveLoopPoint();
 
 	while (true) {
-		uint32_t tmp = exCntr->getData().size();
 		if (!streamCountUp()) {
 			if (f()) {	// Update lambda function
 				stopPlaySong();
@@ -964,13 +988,10 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 				return false;
 			}
 
-			if ((playOrderNum_ == -1 && playStepNum_ == -1)
-					|| (playOrderNum_ == 0 && playStepNum_ == 0 && !(endCnt--))){
-				break;
-			}
+			if (playOrderNum_ == loopOrder && playStepNum_ == loopStep && !(endCnt--)) break;
 
 			if (loopFlag && loopOrder == playOrderNum_ && loopStep == playStepNum_) {
-				loopPoint = tmp;
+				loopPoint = exCntr->setLoopPoint();
 				loopPointSamples = exCntr->getSampleLength();
 			}
 		}
@@ -983,17 +1004,111 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	isFollowPlay_ = tmpFollow;
 	opnaCtrl_->setRate(tmpRate);
 
-	bool ret = FileIO::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+	try {
+		ExportHandler::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
 								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
 								exCntr->getSampleLength(), gd3TagEnabled, tag);
-	f();
-
-	return ret;
+		f();
+		return true;
+	} catch (...) {
+		throw;
+	}
 }
 
-bool BambooTracker::backupModule(std::string file)
+bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, std::function<bool()> f)
 {
-	return FileIO::backupModule(file);
+	int tmpRate = opnaCtrl_->getRate();
+	opnaCtrl_->setRate(44100);
+	size_t intrCnt = 44100 / mod_->getTickFrequency();
+	std::vector<int16_t> dumbuf(intrCnt << 1);
+
+	int loopOrder = 0;
+	int loopStep = 0;
+	checkNextPositionOfLastStep(loopOrder, loopStep);
+	bool loopFlag = (loopOrder != -1);
+	int endCnt = (loopOrder == -1) ? 0 : 1;
+	bool tmpFollow = isFollowPlay_;
+	isFollowPlay_ = false;
+	uint32_t loopPoint = 0;
+	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>();
+	opnaCtrl_->setExportContainer(exCntr);
+	startPlayFromStart();
+	exCntr->forceMoveLoopPoint();
+
+	while (true) {
+		uint32_t tmp = exCntr->getData().size();
+		if (!streamCountUp()) {
+			if (f()) {	// Update lambda function
+				stopPlaySong();
+				isFollowPlay_ = tmpFollow;
+				return false;
+			}
+
+			if (playOrderNum_ == loopOrder && playStepNum_ == loopStep && !(endCnt--)) break;
+
+			if (loopFlag && loopOrder == playOrderNum_ && loopStep == playStepNum_) {
+				loopPoint = exCntr->setLoopPoint();
+			}
+		}
+
+		opnaCtrl_->getStreamSamples(&dumbuf[0], intrCnt);
+	}
+
+	opnaCtrl_->setExportContainer();
+	stopPlaySong();
+	isFollowPlay_ = tmpFollow;
+	opnaCtrl_->setRate(tmpRate);
+
+	try {
+		ExportHandler::writeS98(file, exCntr->getData(), CHIP_CLOCK, 44100,
+								loopFlag, loopPoint, tagEnabled, tag);
+		f();
+		return true;
+	} catch (...) {
+		throw;
+	}
+}
+
+void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) const
+{
+	Song& song = mod_->getSong(curSongNum_);
+	int lastOrder = song.getOrderSize() - 1;
+	int lastStep = getPatternSizeFromOrderNumber(curSongNum_, lastOrder) - 1;
+	endOrder = 0;
+	endStep = 0;
+	for (auto attrib : songStyle_.trackAttribs) {
+		Step& step = song.getTrack(attrib.number).getPatternFromOrderNumber(lastOrder).getStep(lastStep);
+		for (int i = 0; i < 4; ++i) {
+			int effVal = step.getEffectValue(i);
+			if (effVal != -1) {
+				std::string effId = step.getEffectID(i);
+				if (effId == "0B" && effVal <= lastOrder) {
+					endOrder = effVal;
+					endStep = 0;
+				}
+				else if (effId == "0C") {
+					endOrder = -1;
+					endStep = -1;
+				}
+				else if (effId == "0D" && effVal < getPatternSizeFromOrderNumber(curSongNum_, 0)) {
+					endOrder = 0;
+					endStep = effVal;
+				}
+			}
+		}
+	}
+}
+
+/********** Backup **********/
+void BambooTracker::backupModule(std::string file)
+{
+	ModuleIO::backupModule(file);
+}
+
+/********** Stream type **********/
+void BambooTracker::useSCCI(SoundInterfaceManager* manager)
+{
+	opnaCtrl_->useSCCI(manager);
 }
 
 /********** Stream events **********/
@@ -1043,7 +1158,7 @@ void BambooTracker::readTick(int rest)
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& curStep = song.getTrack(attrib.number)
-						.getPatternFromOrderNumber(curOrderNum_).getStep(playStepNum_);
+						.getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
 		case SoundSource::FM:
 		{
@@ -1123,7 +1238,8 @@ void BambooTracker::readTickFMForNoteDelay(Step& step, int ch)
 
 void BambooTracker::envelopeResetEffectFM(Step& step, int ch)
 {
-	if (step.getNoteNumber() >= 0) {
+	int n = step.getNoteNumber();
+	if (n >= 0 || n < -2) {	// Key on or echo buffer access
 		int idx = step.checkEffectID("03");
 		if ((idx == -1 && !opnaCtrl_->isTonePortamentoFM(ch))
 				|| (idx != -1 && !step.getEffectValue(idx))) {
@@ -1161,6 +1277,288 @@ void BambooTracker::clearDelayCounts()
 	std::fill(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), -1);
 	std::fill(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), -1);
 	std::fill(volDlyValueDrum_.begin(), volDlyValueDrum_.end(), -1);
+}
+
+void BambooTracker::retrieveChannelStates()
+{
+	size_t fmch = 0;
+	switch (songStyle_.type) {
+	case SongType::STD:		fmch = 6;	break;
+	case SongType::FMEX:	// TODO: FM3chex
+		break;
+	}
+	std::vector<int> tonesCntFM(fmch, 0), tonesCntSSG(3, 0);
+	std::vector<std::vector<int>> toneFM(fmch), toneSSG(3);
+	for (int i = 0; i < fmch; ++i) {
+		toneFM.at(i) = std::vector<int>(3, -1);
+	}
+	for (int i = 0; i < 3; ++i) {
+		toneSSG.at(i) = std::vector<int>(3, -1);
+	}
+	std::vector<bool> isSetInstFM(fmch, false), isSetVolFM(fmch, false), isSetArpFM(fmch, false);
+	std::vector<bool> isSetPrtFM(fmch, false), isSetVibFM(fmch, false), isSetTreFM(fmch, false);
+	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
+	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
+	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
+	std::vector<bool> isSetVolDrum(6, false), isSetPanDrum(6, false);
+	bool isSetMVolDrum = false;
+	/// bit0: step
+	/// bit1: tempo
+	/// bit2: groove
+	uint8_t speedStates = 0;
+
+	int o = playOrderNum_;
+	int s = playStepNum_;
+	bool isPrevPos = false;
+	Song& song = mod_->getSong(curSongNum_);
+
+	while (true) {
+		for (auto it = songStyle_.trackAttribs.rbegin(), e = songStyle_.trackAttribs.rend(); it != e; ++it) {
+			Step& step = song.getTrack(it->number).getPatternFromOrderNumber(o).getStep(s);
+
+			switch (it->source) {
+			case SoundSource::FM:
+			{
+				// Effects
+				for (int i = 3; i > -1; --i) {
+					std::string id = step.getEffectID(i);
+					int value = step.getEffectValue(i);
+					if (id == "00" && value != -1 && !isSetArpFM[it->channelInSource]) {		// Arpeggio
+						isSetArpFM[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setArpeggioEffectFM(it->channelInSource, value >> 4, value & 0x0f);
+					}
+					else if ((id == "01" || id == "02" || id == "03")
+							 && value != -1 && !isSetPrtFM[it->channelInSource]) {	// Portamento
+						isSetPrtFM[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setPortamentoEffectFM(it->channelInSource, value);
+					}
+					else if (id == "04" && value != -1 && !isSetVibFM[it->channelInSource]) {	// Vibrato
+						isSetVibFM[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setVibratoEffectFM(it->channelInSource, value >> 4, value & 0x0f);
+					}
+					else if (id == "07" && value != -1 && !isSetTreFM[it->channelInSource]) {	// Tremolo
+						isSetTreFM[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setTremoloEffectFM(it->channelInSource, value >> 4, value & 0x0f);
+					}
+					else if (id == "08" && -1 < value && value < 4 && !isSetPanFM[it->channelInSource]) {	// Pan
+						isSetPanFM[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setPanFM(it->channelInSource, value);
+					}
+					else if (id == "0A" && value != -1 && !isSetVolSldFM[it->channelInSource]) {	// Volume slide
+						isSetVolSldFM[it->channelInSource] = true;
+						if (isPrevPos) {
+							int hi = value >> 4;
+							int low = value & 0x0f;
+							if (hi && !low) opnaCtrl_->setVolumeSlideFM(it->channelInSource, hi, true);	// Slide up
+							else if (!hi) opnaCtrl_->setVolumeSlideFM(it->channelInSource, low, false);	// Slide down
+						}
+					}
+					else if (id == "0F" && value != -1 && !(speedStates & 0x4)) {
+						if (value < 0x20 && !(speedStates & 0x1)) {	// Speed change
+							speedStates |= 0x1;
+							if (isPrevPos) effSpeedChange(value);
+						}
+						else if (!(speedStates & 0x2)) {			// Tempo change
+							speedStates |= 0x2;
+							if (isPrevPos) effTempoChange(value);
+						}
+					}
+					else if (id == "0O" && -1 < value && value < mod_->getGrooveCount() && !speedStates) {	// Groove
+						speedStates |= 0x4;
+						if (isPrevPos) effGrooveChange(value);
+					}
+					else if (id == "0P"  && value != -1 && !isSetDtnFM[it->channelInSource]) {	// Detune
+						isSetDtnFM[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setDetuneFM(it->channelInSource, value - 0x80);
+					}
+				}
+				// Volume
+				int vol = step.getVolume();
+				if (!isSetVolFM[it->channelInSource] && 0 <= vol && vol < 0x80) {
+					isSetVolFM[it->channelInSource] = true;
+					if (isPrevPos)
+						opnaCtrl_->setVolumeFM(it->channelInSource, step.getVolume());
+				}
+				// Instrument
+				if (!isSetInstFM[it->channelInSource] && step.getInstrumentNumber() != -1) {
+					if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
+								instMan_->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
+						isSetInstFM[it->channelInSource] = true;
+						if (isPrevPos)
+							opnaCtrl_->setInstrumentFM(it->channelInSource, inst);
+					}
+				}
+				// Tone
+				int t = step.getNoteNumber();
+				if (isPrevPos && t != -1 && t != -2) {
+					--tonesCntFM.at(it->channelInSource);
+					for (auto it2 = toneFM.at(it->channelInSource).rbegin();
+						 it2 != toneFM.at(it->channelInSource).rend(); ++it2) {
+						if (*it2 == -1 || *it2 == tonesCntFM[it->channelInSource]) {
+							if (t >= 0) {
+								*it2 = t;
+							}
+							else if (t < -2) {
+								*it2 = tonesCntFM[it->channelInSource] - t + 2;
+							}
+							break;
+						}
+					}
+				}
+				break;
+			}
+			case SoundSource::SSG:
+			{
+				// Effects
+				for (int i = 3; i > -1; --i) {
+					std::string id = step.getEffectID(i);
+					int value = step.getEffectValue(i);
+					if (id == "00" && value != -1 && !isSetArpSSG[it->channelInSource]) {		// Arpeggio
+						isSetArpSSG[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setArpeggioEffectSSG(it->channelInSource, value >> 4, value & 0x0f);
+					}
+					else if ((id == "01" || id == "02" || id == "03")
+							 && value != -1 && !isSetPrtSSG[it->channelInSource]) {	// Portamento
+						isSetPrtSSG[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setPortamentoEffectSSG(it->channelInSource, value);
+					}
+					else if (id == "04" && value != -1 && !isSetVibSSG[it->channelInSource]) {	// Vibrato
+						isSetVibSSG[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setVibratoEffectSSG(it->channelInSource, value >> 4, value & 0x0f);
+					}
+					else if (id == "07" && value != -1 && !isSetTreSSG[it->channelInSource]) {	// Tremolo
+						isSetTreSSG[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setTremoloEffectSSG(it->channelInSource, value >> 4, value & 0x0f);
+					}
+					else if (id == "0A" && value != -1 && !isSetVolSldSSG[it->channelInSource]) {	// Volume slide
+						isSetVolSldSSG[it->channelInSource] = true;
+						if (isPrevPos) {
+							int hi = value >> 4;
+							int low = value & 0x0f;
+							if (hi && !low) opnaCtrl_->setVolumeSlideSSG(it->channelInSource, hi, true);	// Slide up
+							else if (!hi) opnaCtrl_->setVolumeSlideSSG(it->channelInSource, low, false);	// Slide down
+						}
+					}
+					else if (id == "0F" && value != -1 && !(speedStates & 0x4)) {
+						if (value < 0x20 && !(speedStates & 0x1)) {	// Speed change
+							speedStates |= 0x1;
+							if (isPrevPos) effSpeedChange(value);
+						}
+						else if (!(speedStates & 0x2)) {			// Tempo change
+							speedStates |= 0x2;
+							if (isPrevPos) effTempoChange(value);
+						}
+					}
+					else if (id == "0O" && -1 < value && value < mod_->getGrooveCount() && !speedStates) {	// Groove
+						speedStates |= 0x4;
+						if (isPrevPos) effGrooveChange(value);
+					}
+					else if (id == "0P"  && value != -1 && !isSetDtnSSG[it->channelInSource]) {	// Detune
+						isSetDtnSSG[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setDetuneSSG(it->channelInSource, value - 0x80);
+					}
+				}
+				// Volume
+				int vol = step.getVolume();
+				if (!isSetVolSSG[it->channelInSource] && 0 <= vol && vol < 0x10) {
+					isSetVolSSG[it->channelInSource] = true;
+					if (isPrevPos)
+						opnaCtrl_->setVolumeSSG(it->channelInSource, vol);
+				}
+				// Instrument
+				if (!isSetInstSSG[it->channelInSource] && step.getInstrumentNumber() != -1) {
+					if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
+								instMan_->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
+						isSetInstSSG[it->channelInSource] = true;
+						if (isPrevPos)
+							opnaCtrl_->setInstrumentSSG(it->channelInSource, inst);
+					}
+				}
+				// Tone
+				int t = step.getNoteNumber();
+				if (isPrevPos && t != -1 && t != -2) {
+					--tonesCntSSG.at(it->channelInSource);
+					for (auto it2 = toneSSG.at(it->channelInSource).rbegin();
+						 it2 != toneSSG.at(it->channelInSource).rend(); ++it2) {
+						if (*it2 == -1 || *it2 == tonesCntSSG[it->channelInSource]) {
+							if (t >= 0) {
+								*it2 = t;
+							}
+							else if (t < -2) {
+								*it2 = tonesCntSSG[it->channelInSource] - t + 2;
+							}
+							break;
+						}
+					}
+				}
+				break;
+			}
+			case SoundSource::DRUM:
+			{
+				// Effects
+				for (int i = 3; i > -1; --i) {
+					std::string id = step.getEffectID(i);
+					int value = step.getEffectValue(i);
+					if (id == "08" && -1 < value && value < 4 && !isSetPanDrum[it->channelInSource]) {	// Pan
+						isSetPanDrum[it->channelInSource] = true;
+						if (isPrevPos) opnaCtrl_->setPanDrum(it->channelInSource, value);
+					}
+					else if (id == "0F" && value != -1 && !(speedStates & 0x4)) {
+						if (value < 0x20 && !(speedStates & 0x1)) {	// Speed change
+							speedStates |= 0x1;
+							if (isPrevPos) effSpeedChange(value);
+						}
+						else if (!(speedStates & 0x2)) {			// Tempo change
+							speedStates |= 0x2;
+							if (isPrevPos) effTempoChange(value);
+						}
+					}
+					else if (id == "0O" && -1 < value && value < mod_->getGrooveCount() && !speedStates) {	// Groove
+						speedStates |= 0x4;
+						if (isPrevPos) effGrooveChange(value);
+					}
+					else if (id == "0V"  && -1 < value && value < 64 && !isSetMVolDrum) {	// Master volume
+						isSetMVolDrum = true;
+						if (isPrevPos) opnaCtrl_->setMasterVolumeDrum(value);
+					}
+				}
+				// Volume
+				int vol = step.getVolume();
+				if (!isSetVolDrum[it->channelInSource] && 0 <= vol && vol < 0x20) {
+					isSetVolDrum[it->channelInSource] = true;
+					if (isPrevPos)
+						opnaCtrl_->setVolumeDrum(it->channelInSource, vol);
+				}
+				break;
+			}
+			}
+		}
+
+		// Move position
+		isPrevPos = true;
+		if (--s < 0) {
+			if (--o < 0) break;
+			s = getPatternSizeFromOrderNumber(curSongNum_, o) - 1;
+		}
+	}
+
+	// Echo
+	for (int i = 0; i < fmch; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (toneFM.at(i).at(j) >= 0) {
+				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneFM[i][j]);
+				opnaCtrl_->updateEchoBufferFM(i, octNote.first, octNote.second, 0);
+			}
+		}
+	}
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (toneSSG.at(i).at(j) >= 0) {
+				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneSSG[i][j]);
+				opnaCtrl_->updateEchoBufferSSG(i, octNote.first, octNote.second, 0);
+			}
+		}
+	}
 }
 
 void BambooTracker::findNextStep()
@@ -1277,7 +1675,7 @@ bool BambooTracker::readFMStep(Step& step, int ch, bool isSkippedSpecial)
 	// Set volume
 	int vol = step.getVolume();
 	if (0 <= vol && vol < 0x80) {
-		opnaCtrl_->setVolumeFM(ch, step.getVolume());
+		opnaCtrl_->setVolumeFM(ch, vol);
 	}
 	// Set instrument
 	if (step.getInstrumentNumber() != -1) {
@@ -1329,7 +1727,7 @@ bool BambooTracker::readSSGStep(Step& step, int ch, bool isSkippedSpecial)
 	// Set volume
 	int vol = step.getVolume();
 	if (0 <= vol && vol < 0x10) {
-		opnaCtrl_->setVolumeSSG(ch, step.getVolume());
+		opnaCtrl_->setVolumeSSG(ch, vol);
 	}
 	// Set instrument
 	if (step.getInstrumentNumber() != -1) {
@@ -1381,7 +1779,7 @@ bool BambooTracker::readDrumStep(Step& step, int ch, bool isSkippedSpecial)
 	// Set volume
 	int vol = step.getVolume();
 	if (0 <= vol && vol < 0x20) {
-		opnaCtrl_->setVolumeDrum(ch, step.getVolume());
+		opnaCtrl_->setVolumeDrum(ch, vol);
 	}
 	// Set effect
 	for (int i = 0; i < 4; ++i) {
@@ -1549,7 +1947,7 @@ bool BambooTracker::readDrumEffect(int ch, std::string id, int value, bool isSki
 			effGrooveChange(value);
 	}
 	else if (id == "0V") {	// Master volume
-		if (-1 < value && value <64) opnaCtrl_->setMasterVolumeDrum(value);
+		if (-1 < value && value < 64) opnaCtrl_->setMasterVolumeDrum(value);
 	}
 	else if (!isSkippedSpecial) {
 		ret = readDrumSpecialEffect(ch, id, value);
@@ -1744,6 +2142,21 @@ void BambooTracker::setStreamDuration(int duration)
 	opnaCtrl_->setDuration(duration);
 }
 
+void BambooTracker::setMasterVolume(int percentage)
+{
+	opnaCtrl_->setMasterVolume(percentage);
+}
+
+void BambooTracker::setMasterVolumeFM(double dB)
+{
+	opnaCtrl_->setMasterVolumeFM(dB);
+}
+
+void BambooTracker::setMasterVolumeSSG(double dB)
+{
+	opnaCtrl_->setMasterVolumeSSG(dB);
+}
+
 /********** Module details **********/
 /*----- Module -----*/
 void BambooTracker::makeNewModule()
@@ -1764,19 +2177,28 @@ void BambooTracker::makeNewModule()
 	clearCommandHistory();
 }
 
-bool BambooTracker::loadModule(std::string path)
+void BambooTracker::loadModule(std::string path)
 {
 	makeNewModule();
-	bool ret = FileIO::loadModule(path, mod_, instMan_);
+
+	std::exception_ptr ep;
+	try {
+		ModuleIO::loadModule(path, mod_, instMan_);
+	}
+	catch (...) {
+		ep = std::current_exception();
+	}
+
 	tickCounter_.setInterruptRate(mod_->getTickFrequency());
 	setCurrentSongNumber(0);
 	clearCommandHistory();
-	return ret;
+
+	if (ep) std::rethrow_exception(ep);
 }
 
-bool BambooTracker::saveModule(std::string path)
+void BambooTracker::saveModule(std::string path)
 {
-	return FileIO::saveModule(path, mod_, instMan_);
+	ModuleIO::saveModule(path, mod_, instMan_);
 }
 
 void BambooTracker::setModulePath(std::string path)
@@ -1950,14 +2372,29 @@ void BambooTracker::sortSongs(std::vector<int> numbers)
 	mod_->sortSongs(std::move(numbers));
 }
 
-size_t BambooTracker::getAllStepCount(int songNum) const
+size_t BambooTracker::getAllStepCount(int songNum, int loopCnt) const
 {
-	size_t cnt = 0;
 	size_t os = getOrderSize(songNum);
-	for (size_t i = 0; i < os; ++i) {
-		cnt += getPatternSizeFromOrderNumber(songNum, i);
+	int loopOrder = 0;
+	int loopStep = 0;
+	checkNextPositionOfLastStep(loopOrder, loopStep);
+	if (loopOrder == -1) {
+		size_t stepCnt = 0;
+		for (size_t i = 0; i < os; ++i)
+			stepCnt += getPatternSizeFromOrderNumber(songNum, i);
+		return stepCnt;
 	}
-	return cnt;
+	else {
+		size_t introStepCnt = 0;
+		for (int i = 0; i < loopOrder; ++i)
+			introStepCnt += getPatternSizeFromOrderNumber(curSongNum_, i);
+		introStepCnt += loopStep;
+		size_t loopStepCnt = getPatternSizeFromOrderNumber(curSongNum_, loopOrder) - loopStep;
+		for (size_t i = loopOrder + 1; i < os; ++i) {
+			loopStepCnt += getPatternSizeFromOrderNumber(songNum, i);
+		}
+		return introStepCnt + loopStepCnt * loopCnt;
+	}
 }
 
 /*----- Order -----*/

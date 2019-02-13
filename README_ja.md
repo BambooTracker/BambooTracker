@@ -1,8 +1,9 @@
 # BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.1.1-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
-![Platform: win-32](https://img.shields.io/badge/platform-win--32-lightgrey.svg)
-[![GitHub issues](https://img.shields.io/github/issues/rerrahkr/BambooTracker.svg)](https://github.com/rerrahkr/BambooTracker/issues)
+[![GitHub release](https://img.shields.io/badge/release-v0.1.5-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20linux-lightgrey.svg)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
+
+![Example](./img/overview.gif)
 
 このアプリケーションはNEC PC-8801/9801シリーズに搭載されていたFM音源YM2608(OPNA)向けのトラッカーです。
 
@@ -39,6 +40,9 @@ FMエディタでは、
 5. ピッチ
 
 のプロパティを設定できます。
+
+エンベロープはMMLなどのテキストデータを貼り付けして読み込むことができます。テキストフォーマットは設定で追加・変更を行うことができます。デフォルトではFMP、FMP7、MMLDRV、MUCOM88、MXDRV、NRTDRV(`VOICE_MODE=0`)、PMD、VOPMが登録されています。  
+この機能ではテキスト中の数字を出現順に読み込んでいきます。デフォルトのフォーマットを使用する際には予め音色名、コメントに含まれる数字を削除する必要があります。
 
 #### SSGエディタ
 SSGエディタでは、
@@ -104,12 +108,14 @@ SSGエディタでは、
 | Ctrl+S | モジュール保存                             |
 | Ctrl+P | モジュール設定                             |
 | Ctrl+I | 選択中のインストゥルメントのエディタを開く |
-| Return | 再生                                       |
+| Return | 再生/停止                                  |
 | F5     | Songの最初から再生                         |
 | F6     | パターンを再生                             |
 | F7     | カーソル位置から再生                       |
 | F8     | 停止                                       |
 | Space  | Jam/Editモード切替                         |
+| Alt+O  | オーダーリストへ移動                       |
+| Alt+P  | パターンエディタへ移動                     |
 | F12    | 音声リセット                               |
 
 ### オーダーリスト
@@ -129,36 +135,38 @@ SSGエディタでは、
 | Escape   | 選択解除                                               |
 
 ### パターンエディタ
-| キー      | コマンド                                                                   |
-| --------- | -------------------------------------------------------------------------- |
-| Ctrl+C    | 選択範囲コピー                                                             |
-| Ctrl+X    | 選択範囲カット                                                             |
-| Ctrl+V    | 貼り付け                                                                   |
-| Ctrl+M    | Mix貼り付け                                                                |
-| Ctrl+A    | 1回目:現在のパターン・トラックの全ステップ選択, 2回目:現在のパターン全選択 |
-| Ctrl+G    | 選択範囲のコマンド補完                                                     |
-| Ctrl+R    | 選択範囲のコマンドを逆転                                                   |
-| Ctrl+F1   | 選択範囲または現在のノート半音下げる                                       |
-| Ctrl+F2   | 選択範囲または現在のノート半音上げる                                       |
-| Ctrl+F3   | 選択範囲または現在のノートオクターブ下げる                                 |
-| Ctrl+F4   | 選択範囲または現在のノートオクターブ下げる                                 |
-| Alt+F9    | 現在のトラックをミュート                                                   |
-| Alt+F10   | 現在以外のトラックをミュート                                               |
-| Alt+S     | 選択範囲のインストゥルメントを現在の物に変更                               |
-| Tab       | 次のトラックへ移動                                                         |
-| BackTab   | 前のトラックへ移動                                                         |
-| Home      | パターンの最初のステップへジャンプ                                         |
-| End       | パターンの最後のステップへジャンプ                                         |
-| PageUp    | 前へステップジャンプ                                                       |
-| PageDown  | 後ろへステップジャンプ                                                     |
-| Insert    | ステップ挿入                                                               |
-| BackSpace | 前のステップを削除し詰める                                                 |
-| Delete    | 現在のステップのデータ削除                                                 |
-| Escape    | 選択解除                                                                   |
-| -         | キーオフ                                                                   |
-| \*        | 入力オクターブアップ/エコーバッファ番号選択                                |
-| /         | 入力オクターブダウン/エコーバッファ番号選択                                |
-| ^         | エコーバッファ                                                             |
+| キー          | コマンド                                                                   |
+| ------------- | -------------------------------------------------------------------------- |
+| Ctrl+C        | 選択範囲コピー                                                             |
+| Ctrl+X        | 選択範囲カット                                                             |
+| Ctrl+V        | 貼り付け                                                                   |
+| Ctrl+M        | Mix貼り付け                                                                |
+| Ctrl+A        | 1回目:現在のパターン・トラックの全ステップ選択, 2回目:現在のパターン全選択 |
+| Ctrl+G        | 選択範囲のコマンド補完                                                     |
+| Ctrl+R        | 選択範囲のコマンドを逆転                                                   |
+| Ctrl+F1       | 選択範囲または現在のノート半音下げる                                       |
+| Ctrl+F2       | 選択範囲または現在のノート半音上げる                                       |
+| Ctrl+F3       | 選択範囲または現在のノートオクターブ下げる                                 |
+| Ctrl+F4       | 選択範囲または現在のノートオクターブ下げる                                 |
+| Alt+F9        | 現在のトラックをミュート                                                   |
+| Alt+F10       | 現在以外のトラックをミュート                                               |
+| Alt+S         | 選択範囲のインストゥルメントを現在の物に変更                               |
+| Tab           | 次のトラックへ移動                                                         |
+| BackTab       | 前のトラックへ移動                                                         |
+| Home          | パターンの最初のステップへジャンプ                                         |
+| End           | パターンの最後のステップへジャンプ                                         |
+| PageUp        | 前へステップジャンプ                                                       |
+| PageDown      | 後ろへステップジャンプ                                                     |
+| Ctrl+Up       | 前のハイライトされたステップへジャンプ                                     |
+| Ctrl+Down     | 後ろのハイライトされたステップへジャンプ                                   |
+| Insert        | ステップ挿入                                                               |
+| BackSpace     | 前のステップを削除し詰める                                                 |
+| Delete        | 現在のステップのデータ削除                                                 |
+| Escape        | 選択解除                                                                   |
+| -             | キーオフ                                                                   |
+| \* (テンキー) | 入力オクターブアップ/エコーバッファ番号選択                                |
+| / (テンキー)  | 入力オクターブダウン/エコーバッファ番号選択                                |
+| ^             | エコーバッファ                                                             |
 
 音符はキーボードを鍵盤に見立てて入力します。
 
@@ -194,18 +202,84 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 | 0A0x       | ボリューム・スライドダウン (x[0-f]: デプス)                                                                               | ボリューム・スライドダウン | -                                    |
 | 0Ax0       | ボリューム・スライドアップ (x[0-f]: デプス)                                                                               | ボリューム・スライドアップ | -                                    |
 | 0Bxx       | ポジションジャンプ (xx: オーダ番号)                                                                                       | ポジションジャンプ         | ポジションジャンプ                   |
-| 0Cxx       | トラック・エンド (xx: 任意の値)                                                                                           | トラック・エンド           | トラック・エンド                     |
+| 0Cxx       | ソング・エンド (xx: 任意の値)                                                                                             | ソング・エンド             | ソング・エンド                       |
 | 0Dxx       | パターン・ブレーク (xx: 次のオーダの開始ステップ)                                                                         | パターン・ブレーク         | パターン・ブレーク                   |
 | 0Fxx       | スピード/テンポチェンジ (xx[00-1f]: スピード, [20-ff]: テンポ)                                                            | スピード/テンポチェンジ    | スピード/テンポチェンジ              |
 | 0Gxx       | ノート・ディレイ (xx[00-ff]: ディレイカウント)                                                                            | ノート・ディレイ           | ノート・ディレイ                     |
 | 0Oxx       | グルーブ (xx[00-ff]: グルーブ番号)                                                                                        | グルーブ                   | グルーブ                             |
 | 0Pxx       | デチューン (xx[00-ff]: xx-80だけデチューン)                                                                               | デチューン                 | -                                    |
-| 0Qxy       | ノート・スライドアップ (x[0-f]: スピード, y[0-f]: 半音数)                                                                 | ノート・スライドアップ     | -                                    |
-| 0Rxy       | ノート・スライドダウン (x[0-f]: スピード, y[0-f]: 半音数)                                                                 | ノート・スライドダウン     | -                                    |
+| 0Qxy       | ノート・スライドアップ (x[0-f]: カウント, y[0-f]: 半音数)                                                                 | ノート・スライドアップ     | -                                    |
+| 0Rxy       | ノート・スライドダウン (x[0-f]: カウント, y[0-f]: 半音数)                                                                 | ノート・スライドダウン     | -                                    |
 | 0Sxx       | ノート・カット (xx[01-ff]: ディレイカウント)                                                                              | ノート・カット             | ノート・カット                       |
 | 0Txy       | トランスポーズ・ディレイ (x[1-7]: ディレイカウント(上向き変化), [9-f]: x-8分ディレイカウント(下向き変化), y[0-f]: 半音数) | トランスポーズ・ディレイ   | -                                    |
 | 0Vxx       | -                                                                                                                         | -                          | マスターボリューム (xx[00-3f]: 音量) |
 | Mxyy       | ボリューム・ディレイ (x[1-f]: ディレイカウント, yy[00-ff]: 音量)                                                          | ボリューム・ディレイ       | ボリューム・ディレイ                 |
+
+## ファイル入出力
+### モジュール
+.btm (BambooTracker module file)の読み込み・書き出しに対応しています。
+
+### インストゥルメント
+以下のフォーマットの読み込み対応しています。
+
+- .bti (BambooTracker instrument file)
+- .dmp (DefleMask preset file)
+- .tfi (TFM Music Maker instrument file)
+- .vgi (VGM Music Maker instrument file)
+- .opni (WOPN instrument file)
+- .wopn (WOPN bank file)
+- .y12 (Gens KMod dump file)
+- .ins (MVSTracker instrument file)
+
+また、FMエンベロープはプレーンテキストの読み込みにも対応しています。
+
+書き出しは.btiのみ可能です。
+
+### エクスポート
+以下のファイルにエクスポートが可能です。
+
+- .wav (WAVE file)
+- .vgm (VGM file)
+- .s98 (S98 file)
+
+## Linuxでのビルド方法
+Ubuntu 18.04:
+
+### 必要なパッケージ
+> make  
+> Qt5 (qmake)  
+> Qt5 Multimedia  
+> Qt5 Multimedia plugins
+
+```bash
+sudo apt-get install \
+  build-essential \
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins
+```
+
+### コンパイル
+```bash
+cd BambooTracker
+qmake
+make
+```
+
+## FreeBSDでのパッケージのインストールまたはビルド
+### ビルド
+To build the BambooTracker via FreeBSD ports
+```bash
+cd /usr/ports/audio/bambootracker
+make install clean
+```
+
+### パッケージ
+To install the package
+```bash
+pkg install bambootracker
+```
+
+## DebianまたはUbuntuでのパッケージのインストール
+`apt-get install bambootracker`
 
 ## Changelog
 *[CHANGELOG.md](./CHANGELOG.md)を参照してください。*
@@ -221,5 +295,10 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 - Qt
 - YM2608のエミュレーションコードに関してMAME開発チームさんとValley Bellさん
 - ツールバーに使用しているアイコンに関してMark Jamesさん
-- VGMファイルのフォーマットのドキュメントに関してVGMRipsチームさん
+- VGMファイルのフォーマットのドキュメントに関してVGMRipsチームの方々
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
+- トラッカーのアイコンに関してDecidettoさん
+- WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
+- S98ファイルのフォーマットのドキュメントに関してRu^3さん
+- SCCIライブラリに関してSCCI開発チームの方々
+- そしてこのプロジェクトに手助けしてくださるみなさん!

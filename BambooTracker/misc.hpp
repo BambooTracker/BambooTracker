@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <stdexcept>
 
 enum class SoundSource : int
 {
@@ -27,6 +28,15 @@ enum class Note : int
 	A	= 288,
 	AS	= 320,
 	B	= 352
+};
+
+enum class FMEnvelopeTextType : int
+{
+	Skip, AL, FB,
+	AR1, DR1, SR1, RR1, SL1, TL1, KS1, ML1, DT1,
+	AR2, DR2, SR2, RR2, SL2, TL2, KS2, ML2, DT2,
+	AR3, DR3, SR3, RR3, SL3, TL3, KS3, ML3, DT3,
+	AR4, DR4, SR4, RR4, SL4, TL4, KS4, ML4, DT4
 };
 
 static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
@@ -96,4 +106,20 @@ static int ctohex(const char c)
 	else if (c == 'E')	return 14;
 	else if (c == 'F')	return 15;
 	else				return -1;
+}
+
+static uint8_t uitobcd(const uint8_t v)
+{
+	if (v > 99) throw std::out_of_range("out of range");
+
+	uint8_t high = v / 10;
+	uint8_t low = v % 10;
+	return (high << 4) + low;
+}
+
+static uint8_t bcdtoui(const uint8_t v)
+{
+	uint8_t high = v >> 4;
+	uint8_t low = v & 0x0f;
+	return high * 10 + low;
 }

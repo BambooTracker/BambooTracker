@@ -465,7 +465,7 @@ void OrderListPanel::copySelectedCells()
 	QApplication::clipboard()->setText(str);
 }
 
-void OrderListPanel::pasteCopiedCells(OrderPosition& startPos)
+void OrderListPanel::pasteCopiedCells(const OrderPosition& startPos)
 {
 	// Analyze text
 	QString str = QApplication::clipboard()->text().remove(QRegularExpression("ORDER_COPY:"));
@@ -529,6 +529,91 @@ bool OrderListPanel::isSelectedCell(int track, int row)
 	OrderPosition pos{ track, row };
 	return (selLeftAbovePos_.track <= pos.track && selRightBelowPos_.track >= pos.track
 			&& selLeftAbovePos_.row <= pos.row && selRightBelowPos_.row >= pos.row);
+}
+
+void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& point)
+{
+	QMenu menu;
+	// Leave Before Qt5.7.0 style due to windows xp
+	QAction* insert = menu.addAction(tr("&Insert Order"));
+	QObject::connect(insert, &QAction::triggered, this, [&]() { insertOrderBelow(); });
+	QAction* remove = menu.addAction(tr("&Remove Order"));
+	QObject::connect(remove, &QAction::triggered, this, [&]() { deleteOrder(); });
+	QAction* duplicate = menu.addAction(tr("&Duplicate Order"));
+	QObject::connect(duplicate, &QAction::triggered, this, &OrderListPanel::onDuplicatePressed);
+	QAction* clonep = menu.addAction(tr("&Clone Patterns"));
+	QAction::connect(clonep, &QAction::triggered, this, &OrderListPanel::onClonePatternsPressed);
+	QAction* cloneo = menu.addAction(tr("Clone &Order"));
+	QObject::connect(cloneo, &QAction::triggered, this, &OrderListPanel::onCloneOrderPressed);
+	menu.addSeparator();
+	QAction* moveUp = menu.addAction(tr("Move Order &Up"));
+	QObject::connect(moveUp, &QAction::triggered, this, [&]() { onMoveOrderPressed(true); });
+	QAction* moveDown = menu.addAction(tr("Move Order Do&wn"));
+	QObject::connect(moveDown, &QAction::triggered, this, [&]() { onMoveOrderPressed(false); });
+	menu.addSeparator();
+	QAction* copy = menu.addAction(tr("Cop&y"));
+	QObject::connect(copy, &QAction::triggered, this, &OrderListPanel::copySelectedCells);
+	QAction* paste = menu.addAction(tr("&Paste"));
+	QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(pos); });
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+	duplicate->setShortcutVisibleInContextMenu(true);
+	clonep->setShortcutVisibleInContextMenu(true);
+	copy->setShortcutVisibleInContextMenu(true);
+	paste->setShortcutVisibleInContextMenu(true);
+#endif
+	duplicate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
+	clonep->setShortcut(QKeySequence(Qt::ALT + Qt::Key_D));
+	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
+
+	if (bt_->isJamMode()) {
+		insert->setEnabled(false);
+		remove->setEnabled(false);
+		duplicate->setEnabled(false);
+		clonep->setEnabled(false);
+		cloneo->setEnabled(false);
+		moveUp->setEnabled(false);
+		moveDown->setEnabled(false);
+		copy->setEnabled(false);
+		paste->setEnabled(false);
+	}
+	else {
+		if (pos.row < 0 || pos.track < 0) {
+			remove->setEnabled(false);
+			moveUp->setEnabled(false);
+			moveDown->setEnabled(false);
+			copy->setEnabled(false);
+			paste->setEnabled(false);
+		}
+		if (!bt_->canAddNewOrder(curSongNum_)) {
+			insert->setEnabled(false);
+			duplicate->setEnabled(false);
+			moveUp->setEnabled(false);
+			moveDown->setEnabled(false);
+			copy->setEnabled(false);
+			paste->setEnabled(false);
+		}
+		QString clipText = QApplication::clipboard()->text();
+		if (!clipText.startsWith("ORDER_COPY")) {
+				paste->setEnabled(false);
+		}
+		if (bt_->getOrderSize(curSongNum_) == 1) {
+			remove->setEnabled(false);
+		}
+		if (selRightBelowPos_.row < 0
+				|| !isSelectedCell(pos.track, pos.row)) {
+			clonep->setEnabled(false);
+			copy->setEnabled(false);
+		}
+		if (pos.row == 0) {
+			moveUp->setEnabled(false);
+		}
+		if (pos.row == bt_->getOrderSize(curSongNum_) - 1) {
+			moveDown->setEnabled(false);
+		}
+	}
+
+	menu.exec(mapToGlobal(point));
 }
 
 /********** Slots **********/
@@ -801,6 +886,11 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 	case Qt::Key_Insert:
 		insertOrderBelow();
 		return true;
+	case Qt::Key_Menu:
+		showContextMenu(
+					curPos_,
+					QPoint(calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track), curRowY_ - 8));
+		return true;
 	default:
 		if (!bt_->isJamMode()) {
 			return enterOrder(event->key());
@@ -905,86 +995,8 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 		break;
 
 	case Qt::RightButton:
-	{
-		QMenu menu;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-		QAction* insert = menu.addAction("Insert Order", this, [&]() { insertOrderBelow(); });
-		QAction* remove = menu.addAction("Remove Order", this, [&]() { deleteOrder(); });
-		QAction* duplicate = menu.addAction("Duplicate Order", this, &OrderListPanel::onDuplicatePressed);
-		QAction* clonep = menu.addAction("Clone Patterns", this, &OrderListPanel::onClonePatternsPressed);
-		QAction* cloneo = menu.addAction("Clone Order", this, &OrderListPanel::onCloneOrderPressed);
-		menu.addSeparator();
-		QAction* moveUp = menu.addAction("Move Order Up", this, [&]() { onMoveOrderPressed(true); });
-		QAction* moveDown = menu.addAction("Move Order Down", this, [&]() { onMoveOrderPressed(false); });
-		menu.addSeparator();
-		QAction* copy = menu.addAction("Copy", this, &OrderListPanel::copySelectedCells);
-		QAction* paste = menu.addAction("Paste", this, [&]() { pasteCopiedCells(mousePressPos_); });
-#else
-		QAction* insert = menu.addAction("Insert Order");
-		QObject::connect(insert, &QAction::triggered, this, [&]() { insertOrderBelow(); });
-		QAction* remove = menu.addAction("Remove Order");
-		QObject::connect(remove, &QAction::triggered, this, [&]() { deleteOrder(); });
-		QAction* duplicate = menu.addAction("Duplicate Order");
-		QObject::connect(duplicate, &QAction::triggered, this, &OrderListPanel::onDuplicatePressed);
-		QAction* clonep = menu.addAction("Clone Patterns");
-		QAction::connect(clonep, &QAction::triggered, this, &OrderListPanel::onClonePatternsPressed);
-		QAction* cloneo = menu.addAction("Clone Order");
-		QObject::connect(cloneo, &QAction::triggered, this, &OrderListPanel::onCloneOrderPressed);
-		menu.addSeparator();
-		QAction* moveUp = menu.addAction("Move Order Up");
-		QObject::connect(moveUp, &QAction::triggered, this, [&]() { onMoveOrderPressed(true); });
-		QAction* moveDown = menu.addAction("Move Order Down");
-		QObject::connect(moveDown, &QAction::triggered, this, [&]() { onMoveOrderPressed(false); });
-		menu.addSeparator();
-		QAction* copy = menu.addAction("Copy");
-		QObject::connect(copy, &QAction::triggered, this, &OrderListPanel::copySelectedCells);
-		QAction* paste = menu.addAction("Paste");
-		QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(mousePressPos_); });
-#endif
-
-		if (bt_->isJamMode() || mousePressPos_.row < 0 || mousePressPos_.track < 0) {
-			insert->setEnabled(false);
-			remove->setEnabled(false);
-			duplicate->setEnabled(false);
-			clonep->setEnabled(false);
-			cloneo->setEnabled(false);
-			moveUp->setEnabled(false);
-			moveDown->setEnabled(false);
-			copy->setEnabled(false);
-			paste->setEnabled(false);
-		}
-		else {
-			if (!bt_->canAddNewOrder(curSongNum_)) {
-				insert->setEnabled(false);
-				duplicate->setEnabled(false);
-				moveUp->setEnabled(false);
-				moveDown->setEnabled(false);
-				copy->setEnabled(false);
-				paste->setEnabled(false);
-			}
-			QString clipText = QApplication::clipboard()->text();
-			if (!clipText.startsWith("ORDER_COPY")) {
-					paste->setEnabled(false);
-			}
-			if (bt_->getOrderSize(curSongNum_) == 1) {
-				remove->setEnabled(false);
-			}
-			if (selRightBelowPos_.row < 0
-					|| !isSelectedCell(mousePressPos_.track, mousePressPos_.row)) {
-				clonep->setEnabled(false);
-				copy->setEnabled(false);
-			}
-			if (mousePressPos_.row == 0) {
-				moveUp->setEnabled(false);
-			}
-			if (mousePressPos_.row == bt_->getOrderSize(curSongNum_) - 1) {
-				moveDown->setEnabled(false);
-			}
-		}
-
-		menu.exec(mapToGlobal(event->pos()));
+		showContextMenu(mousePressPos_, event->pos());
 		break;
-	}
 
 	default:
 		break;

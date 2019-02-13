@@ -14,6 +14,7 @@
 #include <QColor>
 #include <QUndoStack>
 #include <QString>
+#include <QPoint>
 #include <memory>
 #include <vector>
 #include "bamboo_tracker.hpp"
@@ -40,6 +41,8 @@ public:
 	void copySelectedCells();
 	void cutSelectedCells();
 
+	int getCurrentTrack() const;
+
 public slots:
 	void setCurrentCellInRow(int num);
 	void setCurrentStep(int num);
@@ -50,6 +53,7 @@ public slots:
 	void onDefaultPatternSizeChanged();
 
 	void setPatternHighlightCount(int count);
+	void setEditableStep(int n);
 
 	void onSongLoaded();
 
@@ -65,8 +69,9 @@ public slots:
 	/// 5: Order
 	void onSelectPressed(int type);
 	void onTransposePressed(bool isOctave, bool isIncreased);
-	void onMuteTrackPressed();
-	void onSoloTrackPressed();
+	void onToggleTrackPressed(int track);
+	void onSoloTrackPressed(int track);
+	void onUnmuteAllPressed();
 	void onExpandPressed();
 	void onShrinkPressed();
 	void onInterpolatePressed();
@@ -82,6 +87,8 @@ signals:
 
 	void selected(bool isSelected);
 	void returnPressed();
+	void instrumentEntered(int num);
+	void effectEntered(QString text);
 
 protected:
 	virtual bool event(QEvent *event) override;
@@ -142,6 +149,7 @@ private:
 	bool isMuteElse_;
 
 	int hlCnt_;
+	int editableStepCnt_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);
@@ -157,6 +165,7 @@ private:
 	int calculateColNumInRow(int trackNum, int colNumInTrack, bool isExpanded = false) const;
 	int calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn, bool isExpanded = false) const;
 	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
+	QPoint calculateCurrentCursorPosition() const;
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
@@ -164,7 +173,7 @@ private:
 	void expandEffect(int trackNum);
 	void shrinkEffect(int trackNum);
 
-	bool enterToneData(int key);
+	bool enterToneData(QKeyEvent* event);
 	void setStepKeyOn(Note note, int octave);
 	bool enterInstrumentData(int key);
 	void setStepInstrument(int num);
@@ -179,18 +188,20 @@ private:
 	void deletePreviousStep();
 
 	void eraseSelectedCells();
-	void pasteCopiedCells(PatternPosition& startPos);
-	void pasteMixCopiedCells(PatternPosition& startPos);
-	void pasteOverwriteCopiedCells(PatternPosition& startPos);
+	void pasteCopiedCells(const PatternPosition& startPos);
+	void pasteMixCopiedCells(const PatternPosition& startPos);
+	void pasteOverwriteCopiedCells(const PatternPosition& startPos);
 	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
 
-	void increaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);
-	void decreaseNoteKey(PatternPosition& startPos, PatternPosition& endPos);
-	void increaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos);
-	void decreaseNoteOctave(PatternPosition& startPos, PatternPosition& endPos);
+	void increaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos);
+	void decreaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos);
+	void increaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos);
+	void decreaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos);
 
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
+
+	void showPatternContextMenu(const PatternPosition& pos, const QPoint& point);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

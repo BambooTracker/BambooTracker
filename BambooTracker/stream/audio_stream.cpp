@@ -44,33 +44,37 @@ void AudioStream::stop()
 
 void AudioStream::setRate(uint32_t rate)
 {
-	stop();
+	bool hasRun = mixer_->hasRun();
+	if (hasRun) stop();
 	format_.setSampleRate(rate);
 	audio_ = std::make_unique<QAudioOutput>(info_, format_);
 	mixer_->setRate(rate);
-	start();
+	if (hasRun) start();
 }
 
 void AudioStream::setDuration(uint32_t duration)
 {
-	stop();
+	bool hasRun = mixer_->hasRun();
+	if (hasRun) stop();
 	mixer_->setDuration(duration);
-	start();
+	if (hasRun) start();
 }
 
 void AudioStream::setInturuption(uint32_t rate)
 {
-	stop();
+	bool hasRun = mixer_->hasRun();
+	if (hasRun) stop();
 	mixer_->setInterruption(rate);
-	start();
+	if (hasRun) start();
 }
 
 void AudioStream::setDevice(QString device)
 {
-	stop();
+	bool hasRun = mixer_->hasRun();
+	if (hasRun) stop();
 	setDeviceFromString(device);
 	audio_ = std::make_unique<QAudioOutput>(info_, format_);
-	start();
+	if (hasRun) start();
 }
 
 void AudioStream::setDeviceFromString(QString device)

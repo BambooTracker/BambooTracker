@@ -220,9 +220,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->arpEditor->setUpperRow(55);
 	ui->arpEditor->setMMLDisplay0As(-48);
 
-	ui->arpTypeComboBox->addItem("Absolute", 0);
-	ui->arpTypeComboBox->addItem("Fix", 1);
-	ui->arpTypeComboBox->addItem("Relative", 2);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), 0);
+	ui->arpTypeComboBox->addItem(tr("Fix"), 1);
+	ui->arpTypeComboBox->addItem(tr("Relative"), 2);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -268,13 +268,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->arpTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
-#else
+// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
-#endif
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -289,8 +285,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem("Absolute", 0);
-	ui->ptTypeComboBox->addItem("Relative", 2);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), 0);
+	ui->ptTypeComboBox->addItem(tr("Relative"), 2);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -336,13 +332,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->ptTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
-#else
+// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
-#endif
 }
 
 InstrumentEditorSSGForm::~InstrumentEditorSSGForm()
@@ -359,6 +351,11 @@ void InstrumentEditorSSGForm::setCore(std::weak_ptr<BambooTracker> core)
 {
 	bt_ = core;
 	updateInstrumentParameters();
+}
+
+void InstrumentEditorSSGForm::setConfiguration(std::weak_ptr<Configuration> config)
+{
+	config_ = config;
 }
 
 void InstrumentEditorSSGForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
@@ -419,15 +416,28 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
 {
 	// For jam key on
+
+	// Check keys
+	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
+	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
+											  config_.lock()->getOctaveUpKey().length())).toString()) {
+		emit octaveChanged(true);
+		return;
+	}
+	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
+												   config_.lock()->getOctaveDownKey().length())).toString()) {
+		emit octaveChanged(false);
+		return;
+	}
+
 	// General keys
 	switch (event->key()) {
-	case Qt::Key_Asterisk:	emit octaveChanged(true);		break;
-	case Qt::Key_Slash:		emit octaveChanged(false);		break;
 	//case Qt::Key_Return:	emit playStatusChanged(0);	break;
 	case Qt::Key_F5:		emit playStatusChanged(1);	break;
 	case Qt::Key_F6:		emit playStatusChanged(2);	break;
 	case Qt::Key_F7:		emit playStatusChanged(3);	break;
 	case Qt::Key_F8:		emit playStatusChanged(-1);	break;
+	case Qt::Key_Escape:	close();					break;
 	default:
 		if (!event->isAutoRepeat()) {
 			// Musical keyboard

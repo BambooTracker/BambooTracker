@@ -76,43 +76,6 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <item row="2" column="0" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="octaveLabel">
-          <property name="text">
-           <string>Octave:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="stepHighrightSpinBox">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>256</number>
-          </property>
-          <property name="value">
-           <number>8</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="LineReadOnlySpinBox" name="octaveSpinBox">
-          <property name="maximum">
-           <number>7</number>
-          </property>
-          <property name="value">
-           <number>4</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="stepHighlightLabel">
-          <property name="text">
-           <string>Step Highlight:</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0" colspan="2">
          <widget class="QGroupBox" name="moduleSettingsGroupBox">
           <property name="title">
@@ -160,7 +123,7 @@
            <item row="4" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="tickFreqLabel">
              <property name="text">
-              <string>Tick Freq:</string>
+              <string>Tick Freq</string>
              </property>
             </widget>
            </item>
@@ -188,6 +151,32 @@
           </layout>
          </widget>
         </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QGroupBox" name="editSettingsGroupBox">
+          <property name="title">
+           <string>Edit settings</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="0" alignment="Qt::AlignRight">
+            <widget class="QLabel" name="editableStepLabel">
+             <property name="text">
+              <string>Editable step</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="editableStepSpinBox">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>256</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -198,7 +187,7 @@
         <item row="1" column="0" alignment="Qt::AlignRight">
          <widget class="QLabel" name="songNumLabel">
           <property name="text">
-           <string>Song:</string>
+           <string>Song</string>
           </property>
          </widget>
         </item>
@@ -246,7 +235,7 @@
            <item row="6" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="speedLabel">
              <property name="text">
-              <string>Speed:</string>
+              <string>Speed</string>
              </property>
             </widget>
            </item>
@@ -260,7 +249,7 @@
            <item row="5" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="tempoLabel">
              <property name="text">
-              <string>Tempo:</string>
+              <string>Tempo</string>
              </property>
             </widget>
            </item>
@@ -293,7 +282,7 @@
            <item row="3" column="0" alignment="Qt::AlignRight">
             <widget class="QLabel" name="songStyleLabel">
              <property name="text">
-              <string>Style:</string>
+              <string>Style</string>
              </property>
             </widget>
            </item>
@@ -336,7 +325,7 @@
            <item row="8" column="0">
             <widget class="QCheckBox" name="grooveCheckBox">
              <property name="text">
-              <string>Groove:</string>
+              <string>Groove</string>
              </property>
             </widget>
            </item>
@@ -363,7 +352,10 @@
         <property name="title">
          <string>Instruments</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <property name="leftMargin">
           <number>3</number>
          </property>
@@ -376,10 +368,7 @@
          <property name="bottomMargin">
           <number>3</number>
          </property>
-         <property name="horizontalSpacing">
-          <number>6</number>
-         </property>
-         <item row="0" column="2">
+         <item>
           <widget class="QListWidget" name="instrumentListWidget">
            <property name="styleSheet">
             <string notr="true"/>
@@ -414,14 +403,16 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <widget class="QMenu" name="menuExport">
      <property name="title">
-      <string>Export</string>
+      <string>&amp;Export</string>
      </property>
      <addaction name="actionWAV"/>
+     <addaction name="separator"/>
      <addaction name="actionVGM"/>
+     <addaction name="actionS98"/>
     </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
@@ -436,11 +427,11 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <widget class="QMenu" name="menuSelect">
      <property name="title">
-      <string>Select</string>
+      <string>&amp;Select</string>
      </property>
      <addaction name="actionAll"/>
      <addaction name="actionNone"/>
@@ -453,7 +444,7 @@
     </widget>
     <widget class="QMenu" name="menuPaste_Special">
      <property name="title">
-      <string>Paste Special</string>
+      <string>Paste Specia&amp;l</string>
      </property>
      <addaction name="separator"/>
      <addaction name="actionMix"/>
@@ -472,11 +463,11 @@
    </widget>
    <widget class="QMenu" name="menuPattern">
     <property name="title">
-     <string>Pattern</string>
+     <string>&amp;Pattern</string>
     </property>
     <widget class="QMenu" name="menuTranspose">
      <property name="title">
-      <string>Transpose</string>
+      <string>&amp;Transpose</string>
      </property>
      <addaction name="actionDecrease_Note"/>
      <addaction name="actionIncrease_Note"/>
@@ -494,7 +485,7 @@
    </widget>
    <widget class="QMenu" name="menuSong">
     <property name="title">
-     <string>Song</string>
+     <string>&amp;Song</string>
     </property>
     <addaction name="actionInsert_Order"/>
     <addaction name="actionRemove_Order"/>
@@ -507,11 +498,11 @@
    </widget>
    <widget class="QMenu" name="menuModule">
     <property name="title">
-     <string>Module</string>
+     <string>&amp;Module</string>
     </property>
     <widget class="QMenu" name="menuCleanup">
      <property name="title">
-      <string>Cleanup</string>
+      <string>Clean&amp;up</string>
      </property>
      <addaction name="actionRemove_Unused_Instruments"/>
      <addaction name="actionRemove_Unused_Patterns"/>
@@ -525,7 +516,7 @@
    </widget>
    <widget class="QMenu" name="menuInstrument">
     <property name="title">
-     <string>Instrument</string>
+     <string>&amp;Instrument</string>
     </property>
     <addaction name="actionNew_Instrument"/>
     <addaction name="actionRemove_Instrument"/>
@@ -535,11 +526,13 @@
     <addaction name="actionLoad_From_File"/>
     <addaction name="actionSave_To_File"/>
     <addaction name="separator"/>
+    <addaction name="actionImport_From_Bank_File"/>
+    <addaction name="separator"/>
     <addaction name="actionEdit"/>
    </widget>
    <widget class="QMenu" name="menuTracker">
     <property name="title">
-     <string>Tracker</string>
+     <string>T&amp;racker</string>
     </property>
     <addaction name="actionPlay"/>
     <addaction name="actionPlay_Pattern"/>
@@ -550,14 +543,14 @@
     <addaction name="actionFollow_Mode"/>
     <addaction name="actionEdit_Mode"/>
     <addaction name="separator"/>
-    <addaction name="actionMute_Track"/>
+    <addaction name="actionToggle_Track"/>
     <addaction name="actionSolo_Track"/>
     <addaction name="separator"/>
     <addaction name="actionKill_Sound"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
@@ -600,11 +593,20 @@
    <addaction name="actionPlay_Pattern"/>
    <addaction name="actionStop"/>
    <addaction name="separator"/>
-   <addaction name="actionFollow_Mode"/>
-   <addaction name="separator"/>
    <addaction name="actionConfiguration"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="subToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
   <action name="actionNew">
    <property name="enabled">
     <bool>true</bool>
@@ -614,7 +616,7 @@
      <normaloff>:/icon/new</normaloff>:/icon/new</iconset>
    </property>
    <property name="text">
-    <string>New...</string>
+    <string>&amp;New...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -629,7 +631,7 @@
      <normaloff>:/icon/open</normaloff>:/icon/open</iconset>
    </property>
    <property name="text">
-    <string>Open...</string>
+    <string>&amp;Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -644,7 +646,7 @@
      <normaloff>:/icon/save</normaloff>:/icon/save</iconset>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>&amp;Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -655,12 +657,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Save As...</string>
+    <string>Save &amp;As...</string>
    </property>
   </action>
   <action name="actionExit">
    <property name="text">
-    <string>Exit</string>
+    <string>E&amp;xit</string>
    </property>
   </action>
   <action name="actionUndo">
@@ -672,7 +674,7 @@
      <normaloff>:/icon/undo</normaloff>:/icon/undo</iconset>
    </property>
    <property name="text">
-    <string>Undo</string>
+    <string>&amp;Undo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -687,7 +689,7 @@
      <normaloff>:/icon/redo</normaloff>:/icon/redo</iconset>
    </property>
    <property name="text">
-    <string>Redo</string>
+    <string>&amp;Redo</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
@@ -699,7 +701,7 @@
      <normaloff>:/icon/cut</normaloff>:/icon/cut</iconset>
    </property>
    <property name="text">
-    <string>Cut</string>
+    <string>Cu&amp;t</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -711,7 +713,7 @@
      <normaloff>:/icon/copy</normaloff>:/icon/copy</iconset>
    </property>
    <property name="text">
-    <string>Copy</string>
+    <string>&amp;Copy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -723,23 +725,15 @@
      <normaloff>:/icon/paste</normaloff>:/icon/paste</iconset>
    </property>
    <property name="text">
-    <string>Paste</string>
+    <string>&amp;Paste</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
    </property>
   </action>
-  <action name="actionPaste_Mix">
-   <property name="text">
-    <string>Paste And Mix</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+M</string>
-   </property>
-  </action>
   <action name="actionDelete">
    <property name="text">
-    <string>Delete</string>
+    <string>&amp;Delete</string>
    </property>
    <property name="shortcut">
     <string>Del</string>
@@ -747,7 +741,7 @@
   </action>
   <action name="actionAll">
    <property name="text">
-    <string>All</string>
+    <string>&amp;All</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -755,7 +749,7 @@
   </action>
   <action name="actionNone">
    <property name="text">
-    <string>None</string>
+    <string>&amp;None</string>
    </property>
    <property name="shortcut">
     <string>Esc</string>
@@ -766,7 +760,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Expand</string>
+    <string>E&amp;xpand</string>
    </property>
   </action>
   <action name="actionShrink">
@@ -774,12 +768,12 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Shrink</string>
+    <string>S&amp;hrink</string>
    </property>
   </action>
   <action name="actionDecrease_Note">
    <property name="text">
-    <string>Decrease Note</string>
+    <string>&amp;Decrease Note</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F1</string>
@@ -787,7 +781,7 @@
   </action>
   <action name="actionIncrease_Note">
    <property name="text">
-    <string>Increase Note</string>
+    <string>&amp;Increase Note</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F2</string>
@@ -795,7 +789,7 @@
   </action>
   <action name="actionDecrease_Octave">
    <property name="text">
-    <string>Decrease Octave</string>
+    <string>D&amp;ecrease Octave</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F3</string>
@@ -803,7 +797,7 @@
   </action>
   <action name="actionIncrease_Octave">
    <property name="text">
-    <string>Increase Octave</string>
+    <string>I&amp;ncrease Octave</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F4</string>
@@ -811,12 +805,12 @@
   </action>
   <action name="actionInsert_Order">
    <property name="text">
-    <string>Insert Order</string>
+    <string>&amp;Insert Order</string>
    </property>
   </action>
   <action name="actionRemove_Order">
    <property name="text">
-    <string>Remove Order</string>
+    <string>&amp;Remove Order</string>
    </property>
   </action>
   <action name="actionModule_Properties">
@@ -825,31 +819,43 @@
      <normaloff>:/icon/property</normaloff>:/icon/property</iconset>
    </property>
    <property name="text">
-    <string>Module Properties...</string>
+    <string>&amp;Module Properties...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
    </property>
   </action>
   <action name="actionNew_Instrument">
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/add_inst</normaloff>:/icon/add_inst</iconset>
+   </property>
    <property name="text">
-    <string>New Instrument</string>
+    <string>&amp;New Instrument</string>
    </property>
   </action>
   <action name="actionRemove_Instrument">
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/remove_inst</normaloff>:/icon/remove_inst</iconset>
+   </property>
    <property name="text">
-    <string>Remove Instrument</string>
+    <string>&amp;Remove Instrument</string>
    </property>
   </action>
   <action name="actionClone_Instrument">
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/clone_inst</normaloff>:/icon/clone_inst</iconset>
+   </property>
    <property name="text">
-    <string>Clone Instrument</string>
+    <string>&amp;Clone Instrument</string>
    </property>
   </action>
   <action name="actionDeep_Clone_Instrument">
@@ -857,31 +863,43 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Deep Clone Instrument</string>
+    <string>&amp;Deep Clone Instrument</string>
    </property>
   </action>
   <action name="actionLoad_From_File">
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/load_inst</normaloff>:/icon/load_inst</iconset>
+   </property>
    <property name="text">
-    <string>Load From File...</string>
+    <string>&amp;Load From File...</string>
    </property>
   </action>
   <action name="actionSave_To_File">
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/save_inst</normaloff>:/icon/save_inst</iconset>
+   </property>
    <property name="text">
-    <string>Save To File...</string>
+    <string>&amp;Save To File...</string>
    </property>
   </action>
   <action name="actionEdit">
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/edit_inst</normaloff>:/icon/edit_inst</iconset>
+   </property>
    <property name="text">
-    <string>Edit...</string>
+    <string>&amp;Edit...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -893,7 +911,7 @@
      <normaloff>:/icon/play</normaloff>:/icon/play</iconset>
    </property>
    <property name="text">
-    <string>Play</string>
+    <string>&amp;Play</string>
    </property>
   </action>
   <action name="actionPlay_Pattern">
@@ -902,7 +920,7 @@
      <normaloff>:/icon/play_pattern</normaloff>:/icon/play_pattern</iconset>
    </property>
    <property name="text">
-    <string>Play Pattern</string>
+    <string>Play P&amp;attern</string>
    </property>
    <property name="shortcut">
     <string>F6</string>
@@ -910,7 +928,7 @@
   </action>
   <action name="actionPlay_From_Start">
    <property name="text">
-    <string>Play From Start</string>
+    <string>Play &amp;From Start</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
@@ -918,7 +936,7 @@
   </action>
   <action name="actionPlay_From_Cursor">
    <property name="text">
-    <string>Play From Cursor</string>
+    <string>Play From C&amp;ursor</string>
    </property>
    <property name="shortcut">
     <string>F7</string>
@@ -930,7 +948,7 @@
      <normaloff>:/icon/stop</normaloff>:/icon/stop</iconset>
    </property>
    <property name="text">
-    <string>Stop</string>
+    <string>&amp;Stop</string>
    </property>
    <property name="shortcut">
     <string>F8</string>
@@ -941,15 +959,15 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Edit Mode</string>
+    <string>&amp;Edit Mode</string>
    </property>
    <property name="shortcut">
     <string>Space</string>
    </property>
   </action>
-  <action name="actionMute_Track">
+  <action name="actionToggle_Track">
    <property name="text">
-    <string>Mute Track</string>
+    <string>To&amp;ggle Track</string>
    </property>
    <property name="shortcut">
     <string>Alt+F9</string>
@@ -957,7 +975,7 @@
   </action>
   <action name="actionSolo_Track">
    <property name="text">
-    <string>Solo Track</string>
+    <string>S&amp;olo Track</string>
    </property>
    <property name="shortcut">
     <string>Alt+F10</string>
@@ -965,7 +983,7 @@
   </action>
   <action name="actionKill_Sound">
    <property name="text">
-    <string>Kill Sound</string>
+    <string>&amp;Kill Sound</string>
    </property>
    <property name="shortcut">
     <string>F12</string>
@@ -973,7 +991,7 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About...</string>
+    <string>&amp;About...</string>
    </property>
   </action>
   <action name="actionFollow_Mode">
@@ -984,7 +1002,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Follow Mode</string>
+    <string>Fo&amp;llow Mode</string>
    </property>
    <property name="shortcut">
     <string>ScrollLock</string>
@@ -992,7 +1010,7 @@
   </action>
   <action name="actionGroove_Settings">
    <property name="text">
-    <string>Groove Settings...</string>
+    <string>&amp;Groove Settings...</string>
    </property>
   </action>
   <action name="actionConfiguration">
@@ -1001,12 +1019,12 @@
      <normaloff>:/icon/config</normaloff>:/icon/config</iconset>
    </property>
    <property name="text">
-    <string>Configuration...</string>
+    <string>&amp;Configuration...</string>
    </property>
   </action>
   <action name="actionDuplicate_Order">
    <property name="text">
-    <string>Duplicate Order</string>
+    <string>&amp;Duplicate Order</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -1014,17 +1032,17 @@
   </action>
   <action name="actionMove_Order_Up">
    <property name="text">
-    <string>Move Order Up</string>
+    <string>Move Order &amp;Up</string>
    </property>
   </action>
   <action name="actionMove_Order_Down">
    <property name="text">
-    <string>Move Order Down</string>
+    <string>Move Order Do&amp;wn</string>
    </property>
   </action>
   <action name="actionClone_Patterns">
    <property name="text">
-    <string>Clone Patterns</string>
+    <string>&amp;Clone Patterns</string>
    </property>
    <property name="shortcut">
     <string>Alt+D</string>
@@ -1032,12 +1050,12 @@
   </action>
   <action name="actionClone_Order">
    <property name="text">
-    <string>Clone Order</string>
+    <string>Clone &amp;Order</string>
    </property>
   </action>
   <action name="actionComments">
    <property name="text">
-    <string>Comments...</string>
+    <string>&amp;Comments...</string>
    </property>
   </action>
   <action name="actionInterpolate">
@@ -1045,7 +1063,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Interpolate</string>
+    <string>&amp;Interpolate</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
@@ -1056,7 +1074,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Reverse</string>
+    <string>&amp;Reverse</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -1067,7 +1085,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Replace Instrument</string>
+    <string>R&amp;eplace Instrument</string>
    </property>
    <property name="shortcut">
     <string>Alt+S</string>
@@ -1075,52 +1093,47 @@
   </action>
   <action name="actionRow">
    <property name="text">
-    <string>Row</string>
+    <string>&amp;Row</string>
    </property>
   </action>
   <action name="actionColumn">
    <property name="text">
-    <string>Column</string>
+    <string>&amp;Column</string>
    </property>
   </action>
   <action name="actionPattern">
    <property name="text">
-    <string>Pattern</string>
+    <string>&amp;Pattern</string>
    </property>
   </action>
   <action name="actionOrder">
    <property name="text">
-    <string>Order</string>
+    <string>&amp;Order</string>
    </property>
   </action>
   <action name="actionRemove_Unused_Instruments">
    <property name="text">
-    <string>Remove Unused Instruments</string>
+    <string>Remove Unused &amp;Instruments</string>
    </property>
   </action>
   <action name="actionRemove_Unused_Patterns">
    <property name="text">
-    <string>Remove Unused Patterns</string>
+    <string>Remove Unused &amp;Patterns</string>
    </property>
   </action>
   <action name="actionWAV">
    <property name="text">
-    <string>WAV...</string>
+    <string>&amp;WAV...</string>
    </property>
   </action>
   <action name="actionVGM">
    <property name="text">
-    <string>VGM...</string>
-   </property>
-  </action>
-  <action name="actionPaste_Overwrite">
-   <property name="text">
-    <string>Paste Overwrite</string>
+    <string>&amp;VGM...</string>
    </property>
   </action>
   <action name="actionMix">
    <property name="text">
-    <string>Mix</string>
+    <string>&amp;Mix</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
@@ -1128,7 +1141,17 @@
   </action>
   <action name="actionOverwrite">
    <property name="text">
-    <string>Overwrite</string>
+    <string>&amp;Overwrite</string>
+   </property>
+  </action>
+  <action name="actionImport_From_Bank_File">
+   <property name="text">
+    <string>&amp;Import From Bank File...</string>
+   </property>
+  </action>
+  <action name="actionS98">
+   <property name="text">
+    <string>&amp;S98...</string>
    </property>
   </action>
  </widget>
@@ -1158,8 +1181,6 @@
   <tabstop>copyrightLineEdit</tabstop>
   <tabstop>tickFreqSpinBox</tabstop>
   <tabstop>modSetDialogOpenToolButton</tabstop>
-  <tabstop>stepHighrightSpinBox</tabstop>
-  <tabstop>octaveSpinBox</tabstop>
   <tabstop>songNumSpinBox</tabstop>
   <tabstop>songTitleLineEdit</tabstop>
   <tabstop>songStyleLineEdit</tabstop>

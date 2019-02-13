@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui multimedia
+CONFIG   += lrelease
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,6 +22,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+
+# This produces the installation rule for the program and resources.
+# Use a default destination prefix if none is given.
+isEmpty(PREFIX) {
+    win32:PREFIX = C:/BambooTracker
+    else:PREFIX = /usr/local
+}
+INSTALLS += target
+win32 {
+    QM_FILES_INSTALL_PATH = $$PREFIX/lang
+    target.path = $$PREFIX
+}
+else {
+    QM_FILES_INSTALL_PATH = $$PREFIX/share/BambooTracker/lang
+    target.path = $$PREFIX/bin
+}
 
 CONFIG += c++14
 
@@ -157,10 +174,21 @@ SOURCES += \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
-    gui/json.cpp \
+    gui/configuration_handler.cpp \
     gui/color_palette.cpp \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.cpp \
-    command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp
+    command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp \
+    io/file_io_error.cpp \
+    format/wopn_file.c \
+    instrument/bank.cpp \
+    gui/instrument_selection_dialog.cpp \
+    gui/s98_export_settings_dialog.cpp \
+    stream/timer.cpp \
+    io/module_io.cpp \
+    io/export_handler.cpp \
+    io/instrument_io.cpp \
+    io/bank_io.cpp \
+    gui/fm_envelope_set_edit_dialog.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -309,10 +337,25 @@ HEADERS += \
     gui/wave_export_settings_dialog.hpp \
     io/gd3_tag.hpp \
     configuration.hpp \
-    gui/json.hpp \
+    gui/configuration_handler.hpp \
     gui/color_palette.hpp \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.hpp \
-    command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp
+    command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp \
+    io/file_io_error.hpp \
+    format/wopn_file.h \
+    instrument/bank.hpp \
+    gui/instrument_selection_dialog.hpp \
+    io/s98_tag.hpp \
+    gui/s98_export_settings_dialog.hpp \
+    chips/scci/scci.h \
+    chips/scci/SCCIDefines.h \
+    stream/timer.hpp \
+    io/module_io.hpp \
+    io/io_handlers.hpp \
+    io/export_handler.hpp \
+    io/instrument_io.hpp \
+    io/bank_io.hpp \
+    gui/fm_envelope_set_edit_dialog.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -329,7 +372,10 @@ FORMS += \
     gui/configuration_dialog.ui \
     gui/comment_edit_dialog.ui \
     gui/vgm_export_settings_dialog.ui \
-    gui/wave_export_settings_dialog.ui
+    gui/wave_export_settings_dialog.ui \
+    gui/instrument_selection_dialog.ui \
+    gui/s98_export_settings_dialog.ui \
+    gui/fm_envelope_set_edit_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \
@@ -341,3 +387,8 @@ INCLUDEPATH += \
 
 RESOURCES += \
     bamboo_tracker.qrc
+
+TRANSLATIONS += \
+    res/lang/bamboo_tracker_fr.ts
+
+RC_ICONS = res/icon/BambooTracker.ico

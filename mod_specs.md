@@ -1,12 +1,16 @@
-# BambooTracker Module File (.btm) Format Specification v1.0.0
+# BambooTracker Module File (.btm) Format Specification
+ v1.0.2 - 2018-12-29
+
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
+
+---
 
 | Type              | Field           | Description                                                               |
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
 | string (16 bytes) | File identifier | Format string, must be `BambooTrackerMod`.                                |
 | uint32            | EOF offset      | Relative offset to end of file. i.e. File length - 18.                    |
-| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.0.0 is stored as `0x00010000`. |
+| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.0.1 is stored as `0x00010001`. |
 
 
 ## Module Section
@@ -182,6 +186,19 @@ There is release details in the end of subsequence block.
 | uint8  | Release type  | `0x00`: no release, `0x01`: fix, `0x02`: absolute, `0x03`: releative.                            |
 | uint16 | Release point | Count from head of sequence where loop starts. If release type is `0x00`, this field is omitted. |
 
+| Type  | Field         | Description                                    |
+| ----- | ------------- | ---------------------------------------------- |
+| uint8 | Sequence type | Type of sequence. See table below for details. |
+
+Sequence type is defined as:
+
+| Value  | Type      |
+| ------ | --------- |
+| `0x00` | Absolute. |
+| `0x01` | Fix.      |
+| `0x02` | Relative. |
+
+FM/SSG arpeggio can be selected from all of these, FM/SSG pitch can be absolute or relative, and other properties must be set to `0x00`.
 
 ## Groove Section
 | Type            | Field                 | Description                               |
@@ -223,9 +240,9 @@ Each song block is defined as:
 
 Song type defined number and order of tracks.
 
-| Type              | Track1 | Track2 | Track3 | Track4 | Track5 | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 | Track15 |
-| ----------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- | ------- |
-| `0x00` (Standard) | FM1ch  | FM2ch  | FM3ch  | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch | SSG3ch | BD      | SD      | TOP     | HH      | TOM     | RIM     |
+| Type              | Track0 | Track1 | Track2 | Track3 | Track4 | Track5 | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 |
+| ----------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- |
+| `0x00` (Standard) | FM1ch  | FM2ch  | FM3ch  | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     |
 
 Current version (v1.0.0) is only stored as `0x00`.
 
@@ -288,3 +305,12 @@ Key event details:
 | -4    | Echo buffer 1 access.                                                               |
 | -5    | Echo buffer 2 access.                                                               |
 | -6    | Echo buffer 3 access.                                                               |
+
+---
+
+## History
+| Version | Date       | Detail                                     |
+| ------- | ---------- | ------------------------------------------ |
+| 1.0.2   | 2018-12-29 | Revised for the change of FM octave range. |
+| 1.0.1   | 2018-12-10 | Added instrument sequence type.            |
+| 1.0.0   | 2018-11-23 | Initial release.                           |

@@ -3,7 +3,10 @@
 
 #include <QDialog>
 #include <memory>
+#include <map>
+#include <vector>
 #include "configuration.hpp"
+#include "misc.hpp"
 
 namespace Ui {
 	class ConfigurationDialog;
@@ -36,6 +39,27 @@ private:
 	{
 		return (state == Qt::Checked) ? true : false;
 	}
+
+	/***** General *****/
+private slots:
+	void on_generalSettingsListWidget_itemSelectionChanged();
+
+	/***** Mixer *****/
+private slots:
+	void on_mixerResetPushButton_clicked();
+
+	/***** Input *****/
+private:
+	std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap_;
+
+	void updateEnvelopeSetUi();
+
+private slots:
+	void on_addEnvelopeSetPushButton_clicked();
+	void on_removeEnvelopeSetpushButton_clicked();
+	void on_editEnvelopeSetPushButton_clicked();
+	void on_envelopeSetNameLineEdit_textChanged(const QString &arg1);
+	void on_envelopeTypeListWidget_currentRowChanged(int currentRow);
 };
 
 #endif // CONFIGURATION_DIALOG_HPP

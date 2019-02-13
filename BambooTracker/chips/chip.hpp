@@ -31,7 +31,8 @@ namespace chip
 		
 		void setExportContainer(std::shared_ptr<ExportContainerInterface> cntr = nullptr);
 
-		/*virtual void setVolume(float db) = 0;*/
+		void setMasterVolume(int percentage);
+
 		virtual void mix(int16_t* stream, size_t nSamples) = 0;
 
 	protected:
@@ -43,9 +44,8 @@ namespace chip
 		int internalRate_[2];
 		size_t maxDuration_;
 
-		/*float dB_[2];*/
-		float volumeRatio_[2];
-		/*static const int MAX_AMP_;*/
+		double masterVolumeRatio_;
+		double volumeRatio_[2];
 
 		sample* buffer_[2][2];
 		std::unique_ptr<AbstractResampler> resampler_[2];

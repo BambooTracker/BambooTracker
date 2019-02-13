@@ -13,7 +13,7 @@ class Track
 {
 public:
 	Track(int number, SoundSource source, int channelInSource, int defPattenSize);
-	explicit Track(const Track& other);
+	Track(const Track& other);
 	TrackAttribute getAttribute() const;
 	OrderData getOrderData(int order);
 	size_t getOrderSize() const;

@@ -115,6 +115,7 @@ void Module::addSong(int n, SongType songType, std::string title, bool isUsedTem
 void Module::sortSongs(std::vector<int> numbers)
 {
 	std::vector<Song> newSongs;
+	newSongs.reserve(songs_.size());
 
 	for (auto& n : numbers) {
 		auto it = std::make_move_iterator(songs_.begin() + n);

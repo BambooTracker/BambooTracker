@@ -50,16 +50,63 @@ InstrumentsManager::InstrumentsManager()
 
 void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::string name)
 {
-	if (instNum < 0 || 127 < instNum) return;
+	if (instNum < 0 || insts_.size() <= instNum) return;
 
 	switch (source) {
 	case SoundSource::FM:
-		insts_.at(instNum) = std::make_shared<InstrumentFM>(instNum, name, this);
-		envFM_.at(0)->registerUserInstrument(instNum);	// Setted 0 in init
+	{
+		auto fm = std::make_shared<InstrumentFM>(instNum, name, this);
+		int envNum = findFirstFreePlainEnvelopeFM();
+		if (envNum == -1) envNum = envFM_.size() - 1;
+		fm->setEnvelopeNumber(envNum);
+		envFM_.at(envNum)->registerUserInstrument(instNum);
+		int lfoNum = findFirstFreePlainLFOFM();
+		if (lfoNum == -1) lfoNum = lfoFM_.size() - 1;
+		fm->setLFONumber(lfoNum);
+		fm->setLFOEnabled(false);
+		for (auto param : envFMParams_) {
+			int opSeqNum = findFirstFreePlainOperatorSequenceFM(param);
+			if (opSeqNum == -1) opSeqNum = opSeqFM_.at(param).size() - 1;
+			fm->setOperatorSequenceNumber(param, opSeqNum);
+			fm->setOperatorSequenceEnabled(param, false);
+		}
+		int arpNum = findFirstFreePlainArpeggioFM();
+		if (arpNum == -1) arpNum = arpFM_.size() - 1;
+		fm->setArpeggioNumber(arpNum);
+		fm->setArpeggioEnabled(false);
+		int ptNum = findFirstFreePlainPitchFM();
+		if (ptNum == -1) ptNum = ptFM_.size() - 1;
+		fm->setPitchNumber(ptNum);
+		fm->setPitchEnabled(false);
+		insts_.at(instNum) = std::move(fm);
 		break;
+	}
 	case SoundSource::SSG:
-		insts_.at(instNum) = std::make_shared<InstrumentSSG>(instNum, name, this);
+	{
+		auto ssg = std::make_shared<InstrumentSSG>(instNum, name, this);
+		int wfNum = findFirstFreePlainWaveFormSSG();
+		if (wfNum == -1) wfNum = wfSSG_.size() - 1;
+		ssg->setWaveFormNumber(wfNum);
+		ssg->setWaveFormEnabled(false);
+		int tnNum = findFirstFreePlainToneNoiseSSG();
+		if (tnNum == -1) tnNum = tnSSG_.size() - 1;
+		ssg->setToneNoiseNumber(tnNum);
+		ssg->setToneNoiseEnabled(false);
+		int envNum = findFirstFreePlainEnvelopeSSG();
+		if (envNum == -1) envNum = envSSG_.size() - 1;
+		ssg->setEnvelopeNumber(envNum);
+		ssg->setEnvelopeEnabled(false);
+		int arpNum = findFirstFreePlainArpeggioSSG();
+		if (arpNum == -1) arpNum = arpSSG_.size() - 1;
+		ssg->setArpeggioNumber(arpNum);
+		ssg->setArpeggioEnabled(false);
+		int ptNum = findFirstFreePlainPitchSSG();
+		if (ptNum == -1) ptNum = ptSSG_.size() - 1;
+		ssg->setPitchNumber(ptNum);
+		ssg->setPitchEnabled(false);
+		insts_.at(instNum) = std::move(ssg);
 		break;
+	}
 	default:
 		break;
 	}
@@ -155,7 +202,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(cloneInstNum));
 		
-		envFM_[0]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
+		envFM_[cloneFm->getEnvelopeNumber()]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
 		int envNum = cloneFMEnvelope(refFm->getEnvelopeNumber());
 		cloneFm->setEnvelopeNumber(envNum);
 		envFM_[envNum]->registerUserInstrument(cloneInstNum);
@@ -401,14 +448,13 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	}
 
 	std::unique_ptr<AbstractInstrument> clone = insts_[instNum]->clone();
-	insts_[instNum]->setNumber(-1);	// Unregistered number
 	insts_[instNum].reset();
 	return clone;
 }
 
 std::shared_ptr<AbstractInstrument> InstrumentsManager::getInstrumentSharedPtr(int instNum)
 {
-	if (0 <= instNum && instNum < 128 && insts_.at(instNum) != nullptr) {
+	if (0 <= instNum && instNum < insts_.size() && insts_.at(instNum) != nullptr) {
 		return insts_[instNum];
 	}
 	else {
@@ -573,6 +619,15 @@ int InstrumentsManager::findFirstFreeEnvelopeFM() const
 	return -1;
 }
 
+int InstrumentsManager::findFirstFreePlainEnvelopeFM() const
+{
+	size_t i = 0;
+	for (size_t i = 0; i < envFM_.size(); ++i) {
+		if (!envFM_[i]->isUserInstrument() && !envFM_[i]->isEdited()) return i;
+	}
+	return -1;
+}
+
 void InstrumentsManager::setInstrumentFMLFOEnabled(int instNum, bool enabled)
 {
 	auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(instNum));
@@ -630,6 +685,14 @@ int InstrumentsManager::findFirstFreeLFOFM() const
 {
 	for (size_t i = 0; i < lfoFM_.size(); ++i) {
 		if (!lfoFM_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
+int InstrumentsManager::findFirstFreePlainLFOFM() const
+{
+	for (size_t i = 0; i < lfoFM_.size(); ++i) {
+		if (!lfoFM_[i]->isUserInstrument() && !lfoFM_[i]->isEdited()) return i;
 	}
 	return -1;
 }
@@ -729,6 +792,14 @@ int InstrumentsManager::findFirstFreeOperatorSequenceFM(FMEnvelopeParameter para
 {
 	for (size_t i = 0; i < opSeqFM_.at(param).size(); ++i) {
 		if (!opSeqFM_.at(param)[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
+int InstrumentsManager::findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter param) const
+{
+	for (size_t i = 0; i < opSeqFM_.at(param).size(); ++i) {
+		if (!opSeqFM_.at(param)[i]->isUserInstrument() && !opSeqFM_.at(param)[i]->isEdited()) return i;
 	}
 	return -1;
 }
@@ -838,6 +909,14 @@ int InstrumentsManager::findFirstFreeArpeggioFM() const
 {
 	for (size_t i = 0; i < arpFM_.size(); ++i) {
 		if (!arpFM_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
+int InstrumentsManager::findFirstFreePlainArpeggioFM() const
+{
+	for (size_t i = 0; i < arpFM_.size(); ++i) {
+		if (!arpFM_[i]->isUserInstrument() && !arpFM_[i]->isEdited()) return i;
 	}
 	return -1;
 }
@@ -956,6 +1035,14 @@ int InstrumentsManager::findFirstFreePitchFM() const
 	return -1;
 }
 
+int InstrumentsManager::findFirstFreePlainPitchFM() const
+{
+	for (size_t i = 0; i < ptFM_.size(); ++i) {
+		if (!ptFM_[i]->isUserInstrument() && !ptFM_[i]->isEdited()) return i;
+	}
+	return -1;
+}
+
 //----- SSG methods -----
 void InstrumentsManager::setInstrumentSSGWaveFormEnabled(int instNum, bool enabled)
 {
@@ -1052,6 +1139,14 @@ int InstrumentsManager::findFirstFreeWaveFormSSG() const
 {
 	for (size_t i = 0; i < wfSSG_.size(); ++i) {
 		if (!wfSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
+int InstrumentsManager::findFirstFreePlainWaveFormSSG() const
+{
+	for (size_t i = 0; i < wfSSG_.size(); ++i) {
+		if (!wfSSG_[i]->isUserInstrument() && !wfSSG_[i]->isEdited()) return i;
 	}
 	return -1;
 }
@@ -1155,6 +1250,14 @@ int InstrumentsManager::findFirstFreeToneNoiseSSG() const
 	return -1;
 }
 
+int InstrumentsManager::findFirstFreePlainToneNoiseSSG() const
+{
+	for (size_t i = 0; i < tnSSG_.size(); ++i) {
+		if (!tnSSG_[i]->isUserInstrument() && !tnSSG_[i]->isEdited()) return i;
+	}
+	return -1;
+}
+
 void InstrumentsManager::setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
@@ -1250,6 +1353,14 @@ int InstrumentsManager::findFirstFreeEnvelopeSSG() const
 {
 	for (size_t i = 0; i < envSSG_.size(); ++i) {
 		if (!envSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
+int InstrumentsManager::findFirstFreePlainEnvelopeSSG() const
+{
+	for (size_t i = 0; i < envSSG_.size(); ++i) {
+		if (!envSSG_[i]->isUserInstrument() && !envSSG_[i]->isEdited()) return i;
 	}
 	return -1;
 }
@@ -1363,6 +1474,14 @@ int InstrumentsManager::findFirstFreeArpeggioSSG() const
 	return -1;
 }
 
+int InstrumentsManager::findFirstFreePlainArpeggioSSG() const
+{
+	for (size_t i = 0; i < arpSSG_.size(); ++i) {
+		if (!arpSSG_[i]->isUserInstrument() && !arpSSG_[i]->isEdited()) return i;
+	}
+	return -1;
+}
+
 void InstrumentsManager::setInstrumentSSGPitchEnabled(int instNum, bool enabled)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(instNum));
@@ -1468,6 +1587,14 @@ int InstrumentsManager::findFirstFreePitchSSG() const
 {
 	for (size_t i = 0; i < ptSSG_.size(); ++i) {
 		if (!ptSSG_[i]->isUserInstrument()) return i;
+	}
+	return -1;
+}
+
+int InstrumentsManager::findFirstFreePlainPitchSSG() const
+{
+	for (size_t i = 0; i < ptSSG_.size(); ++i) {
+		if (!ptSSG_[i]->isUserInstrument() && !ptSSG_[i]->isEdited()) return i;
 	}
 	return -1;
 }

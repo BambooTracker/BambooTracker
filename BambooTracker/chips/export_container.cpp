@@ -38,7 +38,9 @@ namespace chip
 	VgmExportContainer::VgmExportContainer(uint32_t intrRate)
 		: lastWait_(0),
 		  totalSampCnt_(0),
-		  intrRate_(intrRate)
+		  intrRate_(intrRate),
+		  isSetLoop_(false),
+		  loopPoint_(0)
 	{
 	}
 
@@ -67,6 +69,8 @@ namespace chip
 		buf_.clear();
 		lastWait_ = 0;
 		totalSampCnt_ = 0;
+		isSetLoop_ = false;
+		loopPoint_ = 0;
 	}
 
 	bool VgmExportContainer::empty() const
@@ -83,6 +87,19 @@ namespace chip
 	size_t VgmExportContainer::getSampleLength() const
 	{
 		return totalSampCnt_;
+	}
+
+	size_t VgmExportContainer::setLoopPoint()
+	{
+		if (lastWait_) setWait();
+		isSetLoop_ = true;
+		return loopPoint_;
+	}
+
+	size_t VgmExportContainer::forceMoveLoopPoint()
+	{
+		loopPoint_ = buf_.size();
+		return loopPoint_;
 	}
 
 	void VgmExportContainer::setWait()
@@ -142,8 +159,8 @@ namespace chip
 						buf_.push_back(lastWait_ & 0x00ff);
 						buf_.push_back(lastWait_ >> 8);
 					}
+					sub = lastWait_;
 				}
-				sub = lastWait_;
 			}
 			else if (intrRate_ == 60) {
 				if (lastWait_ > 65535) {
@@ -197,8 +214,8 @@ namespace chip
 						buf_.push_back(lastWait_ & 0x00ff);
 						buf_.push_back(lastWait_ >> 8);
 					}
+					sub = lastWait_;
 				}
-				sub = lastWait_;
 			}
 			else {
 				if (lastWait_ > 65535) {
@@ -217,5 +234,92 @@ namespace chip
 
 			lastWait_ -= sub;
 		}
+
+		if (!isSetLoop_) loopPoint_ = buf_.size();
+	}
+
+	//******************************//
+	S98ExportContainer::S98ExportContainer()
+		: lastWait_(0),
+		  totalSampCnt_(0),
+		  isSetLoop_(false),
+		  loopPoint_(0)
+	{
+	}
+
+	void S98ExportContainer::recordRegisterChange(uint32_t offset, uint8_t value)
+	{
+		if (lastWait_) setWait();
+
+		if (offset & 0x100) {
+			buf_.push_back(0x01);
+		}
+		else {
+			buf_.push_back(0x00);
+		}
+		buf_.push_back(offset & 0x000000ff);
+		buf_.push_back(value);
+	}
+
+	void S98ExportContainer::recordStream(int16_t* stream, size_t nSamples)
+	{
+		lastWait_ += nSamples;
+		totalSampCnt_ += nSamples;
+	}
+
+	void S98ExportContainer::clear()
+	{
+		buf_.clear();
+		lastWait_ = 0;
+		totalSampCnt_ = 0;
+		isSetLoop_ = false;
+		loopPoint_ = 0;
+	}
+
+	bool S98ExportContainer::empty() const
+	{
+		return (buf_.empty() || lastWait_ != 0);
+	}
+
+	std::vector<uint8_t> S98ExportContainer::getData()
+	{
+		if (lastWait_) setWait();
+		return buf_;
+	}
+
+	size_t S98ExportContainer::getSampleLength() const
+	{
+		return totalSampCnt_;
+	}
+
+	size_t S98ExportContainer::setLoopPoint()
+	{
+		if (lastWait_) setWait();
+		isSetLoop_ = true;
+		return loopPoint_;
+	}
+
+	size_t S98ExportContainer::forceMoveLoopPoint()
+	{
+		loopPoint_ = buf_.size();
+		return loopPoint_;
+	}
+
+	void S98ExportContainer::setWait()
+	{
+		if (lastWait_ == 1) {
+			buf_.push_back(0xff);
+		}
+		else {
+			buf_.push_back(0xfe);
+			do {
+				uint8_t b = lastWait_ & 0x7f;
+				lastWait_ >>= 7;
+				if (lastWait_ > 0) b |= 0x80;
+				buf_.push_back(b);
+			} while (lastWait_ > 0);
+		}
+		if (!isSetLoop_) loopPoint_ = buf_.size();
+		lastWait_ = 0;
 	}
 }

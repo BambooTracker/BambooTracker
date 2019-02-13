@@ -15,5 +15,12 @@
         <file alias="property">res/icon/if_table_edit_5800.png</file>
         <file alias="inst_ssg">res/icon/inst_ssg.png</file>
         <file alias="inst_fm">res/icon/inst_fm.png</file>
+        <file alias="app_icon">res/icon/BambooTracker.ico</file>
+        <file alias="add_inst">res/icon/iconfinder_add_4941.png</file>
+        <file alias="remove_inst">res/icon/iconfinder_cross_5233.png</file>
+        <file alias="clone_inst">res/icon/iconfinder_page_copy_5551.png</file>
+        <file alias="load_inst">res/icon/iconfinder_page_white_get_5593.png</file>
+        <file alias="save_inst">res/icon/iconfinder_page_white_put_5609.png</file>
+        <file alias="edit_inst">res/icon/iconfinder_pencil_5631.png</file>
     </qresource>
 </RCC>

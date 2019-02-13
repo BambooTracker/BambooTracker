@@ -36,6 +36,9 @@ public:
 	virtual ~CommandSequence() = default;
 	std::unique_ptr<CommandSequence> clone();
 
+	/// 0: Absolute
+	/// 1: Fix
+	/// 2: Relative
 	void setType(int type);
 	int getType() const;
 

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>S98ExportSettingsDialog</class>
+ <widget class="QDialog" name="S98ExportSettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>300</width>
+    <height>320</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>S98 export settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="tagGroupBox">
+     <property name="title">
+      <string>Tag</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="titleLabel">
+        <property name="text">
+         <string>Title</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="titleLineEdit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="artistLabel">
+        <property name="text">
+         <string>Artist</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="artistLineEdit"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="gameLabel">
+        <property name="text">
+         <string>Game</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="gameLineEdit"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="yearLabel">
+        <property name="text">
+         <string>Year</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="yearLineEdit"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="genreLabel">
+        <property name="text">
+         <string>Genre</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="genreLineEdit"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="commentLabel">
+        <property name="text">
+         <string>Comment</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="commentLineEdit"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="copyrightLabel">
+        <property name="text">
+         <string>Copyright</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="copyrightLineEdit"/>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="s98byLabel">
+        <property name="text">
+         <string>S98by</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="s98byLineEdit"/>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="systemLabel">
+        <property name="text">
+         <string>System</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="systemLineEdit">
+        <property name="text">
+         <string>NEC PC-9801</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>S98ExportSettingsDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>S98ExportSettingsDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

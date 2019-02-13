@@ -43,7 +43,7 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	fontLeading_ = metrics.leading();
 
 	/* Width & height */
-	tagWidth_ = metrics.width("Release ");
+	tagWidth_ = metrics.width(VisualizedInstrumentMacroEditor::tr("Release "));
 
 	ui->panel->setAttribute(Qt::WA_Hover);
 	ui->verticalScrollBar->setVisible(false);
@@ -150,7 +150,7 @@ void VisualizedInstrumentMacroEditor::addSequenceCommand(int row, QString str, i
 	updateColumnWidth();
 	ui->panel->update();
 
-	ui->colSizeLabel->setText("Size: " + QString::number(cols_.size()));
+	ui->colSizeLabel->setText(tr("Size: %1").arg(cols_.size()));
 
 	makeMML();
 
@@ -182,7 +182,7 @@ void VisualizedInstrumentMacroEditor::removeSequenceCommand()
 	updateColumnWidth();
 	ui->panel->update();
 
-	ui->colSizeLabel->setText("Size: " + QString::number(cols_.size()));
+	ui->colSizeLabel->setText(tr("Size: %1").arg(cols_.size()));
 
 	makeMML();
 
@@ -319,7 +319,7 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 
 	painter.fillRect(0, loopY_, ui->panel->geometry().width(), fontHeight_, palette_->instSeqLoopBackColor);
 	painter.setPen(palette_->instSeqLoopTextColor);
-	painter.drawText(1, loopBaseY_, "Loop");
+	painter.drawText(1, loopBaseY_, tr("Loop"));
 
 	int w = tagWidth_;
 	for (int i = 0; i < cols_.size(); ++i) {
@@ -329,7 +329,7 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 				if (loops_[j].begin == i) {
 					painter.fillRect(w, loopY_, 2, fontHeight_, palette_->instSeqLoopEdgeColor);
 					QString times = (loops_[j].times == 1) ? "" : QString::number(loops_[j].times);
-					painter.drawText(w + 2, loopBaseY_, "Loop " + times);
+					painter.drawText(w + 2, loopBaseY_, tr("Loop %1").arg(times));
 				}
 				if (loops_[j].end == i) {
 					painter.fillRect(w + colWidths_[i] - 2, loopY_, 2, fontHeight_, palette_->instSeqLoopEdgeColor);
@@ -349,7 +349,7 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 
 	painter.fillRect(0, releaseY_, ui->panel->geometry().width(), fontHeight_, palette_->instSeqReleaseBackColor);
 	painter.setPen(palette_->instSeqReleaseTextColor);
-	painter.drawText(1, releaseBaseY_, "Release");
+	painter.drawText(1, releaseBaseY_, tr("Release"));
 
 	int w = tagWidth_;
 	for (int i = 0; i < cols_.size(); ++i) {
@@ -362,13 +362,13 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 				type = "";
 				break;
 			case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
-				type = "Fix";
+				type = tr("Fix");
 				break;
 			case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
-				type = "Absolute";
+				type = tr("Absolute");
 				break;
 			case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
-				type = "Relative";
+				type = tr("Relative");
 				break;
 			}
 			painter.setPen(palette_->instSeqReleaseTextColor);

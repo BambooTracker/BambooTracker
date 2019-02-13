@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>479</width>
-    <height>313</height>
+    <width>500</width>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,9 +31,58 @@
      </property>
      <widget class="QWidget" name="generalTab">
       <attribute name="title">
-       <string>Genaral</string>
+       <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="keysGroupBox">
+         <property name="title">
+          <string>Keys</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="keyOffLabel">
+            <property name="text">
+             <string>Key off</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QKeySequenceEdit" name="keyOffKeySequenceEdit"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="octaveUpLabel">
+            <property name="text">
+             <string>Octave up</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QKeySequenceEdit" name="octaveUpKeySequenceEdit"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="octaveDownLabel">
+            <property name="text">
+             <string>Octave down</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QKeySequenceEdit" name="octaveDownKeySequenceEdit"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="echoBufferLabel">
+            <property name="text">
+             <string>Echo buffer</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QKeySequenceEdit" name="echoBufferKeySequenceEdit"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QGroupBox" name="editSettingsGroupBox">
          <property name="title">
@@ -43,7 +92,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="pageJumpLengthLabel">
             <property name="text">
-             <string>Page jump length:</string>
+             <string>Page jump length</string>
             </property>
            </widget>
           </item>
@@ -63,7 +112,7 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -76,12 +125,12 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="0" rowspan="2">
+       <item row="0" column="0" rowspan="3">
         <widget class="QGroupBox" name="generalSettingsGroupBox">
          <property name="title">
           <string>General settings</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_5">
+         <layout class="QGridLayout" name="gridLayout_5" rowstretch="9,1">
           <item row="0" column="0">
            <widget class="QListWidget" name="generalSettingsListWidget">
             <item>
@@ -140,6 +189,35 @@
               <enum>Checked</enum>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Move cursor to right</string>
+             </property>
+             <property name="checkState">
+              <enum>Unchecked</enum>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Retrieve channel state</string>
+             </property>
+             <property name="checkState">
+              <enum>Unchecked</enum>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPlainTextEdit" name="descPlainTextEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="plainText">
+             <string>Description:</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -199,7 +277,7 @@
           <item row="1" column="0" alignment="Qt::AlignHCenter">
            <widget class="QLabel" name="bufferLengthLabel">
             <property name="text">
-             <string>TextLabel</string>
+             <string>1ms</string>
             </property>
            </widget>
           </item>
@@ -215,8 +293,164 @@
           <item row="0" column="0">
            <widget class="QComboBox" name="soundDeviceComboBox"/>
           </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="useSCCICheckBox">
+            <property name="text">
+             <string>Use SCCI (beta)</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="mixerTab">
+      <attribute name="title">
+       <string>Mixer</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="0" column="1" rowspan="2">
+        <widget class="QGroupBox" name="mixerPartGroupBox">
+         <property name="title">
+          <string>Part</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_11">
+          <item row="1" column="0">
+           <widget class="LabeledVerticalSlider" name="fmMixerSlider">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="LabeledVerticalSlider" name="ssgMixerSlider">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="0" column="1">
+             <widget class="QPushButton" name="mixerResetPushButton">
+              <property name="text">
+               <string>Reset</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" rowspan="2">
+        <widget class="LabeledVerticalSlider" name="masterMixerSlider">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="inputTab">
+      <attribute name="title">
+       <string>Input</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_12">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="fmEnvelopeTextGoupBox">
+         <property name="title">
+          <string>FM envelope text</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_13">
+          <item row="2" column="1">
+           <widget class="QPushButton" name="addEnvelopeSetPushButton">
+            <property name="text">
+             <string>Add</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QPushButton" name="editEnvelopeSetPushButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Edit</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" rowspan="4">
+           <widget class="QListWidget" name="envelopeTypeListWidget"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QPushButton" name="removeEnvelopeSetpushButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Remove</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLineEdit" name="envelopeSetNameLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -224,6 +458,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LabeledVerticalSlider</class>
+   <extends>QFrame</extends>
+   <header>gui/labeled_vertical_slider.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>generalSettingsListWidget</tabstop>

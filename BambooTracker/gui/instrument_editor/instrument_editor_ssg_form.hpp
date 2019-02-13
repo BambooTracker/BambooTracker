@@ -6,6 +6,7 @@
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
+#include "configuration.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 #include "gui/color_palette.hpp"
 
@@ -22,6 +23,7 @@ public:
 	~InstrumentEditorSSGForm() override;
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
+	void setConfiguration(std::weak_ptr<Configuration> config);
 	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
 signals:
@@ -46,6 +48,7 @@ private:
 	bool isIgnoreEvent_;
 
 	std::weak_ptr<BambooTracker> bt_;
+	std::weak_ptr<Configuration> config_;
 
 	ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
 	VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);

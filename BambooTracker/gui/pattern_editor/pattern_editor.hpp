@@ -39,6 +39,8 @@ signals:
 	void focusOut();
 	void selected(bool isSelected);
 	void returnPressed();
+	void instrumentEntered(int num);
+	void effectEntered(QString text);
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;
@@ -51,6 +53,7 @@ public slots:
 	void onDefaultPatternSizeChanged();
 
 	void setPatternHighlightCount(int count);
+	void setEditableStep(int n);
 
 	void onSongLoaded();
 
@@ -66,7 +69,7 @@ public slots:
 	/// 5: Order
 	void onSelectPressed(int type);
 	void onTransposePressed(bool isOctave, bool isIncreased);
-	void onMuteTrackPressed();
+	void onToggleTrackPressed();
 	void onSoloTrackPressed();
 	void onExpandPressed();
 	void onShrinkPressed();

@@ -23,12 +23,8 @@ Track::Track(const Track& other)
 	attrib_->source = other.attrib_->source;
 	attrib_->channelInSource = other.attrib_->channelInSource;
 
-	for (int i = 0; i < other.patterns_.size(); ++i) {
-		patterns_.emplace_back(i, other.patterns_[i].getSize());
-	}
-
-//	patterns_[0].usedCountUp();
-//	order_.push_back(0);	// Set first order
+	patterns_ = other.patterns_;
+	order_ = other.order_;
 }
 
 TrackAttribute Track::getAttribute() const

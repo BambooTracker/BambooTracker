@@ -1,19 +1,20 @@
-#ifndef JSON_HPP
-#define JSON_HPP
+#ifndef CONF_HPP
+#define CONF_HPP
 
 #include <memory>
 #include <QString>
 #include "configuration.hpp"
 
-class Json
+class ConfigurationHandler
 {	
 public:
 	static bool saveConfiguration(std::weak_ptr<Configuration> config);
 	static bool loadConfiguration(std::weak_ptr<Configuration> config);
 
 private:
-	Json();
-	const static QString CONFIG_PATH;
+	ConfigurationHandler();
+	const static QString organization;
+	const static QString application;
 };
 
-#endif // JSON_HPP
+#endif // CONF_HPP

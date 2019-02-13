@@ -15,11 +15,17 @@
 #include <QResizeEvent>
 #include <QMoveEvent>
 #include <QLabel>
+#include <QSpinBox>
+#include <QTimer>
+#include <QLibrary>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "gui/color_palette.hpp"
+/*#include "timer.hpp"*/
+
+class AbstractBank;
 
 namespace Ui {
 	class MainWindow;
@@ -30,7 +36,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = nullptr);
+	MainWindow(QString filePath, QWidget *parent = nullptr);
 	~MainWindow() override;
 
 protected:
@@ -44,13 +50,16 @@ protected:
 	void closeEvent(QCloseEvent* event) override;
 
 private:
-	Ui::MainWindow *ui;
-
+	std::unique_ptr<Ui::MainWindow> ui;
 	std::shared_ptr<Configuration> config_;
 	std::shared_ptr<ColorPalette> palette_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::shared_ptr<AudioStream> stream_;
+	std::unique_ptr<QTimer> timer_;
+	/*std::unique_ptr<Timer> timer_;*/
 	std::shared_ptr<QUndoStack> comStack_;
+
+	std::unique_ptr<QLibrary> scciDll_;
 
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
@@ -63,6 +72,7 @@ private:
     void deepCloneInstrument();
 	void loadInstrument();
 	void saveInstrument();
+	void importInstrumentsFromBank();
 
 	// Undo-Redo
 	void undo();
@@ -94,6 +104,10 @@ private:
 	bool isSelectedPO_;
 
 	bool isSavedModBefore_;
+
+	// Sub tool bar
+	QSpinBox* octave_;
+	QSpinBox* highlight_;
 
 	// Status bar
 	QLabel* statusDetail_;
@@ -140,7 +154,7 @@ private slots:
 	void on_actionPlay_From_Cursor_triggered();
 	void on_actionStop_triggered();
 	void on_actionEdit_Mode_triggered();
-	void on_actionMute_Track_triggered();
+	void on_actionToggle_Track_triggered();
 	void on_actionSolo_Track_triggered();
 	void on_actionKill_Sound_triggered();
 	void on_actionAbout_triggered();
@@ -161,6 +175,7 @@ private slots:
 	void on_actionOpen_triggered();
 	void on_actionLoad_From_File_triggered();
 	void on_actionSave_To_File_triggered();
+	void on_actionImport_From_Bank_File_triggered();
 	void on_actionInterpolate_triggered();
 	void on_actionReverse_triggered();
 	void on_actionReplace_Instrument_triggered();
@@ -172,8 +187,10 @@ private slots:
 	void on_actionRemove_Unused_Patterns_triggered();
 	void on_actionWAV_triggered();
 	void on_actionVGM_triggered();
+	void on_actionS98_triggered();
 	void on_actionMix_triggered();
 	void on_actionOverwrite_triggered();
+	void onNewTickSignaled();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

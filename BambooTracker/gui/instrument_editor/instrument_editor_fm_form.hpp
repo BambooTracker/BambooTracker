@@ -8,6 +8,7 @@
 #include <memory>
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
+#include "configuration.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 #include "gui/color_palette.hpp"
 
@@ -24,6 +25,7 @@ public:
 	~InstrumentEditorFMForm() override;
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
+	void setConfiguration(std::weak_ptr<Configuration> config);
 	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
 signals:
@@ -51,6 +53,7 @@ private:
 
 	std::weak_ptr<BambooTracker> bt_;
 	std::shared_ptr<ColorPalette> palette_;
+	std::weak_ptr<Configuration> config_;
 
 	ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
 	VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
@@ -69,13 +72,18 @@ public slots:
 private:
 	void setInstrumentEnvelopeParameters();
 	void setInstrumentEnvelopeParameters(QString data);
-
-	QString toEnvelopeString() const;
+	void setInstrumentEnvelopeParameters(QString envType, QString data);
+	void setInstrumentOperatorParameters(int opNum, QString data);
 
 	void paintAlgorithmDiagram();
 	void resizeAlgorithmDiagram();
 
 private slots:
+	void copyEnvelope();
+	void pasteEnvelope();
+	void pasteEnvelopeFrom(QString type);
+	void copyOperator(int opNum);
+	void pasteOperator(int opNum);
 	void on_envNumSpinBox_valueChanged(int arg1);
 	void on_envGroupBox_customContextMenuRequested(const QPoint &pos);
 

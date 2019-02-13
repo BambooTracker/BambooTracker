@@ -7,6 +7,7 @@ PatternEditor::PatternEditor(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	installEventFilter(this);
 	ui->panel->installEventFilter(this);
 
 	ui->panel->setFocus();
@@ -31,6 +32,10 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 this, [&](bool isSelected) { emit selected(isSelected); });
 	QObject::connect(ui->panel, &PatternEditorPanel::returnPressed,
 					 this, [&] { emit returnPressed(); });
+	QObject::connect(ui->panel, &PatternEditorPanel::instrumentEntered,
+					 this, [&](int num) { emit instrumentEntered(num); });
+	QObject::connect(ui->panel, &PatternEditorPanel::effectEntered,
+					 this, [&](QString text) { emit effectEntered(text); });
 
 	auto focusSlot = [&] { ui->panel->setFocus(); };
 
@@ -93,10 +98,19 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
 
-	switch (event->type()) {
-	case QEvent::FocusIn:	emit focusIn();		return false;
-	case QEvent::FocusOut:	emit focusOut();	return false;
-	default:	return false;
+	if (watched == this) {
+		if (event->type() == QEvent::FocusIn) {
+			ui->panel->setFocus();
+		}
+		return false;
+	}
+
+	if (watched == ui->panel) {
+		switch (event->type()) {
+		case QEvent::FocusIn:	emit focusIn();		return false;
+		case QEvent::FocusOut:	emit focusOut();	return false;
+		default:	return false;
+		}
 	}
 }
 
@@ -124,6 +138,11 @@ void PatternEditor::onDefaultPatternSizeChanged()
 void PatternEditor::setPatternHighlightCount(int count)
 {
 	ui->panel->setPatternHighlightCount(count);
+}
+
+void PatternEditor::setEditableStep(int n)
+{
+	ui->panel->setEditableStep(n);
 }
 
 void PatternEditor::onSongLoaded()
@@ -167,14 +186,14 @@ void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
 	ui->panel->onTransposePressed(isOctave, isIncreased);
 }
 
-void PatternEditor::onMuteTrackPressed()
+void PatternEditor::onToggleTrackPressed()
 {
-	ui->panel->onMuteTrackPressed();
+	ui->panel->onToggleTrackPressed(ui->panel->getCurrentTrack());
 }
 
 void PatternEditor::onSoloTrackPressed()
 {
-	ui->panel->onSoloTrackPressed();
+	ui->panel->onSoloTrackPressed(ui->panel->getCurrentTrack());
 }
 
 void PatternEditor::onExpandPressed()

@@ -7,6 +7,7 @@
 #include "opna.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
+#include "chips/scci/scci.h"
 #include "misc.hpp"
 
 struct ToneDetail
@@ -33,6 +34,10 @@ public:
 	// Forward instrument sequence
 	void tickEvent(SoundSource src, int ch, bool isStep = false);
 
+	// Stream type
+	void useSCCI(SoundInterfaceManager* manager);
+	bool isUsedSCCI() const;
+
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
 
@@ -41,14 +46,14 @@ public:
 	void setRate(int rate);
 	int getDuration() const;
 	void setDuration(int duration);
+	void setMasterVolume(int percentage);
 
 	// Export
 	void setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr = nullptr);
 
 
 private:
-	chip::OPNA opna_;
-	int duration_;
+	std::unique_ptr<chip::OPNA> opna_;
 
 	void initChip();
 
@@ -59,6 +64,7 @@ public:
 	void keyOnFM(int ch, int echoBuf);
 	void keyOffFM(int ch, bool isJam = false);
 	void resetFMChannelEnvelope(int ch);
+	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
 
 	// Set Instrument
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
@@ -70,6 +76,7 @@ public:
 	// Set volume
 	void setVolumeFM(int ch, int volume);
 	void setTemporaryVolumeFM(int ch, int volume);
+	void setMasterVolumeFM(double dB);
 
 	// Set pan
 	void setPanFM(int ch, int value);
@@ -132,8 +139,6 @@ private:
 	uint32_t getFmChannelMask(int ch);
 	uint32_t getFMChannelOffset(int ch);
 
-	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
-
 	void writeFMEnvelopeToRegistersFromInstrument(int ch);
 	void writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParameter param, int value);
 
@@ -168,6 +173,7 @@ public:
 	void keyOnSSG(int ch, Note note, int octave, int pitch, bool isJam = false);
 	void keyOnSSG(int ch, int echoBuf);
 	void keyOffSSG(int ch, bool isJam = false);
+	void updateEchoBufferSSG(int ch, int octave, Note note, int pitch);
 
 	// Set Instrument
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
@@ -176,6 +182,7 @@ public:
 	// Set volume
 	void setVolumeSSG(int ch, int volume);
 	void setTemporaryVolumeSSG(int ch, int volume);
+	void setMasterVolumeSSG(double dB);
 
 	// Set effect
 	void setArpeggioEffectSSG(int ch, int second, int third);
@@ -232,8 +239,6 @@ private:
 	int transposeSSG_[3];
 
 	void initSSG();
-
-	void updateEchoBufferSSG(int ch, int octave, Note note, int pitch);
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);

@@ -15,12 +15,12 @@ ColorPalette::ColorPalette()
 	// Instrument editor
 	instFMEnvLine1Color = QColor::fromRgb(242, 38, 19, 255);
 	instFMEnvLine2Color = QColor::fromRgb(46, 204, 113, 255);
-	instFMEnvBackColor = QColor::fromRgb(255, 255, 255, 255);
+	instFMEnvBackColor = QColor::fromRgb(255, 255, 255, 0);
 	instFMEnvBorderColor = QColor::fromRgb(125, 125, 125, 255);
 	instFMEnvCirclePenColor = QColor::fromRgb(0, 0, 0, 255);
 	instFMEnvCircleBrushColor = QColor::fromRgb(255, 255, 255, 255);
 	instFMAlForeColor = QColor::fromRgb(107, 185, 240, 255);
-	instFMAlBackColor = QColor::fromRgb(255, 255, 255, 255);
+	instFMAlBackColor = QColor::fromRgb(255, 255, 255, 0);
 	instSeqLoopBackColor = QColor::fromRgb(25, 25, 25, 255);
 	instSeqReleaseBackColor = QColor::fromRgb(0, 0, 0, 255);
 	instSeqLoopColor = QColor::fromRgb(210, 40, 180, 127);

@@ -9,6 +9,8 @@
 #include <QRegularExpression>
 #include <QGraphicsScene>
 #include <QGraphicsSimpleTextItem>
+#include <QStringList>
+#include <QMessageBox>
 #include "gui/event_guard.hpp"
 #include "misc.hpp"
 
@@ -79,6 +81,16 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op1Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op1Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op1Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op1Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
+	QObject::connect(ui->op1Table, &FMOperatorTable::pasteEnvelopeFromPressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
 
 	ui->op2Table->setOperatorNumber(1);
 	QObject::connect(ui->op2Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -89,7 +101,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->op2Table, &FMOperatorTable::operatorValueChanged,
-						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+					 this, [&](Ui::FMOperatorParameter opParam, int value) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param;
 			switch (opParam) {
@@ -110,6 +122,16 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op2Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op2Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op2Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op2Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
+	QObject::connect(ui->op2Table, &FMOperatorTable::pasteEnvelopeFromPressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
 
 	ui->op3Table->setOperatorNumber(2);
 	QObject::connect(ui->op3Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -120,7 +142,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->op3Table, &FMOperatorTable::operatorValueChanged,
-						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+					 this, [&](Ui::FMOperatorParameter opParam, int value) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param;
 			switch (opParam) {
@@ -141,6 +163,16 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op3Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op3Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op3Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op3Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
+	QObject::connect(ui->op3Table, &FMOperatorTable::pasteEnvelopeFromPressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
 
 	ui->op4Table->setOperatorNumber(3);
 	QObject::connect(ui->op4Table, &FMOperatorTable::operatorEnableChanged, this, [&](bool enable) {
@@ -151,7 +183,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->op4Table, &FMOperatorTable::operatorValueChanged,
-						 this, [&](Ui::FMOperatorParameter opParam, int value) {
+					 this, [&](Ui::FMOperatorParameter opParam, int value) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param;
 			switch (opParam) {
@@ -172,8 +204,18 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
+	QObject::connect(ui->op4Table, &FMOperatorTable::copyEnvelopePressed,
+					 this, &InstrumentEditorFMForm::copyEnvelope);
+	QObject::connect(ui->op4Table, &FMOperatorTable::pasteEnvelopePressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelope);
+	QObject::connect(ui->op4Table, &FMOperatorTable::copyOperatorPressed,
+					 this, &InstrumentEditorFMForm::copyOperator);
+	QObject::connect(ui->op4Table, &FMOperatorTable::pasteOperatorPressed,
+					 this, &InstrumentEditorFMForm::pasteOperator);
+	QObject::connect(ui->op4Table, &FMOperatorTable::pasteEnvelopeFromPressed,
+					 this, &InstrumentEditorFMForm::pasteEnvelopeFrom);
 
-	/******************** LFO editor ********************/	
+	/******************** LFO editor ********************/
 	ui->lfoGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	ui->lfoFreqSlider->setText("Freq");
@@ -245,19 +287,15 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-	auto lfoFunc = [&](int v) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->lfoStartSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int v) {
 		if (!isIgnoreEvent_) {
 			bt_.lock()->setLFOFMParameter(ui->lfoNumSpinBox->value(), FMLFOParameter::COUNT, v);
 			emit lfoParameterChanged(ui->lfoNumSpinBox->value(), instNum_);
 			emit modified();
 		}
-	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->lfoStartSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, lfoFunc);
-#else
-	QObject::connect(ui->lfoStartSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, lfoFunc);
-#endif
+	});
 
 	//========== OperatorSequence ==========//
 	ui->opSeqTypeComboBox->addItem("AL", static_cast<int>(FMEnvelopeParameter::AL));
@@ -352,13 +390,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->opSeqTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->opSeqTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
-#endif
 
 	//========== Arpeggio ==========//
 	ui->arpEditor->setMaximumDisplayedRowCount(15);
@@ -373,9 +407,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->arpEditor->setUpperRow(55);
 	ui->arpEditor->setMMLDisplay0As(-48);
 
-	ui->arpTypeComboBox->addItem("Absolute", 0);
-	ui->arpTypeComboBox->addItem("Fix", 1);
-	ui->arpTypeComboBox->addItem("Relative", 2);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), 0);
+	ui->arpTypeComboBox->addItem(tr("Fix"), 1);
+	ui->arpTypeComboBox->addItem(tr("Relative"), 2);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -421,13 +455,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->arpTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
-#endif
 
 	//========== Pitch ==========//
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
@@ -489,13 +519,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QObject::connect(ui->ptTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
-#else
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
-#endif
 }
 
 InstrumentEditorFMForm::~InstrumentEditorFMForm()
@@ -512,6 +538,20 @@ void InstrumentEditorFMForm::setCore(std::weak_ptr<BambooTracker> core)
 {
 	bt_ = core;
 	updateInstrumentParameters();
+}
+
+void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> config)
+{
+	config_ = config;
+
+	std::vector<QString> names;
+	for (auto pair : config.lock()->getFMEnvelopeTextMap()) {
+		names.push_back(QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+	}
+	ui->op1Table->setEnvelopeSetNames(names);
+	ui->op2Table->setEnvelopeSetNames(names);
+	ui->op3Table->setEnvelopeSetNames(names);
+	ui->op4Table->setEnvelopeSetNames(names);
 }
 
 void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
@@ -579,15 +619,28 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 {
 	// For jam key on
+
+	// Check keys
+	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
+	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
+											  config_.lock()->getOctaveUpKey().length())).toString()) {
+		emit octaveChanged(true);
+		return;
+	}
+	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
+												   config_.lock()->getOctaveDownKey().length())).toString()) {
+		emit octaveChanged(false);
+		return;
+	}
+
 	// General keys
 	switch (event->key()) {
-	case Qt::Key_Asterisk:	emit octaveChanged(true);	break;
-	case Qt::Key_Slash:		emit octaveChanged(false);	break;
 	//case Qt::Key_Return:	emit playStatusChanged(0);	break;
 	case Qt::Key_F5:		emit playStatusChanged(1);	break;
 	case Qt::Key_F6:		emit playStatusChanged(2);	break;
 	case Qt::Key_F7:		emit playStatusChanged(3);	break;
 	case Qt::Key_F8:		emit playStatusChanged(-1);	break;
+	case Qt::Key_Escape:	close();					break;
 	default:
 		if (!event->isAutoRepeat()) {
 			// Musical keyboard
@@ -754,7 +807,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
 						  "(?<tl3>\\d+),(?<ks3>\\d+),(?<ml3>\\d+),(?<dt3>\\d+),(?<ssgeg3>-?\\d+),\\s*"
 						  "(?<ar4>\\d+),(?<dr4>\\d+),(?<sr4>\\d+),(?<rr4>\\d+),(?<sl4>\\d+),"
 						  "(?<tl4>\\d+),(?<ks4>\\d+),(?<ml4>\\d+),(?<dt4>\\d+),(?<ssgeg4>-?\\d+),?\\s*");
-QRegularExpressionMatch match = re.match(data);
+	QRegularExpressionMatch match = re.match(data);
 
 	if (match.hasMatch()) {
 		ui->fbSlider->setValue(match.captured("fb").toInt());
@@ -802,16 +855,123 @@ QRegularExpressionMatch match = re.match(data);
 	}
 }
 
-QString InstrumentEditorFMForm::toEnvelopeString() const
+void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString envType, QString data)
 {
-	auto str = QString("%1,%2,\n%3,\n%4,\n%5,\n%6,")
-			   .arg(QString::number(ui->fbSlider->value()))
-			   .arg(QString::number(ui->alSlider->value()))
-			   .arg(ui->op1Table->toString())
-			   .arg(ui->op2Table->toString())
-			   .arg(ui->op3Table->toString())
-			   .arg(ui->op4Table->toString());
-	return str;
+	data.replace(QRegularExpression(R"(\D+)"), ",");
+	if (data.startsWith(",")) data.remove(0, 1);
+	if (data.endsWith(",")) data.remove(data.length() - 1, 1);
+	QStringList digits = data.split(",");
+
+	std::vector<FMEnvelopeTextType> set = config_.lock()->getFMEnvelopeTextMap().at(envType.toUtf8().toStdString());
+	if (set.size() > digits.size()) {
+		QMessageBox::critical(this, tr("Error"), tr("Did not match the clipboard text format with %1.").arg(envType));
+		return;
+	}
+
+	for (int i = 0; i < digits.size(); ++i) {
+		int d = digits[i].toInt();
+		switch (set[i]) {
+		case FMEnvelopeTextType::Skip:	break;
+		case FMEnvelopeTextType::AL:	ui->alSlider->setValue(d);	break;
+		case FMEnvelopeTextType::FB:	ui->fbSlider->setValue(d);	break;
+		case FMEnvelopeTextType::AR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
+		case FMEnvelopeTextType::DR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
+		case FMEnvelopeTextType::SR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
+		case FMEnvelopeTextType::RR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
+		case FMEnvelopeTextType::SL1:	ui->op1Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
+		case FMEnvelopeTextType::TL1:	ui->op1Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
+		case FMEnvelopeTextType::KS1:	ui->op1Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
+		case FMEnvelopeTextType::ML1:	ui->op1Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
+		case FMEnvelopeTextType::DT1:	ui->op1Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
+		case FMEnvelopeTextType::AR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
+		case FMEnvelopeTextType::DR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
+		case FMEnvelopeTextType::SR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
+		case FMEnvelopeTextType::RR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
+		case FMEnvelopeTextType::SL2:	ui->op2Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
+		case FMEnvelopeTextType::TL2:	ui->op2Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
+		case FMEnvelopeTextType::KS2:	ui->op2Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
+		case FMEnvelopeTextType::ML2:	ui->op2Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
+		case FMEnvelopeTextType::DT2:	ui->op2Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
+		case FMEnvelopeTextType::AR3:	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
+		case FMEnvelopeTextType::DR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
+		case FMEnvelopeTextType::SR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
+		case FMEnvelopeTextType::RR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
+		case FMEnvelopeTextType::SL3:	ui->op3Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
+		case FMEnvelopeTextType::TL3:	ui->op3Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
+		case FMEnvelopeTextType::KS3:	ui->op3Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
+		case FMEnvelopeTextType::ML3:	ui->op3Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
+		case FMEnvelopeTextType::DT3:	ui->op3Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
+		case FMEnvelopeTextType::AR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
+		case FMEnvelopeTextType::DR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
+		case FMEnvelopeTextType::SR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
+		case FMEnvelopeTextType::RR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
+		case FMEnvelopeTextType::SL4:	ui->op4Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
+		case FMEnvelopeTextType::TL4:	ui->op4Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
+		case FMEnvelopeTextType::KS4:	ui->op4Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
+		case FMEnvelopeTextType::ML4:	ui->op4Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
+		case FMEnvelopeTextType::DT4:	ui->op4Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
+		}
+	}
+}
+
+void InstrumentEditorFMForm::setInstrumentOperatorParameters(int opNum, QString data)
+{
+	QRegularExpression re("^(?<ar>\\d+),(?<dr>\\d+),(?<sr>\\d+),(?<rr>\\d+),(?<sl>\\d+),"
+						  "(?<tl>\\d+),(?<ks>\\d+),(?<ml>\\d+),(?<dt>\\d+),(?<ssgeg>-?\\d+)");
+	QRegularExpressionMatch match = re.match(data);
+
+	if (match.hasMatch()) {
+		switch (opNum) {
+		case 0:
+			ui->op1Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op1Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		case 1:
+			ui->op2Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op2Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		case 2:
+			ui->op3Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op3Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		case 3:
+			ui->op4Table->setValue(Ui::FMOperatorParameter::AR, match.captured("ar").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::DR, match.captured("dr").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::SR, match.captured("sr").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::RR, match.captured("rr").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::SL, match.captured("sl").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::TL, match.captured("tl").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::KS, match.captured("ks").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::ML, match.captured("ml").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::DT, match.captured("dt").toInt());
+			ui->op4Table->setValue(Ui::FMOperatorParameter::SSGEG, match.captured("ssgeg").toInt());
+			break;
+		}
+	}
 }
 
 void InstrumentEditorFMForm::paintAlgorithmDiagram()
@@ -1005,6 +1165,47 @@ void InstrumentEditorFMForm::resizeAlgorithmDiagram()
 }
 
 /********** Slots **********/
+void InstrumentEditorFMForm::copyEnvelope()
+{
+	QApplication::clipboard()->setText(QString("FM_ENVELOPE:%1,%2,\n%3,\n%4,\n%5,\n%6,")
+									   .arg(QString::number(ui->fbSlider->value()))
+									   .arg(QString::number(ui->alSlider->value()))
+									   .arg(ui->op1Table->toString())
+									   .arg(ui->op2Table->toString())
+									   .arg(ui->op3Table->toString())
+									   .arg(ui->op4Table->toString()));
+}
+
+void InstrumentEditorFMForm::pasteEnvelope()
+{
+	QString data = QApplication::clipboard()->text().remove("FM_ENVELOPE:");
+	setInstrumentEnvelopeParameters(data);
+}
+
+void InstrumentEditorFMForm::pasteEnvelopeFrom(QString type)
+{
+	setInstrumentEnvelopeParameters(type, QApplication::clipboard()->text());
+}
+
+void InstrumentEditorFMForm::copyOperator(int opNum)
+{
+	QString text;
+	switch (opNum) {
+	case 0:	text = ui->op1Table->toString();	break;
+	case 1:	text = ui->op2Table->toString();	break;
+	case 2:	text = ui->op3Table->toString();	break;
+	case 3:	text = ui->op4Table->toString();	break;
+	}
+
+	QApplication::clipboard()->setText(QString("FM_OPERATOR:") + text);
+}
+
+void InstrumentEditorFMForm::pasteOperator(int opNum)
+{
+	QString data = QApplication::clipboard()->text().remove("FM_OPERATOR:");
+	setInstrumentOperatorParameters(opNum, data);
+}
+
 void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
@@ -1019,27 +1220,20 @@ void InstrumentEditorFMForm::on_envNumSpinBox_valueChanged(int arg1)
 
 void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPoint &pos)
 {
-	QClipboard* clipboard = QApplication::clipboard();
 	QPoint globalPos = ui->envGroupBox->mapToGlobal(pos);
-
 	QMenu menu;
-	auto copyFunc = [&, clipboard]() {
-		clipboard->setText("FM_ENVELOPE:" + toEnvelopeString());
-	};
-	auto pasteFunc = [&, clipboard]() {
-		QString data = clipboard->text().remove("FM_ENVELOPE:");
-		setInstrumentEnvelopeParameters(data);
-	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* copy = menu.addAction("Copy envelope", this, copyFunc);
-	QAction* paste = menu.addAction("Paste envelope", this, pasteFunc);
-#else
-	QAction* copy = menu.addAction("Copy envelope");
-	QObject::connect(copy, &QAction::triggered, this, copyFunc);
-	QAction* paste = menu.addAction("Paste envelope");
-	QObject::connect(paste, &QAction::triggered, this, pasteFunc);
-#endif
-	if (!clipboard->text().startsWith("FM_ENVELOPE:")) paste->setEnabled(false);
+	// Leave Before Qt5.7.0 style due to windows xp
+	QAction* copy = menu.addAction(tr("Copy envelope"));
+	QObject::connect(copy, &QAction::triggered, this, &InstrumentEditorFMForm::copyEnvelope);
+	QAction* paste = menu.addAction(tr("Paste envelope"));
+	QObject::connect(paste, &QAction::triggered, this, &InstrumentEditorFMForm::pasteEnvelope);
+	paste->setEnabled(QApplication::clipboard()->text().startsWith("FM_ENVELOPE:"));
+	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
+	for (auto pair : config_.lock()->getFMEnvelopeTextMap()) {
+		QString type = QString::fromUtf8(pair.first.c_str(), pair.first.length());
+		QAction* action = pasteFrom->addAction(type);
+		QObject::connect(action, &QAction::triggered, this, [&, action]{ pasteEnvelopeFrom(action->text()); });
+	}
 
 	menu.exec(globalPos);
 }
@@ -1149,22 +1343,16 @@ void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPo
 	QPoint globalPos = ui->lfoGroupBox->mapToGlobal(pos);
 
 	QMenu menu;
-	auto copyFunc = [&, clipboard]() {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QAction* copy = menu.addAction(tr("Copy LFO parameters"));
+	QObject::connect(copy, &QAction::triggered, this, [&, clipboard]() {
 		clipboard->setText("FM_LFO:" + toLFOString());
-	};
-	auto pasteFunc = [&, clipboard]() {
+	});
+	QAction* paste = menu.addAction(tr("Paste LFO parameters"));
+	QObject::connect(paste, &QAction::triggered, this, [&, clipboard]() {
 		QString data = clipboard->text().remove("FM_LFO:");
 		setInstrumentLFOParameters(data);
-	};
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-	QAction* copy = menu.addAction("Copy LFO parameters", this, copyFunc);
-	QAction* paste = menu.addAction("Paste LFO parameters", this, pasteFunc);
-#else
-	QAction* copy = menu.addAction("Copy LFO parameters");
-	QObject::connect(copy, &QAction::triggered, this, copyFunc);
-	QAction* paste = menu.addAction("Paste LFO parameters");
-	QObject::connect(paste, &QAction::triggered, this, pasteFunc);
-#endif
+	});
 	if (!ui->lfoGroupBox->isChecked()) {
 		copy->setEnabled(false);
 		paste->setEnabled(false);
@@ -1225,7 +1413,7 @@ void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
 		ui->opSeqEditor->addLoop(l.begin, l.end, l.times);
 	}
 	ui->opSeqEditor->setRelease(convertReleaseTypeForUI(instFM->getOperatorSequenceRelease(param).type),
-							  instFM->getOperatorSequenceRelease(param).begin);
+								instFM->getOperatorSequenceRelease(param).begin);
 	if (instFM->getOperatorSequenceEnabled(param)) {
 		ui->opSeqEditGroupBox->setChecked(true);
 		onOperatorSequenceNumberChanged();
@@ -1490,7 +1678,7 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 		ui->ptEditor->addLoop(l.begin, l.end, l.times);
 	}
 	ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease().type),
-							  instFM->getPitchRelease().begin);
+							 instFM->getPitchRelease().begin);
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
 		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instFM->getPitchType()) {
 			ui->ptTypeComboBox->setCurrentIndex(i);

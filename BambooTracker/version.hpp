@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include "misc.hpp"
 
 class Version
 {
@@ -15,24 +16,24 @@ public:
 	static uint32_t ofInstrumentFileInBCD();
 	static std::string ofInstrumentFileInString();
 
+	static uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
+	static std::string toString(unsigned int major, unsigned int minor, unsigned int revision);
+
 private:
 	// Application version
 	static constexpr unsigned int appMajor			= 0;
 	static constexpr unsigned int appMinor			= 1;
-	static constexpr unsigned int appRevision		= 1;
+	static constexpr unsigned int appRevision		= 5;
 
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;
 	static constexpr unsigned int modFileMinor		= 0;
-	static constexpr unsigned int modFileRevision	= 0;
+	static constexpr unsigned int modFileRevision	= 2;
 
 	// Instrument file version
 	static constexpr unsigned int instFileMajor		= 1;
 	static constexpr unsigned int instFileMinor		= 0;
-	static constexpr unsigned int instFileRevision	= 0;
-
-	static uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
-	static std::string toString(unsigned int major, unsigned int minor, unsigned int revision);
+	static constexpr unsigned int instFileRevision	= 1;
 
 	Version() {}
 };
@@ -69,7 +70,10 @@ inline std::string Version::ofInstrumentFileInString()
 
 inline uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)
 {
-	return (major << 16) + (minor << 8) + revision;
+	uint32_t maj = uitobcd(major);
+	uint32_t min = uitobcd(minor);
+	uint32_t rev = uitobcd(revision);
+	return (maj << 16) + (min << 8) + rev;
 }
 
 inline std::string Version::toString(unsigned int major, unsigned int minor, unsigned int revision)
