@@ -168,7 +168,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		settings.beginGroup("Mixer");
 		configLocked->setMixerVolumeMaster(settings.value("mixerVolumeMaster", configLocked->getMixerVolumeMaster()).toInt());
 		configLocked->setMixerVolumeFM(settings.value("mixerVolumeFM", configLocked->getMixerVolumeFM()).toDouble());
-		configLocked->setMixerVolumeFM(settings.value("mixerVolumeSSG", configLocked->getMixerVolumeSSG()).toDouble());
+		configLocked->setMixerVolumeSSG(settings.value("mixerVolumeSSG", configLocked->getMixerVolumeSSG()).toDouble());
 		settings.endGroup();
 
 		// Input //
