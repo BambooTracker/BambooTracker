@@ -166,7 +166,7 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 
 	if (!isTonePortamentoFM(ch)) {
 		uint32_t chdata = getFmChannelMask(ch);
-		opna_->setRegister(0x28, 0 | chdata);
+		if (isKeyOnFM_[ch]) opna_->setRegister(0x28, 0 | chdata);	// Key off
 		opna_->setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
 	}
 
