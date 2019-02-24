@@ -1,8 +1,15 @@
 # Changelog
 
 ## Unreleased
+### Add
+- [#63] - L10n: French (thanks [@jpcima], [@trebmuh])
+
 ### Fixed
 - Fix corruption in jamming (thanks [@maakmusic])
+- [#61] - Fix translation building for <Qt5.12 (thanks [@OPNA2608], [@jpcima])
+
+[#61]: https://github.com/rerrahkr/BambooTracker/pull/61
+[#63]: https://github.com/rerrahkr/BambooTracker/pull/63
 
 ## v0.1.5 (2019-02-11)
 ### Added

@@ -398,12 +398,12 @@ equals(QT_MAJOR_VERSION, 5) {
           qmfile   = $$tsfile
           qmfile  ~= s/.ts$/.qm/
           qmfile  ~= s,^res/lang,.qm,
-          
+
                   thisqmcom  = $${qmfile}.commands
-          win32:$$thisqmcom  = md .qm;
+          win32:$$thisqmcom  = mkdir .qm;
            else:$$thisqmcom  = test -d .qm || mkdir -p .qm;
                 $$thisqmcom += lrelease -qm $$qmfile $$tsfile
-          
+
             thisqmdep  = $${qmfile}.depends
           $$thisqmdep  = $${tsfile}
           
