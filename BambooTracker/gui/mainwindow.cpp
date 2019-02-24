@@ -2086,10 +2086,13 @@ void MainWindow::on_actionOverwrite_triggered()
 void MainWindow::onNewTickSignaled()
 {
 	if (!bt_->streamCountUp()) {	// New step
-		ui->orderList->update();
-		ui->patternEditor->updatePosition();
-		statusPlayPos_->setText(
-					QString("%1/%2").arg(bt_->getPlayingOrderNumber(), 2, 16, QChar('0'))
-					.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
+		int order = bt_->getPlayingOrderNumber();
+		if (order > -1) {
+			ui->orderList->update();
+			ui->patternEditor->updatePosition();
+			statusPlayPos_->setText(
+						QString("%1/%2").arg(order, 2, 16, QChar('0'))
+						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
+		}
 	}
 }

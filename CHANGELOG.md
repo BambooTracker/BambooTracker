@@ -10,6 +10,7 @@
 - [#64] - Fix the envlope reset behavior (thanks [@Pigu-A])
 - [#67] - Fix SSG Mixer settings not being loaded properly ([#66]; thanks [@ImATrackMan], [@OPNA2608])
 - [#68] - Fix initialization of SSG note slide flag (thanks [@OPNA2608])
+- Fix position status in status bar when 0C effect
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63
