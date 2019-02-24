@@ -8,10 +8,17 @@
 - Fix corruption in jamming (thanks [@maakmusic])
 - [#61] - Fix translation building for <Qt5.12 (thanks [@OPNA2608], [@jpcima])
 - [#64] - Fix the envlope reset behavior (thanks [@Pigu-A])
+- [#67] - Fix SSG Mixer settings not being loaded properly ([#66]; thanks [@ImATrackMan], [@OPNA2608])
+- [#68] - Fix initialization of SSG note slide flag (thanks [@OPNA2608])
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63
 [#64]: https://github.com/rerrahkr/BambooTracker/pull/64
+[#66]: https://github.com/rerrahkr/BambooTracker/issues/66
+[#67]: https://github.com/rerrahkr/BambooTracker/issues/67
+[#68]: https://github.com/rerrahkr/BambooTracker/issues/68
+
+[@ImATrackMan]: https://github.com/ImATrackMan
 
 ## v0.1.5 (2019-02-11)
 ### Added

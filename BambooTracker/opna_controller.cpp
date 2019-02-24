@@ -1599,7 +1599,7 @@ void OPNAController::initSSG()
 		detuneSSG_[ch] = 0;
 		nsItSSG_[ch].reset();
 		sumNoteSldSSG_[ch] = 0;
-		noteSldFMSetFlag_ = false;
+		noteSldSSGSetFlag_ = false;
 		transposeSSG_[ch] = 0;
 	}
 }
