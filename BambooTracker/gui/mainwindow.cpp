@@ -35,6 +35,7 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "chips/scci/SCCIDefines.h"
+#include "gui/file_history_handler.hpp"
 
 MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	config_(std::make_shared<Configuration>()),
 	palette_(std::make_shared<ColorPalette>()),
 	comStack_(std::make_shared<QUndoStack>(this)),
+	fileHistory_(std::make_shared<FileHistory>()),
 	scciDll_(std::make_unique<QLibrary>("scci")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	isModifiedForNotCommand_(false),
@@ -129,6 +131,17 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 		bt_->useSCCI(nullptr);
 		stream_->start();
 	}
+
+	/* File history */
+	FileHistoryHandler::loadFileHistory(fileHistory_);
+	for (size_t i = 0; i < fileHistory_->size(); ++i) {
+		// Leave Before Qt5.7.0 style due to windows xp
+		QAction* action = ui->menu_Recent_Files->addAction(QString("&%1 %2").arg(i + 1).arg(fileHistory_->at(i)));
+		action->setData(fileHistory_->at(i));
+	}
+	QObject::connect(ui->menu_Recent_Files, &QMenu::triggered, this, [&](QAction* action) {
+		if (action != ui->actionClear) openModule(action->data().toString());
+	});
 
 	/* Sub tool bar */
 	auto octLab = new QLabel(tr("Octave"));
@@ -382,22 +395,8 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 		else if (isEditedPattern_) updateMenuByPattern();
 	});
 
-	if (filePath == "") {
-		loadModule();
-	}
-	else {
-		try {
-			bt_->loadModule(filePath.toLocal8Bit().toStdString());
-			loadModule();
-
-			config_->setWorkingDirectory(QFileInfo(filePath).dir().path().toStdString());
-			isModifiedForNotCommand_ = false;
-			setWindowModified(false);
-		}
-		catch (std::exception& e) {
-			QMessageBox::critical(this, tr("Error"), e.what());
-		}
-	}
+	if (filePath == "") loadModule();
+	else openModule(filePath);
 }
 
 MainWindow::~MainWindow()
@@ -577,15 +576,8 @@ void MainWindow::dropEvent(QDropEvent* event)
 	bt_->stopPlaySong();
 	lockControls(false);
 
-	try {
-		bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toLocal8Bit().toStdString());
-		loadModule();
-		isModifiedForNotCommand_ = false;
-		setWindowModified(false);
-	}
-	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
-	}
+	QString file = event->mimeData()->urls().first().toLocalFile();
+	openModule(file);
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
@@ -646,6 +638,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 	instForms_->closeAll();
 	ConfigurationHandler::saveConfiguration(config_);
+
+	FileHistoryHandler::saveFileHistory(fileHistory_);
 
 	event->accept();
 }
@@ -896,6 +890,22 @@ void MainWindow::loadModule()
 	bt_->clearCommandHistory();
 }
 
+void MainWindow::openModule(QString file)
+{
+	try {
+		bt_->loadModule(file.toLocal8Bit().toStdString());
+		loadModule();
+
+		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		changeFileHistory(file);
+		isModifiedForNotCommand_ = false;
+		setWindowModified(false);
+	}
+	catch (std::exception& e) {
+		QMessageBox::critical(this, tr("Error"), e.what());
+	}
+}
+
 void MainWindow::loadSong()
 {
 	// Init position
@@ -1036,6 +1046,19 @@ void MainWindow::changeConfiguration()
 	bt_->changeConfiguration(config_);
 
 	update();
+}
+
+/********** History change **********/
+void MainWindow::changeFileHistory(QString file)
+{
+	fileHistory_->addFile(file);
+	for (int i = ui->menu_Recent_Files->actions().count() - 1; 1 < i; --i)
+		ui->menu_Recent_Files->removeAction(ui->menu_Recent_Files->actions().at(i));
+	for (size_t i = 0; i < fileHistory_->size(); ++i) {
+		// Leave Before Qt5.7.0 style due to windows xp
+		QAction* action = ui->menu_Recent_Files->addAction(QString("&%1 %2").arg(i + 1).arg(fileHistory_->at(i)));
+		action->setData(fileHistory_->at(i));
+	}
 }
 
 /******************************/
@@ -1797,6 +1820,7 @@ bool MainWindow::on_actionSave_As_triggered()
 		setWindowModified(false);
 		setWindowTitle();
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		changeFileHistory(file);
 		return true;
 	}
 	catch (std::exception& e) {
@@ -1835,17 +1859,8 @@ void MainWindow::on_actionOpen_triggered()
 
 	bt_->stopPlaySong();
 	lockControls(false);
-	try {
-		bt_->loadModule(file.toLocal8Bit().toStdString());
-		loadModule();
 
-		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
-		isModifiedForNotCommand_ = false;
-		setWindowModified(false);
-	}
-	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
-	}
+	openModule(file);
 }
 
 void MainWindow::on_actionLoad_From_File_triggered()
@@ -2095,4 +2110,11 @@ void MainWindow::onNewTickSignaled()
 						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
 		}
 	}
+}
+
+void MainWindow::on_actionClear_triggered()
+{
+	fileHistory_->clearHistory();
+	for (int i = ui->menu_Recent_Files->actions().count() - 1; 1 < i; --i)
+		ui->menu_Recent_Files->removeAction(ui->menu_Recent_Files->actions().at(i));
 }

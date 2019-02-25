@@ -3,9 +3,10 @@
 ## Unreleased
 ### Add
 - [#63] - L10n: French (thanks [@jpcima], [@trebmuh])
+- Add file history
 
 ### Fixed
-- Fix corruption in jamming (thanks [@maakmusic])
+- [#69] - Fix corruption in jamming (thanks [@maakmusic], [@ImATrackMan])
 - [#61] - Fix translation building for <Qt5.12 (thanks [@OPNA2608], [@jpcima])
 - [#64] - Fix the envlope reset behavior (thanks [@Pigu-A])
 - [#67] - Fix SSG Mixer settings not being loaded properly ([#66]; thanks [@ImATrackMan], [@OPNA2608])
@@ -18,6 +19,7 @@
 [#66]: https://github.com/rerrahkr/BambooTracker/issues/66
 [#67]: https://github.com/rerrahkr/BambooTracker/issues/67
 [#68]: https://github.com/rerrahkr/BambooTracker/issues/68
+[#69]: https://github.com/rerrahkr/BambooTracker/issues/69
 
 [@ImATrackMan]: https://github.com/ImATrackMan
 

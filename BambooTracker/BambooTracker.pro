@@ -187,7 +187,9 @@ SOURCES += \
     io/export_handler.cpp \
     io/instrument_io.cpp \
     io/bank_io.cpp \
-    gui/fm_envelope_set_edit_dialog.cpp
+    gui/fm_envelope_set_edit_dialog.cpp \
+    gui/file_history_handler.cpp \
+    gui/file_history.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -354,7 +356,9 @@ HEADERS += \
     io/export_handler.hpp \
     io/instrument_io.hpp \
     io/bank_io.hpp \
-    gui/fm_envelope_set_edit_dialog.hpp
+    gui/fm_envelope_set_edit_dialog.hpp \
+    gui/file_history_handler.hpp \
+    gui/file_history.hpp
 
 FORMS += \
     gui/mainwindow.ui \

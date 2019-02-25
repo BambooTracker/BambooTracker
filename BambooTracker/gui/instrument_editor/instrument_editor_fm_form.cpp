@@ -1229,11 +1229,10 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	QObject::connect(paste, &QAction::triggered, this, &InstrumentEditorFMForm::pasteEnvelope);
 	paste->setEnabled(QApplication::clipboard()->text().startsWith("FM_ENVELOPE:"));
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
-	for (auto pair : config_.lock()->getFMEnvelopeTextMap()) {
-		QString type = QString::fromUtf8(pair.first.c_str(), pair.first.length());
-		QAction* action = pasteFrom->addAction(type);
-		QObject::connect(action, &QAction::triggered, this, [&, action]{ pasteEnvelopeFrom(action->text()); });
-	}
+	for (auto pair : config_.lock()->getFMEnvelopeTextMap())
+		pasteFrom->addAction(QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+	QObject::connect(pasteFrom, &QMenu::triggered,
+					 this, [&](QAction* action) { pasteEnvelopeFrom(action->text()); });
 
 	menu.exec(globalPos);
 }

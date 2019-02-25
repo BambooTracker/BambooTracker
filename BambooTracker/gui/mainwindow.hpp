@@ -24,6 +24,7 @@
 #include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "gui/color_palette.hpp"
 /*#include "timer.hpp"*/
+#include "gui/file_history.hpp"
 
 class AbstractBank;
 
@@ -58,6 +59,7 @@ private:
 	std::unique_ptr<QTimer> timer_;
 	/*std::unique_ptr<Timer> timer_;*/
 	std::shared_ptr<QUndoStack> comStack_;
+	std::shared_ptr<FileHistory> fileHistory_;
 
 	std::unique_ptr<QLibrary> scciDll_;
 
@@ -81,6 +83,7 @@ private:
 
 	// Load data
 	void loadModule();
+	void openModule(QString file);
 	void loadSong();
 
 	// Play song
@@ -96,6 +99,9 @@ private:
 
 	// Configuration change
 	void changeConfiguration();
+
+	// History change
+	void changeFileHistory(QString file);
 
 	void setWindowTitle();
 	void setModifiedTrue();
@@ -191,6 +197,7 @@ private slots:
 	void on_actionMix_triggered();
 	void on_actionOverwrite_triggered();
 	void onNewTickSignaled();
+	void on_actionClear_triggered();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

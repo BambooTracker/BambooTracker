@@ -321,11 +321,9 @@ void FMOperatorTable::on_groupBox_customContextMenuRequested(const QPoint &pos)
 	QAction* pasteEnv = menu.addAction(tr("Paste envelope"));
 	QObject::connect(pasteEnv, &QAction::triggered, this, [&] { emit pasteEnvelopePressed(); });
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
-	for (auto type : envelopeTypes_) {
-		QAction* action = pasteFrom->addAction(type);
-		QObject::connect(action, &QAction::triggered,
-						 this, [&, action]{ pasteEnvelopeFromPressed(action->text()); });
-	}
+	for (auto type : envelopeTypes_) pasteFrom->addAction(type);
+	QObject::connect(pasteFrom, &QMenu::triggered,
+					 this, [&](QAction* action) { emit pasteEnvelopeFromPressed(action->text()); });
 	menu.addSeparator();
 	QAction* copyOp = menu.addAction(tr("Copy operator"));
 	QObject::connect(copyOp, &QAction::triggered, this, [&] { emit copyOperatorPressed(number_); });
