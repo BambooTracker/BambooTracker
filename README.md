@@ -1,6 +1,7 @@
 # BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.1.5-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20linux-lightgrey.svg)
+[![Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
 ![Example](./img/overview.gif)
@@ -241,6 +242,12 @@ The tracker can export a song to the following files.
 - .wav (WAVE file)
 - .vgm (VGM file)
 - .s98 (S98 file)
+
+## Downloads
+On Windows:
+
+- <https://github.com/rerrahkr/BambooTracker/releases>
+- **Development builds**: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
 ## Build on Linux
 On Ubuntu 18.04:

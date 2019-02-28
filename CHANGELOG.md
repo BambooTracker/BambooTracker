@@ -4,6 +4,7 @@
 ### Add
 - [#63] - L10n: French (thanks [@jpcima], [@trebmuh])
 - Add file history
+- [#65] - Add repository to Appveyor (thanks [@papiezak], [@OPNA2608], [@jpcima])
 
 ### Fixed
 - [#69] - Fix corruption in jamming (thanks [@maakmusic], [@ImATrackMan])
@@ -20,6 +21,7 @@
 [#67]: https://github.com/rerrahkr/BambooTracker/issues/67
 [#68]: https://github.com/rerrahkr/BambooTracker/issues/68
 [#69]: https://github.com/rerrahkr/BambooTracker/issues/69
+[#65]: https://github.com/rerrahkr/BambooTracker/issues/65
 
 [@ImATrackMan]: https://github.com/ImATrackMan
 
