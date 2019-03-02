@@ -2106,7 +2106,8 @@ void MainWindow::onNewTickSignaled()
 			ui->orderList->update();
 			ui->patternEditor->updatePosition();
 			statusPlayPos_->setText(
-						QString("%1/%2").arg(order, 2, 16, QChar('0'))
+						QString("%1/%2")
+						.arg(order, 2, (config_->getShowRowNumberInHex() ? 16 : 10), QChar('0'))
 						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
 		}
 	}

@@ -161,7 +161,9 @@ void OrderListPanel::drawRows(int maxWidth)
 		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
 		// Row number
 		painter.setPen(palette_.lock()->odrRowNumColor);
-		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
+		painter.drawText(1, baseY, QString("%1").arg(
+							 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+							 ).toUpper());
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
 		painter.setPen(textColor);
@@ -203,7 +205,9 @@ void OrderListPanel::drawRows(int maxWidth)
 		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
 		// Row number
 		painter.setPen(palette_.lock()->odrRowNumColor);
-		painter.drawText(1, baseY, QString("%1").arg(rowNum, 2, 16, QChar('0')).toUpper());
+		painter.drawText(1, baseY, QString("%1").arg(
+							 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+							 ).toUpper());
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
 		painter.setPen(textColor);
