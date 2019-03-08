@@ -13,6 +13,8 @@
 - [#67] - Fix SSG Mixer settings not being loaded properly ([#66]; thanks [@ImATrackMan], [@OPNA2608])
 - [#68] - Fix initialization of SSG note slide flag (thanks [@OPNA2608])
 - Fix position status in status bar when 0C effect
+- [#71] - Fix showing row numbers in hex (thanks [@OPNA2608])
+- [#73] - Fix DR and SR misreading in .ins (thanks [@scarletbullgon])
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63
@@ -22,8 +24,11 @@
 [#68]: https://github.com/rerrahkr/BambooTracker/issues/68
 [#69]: https://github.com/rerrahkr/BambooTracker/issues/69
 [#65]: https://github.com/rerrahkr/BambooTracker/issues/65
+[#71]: https://github.com/rerrahkr/BambooTracker/issues/71
+[#73]: https://github.com/rerrahkr/BambooTracker/issues/73
 
 [@ImATrackMan]: https://github.com/ImATrackMan
+[@scarletbullgon]: https://github.com/scarletbullgon
 
 ## v0.1.5 (2019-02-11)
 ### Added
