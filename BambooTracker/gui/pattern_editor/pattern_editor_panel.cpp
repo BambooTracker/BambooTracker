@@ -1029,10 +1029,10 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		effDetail = tr("0Dxx - Jump to step xx of next order");
 	}
 	else if (id == "0F") {
-		effDetail = tr("0Dxx - Change speed (x: 00-1f), change tempo (x: 20-ff)");
+		effDetail = tr("0Fxx - Change speed (xx: 00-1F), change tempo (xx: 20-FF)");
 	}
 	else if (id == "0G") {
-		effDetail = tr("0Gxx - Note delay, xx: count (00-ff)");
+		effDetail = tr("0Gxx - Note delay, xx: count (00-FF)");
 	}
 	else if (id == "0O") {
 		effDetail = tr("0Oxx - Set groove xx");
@@ -1068,7 +1068,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "0S") {
-		effDetail = tr("0Sxx - Note cut, xx: count (01-0F)");
+		effDetail = tr("0Sxx - Note cut, xx: count (01-FF)");
 	}
 	else if (id == "0T") {
 		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
@@ -1083,15 +1083,12 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	else if (id == "0V") {
 		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
 		case SoundSource::DRUM:
-			effDetail = tr("0Vxx - Master volume, xx: volume");
+			effDetail = tr("0Vxx - Master volume, xx: volume (00-3F)");
 			break;
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			break;
 		}
-	}
-	else if (id == "0S") {
-		effDetail = tr("0Sxx - Note cut, xx: count (01-0F)");
 	}
 	else if (id.front() == 'M') {
 		if (ctohex(*(id.begin() + 1)) > 0)

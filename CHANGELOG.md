@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Add
-- [#63] - L10n: French (thanks [@jpcima], [@trebmuh])
+- [#63] - L10n: French, Japanese (thanks [@jpcima], [@trebmuh])
 - Add file history
 - [#65] - Add repository to Appveyor (thanks [@papiezak], [@OPNA2608], [@jpcima])
 - [#70] - Add keyboard layout selection for note entry (thanks [@OPNA2608])

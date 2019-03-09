@@ -230,9 +230,11 @@ void ConfigurationDialog::on_removeEnvelopeSetpushButton_clicked()
 
 void ConfigurationDialog::on_editEnvelopeSetPushButton_clicked()
 {
-	FMEnvelopeSetEditDialog diag(fmEnvelopeTextMap_.at(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString()));
+	QString set = ui->envelopeSetNameLineEdit->text().toUtf8();
+	FMEnvelopeSetEditDialog diag(fmEnvelopeTextMap_.at(set.toStdString()));
+	diag.setWindowTitle(diag.windowTitle() + ": " + set);
 	if (diag.exec() == QDialog::Accepted) {
-		fmEnvelopeTextMap_.at(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString()) = diag.getSet();
+		fmEnvelopeTextMap_.at(set.toStdString()) = diag.getSet();
 	}
 }
 
