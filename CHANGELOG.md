@@ -15,6 +15,7 @@
 - Fix position status in status bar when 0C effect
 - [#71] - Fix showing row numbers in hex (thanks [@OPNA2608])
 - [#73] - Fix DR and SR misreading in .ins (thanks [@scarletbullgon])
+- Fix FM Mxyy effect to reverse yy by revesing FM volume order
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63

@@ -409,6 +409,8 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		}
 		else {
 			painter.setPen(palette_.lock()->ptnEffValColor);
+			if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder() && effStr.front() == 'M')
+				effVal = 0x7f - effVal;
 			painter.drawText(offset, baseY, QString("%1").arg(effVal, 2, 16, QChar('0')).toUpper());
 		}
 		if (isMuteTrack)	// Paint mute mask
@@ -1126,8 +1128,12 @@ void PatternEditorPanel::setStepEffectValue(int value)
 {
 	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
 	editPos_ = curPos_;
-	bt_->setStepEffectValue(curSongNum_, editPos_.track, editPos_.order, editPos_.step,
-							(editPos_.colInTrack - 4) / 2, value);
+	int n = (editPos_.colInTrack - 4) / 2;
+	bool isReversed = (songStyle_.trackAttribs[curPos_.track].source == SoundSource::FM
+					  && config_.lock()->getReverseFMVolumeOrder()
+					  && bt_->getStepEffectID(curSongNum_, editPos_.track, editPos_.order, editPos_.step, n)
+					  .front() == 'M');
+	bt_->setStepEffectValue(curSongNum_, editPos_.track, editPos_.order, editPos_.step, n, value, isReversed);
 	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, editPos_));
 
 	if (!bt_->isPlaySong() && !entryCnt_) {

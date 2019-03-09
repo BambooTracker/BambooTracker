@@ -25,5 +25,5 @@ private:
 	int song_, track_, order_, step_, vol_;
 	int prevVol_;
 	bool isComplete_;
-        bool isFMReserved_;
+	bool isFMReserved_;
 };
