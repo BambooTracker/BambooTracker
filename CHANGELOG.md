@@ -1,20 +1,81 @@
 # Changelog
 
 ## Unreleased
+### Add
+- [#63] - L10n: French (thanks [@jpcima], [@trebmuh])
+- Add file history
+- [#65] - Add repository to Appveyor (thanks [@papiezak], [@OPNA2608], [@jpcima])
+- [#70] - Add keyboard layout selection for note entry (thanks [@OPNA2608])
+
+### Fixed
+- [#69] - Fix corruption in jamming (thanks [@maakmusic], [@ImATrackMan])
+- [#61] - Fix translation building for <Qt5.12 (thanks [@OPNA2608], [@jpcima])
+- [#64] - Fix the envlope reset behavior (thanks [@Pigu-A])
+- [#67] - Fix SSG Mixer settings not being loaded properly ([#66]; thanks [@ImATrackMan], [@OPNA2608])
+- [#68] - Fix initialization of SSG note slide flag (thanks [@OPNA2608])
+- Fix position status in status bar when 0C effect
+- [#71] - Fix showing row numbers in hex (thanks [@OPNA2608])
+- [#73] - Fix DR and SR misreading in .ins (thanks [@scarletbullgon])
+- Fix FM Mxyy effect to reverse yy by revesing FM volume order
+
+[#61]: https://github.com/rerrahkr/BambooTracker/pull/61
+[#63]: https://github.com/rerrahkr/BambooTracker/pull/63
+[#64]: https://github.com/rerrahkr/BambooTracker/pull/64
+[#66]: https://github.com/rerrahkr/BambooTracker/issues/66
+[#67]: https://github.com/rerrahkr/BambooTracker/issues/67
+[#68]: https://github.com/rerrahkr/BambooTracker/issues/68
+[#69]: https://github.com/rerrahkr/BambooTracker/issues/69
+[#65]: https://github.com/rerrahkr/BambooTracker/issues/65
+[#71]: https://github.com/rerrahkr/BambooTracker/issues/71
+[#73]: https://github.com/rerrahkr/BambooTracker/issues/73
+[#70]: https://github.com/rerrahkr/BambooTracker/issues/70
+
+[@ImATrackMan]: https://github.com/ImATrackMan
+[@scarletbullgon]: https://github.com/scarletbullgon
+
+## v0.1.5 (2019-02-11)
 ### Added
 - Add mix settings
+- [#56] - Add installation rules and loader for translations (thanks [@jpcima])
+- Load module from command line argument
+- [#57] - Add FM envelope paste from plain text like MML (thanks [@pedipanol])
+- Support .y12 and .ins instrument file importing
+- [#58] - Implement retrieving channel state during playback (thanks [@papiezak])
+- Add effect description in status bar
 
 ### Fixed
 - [#48] - Fix incorrect label when setting buffer length to 1ms (thanks [@OPNA2608])
 - [#51] - Add png icon (thanks [@ehaupt])
 - [#52], [#54] - Fix install instructions for FreeBSD, Debian and Ubuntu (thanks [@ehaupt], [@alexmyczko])
+- [#55] - Change default octave up/down keys (thanks [@galap-1])
+- Fix instrument deep clone corruption by deregistering FM envelope user (thanks [@maakmusic])
+- Fix editable step to apply entering events and be "0" selectable (thanks [@maakmusic])
+- Fix to unmute track on jam mode (thanks [@maakmusic])
+- [#44], [#59] - Divide instrument owned check from its number (thanks [@papiezak], [@djtuBIG-MaliceX])
+- Fix echo buffer size and FM envelope reset before echo buffer access
+- Change default FM envelope reset state to unused
+- Fix wait time of VGM
+- [#60] - Fix loop point of S98 (thanks [@scarletbullgon])
+- Fix to work FM TL4 sequence macro (thanks [@maakmusic])
+- Fix to skip instrument redefinition
+- Fix FM TL3 calculation in instrument definition event
 
 [#48]: https://github.com/rerrahkr/BambooTracker/issues/48
 [#51]: https://github.com/rerrahkr/BambooTracker/issues/51
 [#52]: https://github.com/rerrahkr/BambooTracker/pull/52
 [#54]: https://github.com/rerrahkr/BambooTracker/pull/54
+[#55]: https://github.com/rerrahkr/BambooTracker/issues/55
+[#56]: https://github.com/rerrahkr/BambooTracker/pull/56
+[#57]: https://github.com/rerrahkr/BambooTracker/issues/57
+[#44]: https://github.com/rerrahkr/BambooTracker/issues/44
+[#59]: https://github.com/rerrahkr/BambooTracker/issues/59
+[#58]: https://github.com/rerrahkr/BambooTracker/issues/58
+[#60]: https://github.com/rerrahkr/BambooTracker/issues/60
 
 [@ehaupt]: https://github.com/ehaupt
+[@galap-1]: https://github.com/galap-1
+[@djtuBIG-MaliceX]: https://github.com/djtuBIG-MaliceX
+[@scarletbullgon]: https://github.com/scarletbullgon
 
 ## v0.1.4 (2019-01-01)
 ### Added

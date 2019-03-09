@@ -39,11 +39,13 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("dontSelectOnDoubleClick", configLocked->getDontSelectOnDoubleClick());
 		settings.setValue("reverseFMVolumeOrder",    configLocked->getReverseFMVolumeOrder());
 		settings.setValue("moveCursorToRight",       configLocked->getMoveCursorToRight());
+		settings.setValue("retrieveChannelState",	configLocked->getRetrieveChannelState());
 		settings.endGroup();
 
 		// Edit settings
 		settings.beginGroup("Editing");
 		settings.setValue("pageJumpLength", static_cast<int>(configLocked->getPageJumpLength()));
+		settings.setValue("editableStep", static_cast<int>(configLocked->getEditableStep()));
 		settings.endGroup();
 
 		// Keys
@@ -56,6 +58,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 											 configLocked->getOctaveDownKey().length()));
 		settings.setValue("echoBufferKey", QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
 											 configLocked->getEchoBufferKey().length()));
+		settings.setValue("noteEntryLayout",	static_cast<int>(configLocked->getNoteEntryLayout()));
 		settings.endGroup();
 
 		// Sound //
@@ -72,6 +75,23 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("mixerVolumeMaster",	configLocked->getMixerVolumeMaster());
 		settings.setValue("mixerVolumeFM",		configLocked->getMixerVolumeFM());
 		settings.setValue("mixerVolumeSSG",		configLocked->getMixerVolumeSSG());
+		settings.endGroup();
+
+		// Input //
+		settings.beginGroup("Input");
+		settings.beginWriteArray("fmEnvelopeTextMap");
+		int n = 0;
+		for (auto pair : config.lock()->getFMEnvelopeTextMap()) {
+			settings.setArrayIndex(n++);
+			settings.setValue("type", QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+			QString data;
+			for (auto type : pair.second) {
+				data += QString(",%1").arg(static_cast<int>(type));
+			}
+			if (!data.isEmpty()) data.remove(0, 1);
+			settings.setValue("order", data);
+		}
+		settings.endArray();
 		settings.endGroup();
 
 		return true;
@@ -112,6 +132,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setDontSelectOnDoubleClick(settings.value("dontSelectOnDoubleClick", configLocked->getDontSelectOnDoubleClick()).toBool());
 		configLocked->setReverseFMVolumeOrder(settings.value("reverseFMVolumeOrder", configLocked->getReverseFMVolumeOrder()).toBool());
 		configLocked->setMoveCursorToRight(settings.value("moveCursorToRight", configLocked->getMoveCursorToRight()).toBool());
+		configLocked->setRetrieveChannelState(settings.value("retrieveChannelState", configLocked->getRetrieveChannelState()).toBool());
 		settings.endGroup();
 
 		// Edit settings
@@ -119,6 +140,9 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		QVariant pageJumpLengthWorkaround;
 		pageJumpLengthWorkaround.setValue(configLocked->getPageJumpLength());
 		configLocked->setPageJumpLength(static_cast<size_t>(settings.value("pageJumpLength", pageJumpLengthWorkaround).toInt()));
+		QVariant editableStepWorkaround;
+		editableStepWorkaround.setValue(configLocked->getEditableStep());
+		configLocked->setEditableStep(static_cast<size_t>(settings.value("editableStep", editableStepWorkaround).toInt()));
 		settings.endGroup();
 
 		// Keys
@@ -127,6 +151,9 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setOctaveUpKey(settings.value("octaveUpKey", QString::fromStdString(configLocked->getOctaveUpKey())).toString().toUtf8().toStdString());
 		configLocked->setOctaveDownKey(settings.value("octaveDownKey", QString::fromStdString(configLocked->getOctaveDownKey())).toString().toUtf8().toStdString());
 		configLocked->setEchoBufferKey(settings.value("echoBufferKey", QString::fromStdString(configLocked->getEchoBufferKey())).toString().toUtf8().toStdString());
+		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(
+											 settings.value("noteEntryLayout",
+															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));
 		settings.endGroup();
 
 		// Sound //
@@ -145,7 +172,24 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		settings.beginGroup("Mixer");
 		configLocked->setMixerVolumeMaster(settings.value("mixerVolumeMaster", configLocked->getMixerVolumeMaster()).toInt());
 		configLocked->setMixerVolumeFM(settings.value("mixerVolumeFM", configLocked->getMixerVolumeFM()).toDouble());
-		configLocked->setMixerVolumeFM(settings.value("mixerVolumeSSG", configLocked->getMixerVolumeSSG()).toDouble());
+		configLocked->setMixerVolumeSSG(settings.value("mixerVolumeSSG", configLocked->getMixerVolumeSSG()).toDouble());
+		settings.endGroup();
+
+		// Input //
+		settings.beginGroup("Input");
+		int size = settings.beginReadArray("fmEnvelopeTextMap");
+		std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap;
+		for (int i = 0; i < size; ++i) {
+			settings.setArrayIndex(i);
+			std::string type = settings.value("type").toString().toUtf8().toStdString();
+			std::vector<FMEnvelopeTextType> data;
+			for (auto d : settings.value("order").toString().split(",")) {
+				data.push_back(static_cast<FMEnvelopeTextType>(d.toInt()));
+			}
+			fmEnvelopeTextMap.emplace(type, data);
+		}
+		if (!fmEnvelopeTextMap.empty()) config.lock()->setFMEnvelopeTextMap(fmEnvelopeTextMap);
+		settings.endArray();
 		settings.endGroup();
 
 		return true;

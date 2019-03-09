@@ -62,6 +62,11 @@ FMOperatorTable::~FMOperatorTable()
 	delete ui;
 }
 
+void FMOperatorTable::setEnvelopeSetNames(std::vector<QString> list)
+{
+	envelopeTypes_ = list;
+}
+
 void FMOperatorTable::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
@@ -310,20 +315,20 @@ void FMOperatorTable::on_groupBox_customContextMenuRequested(const QPoint &pos)
 {
 	QPoint globalPos = ui->groupBox->mapToGlobal(pos);
 	QMenu menu;
-	auto copyEnvFunc = [&] { emit copyEnvelopePressed(); };
-	auto pasteEnvFunc = [&] { emit pasteEnvelopePressed(); };
-	auto copyOpFunc = [&] { emit copyOperatorPressed(number_); };
-	auto pasteOpFunc = [&] { emit pasteOperatorPressed(number_); };
 	// Leave Before Qt5.7.0 style due to windows xp
 	QAction* copyEnv = menu.addAction(tr("Copy envelope"));
-	QObject::connect(copyEnv, &QAction::triggered, this, copyEnvFunc);
+	QObject::connect(copyEnv, &QAction::triggered, this, [&] { emit copyEnvelopePressed(); });
 	QAction* pasteEnv = menu.addAction(tr("Paste envelope"));
-	QObject::connect(pasteEnv, &QAction::triggered, this, pasteEnvFunc);
+	QObject::connect(pasteEnv, &QAction::triggered, this, [&] { emit pasteEnvelopePressed(); });
+	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
+	for (auto type : envelopeTypes_) pasteFrom->addAction(type);
+	QObject::connect(pasteFrom, &QMenu::triggered,
+					 this, [&](QAction* action) { emit pasteEnvelopeFromPressed(action->text()); });
 	menu.addSeparator();
 	QAction* copyOp = menu.addAction(tr("Copy operator"));
-	QObject::connect(copyOp, &QAction::triggered, this, copyOpFunc);
+	QObject::connect(copyOp, &QAction::triggered, this, [&] { emit copyOperatorPressed(number_); });
 	QAction* pasteOp = menu.addAction(tr("Paste operator"));
-	QObject::connect(pasteOp, &QAction::triggered, this, pasteOpFunc);
+	QObject::connect(pasteOp, &QAction::triggered, this, [&] { emit pasteOperatorPressed(number_); });
 
 	QClipboard* clipboard = QApplication::clipboard();
 	pasteEnv->setEnabled(clipboard->text().startsWith("FM_ENVELOPE:"));

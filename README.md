@@ -1,6 +1,7 @@
 # BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.1.4-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.1.5-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20linux-lightgrey.svg)
+[![Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 [![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
 ![Example](./img/overview.gif)
@@ -40,6 +41,9 @@ In the FM Editor, you can configure the
 5. Pitch
 
 of an FM instrument.
+
+It enables to paste plain text of envelope like MML. You can add and fix text formats in configuration. There are 8 default formats: FMP, FMP7, MMLDRV, MUCOM88, MXDRV, NRTDRV(`VOICE_MODE=0`), PMD, VOPM.  
+Note the tracker reads digits from text in the order of appearance. Please remove needless digits contained in tone name or comments upon using default format.
 
 #### SSG Editor
 In the SSG Editor, you can configure the
@@ -132,38 +136,38 @@ It can also be specified with `0Oxx` effect.
 | Escape   | Deselect            |
 
 ### Pattern editor
-| Key       | Command                            |
-| --------- | ---------------------------------- |
-| Ctrl+C    | Copy                               |
-| Ctrl+X    | Cut                                |
-| Ctrl+V    | Paste                              |
-| Ctrl+M    | Paste and mix                      |
-| Ctrl+A    | Select track/all                   |
-| Ctrl+G    | Interpolate                        |
-| Ctrl+R    | Reverse                            |
-| Ctrl+F1   | Decrease note                      |
-| Ctrl+F2   | Increase note                      |
-| Ctrl+F3   | Decrease octave                    |
-| Ctrl+F4   | Increase octave                    |
-| Alt+F9    | Toggle track                       |
-| Alt+F10   | Solo track                         |
-| Alt+S     | Replace instrument                 |
-| Tab       | Jump to right track                |
-| BackTab   | Jump to left track                 |
-| Home      | Jump to first step                 |
-| End       | Jump to last step                  |
-| PageUp    | Jump to upper step                 |
-| PageDown  | Jump to lower step                 |
-| Ctrl+Up   | Jump to upper highlighted step     |
-| Ctrl+Down | Jump to lower highlighted step     |
-| Insert    | Insert step                        |
-| BackSpace | Delete the step above              |
-| Delete    | Delete commands                    |
-| Escape    | Deselection                        |
-| -         | Key off                            |
-| \*        | Increase octave/echo buffer number |
-| /         | Decrease octave/echo buffer number |
-| ^         | Echo buffer access                 |
+| Key         | Command                            |
+| ----------- | ---------------------------------- |
+| Ctrl+C      | Copy                               |
+| Ctrl+X      | Cut                                |
+| Ctrl+V      | Paste                              |
+| Ctrl+M      | Paste and mix                      |
+| Ctrl+A      | Select track/all                   |
+| Ctrl+G      | Interpolate                        |
+| Ctrl+R      | Reverse                            |
+| Ctrl+F1     | Decrease note                      |
+| Ctrl+F2     | Increase note                      |
+| Ctrl+F3     | Decrease octave                    |
+| Ctrl+F4     | Increase octave                    |
+| Alt+F9      | Toggle track                       |
+| Alt+F10     | Solo track                         |
+| Alt+S       | Replace instrument                 |
+| Tab         | Jump to right track                |
+| BackTab     | Jump to left track                 |
+| Home        | Jump to first step                 |
+| End         | Jump to last step                  |
+| PageUp      | Jump to upper step                 |
+| PageDown    | Jump to lower step                 |
+| Ctrl+Up     | Jump to upper highlighted step     |
+| Ctrl+Down   | Jump to lower highlighted step     |
+| Insert      | Insert step                        |
+| BackSpace   | Delete the step above              |
+| Delete      | Delete commands                    |
+| Escape      | Deselection                        |
+| -           | Key off                            |
+| \* (numpad) | Increase octave/echo buffer number |
+| / (numpad)  | Decrease octave/echo buffer number |
+| ^           | Echo buffer access                 |
 
 There are two rows of a piano keyboard:
 
@@ -199,18 +203,51 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0A0x   | Volume slide down (x[0-f]: depth)                                                       | Volume slide down  | -                                 |
 | 0Ax0   | Volume slide up (x[0-f]: depth)                                                         | Volume slide up    | -                                 |
 | 0Bxx   | Position jump (xx: order)                                                               | Position jump      | Position jump                     |
-| 0Cxx   | Track end (xx: any number)                                                              | Track end          | Track end                         |
+| 0Cxx   | Song end (xx: any number)                                                               | Song end           | Song end                          |
 | 0Dxx   | Pattern break (xx: start step on the next order)                                        | Pattern break      | Pattern break                     |
 | 0Fxx   | Speed/tempo change (xx[00-1f]: speed, [20-ff]: tempo)                                   | Speed/tempo change | Speed/tempo change                |
 | 0Gxx   | Note delay (xx[00-ff]: count)                                                           | Note delay         | Note delay                        |
 | 0Oxx   | Groove (xx[00-ff]: number)                                                              | Groove             | Groove                            |
 | 0Pxx   | Detune (xx[00-ff]: pitch (xx-80))                                                       | Detune             | -                                 |
-| 0Qxy   | Note slide up (x[0-f]: speed, y[0-f]: seminote)                                         | Note slide up      | -                                 |
-| 0Rxy   | Note slide down (x[0-f]: speed, y[0-f]: seminote)                                       | Note slide down    | -                                 |
+| 0Qxy   | Note slide up (x[0-f]: count, y[0-f]: seminote)                                         | Note slide up      | -                                 |
+| 0Rxy   | Note slide down (x[0-f]: count, y[0-f]: seminote)                                       | Note slide down    | -                                 |
 | 0Sxx   | Note cut (xx[01-ff]: count)                                                             | Note cut           | Note cut                          |
 | 0Txy   | Transpose delay (x[1-7]: upwards count, [9-f]: downwards count (x-8), y[0-f]: seminote) | Transpose delay    | -                                 |
 | 0Vxx   | -                                                                                       | -                  | Master volume (xx[00-3f]: volume) |
 | Mxyy   | Volume delay (x[1-f]: count, yy[00-ff]: volume)                                         | Volume delay       | Volume delay                      |
+
+## File I/O
+### Module
+The tracker enables to open and save to .btm (BambooTracker module file).
+
+### Instrument
+The tracker can load instrument from the following files.
+
+- .bti (BambooTracker instrument file)
+- .dmp (DefleMask preset file)
+- .tfi (TFM Music Maker instrument file)
+- .vgi (VGM Music Maker instrument file)
+- .opni (WOPN instrument file)
+- .wopn (WOPN bank file)
+- .y12 (Gens KMod dump file)
+- .ins (MVSTracker instrument file)
+
+It also supports loading plain text of FM envelope.
+
+A instrument save as .bti file.
+
+### Export
+The tracker can export a song to the following files.
+
+- .wav (WAVE file)
+- .vgm (VGM file)
+- .s98 (S98 file)
+
+## Downloads
+On Windows:
+
+- <https://github.com/rerrahkr/BambooTracker/releases>
+- **Development builds**: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
 ## Build on Linux
 On Ubuntu 18.04:
@@ -235,7 +272,6 @@ make
 ```
 
 ## Install package or build on FreeBSD
-
 ### Build
 To build the BambooTracker via FreeBSD ports
 ```bash
@@ -250,7 +286,6 @@ pkg install bambootracker
 ```
 
 ## Install package on Debian or Ubuntu
-
 `apt-get install bambootracker`
 
 ## Changelog

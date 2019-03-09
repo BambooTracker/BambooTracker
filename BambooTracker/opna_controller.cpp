@@ -42,7 +42,7 @@ OPNAController::OPNAController(int clock, int rate, int duration)
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SR4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::RR4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::SL4, nullptr);
-		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL1, nullptr);
+		opSeqItFM_[ch].emplace(FMEnvelopeParameter::TL4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::KS4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::ML4, nullptr);
 		opSeqItFM_[ch].emplace(FMEnvelopeParameter::DT4, nullptr);
@@ -166,6 +166,7 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 
 	if (!isTonePortamentoFM(ch)) {
 		uint32_t chdata = getFmChannelMask(ch);
+		if (isKeyOnFM_[ch]) opna_->setRegister(0x28, 0 | chdata);	// Key off
 		opna_->setRegister(0x28, (fmOpEnables_[ch] << 4) | chdata);
 	}
 
@@ -211,22 +212,33 @@ void OPNAController::resetFMChannelEnvelope(int ch)
 	envFM_[ch]->setParameterValue(FMEnvelopeParameter::RR4, prev);
 }
 
+void OPNAController::updateEchoBufferFM(int ch, int octave, Note note, int pitch)
+{
+	baseToneFM_[ch].pop_back();
+	baseToneFM_[ch].push_front({ octave, note, pitch });
+}
+
 /********** Set instrument **********/
+/// TODO: inst != nullptr
 void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 {
-	if (!inst) {	// Error set ()
-		if (refInstFM_[ch]) {	// When setted instrument has been deleted
-			refInstFM_[ch]->setNumber(-1);
-		}
-		else {
-			return;
-		}
-	}
-	else {
+	if (!refInstFM_[ch] || !refInstFM_[ch]->isRegisteredWithManager()
+			|| refInstFM_[ch]->getNumber() != inst->getNumber()) {
 		refInstFM_[ch] = inst;
+		writeFMEnvelopeToRegistersFromInstrument(ch);
+	}
+	else if (refInstFM_[ch]->getEnvelopeResetEnabled()) {	// Restore envelope from reset
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR1,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR2,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR3,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR4,
+										   refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
+
 	}
 
-	writeFMEnvelopeToRegistersFromInstrument(ch);
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
 	for (auto& p : opSeqItFM_[ch]) {
 		if (refInstFM_[ch]->getOperatorSequenceEnabled(p.first))
@@ -252,7 +264,8 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 void OPNAController::updateInstrumentFM(int instNum)
 {
 	for (int ch = 0; ch < 6; ++ch) {
-		if (refInstFM_[ch] && refInstFM_[ch]->getNumber() == instNum) {
+		if (refInstFM_[ch] && refInstFM_[ch]->isRegisteredWithManager()
+						&& refInstFM_[ch]->getNumber() == instNum) {
 			writeFMEnvelopeToRegistersFromInstrument(ch);
 			if (isKeyOnFM_[ch] && lfoStartCntFM_[ch] == -1) writeFMLFOAllRegisters(ch);
 			for (auto& p : opSeqItFM_[ch]) {
@@ -468,7 +481,7 @@ void OPNAController::initFM()
 		refInstFM_[ch].reset();
 
 		// Init echo buffer
-		baseToneFM_[ch] = std::deque<ToneDetail>(3);
+		baseToneFM_[ch] = std::deque<ToneDetail>(4);
 		for (auto& td : baseToneFM_[ch]) {
 			td.octave = -1;
 		}
@@ -538,12 +551,6 @@ uint32_t OPNAController::getFMChannelOffset(int ch)
 	default:
 		return 0;
 	}
-}
-
-void OPNAController::updateEchoBufferFM(int ch, int octave, Note note, int pitch)
-{
-	baseToneFM_[ch].pop_back();
-	baseToneFM_[ch].push_front({ octave, note, pitch });
 }
 
 void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
@@ -665,7 +672,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int ch)
 	opna_->setRegister(0x30 + offset, data1);
 
 	data1 = refInstFM_[ch]->getEnvelopeParameter(FMEnvelopeParameter::TL3);
-	if (isCareer(3, al)) data1 = calculateTL(ch, data1);	// Adjust volume
+	if (isCareer(2, al)) data1 = calculateTL(ch, data1);	// Adjust volume
 	envFM_[ch]->setParameterValue(FMEnvelopeParameter::TL3, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -775,7 +782,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		// Adjust volume
 		if (isCareer(0, envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL))) {
 			data = calculateTL(ch, data);
-			envFM_[ch]->setParameterValue(param, data);	// Update
+			envFM_[ch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
 		}
 		opna_->setRegister(0x40 + bch, data);
 		break;
@@ -817,7 +824,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		// Adjust volume
 		if (isCareer(1, envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL))) {
 			data = calculateTL(ch, data);
-			envFM_[ch]->setParameterValue(param, data);	// Update
+			envFM_[ch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
 		}
 		opna_->setRegister(0x40 + bch + 8, data);
 		break;
@@ -859,7 +866,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		// Adjust volume
 		if (isCareer(2, envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL))) {
 			data = calculateTL(ch, data);
-			envFM_[ch]->setParameterValue(param, data);	// Update
+			envFM_[ch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
 		}
 		opna_->setRegister(0x40 + bch + 4, data);
 		break;
@@ -900,7 +907,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParame
 		data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL4);
 		// Adjust volume
 		data = calculateTL(ch, data);
-		envFM_[ch]->setParameterValue(param, data);	// Update
+		envFM_[ch]->setParameterValue(FMEnvelopeParameter::TL4, data);	// Update
 		opna_->setRegister(0x40 + bch + 12, data);
 		break;
 	case FMEnvelopeParameter::KS4:
@@ -1356,20 +1363,17 @@ void OPNAController::keyOffSSG(int ch, bool isJam)
 	isKeyOnSSG_[ch] = false;
 }
 
+void OPNAController::updateEchoBufferSSG(int ch, int octave, Note note, int pitch)
+{
+	baseToneSSG_[ch].pop_back();
+	baseToneSSG_[ch].push_front({ octave, note, pitch });
+}
+
 /********** Set instrument **********/
+/// TODO: inst != nullptr
 void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst)
 {
-	if (!inst) {	// Error set ()
-		if (refInstSSG_[ch]) {
-			refInstSSG_[ch]->setNumber(-1);
-		}
-		else {
-			return;
-		}
-	}
-	else {
-		refInstSSG_[ch] = inst;
-	}
+	refInstSSG_[ch] = inst;
 
 	if (refInstSSG_[ch]->getWaveFormEnabled())
 		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
@@ -1398,7 +1402,8 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 void OPNAController::updateInstrumentSSG(int instNum)
 {
 	for (int ch = 0; ch < 3; ++ch) {
-		if (refInstSSG_[ch] && refInstSSG_[ch]->getNumber() == instNum) {
+		if (refInstSSG_[ch] && refInstSSG_[ch]->isRegisteredWithManager()
+						&& refInstSSG_[ch]->getNumber() == instNum) {
 			if (!refInstSSG_[ch]->getWaveFormEnabled()) wfItSSG_[ch].reset();
 			if (!refInstSSG_[ch]->getToneNoiseEnabled()) tnItSSG_[ch].reset();
 			if (!refInstSSG_[ch]->getEnvelopeEnabled()) envItSSG_[ch].reset();
@@ -1557,7 +1562,7 @@ void OPNAController::initSSG()
 		refInstSSG_[ch].reset();	// Init envelope
 
 		// Init echo buffer
-		baseToneSSG_[ch] = std::deque<ToneDetail>(3);
+		baseToneSSG_[ch] = std::deque<ToneDetail>(4);
 		for (auto& td : baseToneSSG_[ch]) {
 			td.octave = -1;
 		}
@@ -1594,16 +1599,9 @@ void OPNAController::initSSG()
 		detuneSSG_[ch] = 0;
 		nsItSSG_[ch].reset();
 		sumNoteSldSSG_[ch] = 0;
-		noteSldFMSetFlag_ = false;
+		noteSldSSGSetFlag_ = false;
 		transposeSSG_[ch] = 0;
 	}
-}
-
-
-void OPNAController::updateEchoBufferSSG(int ch, int octave, Note note, int pitch)
-{
-	baseToneSSG_[ch].pop_back();
-	baseToneSSG_[ch].push_front({ octave, note, pitch });
 }
 
 void OPNAController::setFrontSSGSequences(int ch)

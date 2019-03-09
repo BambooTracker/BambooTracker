@@ -1,9 +1,10 @@
 #include "instrument.hpp"
+#include <utility>
 
 AbstractInstrument::AbstractInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner)
 	: owner_(owner),
-	  name_(name),
 	  number_(number),
+	  name_(name),
 	  source_(source)
 {}
 
@@ -32,6 +33,11 @@ void AbstractInstrument::setName(std::string name)
 	name_ = name;
 }
 
+bool AbstractInstrument::isRegisteredWithManager() const
+{
+	return (this == owner_->getInstrumentSharedPtr(number_).get());
+}
+
 /****************************************/
 
 InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
@@ -43,7 +49,7 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	arpNum_(0),
 	ptEnabled_(false),
 	ptNum_(0),
-	envResetEnabled_(true)
+	envResetEnabled_(false)
 {
 	opSeqEnabled_ = {
 		{ FMEnvelopeParameter::AL,	false },
@@ -129,7 +135,20 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 
 std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
 {
-	return std::unique_ptr<InstrumentFM>(std::make_unique<InstrumentFM>(*this));
+	std::unique_ptr<InstrumentFM> c = std::make_unique<InstrumentFM>(number_, name_, owner_);
+	c->setEnvelopeNumber(envNum_);
+	c->setLFOEnabled(lfoEnabled_);
+	c->setLFONumber(lfoNum_);
+	for (auto pair : opSeqEnabled_)	{
+		c->setOperatorSequenceEnabled(pair.first, pair.second);
+		c->setOperatorSequenceNumber(pair.first, opSeqNum_.at(pair.first));
+	}
+	c->setArpeggioEnabled(arpEnabled_);
+	c->setArpeggioNumber(arpNum_);
+	c->setPitchEnabled(ptEnabled_);
+	c->setPitchNumber(ptNum_);
+	c->setEnvelopeResetEnabled(envResetEnabled_);
+	return std::move(c);
 }
 
 void InstrumentFM::setEnvelopeNumber(int n)
@@ -336,7 +355,18 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 
 std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
 {
-	return std::unique_ptr<AbstractInstrument>(std::make_unique<InstrumentSSG>(*this));
+	std::unique_ptr<InstrumentSSG> c = std::make_unique<InstrumentSSG>(number_, name_, owner_);
+	c->setWaveFormEnabled(wfEnabled_);
+	c->setWaveFormNumber(wfNum_);
+	c->setToneNoiseEnabled(tnEnabled_);
+	c->setToneNoiseNumber(tnNum_);
+	c->setEnvelopeEnabled(envEnabled_);
+	c->setEnvelopeNumber(envNum_);
+	c->setArpeggioEnabled(arpEnabled_);
+	c->setArpeggioNumber(arpNum_);
+	c->setPitchEnabled(ptEnabled_);
+	c->setPitchNumber(ptNum_);
+	return std::move(c);
 }
 
 void InstrumentSSG::setWaveFormEnabled(bool enabled)

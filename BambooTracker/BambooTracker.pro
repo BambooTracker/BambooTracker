@@ -22,6 +22,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+# This produces the installation rule for the program and resources.
+# Use a default destination prefix if none is given.
+isEmpty(PREFIX) {
+    win32:PREFIX = C:/BambooTracker
+    else:PREFIX = /usr/local
+}
+INSTALLS += target
+win32 {
+    QM_FILES_INSTALL_PATH = $$PREFIX/lang
+    target.path = $$PREFIX
+}
+else {
+    QM_FILES_INSTALL_PATH = $$PREFIX/share/BambooTracker/lang
+    target.path = $$PREFIX/bin
+}
+
 CONFIG += c++14
 
 SOURCES += \
@@ -170,7 +186,10 @@ SOURCES += \
     io/module_io.cpp \
     io/export_handler.cpp \
     io/instrument_io.cpp \
-    io/bank_io.cpp
+    io/bank_io.cpp \
+    gui/fm_envelope_set_edit_dialog.cpp \
+    gui/file_history_handler.cpp \
+    gui/file_history.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -336,7 +355,10 @@ HEADERS += \
     io/io_handlers.hpp \
     io/export_handler.hpp \
     io/instrument_io.hpp \
-    io/bank_io.hpp
+    io/bank_io.hpp \
+    gui/fm_envelope_set_edit_dialog.hpp \
+    gui/file_history_handler.hpp \
+    gui/file_history.hpp
 
 FORMS += \
     gui/mainwindow.ui \
@@ -355,7 +377,8 @@ FORMS += \
     gui/vgm_export_settings_dialog.ui \
     gui/wave_export_settings_dialog.ui \
     gui/instrument_selection_dialog.ui \
-    gui/s98_export_settings_dialog.ui
+    gui/s98_export_settings_dialog.ui \
+    gui/fm_envelope_set_edit_dialog.ui
 
 INCLUDEPATH += \
     $$PWD/chips \
@@ -369,6 +392,49 @@ RESOURCES += \
     bamboo_tracker.qrc
 
 TRANSLATIONS += \
+    res/lang/bamboo_tracker_fr.ts \
     res/lang/bamboo_tracker_ja.ts
+
+equals(QT_MAJOR_VERSION, 5) {
+    lessThan(QT_MINOR_VERSION, 12) {
+        message(using a workaround for missing 'lrelease' option in Qt <5.12...)
+        
+        for(tsfile, TRANSLATIONS) {
+          qmfile   = $$tsfile
+          qmfile  ~= s/.ts$/.qm/
+          qmfile  ~= s,^res/lang,.qm,
+
+                  thisqmcom  = $${qmfile}.commands
+          win32:$$thisqmcom  = mkdir .qm;
+           else:$$thisqmcom  = test -d .qm || mkdir -p .qm;
+                $$thisqmcom += lrelease -qm $$qmfile $$tsfile
+
+            thisqmdep  = $${qmfile}.depends
+          $$thisqmdep  = $${tsfile}
+          
+          PRE_TARGETDEPS      += $${qmfile}
+          QMAKE_EXTRA_TARGETS += $${qmfile}
+          
+          
+            thisinst    = translations_$${qmfile}
+            thisinstdep = $${thisinst}.depends
+          $$thisinstdep = $$qmfile
+          
+            thisinstcfg = $${thisinst}.CONFIG
+          $$thisinstcfg = no_check_exist
+          
+            thisinstfil = $${thisinst}.files
+          $$thisinstfil = $$PWD/$$qmfile
+
+            thisinstpat = $${thisinst}.path
+          $$thisinstpat = $$QM_FILES_INSTALL_PATH
+          
+          INSTALLS += $$thisinst
+        }
+    }
+    else {
+        CONFIG += lrelease
+    }
+}
 
 RC_ICONS = res/icon/BambooTracker.ico

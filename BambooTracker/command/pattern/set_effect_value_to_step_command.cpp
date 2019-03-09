@@ -1,6 +1,8 @@
 #include "set_effect_value_to_step_command.hpp"
 
-SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, int value)
+SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
+														 int orderNum, int stepNum, int n, int value,
+														 bool isFMReversed)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
@@ -8,7 +10,8 @@ SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> m
 	  step_(stepNum),
 	  n_(n),
 	  val_(value),
-	  isComplete_(false)
+	  isComplete_(false),
+	  isFMReserved_(isFMReversed)
 {
 	prevVal_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
 				 .getStep(stepNum).getEffectValue(n);
@@ -16,8 +19,9 @@ SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> m
 
 void SetEffectValueToStepCommand::redo()
 {
+	int value = (isFMReserved_ && val_ < 0x80) ? (0x7f - val_) : val_;	// For effect Mxyy of FM
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-			.getStep(step_).setEffectValue(n_, val_);
+			.getStep(step_).setEffectValue(n_, value);
 }
 
 void SetEffectValueToStepCommand::undo()

@@ -25,15 +25,18 @@ Configuration::Configuration()
 	dontSelectOnDoubleClick_ = false;
 	reverseFMVolumeOrder_ = true;
 	moveCursorToRight_ = false;
+	retrieveChannelState_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
+	editableStep_ = 1;
 
 	// Keys
 	keyOffKey_ = u8"-";
-	octUpKey_ = u8"*";
-	octDownKey_ = u8"/";
+	octUpKey_ = u8"Num+*";
+	octDownKey_ = u8"Num+/";
 	echoKey_ = u8"^";
+	noteEntryLayout_ = QWERTY;
 
 	// Sonud //
 	sndDevice_ = u8"";
@@ -45,6 +48,422 @@ Configuration::Configuration()
 	mixerVolumeMaster_ = 100;
 	mixerVolumeFM_ = 0;
 	mixerVolumeSSG_ = 0;
+
+	// Input //
+	fmEnvelopeTextMap_ = {
+		{
+			"PMD",
+			std::vector<FMEnvelopeTextType>({
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::FB,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4,
+				FMEnvelopeTextType::Skip
+			})
+		},
+		{
+			"FMP",
+			std::vector<FMEnvelopeTextType>({
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::FB
+			})
+		},
+		{
+			"FMP7",
+			std::vector<FMEnvelopeTextType>({
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::FB
+			})
+		},
+		{
+			"VOPM",
+			std::vector<FMEnvelopeTextType>({
+				// Number
+				FMEnvelopeTextType::Skip,
+				// LFO
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				// CH
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::FB,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				// Op
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip
+			})
+		},
+		{
+			"NRTDRV",	// For VOICE_MODE=0
+			std::vector<FMEnvelopeTextType>({
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::FB,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip
+			})
+		},
+		{
+			"MXDRV",
+			std::vector<FMEnvelopeTextType>({
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::FB,
+				FMEnvelopeTextType::Skip
+			})
+		},
+		{
+			"MMLDRV",
+			std::vector<FMEnvelopeTextType>({
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::FB,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4,
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::Skip
+			})
+		},
+		{
+			"MUCOM88",
+			std::vector<FMEnvelopeTextType>({
+				FMEnvelopeTextType::Skip,
+				FMEnvelopeTextType::FB,
+				FMEnvelopeTextType::AL,
+				FMEnvelopeTextType::AR1,
+				FMEnvelopeTextType::DR1,
+				FMEnvelopeTextType::SR1,
+				FMEnvelopeTextType::RR1,
+				FMEnvelopeTextType::SL1,
+				FMEnvelopeTextType::TL1,
+				FMEnvelopeTextType::KS1,
+				FMEnvelopeTextType::ML1,
+				FMEnvelopeTextType::DT1,
+				FMEnvelopeTextType::AR2,
+				FMEnvelopeTextType::DR2,
+				FMEnvelopeTextType::SR2,
+				FMEnvelopeTextType::RR2,
+				FMEnvelopeTextType::SL2,
+				FMEnvelopeTextType::TL2,
+				FMEnvelopeTextType::KS2,
+				FMEnvelopeTextType::ML2,
+				FMEnvelopeTextType::DT2,
+				FMEnvelopeTextType::AR3,
+				FMEnvelopeTextType::DR3,
+				FMEnvelopeTextType::SR3,
+				FMEnvelopeTextType::RR3,
+				FMEnvelopeTextType::SL3,
+				FMEnvelopeTextType::TL3,
+				FMEnvelopeTextType::KS3,
+				FMEnvelopeTextType::ML3,
+				FMEnvelopeTextType::DT3,
+				FMEnvelopeTextType::AR4,
+				FMEnvelopeTextType::DR4,
+				FMEnvelopeTextType::SR4,
+				FMEnvelopeTextType::RR4,
+				FMEnvelopeTextType::SL4,
+				FMEnvelopeTextType::TL4,
+				FMEnvelopeTextType::KS4,
+				FMEnvelopeTextType::ML4,
+				FMEnvelopeTextType::DT4
+			})
+		}
+	};
 }
 
 // Internal //
@@ -240,6 +659,16 @@ bool Configuration::getMoveCursorToRight() const
 	return moveCursorToRight_;
 }
 
+void Configuration::setRetrieveChannelState(bool enabled)
+{
+	retrieveChannelState_ = enabled;
+}
+
+bool Configuration::getRetrieveChannelState() const
+{
+	return retrieveChannelState_;
+}
+
 // Edit settings
 void Configuration::setPageJumpLength(size_t length)
 {
@@ -249,6 +678,16 @@ void Configuration::setPageJumpLength(size_t length)
 size_t Configuration::getPageJumpLength() const
 {
 	return pageJumpLength_;
+}
+
+void Configuration::setEditableStep(size_t step)
+{
+	editableStep_ = step;
+}
+
+size_t Configuration::getEditableStep() const
+{
+	return editableStep_;
 }
 
 // Keys
@@ -290,6 +729,16 @@ void Configuration::setEchoBufferKey(std::string key)
 std::string Configuration::getEchoBufferKey() const
 {
 	return echoKey_;
+}
+
+void Configuration::setNoteEntryLayout(KeyboardLayout layout)
+{
+	noteEntryLayout_ = layout;
+}
+
+Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const
+{
+	return noteEntryLayout_;
 }
 
 // Sound //
@@ -362,4 +811,15 @@ void Configuration::setMixerVolumeSSG(double dB)
 double Configuration::getMixerVolumeSSG() const
 {
 	return mixerVolumeSSG_;
+}
+
+// Input //
+void Configuration::setFMEnvelopeTextMap(std::map<std::string, std::vector<FMEnvelopeTextType>> map)
+{
+	fmEnvelopeTextMap_ = map;
+}
+
+std::map<std::string, std::vector<FMEnvelopeTextType>> Configuration::getFMEnvelopeTextMap() const
+{
+	return fmEnvelopeTextMap_;
 }

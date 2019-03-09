@@ -4,6 +4,7 @@
 #include <QAudio>
 #include <QAudioDeviceInfo>
 #include "slider_style.hpp"
+#include "fm_envelope_set_edit_dialog.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
 	: QDialog(parent),
@@ -29,6 +30,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(5)->setCheckState(toCheckState(config.lock()->getDontSelectOnDoubleClick()));
 	ui->generalSettingsListWidget->item(6)->setCheckState(toCheckState(config.lock()->getReverseFMVolumeOrder()));
 	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(config.lock()->getMoveCursorToRight()));
+	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(config.lock()->getRetrieveChannelState()));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(config.lock()->getPageJumpLength());
@@ -42,6 +44,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 																	config.lock()->getOctaveDownKey().length()));
 	ui->echoBufferKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getEchoBufferKey().c_str(),
 																	config.lock()->getEchoBufferKey().length()));
+	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(config.lock()->getNoteEntryLayout()));
 
 	// Sound //
 	int devRow = -1;
@@ -101,6 +104,10 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->ssgMixerSlider->setTickPosition(QSlider::TicksBothSides);
 	ui->ssgMixerSlider->setTickInterval(20);
 	ui->ssgMixerSlider->setValue(static_cast<int>(config.lock()->getMixerVolumeSSG() * 10));
+
+	// Input //
+	fmEnvelopeTextMap_ = config.lock()->getFMEnvelopeTextMap();
+	updateEnvelopeSetUi();
 }
 
 ConfigurationDialog::~ConfigurationDialog()
@@ -120,6 +127,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setDontSelectOnDoubleClick(fromCheckState(ui->generalSettingsListWidget->item(5)->checkState()));
 	config_.lock()->setReverseFMVolumeOrder(fromCheckState(ui->generalSettingsListWidget->item(6)->checkState()));
 	config_.lock()->setMoveCursorToRight(fromCheckState(ui->generalSettingsListWidget->item(7)->checkState()));
+	config_.lock()->setRetrieveChannelState(fromCheckState(ui->generalSettingsListWidget->item(8)->checkState()));
 
 	// Edit settings
 	config_.lock()->setPageJumpLength(ui->pageJumpLengthSpinBox->value());
@@ -129,6 +137,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setOctaveUpKey(ui->octaveUpKeySequenceEdit->keySequence().toString().toStdString());
 	config_.lock()->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
 	config_.lock()->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
+	config_.lock()->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
 
 	// Sound //
 	config_.lock()->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
@@ -140,8 +149,12 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setMixerVolumeMaster(ui->masterMixerSlider->value());
 	config_.lock()->setMixerVolumeFM(ui->fmMixerSlider->value() * 0.1);
 	config_.lock()->setMixerVolumeSSG(ui->ssgMixerSlider->value() * 0.1);
+
+	// Input //
+	config_.lock()->setFMEnvelopeTextMap(fmEnvelopeTextMap_);
 }
 
+/***** General *****/
 void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 {
 	QString text;
@@ -170,6 +183,9 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 	case 7:	// Move cursor to right
 		text = tr("Move the cursor to right after entering effects in the pattern editor.");
 		break;
+	case 8:	// Retrieve channel state
+		text = tr("Reconstruct the current channel's state from previous orders upon playing.");
+		break;
 	default:
 		text = "";
 		break;
@@ -177,8 +193,69 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 	ui->descPlainTextEdit->setPlainText(tr("Description: ") + text);
 }
 
+/***** Mixer *****/
 void ConfigurationDialog::on_mixerResetPushButton_clicked()
 {
 	ui->fmMixerSlider->setValue(0);
 	ui->ssgMixerSlider->setValue(0);
+}
+
+/***** Input *****/
+void ConfigurationDialog::updateEnvelopeSetUi()
+{
+	ui->envelopeTypeListWidget->clear();
+	for (auto& pair : fmEnvelopeTextMap_)
+		ui->envelopeTypeListWidget->addItem(QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+}
+
+void ConfigurationDialog::on_addEnvelopeSetPushButton_clicked()
+{
+	auto name = QString("Set %1").arg(fmEnvelopeTextMap_.size() + 1);
+	fmEnvelopeTextMap_.emplace(name.toUtf8().toStdString(), std::vector<FMEnvelopeTextType>());
+	updateEnvelopeSetUi();
+	for (int i = 0; i < ui->envelopeTypeListWidget->count(); ++i) {
+		if (ui->envelopeTypeListWidget->item(i)->text() == name) {
+			ui->envelopeTypeListWidget->setCurrentRow(i);
+			break;
+		}
+	}
+}
+
+void ConfigurationDialog::on_removeEnvelopeSetpushButton_clicked()
+{
+	int row = ui->envelopeTypeListWidget->currentRow();
+	fmEnvelopeTextMap_.erase(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString());
+	updateEnvelopeSetUi();
+}
+
+void ConfigurationDialog::on_editEnvelopeSetPushButton_clicked()
+{
+	FMEnvelopeSetEditDialog diag(fmEnvelopeTextMap_.at(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString()));
+	if (diag.exec() == QDialog::Accepted) {
+		fmEnvelopeTextMap_.at(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString()) = diag.getSet();
+	}
+}
+
+void ConfigurationDialog::on_envelopeSetNameLineEdit_textChanged(const QString &arg1)
+{
+	QString prev = ui->envelopeTypeListWidget->currentItem()->text();
+	auto data = fmEnvelopeTextMap_.at(prev.toUtf8().toStdString());
+	fmEnvelopeTextMap_.erase(prev.toUtf8().toStdString());
+	fmEnvelopeTextMap_.emplace(arg1.toUtf8().toStdString(), data);
+	ui->envelopeTypeListWidget->currentItem()->setText(arg1);
+}
+
+void ConfigurationDialog::on_envelopeTypeListWidget_currentRowChanged(int currentRow)
+{
+	if (currentRow == -1) {
+		ui->editEnvelopeSetPushButton->setEnabled(false);
+		ui->removeEnvelopeSetpushButton->setEnabled(false);
+		ui->envelopeSetNameLineEdit->setEnabled(false);
+	}
+	else {
+		ui->editEnvelopeSetPushButton->setEnabled(true);
+		ui->removeEnvelopeSetpushButton->setEnabled(true);
+		ui->envelopeSetNameLineEdit->setEnabled(true);
+		ui->envelopeSetNameLineEdit->setText(ui->envelopeTypeListWidget->item(currentRow)->text());
+	}
 }

@@ -1,4 +1,5 @@
 #include "mainwindow.hpp"
+#include "ui_mainwindow.h"
 #include <fstream>
 #include <QString>
 #include <QLineEdit>
@@ -14,7 +15,6 @@
 #include <QRect>
 #include <QDesktopWidget>
 #include <QAudioDeviceInfo>
-#include "ui_mainwindow.h"
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -35,14 +35,15 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "chips/scci/SCCIDefines.h"
+#include "gui/file_history_handler.hpp"
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	config_(std::make_shared<Configuration>()),
 	palette_(std::make_shared<ColorPalette>()),
-	bt_(std::make_shared<BambooTracker>(config_)),
 	comStack_(std::make_shared<QUndoStack>(this)),
+	fileHistory_(std::make_shared<FileHistory>()),
 	scciDll_(std::make_unique<QLibrary>("scci")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	isModifiedForNotCommand_(false),
@@ -53,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	ConfigurationHandler::loadConfiguration(config_);
+	bt_ = std::make_shared<BambooTracker>(config_);
+
 	if (config_->getMainWindowX() == -1) {	// When unset
 		QRect rec = geometry();
 		rec.moveCenter(QApplication::desktop()->availableGeometry().center());
@@ -129,6 +132,17 @@ MainWindow::MainWindow(QWidget *parent) :
 		stream_->start();
 	}
 
+	/* File history */
+	FileHistoryHandler::loadFileHistory(fileHistory_);
+	for (size_t i = 0; i < fileHistory_->size(); ++i) {
+		// Leave Before Qt5.7.0 style due to windows xp
+		QAction* action = ui->menu_Recent_Files->addAction(QString("&%1 %2").arg(i + 1).arg(fileHistory_->at(i)));
+		action->setData(fileHistory_->at(i));
+	}
+	QObject::connect(ui->menu_Recent_Files, &QMenu::triggered, this, [&](QAction* action) {
+		if (action != ui->actionClear) openModule(action->data().toString());
+	});
+
 	/* Sub tool bar */
 	auto octLab = new QLabel(tr("Octave"));
 	octLab->setMargin(6);
@@ -151,13 +165,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	highlight_->setMinimum(1);
 	highlight_->setMaximum(256);
 	highlight_->setValue(8);
-	auto hlFunc = [&](int count) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int count) {
 		bt_->setModuleStepHighlightDistance(count);
 		ui->patternEditor->setPatternHighlightCount(count);
 		ui->patternEditor->update();
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, hlFunc);
+	});
 	ui->subToolBar->addWidget(highlight_);
 
 	/* Module settings */
@@ -177,7 +191,9 @@ MainWindow::MainWindow(QWidget *parent) :
 		bt_->setModuleCopyright(str.toUtf8().toStdString());
 		setModifiedTrue();
 	});
-	auto tickFreqFunc = [&](int freq) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int freq) {
 		if (freq != bt_->getModuleTickFrequency()) {
 			bt_->setModuleTickFrequency(freq);
 			stream_->setInturuption(freq);
@@ -185,58 +201,60 @@ MainWindow::MainWindow(QWidget *parent) :
 			statusIntr_->setText(QString::number(freq) + QString("Hz"));
 			setModifiedTrue();
 		}
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tickFreqFunc);
+	});
 	QObject::connect(ui->modSetDialogOpenToolButton, &QToolButton::clicked,
 					 this, &MainWindow::on_actionModule_Properties_triggered);
 
 	/* Edit settings */
-	auto editableStepFunc = [&](int n) { ui->patternEditor->setEditableStep(n); };
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->editableStepSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, editableStepFunc);
+					 this, [&](int n) {
+		ui->patternEditor->setEditableStep(n);
+		config_->setEditableStep(n);
+	});
+	ui->editableStepSpinBox->setValue(config_->getEditableStep());
+	ui->patternEditor->setEditableStep(config_->getEditableStep());
 
 	/* Song number */
-	auto songNumFunc = [&](int num) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int num) {
 		bt_->setCurrentSongNumber(num);
 		loadSong();
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, songNumFunc);
+	});
 
 	/* Song settings */
-	auto tempoFunc = [&](int tempo) {
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->tempoSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int tempo) {
 		int curSong = bt_->getCurrentSongNumber();
 		if (tempo != bt_->getSongTempo(curSong)) {
 			bt_->setSongTempo(curSong, tempo);
 			setModifiedTrue();
 		}
-	};
+	});
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->tempoSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, tempoFunc);
-	auto speedFunc = [&](int speed) {
+	QObject::connect(ui->speedSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int speed) {
 		int curSong = bt_->getCurrentSongNumber();
 		if (speed != bt_->getSongSpeed(curSong)) {
 			bt_->setSongSpeed(curSong, speed);
 			setModifiedTrue();
 		}
-	};
+	});
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->speedSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, speedFunc);
-	auto ptnSizeFunc = [&](int size) {
+	QObject::connect(ui->patternSizeSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int size) {
 		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
 		ui->patternEditor->onDefaultPatternSizeChanged();
 		setModifiedTrue();
-	};
+	});
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->patternSizeSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, ptnSizeFunc);
-	auto grooveFunc = [&](int n) {
+	QObject::connect(ui->grooveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int n) {
 		bt_->setSongGroove(bt_->getCurrentSongNumber(), n);
 		setModifiedTrue();
-	};
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->grooveSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, grooveFunc);
+	});
 
 	/* Instrument list */
 	ui->instrumentListWidget->setStyleSheet(
@@ -327,6 +345,8 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 		}
 	});
+	QObject::connect(ui->patternEditor, &PatternEditor::effectEntered,
+					 this, [&](QString text) { statusDetail_->setText(text); });
 
 	/* Order List */
 	ui->orderList->setCore(bt_);
@@ -375,7 +395,8 @@ MainWindow::MainWindow(QWidget *parent) :
 		else if (isEditedPattern_) updateMenuByPattern();
 	});
 
-	loadModule();
+	if (filePath == "") loadModule();
+	else openModule(filePath);
 }
 
 MainWindow::~MainWindow()
@@ -412,17 +433,6 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 		}
 	}
 
-	if (auto orderList = qobject_cast<OrderListEditor*>(watched)) {
-		// Catch space key pressing in order list
-		if (event->type() == QEvent::KeyPress) {
-			auto keyEvent = dynamic_cast<QKeyEvent*>(event);
-			if (keyEvent->key() == Qt::Key_Space) {
-				keyPressEvent(keyEvent);
-				return true;
-			}
-		}
-	}
-
 	return false;
 }
 
@@ -454,38 +464,112 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	/* General keys */
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-		switch (key) {
-		case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
-		case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
-		case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
-		case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
-		case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
-		case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
-		case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
-		case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
-		case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
-		case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
-		case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
-		case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
-		case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
-		case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
-		case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
-		case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
-		case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
-		case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
-		case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
-		case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
-		case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
-		case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
-		case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
-		case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
-		case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
-		case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
-		case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
-		case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
-		case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
-		case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
-		default:	break;
+		switch (config_->getNoteEntryLayout()) {
+		case Configuration::QWERTY:
+			switch (key) {
+			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
+			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
+			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
+			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
+			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
+			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
+			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
+			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
+			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
+			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
+			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
+			case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
+			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
+			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
+			case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
+			case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
+			case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
+			case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
+			case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
+			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
+			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
+			case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
+			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
+			case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
+			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
+			case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
+			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
+			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
+			case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
+			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
+			default:	break;
+			}
+			break;
+		case Configuration::QWERTZ:
+			switch (key) {
+			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::LOW_C);		break;
+			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
+			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
+			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
+			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
+			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
+			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
+			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
+			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
+			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
+			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
+			case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
+			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
+			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
+			case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
+			case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
+			case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
+			case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
+			case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
+			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
+			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
+			case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
+			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
+			case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
+			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
+			case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
+			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
+			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
+			case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
+			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
+			default:	break;
+			}
+			break;
+		case Configuration::AZERTY:
+			switch (key) {
+			case Qt::Key_W:			bt_->jamKeyOn(JamKey::LOW_C);		break;
+			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
+			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
+			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
+			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
+			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
+			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
+			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
+			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
+			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
+			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
+			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_B);		break;
+			case Qt::Key_Semicolon:	bt_->jamKeyOn(JamKey::LOW_C_H);		break;
+			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
+			case Qt::Key_Colon:		bt_->jamKeyOn(JamKey::LOW_D_H);		break;
+			case Qt::Key_A:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
+			case Qt::Key_Eacute:	bt_->jamKeyOn(JamKey::HIGH_CS);		break;
+			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
+			case Qt::Key_QuoteDbl:	bt_->jamKeyOn(JamKey::HIGH_DS);		break;
+			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
+			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
+			case Qt::Key_ParenLeft:	bt_->jamKeyOn(JamKey::HIGH_FS);		break;
+			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
+			case Qt::Key_Minus:		bt_->jamKeyOn(JamKey::HIGH_GS);		break;
+			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
+			case Qt::Key_Egrave:	bt_->jamKeyOn(JamKey::HIGH_AS);		break;
+			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
+			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
+			case Qt::Key_Ccedilla:	bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
+			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
+			default:	break;
+			}
+			break;
 		}
 	}
 }
@@ -496,38 +580,112 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-		switch (key) {
-		case Qt::Key_Z:			bt_->jamKeyOff(JamKey::LOW_C);		break;
-		case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
-		case Qt::Key_X:			bt_->jamKeyOff(JamKey::LOW_D);		break;
-		case Qt::Key_D:			bt_->jamKeyOff(JamKey::LOW_DS);		break;
-		case Qt::Key_C:			bt_->jamKeyOff(JamKey::LOW_E);		break;
-		case Qt::Key_V:			bt_->jamKeyOff(JamKey::LOW_F);		break;
-		case Qt::Key_G:			bt_->jamKeyOff(JamKey::LOW_FS);		break;
-		case Qt::Key_B:			bt_->jamKeyOff(JamKey::LOW_G);		break;
-		case Qt::Key_H:			bt_->jamKeyOff(JamKey::LOW_GS);		break;
-		case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
-		case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
-		case Qt::Key_M:			bt_->jamKeyOff(JamKey::LOW_B);		break;
-		case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_C_H);	break;
-		case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
-		case Qt::Key_Period:	bt_->jamKeyOff(JamKey::LOW_D_H);	break;
-		case Qt::Key_Q:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
-		case Qt::Key_2:			bt_->jamKeyOff(JamKey::HIGH_CS);	break;
-		case Qt::Key_W:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
-		case Qt::Key_3:			bt_->jamKeyOff(JamKey::HIGH_DS);	break;
-		case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
-		case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
-		case Qt::Key_5:			bt_->jamKeyOff(JamKey::HIGH_FS);	break;
-		case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
-		case Qt::Key_6:			bt_->jamKeyOff(JamKey::HIGH_GS);	break;
-		case Qt::Key_Y:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
-		case Qt::Key_7:			bt_->jamKeyOff(JamKey::HIGH_AS);	break;
-		case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
-		case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
-		case Qt::Key_9:			bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
-		case Qt::Key_O:			bt_->jamKeyOff(JamKey::HIGH_D_H);	break;
-		default:	break;
+		switch (config_->getNoteEntryLayout()) {
+		case Configuration::QWERTY:
+			switch (key) {
+			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::LOW_C);		break;
+			case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
+			case Qt::Key_X:			bt_->jamKeyOff(JamKey::LOW_D);		break;
+			case Qt::Key_D:			bt_->jamKeyOff(JamKey::LOW_DS);		break;
+			case Qt::Key_C:			bt_->jamKeyOff(JamKey::LOW_E);		break;
+			case Qt::Key_V:			bt_->jamKeyOff(JamKey::LOW_F);		break;
+			case Qt::Key_G:			bt_->jamKeyOff(JamKey::LOW_FS);		break;
+			case Qt::Key_B:			bt_->jamKeyOff(JamKey::LOW_G);		break;
+			case Qt::Key_H:			bt_->jamKeyOff(JamKey::LOW_GS);		break;
+			case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
+			case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
+			case Qt::Key_M:			bt_->jamKeyOff(JamKey::LOW_B);		break;
+			case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_C_H);	break;
+			case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
+			case Qt::Key_Period:	bt_->jamKeyOff(JamKey::LOW_D_H);	break;
+			case Qt::Key_Q:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
+			case Qt::Key_2:			bt_->jamKeyOff(JamKey::HIGH_CS);	break;
+			case Qt::Key_W:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
+			case Qt::Key_3:			bt_->jamKeyOff(JamKey::HIGH_DS);	break;
+			case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
+			case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
+			case Qt::Key_5:			bt_->jamKeyOff(JamKey::HIGH_FS);	break;
+			case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
+			case Qt::Key_6:			bt_->jamKeyOff(JamKey::HIGH_GS);	break;
+			case Qt::Key_Y:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
+			case Qt::Key_7:			bt_->jamKeyOff(JamKey::HIGH_AS);	break;
+			case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
+			case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
+			case Qt::Key_9:			bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
+			case Qt::Key_O:			bt_->jamKeyOff(JamKey::HIGH_D_H);	break;
+			default:	break;
+			}
+			break;
+		case Configuration::QWERTZ:
+			switch (key) {
+			case Qt::Key_Y:			bt_->jamKeyOff(JamKey::LOW_C);		break;
+			case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
+			case Qt::Key_X:			bt_->jamKeyOff(JamKey::LOW_D);		break;
+			case Qt::Key_D:			bt_->jamKeyOff(JamKey::LOW_DS);		break;
+			case Qt::Key_C:			bt_->jamKeyOff(JamKey::LOW_E);		break;
+			case Qt::Key_V:			bt_->jamKeyOff(JamKey::LOW_F);		break;
+			case Qt::Key_G:			bt_->jamKeyOff(JamKey::LOW_FS);		break;
+			case Qt::Key_B:			bt_->jamKeyOff(JamKey::LOW_G);		break;
+			case Qt::Key_H:			bt_->jamKeyOff(JamKey::LOW_GS);		break;
+			case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
+			case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
+			case Qt::Key_M:			bt_->jamKeyOff(JamKey::LOW_B);		break;
+			case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_C_H);	break;
+			case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
+			case Qt::Key_Period:	bt_->jamKeyOff(JamKey::LOW_D_H);	break;
+			case Qt::Key_Q:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
+			case Qt::Key_2:			bt_->jamKeyOff(JamKey::HIGH_CS);	break;
+			case Qt::Key_W:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
+			case Qt::Key_3:			bt_->jamKeyOff(JamKey::HIGH_DS);	break;
+			case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
+			case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
+			case Qt::Key_5:			bt_->jamKeyOff(JamKey::HIGH_FS);	break;
+			case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
+			case Qt::Key_6:			bt_->jamKeyOff(JamKey::HIGH_GS);	break;
+			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
+			case Qt::Key_7:			bt_->jamKeyOff(JamKey::HIGH_AS);	break;
+			case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
+			case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
+			case Qt::Key_9:			bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
+			case Qt::Key_O:			bt_->jamKeyOff(JamKey::HIGH_D_H);	break;
+			default:	break;
+			}
+			break;
+		case Configuration::AZERTY:
+			switch (key) {
+			case Qt::Key_W:			bt_->jamKeyOff(JamKey::LOW_C);		break;
+			case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
+			case Qt::Key_X:			bt_->jamKeyOff(JamKey::LOW_D);		break;
+			case Qt::Key_D:			bt_->jamKeyOff(JamKey::LOW_DS);		break;
+			case Qt::Key_C:			bt_->jamKeyOff(JamKey::LOW_E);		break;
+			case Qt::Key_V:			bt_->jamKeyOff(JamKey::LOW_F);		break;
+			case Qt::Key_G:			bt_->jamKeyOff(JamKey::LOW_FS);		break;
+			case Qt::Key_B:			bt_->jamKeyOff(JamKey::LOW_G);		break;
+			case Qt::Key_H:			bt_->jamKeyOff(JamKey::LOW_GS);		break;
+			case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
+			case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
+			case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_B);		break;
+			case Qt::Key_Semicolon:	bt_->jamKeyOff(JamKey::LOW_C_H);		break;
+			case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
+			case Qt::Key_Colon:		bt_->jamKeyOff(JamKey::LOW_D_H);		break;
+			case Qt::Key_A:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
+			case Qt::Key_Eacute:	bt_->jamKeyOff(JamKey::HIGH_CS);		break;
+			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
+			case Qt::Key_QuoteDbl:	bt_->jamKeyOff(JamKey::HIGH_DS);		break;
+			case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
+			case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
+			case Qt::Key_ParenLeft:	bt_->jamKeyOff(JamKey::HIGH_FS);		break;
+			case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
+			case Qt::Key_Minus:		bt_->jamKeyOff(JamKey::HIGH_GS);		break;
+			case Qt::Key_Y:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
+			case Qt::Key_Egrave:	bt_->jamKeyOff(JamKey::HIGH_AS);		break;
+			case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
+			case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
+			case Qt::Key_Ccedilla:	bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
+			case Qt::Key_O:			bt_->jamKeyOff(JamKey::HIGH_D_H);	break;
+			default:	break;
+			}
+			break;
 		}
 	}
 }
@@ -566,15 +724,8 @@ void MainWindow::dropEvent(QDropEvent* event)
 	bt_->stopPlaySong();
 	lockControls(false);
 
-	try {
-		bt_->loadModule(event->mimeData()->urls().first().toLocalFile().toLocal8Bit().toStdString());
-		loadModule();
-		isModifiedForNotCommand_ = false;
-		setWindowModified(false);
-	}
-	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
-	}
+	QString file = event->mimeData()->urls().first().toLocalFile();
+	openModule(file);
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
@@ -635,6 +786,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 	instForms_->closeAll();
 	ConfigurationHandler::saveConfiguration(config_);
+
+	FileHistoryHandler::saveFileHistory(fileHistory_);
 
 	event->accept();
 }
@@ -741,11 +894,13 @@ void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-												"BambooTracker instrument file (*.bti);;"
-												"DefleMask preset file (*.dmp);;"
+												"BambooTracker instrument (*.bti);;"
+												"DefleMask preset (*.dmp);;"
 												"TFM Music Maker instrument (*.tfi);;"
 												"VGM Music Maker instrument (*.vgi);;"
-												"WOPN instrument (*.opni)");
+												"WOPN instrument (*.opni);;"
+												"Gens KMod dump (*.y12);;"
+												"MVSTracker instrument (*.ins)");
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();
@@ -881,6 +1036,22 @@ void MainWindow::loadModule()
 	QApplication::clipboard()->clear();
 	comStack_->clear();
 	bt_->clearCommandHistory();
+}
+
+void MainWindow::openModule(QString file)
+{
+	try {
+		bt_->loadModule(file.toLocal8Bit().toStdString());
+		loadModule();
+
+		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		changeFileHistory(file);
+		isModifiedForNotCommand_ = false;
+		setWindowModified(false);
+	}
+	catch (std::exception& e) {
+		QMessageBox::critical(this, tr("Error"), e.what());
+	}
 }
 
 void MainWindow::loadSong()
@@ -1023,6 +1194,19 @@ void MainWindow::changeConfiguration()
 	bt_->changeConfiguration(config_);
 
 	update();
+}
+
+/********** History change **********/
+void MainWindow::changeFileHistory(QString file)
+{
+	fileHistory_->addFile(file);
+	for (int i = ui->menu_Recent_Files->actions().count() - 1; 1 < i; --i)
+		ui->menu_Recent_Files->removeAction(ui->menu_Recent_Files->actions().at(i));
+	for (size_t i = 0; i < fileHistory_->size(); ++i) {
+		// Leave Before Qt5.7.0 style due to windows xp
+		QAction* action = ui->menu_Recent_Files->addAction(QString("&%1 %2").arg(i + 1).arg(fileHistory_->at(i)));
+		action->setData(fileHistory_->at(i));
+	}
 }
 
 /******************************/
@@ -1239,7 +1423,7 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 
 	if (num == -1) statusInst_->setText(tr("No instrument"));
 	else statusInst_->setText(
-				tr("Instrument: %1").arg(num, 2, 16, QChar('0')).toUpper());
+				tr("Instrument: ") + QString("%1").arg(num, 2, 16, QChar('0')).toUpper());
 
 	bool isEnabled = (num != -1);
 	ui->actionRemove_Instrument->setEnabled(isEnabled);
@@ -1567,6 +1751,9 @@ void MainWindow::on_actionEdit_Mode_triggered()
 	if (isEditedOrder_) updateMenuByOrder();
 	else if (isEditedPattern_) updateMenuByPattern();
 	updateMenuByPatternAndOrderSelection(isSelectedPO_);
+
+	if (bt_->isJamMode()) statusDetail_->setText(tr("Change to jam mode"));
+	else statusDetail_->setText(tr("Change to edit mode"));
 }
 
 void MainWindow::on_actionToggle_Track_triggered()
@@ -1781,6 +1968,7 @@ bool MainWindow::on_actionSave_As_triggered()
 		setWindowModified(false);
 		setWindowTitle();
 		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		changeFileHistory(file);
 		return true;
 	}
 	catch (std::exception& e) {
@@ -1819,17 +2007,8 @@ void MainWindow::on_actionOpen_triggered()
 
 	bt_->stopPlaySong();
 	lockControls(false);
-	try {
-		bt_->loadModule(file.toLocal8Bit().toStdString());
-		loadModule();
 
-		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
-		isModifiedForNotCommand_ = false;
-		setWindowModified(false);
-	}
-	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
-	}
+	openModule(file);
 }
 
 void MainWindow::on_actionLoad_From_File_triggered()
@@ -2070,10 +2249,21 @@ void MainWindow::on_actionOverwrite_triggered()
 void MainWindow::onNewTickSignaled()
 {
 	if (!bt_->streamCountUp()) {	// New step
-		ui->orderList->update();
-		ui->patternEditor->updatePosition();
-		statusPlayPos_->setText(
-					QString("%1/%2").arg(bt_->getPlayingOrderNumber(), 2, 16, QChar('0'))
-					.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
+		int order = bt_->getPlayingOrderNumber();
+		if (order > -1) {
+			ui->orderList->update();
+			ui->patternEditor->updatePosition();
+			statusPlayPos_->setText(
+						QString("%1/%2")
+						.arg(order, 2, (config_->getShowRowNumberInHex() ? 16 : 10), QChar('0'))
+						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
+		}
 	}
+}
+
+void MainWindow::on_actionClear_triggered()
+{
+	fileHistory_->clearHistory();
+	for (int i = ui->menu_Recent_Files->actions().count() - 1; 1 < i; --i)
+		ui->menu_Recent_Files->removeAction(ui->menu_Recent_Files->actions().at(i));
 }

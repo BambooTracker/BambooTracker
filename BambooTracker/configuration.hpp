@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <cstddef>
 #include <string>
+#include <map>
+#include <vector>
+#include "misc.hpp"
 
 class Configuration
 {
@@ -61,18 +64,23 @@ public:
 	bool getReverseFMVolumeOrder() const;
 	void setMoveCursorToRight(bool enabled);
 	bool getMoveCursorToRight() const;
+	void setRetrieveChannelState(bool enabled);
+	bool getRetrieveChannelState() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
 	bool backupModules_, dontSelectOnDoubleClick_;
 	bool reverseFMVolumeOrder_, moveCursorToRight_;
+	bool retrieveChannelState_;
 
 	// Edit settings
 public:
 	void setPageJumpLength(size_t length);
 	size_t getPageJumpLength() const;
+	void setEditableStep(size_t step);
+	size_t getEditableStep() const;
 private:
-	size_t pageJumpLength_;
+	size_t pageJumpLength_, editableStep_;
 
 	// Keys
 public:
@@ -84,9 +92,18 @@ public:
 	std::string getOctaveDownKey() const;
 	void setEchoBufferKey(std::string key);
 	std::string getEchoBufferKey() const;
+	enum KeyboardLayout : int
+	{
+		QWERTY = 0,
+		QWERTZ,
+		AZERTY
+	};
+	void setNoteEntryLayout(KeyboardLayout layout);
+	KeyboardLayout getNoteEntryLayout() const;
 
 private:
 	std::string keyOffKey_, octUpKey_, octDownKey_, echoKey_;
+	KeyboardLayout noteEntryLayout_;
 
 	// Sound //
 public:
@@ -115,4 +132,12 @@ public:
 private:
 	int mixerVolumeMaster_;
 	double mixerVolumeFM_, mixerVolumeSSG_;
+
+	// Input //
+public:
+	void setFMEnvelopeTextMap(std::map<std::string, std::vector<FMEnvelopeTextType>> map);
+	std::map<std::string, std::vector<FMEnvelopeTextType>> getFMEnvelopeTextMap() const;
+
+private:
+	std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap_;
 };

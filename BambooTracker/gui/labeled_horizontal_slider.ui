@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Frame</string>
+   <string notr="true">Frame</string>
   </property>
   <property name="styleSheet">
    <string notr="true">LabeledHorizontalSlider {
@@ -37,7 +37,7 @@
    <item alignment="Qt::AlignVCenter">
     <widget class="QLabel" name="textLabel">
      <property name="text">
-      <string>Text</string>
+      <string notr="true">Text</string>
      </property>
     </widget>
    </item>
@@ -51,7 +51,7 @@
    <item alignment="Qt::AlignVCenter">
     <widget class="QLabel" name="valueLabel">
      <property name="text">
-      <string>0</string>
+      <string notr="true">0</string>
      </property>
     </widget>
    </item>
