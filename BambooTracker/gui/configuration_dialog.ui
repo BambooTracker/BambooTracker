@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>374</height>
+    <height>381</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,6 +80,32 @@
           <item row="3" column="1">
            <widget class="QKeySequenceEdit" name="echoBufferKeySequenceEdit"/>
           </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="keyboardTypeComboBox">
+            <item>
+             <property name="text">
+              <string notr="true">QWERTY</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">QWERTZ</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">AZERTY</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="noteEntryLabel">
+            <property name="text">
+             <string>Note entry</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -111,19 +137,6 @@
           </item>
          </layout>
         </widget>
-       </item>
-       <item row="2" column="1">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
        <item row="0" column="0" rowspan="3">
         <widget class="QGroupBox" name="generalSettingsGroupBox">
@@ -222,6 +235,19 @@
           </item>
          </layout>
         </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

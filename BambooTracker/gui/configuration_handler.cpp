@@ -58,6 +58,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 											 configLocked->getOctaveDownKey().length()));
 		settings.setValue("echoBufferKey", QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
 											 configLocked->getEchoBufferKey().length()));
+		settings.setValue("noteEntryLayout",	static_cast<int>(configLocked->getNoteEntryLayout()));
 		settings.endGroup();
 
 		// Sound //
@@ -150,6 +151,9 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setOctaveUpKey(settings.value("octaveUpKey", QString::fromStdString(configLocked->getOctaveUpKey())).toString().toUtf8().toStdString());
 		configLocked->setOctaveDownKey(settings.value("octaveDownKey", QString::fromStdString(configLocked->getOctaveDownKey())).toString().toUtf8().toStdString());
 		configLocked->setEchoBufferKey(settings.value("echoBufferKey", QString::fromStdString(configLocked->getEchoBufferKey())).toString().toUtf8().toStdString());
+		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(
+											 settings.value("noteEntryLayout",
+															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));
 		settings.endGroup();
 
 		// Sound //

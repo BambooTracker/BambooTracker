@@ -92,9 +92,18 @@ public:
 	std::string getOctaveDownKey() const;
 	void setEchoBufferKey(std::string key);
 	std::string getEchoBufferKey() const;
+	enum KeyboardLayout : int
+	{
+		QWERTY = 0,
+		QWERTZ,
+		AZERTY
+	};
+	void setNoteEntryLayout(KeyboardLayout layout);
+	KeyboardLayout getNoteEntryLayout() const;
 
 private:
 	std::string keyOffKey_, octUpKey_, octDownKey_, echoKey_;
+	KeyboardLayout noteEntryLayout_;
 
 	// Sound //
 public:

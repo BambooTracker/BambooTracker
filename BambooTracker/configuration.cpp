@@ -36,6 +36,7 @@ Configuration::Configuration()
 	octUpKey_ = u8"Num+*";
 	octDownKey_ = u8"Num+/";
 	echoKey_ = u8"^";
+	noteEntryLayout_ = QWERTY;
 
 	// Sonud //
 	sndDevice_ = u8"";
@@ -728,6 +729,16 @@ void Configuration::setEchoBufferKey(std::string key)
 std::string Configuration::getEchoBufferKey() const
 {
 	return echoKey_;
+}
+
+void Configuration::setNoteEntryLayout(KeyboardLayout layout)
+{
+	noteEntryLayout_ = layout;
+}
+
+Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const
+{
+	return noteEntryLayout_;
 }
 
 // Sound //

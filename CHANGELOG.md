@@ -5,6 +5,7 @@
 - [#63] - L10n: French (thanks [@jpcima], [@trebmuh])
 - Add file history
 - [#65] - Add repository to Appveyor (thanks [@papiezak], [@OPNA2608], [@jpcima])
+- [#70] - Add keyboard layout selection for note entry (thanks [@OPNA2608])
 
 ### Fixed
 - [#69] - Fix corruption in jamming (thanks [@maakmusic], [@ImATrackMan])
@@ -27,6 +28,7 @@
 [#65]: https://github.com/rerrahkr/BambooTracker/issues/65
 [#71]: https://github.com/rerrahkr/BambooTracker/issues/71
 [#73]: https://github.com/rerrahkr/BambooTracker/issues/73
+[#70]: https://github.com/rerrahkr/BambooTracker/issues/70
 
 [@ImATrackMan]: https://github.com/ImATrackMan
 [@scarletbullgon]: https://github.com/scarletbullgon

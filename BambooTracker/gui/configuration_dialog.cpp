@@ -44,6 +44,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 																	config.lock()->getOctaveDownKey().length()));
 	ui->echoBufferKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getEchoBufferKey().c_str(),
 																	config.lock()->getEchoBufferKey().length()));
+	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(config.lock()->getNoteEntryLayout()));
 
 	// Sound //
 	int devRow = -1;
@@ -136,6 +137,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setOctaveUpKey(ui->octaveUpKeySequenceEdit->keySequence().toString().toStdString());
 	config_.lock()->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
 	config_.lock()->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
+	config_.lock()->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
 
 	// Sound //
 	config_.lock()->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());

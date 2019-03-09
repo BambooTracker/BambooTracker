@@ -409,7 +409,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		}
 		else {
 			painter.setPen(palette_.lock()->ptnEffValColor);
-			if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder() && effStr.front() == 'M')
+			if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder() && effStr.at(0) == 'M')
 				effVal = 0x7f - effVal;
 			painter.drawText(offset, baseY, QString("%1").arg(effVal, 2, 16, QChar('0')).toUpper());
 		}
