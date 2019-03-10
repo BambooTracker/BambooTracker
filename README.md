@@ -1,8 +1,9 @@
 # BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.1.5-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
-![Platform: win-32 | linux](https://img.shields.io/badge/platform-win--32%20|%20linux-lightgrey.svg)
-[![Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
-[![GitHub](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
+![Platform: windows | linux](https://img.shields.io/badge/platform-windows%20|%20linux-lightgrey.svg)
+[![Travis CI Build Status](https://travis-ci.org/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.org/rerrahkr/BambooTracker)
+[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
+[![LICENSE](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
 ![Example](./img/overview.gif)
 
