@@ -18,6 +18,7 @@
 - [#73] - Fix DR and SR misreading in .ins (thanks [@scarletbullgon])
 - Fix FM Mxyy effect to reverse yy by revesing FM volume order
 - Fix incorrect notes on undoing of note transposition
+- Fix some key shortcut duplication
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63

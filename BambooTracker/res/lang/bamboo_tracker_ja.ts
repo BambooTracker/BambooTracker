@@ -732,7 +732,6 @@
         <translation>特殊貼り付け(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="475"/>
         <location filename="../../gui/mainwindow.ui" line="1118"/>
         <source>&amp;Pattern</source>
         <translation>パターン(&amp;P)</translation>
@@ -743,9 +742,8 @@
         <translation>トランスポーズ(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="497"/>
         <source>&amp;Song</source>
-        <translation>ソング(&amp;S)</translation>
+        <translation type="vanished">ソング(&amp;S)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="510"/>
@@ -763,9 +761,8 @@
         <translation>インストゥルメント(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="544"/>
         <source>T&amp;racker</source>
-        <translation>トラッカー(&amp;R)</translation>
+        <translation type="vanished">トラッカー(&amp;R)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="562"/>
@@ -876,6 +873,21 @@
         <location filename="../../gui/mainwindow.ui" line="419"/>
         <source>&amp;Recent Files</source>
         <translation>最近使ったファイル(&amp;R)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.ui" line="475"/>
+        <source>Patter&amp;n</source>
+        <translation>パターン(&amp;N)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.ui" line="497"/>
+        <source>Son&amp;g</source>
+        <translation>ソング(&amp;G)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.ui" line="544"/>
+        <source>&amp;Tracker</source>
+        <translation>トラッカー(&amp;T)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="577"/>

@@ -748,6 +748,20 @@
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="475"/>
+        <source>Patter&amp;n</source>
+        <translation>&amp;Motif</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.ui" line="497"/>
+        <source>Son&amp;g</source>
+        <translation>Mor&amp;ceau</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.ui" line="544"/>
+        <source>&amp;Tracker</source>
+        <translation>&amp;Tracker</translation>
+    </message>
+    <message>
         <location filename="../../gui/mainwindow.ui" line="1118"/>
         <source>&amp;Pattern</source>
         <translation>&amp;Motif</translation>
@@ -758,9 +772,8 @@
         <translation>&amp;Transposer</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="497"/>
         <source>&amp;Song</source>
-        <translation>Mor&amp;ceau</translation>
+        <translation type="vanished">Mor&amp;ceau</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="510"/>
@@ -778,9 +791,8 @@
         <translation>&amp;Instrument</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="544"/>
         <source>T&amp;racker</source>
-        <translation>T&amp;racker</translation>
+        <translation type="vanished">T&amp;racker</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="562"/>

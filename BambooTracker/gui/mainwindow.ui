@@ -472,7 +472,7 @@
    </widget>
    <widget class="QMenu" name="menuPattern">
     <property name="title">
-     <string>&amp;Pattern</string>
+     <string>Patter&amp;n</string>
     </property>
     <widget class="QMenu" name="menuTranspose">
      <property name="title">
@@ -494,7 +494,7 @@
    </widget>
    <widget class="QMenu" name="menuSong">
     <property name="title">
-     <string>&amp;Song</string>
+     <string>Son&amp;g</string>
     </property>
     <addaction name="actionInsert_Order"/>
     <addaction name="actionRemove_Order"/>
@@ -541,7 +541,7 @@
    </widget>
    <widget class="QMenu" name="menuTracker">
     <property name="title">
-     <string>T&amp;racker</string>
+     <string>&amp;Tracker</string>
     </property>
     <addaction name="actionPlay"/>
     <addaction name="actionPlay_Pattern"/>
