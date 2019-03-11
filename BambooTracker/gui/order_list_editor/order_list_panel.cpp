@@ -878,7 +878,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 					QPoint(calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track), curRowY_ - 8));
 		return true;
 	default:
-		if (!bt_->isJamMode()) {
+		if (!bt_->isJamMode() && event->modifiers().testFlag(Qt::NoModifier)) {
 			return enterOrder(event->key());
 		}
 		return false;
