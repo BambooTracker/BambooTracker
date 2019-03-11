@@ -764,38 +764,112 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 	int baseOct = bt_->getCurrentOctave();
 
 	if (event->modifiers().testFlag(Qt::NoModifier)) {
-		switch (event->key()) {
-		case Qt::Key_Z:			setStepKeyOn(Note::C, baseOct);			break;
-		case Qt::Key_S:			setStepKeyOn(Note::CS, baseOct);		break;
-		case Qt::Key_X:			setStepKeyOn(Note::D, baseOct);			break;
-		case Qt::Key_D:			setStepKeyOn(Note::DS, baseOct);		break;
-		case Qt::Key_C:			setStepKeyOn(Note::E, baseOct);			break;
-		case Qt::Key_V:			setStepKeyOn(Note::F, baseOct);			break;
-		case Qt::Key_G:			setStepKeyOn(Note::FS, baseOct);		break;
-		case Qt::Key_B:			setStepKeyOn(Note::G, baseOct);			break;
-		case Qt::Key_H:			setStepKeyOn(Note::GS, baseOct);		break;
-		case Qt::Key_N:			setStepKeyOn(Note::A, baseOct);			break;
-		case Qt::Key_J:			setStepKeyOn(Note::AS, baseOct);		break;
-		case Qt::Key_M:			setStepKeyOn(Note::B, baseOct);			break;
-		case Qt::Key_Comma:		setStepKeyOn(Note::C, baseOct + 1);		break;
-		case Qt::Key_L:			setStepKeyOn(Note::CS, baseOct + 1);	break;
-		case Qt::Key_Period:	setStepKeyOn(Note::D, baseOct + 1);		break;
-		case Qt::Key_Q:			setStepKeyOn(Note::C, baseOct + 1);		break;
-		case Qt::Key_2:			setStepKeyOn(Note::CS, baseOct + 1);	break;
-		case Qt::Key_W:			setStepKeyOn(Note::D, baseOct + 1);		break;
-		case Qt::Key_3:			setStepKeyOn(Note::DS, baseOct + 1);	break;
-		case Qt::Key_E:			setStepKeyOn(Note::E, baseOct + 1);		break;
-		case Qt::Key_R:			setStepKeyOn(Note::F, baseOct + 1);		break;
-		case Qt::Key_5:			setStepKeyOn(Note::FS, baseOct + 1);	break;
-		case Qt::Key_T:			setStepKeyOn(Note::G, baseOct + 1);		break;
-		case Qt::Key_6:			setStepKeyOn(Note::GS, baseOct + 1);	break;
-		case Qt::Key_Y:			setStepKeyOn(Note::A, baseOct + 1);		break;
-		case Qt::Key_7:			setStepKeyOn(Note::AS, baseOct + 1);	break;
-		case Qt::Key_U:			setStepKeyOn(Note::B, baseOct + 1);		break;
-		case Qt::Key_I:			setStepKeyOn(Note::C, baseOct + 2);		break;
-		case Qt::Key_9:			setStepKeyOn(Note::CS, baseOct + 2);	break;
-		case Qt::Key_O:			setStepKeyOn(Note::D, baseOct + 2);		break;
-		default:	break;
+		switch (config_.lock()->getNoteEntryLayout()) {
+		case Configuration::QWERTY:
+			switch (event->key()) {
+			case Qt::Key_Z:			setStepKeyOn(Note::C, baseOct);			break;
+			case Qt::Key_S:			setStepKeyOn(Note::CS, baseOct);		break;
+			case Qt::Key_X:			setStepKeyOn(Note::D, baseOct);			break;
+			case Qt::Key_D:			setStepKeyOn(Note::DS, baseOct);		break;
+			case Qt::Key_C:			setStepKeyOn(Note::E, baseOct);			break;
+			case Qt::Key_V:			setStepKeyOn(Note::F, baseOct);			break;
+			case Qt::Key_G:			setStepKeyOn(Note::FS, baseOct);		break;
+			case Qt::Key_B:			setStepKeyOn(Note::G, baseOct);			break;
+			case Qt::Key_H:			setStepKeyOn(Note::GS, baseOct);		break;
+			case Qt::Key_N:			setStepKeyOn(Note::A, baseOct);			break;
+			case Qt::Key_J:			setStepKeyOn(Note::AS, baseOct);		break;
+			case Qt::Key_M:			setStepKeyOn(Note::B, baseOct);			break;
+			case Qt::Key_Comma:		setStepKeyOn(Note::C, baseOct + 1);		break;
+			case Qt::Key_L:			setStepKeyOn(Note::CS, baseOct + 1);	break;
+			case Qt::Key_Period:	setStepKeyOn(Note::D, baseOct + 1);		break;
+			case Qt::Key_Q:			setStepKeyOn(Note::C, baseOct + 1);		break;
+			case Qt::Key_2:			setStepKeyOn(Note::CS, baseOct + 1);	break;
+			case Qt::Key_W:			setStepKeyOn(Note::D, baseOct + 1);		break;
+			case Qt::Key_3:			setStepKeyOn(Note::DS, baseOct + 1);	break;
+			case Qt::Key_E:			setStepKeyOn(Note::E, baseOct + 1);		break;
+			case Qt::Key_R:			setStepKeyOn(Note::F, baseOct + 1);		break;
+			case Qt::Key_5:			setStepKeyOn(Note::FS, baseOct + 1);	break;
+			case Qt::Key_T:			setStepKeyOn(Note::G, baseOct + 1);		break;
+			case Qt::Key_6:			setStepKeyOn(Note::GS, baseOct + 1);	break;
+			case Qt::Key_Y:			setStepKeyOn(Note::A, baseOct + 1);		break;
+			case Qt::Key_7:			setStepKeyOn(Note::AS, baseOct + 1);	break;
+			case Qt::Key_U:			setStepKeyOn(Note::B, baseOct + 1);		break;
+			case Qt::Key_I:			setStepKeyOn(Note::C, baseOct + 2);		break;
+			case Qt::Key_9:			setStepKeyOn(Note::CS, baseOct + 2);	break;
+			case Qt::Key_O:			setStepKeyOn(Note::D, baseOct + 2);		break;
+			default:	break;
+			}
+			break;
+		case Configuration::QWERTZ:
+			switch (event->key()) {
+			case Qt::Key_Y:			setStepKeyOn(Note::C, baseOct);			break;
+			case Qt::Key_S:			setStepKeyOn(Note::CS, baseOct);		break;
+			case Qt::Key_X:			setStepKeyOn(Note::D, baseOct);			break;
+			case Qt::Key_D:			setStepKeyOn(Note::DS, baseOct);		break;
+			case Qt::Key_C:			setStepKeyOn(Note::E, baseOct);			break;
+			case Qt::Key_V:			setStepKeyOn(Note::F, baseOct);			break;
+			case Qt::Key_G:			setStepKeyOn(Note::FS, baseOct);		break;
+			case Qt::Key_B:			setStepKeyOn(Note::G, baseOct);			break;
+			case Qt::Key_H:			setStepKeyOn(Note::GS, baseOct);		break;
+			case Qt::Key_N:			setStepKeyOn(Note::A, baseOct);			break;
+			case Qt::Key_J:			setStepKeyOn(Note::AS, baseOct);		break;
+			case Qt::Key_M:			setStepKeyOn(Note::B, baseOct);			break;
+			case Qt::Key_Comma:		setStepKeyOn(Note::C, baseOct + 1);		break;
+			case Qt::Key_L:			setStepKeyOn(Note::CS, baseOct + 1);	break;
+			case Qt::Key_Period:	setStepKeyOn(Note::D, baseOct + 1);		break;
+			case Qt::Key_Q:			setStepKeyOn(Note::C, baseOct + 1);		break;
+			case Qt::Key_2:			setStepKeyOn(Note::CS, baseOct + 1);	break;
+			case Qt::Key_W:			setStepKeyOn(Note::D, baseOct + 1);		break;
+			case Qt::Key_3:			setStepKeyOn(Note::DS, baseOct + 1);	break;
+			case Qt::Key_E:			setStepKeyOn(Note::E, baseOct + 1);		break;
+			case Qt::Key_R:			setStepKeyOn(Note::F, baseOct + 1);		break;
+			case Qt::Key_5:			setStepKeyOn(Note::FS, baseOct + 1);	break;
+			case Qt::Key_T:			setStepKeyOn(Note::G, baseOct + 1);		break;
+			case Qt::Key_6:			setStepKeyOn(Note::GS, baseOct + 1);	break;
+			case Qt::Key_Z:			setStepKeyOn(Note::A, baseOct + 1);		break;
+			case Qt::Key_7:			setStepKeyOn(Note::AS, baseOct + 1);	break;
+			case Qt::Key_U:			setStepKeyOn(Note::B, baseOct + 1);		break;
+			case Qt::Key_I:			setStepKeyOn(Note::C, baseOct + 2);		break;
+			case Qt::Key_9:			setStepKeyOn(Note::CS, baseOct + 2);	break;
+			case Qt::Key_O:			setStepKeyOn(Note::D, baseOct + 2);		break;
+			default:	break;
+			}
+			break;
+		case Configuration::AZERTY:
+			switch (event->key()) {
+			case Qt::Key_W:			setStepKeyOn(Note::C, baseOct);			break;
+			case Qt::Key_S:			setStepKeyOn(Note::CS, baseOct);		break;
+			case Qt::Key_X:			setStepKeyOn(Note::D, baseOct);			break;
+			case Qt::Key_D:			setStepKeyOn(Note::DS, baseOct);		break;
+			case Qt::Key_C:			setStepKeyOn(Note::E, baseOct);			break;
+			case Qt::Key_V:			setStepKeyOn(Note::F, baseOct);			break;
+			case Qt::Key_G:			setStepKeyOn(Note::FS, baseOct);		break;
+			case Qt::Key_B:			setStepKeyOn(Note::G, baseOct);			break;
+			case Qt::Key_H:			setStepKeyOn(Note::GS, baseOct);		break;
+			case Qt::Key_N:			setStepKeyOn(Note::A, baseOct);			break;
+			case Qt::Key_J:			setStepKeyOn(Note::AS, baseOct);		break;
+			case Qt::Key_Comma:		setStepKeyOn(Note::B, baseOct);			break;
+			case Qt::Key_Semicolon: setStepKeyOn(Note::C, baseOct + 1);		break;
+			case Qt::Key_L:			setStepKeyOn(Note::CS, baseOct + 1);	break;
+			case Qt::Key_Colon:		setStepKeyOn(Note::D, baseOct + 1);		break;
+			case Qt::Key_A:			setStepKeyOn(Note::C, baseOct + 1);		break;
+			case Qt::Key_Eacute:	setStepKeyOn(Note::CS, baseOct + 1);	break;
+			case Qt::Key_Z:			setStepKeyOn(Note::D, baseOct + 1);		break;
+			case Qt::Key_QuoteDbl:	setStepKeyOn(Note::DS, baseOct + 1);	break;
+			case Qt::Key_E:			setStepKeyOn(Note::E, baseOct + 1);		break;
+			case Qt::Key_R:			setStepKeyOn(Note::F, baseOct + 1);		break;
+			case Qt::Key_ParenLeft:	setStepKeyOn(Note::FS, baseOct + 1);	break;
+			case Qt::Key_T:			setStepKeyOn(Note::G, baseOct + 1);		break;
+			case Qt::Key_Minus:		setStepKeyOn(Note::GS, baseOct + 1);	break;
+			case Qt::Key_Y:			setStepKeyOn(Note::A, baseOct + 1);		break;
+			case Qt::Key_Egrave:	setStepKeyOn(Note::AS, baseOct + 1);	break;
+			case Qt::Key_U:			setStepKeyOn(Note::B, baseOct + 1);		break;
+			case Qt::Key_I:			setStepKeyOn(Note::C, baseOct + 2);		break;
+			case Qt::Key_Ccedilla:	setStepKeyOn(Note::CS, baseOct + 2);	break;
+			case Qt::Key_O:			setStepKeyOn(Note::D, baseOct + 2);		break;
+			default:	break;
+			}
+			break;
 		}
 	}
 
