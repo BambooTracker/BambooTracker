@@ -106,7 +106,7 @@ private:
 	void setWindowTitle();
 	void setModifiedTrue();
 
-	bool isEditedPattern_, isEditedOrder_;
+	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPO_;
 
 	bool isSavedModBefore_;
@@ -138,6 +138,7 @@ private slots:
 	void on_actionDelete_triggered();
 	void updateMenuByPattern();
 	void updateMenuByOrder();
+	void updateMenuByInstrumentList();
 	void onPatternAndOrderFocusLost();
 	void updateMenuByPatternAndOrderSelection(bool isSelected);
 	void on_actionAll_triggered();

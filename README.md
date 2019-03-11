@@ -116,9 +116,17 @@ It can also be specified with `0Oxx` effect.
 | F7     | Play from current position     |
 | F8     | Stop song                      |
 | Space  | Toggle jam/edit mode           |
+| Alt+L  | Focus on instrument list       |
 | Alt+O  | Focus on order list            |
 | Alt+P  | Focus on pattern editor        |
 | F12    | Kill sound                     |
+
+### Instrument list
+| Key    | Command                        |
+| ------ | ------------------------------ |
+| Insert | Add instrument                 |
+| Delete | Remove instrument              |
+| Ctrl+I | Open current instrument editor |
 
 ### Order list
 | Key      | Command             |

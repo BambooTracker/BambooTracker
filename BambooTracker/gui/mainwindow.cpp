@@ -49,6 +49,7 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	isModifiedForNotCommand_(false),
 	isEditedPattern_(true),
 	isEditedOrder_(false),
+	isEditedInstList_(false),
 	isSelectedPO_(false)
 {
 	ui->setupUi(this);
@@ -311,6 +312,7 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	instToolBar->addSeparator();
 	instToolBar->addAction(ui->actionEdit);
 	ui->instrumentListGroupBox->layout()->addWidget(instToolBar);
+	ui->instrumentListWidget->installEventFilter(this);
 
 	/* Pattern editor */
 	ui->patternEditor->setCore(bt_);
@@ -399,9 +401,7 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	else openModule(filePath);
 }
 
-MainWindow::~MainWindow()
-{
-}
+MainWindow::~MainWindow() {}
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
@@ -433,6 +433,19 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 		}
 	}
 
+	if (watched == ui->instrumentListWidget) {
+		switch (event->type()) {
+		case QEvent::KeyPress:
+			if (dynamic_cast<QKeyEvent*>(event)->key() == Qt::Key_Insert) addInstrument();
+			break;
+		case QEvent::FocusIn:
+			updateMenuByInstrumentList();
+			break;
+		default:
+			break;
+		}
+	}
+
 	return false;
 }
 
@@ -456,8 +469,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	/* Pressed alt */
 	if (event->modifiers().testFlag(Qt::AltModifier)) {
 		switch (key) {
-		case Qt::Key_O:		ui->orderList->setFocus();		return;
-		case Qt::Key_P:		ui->patternEditor->setFocus();	return;
+		case Qt::Key_L:
+			ui->instrumentListWidget->setFocus();
+			updateMenuByInstrumentList();
+			return;
+		case Qt::Key_O:
+			ui->orderList->setFocus();
+			return;
+		case Qt::Key_P:
+			ui->patternEditor->setFocus();
+			return;
 		}
 	}
 
@@ -807,6 +828,7 @@ void MainWindow::addInstrument()
 
 		TrackAttribute attrib = bt_->getCurrentTrackAttribute();
 		comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instForms_));
+		ui->instrumentListWidget->setCurrentRow(num);
 		break;
 	}
 	case SoundSource::DRUM:
@@ -816,6 +838,8 @@ void MainWindow::addInstrument()
 
 void MainWindow::removeInstrument(int row)
 {
+	if (row < 0) return;
+
 	auto& list = ui->instrumentListWidget;
 	int num = list->item(row)->data(Qt::UserRole).toInt();
 
@@ -1261,8 +1285,12 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QAction* edit = menu.addAction(tr("&Edit..."));
 	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+	add->setShortcutVisibleInContextMenu(true);
+	remove->setShortcutVisibleInContextMenu(true);
 	edit->setShortcutVisibleInContextMenu(true);
 #endif
+	add->setShortcut(QKeySequence(Qt::Key_Insert));
+	remove->setShortcut(QKeySequence(Qt::Key_Delete));
 	edit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
 
 	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
@@ -1491,12 +1519,14 @@ void MainWindow::on_actionDelete_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onDeletePressed();
 	else if (isEditedOrder_) ui->orderList->deleteOrder();
+	else if (isEditedInstList_) on_actionRemove_Instrument_triggered();
 }
 
 void MainWindow::updateMenuByPattern()
 {
 	isEditedPattern_ = true;
 	isEditedOrder_ = false;
+	isEditedInstList_ = false;
 
 	if (bt_->isJamMode()) {
 		// Edit
@@ -1549,6 +1579,7 @@ void MainWindow::updateMenuByOrder()
 {
 	isEditedPattern_ = false;
 	isEditedOrder_ = true;
+	isEditedInstList_ = false;
 
 	if (bt_->isJamMode()) {
 		// Edit
@@ -1592,6 +1623,39 @@ void MainWindow::updateMenuByOrder()
 	ui->actionIncrease_Note->setEnabled(false);
 	ui->actionDecrease_Octave->setEnabled(false);
 	ui->actionIncrease_Octave->setEnabled(false);
+}
+
+void MainWindow::updateMenuByInstrumentList()
+{
+	isEditedPattern_ = false;
+	isEditedOrder_ = false;
+	isEditedInstList_ = true;
+
+	// Edit
+	ui->actionPaste->setEnabled(false);
+	ui->actionMix->setEnabled(false);
+	ui->actionOverwrite->setEnabled(false);
+	ui->actionDelete->setEnabled(true);
+
+	// Pattern
+	ui->actionInterpolate->setEnabled(false);
+	ui->actionReverse->setEnabled(false);
+	ui->actionReplace_Instrument->setEnabled(false);
+	ui->actionExpand->setEnabled(false);
+	ui->actionShrink->setEnabled(false);
+	ui->actionDecrease_Note->setEnabled(false);
+	ui->actionIncrease_Note->setEnabled(false);
+	ui->actionDecrease_Octave->setEnabled(false);
+	ui->actionIncrease_Octave->setEnabled(false);
+
+	// Song
+	ui->actionInsert_Order->setEnabled(false);
+	ui->actionRemove_Order->setEnabled(false);
+	ui->actionDuplicate_Order->setEnabled(false);
+	ui->actionMove_Order_Up->setEnabled(false);
+	ui->actionMove_Order_Down->setEnabled(false);
+	ui->actionClone_Patterns->setEnabled(false);
+	ui->actionClone_Order->setEnabled(false);
 }
 
 void MainWindow::onPatternAndOrderFocusLost()
