@@ -800,13 +800,13 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		return true;
 	case Qt::Key_Left:
 		moveCursorToRight(-1);
-		if (event->modifiers().testFlag(Qt::ShiftModifier))
-			setSelectedRectangle(shiftPressedPos_, curPos_);
+		if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+		else onSelectPressed(0);
 		return true;
 	case Qt::Key_Right:
 		moveCursorToRight(1);
-		if (event->modifiers().testFlag(Qt::ShiftModifier))
-			setSelectedRectangle(shiftPressedPos_, curPos_);
+		if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+		else onSelectPressed(0);
 		return true;
 	case Qt::Key_Up:
 		if (bt_->isPlaySong()) {
@@ -814,11 +814,8 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.row == curPos_.row) {
-				setSelectedRectangle(shiftPressedPos_, curPos_);
-				return true;
-			}
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_Down:
@@ -827,11 +824,8 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.row == curPos_.row) {
-				setSelectedRectangle(shiftPressedPos_, curPos_);
-				return true;
-			}
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_Home:
@@ -840,11 +834,8 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-curPos_.row);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.row == curPos_.row) {
-				setSelectedRectangle(shiftPressedPos_, curPos_);
-				return true;
-			}
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_End:
@@ -854,11 +845,8 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		else {
 			moveCursorToDown(
 						bt_->getOrderSize(curSongNum_) - curPos_.row - 1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.row == curPos_.row) {
-				setSelectedRectangle(shiftPressedPos_, curPos_);
-				return true;
-			}
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_PageUp:
@@ -867,11 +855,8 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(-config_.lock()->getPageJumpLength());
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.row == curPos_.row) {
-				setSelectedRectangle(shiftPressedPos_, curPos_);
-				return true;
-			}
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_PageDown:
@@ -880,11 +865,8 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(config_.lock()->getPageJumpLength());
-			if (event->modifiers().testFlag(Qt::ShiftModifier)
-					&& shiftPressedPos_.row == curPos_.row) {
-				setSelectedRectangle(shiftPressedPos_, curPos_);
-				return true;
-			}
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_Insert:
