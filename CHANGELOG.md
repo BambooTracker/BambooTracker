@@ -21,6 +21,7 @@
 - Fix incorrect notes on undoing of note transposition
 - Fix some key shortcut duplication
 - Fix selected region clear on moving cursor
+- Fix module initialization after failing opening module
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63

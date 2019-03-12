@@ -1075,6 +1075,11 @@ void MainWindow::openModule(QString file)
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());
+		// Init module
+		bt_->makeNewModule();
+		loadModule();
+		isModifiedForNotCommand_ = false;
+		setWindowModified(false);
 	}
 }
 
