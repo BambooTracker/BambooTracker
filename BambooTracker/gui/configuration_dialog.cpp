@@ -1,10 +1,12 @@
 #include "configuration_dialog.hpp"
 #include "ui_configuration_dialog.h"
 #include <QPushButton>
+#include <QMenu>
 #include <QAudio>
 #include <QAudioDeviceInfo>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
+#include "midi/midi.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
 	: QDialog(parent),
@@ -81,6 +83,12 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	});
 	ui->bufferLengthHorizontalSlider->setValue(static_cast<int>(config.lock()->getBufferLength()));
 
+	// Midi //
+	MidiInterface &midiIntf = MidiInterface::instance();
+	if (midiIntf.supportsVirtualPort())
+		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
+	ui->midiInputNameLine->setText(QString::fromStdString(config.lock()->getMidiInputPort()));
+
 	// Mixer //
 	ui->masterMixerSlider->setText(tr("Master"));
 	ui->masterMixerSlider->setSuffix("%");
@@ -150,6 +158,9 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
 	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
 	config_.lock()->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
+
+	// Midi //
+	config_.lock()->setMidiInputPort(ui->midiInputNameLine->text().toStdString());
 
 	// Mixer //
 	config_.lock()->setMixerVolumeMaster(ui->masterMixerSlider->value());
@@ -269,5 +280,36 @@ void ConfigurationDialog::on_envelopeTypeListWidget_currentRowChanged(int curren
 		ui->removeEnvelopeSetpushButton->setEnabled(true);
 		ui->envelopeSetNameLineEdit->setEnabled(true);
 		ui->envelopeSetNameLineEdit->setText(ui->envelopeTypeListWidget->item(currentRow)->text());
+	}
+}
+
+void ConfigurationDialog::on_midiInputChoiceButton_clicked()
+{
+	QToolButton *button = ui->midiInputChoiceButton;
+	QMenu menu;
+	QAction *action;
+
+	MidiInterface &intf = MidiInterface::instance();
+	std::vector<std::string> ports = intf.getRealInputPorts();
+	bool vport = intf.supportsVirtualPort();
+
+	if (vport) {
+		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
+		action = menu.addAction(tr("Virtual port"));
+		action->setData(QString());
+	}
+
+	for (unsigned i = 0, n = ports.size(); i < n; ++i) {
+		if (i == 0 && vport)
+			menu.addSeparator();
+		QString portName = QString::fromStdString(ports[i]);
+		action = menu.addAction(portName);
+		action->setData(portName);
+	}
+
+	QAction *choice = menu.exec(button->mapToGlobal(button->rect().bottomLeft()));
+	if (choice) {
+		QString portName = choice->data().toString();
+		ui->midiInputNameLine->setText(portName);
 	}
 }

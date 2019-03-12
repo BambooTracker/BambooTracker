@@ -17,7 +17,7 @@ class ConfigurationDialog : public QDialog
 	Q_OBJECT
 
 public:
-	ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent = nullptr);
+	explicit ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent = nullptr);
 	~ConfigurationDialog() override;
 
 signals:
@@ -60,6 +60,7 @@ private slots:
 	void on_editEnvelopeSetPushButton_clicked();
 	void on_envelopeSetNameLineEdit_textChanged(const QString &arg1);
 	void on_envelopeTypeListWidget_currentRowChanged(int currentRow);
+	void on_midiInputChoiceButton_clicked();
 };
 
 #endif // CONFIGURATION_DIALOG_HPP

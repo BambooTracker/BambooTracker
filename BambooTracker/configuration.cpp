@@ -39,11 +39,14 @@ Configuration::Configuration()
 	echoKey_ = u8"^";
 	noteEntryLayout_ = QWERTY;
 
-	// Sonud //
+	// Sound //
 	sndDevice_ = u8"";
 	useSCCI_ = false;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
+
+	// Midi //
+	midiInPort_ = u8"";
 
 	// Mixer //
 	mixerVolumeMaster_ = 100;
@@ -790,6 +793,17 @@ void Configuration::setBufferLength(size_t length)
 size_t Configuration::getBufferLength() const
 {
 	return bufferLength_;
+}
+
+// Midi //
+void Configuration::setMidiInputPort(const std::string &port)
+{
+	midiInPort_ = port;
+}
+
+std::string Configuration::getMidiInputPort() const
+{
+	return midiInPort_;
 }
 
 // Mixer //

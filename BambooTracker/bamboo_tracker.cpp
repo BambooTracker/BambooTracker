@@ -6,6 +6,7 @@
 #include "commands.hpp"
 #include "io_handlers.hpp"
 #include "bank.hpp"
+#include "midi/midi.hpp"
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
@@ -37,9 +38,17 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	jamMan_ = std::make_unique<JamManager>(songStyle_.type);
 
 	clearDelayCounts();
+
+	MidiInterface &midiIntf = MidiInterface::instance();
+	std::string midiInPortName = config.lock()->getMidiInputPort();
+
+	if (!midiInPortName.empty())
+		midiIntf.openInputPortByName(midiInPortName);
+	else if (midiIntf.supportsVirtualPort())
+		midiIntf.openInputPort(~0u);
 }
 
-/********** Change confuguration **********/
+/********** Change configuration **********/
 void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 {
 	setStreamRate(config.lock()->getSampleRate());
@@ -48,6 +57,14 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
 	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
 	isRetrieveChannel_ = config.lock()->getRetrieveChannelState();
+
+	MidiInterface &midiIntf = MidiInterface::instance();
+	std::string midiInPortName = config.lock()->getMidiInputPort();
+
+	if (!midiInPortName.empty())
+		midiIntf.openInputPortByName(midiInPortName);
+	else if (midiIntf.supportsVirtualPort())
+		midiIntf.openInputPort(~0u);
 }
 
 /********** Change octave **********/

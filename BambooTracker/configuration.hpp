@@ -123,6 +123,13 @@ private:
 	uint32_t sampleRate_;
 	size_t bufferLength_;
 
+	// Midi //
+public:
+	void setMidiInputPort(const std::string &port);
+	std::string getMidiInputPort() const;
+private:
+	std::string midiInPort_;
+
 	// Mixer //
 public:
 	void setMixerVolumeMaster(int percentage);
