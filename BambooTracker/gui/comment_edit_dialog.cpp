@@ -6,6 +6,7 @@ CommentEditDialog::CommentEditDialog(QString comment, QWidget *parent) :
 	ui(new Ui::CommentEditDialog)
 {
 	ui->setupUi(this);
+	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 	ui->plainTextEdit->setPlainText(comment);
 }
 
