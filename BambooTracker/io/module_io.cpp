@@ -293,6 +293,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
@@ -340,6 +341,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
@@ -387,6 +389,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
@@ -434,6 +437,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
@@ -482,6 +486,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
@@ -529,6 +534,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
@@ -576,6 +582,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			switch (release.type) {
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);

@@ -705,7 +705,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 				case Qt::RightButton:
 				{
 					if (pressCol_ >= release_.point) {	// Erase release
-						release_.point = -1;
+						release_ = { VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, -1 };
 						makeMML();
 						emit releaseChanged(release_.type, release_.point);
 					}

@@ -22,6 +22,7 @@
 - Fix some key shortcut duplication
 - Fix selected region clear on moving cursor
 - Fix module initialization after failing opening module
+- [#11], [#75] - Fix corruption of release point in instrument sequence (thanks [@emninem], [@jpcima])
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63
@@ -34,9 +35,12 @@
 [#71]: https://github.com/rerrahkr/BambooTracker/issues/71
 [#73]: https://github.com/rerrahkr/BambooTracker/issues/73
 [#70]: https://github.com/rerrahkr/BambooTracker/issues/70
+[#11]: https://github.com/rerrahkr/BambooTracker/issues/11
+[#75]: https://github.com/rerrahkr/BambooTracker/issues/75
 
 [@ImATrackMan]: https://github.com/ImATrackMan
 [@scarletbullgon]: https://github.com/scarletbullgon
+[@emninem]: https://github.com/emninem
 
 ## v0.1.5 (2019-02-11)
 ### Added
