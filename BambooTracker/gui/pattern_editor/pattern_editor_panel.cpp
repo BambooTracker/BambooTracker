@@ -14,6 +14,7 @@
 #include <QRegularExpressionMatch>
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
+#include "midi/midi.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -75,6 +76,13 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 
 	setAttribute(Qt::WA_Hover);
 	setContextMenuPolicy(Qt::CustomContextMenu);
+
+	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
+}
+
+PatternEditorPanel::~PatternEditorPanel()
+{
+	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
 }
 
 void PatternEditorPanel::initDisplay()
@@ -2506,4 +2514,33 @@ void PatternEditorPanel::leaveEvent(QEvent* event)
 	Q_UNUSED(event)
 	// Clear mouse hover selection
 	hovPos_ = { -1, -1, -1, -1 };
+}
+
+void PatternEditorPanel::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData)
+{
+	PatternEditorPanel *self = reinterpret_cast<PatternEditorPanel *>(userData);
+
+	Q_UNUSED(delay);
+
+	// Note-On/Note-Off
+	if (len == 3 && (msg[0] & 0xe0) == 0x80) {
+		uint8_t status = msg[0];
+		uint8_t key = msg[1];
+		uint8_t velocity = msg[2];
+		QMetaObject::invokeMethod(
+			self, [self, status, key, velocity]()
+					  { self->midiKeyEvent(status, key, velocity); },
+			Qt::QueuedConnection);
+	}
+}
+
+void PatternEditorPanel::midiKeyEvent(uint8_t status, uint8_t key, uint8_t velocity)
+{
+	if (!bt_->isJamMode()) {
+		bool release = ((status & 0xf0) == 0x80) || velocity == 0;
+		if (!release) {
+			std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote((int)key - 12);
+			setStepKeyOn(octaveAndNote.second, octaveAndNote.first);
+		}
+	}
 }
