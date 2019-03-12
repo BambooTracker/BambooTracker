@@ -437,7 +437,19 @@ void OPNAController::setMuteFMState(int ch, bool isMute)
 {
 	isMuteFM_[ch] = isMute;
 
-	if (isMute) resetFMChannelEnvelope(ch);
+	if (isMute) {
+		resetFMChannelEnvelope(ch);
+	}
+	else {
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR1,
+										   envFM_[ch]->getParameterValue(FMEnvelopeParameter::RR1));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR2,
+										   envFM_[ch]->getParameterValue(FMEnvelopeParameter::RR2));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR3,
+										   envFM_[ch]->getParameterValue(FMEnvelopeParameter::RR3));
+		writeFMEnveropeParameterToRegister(ch, FMEnvelopeParameter::RR4,
+										   envFM_[ch]->getParameterValue(FMEnvelopeParameter::RR4));
+	}
 }
 
 bool OPNAController::isMuteFM(int ch)

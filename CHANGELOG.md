@@ -23,6 +23,7 @@
 - Fix selected region clear on moving cursor
 - Fix module initialization after failing opening module
 - [#11], [#75] - Fix corruption of release point in instrument sequence (thanks [@emninem], [@jpcima])
+- Fix to restore FM RR on unmuting
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63
