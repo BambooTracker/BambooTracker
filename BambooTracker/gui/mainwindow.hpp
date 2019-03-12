@@ -50,6 +50,11 @@ protected:
 	void moveEvent(QMoveEvent* event) override;
 	void closeEvent(QCloseEvent* event) override;
 
+	// Midi
+private:
+	static void midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData);
+	void midiKeyEvent(uint8_t status, uint8_t key, uint8_t velocity);
+
 private:
 	std::unique_ptr<Ui::MainWindow> ui;
 	std::weak_ptr<Configuration> config_;
