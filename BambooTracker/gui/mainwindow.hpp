@@ -53,7 +53,8 @@ protected:
 	// Midi
 private:
 	static void midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData);
-	void midiKeyEvent(uint8_t status, uint8_t key, uint8_t velocity);
+private slots:
+	void midiKeyEvent(uchar status, uchar key, uchar velocity);
 
 private:
 	std::unique_ptr<Ui::MainWindow> ui;
@@ -128,6 +129,9 @@ private:
 	QLabel* statusOctave_;
 	QLabel* statusIntr_;
 	QLabel* statusPlayPos_;
+
+	// Meta methods
+	int midiKeyEventMethod_;
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);

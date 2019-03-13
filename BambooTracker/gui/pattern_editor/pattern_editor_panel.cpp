@@ -12,6 +12,7 @@
 #include <QAction>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <QMetaMethod>
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "midi/midi.hpp"
@@ -77,6 +78,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	setAttribute(Qt::WA_Hover);
 	setContextMenuPolicy(Qt::CustomContextMenu);
 
+	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
+	Q_ASSERT(midiKeyEventMethod_ != -1);
 	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
 }
 
@@ -2527,14 +2530,13 @@ void PatternEditorPanel::midiThreadReceivedEvent(double delay, const uint8_t *ms
 		uint8_t status = msg[0];
 		uint8_t key = msg[1];
 		uint8_t velocity = msg[2];
-		QMetaObject::invokeMethod(
-			self, [self, status, key, velocity]()
-					  { self->midiKeyEvent(status, key, velocity); },
-			Qt::QueuedConnection);
+		QMetaMethod method = self->metaObject()->method(self->midiKeyEventMethod_);
+		method.invoke(self, Qt::QueuedConnection,
+					  Q_ARG(uchar, status), Q_ARG(uchar, key), Q_ARG(uchar, velocity));
 	}
 }
 
-void PatternEditorPanel::midiKeyEvent(uint8_t status, uint8_t key, uint8_t velocity)
+void PatternEditorPanel::midiKeyEvent(uchar status, uchar key, uchar velocity)
 {
 	if (!bt_->isJamMode()) {
 		bool release = ((status & 0xf0) == 0x80) || velocity == 0;

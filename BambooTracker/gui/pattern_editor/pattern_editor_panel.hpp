@@ -108,7 +108,8 @@ protected:
 	// Midi
 private:
 	static void midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData);
-	void midiKeyEvent(uint8_t status, uint8_t key, uint8_t velocity);
+private slots:
+	void midiKeyEvent(uchar status, uchar key, uchar velocity);
 
 private:
 	std::unique_ptr<QPixmap> pixmap_;
@@ -156,6 +157,9 @@ private:
 
 	int hlCnt_;
 	int editableStepCnt_;
+
+	// Meta methods
+	int midiKeyEventMethod_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);
