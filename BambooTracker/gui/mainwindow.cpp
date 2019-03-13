@@ -1042,8 +1042,6 @@ void MainWindow::loadModule()
 							ui->instrumentListWidget, idx, QString::fromUtf8(name.c_str(), name.length()),
 							inst->getSoundSource(), instForms_));
 	}
-	bt_->setCurrentInstrument(-1);
-	statusInst_->setText(tr("No instrument"));
 
 	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
 	case SongType::STD:		statusStyle_->setText(tr("Standard"));			break;
@@ -1081,6 +1079,7 @@ void MainWindow::openModule(QString file)
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
 	}
+	setInitialSelectedInstrument();
 }
 
 void MainWindow::loadSong()
@@ -1256,6 +1255,17 @@ void MainWindow::setModifiedTrue()
 {
 	isModifiedForNotCommand_ = true;
 	setWindowModified(true);
+}
+
+void MainWindow::setInitialSelectedInstrument()
+{
+	if (bt_->getInstrumentIndices().empty()) {
+		bt_->setCurrentInstrument(-1);
+		statusInst_->setText(tr("No instrument"));
+	}
+	else {
+		ui->instrumentListWidget->setCurrentRow(0);
+	}
 }
 
 /******************************/
@@ -1963,6 +1973,7 @@ void MainWindow::on_actionNew_triggered()
 	lockControls(false);
 	bt_->makeNewModule();
 	loadModule();
+	setInitialSelectedInstrument();
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
 }

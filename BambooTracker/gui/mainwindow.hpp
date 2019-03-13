@@ -105,6 +105,7 @@ private:
 
 	void setWindowTitle();
 	void setModifiedTrue();
+	void setInitialSelectedInstrument();
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPO_;
