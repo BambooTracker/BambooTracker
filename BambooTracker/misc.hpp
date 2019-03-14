@@ -3,6 +3,12 @@
 #include <utility>
 #include <stdexcept>
 
+#if !defined(DECL_MAYBE_UNUSED) && defined(__GNUC__)
+#define DECL_MAYBE_UNUSED __attribute__((unused))
+#elif !defined(DECL_MAYBE_UNUSED)
+#define DECL_MAYBE_UNUSED
+#endif
+
 enum class SoundSource : int
 {
 	FM, SSG, DRUM
@@ -39,6 +45,7 @@ enum class FMEnvelopeTextType : int
 	AR4, DR4, SR4, RR4, SL4, TL4, KS4, ML4, DT4
 };
 
+DECL_MAYBE_UNUSED
 static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
 {
 	if (num < 0) return std::pair<int, Note>(0, Note::C);
@@ -65,6 +72,7 @@ static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
 	return std::pair<int, Note>(oct, note);
 }
 
+DECL_MAYBE_UNUSED
 static int octaveAndNoteToNoteNumber(int octave, Note note)
 {
 	int ret = 12 * octave;
@@ -87,6 +95,7 @@ static int octaveAndNoteToNoteNumber(int octave, Note note)
 	return ret;
 }
 
+DECL_MAYBE_UNUSED
 static int ctohex(const char c)
 {
 	if (c == '0')		return 0;
@@ -108,6 +117,7 @@ static int ctohex(const char c)
 	else				return -1;
 }
 
+DECL_MAYBE_UNUSED
 static uint8_t uitobcd(const uint8_t v)
 {
 	if (v > 99) throw std::out_of_range("out of range");
@@ -117,6 +127,7 @@ static uint8_t uitobcd(const uint8_t v)
 	return (high << 4) + low;
 }
 
+DECL_MAYBE_UNUSED
 static uint8_t bcdtoui(const uint8_t v)
 {
 	uint8_t high = v >> 4;

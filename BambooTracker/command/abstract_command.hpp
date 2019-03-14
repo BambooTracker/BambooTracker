@@ -8,6 +8,7 @@ struct AbstractCommand
 	virtual int getID() const = 0;
 	virtual bool mergeWith(const AbstractCommand* other)
 	{
+		(void)other;
 		return false;
 	}
 };
