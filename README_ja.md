@@ -252,6 +252,13 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 - .vgm (VGM file)
 - .s98 (S98 file)
 
+## 言語
+BambooTrackerでは以下の言語に対応しています:
+
+- 英語 (デフォルト)
+- フランス語
+- 日本語
+
 ## ダウンロード
 Windows:
 

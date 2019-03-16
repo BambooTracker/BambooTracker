@@ -40,6 +40,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("reverseFMVolumeOrder",    configLocked->getReverseFMVolumeOrder());
 		settings.setValue("moveCursorToRight",       configLocked->getMoveCursorToRight());
 		settings.setValue("retrieveChannelState",	configLocked->getRetrieveChannelState());
+		settings.setValue("enableTranslation",		configLocked->getEnableTranslation());
 		settings.endGroup();
 
 		// Edit settings
@@ -133,6 +134,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setReverseFMVolumeOrder(settings.value("reverseFMVolumeOrder", configLocked->getReverseFMVolumeOrder()).toBool());
 		configLocked->setMoveCursorToRight(settings.value("moveCursorToRight", configLocked->getMoveCursorToRight()).toBool());
 		configLocked->setRetrieveChannelState(settings.value("retrieveChannelState", configLocked->getRetrieveChannelState()).toBool());
+		configLocked->setEnableTranslation(settings.value("enableTranslation", configLocked->getEnableTranslation()).toBool());
 		settings.endGroup();
 
 		// Edit settings

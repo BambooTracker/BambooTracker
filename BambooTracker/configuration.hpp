@@ -66,12 +66,14 @@ public:
 	bool getMoveCursorToRight() const;
 	void setRetrieveChannelState(bool enabled);
 	bool getRetrieveChannelState() const;
+	void setEnableTranslation(bool enabled);
+	bool getEnableTranslation() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
 	bool backupModules_, dontSelectOnDoubleClick_;
 	bool reverseFMVolumeOrder_, moveCursorToRight_;
-	bool retrieveChannelState_;
+	bool retrieveChannelState_, enableTranslation_;
 
 	// Edit settings
 public:

@@ -26,6 +26,7 @@ Configuration::Configuration()
 	reverseFMVolumeOrder_ = true;
 	moveCursorToRight_ = false;
 	retrieveChannelState_ = false;
+	enableTranslation_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -667,6 +668,15 @@ void Configuration::setRetrieveChannelState(bool enabled)
 bool Configuration::getRetrieveChannelState() const
 {
 	return retrieveChannelState_;
+}
+
+void Configuration::setEnableTranslation(bool enabled)
+{
+	enableTranslation_ = enabled;
+}
+bool Configuration::getEnableTranslation() const
+{
+	return enableTranslation_;
 }
 
 // Edit settings

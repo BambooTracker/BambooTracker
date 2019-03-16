@@ -37,11 +37,12 @@
 #include "chips/scci/SCCIDefines.h"
 #include "gui/file_history_handler.hpp"
 
-MainWindow::MainWindow(QString filePath, QWidget *parent) :
+MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	config_(std::make_shared<Configuration>()),
+	config_(config),
 	palette_(std::make_shared<ColorPalette>()),
+	bt_(std::make_shared<BambooTracker>(config)),
 	comStack_(std::make_shared<QUndoStack>(this)),
 	fileHistory_(std::make_shared<FileHistory>()),
 	scciDll_(std::make_unique<QLibrary>("scci")),
@@ -54,23 +55,20 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ConfigurationHandler::loadConfiguration(config_);
-	bt_ = std::make_shared<BambooTracker>(config_);
-
-	if (config_->getMainWindowX() == -1) {	// When unset
+	if (config.lock()->getMainWindowX() == -1) {	// When unset
 		QRect rec = geometry();
 		rec.moveCenter(QApplication::desktop()->availableGeometry().center());
 		setGeometry(rec);
-		config_->setMainWindowX(x());
-		config_->setMainWindowY(y());
+		config.lock()->setMainWindowX(x());
+		config.lock()->setMainWindowY(y());
 	}
 	else {
-		move(config_->getMainWindowX(), config_->getMainWindowY());
+		move(config.lock()->getMainWindowX(), config.lock()->getMainWindowY());
 	}
-	resize(config_->getMainWindowWidth(), config_->getMainWindowHeight());
-	if (config_->getMainWindowMaximized()) showMaximized();
-	ui->actionFollow_Mode->setChecked(config_->getFollowMode());
-	bt_->setFollowPlay(config_->getFollowMode());
+	resize(config.lock()->getMainWindowWidth(), config.lock()->getMainWindowHeight());
+	if (config.lock()->getMainWindowMaximized()) showMaximized();
+	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
+	bt_->setFollowPlay(config.lock()->getFollowMode());
 
 	/* Command stack */
 	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
@@ -83,27 +81,27 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	/* Audio stream */
 	bool savedDeviceExists = false;
 	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-		if (audioDevice.deviceName().toUtf8().toStdString() == config_->getSoundDevice()) {
+		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
 			savedDeviceExists = true;
 			break;
 		}
 	}
 	if (!savedDeviceExists) {
 		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
-		config_->setSoundDevice(sndDev.toUtf8().toStdString());
+		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
 	}
 	stream_ = std::make_shared<AudioStream>(bt_->getStreamRate(),
 											bt_->getStreamDuration(),
 											bt_->getModuleTickFrequency(),
-											QString::fromUtf8(config_->getSoundDevice().c_str(),
-															  config_->getSoundDevice().length()));
+											QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+															  config.lock()->getSoundDevice().length()));
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
 	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
 					 this, [&](int16_t *container, size_t nSamples) {
 		bt_->getStreamSamples(container, nSamples);
 	}, Qt::DirectConnection);
-	if (config_->getUseSCCI()) {
+	if (config.lock()->getUseSCCI()) {
 		stream_->stop();
 		/*
 		timer_ = std::make_unique<Timer>();
@@ -212,10 +210,10 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	QObject::connect(ui->editableStepSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int n) {
 		ui->patternEditor->setEditableStep(n);
-		config_->setEditableStep(n);
+		config.lock()->setEditableStep(n);
 	});
-	ui->editableStepSpinBox->setValue(config_->getEditableStep());
-	ui->patternEditor->setEditableStep(config_->getEditableStep());
+	ui->editableStepSpinBox->setValue(config.lock()->getEditableStep());
+	ui->patternEditor->setEditableStep(config.lock()->getEditableStep());
 
 	/* Song number */
 	// Leave Before Qt5.7.0 style due to windows xp
@@ -318,7 +316,7 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	/* Pattern editor */
 	ui->patternEditor->setCore(bt_);
 	ui->patternEditor->setCommandStack(comStack_);
-	ui->patternEditor->setConfiguration(config_);
+	ui->patternEditor->setConfiguration(config_.lock());
 	ui->patternEditor->setColorPallete(palette_);
 	ui->patternEditor->installEventFilter(this);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
@@ -352,7 +350,7 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	/* Order List */
 	ui->orderList->setCore(bt_);
 	ui->orderList->setCommandStack(comStack_);
-	ui->orderList->setConfiguration(config_);
+	ui->orderList->setConfiguration(config_.lock());
 	ui->orderList->setColorPallete(palette_);
 	ui->orderList->installEventFilter(this);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
@@ -394,8 +392,13 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 		else if (isEditedPattern_) updateMenuByPattern();
 	});
 
-	if (filePath == "") loadModule();
-	else openModule(filePath);
+	if (filePath.isEmpty()) {
+		loadModule();
+		setInitialSelectedInstrument();
+	}
+	else {
+		openModule(filePath);
+	}
 }
 
 MainWindow::~MainWindow() {}
@@ -410,8 +413,8 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 			return false;
 		}
 		else if (event->type() == QEvent::Resize) {
-			config_->setInstrumentFMWindowWidth(fmForm->width());
-			config_->setInstrumentFMWindowHeight(fmForm->height());
+			config_.lock()->setInstrumentFMWindowWidth(fmForm->width());
+			config_.lock()->setInstrumentFMWindowHeight(fmForm->height());
 			return false;
 		}
 	}
@@ -424,8 +427,8 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 			return false;
 		}
 		else if (event->type() == QEvent::Resize) {
-			config_->setInstrumentSSGWindowWidth(ssgForm->width());
-			config_->setInstrumentSSGWindowHeight(ssgForm->height());
+			config_.lock()->setInstrumentSSGWindowWidth(ssgForm->width());
+			config_.lock()->setInstrumentSSGWindowHeight(ssgForm->height());
 			return false;
 		}
 	}
@@ -452,13 +455,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 	/* Key check */
 	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
-	if (seq == QKeySequence(QString::fromUtf8(config_->getOctaveUpKey().c_str(),
-											  config_->getOctaveUpKey().length())).toString()) {
+	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
+											  config_.lock()->getOctaveUpKey().length())).toString()) {
 		changeOctave(true);
 		return;
 	}
-	else if (seq == QKeySequence(QString::fromUtf8(config_->getOctaveDownKey().c_str(),
-												   config_->getOctaveDownKey().length())).toString()) {
+	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
+												   config_.lock()->getOctaveDownKey().length())).toString()) {
 		changeOctave(false);
 		return;
 	}
@@ -482,7 +485,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	/* General keys */
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-		switch (config_->getNoteEntryLayout()) {
+		switch (config_.lock()->getNoteEntryLayout()) {
 		case Configuration::QWERTY:
 			switch (key) {
 			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
@@ -598,7 +601,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-		switch (config_->getNoteEntryLayout()) {
+		switch (config_.lock()->getNoteEntryLayout()) {
 		case Configuration::QWERTY:
 			switch (key) {
 			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::LOW_C);		break;
@@ -683,20 +686,20 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 			case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
 			case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
 			case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_B);		break;
-			case Qt::Key_Semicolon:	bt_->jamKeyOff(JamKey::LOW_C_H);		break;
+			case Qt::Key_Semicolon:	bt_->jamKeyOff(JamKey::LOW_C_H);	break;
 			case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Colon:		bt_->jamKeyOff(JamKey::LOW_D_H);		break;
+			case Qt::Key_Colon:		bt_->jamKeyOff(JamKey::LOW_D_H);	break;
 			case Qt::Key_A:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
-			case Qt::Key_Eacute:	bt_->jamKeyOff(JamKey::HIGH_CS);		break;
+			case Qt::Key_Eacute:	bt_->jamKeyOff(JamKey::HIGH_CS);	break;
 			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
-			case Qt::Key_QuoteDbl:	bt_->jamKeyOff(JamKey::HIGH_DS);		break;
+			case Qt::Key_QuoteDbl:	bt_->jamKeyOff(JamKey::HIGH_DS);	break;
 			case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
 			case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
-			case Qt::Key_ParenLeft:	bt_->jamKeyOff(JamKey::HIGH_FS);		break;
+			case Qt::Key_ParenLeft:	bt_->jamKeyOff(JamKey::HIGH_FS);	break;
 			case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
-			case Qt::Key_Minus:		bt_->jamKeyOff(JamKey::HIGH_GS);		break;
+			case Qt::Key_Minus:		bt_->jamKeyOff(JamKey::HIGH_GS);	break;
 			case Qt::Key_Y:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
-			case Qt::Key_Egrave:	bt_->jamKeyOff(JamKey::HIGH_AS);		break;
+			case Qt::Key_Egrave:	bt_->jamKeyOff(JamKey::HIGH_AS);	break;
 			case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
 			case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
 			case Qt::Key_Ccedilla:	bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
@@ -751,8 +754,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 	QWidget::resizeEvent(event);
 
 	if (!isMaximized()) {	// Check previous size
-		config_->setMainWindowWidth(event->oldSize().width());
-		config_->setMainWindowHeight(event->oldSize().height());
+		config_.lock()->setMainWindowWidth(event->oldSize().width());
+		config_.lock()->setMainWindowHeight(event->oldSize().height());
 	}
 }
 
@@ -761,8 +764,8 @@ void MainWindow::moveEvent(QMoveEvent* event)
 	QWidget::moveEvent(event);
 
 	if (!isMaximized()) {	// Check previous position
-		config_->setMainWindowX(event->oldPos().x());
-		config_->setMainWindowY(event->oldPos().y());
+		config_.lock()->setMainWindowX(event->oldPos().x());
+		config_.lock()->setMainWindowY(event->oldPos().y());
 	}
 }
 
@@ -791,19 +794,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	}
 
 	if (isMaximized()) {
-		config_->setMainWindowMaximized(true);
+		config_.lock()->setMainWindowMaximized(true);
 	}
 	else {
-		config_->setMainWindowMaximized(false);
-		config_->setMainWindowWidth(width());
-		config_->setMainWindowHeight(height());
-		config_->setMainWindowX(x());
-		config_->setMainWindowY(y());
+		config_.lock()->setMainWindowMaximized(false);
+		config_.lock()->setMainWindowWidth(width());
+		config_.lock()->setMainWindowHeight(height());
+		config_.lock()->setMainWindowX(x());
+		config_.lock()->setMainWindowY(y());
 	}
-	config_->setFollowMode(bt_->isFollowPlay());
+	config_.lock()->setFollowMode(bt_->isFollowPlay());
 
 	instForms_->closeAll();
-	ConfigurationHandler::saveConfiguration(config_);
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
 
@@ -913,7 +915,7 @@ void MainWindow::deepCloneInstrument()
 
 void MainWindow::loadInstrument()
 {
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
 												"BambooTracker instrument (*.bti);;"
 												"DefleMask preset (*.dmp);;"
@@ -934,7 +936,7 @@ void MainWindow::loadInstrument()
 		comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
 												   QString::fromUtf8(name.c_str(), name.length()),
 												   inst->getSoundSource(), instForms_));
-		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());
@@ -943,7 +945,7 @@ void MainWindow::loadInstrument()
 
 void MainWindow::saveInstrument()
 {
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getSaveFileName(this, tr("Save instrument"), (dir.isEmpty() ? "./" : dir),
 												"BambooTracker instrument file (*.bti)");
 	if (file.isNull()) return;
@@ -952,7 +954,7 @@ void MainWindow::saveInstrument()
 	try {
 		bt_->saveInstrument(file.toLocal8Bit().toStdString(),
 							ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt());
-		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());
@@ -961,7 +963,7 @@ void MainWindow::saveInstrument()
 
 void MainWindow::importInstrumentsFromBank()
 {
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
 												"WOPN bank (*.wopn)");
 	if (file.isNull()) return;
@@ -969,7 +971,7 @@ void MainWindow::importInstrumentsFromBank()
 	std::unique_ptr<AbstractBank> bank;
 	try {
 		bank.reset(BankIO::loadBank(file.toLocal8Bit().toStdString()));
-		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());
@@ -1063,7 +1065,7 @@ void MainWindow::openModule(QString file)
 		bt_->loadModule(file.toLocal8Bit().toStdString());
 		loadModule();
 
-		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 		changeFileHistory(file);
 		isModifiedForNotCommand_ = false;
 		setWindowModified(false);
@@ -1182,7 +1184,7 @@ void MainWindow::changeOctave(bool upFlag)
 /********** Configuration change **********/
 void MainWindow::changeConfiguration()
 {
-	if (config_->getUseSCCI()) {
+	if (config_.lock()->getUseSCCI()) {
 		stream_->stop();
 		if (!timer_) {
 			/*
@@ -1211,13 +1213,14 @@ void MainWindow::changeConfiguration()
 	else {
 		timer_.reset();
 		bt_->useSCCI(nullptr);
-		stream_->setRate(config_->getSampleRate());
-		stream_->setDuration(config_->getBufferLength());
+		stream_->setRate(config_.lock()->getSampleRate());
+		stream_->setDuration(config_.lock()->getBufferLength());
 		stream_->setDevice(
-					QString::fromUtf8(config_->getSoundDevice().c_str(), config_->getSoundDevice().length()));
+					QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
+									  config_.lock()->getSoundDevice().length()));
 		stream_->start();
 	}
-	bt_->changeConfiguration(config_);
+	bt_->changeConfiguration(config_.lock());
 
 	update();
 }
@@ -1360,9 +1363,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	{
 		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
 		fmForm->setCore(bt_);
-		fmForm->setConfiguration(config_);
+		fmForm->setConfiguration(config_.lock());
 		fmForm->setColorPalette(palette_);
-		fmForm->resize(config_->getInstrumentFMWindowWidth(), config_->getInstrumentFMWindowHeight());
+		fmForm->resize(config_.lock()->getInstrumentFMWindowWidth(),
+					   config_.lock()->getInstrumentFMWindowHeight());
 
 		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged);
@@ -1407,9 +1411,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
 		ssgForm->setCore(bt_);
-		ssgForm->setConfiguration(config_);
+		ssgForm->setConfiguration(config_.lock());
 		ssgForm->setColorPalette(palette_);
-		ssgForm->resize(config_->getInstrumentSSGWindowWidth(), config_->getInstrumentSSGWindowHeight());
+		ssgForm->resize(config_.lock()->getInstrumentSSGWindowWidth(),
+						config_.lock()->getInstrumentSSGWindowHeight());
 
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged);
@@ -1886,13 +1891,13 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	ConfigurationDialog diag(config_);
+	ConfigurationDialog diag(config_.lock());
 	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->stopPlaySong();
 		changeConfiguration();
-		ConfigurationHandler::saveConfiguration(config_);
+		ConfigurationHandler::saveConfiguration(config_.lock());
 		lockControls(false);
 	}
 }
@@ -1978,7 +1983,7 @@ bool MainWindow::on_actionSave_triggered()
 {
 	auto path = QString::fromLocal8Bit(bt_->getModulePath().c_str(), bt_->getModulePath().length());
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
-		if (!isSavedModBefore_ && config_->getBackupModules()) {
+		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
 			try {
 				bt_->backupModule(path.toLocal8Bit().toStdString());
 			}
@@ -2008,14 +2013,14 @@ bool MainWindow::on_actionSave_triggered()
 
 bool MainWindow::on_actionSave_As_triggered()
 {
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getSaveFileName(this, tr("Save module"), (dir.isEmpty() ? "./" : dir),
 												"BambooTracker module file (*.btm)");
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
 	if (std::ifstream(file.toStdString()).is_open()) {	// Already exists
-		if (!isSavedModBefore_ && config_->getBackupModules()) {
+		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
 			try {
 				bt_->backupModule(file.toLocal8Bit().toStdString());
 			}
@@ -2033,7 +2038,7 @@ bool MainWindow::on_actionSave_As_triggered()
 		isSavedModBefore_ = true;
 		setWindowModified(false);
 		setWindowTitle();
-		config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 		changeFileHistory(file);
 		return true;
 	}
@@ -2066,7 +2071,7 @@ void MainWindow::on_actionOpen_triggered()
 		}
 	}
 
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
 												"BambooTracker module file (*.btm)");
 	if (file.isNull()) return;
@@ -2172,7 +2177,7 @@ void MainWindow::on_actionWAV_triggered()
 	WaveExportSettingsDialog diag;
 	if (diag.exec() != QDialog::Accepted) return;
 
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getSaveFileName(this, tr("Export to wav"), (dir.isEmpty() ? "./" : dir),
 												"WAV signed 16-bit PCM (*.wav)");
 	if (file.isNull()) return;
@@ -2201,7 +2206,7 @@ void MainWindow::on_actionWAV_triggered()
 										progress.setValue(progress.value() + 1);
 										return progress.wasCanceled();
 									});
-		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		if (res) config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Failed to export to wav file."));
@@ -2216,7 +2221,7 @@ void MainWindow::on_actionVGM_triggered()
 	if (diag.exec() != QDialog::Accepted) return;
 	GD3Tag tag = diag.getGD3Tag();
 
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getSaveFileName(this, tr("Export to vgm"), (dir.isEmpty() ? "./" : dir),
 												"VGM file (*.vgm)");
 	if (file.isNull()) return;
@@ -2247,7 +2252,7 @@ void MainWindow::on_actionVGM_triggered()
 										progress.setValue(progress.value() + 1);
 										return progress.wasCanceled();
 									});
-		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		if (res) config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Failed to export to vgm file."));
@@ -2262,7 +2267,7 @@ void MainWindow::on_actionS98_triggered()
 	if (diag.exec() != QDialog::Accepted) return;
 	S98Tag tag = diag.getS98Tag();
 
-	QString dir = QString::fromStdString(config_->getWorkingDirectory());
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getSaveFileName(this, tr("Export to s98"), (dir.isEmpty() ? "./" : dir),
 												"S98 file (*.s98)");
 	if (file.isNull()) return;
@@ -2293,7 +2298,7 @@ void MainWindow::on_actionS98_triggered()
 										progress.setValue(progress.value() + 1);
 										return progress.wasCanceled();
 									});
-		if (res) config_->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		if (res) config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Failed to export to s98 file."));
@@ -2321,7 +2326,7 @@ void MainWindow::onNewTickSignaled()
 			ui->patternEditor->updatePosition();
 			statusPlayPos_->setText(
 						QString("%1/%2")
-						.arg(order, 2, (config_->getShowRowNumberInHex() ? 16 : 10), QChar('0'))
+						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))
 						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
 		}
 	}

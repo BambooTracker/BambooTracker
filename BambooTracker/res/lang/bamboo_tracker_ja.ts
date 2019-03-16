@@ -113,62 +113,67 @@
         <translation>チャンネル状態を復元</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="232"/>
+        <location filename="../../gui/configuration_dialog.ui" line="223"/>
+        <source>Enable translation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/configuration_dialog.ui" line="240"/>
         <source>Description:</source>
         <translation>説明:</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="256"/>
+        <location filename="../../gui/configuration_dialog.ui" line="264"/>
         <source>Sound</source>
         <translation>サウンド</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="262"/>
+        <location filename="../../gui/configuration_dialog.ui" line="270"/>
         <source>Sample rate</source>
         <translation>サンプルレート</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="287"/>
+        <location filename="../../gui/configuration_dialog.ui" line="295"/>
         <source>Buffer length</source>
         <translation>バッファ長</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="306"/>
+        <location filename="../../gui/configuration_dialog.ui" line="314"/>
         <source>1ms</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="316"/>
+        <location filename="../../gui/configuration_dialog.ui" line="324"/>
         <source>Device</source>
         <translation>デバイス</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="325"/>
+        <location filename="../../gui/configuration_dialog.ui" line="333"/>
         <source>Use SCCI (beta)</source>
         <translation>SCCI使用 (ベータ版)</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="406"/>
+        <location filename="../../gui/configuration_dialog.ui" line="414"/>
         <source>Input</source>
         <translation>入力</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="412"/>
+        <location filename="../../gui/configuration_dialog.ui" line="420"/>
         <source>FM envelope text</source>
         <translation>FMエンベロープテキスト</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="418"/>
+        <location filename="../../gui/configuration_dialog.ui" line="426"/>
         <source>Add</source>
         <translation>追加</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="428"/>
+        <location filename="../../gui/configuration_dialog.ui" line="436"/>
         <source>Edit</source>
         <translation>編集</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="441"/>
+        <location filename="../../gui/configuration_dialog.ui" line="449"/>
         <source>Remove</source>
         <translation>削除</translation>
     </message>
@@ -177,73 +182,78 @@
         <translation type="vanished">SCCI使用</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="336"/>
+        <location filename="../../gui/configuration_dialog.ui" line="344"/>
         <source>Mixer</source>
         <translation>ミキサー</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="342"/>
+        <location filename="../../gui/configuration_dialog.ui" line="350"/>
         <source>Part</source>
         <translation>パート</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="370"/>
+        <location filename="../../gui/configuration_dialog.ui" line="378"/>
         <source>Reset</source>
         <translation>リセット</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="80"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="85"/>
         <source>Master</source>
         <translation>マスター</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="163"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="169"/>
         <source>Warp the cursor around the edges of the pattern editor.</source>
         <translation>パターンの両端をワープします。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="166"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="172"/>
         <source>Move to previous or next order when reaching top or bottom in the pattern editor.</source>
         <translation>パターンの上下の端から前後のパターンへ移動します。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="169"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="175"/>
         <source>Display order numbers and the order count on the status bar in hexadecimal.</source>
         <translation>オーダー番号を16進数で表示します。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="172"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="178"/>
         <source>Preview previous and next orders in the pattern editor.</source>
         <translation>パターンエディターで前後のオーダーをプレビューします。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="175"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="181"/>
         <source>Create a backup copy of the existing file when saving a module.</source>
         <translation>モジュール保存時に既存のデータをコピーしてバックアップを作成します。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="178"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="184"/>
         <source>Don&apos;t select the whole track when double-clicking in the pattern editor.</source>
         <translation>パターンエディターでのダブルクリック時にトラック全体を選択しないようにします。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="181"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="187"/>
         <source>Reverse the order of FM volume so that 00 is the quietest in the pattern editor.</source>
         <oldsource>Reverse the order of FM volume so that 00 is the quietest in the pattern editor</oldsource>
         <translation>パターンエディターでFMの音量を00が最小になるよう順序を変更します。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="184"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="190"/>
         <source>Move the cursor to right after entering effects in the pattern editor.</source>
         <translation>パターンエディターでエフェクト入力後にカーソルを右の列へ移動します。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="187"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="193"/>
         <source>Reconstruct the current channel&apos;s state from previous orders upon playing.</source>
         <translation>再生時に以前のオーダーから現在のチャンネルの状態を再構築します。</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.cpp" line="193"/>
+        <location filename="../../gui/configuration_dialog.cpp" line="196"/>
+        <source>Translate to your language from the next launch. See readme to check supported languages.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/configuration_dialog.cpp" line="203"/>
         <source>Description: </source>
         <translation>説明: </translation>
     </message>
@@ -450,52 +460,52 @@
         <translation>ピッチ</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="410"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="411"/>
         <source>Absolute</source>
         <translation>絶対</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="411"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="412"/>
         <source>Fix</source>
         <translation>固定</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="412"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="413"/>
         <source>Relative</source>
         <translation>相対</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="867"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="872"/>
         <source>Error</source>
         <translation>エラー</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="867"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="872"/>
         <source>Did not match the clipboard text format with %1.</source>
         <translation>クリップボードのテキストの形式が%1と一致しません。</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1226"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1231"/>
         <source>Copy envelope</source>
         <translation>エンベロープをコピー</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1228"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1233"/>
         <source>Paste envelope</source>
         <translation>エンベロープを張り付け</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1231"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1236"/>
         <source>Paste envelope From</source>
         <translation>エンベロープを形式貼り付け</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1346"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1351"/>
         <source>Copy LFO parameters</source>
         <translation>LFOパラメーターをコピー</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1350"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1355"/>
         <source>Paste LFO parameters</source>
         <translation>LFOパラメーターを張り付け</translation>
     </message>
@@ -615,129 +625,124 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="119"/>
-        <source>...</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.ui" line="126"/>
+        <location filename="../../gui/mainwindow.ui" line="130"/>
         <source>Tick Freq</source>
         <translation>ティック</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="133"/>
+        <location filename="../../gui/mainwindow.ui" line="137"/>
         <source>Copyright</source>
         <translation>著作権</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="140"/>
+        <location filename="../../gui/mainwindow.ui" line="144"/>
         <source>Author</source>
         <translation>作曲者</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="147"/>
+        <location filename="../../gui/mainwindow.ui" line="151"/>
         <source>Module Title</source>
         <translation>タイトル</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="157"/>
+        <location filename="../../gui/mainwindow.ui" line="161"/>
         <source>Edit settings</source>
         <translation>エディット設定</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="163"/>
+        <location filename="../../gui/mainwindow.ui" line="167"/>
         <source>Editable step</source>
         <translation>ステップ</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="190"/>
+        <location filename="../../gui/mainwindow.ui" line="194"/>
         <source>Song</source>
         <translation>ソング</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="197"/>
-        <location filename="../../gui/mainwindow.ui" line="338"/>
+        <location filename="../../gui/mainwindow.ui" line="201"/>
+        <location filename="../../gui/mainwindow.ui" line="342"/>
         <source>#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="217"/>
+        <location filename="../../gui/mainwindow.ui" line="221"/>
         <source>Song Settings</source>
         <translation>ソング設定</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="238"/>
+        <location filename="../../gui/mainwindow.ui" line="242"/>
         <source>Speed</source>
         <translation>スピード</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="245"/>
+        <location filename="../../gui/mainwindow.ui" line="249"/>
         <source>Pattern Size</source>
         <translation>パターン長</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="252"/>
+        <location filename="../../gui/mainwindow.ui" line="256"/>
         <source>Tempo</source>
         <translation>テンポ</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="285"/>
+        <location filename="../../gui/mainwindow.ui" line="289"/>
         <source>Style</source>
         <translation>スタイル</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="311"/>
-        <location filename="../../gui/mainwindow.cpp" line="706"/>
-        <location filename="../../gui/mainwindow.cpp" line="756"/>
-        <location filename="../../gui/mainwindow.cpp" line="1219"/>
-        <location filename="../../gui/mainwindow.cpp" line="1221"/>
-        <location filename="../../gui/mainwindow.cpp" line="1875"/>
-        <location filename="../../gui/mainwindow.cpp" line="1985"/>
+        <location filename="../../gui/mainwindow.ui" line="315"/>
+        <location filename="../../gui/mainwindow.cpp" line="727"/>
+        <location filename="../../gui/mainwindow.cpp" line="777"/>
+        <location filename="../../gui/mainwindow.cpp" line="1248"/>
+        <location filename="../../gui/mainwindow.cpp" line="1250"/>
+        <location filename="../../gui/mainwindow.cpp" line="1945"/>
+        <location filename="../../gui/mainwindow.cpp" line="2056"/>
         <source>Untitled</source>
         <translation>無題</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="328"/>
+        <location filename="../../gui/mainwindow.ui" line="332"/>
         <source>Groove</source>
         <translation>グルーブ</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="353"/>
+        <location filename="../../gui/mainwindow.ui" line="357"/>
         <source>Instruments</source>
         <translation>インストゥルメント</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="406"/>
+        <location filename="../../gui/mainwindow.ui" line="410"/>
         <source>&amp;File</source>
         <translation>ファイル(&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="410"/>
+        <location filename="../../gui/mainwindow.ui" line="414"/>
         <source>&amp;Export</source>
         <translation>エクスポート(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="439"/>
+        <location filename="../../gui/mainwindow.ui" line="443"/>
         <source>&amp;Edit</source>
         <translation>編集(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="443"/>
+        <location filename="../../gui/mainwindow.ui" line="447"/>
         <source>&amp;Select</source>
         <translation>選択(&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="456"/>
+        <location filename="../../gui/mainwindow.ui" line="460"/>
         <source>Paste Specia&amp;l</source>
         <translation>特殊貼り付け(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1118"/>
+        <location filename="../../gui/mainwindow.ui" line="1122"/>
         <source>&amp;Pattern</source>
         <translation>パターン(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="479"/>
+        <location filename="../../gui/mainwindow.ui" line="483"/>
         <source>&amp;Transpose</source>
         <translation>トランスポーズ(&amp;T)</translation>
     </message>
@@ -746,17 +751,17 @@
         <translation type="vanished">ソング(&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="510"/>
+        <location filename="../../gui/mainwindow.ui" line="514"/>
         <source>&amp;Module</source>
         <translation>モジュール(&amp;M)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="514"/>
+        <location filename="../../gui/mainwindow.ui" line="518"/>
         <source>Clean&amp;up</source>
         <translation>最適化(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="528"/>
+        <location filename="../../gui/mainwindow.ui" line="532"/>
         <source>&amp;Instrument</source>
         <translation>インストゥルメント(&amp;I)</translation>
     </message>
@@ -765,643 +770,643 @@
         <translation type="vanished">トラッカー(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="562"/>
+        <location filename="../../gui/mainwindow.ui" line="566"/>
         <source>&amp;Help</source>
         <translation>ヘルプ(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="631"/>
+        <location filename="../../gui/mainwindow.ui" line="635"/>
         <source>&amp;New...</source>
         <translation>新規作成(&amp;N)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="634"/>
+        <location filename="../../gui/mainwindow.ui" line="638"/>
         <source>Ctrl+N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="646"/>
+        <location filename="../../gui/mainwindow.ui" line="650"/>
         <source>&amp;Open...</source>
         <translation>開く(&amp;O)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="649"/>
+        <location filename="../../gui/mainwindow.ui" line="653"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="661"/>
+        <location filename="../../gui/mainwindow.ui" line="665"/>
         <source>&amp;Save</source>
         <translation>保存(&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="664"/>
+        <location filename="../../gui/mainwindow.ui" line="668"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="672"/>
+        <location filename="../../gui/mainwindow.ui" line="676"/>
         <source>Save &amp;As...</source>
         <translation>名前を付けて保存(&amp;A)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="677"/>
+        <location filename="../../gui/mainwindow.ui" line="681"/>
         <source>E&amp;xit</source>
         <translation>終了(&amp;X)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="689"/>
+        <location filename="../../gui/mainwindow.ui" line="693"/>
         <source>&amp;Undo</source>
         <translation>元に戻す(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="692"/>
+        <location filename="../../gui/mainwindow.ui" line="696"/>
         <source>Ctrl+Z</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="704"/>
+        <location filename="../../gui/mainwindow.ui" line="708"/>
         <source>&amp;Redo</source>
         <translation>やり直し(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="707"/>
+        <location filename="../../gui/mainwindow.ui" line="711"/>
         <source>Ctrl+Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="716"/>
+        <location filename="../../gui/mainwindow.ui" line="720"/>
         <source>Cu&amp;t</source>
         <translation>切り取り(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="719"/>
+        <location filename="../../gui/mainwindow.ui" line="723"/>
         <source>Ctrl+X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="728"/>
+        <location filename="../../gui/mainwindow.ui" line="732"/>
         <source>&amp;Copy</source>
         <translation>コピー(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="731"/>
+        <location filename="../../gui/mainwindow.ui" line="735"/>
         <source>Ctrl+C</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="740"/>
+        <location filename="../../gui/mainwindow.ui" line="744"/>
         <source>&amp;Paste</source>
         <translation>貼り付け(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="743"/>
+        <location filename="../../gui/mainwindow.ui" line="747"/>
         <source>Ctrl+V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1151"/>
+        <location filename="../../gui/mainwindow.ui" line="1155"/>
         <source>Ctrl+M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="748"/>
+        <location filename="../../gui/mainwindow.ui" line="752"/>
         <source>&amp;Delete</source>
         <translation>削除(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="419"/>
+        <location filename="../../gui/mainwindow.ui" line="423"/>
         <source>&amp;Recent Files</source>
         <translation>最近使ったファイル(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="475"/>
+        <location filename="../../gui/mainwindow.ui" line="479"/>
         <source>Patter&amp;n</source>
         <translation>パターン(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="497"/>
+        <location filename="../../gui/mainwindow.ui" line="501"/>
         <source>Son&amp;g</source>
         <translation>ソング(&amp;G)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="544"/>
+        <location filename="../../gui/mainwindow.ui" line="548"/>
         <source>&amp;Tracker</source>
         <translation>トラッカー(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="577"/>
+        <location filename="../../gui/mainwindow.ui" line="581"/>
         <source>Main toolbar</source>
         <translation>メインツールバー</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="613"/>
+        <location filename="../../gui/mainwindow.ui" line="617"/>
         <source>Secondary toolbar</source>
         <translation>サブツールバー</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="751"/>
+        <location filename="../../gui/mainwindow.ui" line="755"/>
         <source>Del</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="756"/>
+        <location filename="../../gui/mainwindow.ui" line="760"/>
         <source>&amp;All</source>
         <translation>全選択(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="759"/>
+        <location filename="../../gui/mainwindow.ui" line="763"/>
         <source>Ctrl+A</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="764"/>
+        <location filename="../../gui/mainwindow.ui" line="768"/>
         <source>&amp;None</source>
         <translation>選択解除(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="767"/>
+        <location filename="../../gui/mainwindow.ui" line="771"/>
         <source>Esc</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="775"/>
+        <location filename="../../gui/mainwindow.ui" line="779"/>
         <source>E&amp;xpand</source>
         <translation>拡大(&amp;X)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="783"/>
+        <location filename="../../gui/mainwindow.ui" line="787"/>
         <source>S&amp;hrink</source>
         <translation>縮小(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="788"/>
+        <location filename="../../gui/mainwindow.ui" line="792"/>
         <source>&amp;Decrease Note</source>
         <translation>半音を下げる(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="791"/>
+        <location filename="../../gui/mainwindow.ui" line="795"/>
         <source>Ctrl+F1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="796"/>
+        <location filename="../../gui/mainwindow.ui" line="800"/>
         <source>&amp;Increase Note</source>
         <translation>半音上げる(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="799"/>
+        <location filename="../../gui/mainwindow.ui" line="803"/>
         <source>Ctrl+F2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="804"/>
+        <location filename="../../gui/mainwindow.ui" line="808"/>
         <source>D&amp;ecrease Octave</source>
         <translation>1オクターブ下げる(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="807"/>
+        <location filename="../../gui/mainwindow.ui" line="811"/>
         <source>Ctrl+F3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="812"/>
+        <location filename="../../gui/mainwindow.ui" line="816"/>
         <source>I&amp;ncrease Octave</source>
         <translation>1オクターブ上げる(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="815"/>
+        <location filename="../../gui/mainwindow.ui" line="819"/>
         <source>Ctrl+F4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="820"/>
+        <location filename="../../gui/mainwindow.ui" line="824"/>
         <source>&amp;Insert Order</source>
         <translation>オーダーを挿入(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="825"/>
+        <location filename="../../gui/mainwindow.ui" line="829"/>
         <source>&amp;Remove Order</source>
         <translation>オーダーを削除(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="834"/>
+        <location filename="../../gui/mainwindow.ui" line="838"/>
         <source>&amp;Module Properties...</source>
         <translation>モジュール情報(&amp;M)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="837"/>
+        <location filename="../../gui/mainwindow.ui" line="841"/>
         <source>Ctrl+P</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="846"/>
+        <location filename="../../gui/mainwindow.ui" line="850"/>
         <source>&amp;New Instrument</source>
         <translation>新規インストゥルメント(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="858"/>
+        <location filename="../../gui/mainwindow.ui" line="862"/>
         <source>&amp;Remove Instrument</source>
         <translation>インストゥルメント削除(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="870"/>
+        <location filename="../../gui/mainwindow.ui" line="874"/>
         <source>&amp;Clone Instrument</source>
         <translation>インストゥルメントをクローン(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="878"/>
+        <location filename="../../gui/mainwindow.ui" line="882"/>
         <source>&amp;Deep Clone Instrument</source>
         <translation>インストゥルメントをディープクローン(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="890"/>
+        <location filename="../../gui/mainwindow.ui" line="894"/>
         <source>&amp;Load From File...</source>
         <translation>ファイルから読み込み(&amp;L)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="902"/>
+        <location filename="../../gui/mainwindow.ui" line="906"/>
         <source>&amp;Save To File...</source>
         <translation>ファイルへ書き出し(&amp;S)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="914"/>
-        <location filename="../../gui/mainwindow.cpp" line="1261"/>
+        <location filename="../../gui/mainwindow.ui" line="918"/>
+        <location filename="../../gui/mainwindow.cpp" line="1301"/>
         <source>&amp;Edit...</source>
         <translation>編集(&amp;E)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="917"/>
+        <location filename="../../gui/mainwindow.ui" line="921"/>
         <source>Ctrl+I</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="926"/>
+        <location filename="../../gui/mainwindow.ui" line="930"/>
         <source>&amp;Play</source>
         <translation>再生(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="935"/>
+        <location filename="../../gui/mainwindow.ui" line="939"/>
         <source>Play P&amp;attern</source>
         <translation>パターンの初めから再生(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="938"/>
+        <location filename="../../gui/mainwindow.ui" line="942"/>
         <source>F6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="943"/>
+        <location filename="../../gui/mainwindow.ui" line="947"/>
         <source>Play &amp;From Start</source>
         <translation>最初から再生(&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="946"/>
+        <location filename="../../gui/mainwindow.ui" line="950"/>
         <source>F5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="951"/>
+        <location filename="../../gui/mainwindow.ui" line="955"/>
         <source>Play From C&amp;ursor</source>
         <translation>カーソル位置から再生(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="954"/>
+        <location filename="../../gui/mainwindow.ui" line="958"/>
         <source>F7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="963"/>
+        <location filename="../../gui/mainwindow.ui" line="967"/>
         <source>&amp;Stop</source>
         <translation>停止(&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="966"/>
+        <location filename="../../gui/mainwindow.ui" line="970"/>
         <source>F8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="974"/>
+        <location filename="../../gui/mainwindow.ui" line="978"/>
         <source>&amp;Edit Mode</source>
         <translation>編集モード(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="977"/>
+        <location filename="../../gui/mainwindow.ui" line="981"/>
         <source>Space</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="982"/>
+        <location filename="../../gui/mainwindow.ui" line="986"/>
         <source>To&amp;ggle Track</source>
         <translation>トラックを演奏(&amp;G)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="985"/>
+        <location filename="../../gui/mainwindow.ui" line="989"/>
         <source>Alt+F9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="990"/>
+        <location filename="../../gui/mainwindow.ui" line="994"/>
         <source>S&amp;olo Track</source>
         <translation>トラックをソロ演奏(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="993"/>
+        <location filename="../../gui/mainwindow.ui" line="997"/>
         <source>Alt+F10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="998"/>
+        <location filename="../../gui/mainwindow.ui" line="1002"/>
         <source>&amp;Kill Sound</source>
         <translation>サウンド初期化(&amp;K)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1001"/>
+        <location filename="../../gui/mainwindow.ui" line="1005"/>
         <source>F12</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1006"/>
+        <location filename="../../gui/mainwindow.ui" line="1010"/>
         <source>&amp;About...</source>
         <translation>バージョン情報(&amp;A)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1017"/>
+        <location filename="../../gui/mainwindow.ui" line="1021"/>
         <source>Fo&amp;llow Mode</source>
         <translation>フォローモード(&amp;L)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1020"/>
+        <location filename="../../gui/mainwindow.ui" line="1024"/>
         <source>ScrollLock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1025"/>
+        <location filename="../../gui/mainwindow.ui" line="1029"/>
         <source>&amp;Groove Settings...</source>
         <translation>グルーブ設定(&amp;G)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1034"/>
+        <location filename="../../gui/mainwindow.ui" line="1038"/>
         <source>&amp;Configuration...</source>
         <translation>設定(&amp;C)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1039"/>
+        <location filename="../../gui/mainwindow.ui" line="1043"/>
         <source>&amp;Duplicate Order</source>
         <translation>オーダーを複製(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1042"/>
+        <location filename="../../gui/mainwindow.ui" line="1046"/>
         <source>Ctrl+D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1047"/>
+        <location filename="../../gui/mainwindow.ui" line="1051"/>
         <source>Move Order &amp;Up</source>
         <translation>オーダーを上に移動(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1052"/>
+        <location filename="../../gui/mainwindow.ui" line="1056"/>
         <source>Move Order Do&amp;wn</source>
         <translation>オーダーを下に移動(&amp;W)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1057"/>
+        <location filename="../../gui/mainwindow.ui" line="1061"/>
         <source>&amp;Clone Patterns</source>
         <translation>パターンをクローン(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1060"/>
+        <location filename="../../gui/mainwindow.ui" line="1064"/>
         <source>Alt+D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1065"/>
+        <location filename="../../gui/mainwindow.ui" line="1069"/>
         <source>Clone &amp;Order</source>
         <translation>オーダーをクローン(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1070"/>
+        <location filename="../../gui/mainwindow.ui" line="1074"/>
         <source>&amp;Comments...</source>
         <translation>コメント(&amp;C)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1078"/>
+        <location filename="../../gui/mainwindow.ui" line="1082"/>
         <source>&amp;Interpolate</source>
         <translation>補完(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1081"/>
+        <location filename="../../gui/mainwindow.ui" line="1085"/>
         <source>Ctrl+G</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1089"/>
+        <location filename="../../gui/mainwindow.ui" line="1093"/>
         <source>&amp;Reverse</source>
         <translation>反転(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1092"/>
+        <location filename="../../gui/mainwindow.ui" line="1096"/>
         <source>Ctrl+R</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1100"/>
+        <location filename="../../gui/mainwindow.ui" line="1104"/>
         <source>R&amp;eplace Instrument</source>
         <translation>インストゥルメント置換(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1103"/>
+        <location filename="../../gui/mainwindow.ui" line="1107"/>
         <source>Alt+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1108"/>
+        <location filename="../../gui/mainwindow.ui" line="1112"/>
         <source>&amp;Row</source>
         <translation>行(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1113"/>
+        <location filename="../../gui/mainwindow.ui" line="1117"/>
         <source>&amp;Column</source>
         <translation>列(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1123"/>
+        <location filename="../../gui/mainwindow.ui" line="1127"/>
         <source>&amp;Order</source>
         <translation>オーダー(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1128"/>
+        <location filename="../../gui/mainwindow.ui" line="1132"/>
         <source>Remove Unused &amp;Instruments</source>
         <translation>未使用のインストゥルメントを削除(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1133"/>
+        <location filename="../../gui/mainwindow.ui" line="1137"/>
         <source>Remove Unused &amp;Patterns</source>
         <translation>未使用のパターンを削除(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1138"/>
+        <location filename="../../gui/mainwindow.ui" line="1142"/>
         <source>&amp;WAV...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1143"/>
+        <location filename="../../gui/mainwindow.ui" line="1147"/>
         <source>&amp;VGM...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1156"/>
+        <location filename="../../gui/mainwindow.ui" line="1160"/>
         <source>&amp;Overwrite</source>
         <oldsource>Paste Overwrite</oldsource>
         <translation>上書き(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1171"/>
+        <location filename="../../gui/mainwindow.ui" line="1175"/>
         <source>&amp;Clear</source>
         <translation>クリア(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1148"/>
+        <location filename="../../gui/mainwindow.ui" line="1152"/>
         <source>&amp;Mix</source>
         <translation>ミックス(&amp;M)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1161"/>
+        <location filename="../../gui/mainwindow.ui" line="1165"/>
         <source>&amp;Import From Bank File...</source>
         <translation>バンクファイルから取り込み(&amp;I)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="1166"/>
+        <location filename="../../gui/mainwindow.ui" line="1170"/>
         <source>&amp;S98...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="147"/>
+        <location filename="../../gui/mainwindow.cpp" line="146"/>
         <source>Octave</source>
         <translation>オクターブ</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="161"/>
+        <location filename="../../gui/mainwindow.cpp" line="160"/>
         <source>Step highlight</source>
         <translation>ステップハイライト</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="388"/>
-        <location filename="../../gui/mainwindow.cpp" line="1153"/>
+        <location filename="../../gui/mainwindow.cpp" line="385"/>
+        <location filename="../../gui/mainwindow.cpp" line="1181"/>
         <source>Octave: %1</source>
         <oldsource>Octave: </oldsource>
         <translation>オクターブ: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="709"/>
-        <location filename="../../gui/mainwindow.cpp" line="759"/>
-        <location filename="../../gui/mainwindow.cpp" line="1878"/>
-        <location filename="../../gui/mainwindow.cpp" line="1988"/>
+        <location filename="../../gui/mainwindow.cpp" line="730"/>
+        <location filename="../../gui/mainwindow.cpp" line="780"/>
+        <location filename="../../gui/mainwindow.cpp" line="1948"/>
+        <location filename="../../gui/mainwindow.cpp" line="2059"/>
         <source>Save changes to %1?</source>
         <oldsource>Save changes to </oldsource>
         <translation>%1の変更を保存しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="907"/>
-        <location filename="../../gui/mainwindow.cpp" line="919"/>
-        <location filename="../../gui/mainwindow.cpp" line="937"/>
-        <location filename="../../gui/mainwindow.cpp" line="954"/>
-        <location filename="../../gui/mainwindow.cpp" line="968"/>
-        <location filename="../../gui/mainwindow.cpp" line="982"/>
-        <location filename="../../gui/mainwindow.cpp" line="1053"/>
-        <location filename="../../gui/mainwindow.cpp" line="1920"/>
-        <location filename="../../gui/mainwindow.cpp" line="1934"/>
-        <location filename="../../gui/mainwindow.cpp" line="1957"/>
-        <location filename="../../gui/mainwindow.cpp" line="1975"/>
-        <location filename="../../gui/mainwindow.cpp" line="2141"/>
-        <location filename="../../gui/mainwindow.cpp" line="2187"/>
-        <location filename="../../gui/mainwindow.cpp" line="2233"/>
+        <location filename="../../gui/mainwindow.cpp" line="930"/>
+        <location filename="../../gui/mainwindow.cpp" line="942"/>
+        <location filename="../../gui/mainwindow.cpp" line="960"/>
+        <location filename="../../gui/mainwindow.cpp" line="977"/>
+        <location filename="../../gui/mainwindow.cpp" line="991"/>
+        <location filename="../../gui/mainwindow.cpp" line="1005"/>
+        <location filename="../../gui/mainwindow.cpp" line="1074"/>
+        <location filename="../../gui/mainwindow.cpp" line="1991"/>
+        <location filename="../../gui/mainwindow.cpp" line="2005"/>
+        <location filename="../../gui/mainwindow.cpp" line="2028"/>
+        <location filename="../../gui/mainwindow.cpp" line="2046"/>
+        <location filename="../../gui/mainwindow.cpp" line="2212"/>
+        <location filename="../../gui/mainwindow.cpp" line="2258"/>
+        <location filename="../../gui/mainwindow.cpp" line="2304"/>
         <source>Error</source>
         <translation>エラー</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="805"/>
+        <location filename="../../gui/mainwindow.cpp" line="825"/>
         <source>Instrument %1</source>
         <oldsource>Instrument </oldsource>
         <translation>インストゥルメント%1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="896"/>
+        <location filename="../../gui/mainwindow.cpp" line="919"/>
         <source>Open instrument</source>
         <translation>インストゥルメントを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="907"/>
-        <location filename="../../gui/mainwindow.cpp" line="968"/>
+        <location filename="../../gui/mainwindow.cpp" line="930"/>
+        <location filename="../../gui/mainwindow.cpp" line="991"/>
         <source>Failed to load instrument.</source>
         <translation>インストゥルメントの読み込みに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="926"/>
+        <location filename="../../gui/mainwindow.cpp" line="949"/>
         <source>Save instrument</source>
         <translation>インストゥルメント保存</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="944"/>
+        <location filename="../../gui/mainwindow.cpp" line="967"/>
         <source>Open bank</source>
         <translation>バンクを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="958"/>
+        <location filename="../../gui/mainwindow.cpp" line="981"/>
         <source>Select instruments to load:</source>
         <translation>読み込むインストゥルメントを選択:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1022"/>
-        <location filename="../../gui/mainwindow.cpp" line="1424"/>
+        <location filename="../../gui/mainwindow.cpp" line="1265"/>
+        <location filename="../../gui/mainwindow.cpp" line="1470"/>
         <source>No instrument</source>
         <translation>インストゥルメントなし</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1025"/>
-        <location filename="../../gui/mainwindow.cpp" line="1077"/>
+        <location filename="../../gui/mainwindow.cpp" line="1046"/>
+        <location filename="../../gui/mainwindow.cpp" line="1105"/>
         <source>Standard</source>
         <translation>標準</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1026"/>
-        <location filename="../../gui/mainwindow.cpp" line="1078"/>
+        <location filename="../../gui/mainwindow.cpp" line="1047"/>
+        <location filename="../../gui/mainwindow.cpp" line="1106"/>
         <source>FM3ch expanded</source>
         <translation>FM3ch拡張</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1241"/>
+        <location filename="../../gui/mainwindow.cpp" line="1281"/>
         <source>&amp;Add</source>
         <translation>追加(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1243"/>
+        <location filename="../../gui/mainwindow.cpp" line="1283"/>
         <source>&amp;Remove</source>
         <translation>削除(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1248"/>
+        <location filename="../../gui/mainwindow.cpp" line="1288"/>
         <source>Edit &amp;name</source>
         <translation>名前の編集(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1251"/>
+        <location filename="../../gui/mainwindow.cpp" line="1291"/>
         <source>&amp;Clone</source>
         <translation>クローン(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1253"/>
+        <location filename="../../gui/mainwindow.cpp" line="1293"/>
         <source>&amp;Deep clone</source>
         <translation>ディープクローン(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1256"/>
+        <location filename="../../gui/mainwindow.cpp" line="1296"/>
         <source>&amp;Load from file...</source>
         <translation>ファイルから読み込む(&amp;L)...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1258"/>
+        <location filename="../../gui/mainwindow.cpp" line="1298"/>
         <source>&amp;Save to file...</source>
         <translation>ファイルに保存(&amp;S)...</translation>
     </message>
@@ -1411,105 +1416,105 @@
         <translation type="vanished">インストゥルメント: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1426"/>
+        <location filename="../../gui/mainwindow.cpp" line="1472"/>
         <source>Instrument: </source>
         <translation>インストゥルメント: </translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1685"/>
+        <location filename="../../gui/mainwindow.cpp" line="1755"/>
         <source>Do you want to change song properties?</source>
         <translation>ソング情報を変更しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1755"/>
+        <location filename="../../gui/mainwindow.cpp" line="1825"/>
         <source>Change to jam mode</source>
         <translation>ジャムモードに切り替え</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1756"/>
+        <location filename="../../gui/mainwindow.cpp" line="1826"/>
         <source>Change to edit mode</source>
         <translation>編集モードに切り替え</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1777"/>
+        <location filename="../../gui/mainwindow.cpp" line="1847"/>
         <source>About</source>
         <translation>バージョン情報</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1920"/>
-        <location filename="../../gui/mainwindow.cpp" line="1957"/>
+        <location filename="../../gui/mainwindow.cpp" line="1991"/>
+        <location filename="../../gui/mainwindow.cpp" line="2028"/>
         <source>Failed to backup module.</source>
         <translation>モジュールのバックアップ作成に失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1946"/>
+        <location filename="../../gui/mainwindow.cpp" line="2017"/>
         <source>Save module</source>
         <translation>モジュール保存</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2004"/>
+        <location filename="../../gui/mainwindow.cpp" line="2075"/>
         <source>Open module</source>
         <translation>モジュールを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2070"/>
+        <location filename="../../gui/mainwindow.cpp" line="2141"/>
         <source>Do you want to remove all unused instruments?</source>
         <translation>未使用のインストゥルメントを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2092"/>
+        <location filename="../../gui/mainwindow.cpp" line="2163"/>
         <source>Do you want to remove all unused patterns?</source>
         <translation>未使用のパターンを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2110"/>
+        <location filename="../../gui/mainwindow.cpp" line="2181"/>
         <source>Export to wav</source>
         <translation>WAV書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2116"/>
+        <location filename="../../gui/mainwindow.cpp" line="2187"/>
         <source>Export to WAV</source>
         <translation>WAV書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2117"/>
-        <location filename="../../gui/mainwindow.cpp" line="2161"/>
-        <location filename="../../gui/mainwindow.cpp" line="2207"/>
+        <location filename="../../gui/mainwindow.cpp" line="2188"/>
+        <location filename="../../gui/mainwindow.cpp" line="2232"/>
+        <location filename="../../gui/mainwindow.cpp" line="2278"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2141"/>
+        <location filename="../../gui/mainwindow.cpp" line="2212"/>
         <source>Failed to export to wav file.</source>
         <translation>WAVの書き出しに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2154"/>
+        <location filename="../../gui/mainwindow.cpp" line="2225"/>
         <source>Export to vgm</source>
         <translation>VGM書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2160"/>
+        <location filename="../../gui/mainwindow.cpp" line="2231"/>
         <source>Export to VGM</source>
         <translation>VGM書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2187"/>
+        <location filename="../../gui/mainwindow.cpp" line="2258"/>
         <source>Failed to export to vgm file.</source>
         <translation>VGMの書き出しに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2200"/>
+        <location filename="../../gui/mainwindow.cpp" line="2271"/>
         <source>Export to s98</source>
         <translation>S98書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2206"/>
+        <location filename="../../gui/mainwindow.cpp" line="2277"/>
         <source>Export to S98</source>
         <translation>S98書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2233"/>
+        <location filename="../../gui/mainwindow.cpp" line="2304"/>
         <source>Failed to export to s98 file.</source>
         <translation>S98の書き出しに失敗しました。</translation>
     </message>
@@ -1642,82 +1647,82 @@
 <context>
     <name>PatternEditorPanel</name>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="939"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1018"/>
         <source>Invalid effect</source>
         <translation>無効なエフェクト</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="946"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1025"/>
         <source>00xy - Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
         <translation>00xy - アルペジオ, x: 第2音(0-F), y: 第3音(0-F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="956"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1035"/>
         <source>01xx - Portamento up, xx: depth (00-FF)</source>
         <translation>01xx - ポルタメント・アップ, xx: デプス(00-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="966"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1045"/>
         <source>02xx - Portamento down, xx: depth (00-FF)</source>
         <translation>02xx - ポルタメント・ダウン, xx: デプス(00-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="976"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1055"/>
         <source>03xx - Tone portamento, xx: depth (00-FF)</source>
         <translation>03 - トーン・ポルタメント, xx: デプス(00-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="986"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1065"/>
         <source>04xy - Vibrato, x: period (0-F), y: depth (0-F)</source>
         <translation>04xy - ビブラート, x: ピリオド(0-F), y: デプス(0-F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="996"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1075"/>
         <source>07xx - Tremolo, x: period (0-F), y: depth (0-F)</source>
         <translation>07xy - トレモロ, x: ピリオド(0-F), y: デプス(0-F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1006"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1085"/>
         <source>08xx - Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
         <translation>08xx - パン, xx: 00 = 無音, 01 = 右, 02 = 左, 03 = 中央</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1016"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1095"/>
         <source>0Axy - Volume slide, x: up (0-F), y: down (0-F)</source>
         <translation>0Axy - ボリューム・スライド, x: アップ(0-F), y: ダウン(0-F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1023"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1102"/>
         <source>0Bxx - Jump to begginning of order xx</source>
         <translation>0Bxx - オーダーxxの先頭へジャンプ</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1026"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1105"/>
         <source>0Cxx - End of song</source>
         <translation>0Cxx - ソングの停止</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1029"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1108"/>
         <source>0Dxx - Jump to step xx of next order</source>
         <translation>0Dxx - 次のオーダーのステップxxへジャンプ</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1038"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1117"/>
         <source>0Oxx - Set groove xx</source>
         <translation>0Oxx - グルーブをxxに設定</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1044"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1123"/>
         <source>0Pxx - Detune, xx: pitch (00-FF)</source>
         <translation>0Pxx - デチューン, xx: ピッチ(00-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1054"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1133"/>
         <source>0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)</source>
         <translation>0Qxy - ノート・スライドアップ, x: カウント(0-F), y: 半音数(0-F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1064"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1143"/>
         <source>0Rxy - Note slide down, x: count (0-F), y: seminote (0-F)</source>
         <translation>0Rxy - ノート・スライドダウン, x: カウント(0-F), y: 半音数(0-F)</translation>
     </message>
@@ -1726,154 +1731,154 @@
         <translation type="vanished">0Sxx - ノート・カット, xx: カウント(01-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1077"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1156"/>
         <source>0Txy - Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)</source>
         <translation>0Txy - トランスポーズ・ディレイ, x: カウント(1-7: アップ, 9-F: ダウン), y: 半音数(0-F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1032"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1111"/>
         <source>0Fxx - Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
         <translation>0Fxx - スピード変更(xx: 00-1F), テンポ変更(xx: 20-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1035"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1114"/>
         <source>0Gxx - Note delay, xx: count (00-FF)</source>
         <translation>0Gxx - ノート・ディレイ, xx: カウント(00-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1071"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1150"/>
         <source>0Sxx - Note cut, xx: count (01-FF)</source>
         <translation>0Sxx - ノート・カット, xx: カウント(01-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1086"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1165"/>
         <source>0Vxx - Master volume, xx: volume (00-3F)</source>
         <translation>0Vxx - マスターボリューム, xx: 音量(00-3F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1095"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1174"/>
         <source>Mxyy - Volume delay, x: count (1-F), yy: volume (00-FF)</source>
         <translation>Mxyy - ボリューム・ディレイ, x: カウント(1-F), yy: 音量(00-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1408"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1490"/>
         <source>&amp;Undo</source>
         <translation>元に戻す(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1413"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1495"/>
         <source>&amp;Redo</source>
         <translation>やり直し(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1419"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1501"/>
         <source>&amp;Copy</source>
         <translation>コピー(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1421"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1503"/>
         <source>Cu&amp;t</source>
         <translation>切り取り(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1423"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1505"/>
         <source>&amp;Paste</source>
         <translation>貼り付け(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1425"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1507"/>
         <source>Paste Specia&amp;l</source>
         <translation>特殊貼り付け(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1427"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1509"/>
         <source>&amp;Mix</source>
         <translation>ミックス(&amp;M)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1429"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1511"/>
         <source>&amp;Overwrite</source>
         <translation>上書き(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1431"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1513"/>
         <source>&amp;Erase</source>
         <translation>削除(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1433"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1515"/>
         <source>Select &amp;All</source>
         <translation>全選択(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1436"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1518"/>
         <source>Patter&amp;n</source>
         <translation>パターン(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1438"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1520"/>
         <source>&amp;Interpolate</source>
         <translation>補完(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1440"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1522"/>
         <source>&amp;Reverse</source>
         <translation>反転(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1442"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1524"/>
         <source>R&amp;eplace Instrument</source>
         <translation>インストゥルメント置換(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1445"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1527"/>
         <source>E&amp;xpand</source>
         <translation>拡大(&amp;X)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1447"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1529"/>
         <source>S&amp;hrink</source>
         <translation>縮小(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1450"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1532"/>
         <source>&amp;Transpose</source>
         <translation>トランスポーズ(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1452"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1534"/>
         <source>&amp;Decrease Note</source>
         <translation>半音を下げる(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1454"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1536"/>
         <source>&amp;Increase Note</source>
         <translation>半音上げる(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1456"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1538"/>
         <source>D&amp;ecrease Octave</source>
         <translation>1オクターブ下げる(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1458"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1540"/>
         <source>I&amp;ncrease Octave</source>
         <translation>1オクターブ上げる(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1461"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2249"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1543"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2325"/>
         <source>To&amp;ggle Track</source>
         <translation>トラックを演奏(&amp;G)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1463"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2251"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1545"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2327"/>
         <source>&amp;Solo Track</source>
         <translation>トラックをソロ演奏(&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2253"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2329"/>
         <source>&amp;Unmute All Tracks</source>
         <translation>全トラックのミュート解除(&amp;U)</translation>
     </message>
@@ -1881,12 +1886,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../main.cpp" line="27"/>
+        <location filename="../../main.cpp" line="33"/>
         <source>Error</source>
         <translation>エラー</translation>
     </message>
     <message>
-        <location filename="../../main.cpp" line="27"/>
+        <location filename="../../main.cpp" line="33"/>
         <source>An unknown error occured.</source>
         <translation>不明なエラーが発生しました。</translation>
     </message>
@@ -2077,28 +2082,28 @@
         <translation>ループ</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="332"/>
+        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="333"/>
         <source>Loop %1</source>
         <oldsource>Loop </oldsource>
         <translation>ループ%1</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="352"/>
+        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="353"/>
         <source>Release</source>
         <translation>リリース</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="365"/>
+        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="367"/>
         <source>Fix</source>
         <translation>固定</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="368"/>
+        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="370"/>
         <source>Absolute</source>
         <translation>絶対</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="371"/>
+        <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="373"/>
         <source>Relative</source>
         <translation>相対</translation>
     </message>

@@ -252,6 +252,13 @@ The tracker can export a song to the following files.
 - .vgm (VGM file)
 - .s98 (S98 file)
 
+## Language
+BambooTracker supports following languages:
+
+- English (default)
+- French
+- Japanese
+
 ## Downloads
 On Windows:
 

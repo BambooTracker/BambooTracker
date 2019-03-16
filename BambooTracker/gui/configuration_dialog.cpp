@@ -31,19 +31,24 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(6)->setCheckState(toCheckState(config.lock()->getReverseFMVolumeOrder()));
 	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(config.lock()->getMoveCursorToRight()));
 	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(config.lock()->getRetrieveChannelState()));
+	ui->generalSettingsListWidget->item(9)->setCheckState(toCheckState(config.lock()->getEnableTranslation()));
 
 	// Edit settings
-	ui->pageJumpLengthSpinBox->setValue(config.lock()->getPageJumpLength());
+	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(config.lock()->getPageJumpLength()));
 
 	// Keys
-	ui->keyOffKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getKeyOffKey().c_str(),
-																config.lock()->getKeyOffKey().length()));
-	ui->octaveUpKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getOctaveUpKey().c_str(),
-																  config.lock()->getOctaveUpKey().length()));
-	ui->octaveDownKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getOctaveDownKey().c_str(),
-																	config.lock()->getOctaveDownKey().length()));
-	ui->echoBufferKeySequenceEdit->setKeySequence(QString::fromUtf8(config.lock()->getEchoBufferKey().c_str(),
-																	config.lock()->getEchoBufferKey().length()));
+	ui->keyOffKeySequenceEdit->setKeySequence(
+				QString::fromUtf8(config.lock()->getKeyOffKey().c_str(),
+								  static_cast<int>(config.lock()->getKeyOffKey().length())));
+	ui->octaveUpKeySequenceEdit->setKeySequence(
+				QString::fromUtf8(config.lock()->getOctaveUpKey().c_str(),
+								  static_cast<int>(config.lock()->getOctaveUpKey().length())));
+	ui->octaveDownKeySequenceEdit->setKeySequence(
+				QString::fromUtf8(config.lock()->getOctaveDownKey().c_str(),
+								  static_cast<int>(config.lock()->getOctaveDownKey().length())));
+	ui->echoBufferKeySequenceEdit->setKeySequence(
+				QString::fromUtf8(config.lock()->getEchoBufferKey().c_str(),
+								  static_cast<int>(config.lock()->getEchoBufferKey().length())));
 	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(config.lock()->getNoteEntryLayout()));
 
 	// Sound //
@@ -52,7 +57,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	for (auto& info : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
 		ui->soundDeviceComboBox->addItem(info.deviceName());
 		if (info.deviceName() == QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-												   config.lock()->getSoundDevice().length()))
+												   static_cast<int>(config.lock()->getSoundDevice().length())))
 			devRow = ui->soundDeviceComboBox->count() - 1;
 		if (info.deviceName() == QAudioDeviceInfo::defaultOutputDevice().deviceName()) {
 			defDevRow = ui->soundDeviceComboBox->count() - 1;
@@ -74,7 +79,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 					 this, [&](int value) {
 		ui->bufferLengthLabel->setText(QString::number(value) + "ms");
 	});
-	ui->bufferLengthHorizontalSlider->setValue(config.lock()->getBufferLength());
+	ui->bufferLengthHorizontalSlider->setValue(static_cast<int>(config.lock()->getBufferLength()));
 
 	// Mixer //
 	ui->masterMixerSlider->setText(tr("Master"));
@@ -128,9 +133,10 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setReverseFMVolumeOrder(fromCheckState(ui->generalSettingsListWidget->item(6)->checkState()));
 	config_.lock()->setMoveCursorToRight(fromCheckState(ui->generalSettingsListWidget->item(7)->checkState()));
 	config_.lock()->setRetrieveChannelState(fromCheckState(ui->generalSettingsListWidget->item(8)->checkState()));
+	config_.lock()->setEnableTranslation(fromCheckState(ui->generalSettingsListWidget->item(9)->checkState()));
 
 	// Edit settings
-	config_.lock()->setPageJumpLength(ui->pageJumpLengthSpinBox->value());
+	config_.lock()->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
 
 	// Keys
 	config_.lock()->setKeyOffKey(ui->keyOffKeySequenceEdit->keySequence().toString().toStdString());
@@ -142,8 +148,8 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	// Sound //
 	config_.lock()->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
 	config_.lock()->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
-	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toInt());
-	config_.lock()->setBufferLength(ui->bufferLengthHorizontalSlider->value());
+	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
+	config_.lock()->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
 
 	// Mixer //
 	config_.lock()->setMixerVolumeMaster(ui->masterMixerSlider->value());
@@ -186,6 +192,10 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 	case 8:	// Retrieve channel state
 		text = tr("Reconstruct the current channel's state from previous orders upon playing.");
 		break;
+	case 9:	// Enable translation
+		text = tr("Translate to your language from the next launch. "
+				  "See readme to check supported languages.");
+		break;
 	default:
 		text = "";
 		break;
@@ -205,7 +215,8 @@ void ConfigurationDialog::updateEnvelopeSetUi()
 {
 	ui->envelopeTypeListWidget->clear();
 	for (auto& pair : fmEnvelopeTextMap_)
-		ui->envelopeTypeListWidget->addItem(QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+		ui->envelopeTypeListWidget->addItem(
+					QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
 }
 
 void ConfigurationDialog::on_addEnvelopeSetPushButton_clicked()

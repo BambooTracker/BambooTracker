@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(QString filePath, QWidget *parent = nullptr);
+	MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent = nullptr);
 	~MainWindow() override;
 
 protected:
@@ -52,7 +52,7 @@ protected:
 
 private:
 	std::unique_ptr<Ui::MainWindow> ui;
-	std::shared_ptr<Configuration> config_;
+	std::weak_ptr<Configuration> config_;
 	std::shared_ptr<ColorPalette> palette_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::shared_ptr<AudioStream> stream_;
