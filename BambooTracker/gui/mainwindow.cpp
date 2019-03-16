@@ -15,6 +15,7 @@
 #include <QRect>
 #include <QDesktopWidget>
 #include <QAudioDeviceInfo>
+#include <QMetaMethod>
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -36,6 +37,7 @@
 #include "gui/configuration_handler.hpp"
 #include "chips/scci/SCCIDefines.h"
 #include "gui/file_history_handler.hpp"
+#include "midi/midi.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -399,9 +401,16 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	else {
 		openModule(filePath);
 	}
+
+	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
+	Q_ASSERT(midiKeyEventMethod_ != -1);
+	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
 }
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow()
+{
+	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
+}
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
@@ -810,6 +819,52 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	FileHistoryHandler::saveFileHistory(fileHistory_);
 
 	event->accept();
+}
+
+/********** MIDI **********/
+void MainWindow::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData)
+{
+	MainWindow *self = reinterpret_cast<MainWindow *>(userData);
+
+	Q_UNUSED(delay);
+
+	// Note-On/Note-Off
+	if (len == 3 && (msg[0] & 0xe0) == 0x80) {
+		uint8_t status = msg[0];
+		uint8_t key = msg[1];
+		uint8_t velocity = msg[2];
+		QMetaMethod method = self->metaObject()->method(self->midiKeyEventMethod_);
+		method.invoke(self, Qt::QueuedConnection,
+					  Q_ARG(uchar, status), Q_ARG(uchar, key), Q_ARG(uchar, velocity));
+	}
+}
+
+void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
+{
+	bool release = ((status & 0xf0) == 0x80) || velocity == 0;
+	std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote((int)key - 12);
+
+	JamKey jamKey;
+	switch (octaveAndNote.second) {
+	default:
+	case Note::C:	jamKey = JamKey::LOW_C; break;
+	case Note::CS:	jamKey = JamKey::LOW_CS; break;
+	case Note::D:	jamKey = JamKey::LOW_D; break;
+	case Note::DS:	jamKey = JamKey::LOW_DS; break;
+	case Note::E:	jamKey = JamKey::LOW_E; break;
+	case Note::F:	jamKey = JamKey::LOW_F; break;
+	case Note::FS:	jamKey = JamKey::LOW_FS; break;
+	case Note::G:	jamKey = JamKey::LOW_G; break;
+	case Note::GS:	jamKey = JamKey::LOW_GS; break;
+	case Note::A:	jamKey = JamKey::LOW_A; break;
+	case Note::AS:	jamKey = JamKey::LOW_AS; break;
+	case Note::B:	jamKey = JamKey::LOW_B; break;
+	}
+
+	octave_->setValue(octaveAndNote.first);
+	bt_->jamKeyOff(jamKey); // possibility to recover on stuck note
+	if (!release)
+		bt_->jamKeyOn(jamKey);
 }
 
 /********** Instrument list **********/

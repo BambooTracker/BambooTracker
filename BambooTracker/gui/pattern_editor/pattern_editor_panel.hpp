@@ -29,6 +29,7 @@ class PatternEditorPanel : public QWidget
 	Q_OBJECT
 public:
 	explicit PatternEditorPanel(QWidget *parent = nullptr);
+	~PatternEditorPanel();
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 	void setConfiguration(std::weak_ptr<Configuration> config);
@@ -104,6 +105,12 @@ protected:
 	virtual void wheelEvent(QWheelEvent* event) override;
 	virtual void leaveEvent(QEvent* event) override;
 
+	// Midi
+private:
+	static void midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData);
+private slots:
+	void midiKeyEvent(uchar status, uchar key, uchar velocity);
+
 private:
 	std::unique_ptr<QPixmap> pixmap_;
 	std::shared_ptr<BambooTracker> bt_;
@@ -150,6 +157,9 @@ private:
 
 	int hlCnt_;
 	int editableStepCnt_;
+
+	// Meta methods
+	int midiKeyEventMethod_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);

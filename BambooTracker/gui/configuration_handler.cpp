@@ -71,6 +71,11 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
 		settings.endGroup();
 
+		// Midi //
+		settings.beginGroup("Midi");
+		settings.setValue("inputPort", QString::fromStdString(configLocked->getMidiInputPort()));
+		settings.endGroup();
+
 		// Mixer //
 		settings.beginGroup("Mixer");
 		settings.setValue("mixerVolumeMaster",	configLocked->getMixerVolumeMaster());
@@ -168,6 +173,11 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		QVariant bufferLengthWorkaround;
 		bufferLengthWorkaround.setValue(configLocked->getBufferLength());
 		configLocked->setBufferLength(static_cast<size_t>(settings.value("bufferLength", bufferLengthWorkaround).toInt()));
+		settings.endGroup();
+
+		// Midi //
+		settings.beginGroup("Midi");
+		configLocked->setMidiInputPort(settings.value("inputPort").toString().toStdString());
 		settings.endGroup();
 
 		// Mixer //

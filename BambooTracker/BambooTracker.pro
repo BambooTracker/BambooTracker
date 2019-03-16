@@ -189,7 +189,8 @@ SOURCES += \
     io/bank_io.cpp \
     gui/fm_envelope_set_edit_dialog.cpp \
     gui/file_history_handler.cpp \
-    gui/file_history.cpp
+    gui/file_history.cpp \
+    midi/midi.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -358,7 +359,9 @@ HEADERS += \
     io/bank_io.hpp \
     gui/fm_envelope_set_edit_dialog.hpp \
     gui/file_history_handler.hpp \
-    gui/file_history.hpp
+    gui/file_history.hpp \
+    midi/midi.hpp \
+    midi/midi_def.h
 
 FORMS += \
     gui/mainwindow.ui \
@@ -394,6 +397,8 @@ RESOURCES += \
 TRANSLATIONS += \
     res/lang/bamboo_tracker_fr.ts \
     res/lang/bamboo_tracker_ja.ts
+
+include("midi/RtMidi/RtMidi.pri")
 
 equals(QT_MAJOR_VERSION, 5) {
     lessThan(QT_MINOR_VERSION, 12) {

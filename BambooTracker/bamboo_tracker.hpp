@@ -24,7 +24,7 @@ class AbstractBank;
 class BambooTracker
 {
 public:
-	BambooTracker(std::weak_ptr<Configuration> config);
+	explicit BambooTracker(std::weak_ptr<Configuration> config);
 
 	// Change confuguration
 	void changeConfiguration(std::weak_ptr<Configuration> config);

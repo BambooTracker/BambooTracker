@@ -50,6 +50,12 @@ protected:
 	void moveEvent(QMoveEvent* event) override;
 	void closeEvent(QCloseEvent* event) override;
 
+	// Midi
+private:
+	static void midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData);
+private slots:
+	void midiKeyEvent(uchar status, uchar key, uchar velocity);
+
 private:
 	std::unique_ptr<Ui::MainWindow> ui;
 	std::weak_ptr<Configuration> config_;
@@ -123,6 +129,9 @@ private:
 	QLabel* statusOctave_;
 	QLabel* statusIntr_;
 	QLabel* statusPlayPos_;
+
+	// Meta methods
+	int midiKeyEventMethod_;
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
