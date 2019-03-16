@@ -1,4 +1,5 @@
 #include "opna_controller.hpp"
+#include <stdexcept>
 #include "pitch_converter.hpp"
 
 OPNAController::OPNAController(int clock, int rate, int duration)
@@ -1138,6 +1139,7 @@ void OPNAController::checkOperatorSequenceFM(int ch, int type)
 			case 0:	t = p.second->next();		break;
 			case 1:	t = p.second->front();		break;
 			case 2:	t = p.second->next(true);	break;
+			default:	throw std::out_of_range("The range of type is 0-2.");
 			}
 			if (t != -1) {
 				int d = p.second->getCommandType();

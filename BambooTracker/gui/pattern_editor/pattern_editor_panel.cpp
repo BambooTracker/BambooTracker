@@ -1,4 +1,8 @@
 #include "pattern_editor_panel.hpp"
+#include <algorithm>
+#include <vector>
+#include <utility>
+#include <stdexcept>
 #include <QPainter>
 #include <QFontMetrics>
 #include <QPoint>
@@ -8,9 +12,6 @@
 #include <QAction>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
-#include <algorithm>
-#include <vector>
-#include <utility>
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 
@@ -352,7 +353,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		painter.drawText(offset, baseY, "--");
 	}
 	else {
-		int volLim;
+		int volLim = 0;	// Dummy set
 		switch (src) {
 		case SoundSource::FM:	volLim = 0x80;	break;
 		case SoundSource::SSG:	volLim = 0x10;	break;

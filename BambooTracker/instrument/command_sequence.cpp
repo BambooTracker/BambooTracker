@@ -187,20 +187,18 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 {
 	if (!isReleaseBegin && pos_ == -1) return -1;
 
-	int next;
+	int next = -1;
 	if (isReleaseBegin) {
 		loopStack_.clear();
 		isRelease_ = true;
 		switch (seq_->release_.type) {
 		case ReleaseType::NO_RELEASE:
-			next = -1;
 			break;
 		case ReleaseType::FIX:
 			next = seq_->release_.begin;
 			break;
 		case ReleaseType::ABSOLUTE:
 		{
-			next = -1;
 			int crtr;
 			if (pos_ == -1) {
 				int prevIdx = seq_->release_.begin - 1;

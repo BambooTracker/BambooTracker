@@ -75,7 +75,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML1;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT1;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG1;	break;
-			default:																break;
+			default:	throw std::invalid_argument("Unexpected FMOperatorParameter.");
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
@@ -116,7 +116,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML2;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT2;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG2;	break;
-			default:																break;
+			default:	throw std::invalid_argument("Unexpected FMOperatorParameter.");
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
@@ -157,7 +157,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML3;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT3;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG3;	break;
-			default:																break;
+			default:	throw std::invalid_argument("Unexpected FMOperatorParameter.");
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
@@ -198,7 +198,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 			case Ui::FMOperatorParameter::ML:		param = FMEnvelopeParameter::ML4;		break;
 			case Ui::FMOperatorParameter::DT:		param = FMEnvelopeParameter::DT4;		break;
 			case Ui::FMOperatorParameter::SSGEG:	param = FMEnvelopeParameter::SSGEG4;	break;
-			default:																break;
+			default:	throw std::invalid_argument("Unexpected FMOperatorParameter.");
 			}
 			bt_.lock()->setEnvelopeFMParameter(ui->envNumSpinBox->value(), param, value);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
