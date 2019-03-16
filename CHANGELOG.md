@@ -1,12 +1,15 @@
 # Changelog
 
 ## Unreleased
+
+## v0.1.6 (2019-03-16)
 ### Add
 - [#63] - L10n: French, Japanese (thanks [@jpcima], [@trebmuh])
 - Add file history
 - [#65] - Add repository to Appveyor and Travis CI (thanks [@papiezak], [@OPNA2608], [@jpcima])
 - [#70] - Add keyboard layout selection for note entry (thanks [@OPNA2608])
 - Add key shortcuts for instrument list
+- [#53] - Add 2 demo modules (thanks [@ehaupt], [@maakmusic])
 
 ### Fixed
 - [#69] - Fix corruption in jamming (thanks [@maakmusic], [@ImATrackMan])
@@ -40,6 +43,7 @@
 [#11]: https://github.com/rerrahkr/BambooTracker/issues/11
 [#75]: https://github.com/rerrahkr/BambooTracker/issues/75
 [#78]: https://github.com/rerrahkr/BambooTracker/pull/78
+[#53]: https://github.com/rerrahkr/BambooTracker/issues/53
 
 [@ImATrackMan]: https://github.com/ImATrackMan
 [@scarletbullgon]: https://github.com/scarletbullgon

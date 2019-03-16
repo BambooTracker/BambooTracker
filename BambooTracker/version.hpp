@@ -23,7 +23,7 @@ private:
 	// Application version
 	static constexpr unsigned int appMajor			= 0;
 	static constexpr unsigned int appMinor			= 1;
-	static constexpr unsigned int appRevision		= 5;
+	static constexpr unsigned int appRevision		= 6;
 
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;
