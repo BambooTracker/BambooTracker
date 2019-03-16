@@ -378,6 +378,8 @@ ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForData(VisualizedInstrum
 		return ReleaseType::ABSOLUTE;
 	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
 		return ReleaseType::RELATIVE;
+	default:
+		throw std::invalid_argument("Unexpected ReleaseType.");
 	}
 }
 
@@ -392,6 +394,8 @@ VisualizedInstrumentMacroEditor::ReleaseType InstrumentEditorSSGForm::convertRel
 		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
 	case ReleaseType::RELATIVE:
 		return VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE;
+	default:
+		throw std::invalid_argument("Unexpected ReleaseType.");
 	}
 }
 

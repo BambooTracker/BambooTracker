@@ -78,11 +78,11 @@ void OPNAController::initChip()
 }
 
 /********** Forward instrument sequence **********/
-void OPNAController::tickEvent(SoundSource src, int ch, bool isStep)
+void OPNAController::tickEvent(SoundSource src, int ch)
 {
 	switch (src) {
-	case SoundSource::FM:	tickEventFM(ch, isStep);	break;
-	case SoundSource::SSG:	tickEventSSG(ch, isStep);	break;
+	case SoundSource::FM:	tickEventFM(ch);	break;
+	case SoundSource::SSG:	tickEventSSG(ch);	break;
 	case SoundSource::DRUM:	break;
 	}
 }
@@ -1093,7 +1093,7 @@ void OPNAController::releaseStartFMSequences(int ch)
 	if (needToneSetFM_[ch]) writePitchFM(ch);
 }
 
-void OPNAController::tickEventFM(int ch, bool isStep)
+void OPNAController::tickEventFM(int ch)
 {
 	if (hasPreSetTickEventFM_[ch]) {
 		hasPreSetTickEventFM_[ch] = false;
@@ -1705,7 +1705,7 @@ void OPNAController::releaseStartSSGSequences(int ch)
 	if (needToneSetSSG_[ch]) writePitchSSG(ch);
 }
 
-void OPNAController::tickEventSSG(int ch, bool isStep)
+void OPNAController::tickEventSSG(int ch)
 {
 	if (hasPreSetTickEventSSG_[ch]) {
 		hasPreSetTickEventSSG_[ch] = false;
@@ -2179,18 +2179,18 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 		setRealVolumeSSG(ch);
 	}
 	else {	// Hardware envelope
-		unsigned int data = envItSSG_[ch]->getCommandData();
+		int data = envItSSG_[ch]->getCommandData();
 		if (envSSG_[ch].data != data) {
 			opna_->setRegister(0x0b, 0x00ff & data);
-			opna_->setRegister(0x0c, data >> 8);
+			opna_->setRegister(0x0c, static_cast<uint8_t>(data >> 8));
 			envSSG_[ch].data = data;
 		}
 		if (envSSG_[ch].type != type || !isKeyOnSSG_[ch]) {
-			opna_->setRegister(0x0d, type - 16 + 8);
+			opna_->setRegister(0x0d, static_cast<uint8_t>(type - 16 + 8));
 			envSSG_[ch].type = type;
 		}
 		if (!isHardEnvSSG_[ch]) {
-			opna_->setRegister(0x08 + ch, 0x10);
+			opna_->setRegister(static_cast<uint32_t>(0x08 + ch), 0x10);
 			isHardEnvSSG_[ch] = true;
 		}
 	}

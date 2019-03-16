@@ -17,7 +17,7 @@ InterpolatePatternCommand::InterpolatePatternCommand(std::weak_ptr<Module> mod,
 	auto& sng = mod.lock()->getSong(songNum);
 	int s = beginStep;
 
-	int h = endStep - beginStep + 1;
+	size_t h = static_cast<size_t>(endStep - beginStep + 1);
 	int w = 0;
 	int tr = endTrack;
 	int cl = endColumn;
@@ -33,11 +33,12 @@ InterpolatePatternCommand::InterpolatePatternCommand(std::weak_ptr<Module> mod,
 		}
 	}
 
+	size_t ww = static_cast<size_t>(w);
 	for (size_t i = 0; i < h; ++i) {
 		prevCells_.emplace_back();
 		int t = beginTrack;
 		int c = beginColmn;
-		for (size_t j = 0; j < w; ++j) {
+		for (size_t j = 0; j < ww; ++j) {
 			switch (c) {
 			case 0:
 				prevCells_.at(i).push_back(std::to_string(

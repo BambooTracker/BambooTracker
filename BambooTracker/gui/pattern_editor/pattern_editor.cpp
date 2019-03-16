@@ -112,6 +112,8 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 		default:	return false;
 		}
 	}
+
+	return false;
 }
 
 /********** Slots **********/

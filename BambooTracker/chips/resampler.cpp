@@ -39,6 +39,8 @@ namespace chip
 	/****************************************/
 	sample** LinearResampler::interpolate(sample** src, size_t nSamples, size_t intrSize)
 	{
+		(void)intrSize;
+
 		// Linear interplation
 		for (int pan = LEFT; pan <= RIGHT; ++pan) {
 			for (size_t n = 0; n < nSamples; ++n) {

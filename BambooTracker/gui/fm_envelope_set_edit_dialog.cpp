@@ -13,8 +13,8 @@ FMEnvelopeSetEditDialog::FMEnvelopeSetEditDialog(std::vector<FMEnvelopeTextType>
 	ui->treeWidget->setColumnCount(2);
 	ui->treeWidget->setHeaderLabels({ tr("Number"), tr("Type") });
 
-	for (int i = 0; i < set.size(); ++i) {
-		insertRow(i, set.at(i));
+	for (size_t i = 0; i < set.size(); ++i) {
+		insertRow(static_cast<int>(i), set.at(i));
 	}
 }
 

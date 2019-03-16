@@ -170,7 +170,8 @@ private:
 
 	inline int getDisplayedRowCount() const
 	{
-		return (maxDispRowCnt_ > labels_.size()) ? labels_.size() : maxDispRowCnt_;
+		int labCnt = static_cast<int>(labels_.size());
+		return (maxDispRowCnt_ > labCnt) ? labCnt : maxDispRowCnt_;
 	}
 
 	inline void scrollUp(int pos)

@@ -612,7 +612,7 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 		if (pos.row == 0) {
 			moveUp->setEnabled(false);
 		}
-		if (pos.row == bt_->getOrderSize(curSongNum_) - 1) {
+		if (pos.row == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
 			moveDown->setEnabled(false);
 		}
 	}
@@ -650,7 +650,7 @@ void OrderListPanel::setCurrentOrder(int num) {
 void OrderListPanel::onOrderEdited()
 {
 	// Move cursor
-	size_t s = bt_->getOrderSize(curSongNum_);
+	int s = static_cast<int>(bt_->getOrderSize(curSongNum_));
 	if (s <= curPos_.row) curPos_.row = s - 1;
 
 	emit orderEdited();
@@ -751,7 +751,7 @@ void OrderListPanel::onDuplicatePressed()
 void OrderListPanel::onMoveOrderPressed(bool isUp)
 {
 	if ((isUp && curPos_.row == 0)
-			|| (!isUp && curPos_.row == bt_->getOrderSize(curSongNum_) - 1))
+			|| (!isUp && curPos_.row == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1))
 		return;
 
 	bt_->MoveOrder(curSongNum_, curPos_.row, isUp);
@@ -1009,7 +1009,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 		}
 		else {
 			hovPos_.row = curPos_.row + (pos.y() - curRowY_) / rowFontHeight_;
-			if (hovPos_.row >= bt_->getOrderSize(curSongNum_)) hovPos_.row = -1;
+			if (hovPos_.row >= static_cast<int>(bt_->getOrderSize(curSongNum_))) hovPos_.row = -1;
 		}
 	}
 
@@ -1027,7 +1027,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 			}
 			++i;
 
-			if (i == songStyle_.trackAttribs.size()) {
+			if (i == static_cast<int>(songStyle_.trackAttribs.size())) {
 				hovPos_.track = -1;
 				break;
 			}

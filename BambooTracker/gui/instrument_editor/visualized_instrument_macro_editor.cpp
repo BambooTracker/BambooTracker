@@ -63,7 +63,7 @@ void VisualizedInstrumentMacroEditor::setColorPalette(std::shared_ptr<ColorPalet
 void VisualizedInstrumentMacroEditor::AddRow(QString label)
 {
 	labels_.push_back(label);
-	if (labels_.size() <= maxDispRowCnt_) {
+	if (static_cast<int>(labels_.size()) <= maxDispRowCnt_) {
 		upperRow_ = labels_.size() - 1;
 		ui->verticalScrollBar->setVisible(false);
 		ui->verticalScrollBar->setMaximum(0);
@@ -80,7 +80,7 @@ void VisualizedInstrumentMacroEditor::AddRow(QString label)
 void VisualizedInstrumentMacroEditor::setMaximumDisplayedRowCount(int count)
 {
 	maxDispRowCnt_ = count;
-	if (labels_.size() <= maxDispRowCnt_) {
+	if (static_cast<int>(labels_.size()) <= maxDispRowCnt_) {
 		upperRow_ = labels_.size() - 1;
 		ui->verticalScrollBar->setVisible(false);
 		ui->verticalScrollBar->setMaximum(0);
@@ -165,18 +165,18 @@ void VisualizedInstrumentMacroEditor::removeSequenceCommand()
 
 	// Modify loop
 	for (size_t i = 0; i < loops_.size();) {
-		if (loops_[i].begin >= cols_.size()) {
+		if (loops_[i].begin >= static_cast<int>(cols_.size())) {
 			loops_.erase(loops_.begin() + i);
 		}
 		else {
-			if (loops_[i].end >= cols_.size())
+			if (loops_[i].end >= static_cast<int>(cols_.size()))
 				loops_[i].end = cols_.size() - 1;
 			++i;
 		}
 	}
 
 	// Modify release
-	if (release_.point >= cols_.size())
+	if (release_.point >= static_cast<int>(cols_.size()))
 		release_.point = -1;
 
 	updateColumnWidth();
@@ -322,7 +322,8 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 	painter.drawText(1, loopBaseY_, tr("Loop"));
 
 	int w = tagWidth_;
-	for (int i = 0; i < cols_.size(); ++i) {
+	int seqLen = static_cast<int>(cols_.size());
+	for (int i = 0; i < seqLen; ++i) {
 		for (size_t j = 0; j < loops_.size(); ++j) {
 			if (loops_[j].begin <= i && i <= loops_[j].end) {
 				painter.fillRect(w, loopY_, colWidths_[i], fontHeight_, palette_->instSeqLoopColor);
@@ -352,7 +353,8 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 	painter.drawText(1, releaseBaseY_, tr("Release"));
 
 	int w = tagWidth_;
-	for (int i = 0; i < cols_.size(); ++i) {
+	int seqLen = static_cast<int>(cols_.size());
+	for (int i = 0; i < seqLen; ++i) {
 		if (release_.point == i) {
 			painter.fillRect(w, releaseY_, ui->panel->geometry().width() - w, fontHeight_, palette_->instSeqReleaseColor);
 			painter.fillRect(w, releaseY_, 2, fontHeight_, palette_->instSeqReleaseEdgeColor);
@@ -404,7 +406,8 @@ void VisualizedInstrumentMacroEditor::makeMML()
 	QString text = "";
 	std::vector<Loop> lstack;
 
-	for (size_t cnt = 0; cnt < cols_.size(); ++cnt) {
+	int seqLen = static_cast<int>(cols_.size());
+	for (int cnt = 0; cnt < seqLen; ++cnt) {
 		if (release_.point == cnt) {
 			switch (release_.type) {
 			case ReleaseType::FIX:		text += "| ";	break;
@@ -494,7 +497,7 @@ void VisualizedInstrumentMacroEditor::moveLoop()
 			}
 		}
 		else if (hovCol_ > loops_[grabLoop_].end) {
-			if (grabLoop_ < loops_.size() - 1 && loops_[grabLoop_ + 1].begin <= hovCol_) {
+			if (grabLoop_ < static_cast<int>(loops_.size()) - 1 && loops_[grabLoop_ + 1].begin <= hovCol_) {
 				loops_[grabLoop_].end = loops_[grabLoop_ + 1].begin - 1;
 			}
 			else {
@@ -574,6 +577,8 @@ void VisualizedInstrumentMacroEditor::paintEventInView(QPaintEvent* event)
 
 void VisualizedInstrumentMacroEditor::resizeEventInView(QResizeEvent* event)
 {
+	Q_UNUSED(event)
+
 	updateRowHeight();
 	updateColumnWidth();
 
@@ -598,7 +603,8 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 	int x = event->pos().x();
 	if (hovRow_ == -2) {
 		if (event->button() == Qt::LeftButton) {
-			for (int col = 0, w = tagWidth_; col < cols_.size(); ++col) {
+			int seqLen = static_cast<int>(cols_.size());
+			for (int col = 0, w = tagWidth_; col < seqLen; ++col) {
 				if (w - 4 < x && x < w + 4) {
 					for (size_t i = 0; i < loops_.size(); ++i) {
 						if (loops_[i].begin == col) {
@@ -777,14 +783,15 @@ void VisualizedInstrumentMacroEditor::mouseHoverdEventInView(QHoverEvent* event)
 		hovCol_ = -2;
 	}
 	else {
-		for (int i = 0, w = tagWidth_; i < cols_.size(); ++i) {
+		int seqLen = static_cast<int>(cols_.size());
+		for (int i = 0, w = tagWidth_; i < seqLen; ++i) {
 			w += colWidths_[i];
 			if (pos.x() < w) {
 				hovCol_ = i;
 				break;
 			}
 		}
-		if (hovCol_ >= cols_.size()) hovCol_ = -1;	// Out of range
+		if (hovCol_ >= seqLen) hovCol_ = -1;	// Out of range
 	}
 
 	// Detect row
@@ -823,8 +830,9 @@ void VisualizedInstrumentMacroEditor::wheelEventInView(QWheelEvent* event)
 	Ui::EventGuard eg(isIgnoreEvent_);
 	int degree = - event->angleDelta().y() / 8;
 	int pos = ui->verticalScrollBar->value() + degree / 15;
+	int labCnt = static_cast<int>(labels_.size());
 	if (0 > pos) pos = 0;
-	else if (pos > labels_.size() - maxDispRowCnt_) pos = labels_.size() - maxDispRowCnt_;
+	else if (pos > labCnt - maxDispRowCnt_) pos = labCnt - maxDispRowCnt_;
 	scrollUp(ui->verticalScrollBar->maximum() - pos);
 	ui->panel->update();
 	ui->verticalScrollBar->setValue(pos);
@@ -860,6 +868,7 @@ void VisualizedInstrumentMacroEditor::on_lineEdit_editingFinished()
 	Release release = { ReleaseType::NO_RELEASE, -1 };
 
 	int cnt = 0;
+	int labCnt = static_cast<int>(labels_.size());
 	while (!text.isEmpty()) {
 
 		QRegularExpressionMatch m = QRegularExpression("^\\[").match(text);
@@ -911,7 +920,7 @@ void VisualizedInstrumentMacroEditor::on_lineEdit_editingFinished()
 		m = QRegularExpression("^(-?\\d+)").match(text);
 		if (m.hasMatch()) {
 			int d = m.captured(1).toInt() - mmlBase_;
-			if (d < 0 || labels_.size() <= d) return;
+			if (d < 0 || labCnt <= d) return;
 			column.push_back({ d, -1, "" });
 			++cnt;
 			text.remove(QRegularExpression("^-?\\d+"));
@@ -929,7 +938,7 @@ void VisualizedInstrumentMacroEditor::on_lineEdit_editingFinished()
 
 	if (column.empty()) return;
 	if (!lstack.empty()) return;
-	if (release.point > -1 && release.point >= column.size()) return;
+	if (release.point > -1 && release.point >= static_cast<int>(column.size())) return;
 
 	while (cols_.size() > 1) removeSequenceCommand();
 	setSequenceCommand(column.front().row, 0);

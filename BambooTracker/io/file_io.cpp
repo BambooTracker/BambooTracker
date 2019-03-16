@@ -1,4 +1,5 @@
 #include "file_io.hpp"
+#include <stdexcept>
 
 const FMEnvelopeParameter FileIO::ENV_FM_PARAMS[38] = {
 	FMEnvelopeParameter::AL,
@@ -50,5 +51,6 @@ std::string FileIO::fileTypeToString(const FileType type)
 	case FileType::VGM:		return "vgm";
 	case FileType::BANK:	return "bank";
 	case FileType::S98:		return "s98";
+	default:	throw std::invalid_argument("Unexpected FileType.");
 	}
 }

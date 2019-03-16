@@ -98,14 +98,14 @@ size_t Module::getGrooveCount() const
 
 void Module::addSong(SongType songType, std::string title)
 {
-	int n = songs_.size();
+	int n = static_cast<int>(songs_.size());
 	songs_.emplace_back(n, songType, title);
 }
 
 void Module::addSong(int n, SongType songType, std::string title, bool isUsedTempo,
 					 int tempo, int groove, int speed, size_t defaultPatternSize)
 {
-	if (n < songs_.size())
+	if (n < static_cast<int>(songs_.size()))
 		songs_.at(n) = Song(n, songType, title, isUsedTempo, tempo, groove, speed, defaultPatternSize);
 	else
 		songs_.emplace_back(

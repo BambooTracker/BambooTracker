@@ -1,5 +1,6 @@
 #include "jam_manager.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 JamManager::JamManager(SongType type)
 	: isJamMode_(true),
@@ -117,6 +118,7 @@ Note JamManager::jamKeyToNote(JamKey &key)
 	case JamKey::HIGH_AS:	return Note::AS;
 	case JamKey::LOW_B:
 	case JamKey::HIGH_B:	return Note::B;
+	default:	throw std::invalid_argument("Unexpected JamKey vlaue.");
 	}
 }
 
@@ -153,6 +155,7 @@ int JamManager::calcOctave(int baseOctave, JamKey &key)
 	case JamKey::HIGH_C_H:
 	case JamKey::HIGH_CS_H:
 	case JamKey::HIGH_D_H:	return (baseOctave + 2);
+	default:	throw std::invalid_argument("Unexpected JamKey vlaue.");
 	}
 }
 
@@ -169,11 +172,11 @@ void JamManager::clear(SongType type)
 			break;
 		}
 
-		for (int i = 0; i < unusedChFM_.size(); ++i) {
-			unusedChFM_[i] = i;
+		for (size_t i = 0; i < unusedChFM_.size(); ++i) {
+			unusedChFM_[i] = static_cast<int>(i);
 		}
-		for (int i = 0; i < unusedChSSG_.size(); ++i) {
-			unusedChSSG_[i] = i;
+		for (size_t i = 0; i < unusedChSSG_.size(); ++i) {
+			unusedChSSG_[i] = static_cast<int>(i);
 		}
 	}
 	else {

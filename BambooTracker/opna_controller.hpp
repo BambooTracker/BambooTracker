@@ -32,7 +32,7 @@ public:
 	void reset();
 
 	// Forward instrument sequence
-	void tickEvent(SoundSource src, int ch, bool isStep = false);
+	void tickEvent(SoundSource src, int ch);
 
 	// Stream type
 	void useSCCI(SoundInterfaceManager* manager);
@@ -148,7 +148,7 @@ private:
 
 	void setFrontFMSequences(int ch);
 	void releaseStartFMSequences(int ch);
-	void tickEventFM(int ch, bool isStep);
+	void tickEventFM(int ch);
 
 	void checkOperatorSequenceFM(int ch, int type);
 	void checkVolumeEffectFM(int ch);
@@ -242,7 +242,7 @@ private:
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
-	void tickEventSSG(int ch, bool isStep);
+	void tickEventSSG(int ch);
 
 	void writeWaveFormSSGToRegister(int ch, int seqPos);
 	void writeSquareWaveForm(int ch);

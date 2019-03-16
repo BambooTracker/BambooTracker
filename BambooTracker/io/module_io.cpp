@@ -90,6 +90,8 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint8(instSSG->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
+			case SoundSource::DRUM:
+				break;
 			}
 			ctr.writeUint32(iOfs, ctr.size() - iOfs);
 		}
@@ -766,6 +768,8 @@ void ModuleIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
 										   size_t globCsr, uint32_t version)
 {
+	(void)version;
+
 	size_t modOfs = ctr.readUint32(globCsr);
 	size_t modCsr = globCsr + 4;
 	size_t modTitleLen = ctr.readUint32(modCsr);
@@ -803,6 +807,8 @@ size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
 											   BinaryContainer& ctr, size_t globCsr, uint32_t version)
 {
+	(void)version;
+
 	size_t instOfs = ctr.readUint32(globCsr);
 	size_t instCsr = globCsr + 4;
 	uint8_t instCnt = ctr.readUint8(instCsr);
@@ -1828,6 +1834,8 @@ size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter para
 size_t ModuleIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
 										   size_t globCsr, uint32_t version)
 {
+	(void)version;
+
 	size_t grvOfs = ctr.readUint32(globCsr);
 	size_t grvCsr = globCsr + 4;
 	uint8_t cnt = ctr.readUint8(grvCsr++) + 1;

@@ -140,7 +140,6 @@ private slots:
 	void updateMenuByPattern();
 	void updateMenuByOrder();
 	void updateMenuByInstrumentList();
-	void onPatternAndOrderFocusLost();
 	void updateMenuByPatternAndOrderSelection(bool isSelected);
 	void on_actionAll_triggered();
 	void on_actionNone_triggered();

@@ -148,7 +148,7 @@ PSG_setMask (PSG *psg, e_uint32 mask)
 EMU2149_API void
 PSG_setStereoMask (PSG *psg, e_uint32 mask)
 {
-  e_uint32 ret = 0;
+//  e_uint32 ret = 0;
   if(psg)
   {
     psg->stereo_mask[0] = (mask >>0) &3;

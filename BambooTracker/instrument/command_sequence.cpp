@@ -68,16 +68,16 @@ void CommandSequence::removeSequenceCommand()
 
 	// Modify loop
 	if (!loops_.empty()) {
-		if (seq_.size() == loops_.back().begin) {
+		if (static_cast<int>(seq_.size()) == loops_.back().begin) {
 			loops_.pop_back();
 		}
-		else if (seq_.size() == loops_.back().end) {
+		else if (static_cast<int>(seq_.size()) == loops_.back().end) {
 			--loops_.back().end;
 		}
 	}
 
 	// Modify release
-	if (release_.begin == seq_.size())
+	if (release_.begin == static_cast<int>(seq_.size()))
 		release_.begin = -1;
 }
 
@@ -215,9 +215,10 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 			else {
 				crtr = seq_->seq_[pos_].type;
 			}
-			for (int i = seq_->release_.begin; i < seq_->seq_.size(); ++i) {
+
+			for (size_t i = static_cast<size_t>(seq_->release_.begin); i < seq_->seq_.size(); ++i) {
 				if (seq_->seq_[i].type <= crtr) {
-					next = i;
+					next = static_cast<int>(i);
 					break;
 				}
 			}
@@ -288,7 +289,7 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 	if (!isRelease_ && pos_ == seq_->release_.begin) {
 		pos_ = -1;
 	}
-	else if (pos_ == seq_->seq_.size()) {
+	else if (pos_ == static_cast<int>(seq_->seq_.size())) {
 		pos_ = -1;
 	}
 

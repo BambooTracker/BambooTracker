@@ -24,6 +24,7 @@
 - Fix module initialization after failing opening module
 - [#11], [#75] - Fix corruption of release point in instrument sequence (thanks [@emninem], [@jpcima])
 - Fix to restore FM RR on unmuting
+- [#78] - Fix unused functions and parameters warnings (thanks [@jpcima])
 
 [#61]: https://github.com/rerrahkr/BambooTracker/pull/61
 [#63]: https://github.com/rerrahkr/BambooTracker/pull/63
@@ -38,6 +39,7 @@
 [#70]: https://github.com/rerrahkr/BambooTracker/issues/70
 [#11]: https://github.com/rerrahkr/BambooTracker/issues/11
 [#75]: https://github.com/rerrahkr/BambooTracker/issues/75
+[#78]: https://github.com/rerrahkr/BambooTracker/pull/78
 
 [@ImATrackMan]: https://github.com/ImATrackMan
 [@scarletbullgon]: https://github.com/scarletbullgon

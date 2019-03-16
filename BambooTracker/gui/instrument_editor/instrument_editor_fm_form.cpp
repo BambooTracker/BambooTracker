@@ -1,5 +1,6 @@
 #include "instrument_editor_fm_form.hpp"
 #include "ui_instrument_editor_fm_form.h"
+#include <stdexcept>
 #include <QString>
 #include <QPoint>
 #include <QMenu>
@@ -579,6 +580,8 @@ ReleaseType InstrumentEditorFMForm::convertReleaseTypeForData(VisualizedInstrume
 		return ReleaseType::ABSOLUTE;
 	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
 		return ReleaseType::RELATIVE;
+	default:
+		throw std::invalid_argument("Unexpected ReleaseType.");
 	}
 }
 
@@ -593,6 +596,8 @@ VisualizedInstrumentMacroEditor::ReleaseType InstrumentEditorFMForm::convertRele
 		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
 	case ReleaseType::RELATIVE:
 		return VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE;
+	default:
+		throw std::invalid_argument("Unexpected ReleaseType.");
 	}
 }
 
@@ -863,7 +868,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString envType, QS
 	QStringList digits = data.split(",");
 
 	std::vector<FMEnvelopeTextType> set = config_.lock()->getFMEnvelopeTextMap().at(envType.toUtf8().toStdString());
-	if (set.size() > digits.size()) {
+	if (static_cast<int>(set.size()) > digits.size()) {
 		QMessageBox::critical(this, tr("Error"), tr("Did not match the clipboard text format with %1.").arg(envType));
 		return;
 	}

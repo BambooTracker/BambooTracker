@@ -1,4 +1,5 @@
 #include "effect_iterator.hpp"
+#include <cstddef>
 
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
 	: pos_(2),
@@ -34,6 +35,7 @@ int ArpeggioEffectIterator::getCommandData() const
 
 int ArpeggioEffectIterator::next(bool isReleaseBegin)
 {
+	(void)isReleaseBegin;
 	pos_ = (pos_ + 1) % 3;
 	return pos_;
 }
@@ -49,15 +51,15 @@ WavingEffectIterator::WavingEffectIterator(int period, int depth)
 	for (int i = 0; i <= period; ++i) {
 		seq_.push_back(i * depth);
 	}
-	for (int i = period - 1; i > 0; --i) {
+	for (size_t i = static_cast<size_t>(period - 1); i > 0; --i) {
 		seq_.push_back(seq_.at(i));
 	}
-	int p2 = period << 1;
-	for (int i = 0; i < p2; ++i) {
+	size_t p2 = static_cast<size_t>(period) << 1;
+	for (size_t i = 0; i < p2; ++i) {
 		seq_.push_back(-seq_.at(i));
 	}
 
-	pos_ = seq_.size() - 1;
+	pos_ = static_cast<int>(seq_.size()) - 1;
 }
 
 int WavingEffectIterator::getPosition() const
@@ -72,7 +74,7 @@ int WavingEffectIterator::getSequenceType() const
 
 int WavingEffectIterator::getCommandType() const
 {
-	return seq_.at(pos_);
+	return seq_.at(static_cast<size_t>(pos_));
 }
 
 int WavingEffectIterator::getCommandData() const
@@ -82,7 +84,8 @@ int WavingEffectIterator::getCommandData() const
 
 int WavingEffectIterator::next(bool isReleaseBegin)
 {
-	pos_ = (pos_ + 1) % seq_.size();
+	(void)isReleaseBegin;
+	pos_ = (pos_ + 1) % static_cast<int>(seq_.size());
 	return pos_;
 }
 int WavingEffectIterator::front()
@@ -116,7 +119,7 @@ int NoteSlideEffectIterator::getSequenceType() const
 
 int NoteSlideEffectIterator::getCommandType() const
 {
-	return seq_.at(pos_);
+	return seq_.at(static_cast<size_t>(pos_));
 }
 
 int NoteSlideEffectIterator::getCommandData() const
@@ -126,8 +129,10 @@ int NoteSlideEffectIterator::getCommandData() const
 
 int NoteSlideEffectIterator::next(bool isReleaseBegin)
 {
-	return (++pos_ < seq_.size()) ? pos_ : -1;
+	(void)isReleaseBegin;
+	return (++pos_ < static_cast<int>(seq_.size())) ? pos_ : -1;
 }
+
 int NoteSlideEffectIterator::front()
 {
 	pos_ = 0;

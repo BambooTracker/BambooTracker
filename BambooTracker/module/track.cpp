@@ -107,7 +107,7 @@ void Track::insertOrderBelow(int order)
 	int n = searchFirstUneditedUnusedPattern();
 	if (n == -1) n = 255;
 
-	if (order == order_.size() - 1) order_.push_back(n);
+	if (order == static_cast<int>(order_.size()) - 1) order_.push_back(n);
 	else order_.insert(order_.begin() + order + 1, n);
 	patterns_[n].usedCountUp();
 }

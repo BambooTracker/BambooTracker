@@ -195,9 +195,10 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int freq) {
-		if (freq != bt_->getModuleTickFrequency()) {
-			bt_->setModuleTickFrequency(freq);
-			stream_->setInturuption(freq);
+		auto f = static_cast<unsigned int>(freq);
+		if (f != bt_->getModuleTickFrequency()) {
+			bt_->setModuleTickFrequency(f);
+			stream_->setInturuption(f);
 			if (timer_) timer_->setInterval(1000 / freq);
 			statusIntr_->setText(QString::number(freq) + QString("Hz"));
 			setModifiedTrue();
@@ -326,8 +327,6 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 					 ui->orderList, &OrderListEditor::setCurrentOrder);
 	QObject::connect(ui->patternEditor, &PatternEditor::focusIn,
 					 this, &MainWindow::updateMenuByPattern);
-	QObject::connect(ui->patternEditor, &PatternEditor::focusOut,
-					 this, &MainWindow::onPatternAndOrderFocusLost);
 	QObject::connect(ui->patternEditor, &PatternEditor::selected,
 					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
 	QObject::connect(ui->patternEditor, &PatternEditor::returnPressed,
@@ -364,8 +363,6 @@ MainWindow::MainWindow(QString filePath, QWidget *parent) :
 					 ui->patternEditor, &PatternEditor::onOrderListEdited);
 	QObject::connect(ui->orderList, &OrderListEditor::focusIn,
 					 this, &MainWindow::updateMenuByOrder);
-	QObject::connect(ui->orderList, &OrderListEditor::focusOut,
-					 this, &MainWindow::onPatternAndOrderFocusLost);
 	QObject::connect(ui->orderList, &OrderListEditor::selected,
 					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
 	QObject::connect(ui->orderList, &OrderListEditor::returnPressed,
@@ -1085,8 +1082,9 @@ void MainWindow::openModule(QString file)
 void MainWindow::loadSong()
 {
 	// Init position
-	if (ui->songNumSpinBox->value() >= bt_->getSongCount())
-		bt_->setCurrentSongNumber(bt_->getSongCount() - 1);
+	int songCnt = static_cast<int>(bt_->getSongCount());
+	if (ui->songNumSpinBox->value() >= songCnt)
+		bt_->setCurrentSongNumber(songCnt - 1);
 	else
 		bt_->setCurrentSongNumber(bt_->getCurrentSongNumber());
 	bt_->setCurrentOrderNumber(0);
@@ -1671,18 +1669,6 @@ void MainWindow::updateMenuByInstrumentList()
 	ui->actionMove_Order_Down->setEnabled(false);
 	ui->actionClone_Patterns->setEnabled(false);
 	ui->actionClone_Order->setEnabled(false);
-}
-
-void MainWindow::onPatternAndOrderFocusLost()
-{
-	/*
-	ui->actionCopy->setEnabled(false);
-	ui->actionCut->setEnabled(false);
-	ui->actionPaste->setEnabled(false);
-	ui->actionMix->setEnabled(false);
-	ui->actionOverwrite->setEnabled(false);
-	ui->actionDelete->setEnabled(false);
-	*/
 }
 
 void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)

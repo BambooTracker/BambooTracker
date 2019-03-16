@@ -1,4 +1,5 @@
 #include "lfo_fm.hpp"
+#include <stdexcept>
 
 constexpr int LFOFM::DEF_AM_OP[4];
 
@@ -56,6 +57,7 @@ int LFOFM::getParameterValue(FMLFOParameter param) const
 	case FMLFOParameter::AM2:	return amOp_[1];
 	case FMLFOParameter::AM3:	return amOp_[2];
 	case FMLFOParameter::AM4:	return amOp_[3];
+	default:	throw std::invalid_argument("Unexpected FMLFOParameter.");
 	}
 }
 

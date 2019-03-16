@@ -223,7 +223,6 @@ void ConfigurationDialog::on_addEnvelopeSetPushButton_clicked()
 
 void ConfigurationDialog::on_removeEnvelopeSetpushButton_clicked()
 {
-	int row = ui->envelopeTypeListWidget->currentRow();
 	fmEnvelopeTextMap_.erase(ui->envelopeSetNameLineEdit->text().toUtf8().toStdString());
 	updateEnvelopeSetUi();
 }

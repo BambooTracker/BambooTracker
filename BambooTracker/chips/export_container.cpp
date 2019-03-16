@@ -12,6 +12,8 @@ namespace chip
 
 	void WavExportContainer::recordRegisterChange(uint32_t offset, uint8_t value)
 	{
+		(void)offset;
+		(void)value;
 	}
 
 	void WavExportContainer::recordStream(int16_t* stream, size_t nSamples)
@@ -60,6 +62,7 @@ namespace chip
 
 	void VgmExportContainer::recordStream(int16_t* stream, size_t nSamples)
 	{
+		(void)stream;
 		lastWait_ += nSamples;
 		totalSampCnt_ += nSamples;
 	}
@@ -263,6 +266,7 @@ namespace chip
 
 	void S98ExportContainer::recordStream(int16_t* stream, size_t nSamples)
 	{
+		(void)stream;
 		lastWait_ += nSamples;
 		totalSampCnt_ += nSamples;
 	}

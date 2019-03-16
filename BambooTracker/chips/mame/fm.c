@@ -875,6 +875,7 @@ INLINE void FM_BUSY_SET(FM_ST *ST,int busyclock )
 
 INLINE void FM_KEYON(UINT8 type, FM_CH *CH , int s )
 {
+	(void)type;
 	FM_SLOT *SLOT = &CH->SLOT[s];
 	if( !SLOT->key )
 	{
@@ -995,12 +996,14 @@ INLINE void set_det_mul(FM_ST *ST,FM_CH *CH,FM_SLOT *SLOT,int v)
 /* set total level */
 INLINE void set_tl(FM_CH *CH,FM_SLOT *SLOT , int v)
 {
+	(void)CH;
 	SLOT->tl = (v&0x7f)<<(ENV_BITS-7); /* 7bit TL */
 }
 
 /* set attack rate & key scale  */
 INLINE void set_ar_ksr(UINT8 type, FM_CH *CH,FM_SLOT *SLOT,int v)
 {
+	(void)type;
 	UINT8 old_KSR = SLOT->KSR;
 
 	SLOT->ar = (v&0x1f) ? 32 + ((v&0x1f)<<1) : 0;
@@ -1027,6 +1030,7 @@ INLINE void set_ar_ksr(UINT8 type, FM_CH *CH,FM_SLOT *SLOT,int v)
 /* set decay rate */
 INLINE void set_dr(UINT8 type, FM_SLOT *SLOT,int v)
 {
+	(void)type;
 	SLOT->d1r = (v&0x1f) ? 32 + ((v&0x1f)<<1) : 0;
 
 	SLOT->eg_sh_d1r = eg_rate_shift [SLOT->d1r + SLOT->ksr];
@@ -1036,6 +1040,7 @@ INLINE void set_dr(UINT8 type, FM_SLOT *SLOT,int v)
 /* set sustain rate */
 INLINE void set_sr(UINT8 type, FM_SLOT *SLOT,int v)
 {
+	(void)type;
 	SLOT->d2r = (v&0x1f) ? 32 + ((v&0x1f)<<1) : 0;
 
 	SLOT->eg_sh_d2r = eg_rate_shift [SLOT->d2r + SLOT->ksr];
@@ -1045,6 +1050,7 @@ INLINE void set_sr(UINT8 type, FM_SLOT *SLOT,int v)
 /* set release rate */
 INLINE void set_sl_rr(UINT8 type, FM_SLOT *SLOT,int v)
 {
+	(void)type;
 	SLOT->sl = sl_table[ v>>4 ];
 
 	SLOT->rr  = 34 + ((v&0x0f)<<2);

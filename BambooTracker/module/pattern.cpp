@@ -61,7 +61,7 @@ void Pattern::changeSize(size_t size)
 
 void Pattern::insertStep(int n)
 {
-	if (n < size_)
+	if (n < static_cast<int>(size_))
 		steps_.emplace(steps_.begin() + n);
 }
 

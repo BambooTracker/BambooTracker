@@ -376,6 +376,7 @@ void ym2608_w(UINT8 ChipID, offs_t offset, UINT8 data)
 //READ8_DEVICE_HANDLER( ym2608_read_port_r )
 UINT8 ym2608_read_port_r(UINT8 ChipID, offs_t offset)
 {
+	(void)offset;
 	return ym2608_r(ChipID, 1);
 }
 //READ8_DEVICE_HANDLER( ym2608_status_port_a_r )
@@ -392,21 +393,25 @@ UINT8 ym2608_read_port_r(UINT8 ChipID, offs_t offset)
 //WRITE8_DEVICE_HANDLER( ym2608_control_port_a_w )
 void ym2608_control_port_a_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
+	(void)offset;
 	ym2608_w(ChipID, 0, data);
 }
 //WRITE8_DEVICE_HANDLER( ym2608_control_port_b_w )
 void ym2608_control_port_b_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
+	(void)offset;
 	ym2608_w(ChipID, 2, data);
 }
 //WRITE8_DEVICE_HANDLER( ym2608_data_port_a_w )
 void ym2608_data_port_a_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
+	(void)offset;
 	ym2608_w(ChipID, 1, data);
 }
 //WRITE8_DEVICE_HANDLER( ym2608_data_port_b_w )
 void ym2608_data_port_b_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
+	(void)offset;
 	ym2608_w(ChipID, 3, data);
 }
 
@@ -416,6 +421,7 @@ void ym2608_set_ay_emu_core(UINT8 Emulator)
 #ifdef ENABLE_ALL_CORES
 	AY_EMU_CORE = (Emulator < 0x02) ? Emulator : 0x00;
 #else
+	(void)Emulator;
 	AY_EMU_CORE = EC_EMU2149;
 #endif
 	

@@ -200,7 +200,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		 rowY <= geometry().height();
 		 rowY += stepFontHeight_, baseY += stepFontHeight_, ++stepNum) {
 		if (stepNum == stepEnd) {
-			if (odrNum == bt_->getOrderSize(curSongNum_) - 1) {
+			if (odrNum == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
 				break;
 			}
 			else if (config_.lock()->getShowPreviousNextOrders()) {
@@ -473,7 +473,8 @@ void PatternEditorPanel::drawBorders(int maxWidth)
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, geometry().height());
-	for (int x = stepNumWidth_, trackNum = leftTrackNum_; trackNum < rightEffn_.size(); ) {
+	size_t trackNum = static_cast<size_t>(leftTrackNum_);
+	for (int x = stepNumWidth_; trackNum < rightEffn_.size(); ) {
 		x += (baseTrackWidth_ + effWidth_ * rightEffn_.at(trackNum));
 		if (x > maxWidth) break;
 		painter.drawLine(x, 0, x, geometry().height());
@@ -522,7 +523,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 				break;
 			}
 			else {
-				if (curPos_.track == songStyle_.trackAttribs.size() - 1) {
+				if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
 					if (config_.lock()->getWarpCursor()) {
 						curPos_.track = 0;
 					}
@@ -597,7 +598,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 			}
 			else {
 				if (config_.lock()->getWarpAcrossOrders()) {
-					if (curPos_.order == bt_->getOrderSize(curSongNum_) - 1) {
+					if (curPos_.order == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
 						curPos_.order = 0;
 					}
 					else {
@@ -1316,7 +1317,8 @@ void PatternEditorPanel::pasteCopiedCells(const PatternPosition& startPos)
 	std::vector<std::vector<std::string>> cells
 			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
 
-	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2) && cells.front().size() <= 11 - curPos_.colInTrack)
+	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
+			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
 		sCol = curPos_.colInTrack;
 
 	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
@@ -1330,7 +1332,8 @@ void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& startPos)
 	std::vector<std::vector<std::string>> cells
 			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
 
-	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2) && cells.front().size() <= 11 - curPos_.colInTrack)
+	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
+			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
 		sCol = curPos_.colInTrack;
 
 	bt_->pasteMixPatternCells(curSongNum_, startPos.track, sCol,
@@ -1344,7 +1347,8 @@ void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& startP
 	std::vector<std::vector<std::string>> cells
 			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
 
-	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2) && cells.front().size() <= 11 - curPos_.colInTrack)
+	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
+			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
 		sCol = curPos_.colInTrack;
 
 	bt_->pasteOverwritePatternCells(curSongNum_, startPos.track, sCol,
@@ -1911,20 +1915,21 @@ void PatternEditorPanel::onToggleTrackPressed(int track)
 
 void PatternEditorPanel::onSoloTrackPressed(int track)
 {
+	int trackCnt = static_cast<int>(songStyle_.trackAttribs.size());
 	if (isMuteElse_) {
 		if (bt_->isMute(track)) {
-			for (int t = 0; t < songStyle_.trackAttribs.size(); ++t)
+			for (int t = 0; t < trackCnt; ++t)
 				bt_->setTrackMuteState(t, (t == track) ? false : true);
 		}
 		else {
 			isMuteElse_ = false;
-			for (int t = 0; t < songStyle_.trackAttribs.size(); ++t)
+			for (int t = 0; t < trackCnt; ++t)
 				bt_->setTrackMuteState(t, false);
 		}
 	}
 	else {
 		isMuteElse_ = true;
-		for (int t = 0; t < songStyle_.trackAttribs.size(); ++t)
+		for (int t = 0; t < trackCnt; ++t)
 			bt_->setTrackMuteState(t, (t == track) ? false : isMuteElse_);
 	}
 	update();
@@ -1932,7 +1937,8 @@ void PatternEditorPanel::onSoloTrackPressed(int track)
 
 void PatternEditorPanel::onUnmuteAllPressed()
 {
-	for (int t = 0; t < songStyle_.trackAttribs.size(); ++t)
+	int trackCnt = static_cast<int>(songStyle_.trackAttribs.size());
+	for (int t = 0; t < trackCnt; ++t)
 		bt_->setTrackMuteState(t, false);
 	isMuteElse_ = false;
 	update();
@@ -2057,7 +2063,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		else {
 			if (event->modifiers().testFlag(Qt::ControlModifier)) {
 				int next = (curPos_.step / hlCnt_ + 1) * hlCnt_;
-				size_t size = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
+				int size = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
 				if (next < size) moveCursorToDown(next - curPos_.step);
 				else moveCursorToDown(size - curPos_.step);
 			}
@@ -2069,7 +2075,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Tab:
-		if (curPos_.track == songStyle_.trackAttribs.size() - 1) {
+		if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
 			if (config_.lock()->getWarpCursor())
 				moveCursorToRight(-calculateColNumInRow(curPos_.track, curPos_.colInTrack));
 		}
@@ -2196,7 +2202,7 @@ void PatternEditorPanel::paintEvent(QPaintEvent *event)
 {	
 	if (bt_ != nullptr) {
 		// Check order size
-		size_t odrSize = bt_->getOrderSize(curSongNum_);
+		int odrSize = static_cast<int>(bt_->getOrderSize(curSongNum_));
 		if (curPos_.order >= odrSize) curPos_.setRows(odrSize - 1, 0);
 
 		drawPattern(event->rect());
@@ -2367,7 +2373,8 @@ void PatternEditorPanel::mouseDoubleClickEvent(QMouseEvent* event)
 		else if (doubleClickPos_.order == -2) {
 			if (doubleClickPos_.track >= 0 && !isPressedPlus_ && !isPressedMinus_) {
 				bool flag = true;
-				for (int t = 0; t < songStyle_.trackAttribs.size(); ++t) {
+				int trackCnt = static_cast<int>(songStyle_.trackAttribs.size());
+				for (int t = 0; t < trackCnt; ++t) {
 					if (t != doubleClickPos_.track) flag &= bt_->isMute(t);
 				}
 				if (flag) onUnmuteAllPressed();
@@ -2421,7 +2428,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 					break;
 				}
 				else {
-					if (tmpOdr == bt_->getOrderSize(curSongNum_) - 1) {
+					if (tmpOdr == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
 						hovPos_.setRows(-1, -1);
 						break;
 					}
@@ -2475,7 +2482,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 			if (flag) break;
 			++i;
 
-			if (i == songStyle_.trackAttribs.size()) {
+			if (i == static_cast<int>(songStyle_.trackAttribs.size())) {
 				hovPos_.setCols(-1, -1);
 				break;
 			}

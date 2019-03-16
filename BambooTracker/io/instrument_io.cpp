@@ -44,6 +44,8 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint8(0x01);
 			break;
 		}
+		case SoundSource::DRUM:
+			break;
 		}
 	}
 	ctr.writeUint32(instOfs, ctr.size() - instOfs);
@@ -519,6 +521,8 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 		}
 		break;
 	}
+	case SoundSource::DRUM:
+		break;
 	}
 
 	ctr.writeUint32(instPropOfs, ctr.size() - instPropOfs);
@@ -556,7 +560,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 	if (ctr.readString(globCsr, 16) != "BambooTrackerIst")
 		throw FileCorruptionError(FileIO::FileType::INST);
 	globCsr += 16;
-	size_t eofOfs = ctr.readUint32(globCsr);
+	/*size_t eofOfs = */ctr.readUint32(globCsr);
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
 	if (fileVersion > Version::ofInstrumentFileInBCD())
@@ -2209,7 +2213,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	tmp = ctr.readUint8(csr++);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
-	int ssgeg1 = ctr.readUint8(csr++);
+	/*int ssgeg1 = */ctr.readUint8(csr++);
 //	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 	csr += 9;
 
@@ -2226,7 +2230,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	tmp = ctr.readUint8(csr++);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
-	int ssgeg2 = ctr.readUint8(csr++);
+	/*int ssgeg2 = */ctr.readUint8(csr++);
 //	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 	csr += 9;
 
@@ -2243,7 +2247,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	tmp = ctr.readUint8(csr++);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
-	int ssgeg3 = ctr.readUint8(csr++);
+	/*int ssgeg3 = */ctr.readUint8(csr++);
 //	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 	csr += 9;
 
@@ -2260,7 +2264,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	tmp = ctr.readUint8(csr++);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
-	int ssgeg4 = ctr.readUint8(csr++);
+	/*int ssgeg4 = */ctr.readUint8(csr++);
 //	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 	csr += 9;
 
@@ -2280,7 +2284,7 @@ AbstractInstrument* InstrumentIO::loadINSFile(std::string path,
 	size_t csr = 0;
 	if (ctr.readString(csr, 4).compare("MVSI") != 0) throw FileInputError(FileIO::FileType::INST);
 	csr += 4;
-	uint8_t fileVersion = std::stoi(ctr.readString(csr++, 1));
+	/*uint8_t fileVersion = */std::stoi(ctr.readString(csr++, 1));
 	size_t nameCsr = 0;
 	while (ctr.readChar(nameCsr++) != '\0')
 		;

@@ -29,6 +29,8 @@ namespace chip
 		  masterVolumeRatio_(100),
 		  exCntr_(exportContainer)
 	{
+		(void)clock;
+
 		resampler_[0] = std::move(resampler1);
 		resampler_[1] = std::move(resampler2);
 
