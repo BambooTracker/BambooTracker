@@ -1202,6 +1202,7 @@
   <tabstop>copyrightLineEdit</tabstop>
   <tabstop>tickFreqSpinBox</tabstop>
   <tabstop>modSetDialogOpenToolButton</tabstop>
+  <tabstop>editableStepSpinBox</tabstop>
   <tabstop>songNumSpinBox</tabstop>
   <tabstop>songTitleLineEdit</tabstop>
   <tabstop>songStyleLineEdit</tabstop>
