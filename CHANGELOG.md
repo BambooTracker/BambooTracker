@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - Add edit/jam button in tool bar
+- Add 1 sample module (thanks [@SuperJetSpade])
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
@@ -10,6 +11,8 @@
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
+
+[@SuperJetSpade]: https://twitter.com/SuperJetSpade
 
 ## v0.1.6 (2019-03-16)
 ### Added
