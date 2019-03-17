@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Added
+- Add edit/jam button in tool bar
+
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
 - [#81] - Fix crash when toggling FM1 on/off using mouse (thanks [@papiezak])
@@ -9,7 +12,7 @@
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
 
 ## v0.1.6 (2019-03-16)
-### Add
+### Added
 - [#63] - L10n: French, Japanese (thanks [@jpcima], [@trebmuh])
 - Add file history
 - [#65] - Add repository to Appveyor and Travis CI (thanks [@papiezak], [@OPNA2608], [@jpcima])

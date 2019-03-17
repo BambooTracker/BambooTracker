@@ -608,6 +608,7 @@
    <addaction name="actionPlay"/>
    <addaction name="actionPlay_Pattern"/>
    <addaction name="actionStop"/>
+   <addaction name="actionEdit_Mode"/>
    <addaction name="separator"/>
    <addaction name="actionConfiguration"/>
   </widget>
@@ -973,6 +974,10 @@
   <action name="actionEdit_Mode">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/record</normaloff>:/icon/record</iconset>
    </property>
    <property name="text">
     <string>&amp;Edit Mode</string>

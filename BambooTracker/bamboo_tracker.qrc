@@ -22,5 +22,6 @@
         <file alias="load_inst">res/icon/iconfinder_page_white_get_5593.png</file>
         <file alias="save_inst">res/icon/iconfinder_page_white_put_5609.png</file>
         <file alias="edit_inst">res/icon/iconfinder_pencil_5631.png</file>
+        <file alias="record">res/icon/iconfinder_stop_5785.png</file>
     </qresource>
 </RCC>
