@@ -152,9 +152,9 @@ void PatternEditor::onSongLoaded()
 	ui->panel->onSongLoaded();
 	ui->horizontalScrollBar->setMaximum(ui->panel->getFullColmunSize());
 	ui->horizontalScrollBar->setValue(0);
-	ui->verticalScrollBar->setMaximum(bt_->getPatternSizeFromOrderNumber(
-										  bt_->getCurrentSongNumber(),
-										  bt_->getCurrentOrderNumber()) - 1);
+	ui->verticalScrollBar->setMaximum(static_cast<int>(bt_->getPatternSizeFromOrderNumber(
+														   bt_->getCurrentSongNumber(),
+														   bt_->getCurrentOrderNumber())) - 1);
 	ui->verticalScrollBar->setValue(0);
 }
 

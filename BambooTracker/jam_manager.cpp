@@ -118,7 +118,26 @@ Note JamManager::jamKeyToNote(JamKey &key)
 	case JamKey::HIGH_AS:	return Note::AS;
 	case JamKey::LOW_B:
 	case JamKey::HIGH_B:	return Note::B;
-	default:	throw std::invalid_argument("Unexpected JamKey vlaue.");
+	default:	throw std::invalid_argument("Unexpected JamKey.");
+	}
+}
+
+JamKey JamManager::noteToJamKey(Note& note)
+{
+	switch (note) {
+	case Note::C:	return JamKey::LOW_C;
+	case Note::CS:	return JamKey::LOW_CS;
+	case Note::D:	return JamKey::LOW_D;
+	case Note::DS:	return JamKey::LOW_DS;
+	case Note::E:	return JamKey::LOW_E;
+	case Note::F:	return JamKey::LOW_F;
+	case Note::FS:	return JamKey::LOW_FS;
+	case Note::G:	return JamKey::LOW_G;
+	case Note::GS:	return JamKey::LOW_GS;
+	case Note::A:	return JamKey::LOW_A;
+	case Note::AS:	return JamKey::LOW_AS;
+	case Note::B:	return JamKey::LOW_B;
+	default:	throw std::invalid_argument("Unexpected Note.");
 	}
 }
 
@@ -155,7 +174,7 @@ int JamManager::calcOctave(int baseOctave, JamKey &key)
 	case JamKey::HIGH_C_H:
 	case JamKey::HIGH_CS_H:
 	case JamKey::HIGH_D_H:	return (baseOctave + 2);
-	default:	throw std::invalid_argument("Unexpected JamKey vlaue.");
+	default:	throw std::invalid_argument("Unexpected JamKey.");
 	}
 }
 

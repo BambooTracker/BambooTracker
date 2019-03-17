@@ -72,6 +72,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
 	bt_->setFollowPlay(config.lock()->getFollowMode());
 
+	setMidiConfiguration();
+
 	/* Command stack */
 	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
 					 this, [&](int idx) {
@@ -92,11 +94,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
 		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
 	}
-	stream_ = std::make_shared<AudioStream>(bt_->getStreamRate(),
-											bt_->getStreamDuration(),
-											bt_->getModuleTickFrequency(),
-											QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-															  config.lock()->getSoundDevice().length()));
+	stream_ = std::make_shared<AudioStream>(
+				  bt_->getStreamRate(), bt_->getStreamDuration(), bt_->getModuleTickFrequency(),
+				  QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+									static_cast<int>(config.lock()->getSoundDevice().length())));
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
 	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
@@ -169,7 +170,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int count) {
-		bt_->setModuleStepHighlightDistance(count);
+		bt_->setModuleStepHighlightDistance(static_cast<size_t>(count));
 		ui->patternEditor->setPatternHighlightCount(count);
 		ui->patternEditor->update();
 	});
@@ -212,10 +213,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->editableStepSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int n) {
 		ui->patternEditor->setEditableStep(n);
-		config.lock()->setEditableStep(n);
+		config.lock()->setEditableStep(static_cast<size_t>(n));
 	});
-	ui->editableStepSpinBox->setValue(config.lock()->getEditableStep());
-	ui->patternEditor->setEditableStep(config.lock()->getEditableStep());
+	ui->editableStepSpinBox->setValue(static_cast<int>(config.lock()->getEditableStep()));
+	ui->patternEditor->setEditableStep(static_cast<int>(config.lock()->getEditableStep()));
 
 	/* Song number */
 	// Leave Before Qt5.7.0 style due to windows xp
@@ -247,7 +248,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->patternSizeSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int size) {
-		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), size);
+		bt_->setDefaultPatternSize(bt_->getCurrentSongNumber(), static_cast<size_t>(size));
 		ui->patternEditor->onDefaultPatternSizeChanged();
 		setModifiedTrue();
 	});
@@ -463,14 +464,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	int key = event->key();
 
 	/* Key check */
-	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
-	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
-											  config_.lock()->getOctaveUpKey().length())).toString()) {
+	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | key).toString();
+	if (seq == QKeySequence(
+				QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
+								  static_cast<int>(config_.lock()->getOctaveUpKey().length()))).toString()) {
 		changeOctave(true);
 		return;
 	}
-	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
-												   config_.lock()->getOctaveDownKey().length())).toString()) {
+	else if (seq == QKeySequence(
+				 QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
+								   static_cast<int>(config_.lock()->getOctaveDownKey().length()))).toString()) {
 		changeOctave(false);
 		return;
 	}
@@ -732,7 +735,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 {
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -782,7 +785,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -842,24 +845,9 @@ void MainWindow::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_
 void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 {
 	bool release = ((status & 0xf0) == 0x80) || velocity == 0;
-	std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote((int)key - 12);
+	std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote(static_cast<int>(key) - 12);
 
-	JamKey jamKey;
-	switch (octaveAndNote.second) {
-	default:
-	case Note::C:	jamKey = JamKey::LOW_C; break;
-	case Note::CS:	jamKey = JamKey::LOW_CS; break;
-	case Note::D:	jamKey = JamKey::LOW_D; break;
-	case Note::DS:	jamKey = JamKey::LOW_DS; break;
-	case Note::E:	jamKey = JamKey::LOW_E; break;
-	case Note::F:	jamKey = JamKey::LOW_F; break;
-	case Note::FS:	jamKey = JamKey::LOW_FS; break;
-	case Note::G:	jamKey = JamKey::LOW_G; break;
-	case Note::GS:	jamKey = JamKey::LOW_GS; break;
-	case Note::A:	jamKey = JamKey::LOW_A; break;
-	case Note::AS:	jamKey = JamKey::LOW_AS; break;
-	case Note::B:	jamKey = JamKey::LOW_B; break;
-	}
+	JamKey jamKey = JamManager::noteToJamKey(octaveAndNote.second);
 
 	octave_->setValue(octaveAndNote.first);
 	bt_->jamKeyOff(jamKey); // possibility to recover on stuck note
@@ -988,9 +976,10 @@ void MainWindow::loadInstrument()
 		bt_->loadInstrument(file.toLocal8Bit().toStdString(), n);
 		auto inst = bt_->getInstrument(n);
 		auto name = inst->getName();
-		comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
-												   QString::fromUtf8(name.c_str(), name.length()),
-												   inst->getSoundSource(), instForms_));
+		comStack_->push(new AddInstrumentQtCommand(
+							ui->instrumentListWidget, n,
+							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
+							inst->getSoundSource(), instForms_));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
@@ -1051,9 +1040,10 @@ void MainWindow::importInstrumentsFromBank()
 
 			auto inst = bt_->getInstrument(n);
 			auto name = inst->getName();
-			comStack_->push(new AddInstrumentQtCommand(ui->instrumentListWidget, n,
-													   QString::fromUtf8(name.c_str(), name.length()),
-													   inst->getSoundSource(), instForms_));
+			comStack_->push(new AddInstrumentQtCommand(
+								ui->instrumentListWidget, n,
+								QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
+								inst->getSoundSource(), instForms_));
 		}
 	}
 	catch (std::exception& e) {
@@ -1081,19 +1071,23 @@ void MainWindow::loadModule()
 	ui->instrumentListWidget->clear();
 
 	auto modTitle = bt_->getModuleTitle();
-	ui->modTitleLineEdit->setText(QString::fromUtf8(modTitle.c_str(), modTitle.length()));
+	ui->modTitleLineEdit->setText(
+				QString::fromUtf8(modTitle.c_str(), static_cast<int>(modTitle.length())));
 	auto modAuthor = bt_->getModuleAuthor();
-	ui->authorLineEdit->setText(QString::fromUtf8(modAuthor.c_str(), modAuthor.length()));
+	ui->authorLineEdit->setText(
+				QString::fromUtf8(modAuthor.c_str(), static_cast<int>(modAuthor.length())));
 	auto modCopyright = bt_->getModuleCopyright();
-	ui->copyrightLineEdit->setText(QString::fromUtf8(modCopyright.c_str(), modCopyright.length()));
-	ui->songNumSpinBox->setMaximum(bt_->getSongCount() - 1);
-	highlight_->setValue(bt_->getModuleStepHighlightDistance());
+	ui->copyrightLineEdit->setText(
+				QString::fromUtf8(modCopyright.c_str(), static_cast<int>(modCopyright.length())));
+	ui->songNumSpinBox->setMaximum(static_cast<int>(bt_->getSongCount()) - 1);
+	highlight_->setValue(static_cast<int>(bt_->getModuleStepHighlightDistance()));
 
 	for (auto& idx : bt_->getInstrumentIndices()) {
 		auto inst = bt_->getInstrument(idx);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(
-							ui->instrumentListWidget, idx, QString::fromUtf8(name.c_str(), name.length()),
+							ui->instrumentListWidget, idx,
+							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
 							inst->getSoundSource(), instForms_));
 	}
 
@@ -1155,17 +1149,17 @@ void MainWindow::loadSong()
 	int curSong = bt_->getCurrentSongNumber();
 	ui->songNumSpinBox->setValue(curSong);
 	auto title = bt_->getSongTitle(curSong);
-	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), title.length()));
+	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), static_cast<int>(title.length())));
 	switch (bt_->getSongStyle(curSong).type) {
 	case SongType::STD:		ui->songStyleLineEdit->setText(tr("Standard"));			break;
 	case SongType::FMEX:	ui->songStyleLineEdit->setText(tr("FM3ch expanded"));	break;
 	}
-	ui->tickFreqSpinBox->setValue(bt_->getModuleTickFrequency());
+	ui->tickFreqSpinBox->setValue(static_cast<int>(bt_->getModuleTickFrequency()));
 	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
 	ui->speedSpinBox->setValue(bt_->getSongSpeed(curSong));
-	ui->patternSizeSpinBox->setValue(bt_->getDefaultPatternSize(curSong));
+	ui->patternSizeSpinBox->setValue(static_cast<int>(bt_->getDefaultPatternSize(curSong)));
 	ui->grooveSpinBox->setValue(bt_->getSongGroove(curSong));
-	ui->grooveSpinBox->setMaximum(bt_->getGrooveCount() - 1);
+	ui->grooveSpinBox->setMaximum(static_cast<int>(bt_->getGrooveCount()) - 1);
 	if (bt_->isUsedTempoInSong(curSong)) {
 		ui->tickFreqSpinBox->setEnabled(true);
 		ui->tempoSpinBox->setEnabled(true);
@@ -1239,6 +1233,7 @@ void MainWindow::changeOctave(bool upFlag)
 /********** Configuration change **********/
 void MainWindow::changeConfiguration()
 {
+	// SCCI settings
 	if (config_.lock()->getUseSCCI()) {
 		stream_->stop();
 		if (!timer_) {
@@ -1272,12 +1267,26 @@ void MainWindow::changeConfiguration()
 		stream_->setDuration(config_.lock()->getBufferLength());
 		stream_->setDevice(
 					QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
-									  config_.lock()->getSoundDevice().length()));
+									  static_cast<int>(config_.lock()->getSoundDevice().length())));
 		stream_->start();
 	}
+
+	setMidiConfiguration();
+
 	bt_->changeConfiguration(config_.lock());
 
 	update();
+}
+
+void MainWindow::setMidiConfiguration()
+{
+	MidiInterface &midiIntf = MidiInterface::instance();
+	std::string midiInPortName = config_.lock()->getMidiInputPort();
+
+	if (!midiInPortName.empty())
+		midiIntf.openInputPortByName(midiInPortName);
+	else if (midiIntf.supportsVirtualPort())
+		midiIntf.openInputPort(~0u);
 }
 
 /********** History change **********/
@@ -1299,9 +1308,9 @@ void MainWindow::setWindowTitle()
 	int n = bt_->getCurrentSongNumber();
 	auto filePathStd = bt_->getModulePath();
 	auto songTitleStd = bt_->getSongTitle(n);
-	QString filePath = QString::fromLocal8Bit(filePathStd.c_str(), filePathStd.length());
+	QString filePath = QString::fromLocal8Bit(filePathStd.c_str(), static_cast<int>(filePathStd.length()));
 	QString fileName = filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).fileName();
-	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), songTitleStd.length());
+	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), static_cast<int>(songTitleStd.length()));
 	if (songTitle.isEmpty()) songTitle = tr("Untitled");
 	QMainWindow::setWindowTitle(QString("%1[*] [#%2 %3] - BambooTracker")
 								.arg(fileName).arg(QString::number(n)).arg(songTitle));
@@ -1909,6 +1918,7 @@ void MainWindow::on_actionAbout_triggered()
 							  "Libraries:<br>"
 							  "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
 							  "- MAME (MAME License)<br>"
+							  "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
 							  "- SCCI (SCCI License)<br>"
 							  "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
 							  "- Qt (GPL v2+ or LGPL v3)<br>"
@@ -1930,7 +1940,7 @@ void MainWindow::on_actionGroove_Settings_triggered()
 {
 	std::vector<std::vector<int>> seqs;
 	for (size_t i = 0; i < bt_->getGrooveCount(); ++i) {
-		seqs.push_back(bt_->getGroove(i));
+		seqs.push_back(bt_->getGroove(static_cast<int>(i)));
 	}
 
 	GrooveSettingsDialog diag;
@@ -1939,7 +1949,7 @@ void MainWindow::on_actionGroove_Settings_triggered()
 		bt_->stopPlaySong();
 		lockControls(false);
 		bt_->setGrooves(diag.getGrooveSequences());
-		ui->grooveSpinBox->setMaximum(bt_->getGrooveCount() - 1);
+		ui->grooveSpinBox->setMaximum(static_cast<int>(bt_->getGrooveCount()) - 1);
 		setModifiedTrue();
 	}
 }
@@ -1996,7 +2006,7 @@ void MainWindow::on_actionNew_triggered()
 {
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -2027,7 +2037,7 @@ void MainWindow::on_actionNew_triggered()
 void MainWindow::on_actionComments_triggered()
 {
 	auto comment = bt_->getModuleComment();
-	CommentEditDialog diag(QString::fromUtf8(comment.c_str(), comment.length()));
+	CommentEditDialog diag(QString::fromUtf8(comment.c_str(), static_cast<int>(comment.length())));
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->setModuleComment(diag.getComment().toUtf8().toStdString());
 		setModifiedTrue();
@@ -2036,7 +2046,8 @@ void MainWindow::on_actionComments_triggered()
 
 bool MainWindow::on_actionSave_triggered()
 {
-	auto path = QString::fromLocal8Bit(bt_->getModulePath().c_str(), bt_->getModulePath().length());
+	auto path = QString::fromLocal8Bit(bt_->getModulePath().c_str(),
+									   static_cast<int>(bt_->getModulePath().length()));
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
 		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
 			try {
@@ -2107,7 +2118,7 @@ void MainWindow::on_actionOpen_triggered()
 {
 	if (isWindowModified()) {
 		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), modTitleStd.length());
+		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -2242,7 +2253,7 @@ void MainWindow::on_actionWAV_triggered()
 				tr("Export to WAV"),
 				tr("Cancel"),
 				0,
-				bt_->getAllStepCount(bt_->getCurrentSongNumber(), diag.getLoopCount()) + 3
+				static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), diag.getLoopCount())) + 3
 				);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
@@ -2286,7 +2297,7 @@ void MainWindow::on_actionVGM_triggered()
 				tr("Export to VGM"),
 				tr("Cancel"),
 				0,
-				bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1) + 3
+				static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3
 				);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
@@ -2332,7 +2343,7 @@ void MainWindow::on_actionS98_triggered()
 				tr("Export to S98"),
 				tr("Cancel"),
 				0,
-				bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1) + 3
+				static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3
 				);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()

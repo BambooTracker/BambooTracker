@@ -170,7 +170,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			}
 			else if (config_.lock()->getShowPreviousNextOrders()) {
 				--odrNum;
-				stepNum = bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum) - 1;
+				stepNum = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum)) - 1;
 			}
 			else {
 				break;
@@ -204,7 +204,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			painter.fillRect(0, rowY, maxWidth, stepFontHeight_, palette_.lock()->ptnMaskColor);
 	}
 
-	int stepEnd = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
+	int stepEnd = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
 
 	/* Next rows */
 	for (rowY = curRowY_ + stepFontHeight_, baseY = curRowBaselineY_ + stepFontHeight_,
@@ -218,7 +218,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			else if (config_.lock()->getShowPreviousNextOrders()) {
 				++odrNum;
 				stepNum = 0;
-				stepEnd = bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum);
+				stepEnd = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum));
 			}
 			else {
 				break;
@@ -261,7 +261,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 	bool isHovTrack = (hovPos_.order == -2 && hovPos_.track == trackNum);
 	bool isHovStep = (hovPos_.track == -2 && hovPos_.order == orderNum && hovPos_.step == stepNum);
 	bool isMuteTrack = bt_->isMute(trackNum);
-	SoundSource src = songStyle_.trackAttribs[trackNum].source;
+	SoundSource src = songStyle_.trackAttribs[static_cast<size_t>(trackNum)].source;
 
 
 	/* Tone name */
@@ -383,7 +383,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 	pos.colInTrack = 3;
 
 	/* Effect */
-	for (int i = 0; i <= rightEffn_.at(trackNum); ++i) {
+	for (int i = 0; i <= rightEffn_.at(static_cast<size_t>(trackNum)); ++i) {
 		/* Effect ID */
 		if (pos == curPos_)	// Paint current cell
 			painter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, palette_.lock()->ptnCurCellColor);
@@ -431,7 +431,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		++pos.colInTrack;
 	}
 
-	return baseTrackWidth_ + effWidth_ * rightEffn_[trackNum];
+	return baseTrackWidth_ + effWidth_ * rightEffn_[static_cast<size_t>(trackNum)];
 }
 
 void PatternEditorPanel::drawHeaders(int maxWidth)
@@ -442,21 +442,22 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_.lock()->ptnHeaderRowColor);
 	int x, trackNum;
 	for (x = stepNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
-		int tw = baseTrackWidth_ + effWidth_ * rightEffn_.at(trackNum);
+		int tw = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackNum));
 		if (hovPos_.order == -2 && hovPos_.track == trackNum)
 			painter.fillRect(x - widthSpace_, 0, tw, headerHeight_, palette_.lock()->ptnHovCellColor);
 
 		painter.setPen(palette_.lock()->ptnHeaderTextColor);
 		QString srcName;
-		switch (songStyle_.trackAttribs[trackNum].source) {
+		const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
+		switch (attrib.source) {
 		case SoundSource::FM:
-			srcName = "FM" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			srcName = "FM" + QString::number(attrib.channelInSource + 1);
 			break;
 		case SoundSource::SSG:
-			srcName = "SSG" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			srcName = "SSG" + QString::number(attrib.channelInSource + 1);
 			break;
 		case SoundSource::DRUM:
-			switch (songStyle_.trackAttribs[trackNum].channelInSource) {
+			switch (attrib.channelInSource) {
 			case 0:	srcName = "Bass drum";	break;
 			case 1:	srcName = "Snare drum";	break;
 			case 2:	srcName = "Top cymbal";	break;
@@ -503,7 +504,8 @@ void PatternEditorPanel::drawShadow()
 int PatternEditorPanel::calculateTracksWidthWithRowNum(int begin, int end) const
 {
 	int width = stepNumWidth_;
-	for (int i = begin; i <= end; ++i) {
+	size_t e = static_cast<size_t>(end);
+	for (size_t i = static_cast<size_t>(begin); i <= e; ++i) {
 		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(i));
 	}
 	return width;
@@ -516,7 +518,8 @@ int PatternEditorPanel::calculateColNumInRow(int trackNum, int colNumInTrack, bo
 	}
 	else {
 		int ret = 0;
-		for (int i = 0; i < trackNum; ++i) {
+		size_t tn = static_cast<size_t>(trackNum);
+		for (size_t i = 0; i < tn; ++i) {
 			ret += (5 + 2 * rightEffn_.at(i));
 		}
 		return ret + colNumInTrack;
@@ -530,7 +533,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	curPos_.colInTrack += n;
 	if (n > 0) {
 		while (true) {
-			int lim = 5 + 2 * rightEffn_.at(curPos_.track);
+			int lim = 5 + 2 * rightEffn_.at(static_cast<size_t>(curPos_.track));
 			if (curPos_.colInTrack < lim) {
 				break;
 			}
@@ -559,7 +562,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 			else {
 				if (!curPos_.track) {
 					if (config_.lock()->getWarpCursor()) {
-						curPos_.track = songStyle_.trackAttribs.size() - 1;
+						curPos_.track = static_cast<int>(songStyle_.trackAttribs.size()) - 1;
 					}
 					else {
 						curPos_.colInTrack = 0;
@@ -569,7 +572,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 				else {
 					--curPos_.track;
 				}
-				curPos_.colInTrack += (5 + 2 * rightEffn_.at(curPos_.track));
+				curPos_.colInTrack += (5 + 2 * rightEffn_.at(static_cast<size_t>(curPos_.track)));
 			}
 		}
 	}
@@ -582,7 +585,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	}
 
 	TracksWidthFromLeftToEnd_
-			= calculateTracksWidthWithRowNum(leftTrackNum_, songStyle_.trackAttribs.size() - 1);
+			= calculateTracksWidthWithRowNum(leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
 	if (curPos_.track != oldTrackNum)
 		bt_->setCurrentTrack(curPos_.track);
@@ -603,7 +606,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 
 	if (n > 0) {
 		while (true) {
-			int dif = tmp - bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
+			int dif = tmp - static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
 			if (dif < 0) {
 				curPos_.step = tmp;
 				break;
@@ -626,7 +629,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 			if (tmp < 0) {
 				if (config_.lock()->getWarpAcrossOrders()) {
 					if (curPos_.order == 0) {
-						curPos_.order = bt_->getOrderSize(curSongNum_) - 1;
+						curPos_.order = static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1;
 					}
 					else {
 						--curPos_.order;
@@ -646,30 +649,34 @@ void PatternEditorPanel::moveCursorToDown(int n)
 	bt_->setCurrentStepNumber(curPos_.step);
 
 	if (!isIgnoreToSlider_)
-		emit currentStepChanged(curPos_.step, bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1);
+		emit currentStepChanged(
+				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
 	if (!isIgnoreToOrder_ && curPos_.order != oldOdr)	// Send to order list
-		emit currentOrderChanged(curPos_.order, bt_->getOrderSize(curSongNum_) - 1);
+		emit currentOrderChanged(
+				curPos_.order, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
 	update();
 }
 
 void PatternEditorPanel::expandEffect(int trackNum)
 {
-	if (rightEffn_.at(trackNum) == 3) return;
-	++rightEffn_[trackNum];
-	TracksWidthFromLeftToEnd_
-			= calculateTracksWidthWithRowNum(leftTrackNum_, songStyle_.trackAttribs.size() - 1);
+	size_t tn = static_cast<size_t>(trackNum);
+	if (rightEffn_.at(tn) == 3) return;
+	++rightEffn_[tn];
+	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
+									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
 	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
 }
 
 void PatternEditorPanel::shrinkEffect(int trackNum)
 {
-	if (rightEffn_.at(trackNum) == 0) return;
-	--rightEffn_[trackNum];
-	TracksWidthFromLeftToEnd_
-			= calculateTracksWidthWithRowNum(leftTrackNum_, songStyle_.trackAttribs.size() - 1);
+	size_t tn = static_cast<size_t>(trackNum);
+	if (rightEffn_.at(tn) == 0) return;
+	--rightEffn_[tn];
+	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
+									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
 	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
 }
@@ -708,7 +715,7 @@ int PatternEditorPanel::calculateStepDistance(int beginOrder, int beginStep, int
 		}
 		else {
 			d += startStep;
-			startStep = bt_->getPatternSizeFromOrderNumber(curSongNum_, --startOrder);
+			startStep = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, --startOrder));
 		}
 	}
 
@@ -741,31 +748,34 @@ void PatternEditorPanel::changeEditable()
 
 int PatternEditorPanel::getFullColmunSize() const
 {
-	return calculateColNumInRow(songStyle_.trackAttribs.size() - 1, 4 + 2 * rightEffn_.back());
+	return calculateColNumInRow(static_cast<int>(songStyle_.trackAttribs.size()) - 1, 4 + 2 * rightEffn_.back());
 }
 
 void PatternEditorPanel::updatePosition()
 {
 	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 
-	emit currentOrderChanged(curPos_.order, bt_->getOrderSize(curSongNum_) - 1);
-	emit currentStepChanged(curPos_.step, bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1);
+	emit currentOrderChanged(curPos_.order, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+	emit currentStepChanged(
+				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
 	update();
 }
 
 bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 {
-	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
-	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getKeyOffKey().c_str(),
-											  config_.lock()->getKeyOffKey().length())).toString()) {
+	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | event->key()).toString();
+	if (seq == QKeySequence(
+				QString::fromUtf8(config_.lock()->getKeyOffKey().c_str(),
+								  static_cast<int>(config_.lock()->getKeyOffKey().length()))).toString()) {
 		bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 		if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
 		return true;
 	}
-	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getEchoBufferKey().c_str(),
-												   config_.lock()->getEchoBufferKey().length())).toString()) {
+	else if (seq == QKeySequence(
+				 QString::fromUtf8(config_.lock()->getEchoBufferKey().c_str(),
+								   static_cast<int>(config_.lock()->getEchoBufferKey().length()))).toString()) {
 		int n = bt_->getCurrentOctave();
 		if (n > 3) n = 3;
 		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
@@ -961,7 +971,7 @@ void PatternEditorPanel::setStepVolume(int volume)
 {
 	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
 	editPos_ = curPos_;
-	bool isReversed = (songStyle_.trackAttribs[curPos_.track].source == SoundSource::FM
+	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source == SoundSource::FM
 					  && config_.lock()->getReverseFMVolumeOrder());
 	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume, isReversed);
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_));
@@ -1029,8 +1039,9 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	QString effDetail = tr("Invalid effect");
 	std::string id = bt_->getStepEffectID(curSongNum_, editPos_.track, editPos_.order,
 										  editPos_.step, (editPos_.colInTrack - 3) / 2);
+	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(editPos_.track)).source;
 	if (id == "00") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("00xy - Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)");
@@ -1040,7 +1051,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "01") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("01xx - Portamento up, xx: depth (00-FF)");
@@ -1050,7 +1061,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "02") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("02xx - Portamento down, xx: depth (00-FF)");
@@ -1060,7 +1071,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "03") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("03xx - Tone portamento, xx: depth (00-FF)");
@@ -1070,7 +1081,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "04") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("04xy - Vibrato, x: period (0-F), y: depth (0-F)");
@@ -1080,7 +1091,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "07") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("07xx - Tremolo, x: period (0-F), y: depth (0-F)");
@@ -1090,7 +1101,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "08") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::DRUM:
 			effDetail = tr("08xx - Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center");
@@ -1100,7 +1111,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "0A") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("0Axy - Volume slide, x: up (0-F), y: down (0-F)");
@@ -1128,7 +1139,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		effDetail = tr("0Oxx - Set groove xx");
 	}
 	else if (id == "0P") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("0Pxx - Detune, xx: pitch (00-FF)");
@@ -1138,7 +1149,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "0Q") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)");
@@ -1148,7 +1159,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "0R") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("0Rxy - Note slide down, x: count (0-F), y: seminote (0-F)");
@@ -1161,7 +1172,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		effDetail = tr("0Sxx - Note cut, xx: count (01-FF)");
 	}
 	else if (id == "0T") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
 			effDetail = tr("0Txy - Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)");
@@ -1171,7 +1182,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "0V") {
-		switch (songStyle_.trackAttribs.at(editPos_.track).source) {
+		switch (src) {
 		case SoundSource::DRUM:
 			effDetail = tr("0Vxx - Master volume, xx: volume (00-3F)");
 			break;
@@ -1216,7 +1227,7 @@ void PatternEditorPanel::setStepEffectValue(int value)
 	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
 	editPos_ = curPos_;
 	int n = (editPos_.colInTrack - 4) / 2;
-	bool isReversed = (songStyle_.trackAttribs[curPos_.track].source == SoundSource::FM
+	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(editPos_.track)].source == SoundSource::FM
 					  && config_.lock()->getReverseFMVolumeOrder()
 					  && bt_->getStepEffectID(curSongNum_, editPos_.track, editPos_.order, editPos_.step, n)
 					  .front() == 'M');
@@ -1376,12 +1387,12 @@ std::vector<std::vector<std::string>> PatternEditorPanel::instantiateCellsFromSt
 	QRegularExpressionMatch match = re.match(str);
 	startCol = match.captured(1).toInt();
 	int w = match.captured(2).toInt();
-	int h = match.captured(3).toInt();
+	size_t h = match.captured(3).toUInt();
 	str.remove(re);
 
 	std::vector<std::vector<std::string>> cells;
 	re = QRegularExpression("^([^,]+),");
-	for (int i = 0; i < h; ++i) {
+	for (size_t i = 0; i < h; ++i) {
 		cells.emplace_back();
 		for (int j = 0; j < w; ++j) {
 			match = re.match(str);
@@ -1456,7 +1467,7 @@ void PatternEditorPanel::decreaseNoteOctave(const PatternPosition& startPos, con
 
 void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, const PatternPosition& end)
 {
-	int patMax = bt_->getPatternSizeFromOrderNumber(curSongNum_, end.order) - 1;
+	int patMax = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, end.order)) - 1;
 	if (start.compareCols(end) > 0) {
 		if (start.step > end.step) {
 			selLeftAbovePos_ = end;
@@ -1699,7 +1710,7 @@ void PatternEditorPanel::onOrderListEdited()
 void PatternEditorPanel::onDefaultPatternSizeChanged()
 {
 	// Check pattern size
-	int end = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order);
+	int end = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
 	if (curPos_.step >= end) curPos_.step = end - 1;
 
 	update();
@@ -1726,7 +1737,8 @@ void PatternEditorPanel::onSongLoaded()
 		bt_->getCurrentStepNumber()
 	};
 	songStyle_ = bt_->getSongStyle(curSongNum_);
-	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
+	TracksWidthFromLeftToEnd_
+			= calculateTracksWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
 	hovPos_ = { -1, -1, -1, -1 };
 	editPos_ = { -1, -1, -1, -1 };
@@ -1817,7 +1829,7 @@ void PatternEditorPanel::onSelectPressed(int type)
 	case 1:	// All
 	{
 		selectAllState_ = (selectAllState_ + 1) % 2;
-		int max = bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1;
+		int max = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1;
 		if (!selectAllState_) {
 			PatternPosition start = { curPos_.track, 0, curPos_.order, 0 };
 			PatternPosition end = { curPos_.track, 10, curPos_.order, max };
@@ -2054,11 +2066,16 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			if (event->modifiers().testFlag(Qt::ControlModifier)) {
-				size_t base = (curPos_.step) ? curPos_.step
-											 : bt_->getPatternSizeFromOrderNumber(
-												   curSongNum_,
-												   (curPos_.order) ? (curPos_.order - 1)
-																   : (bt_->getOrderSize(curSongNum_) - 1));
+				int base;
+				if (curPos_.step) {
+					base = curPos_.step;
+				}
+				else {
+					base = static_cast<int>(bt_->getPatternSizeFromOrderNumber(
+												curSongNum_,
+												(curPos_.order) ? (curPos_.order - 1)
+																: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
+				}
 				moveCursorToDown((base - 1) / hlCnt_ * hlCnt_ - base);
 			}
 			else {
@@ -2092,7 +2109,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				moveCursorToRight(-calculateColNumInRow(curPos_.track, curPos_.colInTrack));
 		}
 		else {
-			moveCursorToRight(5 + 2 * rightEffn_[curPos_.track] - curPos_.colInTrack);
+			moveCursorToRight(5 + 2 * rightEffn_[static_cast<size_t>(curPos_.track)] - curPos_.colInTrack);
 		}
 		return true;
 	case Qt::Key_Backtab:
@@ -2101,7 +2118,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 				moveCursorToRight(getFullColmunSize() - 1);
 		}
 		else {
-			moveCursorToRight(-5 - 2 * rightEffn_[curPos_.track - 1] - curPos_.colInTrack);
+			moveCursorToRight(-5 - 2 * rightEffn_[static_cast<size_t>(curPos_.track) - 1] - curPos_.colInTrack);
 		}
 		return true;
 	case Qt::Key_Home:
@@ -2120,7 +2137,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(
-						bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - curPos_.step - 1);
+						static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - curPos_.step - 1);
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -2130,7 +2147,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-config_.lock()->getPageJumpLength());
+			moveCursorToDown(-static_cast<int>(config_.lock()->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -2140,7 +2157,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(config_.lock()->getPageJumpLength());
+			moveCursorToDown(static_cast<int>(config_.lock()->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -2271,10 +2288,10 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		if (event->x() < stepNumWidth_ && leftTrackNum_ > 0) {
-			moveCursorToRight(-(5 + 2 * rightEffn_.at(leftTrackNum_ - 1)));
+			moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_) - 1)));
 		}
 		else if (event->x() > geometry().width() - stepNumWidth_ && hovPos_.track != -1) {
-			moveCursorToRight(5 + 2 * rightEffn_.at(leftTrackNum_));
+			moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_)));
 		}
 		if (event->pos().y() < headerHeight_ + stepFontHeight_) {
 			moveCursorToDown(-1);
@@ -2434,7 +2451,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 			int tmpOdr = curPos_.order;
 			int tmpStep = curPos_.step +  (pos.y() - curRowY_) / stepFontHeight_;
 			while (true) {
-				int endStep = bt_->getPatternSizeFromOrderNumber(curSongNum_, tmpOdr);
+				int endStep = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, tmpOdr));
 				if (tmpStep < endStep) {
 					hovPos_.setRows(tmpOdr, tmpStep);
 					break;
@@ -2477,7 +2494,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 				break;
 			}
 			bool flag = false;
-			for (int j = 0; j <= rightEffn_.at(i); ++j) {
+			for (int j = 0; j <= rightEffn_.at(static_cast<size_t>(i)); ++j) {
 				tmpWidth += (effIDWidth_ + widthSpace_);
 				if (pos.x() <= tmpWidth) {
 					hovPos_.setCols(i, 3 + 2 * j);
@@ -2541,7 +2558,7 @@ void PatternEditorPanel::midiKeyEvent(uchar status, uchar key, uchar velocity)
 	if (!bt_->isJamMode()) {
 		bool release = ((status & 0xf0) == 0x80) || velocity == 0;
 		if (!release) {
-			std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote((int)key - 12);
+			std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote(static_cast<int>(key) - 12);
 			setStepKeyOn(octaveAndNote.second, octaveAndNote.first);
 		}
 	}

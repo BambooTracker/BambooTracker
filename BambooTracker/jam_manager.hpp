@@ -20,6 +20,7 @@ public:
 	JamKeyData keyOff(JamKey key);
 
 	static Note jamKeyToNote(JamKey& key);
+	static JamKey noteToJamKey(Note& note);
 	static int calcOctave(int baseOctave, JamKey& key);
 
 	void clear(SongType type);

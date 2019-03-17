@@ -5,6 +5,8 @@
 - [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
   - BambooTracker/chips/mame/*
 - [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3
+- [RtMidi](https://github.com/Wohlstand/rtmidi) by Gary P. Scavone - [rtmidi_license.txt](./rtmidi_license.txt)
+  - BambooTracker/midi/RtMidi/*
 - [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) - [scci_license.txt](./scci_license.txt)
   - BambooTracker/chips/scci/*
 - [Silk icon](https://www.iconfinder.com/iconsets/silk2) set 1.3 by Mark James - CC BY 2.5

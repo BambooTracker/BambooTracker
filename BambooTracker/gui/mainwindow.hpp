@@ -105,6 +105,7 @@ private:
 
 	// Configuration change
 	void changeConfiguration();
+	void setMidiConfiguration();
 
 	// History change
 	void changeFileHistory(QString file);
