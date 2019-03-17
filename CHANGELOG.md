@@ -3,8 +3,10 @@
 ## Unreleased
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
+- [#81] - Fix crash when toggling FM1 on/off using mouse (thanks [@papiezak])
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
+[#81]: https://github.com/rerrahkr/BambooTracker/issues/81
 
 ## v0.1.6 (2019-03-16)
 ### Add

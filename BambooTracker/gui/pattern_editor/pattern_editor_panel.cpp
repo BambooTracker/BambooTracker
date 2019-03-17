@@ -501,12 +501,12 @@ void PatternEditorPanel::drawShadow()
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 
+// NOTE: end >= -1
 int PatternEditorPanel::calculateTracksWidthWithRowNum(int begin, int end) const
 {
 	int width = stepNumWidth_;
-	size_t e = static_cast<size_t>(end);
-	for (size_t i = static_cast<size_t>(begin); i <= e; ++i) {
-		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(i));
+	for (int i = begin; i <= end; ++i) {
+		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(i)));
 	}
 	return width;
 }

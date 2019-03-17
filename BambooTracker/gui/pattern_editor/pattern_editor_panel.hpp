@@ -29,7 +29,7 @@ class PatternEditorPanel : public QWidget
 	Q_OBJECT
 public:
 	explicit PatternEditorPanel(QWidget *parent = nullptr);
-	~PatternEditorPanel();
+	~PatternEditorPanel() override;
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 	void setConfiguration(std::weak_ptr<Configuration> config);
