@@ -10,9 +10,12 @@ public:
 	TickCounter();
 	void setInterruptRate(uint32_t rate);
 	void setTempo(int tempo);
+	int getTempo() const;
 	void setSpeed(int speed);
+	int getSpeed() const;
 	void setGroove(std::vector<int> seq);
 	void setGrooveEnebled(bool enabled);
+	bool getGrooveEnabled() const;
 	void setPlayState(bool isPlaySong);
 	int countUp();
 	void resetCount();
@@ -24,8 +27,8 @@ private:
 	std::vector<int> grooves_;
 	int nextGroovePos_;
 
-	size_t defStepSize_;
-	size_t restTickToNextStep_;
+	int defStepSize_;
+	int restTickToNextStep_;
 
 	float tickDif_;
 	float tickDifSum_;

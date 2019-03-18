@@ -2,10 +2,11 @@
 
 ## Unreleased
 ### Added
-- [#76] - MIDI keyboard support ([#32]; thanks [@galap-1], [@jpcima] and [@OPNA2608])
+- [#76] - MIDI keyboard support ([#32]; thanks [@galap-1], [@jpcima], [@OPNA2608])
 - Add edit/jam button in tool bar
 - Add 1 sample module (thanks [@SuperJetSpade])
 - Add 2nd pattern highlight
+- [#79] - Add BPM indicator in status bar (thanks [@papiezak])
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
@@ -15,6 +16,7 @@
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
 [#76]: https://github.com/rerrahkr/BambooTracker/pull/76
 [#32]: https://github.com/rerrahkr/BambooTracker/issues/32
+[#79]: https://github.com/rerrahkr/BambooTracker/issues/79
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 

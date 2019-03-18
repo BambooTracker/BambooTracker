@@ -602,7 +602,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tickCounter_.setTempo(song.getTempo());
 	tickCounter_.setSpeed(song.getSpeed());
 	tickCounter_.setGroove(mod_->getGroove(song.getGroove()).getSequence());
-	tickCounter_.setGrooveEnebled(song.isUsedTempo());
+	tickCounter_.setGrooveEnebled(!song.isUsedTempo());
 
 	switch (songStyle_.type) {
 	case SongType::STD:
@@ -2149,6 +2149,21 @@ int BambooTracker::getStreamDuration() const
 void BambooTracker::setStreamDuration(int duration)
 {
 	opnaCtrl_->setDuration(duration);
+}
+
+int BambooTracker::getStreamTempo() const
+{
+	return tickCounter_.getTempo();
+}
+
+int BambooTracker::getStreamSpeed() const
+{
+	return tickCounter_.getSpeed();
+}
+
+bool BambooTracker::getStreamGrooveEnabled() const
+{
+	return tickCounter_.getGrooveEnabled();
 }
 
 void BambooTracker::setMasterVolume(int percentage)

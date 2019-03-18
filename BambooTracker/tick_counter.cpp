@@ -12,7 +12,7 @@ TickCounter::TickCounter() :
 
 void TickCounter::setInterruptRate(uint32_t rate)
 {
-	tickRate_ = rate;
+	tickRate_ = static_cast<int>(rate);
 	updateTickDIf();
 }
 
@@ -24,12 +24,22 @@ void TickCounter::setTempo(int tempo)
 	resetRest();
 }
 
+int TickCounter::getTempo() const
+{
+	return tempo_;
+}
+
 void TickCounter::setSpeed(int speed)
 {
 	defStepSize_ = speed;
 	updateTickDIf();
 	tickDifSum_ = 0;
 	resetRest();
+}
+
+int TickCounter::getSpeed() const
+{
+	return defStepSize_;
 }
 
 void TickCounter::setGroove(std::vector<int> seq)
@@ -40,8 +50,13 @@ void TickCounter::setGroove(std::vector<int> seq)
 
 void TickCounter::setGrooveEnebled(bool enabled)
 {
-	nextGroovePos_ = enabled ? (grooves_.size() - 1) : -1;
+	nextGroovePos_ = enabled ? (static_cast<int>(grooves_.size()) - 1) : -1;
 	resetRest();
+}
+
+bool TickCounter::getGrooveEnabled() const
+{
+	return (nextGroovePos_ != -1);
 }
 
 void TickCounter::setPlayState(bool isPlaySong)
@@ -55,27 +70,25 @@ void TickCounter::setPlayState(bool isPlaySong)
 ///		0<: rest tick count to next step
 int TickCounter::countUp()
 {
-	int ret;
-
 	if (isPlaySong_) {
-		ret = restTickToNextStep_;
+		int ret = restTickToNextStep_;
 
 		if (!restTickToNextStep_) {  // When head of step, calculate real step size
 			resetRest();
 		}
 
 		--restTickToNextStep_;   // Count down to next step
+
+		return ret;
 	}
 	else {
-		ret = -1;
+		return -1;
 	}
-
-	return ret;
 }
 
 void TickCounter::updateTickDIf()
 {
-	float strictTicksPerStepByBpm = 10.0 * tickRate_ * defStepSize_ / (tempo_ << 2);
+	float strictTicksPerStepByBpm = 10.0f * tickRate_ * defStepSize_ / (tempo_ << 2);
 	tickDif_ = strictTicksPerStepByBpm - static_cast<float>(defStepSize_);
 }
 
@@ -94,7 +107,7 @@ void TickCounter::resetRest()
 		tickDifSum_ -= castedTickDifSum;
 	}
 	else {
-		restTickToNextStep_ = grooves_.at(nextGroovePos_);
-		nextGroovePos_ = (nextGroovePos_ + 1) % grooves_.size();
+		restTickToNextStep_ = grooves_.at(static_cast<size_t>(nextGroovePos_));
+		nextGroovePos_ = (nextGroovePos_ + 1) % static_cast<int>(grooves_.size());
 	}
 }

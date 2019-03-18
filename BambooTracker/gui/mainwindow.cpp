@@ -82,58 +82,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->actionRedo->setEnabled(comStack_->canRedo());
 	});
 
-	/* Audio stream */
-	bool savedDeviceExists = false;
-	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
-			savedDeviceExists = true;
-			break;
-		}
-	}
-	if (!savedDeviceExists) {
-		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
-		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
-	}
-	stream_ = std::make_shared<AudioStream>(
-				  bt_->getStreamRate(), bt_->getStreamDuration(), bt_->getModuleTickFrequency(),
-				  QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-									static_cast<int>(config.lock()->getSoundDevice().length())));
-	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
-					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
-	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
-					 this, [&](int16_t *container, size_t nSamples) {
-		bt_->getStreamSamples(container, nSamples);
-	}, Qt::DirectConnection);
-	if (config.lock()->getUseSCCI()) {
-		stream_->stop();
-		/*
-		timer_ = std::make_unique<Timer>();
-		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
-		timer_->setFunction([&]{ onNewTickSignaled(); });
-		*/
-		timer_ = std::make_unique<QTimer>(this);
-		timer_->setTimerType(Qt::PreciseTimer);
-		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
-		timer_->setSingleShot(false);
-		QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
-
-		scciDll_->load();
-		if (scciDll_->isLoaded()) {
-			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
-													scciDll_->resolve("getSoundInterfaceManager"));
-			bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
-		}
-		else {
-			bt_->useSCCI(nullptr);
-		}
-
-		timer_->start();
-	}
-	else {
-		bt_->useSCCI(nullptr);
-		stream_->start();
-	}
-
 	/* File history */
 	FileHistoryHandler::loadFileHistory(fileHistory_);
 	for (size_t i = 0; i < fileHistory_->size(); ++i) {
@@ -190,6 +138,58 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->patternEditor->update();
 	});
 	ui->subToolBar->addWidget(highlight2_);
+
+	/* Audio stream */
+	bool savedDeviceExists = false;
+	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
+			savedDeviceExists = true;
+			break;
+		}
+	}
+	if (!savedDeviceExists) {
+		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
+		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
+	}
+	stream_ = std::make_shared<AudioStream>(
+				  bt_->getStreamRate(), bt_->getStreamDuration(), bt_->getModuleTickFrequency(),
+				  QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+									static_cast<int>(config.lock()->getSoundDevice().length())));
+	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
+					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
+	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
+					 this, [&](int16_t *container, size_t nSamples) {
+		bt_->getStreamSamples(container, nSamples);
+	}, Qt::DirectConnection);
+	if (config.lock()->getUseSCCI()) {
+		stream_->stop();
+		/*
+		timer_ = std::make_unique<Timer>();
+		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+		timer_->setFunction([&]{ onNewTickSignaled(); });
+		*/
+		timer_ = std::make_unique<QTimer>(this);
+		timer_->setTimerType(Qt::PreciseTimer);
+		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+		timer_->setSingleShot(false);
+		QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
+
+		scciDll_->load();
+		if (scciDll_->isLoaded()) {
+			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
+													scciDll_->resolve("getSoundInterfaceManager"));
+			bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
+		}
+		else {
+			bt_->useSCCI(nullptr);
+		}
+
+		timer_->start();
+	}
+	else {
+		bt_->useSCCI(nullptr);
+		stream_->start();
+	}
 
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
@@ -393,12 +393,14 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	statusInst_ = new QLabel();
 	statusOctave_ = new QLabel();
 	statusIntr_ = new QLabel();
+	statusBpm_ = new QLabel();
 	statusPlayPos_ = new QLabel();
-	ui->statusBar->addWidget(statusDetail_, 5);
+	ui->statusBar->addWidget(statusDetail_, 4);
 	ui->statusBar->addPermanentWidget(statusStyle_, 1);
 	ui->statusBar->addPermanentWidget(statusInst_, 1);
 	ui->statusBar->addPermanentWidget(statusOctave_, 1);
 	ui->statusBar->addPermanentWidget(statusIntr_, 1);
+	ui->statusBar->addPermanentWidget(statusBpm_, 1);
 	ui->statusBar->addPermanentWidget(statusPlayPos_, 1);
 	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
@@ -418,6 +420,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		openModule(filePath);
 	}
 
+	/* MIDI */
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
 	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
@@ -2411,6 +2414,16 @@ void MainWindow::onNewTickSignaled()
 						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))
 						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
 		}
+	}
+
+	// Update BPM status
+	if (bt_->getStreamGrooveEnabled()) {
+		statusBpm_->setText("Groove");
+	}
+	else {
+		// BPM = tempo * 6 / speed * 4 / 1st highlight
+		double bpm = 24.0 * bt_->getStreamTempo() / bt_->getStreamSpeed() / highlight1_->value();
+		statusBpm_->setText(QString::number(bpm, 'f', 2) + QString(" BPM"));
 	}
 }
 

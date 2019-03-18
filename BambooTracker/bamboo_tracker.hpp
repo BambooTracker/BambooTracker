@@ -208,6 +208,9 @@ public:
 	void setStreamRate(int rate);
 	int getStreamDuration() const;
 	void setStreamDuration(int duration);
+	int getStreamTempo() const;
+	int getStreamSpeed() const;
+	bool getStreamGrooveEnabled() const;
 	void setMasterVolume(int percentage);
 	void setMasterVolumeFM(double dB);
 	void setMasterVolumeSSG(double dB);
