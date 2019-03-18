@@ -41,12 +41,12 @@ public:
 	QColor odrBorderColor;
 
 	// Pattern editor
-	QColor ptnDefTextColor, ptnDefRowColor, ptnMkRowColor;
+	QColor ptnDefTextColor, ptnDefRowColor, ptnHl1RowColor, ptnHl2RowColor;
 	QColor ptnCurTextColor, ptnCurRowColor, ptnCurEditRowColor, ptnCurCellColor;
 	QColor ptnPlayTextColor, ptnPlayRowColor;
 	QColor ptnSelCellColor;
 	QColor ptnHovCellColor;
-	QColor ptnDefStepNumColor, ptnMkStepNumColor;
+	QColor ptnDefStepNumColor, ptnHl1StepNumColor, ptnHl2StepNumColor;
 	QColor ptnToneColor, ptnInstColor, ptnVolColor, ptnEffIDColor, ptnEffValColor;
 	QColor ptnErrorColor;
 	QColor ptnHeaderTextColor, ptnHeaderRowColor;

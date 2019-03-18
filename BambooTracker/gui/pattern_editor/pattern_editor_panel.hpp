@@ -53,7 +53,8 @@ public slots:
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
 
-	void setPatternHighlightCount(int count);
+	void setPatternHighlight1Count(int count);
+	void setPatternHighlight2Count(int count);
 	void setEditableStep(int n);
 
 	void onSongLoaded();
@@ -155,7 +156,7 @@ private:
 	int selectAllState_;
 	bool isMuteElse_;
 
-	int hlCnt_;
+	int hl1Cnt_, hl2Cnt_;
 	int editableStepCnt_;
 
 	// Meta methods

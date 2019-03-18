@@ -160,21 +160,36 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->subToolBar->addSeparator();
 	ui->subToolBar->addAction(ui->actionFollow_Mode);
 	ui->subToolBar->addSeparator();
-	auto hlLab = new QLabel(tr("Step highlight"));
-	hlLab->setMargin(6);
-	ui->subToolBar->addWidget(hlLab);
-	highlight_ = new QSpinBox();
-	highlight_->setMinimum(1);
-	highlight_->setMaximum(256);
-	highlight_->setValue(8);
+	auto hlLab1 = new QLabel(tr("Step highlight 1st"));
+	hlLab1->setMargin(6);
+	ui->subToolBar->addWidget(hlLab1);
+	highlight1_ = new QSpinBox();
+	highlight1_->setMinimum(1);
+	highlight1_->setMaximum(256);
+	highlight1_->setValue(8);
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(highlight_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+	QObject::connect(highlight1_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int count) {
-		bt_->setModuleStepHighlightDistance(static_cast<size_t>(count));
-		ui->patternEditor->setPatternHighlightCount(count);
+		bt_->setModuleStepHighlight1Distance(static_cast<size_t>(count));
+		ui->patternEditor->setPatternHighlight1Count(count);
 		ui->patternEditor->update();
 	});
-	ui->subToolBar->addWidget(highlight_);
+	ui->subToolBar->addWidget(highlight1_);
+	auto hlLab2 = new QLabel(tr("2nd"));
+	hlLab2->setMargin(6);
+	ui->subToolBar->addWidget(hlLab2);
+	highlight2_ = new QSpinBox();
+	highlight2_->setMinimum(1);
+	highlight2_->setMaximum(256);
+	highlight2_->setValue(8);
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(highlight2_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int count) {
+		bt_->setModuleStepHighlight2Distance(static_cast<size_t>(count));
+		ui->patternEditor->setPatternHighlight2Count(count);
+		ui->patternEditor->update();
+	});
+	ui->subToolBar->addWidget(highlight2_);
 
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
@@ -1080,7 +1095,8 @@ void MainWindow::loadModule()
 	ui->copyrightLineEdit->setText(
 				QString::fromUtf8(modCopyright.c_str(), static_cast<int>(modCopyright.length())));
 	ui->songNumSpinBox->setMaximum(static_cast<int>(bt_->getSongCount()) - 1);
-	highlight_->setValue(static_cast<int>(bt_->getModuleStepHighlightDistance()));
+	highlight1_->setValue(static_cast<int>(bt_->getModuleStepHighlight1Distance()));
+	highlight2_->setValue(static_cast<int>(bt_->getModuleStepHighlight2Distance()));
 
 	for (auto& idx : bt_->getInstrumentIndices()) {
 		auto inst = bt_->getInstrument(idx);

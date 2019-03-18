@@ -10,7 +10,8 @@ Module::Module(std::string filePath, std::string title, std::string author, std:
 	  copyright_(copyright),
 	  comment_(comment),
 	  tickFreq_(tickFreq),
-	  stepHlDist_(8)
+	  stepHl1Dist_(4),
+	  stepHl2Dist_(16)
 {
 	songs_.emplace_back(0);
 	grooves_.emplace_back();
@@ -76,14 +77,24 @@ unsigned int Module::getTickFrequency() const
 	return tickFreq_;
 }
 
-void Module::setStepHighlightDistance(size_t dist)
+void Module::setStepHighlight1Distance(size_t dist)
 {
-	stepHlDist_ = dist;
+	stepHl1Dist_ = dist;
 }
 
-size_t Module::getStepHighlightDistance() const
+size_t Module::getStepHighlight1Distance() const
 {
-	return stepHlDist_;
+	return stepHl1Dist_;
+}
+
+void Module::setStepHighlight2Distance(size_t dist)
+{
+	stepHl2Dist_ = dist;
+}
+
+size_t Module::getStepHighlight2Distance() const
+{
+	return stepHl2Dist_;
 }
 
 size_t Module::getSongCount() const

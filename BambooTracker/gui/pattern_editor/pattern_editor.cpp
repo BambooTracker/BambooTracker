@@ -137,9 +137,14 @@ void PatternEditor::onDefaultPatternSizeChanged()
 	ui->panel->onDefaultPatternSizeChanged();
 }
 
-void PatternEditor::setPatternHighlightCount(int count)
+void PatternEditor::setPatternHighlight1Count(int count)
 {
-	ui->panel->setPatternHighlightCount(count);
+	ui->panel->setPatternHighlight1Count(count);
+}
+
+void PatternEditor::setPatternHighlight2Count(int count)
+{
+	ui->panel->setPatternHighlight2Count(count);
 }
 
 void PatternEditor::setEditableStep(int n)

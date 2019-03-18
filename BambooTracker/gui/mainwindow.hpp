@@ -121,7 +121,7 @@ private:
 
 	// Sub tool bar
 	QSpinBox* octave_;
-	QSpinBox* highlight_;
+	QSpinBox *highlight1_, *highlight2_;
 
 	// Status bar
 	QLabel* statusDetail_;

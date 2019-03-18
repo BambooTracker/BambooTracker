@@ -1,5 +1,5 @@
 # BambooTracker Module File (.btm) Format Specification
- v1.0.2 - 2018-12-29
+ v1.0.3 - 2019-03-18
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -14,20 +14,21 @@
 
 
 ## Module Section
-| Type             | Field                   | Description                                                                                             |
-| ---------------- | ----------------------- | ------------------------------------------------------------------------------------------------------- |
-| string (8 bytes) | Section identifier      | Must be `MODULE  `.                                                                                     |
-| uint32           | Module section offset   | Relative offset to end of module section.                                                               |
-| uint32           | Title length            | Byte length of title string.                                                                            |
-| string (N bytes) | Title                   | Title string. Character encoding is UTF-8. If module is untitled, it is omitted.                        |
-| uint32           | Author length           | Byte length of author string.                                                                           |
-| string (N bytes) | Author                  | String of author. Character encoding is UTF-8. If author anme is not described, this field is omitted.  |
-| uint32           | Copyright length        | Byte length of copyright string.                                                                        |
-| string (N bytes) | Copyright               | String of copyright. Character encoding is UTF-8. If copyright is not described, this field is omitted. |
-| uint32           | Comment length          | Byte length of module comment.                                                                          |
-| string (N bytes) | Comment                 | String of Module comment. Character encoding is UTF-8. If there is no comment, this field is omitted.   |
-| uint32           | Tick frequency          | Tick frequency. e.g. `0x0000003C` (60) is NTSC, `0x00000032` (50) is PAL.                               |
-| uint32           | Step highlight distance | Step hilight distance.                                                                                  |
+| Type             | Field                       | Description                                                                                             |
+| ---------------- | --------------------------- | ------------------------------------------------------------------------------------------------------- |
+| string (8 bytes) | Section identifier          | Must be `MODULE  `.                                                                                     |
+| uint32           | Module section offset       | Relative offset to end of module section.                                                               |
+| uint32           | Title length                | Byte length of title string.                                                                            |
+| string (N bytes) | Title                       | Title string. Character encoding is UTF-8. If module is untitled, it is omitted.                        |
+| uint32           | Author length               | Byte length of author string.                                                                           |
+| string (N bytes) | Author                      | String of author. Character encoding is UTF-8. If author anme is not described, this field is omitted.  |
+| uint32           | Copyright length            | Byte length of copyright string.                                                                        |
+| string (N bytes) | Copyright                   | String of copyright. Character encoding is UTF-8. If copyright is not described, this field is omitted. |
+| uint32           | Comment length              | Byte length of module comment.                                                                          |
+| string (N bytes) | Comment                     | String of Module comment. Character encoding is UTF-8. If there is no comment, this field is omitted.   |
+| uint32           | Tick frequency              | Tick frequency. e.g. `0x0000003C` (60) is NTSC, `0x00000032` (50) is PAL.                               |
+| uint32           | 1st step highlight distance | 1st step highlight distance.                                                                            |
+| uint32           | 2nd step highlight distance | 2nd step highlight distance.                                                                            |
 
 
 ## Instrument Section
@@ -311,6 +312,7 @@ Key event details:
 ## History
 | Version | Date       | Detail                                     |
 | ------- | ---------- | ------------------------------------------ |
+| 1.0.3   | 2019-03-18 | Added 2nd step hilight.                    |
 | 1.0.2   | 2018-12-29 | Revised for the change of FM octave range. |
 | 1.0.1   | 2018-12-10 | Added instrument sequence type.            |
 | 1.0.0   | 2018-11-23 | Initial release.                           |

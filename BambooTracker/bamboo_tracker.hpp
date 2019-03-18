@@ -229,8 +229,10 @@ public:
 	std::string getModuleComment() const;
 	void setModuleTickFrequency(unsigned int freq);
 	unsigned int getModuleTickFrequency() const;
-	void setModuleStepHighlightDistance(size_t dist);
-	size_t getModuleStepHighlightDistance() const;
+	void setModuleStepHighlight1Distance(size_t dist);
+	size_t getModuleStepHighlight1Distance() const;
+	void setModuleStepHighlight2Distance(size_t dist);
+	size_t getModuleStepHighlight2Distance() const;
 	size_t getGrooveCount() const;
 	void setGroove(int num, std::vector<int> seq);
 	void setGrooves(std::vector<std::vector<int>> seqs);

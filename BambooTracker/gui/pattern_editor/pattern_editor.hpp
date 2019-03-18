@@ -52,7 +52,8 @@ public slots:
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
 
-	void setPatternHighlightCount(int count);
+	void setPatternHighlight1Count(int count);
+	void setPatternHighlight2Count(int count);
 	void setEditableStep(int n);
 
 	void onSongLoaded();

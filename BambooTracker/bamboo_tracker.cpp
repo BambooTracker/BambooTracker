@@ -2271,14 +2271,24 @@ unsigned int BambooTracker::getModuleTickFrequency() const
 	return mod_->getTickFrequency();
 }
 
-void BambooTracker::setModuleStepHighlightDistance(size_t dist)
+void BambooTracker::setModuleStepHighlight1Distance(size_t dist)
 {
-	mod_->setStepHighlightDistance(dist);
+	mod_->setStepHighlight1Distance(dist);
 }
 
-size_t BambooTracker::getModuleStepHighlightDistance() const
+size_t BambooTracker::getModuleStepHighlight1Distance() const
 {
-	return mod_->getStepHighlightDistance();
+	return mod_->getStepHighlight1Distance();
+}
+
+void BambooTracker::setModuleStepHighlight2Distance(size_t dist)
+{
+	mod_->setStepHighlight2Distance(dist);
+}
+
+size_t BambooTracker::getModuleStepHighlight2Distance() const
+{
+	return mod_->getStepHighlight2Distance();
 }
 
 size_t BambooTracker::getGrooveCount() const

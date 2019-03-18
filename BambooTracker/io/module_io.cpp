@@ -37,7 +37,8 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 	ctr.appendUint32(comment.length());
 	if (!comment.empty()) ctr.appendString(comment);
 	ctr.appendUint32(mod.lock()->getTickFrequency());
-	ctr.appendUint32(mod.lock()->getStepHighlightDistance());
+	ctr.appendUint32(mod.lock()->getStepHighlight1Distance());
+	ctr.appendUint32(mod.lock()->getStepHighlight2Distance());
 	ctr.writeUint32(modOfs, ctr.size() - modOfs);
 
 
@@ -768,8 +769,6 @@ void ModuleIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
 										   size_t globCsr, uint32_t version)
 {
-	(void)version;
-
 	size_t modOfs = ctr.readUint32(globCsr);
 	size_t modCsr = globCsr + 4;
 	size_t modTitleLen = ctr.readUint32(modCsr);
@@ -798,8 +797,15 @@ size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 	}
 	mod.lock()->setTickFrequency(ctr.readUint32(modCsr));
 	modCsr += 4;
-	mod.lock()->setStepHighlightDistance(ctr.readUint32(modCsr));
+	mod.lock()->setStepHighlight1Distance(ctr.readUint32(modCsr));
 	modCsr += 4;
+	if (version >= Version::toBCD(1, 0, 3)) {
+		mod.lock()->setStepHighlight2Distance(ctr.readUint32(modCsr));
+		modCsr += 4;
+	}
+	else {
+		mod.lock()->setStepHighlight2Distance(mod.lock()->getStepHighlight1Distance() * 4);
+	}
 
 	return globCsr + modOfs;
 }

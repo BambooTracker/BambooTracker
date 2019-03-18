@@ -55,7 +55,8 @@ ColorPalette::ColorPalette()
 	// Pattern editor
 	ptnDefTextColor = QColor::fromRgb(180, 180, 180, 255);
 	ptnDefRowColor = QColor::fromRgb(0, 0, 40, 255);
-	ptnMkRowColor = QColor::fromRgb(40, 40, 80, 255);
+	ptnHl1RowColor = QColor::fromRgb(30, 40, 70, 255);
+	ptnHl2RowColor = QColor::fromRgb(60, 60, 100, 255);
 	ptnCurTextColor = QColor::fromRgb(255, 255, 255, 255);
 	ptnCurRowColor = QColor::fromRgb(110, 90, 140, 255);
 	ptnCurEditRowColor = QColor::fromRgb(140, 90, 110, 255);
@@ -65,7 +66,8 @@ ColorPalette::ColorPalette()
 	ptnSelCellColor = QColor::fromRgb(100, 100, 200, 192);
 	ptnHovCellColor = QColor::fromRgb(255, 255, 255, 64);
 	ptnDefStepNumColor = QColor::fromRgb(255, 200, 180, 255);
-	ptnMkStepNumColor = QColor::fromRgb(255, 140, 160, 255);
+	ptnHl1StepNumColor = QColor::fromRgb(255, 140, 160, 255);
+	ptnHl2StepNumColor = QColor::fromRgb(255, 140, 160, 255);
 	ptnToneColor = QColor::fromRgb(210, 230, 64, 255);
 	ptnInstColor = QColor::fromRgb(82, 179, 217, 255);
 	ptnVolColor = QColor::fromRgb(226, 156, 80, 255);

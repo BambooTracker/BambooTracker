@@ -37,7 +37,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  entryCnt_(0),
 	  selectAllState_(-1),
 	  isMuteElse_(false),
-	  hlCnt_(8),
+	  hl1Cnt_(4),
+	  hl2Cnt_(16),
 	  editableStepCnt_(1)
 {	
 	/* Font */
@@ -146,7 +147,14 @@ void PatternEditorPanel::drawRows(int maxWidth)
 	// Step number
 	if (hovPos_.track == -2 && hovPos_.order == curPos_.order && hovPos_.step == curPos_.step)
 		painter.fillRect(0, curRowY_, stepNumWidth_, stepFontHeight_, palette_.lock()->ptnHovCellColor);	// Paint hover
-	painter.setPen((curPos_.step % hlCnt_) ? palette_.lock()->ptnDefStepNumColor : palette_.lock()->ptnMkStepNumColor);
+	if (curPos_.step % hl2Cnt_) {
+		painter.setPen(!(curPos_.step % hl2Cnt_) ? palette_.lock()->ptnHl1StepNumColor
+												 : !(curPos_.step % hl1Cnt_) ? palette_.lock()->ptnHl1StepNumColor
+																			 : palette_.lock()->ptnDefStepNumColor);
+	}
+	else {
+		painter.setPen(palette_.lock()->ptnHl2StepNumColor);
+	}
 	painter.drawText(1, curRowBaselineY_, QString("%1").arg(curPos_.step, 2, 16, QChar('0')).toUpper());
 	// Step data
 	for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
@@ -183,7 +191,9 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			textColor = palette_.lock()->ptnPlayTextColor;
 		}
 		else {
-			rowColor = (stepNum % hlCnt_) ? palette_.lock()->ptnDefRowColor : palette_.lock()->ptnMkRowColor;
+			rowColor = !(stepNum % hl2Cnt_) ? palette_.lock()->ptnHl2RowColor
+											: !(stepNum % hl1Cnt_) ? palette_.lock()->ptnHl1RowColor
+																   : palette_.lock()->ptnDefRowColor;
 			textColor = palette_.lock()->ptnDefTextColor;
 		}
 
@@ -192,7 +202,9 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		// Step number
 		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
 			painter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_.lock()->ptnHovCellColor);	// Paint hover
-		painter.setPen((stepNum % hlCnt_) ? palette_.lock()->ptnDefStepNumColor : palette_.lock()->ptnMkStepNumColor);
+		painter.setPen(!(stepNum % hl2Cnt_) ? palette_.lock()->ptnHl2StepNumColor
+											: !(stepNum % hl1Cnt_) ? palette_.lock()->ptnHl1StepNumColor
+																   : palette_.lock()->ptnDefStepNumColor);
 		painter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
 		// Step data
 		painter.setPen(textColor);
@@ -231,7 +243,9 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			textColor = palette_.lock()->ptnPlayTextColor;
 		}
 		else {
-			rowColor = (stepNum % hlCnt_) ? palette_.lock()->ptnDefRowColor : palette_.lock()->ptnMkRowColor;
+			rowColor = !(stepNum % hl2Cnt_) ? palette_.lock()->ptnHl2RowColor
+											: !(stepNum % hl1Cnt_) ? palette_.lock()->ptnHl1RowColor
+																   : palette_.lock()->ptnDefRowColor;
 			textColor = palette_.lock()->ptnDefTextColor;
 		}
 
@@ -240,7 +254,9 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		// Step number
 		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
 			painter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_.lock()->ptnHovCellColor);	// Paint hover
-		painter.setPen((stepNum % hlCnt_) ? palette_.lock()->ptnDefStepNumColor : palette_.lock()->ptnMkStepNumColor);
+		painter.setPen(!(stepNum % hl2Cnt_) ? palette_.lock()->ptnHl2StepNumColor
+											: !(stepNum % hl1Cnt_) ? palette_.lock()->ptnHl1StepNumColor
+																   : palette_.lock()->ptnDefStepNumColor);
 		painter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
 		// Step data
 		painter.setPen(textColor);
@@ -1716,9 +1732,15 @@ void PatternEditorPanel::onDefaultPatternSizeChanged()
 	update();
 }
 
-void PatternEditorPanel::setPatternHighlightCount(int count)
+void PatternEditorPanel::setPatternHighlight1Count(int count)
 {
-	hlCnt_ = count;
+	hl1Cnt_ = count;
+	update();
+}
+
+void PatternEditorPanel::setPatternHighlight2Count(int count)
+{
+	hl2Cnt_ = count;
 	update();
 }
 
@@ -2076,7 +2098,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 												(curPos_.order) ? (curPos_.order - 1)
 																: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
 				}
-				moveCursorToDown((base - 1) / hlCnt_ * hlCnt_ - base);
+				moveCursorToDown((base - 1) / hl1Cnt_ * hl1Cnt_ - base);
 			}
 			else {
 				moveCursorToDown(editableStepCnt_ ? -editableStepCnt_ : -1);
@@ -2091,7 +2113,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			if (event->modifiers().testFlag(Qt::ControlModifier)) {
-				int next = (curPos_.step / hlCnt_ + 1) * hlCnt_;
+				int next = (curPos_.step / hl1Cnt_ + 1) * hl1Cnt_;
 				int size = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
 				if (next < size) moveCursorToDown(next - curPos_.step);
 				else moveCursorToDown(size - curPos_.step);

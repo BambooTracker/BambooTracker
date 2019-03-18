@@ -24,8 +24,10 @@ public:
 	std::string getComment() const;
 	void setTickFrequency(unsigned int freq);
 	unsigned int getTickFrequency() const;
-	void setStepHighlightDistance(size_t dist);
-	size_t getStepHighlightDistance() const;
+	void setStepHighlight1Distance(size_t dist);
+	size_t getStepHighlight1Distance() const;
+	void setStepHighlight2Distance(size_t dist);
+	size_t getStepHighlight2Distance() const;
 	size_t getSongCount() const;
 	size_t getGrooveCount() const;
 
@@ -52,7 +54,7 @@ private:
 	std::string copyright_;
 	std::string comment_;
 	unsigned int tickFreq_;
-	size_t stepHlDist_;
+	size_t stepHl1Dist_, stepHl2Dist_;
 	std::vector<Song> songs_;
 	std::vector<Groove> grooves_;
 };
