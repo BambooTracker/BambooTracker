@@ -210,6 +210,7 @@ private slots:
 	void on_actionOverwrite_triggered();
 	void onNewTickSignaled();
 	void on_actionClear_triggered();
+	void on_keyRepeatCheckBox_stateChanged(int arg1);
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

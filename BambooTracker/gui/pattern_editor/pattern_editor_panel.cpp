@@ -2213,6 +2213,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	default:
 		if (!bt_->isJamMode()) {
 			// Pattern edit
+			if (!config_.lock()->getKeyRepetition() && event->isAutoRepeat()) return false;
 			switch (curPos_.colInTrack) {
 			case 0:
 				return enterToneData(event);

@@ -547,7 +547,7 @@ void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> confi
 
 	std::vector<QString> names;
 	for (auto pair : config.lock()->getFMEnvelopeTextMap()) {
-		names.push_back(QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+		names.push_back(QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
 	}
 	ui->op1Table->setEnvelopeSetNames(names);
 	ui->op2Table->setEnvelopeSetNames(names);
@@ -607,7 +607,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
-	auto name = QString::fromUtf8(instFM->getName().c_str(), instFM->getName().length());
+	auto name = QString::fromUtf8(instFM->getName().c_str(), static_cast<int>(instFM->getName().length()));
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentEnvelopeParameters();
@@ -626,14 +626,16 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 	// For jam key on
 
 	// Check keys
-	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
-	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
-											  config_.lock()->getOctaveUpKey().length())).toString()) {
+	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | event->key()).toString();
+	if (seq == QKeySequence(
+				QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
+								  static_cast<int>(config_.lock()->getOctaveUpKey().length()))).toString()) {
 		emit octaveChanged(true);
 		return;
 	}
-	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
-												   config_.lock()->getOctaveDownKey().length())).toString()) {
+	else if (seq == QKeySequence(
+				 QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
+								   static_cast<int>(config_.lock()->getOctaveDownKey().length()))).toString()) {
 		emit octaveChanged(false);
 		return;
 	}
@@ -875,7 +877,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString envType, QS
 
 	for (int i = 0; i < digits.size(); ++i) {
 		int d = digits[i].toInt();
-		switch (set[i]) {
+		switch (set[static_cast<size_t>(i)]) {
 		case FMEnvelopeTextType::Skip:	break;
 		case FMEnvelopeTextType::AL:	ui->alSlider->setValue(d);	break;
 		case FMEnvelopeTextType::FB:	ui->fbSlider->setValue(d);	break;
@@ -1235,7 +1237,7 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	paste->setEnabled(QApplication::clipboard()->text().startsWith("FM_ENVELOPE:"));
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
 	for (auto pair : config_.lock()->getFMEnvelopeTextMap())
-		pasteFrom->addAction(QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+		pasteFrom->addAction(QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
 	QObject::connect(pasteFrom, &QMenu::triggered,
 					 this, [&](QAction* action) { pasteEnvelopeFrom(action->text()); });
 

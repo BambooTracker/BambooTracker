@@ -44,12 +44,12 @@ size_t CommandSequence::getSequenceSize() const
 
 int CommandSequence::getSequenceTypeAt(int n)
 {
-	return seq_.at(n).type;
+	return seq_.at(static_cast<size_t>(n)).type;
 }
 
 int CommandSequence::getSequenceDataAt(int n)
 {
-	return seq_.at(n).data;
+	return seq_.at(static_cast<size_t>(n)).data;
 }
 
 std::vector<CommandInSequence> CommandSequence::getSequence() const
@@ -83,7 +83,7 @@ void CommandSequence::removeSequenceCommand()
 
 void CommandSequence::setSequenceCommand(int n, int type, int data)
 {
-	seq_.at(n) = { type, data };
+	seq_.at(static_cast<size_t>(n)) = { type, data };
 }
 
 size_t CommandSequence::getNumberOfLoops() const
@@ -93,17 +93,17 @@ size_t CommandSequence::getNumberOfLoops() const
 
 int CommandSequence::getBeginningCountOfLoop(int n)
 {
-	return loops_.at(n).begin;
+	return loops_.at(static_cast<size_t>(n)).begin;
 }
 
 int CommandSequence::getEndCountOfLoop(int n)
 {
-	return loops_.at(n).end;
+	return loops_.at(static_cast<size_t>(n)).end;
 }
 
 int CommandSequence::getTimesOfLoop(int n)
 {
-	return loops_.at(n).times;
+	return loops_.at(static_cast<size_t>(n)).times;
 }
 
 std::vector<Loop> CommandSequence::getLoops() const
@@ -174,7 +174,7 @@ int CommandSequence::Iterator::getCommandType() const
 	return (pos_ == -1)
 			? -1
 			: isRelease_
-			  ? (seq_->getSequenceTypeAt(pos_) * relReleaseRatio_)
+			  ? static_cast<int>(seq_->getSequenceTypeAt(pos_) * relReleaseRatio_)
 			  : seq_->getSequenceTypeAt(pos_);
 }
 
@@ -207,11 +207,11 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 					break;
 				}
 				else {
-					crtr = seq_->seq_[prevIdx].type;
+					crtr = seq_->seq_[static_cast<size_t>(prevIdx)].type;
 				}
 			}
 			else {
-				crtr = seq_->seq_[pos_].type;
+				crtr = seq_->seq_[static_cast<size_t>(pos_)].type;
 			}
 
 			for (size_t i = static_cast<size_t>(seq_->release_.begin); i < seq_->seq_.size(); ++i) {
@@ -226,10 +226,10 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 		{
 			if (pos_ == -1) {
 				int prevIdx = seq_->release_.begin - 1;
-				if (prevIdx >= 0) relReleaseRatio_ = seq_->seq_[prevIdx].type / 15.0;
+				if (prevIdx >= 0) relReleaseRatio_ = seq_->seq_[static_cast<size_t>(prevIdx)].type / 15.0f;
 			}
 			else {
-				relReleaseRatio_ = seq_->seq_[pos_].type / 15.0;
+				relReleaseRatio_ = seq_->seq_[static_cast<size_t>(pos_)].type / 15.0f;
 			}
 			next = seq_->release_.begin;
 			break;

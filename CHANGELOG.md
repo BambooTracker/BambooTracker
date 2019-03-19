@@ -7,6 +7,7 @@
 - Add 1 sample module (thanks [@SuperJetSpade])
 - Add 2nd pattern highlight
 - [#79] - Add BPM indicator in status bar (thanks [@papiezak])
+- Add key repeat settings for pattern editor
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])

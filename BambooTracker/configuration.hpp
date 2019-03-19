@@ -81,8 +81,11 @@ public:
 	size_t getPageJumpLength() const;
 	void setEditableStep(size_t step);
 	size_t getEditableStep() const;
+	void setKeyRepetition(bool enabled);
+	bool getKeyRepetition() const;
 private:
 	size_t pageJumpLength_, editableStep_;
+	bool keyRepetision_;
 
 	// Keys
 public:

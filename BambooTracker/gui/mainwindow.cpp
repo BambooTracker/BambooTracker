@@ -233,6 +233,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->editableStepSpinBox->setValue(static_cast<int>(config.lock()->getEditableStep()));
 	ui->patternEditor->setEditableStep(static_cast<int>(config.lock()->getEditableStep()));
 
+	ui->keyRepeatCheckBox->setCheckState(config.lock()->getKeyRepetition() ? Qt::Checked : Qt::Unchecked);
+
 	/* Song number */
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
@@ -2431,4 +2433,9 @@ void MainWindow::on_actionClear_triggered()
 	fileHistory_->clearHistory();
 	for (int i = ui->menu_Recent_Files->actions().count() - 1; 1 < i; --i)
 		ui->menu_Recent_Files->removeAction(ui->menu_Recent_Files->actions().at(i));
+}
+
+void MainWindow::on_keyRepeatCheckBox_stateChanged(int arg1)
+{
+	config_.lock()->setKeyRepetition(arg1 == Qt::Checked);
 }

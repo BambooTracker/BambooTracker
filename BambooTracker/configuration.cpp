@@ -31,6 +31,7 @@ Configuration::Configuration()
 	// Edit settings
 	pageJumpLength_ = 4;
 	editableStep_ = 1;
+	keyRepetision_ = true;
 
 	// Keys
 	keyOffKey_ = u8"-";
@@ -701,6 +702,16 @@ void Configuration::setEditableStep(size_t step)
 size_t Configuration::getEditableStep() const
 {
 	return editableStep_;
+}
+
+void Configuration::setKeyRepetition(bool enabled)
+{
+	keyRepetision_ = enabled;
+}
+
+bool Configuration::getKeyRepetition() const
+{
+	return keyRepetision_;
 }
 
 // Keys

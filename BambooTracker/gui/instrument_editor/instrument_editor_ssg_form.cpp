@@ -405,7 +405,7 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
-	auto name = QString::fromUtf8(instSSG->getName().c_str(), instSSG->getName().length());
+	auto name = QString::fromUtf8(instSSG->getName().c_str(), static_cast<int>(instSSG->getName().length()));
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentWaveFormParameters();
@@ -422,14 +422,16 @@ void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
 	// For jam key on
 
 	// Check keys
-	QString seq = QKeySequence(event->modifiers() | event->key()).toString();
-	if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
-											  config_.lock()->getOctaveUpKey().length())).toString()) {
+	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | event->key()).toString();
+	if (seq == QKeySequence(
+				QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
+								  static_cast<int>(config_.lock()->getOctaveUpKey().length()))).toString()) {
 		emit octaveChanged(true);
 		return;
 	}
-	else if (seq == QKeySequence(QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
-												   config_.lock()->getOctaveDownKey().length())).toString()) {
+	else if (seq == QKeySequence(
+				 QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
+								   static_cast<int>(config_.lock()->getOctaveDownKey().length()))).toString()) {
 		emit octaveChanged(false);
 		return;
 	}
