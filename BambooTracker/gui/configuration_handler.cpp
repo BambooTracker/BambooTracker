@@ -51,21 +51,26 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 
 		// Keys
 		settings.beginGroup("Keys");
-		settings.setValue("keyOffKey",     QString::fromUtf8(configLocked->getKeyOffKey().c_str(),
-											 configLocked->getKeyOffKey().length()));
-		settings.setValue("octaveUpKey",   QString::fromUtf8(configLocked->getOctaveUpKey().c_str(),
-											 configLocked->getOctaveUpKey().length()));
-		settings.setValue("octaveDownKey", QString::fromUtf8(configLocked->getOctaveDownKey().c_str(),
-											 configLocked->getOctaveDownKey().length()));
-		settings.setValue("echoBufferKey", QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
-											 configLocked->getEchoBufferKey().length()));
+		settings.setValue("keyOffKey",
+						  QString::fromUtf8(configLocked->getKeyOffKey().c_str(),
+											static_cast<int>(configLocked->getKeyOffKey().length())));
+		settings.setValue("octaveUpKey",
+						  QString::fromUtf8(configLocked->getOctaveUpKey().c_str(),
+											static_cast<int>(configLocked->getOctaveUpKey().length())));
+		settings.setValue("octaveDownKey",
+						  QString::fromUtf8(configLocked->getOctaveDownKey().c_str(),
+											static_cast<int>(configLocked->getOctaveDownKey().length())));
+		settings.setValue("echoBufferKey",
+						  QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
+											static_cast<int>(configLocked->getEchoBufferKey().length())));
 		settings.setValue("noteEntryLayout",	static_cast<int>(configLocked->getNoteEntryLayout()));
 		settings.endGroup();
 
 		// Sound //
 		settings.beginGroup("Sound");
-		settings.setValue("soundDevice",  QString::fromUtf8(configLocked->getSoundDevice().c_str(),
-											   configLocked->getSoundDevice().length()));
+		settings.setValue("soundDevice",
+						  QString::fromUtf8(configLocked->getSoundDevice().c_str(),
+											static_cast<int>(configLocked->getSoundDevice().length())));
 		settings.setValue("useSCCI",		configLocked->getUseSCCI());
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
@@ -89,7 +94,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		int n = 0;
 		for (auto pair : config.lock()->getFMEnvelopeTextMap()) {
 			settings.setArrayIndex(n++);
-			settings.setValue("type", QString::fromUtf8(pair.first.c_str(), pair.first.length()));
+			settings.setValue("type", QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
 			QString data;
 			for (auto type : pair.second) {
 				data += QString(",%1").arg(static_cast<int>(type));

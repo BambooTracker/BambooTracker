@@ -122,7 +122,7 @@ private:
 	QFont stepFont_, headerFont_;
 	int stepFontWidth_, stepFontHeight_, stepFontAscend_, stepFontLeading_;
 
-	int widthSpace_;
+	int widthSpace_, widthSpaceDbl_;
 	int stepNumWidth_;
 	int baseTrackWidth_;
 	int toneNameWidth_, instWidth_;

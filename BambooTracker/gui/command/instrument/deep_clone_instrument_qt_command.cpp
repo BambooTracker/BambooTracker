@@ -31,13 +31,13 @@ void DeepCloneInstrumentQtCommand::redo()
 		form = std::make_unique<InstrumentEditorSSGForm>(cloneNum_);
 		break;
 	default:
-		item = nullptr;
-		break;
+		return;
 	}
 
 	// KEEP CODE ORDER //
 	formMan_.lock()->add(cloneNum_, std::move(form), refName, source_);
 
+	item->setSizeHint(QSize(-1, 17));
 	item->setData(Qt::UserRole, cloneNum_);
 	list_->insertItem(cloneNum_, item);
 	//----------//

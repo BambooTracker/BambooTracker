@@ -46,13 +46,13 @@ void AddInstrumentQtCommand::redo()
 		form = std::make_unique<InstrumentEditorSSGForm>(num_);
 		break;
 	default:
-		item = nullptr;
-		break;
+		return;
 	}
 
 	// KEEP CODE ORDER //
 	formMan_.lock()->add(num_, std::move(form), name_, source_);
 
+	item->setSizeHint(QSize(-1, 17));
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(num_, item);
 	//----------//

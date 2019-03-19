@@ -314,7 +314,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 				.arg(palette_->ilistHovSelBackColor.blue()).arg(palette_->ilistHovSelBackColor.alpha())
 				);
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-	ui->instrumentListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
 					 this, &MainWindow::onInstrumentListWidgetItemAdded);

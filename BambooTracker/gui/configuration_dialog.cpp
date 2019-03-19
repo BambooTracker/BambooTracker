@@ -176,34 +176,34 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 {
 	QString text;
 	switch (ui->generalSettingsListWidget->currentRow()) {
-	case 0:	// Warp cursor
+	case 0:		// Warp cursor
 		text = tr("Warp the cursor around the edges of the pattern editor.");
 		break;
-	case 1:	// Warp across orders
+	case 1:		// Warp across orders
 		text = tr("Move to previous or next order when reaching top or bottom in the pattern editor.");
 		break;
-	case 2:	// Show row numbers in hex
+	case 2:		// Show row numbers in hex
 		text = tr("Display order numbers and the order count on the status bar in hexadecimal.");
 		break;
-	case 3:	// Preview previous/next orders
+	case 3:		// Preview previous/next orders
 		text = tr("Preview previous and next orders in the pattern editor.");
 		break;
-	case 4:	// Backup modeles
+	case 4:		// Backup modeles
 		text = tr("Create a backup copy of the existing file when saving a module.");
 		break;
-	case 5:	// Don't select on double click
+	case 5:		// Don't select on double click
 		text = tr("Don't select the whole track when double-clicking in the pattern editor.");
 		break;
-	case 6:	// Reverse FM volume order
+	case 6:		// Reverse FM volume order
 		text = tr("Reverse the order of FM volume so that 00 is the quietest in the pattern editor.");
 		break;
-	case 7:	// Move cursor to right
+	case 7:		// Move cursor to right
 		text = tr("Move the cursor to right after entering effects in the pattern editor.");
 		break;
-	case 8:	// Retrieve channel state
+	case 8:		// Retrieve channel state
 		text = tr("Reconstruct the current channel's state from previous orders upon playing.");
 		break;
-	case 9:	// Enable translation
+	case 9:		// Enable translation
 		text = tr("Translate to your language from the next launch. "
 				  "See readme to check supported languages.");
 		break;

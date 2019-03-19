@@ -56,18 +56,19 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	QFontMetrics m(headerFont_);
 
 	/* Width & height */
-	widthSpace_ = stepFontWidth_ / 2;
+	widthSpace_ = stepFontWidth_ / 5 * 2;
+	widthSpaceDbl_ = widthSpace_ * 2;
 	stepNumWidth_ = stepFontWidth_ * 2 + widthSpace_;
 	toneNameWidth_ = stepFontWidth_ * 3;
 	instWidth_ = stepFontWidth_ * 2;
 	volWidth_ = stepFontWidth_ * 2;
 	effIDWidth_ = stepFontWidth_ * 2;
 	effValWidth_ = stepFontWidth_ * 2;
-	effWidth_ = effIDWidth_ + effValWidth_ + stepFontWidth_;
+	effWidth_ = effIDWidth_ + effValWidth_ + widthSpaceDbl_;
 	baseTrackWidth_ = toneNameWidth_ + instWidth_ + volWidth_
-					  + effIDWidth_ + effValWidth_ + stepFontWidth_ * 4;
+					  + effIDWidth_ + effValWidth_ + widthSpaceDbl_ * 4;
 	hdEffCompandButtonWidth_ = m.width("+");
-	hdMuteToggleWidth_ = baseTrackWidth_ - hdEffCompandButtonWidth_ - widthSpace_ * 3;
+	hdMuteToggleWidth_ = baseTrackWidth_ - hdEffCompandButtonWidth_ - stepFontWidth_ / 2 * 3;
 	headerHeight_ = stepFontHeight_ * 2;
 	hdPlusY_ = headerHeight_ / 4 + m.height() / 2 - m.leading() / 2 - m.descent();
 	hdMinusY_ = headerHeight_ / 2 + hdPlusY_;
@@ -282,12 +283,12 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 
 	/* Tone name */
 	if (pos == curPos_)	// Paint current cell
-		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnCurCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnCurCellColor);
 	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnHovCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnHovCellColor);
 	if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
 			&& isSelectedCell(trackNum, 0, orderNum, stepNum))	// Paint selected
-		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnSelCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnSelCellColor);
 	int noteNum = bt_->getStepNoteNumber(curSongNum_, trackNum, orderNum, stepNum);
 	switch (noteNum) {
 	case -1:	// None
@@ -300,19 +301,19 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		break;
 	case -3:	// Echo 0
 		painter.setPen(palette_.lock()->ptnToneColor);
-		painter.drawText(offset + widthSpace_, baseY, "^0");
+		painter.drawText(offset + stepFontWidth_ / 2, baseY, "^0");
 		break;
 	case -4:	// Echo 1
 		painter.setPen(palette_.lock()->ptnToneColor);
-		painter.drawText(offset + widthSpace_, baseY, "^1");
+		painter.drawText(offset + stepFontWidth_ / 2, baseY, "^1");
 		break;
 	case -5:	// Echo 2
 		painter.setPen(palette_.lock()->ptnToneColor);
-		painter.drawText(offset + widthSpace_, baseY, "^2");
+		painter.drawText(offset + stepFontWidth_ / 2, baseY, "^2");
 		break;
 	case -6:	// Echo 3
 		painter.setPen(palette_.lock()->ptnToneColor);
-		painter.drawText(offset + widthSpace_, baseY, "^3");
+		painter.drawText(offset + stepFontWidth_ / 2, baseY, "^3");
 		break;
 	default:	// Convert tone name
 	{
@@ -337,18 +338,18 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 	}
 	}
 	if (isMuteTrack)	// Paint mute mask
-		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnMaskColor);
-	offset += toneNameWidth_ +  stepFontWidth_;
+		painter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnMaskColor);
+	offset += toneNameWidth_ +  widthSpaceDbl_;
 	pos.colInTrack = 1;
 
 	/* Instrument */
 	if (pos == curPos_)	// Paint current cell
-		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnCurCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnCurCellColor);
 	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnHovCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnHovCellColor);
 	if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
 			&& isSelectedCell(trackNum, 1, orderNum, stepNum))	// Paint selected
-		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnSelCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnSelCellColor);
 	int instNum = bt_->getStepInstrument(curSongNum_, trackNum, orderNum, stepNum);
 	if (instNum == -1) {
 		painter.setPen(textColor);
@@ -362,18 +363,18 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		painter.drawText(offset, baseY, QString("%1").arg(instNum, 2, 16, QChar('0')).toUpper());
 	}
 	if (isMuteTrack)	// Paint mute mask
-		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnMaskColor);
-	offset += instWidth_ +  stepFontWidth_;
+		painter.fillRect(offset - widthSpace_, rowY, instWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnMaskColor);
+	offset += instWidth_ +  widthSpaceDbl_;
 	pos.colInTrack = 2;
 
 	/* Volume */
 	if (pos == curPos_)	// Paint current cell
-		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnCurCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnCurCellColor);
 	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
-		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnHovCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnHovCellColor);
 	if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
 			&& isSelectedCell(trackNum, 2, orderNum, stepNum))	// Paint selected
-		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnSelCellColor);
+		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnSelCellColor);
 	int vol = bt_->getStepVolume(curSongNum_, trackNum, orderNum, stepNum);
 	if (vol == -1) {
 		painter.setPen(textColor);
@@ -394,8 +395,8 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		painter.drawText(offset, baseY, QString("%1").arg(vol, 2, 16, QChar('0')).toUpper());
 	}
 	if (isMuteTrack)	// Paint mute mask
-		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + stepFontWidth_, stepFontHeight_, palette_.lock()->ptnMaskColor);
-	offset += volWidth_ +  stepFontWidth_;
+		painter.fillRect(offset - widthSpace_, rowY, volWidth_ + widthSpaceDbl_, stepFontHeight_, palette_.lock()->ptnMaskColor);
+	offset += volWidth_ +  widthSpaceDbl_;
 	pos.colInTrack = 3;
 
 	/* Effect */
@@ -443,7 +444,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		}
 		if (isMuteTrack)	// Paint mute mask
 			painter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, palette_.lock()->ptnMaskColor);
-		offset += effValWidth_ + stepFontWidth_;
+		offset += effValWidth_ + widthSpaceDbl_;
 		++pos.colInTrack;
 	}
 
@@ -457,10 +458,11 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_.lock()->ptnHeaderRowColor);
 	int x, trackNum;
-	for (x = stepNumWidth_ + widthSpace_, trackNum = leftTrackNum_; x < maxWidth; ) {
+	int lspace = stepFontWidth_ / 2;
+	for (x = stepNumWidth_ + lspace, trackNum = leftTrackNum_; x < maxWidth; ) {
 		int tw = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackNum));
 		if (hovPos_.order == -2 && hovPos_.track == trackNum)
-			painter.fillRect(x - widthSpace_, 0, tw, headerHeight_, palette_.lock()->ptnHovCellColor);
+			painter.fillRect(x - lspace, 0, tw, headerHeight_, palette_.lock()->ptnHovCellColor);
 
 		painter.setPen(palette_.lock()->ptnHeaderTextColor);
 		QString srcName;
@@ -488,8 +490,8 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		painter.fillRect(x, headerHeight_ - 4, hdMuteToggleWidth_, 2,
 						 bt_->isMute(trackNum) ? palette_.lock()->ptnMuteColor : palette_.lock()->ptnUnmuteColor);
 
-		painter.drawText(x + hdMuteToggleWidth_ + widthSpace_, hdPlusY_, "+");
-		painter.drawText(x + hdMuteToggleWidth_ + widthSpace_, hdMinusY_, "-");
+		painter.drawText(x + hdMuteToggleWidth_ + lspace, hdPlusY_, "+");
+		painter.drawText(x + hdMuteToggleWidth_ + lspace, hdMinusY_, "-");
 
 		x += tw;
 		++trackNum;
@@ -742,11 +744,11 @@ QPoint PatternEditorPanel::calculateCurrentCursorPosition() const
 {
 	int w = calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track - 1);
 	if (curPos_.colInTrack > 0) {
-		w = w + toneNameWidth_ + stepFontWidth_;
+		w = w + toneNameWidth_ + widthSpaceDbl_;
 		if (curPos_.colInTrack > 1) {
-			w = w + instWidth_ + stepFontWidth_;
+			w = w + instWidth_ + widthSpaceDbl_;
 			if (curPos_.colInTrack > 2) {
-				w = w + volWidth_ + stepFontWidth_;
+				w = w + volWidth_ + widthSpaceDbl_;
 				for (int i = 3; i < 11; ++i) {
 					if (curPos_.colInTrack == i) break;
 					w = w + widthSpace_ + ((i % 2) ? effIDWidth_ : effValWidth_);
@@ -2500,17 +2502,17 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 	else {
 		int tmpWidth = stepNumWidth_;
 		for (int i = leftTrackNum_; ; ) {
-			tmpWidth += (toneNameWidth_ + stepFontWidth_);
+			tmpWidth += (toneNameWidth_ + widthSpaceDbl_);
 			if (pos.x() <= tmpWidth) {
 				hovPos_.setCols(i, 0);
 				break;
 			}
-			tmpWidth += (instWidth_ + stepFontWidth_);
+			tmpWidth += (instWidth_ + widthSpaceDbl_);
 			if (pos.x() <= tmpWidth) {
 				hovPos_.setCols(i, 1);
 				break;
 			}
-			tmpWidth += (volWidth_ + stepFontWidth_);
+			tmpWidth += (volWidth_ + widthSpaceDbl_);
 			if (pos.x() <= tmpWidth) {
 				hovPos_.setCols(i, 2);
 				break;

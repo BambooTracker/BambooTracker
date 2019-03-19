@@ -48,9 +48,9 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	rowFontHeight_ = rowFontAscend_ + rowFontLeading_;
 
 	/* Width & height */
-	widthSpace_ = rowFontWidth_ / 2;
+	widthSpace_ = rowFontWidth_ / 4;
+	trackWidth_ = rowFontWidth_ * 3 + widthSpace_ * 2;
 	rowNumWidth_ = rowFontWidth_ * 2 + widthSpace_;
-	trackWidth_ = rowFontWidth_ * 5;
 	headerHeight_ = rowFontHeight_;
 
 	initDisplay();
@@ -131,7 +131,7 @@ void OrderListPanel::drawRows(int maxWidth)
 					x + textOffset,
 					curRowBaselineY_,
 					QString("%1")
-					.arg(orderRowData_.at(trackNum).patten, 2, 16, QChar('0')).toUpper()
+					.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
 				);
 
 		x += trackWidth_;
@@ -177,7 +177,8 @@ void OrderListPanel::drawRows(int maxWidth)
 			painter.drawText(
 						x + textOffset,
 						baseY,
-						QString("%1").arg(orderRowData_.at(trackNum).patten, 2, 16, QChar('0')).toUpper()
+						QString("%1")
+						.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
 					);
 
 			x += trackWidth_;
@@ -221,7 +222,8 @@ void OrderListPanel::drawRows(int maxWidth)
 			painter.drawText(
 						x + textOffset,
 						baseY,
-						QString("%1").arg(orderRowData_.at(trackNum).patten, 2, 16, QChar('0')).toUpper()
+						QString("%1")
+						.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
 					);
 
 			x += trackWidth_;
@@ -240,15 +242,16 @@ void OrderListPanel::drawHeaders(int maxWidth)
 	int x, trackNum;
 	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		QString str;
-		switch (songStyle_.trackAttribs[trackNum].source) {
+		auto& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
+		switch (attrib.source) {
 		case SoundSource::FM:
-			str = "FM" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			str = "FM" + QString::number(attrib.channelInSource + 1);
 			break;
 		case SoundSource::SSG:
-			str = "SSG" + QString::number(songStyle_.trackAttribs[trackNum].channelInSource + 1);
+			str = "SG" + QString::number(attrib.channelInSource + 1);
 			break;
 		case SoundSource::DRUM:
-			switch (songStyle_.trackAttribs[trackNum].channelInSource) {
+			switch (attrib.channelInSource) {
 			case 0:	str = "BD";	break;
 			case 1:	str = "SD";	break;
 			case 2:	str = "TOP";	break;
@@ -304,7 +307,7 @@ void OrderListPanel::moveCursorToRight(int n)
 	int tmp = curPos_.track + n;
 	if (n > 0) {
 		while (true) {
-			int sub = tmp - songStyle_.trackAttribs.size();
+			int sub = tmp - static_cast<int>(songStyle_.trackAttribs.size());
 			if (sub < 0) {
 				curPos_.track = tmp;
 				break;
@@ -314,7 +317,7 @@ void OrderListPanel::moveCursorToRight(int n)
 					tmp = sub;
 				}
 				else {
-					curPos_.track = songStyle_.trackAttribs.size() - 1;
+					curPos_.track = static_cast<int>(songStyle_.trackAttribs.size()) - 1;
 					break;
 				}
 			}
@@ -322,7 +325,7 @@ void OrderListPanel::moveCursorToRight(int n)
 	}
 	else {
 		while (true) {
-			int add = tmp + songStyle_.trackAttribs.size();
+			int add = tmp + static_cast<int>(songStyle_.trackAttribs.size());
 			if (tmp < 0) {
 				if (config_.lock()->getWarpCursor()) {
 					tmp = add;
@@ -347,7 +350,7 @@ void OrderListPanel::moveCursorToRight(int n)
 	}
 
 	columnsWidthFromLeftToEnd_
-			= calculateColumnsWidthWithRowNum(leftTrackNum_, songStyle_.trackAttribs.size() - 1);
+			= calculateColumnsWidthWithRowNum(leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
 	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curPos_.track);	// Send to slider
 
@@ -359,7 +362,7 @@ void OrderListPanel::moveCursorToRight(int n)
 void OrderListPanel::moveCursorToDown(int n)
 {
 	int tmp = curPos_.row + n;
-	int endRow = bt_->getOrderSize(curSongNum_);
+	int endRow = static_cast<int>(bt_->getOrderSize(curSongNum_));
 	if (n > 0) {
 		while (true) {
 			int sub = tmp - endRow;
@@ -385,9 +388,11 @@ void OrderListPanel::moveCursorToDown(int n)
 		}
 	}
 
-	if (!isIgnoreToSlider_) emit currentOrderChangedForSlider(curPos_.row, bt_->getOrderSize(curSongNum_) - 1);	// Send to slider
+	if (!isIgnoreToSlider_)		// Send to slider
+		emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
-	if (!isIgnoreToPattern_) emit currentOrderChanged(curPos_.row);	// Send to pattern editor
+	if (!isIgnoreToPattern_)	// Send to pattern editor
+		emit currentOrderChanged(curPos_.row);
 
 	update();
 }
@@ -461,7 +466,7 @@ void OrderListPanel::copySelectedCells()
 	for (int i = 0; i < h; ++i) {
 		std::vector<OrderData> odrs = bt_->getOrderData(curSongNum_, selLeftAbovePos_.row + i);
 		for (int j = 0; j < w; ++j) {
-			str += QString::number(odrs.at(selLeftAbovePos_.track + j).patten);
+			str += QString::number(odrs.at(static_cast<size_t>(selLeftAbovePos_.track + j)).patten);
 			if (i < h - 1 || j < w - 1) str += ",";
 		}
 	}
@@ -477,12 +482,12 @@ void OrderListPanel::pasteCopiedCells(const OrderPosition& startPos)
 	QRegularExpression re(hdRe);
 	QRegularExpressionMatch match = re.match(str);
 	int w = match.captured(1).toInt();
-	int h = match.captured(2).toInt();
+	size_t h = match.captured(2).toUInt();
 	str.remove(re);
 
 	std::vector<std::vector<std::string>> cells;
 	re = QRegularExpression("^([^,]+),");
-	for (int i = 0; i < h; ++i) {
+	for (size_t i = 0; i < h; ++i) {
 		cells.emplace_back();
 		for (int j = 0; j < w; ++j) {
 			match = re.match(str);
@@ -661,7 +666,8 @@ void OrderListPanel::onSongLoaded()
 	curSongNum_ = bt_->getCurrentSongNumber();
 	curPos_ = { bt_->getCurrentTrackAttribute().number, bt_->getCurrentOrderNumber() };
 	songStyle_ = bt_->getSongStyle(curSongNum_);
-	columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(0, songStyle_.trackAttribs.size() - 1);
+	columnsWidthFromLeftToEnd_
+			= calculateColumnsWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
 	hovPos_ = { -1, -1 };
 	editPos_ = { -1, -1 };
@@ -696,7 +702,7 @@ void OrderListPanel::onSelectPressed(int type)
 	}
 	case 1:	// All
 	{
-		int max = bt_->getOrderSize(curSongNum_) - 1;
+		int max = static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1;
 		selectAllState_ = (selectAllState_ + 1) % 2;
 		if (!selectAllState_) {
 			OrderPosition start = { curPos_.track, 0 };
@@ -844,7 +850,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		}
 		else {
 			moveCursorToDown(
-						bt_->getOrderSize(curSongNum_) - curPos_.row - 1);
+						static_cast<int>(bt_->getOrderSize(curSongNum_)) - curPos_.row - 1);
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -854,7 +860,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-config_.lock()->getPageJumpLength());
+			moveCursorToDown(-static_cast<int>(config_.lock()->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -864,7 +870,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(config_.lock()->getPageJumpLength());
+			moveCursorToDown(static_cast<int>(config_.lock()->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
