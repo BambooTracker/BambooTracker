@@ -15,6 +15,7 @@
 - [#81] - Fix crash when toggling FM1 on/off using mouse (thanks [@papiezak])
 - Fix some layouts
 - Fix operator mask in restarting
+- [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -22,8 +23,10 @@
 [#32]: https://github.com/rerrahkr/BambooTracker/issues/32
 [#79]: https://github.com/rerrahkr/BambooTracker/issues/79
 [#62]: https://github.com/rerrahkr/BambooTracker/issues/62
+[#82]: https://github.com/rerrahkr/BambooTracker/issues/82
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
+[@KamuiKazuma]: https://github.com/KamuiKazuma
 
 ## v0.1.6 (2019-03-16)
 ### Added
