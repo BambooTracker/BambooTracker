@@ -9,7 +9,7 @@ AudioStream::AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate, QS
 	format_.setByteOrder(QAudioFormat::Endian(QSysInfo::ByteOrder));
 	format_.setChannelCount(2); // Stereo
 	format_.setCodec("audio/pcm");
-	format_.setSampleRate(rate);
+	format_.setSampleRate(static_cast<int>(rate));
 	format_.setSampleSize(16);   // int16
 	format_.setSampleType(QAudioFormat::SignedInt);
 
@@ -46,7 +46,7 @@ void AudioStream::setRate(uint32_t rate)
 {
 	bool hasRun = mixer_->hasRun();
 	if (hasRun) stop();
-	format_.setSampleRate(rate);
+	format_.setSampleRate(static_cast<int>(rate));
 	audio_ = std::make_unique<QAudioOutput>(info_, format_);
 	mixer_->setRate(rate);
 	if (hasRun) start();

@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 		w->show();
 		int ret = a->exec();
 		ConfigurationHandler::saveConfiguration(config);
+		if (ret) QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occured."));
 		return ret;
 	} catch (...) {
 		QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occured."));

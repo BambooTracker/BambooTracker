@@ -1111,13 +1111,6 @@ void MainWindow::loadModule()
 							inst->getSoundSource(), instForms_));
 	}
 
-	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
-	case SongType::STD:		statusStyle_->setText(tr("Standard"));			break;
-	case SongType::FMEX:	statusStyle_->setText(tr("FM3ch expanded"));	break;
-	}
-
-	statusPlayPos_->setText("00/00");
-
 	isSavedModBefore_ = false;
 
 	loadSong();
@@ -1197,6 +1190,11 @@ void MainWindow::loadSong()
 	}
 
 	setWindowTitle();
+	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
+	case SongType::STD:		statusStyle_->setText(tr("Standard"));			break;
+	case SongType::FMEX:	statusStyle_->setText(tr("FM3ch expanded"));	break;
+	}
+	statusPlayPos_->setText("00/00");
 }
 
 /********** Play song **********/

@@ -27,13 +27,13 @@ private:
 
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;
-	static constexpr unsigned int modFileMinor		= 0;
-	static constexpr unsigned int modFileRevision	= 3;
+	static constexpr unsigned int modFileMinor		= 1;
+	static constexpr unsigned int modFileRevision	= 0;
 
 	// Instrument file version
 	static constexpr unsigned int instFileMajor		= 1;
-	static constexpr unsigned int instFileMinor		= 0;
-	static constexpr unsigned int instFileRevision	= 1;
+	static constexpr unsigned int instFileMinor		= 1;
+	static constexpr unsigned int instFileRevision	= 0;
 
 	Version() {}
 };
@@ -70,9 +70,9 @@ inline std::string Version::ofInstrumentFileInString()
 
 inline uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)
 {
-	uint32_t maj = uitobcd(major);
-	uint32_t min = uitobcd(minor);
-	uint32_t rev = uitobcd(revision);
+	uint32_t maj = uitobcd(static_cast<uint8_t>(major));
+	uint32_t min = uitobcd(static_cast<uint8_t>(minor));
+	uint32_t rev = uitobcd(static_cast<uint8_t>(revision));
 	return (maj << 16) + (min << 8) + rev;
 }
 

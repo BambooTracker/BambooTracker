@@ -181,15 +181,8 @@ int JamManager::calcOctave(int baseOctave, JamKey &key)
 void JamManager::clear(SongType type)
 {
 	if (isPoly_) {
-		switch (type) {
-		case SongType::STD:
-			unusedChFM_ = std::deque<int>(6);
-			unusedChSSG_= std::deque<int>(3);
-			break;
-		case SongType::FMEX:
-			// UNDONE: change channel size by Effect mode
-			break;
-		}
+		unusedChFM_ = std::deque<int>(getFMChannelCount(type));
+		unusedChSSG_= std::deque<int>(3);
 
 		for (size_t i = 0; i < unusedChFM_.size(); ++i) {
 			unusedChFM_[i] = static_cast<int>(i);

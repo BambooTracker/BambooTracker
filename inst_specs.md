@@ -24,9 +24,19 @@ v1.0.1 - 2018-12-10
 The following data change depending on sound source of the instrument.
 
 ### FM
-| Type  | Field               | Description                                                          |
-| ----- | ------------------- | -------------------------------------------------------------------- |
-| uint8 | Envelope reset flag | Flag for envelope reset. If bit 0 is set, envelope reset is enabled. |
+| Type  | Field                         | Description                                                                                                                                                            |
+| ----- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| uint8 | Envelope reset flag           | Flag for envelope reset. Bit 0 is for all operators, bit 1 is for operator 1 and bit 3 is for operator 4. If bit is set, envelope reset is enabled for correspondings. |
+| uint8 | All operators arpeggio number | If bit 7 is clear, arpeggio for all operators is enabled. bit 0-6 are the number: n-th FM arpeggio property. n have to be 0 if it is unused.                           |
+| uint8 | Operator 1 arpeggio number    | If bit 7 is clear, operator 1 arpeggio is enabled. bit 0-6 are the number: n-th FM arpeggio property. n have to be 0 if it is unused.                                  |
+| uint8 | Operator 2 arpeggio number    | If bit 7 is clear, operator 2 arpeggio is enabled. bit 0-6 are the number: n-th FM arpeggio property. n have to be 0 if it is unused.                                  |
+| uint8 | Operator 3 arpeggio number    | If bit 7 is clear, operator 3 arpeggio is enabled. bit 0-6 are the number: n-th FM arpeggio property. n have to be 0 if it is unused.                                  |
+| uint8 | Operator 4 arpeggio number    | If bit 7 is clear, operator 4 arpeggio is enabled. bit 0-6 are the number: n-th FM arpeggio property. n have to be 0 if it is unused.                                  |
+| uint8 | All operators pitch number    | If bit 7 is clear, pitch for all operators is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                 |
+| uint8 | Operator 1 pitch number       | If bit 7 is clear, operator 1 pitch is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                        |
+| uint8 | Operator 2 pitch number       | If bit 7 is clear, operator 2 pitch is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                        |
+| uint8 | Operator 3 pitch number       | If bit 7 is clear, operator 3 pitch is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                        |
+| uint8 | Operator 4 pitch number       | If bit 7 is clear, operator 4 pitch is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                        |
 
 ## Instrument Property Section
 | Type            | Field                              | Description                                            |
@@ -60,7 +70,8 @@ Subsection identifier is defined as:
 | `0x33`        | SSG arpeggio sequence                                                |
 | `0x34`        | SSG pitch sequence                                                   |
 
- And repeats sequence data block.
+And repeats sequence data block.  
+Note that multiple FM arpeggio and pitch sequences can be described for each operator.
 
 ### FM envelope
 | Type  | Field  | Description                                           |
@@ -140,7 +151,8 @@ FM/SSG arpeggio can be selected from all of these, FM/SSG pitch can be absolute 
 ---
 
 ## History
-| Version | Date       | Detail                          |
-| ------- | ---------- | ------------------------------- |
-| 1.0.1   | 2018-12-10 | Added instrument sequence type. |
-| 1.0.0   | 2018-11-23 | Initial release.                |
+| Version | Date       | Detail                                |
+| ------- | ---------- | ------------------------------------- |
+| 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode. |
+| 1.0.1   | 2018-12-10 | Added instrument sequence type.       |
+| 1.0.0   | 2018-11-23 | Initial release.                      |

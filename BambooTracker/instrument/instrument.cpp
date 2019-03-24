@@ -44,12 +44,7 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 	AbstractInstrument(number, SoundSource::FM, name, owner),
 	envNum_(0),
 	lfoEnabled_(false),
-	lfoNum_(0),
-	arpEnabled_(false),
-	arpNum_(0),
-	ptEnabled_(false),
-	ptNum_(0),
-	envResetEnabled_(false)
+	lfoNum_(0)
 {
 	opSeqEnabled_ = {
 		{ FMEnvelopeParameter::AL,	false },
@@ -131,6 +126,41 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 		{ FMEnvelopeParameter::ML4,	0 },
 		{ FMEnvelopeParameter::DT4,	0 }
 	};
+	arpEnabled_ = {
+		{ FMOperatorType::All, false },
+		{ FMOperatorType::Op1, false },
+		{ FMOperatorType::Op2, false },
+		{ FMOperatorType::Op3, false },
+		{ FMOperatorType::Op4, false }
+	};
+	arpNum_ = {
+		{ FMOperatorType::All, 0 },
+		{ FMOperatorType::Op1, 0 },
+		{ FMOperatorType::Op2, 0 },
+		{ FMOperatorType::Op3, 0 },
+		{ FMOperatorType::Op4, 0 }
+	};
+	ptEnabled_ = {
+		{ FMOperatorType::All, false },
+		{ FMOperatorType::Op1, false },
+		{ FMOperatorType::Op2, false },
+		{ FMOperatorType::Op3, false },
+		{ FMOperatorType::Op4, false }
+	};
+	ptNum_ = {
+		{ FMOperatorType::All, 0 },
+		{ FMOperatorType::Op1, 0 },
+		{ FMOperatorType::Op2, 0 },
+		{ FMOperatorType::Op3, 0 },
+		{ FMOperatorType::Op4, 0 }
+	};
+	envResetEnabled_ = {
+		{ FMOperatorType::All, false },
+		{ FMOperatorType::Op1, false },
+		{ FMOperatorType::Op2, false },
+		{ FMOperatorType::Op3, false },
+		{ FMOperatorType::Op4, false }
+	};
 }
 
 std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
@@ -143,11 +173,13 @@ std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
 		c->setOperatorSequenceEnabled(pair.first, pair.second);
 		c->setOperatorSequenceNumber(pair.first, opSeqNum_.at(pair.first));
 	}
-	c->setArpeggioEnabled(arpEnabled_);
-	c->setArpeggioNumber(arpNum_);
-	c->setPitchEnabled(ptEnabled_);
-	c->setPitchNumber(ptNum_);
-	c->setEnvelopeResetEnabled(envResetEnabled_);
+	for (auto pair : arpEnabled_) {
+		c->setArpeggioEnabled(pair.first, pair.second);
+		c->setArpeggioNumber(pair.first, arpNum_.at(pair.first));
+		c->setPitchEnabled(pair.first, ptEnabled_.at(pair.first));
+		c->setPitchNumber(pair.first, ptNum_.at(pair.first));
+		c->setEnvelopeResetEnabled(pair.first, envResetEnabled_.at(pair.first));
+	}
 	return std::move(c);
 }
 
@@ -196,14 +228,14 @@ int InstrumentFM::getLFOParameter(FMLFOParameter param) const
 	return owner_->getLFOFMparameter(lfoNum_, param);
 }
 
-void InstrumentFM::setEnvelopeResetEnabled(bool enabled)
+void InstrumentFM::setEnvelopeResetEnabled(FMOperatorType op, bool enabled)
 {
-	envResetEnabled_ = enabled;
+	envResetEnabled_.at(op) = enabled;
 }
 
-bool InstrumentFM::getEnvelopeResetEnabled() const
+bool InstrumentFM::getEnvelopeResetEnabled(FMOperatorType op) const
 {
-	return envResetEnabled_;
+	return envResetEnabled_.at(op);
 }
 
 void InstrumentFM::setOperatorSequenceEnabled(FMEnvelopeParameter param, bool enabled)
@@ -246,94 +278,94 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getOperatorSequenceSequ
 	return owner_->getOperatorSequenceFMIterator(param, opSeqNum_.at(param));
 }
 
-void InstrumentFM::setArpeggioEnabled(bool enabled)
+void InstrumentFM::setArpeggioEnabled(FMOperatorType op, bool enabled)
 {
-	arpEnabled_ = enabled;
+	arpEnabled_.at(op) = enabled;
 }
 
-bool InstrumentFM::getArpeggioEnabled() const
+bool InstrumentFM::getArpeggioEnabled(FMOperatorType op) const
 {
-	return arpEnabled_;
+	return arpEnabled_.at(op);
 }
 
-void InstrumentFM::setArpeggioNumber(int n)
+void InstrumentFM::setArpeggioNumber(FMOperatorType op, int n)
 {
-	arpNum_ = n;
+	arpNum_.at(op) = n;
 }
 
-int InstrumentFM::getArpeggioNumber() const
+int InstrumentFM::getArpeggioNumber(FMOperatorType op) const
 {
-	return arpNum_;
+	return arpNum_.at(op);
 }
 
-int InstrumentFM::getArpeggioType() const
+int InstrumentFM::getArpeggioType(FMOperatorType op) const
 {
-	return owner_->getArpeggioFMType(arpNum_);
+	return owner_->getArpeggioFMType(arpNum_.at(op));
 }
 
-std::vector<CommandInSequence> InstrumentFM::getArpeggioSequence() const
+std::vector<CommandInSequence> InstrumentFM::getArpeggioSequence(FMOperatorType op) const
 {
-	return owner_->getArpeggioFMSequence(arpNum_);
+	return owner_->getArpeggioFMSequence(arpNum_.at(op));
 }
 
-std::vector<Loop> InstrumentFM::getArpeggioLoops() const
+std::vector<Loop> InstrumentFM::getArpeggioLoops(FMOperatorType op) const
 {
-	return owner_->getArpeggioFMLoops(arpNum_);
+	return owner_->getArpeggioFMLoops(arpNum_.at(op));
 }
 
-Release InstrumentFM::getArpeggioRelease() const
+Release InstrumentFM::getArpeggioRelease(FMOperatorType op) const
 {
-	return owner_->getArpeggioFMRelease(arpNum_);
+	return owner_->getArpeggioFMRelease(arpNum_.at(op));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getArpeggioSequenceIterator() const
+std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getArpeggioSequenceIterator(FMOperatorType op) const
 {
-	return owner_->getArpeggioFMIterator(arpNum_);
+	return owner_->getArpeggioFMIterator(arpNum_.at(op));
 }
 
-void InstrumentFM::setPitchEnabled(bool enabled)
+void InstrumentFM::setPitchEnabled(FMOperatorType op, bool enabled)
 {
-	ptEnabled_ = enabled;
+	ptEnabled_.at(op) = enabled;
 }
 
-bool InstrumentFM::getPitchEnabled() const
+bool InstrumentFM::getPitchEnabled(FMOperatorType op) const
 {
-	return ptEnabled_;
+	return ptEnabled_.at(op);
 }
 
-void InstrumentFM::setPitchNumber(int n)
+void InstrumentFM::setPitchNumber(FMOperatorType op, int n)
 {
-	ptNum_ = n;
+	ptNum_.at(op) = n;
 }
 
-int InstrumentFM::getPitchNumber() const
+int InstrumentFM::getPitchNumber(FMOperatorType op) const
 {
-	return ptNum_;
+	return ptNum_.at(op);
 }
 
-int InstrumentFM::getPitchType() const
+int InstrumentFM::getPitchType(FMOperatorType op) const
 {
-	return owner_->getPitchFMType(ptNum_);
+	return owner_->getPitchFMType(ptNum_.at(op));
 }
 
-std::vector<CommandInSequence> InstrumentFM::getPitchSequence() const
+std::vector<CommandInSequence> InstrumentFM::getPitchSequence(FMOperatorType op) const
 {
-	return owner_->getPitchFMSequence(ptNum_);
+	return owner_->getPitchFMSequence(ptNum_.at(op));
 }
 
-std::vector<Loop> InstrumentFM::getPitchLoops() const
+std::vector<Loop> InstrumentFM::getPitchLoops(FMOperatorType op) const
 {
-	return owner_->getPitchFMLoops(ptNum_);
+	return owner_->getPitchFMLoops(ptNum_.at(op));
 }
 
-Release InstrumentFM::getPitchRelease() const
+Release InstrumentFM::getPitchRelease(FMOperatorType op) const
 {
-	return owner_->getPitchFMRelease(ptNum_);
+	return owner_->getPitchFMRelease(ptNum_.at(op));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterator() const
+std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
 {
-	return owner_->getPitchFMIterator(ptNum_);
+	return owner_->getPitchFMIterator(ptNum_.at(op));
 }
 
 /****************************************/

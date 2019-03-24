@@ -62,28 +62,28 @@ public:
 	Release getOperatorSequenceRelease(FMEnvelopeParameter param) const;
 	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const;
 
-	void setArpeggioEnabled(bool enabled);
-	bool getArpeggioEnabled() const;
-	void setArpeggioNumber(int n);
-	int getArpeggioNumber() const;
-	int getArpeggioType() const;
-	std::vector<CommandInSequence> getArpeggioSequence() const;
-	std::vector<Loop> getArpeggioLoops() const;
-	Release getArpeggioRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
+	void setArpeggioEnabled(FMOperatorType op, bool enabled);
+	bool getArpeggioEnabled(FMOperatorType op) const;
+	void setArpeggioNumber(FMOperatorType op, int n);
+	int getArpeggioNumber(FMOperatorType op) const;
+	int getArpeggioType(FMOperatorType op) const;
+	std::vector<CommandInSequence> getArpeggioSequence(FMOperatorType op) const;
+	std::vector<Loop> getArpeggioLoops(FMOperatorType op) const;
+	Release getArpeggioRelease(FMOperatorType op) const;
+	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator(FMOperatorType op) const;
 
-	void setPitchEnabled(bool enabled);
-	bool getPitchEnabled() const;
-	void setPitchNumber(int n);
-	int getPitchNumber() const;
-	int getPitchType() const;
-	std::vector<CommandInSequence> getPitchSequence() const;
-	std::vector<Loop> getPitchLoops() const;
-	Release getPitchRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;
+	void setPitchEnabled(FMOperatorType op, bool enabled);
+	bool getPitchEnabled(FMOperatorType op) const;
+	void setPitchNumber(FMOperatorType op, int n);
+	int getPitchNumber(FMOperatorType op) const;
+	int getPitchType(FMOperatorType op) const;
+	std::vector<CommandInSequence> getPitchSequence(FMOperatorType op) const;
+	std::vector<Loop> getPitchLoops(FMOperatorType op) const;
+	Release getPitchRelease(FMOperatorType op) const;
+	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator(FMOperatorType op) const;
 
-	void setEnvelopeResetEnabled(bool enabled);
-	bool getEnvelopeResetEnabled() const;
+	void setEnvelopeResetEnabled(FMOperatorType op, bool enabled);
+	bool getEnvelopeResetEnabled(FMOperatorType op) const;
 
 private:
 	int envNum_;
@@ -91,12 +91,12 @@ private:
 	int lfoNum_;
 	std::map<FMEnvelopeParameter, bool> opSeqEnabled_;
 	std::map<FMEnvelopeParameter, int> opSeqNum_;
-	bool arpEnabled_;
-	int arpNum_;
-	bool ptEnabled_;
-	int ptNum_;
+	std::map<FMOperatorType, bool> arpEnabled_;
+	std::map<FMOperatorType, int> arpNum_;
+	std::map<FMOperatorType, bool> ptEnabled_;
+	std::map<FMOperatorType, int> ptNum_;
 
-	bool envResetEnabled_;
+	std::map<FMOperatorType, bool> envResetEnabled_;
 };
 
 

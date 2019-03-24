@@ -25,7 +25,18 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 		}
 		break;
 	case SongType::FMEX:
-		// UNDONE: FM extend mode
+		tracks_.reserve(18);
+		for (int i = 0; i < 9; ++i) {
+			int ch = (i < 3) ? i
+							 : (i < 6) ? (i + 3) : (i - 3);
+			tracks_.emplace_back(i, SoundSource::FM, ch, defaultPatternSize);
+		}
+		for (int i = 0; i < 3; ++i) {
+			tracks_.emplace_back(i + 9, SoundSource::SSG, i, defaultPatternSize);
+		}
+		for (int i = 0; i < 6; ++i) {
+			tracks_.emplace_back(i + 12, SoundSource::DRUM, i, defaultPatternSize);
+		}
 		break;
 	}
 }

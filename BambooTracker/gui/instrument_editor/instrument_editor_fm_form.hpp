@@ -129,6 +129,9 @@ private slots:
 	void on_opSeqNumSpinBox_valueChanged(int arg1);
 
 	//========== Arpeggio ==========//
+public:
+	FMOperatorType getArpeggioOperator() const;
+
 signals:
 	void arpeggioNumberChanged();
 	void arpeggioParameterChanged(int arpNum, int fromInstNum);
@@ -141,11 +144,15 @@ private:
 	void setInstrumentArpeggioParameters();
 
 private slots:
+	void onArpeggioOperatorChanged(int op);
 	void onArpeggioTypeChanged(int index);
 	void on_arpEditGroupBox_toggled(bool arg1);
 	void on_arpNumSpinBox_valueChanged(int arg1);
 
 	//========== Pitch ==========//
+public:
+	FMOperatorType getPitchOperator() const;
+
 signals:
 	void pitchNumberChanged();
 	void pitchParameterChanged(int ptNum, int fromInstNum);
@@ -158,13 +165,14 @@ private:
 	void setInstrumentPitchParameters();
 
 private slots:
+	void onPitchOperatorChanged(int op);
 	void onPitchTypeChanged(int index);
 	void on_ptEditGroupBox_toggled(bool arg1);
 	void on_ptNumSpinBox_valueChanged(int arg1);
 
-	//========== Else ==========//
-private slots:
-	void on_envResetCheckBox_stateChanged(int arg1);
+	//========== Others ==========//
+private:
+	void setInstrumentEnvelopeResetParameters();
 };
 
 #endif // INSTRUMENT_EDITOR_FM_FORM_HPP

@@ -83,8 +83,8 @@ public:
 	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
 	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
-	void setInstrumentFMArpeggio(int instNum, int arpNum);
-	void setInstrumentFMArpeggioEnabled(int instNum, bool enabled);
+	void setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum);
+	void setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::vector<int> getArpeggioFMUsers(int arpNum) const;
 
 	void setPitchFMType(int ptNum, int type);
@@ -93,11 +93,11 @@ public:
 	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
 	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
-	void setInstrumentFMPitch(int instNum, int ptNum);
-	void setInstrumentFMPitchEnabled(int instNum, bool enabled);
+	void setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum);
+	void setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::vector<int> getPitchFMUsers(int ptNum) const;
 
-	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
+	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 	//--- SSG
 	void addWaveFormSSGSequenceCommand(int wfNum, int type, int data);

@@ -245,7 +245,30 @@ void OrderListPanel::drawHeaders(int maxWidth)
 		auto& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
 		switch (attrib.source) {
 		case SoundSource::FM:
-			str = "FM" + QString::number(attrib.channelInSource + 1);
+			switch (songStyle_.type) {
+			case SongType::STD:
+				str = "FM" + QString::number(attrib.channelInSource + 1);
+				break;
+			case SongType::FMEX:
+				switch (attrib.channelInSource) {
+				case 2:
+					str= "OP1";
+					break;
+				case 6:
+					str= "OP2";
+					break;
+				case 7:
+					str = "OP3";
+					break;
+				case 8:
+					str = "OP4";
+					break;
+				default:
+					str = "FM" + QString::number(attrib.channelInSource + 1);
+					break;
+				}
+				break;
+			}
 			break;
 		case SoundSource::SSG:
 			str = "SG" + QString::number(attrib.channelInSource + 1);

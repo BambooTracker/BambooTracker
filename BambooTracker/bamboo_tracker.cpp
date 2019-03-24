@@ -287,15 +287,15 @@ void BambooTracker::setArpeggioFMRelease(int arpNum, ReleaseType type, int begin
 	instMan_->setArpeggioFMRelease(arpNum, type, begin);
 }
 
-void BambooTracker::setInstrumentFMArpeggio(int instNum, int arpNum)
+void BambooTracker::setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum)
 {
-	instMan_->setInstrumentFMArpeggio(instNum, arpNum);
+	instMan_->setInstrumentFMArpeggio(instNum, op, arpNum);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
-void BambooTracker::setInstrumentFMArpeggioEnabled(int instNum, bool enabled)
+void BambooTracker::setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled)
 {
-	instMan_->setInstrumentFMArpeggioEnabled(instNum, enabled);
+	instMan_->setInstrumentFMArpeggioEnabled(instNum, op, enabled);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
@@ -334,15 +334,15 @@ void BambooTracker::setPitchFMRelease(int ptNum, ReleaseType type, int begin)
 	instMan_->setPitchFMRelease(ptNum, type, begin);
 }
 
-void BambooTracker::setInstrumentFMPitch(int instNum, int ptNum)
+void BambooTracker::setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum)
 {
-	instMan_->setInstrumentFMPitch(instNum, ptNum);
+	instMan_->setInstrumentFMPitch(instNum, op, ptNum);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
-void BambooTracker::setInstrumentFMPitchEnabled(int instNum, bool enabled)
+void BambooTracker::setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled)
 {
-	instMan_->setInstrumentFMPitchEnabled(instNum, enabled);
+	instMan_->setInstrumentFMPitchEnabled(instNum, op, enabled);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
@@ -351,9 +351,9 @@ std::vector<int> BambooTracker::getPitchFMUsers(int ptNum) const
 	return instMan_->getPitchFMUsers(ptNum);
 }
 
-void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled)
+void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled)
 {
-	instMan_->setInstrumentFMEnvelopeResetEnabled(instNum, enabled);
+	instMan_->setInstrumentFMEnvelopeResetEnabled(instNum, op, enabled);
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
@@ -598,28 +598,23 @@ void BambooTracker::setCurrentSongNumber(int num)
 
 	// Reset
 	opnaCtrl_->reset();
+	opnaCtrl_->setMode(songStyle_.type);
 	tickCounter_.resetCount();
 	tickCounter_.setTempo(song.getTempo());
 	tickCounter_.setSpeed(song.getSpeed());
 	tickCounter_.setGroove(mod_->getGroove(song.getGroove()).getSequence());
 	tickCounter_.setGrooveEnebled(!song.isUsedTempo());
 
-	switch (songStyle_.type) {
-	case SongType::STD:
-		muteStateFM_ = std::vector<bool>(6, false);
-		for (int i = 0; i < 6; ++i) opnaCtrl_->setMuteFMState(i, false);
+	size_t fmch = getFMChannelCount(songStyle_.type);
+	muteStateFM_ = std::vector<bool>(fmch, false);
+	for (int i = 0; i < static_cast<int>(fmch); ++i) opnaCtrl_->setMuteFMState(i, false);
 
-		ntDlyCntFM_ = std::vector<int>(6);
-		ntCutDlyCntFM_ = std::vector<int>(6);
-		volDlyCntFM_ = std::vector<int>(6);
-		volDlyValueFM_ = std::vector<int>(6, -1);
-		tposeDlyCntFM_ = std::vector<int>(6);
-		tposeDlyValueFM_ = std::vector<int>(6);
-		break;
-	case SongType::FMEX:
-		// UNDONE: extend ch4
-		break;
-	}
+	ntDlyCntFM_ = std::vector<int>(fmch);
+	ntCutDlyCntFM_ = std::vector<int>(fmch);
+	volDlyCntFM_ = std::vector<int>(fmch);
+	volDlyValueFM_ = std::vector<int>(fmch, -1);
+	tposeDlyCntFM_ = std::vector<int>(fmch);
+	tposeDlyValueFM_ = std::vector<int>(fmch);
 
 	muteStateSSG_ = std::vector<bool>(3, false);
 	for (int i = 0; i < 3; ++i) opnaCtrl_->setMuteSSGState(i, false);
@@ -1281,12 +1276,8 @@ void BambooTracker::clearDelayCounts()
 
 void BambooTracker::retrieveChannelStates()
 {
-	size_t fmch = 0;
-	switch (songStyle_.type) {
-	case SongType::STD:		fmch = 6;	break;
-	case SongType::FMEX:	// TODO: FM3chex
-		break;
-	}
+	size_t fmch = getFMChannelCount(songStyle_.type);
+
 	std::vector<int> tonesCntFM(fmch, 0), tonesCntSSG(3, 0);
 	std::vector<std::vector<int>> toneFM(fmch), toneSSG(3);
 	for (size_t i = 0; i < fmch; ++i) {

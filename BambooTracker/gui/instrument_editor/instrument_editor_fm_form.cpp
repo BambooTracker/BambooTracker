@@ -396,6 +396,12 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
 
 	//========== Arpeggio ==========//
+	ui->arpOpComboBox->addItem("All", static_cast<int>(FMOperatorType::All));
+	ui->arpOpComboBox->addItem("Op1", static_cast<int>(FMOperatorType::Op1));
+	ui->arpOpComboBox->addItem("Op2", static_cast<int>(FMOperatorType::Op2));
+	ui->arpOpComboBox->addItem("Op3", static_cast<int>(FMOperatorType::Op3));
+	ui->arpOpComboBox->addItem("Op4", static_cast<int>(FMOperatorType::Op4));
+
 	ui->arpEditor->setMaximumDisplayedRowCount(15);
 	ui->arpEditor->setDefaultRow(48);
 	ui->arpEditor->setLabelDiaplayMode(true);
@@ -459,8 +465,17 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onArpeggioTypeChanged);
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->arpOpComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorFMForm::onArpeggioOperatorChanged);
 
 	//========== Pitch ==========//
+	ui->ptOpComboBox->addItem("All", static_cast<int>(FMOperatorType::All));
+	ui->ptOpComboBox->addItem("Op1", static_cast<int>(FMOperatorType::Op1));
+	ui->ptOpComboBox->addItem("Op2", static_cast<int>(FMOperatorType::Op2));
+	ui->ptOpComboBox->addItem("Op3", static_cast<int>(FMOperatorType::Op3));
+	ui->ptOpComboBox->addItem("Op4", static_cast<int>(FMOperatorType::Op4));
+
 	ui->ptEditor->setMaximumDisplayedRowCount(15);
 	ui->ptEditor->setDefaultRow(127);
 	ui->ptEditor->setLabelDiaplayMode(true);
@@ -523,6 +538,46 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onPitchTypeChanged);
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->ptOpComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+					 this, &InstrumentEditorFMForm::onPitchOperatorChanged);
+
+	//========== Pitch ==========//
+	QObject::connect(ui->envResetCheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::All, (state == Qt::Checked));
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envResetOp1CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op1, (state == Qt::Checked));
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envResetOp2CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op2, (state == Qt::Checked));
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envResetOp3CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op3, (state == Qt::Checked));
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envResetOp4CheckBox, &QCheckBox::stateChanged,
+					 this, [&](int state) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, FMOperatorType::Op4, (state == Qt::Checked));
+			emit modified();
+		}
+	});
 }
 
 InstrumentEditorFMForm::~InstrumentEditorFMForm()
@@ -616,7 +671,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 	setInstrumentArpeggioParameters();
 	setInstrumentPitchParameters();
 
-	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled());
+	setInstrumentEnvelopeResetParameters();
 }
 
 /********** Events **********/
@@ -1534,9 +1589,7 @@ void InstrumentEditorFMForm::onOperatorSequenceTypeChanged(int type)
 {
 	Q_UNUSED(type)
 
-	if (!isIgnoreEvent_) {
-		setInstrumentOperatorSequenceParameters();
-	}
+	if (!isIgnoreEvent_) setInstrumentOperatorSequenceParameters();
 }
 
 void InstrumentEditorFMForm::on_opSeqEditGroupBox_toggled(bool arg1)
@@ -1564,6 +1617,11 @@ void InstrumentEditorFMForm::on_opSeqNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Arpeggio
+FMOperatorType InstrumentEditorFMForm::getArpeggioOperator() const
+{
+	return static_cast<FMOperatorType>(ui->arpOpComboBox->currentData(Qt::UserRole).toInt());
+}
+
 void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -1571,18 +1629,20 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
-	ui->arpNumSpinBox->setValue(instFM->getArpeggioNumber());
+	FMOperatorType param = getArpeggioOperator();
+
+	ui->arpNumSpinBox->setValue(instFM->getArpeggioNumber(param));
 	ui->arpEditor->clearData();
-	for (auto& com : instFM->getArpeggioSequence()) {
+	for (auto& com : instFM->getArpeggioSequence(param)) {
 		ui->arpEditor->addSequenceCommand(com.type);
 	}
-	for (auto& l : instFM->getArpeggioLoops()) {
+	for (auto& l : instFM->getArpeggioLoops(param)) {
 		ui->arpEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->arpEditor->setRelease(convertReleaseTypeForUI(instFM->getArpeggioRelease().type),
-							  instFM->getArpeggioRelease().begin);
-	ui->arpTypeComboBox->setCurrentIndex(instFM->getArpeggioType());
-	if (instFM->getArpeggioEnabled()) {
+	ui->arpEditor->setRelease(convertReleaseTypeForUI(instFM->getArpeggioRelease(param).type),
+							  instFM->getArpeggioRelease(param).begin);
+	ui->arpTypeComboBox->setCurrentIndex(instFM->getArpeggioType(param));
+	if (instFM->getArpeggioEnabled(param)) {
 		ui->arpEditGroupBox->setChecked(true);
 		onArpeggioNumberChanged();
 	}
@@ -1611,6 +1671,13 @@ void InstrumentEditorFMForm::onArpeggioParameterChanged(int tnNum)
 		Ui::EventGuard eg(isIgnoreEvent_);
 		setInstrumentArpeggioParameters();
 	}
+}
+
+void InstrumentEditorFMForm::onArpeggioOperatorChanged(int op)
+{
+	Q_UNUSED(op)
+
+	if (!isIgnoreEvent_) setInstrumentArpeggioParameters();
 }
 
 void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
@@ -1646,7 +1713,7 @@ void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
 void InstrumentEditorFMForm::on_arpEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMArpeggioEnabled(instNum_, arg1);
+		bt_.lock()->setInstrumentFMArpeggioEnabled(instNum_, getArpeggioOperator(), arg1);
 		setInstrumentArpeggioParameters();
 		emit arpeggioNumberChanged();
 		emit modified();
@@ -1658,7 +1725,7 @@ void InstrumentEditorFMForm::on_arpEditGroupBox_toggled(bool arg1)
 void InstrumentEditorFMForm::on_arpNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMArpeggio(instNum_, arg1);
+		bt_.lock()->setInstrumentFMArpeggio(instNum_, getArpeggioOperator(), arg1);
 		setInstrumentArpeggioParameters();
 		emit arpeggioNumberChanged();
 		emit modified();
@@ -1668,6 +1735,11 @@ void InstrumentEditorFMForm::on_arpNumSpinBox_valueChanged(int arg1)
 }
 
 //--- Pitch
+FMOperatorType InstrumentEditorFMForm::getPitchOperator() const
+{
+	return static_cast<FMOperatorType>(ui->ptOpComboBox->currentData(Qt::UserRole).toInt());
+}
+
 void InstrumentEditorFMForm::setInstrumentPitchParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
@@ -1675,23 +1747,25 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
 
-	ui->ptNumSpinBox->setValue(instFM->getPitchNumber());
+	FMOperatorType param = getPitchOperator();
+
+	ui->ptNumSpinBox->setValue(instFM->getPitchNumber(param));
 	ui->ptEditor->clearData();
-	for (auto& com : instFM->getPitchSequence()) {
+	for (auto& com : instFM->getPitchSequence(param)) {
 		ui->ptEditor->addSequenceCommand(com.type);
 	}
-	for (auto& l : instFM->getPitchLoops()) {
+	for (auto& l : instFM->getPitchLoops(param)) {
 		ui->ptEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease().type),
-							 instFM->getPitchRelease().begin);
+	ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease(param).type),
+							 instFM->getPitchRelease(param).begin);
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instFM->getPitchType()) {
+		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instFM->getPitchType(param)) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
 		}
 	}
-	if (instFM->getPitchEnabled()) {
+	if (instFM->getPitchEnabled(param)) {
 		ui->ptEditGroupBox->setChecked(true);
 		onPitchNumberChanged();
 	}
@@ -1722,6 +1796,13 @@ void InstrumentEditorFMForm::onPitchParameterChanged(int tnNum)
 	}
 }
 
+void InstrumentEditorFMForm::onPitchOperatorChanged(int op)
+{
+	Q_UNUSED(op)
+
+	if (!isIgnoreEvent_) setInstrumentPitchParameters();
+}
+
 void InstrumentEditorFMForm::onPitchTypeChanged(int index)
 {
 	Q_UNUSED(index)
@@ -1737,7 +1818,7 @@ void InstrumentEditorFMForm::onPitchTypeChanged(int index)
 void InstrumentEditorFMForm::on_ptEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMPitchEnabled(instNum_, arg1);
+		bt_.lock()->setInstrumentFMPitchEnabled(instNum_, getPitchOperator(), arg1);
 		setInstrumentPitchParameters();
 		emit pitchNumberChanged();
 		emit modified();
@@ -1749,7 +1830,7 @@ void InstrumentEditorFMForm::on_ptEditGroupBox_toggled(bool arg1)
 void InstrumentEditorFMForm::on_ptNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentFMPitch(instNum_, arg1);
+		bt_.lock()->setInstrumentFMPitch(instNum_, getPitchOperator(), arg1);
 		setInstrumentPitchParameters();
 		emit pitchNumberChanged();
 		emit modified();
@@ -1758,15 +1839,17 @@ void InstrumentEditorFMForm::on_ptNumSpinBox_valueChanged(int arg1)
 	onPitchNumberChanged();
 }
 
-//========== Else ==========//
-/********** Slots **********/
-void InstrumentEditorFMForm::on_envResetCheckBox_stateChanged(int arg1)
+//========== Others ==========//
+void InstrumentEditorFMForm::setInstrumentEnvelopeResetParameters()
 {
-	if (arg1 == Qt::Checked) {
-		bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, true);
-	}
-	else {
-		bt_.lock()->setInstrumentFMEnvelopeResetEnabled(instNum_, false);
-	}
-	emit modified();
+	Ui::EventGuard ev(isIgnoreEvent_);
+
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
+
+	ui->envResetCheckBox->setChecked(instFM->getEnvelopeResetEnabled(FMOperatorType::All));
+	ui->envResetOp1CheckBox->setChecked(instFM->getEnvelopeResetEnabled(FMOperatorType::Op1));
+	ui->envResetOp2CheckBox->setChecked(instFM->getEnvelopeResetEnabled(FMOperatorType::Op2));
+	ui->envResetOp3CheckBox->setChecked(instFM->getEnvelopeResetEnabled(FMOperatorType::Op3));
+	ui->envResetOp4CheckBox->setChecked(instFM->getEnvelopeResetEnabled(FMOperatorType::Op4));
 }

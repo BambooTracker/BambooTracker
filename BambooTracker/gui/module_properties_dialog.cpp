@@ -15,14 +15,15 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 	ui->songTreeWidget->setColumnCount(3);
 	ui->songTreeWidget->setHeaderLabels({ tr("Number"), tr("Title"), tr("Song type") });
 	ui->songTreeWidget->header()->resizeSection(0, 52);
-	size_t songCnt = core.lock()->getSongCount();
-	for (size_t i = 0; i < songCnt; ++i) {
+	int songCnt = static_cast<int>(core.lock()->getSongCount());
+	for (int i = 0; i < songCnt; ++i) {
 		auto title = core.lock()->getSongTitle(i);
-		insertSong(i, QString::fromUtf8(title.c_str(), title.length()), core.lock()->getSongStyle(i).type, i);
+		insertSong(i, QString::fromUtf8(title.c_str(), static_cast<int>(title.length())),
+				   core.lock()->getSongStyle(i).type, i);
 	}
 
 	ui->insertTypeComboBox->addItem(tr("Standard"), static_cast<int>(SongType::STD));
-	// ui->insertTypeComboBox->addItem(tr("FM3ch extension"), static_cast<int>(SongType::FMEX));
+	 ui->insertTypeComboBox->addItem(tr("FM3ch expanded"), static_cast<int>(SongType::FMEX));
 }
 
 ModulePropertiesDialog::~ModulePropertiesDialog()
@@ -145,7 +146,7 @@ void ModulePropertiesDialog::onAccepted()
 	for (int i = 0; i < tree->topLevelItemCount(); ++i) {
 		QTreeWidgetItem* item = tree->topLevelItem(i);
 		if (item->data(0, Qt::UserRole).toInt() == -1) {	// Add new song
-			int n = bt_.lock()->getSongCount();
+			int n = static_cast<int>(bt_.lock()->getSongCount());
 			bt_.lock()->addSong(static_cast<SongType>(item->data(2, Qt::UserRole).toInt()),
 								item->text(1).toUtf8().toStdString());
 			newSongNums.push_back(n);

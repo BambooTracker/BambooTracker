@@ -94,7 +94,7 @@
          <item row="1" column="1">
           <widget class="QComboBox" name="insertTypeComboBox">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
          </item>

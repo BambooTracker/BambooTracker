@@ -83,10 +83,10 @@ public:
 	int findFirstFreeOperatorSequenceFM(FMEnvelopeParameter param) const;
 	int findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter param) const;
 
-	void setInstrumentFMArpeggioEnabled(int instNum, bool enabled);
-	bool getInstrumentFMArpeggioEnabled(int instNum) const;
-	void setInstrumentFMArpeggio(int instNum, int arpNum);
-	int getInstrumentFMArpeggio(int instNum);
+	void setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled);
+	bool getInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op) const;
+	void setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum);
+	int getInstrumentFMArpeggio(int instNum, FMOperatorType op);
 	void setArpeggioFMType(int arpNum, int type);
 	int getArpeggioFMType(int arpNum) const;
 	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
@@ -103,10 +103,10 @@ public:
 	int findFirstFreeArpeggioFM() const;
 	int findFirstFreePlainArpeggioFM() const;
 
-	void setInstrumentFMPitchEnabled(int instNum, bool enabled);
-	bool getInstrumentFMPitchEnabled(int instNum) const;
-	void setInstrumentFMPitch(int instNum, int ptNum);
-	int getInstrumentFMPitch(int instNum);
+	void setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled);
+	bool getInstrumentFMPitchEnabled(int instNum, FMOperatorType op) const;
+	void setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum);
+	int getInstrumentFMPitch(int instNum, FMOperatorType op);
 	void setPitchFMType(int ptNum, int type);
 	int getPitchFMType(int ptNum) const;
 	void addPitchFMSequenceCommand(int ptNum, int type, int data);
@@ -123,7 +123,7 @@ public:
 	int findFirstFreePitchFM() const;
 	int findFirstFreePlainPitchFM() const;
 
-	void setInstrumentFMEnvelopeResetEnabled(int instNum, bool enabled);
+	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 private:
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
@@ -133,6 +133,7 @@ private:
 	std::array<std::shared_ptr<CommandSequence>, 128> ptFM_;
 
 	std::vector<FMEnvelopeParameter> envFMParams_;
+	std::vector<FMOperatorType> fmOpTypes_;
 
 	int cloneFMEnvelope(int srcNum);
 	int cloneFMLFO(int srcNum);

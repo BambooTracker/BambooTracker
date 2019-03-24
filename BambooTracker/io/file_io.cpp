@@ -42,6 +42,13 @@ const FMEnvelopeParameter FileIO::ENV_FM_PARAMS[38] = {
 	FMEnvelopeParameter::DT4
 };
 
+const FMOperatorType FileIO::OP_FM_TYPES[4] = {
+	FMOperatorType::Op1,
+	FMOperatorType::Op2,
+	FMOperatorType::Op3,
+	FMOperatorType::Op4
+};
+
 std::string FileIO::fileTypeToString(const FileType type)
 {
 	switch (type) {

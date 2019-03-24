@@ -41,6 +41,10 @@ public:
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
 
+	// Chip mode
+	void setMode(SongType mode);
+	SongType getMode() const;
+
 	// Stream details
 	int getRate() const;
 	void setRate(int rate);
@@ -51,9 +55,9 @@ public:
 	// Export
 	void setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr = nullptr);
 
-
 private:
 	std::unique_ptr<chip::OPNA> opna_;
+	SongType mode_;
 
 	void initChip();
 
@@ -104,46 +108,51 @@ public:
 private:
 	std::shared_ptr<InstrumentFM> refInstFM_[6];
 	std::unique_ptr<EnvelopeFM> envFM_[6];
-	bool isKeyOnFM_[6];
+	bool isKeyOnFM_[9];
 	uint8_t fmOpEnables_[6];
-	std::deque<ToneDetail> baseToneFM_[6];
-	ToneDetail keyToneFM_[6];
-	int sumPitchFM_[6];
-	int baseVolFM_[6], tmpVolFM_[6];
+	std::deque<ToneDetail> baseToneFM_[9];
+	ToneDetail keyToneFM_[9];
+	int sumPitchFM_[9];
+	int baseVolFM_[9], tmpVolFM_[9];
 	/// bit0: right on/off
 	/// bit1: left on/off
 	uint8_t panFM_[6];
-	bool isMuteFM_[6];
-	bool enableEnvResetFM_[6];
+	bool isMuteFM_[9];
+	bool enableEnvResetFM_[9];
 	int lfoFreq_;
 	int lfoStartCntFM_[6];
-	bool hasPreSetTickEventFM_[6];
-	bool needToneSetFM_[6];
+	bool hasPreSetTickEventFM_[9];
+	bool needToneSetFM_[9];
 	std::map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
-	std::unique_ptr<SequenceIteratorInterface> arpItFM_[6];
-	std::unique_ptr<CommandSequence::Iterator> ptItFM_[6];
-	bool isArpEffFM_[6];
-	int prtmFM_[6];
-	bool isTonePrtmFM_[6];
-	std::unique_ptr<WavingEffectIterator> vibItFM_[6];
-	std::unique_ptr<WavingEffectIterator> treItFM_[6];
-	int volSldFM_[6], sumVolSldFM_[6];
-	int detuneFM_[6];
-	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[6];
-	int sumNoteSldFM_[6];
-	bool noteSldFMSetFlag_;
-	int transposeFM_[6];
+	std::unique_ptr<SequenceIteratorInterface> arpItFM_[9];
+	std::unique_ptr<CommandSequence::Iterator> ptItFM_[9];
+	bool isArpEffFM_[9];
+	int prtmFM_[9];
+	bool isTonePrtmFM_[9];
+	std::unique_ptr<WavingEffectIterator> vibItFM_[9];
+	std::unique_ptr<WavingEffectIterator> treItFM_[9];
+	int volSldFM_[9], sumVolSldFM_[9];
+	int detuneFM_[9];
+	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[9];
+	int sumNoteSldFM_[9];
+	bool noteSldFMSetFlag_[9];
+	int transposeFM_[9];
 
 	void initFM();
 
-	uint32_t getFmChannelMask(int ch);
-	uint32_t getFMChannelOffset(int ch);
+	int toInternalFMChannel(int ch) const;
+	uint8_t getFMKeyOnOffChannelMask(int ch) const;
+	uint32_t getFMChannelOffset(int ch, bool forPitch = false) const;
+	FMOperatorType toChannelOperatorType(int ch) const;
+	std::vector<FMEnvelopeParameter> getFMEnvelopeParametersForOperator(FMOperatorType op) const;
 
-	void writeFMEnvelopeToRegistersFromInstrument(int ch);
-	void writeFMEnveropeParameterToRegister(int ch, FMEnvelopeParameter param, int value);
+	void updateFMVolume(int ch);
 
-	void writeFMLFOAllRegisters(int ch);
-	void writeFMLFORegister(int ch, FMLFOParameter param);
+	void writeFMEnvelopeToRegistersFromInstrument(int inch);
+	void writeFMEnveropeParameterToRegister(int inch, FMEnvelopeParameter param, int value);
+
+	void writeFMLFOAllRegisters(int inch);
+	void writeFMLFORegister(int inch, FMLFOParameter param);
 	void checkLFOUsed();
 
 	void setFrontFMSequences(int ch);
@@ -164,7 +173,7 @@ private:
 	inline uint8_t calculateTL(int ch, uint8_t data) const
 	{
 		int v = (tmpVolFM_[ch] == -1) ? baseVolFM_[ch] : tmpVolFM_[ch];
-		return (data > 127 - v) ? 127 : (data + v);
+		return (data > 127 - v) ? 127 : static_cast<uint8_t>(data + v);
 	}
 
 	/*----- SSG -----*/
@@ -259,7 +268,7 @@ private:
 	void setRealVolumeSSG(int ch);
 
 	inline uint8_t judgeSSEGRegisterValue(int v) {
-		return (v == -1) ? 0 : (0x08 + v);
+		return (v == -1) ? 0 : (0x08 + static_cast<uint8_t>(v));
 	}
 
 	/*----- Drum -----*/

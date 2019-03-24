@@ -72,11 +72,20 @@ After FB sequence number, it repeats 9 operator's parameters for each operator (
 | uint8 | ML sequence number | Bit 0-6 is multiple sequence number of the operator, and bit 7 is flag. If bit 7 is clear, it uses ML sequence.      |
 | uint8 | DT sequence number | Bit 0-6 is detune sequence number of the operator, and bit 7 is flag. If bit 7 is clear, it uses DT sequence.        |
 
-| Type  | Field                    | Description                                                                                           |
-| ----- | ------------------------ | ----------------------------------------------------------------------------------------------------- |
-| uint8 | Arpeggio sequence number | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses arpeggio sequence. |
-| uint8 | Pitch sequence number    | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses pitch sequence.       |
-| uint8 | Envelope reset flag      | Flag for envelope reset. If bit 0 is set, envelope reset is enabled.                                  |
+| Type  | Field                               | Description                                                                                                                                                            |
+| ----- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| uint8 | Arpeggio sequence number            | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses arpeggio sequence for all operators.                                                |
+| uint8 | Pitch sequence number               | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses pitch sequence for all operators.                                                      |
+| uint8 | Envelope reset flag                 | Flag for envelope reset. Bit 0 is for all operators, bit 1 is for operator 1 and bit 3 is for operator 4. If bit is set, envelope reset is enabled for correspondings. |
+| uint8 | Operator 1 arpeggio sequence number | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 1 arpeggio sequence in FM 3ch expansion mode.                              |
+| uint8 | Operator 2 arpeggio sequence number | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 2 arpeggio sequence in FM 3ch expansion mode.                              |
+| uint8 | Operator 3 arpeggio sequence number | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 3 arpeggio sequence in FM 3ch expansion mode.                              |
+| uint8 | Operator 4 arpeggio sequence number | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 4 arpeggio sequence in FM 3ch expansion mode.                              |
+| uint8 | Operator 1 pitch sequence number    | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 1 pitch sequence in FM 3ch expansion mode.                                    |
+| uint8 | Operator 2 pitch sequence number    | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 2 pitch sequence in FM 3ch expansion mode.                                    |
+| uint8 | Operator 3 pitch sequence number    | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 3 pitch sequence in FM 3ch expansion mode.                                    |
+| uint8 | Operator 4 pitch sequence number    | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses operator 4 pitch sequence in FM 3ch expansion mode.                                    |
+
 
 ### SSG
 | Type  | Field                      | Description                                                                                               |
@@ -241,11 +250,10 @@ Each song block is defined as:
 
 Song type defined number and order of tracks.
 
-| Type              | Track0 | Track1 | Track2 | Track3 | Track4 | Track5 | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 |
-| ----------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- |
-| `0x00` (Standard) | FM1ch  | FM2ch  | FM3ch  | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     |
-
-Current version (v1.0.0) is only stored as `0x00`.
+| Type                    | Track0 | Track1 | Track2    | Track3    | Track4    | Track5    | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 | Track15 | Track16 | Track17 |
+| ----------------------- | ------ | ------ | --------- | --------- | --------- | --------- | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
+| `0x00` (Standard)       | FM1ch  | FM2ch  | FM3ch     | FM4ch     | FM5ch     | FM6ch     | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     | -       | -       | -       |
+| `0x01` (FM3ch expanded) | FM1ch  | FM2ch  | FM3ch-op1 | FM3ch-op2 | FM3ch-op3 | FM3ch-op4 | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch  | SSG3ch  | BD      | SD      | TOP     | HH      | TOM     | RIM     |
 
 Song section includes some track subblock.
 
@@ -312,6 +320,7 @@ Key event details:
 ## History
 | Version | Date       | Detail                                     |
 | ------- | ---------- | ------------------------------------------ |
+| 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode.      |
 | 1.0.3   | 2019-03-18 | Added 2nd step hilight.                    |
 | 1.0.2   | 2018-12-29 | Revised for the change of FM octave range. |
 | 1.0.1   | 2018-12-10 | Added instrument sequence type.            |

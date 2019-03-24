@@ -2,6 +2,9 @@
 #include "file_io.hpp"
 #include <fstream>
 #include <locale>
+#include <vector>
+#include <algorithm>
+#include <map>
 #include "version.hpp"
 #include "file_io.hpp"
 #include "file_io_error.hpp"
@@ -26,6 +29,8 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 	ctr.appendString("INSTRMNT");
 	size_t instOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy instrument section offset
+
+	std::vector<int> fmArpNums, fmPtNums;
 	std::shared_ptr<AbstractInstrument> inst = instMan.lock()->getInstrumentSharedPtr(instNum);
 	if (inst) {
 		std::string name = inst->getName();
@@ -36,7 +41,89 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 		{
 			ctr.appendUint8(0x00);
 			auto instFM = std::dynamic_pointer_cast<InstrumentFM>(inst);
-			ctr.appendUint8(instFM->getEnvelopeResetEnabled());
+			if (fileVersion >= Version::toBCD(1, 1, 0)) {
+				uint8_t tmp = static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All))
+							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op1) << 1)
+							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op2) << 2)
+							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op3) << 3)
+							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op4) << 4);
+				ctr.appendUint8(tmp);
+			}
+			else {
+				ctr.appendUint8(static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All)));
+			}
+			if (fileVersion >= Version::toBCD(1, 1, 0)) {
+				if (instFM->getArpeggioEnabled(FMOperatorType::All))
+					fmArpNums.push_back(instFM->getArpeggioNumber(FMOperatorType::All));
+				for (auto& t : FileIO::OP_FM_TYPES) {
+					if (instFM->getArpeggioEnabled(t)) {
+						int n = instFM->getArpeggioNumber(t);
+						if (std::find(fmArpNums.begin(), fmArpNums.end(), n) == fmArpNums.end())
+							fmArpNums.push_back(n);
+					}
+				}
+				if (instFM->getArpeggioEnabled(FMOperatorType::All)) {
+					int n = instFM->getArpeggioNumber(FMOperatorType::All);
+					for (size_t i = 0; i < fmArpNums.size(); ++i) {
+						if (n == fmArpNums[i]) {
+							ctr.appendUint8(static_cast<uint8_t>(i));
+							break;
+						}
+					}
+				}
+				else {
+					ctr.appendUint8(0x80);
+				}
+				for (auto& t : FileIO::OP_FM_TYPES) {
+					if (instFM->getArpeggioEnabled(t)) {
+						int n = instFM->getArpeggioNumber(t);
+						for (size_t i = 0; i < fmArpNums.size(); ++i) {
+							if (n == fmArpNums[i]) {
+								ctr.appendUint8(static_cast<uint8_t>(i));
+								break;
+							}
+						}
+					}
+					else {
+						ctr.appendUint8(0x80);
+					}
+				}
+				if (instFM->getPitchEnabled(FMOperatorType::All))
+					fmPtNums.push_back(instFM->getPitchNumber(FMOperatorType::All));
+				for (auto& t : FileIO::OP_FM_TYPES) {
+					if (instFM->getPitchEnabled(t)) {
+						int n = instFM->getPitchNumber(t);
+						if (std::find(fmPtNums.begin(), fmPtNums.end(), n) == fmPtNums.end())
+							fmPtNums.push_back(n);
+					}
+				}
+				if (instFM->getPitchEnabled(FMOperatorType::All)) {
+					int n = instFM->getPitchNumber(FMOperatorType::All);
+					for (size_t i = 0; i < fmPtNums.size(); ++i) {
+						if (n == fmPtNums[i]) {
+							ctr.appendUint8(static_cast<uint8_t>(i));
+							break;
+						}
+					}
+				}
+				else {
+					ctr.appendUint8(0x80);
+				}
+				for (auto& t : FileIO::OP_FM_TYPES) {
+					if (instFM->getPitchEnabled(t)) {
+						int n = instFM->getPitchNumber(t);
+						for (size_t i = 0; i < fmPtNums.size(); ++i) {
+							if (n == fmPtNums[i]) {
+								ctr.appendUint8(static_cast<uint8_t>(i));
+								break;
+							}
+						}
+					}
+					else {
+						ctr.appendUint8(0x80);
+					}
+				}
+			}
 			break;
 		}
 		case SoundSource::SSG:
@@ -67,86 +154,86 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint8(0x00);
 			size_t ofs = ctr.size();
 			ctr.appendUint8(0);	// Dummy offset
-			uint8_t tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL) << 4)
-						  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB);
+			uint8_t tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL) << 4)
+						  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB));
 			ctr.appendUint8(tmp);
 			// Operator 1
 			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 0);
-			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1) << 4)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1) << 4)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1));
 			ctr.appendUint8(tmp);
-			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1));
 			ctr.appendUint8(tmp);
 			int tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1);
-			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1);
+			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1));
 			ctr.appendUint8(tmp);
 			// Operator 2
 			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 1);
-			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2) << 4)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2) << 4)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2));
 			ctr.appendUint8(tmp);
-			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2));
 			ctr.appendUint8(tmp);
 			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2);
-			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2);
+			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2));
 			ctr.appendUint8(tmp);
 			// Operator 3
 			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 2);
-			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3) << 4)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3) << 4)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3));
 			ctr.appendUint8(tmp);
-			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3));
 			ctr.appendUint8(tmp);
 			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3);
-			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3);
+			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3));
 			ctr.appendUint8(tmp);
 			// Operator 4
 			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 3);
-			tmp = (tmp << 5) | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4) << 5)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4) << 4)
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4) << 4)
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4));
 			ctr.appendUint8(tmp);
-			tmp = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4);
+			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4));
 			ctr.appendUint8(tmp);
 			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4);
-			tmp = ((tmp2 == -1) ? 0x80 : (tmp2 << 4))
-				  | instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4);
+			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
+				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4));
 			ctr.appendUint8(tmp);
-			ctr.writeUint8(ofs, ctr.size() - ofs);
+			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
 
 		// FM LFO
@@ -155,39 +242,39 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint8(0x01);
 			size_t ofs = ctr.size();
 			ctr.appendUint8(0);	// Dummy offset
-			uint8_t tmp = (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::FREQ) << 4)
-						  | instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::PMS);
+			uint8_t tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::FREQ) << 4)
+						  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::PMS));
 			ctr.appendUint8(tmp);
-			tmp = (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM4) << 7)
-				  | (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM3) << 6)
-				  | (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM2) << 5)
-				  | (instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM1) << 4)
-				  | instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AMS);
+			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM4) << 7)
+				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM3) << 6)
+				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM2) << 5)
+				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM1) << 4)
+				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AMS));
 			ctr.appendUint8(tmp);
-			tmp = instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::COUNT);
+			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::COUNT));
 			ctr.appendUint8(tmp);
-			ctr.writeUint8(ofs, ctr.size() - ofs);
+			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
 
 		// FM envelope parameter
 		for (size_t i = 0; i < 38; ++i) {
 			if (instFM->getOperatorSequenceEnabled(FileIO::ENV_FM_PARAMS[i])) {
 				int seqNum = instFM->getOperatorSequenceNumber(FileIO::ENV_FM_PARAMS[i]);
-				ctr.appendUint8(0x02 + i);
+				ctr.appendUint8(0x02 + static_cast<uint8_t>(i));
 				size_t ofs = ctr.size();
 				ctr.appendUint16(0);	// Dummy offset
 				auto seq = instMan.lock()->getOperatorSequenceFMSequence(FileIO::ENV_FM_PARAMS[i], seqNum);
-				ctr.appendUint16(seq.size());
+				ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 				for (auto& com : seq) {
-					ctr.appendUint16(com.type);
-					ctr.appendInt16(com.data);
+					ctr.appendUint16(static_cast<uint16_t>(com.type));
+					ctr.appendInt16(static_cast<int16_t>(com.data));
 				}
 				auto loop = instMan.lock()->getOperatorSequenceFMLoops(FileIO::ENV_FM_PARAMS[i], seqNum);
-				ctr.appendUint16(loop.size());
+				ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 				for (auto& l : loop) {
-					ctr.appendUint16(l.begin);
-					ctr.appendUint16(l.end);
-					ctr.appendUint8(l.times);
+					ctr.appendUint16(static_cast<uint16_t>(l.begin));
+					ctr.appendUint16(static_cast<uint16_t>(l.end));
+					ctr.appendUint8(static_cast<uint8_t>(l.times));
 				}
 				auto release = instMan.lock()->getOperatorSequenceFMRelease(FileIO::ENV_FM_PARAMS[i], seqNum);
 				switch (release.type) {
@@ -196,42 +283,45 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 					break;
 				case ReleaseType::FIX:
 					ctr.appendUint8(0x01);
-					ctr.appendUint16(release.begin);
+					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
 				case ReleaseType::ABSOLUTE:
 					ctr.appendUint8(0x02);
-					ctr.appendUint16(release.begin);
+					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
 				case ReleaseType::RELATIVE:
 					ctr.appendUint8(0x03);
-					ctr.appendUint16(release.begin);
+					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
 				}
 				if (fileVersion >= Version::toBCD(1, 0, 1)) {
 					ctr.appendUint8(0);	// Skip sequence type
 				}
-				ctr.writeUint16(ofs, ctr.size() - ofs);
+				ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 			}
 		}
 
 		// FM arpeggio
-		if (instFM->getArpeggioEnabled()) {
-			int arpNum = instFM->getArpeggioNumber();
+		if (fileVersion < Version::toBCD(1, 1, 0)) {
+			if (instFM->getArpeggioEnabled(FMOperatorType::All))
+				fmArpNums.push_back(instFM->getArpeggioNumber(FMOperatorType::All));
+		}
+		for (int& arpNum : fmArpNums) {
 			ctr.appendUint8(0x28);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getArpeggioFMSequence(arpNum);
-			ctr.appendUint16(seq.size());
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
-				ctr.appendUint16(com.type);
-				ctr.appendInt16(com.data);
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getArpeggioFMLoops(arpNum);
-			ctr.appendUint16(loop.size());
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
-				ctr.appendUint16(l.begin);
-				ctr.appendUint16(l.end);
-				ctr.appendUint8(l.times);
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
 			auto release = instMan.lock()->getArpeggioFMRelease(arpNum);
 			switch (release.type) {
@@ -240,41 +330,44 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::ABSOLUTE:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::RELATIVE:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(instMan.lock()->getArpeggioFMType(arpNum));
+				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioFMType(arpNum)));
 			}
-			ctr.writeUint16(ofs, ctr.size() - ofs);
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
 		// FM pitch
-		if (instFM->getPitchEnabled()) {
-			int ptNum = instFM->getPitchNumber();
+		if (fileVersion < Version::toBCD(1, 1, 0)) {
+			if (instFM->getPitchEnabled(FMOperatorType::All))
+				fmPtNums.push_back(instFM->getPitchNumber(FMOperatorType::All));
+		}
+		for (int& ptNum : fmPtNums) {
 			ctr.appendUint8(0x29);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getPitchFMSequence(ptNum);
-			ctr.appendUint16(seq.size());
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
-				ctr.appendUint16(com.type);
-				ctr.appendInt16(com.data);
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getPitchFMLoops(ptNum);
-			ctr.appendUint16(loop.size());
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
-				ctr.appendUint16(l.begin);
-				ctr.appendUint16(l.end);
-				ctr.appendUint8(l.times);
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
 			auto release = instMan.lock()->getPitchFMRelease(ptNum);
 			switch (release.type) {
@@ -283,21 +376,21 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::ABSOLUTE:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::RELATIVE:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(instMan.lock()->getPitchFMType(ptNum));
+				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchFMType(ptNum)));
 			}
-			ctr.writeUint16(ofs, ctr.size() - ofs);
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 		break;
 	}
@@ -312,17 +405,17 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getWaveFormSSGSequence(wfNum);
-			ctr.appendUint16(seq.size());
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
-				ctr.appendUint16(com.type);
-				ctr.appendInt16(com.data);
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getWaveFormSSGLoops(wfNum);
-			ctr.appendUint16(loop.size());
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
-				ctr.appendUint16(l.begin);
-				ctr.appendUint16(l.end);
-				ctr.appendUint8(l.times);
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
 			auto release = instMan.lock()->getWaveFormSSGRelease(wfNum);
 			switch (release.type) {
@@ -331,21 +424,21 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::ABSOLUTE:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::RELATIVE:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			if (fileVersion >= Version::toBCD(1, 0, 1)) {
 				ctr.appendUint8(0);	// Skip sequence type
 			}
-			ctr.writeUint16(ofs, ctr.size() - ofs);
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
 		// SSG tone/noise
@@ -355,17 +448,17 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getToneNoiseSSGSequence(tnNum);
-			ctr.appendUint16(seq.size());
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
-				ctr.appendUint16(com.type);
-				ctr.appendInt16(com.data);
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getToneNoiseSSGLoops(tnNum);
-			ctr.appendUint16(loop.size());
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
-				ctr.appendUint16(l.begin);
-				ctr.appendUint16(l.end);
-				ctr.appendUint8(l.times);
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
 			auto release = instMan.lock()->getToneNoiseSSGRelease(tnNum);
 			switch (release.type) {
@@ -374,21 +467,21 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::ABSOLUTE:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::RELATIVE:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			if (fileVersion >= Version::toBCD(1, 0, 1)) {
 				ctr.appendUint8(0);	// Skip sequence type
 			}
-			ctr.writeUint16(ofs, ctr.size() - ofs);
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
 		// SSG envelope
@@ -398,17 +491,17 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getEnvelopeSSGSequence(envNum);
-			ctr.appendUint16(seq.size());
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
-				ctr.appendUint16(com.type);
-				ctr.appendInt16(com.data);
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getEnvelopeSSGLoops(envNum);
-			ctr.appendUint16(loop.size());
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
-				ctr.appendUint16(l.begin);
-				ctr.appendUint16(l.end);
-				ctr.appendUint8(l.times);
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
 			auto release = instMan.lock()->getEnvelopeSSGRelease(envNum);
 			switch (release.type) {
@@ -417,21 +510,21 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::ABSOLUTE:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::RELATIVE:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			if (fileVersion >= Version::toBCD(1, 0, 1)) {
 				ctr.appendUint8(0);	// Skip sequence type
 			}
-			ctr.writeUint16(ofs, ctr.size() - ofs);
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
 		// SSG arpeggio
@@ -441,17 +534,17 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getArpeggioSSGSequence(arpNum);
-			ctr.appendUint16(seq.size());
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
-				ctr.appendUint16(com.type);
-				ctr.appendInt16(com.data);
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getArpeggioSSGLoops(arpNum);
-			ctr.appendUint16(loop.size());
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
-				ctr.appendUint16(l.begin);
-				ctr.appendUint16(l.end);
-				ctr.appendUint8(l.times);
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
 			auto release = instMan.lock()->getArpeggioSSGRelease(arpNum);
 			switch (release.type) {
@@ -460,21 +553,21 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::ABSOLUTE:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::RELATIVE:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(instMan.lock()->getArpeggioSSGType(arpNum));
+				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioSSGType(arpNum)));
 			}
-			ctr.writeUint16(ofs, ctr.size() - ofs);
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
 		// SSG pitch
@@ -484,17 +577,17 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getPitchSSGSequence(ptNum);
-			ctr.appendUint16(seq.size());
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
-				ctr.appendUint16(com.type);
-				ctr.appendInt16(com.data);
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getPitchSSGLoops(ptNum);
-			ctr.appendUint16(loop.size());
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
-				ctr.appendUint16(l.begin);
-				ctr.appendUint16(l.end);
-				ctr.appendUint8(l.times);
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
 			auto release = instMan.lock()->getPitchSSGRelease(ptNum);
 			switch (release.type) {
@@ -503,21 +596,21 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			case ReleaseType::FIX:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::ABSOLUTE:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			case ReleaseType::RELATIVE:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(release.begin);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(instMan.lock()->getPitchSSGType(ptNum));
+				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchSSGType(ptNum)));
 			}
-			ctr.writeUint16(ofs, ctr.size() - ofs);
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 		break;
 	}
@@ -582,13 +675,31 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 			name = ctr.readString(instCsr, nameLen);
 			instCsr += nameLen;
 		}
+		std::map<FMOperatorType, int> fmArpMap, fmPtMap;
 		AbstractInstrument* inst = nullptr;
 		switch (ctr.readUint8(instCsr++)) {
 		case 0x00:	// FM
 		{
 			inst = new InstrumentFM(instNum, name, instMan.lock().get());
-			dynamic_cast<InstrumentFM*>(inst)->setEnvelopeResetEnabled(
-						ctr.readUint8(instCsr++) ? true : false);
+			auto fm = dynamic_cast<InstrumentFM*>(inst);
+			uint8_t tmp = ctr.readUint8(instCsr++);
+			fm->setEnvelopeResetEnabled(FMOperatorType::All, (tmp & 0x01));
+			fm->setEnvelopeResetEnabled(FMOperatorType::Op1, (tmp & 0x02));
+			fm->setEnvelopeResetEnabled(FMOperatorType::Op2, (tmp & 0x04));
+			fm->setEnvelopeResetEnabled(FMOperatorType::Op3, (tmp & 0x08));
+			fm->setEnvelopeResetEnabled(FMOperatorType::Op4, (tmp & 0x10));
+			if (fileVersion >= Version::toBCD(1, 1, 0)) {
+				fmArpMap.emplace(FMOperatorType::All, ctr.readUint8(instCsr++));
+				for (auto& t : FileIO::OP_FM_TYPES) {
+					tmp = ctr.readUint8(instCsr++);
+					if (!(tmp & 0x80)) fmArpMap.emplace(t, (tmp & 0x7f));
+				}
+				fmPtMap.emplace(FMOperatorType::All, ctr.readUint8(instCsr++));
+				for (auto& t : FileIO::OP_FM_TYPES) {
+					tmp = ctr.readUint8(instCsr++);
+					if (!(tmp & 0x80)) fmPtMap.emplace(t, (tmp & 0x7f));
+				}
+			}
 			break;
 		}
 		case 0x01:	// SSG
@@ -1329,8 +1440,21 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 				{
 					int idx = *numIt++;
 					auto fm = dynamic_cast<InstrumentFM*>(inst);
-					fm->setArpeggioEnabled(true);
-					fm->setArpeggioNumber(idx);
+					if (fileVersion >= Version::toBCD(1, 1, 0)) {
+						std::vector<FMOperatorType> del;
+						for (auto& pair : fmArpMap) {
+							if (pair.second-- == 0) {
+								fm->setArpeggioEnabled(pair.first, true);
+								fm->setArpeggioNumber(pair.first, idx);
+								del.push_back(pair.first);
+							}
+						}
+						for (auto t : del) fmArpMap.erase(t);
+					}
+					else {
+						fm->setArpeggioEnabled(FMOperatorType::All, true);
+						fm->setArpeggioNumber(FMOperatorType::All, idx);
+					}
 					uint16_t ofs = ctr.readUint16(instPropCsr);
 					size_t csr = instPropCsr + 2;
 
@@ -1394,8 +1518,21 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 				{
 					int idx = *numIt++;
 					auto fm = dynamic_cast<InstrumentFM*>(inst);
-					fm->setPitchEnabled(true);
-					fm->setPitchNumber(idx);
+					if (fileVersion >= Version::toBCD(1, 1, 0)) {
+						std::vector<FMOperatorType> del;
+						for (auto& pair : fmPtMap) {
+							if (pair.second-- == 0) {
+								fm->setPitchEnabled(pair.first, true);
+								fm->setPitchNumber(pair.first, idx);
+								del.push_back(pair.first);
+							}
+						}
+						for (auto t : del) fmPtMap.erase(t);
+					}
+					else {
+						fm->setPitchEnabled(FMOperatorType::All, true);
+						fm->setPitchNumber(FMOperatorType::All, idx);
+					}
 					uint16_t ofs = ctr.readUint16(instPropCsr);
 					size_t csr = instPropCsr + 2;
 
@@ -2174,11 +2311,11 @@ AbstractInstrument* InstrumentIO::loadOPNIFile(std::string path, std::weak_ptr<I
 	if (!in)
 		throw FileInputError(FileIO::FileType::INST);
 	else {
-		std::unique_ptr<char[]> buf(new char[size]);
+		std::unique_ptr<char[]> buf(new char[static_cast<size_t>(size)]);
 		in.seekg(0, std::ios::beg);
-		if (!in.read(buf.get(), size) || in.gcount() != size)
+		if (!in.read(buf.get(), static_cast<int>(size)) || in.gcount() != size)
 			throw FileInputError(FileIO::FileType::INST);
-		if (WOPN_LoadInstFromMem(&opni, buf.get(), size) != 0)
+		if (WOPN_LoadInstFromMem(&opni, buf.get(), static_cast<size_t>(size)) != 0)
 			throw FileCorruptionError(FileIO::FileType::INST);
 	}
 
@@ -2411,8 +2548,8 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 	if (srcInst.note_offset != 0) {
 		int arpIdx = instMan.lock()->findFirstFreeArpeggioFM();
 		if (arpIdx < 0) throw FileCorruptionError(FileIO::FileType::INST);
-		inst->setArpeggioEnabled(true);
-		inst->setArpeggioNumber(arpIdx);
+		inst->setArpeggioEnabled(FMOperatorType::All, true);
+		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
 		instMan.lock()->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
 		instMan.lock()->setArpeggioFMType(arpIdx, 0);  // Absolute
 	}

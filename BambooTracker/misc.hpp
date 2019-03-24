@@ -45,6 +45,11 @@ enum class FMEnvelopeTextType : int
 	AR4, DR4, SR4, RR4, SL4, TL4, KS4, ML4, DT4
 };
 
+enum class FMOperatorType : int
+{
+	All, Op1, Op2, Op3, Op4
+};
+
 DECL_MAYBE_UNUSED
 static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
 {
@@ -120,11 +125,11 @@ static int ctohex(const char c)
 DECL_MAYBE_UNUSED
 static uint8_t uitobcd(const uint8_t v)
 {
-	if (v > 99) throw std::out_of_range("out of range");
+	if (v > 99) throw std::out_of_range("Out of range.");
 
 	uint8_t high = v / 10;
 	uint8_t low = v % 10;
-	return (high << 4) + low;
+	return static_cast<uint8_t>(high << 4) + low;
 }
 
 DECL_MAYBE_UNUSED
@@ -133,4 +138,14 @@ static uint8_t bcdtoui(const uint8_t v)
 	uint8_t high = v >> 4;
 	uint8_t low = v & 0x0f;
 	return high * 10 + low;
+}
+
+DECL_MAYBE_UNUSED
+inline static size_t getFMChannelCount(SongType type)
+{
+	switch (type) {
+	case SongType::STD:		return 6;
+	case SongType::FMEX:	return 9;
+	default:	throw std::invalid_argument("Invalid SongType.");
+	}
 }

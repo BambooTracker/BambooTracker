@@ -469,7 +469,30 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
 		switch (attrib.source) {
 		case SoundSource::FM:
-			srcName = "FM" + QString::number(attrib.channelInSource + 1);
+			switch (songStyle_.type) {
+			case SongType::STD:
+				srcName = "FM" + QString::number(attrib.channelInSource + 1);
+				break;
+			case SongType::FMEX:
+				switch (attrib.channelInSource) {
+				case 2:
+					srcName = "FM3-OP1";
+					break;
+				case 6:
+					srcName = "FM3-OP2";
+					break;
+				case 7:
+					srcName = "FM3-OP3";
+					break;
+				case 8:
+					srcName = "FM3-OP4";
+					break;
+				default:
+					srcName = "FM" + QString::number(attrib.channelInSource + 1);
+					break;
+				}
+				break;
+			}
 			break;
 		case SoundSource::SSG:
 			srcName = "SSG" + QString::number(attrib.channelInSource + 1);
@@ -1761,6 +1784,10 @@ void PatternEditorPanel::onSongLoaded()
 		bt_->getCurrentStepNumber()
 	};
 	songStyle_ = bt_->getSongStyle(curSongNum_);
+	switch (songStyle_.type) {
+	case SongType::STD:		rightEffn_ = std::vector<int>(15);	break;
+	case SongType::FMEX:	rightEffn_ = std::vector<int>(18);	break;
+	}
 	TracksWidthFromLeftToEnd_
 			= calculateTracksWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 

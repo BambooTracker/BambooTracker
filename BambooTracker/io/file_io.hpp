@@ -7,6 +7,7 @@ class FileIO
 {
 public:
 	static const FMEnvelopeParameter ENV_FM_PARAMS[38];
+	static const FMOperatorType OP_FM_TYPES[4];
 
 	enum class FileType
 	{
