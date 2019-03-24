@@ -49,13 +49,10 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="waveUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="waveUsersLabel">
+            <property name="text">
+             <string>Users:</string>
             </property>
            </widget>
           </item>
@@ -69,25 +66,71 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="waveUsersLabel">
-            <property name="text">
-             <string>Users:</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="0" colspan="4">
            <widget class="VisualizedInstrumentMacroEditor" name="waveEditor" native="true"/>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="squareMaskLabel">
-            <property name="text">
-             <string>Square mask:</string>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="waveUsersLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="squareMaskComboBox"/>
+          <item row="2" column="0" colspan="4">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <item>
+             <widget class="QLabel" name="squareMaskLabel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Square mask:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="squareMaskNoteComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="squareMaskPitchSpinBox">
+              <property name="prefix">
+               <string notr="true">+</string>
+              </property>
+              <property name="maximum">
+               <number>31</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -408,7 +451,6 @@
   <tabstop>waveEditGroupBox</tabstop>
   <tabstop>waveNumSpinBox</tabstop>
   <tabstop>waveUsersLineEdit</tabstop>
-  <tabstop>squareMaskComboBox</tabstop>
   <tabstop>tnEditGroupBox</tabstop>
   <tabstop>tnNumSpinBox</tabstop>
   <tabstop>tnUsersLineEdit</tabstop>

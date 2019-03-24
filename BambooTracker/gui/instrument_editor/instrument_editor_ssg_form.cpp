@@ -24,10 +24,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	for (int i = 0; i < 8; ++i) {
 		for (int j = 0; j < 12; ++j) {
-			for (int k = 0; k < 32; ++k) {
-				ui->squareMaskComboBox->addItem(
-							QString("%1%2+%3").arg(tn[j]).arg(i).arg(k), 12 * i + 32 * j + k);
-			}
+			ui->squareMaskNoteComboBox->addItem(QString("%1%2").arg(tn[j]).arg(i), 12 * i + 32 * j);
 		}
 	}
 
@@ -35,8 +32,10 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			if (row >= 3) {	// Set square mask frequency
-				ui->waveEditor->setText(col, ui->squareMaskComboBox->currentText());
-				ui->waveEditor->setData(col, ui->squareMaskComboBox->currentData().toInt());
+				ui->waveEditor->setText(col, ui->squareMaskNoteComboBox->currentText()
+										+ "+" + QString::number(ui->squareMaskPitchSpinBox->value()));
+				ui->waveEditor->setData(col, ui->squareMaskNoteComboBox->currentData().toInt()
+										+ ui->squareMaskPitchSpinBox->value());
 			}
 			bt_.lock()->addWaveFormSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), row, ui->waveEditor->getSequenceDataAt(col));
@@ -56,8 +55,10 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
 			if (row >= 3) {	// Set square mask frequency
-				ui->waveEditor->setText(col, ui->squareMaskComboBox->currentText());
-				ui->waveEditor->setData(col, ui->squareMaskComboBox->currentData().toInt());
+				ui->waveEditor->setText(col, ui->squareMaskNoteComboBox->currentText()
+										+ "+" + QString::number(ui->squareMaskPitchSpinBox->value()));
+				ui->waveEditor->setData(col, ui->squareMaskNoteComboBox->currentData().toInt()
+										+ ui->squareMaskPitchSpinBox->value());
 			}
 			bt_.lock()->setWaveFormSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), col, row, ui->waveEditor->getSequenceDataAt(col));
