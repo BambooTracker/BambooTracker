@@ -412,10 +412,10 @@ equals(QT_MAJOR_VERSION, 5) {
                   thisqmcom  = $${qmfile}.commands
           win32:$$thisqmcom  = mkdir .qm;
            else:$$thisqmcom  = test -d .qm || mkdir -p .qm;
-                $$thisqmcom += lrelease -qm $$qmfile $$tsfile
+                $$thisqmcom += lrelease -qm $$qmfile $$PWD/$$tsfile
 
             thisqmdep  = $${qmfile}.depends
-          $$thisqmdep  = $${tsfile}
+          $$thisqmdep  = $$PWD/$${tsfile}
           
           PRE_TARGETDEPS      += $${qmfile}
           QMAKE_EXTRA_TARGETS += $${qmfile}
