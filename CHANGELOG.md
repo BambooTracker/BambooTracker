@@ -8,7 +8,7 @@
 - Add 2nd pattern highlight
 - [#79] - Add BPM indicator in status bar (thanks [@papiezak])
 - Add key repeat settings for pattern editor
-- [#62] - Add FM3ch expanded mode
+- [#62], [#84] - Add FM3ch expanded mode (thanks [@jimbo1qaz], [@OPNA2608])
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
@@ -26,6 +26,7 @@
 [#62]: https://github.com/rerrahkr/BambooTracker/issues/62
 [#82]: https://github.com/rerrahkr/BambooTracker/issues/82
 [#3]: https://github.com/rerrahkr/BambooTracker/issues/3
+[#84]: https://github.com/rerrahkr/BambooTracker/issues/84
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
