@@ -46,6 +46,7 @@ private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
 			FMEnvelopeParameter param, size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan,
 			BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
+	static int convertTFIVGMDT(int dt);
 
 
 private:

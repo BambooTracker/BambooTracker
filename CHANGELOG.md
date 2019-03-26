@@ -20,6 +20,7 @@
 - [#85] - Fix Out-of-Path build for Qt version workaround ([#83]; thanks [@OPNA2608], [@jimbo1qaz])
 - [#86] - Fix crash when changing pattern size during playback (thanks [@papiezak])
 - Fix spinboxes to emit value change event when finishing text editing
+- [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc])
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -33,9 +34,11 @@
 [#85]: https://github.com/rerrahkr/BambooTracker/pull/85
 [#83]: https://github.com/rerrahkr/BambooTracker/issues/83
 [#86]: https://github.com/rerrahkr/BambooTracker/issues/86
+[#88]: https://github.com/rerrahkr/BambooTracker/issues/88
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
+[@bryc]: https://github.com/bryc
 
 ## v0.1.6 (2019-03-16)
 ### Added

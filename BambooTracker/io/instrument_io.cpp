@@ -2145,6 +2145,20 @@ AbstractInstrument* InstrumentIO::loadDMPFile(std::string path, std::weak_ptr<In
 	return inst;
 }
 
+int InstrumentIO::convertTFIVGMDT(int dt)
+{
+	switch (dt) {
+	case 0:		return 7;
+	case 1:		return 6;
+	case 2:		return 5;
+	case 3:		return 0;
+	case 4:		return 1;
+	case 5:		return 2;
+	case 6:		return 3;
+	default:	throw std::out_of_range("Out of range dt");
+	}
+}
+
 AbstractInstrument* InstrumentIO::loadTFIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	BinaryContainer ctr;
 	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::INST);
@@ -2161,7 +2175,7 @@ AbstractInstrument* InstrumentIO::loadTFIFile(std::string path, std::weak_ptr<In
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
@@ -2174,7 +2188,7 @@ AbstractInstrument* InstrumentIO::loadTFIFile(std::string path, std::weak_ptr<In
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
@@ -2187,7 +2201,7 @@ AbstractInstrument* InstrumentIO::loadTFIFile(std::string path, std::weak_ptr<In
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
@@ -2200,7 +2214,7 @@ AbstractInstrument* InstrumentIO::loadTFIFile(std::string path, std::weak_ptr<In
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
@@ -2231,7 +2245,7 @@ AbstractInstrument* InstrumentIO::loadVGIFile(std::string path, std::weak_ptr<In
 	uint8_t pams = ctr.readUint8(csr++);
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
@@ -2245,7 +2259,7 @@ AbstractInstrument* InstrumentIO::loadVGIFile(std::string path, std::weak_ptr<In
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
@@ -2259,7 +2273,7 @@ AbstractInstrument* InstrumentIO::loadVGIFile(std::string path, std::weak_ptr<In
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
@@ -2273,7 +2287,7 @@ AbstractInstrument* InstrumentIO::loadVGIFile(std::string path, std::weak_ptr<In
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, ctr.readUint8(csr++));
+	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++)));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
@@ -2351,7 +2365,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
 	/*int ssgeg1 = */ctr.readUint8(csr++);
-//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+	//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 	csr += 9;
 
 	tmp = ctr.readUint8(csr++);
@@ -2368,7 +2382,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
 	/*int ssgeg2 = */ctr.readUint8(csr++);
-//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+	//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 	csr += 9;
 
 	tmp = ctr.readUint8(csr++);
@@ -2385,7 +2399,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
 	/*int ssgeg3 = */ctr.readUint8(csr++);
-//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+	//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 	csr += 9;
 
 	tmp = ctr.readUint8(csr++);
@@ -2402,7 +2416,7 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, 0x0f & tmp);
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
 	/*int ssgeg4 = */ctr.readUint8(csr++);
-//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+	//	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 	csr += 9;
 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
