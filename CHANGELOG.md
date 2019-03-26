@@ -17,6 +17,9 @@
 - Fix operator mask in restarting
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
 - [#3] - Fix SSG square mask entry (thanks [@papiezak])
+- [#85] - Fix Out-of-Path build for Qt version workaround ([#83]; thanks [@OPNA2608], [@jimbo1qaz])
+- [#86] - Fix crash when changing pattern size during playback (thanks [@papiezak])
+- Fix spinboxes to emit value change event when finishing text editing
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -27,6 +30,9 @@
 [#82]: https://github.com/rerrahkr/BambooTracker/issues/82
 [#3]: https://github.com/rerrahkr/BambooTracker/issues/3
 [#84]: https://github.com/rerrahkr/BambooTracker/issues/84
+[#85]: https://github.com/rerrahkr/BambooTracker/pull/85
+[#83]: https://github.com/rerrahkr/BambooTracker/issues/83
+[#86]: https://github.com/rerrahkr/BambooTracker/issues/86
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

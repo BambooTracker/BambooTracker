@@ -2742,6 +2742,12 @@ size_t BambooTracker::getPatternSizeFromOrderNumber(int songNum, int orderNum) c
 void BambooTracker::setDefaultPatternSize(int songNum, size_t size)
 {
 	mod_->getSong(songNum).setDefaultPatternSize(size);
+
+	int s = static_cast<int>(size);
+	if (isPlaySong() && playStepNum_ >= s) {
+		playStepNum_ = s - 1;
+		findNextStep();
+	}
 }
 
 size_t BambooTracker::getDefaultPatternSize(int songNum) const

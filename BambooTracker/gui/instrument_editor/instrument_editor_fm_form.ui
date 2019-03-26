@@ -61,6 +61,9 @@
                <layout class="QHBoxLayout" name="horizontalLayout">
                 <item alignment="Qt::AlignLeft">
                  <widget class="QSpinBox" name="envNumSpinBox">
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
                   <property name="prefix">
                    <string>#</string>
                   </property>
@@ -218,6 +221,9 @@
              </item>
              <item row="0" column="0">
               <widget class="QSpinBox" name="opSeqNumSpinBox">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
                <property name="prefix">
                 <string>#</string>
                </property>
@@ -253,6 +259,9 @@
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="1">
            <widget class="QSpinBox" name="lfoNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
             <property name="prefix">
              <string>#</string>
             </property>
@@ -355,7 +364,11 @@
              </widget>
             </item>
             <item row="1" column="4">
-             <widget class="QSpinBox" name="lfoStartSpinBox"/>
+             <widget class="QSpinBox" name="lfoStartSpinBox">
+              <property name="keyboardTracking">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
             <item row="0" column="3">
              <spacer name="verticalSpacer">
@@ -521,6 +534,9 @@
              </item>
              <item row="0" column="0">
               <widget class="QSpinBox" name="ptNumSpinBox">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
                <property name="prefix">
                 <string>#</string>
                </property>
@@ -621,6 +637,9 @@
              </item>
              <item row="0" column="0">
               <widget class="QSpinBox" name="arpNumSpinBox">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
                <property name="prefix">
                 <string>#</string>
                </property>

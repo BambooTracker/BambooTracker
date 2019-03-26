@@ -99,6 +99,9 @@
            </property>
            <item row="4" column="1">
             <widget class="QSpinBox" name="tickFreqSpinBox">
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
              <property name="suffix">
               <string>Hz</string>
              </property>
@@ -178,6 +181,9 @@
            </property>
            <item row="0" column="1">
             <widget class="QSpinBox" name="editableStepSpinBox">
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
              <property name="minimum">
               <number>0</number>
              </property>
@@ -222,6 +228,9 @@
         </item>
         <item row="1" column="1">
          <widget class="LineReadOnlySpinBox" name="songNumSpinBox">
+          <property name="keyboardTracking">
+           <bool>false</bool>
+          </property>
           <property name="prefix">
            <string>#</string>
           </property>
@@ -284,6 +293,9 @@
            </item>
            <item row="6" column="1">
             <widget class="QSpinBox" name="speedSpinBox">
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
              <property name="minimum">
               <number>1</number>
              </property>
@@ -297,6 +309,9 @@
            </item>
            <item row="7" column="1">
             <widget class="QSpinBox" name="patternSizeSpinBox">
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
              <property name="minimum">
               <number>1</number>
              </property>
@@ -317,6 +332,9 @@
            </item>
            <item row="5" column="1">
             <widget class="QSpinBox" name="tempoSpinBox">
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
              <property name="minimum">
               <number>32</number>
              </property>
@@ -361,6 +379,9 @@
            <item row="8" column="1">
             <widget class="QSpinBox" name="grooveSpinBox">
              <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="keyboardTracking">
               <bool>false</bool>
              </property>
              <property name="prefix">

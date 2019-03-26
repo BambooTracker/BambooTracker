@@ -58,6 +58,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="waveNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
             <property name="prefix">
              <string>#</string>
             </property>
@@ -176,6 +179,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="tnNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
             <property name="prefix">
              <string>#</string>
             </property>
@@ -244,6 +250,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="envNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
             <property name="prefix">
              <string>#</string>
             </property>
@@ -326,6 +335,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="arpNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
             <property name="prefix">
              <string>#</string>
             </property>
