@@ -21,6 +21,7 @@
 - [#86] - Fix crash when changing pattern size during playback (thanks [@papiezak])
 - Fix spinboxes to emit value change event when finishing text editing
 - [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc])
+- Fix to keep current instrument when loading module
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81

@@ -1835,12 +1835,14 @@ void MainWindow::on_actionModule_Properties_triggered()
 	ModulePropertiesDialog dialog(bt_);
 	if (dialog.exec() == QDialog::Accepted
 			&& showUndoResetWarningDialog(tr("Do you want to change song properties?"))) {
+		int instRow = ui->instrumentListWidget->currentRow();
 		bt_->stopPlaySong();
 		lockControls(false);
 		dialog.onAccepted();
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
+		ui->instrumentListWidget->setCurrentRow(instRow);
 	}
 }
 
