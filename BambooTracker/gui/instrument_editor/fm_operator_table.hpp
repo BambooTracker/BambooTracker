@@ -44,7 +44,7 @@ signals:
 	void operatorEnableChanged(bool enable);
 	void copyEnvelopePressed();
 	void pasteEnvelopePressed();
-	void pasteEnvelopeFromPressed(QString type);
+	void pasteEnvelopeFromPressed(int typenum);
 	void copyOperatorPressed(int num);
 	void pasteOperatorPressed(int num);
 

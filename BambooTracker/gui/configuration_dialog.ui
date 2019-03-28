@@ -571,8 +571,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>371</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -587,12 +587,28 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>371</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>envelopeTypeListWidget</sender>
+   <signal>itemDoubleClicked(QListWidgetItem*)</signal>
+   <receiver>editEnvelopeSetPushButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>189</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>412</x>
+     <y>262</y>
     </hint>
    </hints>
   </connection>

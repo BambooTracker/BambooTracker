@@ -3,9 +3,14 @@
 #include <cstdint>
 #include <cstddef>
 #include <string>
-#include <map>
 #include <vector>
 #include "misc.hpp"
+
+struct FMEnvelopeText
+{
+	std::string name;
+	std::vector<FMEnvelopeTextType> texts;
+};
 
 class Configuration
 {
@@ -147,9 +152,9 @@ private:
 
 	// Input //
 public:
-	void setFMEnvelopeTextMap(std::map<std::string, std::vector<FMEnvelopeTextType>> map);
-	std::map<std::string, std::vector<FMEnvelopeTextType>> getFMEnvelopeTextMap() const;
+	void setFMEnvelopeTexts(std::vector<FMEnvelopeText> texts);
+	std::vector<FMEnvelopeText> getFMEnvelopeTexts() const;
 
 private:
-	std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap_;
+	std::vector<FMEnvelopeText> fmEnvelopeTexts_;
 };

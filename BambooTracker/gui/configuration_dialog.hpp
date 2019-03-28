@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <memory>
-#include <map>
 #include <vector>
 #include "configuration.hpp"
 #include "misc.hpp"
@@ -48,9 +47,13 @@ private slots:
 private slots:
 	void on_mixerResetPushButton_clicked();
 
+	/***** MIDI *****/
+private slots:
+	void on_midiInputChoiceButton_clicked();
+
 	/***** Input *****/
 private:
-	std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap_;
+	std::vector<FMEnvelopeText> fmEnvelopeTexts_;
 
 	void updateEnvelopeSetUi();
 
@@ -60,7 +63,6 @@ private slots:
 	void on_editEnvelopeSetPushButton_clicked();
 	void on_envelopeSetNameLineEdit_textChanged(const QString &arg1);
 	void on_envelopeTypeListWidget_currentRowChanged(int currentRow);
-	void on_midiInputChoiceButton_clicked();
 };
 
 #endif // CONFIGURATION_DIALOG_HPP

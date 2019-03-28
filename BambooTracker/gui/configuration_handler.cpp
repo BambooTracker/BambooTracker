@@ -1,4 +1,5 @@
 #include "configuration_handler.hpp"
+#include <vector>
 #include <QSettings>
 
 // config path (*nix): ~/.config/<organization>/<application>.ini
@@ -93,11 +94,11 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.beginGroup("Input");
 		settings.beginWriteArray("fmEnvelopeTextMap");
 		int n = 0;
-		for (auto pair : config.lock()->getFMEnvelopeTextMap()) {
+		for (auto texts : config.lock()->getFMEnvelopeTexts()) {
 			settings.setArrayIndex(n++);
-			settings.setValue("type", QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
+			settings.setValue("type", QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
 			QString data;
-			for (auto type : pair.second) {
+			for (auto type : texts.texts) {
 				data += QString(",%1").arg(static_cast<int>(type));
 			}
 			if (!data.isEmpty()) data.remove(0, 1);
@@ -197,7 +198,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		// Input //
 		settings.beginGroup("Input");
 		int size = settings.beginReadArray("fmEnvelopeTextMap");
-		std::map<std::string, std::vector<FMEnvelopeTextType>> fmEnvelopeTextMap;
+		std::vector<FMEnvelopeText> fmEnvelopeTexts;
 		for (int i = 0; i < size; ++i) {
 			settings.setArrayIndex(i);
 			std::string type = settings.value("type").toString().toUtf8().toStdString();
@@ -205,9 +206,9 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 			for (auto d : settings.value("order").toString().split(",")) {
 				data.push_back(static_cast<FMEnvelopeTextType>(d.toInt()));
 			}
-			fmEnvelopeTextMap.emplace(type, data);
+			fmEnvelopeTexts.push_back({ type, data });
 		}
-		if (!fmEnvelopeTextMap.empty()) config.lock()->setFMEnvelopeTextMap(fmEnvelopeTextMap);
+		if (!fmEnvelopeTexts.empty()) config.lock()->setFMEnvelopeTexts(fmEnvelopeTexts);
 		settings.endArray();
 		settings.endGroup();
 

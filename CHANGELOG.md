@@ -22,6 +22,7 @@
 - Fix spinboxes to emit value change event when finishing text editing
 - [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc])
 - Fix to keep current instrument when loading module
+- [#87] - Fix FM envelope set associarion when renaming (thanks [@OPNA2608])
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -36,6 +37,7 @@
 [#83]: https://github.com/rerrahkr/BambooTracker/issues/83
 [#86]: https://github.com/rerrahkr/BambooTracker/issues/86
 [#88]: https://github.com/rerrahkr/BambooTracker/issues/88
+[#87]: https://github.com/rerrahkr/BambooTracker/issues/87
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

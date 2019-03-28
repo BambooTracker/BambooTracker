@@ -601,8 +601,8 @@ void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> confi
 	config_ = config;
 
 	std::vector<QString> names;
-	for (auto pair : config.lock()->getFMEnvelopeTextMap()) {
-		names.push_back(QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
+	for (auto texts : config.lock()->getFMEnvelopeTexts()) {
+		names.push_back(QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
 	}
 	ui->op1Table->setEnvelopeSetNames(names);
 	ui->op2Table->setEnvelopeSetNames(names);
@@ -917,16 +917,20 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
 	}
 }
 
-void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString envType, QString data)
+void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QString data)
 {
 	data.replace(QRegularExpression(R"(\D+)"), ",");
 	if (data.startsWith(",")) data.remove(0, 1);
 	if (data.endsWith(",")) data.remove(data.length() - 1, 1);
 	QStringList digits = data.split(",");
 
-	std::vector<FMEnvelopeTextType> set = config_.lock()->getFMEnvelopeTextMap().at(envType.toUtf8().toStdString());
-	if (static_cast<int>(set.size()) > digits.size()) {
-		QMessageBox::critical(this, tr("Error"), tr("Did not match the clipboard text format with %1.").arg(envType));
+	std::vector<FMEnvelopeTextType> set
+			= config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).texts;
+	if (static_cast<int>(set.size()) != digits.size()) {
+		auto name = config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).name;
+		QMessageBox::critical(this, tr("Error"),
+							  tr("Did not match the clipboard text format with %1.")
+							  .arg(QString::fromUtf8(name.c_str(), static_cast<int>(name.length()))));
 		return;
 	}
 
@@ -1244,9 +1248,9 @@ void InstrumentEditorFMForm::pasteEnvelope()
 	setInstrumentEnvelopeParameters(data);
 }
 
-void InstrumentEditorFMForm::pasteEnvelopeFrom(QString type)
+void InstrumentEditorFMForm::pasteEnvelopeFrom(int typenum)
 {
-	setInstrumentEnvelopeParameters(type, QApplication::clipboard()->text());
+	setInstrumentEnvelopeParameters(typenum, QApplication::clipboard()->text());
 }
 
 void InstrumentEditorFMForm::copyOperator(int opNum)
@@ -1291,10 +1295,14 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	QObject::connect(paste, &QAction::triggered, this, &InstrumentEditorFMForm::pasteEnvelope);
 	paste->setEnabled(QApplication::clipboard()->text().startsWith("FM_ENVELOPE:"));
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
-	for (auto pair : config_.lock()->getFMEnvelopeTextMap())
-		pasteFrom->addAction(QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
+	std::vector<FMEnvelopeText> textsSet = config_.lock()->getFMEnvelopeTexts();
+	for (size_t i = 0; i < textsSet.size(); ++i) {
+		QAction* act = pasteFrom->addAction(
+						   QString::fromUtf8(textsSet[i].name.c_str(), static_cast<int>(textsSet[i].name.length())));
+		act->setData(i);
+	}
 	QObject::connect(pasteFrom, &QMenu::triggered,
-					 this, [&](QAction* action) { pasteEnvelopeFrom(action->text()); });
+					 this, [&](QAction* action) { pasteEnvelopeFrom(action->data().toInt()); });
 
 	menu.exec(globalPos);
 }

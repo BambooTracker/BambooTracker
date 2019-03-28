@@ -55,7 +55,7 @@ Configuration::Configuration()
 	mixerVolumeSSG_ = 0;
 
 	// Input //
-	fmEnvelopeTextMap_ = {
+	fmEnvelopeTexts_ = {
 		{
 			"PMD",
 			std::vector<FMEnvelopeTextType>({
@@ -849,12 +849,12 @@ double Configuration::getMixerVolumeSSG() const
 }
 
 // Input //
-void Configuration::setFMEnvelopeTextMap(std::map<std::string, std::vector<FMEnvelopeTextType>> map)
+void Configuration::setFMEnvelopeTexts(std::vector<FMEnvelopeText> texts)
 {
-	fmEnvelopeTextMap_ = map;
+	fmEnvelopeTexts_ = texts;
 }
 
-std::map<std::string, std::vector<FMEnvelopeTextType>> Configuration::getFMEnvelopeTextMap() const
+std::vector<FMEnvelopeText> Configuration::getFMEnvelopeTexts() const
 {
-	return fmEnvelopeTextMap_;
+	return fmEnvelopeTexts_;
 }
