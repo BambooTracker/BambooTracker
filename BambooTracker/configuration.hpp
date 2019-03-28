@@ -117,7 +117,7 @@ public:
 		QWERTY,
 		QWERTZ,
 		AZERTY
-    };
+	};
 	static const std::map<Qt::Key, JamKey> mappingQWERTY, mappingQWERTZ, mappingAZERTY;
 	std::map<Qt::Key, JamKey> mappingCustom;
 	std::map<KeyboardLayout, std::map<Qt::Key, JamKey>> mappingLayouts;
