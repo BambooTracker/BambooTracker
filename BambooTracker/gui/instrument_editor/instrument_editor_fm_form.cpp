@@ -1299,7 +1299,7 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	for (size_t i = 0; i < textsSet.size(); ++i) {
 		QAction* act = pasteFrom->addAction(
 						   QString::fromUtf8(textsSet[i].name.c_str(), static_cast<int>(textsSet[i].name.length())));
-		act->setData(i);
+		act->setData(static_cast<int>(i));
 	}
 	QObject::connect(pasteFrom, &QMenu::triggered,
 					 this, [&](QAction* action) { pasteEnvelopeFrom(action->data().toInt()); });

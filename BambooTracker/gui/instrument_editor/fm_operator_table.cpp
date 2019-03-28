@@ -323,7 +323,7 @@ void FMOperatorTable::on_groupBox_customContextMenuRequested(const QPoint &pos)
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
 	for (size_t i = 0; i < envelopeTypes_.size(); ++i) {
 		QAction* act = pasteFrom->addAction(envelopeTypes_[i]);
-		act->setData(i);
+		act->setData(static_cast<int>(i));
 	}
 	QObject::connect(pasteFrom, &QMenu::triggered,
 					 this, [&](QAction* action) { emit pasteEnvelopeFromPressed(action->data().toInt()); });

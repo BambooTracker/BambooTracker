@@ -144,8 +144,10 @@ void FMEnvelopeSetEditDialog::on_downToolButton_clicked()
 
 void FMEnvelopeSetEditDialog::on_addPushButton_clicked()
 {
-	insertRow(ui->treeWidget->currentIndex().row(), FMEnvelopeTextType::Skip);
+	int row = ui->treeWidget->currentIndex().row();
+	insertRow(row, FMEnvelopeTextType::Skip);
 
+	ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem((row == -1) ? 0 : row));
 	ui->upToolButton->setEnabled(true);
 	ui->downToolButton->setEnabled(true);
 	ui->removePushButton->setEnabled(true);
