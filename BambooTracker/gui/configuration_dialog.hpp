@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <memory>
+#include <map>
 #include <vector>
 #include "configuration.hpp"
 #include "misc.hpp"

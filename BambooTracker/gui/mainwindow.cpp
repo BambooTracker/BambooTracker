@@ -478,6 +478,19 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
+JamKey MainWindow::getJamKeyFromLayoutMapping(Qt::Key key) {
+    std::shared_ptr<Configuration> configLocked = config_.lock();
+    Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
+    if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
+        std::map<Qt::Key, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+        if (selectedLayoutMapping.find (key) != selectedLayoutMapping.end()) {
+            return selectedLayoutMapping.at (key);
+        } else {
+            throw std::invalid_argument("Unmapped key");
+        }
+    } else throw std::out_of_range("Unmapped Layout");
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
 	int key = event->key();
@@ -516,113 +529,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	/* General keys */
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-		switch (config_.lock()->getNoteEntryLayout()) {
-		case Configuration::QWERTY:
-			switch (key) {
-			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::LOW_C);		break;
-			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
-			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
-			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
-			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
-			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
-			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
-			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
-			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
-			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
-			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
-			case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
-			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
-			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
-			case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
-			case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
-			case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
-			case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
-			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
-			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
-			case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
-			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
-			case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
-			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
-			case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
-			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
-			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
-			case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
-			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
-			default:	break;
-			}
-			break;
-		case Configuration::QWERTZ:
-			switch (key) {
-			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::LOW_C);		break;
-			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
-			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
-			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
-			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
-			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
-			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
-			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
-			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
-			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
-			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
-			case Qt::Key_M:			bt_->jamKeyOn(JamKey::LOW_B);		break;
-			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_C_H);		break;
-			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Period:	bt_->jamKeyOn(JamKey::LOW_D_H);		break;
-			case Qt::Key_Q:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
-			case Qt::Key_2:			bt_->jamKeyOn(JamKey::HIGH_CS);		break;
-			case Qt::Key_W:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
-			case Qt::Key_3:			bt_->jamKeyOn(JamKey::HIGH_DS);		break;
-			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
-			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
-			case Qt::Key_5:			bt_->jamKeyOn(JamKey::HIGH_FS);		break;
-			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
-			case Qt::Key_6:			bt_->jamKeyOn(JamKey::HIGH_GS);		break;
-			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
-			case Qt::Key_7:			bt_->jamKeyOn(JamKey::HIGH_AS);		break;
-			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
-			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
-			case Qt::Key_9:			bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
-			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
-			default:	break;
-			}
-			break;
-		case Configuration::AZERTY:
-			switch (key) {
-			case Qt::Key_W:			bt_->jamKeyOn(JamKey::LOW_C);		break;
-			case Qt::Key_S:			bt_->jamKeyOn(JamKey::LOW_CS);		break;
-			case Qt::Key_X:			bt_->jamKeyOn(JamKey::LOW_D);		break;
-			case Qt::Key_D:			bt_->jamKeyOn(JamKey::LOW_DS);		break;
-			case Qt::Key_C:			bt_->jamKeyOn(JamKey::LOW_E);		break;
-			case Qt::Key_V:			bt_->jamKeyOn(JamKey::LOW_F);		break;
-			case Qt::Key_G:			bt_->jamKeyOn(JamKey::LOW_FS);		break;
-			case Qt::Key_B:			bt_->jamKeyOn(JamKey::LOW_G);		break;
-			case Qt::Key_H:			bt_->jamKeyOn(JamKey::LOW_GS);		break;
-			case Qt::Key_N:			bt_->jamKeyOn(JamKey::LOW_A);		break;
-			case Qt::Key_J:			bt_->jamKeyOn(JamKey::LOW_AS);		break;
-			case Qt::Key_Comma:		bt_->jamKeyOn(JamKey::LOW_B);		break;
-			case Qt::Key_Semicolon:	bt_->jamKeyOn(JamKey::LOW_C_H);		break;
-			case Qt::Key_L:			bt_->jamKeyOn(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Colon:		bt_->jamKeyOn(JamKey::LOW_D_H);		break;
-			case Qt::Key_A:			bt_->jamKeyOn(JamKey::HIGH_C);		break;
-			case Qt::Key_Eacute:	bt_->jamKeyOn(JamKey::HIGH_CS);		break;
-			case Qt::Key_Z:			bt_->jamKeyOn(JamKey::HIGH_D);		break;
-			case Qt::Key_QuoteDbl:	bt_->jamKeyOn(JamKey::HIGH_DS);		break;
-			case Qt::Key_E:			bt_->jamKeyOn(JamKey::HIGH_E);		break;
-			case Qt::Key_R:			bt_->jamKeyOn(JamKey::HIGH_F);		break;
-			case Qt::Key_ParenLeft:	bt_->jamKeyOn(JamKey::HIGH_FS);		break;
-			case Qt::Key_T:			bt_->jamKeyOn(JamKey::HIGH_G);		break;
-			case Qt::Key_Minus:		bt_->jamKeyOn(JamKey::HIGH_GS);		break;
-			case Qt::Key_Y:			bt_->jamKeyOn(JamKey::HIGH_A);		break;
-			case Qt::Key_Egrave:	bt_->jamKeyOn(JamKey::HIGH_AS);		break;
-			case Qt::Key_U:			bt_->jamKeyOn(JamKey::HIGH_B);		break;
-			case Qt::Key_I:			bt_->jamKeyOn(JamKey::HIGH_C_H);	break;
-			case Qt::Key_Ccedilla:	bt_->jamKeyOn(JamKey::HIGH_CS_H);	break;
-			case Qt::Key_O:			bt_->jamKeyOn(JamKey::HIGH_D_H);	break;
-			default:	break;
-			}
-			break;
-		}
+        Qt::Key qtKey = static_cast<Qt::Key> (key);
+        JamKey possibleJamKey;
+        try {
+            possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
+            bt_->jamKeyOn (possibleJamKey);
+        } catch (std::invalid_argument) {}
 	}
 }
 
@@ -632,113 +544,12 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-		switch (config_.lock()->getNoteEntryLayout()) {
-		case Configuration::QWERTY:
-			switch (key) {
-			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::LOW_C);		break;
-			case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
-			case Qt::Key_X:			bt_->jamKeyOff(JamKey::LOW_D);		break;
-			case Qt::Key_D:			bt_->jamKeyOff(JamKey::LOW_DS);		break;
-			case Qt::Key_C:			bt_->jamKeyOff(JamKey::LOW_E);		break;
-			case Qt::Key_V:			bt_->jamKeyOff(JamKey::LOW_F);		break;
-			case Qt::Key_G:			bt_->jamKeyOff(JamKey::LOW_FS);		break;
-			case Qt::Key_B:			bt_->jamKeyOff(JamKey::LOW_G);		break;
-			case Qt::Key_H:			bt_->jamKeyOff(JamKey::LOW_GS);		break;
-			case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
-			case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
-			case Qt::Key_M:			bt_->jamKeyOff(JamKey::LOW_B);		break;
-			case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_C_H);	break;
-			case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Period:	bt_->jamKeyOff(JamKey::LOW_D_H);	break;
-			case Qt::Key_Q:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
-			case Qt::Key_2:			bt_->jamKeyOff(JamKey::HIGH_CS);	break;
-			case Qt::Key_W:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
-			case Qt::Key_3:			bt_->jamKeyOff(JamKey::HIGH_DS);	break;
-			case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
-			case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
-			case Qt::Key_5:			bt_->jamKeyOff(JamKey::HIGH_FS);	break;
-			case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
-			case Qt::Key_6:			bt_->jamKeyOff(JamKey::HIGH_GS);	break;
-			case Qt::Key_Y:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
-			case Qt::Key_7:			bt_->jamKeyOff(JamKey::HIGH_AS);	break;
-			case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
-			case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
-			case Qt::Key_9:			bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
-			case Qt::Key_O:			bt_->jamKeyOff(JamKey::HIGH_D_H);	break;
-			default:	break;
-			}
-			break;
-		case Configuration::QWERTZ:
-			switch (key) {
-			case Qt::Key_Y:			bt_->jamKeyOff(JamKey::LOW_C);		break;
-			case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
-			case Qt::Key_X:			bt_->jamKeyOff(JamKey::LOW_D);		break;
-			case Qt::Key_D:			bt_->jamKeyOff(JamKey::LOW_DS);		break;
-			case Qt::Key_C:			bt_->jamKeyOff(JamKey::LOW_E);		break;
-			case Qt::Key_V:			bt_->jamKeyOff(JamKey::LOW_F);		break;
-			case Qt::Key_G:			bt_->jamKeyOff(JamKey::LOW_FS);		break;
-			case Qt::Key_B:			bt_->jamKeyOff(JamKey::LOW_G);		break;
-			case Qt::Key_H:			bt_->jamKeyOff(JamKey::LOW_GS);		break;
-			case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
-			case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
-			case Qt::Key_M:			bt_->jamKeyOff(JamKey::LOW_B);		break;
-			case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_C_H);	break;
-			case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Period:	bt_->jamKeyOff(JamKey::LOW_D_H);	break;
-			case Qt::Key_Q:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
-			case Qt::Key_2:			bt_->jamKeyOff(JamKey::HIGH_CS);	break;
-			case Qt::Key_W:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
-			case Qt::Key_3:			bt_->jamKeyOff(JamKey::HIGH_DS);	break;
-			case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
-			case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
-			case Qt::Key_5:			bt_->jamKeyOff(JamKey::HIGH_FS);	break;
-			case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
-			case Qt::Key_6:			bt_->jamKeyOff(JamKey::HIGH_GS);	break;
-			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
-			case Qt::Key_7:			bt_->jamKeyOff(JamKey::HIGH_AS);	break;
-			case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
-			case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
-			case Qt::Key_9:			bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
-			case Qt::Key_O:			bt_->jamKeyOff(JamKey::HIGH_D_H);	break;
-			default:	break;
-			}
-			break;
-		case Configuration::AZERTY:
-			switch (key) {
-			case Qt::Key_W:			bt_->jamKeyOff(JamKey::LOW_C);		break;
-			case Qt::Key_S:			bt_->jamKeyOff(JamKey::LOW_CS);		break;
-			case Qt::Key_X:			bt_->jamKeyOff(JamKey::LOW_D);		break;
-			case Qt::Key_D:			bt_->jamKeyOff(JamKey::LOW_DS);		break;
-			case Qt::Key_C:			bt_->jamKeyOff(JamKey::LOW_E);		break;
-			case Qt::Key_V:			bt_->jamKeyOff(JamKey::LOW_F);		break;
-			case Qt::Key_G:			bt_->jamKeyOff(JamKey::LOW_FS);		break;
-			case Qt::Key_B:			bt_->jamKeyOff(JamKey::LOW_G);		break;
-			case Qt::Key_H:			bt_->jamKeyOff(JamKey::LOW_GS);		break;
-			case Qt::Key_N:			bt_->jamKeyOff(JamKey::LOW_A);		break;
-			case Qt::Key_J:			bt_->jamKeyOff(JamKey::LOW_AS);		break;
-			case Qt::Key_Comma:		bt_->jamKeyOff(JamKey::LOW_B);		break;
-			case Qt::Key_Semicolon:	bt_->jamKeyOff(JamKey::LOW_C_H);	break;
-			case Qt::Key_L:			bt_->jamKeyOff(JamKey::LOW_CS_H);	break;
-			case Qt::Key_Colon:		bt_->jamKeyOff(JamKey::LOW_D_H);	break;
-			case Qt::Key_A:			bt_->jamKeyOff(JamKey::HIGH_C);		break;
-			case Qt::Key_Eacute:	bt_->jamKeyOff(JamKey::HIGH_CS);	break;
-			case Qt::Key_Z:			bt_->jamKeyOff(JamKey::HIGH_D);		break;
-			case Qt::Key_QuoteDbl:	bt_->jamKeyOff(JamKey::HIGH_DS);	break;
-			case Qt::Key_E:			bt_->jamKeyOff(JamKey::HIGH_E);		break;
-			case Qt::Key_R:			bt_->jamKeyOff(JamKey::HIGH_F);		break;
-			case Qt::Key_ParenLeft:	bt_->jamKeyOff(JamKey::HIGH_FS);	break;
-			case Qt::Key_T:			bt_->jamKeyOff(JamKey::HIGH_G);		break;
-			case Qt::Key_Minus:		bt_->jamKeyOff(JamKey::HIGH_GS);	break;
-			case Qt::Key_Y:			bt_->jamKeyOff(JamKey::HIGH_A);		break;
-			case Qt::Key_Egrave:	bt_->jamKeyOff(JamKey::HIGH_AS);	break;
-			case Qt::Key_U:			bt_->jamKeyOff(JamKey::HIGH_B);		break;
-			case Qt::Key_I:			bt_->jamKeyOff(JamKey::HIGH_C_H);	break;
-			case Qt::Key_Ccedilla:	bt_->jamKeyOff(JamKey::HIGH_CS_H);	break;
-			case Qt::Key_O:			bt_->jamKeyOff(JamKey::HIGH_D_H);	break;
-			default:	break;
-			}
-			break;
-		}
+        Qt::Key qtKey = static_cast<Qt::Key> (key);
+        JamKey possibleJamKey;
+        try {
+            possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
+            bt_->jamKeyOn (possibleJamKey);
+        } catch (std::invalid_argument) {}
 	}
 }
 

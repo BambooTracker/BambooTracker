@@ -213,6 +213,9 @@ private:
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
 
 	void showPatternContextMenu(const PatternPosition& pos, const QPoint& point);
+
+	// Layout decypherer
+	JamKey getJamKeyFromLayoutMapping(Qt::Key key);
 };
 
 #endif // PATTERN_EDITOR_PANEL_HPP

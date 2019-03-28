@@ -3,8 +3,11 @@
 #include <cstdint>
 #include <cstddef>
 #include <string>
+#include <map>
 #include <vector>
+#include <Qt>
 #include "misc.hpp"
+#include "jam_manager.hpp"
 
 struct FMEnvelopeText
 {
@@ -107,10 +110,119 @@ public:
 	std::string getEchoBufferKey() const;
 	enum KeyboardLayout : int
 	{
-		QWERTY = 0,
+		// at the top, so new layouts can easily be added in after it
+		// and it's always easy to find no matter how many layouts we add
+		Custom = 0,
+		QWERTY,
 		QWERTZ,
 		AZERTY
-	};
+    };
+    std::map<Qt::Key, JamKey> mappingCustom;
+    std::map<Qt::Key, JamKey> mappingQWERTY = {
+        {Qt::Key_Z,         JamKey::LOW_C},
+        {Qt::Key_S,         JamKey::LOW_CS},
+        {Qt::Key_X,         JamKey::LOW_D},
+        {Qt::Key_D,         JamKey::LOW_DS},
+        {Qt::Key_C,         JamKey::LOW_E},
+        {Qt::Key_V,         JamKey::LOW_F},
+        {Qt::Key_G,         JamKey::LOW_FS},
+        {Qt::Key_B,         JamKey::LOW_G},
+        {Qt::Key_H,         JamKey::LOW_GS},
+        {Qt::Key_N,         JamKey::LOW_A},
+        {Qt::Key_J,         JamKey::LOW_AS},
+        {Qt::Key_M,         JamKey::LOW_B},
+        {Qt::Key_Comma,     JamKey::LOW_C_H},
+        {Qt::Key_L,         JamKey::LOW_CS_H},
+        {Qt::Key_Period,    JamKey::LOW_D_H},
+
+        {Qt::Key_Q,         JamKey::HIGH_C},
+        {Qt::Key_2,         JamKey::HIGH_CS},
+        {Qt::Key_W,         JamKey::HIGH_D},
+        {Qt::Key_3,         JamKey::HIGH_DS},
+        {Qt::Key_E,         JamKey::HIGH_E},
+        {Qt::Key_R,         JamKey::HIGH_F},
+        {Qt::Key_5,         JamKey::HIGH_FS},
+        {Qt::Key_T,         JamKey::HIGH_G},
+        {Qt::Key_6,         JamKey::HIGH_GS},
+        {Qt::Key_Y,         JamKey::HIGH_A},
+        {Qt::Key_7,         JamKey::HIGH_AS},
+        {Qt::Key_U,         JamKey::HIGH_B},
+        {Qt::Key_I,         JamKey::HIGH_C_H},
+        {Qt::Key_9,         JamKey::HIGH_CS_H},
+        {Qt::Key_O,         JamKey::HIGH_D_H},
+    };
+    std::map<Qt::Key, JamKey> mappingQWERTZ = {
+        {Qt::Key_Y,         JamKey::LOW_C},
+        {Qt::Key_S,         JamKey::LOW_CS},
+        {Qt::Key_X,         JamKey::LOW_D},
+        {Qt::Key_D,         JamKey::LOW_DS},
+        {Qt::Key_C,         JamKey::LOW_E},
+        {Qt::Key_V,         JamKey::LOW_F},
+        {Qt::Key_G,         JamKey::LOW_FS},
+        {Qt::Key_B,         JamKey::LOW_G},
+        {Qt::Key_H,         JamKey::LOW_GS},
+        {Qt::Key_N,         JamKey::LOW_A},
+        {Qt::Key_J,         JamKey::LOW_AS},
+        {Qt::Key_M,         JamKey::LOW_B},
+        {Qt::Key_Comma,     JamKey::LOW_C_H},
+        {Qt::Key_L,         JamKey::LOW_CS_H},
+        {Qt::Key_Period,    JamKey::LOW_D_H},
+
+        {Qt::Key_Q,         JamKey::HIGH_C},
+        {Qt::Key_2,         JamKey::HIGH_CS},
+        {Qt::Key_W,         JamKey::HIGH_D},
+        {Qt::Key_3,         JamKey::HIGH_DS},
+        {Qt::Key_E,         JamKey::HIGH_E},
+        {Qt::Key_R,         JamKey::HIGH_F},
+        {Qt::Key_5,         JamKey::HIGH_FS},
+        {Qt::Key_T,         JamKey::HIGH_G},
+        {Qt::Key_6,         JamKey::HIGH_GS},
+        {Qt::Key_Z,         JamKey::HIGH_A},
+        {Qt::Key_7,         JamKey::HIGH_AS},
+        {Qt::Key_U,         JamKey::HIGH_B},
+        {Qt::Key_I,         JamKey::HIGH_C_H},
+        {Qt::Key_9,         JamKey::HIGH_CS_H},
+        {Qt::Key_O,         JamKey::HIGH_D_H},
+    };
+    std::map<Qt::Key, JamKey> mappingAZERTY = {
+        {Qt::Key_W,         JamKey::LOW_C},
+        {Qt::Key_S,         JamKey::LOW_CS},
+        {Qt::Key_X,         JamKey::LOW_D},
+        {Qt::Key_D,         JamKey::LOW_DS},
+        {Qt::Key_C,         JamKey::LOW_E},
+        {Qt::Key_V,         JamKey::LOW_F},
+        {Qt::Key_G,         JamKey::LOW_FS},
+        {Qt::Key_B,         JamKey::LOW_G},
+        {Qt::Key_H,         JamKey::LOW_GS},
+        {Qt::Key_N,         JamKey::LOW_A},
+        {Qt::Key_J,         JamKey::LOW_AS},
+        {Qt::Key_Comma,     JamKey::LOW_B},
+        {Qt::Key_Semicolon, JamKey::LOW_C_H},
+        {Qt::Key_L,         JamKey::LOW_CS_H},
+        {Qt::Key_Colon,     JamKey::LOW_D_H},
+
+        {Qt::Key_A,         JamKey::HIGH_C},
+        {Qt::Key_Eacute,    JamKey::HIGH_CS},
+        {Qt::Key_Z,         JamKey::HIGH_D},
+        {Qt::Key_QuoteDbl,  JamKey::HIGH_DS},
+        {Qt::Key_E,         JamKey::HIGH_E},
+        {Qt::Key_R,         JamKey::HIGH_F},
+        {Qt::Key_ParenLeft, JamKey::HIGH_FS},
+        {Qt::Key_T,         JamKey::HIGH_G},
+        {Qt::Key_Minus,     JamKey::HIGH_GS},
+        {Qt::Key_Y,         JamKey::HIGH_A},
+        {Qt::Key_Egrave,    JamKey::HIGH_AS},
+        {Qt::Key_U,         JamKey::HIGH_B},
+        {Qt::Key_I,         JamKey::HIGH_C_H},
+        {Qt::Key_Ccedilla,  JamKey::HIGH_CS_H},
+        {Qt::Key_O,         JamKey::HIGH_D_H},
+    };
+    std::map<KeyboardLayout, std::map<Qt::Key, JamKey>> mappingLayouts = {
+        {Custom, mappingCustom},
+        {QWERTY, mappingQWERTY},
+        {QWERTZ, mappingQWERTZ},
+        {AZERTY, mappingAZERTY}
+    };
 	void setNoteEntryLayout(KeyboardLayout layout);
 	KeyboardLayout getNoteEntryLayout() const;
 
