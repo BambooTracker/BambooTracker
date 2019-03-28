@@ -1,5 +1,5 @@
 # BambooTracker Instrument File (.bti) Format Specification
-v1.0.1 - 2018-12-10
+v1.1.0 - 2019-03-24
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
