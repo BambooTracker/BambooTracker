@@ -805,16 +805,16 @@ void PatternEditorPanel::updatePosition()
 }
 
 JamKey PatternEditorPanel::getJamKeyFromLayoutMapping(Qt::Key key) {
-    std::shared_ptr<Configuration> configLocked = config_.lock();
-    Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
-    if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-        std::map<Qt::Key, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
-        if (selectedLayoutMapping.find (key) != selectedLayoutMapping.end()) {
-            return selectedLayoutMapping.at (key);
-        } else {
-            throw std::invalid_argument("Unmapped key");
-        }
-    } else throw std::out_of_range("Unmapped Layout");
+	std::shared_ptr<Configuration> configLocked = config_.lock();
+	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
+	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
+		std::map<Qt::Key, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+		if (selectedLayoutMapping.find (key) != selectedLayoutMapping.end()) {
+			return selectedLayoutMapping.at (key);
+		} else {
+			throw std::invalid_argument("Unmapped key");
+		}
+	} else throw std::out_of_range("Unmapped Layout");
 }
 
 bool PatternEditorPanel::enterToneData(QKeyEvent* event)
@@ -842,12 +842,12 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 	int baseOct = bt_->getCurrentOctave();
 
 	if (event->modifiers().testFlag(Qt::NoModifier)) {
-        Qt::Key qtKey = static_cast<Qt::Key> (event->key());
-        JamKey possibleJamKey;
-        try {
-            possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
-            setStepKeyOn(JamManager::jamKeyToNote (possibleJamKey), baseOct + (static_cast<int>(possibleJamKey) / 12));
-        } catch (std::invalid_argument) {}
+		Qt::Key qtKey = static_cast<Qt::Key> (event->key());
+		JamKey possibleJamKey;
+		try {
+			possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
+			setStepKeyOn(JamManager::jamKeyToNote (possibleJamKey), baseOct + (static_cast<int>(possibleJamKey) / 12));
+		} catch (std::invalid_argument) {}
 	}
 
 	return false;

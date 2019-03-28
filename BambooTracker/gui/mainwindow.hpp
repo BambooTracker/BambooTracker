@@ -108,10 +108,10 @@ private:
 	void setMidiConfiguration();
 
 	// History change
-    void changeFileHistory(QString file);
+	void changeFileHistory(QString file);
 
-    // Layout decypherer
-    JamKey getJamKeyFromLayoutMapping(Qt::Key key);
+	// Layout decypherer
+	JamKey getJamKeyFromLayoutMapping(Qt::Key key);
 
 	void setWindowTitle();
 	void setModifiedTrue();

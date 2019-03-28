@@ -479,16 +479,16 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 }
 
 JamKey MainWindow::getJamKeyFromLayoutMapping(Qt::Key key) {
-    std::shared_ptr<Configuration> configLocked = config_.lock();
-    Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
-    if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-        std::map<Qt::Key, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
-        if (selectedLayoutMapping.find (key) != selectedLayoutMapping.end()) {
-            return selectedLayoutMapping.at (key);
-        } else {
-            throw std::invalid_argument("Unmapped key");
-        }
-    } else throw std::out_of_range("Unmapped Layout");
+	std::shared_ptr<Configuration> configLocked = config_.lock();
+	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
+	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
+		std::map<Qt::Key, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+		if (selectedLayoutMapping.find (key) != selectedLayoutMapping.end()) {
+			return selectedLayoutMapping.at (key);
+		} else {
+			throw std::invalid_argument("Unmapped key");
+		}
+	} else throw std::out_of_range("Unmapped Layout");
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -529,12 +529,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	/* General keys */
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-        Qt::Key qtKey = static_cast<Qt::Key> (key);
-        JamKey possibleJamKey;
-        try {
-            possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
-            bt_->jamKeyOn (possibleJamKey);
-        } catch (std::invalid_argument) {}
+		Qt::Key qtKey = static_cast<Qt::Key> (key);
+		JamKey possibleJamKey;
+		try {
+			possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
+			bt_->jamKeyOn (possibleJamKey);
+		} catch (std::invalid_argument) {}
 	}
 }
 
@@ -544,12 +544,12 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-        Qt::Key qtKey = static_cast<Qt::Key> (key);
-        JamKey possibleJamKey;
-        try {
-            possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
-            bt_->jamKeyOn (possibleJamKey);
-        } catch (std::invalid_argument) {}
+		Qt::Key qtKey = static_cast<Qt::Key> (key);
+		JamKey possibleJamKey;
+		try {
+			possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
+			bt_->jamKeyOff (possibleJamKey);
+		} catch (std::invalid_argument) {}
 	}
 }
 
