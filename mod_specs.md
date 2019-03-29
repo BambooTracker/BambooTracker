@@ -1,5 +1,5 @@
 # BambooTracker Module File (.btm) Format Specification
- v1.0.3 - 2019-03-18
+ v1.1.0 - 2019-03-24
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
