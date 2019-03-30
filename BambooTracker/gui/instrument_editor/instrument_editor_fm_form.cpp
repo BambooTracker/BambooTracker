@@ -919,10 +919,13 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)
 
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QString data)
 {
-	data.replace(QRegularExpression(R"(\D+)"), ",");
-	if (data.startsWith(",")) data.remove(0, 1);
-	if (data.endsWith(",")) data.remove(data.length() - 1, 1);
-	QStringList digits = data.split(",");
+	QStringList digits;
+	QRegularExpression re(R"((-?\d+))");
+	auto it = re.globalMatch(data);
+	while (it.hasNext()) {
+		auto match = it.next();
+		digits.append(match.captured(1));
+	}
 
 	std::vector<FMEnvelopeTextType> set
 			= config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).texts;
@@ -934,49 +937,71 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QSt
 		return;
 	}
 
-	for (int i = 0; i < digits.size(); ++i) {
-		int d = digits[i].toInt();
-		switch (set[static_cast<size_t>(i)]) {
-		case FMEnvelopeTextType::Skip:	break;
-		case FMEnvelopeTextType::AL:	ui->alSlider->setValue(d);	break;
-		case FMEnvelopeTextType::FB:	ui->fbSlider->setValue(d);	break;
-		case FMEnvelopeTextType::AR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
-		case FMEnvelopeTextType::DR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
-		case FMEnvelopeTextType::SR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
-		case FMEnvelopeTextType::RR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
-		case FMEnvelopeTextType::SL1:	ui->op1Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
-		case FMEnvelopeTextType::TL1:	ui->op1Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
-		case FMEnvelopeTextType::KS1:	ui->op1Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
-		case FMEnvelopeTextType::ML1:	ui->op1Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
-		case FMEnvelopeTextType::DT1:	ui->op1Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
-		case FMEnvelopeTextType::AR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
-		case FMEnvelopeTextType::DR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
-		case FMEnvelopeTextType::SR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
-		case FMEnvelopeTextType::RR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
-		case FMEnvelopeTextType::SL2:	ui->op2Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
-		case FMEnvelopeTextType::TL2:	ui->op2Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
-		case FMEnvelopeTextType::KS2:	ui->op2Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
-		case FMEnvelopeTextType::ML2:	ui->op2Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
-		case FMEnvelopeTextType::DT2:	ui->op2Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
-		case FMEnvelopeTextType::AR3:	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
-		case FMEnvelopeTextType::DR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
-		case FMEnvelopeTextType::SR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
-		case FMEnvelopeTextType::RR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
-		case FMEnvelopeTextType::SL3:	ui->op3Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
-		case FMEnvelopeTextType::TL3:	ui->op3Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
-		case FMEnvelopeTextType::KS3:	ui->op3Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
-		case FMEnvelopeTextType::ML3:	ui->op3Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
-		case FMEnvelopeTextType::DT3:	ui->op3Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
-		case FMEnvelopeTextType::AR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, d);	break;
-		case FMEnvelopeTextType::DR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::DR, d);	break;
-		case FMEnvelopeTextType::SR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::SR, d);	break;
-		case FMEnvelopeTextType::RR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::RR, d);	break;
-		case FMEnvelopeTextType::SL4:	ui->op4Table->setValue(Ui::FMOperatorParameter::SL, d);	break;
-		case FMEnvelopeTextType::TL4:	ui->op4Table->setValue(Ui::FMOperatorParameter::TL, d);	break;
-		case FMEnvelopeTextType::KS4:	ui->op4Table->setValue(Ui::FMOperatorParameter::KS, d);	break;
-		case FMEnvelopeTextType::ML4:	ui->op4Table->setValue(Ui::FMOperatorParameter::ML, d);	break;
-		case FMEnvelopeTextType::DT4:	ui->op4Table->setValue(Ui::FMOperatorParameter::DT, d);	break;
+	auto rangeCheck = [](int v, int min, int max) -> int {
+		if (v < min || max < v) throw std::out_of_range("");
+		else return v;
+	};
+	auto rangeCheckDT = [rangeCheck](int v) -> int {
+		switch (v) {
+		case -3:	v = 7;	break;
+		case -2:	v = 6;	break;
+		case -1:	v = 5;	break;
+		default:			break;
 		}
+		return rangeCheck(v, 0, 7);
+	};
+	try {
+		for (int i = 0; i < digits.size(); ++i) {
+			int d = digits[i].toInt();
+			switch (set[static_cast<size_t>(i)]) {
+			case FMEnvelopeTextType::Skip:	break;
+			case FMEnvelopeTextType::AL:	ui->alSlider->setValue(rangeCheck(d, 0, 7));	break;
+			case FMEnvelopeTextType::FB:	ui->fbSlider->setValue(rangeCheck(d, 0, 7));	break;
+			case FMEnvelopeTextType::AR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::AR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::DR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::DR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::SR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::SR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::RR1:	ui->op1Table->setValue(Ui::FMOperatorParameter::RR, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::SL1:	ui->op1Table->setValue(Ui::FMOperatorParameter::SL, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::TL1:	ui->op1Table->setValue(Ui::FMOperatorParameter::TL, rangeCheck(d, 0, 127));	break;
+			case FMEnvelopeTextType::KS1:	ui->op1Table->setValue(Ui::FMOperatorParameter::KS, rangeCheck(d, 0, 3));	break;
+			case FMEnvelopeTextType::ML1:	ui->op1Table->setValue(Ui::FMOperatorParameter::ML, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::DT1:	ui->op1Table->setValue(Ui::FMOperatorParameter::DT, rangeCheckDT(d));	break;
+			case FMEnvelopeTextType::AR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::AR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::DR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::DR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::SR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::SR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::RR2:	ui->op2Table->setValue(Ui::FMOperatorParameter::RR, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::SL2:	ui->op2Table->setValue(Ui::FMOperatorParameter::SL, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::TL2:	ui->op2Table->setValue(Ui::FMOperatorParameter::TL, rangeCheck(d, 0, 127));	break;
+			case FMEnvelopeTextType::KS2:	ui->op2Table->setValue(Ui::FMOperatorParameter::KS, rangeCheck(d, 0, 3));	break;
+			case FMEnvelopeTextType::ML2:	ui->op2Table->setValue(Ui::FMOperatorParameter::ML, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::DT2:	ui->op2Table->setValue(Ui::FMOperatorParameter::DT, rangeCheckDT(d));	break;
+			case FMEnvelopeTextType::AR3:	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::DR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::DR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::SR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::SR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::RR3:	ui->op3Table->setValue(Ui::FMOperatorParameter::RR, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::SL3:	ui->op3Table->setValue(Ui::FMOperatorParameter::SL, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::TL3:	ui->op3Table->setValue(Ui::FMOperatorParameter::TL, rangeCheck(d, 0, 127));	break;
+			case FMEnvelopeTextType::KS3:	ui->op3Table->setValue(Ui::FMOperatorParameter::KS, rangeCheck(d, 0, 4));	break;
+			case FMEnvelopeTextType::ML3:	ui->op3Table->setValue(Ui::FMOperatorParameter::ML, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::DT3:	ui->op3Table->setValue(Ui::FMOperatorParameter::DT, rangeCheckDT(d));	break;
+			case FMEnvelopeTextType::AR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::DR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::DR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::SR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::SR, rangeCheck(d, 0, 31));	break;
+			case FMEnvelopeTextType::RR4:	ui->op4Table->setValue(Ui::FMOperatorParameter::RR, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::SL4:	ui->op4Table->setValue(Ui::FMOperatorParameter::SL, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::TL4:	ui->op4Table->setValue(Ui::FMOperatorParameter::TL, rangeCheck(d, 0, 127));	break;
+			case FMEnvelopeTextType::KS4:	ui->op4Table->setValue(Ui::FMOperatorParameter::KS, rangeCheck(d, 0, 4));	break;
+			case FMEnvelopeTextType::ML4:	ui->op4Table->setValue(Ui::FMOperatorParameter::ML, rangeCheck(d, 0, 15));	break;
+			case FMEnvelopeTextType::DT4:	ui->op4Table->setValue(Ui::FMOperatorParameter::DT, rangeCheckDT(d));	break;
+			}
+		}
+	}
+	catch (...) {
+		auto name = config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).name;
+		QMessageBox::critical(this, tr("Error"),
+							  tr("Did not match the clipboard text format with %1.")
+							  .arg(QString::fromUtf8(name.c_str(), static_cast<int>(name.length()))));
+		return;
 	}
 }
 
