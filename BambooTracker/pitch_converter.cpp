@@ -1,4 +1,5 @@
 #include "pitch_converter.hpp"
+#include <algorithm>
 
 uint16_t PitchConverter::getPitchFM(Note note, int octave, int pitch)
 {
@@ -13,6 +14,12 @@ uint16_t PitchConverter::getPitchSSGSquare(Note note, int octave, int pitch)
 uint16_t PitchConverter::getPitchSSGSquare(int n)
 {
 	return centTableSSGSquare_[n];
+}
+
+int PitchConverter::convertPitchSSGSquareToPitchNumber(uint16_t data)
+{
+	auto it = std::find(std::begin(centTableSSGSquare_), std::end(centTableSSGSquare_), data);
+	return (it == std::end(centTableSSGSquare_)) ? -1 : std::distance(std::begin(centTableSSGSquare_), it);
 }
 
 uint16_t PitchConverter::getPitchSSGTriangle(Note note, int octave, int pitch)

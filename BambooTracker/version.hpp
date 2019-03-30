@@ -28,12 +28,12 @@ private:
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;
 	static constexpr unsigned int modFileMinor		= 1;
-	static constexpr unsigned int modFileRevision	= 0;
+	static constexpr unsigned int modFileRevision	= 1;
 
 	// Instrument file version
 	static constexpr unsigned int instFileMajor		= 1;
 	static constexpr unsigned int instFileMinor		= 1;
-	static constexpr unsigned int instFileRevision	= 0;
+	static constexpr unsigned int instFileRevision	= 1;
 
 	Version() {}
 };

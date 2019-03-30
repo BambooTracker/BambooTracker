@@ -24,6 +24,7 @@
 - [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc])
 - Fix to keep current instrument when loading module
 - [#87] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
+- [#90] - Fix module and instrument specification documents (thanks [@jpcima])
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -40,6 +41,7 @@
 [#88]: https://github.com/rerrahkr/BambooTracker/issues/88
 [#87]: https://github.com/rerrahkr/BambooTracker/issues/87
 [#91]: https://github.com/rerrahkr/BambooTracker/issues/91
+[#90]: https://github.com/rerrahkr/BambooTracker/pull/90
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

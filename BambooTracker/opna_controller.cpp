@@ -173,12 +173,12 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 					uint8_t mask = 0;
 					switch (ch)
 					{
-						case 2:	mask = 0x1;	break;
-						case 6:	mask = 0x2;	break;
-						case 7:	mask = 0x4;	break;
-						case 8:	mask = 0x8;	break;
-						default:
-							break;
+					case 2:	mask = 0x1;	break;
+					case 6:	mask = 0x2;	break;
+					case 7:	mask = 0x4;	break;
+					case 8:	mask = 0x8;	break;
+					default:
+						break;
 					}
 					opna_->setRegister(0x28, static_cast<uint8_t>(((slot & mask) << 4)) | chdata);
 				}
@@ -227,8 +227,8 @@ void OPNAController::keyOffFM(int ch, bool isJam)
 		case 8:
 		{
 			uint8_t slot = fmOpEnables_[2] & (
-					   static_cast<uint8_t>(isKeyOnFM_[2])
-				   | (static_cast<uint8_t>(isKeyOnFM_[6]) << 1)
+							   static_cast<uint8_t>(isKeyOnFM_[2])
+						   | (static_cast<uint8_t>(isKeyOnFM_[6]) << 1)
 					| (static_cast<uint8_t>(isKeyOnFM_[7]) << 2)
 					| (static_cast<uint8_t>(isKeyOnFM_[8]) << 3)
 					);
@@ -298,7 +298,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 	if (!refInstFM_[inch] || !refInstFM_[inch]->isRegisteredWithManager()
 			|| refInstFM_[inch]->getNumber() != inst->getNumber()) {
 		refInstFM_[inch] = inst;
-        writeFMEnvelopeToRegistersFromInstrument(inch);
+		writeFMEnvelopeToRegistersFromInstrument(inch);
 		fmOpEnables_[inch] = static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(0))
 							 | static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(1) << 1)
 							 | static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(2) << 2)
@@ -309,13 +309,13 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 		case SongType::STD:
 		{
 			if (refInstFM_[inch]->getEnvelopeResetEnabled(FMOperatorType::All)) {	// Restore envelope from reset
-                writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
 												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
-                writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
 												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
-                writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
 												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
-                writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
 												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
 			}
 			break;
@@ -323,28 +323,28 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 		case SongType::FMEX:
 		{
 			if (refInstFM_[inch]->getEnvelopeResetEnabled(opType)) {	// Restore envelope from reset
-					if (inch == 2) {
-						FMEnvelopeParameter param;
-						switch (ch) {
-						case 2:	param = FMEnvelopeParameter::RR1;	break;
-						case 6:	param = FMEnvelopeParameter::RR2;	break;
-						case 7:	param = FMEnvelopeParameter::RR3;	break;
-						case 8:	param = FMEnvelopeParameter::RR4;	break;
-						default:	throw std::out_of_range("out of range.");
-						}
-						writeFMEnveropeParameterToRegister(2, param, refInstFM_[2]->getEnvelopeParameter(param));
+				if (inch == 2) {
+					FMEnvelopeParameter param;
+					switch (ch) {
+					case 2:	param = FMEnvelopeParameter::RR1;	break;
+					case 6:	param = FMEnvelopeParameter::RR2;	break;
+					case 7:	param = FMEnvelopeParameter::RR3;	break;
+					case 8:	param = FMEnvelopeParameter::RR4;	break;
+					default:	throw std::out_of_range("out of range.");
 					}
-					else {
-                        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
-														   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
-                        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
-														   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
-                        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
-														   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
-                        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
-														   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
-					}
+					writeFMEnveropeParameterToRegister(2, param, refInstFM_[2]->getEnvelopeParameter(param));
 				}
+				else {
+					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
+													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
+					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
+													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
+					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
+													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
+					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
+													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
+				}
+			}
 			break;
 		}
 		}
@@ -379,8 +379,8 @@ void OPNAController::updateInstrumentFM(int instNum)
 		int inch = toInternalFMChannel(ch);
 
 		if (refInstFM_[inch] && refInstFM_[inch]->isRegisteredWithManager()
-						&& refInstFM_[inch]->getNumber() == instNum) {
-            writeFMEnvelopeToRegistersFromInstrument(inch);
+				&& refInstFM_[inch]->getNumber() == instNum) {
+			writeFMEnvelopeToRegistersFromInstrument(inch);
 			if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
 			FMOperatorType opType = toChannelOperatorType(ch);
 			for (auto& p : getFMEnvelopeParametersForOperator(opType)) {
@@ -481,29 +481,29 @@ void OPNAController::updateFMVolume(int ch)
 	int inch = toInternalFMChannel(ch);
 	switch (toChannelOperatorType(ch)) {
 	case FMOperatorType::All:
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL1,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL1,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL1));
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL2,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL2,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL2));
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL3,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL3,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL3));
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL4,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL4,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL4));
 		break;
 	case FMOperatorType::Op1:
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL1,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL1,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL1));
 		break;
 	case FMOperatorType::Op2:
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL2,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL2,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL2));
 		break;
 	case FMOperatorType::Op3:
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL3,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL3,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL3));
 		break;
 	case FMOperatorType::Op4:
-        writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL4,
+		writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::TL4,
 										   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL4));
 		break;
 	}
@@ -603,29 +603,29 @@ void OPNAController::setMuteFMState(int ch, bool isMute)
 		int inch = toInternalFMChannel(ch);
 		switch (toChannelOperatorType(ch)) {
 		case FMOperatorType::All:
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR1));
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR2));
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR3));
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR4));
 			break;
 		case FMOperatorType::Op1:
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR1));
 			break;
 		case FMOperatorType::Op2:
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR2));
 			break;
 		case FMOperatorType::Op3:
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR3));
 			break;
 		case FMOperatorType::Op4:
-            writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
 											   envFM_[inch]->getParameterValue(FMEnvelopeParameter::RR4));
 			break;
 		}
@@ -749,8 +749,8 @@ uint8_t OPNAController::getFMKeyOnOffChannelMask(int ch) const
 
 uint32_t OPNAController::getFMChannelOffset(int ch, bool forPitch) const
 {
-    if (mode_ == SongType::FMEX && forPitch) {
-        switch (ch) {
+	if (mode_ == SongType::FMEX && forPitch) {
+		switch (ch) {
 		case 0:
 		case 1:
 			return static_cast<uint32_t>(ch);
@@ -861,7 +861,7 @@ std::vector<FMEnvelopeParameter> OPNAController::getFMEnvelopeParametersForOpera
 void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 {
 	uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
-    uint8_t data1, data2;
+	uint8_t data1, data2;
 	int al;
 
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::FB));
@@ -883,9 +883,9 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	opna_->setRegister(0x30 + offset, data1);
 
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL1));
-    // Adjust volume
-    if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(2, data1);
-    else if (isCareer(0, al)) data1 = calculateTL(inch, data1);
+	// Adjust volume
+	if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(2, data1);
+	else if (isCareer(0, al)) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -932,9 +932,9 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	opna_->setRegister(0x30 + offset, data1);
 
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL2));
-    // Adjust volume
-    if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(6, data1);
-    else if (isCareer(1, al)) data1 = calculateTL(inch, data1);
+	// Adjust volume
+	if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(6, data1);
+	else if (isCareer(1, al)) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -981,9 +981,9 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	opna_->setRegister(0x30 + offset, data1);
 
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL3));
-    // Adjust volume
-    if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(7, data1);
-    else if (isCareer(2, al)) data1 = calculateTL(inch, data1);
+	// Adjust volume
+	if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(7, data1);
+	else if (isCareer(2, al)) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -1030,10 +1030,10 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	opna_->setRegister(0x30 + offset, data1);
 
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL4));
-    // Adjust volume
-    if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(8, data1);
-    else data1 = calculateTL(inch, data1);
-    envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL4, data1);
+	// Adjust volume
+	if (mode_ == SongType::FMEX && inch == 2) data1 = calculateTL(8, data1);
+	else data1 = calculateTL(inch, data1);
+	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL4, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::KS4));
@@ -1071,7 +1071,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 
 void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopeParameter param, int value)
 {
-    uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
+	uint32_t bch = getFMChannelOffset(inch);	// Bank and channel offset
 	uint8_t data;
 	int tmp;
 
@@ -1091,16 +1091,16 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 		opna_->setRegister(0x30 + bch, data);
 		break;
 	case FMEnvelopeParameter::TL1:
-        data = static_cast<uint8_t>(envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL1));
+		data = static_cast<uint8_t>(envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL1));
 		// Adjust volume
-        if (mode_ == SongType::FMEX && inch == 2) {
-            data = calculateTL(2, data);
+		if (mode_ == SongType::FMEX && inch == 2) {
+			data = calculateTL(2, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
 		}
-        else if (isCareer(0, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
-            data = calculateTL(inch, data);
-            envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
-        }
+		else if (isCareer(0, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+			data = calculateTL(inch, data);
+			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
+		}
 		opna_->setRegister(0x40 + bch, data);
 		break;
 	case FMEnvelopeParameter::KS1:
@@ -1139,14 +1139,14 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 	case FMEnvelopeParameter::TL2:
 		data = static_cast<uint8_t>(envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL2));
 		// Adjust volume
-        if (mode_ == SongType::FMEX && inch == 2) {
-            data = calculateTL(6, data);
+		if (mode_ == SongType::FMEX && inch == 2) {
+			data = calculateTL(6, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
 		}
-        else if (isCareer(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
-            data = calculateTL(inch, data);
-            envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
-        }
+		else if (isCareer(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+			data = calculateTL(inch, data);
+			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
+		}
 		opna_->setRegister(0x40 + bch + 8, data);
 		break;
 	case FMEnvelopeParameter::KS2:
@@ -1185,14 +1185,14 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 	case FMEnvelopeParameter::TL3:
 		data = static_cast<uint8_t>(envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL3));
 		// Adjust volume
-        if (mode_ == SongType::FMEX && inch == 2) {
-            data = calculateTL(7, data);
+		if (mode_ == SongType::FMEX && inch == 2) {
+			data = calculateTL(7, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
 		}
-        else if (isCareer(2, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
-            data = calculateTL(inch, data);
-            envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
-        }
+		else if (isCareer(2, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+			data = calculateTL(inch, data);
+			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
+		}
 		opna_->setRegister(0x40 + bch + 4, data);
 		break;
 	case FMEnvelopeParameter::KS3:
@@ -1231,14 +1231,14 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 	case FMEnvelopeParameter::TL4:
 		data = static_cast<uint8_t>(envFM_[inch]->getParameterValue(FMEnvelopeParameter::TL4));
 		// Adjust volume
-        if (mode_ == SongType::FMEX && inch == 2) {
-            data = calculateTL(8, data);
-            envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL4, data);	// Update
-        }
-        else {
-            data = calculateTL(inch, data);
-            envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL4, data);	// Update
-        }
+		if (mode_ == SongType::FMEX && inch == 2) {
+			data = calculateTL(8, data);
+			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL4, data);	// Update
+		}
+		else {
+			data = calculateTL(inch, data);
+			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL4, data);	// Update
+		}
 		opna_->setRegister(0x40 + bch + 12, data);
 		break;
 	case FMEnvelopeParameter::KS4:
@@ -1466,7 +1466,7 @@ void OPNAController::checkOperatorSequenceFM(int ch, int type)
 			if (t != -1) {
 				int d = it->getCommandType();
 				if (d != envFM_[inch]->getParameterValue(p)) {
-                    writeFMEnveropeParameterToRegister(inch, p, d);
+					writeFMEnveropeParameterToRegister(inch, p, d);
 				}
 			}
 		}
@@ -1755,7 +1755,7 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 	if (refInstSSG_[ch]->getWaveFormEnabled())
 		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
 	else
-		 wfItSSG_[ch].reset();
+		wfItSSG_[ch].reset();
 	if (refInstSSG_[ch]->getToneNoiseEnabled())
 		tnItSSG_[ch] = refInstSSG_[ch]->getToneNoiseSequenceIterator();
 	else
@@ -1780,7 +1780,7 @@ void OPNAController::updateInstrumentSSG(int instNum)
 {
 	for (int ch = 0; ch < 3; ++ch) {
 		if (refInstSSG_[ch] && refInstSSG_[ch]->isRegisteredWithManager()
-						&& refInstSSG_[ch]->getNumber() == instNum) {
+				&& refInstSSG_[ch]->getNumber() == instNum) {
 			if (!refInstSSG_[ch]->getWaveFormEnabled()) wfItSSG_[ch].reset();
 			if (!refInstSSG_[ch]->getToneNoiseEnabled()) tnItSSG_[ch].reset();
 			if (!refInstSSG_[ch]->getEnvelopeEnabled()) envItSSG_[ch].reset();
@@ -2187,7 +2187,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		case -1:
 		case 0:
 		case 1:
-		case 4:
+		case 3:
 			opna_->setRegister(0x0d, 0x0c);
 			break;
 		default:
@@ -2227,7 +2227,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		if (wfSSG_[ch].data != data) {
-			uint16_t pitch = PitchConverter::getPitchSSGSquare(data);
+			uint16_t pitch = static_cast<uint16_t>(data);
 			uint8_t offset = static_cast<uint8_t>(ch << 1);
 			opna_->setRegister(0x00 + offset, pitch & 0xff);
 			opna_->setRegister(0x01 + offset, pitch >> 8);
@@ -2277,7 +2277,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		if (wfSSG_[ch].data != data) {
-			uint16_t pitch = PitchConverter::getPitchSSGSquare(data);
+			uint16_t pitch = static_cast<uint16_t>(data);
 			uint8_t offset = static_cast<uint8_t>(ch << 1);
 			opna_->setRegister(0x00 + offset, pitch & 0xff);
 			opna_->setRegister(0x01 + offset, pitch >> 8);

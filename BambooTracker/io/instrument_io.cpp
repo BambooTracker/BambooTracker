@@ -8,6 +8,7 @@
 #include "version.hpp"
 #include "file_io.hpp"
 #include "file_io_error.hpp"
+#include "pitch_converter.hpp"
 #include "misc.hpp"
 
 InstrumentIO::InstrumentIO()
@@ -408,7 +409,13 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
+				if (fileVersion >= Version::toBCD(1, 1, 1)) {
+					ctr.appendInt16(static_cast<int16_t>(com.data));
+				}
+				else {
+					int pn = PitchConverter::convertPitchSSGSquareToPitchNumber(static_cast<uint16_t>(com.data));
+					ctr.appendInt16(static_cast<int16_t>(pn));
+				}
 			}
 			auto loop = instMan.lock()->getWaveFormSSGLoops(wfNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -1608,6 +1615,10 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 						csr += 2;
 						int16_t subdata = ctr.readInt16(csr);
 						csr += 2;
+						if (Version::toBCD(1, 1, 1) > fileVersion) {
+							if (subdata > -1)
+								subdata = static_cast<int16_t>(PitchConverter::getPitchSSGSquare(subdata));
+						}
 						if (l == 0)
 							instMan.lock()->setWaveFormSSGSequenceCommand(idx, 0, data, subdata);
 						else
