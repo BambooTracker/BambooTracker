@@ -73,12 +73,15 @@ public:
 	bool getRetrieveChannelState() const;
 	void setEnableTranslation(bool enabled);
 	bool getEnableTranslation() const;
+	void setShowFMDetuneAsSigned(bool enabled);
+	bool getShowFMDetuneAsSigned() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
 	bool backupModules_, dontSelectOnDoubleClick_;
 	bool reverseFMVolumeOrder_, moveCursorToRight_;
 	bool retrieveChannelState_, enableTranslation_;
+	bool showFMDetuneSigned_;
 
 	// Edit settings
 public:

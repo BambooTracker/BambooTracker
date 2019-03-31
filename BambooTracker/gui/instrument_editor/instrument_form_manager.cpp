@@ -9,6 +9,15 @@ InstrumentFormManager::InstrumentFormManager()
 {
 }
 
+void InstrumentFormManager::updateByConfiguration()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::FM) {
+			qobject_cast<InstrumentEditorFMForm*>(pair.second.get())->updateConfigurationForDisplay();
+		}
+	}
+}
+
 const std::unique_ptr<QWidget>& InstrumentFormManager::getForm(int n) const
 {
 	return map_.at(n);

@@ -36,6 +36,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(config.lock()->getMoveCursorToRight()));
 	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(config.lock()->getRetrieveChannelState()));
 	ui->generalSettingsListWidget->item(9)->setCheckState(toCheckState(config.lock()->getEnableTranslation()));
+	ui->generalSettingsListWidget->item(10)->setCheckState(toCheckState(config.lock()->getShowFMDetuneAsSigned()));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(config.lock()->getPageJumpLength()));
@@ -144,6 +145,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	config_.lock()->setMoveCursorToRight(fromCheckState(ui->generalSettingsListWidget->item(7)->checkState()));
 	config_.lock()->setRetrieveChannelState(fromCheckState(ui->generalSettingsListWidget->item(8)->checkState()));
 	config_.lock()->setEnableTranslation(fromCheckState(ui->generalSettingsListWidget->item(9)->checkState()));
+	config_.lock()->setShowFMDetuneAsSigned(fromCheckState(ui->generalSettingsListWidget->item(10)->checkState()));
 
 	// Edit settings
 	config_.lock()->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
@@ -210,6 +212,9 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 	case 9:		// Enable translation
 		text = tr("Translate to your language from the next launch. "
 				  "See readme to check supported languages.");
+		break;
+	case 10:	// Show FM detune as signed
+		text = tr("Display FM detune values as signed numbers in the FM envelope editor.");
 		break;
 	default:
 		text = "";

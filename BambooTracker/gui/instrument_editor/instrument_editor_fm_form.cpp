@@ -608,6 +608,16 @@ void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> confi
 	ui->op2Table->setEnvelopeSetNames(names);
 	ui->op3Table->setEnvelopeSetNames(names);
 	ui->op4Table->setEnvelopeSetNames(names);
+
+	updateConfigurationForDisplay();
+}
+
+void InstrumentEditorFMForm::updateConfigurationForDisplay()
+{
+	ui->op1Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
+	ui->op2Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
+	ui->op3Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
+	ui->op4Table->setDTDisplayType(config_.lock()->getShowFMDetuneAsSigned());
 }
 
 void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
@@ -826,6 +836,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 	ui->op1Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML1));
 	ui->op1Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT1));
 	ui->op1Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG1));
+	ui->op1Table->setGroupEnabled(instFM->getOperatorEnabled(0));
 	ui->op2Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMEnvelopeParameter::AR2));
 	ui->op2Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMEnvelopeParameter::DR2));
 	ui->op2Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMEnvelopeParameter::SR2));
@@ -836,6 +847,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 	ui->op2Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML2));
 	ui->op2Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT2));
 	ui->op2Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG2));
+	ui->op2Table->setGroupEnabled(instFM->getOperatorEnabled(1));
 	ui->op3Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMEnvelopeParameter::AR3));
 	ui->op3Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMEnvelopeParameter::DR3));
 	ui->op3Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMEnvelopeParameter::SR3));
@@ -846,6 +858,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 	ui->op3Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML3));
 	ui->op3Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT3));
 	ui->op3Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG3));
+	ui->op3Table->setGroupEnabled(instFM->getOperatorEnabled(2));
 	ui->op4Table->setValue(Ui::FMOperatorParameter::AR, instFM->getEnvelopeParameter(FMEnvelopeParameter::AR4));
 	ui->op4Table->setValue(Ui::FMOperatorParameter::DR, instFM->getEnvelopeParameter(FMEnvelopeParameter::DR4));
 	ui->op4Table->setValue(Ui::FMOperatorParameter::SR, instFM->getEnvelopeParameter(FMEnvelopeParameter::SR4));
@@ -856,6 +869,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters()
 	ui->op4Table->setValue(Ui::FMOperatorParameter::ML, instFM->getEnvelopeParameter(FMEnvelopeParameter::ML4));
 	ui->op4Table->setValue(Ui::FMOperatorParameter::DT, instFM->getEnvelopeParameter(FMEnvelopeParameter::DT4));
 	ui->op4Table->setValue(Ui::FMOperatorParameter::SSGEG, instFM->getEnvelopeParameter(FMEnvelopeParameter::SSGEG4));
+	ui->op4Table->setGroupEnabled(instFM->getOperatorEnabled(3));
 }
 
 void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(QString data)

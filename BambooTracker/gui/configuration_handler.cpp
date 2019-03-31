@@ -42,6 +42,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("moveCursorToRight",       configLocked->getMoveCursorToRight());
 		settings.setValue("retrieveChannelState",	configLocked->getRetrieveChannelState());
 		settings.setValue("enableTranslation",		configLocked->getEnableTranslation());
+		settings.setValue("showFMDetuneAsSigned",	configLocked->getShowFMDetuneAsSigned());
 		settings.endGroup();
 
 		// Edit settings
@@ -147,6 +148,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setMoveCursorToRight(settings.value("moveCursorToRight", configLocked->getMoveCursorToRight()).toBool());
 		configLocked->setRetrieveChannelState(settings.value("retrieveChannelState", configLocked->getRetrieveChannelState()).toBool());
 		configLocked->setEnableTranslation(settings.value("enableTranslation", configLocked->getEnableTranslation()).toBool());
+		configLocked->setShowFMDetuneAsSigned(settings.value("showFMDetuneAsSigned", configLocked->getShowFMDetuneAsSigned()).toBool());
 		settings.endGroup();
 
 		// Edit settings

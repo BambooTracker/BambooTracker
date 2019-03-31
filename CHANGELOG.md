@@ -10,6 +10,7 @@
 - Add key repeat settings for pattern editor
 - [#62], [#84] - Add FM3ch expanded mode (thanks [@jimbo1qaz], [@OPNA2608])
 - [#91] - Add module and instrument specification archive (thanks [@jpcima])
+- [#88] - Add FM detune display mode selection (thanks [@bryc] and others)
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
@@ -21,7 +22,7 @@
 - [#85] - Fix Out-of-Path build for Qt version workaround ([#83]; thanks [@OPNA2608], [@jimbo1qaz])
 - [#86] - Fix crash when changing pattern size during playback (thanks [@papiezak])
 - Fix spinboxes to emit value change event when finishing text editing
-- [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc])
+- [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc] and others)
 - Fix to keep current instrument when loading module
 - [#87] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
 

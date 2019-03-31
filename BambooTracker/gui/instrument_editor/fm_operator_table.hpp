@@ -32,6 +32,9 @@ public:
 	int operatorNumber() const;
 
 	void setValue(Ui::FMOperatorParameter param, int value);
+	void setGroupEnabled(bool enabled);
+
+	void setDTDisplayType(bool useNegative);
 
 	QString toString() const;
 
@@ -59,6 +62,8 @@ private:
 	int number_;
 	std::map<Ui::FMOperatorParameter, LabeledVerticalSlider*> sliderMap_;
 	std::vector<QString> envelopeTypes_;
+	bool isDTNegative_;
+	bool isIgnoreEvent_;
 
 	// Envelope graph
 	void resizeGraph();

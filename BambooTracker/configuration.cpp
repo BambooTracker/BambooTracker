@@ -27,6 +27,7 @@ Configuration::Configuration()
 	moveCursorToRight_ = false;
 	retrieveChannelState_ = false;
 	enableTranslation_ = true;
+	showFMDetuneSigned_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -681,6 +682,16 @@ void Configuration::setEnableTranslation(bool enabled)
 bool Configuration::getEnableTranslation() const
 {
 	return enableTranslation_;
+}
+
+void Configuration::setShowFMDetuneAsSigned(bool enabled)
+{
+	showFMDetuneSigned_ = enabled;
+}
+
+bool Configuration::getShowFMDetuneAsSigned() const
+{
+	return showFMDetuneSigned_;
 }
 
 // Edit settings

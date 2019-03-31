@@ -1290,8 +1290,9 @@ void MainWindow::changeConfiguration()
 	}
 
 	setMidiConfiguration();
+	instForms_->updateByConfiguration();
 
-	bt_->changeConfiguration(config_.lock());
+	bt_->changeConfiguration(config_);
 
 	update();
 }

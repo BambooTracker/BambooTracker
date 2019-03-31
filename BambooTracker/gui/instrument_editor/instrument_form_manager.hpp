@@ -15,6 +15,7 @@ class InstrumentFormManager : public QObject
 
 public:
 	InstrumentFormManager();
+	void updateByConfiguration();
 
 	const std::unique_ptr<QWidget>& getForm(int n) const;
 	void remove(int n);

@@ -6,10 +6,13 @@
 #include <QBrush>
 #include <QMenu>
 #include <QClipboard>
+#include "gui/event_guard.hpp"
 
 FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	QFrame(parent),
-	ui(new Ui::FMOperatorTable)
+	ui(new Ui::FMOperatorTable),
+	isDTNegative_(false),
+	isIgnoreEvent_(false)
 {
 	ui->setupUi(this);
 
@@ -35,11 +38,28 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	for (auto& pair : sliderMap_) {
 		pair.second->setText(name[n]);
 		pair.second->setMaximum(maxValue[n]);
-		QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
-						 this, [=](int value) {
-			repaintGraph();
-			emit operatorValueChanged(pair.first, value);
-		});
+		if (pair.second == ui->dtSlider) {
+			QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
+							 this, [&](int value) {
+				if (isDTNegative_) {
+					switch (value) {
+					case -1:	value = 5;	break;
+					case -2:	value = 6;	break;
+					case -3:	value = 7;	break;
+					default:				break;
+					}
+				}
+				repaintGraph();
+				if (!isIgnoreEvent_) emit operatorValueChanged(pair.first, value);
+			});
+		}
+		else {
+			QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
+							 this, [&](int value) {
+				repaintGraph();
+				if (!isIgnoreEvent_) emit operatorValueChanged(pair.first, value);
+			});
+		}
 		++n;
 	}
 
@@ -49,7 +69,7 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	QObject::connect(ui->ssgegSlider, &LabeledVerticalSlider::valueChanged,
 					 this, [&](int value) {
 		repaintGraph();
-		emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, value);
+		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, value);
 	});
 
 	// Init graph
@@ -85,6 +105,8 @@ int FMOperatorTable::operatorNumber() const
 
 void FMOperatorTable::setValue(Ui::FMOperatorParameter param, int value)
 {
+	Ui::EventGuard eg(isIgnoreEvent_);
+
 	if (param == Ui::FMOperatorParameter::SSGEG) {
 		if (value == -1) {
 			ui->ssgegCheckBox->setChecked(false);
@@ -95,7 +117,58 @@ void FMOperatorTable::setValue(Ui::FMOperatorParameter param, int value)
 		}
 	}
 	else {
+		if (param == Ui::FMOperatorParameter::DT) {
+			if (isDTNegative_) {
+				switch (value) {
+				case 4:	value = 0;	break;
+				case 5:	value = -1;	break;
+				case 6:	value = -2;	break;
+				case 7:	value = -3;	break;
+				default:		break;
+				}
+			}
+		}
 		sliderMap_.at(param)->setValue(value);
+	}
+}
+
+void FMOperatorTable::setGroupEnabled(bool enabled)
+{
+	Ui::EventGuard eg(isIgnoreEvent_);
+
+	ui->groupBox->setChecked(enabled);
+}
+
+void FMOperatorTable::setDTDisplayType(bool useNegative)
+{
+	if (isDTNegative_ == useNegative) return;
+
+	Ui::EventGuard eg(isIgnoreEvent_);
+	isDTNegative_ = useNegative;
+	if (useNegative) {
+		int v = ui->dtSlider->value();
+		switch (v) {
+		case 4:	v = 0;	break;
+		case 5:	v = -1;	break;
+		case 6:	v = -2;	break;
+		case 7:	v = -3;	break;
+		default:		break;
+		}
+		ui->dtSlider->setMinimum(-3);
+		ui->dtSlider->setMaximum(3);
+		ui->dtSlider->setValue(v);
+	}
+	else {
+		int v = ui->dtSlider->value();
+		switch (v) {
+		case -1:	v = 5;	break;
+		case -2:	v = 6;	break;
+		case -3:	v = 7;	break;
+		default:			break;
+		}
+		ui->dtSlider->setMinimum(0);
+		ui->dtSlider->setMaximum(7);
+		ui->dtSlider->setValue(v);
 	}
 }
 
@@ -296,19 +369,19 @@ void FMOperatorTable::on_ssgegCheckBox_stateChanged(int arg1)
 		ui->ssgegSlider->setEnabled(true);
 		ui->arSlider->setValue(31);
 		ui->arSlider->setEnabled(false);
-		emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, ui->ssgegSlider->value());
+		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, ui->ssgegSlider->value());
 	}
 	else {
 		ui->ssgegSlider->setEnabled(false);
 		ui->arSlider->setEnabled(true);
-		emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, -1);
+		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, -1);
 	}
 	repaintGraph();
 }
 
 void FMOperatorTable::on_groupBox_toggled(bool arg1)
 {
-	emit operatorEnableChanged(arg1);
+	if (!isIgnoreEvent_) emit operatorEnableChanged(arg1);
 }
 
 void FMOperatorTable::on_groupBox_customContextMenuRequested(const QPoint &pos)
