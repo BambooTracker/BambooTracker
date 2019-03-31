@@ -83,7 +83,6 @@ SOURCES += \
     gui/pattern_editor/pattern_editor_panel.cpp \
     gui/pattern_editor/pattern_editor.cpp \
     gui/instrument_editor/instrument_editor_ssg_form.cpp \
-    gui/line_read_only_spin_box.cpp \
     gui/command/pattern/set_key_off_to_step_qt_command.cpp \
     command/pattern/set_key_off_to_step_command.cpp \
     command/pattern/set_key_on_to_step_command.cpp \
@@ -241,7 +240,6 @@ HEADERS += \
     gui/pattern_editor/pattern_editor_panel.hpp \
     gui/pattern_editor/pattern_editor.hpp \
     gui/instrument_editor/instrument_editor_ssg_form.hpp \
-    gui/line_read_only_spin_box.hpp \
     gui/command/pattern/set_key_off_to_step_qt_command.hpp \
     command/pattern/set_key_off_to_step_command.hpp \
     gui/command/pattern/pattern_commands_qt.hpp \

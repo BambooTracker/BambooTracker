@@ -227,7 +227,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="LineReadOnlySpinBox" name="songNumSpinBox">
+         <widget class="QSpinBox" name="songNumSpinBox">
           <property name="keyboardTracking">
            <bool>false</bool>
           </property>
@@ -1246,11 +1246,6 @@
    <extends>QFrame</extends>
    <header>gui/order_list_editor/order_list_editor.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LineReadOnlySpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>gui/line_read_only_spin_box.hpp</header>
   </customwidget>
  </customwidgets>
  <tabstops>
