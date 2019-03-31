@@ -156,6 +156,7 @@ void FMOperatorTable::setDTDisplayType(bool useNegative)
 		}
 		ui->dtSlider->setMinimum(-3);
 		ui->dtSlider->setMaximum(3);
+		ui->dtSlider->setSign(true);
 		ui->dtSlider->setValue(v);
 	}
 	else {
@@ -168,6 +169,7 @@ void FMOperatorTable::setDTDisplayType(bool useNegative)
 		}
 		ui->dtSlider->setMinimum(0);
 		ui->dtSlider->setMaximum(7);
+		ui->dtSlider->setSign(false);
 		ui->dtSlider->setValue(v);
 	}
 }
