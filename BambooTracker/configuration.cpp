@@ -557,7 +557,7 @@ Configuration::Configuration()
 		{u8".",         JamKey::LOW_D_H},
 
 		{u8"A",         JamKey::HIGH_C},
-		{u8"\xc9",      JamKey::HIGH_CS},   //é - \xc9
+		{u8"É",         JamKey::HIGH_CS},   //é - \xc9
 		{u8"Z",         JamKey::HIGH_D},
 		{u8"\"",        JamKey::HIGH_DS},
 		{u8"E",         JamKey::HIGH_E},
@@ -566,10 +566,10 @@ Configuration::Configuration()
 		{u8"T",         JamKey::HIGH_G},
 		{u8"-",         JamKey::HIGH_GS},
 		{u8"Y",         JamKey::HIGH_A},
-		{u8"\xc8",      JamKey::HIGH_AS},   //è - \xc8
+		{u8"È",         JamKey::HIGH_AS},   //è - \xc8
 		{u8"U",         JamKey::HIGH_B},
 		{u8"I",         JamKey::HIGH_C_H},
-		{u8"\xc7",      JamKey::HIGH_CS_H}, //ç - \xc7
+		{u8"Ç",         JamKey::HIGH_CS_H}, //ç - \xc7
 		{u8"O",         JamKey::HIGH_D_H},
 	};
 	mappingCustom = {};
