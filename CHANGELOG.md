@@ -26,6 +26,9 @@
 - [#87] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
 - [#90] - Fix module and instrument specification documents (thanks [@jpcima])
 
+### Removed
+- Remove module and instrument saving to past version
+
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
 [#76]: https://github.com/rerrahkr/BambooTracker/pull/76

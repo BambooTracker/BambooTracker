@@ -5,9 +5,7 @@
 #include "file_io.hpp"
 #include "pitch_converter.hpp"
 
-ModuleIO::ModuleIO()
-{
-}
+ModuleIO::ModuleIO() {}
 
 void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 						  std::weak_ptr<InstrumentsManager> instMan)
@@ -39,9 +37,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 	if (!comment.empty()) ctr.appendString(comment);
 	ctr.appendUint32(mod.lock()->getTickFrequency());
 	ctr.appendUint32(mod.lock()->getStepHighlight1Distance());
-	if (fileVersion >= Version::toBCD(1, 0, 3)) {
-		ctr.appendUint32(mod.lock()->getStepHighlight2Distance());
-	}
+	ctr.appendUint32(mod.lock()->getStepHighlight2Distance());
 	ctr.writeUint32(modOfs, ctr.size() - modOfs);
 
 
@@ -75,26 +71,19 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint8(instFM->getArpeggioEnabled(FMOperatorType::All) ? tmp : (0x80 | tmp));
 				tmp = static_cast<uint8_t>(instFM->getPitchNumber(FMOperatorType::All));
 				ctr.appendUint8(instFM->getPitchEnabled(FMOperatorType::All) ? tmp : (0x80 | tmp));
-				if (fileVersion >= Version::toBCD(1, 1, 0)) {
-					tmp = static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All))
-						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op1) << 1)
-						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op2) << 2)
-						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op3) << 3)
-						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op4) << 4);
-					ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All))
+					  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op1) << 1)
+					  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op2) << 2)
+					  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op3) << 3)
+					  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op4) << 4);
+				ctr.appendUint8(tmp);
+				for (auto& type : FileIO::OP_FM_TYPES) {
+					tmp = static_cast<uint8_t>(instFM->getArpeggioNumber(type));
+					ctr.appendUint8(instFM->getArpeggioEnabled(type) ? tmp : (0x80 | tmp));
 				}
-				else {
-					ctr.appendUint8(static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All)));
-				}
-				if (fileVersion >= Version::toBCD(1, 1, 0)) {
-					for (auto& type : FileIO::OP_FM_TYPES) {
-						tmp = static_cast<uint8_t>(instFM->getArpeggioNumber(type));
-						ctr.appendUint8(instFM->getArpeggioEnabled(type) ? tmp : (0x80 | tmp));
-					}
-					for (auto& type : FileIO::OP_FM_TYPES) {
-						tmp = static_cast<uint8_t>(instFM->getPitchNumber(type));
-						ctr.appendUint8(instFM->getPitchEnabled(type) ? tmp : (0x80 | tmp));
-					}
+				for (auto& type : FileIO::OP_FM_TYPES) {
+					tmp = static_cast<uint8_t>(instFM->getPitchNumber(type));
+					ctr.appendUint8(instFM->getPitchEnabled(type) ? tmp : (0x80 | tmp));
 				}
 				break;
 			}
@@ -285,9 +274,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
 				}
-				if (fileVersion >= Version::toBCD(1, 0, 1)) {
-					ctr.appendUint8(0);	// Skip sequence type
-				}
+				ctr.appendUint8(0);	// Skip sequence type
 				ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 			}
 		}
@@ -334,9 +321,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioFMType(idx)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioFMType(idx)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -382,9 +367,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchFMType(idx)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchFMType(idx)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -402,13 +385,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				if (fileVersion >= Version::toBCD(1, 1, 1)) {
-					ctr.appendInt16(static_cast<int16_t>(com.data));
-				}
-				else {
-					int pn = PitchConverter::convertPitchSSGSquareToPitchNumber(static_cast<uint16_t>(com.data));
-					ctr.appendInt16(static_cast<int16_t>(pn));
-				}
+				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getWaveFormSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -436,9 +413,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(0);	// Skip sequence type
-			}
+			ctr.appendUint8(0);	// Skip sequence type
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -484,9 +459,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(0);	// Skip sequence type
-			}
+			ctr.appendUint8(0);	// Skip sequence type
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -533,9 +506,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(0);	// Skip sequence type
-			}
+			ctr.appendUint8(0);	// Skip sequence type
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -581,9 +552,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioSSGType(idx)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioSSGType(idx)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -629,9 +598,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchSSGType(idx)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchSSGType(idx)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
