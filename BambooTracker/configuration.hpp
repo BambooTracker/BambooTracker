@@ -5,7 +5,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <Qt>
 #include "misc.hpp"
 
 enum class JamKey : int;
@@ -118,9 +117,9 @@ public:
 		QWERTZ,
 		AZERTY
 	};
-	static const std::map<Qt::Key, JamKey> mappingQWERTY, mappingQWERTZ, mappingAZERTY;
-	std::map<Qt::Key, JamKey> mappingCustom;
-	std::map<KeyboardLayout, std::map<Qt::Key, JamKey>> mappingLayouts;
+	static const std::map<std::string, JamKey> mappingQWERTY, mappingQWERTZ, mappingAZERTY;
+	std::map<std::string, JamKey> mappingCustom;
+	std::map<KeyboardLayout, std::map<std::string, JamKey>> mappingLayouts;
 	void setNoteEntryLayout(KeyboardLayout layout);
 	KeyboardLayout getNoteEntryLayout() const;
 

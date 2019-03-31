@@ -808,12 +808,19 @@ JamKey PatternEditorPanel::getJamKeyFromLayoutMapping(Qt::Key key) {
 	std::shared_ptr<Configuration> configLocked = config_.lock();
 	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
 	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-		std::map<Qt::Key, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
-		if (selectedLayoutMapping.find (key) != selectedLayoutMapping.end()) {
-			return selectedLayoutMapping.at (key);
-		} else {
+		std::map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
+						 [key](const std::pair<std::string, JamKey>& t) -> bool {
+						 return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
+		});
+		if (it != selectedLayoutMapping.end()) {
+			return (*it).second;
+		}
+		else {
 			throw std::invalid_argument("Unmapped key");
 		}
+	//something has gone wrong, current layout has no layout map
+	//TODO: handle cleanly?
 	} else throw std::out_of_range("Unmapped Layout");
 }
 
@@ -843,10 +850,36 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 
 	if (event->modifiers().testFlag(Qt::NoModifier)) {
 		Qt::Key qtKey = static_cast<Qt::Key> (event->key());
-		JamKey possibleJamKey;
 		try {
-			possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
-			setStepKeyOn(JamManager::jamKeyToNote (possibleJamKey), baseOct + (static_cast<int>(possibleJamKey) / 12));
+			JamKey possibleJamKey = getJamKeyFromLayoutMapping (qtKey);
+			int octaveOffset = 0;
+			switch (possibleJamKey) {
+				case JamKey::HIGH_D_H:
+				case JamKey::HIGH_CS_H:
+				case JamKey::HIGH_C_H:
+					octaveOffset = 2;
+					break;
+				case JamKey::HIGH_B:
+				case JamKey::HIGH_AS:
+				case JamKey::HIGH_A:
+				case JamKey::HIGH_GS:
+				case JamKey::HIGH_G:
+				case JamKey::HIGH_FS:
+				case JamKey::HIGH_F:
+				case JamKey::HIGH_E:
+				case JamKey::HIGH_DS:
+				case JamKey::HIGH_D:
+				case JamKey::HIGH_CS:
+				case JamKey::HIGH_C:
+				case JamKey::LOW_D_H:
+				case JamKey::LOW_CS_H:
+				case JamKey::LOW_C_H:
+					octaveOffset = 1;
+					break;
+				default:
+					break;
+			}
+			setStepKeyOn (JamManager::jamKeyToNote (possibleJamKey), baseOct + octaveOffset);
 		} catch (std::invalid_argument) {}
 	}
 
