@@ -20,8 +20,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->waveEditor->AddRow("Sq");
 	ui->waveEditor->AddRow("Tri");
 	ui->waveEditor->AddRow("Saw");
-	ui->waveEditor->AddRow("Tri w");
-	ui->waveEditor->AddRow("Saw w");
+	ui->waveEditor->AddRow("SQM Tri");
+	ui->waveEditor->AddRow("SQM Saw");
 
 	QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	for (int i = 0; i < 8; ++i) {
@@ -33,7 +33,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 3) setWaveFormSequenceColumn(col);	// Set square mask frequency
+			if (isModulatedWaveFormSSG(row)) setWaveFormSequenceColumn(col);	// Set modulation frequency
 			bt_.lock()->addWaveFormSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), row, ui->waveEditor->getSequenceDataAt(col));
 			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
@@ -51,7 +51,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 3) setWaveFormSequenceColumn(col);	// Set square mask frequency
+			if (isModulatedWaveFormSSG(row)) setWaveFormSequenceColumn(col);	// Set modulation frequency
 			bt_.lock()->setWaveFormSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), col, row, ui->waveEditor->getSequenceDataAt(col));
 			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
@@ -535,7 +535,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 	ui->waveEditor->clearData();
 	for (auto& com : instSSG->getWaveFormSequence()) {
 		QString str = "";
-		if (com.type >= 3) {
+		if (isModulatedWaveFormSSG(com.type)) {
 			int pn = PitchConverter::convertPitchSSGSquareToPitchNumber(static_cast<uint16_t>(com.data));
 			if (pn != -1) {
 				switch (pn / 32 % 12) {

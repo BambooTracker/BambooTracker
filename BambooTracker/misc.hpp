@@ -50,6 +50,16 @@ enum class FMOperatorType : int
 	All, Op1, Op2, Op3, Op4
 };
 
+enum class SSGWaveFormType : int
+{
+	UNSET = -1,
+	SQUARE = 0,
+	TRIANGLE = 1,
+	SAW = 2,
+	SQM_TRIANGLE = 3,
+	SQM_SAW = 4
+};
+
 DECL_MAYBE_UNUSED
 static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
 {
@@ -147,5 +157,31 @@ inline static size_t getFMChannelCount(SongType type)
 	case SongType::STD:		return 6;
 	case SongType::FMEX:	return 9;
 	default:	throw std::invalid_argument("Invalid SongType.");
+	}
+}
+
+DECL_MAYBE_UNUSED
+inline static bool isModulatedWaveFormSSG(SSGWaveFormType type)
+{
+	switch (type) {
+	case SSGWaveFormType::SQUARE:
+	case SSGWaveFormType::SAW:
+	case SSGWaveFormType::TRIANGLE:
+		return false;
+	case SSGWaveFormType::SQM_TRIANGLE:
+	case SSGWaveFormType::SQM_SAW:
+		return true;
+	default:
+		throw std::invalid_argument("Invalid SSGWaveFormType");
+	}
+}
+
+DECL_MAYBE_UNUSED
+inline static bool isModulatedWaveFormSSG(int id)
+{
+	try {
+		return isModulatedWaveFormSSG(static_cast<SSGWaveFormType>(id));
+	} catch (...) {
+		throw std::invalid_argument("Invalid id");
 	}
 }

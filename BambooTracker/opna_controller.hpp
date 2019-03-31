@@ -229,7 +229,11 @@ private:
 	bool needMixSetSSG_[3];
 	bool needToneSetSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
-	CommandInSequence wfSSG_[3];
+	struct
+	{
+		SSGWaveFormType type;
+		int data;
+	} wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandInSequence envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];

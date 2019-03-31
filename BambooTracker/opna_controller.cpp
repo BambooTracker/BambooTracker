@@ -1955,7 +1955,7 @@ void OPNAController::initSSG()
 		// Init sequence
 		hasPreSetTickEventSSG_[ch] = false;
 		wfItSSG_[ch].reset();
-		wfSSG_[ch] = { -1, -1 };
+		wfSSG_[ch] = { SSGWaveFormType::UNSET, -1 };
 		envItSSG_[ch].reset();
 		envSSG_[ch] = { -1, -1 };
 		tnItSSG_[ch].reset();
@@ -2119,21 +2119,21 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 {
 	if (seqPos == -1) return;
 
-	switch (wfItSSG_[ch]->getCommandType()) {
-	case 0:	// Square
+	switch (static_cast<SSGWaveFormType>(wfItSSG_[ch]->getCommandType())) {
+	case SSGWaveFormType::SQUARE:
 	{
 		writeSquareWaveForm(ch);
 		return;
 	}
-	case 1:	// Triangle
+	case SSGWaveFormType::TRIANGLE:
 	{
-		if (wfSSG_[ch].type == 1 && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].type == SSGWaveFormType::TRIANGLE && isKeyOnSSG_[ch]) return;
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 0:
-		case 3:
-		case 4:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::SQUARE:
+		case SSGWaveFormType::SQM_TRIANGLE:
+		case SSGWaveFormType::SQM_SAW:
 			needMixSetSSG_[ch] = true;
 			break;
 		default:
@@ -2141,10 +2141,10 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 0:
-		case 2:
-		case 4:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::SQUARE:
+		case SSGWaveFormType::SAW:
+		case SSGWaveFormType::SQM_SAW:
 			opna_->setRegister(0x0d, 0x0e);
 			break;
 		default:
@@ -2165,18 +2165,18 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { 1, -1 };
+		wfSSG_[ch] = { SSGWaveFormType::TRIANGLE, -1 };
 		return;
 	}
-	case 2:	// Saw
+	case SSGWaveFormType::SAW:
 	{
-		if (wfSSG_[ch].type == 2 && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].type == SSGWaveFormType::SAW && isKeyOnSSG_[ch]) return;
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 0:
-		case 3:
-		case 4:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::SQUARE:
+		case SSGWaveFormType::SQM_TRIANGLE:
+		case SSGWaveFormType::SQM_SAW:
 			needMixSetSSG_[ch] = true;
 			break;
 		default:
@@ -2184,10 +2184,10 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 0:
-		case 1:
-		case 3:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::SQUARE:
+		case SSGWaveFormType::TRIANGLE:
+		case SSGWaveFormType::SQM_TRIANGLE:
 			opna_->setRegister(0x0d, 0x0c);
 			break;
 		default:
@@ -2208,18 +2208,18 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { 2, -1 };
+		wfSSG_[ch] = { SSGWaveFormType::SAW, -1 };
 		return;
 	}
-	case 3:	// Triangle with square
+	case SSGWaveFormType::SQM_TRIANGLE:
 	{
 		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == 3 && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].type == SSGWaveFormType::SQM_TRIANGLE && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 1:
-		case 2:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::TRIANGLE:
+		case SSGWaveFormType::SAW:
 			needMixSetSSG_[ch] = true;
 			break;
 		default:
@@ -2234,10 +2234,10 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 0:
-		case 2:
-		case 4:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::SQUARE:
+		case SSGWaveFormType::SAW:
+		case SSGWaveFormType::SQM_SAW:
 			opna_->setRegister(0x0d, 0x0e);
 			break;
 		default:
@@ -2258,18 +2258,18 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { 3, data };
+		wfSSG_[ch] = { SSGWaveFormType::SQM_TRIANGLE, data };
 		return;
 	}
-	case 4:	// Saw with square
+	case SSGWaveFormType::SQM_SAW:
 	{
 		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == 4 && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].type == SSGWaveFormType::SQM_SAW && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 1:
-		case 2:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::TRIANGLE:
+		case SSGWaveFormType::SAW:
 			needMixSetSSG_[ch] = true;
 			break;
 		default:
@@ -2284,10 +2284,10 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		switch (wfSSG_[ch].type) {
-		case -1:
-		case 0:
-		case 1:
-		case 3:
+		case SSGWaveFormType::UNSET:
+		case SSGWaveFormType::SQUARE:
+		case SSGWaveFormType::TRIANGLE:
+		case SSGWaveFormType::SQM_TRIANGLE:
 			opna_->setRegister(0x0d, 0x0c);
 			break;
 		default:
@@ -2308,15 +2308,17 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { 4, data };
+		wfSSG_[ch] = { SSGWaveFormType::SQM_SAW, data };
 		return;
 	}
+	default:
+		break;
 	}
 }
 
 void OPNAController::writeSquareWaveForm(int ch)
 {
-	if (wfSSG_[ch].type == 0) {
+	if (wfSSG_[ch].type == SSGWaveFormType::SQUARE) {
 		if (!isKeyOnSSG_[ch]) {
 			needEnvSetSSG_[ch] = true;
 			needToneSetSSG_[ch] = true;
@@ -2325,8 +2327,8 @@ void OPNAController::writeSquareWaveForm(int ch)
 	}
 
 	switch (wfSSG_[ch].type) {
-	case 3:
-	case 4:
+	case SSGWaveFormType::SQM_TRIANGLE:
+	case SSGWaveFormType::SQM_SAW:
 		break;
 	default:
 	{
@@ -2339,7 +2341,7 @@ void OPNAController::writeSquareWaveForm(int ch)
 
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
-	wfSSG_[ch] = { 0, -1 };
+	wfSSG_[ch] = { SSGWaveFormType::SQUARE, -1 };
 }
 
 void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
@@ -2355,8 +2357,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 			if (tnSSG_[ch].isNoise_) {
 				mixerSSG_ |= (1 << (ch + 3));
 				switch (wfSSG_[ch].type) {
-				case 1:
-				case 2:
+				case SSGWaveFormType::TRIANGLE:
+				case SSGWaveFormType::SAW:
 					mixerSSG_ |= (1 << ch);
 					opna_->setRegister(0x07, mixerSSG_);
 					tnSSG_[ch] = { false, false, -1 };
@@ -2369,8 +2371,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 			}
 			else {
 				switch (wfSSG_[ch].type) {
-				case 1:
-				case 2:
+				case SSGWaveFormType::TRIANGLE:
+				case SSGWaveFormType::SAW:
 					mixerSSG_ |= (1 << ch);
 					opna_->setRegister(0x07, mixerSSG_);
 					tnSSG_[ch] = { false, false, -1 };
@@ -2384,8 +2386,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 			if (tnSSG_[ch].isNoise_) {
 				mixerSSG_ |= (1 << (ch + 3));
 				switch (wfSSG_[ch].type) {
-				case 1:
-				case 2:
+				case SSGWaveFormType::TRIANGLE:
+				case SSGWaveFormType::SQUARE:
 					opna_->setRegister(0x07, mixerSSG_);
 					tnSSG_[ch] = { false, false, -1 };
 					break;
@@ -2398,8 +2400,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 			}
 			else {
 				switch (wfSSG_[ch].type) {
-				case 1:
-				case 2:
+				case SSGWaveFormType::TRIANGLE:
+				case SSGWaveFormType::SAW:
 					break;
 				default:
 					mixerSSG_ &= ~(1 << ch);
@@ -2415,8 +2417,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 			if (tnSSG_[ch].isNoise_) {
 				if (tnSSG_[ch].isTone_) {
 					switch (wfSSG_[ch].type) {
-					case 1:
-					case 2:
+					case SSGWaveFormType::TRIANGLE:
+					case SSGWaveFormType::SAW:
 						mixerSSG_ |= (1 << ch);
 						tnSSG_[ch].isTone_ = false;
 						opna_->setRegister(0x07, mixerSSG_);
@@ -2427,8 +2429,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 				}
 				else {
 					switch (wfSSG_[ch].type) {
-					case 1:
-					case 2:
+					case SSGWaveFormType::TRIANGLE:
+					case SSGWaveFormType::SAW:
 						break;
 					default:
 						mixerSSG_ &= ~(1 << ch);
@@ -2441,8 +2443,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 			else {
 				if (tnSSG_[ch].isTone_) {
 					switch (wfSSG_[ch].type) {
-					case 1:
-					case 2:
+					case SSGWaveFormType::TRIANGLE:
+					case SSGWaveFormType::SAW:
 						mixerSSG_ |= (1 << ch);
 						tnSSG_[ch].isTone_ = false;
 						break;
@@ -2452,8 +2454,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 				}
 				else {
 					switch (wfSSG_[ch].type) {
-					case 1:
-					case 2:
+					case SSGWaveFormType::TRIANGLE:
+					case SSGWaveFormType::SAW:
 						break;
 					default:
 						mixerSSG_ &= ~(1 << ch);
@@ -2512,16 +2514,18 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
 {
 	switch (wfSSG_[ch].type) {
-	case 0:
-	case 3:
-	case 4:
+	case SSGWaveFormType::SQUARE:
+	case SSGWaveFormType::SQM_TRIANGLE:
+	case SSGWaveFormType::SQM_SAW:
 		mixerSSG_ &= ~(1 << ch);
 		tnSSG_[ch].isTone_ = true;
 		break;
-	case 1:
-	case 2:
+	case SSGWaveFormType::TRIANGLE:
+	case SSGWaveFormType::SAW:
 		mixerSSG_ |= (1 << ch);
 		tnSSG_[ch].isNoise_ = false;
+		break;
+	default:
 		break;
 	}
 	opna_->setRegister(0x07, mixerSSG_);
@@ -2659,7 +2663,7 @@ void OPNAController::writePitchSSG(int ch)
 			+ transposeSSG_[ch];
 
 	switch (wfSSG_[ch].type) {
-	case 0:	// Square
+	case SSGWaveFormType::SQUARE:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGSquare(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
@@ -2668,8 +2672,8 @@ void OPNAController::writePitchSSG(int ch)
 		opna_->setRegister(0x01 + offset, pitch >> 8);
 		break;
 	}
-	case 1:	// Triangle
-	case 3:
+	case SSGWaveFormType::TRIANGLE:
+	case SSGWaveFormType::SQM_TRIANGLE:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGTriangle(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
@@ -2677,8 +2681,8 @@ void OPNAController::writePitchSSG(int ch)
 		opna_->setRegister(0x0c, pitch >> 8);
 		break;
 	}
-	case 2:	// Saw
-	case 4:
+	case SSGWaveFormType::SAW:
+	case SSGWaveFormType::SQM_SAW:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGSaw(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
@@ -2686,6 +2690,8 @@ void OPNAController::writePitchSSG(int ch)
 		opna_->setRegister(0x0c, pitch >> 8);
 		break;
 	}
+	default:
+		break;
 	}
 
 	needToneSetSSG_[ch] = false;
