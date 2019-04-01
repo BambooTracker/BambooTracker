@@ -1475,9 +1475,13 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
+					if (version < Version::toBCD(1, 2, 0)) {
+						if (data == 3) data = static_cast<int>(SSGWaveFormType::SQM_TRIANGLE);
+						else if (data == 4) data = static_cast<int>(SSGWaveFormType::SQM_SAW);
+					}
 					int16_t subdata = ctr.readInt16(csr);
 					csr += 2;
-					if (Version::toBCD(1, 1, 1) > version) {
+					if (version < Version::toBCD(1, 2, 0)) {
 						if (subdata > -1)
 							subdata = static_cast<int16_t>(PitchConverter::getPitchSSGSquare(subdata));
 					}

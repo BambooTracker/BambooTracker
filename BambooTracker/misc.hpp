@@ -56,8 +56,10 @@ enum class SSGWaveFormType : int
 	SQUARE = 0,
 	TRIANGLE = 1,
 	SAW = 2,
-	SQM_TRIANGLE = 3,
-	SQM_SAW = 4
+	INVSAW = 3,
+	SQM_TRIANGLE = 4,
+	SQM_SAW = 5,
+	SQM_INVSAW = 6
 };
 
 DECL_MAYBE_UNUSED
@@ -165,11 +167,13 @@ inline static bool isModulatedWaveFormSSG(SSGWaveFormType type)
 {
 	switch (type) {
 	case SSGWaveFormType::SQUARE:
-	case SSGWaveFormType::SAW:
 	case SSGWaveFormType::TRIANGLE:
+	case SSGWaveFormType::SAW:
+	case SSGWaveFormType::INVSAW:
 		return false;
 	case SSGWaveFormType::SQM_TRIANGLE:
 	case SSGWaveFormType::SQM_SAW:
+	case SSGWaveFormType::SQM_INVSAW:
 		return true;
 	default:
 		throw std::invalid_argument("Invalid SSGWaveFormType");
