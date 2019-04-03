@@ -27,7 +27,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="generalTab">
       <attribute name="title">
@@ -587,7 +587,7 @@
               <item row="1" column="14">
                <widget class="QKeySequenceEdit" name="lowHighCSEdit">
                 <property name="keySequence">
-                 <string notr="true">L</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -667,7 +667,7 @@ color: rgb(0, 0, 0);</string>
               <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="lowCSEdit">
                 <property name="keySequence">
-                 <string notr="true">S</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -754,7 +754,7 @@ color: rgb(0, 0, 0);</string>
               <item row="1" column="6">
                <widget class="QKeySequenceEdit" name="lowFSEdit">
                 <property name="keySequence">
-                 <string notr="true">G</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -781,7 +781,7 @@ color: rgb(255, 255, 255);</string>
               <item row="1" column="5">
                <widget class="QKeySequenceEdit" name="lowFEdit">
                 <property name="keySequence">
-                 <string notr="true">V</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -808,42 +808,42 @@ color: rgb(0, 0, 0);</string>
               <item row="1" column="10">
                <widget class="QKeySequenceEdit" name="lowASEdit">
                 <property name="keySequence">
-                 <string notr="true">J</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="4">
                <widget class="QKeySequenceEdit" name="lowEEdit">
                 <property name="keySequence">
-                 <string notr="true">C</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="11">
                <widget class="QKeySequenceEdit" name="lowBEdit">
                 <property name="keySequence">
-                 <string notr="true">M</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="9">
                <widget class="QKeySequenceEdit" name="lowAEdit">
                 <property name="keySequence">
-                 <string notr="true">N</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="7">
                <widget class="QKeySequenceEdit" name="lowGEdit">
                 <property name="keySequence">
-                 <string notr="true">B</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="8">
                <widget class="QKeySequenceEdit" name="lowGSEdit">
                 <property name="keySequence">
-                 <string notr="true">H</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -870,14 +870,14 @@ color: rgb(0, 0, 0);</string>
               <item row="1" column="15">
                <widget class="QKeySequenceEdit" name="lowHighDEdit">
                 <property name="keySequence">
-                 <string notr="true">.</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
                <widget class="QKeySequenceEdit" name="lowCEdit">
                 <property name="keySequence">
-                 <string notr="true">Z</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -910,14 +910,14 @@ color: rgb(0, 0, 0);</string>
               <item row="1" column="3">
                <widget class="QKeySequenceEdit" name="lowDSEdit">
                 <property name="keySequence">
-                 <string notr="true">D</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="2">
                <widget class="QKeySequenceEdit" name="lowDEdit">
                 <property name="keySequence">
-                 <string notr="true">X</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -965,7 +965,7 @@ color: rgb(0, 0, 0);</string>
               <item row="1" column="13">
                <widget class="QKeySequenceEdit" name="lowHighCEdit">
                 <property name="keySequence">
-                 <string notr="true">,</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
@@ -1395,105 +1395,105 @@ color: rgb(0, 0, 0);</string>
               <item row="1" column="0">
                <widget class="QKeySequenceEdit" name="highCEdit">
                 <property name="keySequence">
-                 <string notr="true">Q</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="highCSEdit">
                 <property name="keySequence">
-                 <string notr="true">2</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="2">
                <widget class="QKeySequenceEdit" name="highDEdit">
                 <property name="keySequence">
-                 <string notr="true">W</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="3">
                <widget class="QKeySequenceEdit" name="highDSEdit">
                 <property name="keySequence">
-                 <string notr="true">3</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="4">
                <widget class="QKeySequenceEdit" name="highEEdit">
                 <property name="keySequence">
-                 <string notr="true">E</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="5">
                <widget class="QKeySequenceEdit" name="highFEdit">
                 <property name="keySequence">
-                 <string notr="true">R</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="6">
                <widget class="QKeySequenceEdit" name="highFSEdit">
                 <property name="keySequence">
-                 <string notr="true">5</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="7">
                <widget class="QKeySequenceEdit" name="highGEdit">
                 <property name="keySequence">
-                 <string notr="true">T</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="8">
                <widget class="QKeySequenceEdit" name="highGSEdit">
                 <property name="keySequence">
-                 <string notr="true">6</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="9">
                <widget class="QKeySequenceEdit" name="highAEdit">
                 <property name="keySequence">
-                 <string notr="true">Y</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="10">
                <widget class="QKeySequenceEdit" name="highASEdit">
                 <property name="keySequence">
-                 <string notr="true">7</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="11">
                <widget class="QKeySequenceEdit" name="highBEdit">
                 <property name="keySequence">
-                 <string notr="true">U</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="13">
                <widget class="QKeySequenceEdit" name="highHighCEdit">
                 <property name="keySequence">
-                 <string notr="true">I</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="14">
                <widget class="QKeySequenceEdit" name="highHighCSEdit">
                 <property name="keySequence">
-                 <string notr="true">9</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
               <item row="1" column="15">
                <widget class="QKeySequenceEdit" name="highHighDEdit">
                 <property name="keySequence">
-                 <string notr="true">O</string>
+                 <string notr="true"/>
                 </property>
                </widget>
               </item>
