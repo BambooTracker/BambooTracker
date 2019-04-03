@@ -122,6 +122,8 @@ public:
 	std::map<KeyboardLayout, std::map<std::string, JamKey>> mappingLayouts;
 	void setNoteEntryLayout(KeyboardLayout layout);
 	KeyboardLayout getNoteEntryLayout() const;
+	void setCustomLayoutKeys(std::map<std::string, JamKey> mapping);
+	std::map<std::string, JamKey> getCustomLayoutKeys() const;
 
 private:
 	std::string keyOffKey_, octUpKey_, octDownKey_, echoKey_;

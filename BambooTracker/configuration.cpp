@@ -886,6 +886,16 @@ Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const
 	return noteEntryLayout_;
 }
 
+void Configuration::setCustomLayoutKeys(std::map<std::string, JamKey> mapping)
+{
+	mappingLayouts[KeyboardLayout::Custom] = mapping;
+}
+
+std::map<std::string, JamKey> Configuration::getCustomLayoutKeys() const
+{
+	return mappingLayouts.at(KeyboardLayout::Custom);
+}
+
 // Sound //
 void Configuration::setSoundDevice(std::string device)
 {

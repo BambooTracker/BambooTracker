@@ -1,6 +1,7 @@
 #include "configuration_handler.hpp"
 #include <vector>
 #include <QSettings>
+#include "jam_manager.hpp"
 
 // config path (*nix): ~/.config/<organization>/<application>.ini
 const QString ConfigurationHandler::organization = "BambooTracker";
@@ -67,6 +68,46 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 						  QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
 											static_cast<int>(configLocked->getEchoBufferKey().length())));
 		settings.setValue("noteEntryLayout",	static_cast<int>(configLocked->getNoteEntryLayout()));
+		std::map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
+		const std::map<JamKey, std::string> keyToNameMapping = {
+			{JamKey::LOW_C,     "lowC"},
+			{JamKey::LOW_CS,    "lowCS"},
+			{JamKey::LOW_D,     "lowD"},
+			{JamKey::LOW_DS,    "lowDS"},
+			{JamKey::LOW_E,     "lowE"},
+			{JamKey::LOW_F,     "lowF"},
+			{JamKey::LOW_FS,    "lowFS"},
+			{JamKey::LOW_G,     "lowG"},
+			{JamKey::LOW_GS,    "lowGS"},
+			{JamKey::LOW_A,     "lowA"},
+			{JamKey::LOW_AS,    "lowAS"},
+			{JamKey::LOW_B,     "lowB"},
+			{JamKey::LOW_C_H,   "lowHighC"},
+			{JamKey::LOW_CS_H,  "lowHighCS"},
+			{JamKey::LOW_D_H,   "lowHighD"},
+
+			{JamKey::HIGH_C,    "highC"},
+			{JamKey::HIGH_CS,   "highCS"},
+			{JamKey::HIGH_D,    "highD"},
+			{JamKey::HIGH_DS,   "highDS"},
+			{JamKey::HIGH_E,    "highE"},
+			{JamKey::HIGH_F,    "highF"},
+			{JamKey::HIGH_FS,   "highFS"},
+			{JamKey::HIGH_G,    "highG"},
+			{JamKey::HIGH_GS,   "highGS"},
+			{JamKey::HIGH_A,    "highA"},
+			{JamKey::HIGH_AS,   "highAS"},
+			{JamKey::HIGH_B,    "highB"},
+			{JamKey::HIGH_C_H,  "highHighC"},
+			{JamKey::HIGH_CS_H, "highHighCS"},
+			{JamKey::HIGH_D_H,  "highHighD"}
+		};
+		std::map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
+		while (customLayoutMappingIterator != customLayoutMapping.end()) {
+			settings.setValue(QString::fromStdString("customLayout_" + keyToNameMapping.at(customLayoutMappingIterator->second)),
+							  QString::fromUtf8(customLayoutMappingIterator->first.c_str(), static_cast<int> (customLayoutMappingIterator->first.length())));
+			customLayoutMappingIterator++;
+		}
 		settings.endGroup();
 
 		// Sound //
@@ -171,6 +212,53 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(
 											 settings.value("noteEntryLayout",
 															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));
+		std::map<std::string, JamKey> customLayoutNewKeys = {};
+		const std::map<std::string, JamKey> nameToKeyMapping = {
+			{"lowC",       JamKey::LOW_C},
+			{"lowCS",      JamKey::LOW_CS},
+			{"lowD",       JamKey::LOW_D},
+			{"lowDS",      JamKey::LOW_DS},
+			{"lowE",       JamKey::LOW_E},
+			{"lowF",       JamKey::LOW_F},
+			{"lowFS",      JamKey::LOW_FS},
+			{"lowG",       JamKey::LOW_G},
+			{"lowGS",      JamKey::LOW_GS},
+			{"lowA",       JamKey::LOW_A},
+			{"lowAS",      JamKey::LOW_AS},
+			{"lowB",       JamKey::LOW_B},
+			{"lowHighC",   JamKey::LOW_C_H},
+			{"lowHighCS",  JamKey::LOW_CS_H},
+			{"lowHighD",   JamKey::LOW_D_H},
+
+			{"highC",      JamKey::HIGH_C},
+			{"highCS",     JamKey::HIGH_CS},
+			{"highD",      JamKey::HIGH_D},
+			{"highDS",     JamKey::HIGH_DS},
+			{"highE",      JamKey::HIGH_E},
+			{"highF",      JamKey::HIGH_F},
+			{"highFS",     JamKey::HIGH_FS},
+			{"highG",      JamKey::HIGH_G},
+			{"highGS",     JamKey::HIGH_GS},
+			{"highA",      JamKey::HIGH_A},
+			{"highAS",     JamKey::HIGH_AS},
+			{"highB",      JamKey::HIGH_B},
+			{"highHighC",  JamKey::HIGH_C_H},
+			{"highHighCS", JamKey::HIGH_CS_H},
+			{"highHighD",  JamKey::HIGH_D_H}
+		};
+		std::map<std::string, JamKey>::const_iterator nameToKeyMappingIterator = nameToKeyMapping.begin();
+		while (nameToKeyMappingIterator != nameToKeyMapping.end()) {
+			JamKey currentlyWantedJamKey = nameToKeyMappingIterator->second;
+			customLayoutNewKeys[
+						settings.value(QString::fromStdString("customLayout_" + nameToKeyMappingIterator->first),
+									   QString::fromStdString((*std::find_if (configLocked->mappingLayouts.at(Configuration::QWERTY).begin(), configLocked->mappingLayouts.at(Configuration::QWERTY).end(),
+																		[currentlyWantedJamKey](const std::pair<std::string, JamKey>& t) -> bool {
+																		return (t.second) == currentlyWantedJamKey;})
+														 ).first)).toString().toUtf8().toStdString()]
+					= currentlyWantedJamKey;
+			nameToKeyMappingIterator++;
+		}
+		configLocked->setCustomLayoutKeys(customLayoutNewKeys);
 		settings.endGroup();
 
 		// Sound //
