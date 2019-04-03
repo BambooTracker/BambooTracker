@@ -539,9 +539,11 @@ void OPNAController::setArpeggioEffectFM(int ch, int second, int third)
 	}
 	else {
 		int inch = toInternalFMChannel(ch);
-		FMOperatorType op = toChannelOperatorType(ch);
-		if (!refInstFM_[inch]->getArpeggioEnabled(op)) arpItFM_[ch].reset();
-		else arpItFM_[ch] = refInstFM_[inch]->getArpeggioSequenceIterator(op);
+		if (refInstFM_[inch]) {
+			FMOperatorType op = toChannelOperatorType(ch);
+			if (!refInstFM_[inch]->getArpeggioEnabled(op)) arpItFM_[ch].reset();
+			else arpItFM_[ch] = refInstFM_[inch]->getArpeggioSequenceIterator(op);
+		}
 		isArpEffFM_[ch] = false;
 	}
 }

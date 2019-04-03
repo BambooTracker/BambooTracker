@@ -25,6 +25,7 @@
 - [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc] and others)
 - Fix to keep current instrument when loading module
 - [#87] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
+- [#92] - Fix instrument declaration check on arpeggio effect (thanks [@attilaM68K])
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -41,10 +42,12 @@
 [#88]: https://github.com/rerrahkr/BambooTracker/issues/88
 [#87]: https://github.com/rerrahkr/BambooTracker/issues/87
 [#91]: https://github.com/rerrahkr/BambooTracker/issues/91
+[#92]: https://github.com/rerrahkr/BambooTracker/issues/92
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
 [@bryc]: https://github.com/bryc
+[@attilaM68K]: https://github.com/attilaM68K
 
 ## v0.1.6 (2019-03-16)
 ### Added
