@@ -3,9 +3,11 @@
 
 #include <QDialog>
 #include <memory>
+#include <map>
 #include <vector>
 #include "configuration.hpp"
 #include "misc.hpp"
+#include <QKeySequenceEdit>
 
 namespace Ui {
 	class ConfigurationDialog;
@@ -39,6 +41,8 @@ private:
 		return (state == Qt::Checked) ? true : false;
 	}
 
+	std::map<JamKey, QKeySequenceEdit *> customLayoutKeysMap;
+
 	/***** General *****/
 private slots:
 	void on_generalSettingsListWidget_itemSelectionChanged();
@@ -54,6 +58,11 @@ private slots:
 	/***** Input *****/
 private:
 	std::vector<FMEnvelopeText> fmEnvelopeTexts_;
+
+	/***** Keys *****/
+private slots:
+	void on_keyboardTypeComboBox_currentIndexChanged(int index);
+	void on_customLayoutResetButton_clicked();
 
 	void updateEnvelopeSetUi();
 

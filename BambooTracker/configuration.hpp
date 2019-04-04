@@ -3,8 +3,11 @@
 #include <cstdint>
 #include <cstddef>
 #include <string>
+#include <map>
 #include <vector>
 #include "misc.hpp"
+
+enum class JamKey : int;
 
 struct FMEnvelopeText
 {
@@ -107,12 +110,20 @@ public:
 	std::string getEchoBufferKey() const;
 	enum KeyboardLayout : int
 	{
-		QWERTY = 0,
+		// at the top, so new layouts can easily be added in after it
+		// and it's always easy to find no matter how many layouts we add
+		Custom = 0,
+		QWERTY,
 		QWERTZ,
 		AZERTY
 	};
+	static const std::map<std::string, JamKey> mappingQWERTY, mappingQWERTZ, mappingAZERTY;
+	std::map<std::string, JamKey> mappingCustom;
+	std::map<KeyboardLayout, std::map<std::string, JamKey>> mappingLayouts;
 	void setNoteEntryLayout(KeyboardLayout layout);
 	KeyboardLayout getNoteEntryLayout() const;
+	void setCustomLayoutKeys(std::map<std::string, JamKey> mapping);
+	std::map<std::string, JamKey> getCustomLayoutKeys() const;
 
 private:
 	std::string keyOffKey_, octUpKey_, octDownKey_, echoKey_;

@@ -9,6 +9,7 @@
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
+#include "jam_manager.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
 	: QDialog(parent),
@@ -24,45 +25,86 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 		emit applyPressed();
 	});
 
+	std::shared_ptr<Configuration> configLocked = config.lock();
 	// General //
 	// General settings
-	ui->generalSettingsListWidget->item(0)->setCheckState(toCheckState(config.lock()->getWarpCursor()));
-	ui->generalSettingsListWidget->item(1)->setCheckState(toCheckState(config.lock()->getWarpAcrossOrders()));
-	ui->generalSettingsListWidget->item(2)->setCheckState(toCheckState(config.lock()->getShowRowNumberInHex()));
-	ui->generalSettingsListWidget->item(3)->setCheckState(toCheckState(config.lock()->getShowPreviousNextOrders()));
-	ui->generalSettingsListWidget->item(4)->setCheckState(toCheckState(config.lock()->getBackupModules()));
-	ui->generalSettingsListWidget->item(5)->setCheckState(toCheckState(config.lock()->getDontSelectOnDoubleClick()));
-	ui->generalSettingsListWidget->item(6)->setCheckState(toCheckState(config.lock()->getReverseFMVolumeOrder()));
-	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(config.lock()->getMoveCursorToRight()));
-	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(config.lock()->getRetrieveChannelState()));
-	ui->generalSettingsListWidget->item(9)->setCheckState(toCheckState(config.lock()->getEnableTranslation()));
-	ui->generalSettingsListWidget->item(10)->setCheckState(toCheckState(config.lock()->getShowFMDetuneAsSigned()));
+	ui->generalSettingsListWidget->item(0)->setCheckState(toCheckState(configLocked->getWarpCursor()));
+	ui->generalSettingsListWidget->item(1)->setCheckState(toCheckState(configLocked->getWarpAcrossOrders()));
+	ui->generalSettingsListWidget->item(2)->setCheckState(toCheckState(configLocked->getShowRowNumberInHex()));
+	ui->generalSettingsListWidget->item(3)->setCheckState(toCheckState(configLocked->getShowPreviousNextOrders()));
+	ui->generalSettingsListWidget->item(4)->setCheckState(toCheckState(configLocked->getBackupModules()));
+	ui->generalSettingsListWidget->item(5)->setCheckState(toCheckState(configLocked->getDontSelectOnDoubleClick()));
+	ui->generalSettingsListWidget->item(6)->setCheckState(toCheckState(configLocked->getReverseFMVolumeOrder()));
+	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(configLocked->getMoveCursorToRight()));
+	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(configLocked->getRetrieveChannelState()));
+	ui->generalSettingsListWidget->item(9)->setCheckState(toCheckState(configLocked->getEnableTranslation()));
+	ui->generalSettingsListWidget->item(10)->setCheckState(toCheckState(configLocked->getShowFMDetuneAsSigned()));
 
 	// Edit settings
-	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(config.lock()->getPageJumpLength()));
+	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
 
 	// Keys
 	ui->keyOffKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(config.lock()->getKeyOffKey().c_str(),
-								  static_cast<int>(config.lock()->getKeyOffKey().length())));
+				QString::fromUtf8(configLocked->getKeyOffKey().c_str(),
+								  static_cast<int>(configLocked->getKeyOffKey().length())));
 	ui->octaveUpKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(config.lock()->getOctaveUpKey().c_str(),
-								  static_cast<int>(config.lock()->getOctaveUpKey().length())));
+				QString::fromUtf8(configLocked->getOctaveUpKey().c_str(),
+								  static_cast<int>(configLocked->getOctaveUpKey().length())));
 	ui->octaveDownKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(config.lock()->getOctaveDownKey().c_str(),
-								  static_cast<int>(config.lock()->getOctaveDownKey().length())));
+				QString::fromUtf8(configLocked->getOctaveDownKey().c_str(),
+								  static_cast<int>(configLocked->getOctaveDownKey().length())));
 	ui->echoBufferKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(config.lock()->getEchoBufferKey().c_str(),
-								  static_cast<int>(config.lock()->getEchoBufferKey().length())));
-	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(config.lock()->getNoteEntryLayout()));
+				QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
+								  static_cast<int>(configLocked->getEchoBufferKey().length())));
+	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(configLocked->getNoteEntryLayout()));
+
+	customLayoutKeysMap = {
+		{JamKey::LOW_C,     ui->lowCEdit},
+		{JamKey::LOW_CS,    ui->lowCSEdit},
+		{JamKey::LOW_D,     ui->lowDEdit},
+		{JamKey::LOW_DS,    ui->lowDSEdit},
+		{JamKey::LOW_E,     ui->lowEEdit},
+		{JamKey::LOW_F,     ui->lowFEdit},
+		{JamKey::LOW_FS,    ui->lowFSEdit},
+		{JamKey::LOW_G,     ui->lowGEdit},
+		{JamKey::LOW_GS,    ui->lowGSEdit},
+		{JamKey::LOW_A,     ui->lowAEdit},
+		{JamKey::LOW_AS,    ui->lowASEdit},
+		{JamKey::LOW_B,     ui->lowBEdit},
+		{JamKey::LOW_C_H,   ui->lowHighCEdit},
+		{JamKey::LOW_CS_H,  ui->lowHighCSEdit},
+		{JamKey::LOW_D_H,   ui->lowHighDEdit},
+
+		{JamKey::HIGH_C,    ui->highCEdit},
+		{JamKey::HIGH_CS,   ui->highCSEdit},
+		{JamKey::HIGH_D,    ui->highDEdit},
+		{JamKey::HIGH_DS,   ui->highDSEdit},
+		{JamKey::HIGH_E,    ui->highEEdit},
+		{JamKey::HIGH_F,    ui->highFEdit},
+		{JamKey::HIGH_FS,   ui->highFSEdit},
+		{JamKey::HIGH_G,    ui->highGEdit},
+		{JamKey::HIGH_GS,   ui->highGSEdit},
+		{JamKey::HIGH_A,    ui->highAEdit},
+		{JamKey::HIGH_AS,   ui->highASEdit},
+		{JamKey::HIGH_B,    ui->highBEdit},
+		{JamKey::HIGH_C_H,  ui->highHighCEdit},
+		{JamKey::HIGH_CS_H, ui->highHighCSEdit},
+		{JamKey::HIGH_D_H,  ui->highHighDEdit}
+	};
+	std::map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
+	std::map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
+	while (customLayoutMappingIterator != customLayoutMapping.end()) {
+		customLayoutKeysMap.at(customLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(customLayoutMappingIterator->first)));
+		customLayoutMappingIterator++;
+	}
 
 	// Sound //
 	int devRow = -1;
 	int defDevRow = 0;
 	for (auto& info : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
 		ui->soundDeviceComboBox->addItem(info.deviceName());
-		if (info.deviceName() == QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-												   static_cast<int>(config.lock()->getSoundDevice().length())))
+		if (info.deviceName() == QString::fromUtf8(configLocked->getSoundDevice().c_str(),
+												   static_cast<int>(configLocked->getSoundDevice().length())))
 			devRow = ui->soundDeviceComboBox->count() - 1;
 		if (info.deviceName() == QAudioDeviceInfo::defaultOutputDevice().deviceName()) {
 			defDevRow = ui->soundDeviceComboBox->count() - 1;
@@ -70,11 +112,11 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	}
 	ui->soundDeviceComboBox->setCurrentIndex((devRow == -1) ? defDevRow : devRow);
 
-	ui->useSCCICheckBox->setCheckState(config.lock()->getUseSCCI() ? Qt::Checked : Qt::Unchecked);
+	ui->useSCCICheckBox->setCheckState(configLocked->getUseSCCI() ? Qt::Checked : Qt::Unchecked);
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
 	ui->sampleRateComboBox->addItem("55466Hz", 55466);
-	switch (config.lock()->getSampleRate()) {
+	switch (configLocked->getSampleRate()) {
 	case 44100:	ui->sampleRateComboBox->setCurrentIndex(0);	break;
 	case 48000:	ui->sampleRateComboBox->setCurrentIndex(1);	break;
 	case 55466:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
@@ -84,13 +126,13 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 					 this, [&](int value) {
 		ui->bufferLengthLabel->setText(QString::number(value) + "ms");
 	});
-	ui->bufferLengthHorizontalSlider->setValue(static_cast<int>(config.lock()->getBufferLength()));
+	ui->bufferLengthHorizontalSlider->setValue(static_cast<int>(configLocked->getBufferLength()));
 
 	// Midi //
 	MidiInterface &midiIntf = MidiInterface::instance();
 	if (midiIntf.supportsVirtualPort())
 		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
-	ui->midiInputNameLine->setText(QString::fromStdString(config.lock()->getMidiInputPort()));
+	ui->midiInputNameLine->setText(QString::fromStdString(configLocked->getMidiInputPort()));
 
 	// Mixer //
 	ui->masterMixerSlider->setText(tr("Master"));
@@ -99,7 +141,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->masterMixerSlider->setMinimum(0);
 	ui->masterMixerSlider->setTickPosition(QSlider::TicksBothSides);
 	ui->masterMixerSlider->setTickInterval(20);
-	ui->masterMixerSlider->setValue(config.lock()->getMixerVolumeMaster());
+	ui->masterMixerSlider->setValue(configLocked->getMixerVolumeMaster());
 
 	ui->fmMixerSlider->setText("FM");
 	ui->fmMixerSlider->setSuffix("dB");
@@ -109,7 +151,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->fmMixerSlider->setSign(true);
 	ui->fmMixerSlider->setTickPosition(QSlider::TicksBothSides);
 	ui->fmMixerSlider->setTickInterval(20);
-	ui->fmMixerSlider->setValue(static_cast<int>(config.lock()->getMixerVolumeFM() * 10));
+	ui->fmMixerSlider->setValue(static_cast<int>(configLocked->getMixerVolumeFM() * 10));
 
 	ui->ssgMixerSlider->setText("SSG");
 	ui->ssgMixerSlider->setSuffix("dB");
@@ -119,10 +161,10 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->ssgMixerSlider->setSign(true);
 	ui->ssgMixerSlider->setTickPosition(QSlider::TicksBothSides);
 	ui->ssgMixerSlider->setTickInterval(20);
-	ui->ssgMixerSlider->setValue(static_cast<int>(config.lock()->getMixerVolumeSSG() * 10));
+	ui->ssgMixerSlider->setValue(static_cast<int>(configLocked->getMixerVolumeSSG() * 10));
 
 	// Input //
-	fmEnvelopeTexts_ = config.lock()->getFMEnvelopeTexts();
+	fmEnvelopeTexts_ = configLocked->getFMEnvelopeTexts();
 	updateEnvelopeSetUi();
 }
 
@@ -133,48 +175,56 @@ ConfigurationDialog::~ConfigurationDialog()
 
 void ConfigurationDialog::on_ConfigurationDialog_accepted()
 {
+	std::shared_ptr<Configuration> configLocked = config_.lock();
 	// General //
 	// General settings
-	config_.lock()->setWarpCursor(fromCheckState(ui->generalSettingsListWidget->item(0)->checkState()));
-	config_.lock()->setWarpAcrossOrders(fromCheckState(ui->generalSettingsListWidget->item(1)->checkState()));
-	config_.lock()->setShowRowNumberInHex(fromCheckState(ui->generalSettingsListWidget->item(2)->checkState()));
-	config_.lock()->setShowPreviousNextOrders(fromCheckState(ui->generalSettingsListWidget->item(3)->checkState()));
-	config_.lock()->setBackupModules(fromCheckState(ui->generalSettingsListWidget->item(4)->checkState()));
-	config_.lock()->setDontSelectOnDoubleClick(fromCheckState(ui->generalSettingsListWidget->item(5)->checkState()));
-	config_.lock()->setReverseFMVolumeOrder(fromCheckState(ui->generalSettingsListWidget->item(6)->checkState()));
-	config_.lock()->setMoveCursorToRight(fromCheckState(ui->generalSettingsListWidget->item(7)->checkState()));
-	config_.lock()->setRetrieveChannelState(fromCheckState(ui->generalSettingsListWidget->item(8)->checkState()));
-	config_.lock()->setEnableTranslation(fromCheckState(ui->generalSettingsListWidget->item(9)->checkState()));
-	config_.lock()->setShowFMDetuneAsSigned(fromCheckState(ui->generalSettingsListWidget->item(10)->checkState()));
+	configLocked->setWarpCursor(fromCheckState(ui->generalSettingsListWidget->item(0)->checkState()));
+	configLocked->setWarpAcrossOrders(fromCheckState(ui->generalSettingsListWidget->item(1)->checkState()));
+	configLocked->setShowRowNumberInHex(fromCheckState(ui->generalSettingsListWidget->item(2)->checkState()));
+	configLocked->setShowPreviousNextOrders(fromCheckState(ui->generalSettingsListWidget->item(3)->checkState()));
+	configLocked->setBackupModules(fromCheckState(ui->generalSettingsListWidget->item(4)->checkState()));
+	configLocked->setDontSelectOnDoubleClick(fromCheckState(ui->generalSettingsListWidget->item(5)->checkState()));
+	configLocked->setReverseFMVolumeOrder(fromCheckState(ui->generalSettingsListWidget->item(6)->checkState()));
+	configLocked->setMoveCursorToRight(fromCheckState(ui->generalSettingsListWidget->item(7)->checkState()));
+	configLocked->setRetrieveChannelState(fromCheckState(ui->generalSettingsListWidget->item(8)->checkState()));
+	configLocked->setEnableTranslation(fromCheckState(ui->generalSettingsListWidget->item(9)->checkState()));
+	configLocked->setShowFMDetuneAsSigned(fromCheckState(ui->generalSettingsListWidget->item(10)->checkState()));
 
 	// Edit settings
-	config_.lock()->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
+	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
 
 	// Keys
-	config_.lock()->setKeyOffKey(ui->keyOffKeySequenceEdit->keySequence().toString().toStdString());
-	config_.lock()->setOctaveUpKey(ui->octaveUpKeySequenceEdit->keySequence().toString().toStdString());
-	config_.lock()->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
-	config_.lock()->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
-	config_.lock()->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
+	configLocked->setKeyOffKey(ui->keyOffKeySequenceEdit->keySequence().toString().toStdString());
+	configLocked->setOctaveUpKey(ui->octaveUpKeySequenceEdit->keySequence().toString().toStdString());
+	configLocked->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
+	configLocked->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
+	configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
+	std::map<std::string, JamKey> customLayoutNewKeys = {};
+	std::map<JamKey, QKeySequenceEdit *>::const_iterator customLayoutKeysMapIterator = customLayoutKeysMap.begin();
+	while (customLayoutKeysMapIterator != customLayoutKeysMap.end()) {
+		customLayoutNewKeys[customLayoutKeysMapIterator->second->keySequence().toString().toStdString()] = customLayoutKeysMapIterator->first;
+		customLayoutKeysMapIterator++;
+	}
+	configLocked->setCustomLayoutKeys(customLayoutNewKeys);
 
 	// Sound //
-	config_.lock()->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
-	config_.lock()->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
-	config_.lock()->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
-	config_.lock()->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
+	configLocked->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
+	configLocked->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
+	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
+	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
 
 	// Midi //
-	config_.lock()->setMidiInputPort(ui->midiInputNameLine->text().toStdString());
+	configLocked->setMidiInputPort(ui->midiInputNameLine->text().toStdString());
 
 	// Mixer //
-	config_.lock()->setMixerVolumeMaster(ui->masterMixerSlider->value());
-	config_.lock()->setMixerVolumeFM(ui->fmMixerSlider->value() * 0.1);
-	config_.lock()->setMixerVolumeSSG(ui->ssgMixerSlider->value() * 0.1);
+	configLocked->setMixerVolumeMaster(ui->masterMixerSlider->value());
+	configLocked->setMixerVolumeFM(ui->fmMixerSlider->value() * 0.1);
+	configLocked->setMixerVolumeSSG(ui->ssgMixerSlider->value() * 0.1);
 
 	// Input //
 	std::sort(fmEnvelopeTexts_.begin(), fmEnvelopeTexts_.end(),
 			  [](const FMEnvelopeText& a, const FMEnvelopeText& b) -> bool { return (a.name < b.name); });
-	config_.lock()->setFMEnvelopeTexts(fmEnvelopeTexts_);
+	configLocked->setFMEnvelopeTexts(fmEnvelopeTexts_);
 }
 
 /***** General *****/
@@ -321,5 +371,23 @@ void ConfigurationDialog::on_envelopeTypeListWidget_currentRowChanged(int curren
 		ui->removeEnvelopeSetpushButton->setEnabled(true);
 		ui->envelopeSetNameLineEdit->setEnabled(true);
 		ui->envelopeSetNameLineEdit->setText(ui->envelopeTypeListWidget->item(currentRow)->text());
+	}
+}
+
+void ConfigurationDialog::on_keyboardTypeComboBox_currentIndexChanged(int index)
+{
+	Q_UNUSED(index);
+	bool enableCustomLayoutInterface = ui->keyboardTypeComboBox->currentIndex() == 0;
+	ui->lowHighKeysTabWidget->setEnabled(enableCustomLayoutInterface);
+	ui->customLayoutResetButton->setEnabled(enableCustomLayoutInterface);
+}
+
+void ConfigurationDialog::on_customLayoutResetButton_clicked()
+{
+	std::map<std::string, JamKey> QWERTYLayoutMapping = config_.lock()->mappingLayouts.at (Configuration::KeyboardLayout::QWERTY);
+	std::map<std::string, JamKey>::const_iterator QWERTYLayoutMappingIterator = QWERTYLayoutMapping.begin();
+	while (QWERTYLayoutMappingIterator != QWERTYLayoutMapping.end()) {
+		customLayoutKeysMap.at(QWERTYLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(QWERTYLayoutMappingIterator->first)));
+		QWERTYLayoutMappingIterator++;
 	}
 }

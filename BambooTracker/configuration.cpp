@@ -1,4 +1,5 @@
 #include "configuration.hpp"
+#include "jam_manager.hpp"
 
 Configuration::Configuration()
 {
@@ -470,6 +471,114 @@ Configuration::Configuration()
 			})
 		}
 	};
+
+	// Layouts
+	const std::map<std::string, JamKey> mappingQWERTY = {
+		{u8"Z",         JamKey::LOW_C},
+		{u8"S",         JamKey::LOW_CS},
+		{u8"X",         JamKey::LOW_D},
+		{u8"D",         JamKey::LOW_DS},
+		{u8"C",         JamKey::LOW_E},
+		{u8"V",         JamKey::LOW_F},
+		{u8"G",         JamKey::LOW_FS},
+		{u8"B",         JamKey::LOW_G},
+		{u8"H",         JamKey::LOW_GS},
+		{u8"N",         JamKey::LOW_A},
+		{u8"J",         JamKey::LOW_AS},
+		{u8"M",         JamKey::LOW_B},
+		{u8",",         JamKey::LOW_C_H},
+		{u8"L",         JamKey::LOW_CS_H},
+		{u8".",         JamKey::LOW_D_H},
+
+		{u8"Q",         JamKey::HIGH_C},
+		{u8"2",         JamKey::HIGH_CS},
+		{u8"W",         JamKey::HIGH_D},
+		{u8"3",         JamKey::HIGH_DS},
+		{u8"E",         JamKey::HIGH_E},
+		{u8"R",         JamKey::HIGH_F},
+		{u8"5",         JamKey::HIGH_FS},
+		{u8"T",         JamKey::HIGH_G},
+		{u8"6",         JamKey::HIGH_GS},
+		{u8"Y",         JamKey::HIGH_A},
+		{u8"7",         JamKey::HIGH_AS},
+		{u8"U",         JamKey::HIGH_B},
+		{u8"I",         JamKey::HIGH_C_H},
+		{u8"9",         JamKey::HIGH_CS_H},
+		{u8"O",         JamKey::HIGH_D_H},
+	};
+	const std::map<std::string, JamKey> mappingQWERTZ = {
+		{u8"Y",         JamKey::LOW_C},
+		{u8"S",         JamKey::LOW_CS},
+		{u8"X",         JamKey::LOW_D},
+		{u8"D",         JamKey::LOW_DS},
+		{u8"C",         JamKey::LOW_E},
+		{u8"V",         JamKey::LOW_F},
+		{u8"G",         JamKey::LOW_FS},
+		{u8"B",         JamKey::LOW_G},
+		{u8"H",         JamKey::LOW_GS},
+		{u8"N",         JamKey::LOW_A},
+		{u8"J",         JamKey::LOW_AS},
+		{u8"M",         JamKey::LOW_B},
+		{u8",",         JamKey::LOW_C_H},
+		{u8"L",         JamKey::LOW_CS_H},
+		{u8".",         JamKey::LOW_D_H},
+
+		{u8"Q",         JamKey::HIGH_C},
+		{u8"2",         JamKey::HIGH_CS},
+		{u8"W",         JamKey::HIGH_D},
+		{u8"3",         JamKey::HIGH_DS},
+		{u8"E",         JamKey::HIGH_E},
+		{u8"R",         JamKey::HIGH_F},
+		{u8"5",         JamKey::HIGH_FS},
+		{u8"T",         JamKey::HIGH_G},
+		{u8"6",         JamKey::HIGH_GS},
+		{u8"Z",         JamKey::HIGH_A},
+		{u8"7",         JamKey::HIGH_AS},
+		{u8"U",         JamKey::HIGH_B},
+		{u8"I",         JamKey::HIGH_C_H},
+		{u8"9",         JamKey::HIGH_CS_H},
+		{u8"O",         JamKey::HIGH_D_H},
+	};
+	const std::map<std::string, JamKey> mappingAZERTY = {
+		{u8"W",         JamKey::LOW_C},
+		{u8"S",         JamKey::LOW_CS},
+		{u8"X",         JamKey::LOW_D},
+		{u8"D",         JamKey::LOW_DS},
+		{u8"C",         JamKey::LOW_E},
+		{u8"V",         JamKey::LOW_F},
+		{u8"G",         JamKey::LOW_FS},
+		{u8"B",         JamKey::LOW_G},
+		{u8"H",         JamKey::LOW_GS},
+		{u8"N",         JamKey::LOW_A},
+		{u8"J",         JamKey::LOW_AS},
+		{u8",",         JamKey::LOW_B},
+		{u8";",         JamKey::LOW_C_H},
+		{u8"L",         JamKey::LOW_CS_H},
+		{u8".",         JamKey::LOW_D_H},
+
+		{u8"A",         JamKey::HIGH_C},
+		{u8"É",         JamKey::HIGH_CS},   //é - \xc9
+		{u8"Z",         JamKey::HIGH_D},
+		{u8"\"",        JamKey::HIGH_DS},
+		{u8"E",         JamKey::HIGH_E},
+		{u8"R",         JamKey::HIGH_F},
+		{u8"(",         JamKey::HIGH_FS},
+		{u8"T",         JamKey::HIGH_G},
+		{u8"-",         JamKey::HIGH_GS},
+		{u8"Y",         JamKey::HIGH_A},
+		{u8"È",         JamKey::HIGH_AS},   //è - \xc8
+		{u8"U",         JamKey::HIGH_B},
+		{u8"I",         JamKey::HIGH_C_H},
+		{u8"Ç",         JamKey::HIGH_CS_H}, //ç - \xc7
+		{u8"O",         JamKey::HIGH_D_H},
+	};
+	mappingCustom = {};
+	mappingLayouts = {
+		{Custom, mappingCustom},
+		{QWERTY, mappingQWERTY},
+		{QWERTZ, mappingQWERTZ},
+		{AZERTY, mappingAZERTY}
+	};
 }
 
 // Internal //
@@ -774,6 +883,16 @@ void Configuration::setNoteEntryLayout(KeyboardLayout layout)
 Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const
 {
 	return noteEntryLayout_;
+}
+
+void Configuration::setCustomLayoutKeys(std::map<std::string, JamKey> mapping)
+{
+	mappingLayouts[KeyboardLayout::Custom] = mapping;
+}
+
+std::map<std::string, JamKey> Configuration::getCustomLayoutKeys() const
+{
+	return mappingLayouts.at(KeyboardLayout::Custom);
 }
 
 // Sound //
