@@ -11,6 +11,7 @@
 - [#62], [#84] - Add FM3ch expanded mode (thanks [@jimbo1qaz], [@OPNA2608])
 - [#91] - Add module and instrument specification archive (thanks [@jpcima])
 - [#88] - Add FM detune display mode selection (thanks [@bryc] and others)
+- [#89] - Add custom note entry layout configuration ([#70]; thanks [@OPNA2608], [@jpcima])
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
@@ -43,6 +44,7 @@
 [#87]: https://github.com/rerrahkr/BambooTracker/issues/87
 [#91]: https://github.com/rerrahkr/BambooTracker/issues/91
 [#92]: https://github.com/rerrahkr/BambooTracker/issues/92
+[#89]: https://github.com/rerrahkr/BambooTracker/pull/89
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
