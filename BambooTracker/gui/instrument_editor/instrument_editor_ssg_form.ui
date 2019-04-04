@@ -95,9 +95,9 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QRadioButton" name="squareMaskNotePitchRadioButton">
+              <widget class="QRadioButton" name="squareMaskRawRadioButton">
                <property name="text">
-                <string>Note+Pitch</string>
+                <string>Raw</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -108,39 +108,9 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="squareMaskNoteComboBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="squareMaskPitchSpinBox">
-               <property name="prefix">
-                <string notr="true">+</string>
-               </property>
-               <property name="maximum">
-                <number>31</number>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="squareMaskRawRadioButton">
-               <property name="text">
-                <string>Raw</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">squareMaskButtonGroup</string>
-               </attribute>
-              </widget>
-             </item>
-             <item>
               <widget class="QSpinBox" name="squareMaskRawSpinBox">
                <property name="suffix">
-                <string notr="true"> (0x000)</string>
+                <string notr="true"> (0x000 | -Hz)</string>
                </property>
                <property name="maximum">
                 <number>4095</number>
@@ -288,6 +258,9 @@
           </item>
           <item row="2" column="1" colspan="2">
            <widget class="QSpinBox" name="hardFreqSpinBox">
+            <property name="suffix">
+             <string notr="true"> (0x0001 | -Hz)</string>
+            </property>
             <property name="minimum">
              <number>1</number>
             </property>

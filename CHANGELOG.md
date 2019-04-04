@@ -28,6 +28,7 @@
 
 ### Removed
 - Remove module and instrument saving to past version
+- [#3] - Remove square-mask frequency selection by note+pitch
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81

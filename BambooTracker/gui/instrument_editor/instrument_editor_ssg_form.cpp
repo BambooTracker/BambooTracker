@@ -25,13 +25,6 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->waveEditor->AddRow("SMSaw");
 	ui->waveEditor->AddRow("SMInvSaw");
 
-	QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 12; ++j) {
-			ui->squareMaskNoteComboBox->addItem(QString("%1%2").arg(tn[j]).arg(i), 12 * i + j);
-		}
-	}
-
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
@@ -147,7 +140,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->envEditor->setMultipleReleaseState(true);
 
 	ui->hardFreqSpinBox->setSuffix(
-				QString(" (%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
+				QString(" (0x") + QString("%1 | ").arg(ui->hardFreqSpinBox->value(), 3, 16, QChar('0')).toUpper()
+				 + QString("%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
 
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -536,30 +530,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 	ui->waveNumSpinBox->setValue(instSSG->getWaveFormNumber());
 	ui->waveEditor->clearData();
 	for (auto& com : instSSG->getWaveFormSequence()) {
-		QString str = "";
-		if (isModulatedWaveFormSSG(com.type)) {
-			int pn = PitchConverter::convertPitchSSGSquareToPitchNumber(static_cast<uint16_t>(com.data));
-			if (pn != -1) {
-				switch (pn / 32 % 12) {
-				case 0:		str = "C";	break;
-				case 1:		str = "C#";	break;
-				case 2:		str = "D";	break;
-				case 3:		str = "D#";	break;
-				case 4:		str = "E";	break;
-				case 5:		str = "F";	break;
-				case 6:		str = "F#";	break;
-				case 7:		str = "G";	break;
-				case 8:		str = "G#";	break;
-				case 9:		str = "A";	break;
-				case 10:	str = "A#";	break;
-				case 11:	str = "B";	break;
-				}
-				str += QString("%1+%2").arg(pn / 32 / 12).arg(pn % 32);
-			}
-			else {
-				str = QString::number(com.data);
-			}
-		}
+		QString str = isModulatedWaveFormSSG(com.type) ? QString::number(com.data) : "";
 		ui->waveEditor->addSequenceCommand(com.type, str, com.data);
 	}
 	for (auto& l : instSSG->getWaveFormLoops()) {
@@ -579,14 +550,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 void InstrumentEditorSSGForm::setWaveFormSequenceColumn(int col)
 {
 	auto button = ui->squareMaskButtonGroup->checkedButton();
-	if (button == ui->squareMaskNotePitchRadioButton) {
-		ui->waveEditor->setText(col, ui->squareMaskNoteComboBox->currentText()
-								+ "+" + QString::number(ui->squareMaskPitchSpinBox->value()));
-		ui->waveEditor->setData(col, PitchConverter::getPitchSSGSquare(
-									ui->squareMaskNoteComboBox->currentData().toInt() * 32
-									+ ui->squareMaskPitchSpinBox->value()));
-	}
-	else if (button == ui->squareMaskRawRadioButton) {
+	if (button == ui->squareMaskRawRadioButton) {
 		ui->waveEditor->setText(col, QString::number(ui->squareMaskRawSpinBox->value()));
 		ui->waveEditor->setData(col, ui->squareMaskRawSpinBox->value());
 	}
@@ -640,7 +604,10 @@ void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
 
 void InstrumentEditorSSGForm::on_squareMaskRawSpinBox_valueChanged(int arg1)
 {
-	ui->squareMaskRawSpinBox->setSuffix(QString(" (0x") + QString("%1)").arg(arg1, 3, 16, QChar('0')).toUpper());
+	ui->squareMaskRawSpinBox->setSuffix(
+				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
+				+ QString("%1Hz)").arg(arg1 ? QString::number(124800.0 / arg1, 'f', 4) : "-")
+				);
 }
 
 //--- Tone/Noise
@@ -795,10 +762,9 @@ void InstrumentEditorSSGForm::on_envNumSpinBox_valueChanged(int arg1)
 
 void InstrumentEditorSSGForm::on_hardFreqSpinBox_valueChanged(int arg1)
 {
-	Q_UNUSED(arg1)
-
 	ui->hardFreqSpinBox->setSuffix(
-				QString(" (%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
+				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
+				+ QString("%1Hz").arg(arg1 ? QString::number(7800.0 / arg1, 'f', 4) : "-"));
 }
 
 //--- Arpeggio
