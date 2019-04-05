@@ -6,39 +6,6 @@
 
 #ifdef INCLUDE_AY8910_H
 #include "ay8910.h"
-#else
-// Copied from VGMPlay/chips/ay8910.h
-/*
-* Default values for resistor loads.
-* The macro should be used in AY8910interface if
-* the real values are unknown.
-*/
-#define AY8910_DEFAULT_LOADS		{1000, 1000, 1000}
-
-/*
-* The following is used by all drivers not reviewed yet.
-* This will like the old behaviour, output between
-* 0 and 7FFF
-*/
-#define AY8910_LEGACY_OUTPUT		(1)
-
-/*
-* Specifing the next define will simulate the special
-* cross channel mixing if outputs are tied together.
-* The driver will only provide one stream in this case.
-*/
-#define AY8910_SINGLE_OUTPUT		(2)
-
-typedef struct _ay8910_interface ay8910_interface;
-struct _ay8910_interface
-{
-	int					flags;			/* Flags */
-	int					res_load[3]; 	/* Load on channel in ohms */
-										//devcb_read8		portAread;
-										//devcb_read8		portBread;
-										//devcb_write8		portAwrite;
-										//devcb_write8		portBwrite;
-};
 #endif
 
 void ym2608_update_request(void *param);

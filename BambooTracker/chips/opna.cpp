@@ -9,6 +9,7 @@ extern "C"
 #endif //  __cplusplus
 
 #include "mame/2608intf.h"
+#include "nuked/nuke2608intf.h"
 
 #ifdef __cplusplus
 }
@@ -29,7 +30,8 @@ namespace chip
 		  scciManager_(nullptr),
 		  scciChip_(nullptr)
 	{
-		intf_ = &mame_intf2608;
+		//intf_ = &mame_intf2608;
+		intf_ = &nuked_intf2608;
 
 		funcSetRate(rate);
 
