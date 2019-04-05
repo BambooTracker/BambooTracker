@@ -90,3 +90,5 @@ void ym2608_set_ay_emu_core(UINT8 Emulator);
 //							  offs_t DataLength, const UINT8* ROMData);
 void ym2608_set_mute_mask(UINT8 ChipID, UINT32 MuteMaskFM, UINT32 MuteMaskAY);
 //void ym2608_set_srchg_cb(UINT8 ChipID, SRATE_CALLBACK CallbackFunc, void* DataPtr, void* AYDataPtr);
+
+extern struct intf2608 mame_intf2608;

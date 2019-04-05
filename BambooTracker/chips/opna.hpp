@@ -29,6 +29,8 @@ namespace chip
 	private:
 		static size_t count_;
 
+		intf2608* intf_;
+
 		// For SCCI
 		SoundInterfaceManager* scciManager_;
 		SoundChip* scciChip_;
