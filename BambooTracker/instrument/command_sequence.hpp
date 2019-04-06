@@ -31,7 +31,7 @@ struct Release
 class CommandSequence : public AbstractInstrumentProperty
 {
 public:
-	CommandSequence(int num, int seqType, int comType = 0, int comData = -1);
+	CommandSequence(int num, int seqType, int comType = 0, int comData = 0);
 	CommandSequence(const CommandSequence& other);
 	virtual ~CommandSequence() = default;
 	std::unique_ptr<CommandSequence> clone();

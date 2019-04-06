@@ -300,7 +300,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getArpeggioFMLoops(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -340,7 +339,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getPitchFMLoops(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -386,7 +384,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
+				ctr.appendUint16(static_cast<uint16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getWaveFormSSGLoops(wfNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -427,7 +425,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getToneNoiseSSGLoops(tnNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -468,7 +465,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
+				ctr.appendUint16(static_cast<uint16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getEnvelopeSSGLoops(envNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -509,7 +506,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getArpeggioSSGLoops(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -550,7 +546,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getPitchSSGLoops(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -1431,12 +1426,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setArpeggioFMSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setArpeggioFMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addArpeggioFMSequenceCommand(idx, data, subdata);
+							instMan.lock()->addArpeggioFMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1509,12 +1503,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setPitchFMSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setPitchFMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addPitchFMSequenceCommand(idx, data, subdata);
+							instMan.lock()->addPitchFMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1578,11 +1571,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 							if (data == 3) data = static_cast<int>(SSGWaveFormType::SQM_TRIANGLE);
 							else if (data == 4) data = static_cast<int>(SSGWaveFormType::SQM_SAW);
 						}
-						int16_t subdata = ctr.readInt16(csr);
+						uint16_t subdata = ctr.readUint16(csr);
 						csr += 2;
 						if (fileVersion < Version::toBCD(1, 2, 0)) {
-							if (subdata > -1)
-								subdata = static_cast<int16_t>(PitchConverter::getPitchSSGSquare(subdata));
+							if (subdata != 0xffff)
+								subdata = PitchConverter::getPitchSSGSquare(subdata);
 						}
 						if (l == 0)
 							instMan.lock()->setWaveFormSSGSequenceCommand(idx, 0, data, subdata);
@@ -1647,12 +1640,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addToneNoiseSSGSequenceCommand(idx, data, subdata);
+							instMan.lock()->addToneNoiseSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1712,7 +1704,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
+						uint16_t subdata = ctr.readUint16(csr);
 						csr += 2;
 						if (l == 0)
 							instMan.lock()->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
@@ -1777,12 +1769,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, subdata);
+							instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1842,12 +1833,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setPitchSSGSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setPitchSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addPitchSSGSequenceCommand(idx, data, subdata);
+							instMan.lock()->addPitchSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1916,12 +1906,11 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	for (uint16_t l = 0; l < seqLen; ++l) {
 		uint16_t data = ctr.readUint16(csr);
 		csr += 2;
-		int16_t subdata = ctr.readInt16(csr);
-		csr += 2;
+		if (version < Version::toBCD(1, 2, 0)) csr += 2;
 		if (l == 0)
-			instMan.lock()->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, subdata);
+			instMan.lock()->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
 		else
-			instMan.lock()->addOperatorSequenceFMSequenceCommand(param, idx, data, subdata);
+			instMan.lock()->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
 	}
 
 	uint16_t loopCnt = ctr.readUint16(csr);
