@@ -28,6 +28,7 @@
  *
  * OPN-MOD additions:
  *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
+ *   - Jean Pierre Cimalando 2019-04-06: add 6-channel FM flag
  */
 
 #include <string.h>
@@ -420,8 +421,16 @@ void OPN2_DoRegWrite(ym3438_t *chip)
                 }
                 else
                 {
-                    chip->mode_kon_channel = (chip->write_data & 0x03) + ((chip->write_data >> 2) & 1) * 3;
+                    /*OPN-MOD: select according to 6 FM channel flag*/
+                    chip->mode_kon_channel = chip->write_data & 0x03;
+                    if (chip->mode_fm6ch && (chip->write_data & 0x04))
+                    {
+                        chip->mode_kon_channel += 3;
+                    }
                 }
+                break;
+            case 0x29: /*OPN-MOD: set 6 FM channel flag*/
+                chip->mode_fm6ch = chip->write_data & 0x80;
                 break;
             case 0x2a: /* DAC data */
                 chip->dacdata &= 0x01;

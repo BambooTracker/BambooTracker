@@ -28,6 +28,7 @@
  *
  * OPN-MOD additions:
  *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
+ *   - Jean Pierre Cimalando 2019-04-06: add 6-channel FM flag
  */
 
 #ifndef YM3438_H
@@ -184,6 +185,9 @@ typedef struct
     Bit8u mode_kon_csm;
     Bit8u dacen;
     Bit16s dacdata;
+
+    /*OPN-MOD: 6 FM channel flag*/
+    Bit8u mode_fm6ch;
 
     Bit8u ks[24];
     Bit8u ar[24];
