@@ -1,6 +1,7 @@
 #pragma once
 
 #include "chip.hpp"
+#include "chip_misc.h"
 #include "scci/scci.h"
 #include "scci/SCCIDefines.h"
 
@@ -11,7 +12,7 @@ namespace chip
 	public:
 		// [rate]
 		// 0 = rate is 55466 (FM synthesis rate when clock is 3993600 * 2)
-		OPNA(int clock, int rate, size_t maxDuration,
+		OPNA(Emu emu, int clock, int rate, size_t maxDuration,
 			 std::unique_ptr<AbstractResampler> fmResampler = std::make_unique<LinearResampler>(),
 			 std::unique_ptr<AbstractResampler> ssgResampler = std::make_unique<LinearResampler>(),
 			 std::shared_ptr<ExportContainerInterface> exportContainer = nullptr);

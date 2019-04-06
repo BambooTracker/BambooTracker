@@ -45,6 +45,7 @@ Configuration::Configuration()
 	// Sound //
 	sndDevice_ = u8"";
 	useSCCI_ = false;
+	emulator_ = 0;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
 
@@ -914,6 +915,16 @@ void Configuration::setUseSCCI(bool enabled)
 bool Configuration::getUseSCCI() const
 {
 	return useSCCI_;
+}
+
+void Configuration::setEmulator(int emulator)
+{
+	emulator_ = emulator;
+}
+
+int Configuration::getEmulator() const
+{
+	return emulator_;
 }
 
 void Configuration::setSampleRate(uint32_t rate)

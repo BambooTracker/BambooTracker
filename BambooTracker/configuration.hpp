@@ -135,6 +135,8 @@ public:
 	std::string getSoundDevice() const;
 	void setUseSCCI(bool enabled);
 	bool getUseSCCI() const;
+	void setEmulator(int emulator);
+	int getEmulator() const;
 	void setSampleRate(uint32_t rate);
 	uint32_t getSampleRate() const;
 	void setBufferLength(size_t length);
@@ -142,6 +144,7 @@ public:
 private:
 	std::string sndDevice_;
 	bool useSCCI_;
+	int emulator_;
 	uint32_t sampleRate_;
 	size_t bufferLength_;
 

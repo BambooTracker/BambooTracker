@@ -21,7 +21,7 @@ namespace chip
 	
 	const double OPNA::VOL_REDUC = 7.5;
 
-	OPNA::OPNA(int clock, int rate, size_t maxDuration,
+	OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration,
 			   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
 			   std::shared_ptr<ExportContainerInterface> exportContainer)
 		: Chip(count_++, clock, rate, 110933, maxDuration,
@@ -30,8 +30,19 @@ namespace chip
 		  scciManager_(nullptr),
 		  scciChip_(nullptr)
 	{
-		//intf_ = &mame_intf2608;
-		intf_ = &nuked_intf2608;
+		switch (emu) {
+		default:
+			fprintf(stderr, "Unknown emulator choice. Using the default.\n");
+			/* fall through */
+		case Emu::Mame:
+			fprintf(stderr, "Using emulator: MAME YM2608\n");
+			intf_ = &mame_intf2608;
+			break;
+		case Emu::Nuked:
+			fprintf(stderr, "Using emulator: Nuked OPN-Mod\n");
+			intf_ = &nuked_intf2608;
+			break;
+		}
 
 		funcSetRate(rate);
 
