@@ -29,6 +29,7 @@
  * OPN-MOD additions:
  *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
  *   - Jean Pierre Cimalando 2019-04-06: add 6-channel FM flag
+ *   - Jean Pierre Cimalando 2019-04-06: add ADPCM rhythm channels
  */
 
 #ifndef YM3438_H
@@ -76,6 +77,9 @@ typedef struct
     Bit32u cycles;
     Bit32u channel;
     Bit16s mol, mor;
+    /*OPN-MOD: Rhythm channel outputs*/
+    Bit16s rhythml[6];
+    Bit16s rhythmr[6];
     /* IO */
     Bit16u write_data;
     Bit8u write_a;
@@ -152,6 +156,19 @@ typedef struct
     Bit8u ch_lock_l;
     Bit8u ch_lock_r;
     Bit16s ch_read;
+    /*OPNA: Rhythm channel*/
+    Bit8u rhythm_tl;
+    Bit8u rhythm_key[6];
+    Bit8u rhythm_pan[6];
+    Bit8u rhythm_level[6];
+    Bit16u rhythm_addr[6];
+    Bit8u rhythm_data[6];
+    Bit32u rhythm_step[6];
+    Bit32u rhythm_now_step[6];
+    Bit32s rhythm_adpcm_step[6];
+    Bit32s rhythm_adpcm_acc[6];
+    Bit8s rhythm_vol_mul[6];
+    Bit8u rhythm_vol_shift[6];
     /* Timer */
     Bit16u timer_a_cnt;
     Bit16u timer_a_reg;

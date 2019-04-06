@@ -29,6 +29,7 @@
  * OPN-MOD additions:
  *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
  *   - Jean Pierre Cimalando 2019-04-06: add 6-channel FM flag
+ *   - Jean Pierre Cimalando 2019-04-06: add ADPCM rhythm channels
  */
 
 #include <string.h>
@@ -221,7 +222,88 @@ static const Bit32u fm_algorithm[4][6][8] = {
     }
 };
 
+/*OPN-MOD: ADPCM jedi table*/
+static const Bit16s adpcm_jedi_table[49 * 16] =
+{
+    2,     6,    10,    14,    18,    22,    26,    30,    -2,    -6,   -10,   -14,   -18,   -22,   -26,   -30,
+    2,     6,    10,    14,    19,    23,    27,    31,    -2,    -6,   -10,   -14,   -19,   -23,   -27,   -31,
+    2,     7,    11,    16,    21,    26,    30,    35,    -2,    -7,   -11,   -16,   -21,   -26,   -30,   -35,
+    2,     7,    13,    18,    23,    28,    34,    39,    -2,    -7,   -13,   -18,   -23,   -28,   -34,   -39,
+    2,     8,    14,    20,    25,    31,    37,    43,    -2,    -8,   -14,   -20,   -25,   -31,   -37,   -43,
+    3,     9,    15,    21,    28,    34,    40,    46,    -3,    -9,   -15,   -21,   -28,   -34,   -40,   -46,
+    3,    10,    17,    24,    31,    38,    45,    52,    -3,   -10,   -17,   -24,   -31,   -38,   -45,   -52,
+    3,    11,    19,    27,    34,    42,    50,    58,    -3,   -11,   -19,   -27,   -34,   -42,   -50,   -58,
+    4,    12,    21,    29,    38,    46,    55,    63,    -4,   -12,   -21,   -29,   -38,   -46,   -55,   -63,
+    4,    13,    23,    32,    41,    50,    60,    69,    -4,   -13,   -23,   -32,   -41,   -50,   -60,   -69,
+    5,    15,    25,    35,    46,    56,    66,    76,    -5,   -15,   -25,   -35,   -46,   -56,   -66,   -76,
+    5,    16,    28,    39,    50,    61,    73,    84,    -5,   -16,   -28,   -39,   -50,   -61,   -73,   -84,
+    6,    18,    31,    43,    56,    68,    81,    93,    -6,   -18,   -31,   -43,   -56,   -68,   -81,   -93,
+    6,    20,    34,    48,    61,    75,    89,   103,    -6,   -20,   -34,   -48,   -61,   -75,   -89,  -103,
+    7,    22,    37,    52,    67,    82,    97,   112,    -7,   -22,   -37,   -52,   -67,   -82,   -97,  -112,
+    8,    24,    41,    57,    74,    90,   107,   123,    -8,   -24,   -41,   -57,   -74,   -90,  -107,  -123,
+    9,    27,    45,    63,    82,   100,   118,   136,    -9,   -27,   -45,   -63,   -82,  -100,  -118,  -136,
+   10,    30,    50,    70,    90,   110,   130,   150,   -10,   -30,   -50,   -70,   -90,  -110,  -130,  -150,
+   11,    33,    55,    77,    99,   121,   143,   165,   -11,   -33,   -55,   -77,   -99,  -121,  -143,  -165,
+   12,    36,    60,    84,   109,   133,   157,   181,   -12,   -36,   -60,   -84,  -109,  -133,  -157,  -181,
+   13,    40,    66,    93,   120,   147,   173,   200,   -13,   -40,   -66,   -93,  -120,  -147,  -173,  -200,
+   14,    44,    73,   103,   132,   162,   191,   221,   -14,   -44,   -73,  -103,  -132,  -162,  -191,  -221,
+   16,    48,    81,   113,   146,   178,   211,   243,   -16,   -48,   -81,  -113,  -146,  -178,  -211,  -243,
+   17,    53,    89,   125,   160,   196,   232,   268,   -17,   -53,   -89,  -125,  -160,  -196,  -232,  -268,
+   19,    58,    98,   137,   176,   215,   255,   294,   -19,   -58,   -98,  -137,  -176,  -215,  -255,  -294,
+   21,    64,   108,   151,   194,   237,   281,   324,   -21,   -64,  -108,  -151,  -194,  -237,  -281,  -324,
+   23,    71,   118,   166,   213,   261,   308,   356,   -23,   -71,  -118,  -166,  -213,  -261,  -308,  -356,
+   26,    78,   130,   182,   235,   287,   339,   391,   -26,   -78,  -130,  -182,  -235,  -287,  -339,  -391,
+   28,    86,   143,   201,   258,   316,   373,   431,   -28,   -86,  -143,  -201,  -258,  -316,  -373,  -431,
+   31,    94,   158,   221,   284,   347,   411,   474,   -31,   -94,  -158,  -221,  -284,  -347,  -411,  -474,
+   34,   104,   174,   244,   313,   383,   453,   523,   -34,  -104,  -174,  -244,  -313,  -383,  -453,  -523,
+   38,   115,   191,   268,   345,   422,   498,   575,   -38,  -115,  -191,  -268,  -345,  -422,  -498,  -575,
+   42,   126,   210,   294,   379,   463,   547,   631,   -42,  -126,  -210,  -294,  -379,  -463,  -547,  -631,
+   46,   139,   231,   324,   417,   510,   602,   695,   -46,  -139,  -231,  -324,  -417,  -510,  -602,  -695,
+   51,   153,   255,   357,   459,   561,   663,   765,   -51,  -153,  -255,  -357,  -459,  -561,  -663,  -765,
+   56,   168,   280,   392,   505,   617,   729,   841,   -56,  -168,  -280,  -392,  -505,  -617,  -729,  -841,
+   61,   185,   308,   432,   555,   679,   802,   926,   -61,  -185,  -308,  -432,  -555,  -679,  -802,  -926,
+   68,   204,   340,   476,   612,   748,   884,  1020,   -68,  -204,  -340,  -476,  -612,  -748,  -884, -1020,
+   74,   224,   373,   523,   672,   822,   971,  1121,   -74,  -224,  -373,  -523,  -672,  -822,  -971, -1121,
+   82,   246,   411,   575,   740,   904,  1069,  1233,   -82,  -246,  -411,  -575,  -740,  -904, -1069, -1233,
+   90,   271,   452,   633,   814,   995,  1176,  1357,   -90,  -271,  -452,  -633,  -814,  -995, -1176, -1357,
+   99,   298,   497,   696,   895,  1094,  1293,  1492,   -99,  -298,  -497,  -696,  -895, -1094, -1293, -1492,
+  109,   328,   547,   766,   985,  1204,  1423,  1642,  -109,  -328,  -547,  -766,  -985, -1204, -1423, -1642,
+  120,   361,   601,   842,  1083,  1324,  1564,  1805,  -120,  -361,  -601,  -842, -1083, -1324, -1564, -1805,
+  132,   397,   662,   927,  1192,  1457,  1722,  1987,  -132,  -397,  -662,  -927, -1192, -1457, -1722, -1987,
+  145,   437,   728,  1020,  1311,  1603,  1894,  2186,  -145,  -437,  -728, -1020, -1311, -1603, -1894, -2186,
+  160,   480,   801,  1121,  1442,  1762,  2083,  2403,  -160,  -480,  -801, -1121, -1442, -1762, -2083, -2403,
+  176,   529,   881,  1234,  1587,  1940,  2292,  2645,  -176,  -529,  -881, -1234, -1587, -1940, -2292, -2645,
+  194,   582,   970,  1358,  1746,  2134,  2522,  2910,  -194,  -582,  -970, -1358, -1746, -2134, -2522, -2910
+};
+
+/*OPN-MOD: ADPCM table*/
+extern const unsigned int YM2608_ADPCM_ROM_addr[2*6];
+extern const unsigned char YM2608_ADPCM_ROM[0x2000];
+
+/*OPN-MOD: ADPCM constants*/
+static const Bitu adpcm_shift = 16;
+static const int adpcm_step_inc[8] = { -1*16, -1*16, -1*16, -1*16, 2*16, 5*16, 7*16, 9*16 };
+
 static Bit32u chip_type = ym3438_mode_readmode;
+
+/*OPNMOD: update ADPCM volume*/
+void OPNmod_RhythmUpdateVolume(ym3438_t *chip, Bit32u channel)
+{
+    Bit8u volume = chip->rhythm_tl + chip->rhythm_level[channel];
+
+    /* volume formula from MAME OPN */
+
+    if (volume >= 63) /* This is correct, 63 = quiet */
+    {
+        chip->rhythm_vol_mul[channel] = 0;
+        chip->rhythm_vol_shift[channel] = 0;
+    }
+    else
+    {
+        chip->rhythm_vol_mul[channel] = 15 - (volume & 7); /* so called 0.75 dB */
+        chip->rhythm_vol_shift[channel] = 1 + (volume >> 3); /* Yamaha engineers used the approximation: each -6 dB is close to divide by two (shift right) */
+    }
+}
 
 void OPN2_DoIO(ym3438_t *chip)
 {
@@ -371,6 +453,51 @@ void OPN2_DoRegWrite(ym3438_t *chip)
         {
             switch (chip->write_fm_mode_a)
             {
+            /*OPN-MOD: Rhythm key on/off*/
+            case 0x10:
+                if ((chip->write_data & 0x80) == 0)
+                {
+                    for (i = 0; i < 6; ++i)
+                    {
+                        if (chip->write_data & (1 << i))
+                        {
+                            chip->rhythm_key[i] = 1;
+                            chip->rhythm_addr[i] = YM2608_ADPCM_ROM_addr[2 * i] << 1;
+                            chip->rhythm_now_step[i] = 0;
+                            chip->rhythm_adpcm_step[i] = 0;
+                            chip->rhythm_adpcm_acc[i] = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    for (i = 0; i < 6; ++i)
+                    {
+                        if (chip->write_data & (1 << i))
+                        {
+                            chip->rhythm_key[i] = 0;
+                            chip->rhythml[i] = 0;
+                            chip->rhythmr[i] = 0;
+                        }
+                    }
+                }
+                break;
+            /*OPN-MOD: Rhythm total level*/
+            case 0x11:
+                chip->rhythm_tl = ~chip->write_data & 63;
+                for (i = 0; i < 6; ++i)
+                {
+                    OPNmod_RhythmUpdateVolume(chip, i);
+                }
+                break;
+            /*OPN-MOD: Rhythm instrument pan/level*/
+            case 0x18: case 0x19: case 0x1a:
+            case 0x1b: case 0x1c: case 0x1d:
+                i = chip->write_fm_mode_a - 0x18;
+                chip->rhythm_pan[i] = (chip->write_data >> 6) & 3;
+                chip->rhythm_level[i] = ~chip->write_data & 31;
+                OPNmod_RhythmUpdateVolume(chip, i);
+                break;
             case 0x21: /* LSI test 1 */
                 for (i = 0; i < 8; i++)
                 {
@@ -1084,6 +1211,87 @@ void OPN2_FMGenerate(ym3438_t *chip)
     chip->fm_out[slot] = output;
 }
 
+/*OPNMOD: generate ADPCM rhythm*/
+void OPNmod_RhythmGenerate(ym3438_t *chip)
+{
+    Bit32u channel = chip->channel;
+    Bit32s out = 0;
+    Bit8u panl = 0;
+    Bit8u panr = 0;
+
+    if (chip->cycles < 6 && chip->rhythm_key[channel])
+    {
+        Bit32u step;
+        Bit8u data;
+        Bit16u end = YM2608_ADPCM_ROM_addr[2 * channel + 1] << 1;
+
+        panl = chip->rhythm_pan[channel] & 2;
+        panr = chip->rhythm_pan[channel] & 1;
+
+        /*from MAME*/
+        chip->rhythm_now_step[channel] += chip->rhythm_step[channel];
+        if (chip->rhythm_now_step[channel] >= (1 << adpcm_shift))
+        {
+            step = chip->rhythm_now_step[channel] >> adpcm_shift;
+            chip->rhythm_now_step[channel] &= (1 << adpcm_shift) - 1;
+            do
+            {
+                /* end check */
+                /* 11-06-2001 JB: corrected comparison. Was > instead of == */
+                /* YM2610 checks lower 20 bits only, the 4 MSB bits are sample bank */
+                /* Here we use 1<<21 to compensate for nibble calculations */
+
+                if ((chip->rhythm_addr[channel] & ((1 << 21) - 1)) == (end & ((1 << 21) - 1)))
+                {
+                    chip->rhythm_key[channel] = 0;
+                    goto end;
+                }
+
+                if (chip->rhythm_addr[channel] & 1)
+                {
+                    data = chip->rhythm_data[channel] & 0x0f;
+                }
+                else
+                {
+                    chip->rhythm_data[channel] = YM2608_ADPCM_ROM[chip->rhythm_addr[channel] >> 1];
+                    data = (chip->rhythm_data[channel] >> 4) & 0x0f;
+                }
+
+                chip->rhythm_addr[channel]++;
+
+                chip->rhythm_adpcm_acc[channel] += adpcm_jedi_table[chip->rhythm_adpcm_step[channel] + data];
+
+                /* extend 12-bit signed int */
+                if (chip->rhythm_adpcm_acc[channel] & ~0x7ff)
+                {
+                    chip->rhythm_adpcm_acc[channel] |= ~0xfff;
+                }
+                else
+                {
+                    chip->rhythm_adpcm_acc[channel] &= 0xfff;
+                }
+
+                chip->rhythm_adpcm_step[channel] += adpcm_step_inc[data & 7];
+                if (chip->rhythm_adpcm_step[channel] > 48 * 16)
+                {
+                    chip->rhythm_adpcm_step[channel] = 48 * 16;
+                }
+                if (chip->rhythm_adpcm_step[channel] < 0)
+                {
+                    chip->rhythm_adpcm_step[channel] = 0;
+                }
+            } while (--step);
+
+            /* calc pcm * volume data */
+            out = ((chip->rhythm_adpcm_acc[channel] * chip->rhythm_vol_mul[channel]) >> chip->rhythm_vol_shift[channel]) & ~3; /* multiply, shift and mask out 2 LSB bits */
+
+        end:
+            chip->rhythml[channel] = panl ? (out >> 1) : 0;
+            chip->rhythmr[channel] = panr ? (out >> 1) : 0;
+        }
+    }
+}
+
 void OPN2_DoTimerA(ym3438_t *chip)
 {
     Bit16u time;
@@ -1225,6 +1433,13 @@ void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks
     chip->psgdata = psgdata;
     psg->Reset(psgdata);
     psg->SetClock(psgdata, clock / 4);
+    /*OPN-MOD: initialize rhythm*/
+    for (i = 0; i < 6; i++)
+    {
+        chip->rhythm_pan[i] = 3;
+        chip->rhythm_step[i] = (Bit32u)((1 << adpcm_shift) / ((i < 4) ? 3.0 : 6.0));
+        OPNmod_RhythmUpdateVolume(chip, i);
+    }
 }
 
 void OPN2_SetChipType(Bit32u type)
@@ -1235,6 +1450,8 @@ void OPN2_SetChipType(Bit32u type)
 void OPN2_Clock(ym3438_t *chip, Bit16s *buffer)
 {
     Bit32u slot = chip->cycles;
+    Bit16s *rhythml = &chip->rhythml[chip->channel];
+    Bit16s *rhythmr = &chip->rhythmr[chip->channel];
     chip->lfo_inc = chip->mode_test_21[1];
     chip->pg_read >>= 1;
     chip->eg_read[1] >>= 1;
@@ -1313,6 +1530,8 @@ void OPN2_Clock(ym3438_t *chip, Bit16s *buffer)
     OPN2_FMPrepare(chip);
     OPN2_FMGenerate(chip);
 
+    OPNmod_RhythmGenerate(chip);
+
     OPN2_PhaseGenerate(chip);
     OPN2_PhaseCalcIncrement(chip);
 
@@ -1364,6 +1583,9 @@ void OPN2_Clock(ym3438_t *chip, Bit16s *buffer)
 
     buffer[0] = chip->mol;
     buffer[1] = chip->mor;
+    /*OPN-MOD: Rhythm output*/
+    buffer[2] = *rhythml;
+    buffer[3] = *rhythmr;
 
     if (chip->status_time)
         chip->status_time--;
@@ -1467,7 +1689,7 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
 void OPN2_WriteBuffered(ym3438_t *chip, Bit32u port, Bit8u data)
 {
     Bit64u time1, time2;
-    Bit16s buffer[2];
+    Bit16s buffer[4];
     Bit64u skip;
 
     if (chip->writebuf[chip->writebuf_last].port & 0x04)
@@ -1502,7 +1724,7 @@ void OPN2_WriteBuffered(ym3438_t *chip, Bit32u port, Bit8u data)
 void OPN2_Generate(ym3438_t *chip, sample *samples)
 {
     Bit32u i;
-    Bit16s buffer[2];
+    Bit16s buffer[4];
 
     samples[0] = 0;
     samples[1] = 0;
@@ -1511,8 +1733,12 @@ void OPN2_Generate(ym3438_t *chip, sample *samples)
     {
         OPN2_Clock(chip, buffer);
 
-        samples[0] += buffer[0];
-        samples[1] += buffer[1];
+        samples[0] += buffer[0] * 11;
+        samples[1] += buffer[1] * 11;
+
+        /*OPN-MOD: mix rhythm samples*/
+        samples[0] += buffer[2];
+        samples[1] += buffer[3];
 
         while (chip->writebuf[chip->writebuf_cur].time <= chip->writebuf_samplecnt)
         {

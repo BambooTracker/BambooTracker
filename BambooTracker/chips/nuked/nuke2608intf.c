@@ -254,14 +254,12 @@ void nuke2608_stream_update(uint8_t ChipID, sample **outputs, int samples)
 	sample *bufl = outputs[0];
 	sample *bufr = outputs[1];
 
-	int gain = 11; // gain factor for Nuked, not sure entirely why it is
-
 	for (i = 0; i < samples; ++i)
 	{
 		sample lr[2];
 		OPN2_Generate(info->chip, lr);
-		*bufl++ = lr[0] * gain;
-		*bufr++ = lr[1] * gain;
+		*bufl++ = lr[0];
+		*bufr++ = lr[1];
 	}
 }
 

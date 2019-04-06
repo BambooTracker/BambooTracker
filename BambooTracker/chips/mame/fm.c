@@ -2743,7 +2743,7 @@ static void FMsave_state_adpcma(const device_config *device,ADPCM_CH *adpcm)
 
 
 
-static const unsigned int YM2608_ADPCM_ROM_addr[2*6] = {
+const unsigned int YM2608_ADPCM_ROM_addr[2*6] = {
 0x0000, 0x01bf, /* bass drum  */
 0x01c0, 0x043f, /* snare drum */
 0x0440, 0x1b7f, /* top cymbal */
@@ -2758,7 +2758,7 @@ static const unsigned int YM2608_ADPCM_ROM_addr[2*6] = {
     It was verified, using real YM2608, that this ADPCM stream produces 100% correct output signal.
 */
 
-static const unsigned char YM2608_ADPCM_ROM[0x2000] = {
+const unsigned char YM2608_ADPCM_ROM[0x2000] = {
 
 /* Source: 01BD.ROM */
 /* Length: 448 / 0x000001C0 */
