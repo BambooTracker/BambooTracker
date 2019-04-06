@@ -53,3 +53,11 @@ struct _ay8910_interface
 										//devcb_write8		portBwrite;
 };
 #endif
+
+typedef struct _ym2608_interface ym2608_interface;
+struct _ym2608_interface
+{
+	ay8910_interface ay8910_intf;
+	//void ( *handler )( const device_config *device, int irq );	/* IRQ handler for the YM2608 */
+	void ( *handler )( int irq );	/* IRQ handler for the YM2608 */
+};

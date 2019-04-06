@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017-2018 Alexey Khokholov (Nuke.YKT)
+ * Copyright (C) 2019      Jean Pierre Cimalando
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
- *  Nuked OPN2(Yamaha YM3438) emulator.
+ *  Nuked OPN2-MOD emulator, with OPNA functionality added.
  *  Thanks:
  *      Silicon Pr0n:
  *          Yamaha YM3438 decap and die shot(digshadow).
@@ -24,6 +25,9 @@
  *          OPL2 ROMs.
  *
  * version: 1.0.9
+ *
+ * OPN-MOD additions:
+ *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
  */
 
 #ifndef YM3438_H
@@ -215,9 +219,13 @@ typedef struct
     Bit32u writebuf_last;
     Bit64u writebuf_lasttime;
     opn2_writebuf writebuf[OPN_WRITEBUF_SIZE];
+
+    /*OPN-MOD*/
+    const struct OPN2mod_psg_callbacks *psg;
+    void *psgdata;
 } ym3438_t;
 
-void OPN2_Reset(ym3438_t *chip);
+void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks *psg, void *psgdata);
 void OPN2_SetChipType(Bit32u type);
 void OPN2_Clock(ym3438_t *chip, Bit16s *buffer);
 void OPN2_Write(ym3438_t *chip, Bit32u port, Bit8u data);
@@ -229,6 +237,15 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port);
 /*EXTRA*/
 void OPN2_WriteBuffered(ym3438_t *chip, Bit32u port, Bit8u data);
 void OPN2_Generate(ym3438_t *chip, sample *samples);
+
+/*OPN-MOD*/
+struct OPN2mod_psg_callbacks
+{
+    void (*SetClock)(void *param, int clock);
+    void (*Write)(void *param, int address, int data);
+    int (*Read)(void *param);
+    void (*Reset)(void *param);
+};
 
 #ifdef __cplusplus
 }

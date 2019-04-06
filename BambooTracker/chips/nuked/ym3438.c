@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017-2018 Alexey Khokholov (Nuke.YKT)
+ * Copyright (C) 2019      Jean Pierre Cimalando
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  *
- *  Nuked OPN2(Yamaha YM3438) emulator.
+ *  Nuked OPN2-MOD emulator, with OPNA functionality added.
  *  Thanks:
  *      Silicon Pr0n:
  *          Yamaha YM3438 decap and die shot(digshadow).
@@ -24,6 +25,9 @@
  *          OPL2 ROMs.
  *
  * version: 1.0.9
+ *
+ * OPN-MOD additions:
+ *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
  */
 
 #include <string.h>
@@ -337,7 +341,7 @@ void OPN2_DoRegWrite(ym3438_t *chip)
             chip->write_fm_data = 0;
         }
 
-        if (chip->write_fm_address && chip->write_d_en)
+        if (chip->write_d_en)
         {
             chip->write_fm_data = 1;
         }
@@ -345,10 +349,12 @@ void OPN2_DoRegWrite(ym3438_t *chip)
         /* Address */
         if (chip->write_a_en)
         {
+            /*OPN-MOD: store address for both FM/SSG modes (for PSG read) */
+            chip->address = chip->write_data;
+
             if ((chip->write_data & 0xf0) != 0x00)
             {
                 /* FM Write */
-                chip->address = chip->write_data;
                 chip->write_fm_address = 1;
             }
             else
@@ -434,6 +440,12 @@ void OPN2_DoRegWrite(ym3438_t *chip)
                 chip->eg_custom_timer = !chip->mode_test_2c[7] && chip->mode_test_2c[6];
                 break;
             default:
+                /*OPN-MOD: write $00-$0F to PSG*/
+                if (chip->write_fm_mode_a < 0x10)
+                {
+                    chip->psg->Write(chip->psgdata, 0, chip->write_fm_mode_a);
+                    chip->psg->Write(chip->psgdata, 1, chip->write_data);
+                }
                 break;
             }
         }
@@ -1183,7 +1195,7 @@ void OPN2_KeyOn(ym3438_t*chip)
     }
 }
 
-void OPN2_Reset(ym3438_t *chip)
+void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks *psg, void *psgdata)
 {
     Bit32u i;
     memset(chip, 0, sizeof(ym3438_t));
@@ -1199,6 +1211,11 @@ void OPN2_Reset(ym3438_t *chip)
         chip->pan_l[i] = 1;
         chip->pan_r[i] = 1;
     }
+    /*OPN-MOD: initialize and connect PSG*/
+    chip->psg = psg;
+    chip->psgdata = psgdata;
+    psg->Reset(psgdata);
+    psg->SetClock(psgdata, clock / 4);
 }
 
 void OPN2_SetChipType(Bit32u type)
@@ -1417,6 +1434,18 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
         else
         {
             chip->status_time = 40000000;
+        }
+    }
+    /*OPN-MOD: read from PSG*/
+    else if ((port & 3) == 1)
+    {
+        if (chip->address < 16)
+        {
+            return chip->psg->Read(chip->psgdata);
+        }
+        else if(chip->address == 0xff)
+        {
+            return 1; /* ID code */
         }
     }
     if (chip->status_time)
