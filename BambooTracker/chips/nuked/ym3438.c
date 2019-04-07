@@ -30,10 +30,14 @@
  *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
  *   - Jean Pierre Cimalando 2019-04-06: add 6-channel FM flag
  *   - Jean Pierre Cimalando 2019-04-06: add ADPCM rhythm channels
+ *   - Jean Pierre Cimalando 2019-04-07: raise the channel clipping threshold
  */
 
 #include <string.h>
 #include "ym3438.h"
+
+/*OPN-MOD: define the quantization in bits at which channels clip*/
+static const unsigned channel_clipbits = 11; /*YM2612 has 9 bits*/
 
 enum {
     eg_num_attack = 0,
@@ -1074,13 +1078,15 @@ void OPN2_ChGenerate(ym3438_t *chip)
     }
     sum = acc + add;
     /* Clamp */
-    if (sum > 255)
+    Bit16s channel_maxsample = (1 << (channel_clipbits - 1)) - 1;
+    Bit16s channel_minsample = -(1 << (channel_clipbits - 1));
+    if (sum > channel_maxsample)
     {
-        sum = 255;
+        sum = channel_maxsample;
     }
-    else if(sum < -256)
+    else if(sum < channel_minsample)
     {
-        sum = -256;
+        sum = channel_minsample;
     }
 
     if (op == 0 || test_dac)

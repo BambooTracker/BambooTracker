@@ -30,6 +30,7 @@
  *   - Jean Pierre Cimalando 2019-04-06: add SSG control interface
  *   - Jean Pierre Cimalando 2019-04-06: add 6-channel FM flag
  *   - Jean Pierre Cimalando 2019-04-06: add ADPCM rhythm channels
+ *   - Jean Pierre Cimalando 2019-04-07: raise the channel clipping threshold
  */
 
 #ifndef YM3438_H
