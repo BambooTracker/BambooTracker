@@ -171,10 +171,10 @@ Sequence-type data block (e.g. FM arpeggio, SSG envelope) is defined as:
 
 And repeat sequence data units.
 
-| Type   | Field        | Description                                                                                                               |
-| ------ | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor.                                                         |
-| uint16 | Unit subdata | Unit subdata. Only used by SSG waveform and envelope, and omitted in other sequences. |
+| Type   | Field        | Description                                                                           |
+| ------ | ------------ | ------------------------------------------------------------------------------------- |
+| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor.                     |
+| int32  | Unit subdata | Unit subdata. Only used by SSG waveform and envelope, and omitted in other sequences. |
 
 Unit subdata is used in SSG waveform and envelope sequence.  
 In waveform sequence, it indecates square mask frequency.  

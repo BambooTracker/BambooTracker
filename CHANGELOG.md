@@ -10,6 +10,7 @@
 - Add key repeat settings for pattern editor
 - [#62], [#84] - Add FM3ch expanded mode (thanks [@jimbo1qaz], [@OPNA2608])
 - [#91] - Add module and instrument specification archive (thanks [@jpcima])
+- [#3] - Add tone/hard frequency ratio in SSG envelope edit (thanks [@marysiamzawka])
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])

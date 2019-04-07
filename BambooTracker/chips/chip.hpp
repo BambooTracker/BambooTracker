@@ -26,6 +26,8 @@ namespace chip
 		virtual void setRate(int rate);
 		int getRate() const;
 
+		int getClock() const;
+
 		void setMaxDuration(size_t maxDuration);
 		size_t getMaxDuration() const;
 		
@@ -39,7 +41,7 @@ namespace chip
 		const int id_;
 		std::mutex mutex_;
 
-		int rate_;
+		int rate_, clock_;
 		const int autoRate_;
 		int internalRate_[2];
 		size_t maxDuration_;

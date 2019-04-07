@@ -104,7 +104,7 @@ private:
 private slots:
 	void on_envEditGroupBox_toggled(bool arg1);
 	void on_envNumSpinBox_valueChanged(int arg1);
-	void on_hardFreqSpinBox_valueChanged(int arg1);
+	void on_hardFreqRawSpinBox_valueChanged(int arg1);
 
 	//========== Arpeggio ==========//
 signals:

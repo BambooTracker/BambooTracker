@@ -235,7 +235,7 @@ private:
 		int data;
 	} wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
-	CommandInSequence envSSG_[3];
+	CommandSequenceUnit envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
 	std::unique_ptr<SequenceIteratorInterface> arpItSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> ptItSSG_[3];
@@ -271,7 +271,8 @@ private:
 
 	void setRealVolumeSSG(int ch);
 
-	inline uint8_t judgeSSEGRegisterValue(int v) {
+	inline uint8_t judgeSSEGRegisterValue(int v)
+	{
 		return (v == -1) ? 0 : (0x08 + static_cast<uint8_t>(v));
 	}
 

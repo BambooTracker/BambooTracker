@@ -72,7 +72,7 @@ public:
 	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
 	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
 	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum);
+	std::vector<CommandSequenceUnit> getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum);
 	void setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum) const;
 	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
@@ -92,7 +92,7 @@ public:
 	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioFMSequenceCommand(int arpNum);
 	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getArpeggioFMSequence(int arpNum);
+	std::vector<CommandSequenceUnit> getArpeggioFMSequence(int arpNum);
 	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getArpeggioFMLoops(int arpNum) const;
 	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
@@ -112,7 +112,7 @@ public:
 	void addPitchFMSequenceCommand(int ptNum, int type, int data);
 	void removePitchFMSequenceCommand(int ptNum);
 	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getPitchFMSequence(int ptNum);
+	std::vector<CommandSequenceUnit> getPitchFMSequence(int ptNum);
 	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getPitchFMLoops(int ptNum) const;
 	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
@@ -150,7 +150,7 @@ public:
 	void addWaveFormSSGSequenceCommand(int wfNum, int type, int data);
 	void removeWaveFormSSGSequenceCommand(int wfNum);
 	void setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getWaveFormSSGSequence(int wfNum);
+	std::vector<CommandSequenceUnit> getWaveFormSSGSequence(int wfNum);
 	void setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getWaveFormSSGLoops(int wfNum) const;
 	void setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin);
@@ -168,7 +168,7 @@ public:
 	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
 	void removeToneNoiseSSGSequenceCommand(int tnNum);
 	void setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getToneNoiseSSGSequence(int tnNum);
+	std::vector<CommandSequenceUnit> getToneNoiseSSGSequence(int tnNum);
 	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getToneNoiseSSGLoops(int tnNum) const;
 	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
@@ -186,7 +186,7 @@ public:
 	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
 	void removeEnvelopeSSGSequenceCommand(int envNum);
 	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getEnvelopeSSGSequence(int envNum);
+	std::vector<CommandSequenceUnit> getEnvelopeSSGSequence(int envNum);
 	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getEnvelopeSSGLoops(int envNum) const;
 	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
@@ -206,7 +206,7 @@ public:
 	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioSSGSequenceCommand(int arpNum);
 	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getArpeggioSSGSequence(int arpNum);
+	std::vector<CommandSequenceUnit> getArpeggioSSGSequence(int arpNum);
 	void setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getArpeggioSSGLoops(int arpNum) const;
 	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
@@ -226,7 +226,7 @@ public:
 	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
 	void removePitchSSGSequenceCommand(int ptNum);
 	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);
-	std::vector<CommandInSequence> getPitchSSGSequence(int ptNum);
+	std::vector<CommandSequenceUnit> getPitchSSGSequence(int ptNum);
 	void setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	std::vector<Loop> getPitchSSGLoops(int ptNum) const;
 	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);

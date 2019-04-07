@@ -383,7 +383,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendUint16(static_cast<uint16_t>(com.data));
+				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
 			auto loop = instMan.lock()->getWaveFormSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -474,7 +474,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendUint16(static_cast<uint16_t>(com.data));
+				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
 			auto loop = instMan.lock()->getEnvelopeSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -1472,10 +1472,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						if (data == 3) data = static_cast<int>(SSGWaveFormType::SQM_TRIANGLE);
 						else if (data == 4) data = static_cast<int>(SSGWaveFormType::SQM_SAW);
 					}
-					uint16_t subdata = ctr.readUint16(csr);
-					csr += 2;
-					if (version < Version::toBCD(1, 2, 0)) {
-						if (subdata != 0xffff)
+					int32_t subdata;
+					if (version >= Version::toBCD(1, 2, 0)) {
+						subdata = ctr.readInt32(csr);
+						csr += 4;
+					}
+					else {
+						subdata = ctr.readUint16(csr);
+						csr += 2;
+						if (subdata != -1)
 							subdata = PitchConverter::getPitchSSGSquare(subdata);
 					}
 					if (l == 0)
@@ -1603,8 +1608,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
-					uint16_t subdata = ctr.readUint16(csr);
-					csr += 2;
+					int32_t subdata;
+					if (version >= Version::toBCD(1, 2, 0)) {
+						subdata = ctr.readInt32(csr);
+						csr += 4;
+					}
+					else {
+						subdata = ctr.readUint16(csr);
+						csr += 2;
+					}
 					if (l == 0)
 						instMan.lock()->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
 					else
