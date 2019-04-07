@@ -108,18 +108,11 @@
    <item row="1" column="0" rowspan="7">
     <widget class="QTreeWidget" name="treeWidget">
      <property name="styleSheet">
-      <string notr="true">QTreeWidget::item {
-  height: 21px;
-}</string>
+      <string notr="true"/>
      </property>
      <property name="uniformRowHeights">
       <bool>true</bool>
      </property>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
     </widget>
    </item>
   </layout>

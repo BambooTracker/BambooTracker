@@ -54,6 +54,8 @@ void FMEnvelopeSetEditDialog::swapset(int aboveRow, int belowRow)
 		tree->setItemWidget(below, 1, belowBox);
 	}
 
+	if (!aboveRow || !belowRow) alignTreeOn1stItemChanged();	// Dummy set and delete to align
+
 	for (int i = aboveRow; i < ui->treeWidget->topLevelItemCount(); ++i) {
 		ui->treeWidget->topLevelItem(i)->setText(0, QString::number(i));
 	}
@@ -73,6 +75,8 @@ void FMEnvelopeSetEditDialog::insertRow(int row, FMEnvelopeTextType type)
 	}
 	ui->treeWidget->insertTopLevelItem(row, item);
 	ui->treeWidget->setItemWidget(item, 1, box);
+
+	if (!row) alignTreeOn1stItemChanged();	// Dummy set and delete to align
 
 	for (int i = row + 1; i < ui->treeWidget->topLevelItemCount(); ++i) {
 		ui->treeWidget->topLevelItem(i)->setText(0, QString::number(i));
@@ -124,6 +128,14 @@ QComboBox* FMEnvelopeSetEditDialog::makeCombobox()
 	return box;
 }
 
+/// Dummy set and delete to align
+void FMEnvelopeSetEditDialog::alignTreeOn1stItemChanged()
+{
+	auto tmp = new QTreeWidgetItem();
+	ui->treeWidget->insertTopLevelItem(1, tmp);
+	delete ui->treeWidget->takeTopLevelItem(1);
+}
+
 void FMEnvelopeSetEditDialog::on_upToolButton_clicked()
 {
 	int curRow = ui->treeWidget->currentIndex().row();
@@ -155,7 +167,12 @@ void FMEnvelopeSetEditDialog::on_addPushButton_clicked()
 
 void FMEnvelopeSetEditDialog::on_removePushButton_clicked()
 {
-	delete ui->treeWidget->takeTopLevelItem(ui->treeWidget->currentIndex().row());
+	int row = ui->treeWidget->currentIndex().row();
+	delete ui->treeWidget->takeTopLevelItem(row);
+
+	for (int i = row; i < ui->treeWidget->topLevelItemCount(); ++i) {
+		ui->treeWidget->topLevelItem(i)->setText(0, QString::number(i));
+	}
 
 	if (!ui->treeWidget->topLevelItemCount()) {
 		ui->upToolButton->setEnabled(false);

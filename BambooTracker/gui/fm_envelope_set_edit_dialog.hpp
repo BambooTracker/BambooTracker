@@ -32,6 +32,7 @@ private:
 	void swapset(int aboveRow, int belowRow);
 	void insertRow(int row, FMEnvelopeTextType type);
 	QComboBox* makeCombobox();
+	void alignTreeOn1stItemChanged();
 };
 
 #endif // FM_ENVELOPE_SET_EDIT_DIALOG_HPP
