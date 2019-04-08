@@ -25,7 +25,7 @@
 - Fix spinboxes to emit value change event when finishing text editing
 - [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc] and others)
 - Fix to keep current instrument when loading module
-- [#87] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
+- [#87], [#95] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
 - [#92] - Fix instrument declaration check on arpeggio effect (thanks [@attilaM68K])
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
@@ -45,6 +45,7 @@
 [#91]: https://github.com/rerrahkr/BambooTracker/issues/91
 [#92]: https://github.com/rerrahkr/BambooTracker/issues/92
 [#89]: https://github.com/rerrahkr/BambooTracker/pull/89
+[#95]: https://github.com/rerrahkr/BambooTracker/pull/95
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
