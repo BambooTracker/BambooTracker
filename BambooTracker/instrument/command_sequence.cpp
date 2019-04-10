@@ -52,7 +52,7 @@ int CommandSequence::getSequenceDataAt(int n)
 	return seq_.at(static_cast<size_t>(n)).data;
 }
 
-std::vector<CommandInSequence> CommandSequence::getSequence() const
+std::vector<CommandSequenceUnit> CommandSequence::getSequence() const
 {
 	return seq_;
 }

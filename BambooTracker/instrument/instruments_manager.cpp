@@ -797,7 +797,7 @@ void InstrumentsManager::setOperatorSequenceFMSequenceCommand(FMEnvelopeParamete
 	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum)
 {
 	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getSequence();
 }
@@ -915,7 +915,7 @@ void InstrumentsManager::setArpeggioFMSequenceCommand(int arpNum, int cnt, int t
 	arpFM_.at(static_cast<size_t>(arpNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getArpeggioFMSequence(int arpNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getArpeggioFMSequence(int arpNum)
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getSequence();
 }
@@ -1033,7 +1033,7 @@ void InstrumentsManager::setPitchFMSequenceCommand(int ptNum, int cnt, int type,
 	ptFM_.at(static_cast<size_t>(ptNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getPitchFMSequence(int ptNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getPitchFMSequence(int ptNum)
 {
 	return ptFM_.at(static_cast<size_t>(ptNum))->getSequence();
 }
@@ -1147,7 +1147,7 @@ void InstrumentsManager::setWaveFormSSGSequenceCommand(int wfNum, int cnt, int t
 	wfSSG_.at(static_cast<size_t>(wfNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getWaveFormSSGSequence(int wfNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getWaveFormSSGSequence(int wfNum)
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getSequence();
 }
@@ -1255,7 +1255,7 @@ void InstrumentsManager::setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int 
 	tnSSG_.at(static_cast<size_t>(tnNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getToneNoiseSSGSequence(int tnNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getToneNoiseSSGSequence(int tnNum)
 {
 	return tnSSG_.at(static_cast<size_t>(tnNum))->getSequence();
 }
@@ -1363,7 +1363,7 @@ void InstrumentsManager::setEnvelopeSSGSequenceCommand(int envNum, int cnt, int 
 	envSSG_.at(static_cast<size_t>(envNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getEnvelopeSSGSequence(int envNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getEnvelopeSSGSequence(int envNum)
 {
 	return envSSG_.at(static_cast<size_t>(envNum))->getSequence();
 }
@@ -1481,7 +1481,7 @@ void InstrumentsManager::setArpeggioSSGSequenceCommand(int arpNum, int cnt, int 
 	arpSSG_.at(static_cast<size_t>(arpNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getArpeggioSSGSequence(int arpNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getArpeggioSSGSequence(int arpNum)
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getSequence();
 }
@@ -1599,7 +1599,7 @@ void InstrumentsManager::setPitchSSGSequenceCommand(int ptNum, int cnt, int type
 	ptSSG_.at(static_cast<size_t>(ptNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandInSequence> InstrumentsManager::getPitchSSGSequence(int ptNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getPitchSSGSequence(int ptNum)
 {
 	return ptSSG_.at(static_cast<size_t>(ptNum))->getSequence();
 }

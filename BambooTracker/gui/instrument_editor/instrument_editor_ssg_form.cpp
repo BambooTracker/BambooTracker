@@ -2,7 +2,10 @@
 #include "ui_instrument_editor_ssg_form.h"
 #include <vector>
 #include <utility>
+#include <stdexcept>
 #include "gui/event_guard.hpp"
+#include "pitch_converter.hpp"
+#include "command_sequence.hpp"
 #include "misc.hpp"
 
 InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
@@ -13,30 +16,20 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->setupUi(this);
 
 	//========== Wave form ==========//
-	ui->waveEditor->setMaximumDisplayedRowCount(5);
+	ui->waveEditor->setMaximumDisplayedRowCount(7);
 	ui->waveEditor->setDefaultRow(0);
 	ui->waveEditor->AddRow("Sq");
 	ui->waveEditor->AddRow("Tri");
 	ui->waveEditor->AddRow("Saw");
-	ui->waveEditor->AddRow("Tri w");
-	ui->waveEditor->AddRow("Saw w");
-
-	QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 12; ++j) {
-			ui->squareMaskNoteComboBox->addItem(QString("%1%2").arg(tn[j]).arg(i), 12 * i + 32 * j);
-		}
-	}
+	ui->waveEditor->AddRow("InvSaw");
+	ui->waveEditor->AddRow("SMTri");
+	ui->waveEditor->AddRow("SMSaw");
+	ui->waveEditor->AddRow("SMInvSaw");
 
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 3) {	// Set square mask frequency
-				ui->waveEditor->setText(col, ui->squareMaskNoteComboBox->currentText()
-										+ "+" + QString::number(ui->squareMaskPitchSpinBox->value()));
-				ui->waveEditor->setData(col, ui->squareMaskNoteComboBox->currentData().toInt()
-										+ ui->squareMaskPitchSpinBox->value());
-			}
+			if (isModulatedWaveFormSSG(row)) setWaveFormSequenceColumn(col);	// Set square-mask frequency
 			bt_.lock()->addWaveFormSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), row, ui->waveEditor->getSequenceDataAt(col));
 			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
@@ -54,12 +47,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 3) {	// Set square mask frequency
-				ui->waveEditor->setText(col, ui->squareMaskNoteComboBox->currentText()
-										+ "+" + QString::number(ui->squareMaskPitchSpinBox->value()));
-				ui->waveEditor->setData(col, ui->squareMaskNoteComboBox->currentData().toInt()
-										+ ui->squareMaskPitchSpinBox->value());
-			}
+			if (isModulatedWaveFormSSG(row)) setWaveFormSequenceColumn(col);	// Set square-mask frequency
 			bt_.lock()->setWaveFormSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), col, row, ui->waveEditor->getSequenceDataAt(col));
 			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
@@ -152,16 +140,10 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	}
 	ui->envEditor->setMultipleReleaseState(true);
 
-	ui->hardFreqSpinBox->setSuffix(
-				QString(" (%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
-
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 16) {	// Set hard frequency
-				ui->envEditor->setText(col, QString::number(ui->hardFreqSpinBox->value()));
-				ui->envEditor->setData(col, ui->hardFreqSpinBox->value());
-			}
+			if (row >= 16) setEnvelopeSequenceColumn(col);	// Set hard frequency
 			bt_.lock()->addEnvelopeSSGSequenceCommand(
 						ui->envNumSpinBox->value(), row, ui->envEditor->getSequenceDataAt(col));
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
@@ -179,10 +161,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 16) {	// Set hard frequency
-				ui->envEditor->setText(col, QString::number(ui->hardFreqSpinBox->value()));
-				ui->envEditor->setData(col, ui->hardFreqSpinBox->value());
-			}
+			if (row >= 16) setEnvelopeSequenceColumn(col);	// Set hard frequency
 			bt_.lock()->setEnvelopeSSGSequenceCommand(
 						ui->envNumSpinBox->value(), col, row, ui->envEditor->getSequenceDataAt(col));
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
@@ -269,7 +248,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-// Leave Before Qt5.7.0 style due to windows xp
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->arpTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onArpeggioTypeChanged);
 
@@ -333,7 +312,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 			emit modified();
 		}
 	});
-// Leave Before Qt5.7.0 style due to windows xp
+	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorSSGForm::onPitchTypeChanged);
 }
@@ -542,23 +521,15 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 	ui->waveNumSpinBox->setValue(instSSG->getWaveFormNumber());
 	ui->waveEditor->clearData();
 	for (auto& com : instSSG->getWaveFormSequence()) {
-		QString str = "";
-		if (com.type >= 3) {
-			switch (com.data / 32 % 12) {
-				case 0:		str = "C";	break;
-				case 1:		str = "C#";	break;
-				case 2:		str = "D";	break;
-				case 3:		str = "D#";	break;
-				case 4:		str = "E";	break;
-				case 5:		str = "F";	break;
-				case 6:		str = "F#";	break;
-				case 7:		str = "G";	break;
-				case 8:		str = "G#";	break;
-				case 9:		str = "A";	break;
-				case 10:	str = "A#";	break;
-				case 11:	str = "B";	break;
+		QString str("");
+		if (isModulatedWaveFormSSG(com.type)) {
+			if (CommandSequenceUnit::isRatioData(com.data)) {
+				auto ratio = CommandSequenceUnit::data2ratio(com.data);
+				str = QString::number(ratio.first) + "/" + QString::number(ratio.second);
 			}
-			str += QString("%1+%2").arg(com.data / 32 / 12).arg(com.data % 32);
+			else {
+				str = QString::number(com.data);
+			}
 		}
 		ui->waveEditor->addSequenceCommand(com.type, str, com.data);
 	}
@@ -573,6 +544,23 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 	}
 	else {
 		ui->waveEditGroupBox->setChecked(false);
+	}
+}
+
+void InstrumentEditorSSGForm::setWaveFormSequenceColumn(int col)
+{
+	auto button = ui->squareMaskButtonGroup->checkedButton();
+	if (button == ui->squareMaskRawRadioButton) {
+		ui->waveEditor->setText(col, QString::number(ui->squareMaskRawSpinBox->value()));
+		ui->waveEditor->setData(col, ui->squareMaskRawSpinBox->value());
+	}
+	else {
+		ui->waveEditor->setText(col, QString::number(ui->squareMaskToneSpinBox->value()) + "/"
+								+ QString::number(ui->squareMaskMaskSpinBox->value()));
+
+		ui->waveEditor->setData(col, CommandSequenceUnit::ratio2data(
+									ui->squareMaskToneSpinBox->value(),
+									ui->squareMaskMaskSpinBox->value()));
 	}
 }
 
@@ -620,6 +608,14 @@ void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
 	}
 
 	onWaveFormNumberChanged();
+}
+
+void InstrumentEditorSSGForm::on_squareMaskRawSpinBox_valueChanged(int arg1)
+{
+	ui->squareMaskRawSpinBox->setSuffix(
+				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
+				+ QString("%1Hz)").arg(arg1 ? QString::number(124800.0 / arg1, 'f', 4) : "-")
+				);
 }
 
 //--- Tone/Noise
@@ -706,9 +702,15 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	ui->envNumSpinBox->setValue(instSSG->getEnvelopeNumber());
 	ui->envEditor->clearData();
 	for (auto& com : instSSG->getEnvelopeSequence()) {
-		QString str = "";
+		QString str("");
 		if (com.type >= 16) {
-			str = QString("%1").arg(com.data);
+			if (CommandSequenceUnit::isRatioData(com.data)) {
+				auto ratio = CommandSequenceUnit::data2ratio(com.data);
+				str = QString::number(ratio.first) + "/" + QString::number(ratio.second);
+			}
+			else {
+				str = QString::number(com.data);
+			}
 		}
 		ui->envEditor->addSequenceCommand(com.type, str, com.data);
 	}
@@ -723,6 +725,22 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	}
 	else {
 		ui->envEditGroupBox->setChecked(false);
+	}
+}
+
+void InstrumentEditorSSGForm::setEnvelopeSequenceColumn(int col)
+{
+	if (ui->hardFreqButtonGroup->checkedButton() == ui->hardFreqRawRadioButton) {
+		ui->envEditor->setText(col, QString::number(ui->hardFreqRawSpinBox->value()));
+		ui->envEditor->setData(col, ui->hardFreqRawSpinBox->value());
+	}
+	else {
+		ui->envEditor->setText(col, QString::number(ui->hardFreqToneSpinBox->value()) + "/"
+							   + QString::number(ui->hardFreqHardSpinBox->value()));
+
+		ui->envEditor->setData(col, CommandSequenceUnit::ratio2data(
+								   ui->hardFreqToneSpinBox->value(),
+								   ui->hardFreqHardSpinBox->value()));
 	}
 }
 
@@ -772,12 +790,11 @@ void InstrumentEditorSSGForm::on_envNumSpinBox_valueChanged(int arg1)
 	onEnvelopeNumberChanged();
 }
 
-void InstrumentEditorSSGForm::on_hardFreqSpinBox_valueChanged(int arg1)
+void InstrumentEditorSSGForm::on_hardFreqRawSpinBox_valueChanged(int arg1)
 {
-	Q_UNUSED(arg1)
-
-	ui->hardFreqSpinBox->setSuffix(
-				QString(" (%1Hz)").arg(QString::number(7800.0 / ui->hardFreqSpinBox->value(), 'f', 4)));
+	ui->hardFreqRawSpinBox->setSuffix(
+				QString(" (0x") + QString("%1 | ").arg(arg1, 4, 16, QChar('0')).toUpper()
+				+ QString("%1Hz").arg(arg1 ? QString::number(7800.0 / arg1, 'f', 4) : "-"));
 }
 
 //--- Arpeggio
@@ -901,7 +918,7 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 		ui->ptEditor->addLoop(l.begin, l.end, l.times);
 	}
 	ui->ptEditor->setRelease(convertReleaseTypeForUI(instSSG->getPitchRelease().type),
-							  instSSG->getPitchRelease().begin);
+							 instSSG->getPitchRelease().begin);
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
 		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instSSG->getPitchType()) {
 			ui->ptTypeComboBox->setCurrentIndex(i);

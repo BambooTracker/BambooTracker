@@ -66,10 +66,12 @@ public slots:
 
 private:
 	void setInstrumentWaveFormParameters();
+	void setWaveFormSequenceColumn(int col);
 
 private slots:
 	void on_waveEditGroupBox_toggled(bool arg1);
 	void on_waveNumSpinBox_valueChanged(int arg1);
+	void on_squareMaskRawSpinBox_valueChanged(int arg1);
 
 	//========== Tone/Noise ==========//
 signals:
@@ -98,11 +100,12 @@ public slots:
 
 private:
 	void setInstrumentEnvelopeParameters();
+	void setEnvelopeSequenceColumn(int col);
 
 private slots:
 	void on_envEditGroupBox_toggled(bool arg1);
 	void on_envNumSpinBox_valueChanged(int arg1);
-	void on_hardFreqSpinBox_valueChanged(int arg1);
+	void on_hardFreqRawSpinBox_valueChanged(int arg1);
 
 	//========== Arpeggio ==========//
 signals:

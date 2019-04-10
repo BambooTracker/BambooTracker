@@ -24,13 +24,12 @@ namespace chip
 			   std::shared_ptr<ExportContainerInterface> exportContainer)
 		: id_(id),
 		  rate_(rate),	// Dummy set
+		  clock_(clock),
 		  autoRate_(autoRate),
 		  maxDuration_(maxDuration),
 		  masterVolumeRatio_(100),
 		  exCntr_(exportContainer)
 	{
-		(void)clock;
-
 		resampler_[0] = std::move(resampler1);
 		resampler_[1] = std::move(resampler2);
 
@@ -71,6 +70,11 @@ namespace chip
 	void Chip::funcSetRate(int rate)
 	{
 		rate_ = CHIP_SAMPLE_RATE = ((rate) ? rate : autoRate_);
+	}
+
+	int Chip::getClock() const
+	{
+		return clock_;
 	}
 
 	int Chip::getRate() const

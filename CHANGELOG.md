@@ -12,6 +12,7 @@
 - [#91] - Add module and instrument specification archive (thanks [@jpcima])
 - [#88] - Add FM detune display mode selection (thanks [@bryc] and others)
 - [#89] - Add custom note entry layout configuration ([#70]; thanks [@OPNA2608], [@jpcima])
+- [#3] - Add tone/hard frequency ratio in SSG envelope edit and tone/square-mask frequency ratio in SSG waveform edit (thanks [@marysiamzawka])
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
@@ -27,6 +28,12 @@
 - Fix to keep current instrument when loading module
 - [#87], [#95] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
 - [#92] - Fix instrument declaration check on arpeggio effect (thanks [@attilaM68K])
+- [#90] - Fix module and instrument specification documents (thanks [@jpcima])
+- Fix bug increasing tone by octave when changing from Tri w to Saw in SSG waveform sequence
+
+### Removed
+- Remove module and instrument saving to past version
+- [#3] - Remove square-mask frequency selection by note+pitch
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -46,6 +53,7 @@
 [#92]: https://github.com/rerrahkr/BambooTracker/issues/92
 [#89]: https://github.com/rerrahkr/BambooTracker/pull/89
 [#95]: https://github.com/rerrahkr/BambooTracker/pull/95
+[#90]: https://github.com/rerrahkr/BambooTracker/pull/90
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

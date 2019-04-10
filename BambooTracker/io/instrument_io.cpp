@@ -8,11 +8,10 @@
 #include "version.hpp"
 #include "file_io.hpp"
 #include "file_io_error.hpp"
+#include "pitch_converter.hpp"
 #include "misc.hpp"
 
-InstrumentIO::InstrumentIO()
-{
-}
+InstrumentIO::InstrumentIO() {}
 
 void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
@@ -41,29 +40,36 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 		{
 			ctr.appendUint8(0x00);
 			auto instFM = std::dynamic_pointer_cast<InstrumentFM>(inst);
-			if (fileVersion >= Version::toBCD(1, 1, 0)) {
-				uint8_t tmp = static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All))
-							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op1) << 1)
-							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op2) << 2)
-							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op3) << 3)
-							  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op4) << 4);
-				ctr.appendUint8(tmp);
+			uint8_t tmp = static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All))
+						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op1) << 1)
+						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op2) << 2)
+						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op3) << 3)
+						  | static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::Op4) << 4);
+			ctr.appendUint8(tmp);
+			if (instFM->getArpeggioEnabled(FMOperatorType::All))
+				fmArpNums.push_back(instFM->getArpeggioNumber(FMOperatorType::All));
+			for (auto& t : FileIO::OP_FM_TYPES) {
+				if (instFM->getArpeggioEnabled(t)) {
+					int n = instFM->getArpeggioNumber(t);
+					if (std::find(fmArpNums.begin(), fmArpNums.end(), n) == fmArpNums.end())
+						fmArpNums.push_back(n);
+				}
 			}
-			else {
-				ctr.appendUint8(static_cast<uint8_t>(instFM->getEnvelopeResetEnabled(FMOperatorType::All)));
-			}
-			if (fileVersion >= Version::toBCD(1, 1, 0)) {
-				if (instFM->getArpeggioEnabled(FMOperatorType::All))
-					fmArpNums.push_back(instFM->getArpeggioNumber(FMOperatorType::All));
-				for (auto& t : FileIO::OP_FM_TYPES) {
-					if (instFM->getArpeggioEnabled(t)) {
-						int n = instFM->getArpeggioNumber(t);
-						if (std::find(fmArpNums.begin(), fmArpNums.end(), n) == fmArpNums.end())
-							fmArpNums.push_back(n);
+			if (instFM->getArpeggioEnabled(FMOperatorType::All)) {
+				int n = instFM->getArpeggioNumber(FMOperatorType::All);
+				for (size_t i = 0; i < fmArpNums.size(); ++i) {
+					if (n == fmArpNums[i]) {
+						ctr.appendUint8(static_cast<uint8_t>(i));
+						break;
 					}
 				}
-				if (instFM->getArpeggioEnabled(FMOperatorType::All)) {
-					int n = instFM->getArpeggioNumber(FMOperatorType::All);
+			}
+			else {
+				ctr.appendUint8(0x80);
+			}
+			for (auto& t : FileIO::OP_FM_TYPES) {
+				if (instFM->getArpeggioEnabled(t)) {
+					int n = instFM->getArpeggioNumber(t);
 					for (size_t i = 0; i < fmArpNums.size(); ++i) {
 						if (n == fmArpNums[i]) {
 							ctr.appendUint8(static_cast<uint8_t>(i));
@@ -74,31 +80,31 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				else {
 					ctr.appendUint8(0x80);
 				}
-				for (auto& t : FileIO::OP_FM_TYPES) {
-					if (instFM->getArpeggioEnabled(t)) {
-						int n = instFM->getArpeggioNumber(t);
-						for (size_t i = 0; i < fmArpNums.size(); ++i) {
-							if (n == fmArpNums[i]) {
-								ctr.appendUint8(static_cast<uint8_t>(i));
-								break;
-							}
-						}
-					}
-					else {
-						ctr.appendUint8(0x80);
+			}
+			if (instFM->getPitchEnabled(FMOperatorType::All))
+				fmPtNums.push_back(instFM->getPitchNumber(FMOperatorType::All));
+			for (auto& t : FileIO::OP_FM_TYPES) {
+				if (instFM->getPitchEnabled(t)) {
+					int n = instFM->getPitchNumber(t);
+					if (std::find(fmPtNums.begin(), fmPtNums.end(), n) == fmPtNums.end())
+						fmPtNums.push_back(n);
+				}
+			}
+			if (instFM->getPitchEnabled(FMOperatorType::All)) {
+				int n = instFM->getPitchNumber(FMOperatorType::All);
+				for (size_t i = 0; i < fmPtNums.size(); ++i) {
+					if (n == fmPtNums[i]) {
+						ctr.appendUint8(static_cast<uint8_t>(i));
+						break;
 					}
 				}
-				if (instFM->getPitchEnabled(FMOperatorType::All))
-					fmPtNums.push_back(instFM->getPitchNumber(FMOperatorType::All));
-				for (auto& t : FileIO::OP_FM_TYPES) {
-					if (instFM->getPitchEnabled(t)) {
-						int n = instFM->getPitchNumber(t);
-						if (std::find(fmPtNums.begin(), fmPtNums.end(), n) == fmPtNums.end())
-							fmPtNums.push_back(n);
-					}
-				}
-				if (instFM->getPitchEnabled(FMOperatorType::All)) {
-					int n = instFM->getPitchNumber(FMOperatorType::All);
+			}
+			else {
+				ctr.appendUint8(0x80);
+			}
+			for (auto& t : FileIO::OP_FM_TYPES) {
+				if (instFM->getPitchEnabled(t)) {
+					int n = instFM->getPitchNumber(t);
 					for (size_t i = 0; i < fmPtNums.size(); ++i) {
 						if (n == fmPtNums[i]) {
 							ctr.appendUint8(static_cast<uint8_t>(i));
@@ -108,20 +114,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				}
 				else {
 					ctr.appendUint8(0x80);
-				}
-				for (auto& t : FileIO::OP_FM_TYPES) {
-					if (instFM->getPitchEnabled(t)) {
-						int n = instFM->getPitchNumber(t);
-						for (size_t i = 0; i < fmPtNums.size(); ++i) {
-							if (n == fmPtNums[i]) {
-								ctr.appendUint8(static_cast<uint8_t>(i));
-								break;
-							}
-						}
-					}
-					else {
-						ctr.appendUint8(0x80);
-					}
 				}
 			}
 			break;
@@ -294,18 +286,12 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
 				}
-				if (fileVersion >= Version::toBCD(1, 0, 1)) {
-					ctr.appendUint8(0);	// Skip sequence type
-				}
+				ctr.appendUint8(0);	// Skip sequence type
 				ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 			}
 		}
 
 		// FM arpeggio
-		if (fileVersion < Version::toBCD(1, 1, 0)) {
-			if (instFM->getArpeggioEnabled(FMOperatorType::All))
-				fmArpNums.push_back(instFM->getArpeggioNumber(FMOperatorType::All));
-		}
 		for (int& arpNum : fmArpNums) {
 			ctr.appendUint8(0x28);
 			size_t ofs = ctr.size();
@@ -314,7 +300,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getArpeggioFMLoops(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -341,17 +326,11 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioFMType(arpNum)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioFMType(arpNum)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
 		// FM pitch
-		if (fileVersion < Version::toBCD(1, 1, 0)) {
-			if (instFM->getPitchEnabled(FMOperatorType::All))
-				fmPtNums.push_back(instFM->getPitchNumber(FMOperatorType::All));
-		}
 		for (int& ptNum : fmPtNums) {
 			ctr.appendUint8(0x29);
 			size_t ofs = ctr.size();
@@ -360,7 +339,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getPitchFMLoops(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -387,9 +365,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchFMType(ptNum)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchFMType(ptNum)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 		break;
@@ -408,7 +384,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
+				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
 			auto loop = instMan.lock()->getWaveFormSSGLoops(wfNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -435,9 +411,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(0);	// Skip sequence type
-			}
+			ctr.appendUint8(0);	// Skip sequence type
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
@@ -451,7 +425,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getToneNoiseSSGLoops(tnNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -478,9 +451,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(0);	// Skip sequence type
-			}
+			ctr.appendUint8(0);	// Skip sequence type
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
@@ -494,7 +465,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
+				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
 			auto loop = instMan.lock()->getEnvelopeSSGLoops(envNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -521,9 +492,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(0);	// Skip sequence type
-			}
+			ctr.appendUint8(0);	// Skip sequence type
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
@@ -537,7 +506,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getArpeggioSSGLoops(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -564,9 +532,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioSSGType(arpNum)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioSSGType(arpNum)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 
@@ -580,7 +546,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt16(static_cast<int16_t>(com.data));
 			}
 			auto loop = instMan.lock()->getPitchSSGLoops(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -607,9 +572,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			if (fileVersion >= Version::toBCD(1, 0, 1)) {
-				ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchSSGType(ptNum)));
-			}
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchSSGType(ptNum)));
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 		break;
@@ -1463,12 +1426,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setArpeggioFMSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setArpeggioFMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addArpeggioFMSequenceCommand(idx, data, subdata);
+							instMan.lock()->addArpeggioFMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1541,12 +1503,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setPitchFMSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setPitchFMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addPitchFMSequenceCommand(idx, data, subdata);
+							instMan.lock()->addPitchFMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1606,8 +1567,21 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) {
+							if (data == 3) data = static_cast<int>(SSGWaveFormType::SQM_TRIANGLE);
+							else if (data == 4) data = static_cast<int>(SSGWaveFormType::SQM_SAW);
+						}
+						int32_t subdata;
+						if (fileVersion >= Version::toBCD(1, 2, 0)) {
+							subdata = ctr.readInt32(csr);
+							csr += 4;
+						}
+						else {
+							subdata = ctr.readUint16(csr);
+							csr += 2;
+							if (subdata != -1)
+								subdata = PitchConverter::getPitchSSGSquare(subdata);
+						}
 						if (l == 0)
 							instMan.lock()->setWaveFormSSGSequenceCommand(idx, 0, data, subdata);
 						else
@@ -1671,12 +1645,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addToneNoiseSSGSequenceCommand(idx, data, subdata);
+							instMan.lock()->addToneNoiseSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1736,8 +1709,15 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						int32_t subdata;
+						if (fileVersion >= Version::toBCD(1, 2, 0)) {
+							subdata = ctr.readInt32(csr);
+							csr += 4;
+						}
+						else {
+							subdata = ctr.readUint16(csr);
+							csr += 2;
+						}
 						if (l == 0)
 							instMan.lock()->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
 						else
@@ -1801,12 +1781,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, subdata);
+							instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1866,12 +1845,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
-						int16_t subdata = ctr.readInt16(csr);
-						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setPitchSSGSequenceCommand(idx, 0, data, subdata);
+							instMan.lock()->setPitchSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addPitchSSGSequenceCommand(idx, data, subdata);
+							instMan.lock()->addPitchSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1940,12 +1918,11 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	for (uint16_t l = 0; l < seqLen; ++l) {
 		uint16_t data = ctr.readUint16(csr);
 		csr += 2;
-		int16_t subdata = ctr.readInt16(csr);
-		csr += 2;
+		if (version < Version::toBCD(1, 2, 0)) csr += 2;
 		if (l == 0)
-			instMan.lock()->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, subdata);
+			instMan.lock()->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
 		else
-			instMan.lock()->addOperatorSequenceFMSequenceCommand(param, idx, data, subdata);
+			instMan.lock()->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
 	}
 
 	uint16_t loopCnt = ctr.readUint16(csr);

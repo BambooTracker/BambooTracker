@@ -57,7 +57,7 @@ public:
 	bool getOperatorSequenceEnabled(FMEnvelopeParameter param) const;
 	void setOperatorSequenceNumber(FMEnvelopeParameter param, int n);
 	int getOperatorSequenceNumber(FMEnvelopeParameter param) const;
-	std::vector<CommandInSequence> getOperatorSequenceSequence(FMEnvelopeParameter param) const;
+	std::vector<CommandSequenceUnit> getOperatorSequenceSequence(FMEnvelopeParameter param) const;
 	std::vector<Loop> getOperatorSequenceLoops(FMEnvelopeParameter param) const;
 	Release getOperatorSequenceRelease(FMEnvelopeParameter param) const;
 	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const;
@@ -67,7 +67,7 @@ public:
 	void setArpeggioNumber(FMOperatorType op, int n);
 	int getArpeggioNumber(FMOperatorType op) const;
 	int getArpeggioType(FMOperatorType op) const;
-	std::vector<CommandInSequence> getArpeggioSequence(FMOperatorType op) const;
+	std::vector<CommandSequenceUnit> getArpeggioSequence(FMOperatorType op) const;
 	std::vector<Loop> getArpeggioLoops(FMOperatorType op) const;
 	Release getArpeggioRelease(FMOperatorType op) const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator(FMOperatorType op) const;
@@ -77,7 +77,7 @@ public:
 	void setPitchNumber(FMOperatorType op, int n);
 	int getPitchNumber(FMOperatorType op) const;
 	int getPitchType(FMOperatorType op) const;
-	std::vector<CommandInSequence> getPitchSequence(FMOperatorType op) const;
+	std::vector<CommandSequenceUnit> getPitchSequence(FMOperatorType op) const;
 	std::vector<Loop> getPitchLoops(FMOperatorType op) const;
 	Release getPitchRelease(FMOperatorType op) const;
 	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator(FMOperatorType op) const;
@@ -110,7 +110,7 @@ public:
 	bool getWaveFormEnabled() const;
 	void setWaveFormNumber(int n);
 	int getWaveFormNumber() const;
-	std::vector<CommandInSequence> getWaveFormSequence() const;
+	std::vector<CommandSequenceUnit> getWaveFormSequence() const;
 	std::vector<Loop> getWaveFormLoops() const;
 	Release getWaveFormRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getWaveFormSequenceIterator() const;
@@ -119,7 +119,7 @@ public:
 	bool getToneNoiseEnabled() const;
 	void setToneNoiseNumber(int n);
 	int getToneNoiseNumber() const;
-	std::vector<CommandInSequence> getToneNoiseSequence() const;
+	std::vector<CommandSequenceUnit> getToneNoiseSequence() const;
 	std::vector<Loop> getToneNoiseLoops() const;
 	Release getToneNoiseRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSequenceIterator() const;
@@ -128,7 +128,7 @@ public:
 	bool getEnvelopeEnabled() const;
 	void setEnvelopeNumber(int n);
 	int getEnvelopeNumber() const;
-	std::vector<CommandInSequence> getEnvelopeSequence() const;
+	std::vector<CommandSequenceUnit> getEnvelopeSequence() const;
 	std::vector<Loop> getEnvelopeLoops() const;
 	Release getEnvelopeRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSequenceIterator() const;
@@ -138,7 +138,7 @@ public:
 	void setArpeggioNumber(int n);
 	int getArpeggioNumber() const;
 	int getArpeggioType() const;
-	std::vector<CommandInSequence> getArpeggioSequence() const;
+	std::vector<CommandSequenceUnit> getArpeggioSequence() const;
 	std::vector<Loop> getArpeggioLoops() const;
 	Release getArpeggioRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
@@ -148,7 +148,7 @@ public:
 	void setPitchNumber(int n);
 	int getPitchNumber() const;
 	int getPitchType() const;
-	std::vector<CommandInSequence> getPitchSequence() const;
+	std::vector<CommandSequenceUnit> getPitchSequence() const;
 	std::vector<Loop> getPitchLoops() const;
 	Release getPitchRelease() const;
 	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;

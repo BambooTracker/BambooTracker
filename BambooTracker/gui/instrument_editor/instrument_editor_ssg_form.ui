@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>507</width>
     <height>390</height>
    </rect>
   </property>
@@ -36,24 +36,95 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="3">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="0" column="1" alignment="Qt::AlignRight">
            <widget class="QLabel" name="waveUsersLabel">
             <property name="text">
              <string>Users:</string>
             </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="5">
+           <widget class="QGroupBox" name="squareMaskGroupBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Square mask</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QRadioButton" name="squareMaskRawRadioButton">
+               <property name="text">
+                <string>Raw</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">squareMaskButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="squareMaskRawSpinBox">
+               <property name="suffix">
+                <string notr="true"> (0x000 | -Hz)</string>
+               </property>
+               <property name="maximum">
+                <number>4095</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="squareMaskRatioRadioButton">
+               <property name="text">
+                <string>Tone/Mask ratio</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">squareMaskButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="squareMaskToneSpinBox">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="squareMaskRatioLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>/</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="squareMaskMaskSpinBox">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item row="0" column="0">
@@ -69,7 +140,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0" colspan="4">
+          <item row="1" column="0" colspan="5">
            <widget class="VisualizedInstrumentMacroEditor" name="waveEditor" native="true"/>
           </item>
           <item row="0" column="2">
@@ -82,58 +153,18 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="4">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <property name="sizeConstraint">
-             <enum>QLayout::SetDefaultConstraint</enum>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-            <item>
-             <widget class="QLabel" name="squareMaskLabel">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Square mask:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="squareMaskNoteComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="squareMaskPitchSpinBox">
-              <property name="prefix">
-               <string notr="true">+</string>
-              </property>
-              <property name="maximum">
-               <number>31</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -157,12 +188,18 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="1" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="tnUsersLabel">
-            <property name="text">
-             <string>Users:</string>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="tnUsersLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="VisualizedInstrumentMacroEditor" name="tnEditor" native="true"/>
           </item>
           <item row="0" column="3">
            <spacer name="horizontalSpacer_3">
@@ -177,6 +214,13 @@
             </property>
            </spacer>
           </item>
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="tnUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="tnNumSpinBox">
             <property name="keyboardTracking">
@@ -189,19 +233,6 @@
              <number>127</number>
             </property>
            </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="tnUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="4">
-           <widget class="VisualizedInstrumentMacroEditor" name="tnEditor" native="true"/>
           </item>
          </layout>
         </widget>
@@ -225,29 +256,6 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="1" column="0" colspan="5">
-           <widget class="VisualizedInstrumentMacroEditor" name="envEditor" native="true"/>
-          </item>
-          <item row="0" column="1" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="envUsersLabel">
-            <property name="text">
-             <string>Users:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="envNumSpinBox">
             <property name="keyboardTracking">
@@ -261,24 +269,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="hardFreqLabel">
-            <property name="text">
-             <string>Hard frequency:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="2">
-           <widget class="QSpinBox" name="hardFreqSpinBox">
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>65535</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2" colspan="2">
+          <item row="0" column="2" colspan="3">
            <widget class="QLineEdit" name="envUsersLineEdit">
             <property name="enabled">
              <bool>false</bool>
@@ -286,6 +277,116 @@
             <property name="readOnly">
              <bool>true</bool>
             </property>
+           </widget>
+          </item>
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="envUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0" colspan="6">
+           <widget class="VisualizedInstrumentMacroEditor" name="envEditor" native="true"/>
+          </item>
+          <item row="2" column="0" colspan="6">
+           <widget class="QGroupBox" name="envHardFreqGroupBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Hard frequency</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QRadioButton" name="hardFreqRawRadioButton">
+               <property name="text">
+                <string>Raw</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">hardFreqButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="hardFreqRawSpinBox">
+               <property name="suffix">
+                <string notr="true"> (0x0000 | -Hz)</string>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>65535</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="hardFreqRatioRadioButton">
+               <property name="text">
+                <string>Tone/Hard ratio</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">hardFreqButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="hardFreqToneSpinBox">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="hardFreqRatioLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>/</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="hardFreqHardSpinBox">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -469,7 +570,6 @@
   <tabstop>envEditGroupBox</tabstop>
   <tabstop>envNumSpinBox</tabstop>
   <tabstop>envUsersLineEdit</tabstop>
-  <tabstop>hardFreqSpinBox</tabstop>
   <tabstop>arpEditGroupBox</tabstop>
   <tabstop>arpNumSpinBox</tabstop>
   <tabstop>arpUsersLineEdit</tabstop>
@@ -481,4 +581,8 @@
  </tabstops>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="squareMaskButtonGroup"/>
+  <buttongroup name="hardFreqButtonGroup"/>
+ </buttongroups>
 </ui>

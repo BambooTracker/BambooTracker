@@ -1,12 +1,30 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <utility>
 #include "abstract_instrument_property.hpp"
 #include "sequence_iterator_interface.hpp"
 
-struct CommandInSequence
+struct CommandSequenceUnit
 {
-	int type, data;
+	int type;
+	/// In SSG waveform and envelope, when bit 16 is ratio flag
+	int data;
+
+	inline static bool isRatioData(int data)
+	{
+		return (data > -1 && data & 0x00010000);
+	}
+
+	inline static int ratio2data(int first, int second)
+	{
+		return ((1 << 16) | (first << 8) | second);
+	}
+
+	inline static std::pair<int, int> data2ratio(int data)
+	{
+		return std::pair<int, int>((data & 0x0000ff00) >> 8, data & 0x000000ff);
+	}
 };
 
 struct Loop
@@ -45,7 +63,7 @@ public:
 	size_t getSequenceSize() const;
 	int getSequenceTypeAt(int n);
 	int getSequenceDataAt(int n);
-	std::vector<CommandInSequence> getSequence() const;
+	std::vector<CommandSequenceUnit> getSequence() const;
 	void addSequenceCommand(int type, int data);
 	void removeSequenceCommand();
 	void setSequenceCommand(int n, int type, int data);
@@ -90,7 +108,7 @@ private:
 	const int DEF_COM_DATA;
 
 	int type_;
-	std::vector<CommandInSequence> seq_;
+	std::vector<CommandSequenceUnit> seq_;
 	std::vector<Loop> loops_;
 	Release release_;
 };
