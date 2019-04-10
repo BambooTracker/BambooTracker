@@ -100,6 +100,7 @@ public slots:
 
 private:
 	void setInstrumentEnvelopeParameters();
+	void setEnvelopeSequenceColumn(int col);
 
 private slots:
 	void on_envEditGroupBox_toggled(bool arg1);

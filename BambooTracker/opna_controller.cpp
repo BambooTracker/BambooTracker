@@ -1966,6 +1966,7 @@ void OPNAController::initSSG()
 		needEnvSetSSG_[ch] = false;
 		needMixSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = false;
+		needSqMaskFreqSetSSG_[ch] = false;
 
 		// Effect
 		isArpEffSSG_[ch] = false;
@@ -2069,7 +2070,8 @@ void OPNAController::releaseStartSSGSequences(int ch)
 		needToneSetSSG_[ch] = true;
 	}
 
-	if (needToneSetSSG_[ch]) writePitchSSG(ch);
+	if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
+		writePitchSSG(ch);
 }
 
 void OPNAController::tickEventSSG(int ch)
@@ -2113,7 +2115,8 @@ void OPNAController::tickEventSSG(int ch)
 			needToneSetSSG_[ch] = true;
 		}
 
-		if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch])) writePitchSSG(ch);
+		if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
+			writePitchSSG(ch);
 	}
 }
 
@@ -2170,6 +2173,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
+		needSqMaskFreqSetSSG_[ch] = false;
 		wfSSG_[ch] = { SSGWaveFormType::TRIANGLE, -1 };
 		return;
 	}
@@ -2216,6 +2220,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
+		needSqMaskFreqSetSSG_[ch] = false;
 		wfSSG_[ch] = { SSGWaveFormType::SAW, -1 };
 		return;
 	}
@@ -2262,6 +2267,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
+		needSqMaskFreqSetSSG_[ch] = false;
 		wfSSG_[ch] = { SSGWaveFormType::INVSAW, -1 };
 		return;
 	}
@@ -2282,10 +2288,19 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		if (wfSSG_[ch].data != data) {
-			uint16_t pitch = static_cast<uint16_t>(data);
-			uint8_t offset = static_cast<uint8_t>(ch << 1);
-			opna_->setRegister(0x00 + offset, pitch & 0xff);
-			opna_->setRegister(0x01 + offset, pitch >> 8);
+			if (CommandSequenceUnit::isRatioData(data)) {
+				needSqMaskFreqSetSSG_[ch] = true;
+			}
+			else {
+				uint16_t pitch = static_cast<uint16_t>(data);
+				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				opna_->setRegister(0x00 + offset, pitch & 0xff);
+				opna_->setRegister(0x01 + offset, pitch >> 8);
+				needSqMaskFreqSetSSG_[ch] = false;
+			}
+		}
+		else {
+			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
 		switch (wfSSG_[ch].type) {
@@ -2335,10 +2350,19 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		if (wfSSG_[ch].data != data) {
-			uint16_t pitch = static_cast<uint16_t>(data);
-			uint8_t offset = static_cast<uint8_t>(ch << 1);
-			opna_->setRegister(0x00 + offset, pitch & 0xff);
-			opna_->setRegister(0x01 + offset, pitch >> 8);
+			if (CommandSequenceUnit::isRatioData(data)) {
+				needSqMaskFreqSetSSG_[ch] = true;
+			}
+			else {
+				uint16_t pitch = static_cast<uint16_t>(data);
+				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				opna_->setRegister(0x00 + offset, pitch & 0xff);
+				opna_->setRegister(0x01 + offset, pitch >> 8);
+				needSqMaskFreqSetSSG_[ch] = false;
+			}
+		}
+		else {
+			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
 		switch (wfSSG_[ch].type) {
@@ -2388,10 +2412,19 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 		}
 
 		if (wfSSG_[ch].data != data) {
-			uint16_t pitch = static_cast<uint16_t>(data);
-			uint8_t offset = static_cast<uint8_t>(ch << 1);
-			opna_->setRegister(0x00 + offset, pitch & 0xff);
-			opna_->setRegister(0x01 + offset, pitch >> 8);
+			if (CommandSequenceUnit::isRatioData(data)) {
+				needSqMaskFreqSetSSG_[ch] = true;
+			}
+			else {
+				uint16_t pitch = static_cast<uint16_t>(data);
+				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				opna_->setRegister(0x00 + offset, pitch & 0xff);
+				opna_->setRegister(0x01 + offset, pitch >> 8);
+				needSqMaskFreqSetSSG_[ch] = false;
+			}
+		}
+		else {
+			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
 		switch (wfSSG_[ch].type) {
@@ -2455,6 +2488,7 @@ void OPNAController::writeSquareWaveForm(int ch)
 
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
+	needSqMaskFreqSetSSG_[ch] = false;
 	wfSSG_[ch] = { SSGWaveFormType::SQUARE, -1 };
 }
 
@@ -2810,6 +2844,7 @@ void OPNAController::writePitchSSG(int ch)
 			opna_->setRegister(0x01 + offset, pitch >> 8);
 			if (CommandSequenceUnit::isRatioData(envSSG_[ch].data)) {	// Hard envelope ratio
 				double hz = opna_->getClock() / 64.0 / pitch;
+				// Multiple frequency if triangle
 				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
 				auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
 				hz = mul * hz * ratio.second / ratio.first;
@@ -2821,6 +2856,7 @@ void OPNAController::writePitchSSG(int ch)
 		else if (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) {
 			if (CommandSequenceUnit::isRatioData(envSSG_[ch].data)) {	// Hard envelope ratio
 				double hz = opna_->getClock() / 64.0 / pitch;
+				// Multiple frequency if triangle
 				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
 				auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
 				hz = mul * hz * ratio.second / ratio.first;
@@ -2849,28 +2885,71 @@ void OPNAController::writePitchSSG(int ch)
 	}
 	break;
 	case SSGWaveFormType::SQM_TRIANGLE:
-	if (needToneSetSSG_[ch]) {
+	{
 		uint16_t pitch = PitchConverter::getPitchSSGTriangle(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
-		opna_->setRegister(0x0b, pitch & 0x00ff);
-		opna_->setRegister(0x0c, pitch >> 8);
+		if (needToneSetSSG_[ch]) {
+			opna_->setRegister(0x0b, pitch & 0x00ff);
+			opna_->setRegister(0x0c, pitch >> 8);
+			if (CommandSequenceUnit::isRatioData(wfSSG_[ch].data)) {
+				double hz = opna_->getClock() / 2048.0 / pitch;
+				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
+				hz = hz * ratio.second / ratio.first;
+				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				opna_->setRegister(0x00 + offset, freq & 0x00ff);
+				opna_->setRegister(0x01 + offset, freq >> 8);
+			}
+		}
+		else if (needSqMaskFreqSetSSG_[ch]) {
+			if (CommandSequenceUnit::isRatioData(wfSSG_[ch].data)) {
+				double hz = opna_->getClock() / 2048.0 / pitch;
+				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
+				hz = hz * ratio.second / ratio.first;
+				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				opna_->setRegister(0x00 + offset, freq & 0x00ff);
+				opna_->setRegister(0x01 + offset, freq >> 8);
+			}
+		}
+		break;
 	}
-	break;
 	case SSGWaveFormType::SQM_SAW:
 	case SSGWaveFormType::SQM_INVSAW:
-	if (needToneSetSSG_[ch]) {
+	{
 		uint16_t pitch = PitchConverter::getPitchSSGSaw(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
-		opna_->setRegister(0x0b, pitch & 0x00ff);
-		opna_->setRegister(0x0c, pitch >> 8);
+		if (needToneSetSSG_[ch]) {
+			opna_->setRegister(0x0b, pitch & 0x00ff);
+			opna_->setRegister(0x0c, pitch >> 8);
+			if (CommandSequenceUnit::isRatioData(wfSSG_[ch].data)) {
+				double hz = opna_->getClock() / 1024.0 / pitch;
+				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
+				hz = hz * ratio.second / ratio.first;
+				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				opna_->setRegister(0x0b, freq & 0x00ff);
+				opna_->setRegister(0x0c, freq >> 8);
+			}
+		}
+		else if (needSqMaskFreqSetSSG_[ch]) {
+			if (CommandSequenceUnit::isRatioData(wfSSG_[ch].data)) {
+				double hz = opna_->getClock() / 1024.0 / pitch;
+				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
+				hz = hz * ratio.second / ratio.first;
+				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				opna_->setRegister(0x0b, freq & 0x00ff);
+				opna_->setRegister(0x0c, freq >> 8);
+			}
+		}
+		break;
 	}
-	break;
 	default:
 		break;
 	}
 
 	needToneSetSSG_[ch] = false;
 	needEnvSetSSG_[ch] = false;
+	needSqMaskFreqSetSSG_[ch] = false;
 }
 
 //---------- Drum ----------//

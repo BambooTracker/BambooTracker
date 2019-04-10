@@ -228,6 +228,7 @@ private:
 	bool needEnvSetSSG_[3];
 	bool needMixSetSSG_[3];
 	bool needToneSetSSG_[3];
+	bool needSqMaskFreqSetSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
 	struct
 	{

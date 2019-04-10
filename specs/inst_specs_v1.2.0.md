@@ -1,6 +1,5 @@
-***NOTE: THIS IS A DRAFT!***
 # BambooTracker Instrument File (.bti) Format Specification
-v1.2.0 - 2019-03-30
+v1.2.0 - 2019-04-10
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -11,7 +10,7 @@ v1.2.0 - 2019-03-30
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
 | string (16 bytes) | File identifier | Format string, must be `BambooTrackerIst`.                                |
 | uint32            | EOF offset      | Relative offset to end of file. i.e. File length - 18.                    |
-| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.0.1 is stored as `0x00010101`. |
+| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.2.0 is stored as `0x00010200`. |
 
 ## Instrument Section
 | Type             | Field                     | Description                                                                                                   |
@@ -156,8 +155,9 @@ FM/SSG arpeggio can be selected from all of these, FM/SSG pitch can be absolute 
 ---
 
 ## History
-| Version | Date       | Detail                                |
-| ------- | ---------- | ------------------------------------- |
-| 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode. |
-| 1.0.1   | 2018-12-10 | Added instrument sequence type.       |
-| 1.0.0   | 2018-11-23 | Initial release.                      |
+| Version | Date       | Detail                                                             |
+| ------- | ---------- | ------------------------------------------------------------------ |
+| 1.2.0   | 2019-04-10 | Added and changed for SSG tone/hard or square-mask ratio settings. |
+| 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode.                              |
+| 1.0.1   | 2018-12-10 | Added instrument sequence type.                                    |
+| 1.0.0   | 2018-11-23 | Initial release.                                                   |

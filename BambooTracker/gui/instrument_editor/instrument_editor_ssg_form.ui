@@ -81,6 +81,49 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QRadioButton" name="squareMaskRatioRadioButton">
+               <property name="text">
+                <string>Tone/Mask ratio</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">squareMaskButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="squareMaskToneSpinBox">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="squareMaskRatioLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>/</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="squareMaskMaskSpinBox">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>8</number>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -539,7 +582,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="hardFreqButtonGroup"/>
   <buttongroup name="squareMaskButtonGroup"/>
+  <buttongroup name="hardFreqButtonGroup"/>
  </buttongroups>
 </ui>

@@ -8,7 +8,7 @@
 struct CommandSequenceUnit
 {
 	int type;
-	/// In SSG waveform and envelope, when bit 8 is ratio flag
+	/// In SSG waveform and envelope, when bit 16 is ratio flag
 	int data;
 
 	inline static bool isRatioData(int data)

@@ -143,20 +143,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 16) {	// Set hard frequency
-				if (ui->hardFreqButtonGroup->checkedButton() == ui->hardFreqRawRadioButton) {
-					ui->envEditor->setText(col, QString::number(ui->hardFreqRawSpinBox->value()));
-					ui->envEditor->setData(col, ui->hardFreqRawSpinBox->value());
-				}
-				else {
-					ui->envEditor->setText(col, QString::number(ui->hardFreqToneSpinBox->value()) + "/"
-										   + QString::number(ui->hardFreqHardSpinBox->value()));
-
-					ui->envEditor->setData(col, CommandSequenceUnit::ratio2data(
-											   ui->hardFreqToneSpinBox->value(),
-											   ui->hardFreqHardSpinBox->value()));
-				}
-			}
+			if (row >= 16) setEnvelopeSequenceColumn(col);	// Set hard frequency
 			bt_.lock()->addEnvelopeSSGSequenceCommand(
 						ui->envNumSpinBox->value(), row, ui->envEditor->getSequenceDataAt(col));
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
@@ -174,19 +161,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (row >= 16) {	// Set hard frequency
-				if (ui->hardFreqButtonGroup->checkedButton() == ui->hardFreqRawRadioButton) {
-					ui->envEditor->setText(col, QString::number(ui->hardFreqRawSpinBox->value()));
-					ui->envEditor->setData(col, ui->hardFreqRawSpinBox->value());
-				}
-				else {
-					ui->envEditor->setText(col, QString::number(ui->hardFreqToneSpinBox->value()) + "/"
-										   + QString::number(ui->hardFreqHardSpinBox->value()));
-					ui->envEditor->setData(col, CommandSequenceUnit::ratio2data(
-											   ui->hardFreqToneSpinBox->value(),
-											   ui->hardFreqHardSpinBox->value()));
-				}
-			}
+			if (row >= 16) setEnvelopeSequenceColumn(col);	// Set hard frequency
 			bt_.lock()->setEnvelopeSSGSequenceCommand(
 						ui->envNumSpinBox->value(), col, row, ui->envEditor->getSequenceDataAt(col));
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
@@ -546,7 +521,16 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 	ui->waveNumSpinBox->setValue(instSSG->getWaveFormNumber());
 	ui->waveEditor->clearData();
 	for (auto& com : instSSG->getWaveFormSequence()) {
-		QString str = isModulatedWaveFormSSG(com.type) ? QString::number(com.data) : "";
+		QString str("");
+		if (isModulatedWaveFormSSG(com.type)) {
+			if (CommandSequenceUnit::isRatioData(com.data)) {
+				auto ratio = CommandSequenceUnit::data2ratio(com.data);
+				str = QString::number(ratio.first) + "/" + QString::number(ratio.second);
+			}
+			else {
+				str = QString::number(com.data);
+			}
+		}
 		ui->waveEditor->addSequenceCommand(com.type, str, com.data);
 	}
 	for (auto& l : instSSG->getWaveFormLoops()) {
@@ -569,6 +553,14 @@ void InstrumentEditorSSGForm::setWaveFormSequenceColumn(int col)
 	if (button == ui->squareMaskRawRadioButton) {
 		ui->waveEditor->setText(col, QString::number(ui->squareMaskRawSpinBox->value()));
 		ui->waveEditor->setData(col, ui->squareMaskRawSpinBox->value());
+	}
+	else {
+		ui->waveEditor->setText(col, QString::number(ui->squareMaskToneSpinBox->value()) + "/"
+								+ QString::number(ui->squareMaskMaskSpinBox->value()));
+
+		ui->waveEditor->setData(col, CommandSequenceUnit::ratio2data(
+									ui->squareMaskToneSpinBox->value(),
+									ui->squareMaskMaskSpinBox->value()));
 	}
 }
 
@@ -710,7 +702,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	ui->envNumSpinBox->setValue(instSSG->getEnvelopeNumber());
 	ui->envEditor->clearData();
 	for (auto& com : instSSG->getEnvelopeSequence()) {
-		QString str = "";
+		QString str("");
 		if (com.type >= 16) {
 			if (CommandSequenceUnit::isRatioData(com.data)) {
 				auto ratio = CommandSequenceUnit::data2ratio(com.data);
@@ -733,6 +725,22 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	}
 	else {
 		ui->envEditGroupBox->setChecked(false);
+	}
+}
+
+void InstrumentEditorSSGForm::setEnvelopeSequenceColumn(int col)
+{
+	if (ui->hardFreqButtonGroup->checkedButton() == ui->hardFreqRawRadioButton) {
+		ui->envEditor->setText(col, QString::number(ui->hardFreqRawSpinBox->value()));
+		ui->envEditor->setData(col, ui->hardFreqRawSpinBox->value());
+	}
+	else {
+		ui->envEditor->setText(col, QString::number(ui->hardFreqToneSpinBox->value()) + "/"
+							   + QString::number(ui->hardFreqHardSpinBox->value()));
+
+		ui->envEditor->setData(col, CommandSequenceUnit::ratio2data(
+								   ui->hardFreqToneSpinBox->value(),
+								   ui->hardFreqHardSpinBox->value()));
 	}
 }
 
