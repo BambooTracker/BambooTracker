@@ -1,4 +1,5 @@
 #include "export_container.hpp"
+#include "export_handler.hpp"
 #include <algorithm>
 
 namespace chip
@@ -37,8 +38,9 @@ namespace chip
 	}
 
 	//******************************//
-	VgmExportContainer::VgmExportContainer(uint32_t intrRate)
-		: lastWait_(0),
+	VgmExportContainer::VgmExportContainer(int target, uint32_t intrRate)
+		: target_(target),
+		  lastWait_(0),
 		  totalSampCnt_(0),
 		  intrRate_(intrRate),
 		  isSetLoop_(false),
@@ -50,14 +52,43 @@ namespace chip
 	{
 		if (lastWait_) setWait();
 
-		if (offset & 0x100) {
-			buf_.push_back(0x57);
+		int fm = target_ & Export_FmMask;
+		int ssg = target_ & Export_SsgMask;
+
+		bool haveSsg = ssg != Export_InternalSsg || fm == Export_YM2608 || fm == Export_YM2203;
+
+		if (offset < 0x10 && haveSsg) {
+			uint8_t cmd = 0x56;
+			if (fm == Export_YM2203)
+				cmd = 0x55;
+			if (ssg != Export_InternalSsg)
+				cmd = 0xa0;
+
+			buf_.push_back(cmd);
+			buf_.push_back((uint8_t)offset);
+			buf_.push_back(value);
 		}
-		else {
-			buf_.push_back(0x56);
+		else switch (fm) {
+			case Export_YM2608:
+				buf_.push_back((offset & 0x100) ? 0x57 : 0x56);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+				break;
+
+			case Export_YM2612:
+				buf_.push_back((offset & 0x100) ? 0x53 : 0x52);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+				break;
+
+			case Export_YM2203:
+				if (offset & 0x100)
+					break;
+				buf_.push_back(0x55);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+				break;
 		}
-		buf_.push_back(offset & 0x000000ff);
-		buf_.push_back(value);
 	}
 
 	void VgmExportContainer::recordStream(int16_t* stream, size_t nSamples)

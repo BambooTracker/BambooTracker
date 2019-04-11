@@ -957,7 +957,7 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 	}
 }
 
-bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f)
+bool BambooTracker::exportToVgm(std::string file, int target, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -974,7 +974,7 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	uint32_t loopPoint = 0;
 	uint32_t loopPointSamples = 0;
 	std::shared_ptr<chip::VgmExportContainer> exCntr
-			= std::make_shared<chip::VgmExportContainer>(mod_->getTickFrequency());
+			= std::make_shared<chip::VgmExportContainer>(target, mod_->getTickFrequency());
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
 	exCntr->forceMoveLoopPoint();
@@ -1004,7 +1004,7 @@ bool BambooTracker::exportToVgm(std::string file, bool gd3TagEnabled, GD3Tag tag
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeVgm(file, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+		ExportHandler::writeVgm(file, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
 								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
 								exCntr->getSampleLength(), gd3TagEnabled, tag);
 		f();

@@ -30,6 +30,10 @@ public:
 	QString getVgmCreator() const;
 	QString getNotes() const;
 	GD3Tag getGD3Tag() const;
+	int getExportTarget() const;
+
+private slots:
+	void updateSupportInformation();
 
 private:
 	Ui::VgmExportSettingsDialog *ui;

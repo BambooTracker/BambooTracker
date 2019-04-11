@@ -45,7 +45,7 @@ void ExportHandler::writeWave(std::string path, std::vector<int16_t> samples, ui
 	}
 }
 
-void ExportHandler::writeVgm(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+void ExportHandler::writeVgm(std::string path, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
 							 bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
 							 bool gd3TagEnabled, GD3Tag tag)
 {
@@ -65,40 +65,61 @@ void ExportHandler::writeVgm(std::string path, std::vector<uint8_t> samples, uin
 
 		// Header
 		// 0x00: "Vgm " ident
-		ofs.write("Vgm ", 4);
+		uint8_t header[0x100] = {'V', 'g', 'm', ' '};
 		// 0x04: EOF offset
 		uint32_t offset = 0x100 + samples.size() + 1 + tagLen - 4;
-		ofs.write(reinterpret_cast<char*>(&offset), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x04) = offset;
 		// 0x08: Version [v1.71]
 		uint32_t version = 0x171;
-		ofs.write(reinterpret_cast<char*>(&version), 4);
-		// 0x0c-0x03: Unused
-		uint32_t zero = 0;
-		for (int i = 0; i < 2; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x08) = version;
 		// 0x14: GD3 offset
 		uint32_t gd3Offset = gd3TagEnabled ? (0x100 + samples.size() + 1 - 0x14) : 0;
-		ofs.write(reinterpret_cast<char*>(&gd3Offset), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x14) = gd3Offset;
 		// 0x18: Total # samples
-		ofs.write(reinterpret_cast<char*>(&totalSamples), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x18) = totalSamples;
 		// 0x1c: Loop offset
 		uint32_t loopOffset = loopFlag ? (loopPoint + 0x100 - 0x1c) : 0;
-		ofs.write(reinterpret_cast<char*>(&loopOffset), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x1c) = loopOffset;
 		// 0x20: Loop # samples
 		uint32_t loopSamps = loopFlag ? loopSamples : 0;
-		ofs.write(reinterpret_cast<char*>(&loopSamps), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x20) = loopSamps;
 		// 0x24: Rate
-		ofs.write(reinterpret_cast<char*>(&rate), 4);
-		// 0x28-0x33: Unused
-		for (int i = 0; i < 3; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x24) = rate;
 		// 0x34: VGM data offset
 		uint32_t dataOffset = 0xcc;
-		ofs.write(reinterpret_cast<char*>(&dataOffset), 4);
-		// 0x38-0x47: Unused
-		for (int i = 0; i < 4; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
-		// 0x48: YM2608 clock
-		ofs.write(reinterpret_cast<char*>(&clock), 4);
-		// 0x4c-0xff: Unused
-		for (int i = 0; i < 45; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+		*reinterpret_cast<uint32_t *>(header + 0x34) = dataOffset;
+
+		switch (target & Export_FmMask) {
+		default:
+		case Export_YM2608:
+			// 0x48: YM2608 clock
+			*reinterpret_cast<uint32_t *>(header + 0x48) = clock;
+			break;
+		case Export_YM2612:
+			// 0x2c: YM2612 clock
+			*reinterpret_cast<uint32_t *>(header + 0x2c) = clock;
+			break;
+		case Export_YM2203:
+			// 0x44: YM2203 clock
+			*reinterpret_cast<uint32_t *>(header + 0x44) = clock / 2;
+			break;
+		}
+
+		switch (target & Export_SsgMask) {
+		case Export_InternalSsg:
+			break;
+		default:
+			// 0x74: AY8910 clock
+			*reinterpret_cast<uint32_t *>(header + 0x74) = clock / 4;
+			// 0x78: AY8910 chip type
+			if ((target & Export_SsgMask) == Export_YM2149Psg)
+				*reinterpret_cast<uint32_t *>(header + 0x78) = 0x10;
+			// 0x79: AY8910 flags
+			*reinterpret_cast<uint32_t *>(header + 0x79) = 0x01;
+			break;
+		}
+
+		ofs.write(reinterpret_cast<char *>(header), 0x100);
 
 		// Commands
 		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(samples.size()));

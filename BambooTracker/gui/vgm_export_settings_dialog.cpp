@@ -1,5 +1,6 @@
 #include "vgm_export_settings_dialog.hpp"
 #include "ui_vgm_export_settings_dialog.h"
+#include "export_handler.hpp"
 #include <QTextCodec>
 
 VgmExportSettingsDialog::VgmExportSettingsDialog(QWidget *parent) :
@@ -9,6 +10,14 @@ VgmExportSettingsDialog::VgmExportSettingsDialog(QWidget *parent) :
 	ui->setupUi(this);
 
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+
+	for (QRadioButton *button : {
+			ui->ym2608RadioButton, ui->ym2612RadioButton, ui->ym2203RadioButton,
+			ui->internalSsgRadioButton, ui->ay8910PsgRadioButton })
+		connect(button, &QAbstractButton::toggled,
+				this, &VgmExportSettingsDialog::updateSupportInformation);
+
+	updateSupportInformation();
 }
 
 VgmExportSettingsDialog::~VgmExportSettingsDialog()
@@ -158,4 +167,57 @@ GD3Tag VgmExportSettingsDialog::getGD3Tag() const
 	tag.notes += endNull;
 
 	return tag;
+}
+
+int VgmExportSettingsDialog::getExportTarget() const
+{
+	int target = 0;
+
+	if (ui->ym2612RadioButton->isChecked())
+		target |= Export_YM2612;
+	else if (ui->ym2203RadioButton->isChecked())
+		target |= Export_YM2203;
+
+	if (ui->ay8910PsgRadioButton->isChecked())
+		target |= Export_AY8910Psg;
+	else if (ui->ym2149PsgRadioButton->isChecked())
+		target |= Export_YM2149Psg;
+
+	return target;
+}
+
+void VgmExportSettingsDialog::updateSupportInformation()
+{
+	int target = getExportTarget();
+	int channels;
+
+	int fm = target & Export_FmMask;
+	int ssg = target & Export_SsgMask;
+
+	switch (fm) {
+	default:
+		channels = 6;
+		break;
+	case Export_YM2203:
+		channels = 3;
+		break;
+	}
+
+	bool haveSsg = fm == Export_YM2608 || fm == Export_YM2203 || ssg != Export_InternalSsg;
+	bool haveRhythm = fm == Export_YM2608;
+	bool haveAdpcm = fm == Export_YM2608;
+
+	ui->supportFmChannelsLabel->setText(QString::number(channels));
+	ui->supportSsgLabel->setText(haveSsg ? tr("Yes") : tr("No"));
+	ui->supportRhythmLabel->setText(haveRhythm ? tr("Yes") : tr("No"));
+	ui->supportAdpcmLabel->setText(haveAdpcm ? tr("Yes") : tr("No"));
+
+	QPalette normalPalette = palette();
+	QPalette warnPalette = normalPalette;
+	warnPalette.setColor(QPalette::WindowText, QColor(0xef2929));
+
+	ui->supportFmChannelsLabel->setPalette((channels == 6) ? normalPalette : warnPalette);
+	ui->supportSsgLabel->setPalette(haveSsg ? normalPalette : warnPalette);
+	ui->supportRhythmLabel->setPalette(haveRhythm ? normalPalette : warnPalette);
+	ui->supportAdpcmLabel->setPalette(haveAdpcm ? normalPalette : warnPalette);
 }

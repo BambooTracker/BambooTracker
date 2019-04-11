@@ -2156,6 +2156,7 @@ void MainWindow::on_actionVGM_triggered()
 
 	try {
 		bool res = bt_->exportToVgm(file.toStdString(),
+									diag.getExportTarget(),
 									diag.enabledGD3(),
 									tag,
 									[&progress]() -> bool {
