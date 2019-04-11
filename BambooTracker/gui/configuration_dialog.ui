@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>405</height>
+    <height>454</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -197,19 +197,7 @@
        <string>Sound</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2" columnstretch="5,5">
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="sampleRateGroupBox">
-         <property name="title">
-          <string>Sample rate</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <widget class="QComboBox" name="sampleRateComboBox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -222,7 +210,38 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="1">
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="soundDeviceGroupBox">
+         <property name="title">
+          <string>Device</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="QComboBox" name="soundDeviceComboBox"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="useSCCICheckBox">
+            <property name="text">
+             <string>Use SCCI (beta)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="sampleRateGroupBox">
+         <property name="title">
+          <string>Sample rate</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QComboBox" name="sampleRateComboBox"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="1">
         <widget class="QGroupBox" name="bufferLengthGroupBox">
          <property name="title">
           <string>Buffer length</string>
@@ -252,20 +271,13 @@
         </widget>
        </item>
        <item row="0" column="0" colspan="2">
-        <widget class="QGroupBox" name="soundDeviceGroupBox">
+        <widget class="QGroupBox" name="groupBoxEmulation">
          <property name="title">
-          <string>Device</string>
+          <string>Emulation core</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
-           <widget class="QComboBox" name="soundDeviceComboBox"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="useSCCICheckBox">
-            <property name="text">
-             <string>Use SCCI (beta)</string>
-            </property>
-           </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QComboBox" name="emulatorComboBox"/>
           </item>
          </layout>
         </widget>

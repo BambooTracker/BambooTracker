@@ -1,4 +1,5 @@
 #include "opna.hpp"
+#include <cstdint>
 #include <cmath>
 #include "chip_misc.h"
 
@@ -8,6 +9,7 @@ extern "C"
 #endif //  __cplusplus
 
 #include "mame/2608intf.h"
+#include "nuked/nuke2608intf.h"
 
 #ifdef __cplusplus
 }
@@ -19,7 +21,7 @@ namespace chip
 	
 	const double OPNA::VOL_REDUC = 7.5;
 
-	OPNA::OPNA(int clock, int rate, size_t maxDuration,
+	OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration,
 			   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
 			   std::shared_ptr<ExportContainerInterface> exportContainer)
 		: Chip(count_++, clock, rate, 110933, maxDuration,
@@ -28,14 +30,28 @@ namespace chip
 		  scciManager_(nullptr),
 		  scciChip_(nullptr)
 	{
+		switch (emu) {
+		default:
+			fprintf(stderr, "Unknown emulator choice. Using the default.\n");
+			/* fall through */
+		case Emu::Mame:
+			fprintf(stderr, "Using emulator: MAME YM2608\n");
+			intf_ = &mame_intf2608;
+			break;
+		case Emu::Nuked:
+			fprintf(stderr, "Using emulator: Nuked OPN-Mod\n");
+			intf_ = &nuked_intf2608;
+			break;
+		}
+
 		funcSetRate(rate);
 
-		UINT8 EmuCore = 0;
-		ym2608_set_ay_emu_core(EmuCore);
+		uint8_t EmuCore = 0;
+		intf_->set_ay_emu_core(EmuCore);
 
-		UINT8 AYDisable = 0;	// Enable
-		UINT8 AYFlags = 0;		// None
-		internalRate_[FM] = device_start_ym2608(id_, clock, AYDisable, AYFlags, reinterpret_cast<int*>(&internalRate_[SSG]));
+		uint8_t AYDisable = 0;	// Enable
+		uint8_t AYFlags = 0;		// None
+		internalRate_[FM] = intf_->device_start(id_, clock, AYDisable, AYFlags, reinterpret_cast<int*>(&internalRate_[SSG]));
 
 		initResampler();
 
@@ -47,7 +63,7 @@ namespace chip
 
 	OPNA::~OPNA()
 	{
-		device_stop_ym2608(id_);
+		intf_->device_stop(id_);
 
 		--count_;
 
@@ -58,7 +74,7 @@ namespace chip
 	{
 		std::lock_guard<std::mutex> lg(mutex_);
 
-		device_reset_ym2608(id_);
+		intf_->device_reset(id_);
 
 		if (scciChip_) scciChip_->init();
 	}
@@ -68,13 +84,13 @@ namespace chip
 		std::lock_guard<std::mutex> lg(mutex_);
 
 		if (offset & 0x100) {
-			ym2608_control_port_b_w(id_, 2, offset & 0xff);
-			ym2608_data_port_b_w(id_, 3, value & 0xff);
+			intf_->control_port_b_w(id_, 2, offset & 0xff);
+			intf_->data_port_b_w(id_, 3, value & 0xff);
 		}
 		else
 		{
-			ym2608_control_port_a_w(id_, 0, offset & 0xff);
-			ym2608_data_port_a_w(id_, 1, value & 0xff);
+			intf_->control_port_a_w(id_, 0, offset & 0xff);
+			intf_->data_port_a_w(id_, 1, value & 0xff);
 		}
 
 		if (scciChip_) scciChip_->setRegister(offset, value);
@@ -85,13 +101,13 @@ namespace chip
 	uint8_t OPNA::getRegister(uint32_t offset) const
 	{
 		if (offset & 0x100) {
-			ym2608_control_port_b_w(id_, 2, offset & 0xff);
+			intf_->control_port_b_w(id_, 2, offset & 0xff);
 		}
 		else
 		{
-			ym2608_control_port_a_w(id_, 0, offset & 0xff);
+			intf_->control_port_a_w(id_, 0, offset & 0xff);
 		}
-		return ym2608_read_port_r(id_, 1);
+		return intf_->read_port_r(id_, 1);
 	}
 
 
@@ -114,23 +130,23 @@ namespace chip
 
 		// Set FM buffer
 		if (internalRate_[FM] == rate_) {
-			ym2608_stream_update(id_, buffer_[FM], nSamples);
+			intf_->stream_update(id_, buffer_[FM], nSamples);
 			bufFM = buffer_[FM];
 		}
 		else {
 			size_t intrSize = resampler_[FM]->calculateInternalSampleSize(nSamples);
-			ym2608_stream_update(id_, buffer_[FM], intrSize);
+			intf_->stream_update(id_, buffer_[FM], intrSize);
 			bufFM = resampler_[FM]->interpolate(buffer_[FM], nSamples, intrSize);
 		}
 
 		// Set SSG buffer
 		if (internalRate_[SSG] == rate_) {
-			ym2608_stream_update_ay(id_, buffer_[SSG], nSamples);
+			intf_->stream_update_ay(id_, buffer_[SSG], nSamples);
 			bufSSG = buffer_[SSG];
 		}
 		else {
 			size_t intrSize = resampler_[SSG]->calculateInternalSampleSize(nSamples);
-			ym2608_stream_update_ay(id_, buffer_[SSG], intrSize);
+			intf_->stream_update_ay(id_, buffer_[SSG], intrSize);
 			bufSSG = resampler_[SSG]->interpolate(buffer_[SSG], nSamples, intrSize);
 		}
 		int16_t* p = stream;

@@ -25,6 +25,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  isFindNextStep_(false)
 {
 	opnaCtrl_ = std::make_unique<OPNAController>(
+					static_cast<chip::Emu>(config.lock()->getEmulator()),
 					CHIP_CLOCK,
 					config.lock()->getSampleRate(),
 					config.lock()->getBufferLength());

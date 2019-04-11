@@ -501,3 +501,18 @@ void ym2608_set_mute_mask(UINT8 ChipID, UINT32 MuteMaskFM, UINT32 MuteMaskAY)
 		case DEVINFO_STR_CREDITS:					strcpy(info->s, "Copyright Nicola Salmoria and the MAME Team"); break;
 	}
 }*/
+
+struct intf2608 mame_intf2608 =
+{
+    .set_ay_emu_core = &ym2608_set_ay_emu_core,
+    .device_start = &device_start_ym2608,
+    .device_stop = &device_stop_ym2608,
+    .device_reset = &device_reset_ym2608,
+    .control_port_a_w = &ym2608_control_port_a_w,
+    .control_port_b_w = &ym2608_control_port_b_w,
+    .data_port_a_w = &ym2608_data_port_a_w,
+    .data_port_b_w = &ym2608_data_port_b_w,
+    .read_port_r = &ym2608_read_port_r,
+    .stream_update = &ym2608_stream_update,
+    .stream_update_ay = &ym2608_stream_update_ay,
+};

@@ -50,6 +50,8 @@ SOURCES += \
     chips/mame/emu2149.c \
     chips/mame/fm.c \
     chips/mame/ymdeltat.c \
+    chips/nuked/nuke2608intf.c \
+    chips/nuked/ym3438.c \
     bamboo_tracker.cpp \
     stream/audio_stream.cpp \
     stream/audio_stream_mixier.cpp \
@@ -199,6 +201,8 @@ HEADERS += \
     chips/mame/fm.h \
     chips/mame/mamedef.h \
     chips/mame/ymdeltat.h \
+    chips/nuked/nuke2608intf.h \
+    chips/nuked/ym3438.h \
     chips/chip.hpp \
     chips/chip_misc.h \
     chips/opna.hpp \

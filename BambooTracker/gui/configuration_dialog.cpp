@@ -4,12 +4,14 @@
 #include <functional>
 #include <QPushButton>
 #include <QMenu>
+#include <QMessageBox>
 #include <QAudio>
 #include <QAudioDeviceInfo>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
+#include "chips/chip_misc.h"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
 	: QDialog(parent),
@@ -97,6 +99,11 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 		customLayoutKeysMap.at(customLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(customLayoutMappingIterator->first)));
 		customLayoutMappingIterator++;
 	}
+
+	// Emulation //
+	ui->emulatorComboBox->addItem("MAME YM2608", static_cast<int>(chip::Emu::Mame));
+	ui->emulatorComboBox->addItem("Nuked OPN-Mod", static_cast<int>(chip::Emu::Nuked));
+	ui->emulatorComboBox->setCurrentIndex(ui->emulatorComboBox->findData(configLocked->getEmulator()));
 
 	// Sound //
 	int devRow = -1;
@@ -207,6 +214,14 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	}
 	configLocked->setCustomLayoutKeys(customLayoutNewKeys);
 
+	// Emulation //
+	int emu = ui->emulatorComboBox->currentData().toInt();
+	bool changedEmu = false;
+	if (emu != configLocked->getEmulator()) {
+		configLocked->setEmulator(emu);
+		changedEmu = true;
+	}
+
 	// Sound //
 	configLocked->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
 	configLocked->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
@@ -225,6 +240,10 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	std::sort(fmEnvelopeTexts_.begin(), fmEnvelopeTexts_.end(),
 			  [](const FMEnvelopeText& a, const FMEnvelopeText& b) -> bool { return (a.name < b.name); });
 	configLocked->setFMEnvelopeTexts(fmEnvelopeTexts_);
+
+	if (changedEmu) {
+		QMessageBox::information(this, tr("Configuration"), tr("The change of emulator will be effective after restarting the program."));
+	}
 }
 
 /***** General *****/

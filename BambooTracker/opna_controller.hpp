@@ -7,6 +7,7 @@
 #include "opna.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
+#include "chips/chip_misc.h"
 #include "chips/scci/scci.h"
 #include "misc.hpp"
 
@@ -26,7 +27,7 @@ struct ToneNoise
 class OPNAController
 {
 public:
-	OPNAController(int clock, int rate, int duration);
+	OPNAController(chip::Emu emu, int clock, int rate, int duration);
 
 	// Reset and initialize
 	void reset();

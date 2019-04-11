@@ -2,10 +2,10 @@
 #include <stdexcept>
 #include "pitch_converter.hpp"
 
-OPNAController::OPNAController(int clock, int rate, int duration)
+OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	: mode_(SongType::STD)
-{	
-	opna_ = std::make_unique<chip::OPNA>(clock, rate, duration,
+{
+	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration,
 										 std::make_unique<chip::LinearResampler>(),
 										 std::make_unique<chip::LinearResampler>());
 
