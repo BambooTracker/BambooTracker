@@ -679,7 +679,10 @@ void OrderListPanel::onOrderEdited()
 {
 	// Move cursor
 	int s = static_cast<int>(bt_->getOrderSize(curSongNum_));
-	if (s <= curPos_.row) curPos_.row = s - 1;
+	if (s <= curPos_.row) {
+		curPos_.row = s - 1;
+		bt_->setCurrentOrderNumber(curPos_.row);
+	}
 
 	emit orderEdited();
 }

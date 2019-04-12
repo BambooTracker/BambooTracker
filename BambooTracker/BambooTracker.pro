@@ -191,7 +191,8 @@ SOURCES += \
     gui/fm_envelope_set_edit_dialog.cpp \
     gui/file_history_handler.cpp \
     gui/file_history.cpp \
-    midi/midi.cpp
+    midi/midi.cpp \
+    gui/q_application_wrapper.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -363,7 +364,8 @@ HEADERS += \
     gui/file_history_handler.hpp \
     gui/file_history.hpp \
     midi/midi.hpp \
-    midi/midi_def.h
+    midi/midi_def.h \
+    gui/q_application_wrapper.hpp
 
 FORMS += \
     gui/mainwindow.ui \

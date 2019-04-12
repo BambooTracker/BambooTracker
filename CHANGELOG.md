@@ -34,6 +34,7 @@
 - [#90] - Fix module and instrument specification documents (thanks [@jpcima])
 - Fix bug increasing tone by octave when changing from Tri w to Saw in SSG waveform sequence
 - [#97] - Fix .y12 instrument loader (thanks [@jpcima])
+- [#101] - Fix to update the current order position when deleting a order (thanks [@jpcima], [@OPNA2608])
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -61,6 +62,7 @@
 [#94]: https://github.com/rerrahkr/BambooTracker/pull/94
 [#93]: https://github.com/rerrahkr/BambooTracker/issues/93
 [#97]: https://github.com/rerrahkr/BambooTracker/pull/97
+[#101]: https://github.com/rerrahkr/BambooTracker/issues/101
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

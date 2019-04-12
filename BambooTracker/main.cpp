@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QString>
 #include "configuration.hpp"
+#include "gui/q_application_wrapper.hpp"
 #include "gui/configuration_handler.hpp"
 
 // Localization
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
 		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
 		std::shared_ptr<Configuration> config = std::make_shared<Configuration>();
 		ConfigurationHandler::loadConfiguration(config);
-		std::unique_ptr<QApplication> a(std::make_unique<QApplication>(argc, argv));
+		std::unique_ptr<QApplicationWrapper> a(std::make_unique<QApplicationWrapper>(argc, argv));
 		if (config->getEnableTranslation()) setupTranslations();
 		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath));
 		w->show();
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 		return ret;
 	} catch (...) {
 		QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occured."));
-		return -1;
+		return 1;
 	}
 }
 
