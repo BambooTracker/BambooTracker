@@ -13,23 +13,27 @@
 - [#88] - Add FM detune display mode selection (thanks [@bryc] and others)
 - [#89] - Add custom note entry layout configuration ([#70]; thanks [@OPNA2608], [@jpcima])
 - [#3] - Add tone/hard frequency ratio in SSG envelope edit and tone/square-mask frequency ratio in SSG waveform edit (thanks [@marysiamzawka])
+- [#94] - Add Nuked OPN-Mod emulator ([#93]; thanks [@jpcima], [@papiezak])
+
+### Changed
+- [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
+- Change to keep current instrument when loading module
+- Change some layouts of UI
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
 - [#81] - Fix crash when toggling FM1 on/off using mouse (thanks [@papiezak])
-- Fix some layouts
 - Fix operator mask in restarting
-- [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
 - [#3] - Fix SSG square mask entry (thanks [@papiezak])
 - [#85] - Fix Out-of-Path build for Qt version workaround ([#83]; thanks [@OPNA2608], [@jimbo1qaz])
 - [#86] - Fix crash when changing pattern size during playback (thanks [@papiezak])
 - Fix spinboxes to emit value change event when finishing text editing
 - [#88] - Fix incorrect DT importing from TFI/VGI (thanks [@bryc] and others)
-- Fix to keep current instrument when loading module
 - [#87], [#95] - Fix FM envelope set association when renaming and type combobox overlapping (thanks [@OPNA2608])
 - [#92] - Fix instrument declaration check on arpeggio effect (thanks [@attilaM68K])
 - [#90] - Fix module and instrument specification documents (thanks [@jpcima])
 - Fix bug increasing tone by octave when changing from Tri w to Saw in SSG waveform sequence
+- [#97] - Fix .y12 instrument loader (thanks [@jpcima])
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -54,6 +58,9 @@
 [#89]: https://github.com/rerrahkr/BambooTracker/pull/89
 [#95]: https://github.com/rerrahkr/BambooTracker/pull/95
 [#90]: https://github.com/rerrahkr/BambooTracker/pull/90
+[#94]: https://github.com/rerrahkr/BambooTracker/pull/94
+[#93]: https://github.com/rerrahkr/BambooTracker/issues/93
+[#97]: https://github.com/rerrahkr/BambooTracker/pull/97
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

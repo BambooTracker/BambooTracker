@@ -326,4 +326,5 @@ I would like to thank the following people for making it:
 - Ru^3 for S98 file format documentation
 - SCCI team for SCCI libraries
 - Gary P. Scavone and others for RtMidi libraries
+- Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - And everyone who helps this project!

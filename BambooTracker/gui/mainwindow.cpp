@@ -1753,6 +1753,8 @@ void MainWindow::on_actionAbout_triggered()
 							  "Libraries:<br>"
 							  "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
 							  "- MAME (MAME License)<br>"
+							  "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
+							  "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
 							  "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
 							  "- SCCI (SCCI License)<br>"
 							  "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
