@@ -1080,6 +1080,7 @@ void MainWindow::changeConfiguration()
 			timer_->setSingleShot(false);
 			QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
 
+			scciDll_->load();
 			if (scciDll_->isLoaded()) {
 				SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
 														scciDll_->resolve("getSoundInterfaceManager"));

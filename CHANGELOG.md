@@ -35,6 +35,7 @@
 - Fix bug increasing tone by octave when changing from Tri w to Saw in SSG waveform sequence
 - [#97] - Fix .y12 instrument loader (thanks [@jpcima])
 - [#101] - Fix to update the current order position when deleting a order (thanks [@jpcima], [@OPNA2608])
+- Fix SCCI to be launched when changing configuration
 
 ### Removed
 - Remove module and instrument saving to past version
