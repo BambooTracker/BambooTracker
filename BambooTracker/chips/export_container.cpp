@@ -52,42 +52,49 @@ namespace chip
 	{
 		if (lastWait_) setWait();
 
-		int fm = target_ & Export_FmMask;
-		int ssg = target_ & Export_SsgMask;
+		const int fm = target_ & Export_FmMask;
+		const int ssg = target_ & Export_SsgMask;
 
-		bool haveSsg = ssg != Export_InternalSsg || fm == Export_YM2608 || fm == Export_YM2203;
+		const uint8_t cmdSsg =
+			(ssg != Export_InternalSsg) ? 0xa0 : (fm == Export_YM2608) ? 0x56 :
+			(fm == Export_YM2203) ? 0x55 : 0x00;
+		const uint8_t cmdFmPortA =
+			(fm == Export_YM2608) ? 0x56 : (fm == Export_YM2612) ? 0x52 :
+			(fm == Export_YM2203) ? 0x55 : 0x00;
+		const uint8_t cmdFmPortB =
+			(fm == Export_YM2608) ? 0x57 : (fm == Export_YM2612) ? 0x53 :
+			0x00;
 
-		if (offset < 0x10 && haveSsg) {
-			uint8_t cmd = 0x56;
-			if (fm == Export_YM2203)
-				cmd = 0x55;
-			if (ssg != Export_InternalSsg)
-				cmd = 0xa0;
-
-			buf_.push_back(cmd);
-			buf_.push_back((uint8_t)offset);
+		if (cmdSsg && offset < 0x10) {
+			buf_.push_back(cmdSsg);
+			buf_.push_back(offset);
 			buf_.push_back(value);
 		}
-		else switch (fm) {
-			case Export_YM2608:
-				buf_.push_back((offset & 0x100) ? 0x57 : 0x56);
-				buf_.push_back(offset & 0xff);
-				buf_.push_back(value);
-				break;
+		else if (cmdFmPortA && (offset & 0x100) == 0) {
+			bool compatible = true;
 
-			case Export_YM2612:
-				buf_.push_back((offset & 0x100) ? 0x53 : 0x52);
-				buf_.push_back(offset & 0xff);
-				buf_.push_back(value);
-				break;
+			if (offset == 0x29) // Mode register
+				compatible = fm == Export_YM2608;
+			else if ((offset & 0xf0) == 0x10) // Rhythm section
+				compatible = fm == Export_YM2608;
 
-			case Export_YM2203:
-				if (offset & 0x100)
-					break;
-				buf_.push_back(0x55);
+			if (compatible) {
+				buf_.push_back(cmdFmPortA);
 				buf_.push_back(offset & 0xff);
 				buf_.push_back(value);
-				break;
+			}
+		}
+		else if (cmdFmPortB && (offset & 0x100) != 0) {
+			bool compatible = true;
+
+			if (offset < 0x10) // ADPCM section
+				compatible = fm == Export_YM2608;
+
+			if (compatible) {
+				buf_.push_back(cmdFmPortB);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+			}
 		}
 	}
 
