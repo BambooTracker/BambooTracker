@@ -73,7 +73,11 @@ namespace chip
 		else if (cmdFmPortA && (offset & 0x100) == 0) {
 			bool compatible = true;
 
-			if (offset == 0x29) // Mode register
+			if (offset == 0x28) { // Key register
+				if (fm == Export_YM2203 && (value & 7) >= 3)
+					compatible = false;
+			}
+			else if (offset == 0x29) // Mode register
 				compatible = fm == Export_YM2608;
 			else if ((offset & 0xf0) == 0x10) // Rhythm section
 				compatible = fm == Export_YM2608;
