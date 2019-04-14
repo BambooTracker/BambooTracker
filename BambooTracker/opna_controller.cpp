@@ -74,7 +74,9 @@ bool OPNAController::isUsedSCCI() const
 void OPNAController::getStreamSamples(int16_t* container, size_t nSamples)
 {
 	opna_->mix(container, nSamples);
-	fillOutputHistory(container, std::min<size_t>(nSamples, OutputHistorySize));
+
+	size_t nHistory = std::min<size_t>(nSamples, OutputHistorySize);
+	fillOutputHistory(&container[2 * (nSamples - nHistory)], nHistory);
 }
 
 void OPNAController::getOutputHistory(int16_t* container)
