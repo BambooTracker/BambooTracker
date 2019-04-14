@@ -28,7 +28,8 @@ namespace chip
 		  autoRate_(autoRate),
 		  maxDuration_(maxDuration),
 		  masterVolumeRatio_(100),
-		  exCntr_(exportContainer)
+		  exCntr_(exportContainer),
+		  needSampleGen_(isNeedSampleGeneration(exportContainer))
 	{
 		resampler_[0] = std::move(resampler1);
 		resampler_[1] = std::move(resampler2);
@@ -98,6 +99,7 @@ namespace chip
 	void Chip::setExportContainer(std::shared_ptr<ExportContainerInterface> cntr)
 	{
 		exCntr_ = cntr;
+		needSampleGen_ = isNeedSampleGeneration(cntr);
 	}
 
 	void Chip::setMasterVolume(int percentage)

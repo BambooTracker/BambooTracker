@@ -36,6 +36,7 @@
 - [#97] - Fix .y12 instrument loader (thanks [@jpcima])
 - [#101] - Fix to update the current order position when deleting a order (thanks [@jpcima], [@OPNA2608])
 - Fix SCCI to be launched when changing configuration
+- [#100] - Accelerate vgm/s98 export to skip sample generation (thanks [@jpcima])
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -64,6 +65,7 @@
 [#93]: https://github.com/rerrahkr/BambooTracker/issues/93
 [#97]: https://github.com/rerrahkr/BambooTracker/pull/97
 [#101]: https://github.com/rerrahkr/BambooTracker/issues/101
+[#100]: https://github.com/rerrahkr/BambooTracker/issues/100
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

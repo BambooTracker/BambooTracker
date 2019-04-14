@@ -53,9 +53,16 @@ namespace chip
 		std::unique_ptr<AbstractResampler> resampler_[2];
 
 		std::shared_ptr<ExportContainerInterface> exCntr_;
+		bool needSampleGen_;
 
 		void initResampler();
 
 		void funcSetRate(int rate);
+
+	private:
+		inline static bool isNeedSampleGeneration(std::shared_ptr<ExportContainerInterface> cntr)
+		{
+			return (cntr == nullptr || std::dynamic_pointer_cast<WavExportContainer>(cntr) != nullptr);
+		}
 	};
 }
