@@ -25,6 +25,10 @@ OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	}
 
 	initChip();
+
+	outputHistory_.reset(new int16_t[2 * OutputHistorySize]{});
+	outputHistoryReady_.reset(new int16_t[2 * OutputHistorySize]{});
+	outputHistoryIndex_ = 0;
 }
 
 /********** Reset and initialize **********/
@@ -32,6 +36,8 @@ void OPNAController::reset()
 {
 	opna_->reset();
 	initChip();
+	std::fill(&outputHistory_[0], &outputHistory_[2 * OutputHistorySize], 0);
+	std::fill(&outputHistoryReady_[0], &outputHistoryReady_[2 * OutputHistorySize], 0);
 }
 
 void OPNAController::initChip()
@@ -68,6 +74,48 @@ bool OPNAController::isUsedSCCI() const
 void OPNAController::getStreamSamples(int16_t* container, size_t nSamples)
 {
 	opna_->mix(container, nSamples);
+	fillOutputHistory(container, std::min<size_t>(nSamples, OutputHistorySize));
+}
+
+void OPNAController::getOutputHistory(int16_t* container)
+{
+	std::lock_guard<std::mutex> lock(outputHistoryReadyMutex_);
+	int16_t *history = outputHistoryReady_.get();
+	std::copy(history, &history[2 * OutputHistorySize], container);
+}
+
+void OPNAController::fillOutputHistory(const int16_t* outputs, size_t nSamples)
+{
+	int16_t *history = outputHistory_.get();
+	size_t historyIndex = outputHistoryIndex_;
+
+	// copy as many as possible to the back
+	size_t backCapacity = OutputHistorySize - historyIndex;
+	size_t nBack = std::min(nSamples, backCapacity);
+	std::copy(outputs, &outputs[2 * nBack], &history[2 * historyIndex]);
+
+	// copy the rest to the front
+	std::copy(&outputs[2 * nBack], &outputs[2 * nSamples], history);
+
+	// update the write position
+	historyIndex = (historyIndex + nSamples) % OutputHistorySize;
+	outputHistoryIndex_ = historyIndex;
+
+	// if no one holds the ready buffer, update the contents
+	std::unique_lock<std::mutex> lock(outputHistoryReadyMutex_, std::try_to_lock);
+	if (lock.owns_lock())
+		transferReadyHistory();
+}
+
+void OPNAController::transferReadyHistory()
+{
+	const int16_t *src = outputHistory_.get();
+	int16_t *dst = outputHistoryReady_.get();
+	size_t index = outputHistoryIndex_;
+
+	// copy the back, and then the front
+	std::copy(&src[2 * index], &src[2 * OutputHistorySize], dst);
+	std::copy(&src[0], &src[2 * index], &dst[2 * (OutputHistorySize - index)]);
 }
 
 /********** Chip mode **********/
