@@ -2755,3 +2755,8 @@ size_t BambooTracker::getDefaultPatternSize(int songNum) const
 {
 	return mod_->getSong(songNum).getDefaultPatternSize();
 }
+
+void BambooTracker::getOutputHistory(int16_t* container)
+{
+	opnaCtrl_->getOutputHistory(container);
+}

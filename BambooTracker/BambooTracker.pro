@@ -192,7 +192,8 @@ SOURCES += \
     gui/file_history_handler.cpp \
     gui/file_history.cpp \
     midi/midi.cpp \
-    gui/q_application_wrapper.cpp
+    gui/q_application_wrapper.cpp \
+    gui/wave_visual.cpp
 
 HEADERS += \
     gui/mainwindow.hpp \
@@ -365,7 +366,8 @@ HEADERS += \
     gui/file_history.hpp \
     midi/midi.hpp \
     midi/midi_def.h \
-    gui/q_application_wrapper.hpp
+    gui/q_application_wrapper.hpp \
+    gui/wave_visual.hpp
 
 FORMS += \
     gui/mainwindow.ui \

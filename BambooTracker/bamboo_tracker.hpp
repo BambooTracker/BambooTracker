@@ -327,6 +327,8 @@ public:
 	size_t getPatternSizeFromOrderNumber(int songNum, int orderNum) const;
 	void setDefaultPatternSize(int songNum, size_t size);
 	size_t getDefaultPatternSize(int songNum) const;
+	/*----- Visual -----*/
+	void getOutputHistory(int16_t* container);
 
 private:
 	CommandManager comMan_;
