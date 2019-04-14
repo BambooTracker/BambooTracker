@@ -1,5 +1,6 @@
 #include "./gui/mainwindow.hpp"
 #include <memory>
+#include <exception>
 #include <QApplication>
 #include <QMessageBox>
 #include <QTranslator>
@@ -31,8 +32,10 @@ int main(int argc, char *argv[])
 		ConfigurationHandler::saveConfiguration(config);
 		if (ret) QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occured."));
 		return ret;
-	} catch (...) {
-		QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occured."));
+	}
+	catch (std::exception& e) {
+		QMessageBox::critical(nullptr, QObject::tr("Error"),
+							  QObject::tr("An unknown error occured.\n%1").arg(e.what()));
 		return 1;
 	}
 }
