@@ -53,6 +53,10 @@ public:
 	QColor ptnMaskColor;
 	QColor ptnBorderColor;
 	QColor ptnMuteColor, ptnUnmuteColor;
+
+	// Wave visual
+	QColor wavBackColor;
+	QColor wavDrawColor;
 };
 
 #endif // COLOR_PALETTE_HPP

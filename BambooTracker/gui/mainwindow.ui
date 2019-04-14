@@ -34,7 +34,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0" colspan="4">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,2,2,2">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,0,2,2,2">
       <property name="leftMargin">
        <number>9</number>
       </property>
@@ -48,28 +48,86 @@
        <number>9</number>
       </property>
       <item>
-       <widget class="QGroupBox" name="orderListGroupBox">
-        <property name="title">
-         <string>Order List</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="leftMargin">
-          <number>3</number>
-         </property>
-         <property name="topMargin">
-          <number>3</number>
-         </property>
-         <property name="rightMargin">
-          <number>3</number>
-         </property>
-         <property name="bottomMargin">
-          <number>3</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="OrderListEditor" name="orderList"/>
-         </item>
-        </layout>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QGroupBox" name="orderListGroupBox">
+          <property name="title">
+           <string>Order List</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="OrderListEditor" name="orderList"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QGroupBox" name="visualGroupBox">
+          <property name="title">
+           <string>Visual</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item>
+            <widget class="WaveVisual" name="waveVisual" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>80</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout_4">
@@ -454,7 +512,7 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>21</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1245,6 +1303,12 @@
    <class>OrderListEditor</class>
    <extends>QFrame</extends>
    <header>gui/order_list_editor/order_list_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WaveVisual</class>
+   <extends>QWidget</extends>
+   <header>gui/wave_visual.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

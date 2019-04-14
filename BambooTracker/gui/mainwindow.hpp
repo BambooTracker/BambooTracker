@@ -64,6 +64,7 @@ private:
 	std::shared_ptr<AudioStream> stream_;
 	std::unique_ptr<QTimer> timer_;
 	/*std::unique_ptr<Timer> timer_;*/
+	std::unique_ptr<QTimer> visualTimer_;
 	std::shared_ptr<QUndoStack> comStack_;
 	std::shared_ptr<FileHistory> fileHistory_;
 
@@ -214,6 +215,7 @@ private slots:
 	void onNewTickSignaled();
 	void on_actionClear_triggered();
 	void on_keyRepeatCheckBox_stateChanged(int arg1);
+	void updateVisuals();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

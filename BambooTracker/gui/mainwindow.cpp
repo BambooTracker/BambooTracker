@@ -388,6 +388,13 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		else startPlaySong();
 	});
 
+	/* Visuals */
+	ui->waveVisual->setColorPalette(palette_);
+	visualTimer_.reset(new QTimer);
+	visualTimer_->start(40);
+	QObject::connect(visualTimer_.get(), &QTimer::timeout,
+					 this, &MainWindow::updateVisuals);
+
 	/* Status bar */
 	statusDetail_ = new QLabel();
 	statusStyle_ = new QLabel();
@@ -2256,4 +2263,12 @@ void MainWindow::on_actionClear_triggered()
 void MainWindow::on_keyRepeatCheckBox_stateChanged(int arg1)
 {
 	config_.lock()->setKeyRepetition(arg1 == Qt::Checked);
+}
+
+void MainWindow::updateVisuals()
+{
+	int16_t wave[2 * OPNAController::OutputHistorySize];
+	bt_->getOutputHistory(wave);
+
+	ui->waveVisual->setStereoSamples(wave, OPNAController::OutputHistorySize);
 }

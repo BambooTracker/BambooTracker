@@ -80,4 +80,8 @@ ColorPalette::ColorPalette()
 	ptnBorderColor = QColor::fromRgb(120, 120, 120, 255);
 	ptnMuteColor = QColor::fromRgb(255, 0, 0, 255);
 	ptnUnmuteColor = QColor::fromRgb(0, 255, 0, 255);
+
+	// Wave visual
+	wavBackColor = QColor::fromRgb(0, 0, 33, 255);
+	wavDrawColor = QColor::fromRgb(82, 179, 217, 255);
 }

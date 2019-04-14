@@ -41,6 +41,9 @@ public:
 
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
+	void getOutputHistory(int16_t* history);
+
+	enum { OutputHistorySize = 1024 };
 
 	// Chip mode
 	void setMode(SongType mode);
@@ -61,6 +64,9 @@ private:
 	SongType mode_;
 
 	void initChip();
+
+	void fillOutputHistory(const int16_t* outputs, size_t nSamples);
+	void transferReadyHistory();
 
 	/*----- FM -----*/
 public:
@@ -252,6 +258,10 @@ private:
 	int sumNoteSldSSG_[3];
 	bool noteSldSSGSetFlag_;
 	int transposeSSG_[3];
+	std::unique_ptr<int16_t[]> outputHistory_;
+	size_t outputHistoryIndex_;
+	std::unique_ptr<int16_t[]> outputHistoryReady_;
+	std::mutex outputHistoryReadyMutex_;
 
 	void initSSG();
 
