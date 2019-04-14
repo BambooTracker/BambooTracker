@@ -62,7 +62,7 @@ namespace chip
 	private:
 		inline static bool isNeedSampleGeneration(std::shared_ptr<ExportContainerInterface> cntr)
 		{
-			return (cntr == nullptr || std::dynamic_pointer_cast<WavExportContainer>(cntr) != nullptr);
+			return (cntr == nullptr || cntr->isNeedSampleGeneration());
 		}
 	};
 }

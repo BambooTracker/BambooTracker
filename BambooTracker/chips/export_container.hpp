@@ -10,6 +10,7 @@ namespace chip
 	{
 	public:
 		virtual ~ExportContainerInterface();
+		virtual bool isNeedSampleGeneration() const = 0;
 		virtual void recordRegisterChange(uint32_t offset, uint8_t value) = 0;
 		virtual void recordStream(int16_t* stream, size_t nSamples) = 0;
 		virtual bool empty() const = 0;
@@ -20,6 +21,7 @@ namespace chip
 	{
 	public:
 		WavExportContainer();
+		bool isNeedSampleGeneration() const override { return true; }
 		void recordRegisterChange(uint32_t offset, uint8_t value) override;
 		void recordStream(int16_t* stream, size_t nSamples) override;
 		bool empty() const override;
@@ -34,6 +36,7 @@ namespace chip
 	{
 	public:
 		VgmExportContainer(uint32_t intrRate);
+		bool isNeedSampleGeneration() const override { return false; }
 		void recordRegisterChange(uint32_t offset, uint8_t value) override;
 		void recordStream(int16_t* stream, size_t nSamples) override;
 		void clear() override;
@@ -57,6 +60,7 @@ namespace chip
 	{
 	public:
 		S98ExportContainer();
+		bool isNeedSampleGeneration() const override { return false; }
 		void recordRegisterChange(uint32_t offset, uint8_t value) override;
 		void recordStream(int16_t* stream, size_t nSamples) override;
 		void clear() override;
