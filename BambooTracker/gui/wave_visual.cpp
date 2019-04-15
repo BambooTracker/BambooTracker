@@ -3,6 +3,8 @@
 #include <limits>
 #include <QPainter>
 #include <QDebug>
+//Xcode 8.3: "no member names 'abs' in namespace 'std'
+#include <cstdlib>
 
 WaveVisual::WaveVisual(QWidget *parent)
 	: QWidget(parent)
