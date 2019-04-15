@@ -55,6 +55,7 @@ private:
 	static void midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData);
 private slots:
 	void midiKeyEvent(uchar status, uchar key, uchar velocity);
+	void midiProgramEvent(uchar status, uchar program);
 
 private:
 	std::unique_ptr<Ui::MainWindow> ui;
@@ -138,6 +139,7 @@ private:
 
 	// Meta methods
 	int midiKeyEventMethod_;
+	int midiProgramEventMethod_;
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);

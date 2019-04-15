@@ -431,6 +431,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	/* MIDI */
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
+	midiProgramEventMethod_ = metaObject()->indexOfSlot("midiProgramEvent(uchar,uchar)");
+	Q_ASSERT(midiProgramEventMethod_ != -1);
 	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
 }
 
@@ -680,6 +682,14 @@ void MainWindow::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_
 		method.invoke(self, Qt::QueuedConnection,
 					  Q_ARG(uchar, status), Q_ARG(uchar, key), Q_ARG(uchar, velocity));
 	}
+	// Program change
+	else if (len == 2 && (msg[0] & 0xf0) == 0xc0) {
+		uint8_t status = msg[0];
+		uint8_t program = msg[1];
+		QMetaMethod method = self->metaObject()->method(self->midiProgramEventMethod_);
+		method.invoke(self, Qt::QueuedConnection,
+					  Q_ARG(uchar, status), Q_ARG(uchar, program));
+	}
 }
 
 void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
@@ -693,6 +703,12 @@ void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 	bt_->jamKeyOff(jamKey); // possibility to recover on stuck note
 	if (!release)
 		bt_->jamKeyOn(jamKey);
+}
+
+void MainWindow::midiProgramEvent(uchar status, uchar program)
+{
+	int row = findRowFromInstrumentList(program);
+	ui->instrumentListWidget->setCurrentRow(row);
 }
 
 /********** Instrument list **********/
