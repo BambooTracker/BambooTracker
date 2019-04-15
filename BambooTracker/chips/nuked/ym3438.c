@@ -1673,7 +1673,7 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
         }
     }
     /*OPN-MOD: read from PSG*/
-    else if ((port & 3) == 1)
+    if ((port & 3) == 1)
     {
         if (chip->address < 16)
         {
