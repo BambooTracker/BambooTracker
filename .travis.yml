@@ -1,6 +1,25 @@
 language: cpp
-os: linux
-dist: xenial
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+    - os: osx
+      osx_image: xcode8.3
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:ubuntu-sdk-team/ppa'
+    packages:
+      - qt5-default
+      - qttools5-dev-tools
+      - qtmultimedia5-dev
+      - libqt5multimedia5-plugins
+      - libasound2-dev
+  homebrew:
+    packages:
+      - qt5
 
 git:
   depth: 3
@@ -10,10 +29,8 @@ branches:
     - master
 
 before_install:
-  - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
-  - sudo apt update -qq
-  - sudo apt install qt5-default qttools5-dev-tools qtmultimedia5-dev libqt5multimedia5-plugins
-  - sudo apt install libasound2-dev
+  # osx: force linking of qt5 into PATH
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew link --force qt5; fi
 
 script:
   - cd BambooTracker
