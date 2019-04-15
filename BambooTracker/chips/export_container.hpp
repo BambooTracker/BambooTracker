@@ -35,7 +35,7 @@ namespace chip
 	class VgmExportContainer : public ExportContainerInterface
 	{
 	public:
-		VgmExportContainer(uint32_t intrRate);
+		VgmExportContainer(int target, uint32_t intrRate);
 		bool isNeedSampleGeneration() const override { return false; }
 		void recordRegisterChange(uint32_t offset, uint8_t value) override;
 		void recordStream(int16_t* stream, size_t nSamples) override;
@@ -48,6 +48,7 @@ namespace chip
 
 	private:
 		std::vector<uint8_t> buf_;
+		int target_;
 		uint64_t lastWait_, totalSampCnt_;
 		uint32_t intrRate_;
 		bool isSetLoop_;

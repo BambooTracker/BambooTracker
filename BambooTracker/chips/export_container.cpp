@@ -1,4 +1,5 @@
 #include "export_container.hpp"
+#include "export_handler.hpp"
 #include <algorithm>
 
 namespace chip
@@ -37,8 +38,9 @@ namespace chip
 	}
 
 	//******************************//
-	VgmExportContainer::VgmExportContainer(uint32_t intrRate)
-		: lastWait_(0),
+	VgmExportContainer::VgmExportContainer(int target, uint32_t intrRate)
+		: target_(target),
+		  lastWait_(0),
 		  totalSampCnt_(0),
 		  intrRate_(intrRate),
 		  isSetLoop_(false),
@@ -50,14 +52,54 @@ namespace chip
 	{
 		if (lastWait_) setWait();
 
-		if (offset & 0x100) {
-			buf_.push_back(0x57);
+		const int fm = target_ & Export_FmMask;
+		const int ssg = target_ & Export_SsgMask;
+
+		const uint8_t cmdSsg =
+			(ssg != Export_InternalSsg) ? 0xa0 : (fm == Export_YM2608) ? 0x56 :
+			(fm == Export_YM2203) ? 0x55 : 0x00;
+		const uint8_t cmdFmPortA =
+			(fm == Export_YM2608) ? 0x56 : (fm == Export_YM2612) ? 0x52 :
+			(fm == Export_YM2203) ? 0x55 : 0x00;
+		const uint8_t cmdFmPortB =
+			(fm == Export_YM2608) ? 0x57 : (fm == Export_YM2612) ? 0x53 :
+			0x00;
+
+		if (cmdSsg && offset < 0x10) {
+			buf_.push_back(cmdSsg);
+			buf_.push_back(offset);
+			buf_.push_back(value);
 		}
-		else {
-			buf_.push_back(0x56);
+		else if (cmdFmPortA && (offset & 0x100) == 0) {
+			bool compatible = true;
+
+			if (offset == 0x28) { // Key register
+				if (fm == Export_YM2203 && (value & 7) >= 3)
+					compatible = false;
+			}
+			else if (offset == 0x29) // Mode register
+				compatible = fm == Export_YM2608;
+			else if ((offset & 0xf0) == 0x10) // Rhythm section
+				compatible = fm == Export_YM2608;
+
+			if (compatible) {
+				buf_.push_back(cmdFmPortA);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+			}
 		}
-		buf_.push_back(offset & 0x000000ff);
-		buf_.push_back(value);
+		else if (cmdFmPortB && (offset & 0x100) != 0) {
+			bool compatible = true;
+
+			if (offset < 0x10) // ADPCM section
+				compatible = fm == Export_YM2608;
+
+			if (compatible) {
+				buf_.push_back(cmdFmPortB);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+			}
+		}
 	}
 
 	void VgmExportContainer::recordStream(int16_t* stream, size_t nSamples)
