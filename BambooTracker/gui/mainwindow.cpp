@@ -707,6 +707,7 @@ void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 
 void MainWindow::midiProgramEvent(uchar status, uchar program)
 {
+	Q_UNUSED(status)
 	int row = findRowFromInstrumentList(program);
 	ui->instrumentListWidget->setCurrentRow(row);
 }
@@ -845,15 +846,20 @@ void MainWindow::loadInstrument()
 
 void MainWindow::saveInstrument()
 {
+	int n = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	auto nameStd = bt_->getInstrument(n)->getName();
+	QString name = QString::fromUtf8(nameStd.c_str(), static_cast<int>(nameStd.length()));
+
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, tr("Save instrument"), (dir.isEmpty() ? "./" : dir),
-												"BambooTracker instrument file (*.bti)");
+	QString file = QFileDialog::getSaveFileName(
+					   this, tr("Save instrument"),
+					   QString("%1/%2.bti").arg(dir.isEmpty() ? "." : dir, name),
+					   "BambooTracker instrument file (*.bti)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
 	try {
-		bt_->saveInstrument(file.toLocal8Bit().toStdString(),
-							ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt());
+		bt_->saveInstrument(file.toLocal8Bit().toStdString(), n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
@@ -1188,6 +1194,13 @@ void MainWindow::setInitialSelectedInstrument()
 	else {
 		ui->instrumentListWidget->setCurrentRow(0);
 	}
+}
+
+QString MainWindow::getModuleFileBaseName() const
+{
+	auto filePathStd = bt_->getModulePath();
+	QString filePath = QString::fromLocal8Bit(filePathStd.c_str(), static_cast<int>(filePathStd.length()));
+	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).baseName());
 }
 
 /******************************/
@@ -1941,8 +1954,10 @@ bool MainWindow::on_actionSave_triggered()
 bool MainWindow::on_actionSave_As_triggered()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, tr("Save module"), (dir.isEmpty() ? "./" : dir),
-												"BambooTracker module file (*.btm)");
+	QString file = QFileDialog::getSaveFileName(
+					   this, tr("Save module"),
+					   QString("%1/%2.btm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
+					   "BambooTracker module file (*.btm)");
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
@@ -2105,8 +2120,10 @@ void MainWindow::on_actionWAV_triggered()
 	if (diag.exec() != QDialog::Accepted) return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, tr("Export to wav"), (dir.isEmpty() ? "./" : dir),
-												"WAV signed 16-bit PCM (*.wav)");
+	QString file = QFileDialog::getSaveFileName(
+					   this, tr("Export to wav"),
+					   QString("%1/%2.wav").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
+					   "WAV signed 16-bit PCM (*.wav)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".wav")) file += ".wav";	// For linux
 
@@ -2149,8 +2166,10 @@ void MainWindow::on_actionVGM_triggered()
 	GD3Tag tag = diag.getGD3Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, tr("Export to vgm"), (dir.isEmpty() ? "./" : dir),
-												"VGM file (*.vgm)");
+	QString file = QFileDialog::getSaveFileName(
+					   this, tr("Export to vgm"),
+					   QString("%1/%2.vgm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
+					   "VGM file (*.vgm)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".vgm")) file += ".vgm";	// For linux
 
@@ -2196,8 +2215,10 @@ void MainWindow::on_actionS98_triggered()
 	S98Tag tag = diag.getS98Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(this, tr("Export to s98"), (dir.isEmpty() ? "./" : dir),
-												"S98 file (*.s98)");
+	QString file = QFileDialog::getSaveFileName(
+					   this, tr("Export to s98"),
+					   QString("%1/%2.s98").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
+					   "S98 file (*.s98)");
 	if (file.isNull()) return;
 	if (!file.endsWith(".s98")) file += ".s98";	// For linux
 

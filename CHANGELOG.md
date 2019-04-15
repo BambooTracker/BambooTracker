@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Added
-- [#76] - MIDI keyboard support ([#32]; thanks [@galap-1], [@jpcima], [@OPNA2608])
+- [#76], [#107] - MIDI keyboard support ([#32]; thanks [@galap-1], [@jpcima], [@OPNA2608])
 - Add edit/jam button in tool bar
 - Add 1 sample module (thanks [@SuperJetSpade])
 - Add 2nd pattern highlight
@@ -13,7 +13,10 @@
 - [#88] - Add FM detune display mode selection (thanks [@bryc] and others)
 - [#89] - Add custom note entry layout configuration ([#70]; thanks [@OPNA2608], [@jpcima])
 - [#3] - Add tone/hard frequency ratio in SSG envelope edit and tone/square-mask frequency ratio in SSG waveform edit (thanks [@marysiamzawka])
-- [#94] - Add Nuked OPN-Mod emulator ([#93]; thanks [@jpcima], [@papiezak])
+- [#94], [#106] - Add Nuked OPN-Mod emulator ([#93]; thanks [@jpcima], [@papiezak])
+- [#103], [#105] - Add oscilloscope ([#79]; thanks [@jpcima], [@papiezak])
+- [#99] - Add VGM chip target selection ([#98]; thanks [@jpcima], [@pedipanol])
+- Add default file name to save/export dialogs
 
 ### Changed
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
@@ -36,7 +39,8 @@
 - [#97] - Fix .y12 instrument loader (thanks [@jpcima])
 - [#101] - Fix to update the current order position when deleting a order (thanks [@jpcima], [@OPNA2608])
 - Fix SCCI to be launched when changing configuration
-- [#100] - Accelerate vgm/s98 export to skip sample generation (thanks [@jpcima])
+- [#100], [#104] - Accelerate vgm/s98 export to skip sample generation (thanks [@jpcima])
+- [#106] - Fix 12-bit wrapping behavior in MAME YM2608 ADPCM-A (thanks [@jpcima])
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -66,6 +70,13 @@
 [#97]: https://github.com/rerrahkr/BambooTracker/pull/97
 [#101]: https://github.com/rerrahkr/BambooTracker/issues/101
 [#100]: https://github.com/rerrahkr/BambooTracker/issues/100
+[#103]: https://github.com/rerrahkr/BambooTracker/pull/103
+[#104]: https://github.com/rerrahkr/BambooTracker/pull/104
+[#105]: https://github.com/rerrahkr/BambooTracker/pull/105
+[#99]: https://github.com/rerrahkr/BambooTracker/pull/99
+[#98]: https://github.com/rerrahkr/BambooTracker/issues/98
+[#106]: https://github.com/rerrahkr/BambooTracker/pull/106
+[#107]: https://github.com/rerrahkr/BambooTracker/pull/107
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

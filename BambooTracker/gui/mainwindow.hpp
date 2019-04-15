@@ -118,6 +118,7 @@ private:
 	void setWindowTitle();
 	void setModifiedTrue();
 	void setInitialSelectedInstrument();
+	QString getModuleFileBaseName() const;
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPO_;
