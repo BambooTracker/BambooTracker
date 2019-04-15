@@ -1267,14 +1267,13 @@ void OPNmod_RhythmGenerate(ym3438_t *chip)
 
                 chip->rhythm_adpcm_acc[channel] += adpcm_jedi_table[chip->rhythm_adpcm_step[channel] + data];
 
+                /* the 12-bit accumulator wraps on the ym2610 and ym2608 (like the msm5205), it does not saturate (like the msm5218) */
+                chip->rhythm_adpcm_acc[channel] &= 0xfff;
+
                 /* extend 12-bit signed int */
-                if (chip->rhythm_adpcm_acc[channel] & ~0x7ff)
+                if (chip->rhythm_adpcm_acc[channel] & 0x800)
                 {
                     chip->rhythm_adpcm_acc[channel] |= ~0xfff;
-                }
-                else
-                {
-                    chip->rhythm_adpcm_acc[channel] &= 0xfff;
                 }
 
                 chip->rhythm_adpcm_step[channel] += adpcm_step_inc[data & 7];
