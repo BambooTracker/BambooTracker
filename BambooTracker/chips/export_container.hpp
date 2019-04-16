@@ -60,7 +60,7 @@ namespace chip
 	class S98ExportContainer : public ExportContainerInterface
 	{
 	public:
-		S98ExportContainer();
+		explicit S98ExportContainer(int target);
 		bool isNeedSampleGeneration() const override { return false; }
 		void recordRegisterChange(uint32_t offset, uint8_t value) override;
 		void recordStream(int16_t* stream, size_t nSamples) override;
@@ -73,6 +73,7 @@ namespace chip
 
 	private:
 		std::vector<uint8_t> buf_;
+		int target_;
 		uint64_t lastWait_, totalSampCnt_;
 		bool isSetLoop_;
 		uint32_t loopPoint_;

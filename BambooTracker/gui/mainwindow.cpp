@@ -2240,6 +2240,7 @@ void MainWindow::on_actionS98_triggered()
 
 	try {
 		bool res = bt_->exportToS98(file.toStdString(),
+									diag.getExportTarget(),
 									diag.enabledTag(),
 									tag,
 									[&progress]() -> bool {

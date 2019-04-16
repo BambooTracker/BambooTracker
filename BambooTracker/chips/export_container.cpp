@@ -284,8 +284,9 @@ namespace chip
 	}
 
 	//******************************//
-	S98ExportContainer::S98ExportContainer()
-		: lastWait_(0),
+	S98ExportContainer::S98ExportContainer(int target)
+		: target_(target),
+		  lastWait_(0),
 		  totalSampCnt_(0),
 		  isSetLoop_(false),
 		  loopPoint_(0)
@@ -296,14 +297,51 @@ namespace chip
 	{
 		if (lastWait_) setWait();
 
-		if (offset & 0x100) {
-			buf_.push_back(0x01);
+		const int fm = target_ & Export_FmMask;
+		const int ssg = target_ & Export_SsgMask;
+
+		const uint8_t cmdSsg =
+			(ssg != Export_InternalSsg) ? 0x02 : (fm == Export_YM2608) ? 0x00 :
+			(fm == Export_YM2203) ? 0x00 : 0xff;
+		const uint8_t cmdFmPortA = 0x00;
+		const uint8_t cmdFmPortB =
+			(fm == Export_YM2608 || fm == Export_YM2612) ? 0x01 : 0xff;
+
+		if (cmdSsg != 0xff && offset < 0x10) {
+			buf_.push_back(cmdSsg);
+			buf_.push_back(offset);
+			buf_.push_back(value);
 		}
-		else {
-			buf_.push_back(0x00);
+		else if (cmdFmPortA != 0xff && (offset & 0x100) == 0) {
+			bool compatible = true;
+
+			if (offset == 0x28) { // Key register
+				if (fm == Export_YM2203 && (value & 7) >= 3)
+					compatible = false;
+			}
+			else if (offset == 0x29) // Mode register
+				compatible = fm == Export_YM2608;
+			else if ((offset & 0xf0) == 0x10) // Rhythm section
+				compatible = fm == Export_YM2608;
+
+			if (compatible) {
+				buf_.push_back(cmdFmPortA);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+			}
 		}
-		buf_.push_back(offset & 0x000000ff);
-		buf_.push_back(value);
+		else if (cmdFmPortB != 0xff && (offset & 0x100) != 0) {
+			bool compatible = true;
+
+			if (offset < 0x10) // ADPCM section
+				compatible = fm == Export_YM2608;
+
+			if (compatible) {
+				buf_.push_back(cmdFmPortB);
+				buf_.push_back(offset & 0xff);
+				buf_.push_back(value);
+			}
+		}
 	}
 
 	void S98ExportContainer::recordStream(int16_t* stream, size_t nSamples)

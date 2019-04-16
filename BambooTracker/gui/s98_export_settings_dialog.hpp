@@ -18,6 +18,10 @@ public:
 
 	bool enabledTag() const;
 	S98Tag getS98Tag() const;
+	int getExportTarget() const;
+
+private slots:
+	void updateSupportInformation();
 
 private:
 	Ui::S98ExportSettingsDialog *ui;
