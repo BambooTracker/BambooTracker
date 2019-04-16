@@ -70,6 +70,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	resize(config.lock()->getMainWindowWidth(), config.lock()->getMainWindowHeight());
 	if (config.lock()->getMainWindowMaximized()) showMaximized();
 	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
+	ui->visualFrame->setVisible(config_.lock()->getShowWaveVisual());
 	bt_->setFollowPlay(config.lock()->getFollowMode());
 
 	setMidiConfiguration();
@@ -1137,6 +1138,8 @@ void MainWindow::changeConfiguration()
 	instForms_->updateByConfiguration();
 
 	bt_->changeConfiguration(config_);
+
+	ui->visualFrame->setVisible(config_.lock()->getShowWaveVisual());
 
 	update();
 }

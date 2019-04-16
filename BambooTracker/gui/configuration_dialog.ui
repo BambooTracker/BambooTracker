@@ -143,6 +143,14 @@
               <enum>Unchecked</enum>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Show wave visual</string>
+             </property>
+             <property name="checkState">
+              <enum>Checked</enum>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="1" column="0">

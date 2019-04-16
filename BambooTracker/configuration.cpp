@@ -29,6 +29,7 @@ Configuration::Configuration()
 	retrieveChannelState_ = false;
 	enableTranslation_ = true;
 	showFMDetuneSigned_ = false;
+	showWaveVisual_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -804,6 +805,16 @@ bool Configuration::getShowFMDetuneAsSigned() const
 	return showFMDetuneSigned_;
 }
 
+void Configuration::setShowWaveVisual(bool enabled)
+{
+	showWaveVisual_ = enabled;
+}
+
+bool Configuration::getShowWaveVisual() const
+{
+	return showWaveVisual_;
+}
+
 // Edit settings
 void Configuration::setPageJumpLength(size_t length)
 {
@@ -999,3 +1010,4 @@ std::vector<FMEnvelopeText> Configuration::getFMEnvelopeTexts() const
 {
 	return fmEnvelopeTexts_;
 }
+

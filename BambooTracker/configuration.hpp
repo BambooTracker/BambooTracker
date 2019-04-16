@@ -78,6 +78,8 @@ public:
 	bool getEnableTranslation() const;
 	void setShowFMDetuneAsSigned(bool enabled);
 	bool getShowFMDetuneAsSigned() const;
+	void setShowWaveVisual(bool enabled);
+	bool getShowWaveVisual() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
@@ -85,6 +87,7 @@ private:
 	bool reverseFMVolumeOrder_, moveCursorToRight_;
 	bool retrieveChannelState_, enableTranslation_;
 	bool showFMDetuneSigned_;
+	bool showWaveVisual_;
 
 	// Edit settings
 public:
