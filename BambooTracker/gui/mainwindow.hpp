@@ -79,7 +79,7 @@ private:
 	int findRowFromInstrumentList(int instNum);
 	void editInstrumentName();
 	void cloneInstrument();
-    void deepCloneInstrument();
+	void deepCloneInstrument();
 	void loadInstrument();
 	void saveInstrument();
 	void importInstrumentsFromBank();
@@ -223,9 +223,9 @@ private slots:
 	inline bool showUndoResetWarningDialog(QString text)
 	{
 		return (QMessageBox::warning(this, "Warning",
-									text + " If you execute this command, the command history is reset.",
-									QMessageBox::Yes | QMessageBox::No,
-									QMessageBox::No) == QMessageBox::Yes);
+									 text + " If you execute this command, the command history is reset.",
+									 QMessageBox::Yes | QMessageBox::No,
+									 QMessageBox::No) == QMessageBox::Yes);
 	}
 };
 

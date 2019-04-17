@@ -12,6 +12,8 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
+	ui->tickFreqSpinBox->setValue(static_cast<int>(core.lock()->getModuleTickFrequency()));
+
 	ui->songTreeWidget->setColumnCount(3);
 	ui->songTreeWidget->setHeaderLabels({ tr("Number"), tr("Title"), tr("Song type") });
 	ui->songTreeWidget->header()->resizeSection(0, 52);
@@ -23,7 +25,7 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 	}
 
 	ui->insertTypeComboBox->addItem(tr("Standard"), static_cast<int>(SongType::STD));
-	 ui->insertTypeComboBox->addItem(tr("FM3ch expanded"), static_cast<int>(SongType::FMEX));
+	ui->insertTypeComboBox->addItem(tr("FM3ch expanded"), static_cast<int>(SongType::FMEX));
 }
 
 ModulePropertiesDialog::~ModulePropertiesDialog()
@@ -140,6 +142,9 @@ void ModulePropertiesDialog::on_editTitleLineEdit_textEdited(const QString &arg1
 
 void ModulePropertiesDialog::onAccepted()
 {
+	// Set tick frequency
+	bt_.lock()->setModuleTickFrequency(static_cast<unsigned int>(ui->tickFreqSpinBox->value()));
+
 	auto* tree = ui->songTreeWidget;
 	std::vector<int> newSongNums;
 

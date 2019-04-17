@@ -208,20 +208,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		bt_->setModuleCopyright(str.toUtf8().toStdString());
 		setModifiedTrue();
 	});
-	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->tickFreqSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-					 this, [&](int freq) {
-		auto f = static_cast<unsigned int>(freq);
-		if (f != bt_->getModuleTickFrequency()) {
-			bt_->setModuleTickFrequency(f);
-			stream_->setInturuption(f);
-			if (timer_) timer_->setInterval(1000 / freq);
-			statusIntr_->setText(QString::number(freq) + QString("Hz"));
-			setModifiedTrue();
-		}
-	});
-	QObject::connect(ui->modSetDialogOpenToolButton, &QToolButton::clicked,
-					 this, &MainWindow::on_actionModule_Properties_triggered);
 
 	/* Edit settings */
 	// Leave Before Qt5.7.0 style due to windows xp
@@ -485,26 +471,6 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 	}
 
 	return false;
-}
-
-JamKey MainWindow::getJamKeyFromLayoutMapping(Qt::Key key) {
-	std::shared_ptr<Configuration> configLocked = config_.lock();
-	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
-	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-		std::map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
-		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
-						 [key](const std::pair<std::string, JamKey>& t) -> bool {
-						 return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
-		});
-		if (it != selectedLayoutMapping.end()) {
-			return (*it).second;
-		}
-		else {
-			throw std::invalid_argument("Unmapped key");
-		}
-	//something has gone wrong, current layout has no layout map
-	//TODO: handle cleanly?
-	} else throw std::out_of_range("Unmapped Layout");
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -1010,22 +976,18 @@ void MainWindow::loadSong()
 	case SongType::STD:		ui->songStyleLineEdit->setText(tr("Standard"));			break;
 	case SongType::FMEX:	ui->songStyleLineEdit->setText(tr("FM3ch expanded"));	break;
 	}
-	ui->tickFreqSpinBox->setValue(static_cast<int>(bt_->getModuleTickFrequency()));
 	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
 	ui->speedSpinBox->setValue(bt_->getSongSpeed(curSong));
 	ui->patternSizeSpinBox->setValue(static_cast<int>(bt_->getDefaultPatternSize(curSong)));
 	ui->grooveSpinBox->setValue(bt_->getSongGroove(curSong));
 	ui->grooveSpinBox->setMaximum(static_cast<int>(bt_->getGrooveCount()) - 1);
 	if (bt_->isUsedTempoInSong(curSong)) {
-		ui->tickFreqSpinBox->setEnabled(true);
 		ui->tempoSpinBox->setEnabled(true);
 		ui->speedSpinBox->setEnabled(true);
 		ui->grooveCheckBox->setChecked(false);
 		ui->grooveSpinBox->setEnabled(false);
 	}
 	else {
-
-		ui->tickFreqSpinBox->setEnabled(false);
 		ui->tempoSpinBox->setEnabled(false);
 		ui->speedSpinBox->setEnabled(false);
 		ui->grooveCheckBox->setChecked(true);
@@ -1078,7 +1040,6 @@ void MainWindow::stopPlaySong()
 
 void MainWindow::lockControls(bool isLock)
 {
-	ui->modSetDialogOpenToolButton->setEnabled(!isLock);
 	ui->songNumSpinBox->setEnabled(!isLock);
 }
 
@@ -1163,6 +1124,27 @@ void MainWindow::changeFileHistory(QString file)
 		QAction* action = ui->menu_Recent_Files->addAction(QString("&%1 %2").arg(i + 1).arg(fileHistory_->at(i)));
 		action->setData(fileHistory_->at(i));
 	}
+}
+
+/********** Layout decypherer **********/
+JamKey MainWindow::getJamKeyFromLayoutMapping(Qt::Key key) {
+	std::shared_ptr<Configuration> configLocked = config_.lock();
+	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
+	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
+		std::map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
+							   [key](const std::pair<std::string, JamKey>& t) -> bool {
+			return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
+		});
+		if (it != selectedLayoutMapping.end()) {
+			return (*it).second;
+		}
+		else {
+			throw std::invalid_argument("Unmapped key");
+		}
+		//something has gone wrong, current layout has no layout map
+		//TODO: handle cleanly?
+	} else throw std::out_of_range("Unmapped Layout");
 }
 
 /******************************/
@@ -1416,16 +1398,12 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 void MainWindow::on_grooveCheckBox_stateChanged(int arg1)
 {
 	if (arg1 == Qt::Checked) {
-		ui->tickFreqSpinBox->setValue(60);
-		ui->tickFreqSpinBox->setEnabled(false);
-		ui->tempoSpinBox->setValue(150);
 		ui->tempoSpinBox->setEnabled(false);
 		ui->speedSpinBox->setEnabled(false);
 		ui->grooveSpinBox->setEnabled(true);
 		bt_->toggleTempoOrGrooveInSong(bt_->getCurrentSongNumber(), false);
 	}
 	else {
-		ui->tickFreqSpinBox->setEnabled(true);
 		ui->tempoSpinBox->setEnabled(true);
 		ui->speedSpinBox->setEnabled(true);
 		ui->grooveSpinBox->setEnabled(false);
@@ -1695,6 +1673,11 @@ void MainWindow::on_actionModule_Properties_triggered()
 		setModifiedTrue();
 		setWindowTitle();
 		ui->instrumentListWidget->setCurrentRow(instRow);
+
+		// Set tick frequency
+		stream_->setInturuption(bt_->getModuleTickFrequency());
+		if (timer_) timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+		statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 	}
 }
 
