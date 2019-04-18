@@ -1014,7 +1014,7 @@ bool BambooTracker::exportToVgm(std::string file, int target, bool gd3TagEnabled
 	}
 }
 
-bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, std::function<bool()> f)
+bool BambooTracker::exportToS98(std::string file, int target, bool tagEnabled, S98Tag tag, std::function<bool()> f)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -1029,7 +1029,7 @@ bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, s
 	bool tmpFollow = isFollowPlay_;
 	isFollowPlay_ = false;
 	uint32_t loopPoint = 0;
-	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>();
+	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>(target);
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
 	exCntr->forceMoveLoopPoint();
@@ -1059,7 +1059,7 @@ bool BambooTracker::exportToS98(std::string file, bool tagEnabled, S98Tag tag, s
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeS98(file, exCntr->getData(), CHIP_CLOCK, 44100,
+		ExportHandler::writeS98(file, target, exCntr->getData(), CHIP_CLOCK, 44100,
 								loopFlag, loopPoint, tagEnabled, tag);
 		f();
 		return true;

@@ -174,7 +174,7 @@ void ExportHandler::writeVgm(std::string path, int target, std::vector<uint8_t> 
 	}
 }
 
-void ExportHandler::writeS98(std::string path, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+void ExportHandler::writeS98(std::string path, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
 							 bool loopFlag, uint32_t loopPoint, bool tagEnabled, S98Tag tag)
 {
 	try {
@@ -205,19 +205,65 @@ void ExportHandler::writeS98(std::string path, std::vector<uint8_t> samples, uin
 		ofs.write(reinterpret_cast<char*>(&loopOffset), 4);
 		// 0x1c: Device count
 		uint32_t deviceCnt = 1;
+		if ((target & Export_SsgMask) != Export_InternalSsg)
+			deviceCnt = 2;
 		ofs.write(reinterpret_cast<char*>(&deviceCnt), 4);
+
 		// 0x20-0x2f: Device info
 		// 0x20: Device type
-		uint32_t deviceType = 4;	// OPNA
+		uint32_t deviceType;
+		uint32_t deviceClock;
+		switch (target & Export_FmMask) {
+		default:
+		case Export_YM2608:
+			deviceType = 4;	// OPNA
+			deviceClock = clock;
+			break;
+		case Export_YM2612:
+			deviceType = 3;	// OPN2
+			deviceClock = clock;
+			break;
+		case Export_YM2203:
+			deviceType = 2;	// OPN
+			deviceClock = clock / 2;
+			break;
+		}
 		ofs.write(reinterpret_cast<char*>(&deviceType), 4);
 		// 0x24: Clock
-		ofs.write(reinterpret_cast<char*>(&clock), 4);
+		ofs.write(reinterpret_cast<char*>(&deviceClock), 4);
 		// 0x28: Pan (Unused)
 		ofs.write(reinterpret_cast<char*>(&zero), 4);
-		// 0x28: Reserved
+		// 0x2c: Reserved
 		ofs.write(reinterpret_cast<char*>(&zero), 4);
-		// 0x30-0x7f: Unused
-		for (int i = 0; i < 20; ++i) ofs.write(reinterpret_cast<char*>(&zero), 4);
+
+		if ((target & Export_SsgMask) != Export_InternalSsg) {
+			// 0x30-0x3f: Device info
+			// 0x30: Device type
+			uint32_t subdeviceType;
+			uint32_t subdeviceClock;
+			switch (target & Export_SsgMask) {
+			default:
+			case Export_AY8910Psg:
+				subdeviceType = 15;	// PSG (AY-3-8910)
+				subdeviceClock = clock / 4;
+				break;
+			case Export_YM2149Psg:
+				subdeviceType = 1;		// PSG (YM 2149)
+				subdeviceClock = clock / 2;
+				break;
+			}
+			ofs.write(reinterpret_cast<char*>(&subdeviceType), 4);
+			// 0x34: Clock
+			ofs.write(reinterpret_cast<char*>(&subdeviceClock), 4);
+			// 0x38: Pan (Unused)
+			ofs.write(reinterpret_cast<char*>(&zero), 4);
+			// 0x3c: Reserved
+			ofs.write(reinterpret_cast<char*>(&zero), 4);
+		}
+
+		// 0x??-0x7f: Unused
+		for (uint32_t i = 0; i < (24 - 4 * deviceCnt); ++i)
+			ofs.write(reinterpret_cast<char*>(&zero), 4);
 
 		// Commands
 		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(samples.size()));
