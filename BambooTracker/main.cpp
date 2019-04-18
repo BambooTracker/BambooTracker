@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 		ConfigurationHandler::loadConfiguration(config);
 		std::unique_ptr<QApplicationWrapper> a(std::make_unique<QApplicationWrapper>(argc, argv));
 		if (config->getEnableTranslation()) setupTranslations();
+		a->setWindowIcon(QIcon(":/icon/app_icon"));
 		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath));
 		w->show();
 		int ret = a->exec();
