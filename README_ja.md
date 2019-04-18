@@ -1,4 +1,4 @@
-# BambooTracker
+# ![icon](./img/icon.png) BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.1.6-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | linux](https://img.shields.io/badge/platform-windows%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.org/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.org/rerrahkr/BambooTracker)
@@ -8,6 +8,15 @@
 ![Example](./img/overview.gif)
 
 このアプリケーションはNEC PC-8801/9801シリーズに搭載されていたFM音源YM2608(OPNA)向けのトラッカーです。
+
+## ダウンロード
+Windows:
+
+- <https://github.com/rerrahkr/BambooTracker/releases>
+- **開発版**: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
+
+Linux:  
+"Linuxでのビルド方法" - "DebianまたはUbuntuでのパッケージのインストール"の章を参照してください。
 
 ## 用語解説
 トラッカーで作成される1データ(ファイル)をモジュールと呼びます。モジュールは複数のソング(曲データ)とインストゥルメント(音色)、各ソング共通の設定を持ちます。  
@@ -258,12 +267,6 @@ BambooTrackerでは以下の言語に対応しています:
 - 英語 (デフォルト)
 - フランス語
 - 日本語
-
-## ダウンロード
-Windows:
-
-- <https://github.com/rerrahkr/BambooTracker/releases>
-- **開発版**: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
 
 ## Linuxでのビルド方法
 Ubuntu 18.04:

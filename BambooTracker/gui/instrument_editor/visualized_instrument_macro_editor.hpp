@@ -104,6 +104,7 @@ private:
 	std::shared_ptr<ColorPalette> palette_;
 
 	QFont font_;
+	QFontMetrics met_;
 	int fontWidth_, fontHeight_, fontAscend_, fontLeading_;
 	int tagWidth_;
 	std::vector<int> rowHeights_, colWidths_;
@@ -165,6 +166,7 @@ private:
 	int checkLoopRegion(int col);
 	void moveLoop();
 
+	void updateTagWidth();
 	void updateColumnWidth();
 	void updateRowHeight();
 

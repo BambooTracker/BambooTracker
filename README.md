@@ -1,4 +1,4 @@
-# BambooTracker
+# ![icon](./img/icon.png) BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.1.6-orange.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | linux](https://img.shields.io/badge/platform-windows%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.org/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.org/rerrahkr/BambooTracker)
@@ -8,6 +8,15 @@
 ![Example](./img/overview.gif)
 
 BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which was used in NEC PC-8801/9801 series computers.
+
+## Downloads
+On Windows:
+
+- <https://github.com/rerrahkr/BambooTracker/releases>
+- **Development builds**: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
+
+On Linux:  
+See below chapter "Build on Linux" - "Install package on Debian or Ubuntu".
 
 ## Glossary
 The files created by this tracker are called "modules". One such module contains songs (song data), instruments (tone data) and settings common to each song.
@@ -258,12 +267,6 @@ BambooTracker supports following languages:
 - English (default)
 - French
 - Japanese
-
-## Downloads
-On Windows:
-
-- <https://github.com/rerrahkr/BambooTracker/releases>
-- **Development builds**: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
 ## Build on Linux
 On Ubuntu 18.04:

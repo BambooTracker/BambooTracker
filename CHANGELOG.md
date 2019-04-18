@@ -17,6 +17,7 @@
 - [#103], [#105] - Add oscilloscope ([#79]; thanks [@jpcima], [@papiezak])
 - [#99] - Add VGM chip target selection ([#98]; thanks [@jpcima], [@pedipanol])
 - Add default file name to save/export dialogs
+- [#108] - Add macOS test to Travis CI (thanks [@OPNA2608], [@jpcima])
 
 ### Changed
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
@@ -41,6 +42,7 @@
 - Fix SCCI to be launched when changing configuration
 - [#100], [#104] - Accelerate vgm/s98 export to skip sample generation (thanks [@jpcima])
 - [#106] - Fix 12-bit wrapping behavior in MAME YM2608 ADPCM-A (thanks [@jpcima])
+- [#109] - Fix icon to desplay all windows (thanks [@jpcima])
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -77,6 +79,8 @@
 [#98]: https://github.com/rerrahkr/BambooTracker/issues/98
 [#106]: https://github.com/rerrahkr/BambooTracker/pull/106
 [#107]: https://github.com/rerrahkr/BambooTracker/pull/107
+[#108]: https://github.com/rerrahkr/BambooTracker/pull/108
+[#109]: https://github.com/rerrahkr/BambooTracker/pull/109
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

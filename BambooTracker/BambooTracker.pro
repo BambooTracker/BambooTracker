@@ -447,5 +447,3 @@ equals(QT_MAJOR_VERSION, 5) {
         CONFIG += lrelease
     }
 }
-
-RC_ICONS = res/icon/BambooTracker.ico

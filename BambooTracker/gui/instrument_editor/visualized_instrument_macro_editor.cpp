@@ -1,19 +1,21 @@
 #include "visualized_instrument_macro_editor.hpp"
 #include "ui_visualized_instrument_macro_editor.h"
+#include <algorithm>
+#include <numeric>
+#include <utility>
 #include <QApplication>
 #include <QFontMetrics>
 #include <QPainter>
 #include <QPoint>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
-#include <algorithm>
-#include <numeric>
-#include <utility>
 #include "gui/event_guard.hpp"
 
 VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent)
 	: QWidget(parent),
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
+	  font_(QApplication::font()),
+	  met_(font_),
 	  maxDispRowCnt_(0),
 	  upperRow_(-1),
 	  defaultRow_(0),
@@ -33,17 +35,15 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	ui->setupUi(this);
 
 	/* Font */
-	font_ = QApplication::font();
 	font_.setPointSize(10);
 	// Check font size
-	QFontMetrics metrics(font_);
-	fontWidth_ = metrics.width('0');
-	fontAscend_ = metrics.ascent();
-	fontHeight_ = metrics.height();
-	fontLeading_ = metrics.leading();
+	fontWidth_ = met_.width('0');
+	fontAscend_ = met_.ascent();
+	fontHeight_ = met_.height();
+	fontLeading_ = met_.leading();
 
 	/* Width & height */
-	tagWidth_ = metrics.width(VisualizedInstrumentMacroEditor::tr("Release "));
+	updateTagWidth();
 
 	ui->panel->setAttribute(Qt::WA_Hover);
 	ui->verticalScrollBar->setVisible(false);
@@ -74,6 +74,7 @@ void VisualizedInstrumentMacroEditor::AddRow(QString label)
 		ui->verticalScrollBar->setMaximum(max);
 		ui->verticalScrollBar->setValue(max);
 	}
+	updateTagWidth();
 	updateRowHeight();
 }
 
@@ -228,6 +229,7 @@ void VisualizedInstrumentMacroEditor::clearData()
 void VisualizedInstrumentMacroEditor::clearRow()
 {
 	labels_.clear();
+	updateTagWidth();
 }
 
 void VisualizedInstrumentMacroEditor::setUpperRow(int row)
@@ -241,12 +243,14 @@ void VisualizedInstrumentMacroEditor::setUpperRow(int row)
 void VisualizedInstrumentMacroEditor::setLabel(int row, QString text)
 {
 	labels_.at(static_cast<size_t>(row)) = text;
+	updateTagWidth();
 	ui->panel->update();
 }
 
 void VisualizedInstrumentMacroEditor::clearAllLabelText()
 {
 	std::fill(labels_.begin(), labels_.end(), "");
+	updateTagWidth();
 	ui->panel->update();
 }
 
@@ -974,6 +978,13 @@ void VisualizedInstrumentMacroEditor::onLoopChanged()
 	}
 
 	emit loopChanged(std::move(begins), std::move(ends), std::move(times));
+}
+
+void VisualizedInstrumentMacroEditor::updateTagWidth()
+{
+	int w = met_.width(VisualizedInstrumentMacroEditor::tr("Release") + " ");
+	for (auto& lab : labels_) w = std::max(w, met_.width(lab + " "));
+	tagWidth_ = w;
 }
 
 void VisualizedInstrumentMacroEditor::updateColumnWidth()
