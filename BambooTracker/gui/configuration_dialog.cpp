@@ -41,6 +41,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(configLocked->getRetrieveChannelState()));
 	ui->generalSettingsListWidget->item(9)->setCheckState(toCheckState(configLocked->getEnableTranslation()));
 	ui->generalSettingsListWidget->item(10)->setCheckState(toCheckState(configLocked->getShowFMDetuneAsSigned()));
+	ui->generalSettingsListWidget->item(11)->setCheckState(toCheckState(configLocked->getShowWaveVisual()));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -196,6 +197,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setRetrieveChannelState(fromCheckState(ui->generalSettingsListWidget->item(8)->checkState()));
 	configLocked->setEnableTranslation(fromCheckState(ui->generalSettingsListWidget->item(9)->checkState()));
 	configLocked->setShowFMDetuneAsSigned(fromCheckState(ui->generalSettingsListWidget->item(10)->checkState()));
+	configLocked->setShowWaveVisual(fromCheckState(ui->generalSettingsListWidget->item(11)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
@@ -284,6 +286,9 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		break;
 	case 10:	// Show FM detune as signed
 		text = tr("Display FM detune values as signed numbers in the FM envelope editor.");
+		break;
+	case 11:	// Show wave visual
+		text = tr("Enable an oscilloscope which displays a waveform of the sound output.");
 		break;
 	default:
 		text = "";
