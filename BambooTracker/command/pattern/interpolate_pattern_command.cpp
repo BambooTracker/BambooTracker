@@ -112,7 +112,7 @@ void InterpolatePatternCommand::redo()
 				int a = pattern.getStep(bStep_).getNoteNumber();
 				int b = pattern.getStep(eStep_).getNoteNumber();
 				if (a > -1 && b > -1)
-					pattern.getStep(s).setNoteNumber(a + (b - a) * j / div);
+					pattern.getStep(s).setNoteNumber(a + (b - a) * (int)j / div);
 				break;
 			}
 			case 1:
@@ -121,7 +121,7 @@ void InterpolatePatternCommand::redo()
 				int a = pattern.getStep(bStep_).getInstrumentNumber();
 				int b = pattern.getStep(eStep_).getInstrumentNumber();
 				if (a > -1 && b > -1)
-					pattern.getStep(s).setInstrumentNumber(a + (b - a) * j / div);
+					pattern.getStep(s).setInstrumentNumber(a + (b - a) * (int)j / div);
 				break;
 			}
 			case 2:
@@ -130,7 +130,7 @@ void InterpolatePatternCommand::redo()
 				int a = pattern.getStep(bStep_).getVolume();
 				int b = pattern.getStep(eStep_).getVolume();
 				if (a > -1 && b > -1)
-					pattern.getStep(s).setVolume(a + (b - a) * j / div);
+					pattern.getStep(s).setVolume(a + (b - a) * (int)j / div);
 				break;
 			}
 			case 3:
@@ -149,7 +149,7 @@ void InterpolatePatternCommand::redo()
 				int a = pattern.getStep(bStep_).getEffectValue(0);
 				int b = pattern.getStep(eStep_).getEffectValue(0);
 				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(0, a + (b - a) * j / div);
+					pattern.getStep(s).setEffectValue(0, a + (b - a) * (int)j / div);
 				break;
 			}
 			case 5:
@@ -168,7 +168,7 @@ void InterpolatePatternCommand::redo()
 				int a = pattern.getStep(bStep_).getEffectValue(1);
 				int b = pattern.getStep(eStep_).getEffectValue(1);
 				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(1, a + (b - a) * j / div);
+					pattern.getStep(s).setEffectValue(1, a + (b - a) * (int)j / div);
 				break;
 			}
 			case 7:
@@ -187,7 +187,7 @@ void InterpolatePatternCommand::redo()
 				int a = pattern.getStep(bStep_).getEffectValue(2);
 				int b = pattern.getStep(eStep_).getEffectValue(2);
 				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(2, a + (b - a) * j / div);
+					pattern.getStep(s).setEffectValue(2, a + (b - a) * (int)j / div);
 				break;
 			}
 			case 9:
@@ -206,7 +206,7 @@ void InterpolatePatternCommand::redo()
 				int a = pattern.getStep(bStep_).getEffectValue(3);
 				int b = pattern.getStep(eStep_).getEffectValue(3);
 				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(3, a + (b - a) * j / div);
+					pattern.getStep(s).setEffectValue(3, a + (b - a) * (int)j / div);
 				break;
 			}
 			}
