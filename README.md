@@ -15,8 +15,9 @@ On Windows:
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - **Development builds**: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
-On Linux:  
-See below chapter "Build on Linux" - "Install package on Debian or Ubuntu".
+On Linux:
+
+- See below chapters "Build on Linux" - "Install package on Debian or Ubuntu".
 
 ## Glossary
 The files created by this tracker are called "modules". One such module contains songs (song data), instruments (tone data) and settings common to each song.

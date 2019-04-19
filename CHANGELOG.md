@@ -14,14 +14,15 @@
 - [#89] - Add custom note entry layout configuration ([#70]; thanks [@OPNA2608], [@jpcima])
 - [#3] - Add tone/hard frequency ratio in SSG envelope edit and tone/square-mask frequency ratio in SSG waveform edit (thanks [@marysiamzawka])
 - [#94], [#106] - Add Nuked OPN-Mod emulator ([#93]; thanks [@jpcima], [@papiezak])
-- [#103], [#105] - Add oscilloscope ([#79]; thanks [@jpcima], [@papiezak])
-- [#99] - Add VGM chip target selection ([#98]; thanks [@jpcima], [@pedipanol])
+- [#103], [#105], [#110] - Add oscilloscope ([#79]; thanks [@jpcima], [@papiezak])
+- [#99], [#111] - Add VGM and S98 chip target selection ([#98]; thanks [@jpcima], [@pedipanol])
 - Add default file name to save/export dialogs
 - [#108] - Add macOS test to Travis CI (thanks [@OPNA2608], [@jpcima])
 
 ### Changed
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
 - Change to keep current instrument when loading module
+- Move tick frequency settings from module settings groupbox to module properties dialog
 - Change some layouts of UI
 
 ### Fixed
@@ -43,10 +44,12 @@
 - [#100], [#104] - Accelerate vgm/s98 export to skip sample generation (thanks [@jpcima])
 - [#106] - Fix 12-bit wrapping behavior in MAME YM2608 ADPCM-A (thanks [@jpcima])
 - [#109] - Fix icon to desplay all windows (thanks [@jpcima])
+- [#114] - Fix incorrect event interpolation ([#113]; thanks [@jpcima])
 
 ### Removed
 - Remove module and instrument saving to past version
 - [#3] - Remove square-mask frequency selection by note+pitch
+- Delete module properties dialog open button in module settings groupbox
 
 [#80]: https://github.com/rerrahkr/BambooTracker/pull/80
 [#81]: https://github.com/rerrahkr/BambooTracker/issues/81
@@ -81,6 +84,10 @@
 [#107]: https://github.com/rerrahkr/BambooTracker/pull/107
 [#108]: https://github.com/rerrahkr/BambooTracker/pull/108
 [#109]: https://github.com/rerrahkr/BambooTracker/pull/109
+[#111]: https://github.com/rerrahkr/BambooTracker/pull/111
+[#110]: https://github.com/rerrahkr/BambooTracker/pull/110
+[#114]: https://github.com/rerrahkr/BambooTracker/pull/114
+[#113]: https://github.com/rerrahkr/BambooTracker/issues/113
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

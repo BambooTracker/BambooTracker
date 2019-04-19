@@ -12,9 +12,9 @@ PasteCopiedDataToOrderCommand::PasteCopiedDataToOrderCommand(std::weak_ptr<Modul
 	auto& sng = mod.lock()->getSong(songNum);
 	for (size_t i = 0; i < cells.size(); ++i) {
 		prevCells_.emplace_back();
-		std::vector<OrderData> odrs = sng.getOrderData(beginOrder + i);
+		std::vector<OrderData> odrs = sng.getOrderData(beginOrder + static_cast<int>(i));
 		for (size_t j = 0; j < cells.at(i).size(); ++j) {
-			prevCells_.at(i).push_back(std::to_string(odrs.at(beginTrack + j).patten));
+			prevCells_.at(i).push_back(std::to_string(odrs.at(static_cast<size_t>(beginTrack) + j).patten));
 		}
 	}
 }
@@ -40,7 +40,8 @@ void PasteCopiedDataToOrderCommand::setCells(std::vector<std::vector<std::string
 
 	for (size_t i = 0; i < cells.size(); ++i) {
 		for (size_t j = 0; j < cells.at(i).size(); ++j) {
-			sng.getTrack(track_ + j).registerPatternToOrder(order_ + i, std::stoi(cells.at(i).at(j)));
+			sng.getTrack(track_ + static_cast<int>(j))
+					.registerPatternToOrder(order_ + static_cast<int>(i), std::stoi(cells.at(i).at(j)));
 		}
 	}
 }

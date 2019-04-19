@@ -15,8 +15,9 @@ Windows:
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - **開発版**: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
 
-Linux:  
-"Linuxでのビルド方法" - "DebianまたはUbuntuでのパッケージのインストール"の章を参照してください。
+Linux:
+
+- "Linuxでのビルド方法" - "DebianまたはUbuntuでのパッケージのインストール"の章を参照してください。
 
 ## 用語解説
 トラッカーで作成される1データ(ファイル)をモジュールと呼びます。モジュールは複数のソング(曲データ)とインストゥルメント(音色)、各ソング共通の設定を持ちます。  
