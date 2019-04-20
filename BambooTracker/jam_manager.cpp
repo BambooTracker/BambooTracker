@@ -29,7 +29,7 @@ void JamManager::polyphonic(bool flag, SongType type)
 std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource source)
 {
 	std::vector<JamKeyData> keyDataList;
-	JamKeyData onData{key, channel, source};
+	JamKeyData onData{ key, channel, source };
 
 	std::deque<int>* unusedCh = nullptr;
 	switch (source) {
@@ -39,10 +39,23 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 	}
 
 	if (!unusedCh->empty()) {
-		if (isPoly_) onData.channelInSource = unusedCh->front();
-		unusedCh->pop_front();
-		keyOnTable_.push_back(onData);
-		keyDataList.push_back(onData);
+		auto&& it = std::find_if(keyOnTable_.begin(),
+								 keyOnTable_.end(),
+								 [&](JamKeyData x) {return (x.source == source && x.key == key);});
+		if (it == keyOnTable_.end()) {
+			if (isPoly_) onData.channelInSource = unusedCh->front();
+			unusedCh->pop_front();
+			keyOnTable_.push_back(onData);
+			keyDataList.push_back(onData);
+		}
+		else {
+			JamKeyData del = *it;
+			if (isPoly_) onData.channelInSource = del.channelInSource;
+			keyDataList.push_back(onData);
+			keyDataList.push_back(del);
+			keyOnTable_.erase(it);
+			keyOnTable_.push_back(onData);
+		}
 	}
 	else {
 		auto&& it = std::find_if(keyOnTable_.begin(),

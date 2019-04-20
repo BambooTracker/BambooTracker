@@ -45,6 +45,7 @@
 - [#106] - Fix 12-bit wrapping behavior in MAME YM2608 ADPCM-A (thanks [@jpcima])
 - [#109] - Fix icon to desplay all windows (thanks [@jpcima])
 - [#114] - Fix incorrect event interpolation ([#113]; thanks [@jpcima])
+- [#115] - Fix jam manager to replace key on data with new one when the same data is exist (thanks [@papiezak])
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -88,6 +89,7 @@
 [#110]: https://github.com/rerrahkr/BambooTracker/pull/110
 [#114]: https://github.com/rerrahkr/BambooTracker/pull/114
 [#113]: https://github.com/rerrahkr/BambooTracker/issues/113
+[#115]: https://github.com/rerrahkr/BambooTracker/issues/115
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
