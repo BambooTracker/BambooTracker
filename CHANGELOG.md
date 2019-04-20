@@ -47,6 +47,9 @@
 - [#114] - Fix incorrect event interpolation ([#113]; thanks [@jpcima])
 - [#115] - Fix jam manager to replace key on data with new one when the same data is exist (thanks [@papiezak])
 - Fix tick timings more accurate in using SCCI
+- [#116] - Fix position the cursor after setting line edit contents (thanks [@jpcima])
+- [#117] - Resolve warning 'catching polymorphic type by value' (thanks [@jpcima])
+- Add file save check before opening a module from recent files list
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -91,6 +94,8 @@
 [#114]: https://github.com/rerrahkr/BambooTracker/pull/114
 [#113]: https://github.com/rerrahkr/BambooTracker/issues/113
 [#115]: https://github.com/rerrahkr/BambooTracker/issues/115
+[#116]: https://github.com/rerrahkr/BambooTracker/pull/116
+[#117]: https://github.com/rerrahkr/BambooTracker/pull/117
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

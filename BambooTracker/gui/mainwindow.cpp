@@ -91,7 +91,29 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		action->setData(fileHistory_->at(i));
 	}
 	QObject::connect(ui->menu_Recent_Files, &QMenu::triggered, this, [&](QAction* action) {
-		if (action != ui->actionClear) openModule(action->data().toString());
+		if (action != ui->actionClear) {
+			if (isWindowModified()) {
+				auto modTitleStd = bt_->getModuleTitle();
+				QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
+				if (modTitle.isEmpty()) modTitle = tr("Untitled");
+				QMessageBox dialog(QMessageBox::Warning,
+								   "BambooTracker",
+								   tr("Save changes to %1?").arg(modTitle),
+								   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+				switch (dialog.exec()) {
+				case QMessageBox::Yes:
+					if (!on_actionSave_triggered()) return;
+					break;
+				case QMessageBox::No:
+					break;
+				case QMessageBox::Cancel:
+					return;
+				default:
+					break;
+				}
+			}
+			openModule(action->data().toString());
+		}
 	});
 
 	/* Sub tool bar */
