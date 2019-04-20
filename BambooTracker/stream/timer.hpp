@@ -12,7 +12,7 @@ public:
 	~Timer();
 
 	void setFunction(std::function<void()> func);
-	void setInterval(const int milisec);
+	void setInterval(const int microsec);
 
 	void start();
 	void stop();

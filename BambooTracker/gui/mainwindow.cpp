@@ -164,16 +164,14 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}, Qt::DirectConnection);
 	if (config.lock()->getUseSCCI()) {
 		stream_->stop();
-		/*
 		timer_ = std::make_unique<Timer>();
-		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
-		timer_->setFunction([&]{ onNewTickSignaled(); });
-		*/
-		timer_ = std::make_unique<QTimer>(this);
-		timer_->setTimerType(Qt::PreciseTimer);
-		timer_->setInterval(1000 / bt_->getModuleTickFrequency());
-		timer_->setSingleShot(false);
-		QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
+		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaled()");
+		Q_ASSERT(tickEventMethod_ != -1);
+		timer_->setFunction([&]{
+			QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
+			method.invoke(this, Qt::QueuedConnection);
+		});
 
 		scciDll_->load();
 		if (scciDll_->isLoaded()) {
@@ -1065,16 +1063,14 @@ void MainWindow::changeConfiguration()
 	if (config_.lock()->getUseSCCI()) {
 		stream_->stop();
 		if (!timer_) {
-			/*
 			timer_ = std::make_unique<Timer>();
-			timer_->setInterval(1000 / bt_->getModuleTickFrequency());
-			timer_->setFunction([&]{ onNewTickSignaled(); });
-			*/
-			timer_ = std::make_unique<QTimer>(this);
-			timer_->setTimerType(Qt::PreciseTimer);
-			timer_->setInterval(1000 / bt_->getModuleTickFrequency());
-			timer_->setSingleShot(false);
-			QObject::connect(timer_.get(), &QTimer::timeout, this, &MainWindow::onNewTickSignaled);
+			timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaled()");
+			Q_ASSERT(tickEventMethod_ != -1);
+			timer_->setFunction([&]{
+				QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
+				method.invoke(this, Qt::QueuedConnection);
+			});
 
 			scciDll_->load();
 			if (scciDll_->isLoaded()) {
@@ -1684,7 +1680,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 
 		// Set tick frequency
 		stream_->setInturuption(bt_->getModuleTickFrequency());
-		if (timer_) timer_->setInterval(1000 / bt_->getModuleTickFrequency());
+		if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 	}
 }

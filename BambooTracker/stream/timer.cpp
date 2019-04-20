@@ -15,9 +15,9 @@ void Timer::setFunction(std::function<void()> func)
 	func_ = func;
 }
 
-void Timer::setInterval(const int milisec)
+void Timer::setInterval(const int microsec)
 {
-	time_.store(milisec);
+	time_.store(microsec);
 }
 
 void Timer::start()
@@ -25,7 +25,7 @@ void Timer::start()
 	isContinue_.store(true);
 	thread_ = std::thread([&] {
 		while (isContinue_.load()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(time_.load()));
+			std::this_thread::sleep_for(std::chrono::microseconds(time_.load()));
 			func_();
 		}
 	});
