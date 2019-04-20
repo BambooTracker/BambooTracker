@@ -46,6 +46,7 @@
 - [#109] - Fix icon to desplay all windows (thanks [@jpcima])
 - [#114] - Fix incorrect event interpolation ([#113]; thanks [@jpcima])
 - [#115] - Fix jam manager to replace key on data with new one when the same data is exist (thanks [@papiezak])
+- Fix tick timings more accurate in using SCCI
 
 ### Removed
 - Remove module and instrument saving to past version
