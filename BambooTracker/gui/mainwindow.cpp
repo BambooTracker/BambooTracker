@@ -515,7 +515,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		Qt::Key qtKey = static_cast<Qt::Key> (key);
 		try {
 			bt_->jamKeyOn (getJamKeyFromLayoutMapping (qtKey));
-		} catch (std::invalid_argument) {}
+		} catch (std::invalid_argument &) {}
 	}
 }
 
@@ -528,7 +528,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 		Qt::Key qtKey = static_cast<Qt::Key> (key);
 		try {
 			bt_->jamKeyOff (getJamKeyFromLayoutMapping (qtKey));
-		} catch (std::invalid_argument) {}
+		} catch (std::invalid_argument &) {}
 	}
 }
 
