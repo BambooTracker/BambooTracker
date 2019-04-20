@@ -880,7 +880,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 					break;
 			}
 			setStepKeyOn (JamManager::jamKeyToNote (possibleJamKey), baseOct + octaveOffset);
-		} catch (std::invalid_argument) {}
+		} catch (std::invalid_argument &) {}
 	}
 
 	return false;
