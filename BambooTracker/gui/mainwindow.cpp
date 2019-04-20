@@ -902,12 +902,15 @@ void MainWindow::loadModule()
 	auto modTitle = bt_->getModuleTitle();
 	ui->modTitleLineEdit->setText(
 				QString::fromUtf8(modTitle.c_str(), static_cast<int>(modTitle.length())));
+	ui->modTitleLineEdit->setCursorPosition(0);
 	auto modAuthor = bt_->getModuleAuthor();
 	ui->authorLineEdit->setText(
 				QString::fromUtf8(modAuthor.c_str(), static_cast<int>(modAuthor.length())));
+	ui->authorLineEdit->setCursorPosition(0);
 	auto modCopyright = bt_->getModuleCopyright();
 	ui->copyrightLineEdit->setText(
 				QString::fromUtf8(modCopyright.c_str(), static_cast<int>(modCopyright.length())));
+	ui->copyrightLineEdit->setCursorPosition(0);
 	ui->songNumSpinBox->setMaximum(static_cast<int>(bt_->getSongCount()) - 1);
 	highlight1_->setValue(static_cast<int>(bt_->getModuleStepHighlight1Distance()));
 	highlight2_->setValue(static_cast<int>(bt_->getModuleStepHighlight2Distance()));
@@ -973,10 +976,12 @@ void MainWindow::loadSong()
 	ui->songNumSpinBox->setValue(curSong);
 	auto title = bt_->getSongTitle(curSong);
 	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), static_cast<int>(title.length())));
+	ui->songTitleLineEdit->setCursorPosition(0);
 	switch (bt_->getSongStyle(curSong).type) {
 	case SongType::STD:		ui->songStyleLineEdit->setText(tr("Standard"));			break;
 	case SongType::FMEX:	ui->songStyleLineEdit->setText(tr("FM3ch expanded"));	break;
 	}
+	ui->songStyleLineEdit->setCursorPosition(0);
 	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
 	ui->speedSpinBox->setValue(bt_->getSongSpeed(curSong));
 	ui->patternSizeSpinBox->setValue(static_cast<int>(bt_->getDefaultPatternSize(curSong)));
