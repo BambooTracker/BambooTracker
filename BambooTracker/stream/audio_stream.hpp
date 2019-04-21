@@ -37,7 +37,7 @@ private:
 	QAudioDeviceInfo info_;
 	QAudioFormat format_;
 	std::unique_ptr<QAudioOutput> audio_;
-	QIODevice* mixer_;
+	QIODevice* device_;
 	uint32_t rate_, duration_, intrRate_;
 	size_t bufferSampleSize_, bufferSize_, bufferByteSize_, bufferIdx_;
 	size_t intrSampSize_;

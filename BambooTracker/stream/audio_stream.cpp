@@ -29,20 +29,23 @@ AudioStream::~AudioStream()
 
 void AudioStream::start()
 {
-	if (audio_->state() != QAudio::ActiveState) mixer_ = audio_->start();
+	if (audio_->state() != QAudio::ActiveState) device_ = audio_->start();
 	char dummy[TRANS_BUFFER_SIZE] = { 0 };
-	mixer_->write(dummy, TRANS_BUFFER_SIZE);
+	device_->write(dummy, TRANS_BUFFER_SIZE);
 }
 
 void AudioStream::stop()
 {
-	if (mixer_->isOpen()) mixer_->close();
+	if (device_ && device_->isOpen()) {
+		device_->close();
+		device_ = nullptr;
+	}
 	if (audio_->state() != QAudio::StoppedState) audio_->stop();
 }
 
 void AudioStream::setRate(uint32_t rate)
 {
-	bool isOpen = mixer_->isOpen();
+	bool isOpen = device_ ? device_->isOpen() : false;
 	if (isOpen) stop();
 	rate_ = rate;
 	format_.setSampleRate(static_cast<int>(rate));
@@ -54,7 +57,7 @@ void AudioStream::setRate(uint32_t rate)
 
 void AudioStream::setDuration(uint32_t duration)
 {
-	bool isOpen = mixer_->isOpen();
+	bool isOpen = device_ ? device_->isOpen() : false;
 	if (isOpen) stop();
 	duration_ = duration;
 	updateBufferSize();
@@ -69,7 +72,7 @@ void AudioStream::setInturuption(uint32_t rate)
 
 void AudioStream::setDevice(QString device)
 {
-	bool isOpen = mixer_->isOpen();
+	bool isOpen = device_ ? device_->isOpen() : false;
 	if (isOpen) stop();
 	setDeviceFromString(device);
 	audio_ = std::make_unique<QAudioOutput>(info_, format_);
@@ -89,7 +92,7 @@ size_t AudioStream::getInterruptionSampleSize() const
 void AudioStream::flushSamples(int16_t* buf, size_t nSamples)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
-	if (buf_.empty() || audio_->state() == QAudio::StoppedState || !mixer_->isOpen()) return;
+	if (buf_.empty() || audio_->state() == QAudio::StoppedState || !device_->isOpen()) return;
 	size_t idx = 0;
 	size_t argBufSize = nSamples << 1;	// Stereo
 
@@ -97,7 +100,7 @@ void AudioStream::flushSamples(int16_t* buf, size_t nSamples)
 		buf_[bufferIdx_++] = buf[idx++];	// Left
 		buf_[bufferIdx_++] = buf[idx++];	// Right
 		if (bufferIdx_ >= bufferSize_) {
-			mixer_->write(reinterpret_cast<const char*>(&buf_[0]), bufferByteSize_);
+			device_->write(reinterpret_cast<const char*>(&buf_[0]), bufferByteSize_);
 			bufferIdx_ = 0;
 		}
 	}
