@@ -12,7 +12,13 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
-	ui->tickFreqSpinBox->setValue(static_cast<int>(core.lock()->getModuleTickFrequency()));
+	int tickFreq = static_cast<int>(core.lock()->getModuleTickFrequency());
+	ui->customTickFreqSpinBox->setValue(tickFreq);
+	switch (tickFreq) {
+	case 60:	ui->ntscRadioButton->setChecked(true);				break;
+	case 50:	ui->palRadioButton->setChecked(true);				break;
+	default:	ui->customTickFreqRadioButton->setChecked(true);	break;
+	}
 
 	ui->songTreeWidget->setColumnCount(3);
 	ui->songTreeWidget->setHeaderLabels({ tr("Number"), tr("Title"), tr("Song type") });
@@ -143,7 +149,11 @@ void ModulePropertiesDialog::on_editTitleLineEdit_textEdited(const QString &arg1
 void ModulePropertiesDialog::onAccepted()
 {
 	// Set tick frequency
-	bt_.lock()->setModuleTickFrequency(static_cast<unsigned int>(ui->tickFreqSpinBox->value()));
+	unsigned int tickFreq;
+	if (ui->ntscRadioButton->isChecked()) tickFreq = 60;
+	else if (ui->palRadioButton->isChecked()) tickFreq = 50;
+	else tickFreq = static_cast<unsigned int>(ui->customTickFreqSpinBox->value());
+	bt_.lock()->setModuleTickFrequency(tickFreq);
 
 	auto* tree = ui->songTreeWidget;
 	std::vector<int> newSongNums;

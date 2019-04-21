@@ -15,30 +15,63 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="generalGroupBox">
+    <widget class="QGroupBox" name="tickFrequencyGroupBox">
      <property name="title">
-      <string>General</string>
+      <string>Tick frequency</string>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="tickFreqLabel">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="ntscRadioButton">
         <property name="text">
-         <string>Tick frequency:</string>
+         <string>60Hz (NTSC)</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">tickFreqButtonGroup</string>
+        </attribute>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QSpinBox" name="tickFreqSpinBox">
-        <property name="suffix">
-         <string notr="true">Hz</string>
+      <item>
+       <widget class="QRadioButton" name="palRadioButton">
+        <property name="text">
+         <string>50Hz (PAL)</string>
         </property>
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="value">
-         <number>60</number>
-        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">tickFreqButtonGroup</string>
+        </attribute>
        </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QRadioButton" name="customTickFreqRadioButton">
+          <property name="text">
+           <string>Custom</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">tickFreqButtonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="customTickFreqSpinBox">
+          <property name="suffix">
+           <string notr="true">Hz</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>60</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -256,4 +289,7 @@
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="tickFreqButtonGroup"/>
+ </buttongroups>
 </ui>
