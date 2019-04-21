@@ -54,7 +54,6 @@ SOURCES += \
     chips/nuked/ym3438.c \
     bamboo_tracker.cpp \
     stream/audio_stream.cpp \
-    stream/audio_stream_mixier.cpp \
     jam_manager.cpp \
     pitch_converter.cpp \
     instrument/instruments_manager.cpp \
@@ -211,7 +210,6 @@ HEADERS += \
     chips/resampler.hpp \
     bamboo_tracker.hpp \
     stream/audio_stream.hpp \
-    stream/audio_stream_mixier.hpp \
     chips/chip_def.h \
     jam_manager.hpp \
     misc.hpp \

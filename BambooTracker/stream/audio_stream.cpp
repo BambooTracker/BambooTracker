@@ -1,10 +1,14 @@
 #include "audio_stream.hpp"
+#include <algorithm>
 #include <QSysInfo>
 #include <QAudio>
 
-AudioStream::AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate, QString device)
+AudioStream::AudioStream(uint32_t rate, uint32_t bufferDuration, uint32_t intrRate, QString device)
+	: rate_(rate), duration_(bufferDuration), intrRate_(intrRate)
 {
 	setDeviceFromString(device);
+	updateBufferSize();
+	updateIntrruptionSampleSize();
 
 	format_.setByteOrder(QAudioFormat::Endian(QSysInfo::ByteOrder));
 	format_.setChannelCount(2); // Stereo
@@ -14,13 +18,6 @@ AudioStream::AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate, QS
 	format_.setSampleType(QAudioFormat::SignedInt);
 
 	audio_ = std::make_unique<QAudioOutput>(info_, format_);
-	mixer_ = std::make_unique<AudioStreamMixier>(rate, duration, intrRate);
-	QObject::connect(mixer_.get(), &AudioStreamMixier::streamInterrupted,
-					 this, [&]() { emit streamInterrupted(); }, Qt::DirectConnection);
-	QObject::connect(mixer_.get(), &AudioStreamMixier::bufferPrepared,
-					 this, [&](int16_t *container, size_t nSamples) {
-		emit bufferPrepared(container, nSamples);
-	}, Qt::DirectConnection);
 
 	start();
 }
@@ -32,49 +29,78 @@ AudioStream::~AudioStream()
 
 void AudioStream::start()
 {
-	if (!mixer_->hasRun()) mixer_->start();
-	if (audio_->state() != QAudio::ActiveState) audio_->start(mixer_.get());
+	if (audio_->state() != QAudio::ActiveState) mixer_ = audio_->start();
+	char dummy[TRANS_BUFFER_SIZE] = { 0 };
+	mixer_->write(dummy, TRANS_BUFFER_SIZE);
 }
 
 void AudioStream::stop()
 {
-	if (mixer_->hasRun()) mixer_->stop();
+	if (mixer_->isOpen()) mixer_->close();
 	if (audio_->state() != QAudio::StoppedState) audio_->stop();
 }
 
 void AudioStream::setRate(uint32_t rate)
 {
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
+	bool isOpen = mixer_->isOpen();
+	if (isOpen) stop();
+	rate_ = rate;
 	format_.setSampleRate(static_cast<int>(rate));
+	updateBufferSize();
+	updateIntrruptionSampleSize();
 	audio_ = std::make_unique<QAudioOutput>(info_, format_);
-	mixer_->setRate(rate);
-	if (hasRun) start();
+	if (isOpen) start();
 }
 
 void AudioStream::setDuration(uint32_t duration)
 {
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
-	mixer_->setDuration(duration);
-	if (hasRun) start();
+	bool isOpen = mixer_->isOpen();
+	if (isOpen) stop();
+	duration_ = duration;
+	updateBufferSize();
+	if (isOpen) start();
 }
 
 void AudioStream::setInturuption(uint32_t rate)
 {
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
-	mixer_->setInterruption(rate);
-	if (hasRun) start();
+	intrRate_ = rate;
+	updateIntrruptionSampleSize();
 }
 
 void AudioStream::setDevice(QString device)
 {
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
+	bool isOpen = mixer_->isOpen();
+	if (isOpen) stop();
 	setDeviceFromString(device);
 	audio_ = std::make_unique<QAudioOutput>(info_, format_);
-	if (hasRun) start();
+	if (isOpen) start();
+}
+
+int16_t* AudioStream::getTransferBuffer()
+{
+	return transBuf_;
+}
+
+size_t AudioStream::getInterruptionSampleSize() const
+{
+	return intrSampSize_;
+}
+
+void AudioStream::flushSamples(int16_t* buf, size_t nSamples)
+{
+	std::lock_guard<std::mutex> lg(mutex_);
+	if (buf_.empty() || audio_->state() == QAudio::StoppedState || !mixer_->isOpen()) return;
+	size_t idx = 0;
+	size_t argBufSize = nSamples << 1;	// Stereo
+
+	while (idx < argBufSize) {
+		buf_[bufferIdx_++] = buf[idx++];	// Left
+		buf_[bufferIdx_++] = buf[idx++];	// Right
+		if (bufferIdx_ >= bufferSize_) {
+			mixer_->write(reinterpret_cast<const char*>(&buf_[0]), bufferByteSize_);
+			bufferIdx_ = 0;
+		}
+	}
 }
 
 void AudioStream::setDeviceFromString(QString device)
@@ -89,4 +115,14 @@ void AudioStream::setDeviceFromString(QString device)
 			break;
 		}
 	}
+}
+
+void AudioStream::updateBufferSize()
+{
+	bufferSampleSize_ = rate_ * duration_ / 1000;
+	bufferSize_ = bufferSampleSize_ << 1;	// Stereo
+	bufferByteSize_ = bufferSize_ << 1;		// int16
+	buf_.resize(bufferSize_);
+	buf_.shrink_to_fit();
+	bufferIdx_ = 0;
 }

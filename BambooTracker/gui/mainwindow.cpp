@@ -178,22 +178,12 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 				  bt_->getStreamRate(), bt_->getStreamDuration(), bt_->getModuleTickFrequency(),
 				  QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
 									static_cast<int>(config.lock()->getSoundDevice().length())));
-	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
-					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
-	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
-					 this, [&](int16_t *container, size_t nSamples) {
-		bt_->getStreamSamples(container, nSamples);
-	}, Qt::DirectConnection);
+	timer_ = std::make_unique<Timer>();
+	timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
 	if (config.lock()->getUseSCCI()) {
 		stream_->stop();
-		timer_ = std::make_unique<Timer>();
-		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
-		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaled()");
+		tickEventMethod_ = metaObject()->indexOfSlot("updateTick()");
 		Q_ASSERT(tickEventMethod_ != -1);
-		timer_->setFunction([&]{
-			QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
-			method.invoke(this, Qt::QueuedConnection);
-		});
 
 		scciDll_->load();
 		if (scciDll_->isLoaded()) {
@@ -204,13 +194,19 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		else {
 			bt_->useSCCI(nullptr);
 		}
-
-		timer_->start();
 	}
 	else {
 		bt_->useSCCI(nullptr);
+		tickEventMethod_ = metaObject()->indexOfSlot("updateTickAndStream()");
+		Q_ASSERT(tickEventMethod_ != -1);
+
 		stream_->start();
 	}
+	timer_->setFunction([&]{
+		QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
+		method.invoke(this, Qt::QueuedConnection);
+	});
+	timer_->start();
 
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
@@ -1081,42 +1077,39 @@ void MainWindow::changeOctave(bool upFlag)
 /********** Configuration change **********/
 void MainWindow::changeConfiguration()
 {
+	timer_->stop();
+
 	// SCCI settings
 	if (config_.lock()->getUseSCCI()) {
 		stream_->stop();
-		if (!timer_) {
-			timer_ = std::make_unique<Timer>();
-			timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
-			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaled()");
-			Q_ASSERT(tickEventMethod_ != -1);
-			timer_->setFunction([&]{
-				QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
-				method.invoke(this, Qt::QueuedConnection);
-			});
 
-			scciDll_->load();
-			if (scciDll_->isLoaded()) {
-				SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
-														scciDll_->resolve("getSoundInterfaceManager"));
-				bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
-			}
-			else {
-				bt_->useSCCI(nullptr);
-			}
+		tickEventMethod_ = metaObject()->indexOfSlot("updateTick()");
+		Q_ASSERT(tickEventMethod_ != -1);
 
-			timer_->start();
+		scciDll_->load();
+		if (scciDll_->isLoaded()) {
+			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
+													scciDll_->resolve("getSoundInterfaceManager"));
+			bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
+		}
+		else {
+			bt_->useSCCI(nullptr);
 		}
 	}
 	else {
-		timer_.reset();
 		bt_->useSCCI(nullptr);
 		stream_->setRate(config_.lock()->getSampleRate());
 		stream_->setDuration(config_.lock()->getBufferLength());
 		stream_->setDevice(
 					QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
 									  static_cast<int>(config_.lock()->getSoundDevice().length())));
+
+		tickEventMethod_ = metaObject()->indexOfSlot("updateTickAndStream()");
+		Q_ASSERT(tickEventMethod_ != -1);
+
 		stream_->start();
 	}
+	timer_->start();
 
 	setMidiConfiguration();
 	instForms_->updateByConfiguration();
@@ -1702,7 +1695,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 
 		// Set tick frequency
 		stream_->setInturuption(bt_->getModuleTickFrequency());
-		if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 	}
 }
@@ -2276,7 +2269,7 @@ void MainWindow::on_actionOverwrite_triggered()
 	if (isEditedPattern_) ui->patternEditor->onPasteOverwritePressed();
 }
 
-void MainWindow::onNewTickSignaled()
+void MainWindow::updateTick()
 {
 	if (!bt_->streamCountUp()) {	// New step
 		int order = bt_->getPlayingOrderNumber();
@@ -2319,4 +2312,14 @@ void MainWindow::updateVisuals()
 	bt_->getOutputHistory(wave);
 
 	ui->waveVisual->setStereoSamples(wave, OPNAController::OutputHistorySize);
+}
+
+void MainWindow::updateTickAndStream()
+{
+	updateTick();
+
+	int16_t* buf = stream_->getTransferBuffer();
+	size_t nSamples = stream_->getInterruptionSampleSize();
+	bt_->getStreamSamples(buf, nSamples);
+	stream_->flushSamples(buf, nSamples);
 }
