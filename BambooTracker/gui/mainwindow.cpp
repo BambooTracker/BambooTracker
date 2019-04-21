@@ -204,7 +204,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}
 	timer_->setFunction([&]{
 		QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
-		method.invoke(this, Qt::QueuedConnection);
+		method.invoke(this, Qt::DirectConnection);
 	});
 	timer_->start();
 
