@@ -30,8 +30,6 @@ AudioStream::~AudioStream()
 void AudioStream::start()
 {
 	if (audio_->state() != QAudio::ActiveState) device_ = audio_->start();
-	char dummy[TRANS_BUFFER_SIZE] = { 0 };
-	device_->write(dummy, TRANS_BUFFER_SIZE);
 }
 
 void AudioStream::stop()
