@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string notr="true">Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -115,7 +115,10 @@
                     <item>
                      <widget class="QLineEdit" name="envUsersLineEdit">
                       <property name="enabled">
-                       <bool>false</bool>
+                       <bool>true</bool>
+                      </property>
+                      <property name="focusPolicy">
+                       <enum>Qt::NoFocus</enum>
                       </property>
                       <property name="readOnly">
                        <bool>true</bool>
@@ -226,8 +229,18 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_10">
-                 <item row="1" column="0" colspan="4">
-                  <widget class="VisualizedInstrumentMacroEditor" name="opSeqEditor" native="true"/>
+                 <item row="0" column="0">
+                  <widget class="QSpinBox" name="opSeqNumSpinBox">
+                   <property name="keyboardTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="prefix">
+                    <string>#</string>
+                   </property>
+                   <property name="maximum">
+                    <number>127</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="0" column="3">
                   <spacer name="horizontalSpacer_5">
@@ -242,33 +255,23 @@
                    </property>
                   </spacer>
                  </item>
-                 <item row="0" column="2">
-                  <widget class="QLineEdit" name="opSeqUsersLineEdit">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QSpinBox" name="opSeqNumSpinBox">
-                   <property name="keyboardTracking">
-                    <bool>false</bool>
-                   </property>
-                   <property name="prefix">
-                    <string>#</string>
-                   </property>
-                   <property name="maximum">
-                    <number>127</number>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="1" alignment="Qt::AlignRight">
                   <widget class="QLabel" name="opSeqUsersLabel">
                    <property name="text">
                     <string>Users:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="4">
+                  <widget class="VisualizedInstrumentMacroEditor" name="opSeqEditor" native="true"/>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLineEdit" name="opSeqUsersLineEdit">
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -303,24 +306,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
-               <widget class="QLabel" name="lfoUsersLabel">
-                <property name="text">
-                 <string>Users:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLineEdit" name="lfoUsersLineEdit">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" colspan="4">
+              <item row="1" column="0" colspan="5">
                <layout class="QGridLayout" name="gridLayout_7">
                 <item row="0" column="2" rowspan="3">
                  <widget class="LabeledVerticalSlider" name="amsSlider">
@@ -417,6 +403,23 @@
                  </spacer>
                 </item>
                </layout>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="lfoUsersLabel">
+                <property name="text">
+                 <string>Users:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLineEdit" name="lfoUsersLineEdit">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -555,16 +558,6 @@
                    </property>
                   </spacer>
                  </item>
-                 <item row="0" column="2">
-                  <widget class="QLineEdit" name="ptUsersLineEdit">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="0">
                   <widget class="QSpinBox" name="ptNumSpinBox">
                    <property name="keyboardTracking">
@@ -578,6 +571,19 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="0" column="5">
+                  <widget class="QComboBox" name="ptTypeComboBox"/>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QLabel" name="ptTypeLabel">
+                   <property name="text">
+                    <string>Type:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="6">
+                  <widget class="VisualizedInstrumentMacroEditor" name="ptEditor" native="true"/>
+                 </item>
                  <item row="0" column="1" alignment="Qt::AlignRight">
                   <widget class="QLabel" name="ptUsersLabel">
                    <property name="text">
@@ -585,18 +591,15 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0" colspan="4">
-                  <widget class="VisualizedInstrumentMacroEditor" name="ptEditor" native="true"/>
-                 </item>
-                 <item row="2" column="0" alignment="Qt::AlignRight">
-                  <widget class="QLabel" name="ptTypeLabel">
-                   <property name="text">
-                    <string>Type:</string>
+                 <item row="0" column="2">
+                  <widget class="QLineEdit" name="ptUsersLineEdit">
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
                    </property>
                   </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QComboBox" name="ptTypeComboBox"/>
                  </item>
                 </layout>
                </widget>
@@ -645,23 +648,7 @@
                  <bool>false</bool>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_9">
-                 <item row="1" column="0" colspan="5">
-                  <widget class="VisualizedInstrumentMacroEditor" name="arpEditor" native="true"/>
-                 </item>
                  <item row="0" column="4">
-                  <spacer name="horizontalSpacer_4">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="2" column="0" alignment="Qt::AlignRight">
                   <widget class="QLabel" name="arpTypeLabel">
                    <property name="text">
                     <string>Type:</string>
@@ -674,9 +661,6 @@
                     <string>Users:</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QComboBox" name="arpTypeComboBox"/>
                  </item>
                  <item row="0" column="0">
                   <widget class="QSpinBox" name="arpNumSpinBox">
@@ -691,10 +675,29 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="0" column="5">
+                  <widget class="QComboBox" name="arpTypeComboBox"/>
+                 </item>
+                 <item row="1" column="0" colspan="7">
+                  <widget class="VisualizedInstrumentMacroEditor" name="arpEditor" native="true"/>
+                 </item>
+                 <item row="0" column="3">
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item row="0" column="2">
                   <widget class="QLineEdit" name="arpUsersLineEdit">
-                   <property name="enabled">
-                    <bool>false</bool>
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
                    </property>
                    <property name="readOnly">
                     <bool>true</bool>
@@ -744,25 +747,33 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>envNumSpinBox</tabstop>
-  <tabstop>envUsersLineEdit</tabstop>
   <tabstop>alGraphicsView</tabstop>
   <tabstop>lfoGroupBox</tabstop>
   <tabstop>lfoNumSpinBox</tabstop>
-  <tabstop>lfoUsersLineEdit</tabstop>
+  <tabstop>lfoStartSpinBox</tabstop>
   <tabstop>amOp1CheckBox</tabstop>
   <tabstop>amOp2CheckBox</tabstop>
   <tabstop>amOp3CheckBox</tabstop>
   <tabstop>amOp4CheckBox</tabstop>
+  <tabstop>envResetCheckBox</tabstop>
+  <tabstop>envResetOp1CheckBox</tabstop>
+  <tabstop>envResetOp2CheckBox</tabstop>
+  <tabstop>envResetOp3CheckBox</tabstop>
+  <tabstop>envResetOp4CheckBox</tabstop>
   <tabstop>opSeqTypeComboBox</tabstop>
   <tabstop>opSeqEditGroupBox</tabstop>
   <tabstop>opSeqNumSpinBox</tabstop>
-  <tabstop>opSeqUsersLineEdit</tabstop>
+  <tabstop>arpOpComboBox</tabstop>
+  <tabstop>arpEditGroupBox</tabstop>
   <tabstop>arpNumSpinBox</tabstop>
   <tabstop>arpTypeComboBox</tabstop>
+  <tabstop>ptOpComboBox</tabstop>
+  <tabstop>ptEditGroupBox</tabstop>
   <tabstop>ptNumSpinBox</tabstop>
-  <tabstop>ptUsersLineEdit</tabstop>
   <tabstop>ptTypeComboBox</tabstop>
+  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>
  <connections/>

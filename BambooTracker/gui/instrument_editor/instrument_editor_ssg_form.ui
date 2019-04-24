@@ -36,6 +36,29 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QSpinBox" name="waveNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+            <property name="prefix">
+             <string>#</string>
+            </property>
+            <property name="maximum">
+             <number>127</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="waveUsersLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="1" alignment="Qt::AlignRight">
            <widget class="QLabel" name="waveUsersLabel">
             <property name="text">
@@ -43,7 +66,23 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="5">
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="VisualizedInstrumentMacroEditor" name="waveEditor" native="true"/>
+          </item>
+          <item row="2" column="0" colspan="4">
            <widget class="QGroupBox" name="squareMaskGroupBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -127,45 +166,6 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="0">
-           <widget class="QSpinBox" name="waveNumSpinBox">
-            <property name="keyboardTracking">
-             <bool>false</bool>
-            </property>
-            <property name="prefix">
-             <string>#</string>
-            </property>
-            <property name="maximum">
-             <number>127</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="5">
-           <widget class="VisualizedInstrumentMacroEditor" name="waveEditor" native="true"/>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="waveUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
        </item>
@@ -188,19 +188,6 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="tnUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="4">
-           <widget class="VisualizedInstrumentMacroEditor" name="tnEditor" native="true"/>
-          </item>
           <item row="0" column="3">
            <spacer name="horizontalSpacer_3">
             <property name="orientation">
@@ -221,6 +208,9 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="VisualizedInstrumentMacroEditor" name="tnEditor" native="true"/>
+          </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="tnNumSpinBox">
             <property name="keyboardTracking">
@@ -231,6 +221,16 @@
             </property>
             <property name="maximum">
              <number>127</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="tnUsersLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -256,53 +256,10 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="0">
-           <widget class="QSpinBox" name="envNumSpinBox">
-            <property name="keyboardTracking">
-             <bool>false</bool>
-            </property>
-            <property name="prefix">
-             <string>#</string>
-            </property>
-            <property name="maximum">
-             <number>127</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2" colspan="3">
-           <widget class="QLineEdit" name="envUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="envUsersLabel">
-            <property name="text">
-             <string>Users:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="5">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0" colspan="6">
+          <item row="1" column="0" colspan="4">
            <widget class="VisualizedInstrumentMacroEditor" name="envEditor" native="true"/>
           </item>
-          <item row="2" column="0" colspan="6">
+          <item row="2" column="0" colspan="4">
            <widget class="QGroupBox" name="envHardFreqGroupBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -389,6 +346,49 @@
             </layout>
            </widget>
           </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <widget class="QSpinBox" name="envNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+            <property name="prefix">
+             <string>#</string>
+            </property>
+            <property name="maximum">
+             <number>127</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="envUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="envUsersLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -411,26 +411,13 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="3">
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
+          <item row="0" column="5">
+           <widget class="QComboBox" name="arpTypeComboBox"/>
           </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="arpUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
+          <item row="0" column="4">
+           <widget class="QLabel" name="arpTypeLabel">
+            <property name="text">
+             <string>Type:</string>
             </property>
            </widget>
           </item>
@@ -447,6 +434,22 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="0" colspan="6">
+           <widget class="VisualizedInstrumentMacroEditor" name="arpEditor" native="true"/>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item row="0" column="1" alignment="Qt::AlignRight">
            <widget class="QLabel" name="arpUsersLabel">
             <property name="text">
@@ -454,18 +457,15 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0" colspan="4">
-           <widget class="VisualizedInstrumentMacroEditor" name="arpEditor" native="true"/>
-          </item>
-          <item row="2" column="0" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="arpTypeLabel">
-            <property name="text">
-             <string>Type:</string>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="arpUsersLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="arpTypeComboBox"/>
           </item>
          </layout>
         </widget>
@@ -489,6 +489,26 @@
           <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_11">
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="ptUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="ptTypeLabel">
+            <property name="text">
+             <string>Type:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QComboBox" name="ptTypeComboBox"/>
+          </item>
+          <item row="1" column="0" colspan="6">
+           <widget class="VisualizedInstrumentMacroEditor" name="ptEditor" native="true"/>
+          </item>
           <item row="0" column="3">
            <spacer name="horizontalSpacer_6">
             <property name="orientation">
@@ -502,16 +522,6 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="ptUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="ptNumSpinBox">
             <property name="prefix">
@@ -522,25 +532,15 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="ptUsersLabel">
-            <property name="text">
-             <string>Users:</string>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="ptUsersLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
-          </item>
-          <item row="1" column="0" colspan="4">
-           <widget class="VisualizedInstrumentMacroEditor" name="ptEditor" native="true"/>
-          </item>
-          <item row="2" column="0" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="ptTypeLabel">
-            <property name="text">
-             <string>Type:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="ptTypeComboBox"/>
           </item>
          </layout>
         </widget>
@@ -563,26 +563,31 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>waveEditGroupBox</tabstop>
   <tabstop>waveNumSpinBox</tabstop>
-  <tabstop>waveUsersLineEdit</tabstop>
+  <tabstop>squareMaskRawRadioButton</tabstop>
+  <tabstop>squareMaskRawSpinBox</tabstop>
+  <tabstop>squareMaskRatioRadioButton</tabstop>
+  <tabstop>squareMaskToneSpinBox</tabstop>
+  <tabstop>squareMaskMaskSpinBox</tabstop>
   <tabstop>tnEditGroupBox</tabstop>
   <tabstop>tnNumSpinBox</tabstop>
-  <tabstop>tnUsersLineEdit</tabstop>
   <tabstop>envEditGroupBox</tabstop>
   <tabstop>envNumSpinBox</tabstop>
-  <tabstop>envUsersLineEdit</tabstop>
+  <tabstop>hardFreqRawRadioButton</tabstop>
+  <tabstop>hardFreqRawSpinBox</tabstop>
+  <tabstop>hardFreqRatioRadioButton</tabstop>
+  <tabstop>hardFreqToneSpinBox</tabstop>
+  <tabstop>hardFreqHardSpinBox</tabstop>
   <tabstop>arpEditGroupBox</tabstop>
   <tabstop>arpNumSpinBox</tabstop>
-  <tabstop>arpUsersLineEdit</tabstop>
   <tabstop>arpTypeComboBox</tabstop>
   <tabstop>ptEditGroupBox</tabstop>
   <tabstop>ptNumSpinBox</tabstop>
-  <tabstop>ptUsersLineEdit</tabstop>
   <tabstop>ptTypeComboBox</tabstop>
  </tabstops>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="squareMaskButtonGroup"/>
   <buttongroup name="hardFreqButtonGroup"/>
+  <buttongroup name="squareMaskButtonGroup"/>
  </buttongroups>
 </ui>
