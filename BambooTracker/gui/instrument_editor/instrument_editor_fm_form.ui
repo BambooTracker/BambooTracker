@@ -13,665 +13,702 @@
   <property name="windowTitle">
    <string notr="true">Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0">
-   <property name="verticalSpacing">
-    <number>2</number>
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0">
+   <property name="leftMargin">
+    <number>0</number>
    </property>
-   <item row="3" column="0">
-    <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>6</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="lineWidth">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab_1">
-      <attribute name="title">
-       <string>Envelope</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
-       <item>
-        <widget class="QGroupBox" name="envGroupBox">
-         <property name="title">
-          <string>Envelope</string>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>570</width>
+        <height>680</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_17">
+       <item row="0" column="0">
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>0</number>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6" rowstretch="1,2,2,2,2">
-          <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="6,4">
-            <item>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <item row="1" column="0">
-               <widget class="LabeledHorizontalSlider" name="fbSlider">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="LabeledHorizontalSlider" name="alSlider">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="2">
-               <layout class="QHBoxLayout" name="horizontalLayout">
-                <item alignment="Qt::AlignLeft">
-                 <widget class="QSpinBox" name="envNumSpinBox">
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                  <property name="prefix">
-                   <string>#</string>
-                  </property>
-                  <property name="maximum">
-                   <number>127</number>
-                  </property>
-                 </widget>
-                </item>
-                <item alignment="Qt::AlignRight">
-                 <widget class="QLabel" name="envUsersLabel">
-                  <property name="text">
-                   <string>Users:</string>
-                  </property>
-                 </widget>
+         <widget class="QWidget" name="tab_1">
+          <attribute name="title">
+           <string>Envelope</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
+           <item>
+            <widget class="QGroupBox" name="envGroupBox">
+             <property name="title">
+              <string>Envelope</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_6" rowstretch="1,2,2,2,2">
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="6,4">
+                <item>
+                 <layout class="QGridLayout" name="gridLayout_2">
+                  <item row="1" column="0">
+                   <widget class="LabeledHorizontalSlider" name="fbSlider">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="LabeledHorizontalSlider" name="alSlider">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <layout class="QHBoxLayout" name="horizontalLayout">
+                    <item alignment="Qt::AlignLeft">
+                     <widget class="QSpinBox" name="envNumSpinBox">
+                      <property name="keyboardTracking">
+                       <bool>false</bool>
+                      </property>
+                      <property name="prefix">
+                       <string>#</string>
+                      </property>
+                      <property name="maximum">
+                       <number>127</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item alignment="Qt::AlignRight">
+                     <widget class="QLabel" name="envUsersLabel">
+                      <property name="text">
+                       <string>Users:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="envUsersLineEdit">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="envUsersLineEdit">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="readOnly">
-                   <bool>true</bool>
+                 <widget class="QGraphicsView" name="alGraphicsView">
+                  <property name="styleSheet">
+                   <string notr="true"/>
                   </property>
                  </widget>
                 </item>
                </layout>
               </item>
+              <item row="1" column="0">
+               <widget class="FMOperatorTable" name="op1Table">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="FMOperatorTable" name="op2Table">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="FMOperatorTable" name="op3Table">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="FMOperatorTable" name="op4Table">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
              </layout>
-            </item>
-            <item>
-             <widget class="QGraphicsView" name="alGraphicsView">
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <widget class="FMOperatorTable" name="op1Table">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="FMOperatorTable" name="op2Table">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="FMOperatorTable" name="op3Table">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="FMOperatorTable" name="op4Table">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>LFO/Operator sequence</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_3" rowstretch="4,6,0" columnstretch="0,0">
-       <item row="1" column="0" rowspan="2" colspan="2">
-        <widget class="QGroupBox" name="opSeqGroupBox">
-         <property name="title">
-          <string>Operator sequence</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_12">
-          <item row="0" column="0">
-           <widget class="QLabel" name="opSeqTypeLabel">
-            <property name="text">
-             <string>Operator:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="opSeqTypeComboBox"/>
-          </item>
-          <item row="0" column="2">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="QGroupBox" name="opSeqEditGroupBox">
-            <property name="title">
-             <string>Sequence</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_10">
-             <item row="1" column="0" colspan="4">
-              <widget class="VisualizedInstrumentMacroEditor" name="opSeqEditor" native="true"/>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_2">
+          <attribute name="title">
+           <string>LFO/Operator sequence</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_3" rowstretch="4,6,0" columnstretch="0,0">
+           <item row="1" column="0" rowspan="2" colspan="2">
+            <widget class="QGroupBox" name="opSeqGroupBox">
+             <property name="title">
+              <string>Operator sequence</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="0" column="0">
+               <widget class="QLabel" name="opSeqTypeLabel">
+                <property name="text">
+                 <string>Operator:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="opSeqTypeComboBox"/>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QGroupBox" name="opSeqEditGroupBox">
+                <property name="title">
+                 <string>Sequence</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_10">
+                 <item row="1" column="0" colspan="4">
+                  <widget class="VisualizedInstrumentMacroEditor" name="opSeqEditor" native="true"/>
+                 </item>
+                 <item row="0" column="3">
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLineEdit" name="opSeqUsersLineEdit">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QSpinBox" name="opSeqNumSpinBox">
+                   <property name="keyboardTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="prefix">
+                    <string>#</string>
+                   </property>
+                   <property name="maximum">
+                    <number>127</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" alignment="Qt::AlignRight">
+                  <widget class="QLabel" name="opSeqUsersLabel">
+                   <property name="text">
+                    <string>Users:</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="lfoGroupBox">
+             <property name="title">
+              <string>LFO</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="1">
+               <widget class="QSpinBox" name="lfoNumSpinBox">
+                <property name="keyboardTracking">
+                 <bool>false</bool>
+                </property>
+                <property name="prefix">
+                 <string>#</string>
+                </property>
+                <property name="maximum">
+                 <number>127</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="lfoUsersLabel">
+                <property name="text">
+                 <string>Users:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLineEdit" name="lfoUsersLineEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="4">
+               <layout class="QGridLayout" name="gridLayout_7">
+                <item row="0" column="2" rowspan="3">
+                 <widget class="LabeledVerticalSlider" name="amsSlider">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1" rowspan="3">
+                 <widget class="LabeledVerticalSlider" name="pmsSlider">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0" rowspan="3">
+                 <widget class="LabeledVerticalSlider" name="lfoFreqSlider">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="3" colspan="2">
+                 <widget class="QGroupBox" name="amOpsGroupBox">
+                  <property name="title">
+                   <string>AM operators</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_2">
+                   <item>
+                    <widget class="QCheckBox" name="amOp1CheckBox">
+                     <property name="text">
+                      <string>Operator 1</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="amOp2CheckBox">
+                     <property name="text">
+                      <string>Operator 2</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="amOp3CheckBox">
+                     <property name="text">
+                      <string>Operator 3</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="amOp4CheckBox">
+                     <property name="text">
+                      <string>Operator 4</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="1" column="3">
+                 <widget class="QLabel" name="lfoStartLabel">
+                  <property name="text">
+                   <string>Start count:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="4">
+                 <widget class="QSpinBox" name="lfoStartSpinBox">
+                  <property name="keyboardTracking">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="1" column="0">
+              <widget class="QGroupBox" name="envResetGroupBox">
+               <property name="title">
+                <string>Envelope reset</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_15">
+                <item row="0" column="0">
+                 <widget class="QCheckBox" name="envResetCheckBox">
+                  <property name="text">
+                   <string>Reset envelope before key on</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QGroupBox" name="envResetFm3GroupBox">
+                  <property name="title">
+                   <string>FM 3ch</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_16">
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="envResetOp1CheckBox">
+                     <property name="text">
+                      <string>Operator 1</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QCheckBox" name="envResetOp2CheckBox">
+                     <property name="text">
+                      <string>Operator 2</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QCheckBox" name="envResetOp3CheckBox">
+                     <property name="text">
+                      <string>Operator 3</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QCheckBox" name="envResetOp4CheckBox">
+                     <property name="text">
+                      <string>Operator 4</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </item>
-             <item row="0" column="3">
-              <spacer name="horizontalSpacer_5">
+             <item row="0" column="0">
+              <spacer name="verticalSpacer_2">
                <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+                <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>20</width>
+                 <height>40</height>
                 </size>
                </property>
               </spacer>
              </item>
-             <item row="0" column="2">
-              <widget class="QLineEdit" name="opSeqUsersLineEdit">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QSpinBox" name="opSeqNumSpinBox">
-               <property name="keyboardTracking">
-                <bool>false</bool>
-               </property>
-               <property name="prefix">
-                <string>#</string>
-               </property>
-               <property name="maximum">
-                <number>127</number>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1" alignment="Qt::AlignRight">
-              <widget class="QLabel" name="opSeqUsersLabel">
-               <property name="text">
-                <string>Users:</string>
-               </property>
-              </widget>
-             </item>
             </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="lfoGroupBox">
-         <property name="title">
-          <string>LFO</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="lfoNumSpinBox">
-            <property name="keyboardTracking">
-             <bool>false</bool>
-            </property>
-            <property name="prefix">
-             <string>#</string>
-            </property>
-            <property name="maximum">
-             <number>127</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="lfoUsersLabel">
-            <property name="text">
-             <string>Users:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QLineEdit" name="lfoUsersLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="4">
-           <layout class="QGridLayout" name="gridLayout_7">
-            <item row="0" column="2" rowspan="3">
-             <widget class="LabeledVerticalSlider" name="amsSlider">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" rowspan="3">
-             <widget class="LabeledVerticalSlider" name="pmsSlider">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" rowspan="3">
-             <widget class="LabeledVerticalSlider" name="lfoFreqSlider">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3" colspan="2">
-             <widget class="QGroupBox" name="amOpsGroupBox">
-              <property name="title">
-               <string>AM operators</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <widget class="QCheckBox" name="amOp1CheckBox">
-                 <property name="text">
-                  <string>Operator 1</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="amOp2CheckBox">
-                 <property name="text">
-                  <string>Operator 2</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="amOp3CheckBox">
-                 <property name="text">
-                  <string>Operator 3</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="amOp4CheckBox">
-                 <property name="text">
-                  <string>Operator 4</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QLabel" name="lfoStartLabel">
-              <property name="text">
-               <string>Start count:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="4">
-             <widget class="QSpinBox" name="lfoStartSpinBox">
-              <property name="keyboardTracking">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <layout class="QGridLayout" name="gridLayout_8">
-         <item row="1" column="0">
-          <widget class="QGroupBox" name="envResetGroupBox">
-           <property name="title">
-            <string>Envelope reset</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_15">
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="envResetCheckBox">
-              <property name="text">
-               <string>Reset envelope before key on</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QGroupBox" name="envResetFm3GroupBox">
-              <property name="title">
-               <string>FM 3ch</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_16">
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="envResetOp1CheckBox">
-                 <property name="text">
-                  <string>Operator 1</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QCheckBox" name="envResetOp2CheckBox">
-                 <property name="text">
-                  <string>Operator 2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QCheckBox" name="envResetOp3CheckBox">
-                 <property name="text">
-                  <string>Operator 3</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QCheckBox" name="envResetOp4CheckBox">
-                 <property name="text">
-                  <string>Operator 4</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_3">
-      <attribute name="title">
-       <string>Arpeggio/Pitch</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_5" rowstretch="5,5">
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="ptGroupBox">
-         <property name="title">
-          <string>Pitch</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_14">
-          <item row="0" column="0">
-           <widget class="QLabel" name="ptOpLabel">
-            <property name="text">
-             <string>Operator:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="ptOpComboBox"/>
-          </item>
-          <item row="0" column="2">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="QGroupBox" name="ptEditGroupBox">
-            <property name="title">
-             <string>Sequence</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_11">
-             <item row="0" column="3">
-              <spacer name="horizontalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLineEdit" name="ptUsersLineEdit">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QSpinBox" name="ptNumSpinBox">
-               <property name="keyboardTracking">
-                <bool>false</bool>
-               </property>
-               <property name="prefix">
-                <string>#</string>
-               </property>
-               <property name="maximum">
-                <number>127</number>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1" alignment="Qt::AlignRight">
-              <widget class="QLabel" name="ptUsersLabel">
-               <property name="text">
-                <string>Users:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0" colspan="4">
-              <widget class="VisualizedInstrumentMacroEditor" name="ptEditor" native="true"/>
-             </item>
-             <item row="2" column="0" alignment="Qt::AlignRight">
-              <widget class="QLabel" name="ptTypeLabel">
-               <property name="text">
-                <string>Type:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QComboBox" name="ptTypeComboBox"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="arpGroupBox">
-         <property name="title">
-          <string>Arpeggio</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_13">
-          <item row="0" column="1">
-           <widget class="QComboBox" name="arpOpComboBox"/>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="arpOpLabel">
-            <property name="text">
-             <string>Operator:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="QGroupBox" name="arpEditGroupBox">
-            <property name="title">
-             <string>Sequence</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_9">
-             <item row="1" column="0" colspan="5">
-              <widget class="VisualizedInstrumentMacroEditor" name="arpEditor" native="true"/>
-             </item>
-             <item row="0" column="4">
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="2" column="0" alignment="Qt::AlignRight">
-              <widget class="QLabel" name="arpTypeLabel">
-               <property name="text">
-                <string>Type:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1" alignment="Qt::AlignRight">
-              <widget class="QLabel" name="arpUsersLabel">
-               <property name="text">
-                <string>Users:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QComboBox" name="arpTypeComboBox"/>
-             </item>
-             <item row="0" column="0">
-              <widget class="QSpinBox" name="arpNumSpinBox">
-               <property name="keyboardTracking">
-                <bool>false</bool>
-               </property>
-               <property name="prefix">
-                <string>#</string>
-               </property>
-               <property name="maximum">
-                <number>127</number>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLineEdit" name="arpUsersLineEdit">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_3">
+          <attribute name="title">
+           <string>Arpeggio/Pitch</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_5" rowstretch="5,5">
+           <item row="1" column="0">
+            <widget class="QGroupBox" name="ptGroupBox">
+             <property name="title">
+              <string>Pitch</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_14">
+              <item row="0" column="0">
+               <widget class="QLabel" name="ptOpLabel">
+                <property name="text">
+                 <string>Operator:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="ptOpComboBox"/>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QGroupBox" name="ptEditGroupBox">
+                <property name="title">
+                 <string>Sequence</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_11">
+                 <item row="0" column="3">
+                  <spacer name="horizontalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLineEdit" name="ptUsersLineEdit">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QSpinBox" name="ptNumSpinBox">
+                   <property name="keyboardTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="prefix">
+                    <string>#</string>
+                   </property>
+                   <property name="maximum">
+                    <number>127</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" alignment="Qt::AlignRight">
+                  <widget class="QLabel" name="ptUsersLabel">
+                   <property name="text">
+                    <string>Users:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="4">
+                  <widget class="VisualizedInstrumentMacroEditor" name="ptEditor" native="true"/>
+                 </item>
+                 <item row="2" column="0" alignment="Qt::AlignRight">
+                  <widget class="QLabel" name="ptTypeLabel">
+                   <property name="text">
+                    <string>Type:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QComboBox" name="ptTypeComboBox"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="arpGroupBox">
+             <property name="title">
+              <string>Arpeggio</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="0" column="1">
+               <widget class="QComboBox" name="arpOpComboBox"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="arpOpLabel">
+                <property name="text">
+                 <string>Operator:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QGroupBox" name="arpEditGroupBox">
+                <property name="title">
+                 <string>Sequence</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_9">
+                 <item row="1" column="0" colspan="5">
+                  <widget class="VisualizedInstrumentMacroEditor" name="arpEditor" native="true"/>
+                 </item>
+                 <item row="0" column="4">
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="2" column="0" alignment="Qt::AlignRight">
+                  <widget class="QLabel" name="arpTypeLabel">
+                   <property name="text">
+                    <string>Type:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" alignment="Qt::AlignRight">
+                  <widget class="QLabel" name="arpUsersLabel">
+                   <property name="text">
+                    <string>Users:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QComboBox" name="arpTypeComboBox"/>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QSpinBox" name="arpNumSpinBox">
+                   <property name="keyboardTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="prefix">
+                    <string>#</string>
+                   </property>
+                   <property name="maximum">
+                    <number>127</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLineEdit" name="arpUsersLineEdit">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -682,15 +719,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>VisualizedInstrumentMacroEditor</class>
-   <extends>QWidget</extends>
-   <header>gui/instrument_editor/visualized_instrument_macro_editor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>LabeledVerticalSlider</class>
    <extends>QFrame</extends>
    <header>gui/labeled_vertical_slider.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VisualizedInstrumentMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/visualized_instrument_macro_editor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -707,7 +744,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
   <tabstop>envNumSpinBox</tabstop>
   <tabstop>envUsersLineEdit</tabstop>
   <tabstop>alGraphicsView</tabstop>
