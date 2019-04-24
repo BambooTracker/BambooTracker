@@ -23,6 +23,7 @@
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
 - Change to keep current instrument when loading module
 - Move tick frequency settings from module settings groupbox to module properties dialog
+- [#119] - Change FM instrument editor scrollable (thanks [@Delta-Psi])
 - Change some layouts of UI
 
 ### Fixed
@@ -50,6 +51,7 @@
 - [#116] - Fix position the cursor after setting line edit contents (thanks [@jpcima])
 - [#117] - Resolve warning 'catching polymorphic type by value' (thanks [@jpcima])
 - Add file save check before opening a module from recent files list
+- Fix incorrect wait counts in S98 exportation
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -96,11 +98,13 @@
 [#115]: https://github.com/rerrahkr/BambooTracker/issues/115
 [#116]: https://github.com/rerrahkr/BambooTracker/pull/116
 [#117]: https://github.com/rerrahkr/BambooTracker/pull/117
+[#119]: https://github.com/rerrahkr/BambooTracker/issues/119
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
 [@bryc]: https://github.com/bryc
 [@attilaM68K]: https://github.com/attilaM68K
+[@Delta-Psi]: https://github.com/Delta-Psi
 
 ## v0.1.6 (2019-03-16)
 ### Added

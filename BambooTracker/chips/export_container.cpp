@@ -396,6 +396,7 @@ namespace chip
 		}
 		else {
 			buf_.push_back(0xfe);
+			lastWait_ -= 2;
 			do {
 				uint8_t b = lastWait_ & 0x7f;
 				lastWait_ >>= 7;
