@@ -593,7 +593,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -1985,11 +1985,59 @@ color: rgb(255, 255, 255);</string>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>generalSettingsListWidget</tabstop>
   <tabstop>pageJumpLengthSpinBox</tabstop>
+  <tabstop>emulatorComboBox</tabstop>
   <tabstop>soundDeviceComboBox</tabstop>
+  <tabstop>useSCCICheckBox</tabstop>
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>bufferLengthHorizontalSlider</tabstop>
+  <tabstop>midiInputNameLine</tabstop>
+  <tabstop>midiInputChoiceButton</tabstop>
+  <tabstop>mixerResetPushButton</tabstop>
+  <tabstop>envelopeTypeListWidget</tabstop>
+  <tabstop>envelopeSetNameLineEdit</tabstop>
+  <tabstop>addEnvelopeSetPushButton</tabstop>
+  <tabstop>removeEnvelopeSetpushButton</tabstop>
+  <tabstop>editEnvelopeSetPushButton</tabstop>
+  <tabstop>keyboardTypeComboBox</tabstop>
+  <tabstop>customLayoutResetButton</tabstop>
+  <tabstop>lowHighKeysTabWidget</tabstop>
+  <tabstop>lowCSEdit</tabstop>
+  <tabstop>lowCEdit</tabstop>
+  <tabstop>lowDEdit</tabstop>
+  <tabstop>lowDSEdit</tabstop>
+  <tabstop>lowEEdit</tabstop>
+  <tabstop>lowFEdit</tabstop>
+  <tabstop>lowFSEdit</tabstop>
+  <tabstop>lowGEdit</tabstop>
+  <tabstop>lowGSEdit</tabstop>
+  <tabstop>lowAEdit</tabstop>
+  <tabstop>lowASEdit</tabstop>
+  <tabstop>lowBEdit</tabstop>
+  <tabstop>lowHighCEdit</tabstop>
+  <tabstop>lowHighCSEdit</tabstop>
+  <tabstop>lowHighDEdit</tabstop>
+  <tabstop>highCEdit</tabstop>
+  <tabstop>highCSEdit</tabstop>
+  <tabstop>highDEdit</tabstop>
+  <tabstop>highDSEdit</tabstop>
+  <tabstop>highEEdit</tabstop>
+  <tabstop>highFEdit</tabstop>
+  <tabstop>highFSEdit</tabstop>
+  <tabstop>highGEdit</tabstop>
+  <tabstop>highGSEdit</tabstop>
+  <tabstop>highAEdit</tabstop>
+  <tabstop>highASEdit</tabstop>
+  <tabstop>highBEdit</tabstop>
+  <tabstop>highHighCEdit</tabstop>
+  <tabstop>highHighCSEdit</tabstop>
+  <tabstop>highHighDEdit</tabstop>
+  <tabstop>keyOffKeySequenceEdit</tabstop>
+  <tabstop>octaveUpKeySequenceEdit</tabstop>
+  <tabstop>octaveDownKeySequenceEdit</tabstop>
+  <tabstop>echoBufferKeySequenceEdit</tabstop>
  </tabstops>
  <resources/>
  <connections>

@@ -117,6 +117,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>treeWidget</tabstop>
+  <tabstop>upToolButton</tabstop>
+  <tabstop>downToolButton</tabstop>
+  <tabstop>addPushButton</tabstop>
+  <tabstop>removePushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

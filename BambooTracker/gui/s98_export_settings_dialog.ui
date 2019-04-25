@@ -371,6 +371,25 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>resSpinBox</tabstop>
+  <tabstop>tagGroupBox</tabstop>
+  <tabstop>titleLineEdit</tabstop>
+  <tabstop>artistLineEdit</tabstop>
+  <tabstop>gameLineEdit</tabstop>
+  <tabstop>yearLineEdit</tabstop>
+  <tabstop>genreLineEdit</tabstop>
+  <tabstop>commentLineEdit</tabstop>
+  <tabstop>copyrightLineEdit</tabstop>
+  <tabstop>s98byLineEdit</tabstop>
+  <tabstop>systemLineEdit</tabstop>
+  <tabstop>ym2608RadioButton</tabstop>
+  <tabstop>ym2612RadioButton</tabstop>
+  <tabstop>ym2203RadioButton</tabstop>
+  <tabstop>internalSsgRadioButton</tabstop>
+  <tabstop>ay8910PsgRadioButton</tabstop>
+  <tabstop>ym2149PsgRadioButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

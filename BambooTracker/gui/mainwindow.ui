@@ -1242,6 +1242,7 @@
   <tabstop>authorLineEdit</tabstop>
   <tabstop>copyrightLineEdit</tabstop>
   <tabstop>editableStepSpinBox</tabstop>
+  <tabstop>keyRepeatCheckBox</tabstop>
   <tabstop>songNumSpinBox</tabstop>
   <tabstop>songTitleLineEdit</tabstop>
   <tabstop>songStyleLineEdit</tabstop>

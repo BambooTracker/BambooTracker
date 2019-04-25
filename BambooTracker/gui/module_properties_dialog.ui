@@ -245,11 +245,15 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>ntscRadioButton</tabstop>
+  <tabstop>palRadioButton</tabstop>
+  <tabstop>customTickFreqRadioButton</tabstop>
+  <tabstop>customTickFreqSpinBox</tabstop>
   <tabstop>songTreeWidget</tabstop>
+  <tabstop>editTitleLineEdit</tabstop>
   <tabstop>upToolButton</tabstop>
   <tabstop>downToolButton</tabstop>
   <tabstop>removePushButton</tabstop>
-  <tabstop>editTitleLineEdit</tabstop>
   <tabstop>insertTitleLineEdit</tabstop>
   <tabstop>insertTypeComboBox</tabstop>
   <tabstop>insertPushButton</tabstop>
