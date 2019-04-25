@@ -15,4 +15,5 @@ public:
 	virtual int getCommandData() const = 0;
 	virtual int next(bool isReleaseBegin = false) = 0;
 	virtual int front() = 0;
+	virtual int end() = 0;
 };

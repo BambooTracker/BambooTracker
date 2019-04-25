@@ -39,10 +39,17 @@ int ArpeggioEffectIterator::next(bool isReleaseBegin)
 	pos_ = (pos_ + 1) % 3;
 	return pos_;
 }
+
 int ArpeggioEffectIterator::front()
 {
 	pos_ = 0;
 	return 0;
+}
+
+int ArpeggioEffectIterator::end()
+{
+	pos_ = -1;
+	return -1;
 }
 
 /****************************************/
@@ -88,10 +95,17 @@ int WavingEffectIterator::next(bool isReleaseBegin)
 	pos_ = (pos_ + 1) % static_cast<int>(seq_.size());
 	return pos_;
 }
+
 int WavingEffectIterator::front()
 {
 	pos_ = 0;
 	return 0;
+}
+
+int WavingEffectIterator::end()
+{
+	pos_ = -1;
+	return -1;
 }
 
 /****************************************/
@@ -137,4 +151,10 @@ int NoteSlideEffectIterator::front()
 {
 	pos_ = 0;
 	return 0;
+}
+
+int NoteSlideEffectIterator::end()
+{
+	pos_ = -1;
+	return -1;
 }

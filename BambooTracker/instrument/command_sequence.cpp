@@ -316,3 +316,9 @@ int CommandSequence::Iterator::front()
 
 	return pos_;
 }
+
+int CommandSequence::Iterator::end()
+{
+	pos_ = -1;
+	return -1;
+}

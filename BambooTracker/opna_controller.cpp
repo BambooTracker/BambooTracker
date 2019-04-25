@@ -257,6 +257,7 @@ void OPNAController::keyOnFM(int ch, int echoBuf)
 
 void OPNAController::keyOffFM(int ch, bool isJam)
 {
+	if (!isKeyOnFM_[ch]) return;
 	releaseStartFMSequences(ch);
 	hasPreSetTickEventFM_[ch] = isJam;
 
@@ -642,6 +643,20 @@ void OPNAController::setTransposeEffectFM(int ch, int seminote)
 {
 	transposeFM_[ch] += (seminote * 32);
 	needToneSetFM_[ch] = true;
+}
+
+/********** For state retrieve **********/
+void OPNAController::haltSequencesFM(int ch)
+{
+	int inch = toInternalFMChannel(ch);
+	for (auto& p : getFMEnvelopeParametersForOperator(toChannelOperatorType(ch))) {
+		if (auto& it = opSeqItFM_[inch].at(p)) it->end();
+	}
+	if (treItFM_[ch]) treItFM_[ch]->end();
+	if (arpItFM_[ch]) arpItFM_[ch]->end();
+	if (ptItFM_[ch]) ptItFM_[ch]->end();
+	if (vibItFM_[ch]) vibItFM_[ch]->next();
+	if (nsItFM_[ch]) nsItFM_[ch]->end();
 }
 
 /********** Mute **********/
@@ -1789,6 +1804,7 @@ void OPNAController::keyOnSSG(int ch, int echoBuf)
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
 {
+	if (!isKeyOnSSG_[ch]) return;
 	releaseStartSSGSequences(ch);
 	hasPreSetTickEventSSG_[ch] = isJam;
 	isKeyOnSSG_[ch] = false;
@@ -1947,6 +1963,19 @@ void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 {
 	transposeSSG_[ch] += (seminote * 32);
 	needToneSetSSG_[ch] = true;
+}
+
+/********** For state retrieve **********/
+void OPNAController::haltSequencesSSG(int ch)
+{
+	if (wfItSSG_[ch]) wfItSSG_[ch]->end();
+	if (treItSSG_[ch]) treItSSG_[ch]->end();
+	if (envItSSG_[ch]) envItSSG_[ch]->end();
+	if (tnItSSG_[ch]) tnItSSG_[ch]->end();
+	if (arpItSSG_[ch]) arpItSSG_[ch]->end();
+	if (ptItSSG_[ch]) ptItSSG_[ch]->end();
+	if (vibItSSG_[ch]) vibItSSG_[ch]->next();
+	if (nsItSSG_[ch]) nsItSSG_[ch]->end();
 }
 
 /********** Mute **********/

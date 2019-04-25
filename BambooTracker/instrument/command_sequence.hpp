@@ -90,6 +90,7 @@ public:
 		int getCommandData() const override;
 		int next(bool isReleaseBegin = false) override;
 		int front() override;
+		int end() override;
 
 	private:
 		CommandSequence* seq_;

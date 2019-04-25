@@ -102,6 +102,9 @@ public:
 	void setNoteSlideFM(int ch, int speed, int seminote);
 	void setTransposeEffectFM(int ch, int seminote);
 
+	// For state retrieve
+	void haltSequencesFM(int ch);
+
 	// Mute
 	void setMuteFMState(int ch, bool isMuteFM);
 	bool isMuteFM(int ch);
@@ -209,6 +212,9 @@ public:
 	void setDetuneSSG(int ch, int pitch);
 	void setNoteSlideSSG(int ch, int speed, int seminote);
 	void setTransposeEffectSSG(int ch, int seminote);
+
+	// For state retrieve
+	void haltSequencesSSG(int ch);
 
 	// Mute
 	void setMuteSSGState(int ch, bool isMuteFM);

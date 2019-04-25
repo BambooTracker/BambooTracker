@@ -1550,22 +1550,24 @@ void BambooTracker::retrieveChannelStates()
 		}
 	}
 
-	// Echo
-	for (size_t i = 0; i < fmch; ++i) {
-		for (size_t j = 0; j < 3; ++j) {
-			if (toneFM.at(i).at(j) >= 0) {
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneFM[i][j]);
-				opnaCtrl_->updateEchoBufferFM(static_cast<int>(i), octNote.first, octNote.second, 0);
+	// Echo & sequence reset
+	for (size_t ch = 0; ch < fmch; ++ch) {
+		for (size_t i = 0; i < 3; ++i) {
+			if (toneFM.at(ch).at(i) >= 0) {
+				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneFM[ch][i]);
+				opnaCtrl_->updateEchoBufferFM(static_cast<int>(ch), octNote.first, octNote.second, 0);
 			}
 		}
+		opnaCtrl_->haltSequencesFM(static_cast<int>(ch));
 	}
-	for (size_t i = 0; i < 3; ++i) {
-		for (size_t j = 0; j < 3; ++j) {
-			if (toneSSG.at(i).at(j) >= 0) {
-				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneSSG[i][j]);
-				opnaCtrl_->updateEchoBufferSSG(static_cast<int>(i), octNote.first, octNote.second, 0);
+	for (size_t ch = 0; ch < 3; ++ch) {
+		for (size_t i = 0; i < 3; ++i) {
+			if (toneSSG.at(ch).at(i) >= 0) {
+				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneSSG[ch][i]);
+				opnaCtrl_->updateEchoBufferSSG(static_cast<int>(ch), octNote.first, octNote.second, 0);
 			}
 		}
+		opnaCtrl_->haltSequencesSSG(static_cast<int>(ch));
 	}
 }
 

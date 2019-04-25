@@ -54,6 +54,7 @@
 - Add file save check before opening a module from recent files list
 - Fix incorrect wait counts in S98 exportation
 - Fix wait time precision of VGM and S98
+- Fix channel state retrieve to stop instrument sequences when there is no note at the first step
 
 ### Removed
 - Remove module and instrument saving to past version
