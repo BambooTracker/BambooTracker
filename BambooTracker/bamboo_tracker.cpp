@@ -1020,12 +1020,11 @@ bool BambooTracker::exportToVgm(std::string file, int target, bool gd3TagEnabled
 	}
 }
 
-bool BambooTracker::exportToS98(std::string file, int target, bool tagEnabled, S98Tag tag, std::function<bool()> f)
+bool BambooTracker::exportToS98(std::string file, int target, bool tagEnabled, S98Tag tag, int rate, std::function<bool()> f)
 {
 	int tmpRate = opnaCtrl_->getRate();
-	int s98Rate = 44100;
-	opnaCtrl_->setRate(s98Rate);
-	double dblIntrCnt = static_cast<double>(s98Rate) / static_cast<double>(mod_->getTickFrequency());
+	opnaCtrl_->setRate(rate);
+	double dblIntrCnt = static_cast<double>(rate) / static_cast<double>(mod_->getTickFrequency());
 	size_t intrCnt = static_cast<size_t>(dblIntrCnt);
 	double intrCntDiff = dblIntrCnt - intrCnt;
 	double intrCntRest = 0;
@@ -1072,7 +1071,7 @@ bool BambooTracker::exportToS98(std::string file, int target, bool tagEnabled, S
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeS98(file, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(s98Rate),
+		ExportHandler::writeS98(file, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(rate),
 								loopFlag, loopPoint, tagEnabled, tag);
 		f();
 		return true;

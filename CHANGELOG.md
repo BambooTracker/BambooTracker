@@ -18,6 +18,7 @@
 - [#99], [#111] - Add VGM and S98 chip target selection ([#98]; thanks [@jpcima], [@pedipanol])
 - Add default file name to save/export dialogs
 - [#108] - Add macOS test to Travis CI (thanks [@OPNA2608], [@jpcima])
+- Add resolution selection to S98 export settings
 
 ### Changed
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])

@@ -2252,6 +2252,7 @@ void MainWindow::on_actionS98_triggered()
 									diag.getExportTarget(),
 									diag.enabledTag(),
 									tag,
+									diag.getResolution(),
 									[&progress]() -> bool {
 										QApplication::processEvents();
 										progress.setValue(progress.value() + 1);

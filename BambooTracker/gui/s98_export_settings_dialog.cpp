@@ -24,6 +24,11 @@ S98ExportSettingsDialog::~S98ExportSettingsDialog()
 	delete ui;
 }
 
+int S98ExportSettingsDialog::getResolution() const
+{
+	return ui->resSpinBox->value();
+}
+
 bool S98ExportSettingsDialog::enabledTag() const
 {
 	return ui->tagGroupBox->isChecked();

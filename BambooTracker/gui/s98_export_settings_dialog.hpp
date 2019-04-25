@@ -16,6 +16,7 @@ public:
 	explicit S98ExportSettingsDialog(QWidget *parent = nullptr);
 	~S98ExportSettingsDialog();
 
+	int getResolution() const;
 	bool enabledTag() const;
 	S98Tag getS98Tag() const;
 	int getExportTarget() const;
