@@ -52,6 +52,7 @@
 - [#117] - Resolve warning 'catching polymorphic type by value' (thanks [@jpcima])
 - Add file save check before opening a module from recent files list
 - Fix incorrect wait counts in S98 exportation
+- Fix wait time precision of VGM and S98
 
 ### Removed
 - Remove module and instrument saving to past version
