@@ -31,7 +31,7 @@ public:
 
 	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
-	void AddRow(QString label = "");
+	void AddRow(QString label = "", bool fitLabelWidth = true);
 	void setMaximumDisplayedRowCount(int count);
 	void setDefaultRow(int row);
 	int getSequenceLength() const;
@@ -68,6 +68,7 @@ public:
 	void setLabel(int row, QString text);
 	void clearAllLabelText();
 	void setLabelDiaplayMode(bool isOmitted);
+	void autoFitLabelWidth();
 
 	void setMMLDisplay0As(int n);
 
@@ -106,7 +107,7 @@ private:
 	QFont font_;
 	QFontMetrics met_;
 	int fontWidth_, fontHeight_, fontAscend_, fontLeading_;
-	int tagWidth_;
+	int labWidth_;
 	std::vector<int> rowHeights_, colWidths_;
 	int rowHeight_;
 	int fieldHeight_;
@@ -166,7 +167,6 @@ private:
 	int checkLoopRegion(int col);
 	void moveLoop();
 
-	void updateTagWidth();
 	void updateColumnWidth();
 	void updateRowHeight();
 

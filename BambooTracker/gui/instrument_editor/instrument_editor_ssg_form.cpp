@@ -18,13 +18,14 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	//========== Wave form ==========//
 	ui->waveEditor->setMaximumDisplayedRowCount(7);
 	ui->waveEditor->setDefaultRow(0);
-	ui->waveEditor->AddRow("Sq");
-	ui->waveEditor->AddRow("Tri");
-	ui->waveEditor->AddRow("Saw");
-	ui->waveEditor->AddRow("InvSaw");
-	ui->waveEditor->AddRow("SMTri");
-	ui->waveEditor->AddRow("SMSaw");
-	ui->waveEditor->AddRow("SMInvSaw");
+	ui->waveEditor->AddRow("Sq", false);
+	ui->waveEditor->AddRow("Tri", false);
+	ui->waveEditor->AddRow("Saw", false);
+	ui->waveEditor->AddRow("InvSaw", false);
+	ui->waveEditor->AddRow("SMTri", false);
+	ui->waveEditor->AddRow("SMSaw", false);
+	ui->waveEditor->AddRow("SMInvSaw", false);
+	ui->waveEditor->autoFitLabelWidth();
 
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -76,13 +77,14 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	//========== Tone/Noise ==========//
 	ui->tnEditor->setMaximumDisplayedRowCount(16);
 	ui->tnEditor->setDefaultRow(0);
-	ui->tnEditor->AddRow("T");
+	ui->tnEditor->AddRow("T", false);
 	for (int i = 0; i < 32; ++i) {
-		ui->tnEditor->AddRow("N " + QString::number(i));
+		ui->tnEditor->AddRow("N " + QString::number(i), false);
 	}
 	for (int i = 0; i < 32; ++i) {
-		ui->tnEditor->AddRow("T&N " + QString::number(i));
+		ui->tnEditor->AddRow("T&N " + QString::number(i), false);
 	}
+	ui->tnEditor->autoFitLabelWidth();
 
 	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -133,11 +135,12 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->envEditor->setMaximumDisplayedRowCount(16);
 	ui->envEditor->setDefaultRow(15);
 	for (int i = 0; i < 16; ++i) {
-		ui->envEditor->AddRow(QString::number(i));
+		ui->envEditor->AddRow(QString::number(i), false);
 	}
 	for (int i = 0; i < 8; ++i) {
-		ui->envEditor->AddRow("Hard " + QString::number(i));
+		ui->envEditor->AddRow("Hard " + QString::number(i), false);
 	}
+	ui->envEditor->autoFitLabelWidth();
 	ui->envEditor->setMultipleReleaseState(true);
 
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
@@ -195,8 +198,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 		int d = i - 48;
 		auto text = QString::number(d);
 		if (d > 0) text = "+" + text;
-		ui->arpEditor->AddRow(text);
+		ui->arpEditor->AddRow(text, false);
 	}
+	ui->arpEditor->autoFitLabelWidth();
 	ui->arpEditor->setUpperRow(55);
 	ui->arpEditor->setMMLDisplay0As(-48);
 
@@ -260,8 +264,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 		int d = i - 127;
 		auto text = QString::number(d);
 		if (d > 0) text = "+" + text;
-		ui->ptEditor->AddRow(text);
+		ui->ptEditor->AddRow(text, false);
 	}
+	ui->ptEditor->autoFitLabelWidth();
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 

@@ -409,8 +409,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		int d = i - 48;
 		auto text = QString::number(d);
 		if (d > 0) text = "+" + text;
-		ui->arpEditor->AddRow(text);
+		ui->arpEditor->AddRow(text, false);
 	}
+	ui->arpEditor->autoFitLabelWidth();
 	ui->arpEditor->setUpperRow(55);
 	ui->arpEditor->setMMLDisplay0As(-48);
 
@@ -483,8 +484,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 		int d = i - 127;
 		auto text = QString::number(d);
 		if (d > 0) text = "+" + text;
-		ui->ptEditor->AddRow(text);
+		ui->ptEditor->AddRow(text, false);
 	}
+	ui->ptEditor->autoFitLabelWidth();
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
@@ -542,7 +544,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->ptOpComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorFMForm::onPitchOperatorChanged);
 
-	//========== Pitch ==========//
+	//========== Others ==========//
 	QObject::connect(ui->envResetCheckBox, &QCheckBox::stateChanged,
 					 this, [&](int state) {
 		if (!isIgnoreEvent_) {
@@ -1545,8 +1547,9 @@ void InstrumentEditorFMForm::setOperatorSequenceEditor()
 	case FMEnvelopeParameter::DT4:
 		ui->opSeqEditor->setMaximumDisplayedRowCount(8);
 		for (int i = 0; i < 8; ++i) {
-			ui->opSeqEditor->AddRow(QString::number(i));
+			ui->opSeqEditor->AddRow(QString::number(i), false);
 		}
+		ui->opSeqEditor->autoFitLabelWidth();
 		ui->opSeqEditor->setUpperRow(7);
 		break;
 	case FMEnvelopeParameter::AR1:
