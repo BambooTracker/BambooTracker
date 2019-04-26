@@ -447,3 +447,7 @@ equals(QT_MAJOR_VERSION, 5) {
         CONFIG += lrelease
     }
 }
+
+win32 {
+    RC_ICONS = res/icon/BambooTracker.ico
+}
