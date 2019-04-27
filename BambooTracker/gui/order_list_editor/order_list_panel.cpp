@@ -694,6 +694,7 @@ void OrderListPanel::onSongLoaded()
 	songStyle_ = bt_->getSongStyle(curSongNum_);
 	columnsWidthFromLeftToEnd_
 			= calculateColumnsWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	setMaximumWidth(columnsWidthFromLeftToEnd_);
 
 	hovPos_ = { -1, -1 };
 	editPos_ = { -1, -1 };

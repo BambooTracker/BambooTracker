@@ -992,6 +992,12 @@ void MainWindow::loadSong()
 
 	// Init ui
 	ui->orderList->onSongLoaded();
+	ui->orderListGroupBox->setMaximumWidth(
+				ui->orderListGroupBox->contentsMargins().left()
+				+ ui->orderListGroupBox->layout()->contentsMargins().left()
+				+ ui->orderList->maximumWidth()
+				+ ui->orderListGroupBox->layout()->contentsMargins().right()
+				+ ui->orderListGroupBox->contentsMargins().right());
 	ui->patternEditor->onSongLoaded();
 
 	int curSong = bt_->getCurrentSongNumber();
