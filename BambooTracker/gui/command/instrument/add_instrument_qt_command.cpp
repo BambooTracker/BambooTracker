@@ -52,7 +52,7 @@ void AddInstrumentQtCommand::redo()
 	// KEEP CODE ORDER //
 	formMan_.lock()->add(num_, std::move(form), name_, source_);
 
-	item->setSizeHint(QSize(-1, 17));
+	item->setSizeHint(QSize(130, 17));
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(num_, item);
 	//----------//

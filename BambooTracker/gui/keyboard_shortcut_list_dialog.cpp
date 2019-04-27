@@ -13,4 +13,3 @@ KeyboardShortcutListDialog::~KeyboardShortcutListDialog()
 {
 	delete ui;
 }
-
