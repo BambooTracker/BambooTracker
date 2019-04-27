@@ -121,6 +121,7 @@ It can also be specified with `0Oxx` effect.
 | Ctrl+P | Open module property dialog    |
 | Ctrl+I | Open current instrument editor |
 | Return | Play/stop song                 |
+| F1     | Show effect list dialog        |
 | F5     | Play from start                |
 | F6     | Play pattern                   |
 | F7     | Play from current position     |

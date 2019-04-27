@@ -19,6 +19,7 @@
 - Add default file name to save/export dialogs
 - [#108] - Add macOS test to Travis CI (thanks [@OPNA2608], [@jpcima])
 - Add resolution selection to S98 export settings
+- [#112] Add effect list dialog (thanks [@attilaM68K])
 
 ### Changed
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
@@ -102,6 +103,7 @@
 [#116]: https://github.com/rerrahkr/BambooTracker/pull/116
 [#117]: https://github.com/rerrahkr/BambooTracker/pull/117
 [#119]: https://github.com/rerrahkr/BambooTracker/issues/119
+[#112]: https://github.com/rerrahkr/BambooTracker/issues/112
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma

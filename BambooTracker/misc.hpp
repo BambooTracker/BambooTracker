@@ -11,7 +11,9 @@
 
 enum class SoundSource : int
 {
-	FM, SSG, DRUM
+	FM = 1,
+	SSG = 2,
+	DRUM = 4
 };
 
 enum class SongType : int

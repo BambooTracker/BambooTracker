@@ -25,6 +25,7 @@
 #include "gui/color_palette.hpp"
 #include "timer.hpp"
 #include "gui/file_history.hpp"
+#include "gui/effect_list_dialog.hpp"
 
 class AbstractBank;
 
@@ -137,6 +138,9 @@ private:
 	QLabel* statusBpm_;
 	QLabel* statusPlayPos_;
 
+	// Dialogs
+	std::unique_ptr<EffectListDialog> effListDiag_;
+
 	// Meta methods
 	int tickEventMethod_;
 	int midiKeyEventMethod_;
@@ -219,6 +223,7 @@ private slots:
 	void on_actionClear_triggered();
 	void on_keyRepeatCheckBox_stateChanged(int arg1);
 	void updateVisuals();
+	void on_action_Effect_List_triggered();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

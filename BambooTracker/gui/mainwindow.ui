@@ -600,6 +600,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="action_Effect_List"/>
+    <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
@@ -1213,6 +1215,17 @@
   <action name="actionClear">
    <property name="text">
     <string>&amp;Clear</string>
+   </property>
+  </action>
+  <action name="action_Effect_List">
+   <property name="text">
+    <string>&amp;Effect List...</string>
+   </property>
+   <property name="toolTip">
+    <string>Effect List</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>
