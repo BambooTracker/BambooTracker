@@ -1,48 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EffectListDialog</class>
- <widget class="QDialog" name="EffectListDialog">
+ <class>KeyboardShortcutListDialog</class>
+ <widget class="QDialog" name="KeyboardShortcutListDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>400</height>
+    <width>400</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Effect list</string>
+   <string>Keyboard shortcuts</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
+    <widget class="QTextBrowser" name="textBrowser">
+     <property name="source">
+      <url>
+       <string>qrc:/doc/shortcuts</string>
+      </url>
      </property>
-     <attribute name="horizontalHeaderMinimumSectionSize">
-      <number>27</number>
-     </attribute>
-     <attribute name="horizontalHeaderStretchLastSection">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Effect</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Track type</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Description</string>
-      </property>
-     </column>
     </widget>
    </item>
    <item>
@@ -62,7 +40,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>EffectListDialog</receiver>
+   <receiver>KeyboardShortcutListDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -78,7 +56,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>EffectListDialog</receiver>
+   <receiver>KeyboardShortcutListDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

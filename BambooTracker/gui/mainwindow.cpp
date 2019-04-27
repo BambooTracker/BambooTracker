@@ -54,7 +54,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	isEditedOrder_(false),
 	isEditedInstList_(false),
 	isSelectedPO_(false),
-	effListDiag_(std::make_unique<EffectListDialog>())
+	effListDiag_(std::make_unique<EffectListDialog>()),
+	shortcutsDiag_(std::make_unique<KeyboardShortcutListDialog>())
 {
 	ui->setupUi(this);
 
@@ -2327,4 +2328,10 @@ void MainWindow::on_action_Effect_List_triggered()
 {
 	if (effListDiag_->isVisible()) effListDiag_->activateWindow();
 	else effListDiag_->show();
+}
+
+void MainWindow::on_actionShortcuts_triggered()
+{
+	if (shortcutsDiag_->isVisible()) shortcutsDiag_->activateWindow();
+	else shortcutsDiag_->show();
 }

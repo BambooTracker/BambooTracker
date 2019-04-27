@@ -601,6 +601,7 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="action_Effect_List"/>
+    <addaction name="actionShortcuts"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
@@ -1226,6 +1227,11 @@
    </property>
    <property name="shortcut">
     <string>F1</string>
+   </property>
+  </action>
+  <action name="actionShortcuts">
+   <property name="text">
+    <string>&amp;Shortcuts...</string>
    </property>
   </action>
  </widget>

@@ -42,6 +42,7 @@ CONFIG += c++14
 
 SOURCES += \
     gui/effect_list_dialog.cpp \
+    gui/keyboard_shortcut_list_dialog.cpp \
     main.cpp \
     gui/mainwindow.cpp \
     chips/chip.cpp \
@@ -198,6 +199,7 @@ SOURCES += \
 
 HEADERS += \
     gui/effect_list_dialog.hpp \
+    gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
     chips/mame/2608intf.h \
     chips/mame/emu2149.h \
@@ -373,6 +375,7 @@ HEADERS += \
 
 FORMS += \
     gui/effect_list_dialog.ui \
+    gui/keyboard_shortcut_list_dialog.ui \
     gui/mainwindow.ui \
     gui/instrument_editor/instrument_editor_fm_form.ui \
     gui/instrument_editor/fm_operator_table.ui \

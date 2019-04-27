@@ -24,4 +24,7 @@
         <file alias="edit_inst">res/icon/iconfinder_pencil_5631.png</file>
         <file alias="record">res/icon/iconfinder_stop_5785.png</file>
     </qresource>
+    <qresource prefix="/doc">
+        <file alias="shortcuts">res/doc/keyboard_shortcuts.html</file>
+    </qresource>
 </RCC>

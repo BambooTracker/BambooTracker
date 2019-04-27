@@ -26,6 +26,7 @@
 #include "timer.hpp"
 #include "gui/file_history.hpp"
 #include "gui/effect_list_dialog.hpp"
+#include "gui/keyboard_shortcut_list_dialog.hpp"
 
 class AbstractBank;
 
@@ -140,6 +141,7 @@ private:
 
 	// Dialogs
 	std::unique_ptr<EffectListDialog> effListDiag_;
+	std::unique_ptr<KeyboardShortcutListDialog> shortcutsDiag_;
 
 	// Meta methods
 	int tickEventMethod_;
@@ -224,6 +226,7 @@ private slots:
 	void on_keyRepeatCheckBox_stateChanged(int arg1);
 	void updateVisuals();
 	void on_action_Effect_List_triggered();
+	void on_actionShortcuts_triggered();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

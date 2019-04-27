@@ -19,7 +19,8 @@
 - Add default file name to save/export dialogs
 - [#108] - Add macOS test to Travis CI (thanks [@OPNA2608], [@jpcima])
 - Add resolution selection to S98 export settings
-- [#112] Add effect list dialog (thanks [@attilaM68K])
+- [#112] - Add effect list dialog (thanks [@attilaM68K])
+- [#79] - Add plain keyboard shortcut list dialog (thanks [@papiezak])
 
 ### Changed
 - [#82] - Change default main window size to 900x700 (thanks [@KamuiKazuma])
