@@ -26,11 +26,22 @@ private slots:
 	void on_addButton_clicked();
 	void on_removeButton_clicked();
 	void on_lineEdit_editingFinished();
-	void on_listWidget_currentRowChanged(int currentRow);
+	void on_grooveListWidget_currentRowChanged(int currentRow);
+	void on_upToolButton_clicked();
+	void on_downToolButton_clicked();
+	void on_expandPushButton_clicked();
+	void on_shrinkPushButton_clicked();
+	void on_genPushButton_clicked();
+	void on_padPushButton_clicked();
+	void on_copyPushButton_clicked();
 
 private:
 	Ui::GrooveSettingsDialog *ui;
 	std::vector<std::vector<int>> seqs_;
+
+	void changeSequence(int seqNum);
+	QString updateSequence(size_t seqNum);
+	void swapSequenceItem(size_t seqNum, int index1, int index2);
 };
 
 #endif // GROOVE_SETTINGS_DIALOG_HPP

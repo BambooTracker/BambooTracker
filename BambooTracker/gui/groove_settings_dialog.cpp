@@ -1,7 +1,11 @@
 #include "groove_settings_dialog.hpp"
 #include "ui_groove_settings_dialog.h"
+#include <algorithm>
+#include <numeric>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <QApplication>
+#include <QClipboard>
 
 GrooveSettingsDialog::GrooveSettingsDialog(QWidget *parent) :
 	QDialog(parent),
@@ -10,7 +14,7 @@ GrooveSettingsDialog::GrooveSettingsDialog(QWidget *parent) :
 	ui->setupUi(this);
 
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
-	ui->listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+	ui->grooveListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 }
 
 GrooveSettingsDialog::~GrooveSettingsDialog()
@@ -23,14 +27,15 @@ void GrooveSettingsDialog::setGrooveSquences(std::vector<std::vector<int>> seqs)
 	seqs_ = seqs;
 
 	for (size_t i = 0; i < seqs_.size(); ++i) {
-		QString text = QString::number(i) + ": ";
+		auto text = QString("%1: ").arg(i, 2, 16, QChar('0')).toUpper();
 		for (auto& g : seqs_[i]) {
 			text = text + QString::number(g) + " ";
 		}
-		ui->listWidget->addItem(text);
+		ui->grooveListWidget->addItem(text);
 	}
 
-	ui->removeButton->setEnabled(ui->listWidget->count() > 1);
+	ui->grooveListWidget->setCurrentRow(0);
+	ui->removeButton->setEnabled(ui->grooveListWidget->count() > 1);
 }
 
 std::vector<std::vector<int>> GrooveSettingsDialog::getGrooveSequences()
@@ -53,37 +58,38 @@ void GrooveSettingsDialog::keyPressEvent(QKeyEvent* event)
 
 void GrooveSettingsDialog::on_addButton_clicked()
 {
-	ui->listWidget->addItem(QString::number(seqs_.size()) + ": 6 6 ");
+	ui->grooveListWidget->addItem(QString("%1: 6 6").arg(seqs_.size(), 2, 16, QChar('0')).toUpper());
 	seqs_.push_back({ 6, 6});
 	ui->removeButton->setEnabled(true);
-	if (ui->listWidget->count() == 128) ui->addButton->setEnabled(false);
+	ui->grooveListWidget->setCurrentRow(ui->grooveListWidget->count() - 1);
+	if (ui->grooveListWidget->count() == 128) ui->addButton->setEnabled(false);
 }
 
 void GrooveSettingsDialog::on_removeButton_clicked()
 {
-	int row = ui->listWidget->currentRow();
+	int row = ui->grooveListWidget->currentRow();
 	if (row == -1) return;
 
 	seqs_.erase(seqs_.begin() + row);
-	delete ui->listWidget->takeItem(row);
-	for (int i = row; i < ui->listWidget->count(); ++i) {
+	delete ui->grooveListWidget->takeItem(row);
+	for (int i = row; i < ui->grooveListWidget->count(); ++i) {
 		QString text = QString::number(i) + ": ";
-		for (auto& g : seqs_[i]) {
+		for (auto& g : seqs_[static_cast<size_t>(i)]) {
 			text = text + QString::number(g) + " ";
 		}
-		ui->listWidget->item(i)->setText(text);
+		ui->grooveListWidget->item(i)->setText(text);
 	}
 
-	on_listWidget_currentRowChanged(ui->listWidget->currentRow());
+	on_grooveListWidget_currentRowChanged(ui->grooveListWidget->currentRow());
 
 	ui->addButton->setEnabled(true);
-	if (ui->listWidget->count() == 1)
+	if (ui->grooveListWidget->count() == 1)
 		ui->removeButton->setEnabled(false);
 }
 
 void GrooveSettingsDialog::on_lineEdit_editingFinished()
 {
-	int row = ui->listWidget->currentRow();
+	int row = ui->grooveListWidget->currentRow();
 	if (row == -1) return;
 
 	std::vector<int> seq;
@@ -107,22 +113,123 @@ void GrooveSettingsDialog::on_lineEdit_editingFinished()
 
 	if (seq.empty()) return;
 
-	text = "";
-	for (auto& g : seq) {
-		text = text + QString::number(g) + " ";
-	}
-	ui->lineEdit->setText(text);
-	ui->listWidget->item(row)->setText(QString::number(row) + ": " + text);
-	seqs_.at(row) = std::move(seq);
+	seqs_.at(static_cast<size_t>(row)) = std::move(seq);
+	changeSequence(row);
 }
 
-void GrooveSettingsDialog::on_listWidget_currentRowChanged(int currentRow)
+void GrooveSettingsDialog::on_grooveListWidget_currentRowChanged(int currentRow)
 {
-	if (currentRow > -1) {
-		QString text;
-		for (auto& g : seqs_[currentRow]) {
-			text = text + QString::number(g) + " ";
-		}
-		ui->lineEdit->setText(text);
+	if (currentRow > -1) updateSequence(static_cast<size_t>(currentRow));
+}
+
+void GrooveSettingsDialog::changeSequence(int seqNum)
+{
+	QString text = updateSequence(static_cast<size_t>(seqNum));
+	ui->grooveListWidget->item(seqNum)->setText(QString("%1: ").arg(seqNum, 2, 16, QChar('0')).toUpper() + text);
+}
+
+QString GrooveSettingsDialog::updateSequence(size_t seqNum)
+{
+	ui->seqListWidget->clear();
+	QString text;
+	auto& seq = seqs_.at(seqNum);
+	for (size_t i = 0; i < seq.size(); ++i) {
+		ui->seqListWidget->addItem(QString("%1: %2").arg(i, 2, 16, QChar('0')).toUpper().arg(seq[i]));
+		text = text + QString::number(seq[i]) + " ";
 	}
+	ui->seqListWidget->setCurrentRow(0);
+	ui->lineEdit->setText(text);
+	double speed = std::accumulate(seq.begin(), seq.end(), 0) / static_cast<double>(seq.size());
+	ui->speedLabel->setText(tr("Speed") + ": " + QString::number(speed, 'f', 3));
+	return text;
+}
+
+void GrooveSettingsDialog::on_upToolButton_clicked()
+{
+	int curRow = ui->seqListWidget->currentRow();
+	if (!curRow) return;
+
+	swapSequenceItem(static_cast<size_t>(ui->grooveListWidget->currentRow()), curRow - 1, curRow);
+	ui->seqListWidget->setCurrentRow(curRow - 1);
+}
+
+void GrooveSettingsDialog::on_downToolButton_clicked()
+{
+	int curRow = ui->seqListWidget->currentRow();
+	if (curRow == ui->seqListWidget->count() - 1) return;
+
+	swapSequenceItem(static_cast<size_t>(ui->grooveListWidget->currentRow()), curRow, curRow + 1);
+	ui->seqListWidget->setCurrentRow(curRow + 1);
+}
+
+void GrooveSettingsDialog::swapSequenceItem(size_t seqNum, int index1, int index2)
+{
+	std::iter_swap(seqs_.at(seqNum).begin() + index1, seqs_.at(seqNum).begin() + index2);
+	changeSequence(static_cast<int>(seqNum));
+}
+
+void GrooveSettingsDialog::on_expandPushButton_clicked()
+{
+	size_t id = static_cast<size_t>(ui->grooveListWidget->currentRow());
+	auto& ref = seqs_[id];
+	if (std::find(ref.begin(), ref.end(), 1) != ref.end()) return;
+
+	std::vector<int> seq;
+	for (auto v : ref) {
+		int tmp = v / 2;
+		seq.push_back(v - tmp);
+		seq.push_back(tmp);
+	}
+	seqs_.at(id) = std::move(seq);
+	changeSequence(static_cast<int>(id));
+}
+
+void GrooveSettingsDialog::on_shrinkPushButton_clicked()
+{
+	size_t id = static_cast<size_t>(ui->grooveListWidget->currentRow());
+	auto& ref = seqs_[id];
+	if (ref.size() % 2) return;
+
+	std::vector<int> seq;
+	for (auto it = ref.begin(); it != ref.end(); it += 2) seq.push_back(*it + *(it + 1));
+	seqs_.at(id) = std::move(seq);
+	changeSequence(static_cast<int>(id));
+}
+
+void GrooveSettingsDialog::on_genPushButton_clicked()
+{
+	int num = ui->numeratorSpinBox->value();
+	int denom = ui->denominatorSpinBox->value();
+	if (num < denom) return;
+
+	std::vector<int> seq(static_cast<size_t>(denom));
+	for (int i = 0; i < num * denom; i += num)
+		seq.at(static_cast<size_t>(denom - i / num - 1)) = (i + num) / denom - i / denom;
+	seqs_.at(static_cast<size_t>(ui->grooveListWidget->currentRow())) = std::move(seq);
+	changeSequence(ui->grooveListWidget->currentRow());
+}
+
+void GrooveSettingsDialog::on_padPushButton_clicked()
+{
+	int pad = ui->padSpinBox->value();
+	size_t id = static_cast<size_t>(ui->grooveListWidget->currentRow());
+	auto& ref = seqs_[id];
+	if (std::find_if(ref.begin(), ref.end(), [pad](int x) {return (x <= pad); }) != ref.end()) return;
+
+	std::vector<int> seq;
+	for (auto v : ref) {
+		seq.push_back(v - pad);
+		seq.push_back(pad);
+	}
+	seqs_.at(id) = std::move(seq);
+	changeSequence(static_cast<int>(id));
+}
+
+void GrooveSettingsDialog::on_copyPushButton_clicked()
+{
+	auto& seq = seqs_[static_cast<size_t>(ui->grooveListWidget->currentRow())];
+	auto text = QString("PATTERN_COPY:3,2,%1,").arg(seq.size());
+	for (auto v : seq) text += QString("0F,%1,").arg(v);
+
+	QApplication::clipboard()->setText(text);
 }

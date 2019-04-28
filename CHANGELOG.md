@@ -27,6 +27,7 @@
 - Change to keep current instrument when loading module
 - Move tick frequency settings from module settings groupbox to module properties dialog
 - [#119] - Change FM instrument editor scrollable (thanks [@Delta-Psi])
+- Improve groove editor
 - Change some layouts of UI
 
 ### Fixed
