@@ -288,7 +288,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="233"/>
         <source>Use SCCI (beta)</source>
-        <translation>Utiliser SCCI (beta)</translation>
+        <translation>Utiliser SCCI (bêta)</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="427"/>
@@ -422,7 +422,7 @@
     <message>
         <location filename="../../gui/effect_list_dialog.ui" line="14"/>
         <source>Effect list</source>
-        <translation>List d&apos;effets</translation>
+        <translation>Liste d&apos;effets</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.ui" line="33"/>
@@ -793,7 +793,7 @@
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="951"/>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1018"/>
         <source>Did not match the clipboard text format with %1.</source>
-        <translation>Impossible d&apos;interpréter le text formaté du presse-papiers avec %1.</translation>
+        <translation>Impossible d&apos;interpréter le texte formaté du presse-papiers avec %1.</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1333"/>
@@ -1664,7 +1664,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1228"/>
         <source>Effect List</source>
-        <translation>List d&apos;effets</translation>
+        <translation>Liste d&apos;effets</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1231"/>
