@@ -561,7 +561,7 @@
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="52"/>
         <source>Set digit types in the order of appearence:</source>
-        <translation>Typer les valeurs d&apos;après l&apos;ordre d&apos;apparition :</translation>
+        <translation>Définir les types de valeurs d&apos;après l&apos;ordre d&apos;apparition :</translation>
     </message>
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="62"/>
