@@ -863,7 +863,8 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="126"/>
         <source>Tone/Mask ratio</source>
-        <translation>Rapport ton/masque</translation>
+        <translatorcomment>À vérifier</translatorcomment>
+        <translation type="unfinished">Rapport tonalité/masque</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="152"/>
@@ -881,7 +882,7 @@
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="306"/>
         <source>Tone/Hard ratio</source>
         <translatorcomment>À vérifier...</translatorcomment>
-        <translation type="unfinished">Rapport ton/dur</translation>
+        <translation type="unfinished">Rapport tonalité/dur</translation>
     </message>
     <message>
         <source>Square mask:</source>
