@@ -676,9 +676,13 @@
         <translation type="unfinished">Remplir</translation>
     </message>
     <message>
-        <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
         <source>Speed</source>
-        <translation>Vitesse</translation>
+        <translation type="vanished">Vitesse</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
+        <source>Speed: </source>
+        <translation>Vitesse : </translation>
     </message>
 </context>
 <context>

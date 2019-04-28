@@ -140,7 +140,7 @@ QString GrooveSettingsDialog::updateSequence(size_t seqNum)
 	ui->seqListWidget->setCurrentRow(0);
 	ui->lineEdit->setText(text);
 	double speed = std::accumulate(seq.begin(), seq.end(), 0) / static_cast<double>(seq.size());
-	ui->speedLabel->setText(tr("Speed") + ": " + QString::number(speed, 'f', 3));
+	ui->speedLabel->setText(tr("Speed: ") + QString::number(speed, 'f', 3));
 	return text;
 }
 
