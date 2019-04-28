@@ -630,14 +630,55 @@
         <translation>Paramètres du groove</translation>
     </message>
     <message>
-        <location filename="../../gui/groove_settings_dialog.ui" line="42"/>
+        <location filename="../../gui/groove_settings_dialog.ui" line="32"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../../gui/groove_settings_dialog.ui" line="58"/>
+        <location filename="../../gui/groove_settings_dialog.ui" line="45"/>
         <source>Add</source>
         <translation>Ajouter</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="76"/>
+        <source>Sequence</source>
+        <translation>Séquence</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="82"/>
+        <source>Copy Fxx</source>
+        <translation>Copier Fxx</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="95"/>
+        <location filename="../../gui/groove_settings_dialog.ui" line="177"/>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="105"/>
+        <source>Expand</source>
+        <translation>Étendre</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="161"/>
+        <source>Generate</source>
+        <translation>Générer</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="187"/>
+        <source>Shrink</source>
+        <translation>Réduire</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="201"/>
+        <source>Pad</source>
+        <translation type="unfinished">Remplir</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
+        <source>Speed</source>
+        <translation>Vitesse</translation>
     </message>
 </context>
 <context>
