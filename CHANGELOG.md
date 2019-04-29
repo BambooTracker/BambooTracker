@@ -58,6 +58,7 @@
 - Fix incorrect wait counts in S98 exportation
 - Fix wait time precision of VGM and S98
 - Fix channel state retrieve to stop instrument sequences when there is no note at the first step
+- [#121] - Update French translation (thanks [@jpcima], [@trebmuh])
 
 ### Removed
 - Remove module and instrument saving to past version
@@ -106,6 +107,7 @@
 [#117]: https://github.com/rerrahkr/BambooTracker/pull/117
 [#119]: https://github.com/rerrahkr/BambooTracker/issues/119
 [#112]: https://github.com/rerrahkr/BambooTracker/issues/112
+[#121]: https://github.com/rerrahkr/BambooTracker/pull/121
 
 [@SuperJetSpade]: https://twitter.com/SuperJetSpade
 [@KamuiKazuma]: https://github.com/KamuiKazuma
