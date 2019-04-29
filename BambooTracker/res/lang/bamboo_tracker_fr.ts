@@ -25,27 +25,27 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="284"/>
         <source>Emulation core</source>
-        <translation type="unfinished"></translation>
+        <translation>Cœur d&apos;émulation</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="297"/>
         <source>MIDI</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="309"/>
         <source>MIDI input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrée MIDI</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="325"/>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="421"/>
         <source>Formats</source>
-        <translation type="unfinished"></translation>
+        <translation>Formats</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="500"/>
@@ -55,18 +55,18 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="518"/>
         <source>Note entry layout</source>
-        <translation type="unfinished"></translation>
+        <translation>Agencement pour la saisie de notes</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="524"/>
         <location filename="../../gui/configuration_dialog.ui" line="531"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Personnalisé</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="606"/>
         <source>Low</source>
-        <translation type="unfinished"></translation>
+        <translation>Bas</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="658"/>
@@ -74,7 +74,7 @@
         <location filename="../../gui/configuration_dialog.ui" line="1685"/>
         <location filename="../../gui/configuration_dialog.ui" line="1859"/>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>Do</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="690"/>
@@ -82,7 +82,7 @@
         <location filename="../../gui/configuration_dialog.ui" line="1327"/>
         <location filename="../../gui/configuration_dialog.ui" line="1753"/>
         <source>C#</source>
-        <translation type="unfinished"></translation>
+        <translation>Do#</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="725"/>
@@ -90,71 +90,71 @@
         <location filename="../../gui/configuration_dialog.ui" line="1418"/>
         <location filename="../../gui/configuration_dialog.ui" line="1554"/>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>Ré</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="751"/>
         <location filename="../../gui/configuration_dialog.ui" line="1633"/>
         <source>D#</source>
-        <translation type="unfinished"></translation>
+        <translation>Ré#</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="777"/>
         <location filename="../../gui/configuration_dialog.ui" line="1711"/>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>Mi</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="803"/>
         <location filename="../../gui/configuration_dialog.ui" line="1353"/>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>Fa</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="829"/>
         <location filename="../../gui/configuration_dialog.ui" line="1888"/>
         <source>F#</source>
-        <translation type="unfinished"></translation>
+        <translation>Fa#</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="856"/>
         <location filename="../../gui/configuration_dialog.ui" line="1581"/>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>Sol</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="882"/>
         <location filename="../../gui/configuration_dialog.ui" line="1470"/>
         <source>G#</source>
-        <translation type="unfinished"></translation>
+        <translation>Sol#</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="908"/>
         <location filename="../../gui/configuration_dialog.ui" line="1659"/>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>La</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="934"/>
         <location filename="../../gui/configuration_dialog.ui" line="1782"/>
         <source>A#</source>
-        <translation type="unfinished"></translation>
+        <translation>La#</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="960"/>
         <location filename="../../gui/configuration_dialog.ui" line="1808"/>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>Si</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1260"/>
         <source>High</source>
-        <translation type="unfinished"></translation>
+        <translation>Haut</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1927"/>
         <source>Special keys</source>
-        <translation type="unfinished"></translation>
+        <translation>Touches spéciales</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1933"/>
@@ -237,22 +237,22 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="124"/>
         <source>Retrieve channel state</source>
-        <translation type="unfinished"></translation>
+        <translation>Récupérer l&apos;état des canaux</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="132"/>
         <source>Enable translation</source>
-        <translation type="unfinished"></translation>
+        <translation>Activer la traduction</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="140"/>
         <source>Show FM detune as signed</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher le désaccordage FM comme valeur signée</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="148"/>
         <source>Show wave visual</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher une visualisation de l&apos;onde</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="165"/>
@@ -288,27 +288,27 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="233"/>
         <source>Use SCCI (beta)</source>
-        <translation type="unfinished"></translation>
+        <translation>Utiliser SCCI (bêta)</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="427"/>
         <source>FM envelope text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte d&apos;enveloppe FM</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="433"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="443"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Éditer</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="456"/>
         <source>Remove</source>
-        <translation type="unfinished">Supprimer</translation>
+        <translation>Supprimer</translation>
     </message>
     <message>
         <source>Use SCCI</source>
@@ -335,7 +335,7 @@
         <location filename="../../gui/configuration_dialog.cpp" line="319"/>
         <location filename="../../gui/configuration_dialog.cpp" line="320"/>
         <source>Virtual port</source>
-        <translation type="unfinished"></translation>
+        <translation>Port virtuel</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="146"/>
@@ -345,7 +345,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="247"/>
         <source>The change of emulator will be effective after restarting the program.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le changement d&apos;émulateur sera pris en compte au redémarrage du logiciel.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="257"/>
@@ -394,22 +394,22 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="281"/>
         <source>Reconstruct the current channel&apos;s state from previous orders upon playing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Reconstruire l&apos;état du canal actuel à partir des ordres précédents durant la lecture.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="284"/>
         <source>Translate to your language from the next launch. See readme to check supported languages.</source>
-        <translation type="unfinished"></translation>
+        <translation>Traduire en votre langue au prochain démarrage. Lire le fichier readme pour connaître la liste des langues gérées.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="288"/>
         <source>Display FM detune values as signed numbers in the FM envelope editor.</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher les valeurs de désaccordage FM comme nombres signés dans l&apos;éditeur d&apos;enveloppe FM.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="291"/>
         <source>Enable an oscilloscope which displays a waveform of the sound output.</source>
-        <translation type="unfinished"></translation>
+        <translation>Activer un oscilloscope qui affiche la forme d&apos;onde du signal de sortie.</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="297"/>
@@ -422,22 +422,22 @@
     <message>
         <location filename="../../gui/effect_list_dialog.ui" line="14"/>
         <source>Effect list</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste d&apos;effets</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.ui" line="33"/>
         <source>Effect</source>
-        <translation type="unfinished"></translation>
+        <translation>Effet</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.ui" line="38"/>
         <source>Track type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type de piste</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.ui" line="43"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Description</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="17"/>
@@ -551,32 +551,32 @@
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="14"/>
         <source>Edit FM envelope set</source>
-        <translation type="unfinished"></translation>
+        <translation>Éditer le format d&apos;enveloppe FM</translation>
     </message>
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="39"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="52"/>
         <source>Set digit types in the order of appearence:</source>
-        <translation type="unfinished"></translation>
+        <translation>Définir les types de valeurs d&apos;après l&apos;ordre d&apos;apparition :</translation>
     </message>
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="62"/>
         <source>Remove</source>
-        <translation type="unfinished">Supprimer</translation>
+        <translation>Supprimer</translation>
     </message>
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.cpp" line="14"/>
         <source>Number</source>
-        <translation type="unfinished">Numéro</translation>
+        <translation>Numéro</translation>
     </message>
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.cpp" line="14"/>
         <source>Type</source>
-        <translation type="unfinished">Type</translation>
+        <translation>Type</translation>
     </message>
 </context>
 <context>
@@ -609,7 +609,7 @@
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="398"/>
         <source>Paste envelope From</source>
-        <translation type="unfinished"></translation>
+        <translation>Coller l&apos;enveloppe depuis</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="406"/>
@@ -630,14 +630,59 @@
         <translation>Paramètres du groove</translation>
     </message>
     <message>
-        <location filename="../../gui/groove_settings_dialog.ui" line="42"/>
+        <location filename="../../gui/groove_settings_dialog.ui" line="32"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../../gui/groove_settings_dialog.ui" line="58"/>
+        <location filename="../../gui/groove_settings_dialog.ui" line="45"/>
         <source>Add</source>
         <translation>Ajouter</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="76"/>
+        <source>Sequence</source>
+        <translation>Séquence</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="82"/>
+        <source>Copy Fxx</source>
+        <translation>Copier Fxx</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="95"/>
+        <location filename="../../gui/groove_settings_dialog.ui" line="177"/>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="105"/>
+        <source>Expand</source>
+        <translation>Étendre</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="161"/>
+        <source>Generate</source>
+        <translation>Générer</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="187"/>
+        <source>Shrink</source>
+        <translation>Réduire</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.ui" line="201"/>
+        <source>Pad</source>
+        <translation type="unfinished">Remplir</translation>
+    </message>
+    <message>
+        <source>Speed</source>
+        <translation type="vanished">Vitesse</translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
+        <source>Speed: </source>
+        <translation>Vitesse : </translation>
     </message>
 </context>
 <context>
@@ -714,7 +759,7 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="432"/>
         <source>Envelope reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Réinitialisation d&apos;enveloppe</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="438"/>
@@ -745,7 +790,7 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="448"/>
         <source>FM 3ch</source>
-        <translation type="unfinished"></translation>
+        <translation>FM 3canaux</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="504"/>
@@ -787,13 +832,13 @@
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="950"/>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1017"/>
         <source>Error</source>
-        <translation type="unfinished">Erreur</translation>
+        <translation>Erreur</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="951"/>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1018"/>
         <source>Did not match the clipboard text format with %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;interpréter le texte formaté du presse-papiers avec %1.</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1333"/>
@@ -808,7 +853,7 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1338"/>
         <source>Paste envelope From</source>
-        <translation type="unfinished"></translation>
+        <translation>Coller l&apos;enveloppe depuis</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1457"/>
@@ -850,34 +895,39 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="94"/>
         <source>Square mask</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>À vérifier</translatorcomment>
+        <translation type="unfinished">Masque carré</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="100"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="277"/>
         <source>Raw</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>À vérifier</translatorcomment>
+        <translation type="unfinished">Brut</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="126"/>
         <source>Tone/Mask ratio</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>À vérifier</translatorcomment>
+        <translation type="unfinished">Rapport tonalité/masque</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="152"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="332"/>
         <source>/</source>
-        <translation type="unfinished"></translation>
+        <translation>/</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="271"/>
         <source>Hard frequency</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>À vérifier...</translatorcomment>
+        <translation type="unfinished">Fréquence dure</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="306"/>
         <source>Tone/Hard ratio</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>À vérifier...</translatorcomment>
+        <translation type="unfinished">Rapport tonalité/dur</translation>
     </message>
     <message>
         <source>Square mask:</source>
@@ -949,7 +999,7 @@
     <message>
         <location filename="../../gui/keyboard_shortcut_list_dialog.ui" line="14"/>
         <source>Keyboard shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Raccourcis clavier</translation>
     </message>
     <message>
         <location filename="../../gui/keyboard_shortcut_list_dialog.ui" line="21"/>
@@ -1015,7 +1065,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="191"/>
         <source>Key repetition</source>
-        <translation type="unfinished"></translation>
+        <translation>Répétition des touches</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="211"/>
@@ -1089,7 +1139,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="460"/>
         <source>&amp;Recent Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichiers &amp;récents</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="480"/>
@@ -1650,27 +1700,27 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1220"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Effacer</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1225"/>
         <source>&amp;Effect List...</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste d&apos;&amp;effets...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1228"/>
         <source>Effect List</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste d&apos;effets</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1231"/>
         <source>F1</source>
-        <translation type="unfinished">F1</translation>
+        <translation>F1</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1236"/>
         <source>&amp;Shortcuts...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Raccourcis...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="122"/>
@@ -1760,12 +1810,12 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="136"/>
         <source>Step highlight 1st</source>
-        <translation type="unfinished"></translation>
+        <translation>1er intervalle en surbrillance</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="151"/>
         <source>2nd</source>
-        <translation type="unfinished"></translation>
+        <translation>2nd</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1010"/>
@@ -1815,7 +1865,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1422"/>
         <source>Instrument: </source>
-        <translation type="unfinished"></translation>
+        <translation>Instrument : </translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1701"/>
@@ -1825,12 +1875,12 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1778"/>
         <source>Change to jam mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Passage en mode jeu</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1779"/>
         <source>Change to edit mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Passage en mode édition</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1800"/>
@@ -1926,22 +1976,22 @@
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="20"/>
         <source>Tick frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>Fréquence d&apos;horloge</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="26"/>
         <source>60Hz (NTSC)</source>
-        <translation type="unfinished"></translation>
+        <translation>60Hz (NTSC)</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="39"/>
         <source>50Hz (PAL)</source>
-        <translation type="unfinished"></translation>
+        <translation>50Hz (PAL)</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="54"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Autre</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="82"/>
@@ -2072,7 +2122,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1026"/>
         <source>Invalid effect</source>
-        <translation type="unfinished"></translation>
+        <translation>Effet invalide</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1034"/>
@@ -2316,7 +2366,8 @@
         <location filename="../../main.cpp" line="39"/>
         <source>An unknown error occured.
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Une erreur inconnue s&apos;est produite.
+%1</translation>
     </message>
     <message>
         <location filename="../../main.cpp" line="34"/>
@@ -2389,58 +2440,58 @@
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="136"/>
         <source>Target</source>
-        <translation type="unfinished"></translation>
+        <translation>Cible</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="142"/>
         <source>FM</source>
-        <translation type="unfinished"></translation>
+        <translation>FM</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="148"/>
         <source>YM2608 OPNA</source>
-        <translation type="unfinished"></translation>
+        <translation>YM2608 OPNA</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="158"/>
         <source>YM2612 OPN2</source>
-        <translation type="unfinished"></translation>
+        <translation>YM2612 OPN2</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="165"/>
         <source>YM2203 OPN</source>
-        <translation type="unfinished"></translation>
+        <translation>YM2203 OPN</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="188"/>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="266"/>
         <source>SSG</source>
-        <translation type="unfinished"></translation>
+        <translation>SSG</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="194"/>
         <source>OPN internal</source>
-        <translation type="unfinished"></translation>
+        <translation>Interne OPN</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="204"/>
         <source>AY-3-8910 PSG</source>
-        <translation type="unfinished"></translation>
+        <translation>PSG AY-3-8910</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="211"/>
         <source>YM2149 PSG</source>
-        <translation type="unfinished"></translation>
+        <translation>PSG YM2149</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="234"/>
         <source>Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Support</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="240"/>
         <source>FM Channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Canaux FM</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="279"/>
@@ -2450,29 +2501,29 @@
         <location filename="../../gui/s98_export_settings_dialog.cpp" line="92"/>
         <location filename="../../gui/s98_export_settings_dialog.cpp" line="93"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Oui</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="292"/>
         <source>Rhythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Rythme</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="318"/>
         <source>ADPCM</source>
-        <translation type="unfinished"></translation>
+        <translation>ADPCM</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="350"/>
         <source>Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Résolution</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.cpp" line="91"/>
         <location filename="../../gui/s98_export_settings_dialog.cpp" line="92"/>
         <location filename="../../gui/s98_export_settings_dialog.cpp" line="93"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Non</translation>
     </message>
 </context>
 <context>
@@ -2561,58 +2612,58 @@
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="353"/>
         <source>Target</source>
-        <translation type="unfinished"></translation>
+        <translation>Cible</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="359"/>
         <source>FM</source>
-        <translation type="unfinished"></translation>
+        <translation>FM</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="365"/>
         <source>YM2608 OPNA</source>
-        <translation type="unfinished"></translation>
+        <translation>YM2608 OPNA</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="375"/>
         <source>YM2612 OPN2</source>
-        <translation type="unfinished"></translation>
+        <translation>YM2612 OPN2</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="382"/>
         <source>YM2203 OPN</source>
-        <translation type="unfinished"></translation>
+        <translation>YM2203 OPN</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="405"/>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="483"/>
         <source>SSG</source>
-        <translation type="unfinished"></translation>
+        <translation>SSG</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="411"/>
         <source>OPN internal</source>
-        <translation type="unfinished"></translation>
+        <translation>Interne OPN</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="421"/>
         <source>AY-3-8910 PSG</source>
-        <translation type="unfinished"></translation>
+        <translation>PSG AY-3-8910</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="428"/>
         <source>YM2149 PSG</source>
-        <translation type="unfinished"></translation>
+        <translation>PSG YM2149</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="451"/>
         <source>Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Support</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="457"/>
         <source>FM Channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Canaux FM</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="496"/>
@@ -2622,24 +2673,24 @@
         <location filename="../../gui/vgm_export_settings_dialog.cpp" line="212"/>
         <location filename="../../gui/vgm_export_settings_dialog.cpp" line="213"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Oui</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="509"/>
         <source>Rhythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Rythme</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="535"/>
         <source>ADPCM</source>
-        <translation type="unfinished"></translation>
+        <translation>ADPCM</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.cpp" line="211"/>
         <location filename="../../gui/vgm_export_settings_dialog.cpp" line="212"/>
         <location filename="../../gui/vgm_export_settings_dialog.cpp" line="213"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Non</translation>
     </message>
 </context>
 <context>
