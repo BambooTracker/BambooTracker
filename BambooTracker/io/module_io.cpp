@@ -898,6 +898,8 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 			instMan.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(instSSG));
 			break;
 		}
+		default:
+			throw FileCorruptionError(FileIO::FileType::MOD);
 		}
 		instCsr += iOfs;
 	}
@@ -1365,24 +1367,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setArpeggioFMRelease(
-								idx, ReleaseType::NO_RELEASE, -1);
+					instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
 				case 0x01:	// Fix
-					instMan.lock()->setArpeggioFMRelease(
-								idx, ReleaseType::FIX, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::FIX, pos);
+					else instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x02:	// Absolute
-					instMan.lock()->setArpeggioFMRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
-					csr += 2;
-					break;
-				case 0x03:	// Relative
-					instMan.lock()->setArpeggioFMRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
-					csr += 2;
-					break;
+				}
+				default:
+					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					instMan.lock()->setArpeggioFMType(idx, ctr.readUint8(csr++));
@@ -1428,24 +1425,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setPitchFMRelease(
-								idx, ReleaseType::NO_RELEASE, -1);
+					instMan.lock()->setPitchFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
 				case 0x01:	// Fix
-					instMan.lock()->setPitchFMRelease(
-								idx, ReleaseType::FIX, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					if (pos < seqLen) instMan.lock()->setPitchFMRelease(idx, ReleaseType::FIX, pos);
+					else instMan.lock()->setPitchFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x02:	// Absolute
-					instMan.lock()->setPitchFMRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
-					csr += 2;
-					break;
-				case 0x03:	// Relative
-					instMan.lock()->setPitchFMRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
-					csr += 2;
-					break;
+				}
+				default:
+					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					instMan.lock()->setPitchFMType(idx, ctr.readUint8(csr++));
@@ -1505,24 +1497,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setWaveFormSSGRelease(
-								idx, ReleaseType::NO_RELEASE, -1);
+					instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
 				case 0x01:	// Fix
-					instMan.lock()->setWaveFormSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::FIX, pos);
+					else instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x02:	// Absolute
-					instMan.lock()->setWaveFormSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
-					csr += 2;
-					break;
-				case 0x03:	// Relative
-					instMan.lock()->setWaveFormSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
-					csr += 2;
-					break;
+				}
+				default:
+					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					++csr;	// Skip sequence type
@@ -1568,24 +1555,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setToneNoiseSSGRelease(
-								idx, ReleaseType::NO_RELEASE, -1);
+					instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
 				case 0x01:	// Fix
-					instMan.lock()->setToneNoiseSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::FIX, pos);
+					else instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x02:	// Absolute
-					instMan.lock()->setToneNoiseSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
-					csr += 2;
-					break;
-				case 0x03:	// Relative
-					instMan.lock()->setToneNoiseSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
-					csr += 2;
-					break;
+				}
+				default:
+					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					++csr;	// Skip sequence type
@@ -1639,24 +1621,35 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setEnvelopeSSGRelease(
-								idx, ReleaseType::NO_RELEASE, -1);
+					instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
+					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
 				case 0x01:	// Fix
-					instMan.lock()->setEnvelopeSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::FIX, pos);
+					else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
+				}
 				case 0x02:	// Absolute
-					instMan.lock()->setEnvelopeSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::ABSOLUTE, pos);
+					else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
+				}
 				case 0x03:	// Relative
-					instMan.lock()->setEnvelopeSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::RELATIVE, pos);
+					else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
+				}
+				default:
+					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					++csr;	// Skip sequence type
@@ -1702,24 +1695,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setArpeggioSSGRelease(
-								idx, ReleaseType::NO_RELEASE, -1);
+					instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
 				case 0x01:	// Fix
-					instMan.lock()->setArpeggioSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::FIX, pos);
+					else instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x02:	// Absolute
-					instMan.lock()->setArpeggioSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
-					csr += 2;
-					break;
-				case 0x03:	// Relative
-					instMan.lock()->setArpeggioSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
-					csr += 2;
-					break;
+				}
+				default:
+					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					instMan.lock()->setArpeggioSSGType(idx, ctr.readUint8(csr++));
@@ -1765,24 +1753,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setPitchSSGRelease(
-								idx, ReleaseType::NO_RELEASE, -1);
+					instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
 				case 0x01:	// Fix
-					instMan.lock()->setPitchSSGRelease(
-								idx, ReleaseType::FIX, ctr.readUint16(csr));
+				{
+					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
+					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					if (pos < seqLen) instMan.lock()->setPitchSSGRelease(idx, ReleaseType::FIX, pos);
+					else instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x02:	// Absolute
-					instMan.lock()->setPitchSSGRelease(
-								idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
-					csr += 2;
-					break;
-				case 0x03:	// Relative
-					instMan.lock()->setPitchSSGRelease(
-								idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
-					csr += 2;
-					break;
+				}
+				default:
+					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					instMan.lock()->setPitchSSGType(idx, ctr.readUint8(csr++));
@@ -1792,6 +1775,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			}
 			break;
 		}
+		default:
+			throw FileCorruptionError(FileIO::FileType::MOD);
 		}
 	}
 
@@ -1835,24 +1820,19 @@ size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter para
 
 	switch (ctr.readUint8(csr++)) {
 	case 0x00:	// No release
-		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::NO_RELEASE, -1);
+		instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NO_RELEASE, -1);
 		break;
 	case 0x01:	// Fix
-		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::FIX, ctr.readUint16(csr));
+	{
+		uint16_t pos = ctr.readUint16(csr);
 		csr += 2;
+		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+		if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::FIX, pos);
+		else instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NO_RELEASE, -1);
 		break;
-	case 0x02:	// Absolute
-		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::ABSOLUTE, ctr.readUint16(csr));
-		csr += 2;
-		break;
-	case 0x03:	// Relative
-		instMan.lock()->setOperatorSequenceFMRelease(
-					param, idx, ReleaseType::RELATIVE, ctr.readUint16(csr));
-		csr += 2;
-		break;
+	}
+	default:
+		throw FileCorruptionError(FileIO::FileType::MOD);
 	}
 
 	if (version >= Version::toBCD(1, 0, 1)) {

@@ -133,10 +133,10 @@ Loop unit is defined as the table below. If it is stored `0x00` in loop counts i
 
 There is release details in the end of subsequence block.
 
-| Type   | Field         | Description                                                                                      |
-| ------ | ------------- | ------------------------------------------------------------------------------------------------ |
-| uint8  | Release type  | `0x00`: no release, `0x01`: fix, `0x02`: absolute, `0x03`: releative.                            |
-| uint16 | Release point | Count from head of sequence where loop starts. If release type is `0x00`, this field is omitted. |
+| Type   | Field         | Description                                                                                                                                                               |
+| ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| uint8  | Release type  | `0x00`: no release, `0x01`: fix, `0x02`: absolute, `0x03`: releative. SSG envelope can be selected from all of these, and other properties can use only `0x00` or `0x01`. |
+| uint16 | Release point | Count from head of sequence where loop starts. If release type is `0x00`, this field is omitted.                                                                          |
 
 | Type  | Field         | Description                                    |
 | ----- | ------------- | ---------------------------------------------- |
