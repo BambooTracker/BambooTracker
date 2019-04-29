@@ -29,6 +29,7 @@
 - [#119] - Change FM instrument editor scrollable (thanks [@Delta-Psi])
 - Improve groove editor
 - Change some layouts of UI
+- [#121] - Update translation: fr, ja (thanks [@jpcima], [@trebmuh])
 
 ### Fixed
 - [#80] - Fix a typo in BambooTracker.fr.1 (thanks [@trebmuh])
@@ -58,7 +59,6 @@
 - Fix incorrect wait counts in S98 exportation
 - Fix wait time precision of VGM and S98
 - Fix channel state retrieve to stop instrument sequences when there is no note at the first step
-- [#121] - Update French translation (thanks [@jpcima], [@trebmuh])
 
 ### Removed
 - Remove module and instrument saving to past version
