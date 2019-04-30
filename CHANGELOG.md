@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.2.0 (2019-04-30)
 ### Added
 - [#76], [#107] - MIDI keyboard support ([#32]; thanks [@galap-1], [@jpcima], [@OPNA2608])
 - Add edit/jam button in tool bar
