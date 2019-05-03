@@ -42,7 +42,7 @@
              <bool>false</bool>
             </property>
             <property name="prefix">
-             <string>#</string>
+             <string notr="true">#</string>
             </property>
             <property name="maximum">
              <number>127</number>
@@ -149,7 +149,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>/</string>
+                <string notr="true">/</string>
                </property>
               </widget>
              </item>
@@ -217,7 +217,7 @@
              <bool>false</bool>
             </property>
             <property name="prefix">
-             <string>#</string>
+             <string notr="true">#</string>
             </property>
             <property name="maximum">
              <number>127</number>
@@ -329,7 +329,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>/</string>
+                <string notr="true">/</string>
                </property>
               </widget>
              </item>
@@ -365,7 +365,7 @@
              <bool>false</bool>
             </property>
             <property name="prefix">
-             <string>#</string>
+             <string notr="true">#</string>
             </property>
             <property name="maximum">
              <number>127</number>
@@ -427,7 +427,7 @@
              <bool>false</bool>
             </property>
             <property name="prefix">
-             <string>#</string>
+             <string notr="true">#</string>
             </property>
             <property name="maximum">
              <number>127</number>
@@ -525,7 +525,7 @@
           <item row="0" column="0">
            <widget class="QSpinBox" name="ptNumSpinBox">
             <property name="prefix">
-             <string>#</string>
+             <string notr="true">#</string>
             </property>
             <property name="maximum">
              <number>127</number>
@@ -587,7 +587,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="hardFreqButtonGroup"/>
   <buttongroup name="squareMaskButtonGroup"/>
+  <buttongroup name="hardFreqButtonGroup"/>
  </buttongroups>
 </ui>

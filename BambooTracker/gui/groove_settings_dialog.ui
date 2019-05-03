@@ -92,7 +92,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>...</string>
+         <string/>
         </property>
         <property name="arrowType">
          <enum>Qt::UpArrow</enum>
@@ -174,7 +174,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>...</string>
+         <string/>
         </property>
         <property name="arrowType">
          <enum>Qt::DownArrow</enum>

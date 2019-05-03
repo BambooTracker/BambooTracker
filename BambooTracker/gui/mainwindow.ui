@@ -218,7 +218,7 @@
            <bool>false</bool>
           </property>
           <property name="prefix">
-           <string>#</string>
+           <string notr="true">#</string>
           </property>
          </widget>
         </item>

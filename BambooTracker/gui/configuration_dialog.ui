@@ -322,7 +322,7 @@
             <item>
              <widget class="QToolButton" name="midiInputChoiceButton">
               <property name="text">
-               <string>...</string>
+               <string notr="true">...</string>
               </property>
              </widget>
             </item>

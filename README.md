@@ -93,9 +93,6 @@ Up to 256 patterns (`$00` - `$FF`) can be created for each track.
 ### Settings Field
 In the Settings Field you can adjust the module's metadata and performance settings of the song.
 
-#### Tick Frequency
-Sets the frequency of the tick. NTSC is 60 Hz, PAL is 50 Hz.
-
 #### Tempo
 Specify the tempo of the song. The tempo here is different from bpm, it is simply an indicator of speed.
 It can also be specified with the `0Fxx` effect.

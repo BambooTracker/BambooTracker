@@ -98,7 +98,7 @@
                        <bool>false</bool>
                       </property>
                       <property name="prefix">
-                       <string>#</string>
+                       <string notr="true">#</string>
                       </property>
                       <property name="maximum">
                        <number>127</number>
@@ -235,7 +235,7 @@
                     <bool>false</bool>
                    </property>
                    <property name="prefix">
-                    <string>#</string>
+                    <string notr="true">#</string>
                    </property>
                    <property name="maximum">
                     <number>127</number>
@@ -299,7 +299,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="prefix">
-                 <string>#</string>
+                 <string notr="true">#</string>
                 </property>
                 <property name="maximum">
                  <number>127</number>
@@ -564,7 +564,7 @@
                     <bool>false</bool>
                    </property>
                    <property name="prefix">
-                    <string>#</string>
+                    <string notr="true">#</string>
                    </property>
                    <property name="maximum">
                     <number>127</number>
@@ -668,7 +668,7 @@
                     <bool>false</bool>
                    </property>
                    <property name="prefix">
-                    <string>#</string>
+                    <string notr="true">#</string>
                    </property>
                    <property name="maximum">
                     <number>127</number>
@@ -722,15 +722,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>LabeledVerticalSlider</class>
-   <extends>QFrame</extends>
-   <header>gui/labeled_vertical_slider.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>VisualizedInstrumentMacroEditor</class>
    <extends>QWidget</extends>
    <header>gui/instrument_editor/visualized_instrument_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LabeledVerticalSlider</class>
+   <extends>QFrame</extends>
+   <header>gui/labeled_vertical_slider.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
