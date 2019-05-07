@@ -38,9 +38,8 @@
         <translation>Entrée MIDI</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="325"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="vanished">...</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="421"/>
@@ -650,10 +649,8 @@
         <translation>Copier Fxx</translation>
     </message>
     <message>
-        <location filename="../../gui/groove_settings_dialog.ui" line="95"/>
-        <location filename="../../gui/groove_settings_dialog.ui" line="177"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="vanished">...</translation>
     </message>
     <message>
         <location filename="../../gui/groove_settings_dialog.ui" line="105"/>
@@ -694,13 +691,8 @@
         <translation>Enveloppe</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="101"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="238"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="302"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="567"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="671"/>
         <source>#</source>
-        <translation>#</translation>
+        <translation type="vanished">#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="111"/>
@@ -875,13 +867,8 @@
         <translation>Forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="45"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="220"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="368"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="430"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="528"/>
         <source>#</source>
-        <translation>#</translation>
+        <translation type="vanished">#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="65"/>
@@ -912,10 +899,8 @@
         <translation type="unfinished">Rapport tonalité/masque</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="152"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="332"/>
         <source>/</source>
-        <translation>/</translation>
+        <translation type="vanished">/</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="271"/>
@@ -1073,7 +1058,6 @@
         <translation>Morceau</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="221"/>
         <location filename="../../gui/mainwindow.ui" line="374"/>
         <source>#</source>
         <translation>#</translation>
@@ -1818,6 +1802,51 @@
         <translation>2nd</translation>
     </message>
     <message>
+        <location filename="../../gui/mainwindow.cpp" line="809"/>
+        <source>BambooTracker instrument (*.bti)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="810"/>
+        <source>DefleMask preset (*.dmp)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="811"/>
+        <source>TFM Music Maker instrument (*.tfi)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="812"/>
+        <source>VGM Music Maker instrument (*.vgi)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="813"/>
+        <source>WOPN instrument (*.opni)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="814"/>
+        <source>Gens KMod dump (*.y12)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="815"/>
+        <source>MVSTracker instrument (*.ins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="846"/>
+        <source>BambooTracker instrument file (*.bti)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="863"/>
+        <source>WOPN bank (*.wopn)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../gui/mainwindow.cpp" line="1010"/>
         <location filename="../../gui/mainwindow.cpp" line="1034"/>
         <source>FM3ch expanded</source>
@@ -1897,6 +1926,12 @@
         <location filename="../../gui/mainwindow.cpp" line="1975"/>
         <source>Save module</source>
         <translation>Sauvegarder le module</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="1977"/>
+        <location filename="../../gui/mainwindow.cpp" line="2035"/>
+        <source>BambooTracker module file (*.btm)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2034"/>
@@ -2004,10 +2039,8 @@
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../../gui/module_properties_dialog.ui" line="120"/>
-        <location filename="../../gui/module_properties_dialog.ui" line="215"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="vanished">...</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="139"/>

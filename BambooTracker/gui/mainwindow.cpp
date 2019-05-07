@@ -806,13 +806,13 @@ void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-												"BambooTracker instrument (*.bti);;"
-												"DefleMask preset (*.dmp);;"
-												"TFM Music Maker instrument (*.tfi);;"
-												"VGM Music Maker instrument (*.vgi);;"
-												"WOPN instrument (*.opni);;"
-												"Gens KMod dump (*.y12);;"
-												"MVSTracker instrument (*.ins)");
+												QStringList{tr("BambooTracker instrument (*.bti)"),
+														tr("DefleMask preset (*.dmp)"),
+														tr("TFM Music Maker instrument (*.tfi)"),
+														tr("VGM Music Maker instrument (*.vgi)"),
+														tr("WOPN instrument (*.opni)"),
+														tr("Gens KMod dump (*.y12)"),
+														tr("MVSTracker instrument (*.ins)")}.join(";;"));
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();
@@ -843,7 +843,7 @@ void MainWindow::saveInstrument()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save instrument"),
 					   QString("%1/%2.bti").arg(dir.isEmpty() ? "." : dir, name),
-					   "BambooTracker instrument file (*.bti)");
+					   tr("BambooTracker instrument file (*.bti)"));
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
@@ -860,7 +860,7 @@ void MainWindow::importInstrumentsFromBank()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
-												"WOPN bank (*.wopn)");
+												tr("WOPN bank (*.wopn)"));
 	if (file.isNull()) return;
 
 	std::unique_ptr<AbstractBank> bank;
@@ -1974,7 +1974,7 @@ bool MainWindow::on_actionSave_As_triggered()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save module"),
 					   QString("%1/%2.btm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   "BambooTracker module file (*.btm)");
+					   tr("BambooTracker module file (*.btm)"));
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
@@ -2032,7 +2032,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
-												"BambooTracker module file (*.btm)");
+												tr("BambooTracker module file (*.btm)"));
 	if (file.isNull()) return;
 
 	bt_->stopPlaySong();
