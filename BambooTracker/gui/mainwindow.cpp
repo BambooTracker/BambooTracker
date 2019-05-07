@@ -1800,22 +1800,22 @@ void MainWindow::on_actionAbout_triggered()
 					tr("About"),
 					QString("<h2>BambooTracker v")
 					+ QString::fromStdString(Version::ofApplicationInString())
-					+ QString("</h2>"
-							  "<b>YM2608 (OPNA) Music Tracker<br>"
-							  "Copyright (C) 2018, 2019 Rerrah</b><br>"
-							  "<hr>"
-							  "Libraries:<br>"
-							  "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
-							  "- MAME (MAME License)<br>"
-							  "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
-							  "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
-							  "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
-							  "- SCCI (SCCI License)<br>"
-							  "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
-							  "- Qt (GPL v2+ or LGPL v3)<br>"
-							  "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
-							  "<br>"
-							  "Also see changelog which lists contributors."),
+					+ QString("</h2>")
+					+ tr("<b>YM2608 (OPNA) Music Tracker<br>"
+						 "Copyright (C) 2018, 2019 Rerrah</b><br>"
+						 "<hr>"
+						 "Libraries:<br>"
+						 "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
+						 "- MAME (MAME License)<br>"
+						 "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
+						 "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
+						 "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
+						 "- SCCI (SCCI License)<br>"
+						 "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
+						 "- Qt (GPL v2+ or LGPL v3)<br>"
+						 "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
+						 "<br>"
+						 "Also see changelog which lists contributors."),
 					QMessageBox::Ok,
 					this);
 	box.setIconPixmap(QIcon(":/icon/app_icon").pixmap(QSize(44, 44)));
