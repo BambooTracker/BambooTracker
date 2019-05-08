@@ -1,9 +1,6 @@
 #include "timer.hpp"
 
-Timer::Timer()
-	: checkTime_(100)
-{
-}
+Timer::Timer() {}
 
 Timer::~Timer()
 {

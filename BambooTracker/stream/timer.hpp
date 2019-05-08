@@ -19,7 +19,6 @@ public:
 
 private:
 	std::atomic<int> time_;
-	const int checkTime_;
 	std::function<void()> func_;
 	std::thread thread_;
 	std::atomic_bool isContinue_;

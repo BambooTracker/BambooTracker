@@ -10,8 +10,6 @@ InterpolatePatternCommand::InterpolatePatternCommand(std::weak_ptr<Module> mod,
 	  bCol_(beginColmn),
 	  order_(beginOrder),
 	  bStep_(beginStep),
-	  eTrack_(endTrack),
-	  eCol_(endColumn),
 	  eStep_(endStep)
 {
 	auto& sng = mod.lock()->getSong(songNum);

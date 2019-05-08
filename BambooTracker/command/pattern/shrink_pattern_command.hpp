@@ -19,6 +19,6 @@ public:
 private:
 	std::weak_ptr<Module> mod_;
 	int song_, bTrack_, bCol_, order_, bStep_;
-	int eTrack_, eCol_, eStep_;
+	int eStep_;
 	std::vector<std::vector<std::string>> prevCells_;
 };

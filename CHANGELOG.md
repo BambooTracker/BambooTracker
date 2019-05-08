@@ -1,6 +1,16 @@
 # Changelog
 
 ## Unreleased
+### Changed
+- [#123], [#125] - Update translation: fr ([#122]; thanks [@trebmuh], [@jpcima])
+
+### Fixed
+- [#124] - Automatic section size for table column ([#122]; thanks [@jpcima], [@trebmuh])
+
+[#122]: https://github.com/rerrahkr/BambooTracker/issues/122
+[#123]: https://github.com/rerrahkr/BambooTracker/pull/123
+[#125]: https://github.com/rerrahkr/BambooTracker/pull/125
+[#124]: https://github.com/rerrahkr/BambooTracker/pull/124
 
 ## v0.2.0 (2019-04-30)
 ### Added

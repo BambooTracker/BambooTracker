@@ -9,10 +9,7 @@ ExpandPatternCommand::ExpandPatternCommand(std::weak_ptr<Module> mod,
 	  bTrack_(beginTrack),
 	  bCol_(beginColmn),
 	  order_(beginOrder),
-	  bStep_(beginStep),
-	  eTrack_(endTrack),
-	  eCol_(endColumn),
-	  eStep_(endStep)
+	  bStep_(beginStep)
 {
 	auto& sng = mod.lock()->getSong(songNum);
 	int s = beginStep;
