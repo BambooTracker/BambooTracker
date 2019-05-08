@@ -22,7 +22,7 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 
 	ui->songTreeWidget->setColumnCount(3);
 	ui->songTreeWidget->setHeaderLabels({ tr("Number"), tr("Title"), tr("Song type") });
-	ui->songTreeWidget->header()->resizeSection(0, 52);
+	ui->songTreeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
 	int songCnt = static_cast<int>(core.lock()->getSongCount());
 	for (int i = 0; i < songCnt; ++i) {
 		auto title = core.lock()->getSongTitle(i);
