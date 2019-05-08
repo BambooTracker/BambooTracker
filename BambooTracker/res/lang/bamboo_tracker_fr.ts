@@ -2231,7 +2231,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1142"/>
         <source>0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)</source>
-        <translatio>0Qxy - Note glissée vers le haut, x : compte (0-F), y : demi-note (0-F)</translation>
+        <translation>0Qxy - Note glissée vers le haut, x : compte (0-F), y : demi-note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1152"/>
