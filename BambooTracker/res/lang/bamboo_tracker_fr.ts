@@ -441,108 +441,108 @@
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="17"/>
         <source>Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Arpège, x : 2nde note (0-F), y : 3ème note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="20"/>
         <source>Portamento up, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Portamento haut, xx : profondeur (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="23"/>
         <source>Portamento down, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Portamento bas, xx : profondeur (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="26"/>
         <source>Tone portamento, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Portamento de tonalité, xx : profondeur (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="29"/>
         <source>Vibrato, x: period (0-F), y: depth (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Vibrato, x : période (0-F), y : profondeur (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="32"/>
         <location filename="../../gui/effect_list_dialog.cpp" line="68"/>
         <source>Tremolo, x: period (0-F), y: depth (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Trémolo, x : période (0-F), y : profondeur (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="35"/>
         <source>Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
-        <translation type="unfinished"></translation>
+        <translation>Pan, xx : 00 = pas de son, 01 = droite, 02 = gauche, 03 = centre</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="38"/>
         <source>Volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Glissé de volume, x : haut (0-F), y : bas (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="41"/>
         <source>Jump to begginning of order xx</source>
-        <translation type="unfinished"></translation>
+        <translation>Aller au début de la commande xx</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="44"/>
         <source>End of song</source>
-        <translation type="unfinished"></translation>
+        <translation>Fin du morceau</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="47"/>
         <source>Jump to step xx of next order</source>
-        <translation type="unfinished"></translation>
+        <translation>Aller au pas xx de la prochaine commande</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="50"/>
         <source>Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Changement de vitesse (xx : 00-1F), changement de tempo (xx : 20-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="53"/>
         <source>Note delay, xx: count (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Délai de note, xx : compte (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="56"/>
         <source>Set groove xx</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramétrer le groove xx</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="59"/>
         <source>Detune, xx: pitch (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Désaccordage, xx : tonalité (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="62"/>
         <source>Note slide up, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Note glissée vers le haut, x : compte (0-F), y : demi-note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="65"/>
         <source>Note slide down, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Note glissée vers le bas, x : compte (0-F), y : demi-note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="71"/>
         <source>Note cut, xx: count (01-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Coupure de note, xx : compte (01-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="74"/>
         <source>Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Délai de transposition, x : compte (1-7 : haut, 9-F : bas), y : demi-note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="77"/>
         <source>Master volume, xx: volume (00-3F)</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume maître, xx : volume (00-3F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="80"/>
         <source>Volume delay, x: count (1-F), yy: volume (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Délai de volume, x : compte (1-F), yy : volume (00-FF)</translation>
     </message>
 </context>
 <context>
@@ -1804,47 +1804,47 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="809"/>
         <source>BambooTracker instrument (*.bti)</source>
-        <translation type="unfinished"></translation>
+        <translation>Instrument BambooTracker (*.bti)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="810"/>
         <source>DefleMask preset (*.dmp)</source>
-        <translation type="unfinished"></translation>
+        <translation>Préréglage DefleMask (*.dmp)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="811"/>
         <source>TFM Music Maker instrument (*.tfi)</source>
-        <translation type="unfinished"></translation>
+        <translation>Instrument TFM Music Maker (*.tfi)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="812"/>
         <source>VGM Music Maker instrument (*.vgi)</source>
-        <translation type="unfinished"></translation>
+        <translation>Instrument VGM Music Maker (*.vgi)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="813"/>
         <source>WOPN instrument (*.opni)</source>
-        <translation type="unfinished"></translation>
+        <translation>Instrument WOPN (*.opni)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="814"/>
         <source>Gens KMod dump (*.y12)</source>
-        <translation type="unfinished"></translation>
+        <translation>Décharge Gens KMod (*.y12)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="815"/>
         <source>MVSTracker instrument (*.ins)</source>
-        <translation type="unfinished"></translation>
+        <translation>Instrument MVSTracker (*.ins)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="846"/>
         <source>BambooTracker instrument file (*.bti)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichier instrument BambooTracker (*.bti)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="863"/>
         <source>WOPN bank (*.wopn)</source>
-        <translation type="unfinished"></translation>
+        <translation>Banque WOPN (*.wopn)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1010"/>
@@ -1919,7 +1919,8 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1804"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Bibliothèques:&lt;br&gt;- libOPNMIDI par (C) Vitaly Novichkov (en partie sous licence MIT)&lt;br&gt;- MAME (licence MAME)&lt;br&gt;- Nuked OPN-MOD par (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;et (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtMidi par (C) Gary P. Scavone (licence RtMidi)&lt;br&gt;- SCCI (licence SCCI)&lt;br&gt;- ensemble d&apos;icône Silk 1.3 par (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ ou LGPL v3)&lt;br&gt;- VGMPlay par (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Lire également le changelog qui contient la liste des contributeurs.
+       </translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1948"/>
@@ -1936,7 +1937,7 @@
         <location filename="../../gui/mainwindow.cpp" line="1977"/>
         <location filename="../../gui/mainwindow.cpp" line="2035"/>
         <source>BambooTracker module file (*.btm)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichier de module BambooTracker (*.btm)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2034"/>
@@ -2165,107 +2166,107 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1034"/>
         <source>00xy - Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>00xy - Arpège, x : 2nde note (0-F), y : 3ème note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1044"/>
         <source>01xx - Portamento up, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>01xx - Portamento haut, xx : profondeur (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1054"/>
         <source>02xx - Portamento down, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>02xx - Portamento bas, xx : profondeur (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1064"/>
         <source>03xx - Tone portamento, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>03xx - Portamento de tonalité, xx : profondeur (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1074"/>
         <source>04xy - Vibrato, x: period (0-F), y: depth (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>04xx - Vibrato, x : période (0-F), y : profondeur (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1084"/>
         <source>07xx - Tremolo, x: period (0-F), y: depth (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>07xx - Trémolo, x : période (0-F), y : profondeur (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1094"/>
         <source>08xx - Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
-        <translation type="unfinished"></translation>
+        <translation>08xx - Pan, xx : 00 = pas de son, 01 = droite, 02 = gauche, 03 = centre</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1104"/>
         <source>0Axy - Volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Axy - Glissé de volume, x : haut (0-F), y : bas (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1111"/>
         <source>0Bxx - Jump to begginning of order xx</source>
-        <translation type="unfinished"></translation>
+        <translation>0Bxx - Aller au début de la commande xx</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1114"/>
         <source>0Cxx - End of song</source>
-        <translation type="unfinished"></translation>
+        <translation>0Cxx - Fin du morceau</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1117"/>
         <source>0Dxx - Jump to step xx of next order</source>
-        <translation type="unfinished"></translation>
+        <translation>0Dxx - Aller au pas xx de la prochaine commande</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1126"/>
         <source>0Oxx - Set groove xx</source>
-        <translation type="unfinished"></translation>
+        <translation>0Oxx - Paramétrer le groove xx</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1132"/>
         <source>0Pxx - Detune, xx: pitch (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Pxx - Désaccordage, xx : toalité (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1142"/>
         <source>0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Qxy - Note glissée vers le haut, x : compte (0-F), y : demi-note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1152"/>
         <source>0Rxy - Note slide down, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Rxy - Note glissée vers le bas, x : compte (0-F), y : demi-note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1165"/>
         <source>0Txy - Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Txy - Délai de transposition, x : compte (1-7 : haut, 9-F : bas), y : demi-note (0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1120"/>
         <source>0Fxx - Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Fxx - Changement de vitesse (xx : 00-1F), changement de tempo (xx : 20-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1123"/>
         <source>0Gxx - Note delay, xx: count (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Gxx - Délai de note, xx : compte (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1159"/>
         <source>0Sxx - Note cut, xx: count (01-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Sxx - Coupure de note, xx : compte (01-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1174"/>
         <source>0Vxx - Master volume, xx: volume (00-3F)</source>
-        <translation type="unfinished"></translation>
+        <translation>0Vxx - Volume maître, xx : volume (00-3F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1183"/>
         <source>Mxyy - Volume delay, x: count (1-F), yy: volume (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>Mxyy - Délai de volume , x : compte (1-F), yy : volume (00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1499"/>
