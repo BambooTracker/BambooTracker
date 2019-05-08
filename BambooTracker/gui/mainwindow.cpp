@@ -806,13 +806,13 @@ void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-												"BambooTracker instrument (*.bti);;"
-												"DefleMask preset (*.dmp);;"
-												"TFM Music Maker instrument (*.tfi);;"
-												"VGM Music Maker instrument (*.vgi);;"
-												"WOPN instrument (*.opni);;"
-												"Gens KMod dump (*.y12);;"
-												"MVSTracker instrument (*.ins)");
+												QStringList{tr("BambooTracker instrument (*.bti)"),
+														tr("DefleMask preset (*.dmp)"),
+														tr("TFM Music Maker instrument (*.tfi)"),
+														tr("VGM Music Maker instrument (*.vgi)"),
+														tr("WOPN instrument (*.opni)"),
+														tr("Gens KMod dump (*.y12)"),
+														tr("MVSTracker instrument (*.ins)")}.join(";;"));
 	if (file.isNull()) return;
 
 	int n = bt_->findFirstFreeInstrumentNumber();
@@ -843,7 +843,7 @@ void MainWindow::saveInstrument()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save instrument"),
 					   QString("%1/%2.bti").arg(dir.isEmpty() ? "." : dir, name),
-					   "BambooTracker instrument file (*.bti)");
+					   tr("BambooTracker instrument file (*.bti)"));
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
@@ -860,7 +860,7 @@ void MainWindow::importInstrumentsFromBank()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
-												"WOPN bank (*.wopn)");
+												tr("WOPN bank (*.wopn)"));
 	if (file.isNull()) return;
 
 	std::unique_ptr<AbstractBank> bank;
@@ -1800,22 +1800,22 @@ void MainWindow::on_actionAbout_triggered()
 					tr("About"),
 					QString("<h2>BambooTracker v")
 					+ QString::fromStdString(Version::ofApplicationInString())
-					+ QString("</h2>"
-							  "<b>YM2608 (OPNA) Music Tracker<br>"
-							  "Copyright (C) 2018, 2019 Rerrah</b><br>"
-							  "<hr>"
-							  "Libraries:<br>"
-							  "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
-							  "- MAME (MAME License)<br>"
-							  "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
-							  "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
-							  "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
-							  "- SCCI (SCCI License)<br>"
-							  "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
-							  "- Qt (GPL v2+ or LGPL v3)<br>"
-							  "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
-							  "<br>"
-							  "Also see changelog which lists contributors."),
+					+ QString("</h2>")
+					+ tr("<b>YM2608 (OPNA) Music Tracker<br>"
+						 "Copyright (C) 2018, 2019 Rerrah</b><br>"
+						 "<hr>"
+						 "Libraries:<br>"
+						 "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
+						 "- MAME (MAME License)<br>"
+						 "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
+						 "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
+						 "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
+						 "- SCCI (SCCI License)<br>"
+						 "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
+						 "- Qt (GPL v2+ or LGPL v3)<br>"
+						 "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
+						 "<br>"
+						 "Also see changelog which lists contributors."),
 					QMessageBox::Ok,
 					this);
 	box.setIconPixmap(QIcon(":/icon/app_icon").pixmap(QSize(44, 44)));
@@ -1974,7 +1974,7 @@ bool MainWindow::on_actionSave_As_triggered()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save module"),
 					   QString("%1/%2.btm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   "BambooTracker module file (*.btm)");
+					   tr("BambooTracker module file (*.btm)"));
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
@@ -2032,7 +2032,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
-												"BambooTracker module file (*.btm)");
+												tr("BambooTracker module file (*.btm)"));
 	if (file.isNull()) return;
 
 	bt_->stopPlaySong();
