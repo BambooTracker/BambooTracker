@@ -1,5 +1,6 @@
 #include "audio_stream_mixier.hpp"
 #include <algorithm>
+#include <cstring>
 
 AudioStreamMixier::AudioStreamMixier(uint32_t rate, uint32_t duration, uint32_t intrRate, QObject* parent) :
 	QIODevice(parent),
@@ -66,9 +67,10 @@ void AudioStreamMixier::updateIntrruptCount()
 qint64 AudioStreamMixier::readData(char* data, qint64 maxlen)
 {
 	qint64 generatedCount;
-	if (isFirstRead_) {   // Fill device buffer in first read
-		generatedCount = maxlen >> 2;
+	if (isFirstRead_) {   // Clean device buffer in first read
 		isFirstRead_ = false;
+		std::memset(data, 0, static_cast<size_t>(maxlen));
+		return maxlen;
 	}
 	else {  // Fill appropriate sample counts
 		generatedCount = std::min(bufferSampleSize_, (maxlen >> 2));
