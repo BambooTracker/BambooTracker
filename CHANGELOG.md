@@ -7,12 +7,16 @@
 ### Fixed
 - [#124] - Automatic section size for table column ([#122]; thanks [@jpcima], [@trebmuh])
 - [#96] - Clean audio buffer initially (thanks [@OPNA2608])
+- [#126] - Reset scrollbar positions in order list when loading song (thanks [@N-SPC700], [@OPNA2608])
 
 [#122]: https://github.com/rerrahkr/BambooTracker/issues/122
 [#123]: https://github.com/rerrahkr/BambooTracker/pull/123
 [#125]: https://github.com/rerrahkr/BambooTracker/pull/125
 [#124]: https://github.com/rerrahkr/BambooTracker/pull/124
 [#96]: https://github.com/rerrahkr/BambooTracker/issues/96
+[#126]: https://github.com/rerrahkr/BambooTracker/issues/126
+
+[@N-SPC700]: https://github.com/N-SPC700
 
 ## v0.2.0 (2019-04-30)
 ### Added

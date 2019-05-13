@@ -125,7 +125,9 @@ void OrderListEditor::onSongLoaded()
 	ui->panel->onSongLoaded();
 	setMaximumWidth(ui->panel->maximumWidth() + ui->verticalScrollBar->width() + 2);
 	int song = bt_->getCurrentSongNumber();
+	ui->horizontalScrollBar->setValue(0);
 	ui->horizontalScrollBar->setMaximum(static_cast<int>(bt_->getSongStyle(song).trackAttribs.size()) - 1);
+	ui->verticalScrollBar->setValue(0);
 	ui->verticalScrollBar->setMaximum(static_cast<int>(bt_->getOrderSize(song)) - 1);
 }
 
