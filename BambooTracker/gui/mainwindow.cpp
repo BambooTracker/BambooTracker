@@ -950,6 +950,11 @@ void MainWindow::loadModule()
 
 	loadSong();
 
+	// Set tick frequency
+	stream_->setInturuption(bt_->getModuleTickFrequency());
+	if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
+
 	// Clear records
 	QApplication::clipboard()->clear();
 	comStack_->clear();
@@ -1707,11 +1712,6 @@ void MainWindow::on_actionModule_Properties_triggered()
 		setModifiedTrue();
 		setWindowTitle();
 		ui->instrumentListWidget->setCurrentRow(instRow);
-
-		// Set tick frequency
-		stream_->setInturuption(bt_->getModuleTickFrequency());
-		if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
-		statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 	}
 }
 
