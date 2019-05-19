@@ -105,8 +105,6 @@ int FMOperatorTable::operatorNumber() const
 
 void FMOperatorTable::setValue(Ui::FMOperatorParameter param, int value)
 {
-	Ui::EventGuard eg(isIgnoreEvent_);
-
 	if (param == Ui::FMOperatorParameter::SSGEG) {
 		if (value == -1) {
 			ui->ssgegCheckBox->setChecked(false);
