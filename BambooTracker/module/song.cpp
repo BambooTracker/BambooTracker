@@ -135,7 +135,7 @@ std::vector<TrackAttribute> Song::getTrackAttributes() const
 
 Track& Song::getTrack(int num)
 {
-	return tracks_.at(num);
+	return tracks_.at(static_cast<size_t>(num));
 }
 
 std::vector<OrderData> Song::getOrderData(int order)

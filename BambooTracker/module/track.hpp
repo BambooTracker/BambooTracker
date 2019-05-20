@@ -31,6 +31,9 @@ public:
 
 	void changeDefaultPatternSize(size_t size);
 
+	void setEffectDisplayWidth(size_t w);
+	size_t getEffectDisplayWidth() const;
+
 	void clearUnusedPatterns();
 
 private:
@@ -38,6 +41,7 @@ private:
 
 	std::vector<int> order_;
 	std::vector<Pattern> patterns_;
+	size_t effetDisplayWidth_;
 };
 
 struct TrackAttribute

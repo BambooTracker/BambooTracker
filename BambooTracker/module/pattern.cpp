@@ -37,7 +37,7 @@ int Pattern::getUsedCount() const
 
 Step& Pattern::getStep(int n)
 {
-	return steps_.at(n);
+	return steps_.at(static_cast<size_t>(n));
 }
 
 size_t Pattern::getSize() const
@@ -88,7 +88,7 @@ std::vector<int> Pattern::getEditedStepIndices() const
 	std::vector<int> list;
 	for (size_t i = 0; i < size_; ++i) {
 		if (steps_.at(i).existCommand())
-			list.push_back(i);
+			list.push_back(static_cast<int>(i));
 	}
 	return list;
 }

@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#127] - Add effect display width to module (thanks [@ImATrackMan])
+
 ### Changed
 - [#123], [#125] - Update translation: fr ([#122]; thanks [@trebmuh], [@jpcima])
 

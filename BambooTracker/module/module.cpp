@@ -117,7 +117,8 @@ void Module::addSong(int n, SongType songType, std::string title, bool isUsedTem
 					 int tempo, int groove, int speed, size_t defaultPatternSize)
 {
 	if (n < static_cast<int>(songs_.size()))
-		songs_.at(n) = Song(n, songType, title, isUsedTempo, tempo, groove, speed, defaultPatternSize);
+		songs_.at(static_cast<size_t>(n))
+				= Song(n, songType, title, isUsedTempo, tempo, groove, speed, defaultPatternSize);
 	else
 		songs_.emplace_back(
 					n, songType, title, isUsedTempo, tempo, groove, speed, defaultPatternSize);
@@ -130,7 +131,7 @@ void Module::sortSongs(std::vector<int> numbers)
 
 	for (auto& n : numbers) {
 		auto it = std::make_move_iterator(songs_.begin() + n);
-		it->setNumber(newSongs.size());
+		it->setNumber(static_cast<int>(newSongs.size()));
 		newSongs.push_back(*it);
 	}
 
@@ -158,7 +159,7 @@ void Module::removeGroove(int num)
 
 void Module::setGroove(int num, std::vector<int> seq)
 {
-	grooves_.at(num).setSequrnce(seq);
+	grooves_.at(static_cast<size_t>(num)).setSequrnce(seq);
 }
 
 void Module::setGrooves(std::vector<std::vector<int>> seqs)
@@ -171,7 +172,7 @@ void Module::setGrooves(std::vector<std::vector<int>> seqs)
 
 Groove& Module::getGroove(int num)
 {
-	return grooves_.at(num);
+	return grooves_.at(static_cast<size_t>(num));
 }
 
 std::set<int> Module::getRegisterdInstruments() const

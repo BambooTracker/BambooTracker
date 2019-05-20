@@ -2437,6 +2437,17 @@ size_t BambooTracker::getAllStepCount(int songNum, int loopCnt) const
 	}
 }
 
+/*----- Track -----*/
+void BambooTracker::setEffectDisplayWidth(int songNum, int trackNum, size_t w)
+{
+	mod_->getSong(songNum).getTrack(trackNum).setEffectDisplayWidth(w);
+}
+
+size_t BambooTracker::getEffectDisplayWidth(int songNum, int trackNum) const
+{
+	return mod_->getSong(songNum).getTrack(trackNum).getEffectDisplayWidth();
+}
+
 /*----- Order -----*/
 std::vector<OrderData> BambooTracker::getOrderData(int songNum, int orderNum) const
 {

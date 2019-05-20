@@ -658,6 +658,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(odrSize) - 1);
 			for (size_t o = 0; o < odrSize; ++o)
 				ctr.appendUint8(static_cast<uint8_t>(track.getOrderData(static_cast<int>(o)).patten));
+			ctr.appendUint8(static_cast<uint8_t>(track.getEffectDisplayWidth()));
 
 			// Pattern
 			for (auto& idx : track.getEditedPatternIndices()) {
@@ -1922,6 +1923,9 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 					track.insertOrderBelow(oi - 1);
 					track.registerPatternToOrder(oi, ctr.readUint8(tcsr++));
 				}
+			}
+			if (version >= Version::toBCD(1, 2, 1)) {
+				track.setEffectDisplayWidth(ctr.readUint8(tcsr++));
 			}
 
 			// Pattern

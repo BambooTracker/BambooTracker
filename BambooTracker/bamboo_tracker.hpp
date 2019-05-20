@@ -257,6 +257,9 @@ public:
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
 	size_t getAllStepCount(int songNum, int loopCnt) const;
+	/*----- Track -----*/
+	void setEffectDisplayWidth(int songNum, int trackNum, size_t w);
+	size_t getEffectDisplayWidth(int songNum, int trackNum) const;
 	/*----- Order -----*/
 	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
 	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);

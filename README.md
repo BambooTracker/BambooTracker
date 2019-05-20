@@ -208,7 +208,7 @@ Z X CV B N M, .
 It is able to reverse the order of FM volume (Configuration -> General -> Reverse FM volume order).
 
 ## Effect list
-| Effect | FM                                                                                      | PSG                | Drum                              |
+| Effect | FM                                                                                      | SSG                | Drum                              |
 | ------ | --------------------------------------------------------------------------------------- | ------------------ | --------------------------------- |
 | 00xy   | Arpeggio (x[0-f]: 2nd note, y[0-f]: 3rd note)                                           | Arpeggio           | -                                 |
 | 01xx   | Portamento up (xx[00-ff]: depth)                                                        | Portamento up      | -                                 |
@@ -329,4 +329,5 @@ I would like to thank the following people for making it:
 - SCCI team for SCCI libraries
 - Gary P. Scavone and others for RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
+- Jean Pierre Cimalando and Olivier Humbert for French translation
 - And everyone who helps this project!

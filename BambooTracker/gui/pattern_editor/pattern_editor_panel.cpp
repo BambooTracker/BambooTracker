@@ -705,7 +705,7 @@ void PatternEditorPanel::expandEffect(int trackNum)
 {
 	size_t tn = static_cast<size_t>(trackNum);
 	if (rightEffn_.at(tn) == 3) return;
-	++rightEffn_[tn];
+	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(++rightEffn_[tn]));
 	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
 									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
@@ -716,7 +716,7 @@ void PatternEditorPanel::shrinkEffect(int trackNum)
 {
 	size_t tn = static_cast<size_t>(trackNum);
 	if (rightEffn_.at(tn) == 0) return;
-	--rightEffn_[tn];
+	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(--rightEffn_[tn]));
 	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
 									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
@@ -1730,10 +1730,14 @@ void PatternEditorPanel::onSongLoaded()
 		bt_->getCurrentStepNumber()
 	};
 	songStyle_ = bt_->getSongStyle(curSongNum_);
+	int trackCnt;
 	switch (songStyle_.type) {
-	case SongType::STD:		rightEffn_ = std::vector<int>(15);	break;
-	case SongType::FMEX:	rightEffn_ = std::vector<int>(18);	break;
+	case SongType::STD:		trackCnt = 15;	break;
+	case SongType::FMEX:	trackCnt = 18;	break;
 	}
+	rightEffn_ = std::vector<int>(18);
+	for (int i = 0; i < trackCnt; ++i)
+		rightEffn_[static_cast<size_t>(i)] = static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, i));
 	TracksWidthFromLeftToEnd_
 			= calculateTracksWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
