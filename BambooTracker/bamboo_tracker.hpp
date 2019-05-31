@@ -168,7 +168,9 @@ public:
 	void toggleJamMode();
 	bool isJamMode() const;
 	void jamKeyOn(JamKey key);
+	void jamKeyOn(int keyNum);
 	void jamKeyOff(JamKey key);
+	void jamKeyOff(int keyNum);
 
 	// Play song
 	void startPlaySong();

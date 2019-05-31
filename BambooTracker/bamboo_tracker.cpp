@@ -695,7 +695,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 		opnaCtrl_->keyOnDrum(attrib.channelInSource);
 	}
 	else {
-		std::vector<JamKeyData>&& list = jamMan_->keyOn(key, attrib.channelInSource, attrib.source);
+		int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
+		std::vector<JamKeyData>&& list = jamMan_->keyOn(key, attrib.channelInSource, attrib.source, keyNum);
 		if (list.size() == 2) {	// Key off
 			JamKeyData& offData = list[1];
 			switch (offData.source) {
@@ -733,6 +734,44 @@ void BambooTracker::jamKeyOn(JamKey key)
 	}
 }
 
+void BambooTracker::jamKeyOn(int keyNum)
+{
+	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
+	if (attrib.source == SoundSource::DRUM) {
+		opnaCtrl_->keyOnDrum(attrib.channelInSource);
+	}
+	else {
+		std::vector<JamKeyData>&& list = jamMan_->keyOn(JamKey::MIDI_KEY, attrib.channelInSource, attrib.source, keyNum);
+		if (list.size() == 2) {	// Key off
+			JamKeyData& offData = list[1];
+			switch (offData.source) {
+			case SoundSource::FM:	opnaCtrl_->keyOffFM(offData.channelInSource, true);	break;
+			case SoundSource::SSG:	opnaCtrl_->keyOffSSG(offData.channelInSource, true);	break;
+			default:	break;
+			}
+		}
+
+		auto octNote = noteNumberToOctaveAndNote(keyNum);
+		std::shared_ptr<AbstractInstrument> tmpInst = instMan_->getInstrumentSharedPtr(curInstNum_);
+		JamKeyData& onData = list.front();
+
+		switch (onData.source) {
+		case SoundSource::FM:
+			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
+				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
+			opnaCtrl_->keyOnFM(onData.channelInSource, octNote.second, octNote.first, 0, true);
+			break;
+		case SoundSource::SSG:
+			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(tmpInst))
+				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
+			opnaCtrl_->keyOnSSG(onData.channelInSource, octNote.second, octNote.first, 0, true);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 void BambooTracker::jamKeyOff(JamKey key)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
@@ -740,7 +779,32 @@ void BambooTracker::jamKeyOff(JamKey key)
 		opnaCtrl_->keyOffDrum(attrib.channelInSource);
 	}
 	else {
-		JamKeyData&& data = jamMan_->keyOff(key);
+		int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
+		JamKeyData&& data = jamMan_->keyOff(key, keyNum);
+
+		if (data.channelInSource > -1) {	// Key still sound
+			switch (data.source) {
+			case SoundSource::FM:
+				opnaCtrl_->keyOffFM(data.channelInSource, true);
+				break;
+			case SoundSource::SSG:
+				opnaCtrl_->keyOffSSG(data.channelInSource, true);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void BambooTracker::jamKeyOff(int keyNum)
+{
+	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
+	if (attrib.source == SoundSource::DRUM) {
+		opnaCtrl_->keyOffDrum(attrib.channelInSource);
+	}
+	else {
+		JamKeyData&& data = jamMan_->keyOff(JamKey::MIDI_KEY, keyNum);
 
 		if (data.channelInSource > -1) {	// Key still sound
 			switch (data.source) {

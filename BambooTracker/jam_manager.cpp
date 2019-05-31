@@ -1,5 +1,6 @@
 #include "jam_manager.hpp"
 #include <algorithm>
+#include <functional>
 #include <stdexcept>
 
 JamManager::JamManager(SongType type)
@@ -26,10 +27,10 @@ void JamManager::polyphonic(bool flag, SongType type)
 	clear(type);
 }
 
-std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource source)
+std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource source, int keyNum)
 {
 	std::vector<JamKeyData> keyDataList;
-	JamKeyData onData{ key, channel, source };
+	JamKeyData onData{ key, channel, source, keyNum };
 
 	std::deque<int>* unusedCh = nullptr;
 	switch (source) {
@@ -39,28 +40,36 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 	}
 
 	if (!unusedCh->empty()) {
-		auto&& it = std::find_if(keyOnTable_.begin(),
-								 keyOnTable_.end(),
-								 [&](JamKeyData x) {return (x.source == source && x.key == key);});
-		if (it == keyOnTable_.end()) {
+		if (key == JamKey::MIDI_KEY) {
 			if (isPoly_) onData.channelInSource = unusedCh->front();
 			unusedCh->pop_front();
 			keyOnTable_.push_back(onData);
 			keyDataList.push_back(onData);
 		}
 		else {
-			JamKeyData del = *it;
-			if (isPoly_) onData.channelInSource = del.channelInSource;
-			keyDataList.push_back(onData);
-			keyDataList.push_back(del);
-			keyOnTable_.erase(it);
-			keyOnTable_.push_back(onData);
+			auto&& it = std::find_if(keyOnTable_.begin(),
+									 keyOnTable_.end(),
+									 [&](JamKeyData x) { return (x.source == source && x.key == key); });
+			if (it == keyOnTable_.end()) {
+				if (isPoly_) onData.channelInSource = unusedCh->front();
+				unusedCh->pop_front();
+				keyOnTable_.push_back(onData);
+				keyDataList.push_back(onData);
+			}
+			else {
+				JamKeyData del = *it;
+				if (isPoly_) onData.channelInSource = del.channelInSource;
+				keyDataList.push_back(onData);
+				keyDataList.push_back(del);
+				keyOnTable_.erase(it);
+				keyOnTable_.push_back(onData);
+			}
 		}
 	}
 	else {
 		auto&& it = std::find_if(keyOnTable_.begin(),
 								 keyOnTable_.end(),
-								 [&](JamKeyData x) {return (x.source == source);});
+								 [&](JamKeyData x) { return (x.source == source); });
 		JamKeyData del = *it;
 		if (isPoly_) onData.channelInSource = del.channelInSource;
 		keyDataList.push_back(onData);
@@ -72,13 +81,14 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 	return keyDataList;
 }
 
-JamKeyData JamManager::keyOff(JamKey key)
+JamKeyData JamManager::keyOff(JamKey key, int keyNum)
 {
 	JamKeyData keyData;
 
-	auto&& it = std::find_if(keyOnTable_.begin(),
-							 keyOnTable_.end(),
-							 [&](JamKeyData x) {return (x.key == key);});
+	auto cond = (key == JamKey::MIDI_KEY)
+			  ? std::function<bool(JamKeyData)>([&](JamKeyData x) -> bool { return (x.key == JamKey::MIDI_KEY && x.keyNum == keyNum); })
+			  : std::function<bool(JamKeyData)>([&](JamKeyData x) -> bool { return (x.key == key); });
+	auto&& it = std::find_if(keyOnTable_.begin(), keyOnTable_.end(), cond);
 	if (it == keyOnTable_.end()) {
 		keyData.channelInSource = -1;	// Already released
 	}

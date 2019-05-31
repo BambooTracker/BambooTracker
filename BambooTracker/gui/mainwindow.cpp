@@ -684,14 +684,11 @@ void MainWindow::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_
 void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 {
 	bool release = ((status & 0xf0) == 0x80) || velocity == 0;
-	std::pair<int, Note> octaveAndNote = noteNumberToOctaveAndNote(static_cast<int>(key) - 12);
+	int k = static_cast<int>(key) - 12;
 
-	JamKey jamKey = JamManager::noteToJamKey(octaveAndNote.second);
-
-	octave_->setValue(octaveAndNote.first);
-	bt_->jamKeyOff(jamKey); // possibility to recover on stuck note
-	if (!release)
-		bt_->jamKeyOn(jamKey);
+	octave_->setValue(k / 12);
+	bt_->jamKeyOff(k); // possibility to recover on stuck note
+	if (!release) bt_->jamKeyOn(k);
 }
 
 void MainWindow::midiProgramEvent(uchar status, uchar program)

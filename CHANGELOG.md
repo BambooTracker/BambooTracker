@@ -13,6 +13,7 @@
 - [#126] - Reset scrollbar positions in order list when loading song (thanks [@N-SPC700], [@OPNA2608])
 - [#127] - Fix stream to change its interrupt rate when a module open (thanks [@ImATrackMan])
 - [#128] - Fix that FM envelope paste was not worked (thanks [@papiezak])
+- [#129] - Fix polyphonic jam-mode to accept unison when using MIDI keyboard (thanks [@galap-1])
 
 [#122]: https://github.com/rerrahkr/BambooTracker/issues/122
 [#123]: https://github.com/rerrahkr/BambooTracker/pull/123
@@ -22,6 +23,7 @@
 [#126]: https://github.com/rerrahkr/BambooTracker/issues/126
 [#127]: https://github.com/rerrahkr/BambooTracker/issues/127
 [#128]: https://github.com/rerrahkr/BambooTracker/issues/128
+[#129]: https://github.com/rerrahkr/BambooTracker/issues/129
 
 [@N-SPC700]: https://github.com/N-SPC700
 
