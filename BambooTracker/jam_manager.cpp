@@ -3,11 +3,11 @@
 #include <functional>
 #include <stdexcept>
 
-JamManager::JamManager(SongType type)
+JamManager::JamManager()
 	: isJamMode_(true),
 	  isPoly_(true)
 {
-	clear(type);
+	clear();
 }
 
 bool JamManager::toggleJamMode()
@@ -21,10 +21,10 @@ bool JamManager::isJamMode() const
 	return isJamMode_;
 }
 
-void JamManager::polyphonic(bool flag, SongType type)
+void JamManager::polyphonic(bool flag)
 {
 	isPoly_ = flag;
-	clear(type);
+	clear();
 }
 
 std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource source, int keyNum)
@@ -201,10 +201,10 @@ int JamManager::calcOctave(int baseOctave, JamKey &key)
 	}
 }
 
-void JamManager::clear(SongType type)
+void JamManager::clear()
 {
 	if (isPoly_) {
-		unusedChFM_ = std::deque<int>(getFMChannelCount(type));
+		unusedChFM_ = std::deque<int>(6);
 		unusedChSSG_= std::deque<int>(3);
 
 		for (size_t i = 0; i < unusedChFM_.size(); ++i) {

@@ -35,7 +35,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	isRetrieveChannel_ = config.lock()->getRetrieveChannelState();
 
 	songStyle_ = mod_->getSong(curSongNum_).getStyle();
-	jamMan_ = std::make_unique<JamManager>(songStyle_.type);
+	jamMan_ = std::make_unique<JamManager>();
 
 	clearDelayCounts();
 }
@@ -595,7 +595,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 	auto& song = mod_->getSong(curSongNum_);
 	songStyle_ = song.getStyle();
 
-	jamMan_->clear(songStyle_.type);
+	/*jamMan_->clear();*/
 
 	// Reset
 	opnaCtrl_->reset();
@@ -676,10 +676,10 @@ void BambooTracker::clearCommandHistory()
 void BambooTracker::toggleJamMode()
 {
 	if (jamMan_->toggleJamMode() && !isPlaySong()) {
-		jamMan_->polyphonic(true, songStyle_.type);
+		jamMan_->polyphonic(true);
 	}
 	else {
-		jamMan_->polyphonic(false, songStyle_.type);
+		jamMan_->polyphonic(false);
 	}
 }
 
@@ -700,33 +700,50 @@ void BambooTracker::jamKeyOn(JamKey key)
 		if (list.size() == 2) {	// Key off
 			JamKeyData& offData = list[1];
 			switch (offData.source) {
-			case SoundSource::FM:	opnaCtrl_->keyOffFM(offData.channelInSource, true);	break;
-			case SoundSource::SSG:	opnaCtrl_->keyOffSSG(offData.channelInSource, true);	break;
-			default:	break;
+			case SoundSource::FM:
+				if (songStyle_.type == SongType::FMEX && offData.channelInSource == 2) {
+					opnaCtrl_->keyOffFM(2, true);
+					opnaCtrl_->keyOffFM(6, true);
+					opnaCtrl_->keyOffFM(7, true);
+					opnaCtrl_->keyOffFM(8, true);
+				}
+				else {
+					opnaCtrl_->keyOffFM(offData.channelInSource, true);
+				}
+				break;
+			case SoundSource::SSG:
+				opnaCtrl_->keyOffSSG(offData.channelInSource, true);
+				break;
+			default:
+				break;
 			}
 		}
 
 		std::shared_ptr<AbstractInstrument> tmpInst = instMan_->getInstrumentSharedPtr(curInstNum_);
 		JamKeyData& onData = list.front();
 
+		Note note = JamManager::jamKeyToNote(onData.key);
+		int octave = JamManager::calcOctave(octave_, onData.key);
+		int pitch = 0;
+
 		switch (onData.source) {
 		case SoundSource::FM:
 			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
 				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
-			opnaCtrl_->keyOnFM(onData.channelInSource,
-							   JamManager::jamKeyToNote(onData.key),
-							   JamManager::calcOctave(octave_, onData.key),
-							   0,
-							   true);
+			if (songStyle_.type == SongType::FMEX && onData.channelInSource == 2) {
+				opnaCtrl_->keyOnFM(2, note, octave, pitch, true);
+				opnaCtrl_->keyOnFM(6, note, octave, pitch, true);
+				opnaCtrl_->keyOnFM(7, note, octave, pitch, true);
+				opnaCtrl_->keyOnFM(8, note, octave, pitch, true);
+			}
+			else {
+				opnaCtrl_->keyOnFM(onData.channelInSource, note, octave, pitch, true);
+			}
 			break;
 		case SoundSource::SSG:
 			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(tmpInst))
 				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
-			opnaCtrl_->keyOnSSG(onData.channelInSource,
-								JamManager::jamKeyToNote(onData.key),
-								JamManager::calcOctave(octave_, onData.key),
-								0,
-								true);
+			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
 			break;
 		default:
 			break;
@@ -745,26 +762,49 @@ void BambooTracker::jamKeyOn(int keyNum)
 		if (list.size() == 2) {	// Key off
 			JamKeyData& offData = list[1];
 			switch (offData.source) {
-			case SoundSource::FM:	opnaCtrl_->keyOffFM(offData.channelInSource, true);	break;
-			case SoundSource::SSG:	opnaCtrl_->keyOffSSG(offData.channelInSource, true);	break;
-			default:	break;
+			case SoundSource::FM:
+				if (songStyle_.type == SongType::FMEX && offData.channelInSource == 2) {
+					opnaCtrl_->keyOffFM(2, true);
+					opnaCtrl_->keyOffFM(6, true);
+					opnaCtrl_->keyOffFM(7, true);
+					opnaCtrl_->keyOffFM(8, true);
+				}
+				else {
+					opnaCtrl_->keyOffFM(offData.channelInSource, true);
+				}
+				break;
+			case SoundSource::SSG:
+				opnaCtrl_->keyOffSSG(offData.channelInSource, true);
+				break;
+			default:
+				break;
 			}
 		}
 
-		auto octNote = noteNumberToOctaveAndNote(keyNum);
 		std::shared_ptr<AbstractInstrument> tmpInst = instMan_->getInstrumentSharedPtr(curInstNum_);
 		JamKeyData& onData = list.front();
+
+		auto octNote = noteNumberToOctaveAndNote(keyNum);
+		int pitch = 0;
 
 		switch (onData.source) {
 		case SoundSource::FM:
 			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
 				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
-			opnaCtrl_->keyOnFM(onData.channelInSource, octNote.second, octNote.first, 0, true);
+			if (songStyle_.type == SongType::FMEX && onData.channelInSource == 2) {
+				opnaCtrl_->keyOnFM(2, octNote.second, octNote.first, pitch, true);
+				opnaCtrl_->keyOnFM(6, octNote.second, octNote.first, pitch, true);
+				opnaCtrl_->keyOnFM(7, octNote.second, octNote.first, pitch, true);
+				opnaCtrl_->keyOnFM(8, octNote.second, octNote.first, pitch, true);
+			}
+			else {
+				opnaCtrl_->keyOnFM(onData.channelInSource, octNote.second, octNote.first, pitch, true);
+			}
 			break;
 		case SoundSource::SSG:
 			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(tmpInst))
 				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
-			opnaCtrl_->keyOnSSG(onData.channelInSource, octNote.second, octNote.first, 0, true);
+			opnaCtrl_->keyOnSSG(onData.channelInSource, octNote.second, octNote.first, pitch, true);
 			break;
 		default:
 			break;
@@ -785,7 +825,15 @@ void BambooTracker::jamKeyOff(JamKey key)
 		if (data.channelInSource > -1) {	// Key still sound
 			switch (data.source) {
 			case SoundSource::FM:
-				opnaCtrl_->keyOffFM(data.channelInSource, true);
+				if (songStyle_.type == SongType::FMEX && data.channelInSource == 2) {
+					opnaCtrl_->keyOffFM(2, true);
+					opnaCtrl_->keyOffFM(6, true);
+					opnaCtrl_->keyOffFM(7, true);
+					opnaCtrl_->keyOffFM(8, true);
+				}
+				else {
+					opnaCtrl_->keyOffFM(data.channelInSource, true);
+				}
 				break;
 			case SoundSource::SSG:
 				opnaCtrl_->keyOffSSG(data.channelInSource, true);
@@ -809,7 +857,15 @@ void BambooTracker::jamKeyOff(int keyNum)
 		if (data.channelInSource > -1) {	// Key still sound
 			switch (data.source) {
 			case SoundSource::FM:
-				opnaCtrl_->keyOffFM(data.channelInSource, true);
+				if (songStyle_.type == SongType::FMEX && data.channelInSource == 2) {
+					opnaCtrl_->keyOffFM(2, true);
+					opnaCtrl_->keyOffFM(6, true);
+					opnaCtrl_->keyOffFM(7, true);
+					opnaCtrl_->keyOffFM(8, true);
+				}
+				else {
+					opnaCtrl_->keyOffFM(data.channelInSource, true);
+				}
 				break;
 			case SoundSource::SSG:
 				opnaCtrl_->keyOffSSG(data.channelInSource, true);
@@ -870,7 +926,7 @@ void BambooTracker::startPlayFromCurrentStep()
 void BambooTracker::startPlay()
 {
 	opnaCtrl_->reset();
-	jamMan_->polyphonic(false, songStyle_.type);
+	jamMan_->polyphonic(false);
 
 	Song& song = mod_->getSong(curSongNum_);
 	tickCounter_.setTempo(song.getTempo());
@@ -890,7 +946,7 @@ void BambooTracker::startPlay()
 void BambooTracker::stopPlaySong()
 {
 	opnaCtrl_->reset();
-	jamMan_->polyphonic(true, songStyle_.type);
+	jamMan_->polyphonic(true);
 	tickCounter_.setPlayState(false);
 	playState_ = 0;
 	playOrderNum_ = -1;
@@ -2196,7 +2252,7 @@ void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 
 void BambooTracker::killSound()
 {
-	jamMan_->clear(songStyle_.type);
+	jamMan_->clear();
 	opnaCtrl_->reset();
 }
 

@@ -12,10 +12,10 @@ enum class JamKey;
 class JamManager
 {
 public:
-	JamManager(SongType type);
+	JamManager();
 	bool toggleJamMode();
 	bool isJamMode() const;
-	void polyphonic(bool flag, SongType type);
+	void polyphonic(bool flag);
 	std::vector<JamKeyData> keyOn(JamKey key, int channel, SoundSource source, int keyNum);
 	JamKeyData keyOff(JamKey key, int keyNum);
 
@@ -23,7 +23,7 @@ public:
 	static JamKey noteToJamKey(Note& note);
 	static int calcOctave(int baseOctave, JamKey& key);
 
-	void clear(SongType type);
+	void clear();
 
 private:
 	bool isJamMode_;
