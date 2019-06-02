@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#127] - Add effect display width to module (thanks [@ImATrackMan])
+- Add 1 sample module (thanks [Dippy])
 
 ### Changed
 - [#123], [#125] - Update translation: fr ([#122]; thanks [@trebmuh], [@jpcima])
@@ -27,6 +28,7 @@
 [#129]: https://github.com/rerrahkr/BambooTracker/issues/129
 
 [@N-SPC700]: https://github.com/N-SPC700
+[Dippy]: https://www.youtube.com/channel/UCw2xCNQhuwpnfnf1-wfRefQ
 
 ## v0.2.0 (2019-04-30)
 ### Added
