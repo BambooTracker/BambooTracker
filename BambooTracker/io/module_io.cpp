@@ -1,5 +1,5 @@
 #include "module_io.hpp"
-#include <fstream>
+#include <nowide/fstream.hpp>
 #include "version.hpp"
 #include "file_io_error.hpp"
 #include "file_io.hpp"
@@ -1990,8 +1990,8 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 void ModuleIO::backupModule(std::string path)
 {
 	try {
-		std::ifstream ifs(path, std::ios::binary);
-		std::ofstream ofs(path + ".bak", std::ios::binary);
+		nowide::ifstream ifs(path, std::ios::binary);
+		nowide::ofstream ofs(path + ".bak", std::ios::binary);
 		ofs << ifs.rdbuf();
 	} catch (...) {
 		throw FileOutputError(FileIO::FileType::MOD);

@@ -1,6 +1,6 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-#include <fstream>
+#include <nowide/fstream.hpp>
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
@@ -816,7 +816,7 @@ void MainWindow::loadInstrument()
 	if (n == -1) QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
 
 	try {
-		bt_->loadInstrument(file.toLocal8Bit().toStdString(), n);
+		bt_->loadInstrument(file.toStdString(), n);
 		auto inst = bt_->getInstrument(n);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(
@@ -845,7 +845,7 @@ void MainWindow::saveInstrument()
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
 	try {
-		bt_->saveInstrument(file.toLocal8Bit().toStdString(), n);
+		bt_->saveInstrument(file.toStdString(), n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
@@ -862,7 +862,7 @@ void MainWindow::importInstrumentsFromBank()
 
 	std::unique_ptr<AbstractBank> bank;
 	try {
-		bank.reset(BankIO::loadBank(file.toLocal8Bit().toStdString()));
+		bank.reset(BankIO::loadBank(file.toStdString()));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
@@ -961,7 +961,7 @@ void MainWindow::loadModule()
 void MainWindow::openModule(QString file)
 {
 	try {
-		bt_->loadModule(file.toLocal8Bit().toStdString());
+		bt_->loadModule(file.toStdString());
 		loadModule();
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
@@ -1189,7 +1189,7 @@ void MainWindow::setWindowTitle()
 	int n = bt_->getCurrentSongNumber();
 	auto filePathStd = bt_->getModulePath();
 	auto songTitleStd = bt_->getSongTitle(n);
-	QString filePath = QString::fromLocal8Bit(filePathStd.c_str(), static_cast<int>(filePathStd.length()));
+	QString filePath = QString::fromStdString(filePathStd);
 	QString fileName = filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).fileName();
 	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), static_cast<int>(songTitleStd.length()));
 	if (songTitle.isEmpty()) songTitle = tr("Untitled");
@@ -1217,7 +1217,7 @@ void MainWindow::setInitialSelectedInstrument()
 QString MainWindow::getModuleFileBaseName() const
 {
 	auto filePathStd = bt_->getModulePath();
-	QString filePath = QString::fromLocal8Bit(filePathStd.c_str(), static_cast<int>(filePathStd.length()));
+	QString filePath = QString::fromStdString(filePathStd);
 	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).baseName());
 }
 
@@ -1934,12 +1934,11 @@ void MainWindow::on_actionComments_triggered()
 
 bool MainWindow::on_actionSave_triggered()
 {
-	auto path = QString::fromLocal8Bit(bt_->getModulePath().c_str(),
-									   static_cast<int>(bt_->getModulePath().length()));
+	auto path = QString::fromStdString(bt_->getModulePath());
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
 		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
 			try {
-				bt_->backupModule(path.toLocal8Bit().toStdString());
+				bt_->backupModule(path.toStdString());
 			}
 			catch (...) {
 				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
@@ -1975,10 +1974,10 @@ bool MainWindow::on_actionSave_As_triggered()
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
-	if (std::ifstream(file.toStdString()).is_open()) {	// Already exists
+	if (nowide::ifstream(file.toStdString()).is_open()) {	// Already exists
 		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
 			try {
-				bt_->backupModule(file.toLocal8Bit().toStdString());
+				bt_->backupModule(file.toStdString());
 			}
 			catch (...) {
 				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
@@ -1987,7 +1986,7 @@ bool MainWindow::on_actionSave_As_triggered()
 		}
 	}
 
-	bt_->setModulePath(file.toLocal8Bit().toStdString());
+	bt_->setModulePath(file.toStdString());
 	try {
 		bt_->saveModule(bt_->getModulePath());
 		isModifiedForNotCommand_ = false;

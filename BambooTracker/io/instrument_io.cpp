@@ -1,6 +1,6 @@
 #include "instrument_io.hpp"
 #include "file_io.hpp"
-#include <fstream>
+#include <nowide/fstream.hpp>
 #include <locale>
 #include <vector>
 #include <algorithm>
@@ -2277,7 +2277,7 @@ AbstractInstrument* InstrumentIO::loadVGIFile(std::string path, std::weak_ptr<In
 AbstractInstrument* InstrumentIO::loadOPNIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	OPNIFile opni;
 
-	std::ifstream in(path, std::ios::binary);
+	nowide::ifstream in(path, std::ios::binary);
 	in.seekg(0, std::ios::end);
 	std::streampos size = in.tellg();
 

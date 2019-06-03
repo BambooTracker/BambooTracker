@@ -1,5 +1,5 @@
 #include "bank_io.hpp"
-#include <fstream>
+#include <nowide/fstream.hpp>
 #include "file_io.hpp"
 #include "file_io_error.hpp"
 
@@ -22,7 +22,7 @@ AbstractBank* BankIO::loadWOPNFile(std::string path)
 
 	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
 
-	std::ifstream in(path, std::ios::binary);
+	nowide::ifstream in(path, std::ios::binary);
 	in.seekg(0, std::ios::end);
 	std::streampos size = in.tellg();
 

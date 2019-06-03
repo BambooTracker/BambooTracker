@@ -1,6 +1,6 @@
 #include "binary_container.hpp"
+#include <nowide/fstream.hpp>
 #include <algorithm>
-#include <fstream>
 #include <iterator>
 
 BinaryContainer::BinaryContainer(size_t defCapacity)
@@ -38,7 +38,7 @@ bool BinaryContainer::isLittleEndian() const
 bool BinaryContainer::load(std::string path)
 {
 	try {
-		std::ifstream ifs(path, std::ios::binary);
+		nowide::ifstream ifs(path, std::ios::binary);
 		buf_.resize(static_cast<size_t>(ifs.seekg(0, std::ios::end).tellg()));
 		ifs.seekg(0, std::ios::beg).read(&buf_[0], static_cast<std::streamsize>(buf_.size()));
 		return true;
@@ -51,7 +51,7 @@ bool BinaryContainer::load(std::string path)
 bool BinaryContainer::save(std::string path)
 {
 	try {
-		std::ofstream ofs(path, std::ios::binary);
+		nowide::ofstream ofs(path, std::ios::binary);
 		ofs.write(&buf_[0], static_cast<std::streamsize>(buf_.size()));
 		return true;
 	}

@@ -1,5 +1,5 @@
 #include "export_handler.hpp"
-#include <fstream>
+#include <nowide/fstream.hpp>
 #include "file_io.hpp"
 #include "file_io_error.hpp"
 
@@ -10,7 +10,7 @@ ExportHandler::ExportHandler()
 void ExportHandler::writeWave(std::string path, std::vector<int16_t> samples, uint32_t sampRate)
 {
 	try {
-		std::ofstream ofs(path, std::ios::binary);
+		nowide::ofstream ofs(path, std::ios::binary);
 
 		// RIFF header
 		ofs.write("RIFF", 4);
@@ -61,7 +61,7 @@ void ExportHandler::writeVgm(std::string path, int target, std::vector<uint8_t> 
 	}
 
 	try {
-		std::ofstream ofs(path, std::ios::binary);
+		nowide::ofstream ofs(path, std::ios::binary);
 
 		// Header
 		// 0x00: "Vgm " ident
@@ -178,7 +178,7 @@ void ExportHandler::writeS98(std::string path, int target, std::vector<uint8_t> 
 							 bool loopFlag, uint32_t loopPoint, bool tagEnabled, S98Tag tag)
 {
 	try {
-		std::ofstream ofs(path, std::ios::binary);
+		nowide::ofstream ofs(path, std::ios::binary);
 
 		// Header
 		// 0x00: Magic "S98"
