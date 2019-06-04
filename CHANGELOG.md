@@ -16,6 +16,7 @@
 - [#127] - Fix stream to change its interrupt rate when a module open (thanks [@ImATrackMan])
 - [#128] - Fix that FM envelope paste was not worked (thanks [@papiezak])
 - [#129] - Fix polyphonic jam-mode to accept unison when using MIDI keyboard (thanks [@galap-1])
+- [#133] - Use Unicode paths ([#130]; thanks [@jpcima] and others)
 
 [#122]: https://github.com/rerrahkr/BambooTracker/issues/122
 [#123]: https://github.com/rerrahkr/BambooTracker/pull/123
@@ -26,6 +27,8 @@
 [#127]: https://github.com/rerrahkr/BambooTracker/issues/127
 [#128]: https://github.com/rerrahkr/BambooTracker/issues/128
 [#129]: https://github.com/rerrahkr/BambooTracker/issues/129
+[#130]: https://github.com/rerrahkr/BambooTracker/issues/130
+[#133]: https://github.com/rerrahkr/BambooTracker/pull/133
 
 [@N-SPC700]: https://github.com/N-SPC700
 [Dippy]: https://www.youtube.com/channel/UCw2xCNQhuwpnfnf1-wfRefQ

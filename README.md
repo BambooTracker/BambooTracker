@@ -9,6 +9,8 @@
 
 BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which was used in NEC PC-8801/9801 series computers.
 
+[日本語](./README_ja.md)
+
 ## Downloads
 On Windows:
 
@@ -329,5 +331,6 @@ I would like to thank the following people for making it:
 - SCCI team for SCCI libraries
 - Gary P. Scavone and others for RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
+- Artyom Beilis for nowide library
 - Jean Pierre Cimalando and Olivier Humbert for French translation
 - And everyone who helps this project!
