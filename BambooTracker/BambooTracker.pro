@@ -401,7 +401,8 @@ INCLUDEPATH += \
     $$PWD/instrument \
     $$PWD/command \
     $$PWD/module \
-    $$PWD/io
+    $$PWD/io \
+    $$PWD/utility/nowide/include
 
 RESOURCES += \
     bamboo_tracker.qrc
