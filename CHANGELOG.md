@@ -17,6 +17,7 @@
 - [#128] - Fix that FM envelope paste was not worked (thanks [@papiezak])
 - [#129] - Fix polyphonic jam-mode to accept unison when using MIDI keyboard (thanks [@galap-1])
 - [#133] - Use Unicode paths ([#130]; thanks [@jpcima] and others)
+- [#135] - Delete unit data saving of FM operator sequence (thanks [@elohimf], [@jpcima], [@OPNA2608])
 
 [#122]: https://github.com/rerrahkr/BambooTracker/issues/122
 [#123]: https://github.com/rerrahkr/BambooTracker/pull/123
@@ -29,9 +30,11 @@
 [#129]: https://github.com/rerrahkr/BambooTracker/issues/129
 [#130]: https://github.com/rerrahkr/BambooTracker/issues/130
 [#133]: https://github.com/rerrahkr/BambooTracker/pull/133
+[#135]: https://github.com/rerrahkr/BambooTracker/issues/135
 
 [@N-SPC700]: https://github.com/N-SPC700
 [Dippy]: https://www.youtube.com/channel/UCw2xCNQhuwpnfnf1-wfRefQ
+[@elohimf]: https://github.com/elohimf
 
 ## v0.2.0 (2019-04-30)
 ### Added

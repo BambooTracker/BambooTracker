@@ -179,6 +179,10 @@ Unit subdata is used in SSG waveform and envelope sequence.
 In waveform sequence, it indecates square mask frequency.  
 In envelope sequence, it indecates hardware envelope frequency.
 
+> **NOTE**: In BambooTracker v0.2.0, there is the bug that unit subdata of FM operator sequence is not omitted when saving a module.
+> To read the module made by v0.2.0 and used operator sequence, please use the fixed version tracker.
+> (2019-06-07)
+
 After sequences, loops are stored.
 
 | Type   | Field       | Description      |

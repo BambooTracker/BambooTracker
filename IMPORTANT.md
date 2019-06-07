@@ -6,3 +6,7 @@ In some cases, you need to modify modules.
 - Since BambooTracker v0.1.5, a bug to set wrong value of FM envelope in instrument event is fixed. You would need to change TL3 value if you use AL = 0-4 to play module made by before v0.1.4 correctly.
 - Since BambooTracker v0.1.4, FM octave range lower. However the tracker automatically correct song octaves whose module version is before 1.0.2, old octave 7 cannot be played.
 - Since BambooTracker v0.1.3, FM synthesis frequency is changed from 110933Hz to 55466Hz.
+
+And the found critical bugs about file I/O.
+
+- In BambooTracker v0.2.0, there is the bug that unit subdata of FM operator sequence is not omitted when saving a module and an instrument. To read them made by v0.2.0 and used operator sequence, please use the fixed version tracker.

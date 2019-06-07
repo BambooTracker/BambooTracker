@@ -259,7 +259,6 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 				for (auto& com : seq) {
 					ctr.appendUint16(static_cast<uint16_t>(com.type));
-					ctr.appendInt16(static_cast<int16_t>(com.data));
 				}
 				auto loop = instMan.lock()->getOperatorSequenceFMLoops(FileIO::ENV_FM_PARAMS[i], seqNum);
 				ctr.appendUint16(static_cast<uint16_t>(loop.size()));
@@ -1905,7 +1904,7 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	for (uint16_t l = 0; l < seqLen; ++l) {
 		uint16_t data = ctr.readUint16(csr);
 		csr += 2;
-		if (version < Version::toBCD(1, 2, 0)) csr += 2;
+		if (version < Version::toBCD(1, 2, 1)) csr += 2;
 		if (l == 0)
 			instMan.lock()->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
 		else

@@ -1,5 +1,5 @@
 # BambooTracker Module File (.btm) Format Specification
-v1.2.1 - 2019-05-20
+v1.2.2 - 2019-06-07
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -179,10 +179,6 @@ Unit subdata is used in SSG waveform and envelope sequence.
 In waveform sequence, it indecates square mask frequency.  
 In envelope sequence, it indecates hardware envelope frequency.
 
-> **NOTE**: In BambooTracker v0.2.0, there is the bug that unit subdata of FM operator sequence is not omitted when saving a module.
-> To read the module made by v0.2.0 and used operator sequence, please use the fixed version tracker.
-> (2019-06-07)
-
 After sequences, loops are stored.
 
 | Type   | Field       | Description      |
@@ -329,6 +325,7 @@ Key event details:
 ## History
 | Version | Date       | Detail                                                             |
 | ------- | ---------- | ------------------------------------------------------------------ |
+| 1.2.2   | 2019-06-07 | Revised to fix unit data skipping bug of FM operator sequence.     |
 | 1.2.1   | 2019-05-20 | Added display width of effect columns in tracks.                   |
 | 1.2.0   | 2019-04-10 | Added and changed for SSG tone/hard or square-mask ratio settings. |
 | 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode.                              |
