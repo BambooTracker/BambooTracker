@@ -734,9 +734,9 @@ void OPNAController::initFM()
 	uint8_t mode = 0;
 	switch (mode_) {
 	case SongType::STD:		mode = 0;		break;
-	case SongType::FMEX:	mode = 0x80;	break;
+	case SongType::FMEX:	mode = 0x40;	break;
 	}
-	opna_->setRegister(0x27, mode);	// FM ch3 mode
+	opna_->setRegister(0x27, mode);
 
 	for (int inch = 0; inch < 6; ++inch) {
 		// Init envelope
