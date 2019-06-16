@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.2.1 (2019-06-16)
 ### Added
 - [#127] - Add effect display width to module (thanks [@ImATrackMan])
 - Add 1 sample module (thanks [Dippy])

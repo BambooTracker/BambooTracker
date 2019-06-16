@@ -1,5 +1,5 @@
 # ![icon](./img/icon.png) BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.2.0-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.2.1-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | linux](https://img.shields.io/badge/platform-windows%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.org/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.org/rerrahkr/BambooTracker)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
@@ -326,7 +326,7 @@ I would like to thank the following people for making it:
 - Some tracker creators, especially HertzDevil of 0CC-FamiTracker, Leonardo Demartino (delek) of Deflemask Tracker and Lasse Öörni (Cadaver) of GoatTracker for UI and routines of the tracker
 - Decidetto for the application icon
 - Vitaly Novichkov (Wohlstand) for WOPN instrument format files
-- maak and SuperJet Spade for sample modules
+- maak, SuperJet Spade and Dippy for sample modules
 - Ru^3 for S98 file format documentation
 - SCCI team for SCCI libraries
 - Gary P. Scavone and others for RtMidi libraries
