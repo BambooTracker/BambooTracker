@@ -701,7 +701,7 @@ bool BambooTracker::isJamMode() const
 void BambooTracker::jamKeyOn(JamKey key)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::DRUM) {
+	if (attrib.source == SoundSource::Drum) {
 		opnaCtrl_->keyOnDrum(attrib.channelInSource);
 	}
 	else {
@@ -764,7 +764,7 @@ void BambooTracker::jamKeyOn(JamKey key)
 void BambooTracker::jamKeyOn(int keyNum)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::DRUM) {
+	if (attrib.source == SoundSource::Drum) {
 		opnaCtrl_->keyOnDrum(attrib.channelInSource);
 	}
 	else {
@@ -825,7 +825,7 @@ void BambooTracker::jamKeyOn(int keyNum)
 void BambooTracker::jamKeyOff(JamKey key)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::DRUM) {
+	if (attrib.source == SoundSource::Drum) {
 		opnaCtrl_->keyOffDrum(attrib.channelInSource);
 	}
 	else {
@@ -858,7 +858,7 @@ void BambooTracker::jamKeyOff(JamKey key)
 void BambooTracker::jamKeyOff(int keyNum)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::DRUM) {
+	if (attrib.source == SoundSource::Drum) {
 		opnaCtrl_->keyOffDrum(attrib.channelInSource);
 	}
 	else {
@@ -987,7 +987,7 @@ void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 		muteStateSSG_.at(static_cast<size_t>(ch)) = isMute;
 		if (isPlaySong()) opnaCtrl_->setMuteSSGState(ch, isMute);
 		break;
-	case SoundSource::DRUM:
+	case SoundSource::Drum:
 		muteStateDrum_.at(static_cast<size_t>(ch)) = isMute;
 		if (isPlaySong()) opnaCtrl_->setMuteDrumState(ch, isMute);
 		break;
@@ -1001,7 +1001,7 @@ bool BambooTracker::isMute(int trackNum)
 	switch (ta.source) {
 	case SoundSource::FM:	return muteStateFM_.at(ch);
 	case SoundSource::SSG:	return muteStateSSG_.at(ch);
-	case SoundSource::DRUM:	return muteStateDrum_.at(ch);
+	case SoundSource::Drum:	return muteStateDrum_.at(ch);
 	default:	return false;	// Dummy
 	}
 }
@@ -1281,71 +1281,17 @@ void BambooTracker::readTick(int rest)
 {	
 	if (!(playState_ & 0x02)) return;	// When it has not read first step
 
-	// Delay
-	auto f = [](int x) { return (x == -1) ? x : --x; };
-	std::transform(ntDlyCntFM_.begin(), ntDlyCntFM_.end(), ntDlyCntFM_.begin(), f);
-	std::transform(ntDlyCntSSG_.begin(), ntDlyCntSSG_.end(), ntDlyCntSSG_.begin(), f);
-	std::transform(ntDlyCntDrum_.begin(), ntDlyCntDrum_.end(), ntDlyCntDrum_.begin(), f);
-	std::transform(ntCutDlyCntFM_.begin(), ntCutDlyCntFM_.end(), ntCutDlyCntFM_.begin(), f);
-	std::transform(ntCutDlyCntSSG_.begin(), ntCutDlyCntSSG_.end(), ntCutDlyCntSSG_.begin(), f);
-	std::transform(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), ntCutDlyCntDrum_.begin(), f);
-	std::transform(volDlyCntFM_.begin(), volDlyCntFM_.end(), volDlyCntFM_.begin(), f);
-	std::transform(volDlyCntSSG_.begin(), volDlyCntSSG_.end(), volDlyCntSSG_.begin(), f);
-	std::transform(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), volDlyCntDrum_.begin(), f);
-	std::transform(tposeDlyCntFM_.begin(), tposeDlyCntFM_.end(), tposeDlyCntFM_.begin(), f);
-	std::transform(tposeDlyCntSSG_.begin(), tposeDlyCntSSG_.end(), tposeDlyCntSSG_.begin(), f);
+	updateDelayEventCounts();
 
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& curStep = song.getTrack(attrib.number)
 						.getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		int ch = attrib.channelInSource;
-		size_t uch = static_cast<size_t>(ch);
 		switch (attrib.source) {
-		case SoundSource::FM:
-		{
-			// Check volume delay
-			if (!volDlyCntFM_.at(uch))
-				opnaCtrl_->setTemporaryVolumeFM(ch, volDlyValueFM_.at(uch));
-			// Check note cut
-			if (!ntCutDlyCntFM_.at(uch))
-				opnaCtrl_->keyOffFM(ch);
-			// Check transpose delay
-			if (!tposeDlyCntFM_.at(uch))
-				opnaCtrl_->setTransposeEffectFM(ch, tposeDlyValueFM_.at(uch));
-			// Check note delay and envelope reset
-			readTickFMForNoteDelay(curStep, ch);
-			break;
-		}
-		case SoundSource::SSG:
-		{
-			// Check volume delay
-			if (!volDlyCntSSG_.at(uch))
-				opnaCtrl_->setTemporaryVolumeSSG(ch, volDlyValueSSG_.at(uch));
-			// Check note cut
-			if (!ntCutDlyCntSSG_.at(uch))
-				opnaCtrl_->keyOffSSG(ch);
-			// Check transpose delay
-			if (!tposeDlyCntSSG_.at(uch))
-				opnaCtrl_->setTransposeEffectSSG(ch, tposeDlyValueSSG_.at(uch));
-			// Check note delay
-			if (!ntDlyCntSSG_.at(uch))
-				readSSGEventsInStep(curStep, ch, true);
-			break;
-		}
-		case SoundSource::DRUM:
-		{
-			// Check volume delay
-			if (!volDlyCntDrum_.at(uch))
-				opnaCtrl_->setTemporaryVolumeDrum(ch, volDlyValueDrum_.at(uch));
-			// Check note cut
-			if (!ntCutDlyCntDrum_.at(uch))
-				opnaCtrl_->keyOnDrum(ch);
-			// Check note delay
-			if (!ntDlyCntDrum_.at(uch))
-				readDrumEventsInStep(curStep, ch, true);
-			break;
-		}
+		case SoundSource::FM:	checkFMDelayEventsInTick(curStep, ch);		break;
+		case SoundSource::SSG:	checkSSGDelayEventsInTick(curStep, ch);		break;
+		case SoundSource::Drum:	checkDrumDelayEventsInTick(curStep, ch);	break;
 		}
 
 		if (rest == 1 && nextReadOrder_ != -1 && attrib.source == SoundSource::FM) {
@@ -1364,6 +1310,22 @@ void BambooTracker::readTick(int rest)
 			opnaCtrl_->tickEvent(attrib.source, ch);
 		}
 	}
+}
+
+void BambooTracker::checkFMDelayEventsInTick(Step& step, int ch)
+{
+	size_t uch = static_cast<size_t>(ch);
+	// Check volume delay
+	if (!volDlyCntFM_.at(uch))
+		opnaCtrl_->setTemporaryVolumeFM(ch, volDlyValueFM_.at(uch));
+	// Check note cut
+	if (!ntCutDlyCntFM_.at(uch))
+		opnaCtrl_->keyOffFM(ch);
+	// Check transpose delay
+	if (!tposeDlyCntFM_.at(uch))
+		opnaCtrl_->setTransposeEffectFM(ch, tposeDlyValueFM_.at(uch));
+	// Check note delay and envelope reset
+	readTickFMForNoteDelay(step, ch);
 }
 
 void BambooTracker::readTickFMForNoteDelay(Step& step, int ch)
@@ -1395,6 +1357,37 @@ void BambooTracker::envelopeResetEffectFM(Step& step, int ch)
 	else {
 		opnaCtrl_->tickEvent(SoundSource::FM, ch);
 	}
+}
+
+void BambooTracker::checkSSGDelayEventsInTick(Step& step, int ch)
+{
+	size_t uch = static_cast<size_t>(ch);
+	// Check volume delay
+	if (!volDlyCntSSG_.at(uch))
+		opnaCtrl_->setTemporaryVolumeSSG(ch, volDlyValueSSG_.at(uch));
+	// Check note cut
+	if (!ntCutDlyCntSSG_.at(uch))
+		opnaCtrl_->keyOffSSG(ch);
+	// Check transpose delay
+	if (!tposeDlyCntSSG_.at(uch))
+		opnaCtrl_->setTransposeEffectSSG(ch, tposeDlyValueSSG_.at(uch));
+	// Check note delay
+	if (!ntDlyCntSSG_.at(uch))
+		readSSGEventsInStep(step, ch, true);
+}
+
+void BambooTracker::checkDrumDelayEventsInTick(Step& step, int ch)
+{
+	size_t uch = static_cast<size_t>(ch);
+	// Check volume delay
+	if (!volDlyCntDrum_.at(uch))
+		opnaCtrl_->setTemporaryVolumeDrum(ch, volDlyValueDrum_.at(uch));
+	// Check note cut
+	if (!ntCutDlyCntDrum_.at(uch))
+		opnaCtrl_->keyOnDrum(ch);
+	// Check note delay
+	if (!ntDlyCntDrum_.at(uch))
+		readDrumEventsInStep(step, ch, true);
 }
 
 void BambooTracker::clearEffectQueues()
@@ -1466,6 +1459,22 @@ void BambooTracker::clearDrumDelayBeyondStepCounts(int ch)
 	volDlyValueDrum_.at(uch) = -1;
 }
 
+void BambooTracker::updateDelayEventCounts()
+{
+	auto f = [](int x) { return (x == -1) ? x : --x; };
+	std::transform(ntDlyCntFM_.begin(), ntDlyCntFM_.end(), ntDlyCntFM_.begin(), f);
+	std::transform(ntDlyCntSSG_.begin(), ntDlyCntSSG_.end(), ntDlyCntSSG_.begin(), f);
+	std::transform(ntDlyCntDrum_.begin(), ntDlyCntDrum_.end(), ntDlyCntDrum_.begin(), f);
+	std::transform(ntCutDlyCntFM_.begin(), ntCutDlyCntFM_.end(), ntCutDlyCntFM_.begin(), f);
+	std::transform(ntCutDlyCntSSG_.begin(), ntCutDlyCntSSG_.end(), ntCutDlyCntSSG_.begin(), f);
+	std::transform(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), ntCutDlyCntDrum_.begin(), f);
+	std::transform(volDlyCntFM_.begin(), volDlyCntFM_.end(), volDlyCntFM_.begin(), f);
+	std::transform(volDlyCntSSG_.begin(), volDlyCntSSG_.end(), volDlyCntSSG_.begin(), f);
+	std::transform(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), volDlyCntDrum_.begin(), f);
+	std::transform(tposeDlyCntFM_.begin(), tposeDlyCntFM_.end(), tposeDlyCntFM_.begin(), f);
+	std::transform(tposeDlyCntSSG_.begin(), tposeDlyCntSSG_.end(), tposeDlyCntSSG_.begin(), f);
+}
+
 void BambooTracker::retrieveChannelStates()
 {
 	size_t fmch = getFMChannelCount(songStyle_.type);
@@ -1506,7 +1515,7 @@ void BambooTracker::retrieveChannelStates()
 			{
 				// Effects
 				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(it->source, step.getEffectID(i), step.getEffectValue(i));
+					Effect eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Arpeggio:
 						if (!isSetArpFM.at(uch)) {
@@ -1628,7 +1637,7 @@ void BambooTracker::retrieveChannelStates()
 			{
 				// Effects
 				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(it->source, step.getEffectID(i), step.getEffectValue(i));
+					Effect eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Arpeggio:
 						if (!isSetArpSSG.at(uch)) {
@@ -1740,11 +1749,11 @@ void BambooTracker::retrieveChannelStates()
 				}
 				break;
 			}
-			case SoundSource::DRUM:
+			case SoundSource::Drum:
 			{
 				// Effects
 				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(it->source, step.getEffectID(i), step.getEffectValue(i));
+					Effect eff = Effect::makeEffectData(SoundSource::Drum, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Pan:
 						if (-1 < eff.value && eff.value < 4 && !isSetPanDrum.at(uch)) {
@@ -1870,27 +1879,22 @@ bool BambooTracker::stepDown()
 	return true;
 }
 
-/// Read order: volume -> instrument -> effect -> key on
+/// Register update order: volume -> instrument -> effect -> key on
 void BambooTracker::readStep()
 {
 	bool isNextSet = false;
 
 	clearNoteDelayCounts();
+	updateDelayEventCounts();
 
 	auto& song = mod_->getSong(curSongNum_);
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
-		case SoundSource::FM:
-			isNextSet |= readFMStep(step, attrib.channelInSource);
-			break;
-		case SoundSource::SSG:
-			isNextSet |= readSSGStep(step, attrib.channelInSource);
-			break;
-		case SoundSource::DRUM:
-			isNextSet |= readDrumStep(step, attrib.channelInSource);
-			break;
+		case SoundSource::FM:	isNextSet |= readFMStep(step, attrib.channelInSource);		break;
+		case SoundSource::SSG:	isNextSet |= readSSGStep(step, attrib.channelInSource);		break;
+		case SoundSource::Drum:	isNextSet |= readDrumStep(step, attrib.channelInSource);	break;
 		}
 	}
 
@@ -1946,6 +1950,7 @@ bool BambooTracker::readFMEventsInStep(Step& step, int ch, bool calledByNoteDela
 	// Set key
 	switch (noteNum) {
 	case -1:	// None
+		checkFMDelayEventsInTick(step, ch);
 		opnaCtrl_->tickEvent(SoundSource::FM, ch);
 		break;
 	case -2:	// Key off
@@ -2022,6 +2027,7 @@ bool BambooTracker::readSSGEventsInStep(Step& step, int ch, bool calledByNoteDel
 	// Set key
 	switch (noteNum) {
 	case -1:	// None
+		checkSSGDelayEventsInTick(step, ch);
 		opnaCtrl_->tickEvent(SoundSource::SSG, ch);
 		break;
 	case -2:	// Key off
@@ -2058,7 +2064,7 @@ bool BambooTracker::readDrumStep(Step& step, int ch)
 
 	// Set effects to queue
 	for (int i = 0; i < 4; ++i) {
-		Effect&& eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
+		Effect&& eff = Effect::makeEffectData(SoundSource::Drum, step.getEffectID(i), step.getEffectValue(i));
 		isNoteDelay |= setEffectToQueueDrum(ch, std::move(eff));
 	}
 
@@ -2091,7 +2097,8 @@ bool BambooTracker::readDrumEventsInStep(Step& step, int ch, bool calledByNoteDe
 	// Set key
 	switch (noteNum) {
 	case -1:	// None
-		opnaCtrl_->tickEvent(SoundSource::DRUM, ch);
+		checkDrumDelayEventsInTick(step, ch);
+		opnaCtrl_->tickEvent(SoundSource::Drum, ch);
 		break;
 	case -2:	// Key off
 		opnaCtrl_->keyOffDrum(ch);

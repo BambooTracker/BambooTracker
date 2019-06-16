@@ -716,7 +716,7 @@ void MainWindow::addInstrument()
 		ui->instrumentListWidget->setCurrentRow(num);
 		break;
 	}
-	case SoundSource::DRUM:
+	case SoundSource::Drum:
 		break;
 	}
 }
@@ -1267,7 +1267,7 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	}
 	else {
 		switch (bt_->getCurrentTrackAttribute().source) {
-		case SoundSource::DRUM:	add->setEnabled(false);	break;
+		case SoundSource::Drum:	add->setEnabled(false);	break;
 		default:	break;
 		}
 	}

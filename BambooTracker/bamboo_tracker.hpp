@@ -377,8 +377,11 @@ private:
 	void readStep();
 	void readTick(int rest);
 
+	void checkFMDelayEventsInTick(Step& step, int ch);
 	void readTickFMForNoteDelay(Step& step, int ch);
 	void envelopeResetEffectFM(Step& step, int ch);
+	void checkSSGDelayEventsInTick(Step& step, int ch);
+	void checkDrumDelayEventsInTick(Step& step, int ch);
 
 	void clearEffectQueues();
 	void clearNoteDelayCounts();
@@ -386,6 +389,7 @@ private:
 	void clearFMDelayBeyondStepCounts(int ch);
 	void clearSSGDelayBeyondStepCounts(int ch);
 	void clearDrumDelayBeyondStepCounts(int ch);
+	void updateDelayEventCounts();
 
 	bool readFMStep(Step& step, int ch);
 	bool readFMEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);

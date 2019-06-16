@@ -31,28 +31,28 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG),
 		   tr("Tremolo, x: period (0-F), y: depth (0-F)"));
 	addRow("08xx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::Drum),
 		   tr("Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center"));
 	addRow("0Axy",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG),
 		   tr("Volume slide, x: up (0-F), y: down (0-F)"));
 	addRow("0Bxx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Jump to begginning of order xx"));
 	addRow("0Cxx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("End of song"));
 	addRow("0Dxx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Jump to step xx of next order"));
 	addRow("0Fxx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Change speed (xx: 00-1F), change tempo (xx: 20-FF)"));
 	addRow("0Gxx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Note delay, xx: count (00-FF)"));
 	addRow("0Oxx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Set groove xx"));
 	addRow("0Pxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG),
@@ -67,16 +67,16 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG),
 		   tr("Tremolo, x: period (0-F), y: depth (0-F)"));
 	addRow("0Sxx",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Note cut, xx: count (01-FF)"));
 	addRow("0Txy",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG),
 		   tr("Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)"));
 	addRow("0Vxx",
-		   static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::Drum),
 		   tr("Master volume, xx: volume (00-3F)"));
 	addRow("Mxyy",
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM),
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Volume delay, x: count (1-F), yy: volume (00-FF)"));
 }
 
@@ -94,7 +94,7 @@ void EffectListDialog::addRow(QString effect, int flag, QString text)
 	QString type("");
 	if (flag & static_cast<int>(SoundSource::FM)) type += "FM";
 	if (flag & static_cast<int>(SoundSource::SSG)) type = type + (type.isEmpty() ? "" : ", ") + "SSG";
-	if (flag & static_cast<int>(SoundSource::DRUM)) type = type + (type.isEmpty() ? "" : ", ") + "Drum";
+	if (flag & static_cast<int>(SoundSource::Drum)) type = type + (type.isEmpty() ? "" : ", ") + "Drum";
 	ui->tableWidget->setItem(row, 1, new QTableWidgetItem(type));
 	ui->tableWidget->setItem(row, 2, new QTableWidgetItem(text));
 }

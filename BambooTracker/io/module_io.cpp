@@ -103,7 +103,7 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint8(instSSG->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
-			case SoundSource::DRUM:
+			case SoundSource::Drum:
 				break;
 			}
 			ctr.writeUint32(iOfs, ctr.size() - iOfs);

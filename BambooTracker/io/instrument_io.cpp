@@ -123,7 +123,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			ctr.appendUint8(0x01);
 			break;
 		}
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -576,7 +576,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 		}
 		break;
 	}
-	case SoundSource::DRUM:
+	case SoundSource::Drum:
 		break;
 	}
 

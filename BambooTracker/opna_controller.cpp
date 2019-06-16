@@ -55,7 +55,7 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 	switch (src) {
 	case SoundSource::FM:	tickEventFM(ch);	break;
 	case SoundSource::SSG:	tickEventSSG(ch);	break;
-	case SoundSource::DRUM:	break;
+	case SoundSource::Drum:	break;
 	}
 }
 

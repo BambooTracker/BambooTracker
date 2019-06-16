@@ -21,7 +21,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 			tracks_.emplace_back(i + 6, SoundSource::SSG, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i + 9, SoundSource::DRUM, i, defaultPatternSize);
+			tracks_.emplace_back(i + 9, SoundSource::Drum, i, defaultPatternSize);
 		}
 		break;
 	case SongType::FMEX:
@@ -35,7 +35,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 			tracks_.emplace_back(i + 9, SoundSource::SSG, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i + 12, SoundSource::DRUM, i, defaultPatternSize);
+			tracks_.emplace_back(i + 12, SoundSource::Drum, i, defaultPatternSize);
 		}
 		break;
 	}

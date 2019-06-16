@@ -386,7 +386,7 @@ int PatternEditorPanel::drawStep(QPainter &painter, int trackNum, int orderNum, 
 		switch (src) {
 		case SoundSource::FM:	volLim = 0x80;	break;
 		case SoundSource::SSG:	volLim = 0x10;	break;
-		case SoundSource::DRUM:	volLim = 0x20;	break;
+		case SoundSource::Drum:	volLim = 0x20;	break;
 		}
 		painter.setPen((vol < volLim) ? palette_.lock()->ptnVolColor : palette_.lock()->ptnErrorColor);
 		if (src == SoundSource::FM && vol < volLim && config_.lock()->getReverseFMVolumeOrder()) {
@@ -498,7 +498,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		case SoundSource::SSG:
 			srcName = "SSG" + QString::number(attrib.channelInSource + 1);
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			switch (attrib.channelInSource) {
 			case 0:	srcName = "Bass drum";	break;
 			case 1:	srcName = "Snare drum";	break;
@@ -1033,7 +1033,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("00xy - Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1043,7 +1043,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("01xx - Portamento up, xx: depth (00-FF)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1053,7 +1053,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("02xx - Portamento down, xx: depth (00-FF)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1063,7 +1063,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("03xx - Tone portamento, xx: depth (00-FF)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1073,7 +1073,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("04xy - Vibrato, x: period (0-F), y: depth (0-F)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1083,14 +1083,14 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("07xx - Tremolo, x: period (0-F), y: depth (0-F)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
 	else if (id == "08") {
 		switch (src) {
 		case SoundSource::FM:
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			effDetail = tr("08xx - Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center");
 			break;
 		case SoundSource::SSG:
@@ -1103,7 +1103,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("0Axy - Volume slide, x: up (0-F), y: down (0-F)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1131,7 +1131,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("0Pxx - Detune, xx: pitch (00-FF)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1141,7 +1141,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1151,7 +1151,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("0Rxy - Note slide down, x: count (0-F), y: seminote (0-F)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
@@ -1164,13 +1164,13 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		case SoundSource::SSG:
 			effDetail = tr("0Txy - Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)");
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			break;
 		}
 	}
 	else if (id == "0V") {
 		switch (src) {
-		case SoundSource::DRUM:
+		case SoundSource::Drum:
 			effDetail = tr("0Vxx - Master volume, xx: volume (00-3F)");
 			break;
 		case SoundSource::FM:
