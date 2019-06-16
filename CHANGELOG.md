@@ -8,6 +8,7 @@
 ### Changed
 - [#123], [#125] - Update translation: fr ([#122]; thanks [@trebmuh], [@jpcima])
 - [#129] - Set the maximum count of FM channel to 6 in jamming during FX 3ch expanded mode (thanks [@galap-1])
+- [#134] - Change delay effects to affect over step except note delay (thanks [@scarletbullgon])
 
 ### Fixed
 - [#124] - Automatic section size for table column ([#122]; thanks [@jpcima], [@trebmuh])
@@ -33,6 +34,7 @@
 [#133]: https://github.com/rerrahkr/BambooTracker/pull/133
 [#135]: https://github.com/rerrahkr/BambooTracker/issues/135
 [#131]: https://github.com/rerrahkr/BambooTracker/issues/131
+[#134]: https://github.com/rerrahkr/BambooTracker/issues/134
 
 [@N-SPC700]: https://github.com/N-SPC700
 [Dippy]: https://www.youtube.com/channel/UCw2xCNQhuwpnfnf1-wfRefQ

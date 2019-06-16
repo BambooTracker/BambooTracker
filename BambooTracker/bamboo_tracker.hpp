@@ -17,6 +17,7 @@
 #include "gd3_tag.hpp"
 #include "s98_tag.hpp"
 #include "chips/scci/scci.h"
+#include "effect.hpp"
 #include "misc.hpp"
 
 class AbstractBank;
@@ -379,18 +380,29 @@ private:
 	void readTickFMForNoteDelay(Step& step, int ch);
 	void envelopeResetEffectFM(Step& step, int ch);
 
-	void clearDelayCounts();
+	void clearEffectQueues();
+	void clearNoteDelayCounts();
+	void clearDelayBeyondStepCounts();
+	void clearFMDelayBeyondStepCounts(int ch);
+	void clearSSGDelayBeyondStepCounts(int ch);
+	void clearDrumDelayBeyondStepCounts(int ch);
 
-	bool readFMStep(Step& step, int ch, bool isSkippedSpecial = false);
-	bool readSSGStep(Step& step, int ch, bool isSkippedSpecial = false);
-	bool readDrumStep(Step& step, int ch, bool isSkippedSpecial = false);
+	bool readFMStep(Step& step, int ch);
+	bool readFMEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
+	bool readSSGStep(Step& step, int ch);
+	bool readSSGEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
+	bool readDrumStep(Step& step, int ch);
+	bool readDrumEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
 
-	bool readFMEffect(int ch, std::string id, int value, bool isSkippedSpecial = false);
-	bool readSSGEffect(int ch, std::string id, int value, bool isSkippedSpecial = false);
-	bool readDrumEffect(int ch, std::string id, int value, bool isSkippedSpecial = false);
-	bool readFMSpecialEffect(int ch, std::string id, int value);
-	bool readSSGSpecialEffect(int ch, std::string id, int value);
-	bool readDrumSpecialEffect(int ch, std::string id, int value);
+	std::vector<std::vector<Effect>> keyOnBasedEffsFM_, stepBeginBasedEffsFM_, stepEndBasedEffsFM_;
+	std::vector<std::vector<Effect>> keyOnBasedEffsSSG_, stepBeginBasedEffsSSG_, stepEndBasedEffsSSG_;
+	std::vector<std::vector<Effect>> keyOnBasedEffsDrum_, stepBeginBasedEffsDrum_, stepEndBasedEffsDrum_;
+	bool setEffectToQueueFM(int ch, Effect eff);
+	bool readFMEffectFromQueue(int ch);
+	bool setEffectToQueueSSG(int ch, Effect eff);
+	bool readSSGEffectFromQueue(int ch);
+	bool setEffectToQueueDrum(int ch, Effect eff);
+	bool readDrumEffectFromQueue(int ch);
 
 	bool effPositionJump(int nextOrder);
 	void effTrackEnd();

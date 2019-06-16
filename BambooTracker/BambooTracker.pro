@@ -55,6 +55,7 @@ SOURCES += \
     chips/nuked/nuke2608intf.c \
     chips/nuked/ym3438.c \
     bamboo_tracker.cpp \
+    module/effect.cpp \
     stream/audio_stream.cpp \
     stream/audio_stream_mixier.cpp \
     jam_manager.cpp \
@@ -214,6 +215,7 @@ HEADERS += \
     chips/opna.hpp \
     chips/resampler.hpp \
     bamboo_tracker.hpp \
+    module/effect.hpp \
     stream/audio_stream.hpp \
     stream/audio_stream_mixier.hpp \
     chips/chip_def.h \
