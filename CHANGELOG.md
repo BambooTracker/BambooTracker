@@ -4,6 +4,11 @@
 ### Fixed
 - Fix SSG hardware envelope to reset on note on
 - Fix that Drum master volume effect is not available
+- [#137] - Fix corruption that occurred when using volume slide in FM3ch expansion (thanks [@SMB7])
+
+[#137]: https://github.com/rerrahkr/BambooTracker/issues/137
+
+[@SMB7]: https://github.com/SMB7
 
 ## v0.2.1 (2019-06-16)
 ### Added

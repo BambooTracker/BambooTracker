@@ -1553,12 +1553,11 @@ void OPNAController::checkVolumeEffectFM(int ch)
 	}
 
 	uint32_t bch = getFMChannelOffset(ch);
-	int al = envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL);
-
 	int inch = toInternalFMChannel(ch);
 	switch (toChannelOperatorType(ch)) {
 	case FMOperatorType::All:
 	{
+		int al = envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL);
 		if (isCareer(0, al)) {	// Operator 1
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL1) + v;
 			if (data > 127) data = 127;
