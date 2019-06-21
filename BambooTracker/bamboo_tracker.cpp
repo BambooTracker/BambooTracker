@@ -1779,7 +1779,7 @@ void BambooTracker::retrieveChannelStates()
 							if (isPrevPos) effGrooveChange(eff.value);
 						}
 						break;
-					case EffectType::VolumeSlide:
+					case EffectType::MasterVolume:
 						if (-1 < eff.value && eff.value < 64 && !isSetMVolDrum) {
 							isSetMVolDrum = true;
 							if (isPrevPos) opnaCtrl_->setMasterVolumeDrum(eff.value);
