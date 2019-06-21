@@ -38,10 +38,6 @@
         <translation>Entrée MIDI</translation>
     </message>
     <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.ui" line="421"/>
         <source>Formats</source>
         <translation>Formats</translation>
@@ -308,10 +304,6 @@
         <location filename="../../gui/configuration_dialog.ui" line="456"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
-    </message>
-    <message>
-        <source>Use SCCI</source>
-        <translation type="vanished">Utiliser SCCI</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="351"/>
@@ -596,27 +588,27 @@
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="394"/>
+        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="392"/>
         <source>Copy envelope</source>
         <translation>Copier l&apos;enveloppe</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="396"/>
+        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="394"/>
         <source>Paste envelope</source>
         <translation>Coller l&apos;enveloppe</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="398"/>
+        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="396"/>
         <source>Paste envelope From</source>
         <translation>Coller l&apos;enveloppe depuis</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="406"/>
+        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="404"/>
         <source>Copy operator</source>
         <translation>Copier l&apos;opérateur</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="408"/>
+        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="406"/>
         <source>Paste operator</source>
         <translation>Coller l&apos;opérateur</translation>
     </message>
@@ -649,10 +641,6 @@
         <translation>Copier Fxx</translation>
     </message>
     <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
         <location filename="../../gui/groove_settings_dialog.ui" line="105"/>
         <source>Expand</source>
         <translation>Étendre</translation>
@@ -673,10 +661,6 @@
         <translation type="unfinished">Remplir</translation>
     </message>
     <message>
-        <source>Speed</source>
-        <translation type="vanished">Vitesse</translation>
-    </message>
-    <message>
         <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
         <source>Speed: </source>
         <translation>Vitesse : </translation>
@@ -689,10 +673,6 @@
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="66"/>
         <source>Envelope</source>
         <translation>Enveloppe</translation>
-    </message>
-    <message>
-        <source>#</source>
-        <translation type="vanished">#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="111"/>
@@ -867,10 +847,6 @@
         <translation>Forme d&apos;onde</translation>
     </message>
     <message>
-        <source>#</source>
-        <translation type="vanished">#</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="65"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="207"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="378"/>
@@ -899,10 +875,6 @@
         <translation type="unfinished">Rapport tonalité/masque</translation>
     </message>
     <message>
-        <source>/</source>
-        <translation type="vanished">/</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="271"/>
         <source>Hard frequency</source>
         <translatorcomment>À vérifier...</translatorcomment>
@@ -915,11 +887,6 @@
         <translation type="unfinished">Rapport tonalité/dur</translation>
     </message>
     <message>
-        <source>Square mask:</source>
-        <translatorcomment>À vérifier</translatorcomment>
-        <translation type="obsolete">Signal carré masquant :</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="176"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="182"/>
         <source>Tone/Noise</source>
@@ -930,10 +897,6 @@
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="250"/>
         <source>Envelope</source>
         <translation>Enveloppe</translation>
-    </message>
-    <message>
-        <source>Hard frequency:</source>
-        <translation type="vanished">Fréquence dure :</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="399"/>
@@ -1011,18 +974,6 @@
         <translation>Paramètres du module</translation>
     </message>
     <message>
-        <source>Hz</source>
-        <translation type="vanished">Hz</translation>
-    </message>
-    <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
-        <source>Tick Freq</source>
-        <translation type="vanished">Fréq. horloge</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="110"/>
         <source>Copyright</source>
         <translation>Droits d&apos;auteur</translation>
@@ -1092,11 +1043,11 @@
         <location filename="../../gui/mainwindow.cpp" line="100"/>
         <location filename="../../gui/mainwindow.cpp" line="570"/>
         <location filename="../../gui/mainwindow.cpp" line="620"/>
-        <location filename="../../gui/mainwindow.cpp" line="1191"/>
         <location filename="../../gui/mainwindow.cpp" line="1193"/>
-        <location filename="../../gui/mainwindow.cpp" line="1219"/>
-        <location filename="../../gui/mainwindow.cpp" line="1901"/>
-        <location filename="../../gui/mainwindow.cpp" line="2015"/>
+        <location filename="../../gui/mainwindow.cpp" line="1195"/>
+        <location filename="../../gui/mainwindow.cpp" line="1221"/>
+        <location filename="../../gui/mainwindow.cpp" line="1899"/>
+        <location filename="../../gui/mainwindow.cpp" line="2012"/>
         <source>Untitled</source>
         <translation>Sans titre</translation>
     </message>
@@ -1166,10 +1117,6 @@
         <translation>&amp;Transposer</translation>
     </message>
     <message>
-        <source>&amp;Song</source>
-        <translation type="vanished">Mor&amp;ceau</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="551"/>
         <source>&amp;Module</source>
         <translation>&amp;Module</translation>
@@ -1183,10 +1130,6 @@
         <location filename="../../gui/mainwindow.ui" line="569"/>
         <source>&amp;Instrument</source>
         <translation>&amp;Instrument</translation>
-    </message>
-    <message>
-        <source>T&amp;racker</source>
-        <translation type="vanished">T&amp;racker</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="603"/>
@@ -1427,7 +1370,7 @@
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="959"/>
-        <location filename="../../gui/mainwindow.cpp" line="1251"/>
+        <location filename="../../gui/mainwindow.cpp" line="1253"/>
         <source>&amp;Edit...</source>
         <translation>&amp;Éditer...</translation>
     </message>
@@ -1712,12 +1655,8 @@
         <translation>Octave</translation>
     </message>
     <message>
-        <source>Step highlight</source>
-        <translation type="vanished">Intervalle en surbrillance</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.cpp" line="422"/>
-        <location filename="../../gui/mainwindow.cpp" line="1086"/>
+        <location filename="../../gui/mainwindow.cpp" line="1088"/>
         <source>Octave: %1</source>
         <translation>Octave : %1</translation>
     </message>
@@ -1725,69 +1664,69 @@
         <location filename="../../gui/mainwindow.cpp" line="103"/>
         <location filename="../../gui/mainwindow.cpp" line="573"/>
         <location filename="../../gui/mainwindow.cpp" line="623"/>
-        <location filename="../../gui/mainwindow.cpp" line="1904"/>
-        <location filename="../../gui/mainwindow.cpp" line="2018"/>
+        <location filename="../../gui/mainwindow.cpp" line="1902"/>
+        <location filename="../../gui/mainwindow.cpp" line="2015"/>
         <source>Save changes to %1?</source>
         <translation>Sauvegarder les modifications dans %1 ?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="819"/>
-        <location filename="../../gui/mainwindow.cpp" line="832"/>
-        <location filename="../../gui/mainwindow.cpp" line="855"/>
-        <location filename="../../gui/mainwindow.cpp" line="872"/>
-        <location filename="../../gui/mainwindow.cpp" line="886"/>
-        <location filename="../../gui/mainwindow.cpp" line="901"/>
-        <location filename="../../gui/mainwindow.cpp" line="971"/>
-        <location filename="../../gui/mainwindow.cpp" line="1948"/>
-        <location filename="../../gui/mainwindow.cpp" line="1962"/>
-        <location filename="../../gui/mainwindow.cpp" line="1987"/>
-        <location filename="../../gui/mainwindow.cpp" line="2005"/>
-        <location filename="../../gui/mainwindow.cpp" line="2173"/>
-        <location filename="../../gui/mainwindow.cpp" line="2222"/>
-        <location filename="../../gui/mainwindow.cpp" line="2272"/>
+        <location filename="../../gui/mainwindow.cpp" line="816"/>
+        <location filename="../../gui/mainwindow.cpp" line="829"/>
+        <location filename="../../gui/mainwindow.cpp" line="852"/>
+        <location filename="../../gui/mainwindow.cpp" line="869"/>
+        <location filename="../../gui/mainwindow.cpp" line="883"/>
+        <location filename="../../gui/mainwindow.cpp" line="898"/>
+        <location filename="../../gui/mainwindow.cpp" line="973"/>
+        <location filename="../../gui/mainwindow.cpp" line="1945"/>
+        <location filename="../../gui/mainwindow.cpp" line="1959"/>
+        <location filename="../../gui/mainwindow.cpp" line="1984"/>
+        <location filename="../../gui/mainwindow.cpp" line="2002"/>
+        <location filename="../../gui/mainwindow.cpp" line="2170"/>
+        <location filename="../../gui/mainwindow.cpp" line="2219"/>
+        <location filename="../../gui/mainwindow.cpp" line="2269"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="714"/>
+        <location filename="../../gui/mainwindow.cpp" line="711"/>
         <source>Instrument %1</source>
         <translation>Instrument %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="808"/>
+        <location filename="../../gui/mainwindow.cpp" line="805"/>
         <source>Open instrument</source>
         <translation>Ouvrir l&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="819"/>
-        <location filename="../../gui/mainwindow.cpp" line="886"/>
+        <location filename="../../gui/mainwindow.cpp" line="816"/>
+        <location filename="../../gui/mainwindow.cpp" line="883"/>
         <source>Failed to load instrument.</source>
         <translation>Le chargement de l&apos;instrument a échoué.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="844"/>
+        <location filename="../../gui/mainwindow.cpp" line="841"/>
         <source>Save instrument</source>
         <translation>Sauvegarder l&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="862"/>
+        <location filename="../../gui/mainwindow.cpp" line="859"/>
         <source>Open bank</source>
         <translation>Ouvrir la banque</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="876"/>
+        <location filename="../../gui/mainwindow.cpp" line="873"/>
         <source>Select instruments to load:</source>
         <translation>Sélectionnez les instruments à charger :</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1208"/>
-        <location filename="../../gui/mainwindow.cpp" line="1420"/>
+        <location filename="../../gui/mainwindow.cpp" line="1210"/>
+        <location filename="../../gui/mainwindow.cpp" line="1422"/>
         <source>No instrument</source>
         <translation>Pas d&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1009"/>
-        <location filename="../../gui/mainwindow.cpp" line="1033"/>
+        <location filename="../../gui/mainwindow.cpp" line="1011"/>
+        <location filename="../../gui/mainwindow.cpp" line="1035"/>
         <source>Standard</source>
         <translation>Standard</translation>
     </message>
@@ -1802,207 +1741,202 @@
         <translation>2nd</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="809"/>
+        <location filename="../../gui/mainwindow.cpp" line="806"/>
         <source>BambooTracker instrument (*.bti)</source>
         <translation>Instrument BambooTracker (*.bti)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="810"/>
+        <location filename="../../gui/mainwindow.cpp" line="807"/>
         <source>DefleMask preset (*.dmp)</source>
         <translation>Préréglage DefleMask (*.dmp)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="811"/>
+        <location filename="../../gui/mainwindow.cpp" line="808"/>
         <source>TFM Music Maker instrument (*.tfi)</source>
         <translation>Instrument TFM Music Maker (*.tfi)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="812"/>
+        <location filename="../../gui/mainwindow.cpp" line="809"/>
         <source>VGM Music Maker instrument (*.vgi)</source>
         <translation>Instrument VGM Music Maker (*.vgi)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="813"/>
+        <location filename="../../gui/mainwindow.cpp" line="810"/>
         <source>WOPN instrument (*.opni)</source>
         <translation>Instrument WOPN (*.opni)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="814"/>
+        <location filename="../../gui/mainwindow.cpp" line="811"/>
         <source>Gens KMod dump (*.y12)</source>
         <translation>Décharge Gens KMod (*.y12)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="815"/>
+        <location filename="../../gui/mainwindow.cpp" line="812"/>
         <source>MVSTracker instrument (*.ins)</source>
         <translation>Instrument MVSTracker (*.ins)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="846"/>
+        <location filename="../../gui/mainwindow.cpp" line="843"/>
         <source>BambooTracker instrument file (*.bti)</source>
         <translation>Fichier instrument BambooTracker (*.bti)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="863"/>
+        <location filename="../../gui/mainwindow.cpp" line="860"/>
         <source>WOPN bank (*.wopn)</source>
         <translation>Banque WOPN (*.wopn)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1010"/>
-        <location filename="../../gui/mainwindow.cpp" line="1034"/>
+        <location filename="../../gui/mainwindow.cpp" line="1012"/>
+        <location filename="../../gui/mainwindow.cpp" line="1036"/>
         <source>FM3ch expanded</source>
         <translation>FM3canaux étendu</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1231"/>
+        <location filename="../../gui/mainwindow.cpp" line="1233"/>
         <source>&amp;Add</source>
         <translation>&amp;Ajouter</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1233"/>
+        <location filename="../../gui/mainwindow.cpp" line="1235"/>
         <source>&amp;Remove</source>
         <translation>Supp&amp;rimer</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1238"/>
+        <location filename="../../gui/mainwindow.cpp" line="1240"/>
         <source>Edit &amp;name</source>
         <translation>Éditer le &amp;nom</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1241"/>
+        <location filename="../../gui/mainwindow.cpp" line="1243"/>
         <source>&amp;Clone</source>
         <translation>&amp;Cloner</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1243"/>
+        <location filename="../../gui/mainwindow.cpp" line="1245"/>
         <source>&amp;Deep clone</source>
         <translation>Cloner en &amp;profondeur</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1246"/>
+        <location filename="../../gui/mainwindow.cpp" line="1248"/>
         <source>&amp;Load from file...</source>
         <translation>&amp;Charger depuis un fichier...</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1248"/>
+        <location filename="../../gui/mainwindow.cpp" line="1250"/>
         <source>&amp;Save to file...</source>
         <translation>&amp;Sauvegarder dans le fichier...</translation>
     </message>
     <message>
-        <source>Instrument: %1</source>
-        <translation type="vanished">Instrument : %1</translation>
+        <location filename="../../gui/mainwindow.cpp" line="1801"/>
+        <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- nowide by (C) Artyom Beilis (BSL v1.0)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
+        <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Bibliothèques:&lt;br&gt;- libOPNMIDI par (C) Vitaly Novichkov (en partie sous licence MIT)&lt;br&gt;- MAME (licence MAME)&lt;br&gt;- nowide par (C) Artyom Beilis (BSL v1.0)&lt;br&gt;- Nuked OPN-MOD par (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;et (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtMidi par (C) Gary P. Scavone (licence RtMidi)&lt;br&gt;- SCCI (licence SCCI)&lt;br&gt;- ensemble d&apos;icône Silk 1.3 par (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ ou LGPL v3)&lt;br&gt;- VGMPlay par (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Lire également le changelog qui contient la liste des contributeurs.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1422"/>
+        <location filename="../../gui/mainwindow.cpp" line="1424"/>
         <source>Instrument: </source>
         <translation>Instrument : </translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1701"/>
+        <location filename="../../gui/mainwindow.cpp" line="1703"/>
         <source>Do you want to change song properties?</source>
         <translation>Voulez-vous modifier les propriétés du morceau ?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1778"/>
+        <location filename="../../gui/mainwindow.cpp" line="1775"/>
         <source>Change to jam mode</source>
         <translation>Passage en mode jeu</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1779"/>
+        <location filename="../../gui/mainwindow.cpp" line="1776"/>
         <source>Change to edit mode</source>
         <translation>Passage en mode édition</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1800"/>
+        <location filename="../../gui/mainwindow.cpp" line="1797"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1804"/>
-        <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Bibliothèques:&lt;br&gt;- libOPNMIDI par (C) Vitaly Novichkov (en partie sous licence MIT)&lt;br&gt;- MAME (licence MAME)&lt;br&gt;- Nuked OPN-MOD par (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;et (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtMidi par (C) Gary P. Scavone (licence RtMidi)&lt;br&gt;- SCCI (licence SCCI)&lt;br&gt;- ensemble d&apos;icône Silk 1.3 par (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ ou LGPL v3)&lt;br&gt;- VGMPlay par (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Lire également le changelog qui contient la liste des contributeurs.
-       </translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="1948"/>
-        <location filename="../../gui/mainwindow.cpp" line="1987"/>
+        <location filename="../../gui/mainwindow.cpp" line="1945"/>
+        <location filename="../../gui/mainwindow.cpp" line="1984"/>
         <source>Failed to backup module.</source>
         <translation>La sauvegarde du module a échoué.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1975"/>
+        <location filename="../../gui/mainwindow.cpp" line="1972"/>
         <source>Save module</source>
         <translation>Sauvegarder le module</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1977"/>
-        <location filename="../../gui/mainwindow.cpp" line="2035"/>
+        <location filename="../../gui/mainwindow.cpp" line="1974"/>
+        <location filename="../../gui/mainwindow.cpp" line="2032"/>
         <source>BambooTracker module file (*.btm)</source>
         <translation>Fichier de module BambooTracker (*.btm)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2034"/>
+        <location filename="../../gui/mainwindow.cpp" line="2031"/>
         <source>Open module</source>
         <translation>Ouvrir le module</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2100"/>
+        <location filename="../../gui/mainwindow.cpp" line="2097"/>
         <source>Do you want to remove all unused instruments?</source>
         <translation>Voulez-vous supprimer tous les instruments inutilisés ?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2122"/>
+        <location filename="../../gui/mainwindow.cpp" line="2119"/>
         <source>Do you want to remove all unused patterns?</source>
         <translation>Voulez-vous supprimer tous les motifs inutilisés ?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2141"/>
+        <location filename="../../gui/mainwindow.cpp" line="2138"/>
         <source>Export to wav</source>
         <translation>Exporter en wav</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2148"/>
+        <location filename="../../gui/mainwindow.cpp" line="2145"/>
         <source>Export to WAV</source>
         <translation>Exporter en WAV</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2149"/>
-        <location filename="../../gui/mainwindow.cpp" line="2195"/>
-        <location filename="../../gui/mainwindow.cpp" line="2244"/>
+        <location filename="../../gui/mainwindow.cpp" line="2146"/>
+        <location filename="../../gui/mainwindow.cpp" line="2192"/>
+        <location filename="../../gui/mainwindow.cpp" line="2241"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2173"/>
+        <location filename="../../gui/mainwindow.cpp" line="2170"/>
         <source>Failed to export to wav file.</source>
         <translation>L&apos;exportation en fichier wav a échoué.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2187"/>
+        <location filename="../../gui/mainwindow.cpp" line="2184"/>
         <source>Export to vgm</source>
         <translation>Exporter en vgm</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2194"/>
+        <location filename="../../gui/mainwindow.cpp" line="2191"/>
         <source>Export to VGM</source>
         <translation>Exporter en VGM</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2222"/>
+        <location filename="../../gui/mainwindow.cpp" line="2219"/>
         <source>Failed to export to vgm file.</source>
         <translation>L&apos;exportation en fichier vgm a échoué.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2236"/>
+        <location filename="../../gui/mainwindow.cpp" line="2233"/>
         <source>Export to s98</source>
         <translation>Exporter en s98</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2243"/>
+        <location filename="../../gui/mainwindow.cpp" line="2240"/>
         <source>Export to S98</source>
         <translation>Exporter en S98</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2272"/>
+        <location filename="../../gui/mainwindow.cpp" line="2269"/>
         <source>Failed to export to s98 file.</source>
         <translation>L&apos;exportation en fichier s98 a échoué.</translation>
     </message>
@@ -2043,10 +1977,6 @@
         <location filename="../../gui/module_properties_dialog.ui" line="91"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
-    </message>
-    <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="139"/>
@@ -2375,18 +2305,18 @@
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1552"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2351"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2355"/>
         <source>To&amp;ggle Track</source>
         <translation>&amp;Basculer la piste</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1554"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2353"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2357"/>
         <source>&amp;Solo Track</source>
         <translation>Piste &amp;solo</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2355"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2359"/>
         <source>&amp;Unmute All Tracks</source>
         <translation>Rendre a&amp;udibles toutes les pistes</translation>
     </message>
@@ -2738,10 +2668,6 @@
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.ui" line="69"/>
         <source>Size: 1</source>
         <translation>Taille : 1</translation>
-    </message>
-    <message>
-        <source>Release </source>
-        <translation type="vanished">Relâche </translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="155"/>
