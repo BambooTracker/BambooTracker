@@ -1789,6 +1789,8 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 	sumNoteSldSSG_[ch] = 0;
 	transposeSSG_[ch] = 0;
 
+	isKeyOnSSG_[ch] = false;	// For first tick check
+
 	setFrontSSGSequences(ch);
 
 	hasPreSetTickEventSSG_[ch] = isJam;

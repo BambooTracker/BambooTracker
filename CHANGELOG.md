@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- Fix SSG hardware envelope to reset on note on
 
 ## v0.2.1 (2019-06-16)
 ### Added
