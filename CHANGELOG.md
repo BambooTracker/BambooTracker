@@ -5,8 +5,10 @@
 - Fix SSG hardware envelope to reset on note on
 - Fix that Drum master volume effect is not available
 - [#137] - Fix corruption that occurred when using volume slide in FM3ch expansion (thanks [@SMB7])
+- [#140] - Fix incorrect DT importing from DMP (thanks [@papiezak], [@jpcima], [@OPNA2608])
 
 [#137]: https://github.com/rerrahkr/BambooTracker/issues/137
+[#140]: https://github.com/rerrahkr/BambooTracker/issues/140
 
 [@SMB7]: https://github.com/SMB7
 
