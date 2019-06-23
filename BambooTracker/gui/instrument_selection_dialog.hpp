@@ -12,6 +12,8 @@ namespace Ui {
 
 class InstrumentSelectionDialog : public QDialog
 {
+	Q_OBJECT
+
 public:
 	InstrumentSelectionDialog(const AbstractBank &bank, const QString &text, QWidget *parent = nullptr);
 	~InstrumentSelectionDialog();
@@ -23,4 +25,7 @@ private:
 	std::unique_ptr<Ui::InstrumentSelectionDialog> ui_;
 
 	void setupContents();
+
+private slots:
+	void on_searchLineEdit_textChanged(const QString &search);
 };

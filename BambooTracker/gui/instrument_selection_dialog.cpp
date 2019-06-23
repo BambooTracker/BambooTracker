@@ -43,3 +43,15 @@ QVector<size_t> InstrumentSelectionDialog::currentInstrumentSelection() const
 
 	return selection;
 }
+
+void InstrumentSelectionDialog::on_searchLineEdit_textChanged(const QString &search)
+{
+	QListWidget *lw = ui_->listWidget;
+	unsigned count = lw->count();
+
+	for (unsigned row = 0; row < count; ++row) {
+		QListWidgetItem *item = lw->item(row);
+		bool accept = search.isEmpty() || item->text().contains(search, Qt::CaseInsensitive);
+		item->setHidden(!accept);
+	}
+}
