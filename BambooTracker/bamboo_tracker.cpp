@@ -1784,7 +1784,6 @@ void BambooTracker::retrieveChannelStates()
 							isSetMVolDrum = true;
 							if (isPrevPos) opnaCtrl_->setMasterVolumeDrum(eff.value);
 						}
-
 						break;
 					default:
 						break;
@@ -2200,7 +2199,7 @@ bool BambooTracker::readFMEffectFromQueue(int ch)
 	}
 	stepBeginBasedEffsFM_.at(uch).clear();
 
-	// Read step beginning based effects
+	// Read note on and step beginning based effects
 	if (!isNoteDelay) {
 		for (const Effect& eff : keyOnBasedEffsFM_.at(uch)) {
 			switch (eff.type) {
@@ -2356,7 +2355,7 @@ bool BambooTracker::readSSGEffectFromQueue(int ch)
 	}
 	stepBeginBasedEffsSSG_.at(uch).clear();
 
-	// Read step beginning based effects
+	// Read note on and step beginning based effects
 	if (!isNoteDelay) {
 		for (const Effect& eff : keyOnBasedEffsSSG_.at(uch)) {
 			switch (eff.type) {
@@ -2426,6 +2425,7 @@ bool BambooTracker::setEffectToQueueDrum(int ch, Effect eff)
 	switch (eff.type) {
 	case EffectType::Pan:
 	case EffectType::NoteCut:
+	case EffectType::MasterVolume:
 	case EffectType::VolumeDelay:
 		keyOnBasedEffsDrum_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
@@ -2499,7 +2499,7 @@ bool BambooTracker::readDrumEffectFromQueue(int ch)
 	}
 	stepBeginBasedEffsDrum_.at(uch).clear();
 
-	// Read step beginning based effects
+	// Read key on  and step beginning based effects
 	if (!isNoteDelay) {
 		for (const Effect& eff : keyOnBasedEffsDrum_.at(uch)) {
 			switch (eff.type) {
@@ -2508,6 +2508,9 @@ bool BambooTracker::readDrumEffectFromQueue(int ch)
 				break;
 			case EffectType::NoteCut:
 				ntCutDlyCntDrum_.at(uch) = eff.value;
+				break;
+			case EffectType::MasterVolume:
+				if (-1 < eff.value && eff.value < 64) opnaCtrl_->setMasterVolumeDrum(eff.value);
 				break;
 			case EffectType::VolumeDelay:
 			{
