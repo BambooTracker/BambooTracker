@@ -20,6 +20,7 @@ addons:
   homebrew:
     packages:
       - qt5
+    update: true
 
 git:
   depth: 3
