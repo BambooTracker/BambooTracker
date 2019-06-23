@@ -1,6 +1,7 @@
 #include "audio_stream_mixier.hpp"
 #include <algorithm>
 #include <cstring>
+#include <utility>
 
 AudioStreamMixier::AudioStreamMixier(uint32_t rate, uint32_t duration, uint32_t intrRate, QObject* parent) :
 	QIODevice(parent),
@@ -8,7 +9,7 @@ AudioStreamMixier::AudioStreamMixier(uint32_t rate, uint32_t duration, uint32_t 
 	duration_(duration),
 	intrRate_(intrRate),
 	intrCountRest_(0),
-	isFirstRead_(true)
+	initializeRestCount_(-1)
 {
 	updateBufferSampleSize();
 	updateIntrruptCount();
@@ -21,7 +22,7 @@ AudioStreamMixier::~AudioStreamMixier()
 
 void AudioStreamMixier::start()
 {
-	isFirstRead_ = true;
+	initializeRestCount_ = -1;
 	open(QIODevice::ReadOnly);
 }
 
@@ -67,13 +68,17 @@ void AudioStreamMixier::updateIntrruptCount()
 qint64 AudioStreamMixier::readData(char* data, qint64 maxlen)
 {
 	qint64 generatedCount;
-	if (isFirstRead_) {   // Clean device buffer in first read
-		isFirstRead_ = false;
+	switch (initializeRestCount_) {
+	case -1:	// Clean device buffer in first read
+		initializeRestCount_ = maxlen % 4;	// int16 * 2 (stereo)
 		std::memset(data, 0, static_cast<size_t>(maxlen));
 		return maxlen;
-	}
-	else {  // Fill appropriate sample counts
+	case 0:		// Fill appropriate sample counts
 		generatedCount = std::min(bufferSampleSize_, (maxlen >> 2));
+		break;
+	default:	// Clean device buffer to adjust L-R
+		std::memset(data, 0, static_cast<size_t>(initializeRestCount_));
+		return std::exchange(initializeRestCount_, 0);
 	}
 	size_t requiredCount = static_cast<size_t>(generatedCount);
 	int16_t* destPtr = reinterpret_cast<int16_t*>(data);

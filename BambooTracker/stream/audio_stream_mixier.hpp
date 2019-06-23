@@ -36,7 +36,7 @@ private:
 	size_t intrCount_;
 	size_t intrCountRest_;
 
-	bool isFirstRead_;
+	int initializeRestCount_;
 
 	void updateBufferSampleSize();
 	void updateIntrruptCount();

@@ -1,14 +1,24 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#141] - Add bank import and icons to instrument context menu (thanks [@jpcima])
+
+### Changed
+- [#139] - Update translation: fr (thanks [@jpcima])
+
 ### Fixed
 - Fix SSG hardware envelope to reset on note on
 - Fix that Drum master volume effect is not available
 - [#137] - Fix corruption that occurred when using volume slide in FM3ch expansion (thanks [@SMB7])
 - [#140] - Fix incorrect DT importing from DMP (thanks [@papiezak], [@jpcima], [@OPNA2608])
+- [#138] - Fix that panning is reversed by insufficient stream buffer initialization (thanks [@jpcima])
 
 [#137]: https://github.com/rerrahkr/BambooTracker/issues/137
 [#140]: https://github.com/rerrahkr/BambooTracker/issues/140
+[#139]: https://github.com/rerrahkr/BambooTracker/pull/139
+[#141]: https://github.com/rerrahkr/BambooTracker/pull/141
+[#138]: https://github.com/rerrahkr/BambooTracker/issues/138
 
 [@SMB7]: https://github.com/SMB7
 
