@@ -1231,8 +1231,10 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 
 	// Leave Before Qt5.7.0 style due to windows xp
 	QAction* add = menu.addAction(tr("&Add"));
+	add->setIcon(QIcon(":/icon/add_inst"));
 	QObject::connect(add, &QAction::triggered, this, &MainWindow::addInstrument);
 	QAction* remove = menu.addAction(tr("&Remove"));
+	remove->setIcon(QIcon(":/icon/remove_inst"));
 	QObject::connect(remove, &QAction::triggered, this, [&]() {
 		removeInstrument(ui->instrumentListWidget->currentRow());
 	});
@@ -1241,16 +1243,23 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QObject::connect(name, &QAction::triggered, this, &MainWindow::editInstrumentName);
 	menu.addSeparator();
 	QAction* clone = menu.addAction(tr("&Clone"));
+	clone->setIcon(QIcon(":/icon/clone_inst"));
 	QObject::connect(clone, &QAction::triggered, this, &MainWindow::cloneInstrument);
 	QAction* dClone = menu.addAction(tr("&Deep clone"));
 	QObject::connect(dClone, &QAction::triggered, this, &MainWindow::deepCloneInstrument);
 	menu.addSeparator();
 	QAction* ldFile = menu.addAction(tr("&Load from file..."));
+	ldFile->setIcon(QIcon(":/icon/load_inst"));
 	QObject::connect(ldFile, &QAction::triggered, this, &MainWindow::loadInstrument);
 	QAction* svFile = menu.addAction(tr("&Save to file..."));
+	svFile->setIcon(QIcon(":/icon/save_inst"));
 	QObject::connect(svFile, &QAction::triggered, this, &MainWindow::saveInstrument);
 	menu.addSeparator();
+	QAction* ldBank = menu.addAction(tr("&Import from bank file..."));
+	QObject::connect(ldBank, &QAction::triggered, this, &MainWindow::importInstrumentsFromBank);
+	menu.addSeparator();
 	QAction* edit = menu.addAction(tr("&Edit..."));
+	edit->setIcon(QIcon(":/icon/edit_inst"));
 	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	add->setShortcutVisibleInContextMenu(true);
