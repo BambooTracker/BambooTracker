@@ -3,6 +3,7 @@
 
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
 	: pos_(2),
+	  started_(false),
 	  second_(second + 48),
 	  third_(third + 48)
 {
@@ -36,24 +37,34 @@ int ArpeggioEffectIterator::getCommandData() const
 int ArpeggioEffectIterator::next(bool isReleaseBegin)
 {
 	(void)isReleaseBegin;
-	pos_ = (pos_ + 1) % 3;
+
+	if (started_) {
+		pos_ = (pos_ + 1) % 3;
+	}
+	else {
+		started_ = true;
+	}
+
 	return pos_;
 }
 
 int ArpeggioEffectIterator::front()
 {
 	pos_ = 0;
+	started_ = true;
 	return 0;
 }
 
 int ArpeggioEffectIterator::end()
 {
 	pos_ = -1;
+	started_ = false;
 	return -1;
 }
 
 /****************************************/
 WavingEffectIterator::WavingEffectIterator(int period, int depth)
+	: started_(false)
 {
 	for (int i = 0; i <= period; ++i) {
 		seq_.push_back(i * depth);
@@ -92,24 +103,34 @@ int WavingEffectIterator::getCommandData() const
 int WavingEffectIterator::next(bool isReleaseBegin)
 {
 	(void)isReleaseBegin;
-	pos_ = (pos_ + 1) % static_cast<int>(seq_.size());
+
+	if (started_) {
+		pos_ = (pos_ + 1) % static_cast<int>(seq_.size());
+	}
+	else {
+		started_ = true;
+	}
+
 	return pos_;
 }
 
 int WavingEffectIterator::front()
 {
 	pos_ = 0;
+	started_ = true;
 	return 0;
 }
 
 int WavingEffectIterator::end()
 {
 	pos_ = -1;
+	started_ = false;
 	return -1;
 }
 
 /****************************************/
 NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
+	: started_(false)
 {
 	int d = seminote * 32;
 	int prev = 0;
@@ -144,17 +165,26 @@ int NoteSlideEffectIterator::getCommandData() const
 int NoteSlideEffectIterator::next(bool isReleaseBegin)
 {
 	(void)isReleaseBegin;
-	return (++pos_ < static_cast<int>(seq_.size())) ? pos_ : -1;
+
+	if (started_) {
+		return (++pos_ < static_cast<int>(seq_.size())) ? pos_ : -1;
+	}
+	else {
+		started_ = true;
+		return pos_;
+	}
 }
 
 int NoteSlideEffectIterator::front()
 {
 	pos_ = 0;
+	started_ = true;
 	return 0;
 }
 
 int NoteSlideEffectIterator::end()
 {
 	pos_ = -1;
+	started_ = false;
 	return -1;
 }

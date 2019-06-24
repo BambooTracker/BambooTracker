@@ -154,6 +154,7 @@ bool CommandSequence::isEdited() const
 CommandSequence::Iterator::Iterator(CommandSequence* seq)
 	: seq_(seq),
 	  pos_(0),
+	  started_(false),
 	  isRelease_(false),
 	  relReleaseRatio_(1)
 {
@@ -186,6 +187,11 @@ int CommandSequence::Iterator::getCommandData() const
 int CommandSequence::Iterator::next(bool isReleaseBegin)
 {
 	if (!isReleaseBegin && pos_ == -1) return -1;
+
+	if (!started_) {
+		started_ = true;
+		return pos_;
+	}
 
 	int next = -1;
 	if (isReleaseBegin) {
@@ -296,6 +302,7 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 
 int CommandSequence::Iterator::front()
 {
+	started_ = true;
 	loopStack_.clear();
 	isRelease_ = false;
 	relReleaseRatio_ = 1;
@@ -320,5 +327,6 @@ int CommandSequence::Iterator::front()
 int CommandSequence::Iterator::end()
 {
 	pos_ = -1;
+	started_ = false;
 	return -1;
 }

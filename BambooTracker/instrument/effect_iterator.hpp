@@ -16,6 +16,7 @@ public:
 
 private:
 	int pos_;
+	bool started_;
 	int second_, third_;
 };
 
@@ -33,6 +34,7 @@ public:
 
 private:
 	int pos_;
+	bool started_;
 	std::vector<int> seq_;
 };
 
@@ -50,5 +52,6 @@ public:
 
 private:
 	int pos_;
+	bool started_;
 	std::vector<int> seq_;
 };

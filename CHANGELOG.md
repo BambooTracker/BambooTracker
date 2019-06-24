@@ -13,6 +13,7 @@
 - [#137] - Fix corruption that occurred when using volume slide in FM3ch expansion (thanks [@SMB7])
 - [#140] - Fix incorrect DT importing from DMP (thanks [@papiezak], [@jpcima], [@OPNA2608])
 - [#138] - Fix that panning is reversed by insufficient stream buffer initialization (thanks [@jpcima])
+- Fix the sequence start position when declaring sequence-type effect after key on
 
 [#137]: https://github.com/rerrahkr/BambooTracker/issues/137
 [#140]: https://github.com/rerrahkr/BambooTracker/issues/140

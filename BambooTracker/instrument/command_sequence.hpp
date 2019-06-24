@@ -95,6 +95,7 @@ public:
 	private:
 		CommandSequence* seq_;
 		int pos_;
+		bool started_;
 		std::vector<Loop> loopStack_;
 		bool isRelease_;
 		float relReleaseRatio_;
