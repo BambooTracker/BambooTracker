@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#141] - Add bank import and icons to instrument context menu (thanks [@jpcima])
+- [#142] - Add search box for instrument selection dialog (thanks [@jpcima])
 
 ### Changed
 - [#139] - Update translation: fr (thanks [@jpcima])
@@ -14,12 +15,14 @@
 - [#140] - Fix incorrect DT importing from DMP (thanks [@papiezak], [@jpcima], [@OPNA2608])
 - [#138] - Fix that panning is reversed by insufficient stream buffer initialization (thanks [@jpcima])
 - Fix the sequence start position when declaring sequence-type effect after key on
+- Fix note slide effect to enable to execute when speed is 0
 
 [#137]: https://github.com/rerrahkr/BambooTracker/issues/137
 [#140]: https://github.com/rerrahkr/BambooTracker/issues/140
 [#139]: https://github.com/rerrahkr/BambooTracker/pull/139
 [#141]: https://github.com/rerrahkr/BambooTracker/pull/141
 [#138]: https://github.com/rerrahkr/BambooTracker/issues/138
+[#142]: https://github.com/rerrahkr/BambooTracker/pull/142
 
 [@SMB7]: https://github.com/SMB7
 

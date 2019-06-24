@@ -631,7 +631,7 @@ void OPNAController::setDetuneFM(int ch, int pitch)
 
 void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 {
-	if (speed && seminote) {
+	if (seminote) {
 		nsItFM_[ch] = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
 		noteSldFMSetFlag_[ch] = true;
 	}
@@ -1953,7 +1953,7 @@ void OPNAController::setDetuneSSG(int ch, int pitch)
 
 void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 {
-	if (speed && seminote) {
+	if (seminote) {
 		nsItSSG_[ch] = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
 		noteSldSSGSetFlag_ = true;
 	}

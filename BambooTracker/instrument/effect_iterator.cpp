@@ -133,11 +133,16 @@ NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
 	: started_(false)
 {
 	int d = seminote * 32;
-	int prev = 0;
-	for (int i = 0; i <= speed; ++i) {
-		int dif = d * i / speed - prev;
-		seq_.push_back(dif);
-		prev += dif;
+	if (speed) {
+		int prev = 0;
+		for (int i = 0; i <= speed; ++i) {
+			int dif = d * i / speed - prev;
+			seq_.push_back(dif);
+			prev += dif;
+		}
+	}
+	else {
+		seq_.push_back(d);
 	}
 	pos_ = 0;
 }
