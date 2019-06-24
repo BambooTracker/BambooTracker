@@ -6,7 +6,7 @@
 - [#142] - Add search box for instrument selection dialog (thanks [@jpcima])
 
 ### Changed
-- [#139] - Update translation: fr (thanks [@jpcima])
+- [#139] - Update translation: fr ([#122]; thanks [@jpcima], [@trebmuh])
 
 ### Fixed
 - Fix SSG hardware envelope to reset on note on
@@ -16,6 +16,7 @@
 - [#138] - Fix that panning is reversed by insufficient stream buffer initialization (thanks [@jpcima])
 - Fix the sequence start position when declaring sequence-type effect after key on
 - Fix note slide effect to enable to execute when speed is 0
+- Fix default save and export name when the name of module file contains multiple dots
 
 [#137]: https://github.com/rerrahkr/BambooTracker/issues/137
 [#140]: https://github.com/rerrahkr/BambooTracker/issues/140

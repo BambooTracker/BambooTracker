@@ -1218,7 +1218,7 @@ QString MainWindow::getModuleFileBaseName() const
 {
 	auto filePathStd = bt_->getModulePath();
 	QString filePath = QString::fromStdString(filePathStd);
-	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).baseName());
+	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).completeBaseName());
 }
 
 /******************************/
