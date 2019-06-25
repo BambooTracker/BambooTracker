@@ -1014,7 +1014,8 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
 	editPos_ = curPos_;
 	bt_->setStepEffectID(curSongNum_, editPos_.track, editPos_.order, editPos_.step,
-						 (editPos_.colInTrack - 3) / 2, str.toStdString());
+						 (editPos_.colInTrack - 3) / 2, str.toStdString(),
+						 config_.lock()->getFill00ToEffectValue());
 	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, editPos_));
 
 	if (!bt_->isPlaySong() && !entryCnt_) {

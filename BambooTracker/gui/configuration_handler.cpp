@@ -44,7 +44,8 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("retrieveChannelState",	configLocked->getRetrieveChannelState());
 		settings.setValue("enableTranslation",		configLocked->getEnableTranslation());
 		settings.setValue("showFMDetuneAsSigned",	configLocked->getShowFMDetuneAsSigned());
-		settings.setValue("showWaveVisual",		configLocked->getShowWaveVisual());
+		settings.setValue("showWaveVisual",			configLocked->getShowWaveVisual());
+		settings.setValue("fill00ToEffectValue",	configLocked->getFill00ToEffectValue());
 		settings.endGroup();
 
 		// Edit settings
@@ -193,6 +194,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setEnableTranslation(settings.value("enableTranslation", configLocked->getEnableTranslation()).toBool());
 		configLocked->setShowFMDetuneAsSigned(settings.value("showFMDetuneAsSigned", configLocked->getShowFMDetuneAsSigned()).toBool());
 		configLocked->setShowWaveVisual(settings.value("showWaveVisual", configLocked->getShowWaveVisual()).toBool());
+		configLocked->setFill00ToEffectValue(settings.value("fill00ToEffectValue", configLocked->getFill00ToEffectValue()).toBool());
 		settings.endGroup();
 
 		// Edit settings

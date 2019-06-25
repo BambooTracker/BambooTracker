@@ -42,6 +42,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->generalSettingsListWidget->item(9)->setCheckState(toCheckState(configLocked->getEnableTranslation()));
 	ui->generalSettingsListWidget->item(10)->setCheckState(toCheckState(configLocked->getShowFMDetuneAsSigned()));
 	ui->generalSettingsListWidget->item(11)->setCheckState(toCheckState(configLocked->getShowWaveVisual()));
+	ui->generalSettingsListWidget->item(12)->setCheckState(toCheckState(configLocked->getFill00ToEffectValue()));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -198,6 +199,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setEnableTranslation(fromCheckState(ui->generalSettingsListWidget->item(9)->checkState()));
 	configLocked->setShowFMDetuneAsSigned(fromCheckState(ui->generalSettingsListWidget->item(10)->checkState()));
 	configLocked->setShowWaveVisual(fromCheckState(ui->generalSettingsListWidget->item(11)->checkState()));
+	configLocked->setFill00ToEffectValue(fromCheckState(ui->generalSettingsListWidget->item(12)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
@@ -289,6 +291,9 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		break;
 	case 11:	// Show wave visual
 		text = tr("Enable an oscilloscope which displays a waveform of the sound output.");
+		break;
+	case 12:	// Fill 00 to effect value
+		text = tr("Fill 00 to effect value column upon entering effect id.");
 		break;
 	default:
 		text = "";

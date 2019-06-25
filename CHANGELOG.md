@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Added
+- Add the selection of effect value initialization upon entering effect id
 
 ## v0.2.2 (2019-06-25)
 ### Added

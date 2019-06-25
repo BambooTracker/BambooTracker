@@ -289,7 +289,7 @@ public:
 	void setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed);
 	void eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum);
 	std::string getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
-	void setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id);
+	void setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00);
 	int getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
 	void setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, bool isFMReversed);
 	void eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n);

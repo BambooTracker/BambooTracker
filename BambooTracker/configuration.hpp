@@ -80,6 +80,8 @@ public:
 	bool getShowFMDetuneAsSigned() const;
 	void setShowWaveVisual(bool enabled);
 	bool getShowWaveVisual() const;
+	void setFill00ToEffectValue(bool enabled);
+	bool getFill00ToEffectValue() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
@@ -88,6 +90,7 @@ private:
 	bool retrieveChannelState_, enableTranslation_;
 	bool showFMDetuneSigned_;
 	bool showWaveVisual_;
+	bool fill00ToEffectValue_;
 
 	// Edit settings
 public:

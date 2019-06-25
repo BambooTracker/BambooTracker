@@ -8,7 +8,8 @@
 class SetEffectIDToStepCommand : public AbstractCommand
 {
 public:
-	SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id);
+	SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
+							 int n, std::string id, bool fillValue00);
 	void redo() override;
 	void undo() override;
 	int getID() const override;
@@ -25,5 +26,5 @@ private:
 	std::weak_ptr<Module> mod_;
 	int song_, track_, order_, step_, n_;
 	std::string effID_, prevEffID_;
-	bool isComplete_;
+	bool isComplete_, filledValue00_;
 };

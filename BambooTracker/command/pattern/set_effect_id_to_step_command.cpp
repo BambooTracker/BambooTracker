@@ -1,6 +1,6 @@
 #include "set_effect_id_to_step_command.hpp"
 
-SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id)
+SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
@@ -10,21 +10,25 @@ SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, in
 	  effID_(id),
 	  isComplete_(false)
 {
-	prevEffID_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-				 .getStep(stepNum).getEffectID(n);
+	Step& step = mod_.lock()->getSong(songNum).getTrack(trackNum)
+				 .getPatternFromOrderNumber(orderNum).getStep(stepNum);
+	prevEffID_ = step.getEffectID(n);
+	filledValue00_ = fillValue00 && (step.getEffectValue(n) == -1);
 }
 
 void SetEffectIDToStepCommand::redo()
 {
 	std::string str = isComplete_ ? effID_ : ("0" + effID_);
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-					.getStep(step_).setEffectID(n_, str);
+	Step& step = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	step.setEffectID(n_, str);
+	if (filledValue00_) step.setEffectValue(n_, 0);
 }
 
 void SetEffectIDToStepCommand::undo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-					.getStep(step_).setEffectID(n_, prevEffID_);
+	Step& step = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	step.setEffectID(n_, prevEffID_);
+	if (filledValue00_) step.setEffectValue(n_, -1);
 }
 
 int SetEffectIDToStepCommand::getID() const

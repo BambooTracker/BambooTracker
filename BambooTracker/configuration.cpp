@@ -30,6 +30,7 @@ Configuration::Configuration()
 	enableTranslation_ = true;
 	showFMDetuneSigned_ = false;
 	showWaveVisual_ = true;
+	fill00ToEffectValue_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -813,6 +814,16 @@ void Configuration::setShowWaveVisual(bool enabled)
 bool Configuration::getShowWaveVisual() const
 {
 	return showWaveVisual_;
+}
+
+void Configuration::setFill00ToEffectValue(bool enabled)
+{
+	fill00ToEffectValue_ = enabled;
+}
+
+bool Configuration::getFill00ToEffectValue() const
+{
+	return fill00ToEffectValue_;
 }
 
 // Edit settings

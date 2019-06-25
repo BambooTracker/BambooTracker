@@ -3051,9 +3051,9 @@ std::string BambooTracker::getStepEffectID(int songNum, int trackNum, int orderN
 			.getStep(stepNum).getEffectID(n);
 }
 
-void BambooTracker::setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id)
+void BambooTracker::setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00)
 {
-	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, id));
+	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, id, fillValue00));
 }
 
 int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const
