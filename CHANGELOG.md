@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.2.2 (2019-06-25)
 ### Added
 - [#141] - Add bank import and icons to instrument context menu (thanks [@jpcima])
 - [#142] - Add search box for instrument selection dialog (thanks [@jpcima])
