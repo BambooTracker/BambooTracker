@@ -1949,8 +1949,10 @@ bool BambooTracker::readFMEventsInStep(Step& step, int ch, bool calledByNoteDela
 	// Set key
 	switch (noteNum) {
 	case -1:	// None
-		checkFMDelayEventsInTick(step, ch);
-		opnaCtrl_->tickEvent(SoundSource::FM, ch);
+		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
+			checkFMDelayEventsInTick(step, ch);
+			opnaCtrl_->tickEvent(SoundSource::FM, ch);
+		}
 		break;
 	case -2:	// Key off
 		opnaCtrl_->keyOffFM(ch);
@@ -1994,6 +1996,7 @@ bool BambooTracker::readSSGStep(Step& step, int ch)
 	if (isNoteDelay) {
 		// Set effect
 		changedNextStep = readSSGEffectFromQueue(ch);
+		opnaCtrl_->tickEvent(SoundSource::SSG, ch);
 	}
 	else {
 		changedNextStep = readSSGEventsInStep(step, ch);
@@ -2026,8 +2029,10 @@ bool BambooTracker::readSSGEventsInStep(Step& step, int ch, bool calledByNoteDel
 	// Set key
 	switch (noteNum) {
 	case -1:	// None
-		checkSSGDelayEventsInTick(step, ch);
-		opnaCtrl_->tickEvent(SoundSource::SSG, ch);
+		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
+			checkSSGDelayEventsInTick(step, ch);
+			opnaCtrl_->tickEvent(SoundSource::SSG, ch);
+		}
 		break;
 	case -2:	// Key off
 		opnaCtrl_->keyOffSSG(ch);
@@ -2071,6 +2076,7 @@ bool BambooTracker::readDrumStep(Step& step, int ch)
 	if (isNoteDelay) {
 		// Set effect
 		changedNextStep = readDrumEffectFromQueue(ch);
+		opnaCtrl_->tickEvent(SoundSource::Drum, ch);
 	}
 	else {
 		changedNextStep = readDrumEventsInStep(step, ch);
@@ -2096,8 +2102,10 @@ bool BambooTracker::readDrumEventsInStep(Step& step, int ch, bool calledByNoteDe
 	// Set key
 	switch (noteNum) {
 	case -1:	// None
-		checkDrumDelayEventsInTick(step, ch);
-		opnaCtrl_->tickEvent(SoundSource::Drum, ch);
+		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
+			checkDrumDelayEventsInTick(step, ch);
+			opnaCtrl_->tickEvent(SoundSource::Drum, ch);
+		}
 		break;
 	case -2:	// Key off
 		opnaCtrl_->keyOffDrum(ch);
