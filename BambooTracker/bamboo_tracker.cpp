@@ -1917,6 +1917,7 @@ bool BambooTracker::readFMStep(Step& step, int ch)
 		// Set effect
 		changedNextStep = readFMEffectFromQueue(ch);
 		readTickFMForNoteDelay(step, ch);
+		opnaCtrl_->tickEvent(SoundSource::FM, ch);
 	}
 	else {
 		changedNextStep = readFMEventsInStep(step, ch);
