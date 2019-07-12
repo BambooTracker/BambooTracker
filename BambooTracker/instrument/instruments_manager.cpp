@@ -563,6 +563,15 @@ std::string InstrumentsManager::getInstrumentName(int instNum) const
 	return insts_.at(static_cast<size_t>(instNum))->getName();
 }
 
+std::vector<std::string> InstrumentsManager::getInstrumentNameList() const
+{
+	std::vector<std::string> names;
+	for (auto& inst : insts_) {
+		if (inst) names.push_back(inst->getName());
+	}
+	return names;
+}
+
 std::vector<int> InstrumentsManager::getEntriedInstrumentIndices() const
 {
 	std::vector<int> idcs;

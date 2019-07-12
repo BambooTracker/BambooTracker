@@ -31,6 +31,7 @@ public:
 
 	void setInstrumentName(int instNum, std::string name);
 	std::string getInstrumentName(int instNum) const;
+	std::vector<std::string> getInstrumentNameList() const;
 
 	std::vector<int> getEntriedInstrumentIndices() const;
 

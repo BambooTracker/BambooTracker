@@ -84,6 +84,7 @@ private:
 	void loadInstrument();
 	void saveInstrument();
 	void importInstrumentsFromBank();
+	void exportInstrumentsToBank();
 
 	// Undo-Redo
 	void undo();
@@ -227,6 +228,7 @@ private slots:
 	void updateVisuals();
 	void on_action_Effect_List_triggered();
 	void on_actionShortcuts_triggered();
+	void on_actionExport_To_Bank_File_triggered();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

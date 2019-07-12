@@ -214,7 +214,7 @@ void GrooveSettingsDialog::on_padPushButton_clicked()
 	int pad = ui->padSpinBox->value();
 	size_t id = static_cast<size_t>(ui->grooveListWidget->currentRow());
 	auto& ref = seqs_[id];
-	if (std::find_if(ref.begin(), ref.end(), [pad](int x) {return (x <= pad); }) != ref.end()) return;
+	if (std::any_of(ref.begin(), ref.end(), [pad](int x) {return (x <= pad); })) return;
 
 	std::vector<int> seq;
 	for (auto v : ref) {

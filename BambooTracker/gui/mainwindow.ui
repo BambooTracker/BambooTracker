@@ -577,6 +577,7 @@
     <addaction name="actionSave_To_File"/>
     <addaction name="separator"/>
     <addaction name="actionImport_From_Bank_File"/>
+    <addaction name="actionExport_To_Bank_File"/>
     <addaction name="separator"/>
     <addaction name="actionEdit"/>
    </widget>
@@ -1234,6 +1235,11 @@
   <action name="actionShortcuts">
    <property name="text">
     <string>&amp;Shortcuts...</string>
+   </property>
+  </action>
+  <action name="actionExport_To_Bank_File">
+   <property name="text">
+    <string>E&amp;xport To Bank File...</string>
    </property>
   </action>
  </widget>

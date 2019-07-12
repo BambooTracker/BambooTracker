@@ -16,6 +16,9 @@ public:
 	static uint32_t ofInstrumentFileInBCD();
 	static std::string ofInstrumentFileInString();
 
+	static uint32_t ofBankFileInBCD();
+	static std::string ofBankFileInString();
+
 	static uint32_t toBCD(unsigned int major, unsigned int minor, unsigned int revision);
 	static std::string toString(unsigned int major, unsigned int minor, unsigned int revision);
 
@@ -34,6 +37,11 @@ private:
 	static constexpr unsigned int instFileMajor		= 1;
 	static constexpr unsigned int instFileMinor		= 2;
 	static constexpr unsigned int instFileRevision	= 1;
+
+	// Bank file version
+	static constexpr unsigned int bankFileMajor		= 1;
+	static constexpr unsigned int bankFileMinor		= 0;
+	static constexpr unsigned int bankFileRevision	= 0;
 
 	Version() {}
 };
@@ -66,6 +74,16 @@ inline uint32_t Version::ofInstrumentFileInBCD()
 inline std::string Version::ofInstrumentFileInString()
 {
 	return toString(instFileMajor, instFileMinor, instFileRevision);
+}
+
+inline uint32_t Version::ofBankFileInBCD()
+{
+	return toBCD(bankFileMajor, bankFileMinor, bankFileRevision);
+}
+
+inline std::string Version::ofBankFileInString()
+{
+	return toString(bankFileMajor, bankFileMinor, bankFileRevision);
 }
 
 inline uint32_t Version::toBCD(unsigned int major, unsigned int minor, unsigned int revision)

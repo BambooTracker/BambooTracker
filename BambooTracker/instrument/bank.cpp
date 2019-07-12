@@ -2,6 +2,7 @@
 #include "instrument_io.hpp"
 #include "format/wopn_file.h"
 #include <stdio.h>
+#include <utility>
 
 void WopnBank::WOPNDeleter::operator()(WOPNFile *x) {
 	WOPN_Free(x);
@@ -63,4 +64,39 @@ std::string WopnBank::getInstrumentName(size_t index) const {
 AbstractInstrument* WopnBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const {
 	const InstEntry &ent = entries_.at(index);
 	return InstrumentIO::loadWOPNInstrument(*ent.inst, instMan, instNum);
+}
+
+BtBank::BtBank(std::vector<int> ids, std::vector<std::string> names)
+	: ids_(std::move(ids)),
+	  names_(std::move(names))
+{
+}
+
+BtBank::BtBank(BinaryContainer instSec, BinaryContainer propSec)
+{
+	// TODO: implement
+}
+
+BtBank::~BtBank()
+{
+}
+
+size_t BtBank::getNumInstruments() const
+{
+	return ids_.size();
+}
+
+std::string BtBank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string BtBank::getInstrumentName(size_t index) const
+{
+	return names_.at(index);
+}
+
+AbstractInstrument* BtBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	// TODO: implement
 }

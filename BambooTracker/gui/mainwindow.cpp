@@ -899,6 +899,30 @@ void MainWindow::importInstrumentsFromBank()
 	}
 }
 
+void MainWindow::exportInstrumentsToBank()
+{
+	std::shared_ptr<BtBank> bank(std::make_shared<BtBank>(bt_->getInstrumentIndices(), bt_->getInstrumentNames()));
+
+	InstrumentSelectionDialog dlg(*bank, tr("Select instruments to save:"), this);
+	if (dlg.exec() != QDialog::Accepted)
+		return;
+
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
+	QString file = QFileDialog::getSaveFileName(this, tr("Save bank"), (dir.isEmpty() ? "./" : dir),
+												tr("BambooTracker bank file (*.btb)"));
+	if (file.isNull()) return;
+
+	std::vector<size_t> selection = dlg.currentInstrumentSelection().toStdVector();
+
+	try {
+		bt_->exportInstruments(file.toStdString(), selection);
+		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+	}
+	catch (std::exception& e) {
+		QMessageBox::critical(this, tr("Error"), e.what());
+	}
+}
+
 /********** Undo-Redo **********/
 void MainWindow::undo()
 {
@@ -1257,6 +1281,8 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	menu.addSeparator();
 	QAction* ldBank = menu.addAction(tr("&Import from bank file..."));
 	QObject::connect(ldBank, &QAction::triggered, this, &MainWindow::importInstrumentsFromBank);
+	QAction* exBank = menu.addAction(tr("E&xport to bank file..."));
+	QObject::connect(exBank, &QAction::triggered, this, &MainWindow::exportInstrumentsToBank);
 	menu.addSeparator();
 	QAction* edit = menu.addAction(tr("&Edit..."));
 	edit->setIcon(QIcon(":/icon/edit_inst"));
@@ -2346,4 +2372,9 @@ void MainWindow::on_actionShortcuts_triggered()
 {
 	if (shortcutsDiag_->isVisible()) shortcutsDiag_->activateWindow();
 	else shortcutsDiag_->show();
+}
+
+void MainWindow::on_actionExport_To_Bank_File_triggered()
+{
+	exportInstrumentsToBank();
 }

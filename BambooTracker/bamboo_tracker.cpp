@@ -135,6 +135,11 @@ void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
+void BambooTracker::exportInstruments(std::string path, std::vector<size_t> instNums)
+{
+	BankIO::saveBank(path, instNums, instMan_);
+}
+
 int BambooTracker::findFirstFreeInstrumentNumber() const
 {
 	return instMan_->findFirstFreeInstrument();
@@ -169,6 +174,11 @@ std::vector<int> BambooTracker::getUnusedInstrumentIndices() const
 void BambooTracker::clearUnusedInstrumentProperties()
 {
 	instMan_->clearUnusedInstrumentProperties();
+}
+
+std::vector<std::string> BambooTracker::getInstrumentNames() const
+{
+	return instMan_->getInstrumentNameList();
 }
 
 //--- FM
