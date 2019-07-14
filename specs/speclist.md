@@ -1,14 +1,15 @@
 Version table between tracker, module specification and instrument specification.
 
-<table>
+<table style="text-align: center;">
   <thead>
     <th>Tracker</th>
     <th>Module</th>
     <th>Instrument</th>
+    <th>Bank</th>
   </thead>
   <tbody>
     <tr>
-      <td>0.1.0</td><td rowspan=3>1.0.0</td><td rowspan=3>1.0.0</td>
+      <td>0.1.0</td><td rowspan=3>1.0.0</td><td rowspan=3>1.0.0</td><td rowspan=9>-</td>
     </tr>
     <tr>
       <td>0.1.1</td>
@@ -35,7 +36,7 @@ Version table between tracker, module specification and instrument specification
       <td>0.2.1</td><td rowspan=2>1.2.2</td><td rowspan=2>1.2.1</td>
     </tr>
     <tr>
-      <td>0.2.2</td>
+      <td>0.2.2</td><td>1.0.0</td>
     </tr>
   </tbody>
 </table>

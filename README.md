@@ -247,13 +247,20 @@ The tracker can load instrument from the following files.
 - .tfi (TFM Music Maker instrument file)
 - .vgi (VGM Music Maker instrument file)
 - .opni (WOPN instrument file)
-- .wopn (WOPN bank file)
 - .y12 (Gens KMod dump file)
 - .ins (MVSTracker instrument file)
 
 It also supports loading plain text of FM envelope.
 
-A instrument save as .bti file.
+A instrument saves as .bti file.
+
+### Bank
+The tracker can load instrument from the following files.
+
+- .btb (BambooTracker bank file)
+- .wopn (WOPN bank file)
+
+A bank saves as .btb file.
 
 ### Export
 The tracker can export a song to the following files.
