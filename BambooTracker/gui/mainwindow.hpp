@@ -121,6 +121,7 @@ private:
 	void setModifiedTrue();
 	void setInitialSelectedInstrument();
 	QString getModuleFileBaseName() const;
+	int getSelectedFileFilter(QString& file, QStringList& filters) const;
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPO_;

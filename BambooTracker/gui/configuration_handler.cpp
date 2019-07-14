@@ -28,6 +28,8 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("instrumentSSGWindowHeight", configLocked->getInstrumentSSGWindowHeight());
 		settings.setValue("followMode",		configLocked->getFollowMode());
 		settings.setValue("workingDirectory",          QString::fromStdString(configLocked->getWorkingDirectory()));
+		settings.setValue("instrumentOpenFormat",		configLocked->getInstrumentOpenFormat());
+		settings.setValue("bankOpenFormat",				configLocked->getBankOpenFormat());
 		settings.endGroup();
 
 		// General //
@@ -177,6 +179,8 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setInstrumentSSGWindowHeight(settings.value("instrumentSSGWindowHeight", configLocked->getInstrumentSSGWindowHeight()).toInt());
 		configLocked->setFollowMode(settings.value("followMode", configLocked->getFollowMode()).toBool());
 		configLocked->setWorkingDirectory(settings.value("workingDirectory", QString::fromStdString(configLocked->getWorkingDirectory())).toString().toStdString());
+		configLocked->setInstrumentOpenFormat(settings.value("instrumentOpenFormat", configLocked->getInstrumentOpenFormat()).toInt());
+		configLocked->setBankOpenFormat(settings.value("bankOpenFormat", configLocked->getBankOpenFormat()).toInt());
 		settings.endGroup();
 
 		// General //

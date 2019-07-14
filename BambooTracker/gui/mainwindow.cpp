@@ -803,15 +803,26 @@ void MainWindow::deepCloneInstrument()
 void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
+	QStringList filters {
+		tr("BambooTracker instrument (*.bti)"),
+		tr("DefleMask preset (*.dmp)"),
+		tr("TFM Music Maker instrument (*.tfi)"),
+		tr("VGM Music Maker instrument (*.vgi)"),
+		tr("WOPN instrument (*.opni)"),
+		tr("Gens KMod dump (*.y12)"),
+		tr("MVSTracker instrument (*.ins)")
+	};
+	QString defaultFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
+
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
-												QStringList{tr("BambooTracker instrument (*.bti)"),
-														tr("DefleMask preset (*.dmp)"),
-														tr("TFM Music Maker instrument (*.tfi)"),
-														tr("VGM Music Maker instrument (*.vgi)"),
-														tr("WOPN instrument (*.opni)"),
-														tr("Gens KMod dump (*.y12)"),
-														tr("MVSTracker instrument (*.ins)")}.join(";;"));
-	if (file.isNull()) return;
+												filters.join(";;"), &defaultFilter);
+	if (file.isNull()) {
+		return;
+	}
+	else {
+		int index = getSelectedFileFilter(file, filters);
+		if (index != -1) config_.lock()->setInstrumentOpenFormat(index);
+	}
 
 	int n = bt_->findFirstFreeInstrumentNumber();
 	if (n == -1) QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
@@ -857,10 +868,21 @@ void MainWindow::saveInstrument()
 void MainWindow::importInstrumentsFromBank()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
+	QStringList filters {
+		tr("BambooTracker bank (*.btb)"),
+		tr("WOPN bank (*.wopn)")
+	};
+	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
+
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
-												QStringList{tr("BambooTracker bank (*.btb)"),
-														tr("WOPN bank (*.wopn)")}.join(";;"));
-	if (file.isNull()) return;
+												filters.join(";;"), &defaultFilter);
+	if (file.isNull()) {
+		return;
+	}
+	else {
+		int index = getSelectedFileFilter(file, filters);
+		if (index != -1) config_.lock()->setBankOpenFormat(index);
+	}
 
 	std::unique_ptr<AbstractBank> bank;
 	try {
@@ -1247,6 +1269,15 @@ QString MainWindow::getModuleFileBaseName() const
 	auto filePathStd = bt_->getModulePath();
 	QString filePath = QString::fromStdString(filePathStd);
 	return (filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).completeBaseName());
+}
+
+int MainWindow::getSelectedFileFilter(QString& file, QStringList& filters) const
+{
+	QRegularExpression re(R"(\(\*\.(.+)\))");
+	QString ex = QFileInfo(file).suffix();
+	for (int i = 0; i < filters.size(); ++i)
+		if (ex == re.match(filters[i]).captured(1)) return i;
+	return -1;
 }
 
 /******************************/

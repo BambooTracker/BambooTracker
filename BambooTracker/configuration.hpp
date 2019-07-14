@@ -44,6 +44,10 @@ public:
 	bool getFollowMode() const;
 	void setWorkingDirectory(std::string path);
 	std::string getWorkingDirectory() const;
+	void setInstrumentOpenFormat(int i);
+	int getInstrumentOpenFormat() const;
+	void setBankOpenFormat(int i);
+	int getBankOpenFormat() const;
 private:
 	int mainW_, mainH_;
 	bool mainMax_;
@@ -52,6 +56,7 @@ private:
 	int instSSGW_, instSSGH_;
 	bool followMode_;
 	std::string workDir_;
+	int instOpenFormat_, bankOpenFormat_;
 
 	// General //
 	// General settings

@@ -15,6 +15,8 @@ Configuration::Configuration()
 	instSSGH_ = 390;
 	followMode_ = true;
 	workDir_ = "";
+	instOpenFormat_ = 0;
+	bankOpenFormat_ = 0;
 
 	// General //
 	// General settings
@@ -693,6 +695,26 @@ void Configuration::setWorkingDirectory(std::string path)
 std::string Configuration::getWorkingDirectory() const
 {
 	return workDir_;
+}
+
+void Configuration::setInstrumentOpenFormat(int i)
+{
+	instOpenFormat_ = i;
+}
+
+int Configuration::getInstrumentOpenFormat() const
+{
+	return instOpenFormat_;
+}
+
+void Configuration::setBankOpenFormat(int i)
+{
+	bankOpenFormat_ = i;
+}
+
+int Configuration::getBankOpenFormat() const
+{
+	return bankOpenFormat_;
 }
 
 // General //
