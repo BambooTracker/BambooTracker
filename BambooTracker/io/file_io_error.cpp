@@ -33,11 +33,11 @@ FileVersionError::FileVersionError(const uint32_t fileVersionBCD, const uint32_t
 
 std::string FileVersionError::makeText(const uint32_t fileVersionBCD, const uint32_t appVersionBCD, const FileIO::FileType type)
 {
-	uint8_t fmaj = bcdtoui(fileVersionBCD >> 16);
+	uint8_t fmaj = bcdtoui(static_cast<uint8_t>(fileVersionBCD >> 16));
 	uint8_t fmin = bcdtoui((fileVersionBCD & 0x00ff00) >> 8);
 	uint8_t frev = bcdtoui(fileVersionBCD & 0x0000ff);
 	std::string fver = std::to_string(fmaj) + "." + std::to_string(fmin) + "." + std::to_string(frev);
-	uint8_t pmaj = bcdtoui(appVersionBCD >> 16);
+	uint8_t pmaj = bcdtoui(static_cast<uint8_t>(appVersionBCD >> 16));
 	uint8_t pmin = bcdtoui((appVersionBCD & 0x00ff00) >> 8);
 	uint8_t prev = bcdtoui(appVersionBCD & 0x0000ff);
 	std::string pver = std::to_string(pmaj) + "." + std::to_string(pmin) + "." + std::to_string(prev);

@@ -23,7 +23,8 @@ class BtBank : public AbstractBank
 {
 public:
 	BtBank(std::vector<int> ids, std::vector<std::string> names);
-	BtBank(BinaryContainer instSec, BinaryContainer propSec);
+	BtBank(std::vector<int> ids, std::vector<std::string> names,
+		   std::vector<BinaryContainer> instSecs, BinaryContainer propSec, uint32_t version);
 	~BtBank() override;
 
 	size_t getNumInstruments() const override;
@@ -32,9 +33,11 @@ public:
 	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
 private:
-	BinaryContainer instCntr_, propCntr_;
+	std::vector<BinaryContainer> instCtrs_;
+	BinaryContainer propCtr_;
 	std::vector<int> ids_;
 	std::vector<std::string> names_;
+	uint32_t version_;
 };
 
 class WopnBank : public AbstractBank

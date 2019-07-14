@@ -3,11 +3,13 @@
 ## Unreleased
 ### Added
 - Add the selection of effect value initialization upon entering effect id
+- [#136] - Add instrument bank (thanks [@papiezak], [@jpcima])
 
 ### Fixed
 - [#143] - Fix the corruption of note delay effect without note on (thanks [@ImATrackMan])
 
 [#143]: https://github.com/rerrahkr/BambooTracker/issues/143
+[#136]: https://github.com/rerrahkr/BambooTracker/issues/136
 
 ## v0.2.2 (2019-06-25)
 ### Added

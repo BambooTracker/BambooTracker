@@ -39,13 +39,19 @@ private:
 
 public:
 	static AbstractInstrument* loadWOPNInstrument(const WOPNInstrument &srcInst,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
+												  std::weak_ptr<InstrumentsManager> instMan,
+												  int instNum);
+	static AbstractInstrument* loadBTBInstrument(BinaryContainer instCtr,
+												 BinaryContainer propCtr,
+												 std::weak_ptr<InstrumentsManager> instMan,
+												 int instNum,
+												 uint32_t version);
 
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
 			FMEnvelopeParameter param, size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan,
 			BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
+	static size_t getPropertyPositionForBTB(const BinaryContainer& propCtr, uint8_t subsecType, uint8_t index);
 	static int convertTFIVGMDT(int dt);
 
 

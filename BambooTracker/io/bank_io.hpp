@@ -13,6 +13,7 @@ public:
 	static void saveBank(std::string path, std::vector<size_t> instNums,
 						 std::weak_ptr<InstrumentsManager> instMan);
 	static AbstractBank* loadBank(std::string path);
+	static AbstractBank* loadBTBFile(std::string path);
 	static AbstractBank* loadWOPNFile(std::string path);
 
 private:

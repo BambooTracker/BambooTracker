@@ -1,7 +1,5 @@
-# BambooTracker Instrument Bank File (.btb) Format Specification
-v1.0.0 - 2019-XX-XX
-
-*NOTE: THIS IS THE DRAFT SPECIFICATION!*
+# BambooTracker Bank File (.btb) Format Specification
+v1.0.0 - 2019-07-14
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -25,6 +23,7 @@ After instrument count, details of each instrument are described.
 
 | Type             | Field                  | Description                                                                                                   |
 | ---------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| uint8            | Instrument index       | Index of the instrument.                                                                                      |
 | uint32           | instrument offset      | Relative offset to end of the instrument details.                                                             |
 | uint32           | Instrument name length | Length of instrument name.                                                                                    |
 | string (N bytes) | Instrument name        | String of instrument name. Character encoding is UTF-8. If instrument name is not set, this field is omitted. |
@@ -201,4 +200,4 @@ FM/SSG arpeggio can be selected from all of these, FM/SSG pitch can be absolute 
 ## History
 | Version | Date       | Detail           |
 | ------- | ---------- | ---------------- |
-| 1.0.0   | 2019-XX-XX | Initial release. |
+| 1.0.0   | 2019-07-14 | Initial release. |

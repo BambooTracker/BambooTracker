@@ -4,6 +4,7 @@
 #include <nowide/fstream.hpp>
 #include "file_io.hpp"
 #include "file_io_error.hpp"
+#include "binary_container.hpp"
 #include "version.hpp"
 
 BankIO::BankIO()
@@ -29,6 +30,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 	ctr.appendUint8(static_cast<uint8_t>(instNums.size()));
 	for (auto& idx : instNums) {
 		if (std::shared_ptr<AbstractInstrument> inst = instMan.lock()->getInstrumentSharedPtr(static_cast<int>(idx))) {
+			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t iOfs = ctr.size();
 			ctr.appendUint32(0);	// Dummy instrument block offset
 			std::string name = inst->getName();
@@ -647,7 +649,66 @@ AbstractBank* BankIO::loadBank(std::string path)
 {
 	std::string ext = path.substr(path.find_last_of(".")+1);
 	if (ext.compare("wopn") == 0) return BankIO::loadWOPNFile(path);
+	if (ext.compare("btb") == 0) return BankIO::loadBTBFile(path);
 	throw FileInputError(FileIO::FileType::BANK);
+}
+
+AbstractBank* BankIO::loadBTBFile(std::string path)
+{
+	BinaryContainer ctr;
+
+	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::BANK);
+
+	size_t globCsr = 0;
+	if (ctr.readString(globCsr, 16) != "BambooTrackerBnk")
+		throw FileCorruptionError(FileIO::FileType::BANK);
+	globCsr += 16;
+	/*size_t eofOfs = */ctr.readUint32(globCsr);
+	globCsr += 4;
+	size_t fileVersion = ctr.readUint32(globCsr);
+	if (fileVersion > Version::ofBankFileInBCD())
+		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIO::FileType::BANK);
+	globCsr += 4;
+
+
+	/***** Instrument section *****/
+	std::vector<int> ids;
+	std::vector<std::string> names;
+	std::vector<BinaryContainer> instCtrs;
+	if (ctr.readString(globCsr, 8) != "INSTRMNT") throw FileCorruptionError(FileIO::FileType::BANK);
+	globCsr += 8;
+	size_t instOfs = ctr.readUint32(globCsr);
+	size_t instCsr = globCsr + 4;
+	uint8_t instCnt = ctr.readUint8(instCsr);
+	instCsr += 1;
+	for (uint8_t i = 0; i < instCnt; ++i) {
+		size_t pos = instCsr;
+		uint8_t idx = ctr.readUint8(instCsr);
+		ids.push_back(idx);
+		instCsr += 1;
+		size_t iOfs = ctr.readUint32(instCsr);
+		size_t iCsr = instCsr + 4;
+		size_t nameLen = ctr.readUint32(iCsr);
+		iCsr += 4;
+		std::string name = u8"";
+		if (nameLen > 0) {
+			name = ctr.readString(iCsr, nameLen);
+			iCsr += nameLen;
+		}
+		names.push_back(name);
+		instCsr += iOfs;	// Jump to next
+		instCtrs.push_back(ctr.getSubcontainer(pos, 1 + iOfs));
+	}
+	globCsr += instOfs;
+
+
+	/***** Instrument property section *****/
+	if (ctr.readString(globCsr, 8) != "INSTPROP") throw FileCorruptionError(FileIO::FileType::INST);
+	globCsr += 8;
+	size_t instPropOfs = ctr.readUint32(globCsr);
+	BinaryContainer propCtr = ctr.getSubcontainer(globCsr + 4, instPropOfs - 4);
+
+	return new BtBank(std::move(ids), std::move(names), std::move(instCtrs), std::move(propCtr), fileVersion);
 }
 
 AbstractBank* BankIO::loadWOPNFile(std::string path)

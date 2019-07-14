@@ -1,6 +1,7 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 #include <nowide/fstream.hpp>
+#include <algorithm>
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
@@ -857,7 +858,8 @@ void MainWindow::importInstrumentsFromBank()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
-												tr("WOPN bank (*.wopn)"));
+												QStringList{tr("BambooTracker bank (*.btb)"),
+														tr("WOPN bank (*.wopn)")}.join(";;"));
 	if (file.isNull()) return;
 
 	std::unique_ptr<AbstractBank> bank;
@@ -913,6 +915,8 @@ void MainWindow::exportInstrumentsToBank()
 	if (file.isNull()) return;
 
 	std::vector<size_t> selection = dlg.currentInstrumentSelection().toStdVector();
+	std::sort(selection.begin(), selection.end());
+	if (selection.empty()) return;
 
 	try {
 		bt_->exportInstruments(file.toStdString(), selection);

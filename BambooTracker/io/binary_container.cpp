@@ -2,11 +2,18 @@
 #include <nowide/fstream.hpp>
 #include <algorithm>
 #include <iterator>
+#include <utility>
 
 BinaryContainer::BinaryContainer(size_t defCapacity)
 	: isLE_(true)
 {
 	if (defCapacity) reserve(defCapacity);
+}
+
+BinaryContainer::BinaryContainer(std::vector<char> buf)
+	: buf_(buf),
+	  isLE_(true)
+{
 }
 
 size_t BinaryContainer::size() const
@@ -169,51 +176,58 @@ void BinaryContainer::writeChar(size_t offset, const char c)
 
 void BinaryContainer::writeString(size_t offset, const std::string str)
 {
-	std::copy(str.begin(), str.end(), buf_.begin() + offset);
+	std::copy(str.begin(), str.end(), buf_.begin() + static_cast<int>(offset));
 }
 
-int8_t BinaryContainer::readInt8(size_t offset)
+int8_t BinaryContainer::readInt8(size_t offset) const
 {
 	return static_cast<int8_t>(buf_.at(offset));
 }
 
-uint8_t BinaryContainer::readUint8(size_t offset)
+uint8_t BinaryContainer::readUint8(size_t offset) const
 {
 	return static_cast<uint8_t>(buf_.at(offset));
 }
 
-int16_t BinaryContainer::readInt16(size_t offset)
+int16_t BinaryContainer::readInt16(size_t offset) const
 {
 	std::vector<unsigned char> data = read(offset, 2);
 	return static_cast<int16_t>(data[0] | (data[1] << 8));
 }
 
-uint16_t BinaryContainer::readUint16(size_t offset)
+uint16_t BinaryContainer::readUint16(size_t offset) const
 {
 	std::vector<unsigned char> data = read(offset, 2);
 	return static_cast<uint16_t>(data[0] | (data[1] << 8));
 }
 
-int32_t BinaryContainer::readInt32(size_t offset)
+int32_t BinaryContainer::readInt32(size_t offset) const
 {
 	std::vector<unsigned char> data = read(offset, 4);
 	return static_cast<int32_t>(data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24));
 }
 
-uint32_t BinaryContainer::readUint32(size_t offset)
+uint32_t BinaryContainer::readUint32(size_t offset) const
 {
 	std::vector<unsigned char> data = read(offset, 4);
 	return static_cast<uint32_t>(data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24));
 }
 
-char BinaryContainer::readChar(size_t offset)
+char BinaryContainer::readChar(size_t offset) const
 {
 	return buf_.at(offset);
 }
 
-std::string BinaryContainer::readString(size_t offset, size_t length)
+std::string BinaryContainer::readString(size_t offset, size_t length) const
 {
-	return std::string(buf_.begin() + offset, buf_.begin() + offset + length);
+	return std::string(buf_.begin() + static_cast<int>(offset), buf_.begin() + static_cast<int>(offset + length));
+}
+
+BinaryContainer BinaryContainer::getSubcontainer(size_t offset, size_t length) const
+{
+	std::vector<char> tmp;
+	std::copy_n(buf_.begin() + static_cast<int>(offset), length, std::back_inserter(tmp));
+	return BinaryContainer(std::move(tmp));
 }
 
 void BinaryContainer::append(std::vector<char> a)
@@ -227,17 +241,17 @@ void BinaryContainer::append(std::vector<char> a)
 void BinaryContainer::write(size_t offset, std::vector<char> a)
 {
 	if (isLE_)
-		std::copy(a.begin(), a.end(), buf_.begin() + offset);
+		std::copy(a.begin(), a.end(), buf_.begin() + static_cast<int>(offset));
 	else
-		std::reverse_copy(a.begin(), a.end(), buf_.begin() + offset);
+		std::reverse_copy(a.begin(), a.end(), buf_.begin() + static_cast<int>(offset));
 }
 
-std::vector<unsigned char> BinaryContainer::read(size_t offset, size_t size)
+std::vector<unsigned char> BinaryContainer::read(size_t offset, size_t size) const
 {
 	std::vector<unsigned char> data;
 	if (isLE_)
-		std::copy(buf_.begin() + offset, buf_.begin() + offset + size, std::back_inserter(data));
+		std::copy(buf_.begin() + static_cast<int>(offset), buf_.begin() + static_cast<int>(offset + size), std::back_inserter(data));
 	else
-		std::reverse_copy(buf_.begin() + offset, buf_.begin() + offset + size, std::back_inserter(data));
+		std::reverse_copy(buf_.begin() + static_cast<int>(offset), buf_.begin() + static_cast<int>(offset + size), std::back_inserter(data));
 	return data;
 }
