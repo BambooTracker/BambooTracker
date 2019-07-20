@@ -82,8 +82,10 @@ private:
 	void cloneInstrument();
 	void deepCloneInstrument();
 	void loadInstrument();
+	void funcLoadInstrument(QString file);
 	void saveInstrument();
 	void importInstrumentsFromBank();
+	void funcImportInstrumentsFromBank(QString file);
 	void exportInstrumentsToBank();
 
 	// Undo-Redo

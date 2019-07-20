@@ -1,5 +1,6 @@
 #include "file_io.hpp"
 #include <stdexcept>
+#include <algorithm>
 
 const FMEnvelopeParameter FileIO::ENV_FM_PARAMS[38] = {
 	FMEnvelopeParameter::AL,
@@ -60,4 +61,33 @@ std::string FileIO::fileTypeToString(const FileType type)
 	case FileType::S98:		return "s98";
 	default:	throw std::invalid_argument("Unexpected FileType.");
 	}
+}
+
+std::string FileIO::getExtension(const std::string path)
+{
+	std::string ext = path.substr(path.find_last_of(".") + 1);
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+	return ext;
+}
+
+FileIO::FileType FileIO::judgeFileTypeFromExtension(const std::string ext)
+{
+	if (ext == "btm") return FileType::MOD;
+
+	if (ext == "bti") return FileType::INST;
+	if (ext == "dmp") return FileType::INST;
+	if (ext == "tfi") return FileType::INST;
+	if (ext == "vgi") return FileType::INST;
+	if (ext == "opni") return FileType::INST;
+	if (ext == "y12") return FileType::INST;
+	if (ext == "ins") return FileType::INST;
+
+	if (ext == "btb") return FileType::BANK;
+	if (ext == "wopn") return FileType::BANK;
+
+	if (ext == "vgm") return FileType::VGM;
+	if (ext == "s98") return FileType::S98;
+	if (ext == "wav") return FileType::WAV;
+
+	return FileType::UNKNOWN;
 }

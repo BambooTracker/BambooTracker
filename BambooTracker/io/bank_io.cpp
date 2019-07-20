@@ -647,7 +647,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 
 AbstractBank* BankIO::loadBank(std::string path)
 {
-	std::string ext = path.substr(path.find_last_of(".")+1);
+	std::string ext = FileIO::getExtension(path);
 	if (ext.compare("wopn") == 0) return BankIO::loadWOPNFile(path);
 	if (ext.compare("btb") == 0) return BankIO::loadBTBFile(path);
 	throw FileInputError(FileIO::FileType::BANK);

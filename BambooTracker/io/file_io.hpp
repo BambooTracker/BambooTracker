@@ -11,10 +11,12 @@ public:
 
 	enum class FileType
 	{
-		MOD, INST, WAV, VGM, BANK, S98
+		MOD, INST, WAV, VGM, BANK, S98, UNKNOWN
 	};
 
 	static std::string fileTypeToString(const FileType type);
+	static std::string getExtension(const std::string path);
+	static FileType judgeFileTypeFromExtension(const std::string ext);
 
 private:
 	FileIO() {}

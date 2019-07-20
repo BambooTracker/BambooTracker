@@ -23,6 +23,7 @@
 #include "instrument.hpp"
 #include "bank.hpp"
 #include "bank_io.hpp"
+#include "file_io.hpp"
 #include "version.hpp"
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -558,39 +559,67 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
 	auto mime = event->mimeData();
-	if (mime->hasUrls() && mime->urls().length() == 1
-			&& mime->urls().first().toLocalFile().endsWith(".btm"))
-		event->acceptProposedAction();
-}
-
-void MainWindow::dropEvent(QDropEvent* event)
-{
-	if (isWindowModified()) {
-		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
-		if (modTitle.isEmpty()) modTitle = tr("Untitled");
-		QMessageBox dialog(QMessageBox::Warning,
-						   "BambooTracker",
-						   tr("Save changes to %1?").arg(modTitle),
-						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-		switch (dialog.exec()) {
-		case QMessageBox::Yes:
-			if (!on_actionSave_triggered()) return;
+	if (mime->hasUrls() && mime->urls().length() == 1) {
+		switch (FileIO::judgeFileTypeFromExtension(
+					QFileInfo(mime->urls().first().toLocalFile()).suffix().toStdString())) {
+		case FileIO::FileType::MOD:
+		case FileIO::FileType::INST:
+		case FileIO::FileType::BANK:
+			event->acceptProposedAction();
 			break;
-		case QMessageBox::No:
-			break;
-		case QMessageBox::Cancel:
-			return;
 		default:
 			break;
 		}
 	}
+}
 
-	bt_->stopPlaySong();
-	lockControls(false);
-
+void MainWindow::dropEvent(QDropEvent* event)
+{
 	QString file = event->mimeData()->urls().first().toLocalFile();
-	openModule(file);
+
+	switch (FileIO::judgeFileTypeFromExtension(QFileInfo(file).suffix().toStdString())) {
+	case FileIO::FileType::MOD:
+	{
+		if (isWindowModified()) {
+			auto modTitleStd = bt_->getModuleTitle();
+			QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
+			if (modTitle.isEmpty()) modTitle = tr("Untitled");
+			QMessageBox dialog(QMessageBox::Warning,
+							   "BambooTracker",
+							   tr("Save changes to %1?").arg(modTitle),
+							   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+			switch (dialog.exec()) {
+			case QMessageBox::Yes:
+				if (!on_actionSave_triggered()) return;
+				break;
+			case QMessageBox::No:
+				break;
+			case QMessageBox::Cancel:
+				return;
+			default:
+				break;
+			}
+		}
+
+		bt_->stopPlaySong();
+		lockControls(false);
+
+		openModule(file);
+		break;
+	}
+	case FileIO::FileType::INST:
+	{
+		funcLoadInstrument(file);
+		break;
+	}
+	case FileIO::FileType::BANK:
+	{
+		funcImportInstrumentsFromBank(file);
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
@@ -824,6 +853,11 @@ void MainWindow::loadInstrument()
 		if (index != -1) config_.lock()->setInstrumentOpenFormat(index);
 	}
 
+	funcLoadInstrument(file);
+}
+
+void MainWindow::funcLoadInstrument(QString file)
+{
 	int n = bt_->findFirstFreeInstrumentNumber();
 	if (n == -1) QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
 
@@ -835,6 +869,7 @@ void MainWindow::loadInstrument()
 							ui->instrumentListWidget, n,
 							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
 							inst->getSoundSource(), instForms_));
+		ui->instrumentListWidget->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
@@ -884,6 +919,11 @@ void MainWindow::importInstrumentsFromBank()
 		if (index != -1) config_.lock()->setBankOpenFormat(index);
 	}
 
+	funcImportInstrumentsFromBank(file);
+}
+
+void MainWindow::funcImportInstrumentsFromBank(QString file)
+{
 	std::unique_ptr<AbstractBank> bank;
 	try {
 		bank.reset(BankIO::loadBank(file.toStdString()));
@@ -899,12 +939,15 @@ void MainWindow::importInstrumentsFromBank()
 		return;
 
 	QVector<size_t> selection = dlg.currentInstrumentSelection();
+	if (selection.empty()) return;
 
 	try {
+		int lastNum = ui->instrumentListWidget->currentRow();
 		for (size_t index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
 				QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
+				ui->instrumentListWidget->setCurrentRow(lastNum);
 				return;
 			}
 
@@ -916,7 +959,9 @@ void MainWindow::importInstrumentsFromBank()
 								ui->instrumentListWidget, n,
 								QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
 								inst->getSoundSource(), instForms_));
+			lastNum = n;
 		}
+		ui->instrumentListWidget->setCurrentRow(lastNum);
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());

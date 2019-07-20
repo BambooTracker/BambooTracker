@@ -591,8 +591,7 @@ AbstractInstrument* InstrumentIO::loadInstrument(std::string path,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum)
 {
-	std::string ext = path.substr(path.find_last_of(".")+1);
-	for (auto& i : ext) i = std::tolower(i, std::locale());
+	std::string ext = FileIO::getExtension(path);
 	if (ext.compare("dmp") == 0) return InstrumentIO::loadDMPFile(path, instMan, instNum);
 	if (ext.compare("tfi") == 0) return InstrumentIO::loadTFIFile(path, instMan, instNum);
 	if (ext.compare("vgi") == 0) return InstrumentIO::loadVGIFile(path, instMan, instNum);
