@@ -1,4 +1,5 @@
 #include "song.hpp"
+#include <algorithm>
 
 Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 		   int tempo, int groove, int speed, size_t defaultPatternSize)
@@ -114,6 +115,19 @@ size_t Song::getDefaultPatternSize() const
 	return defPtnSize_;
 }
 
+size_t Song::getPatternSizeFromOrderNumber(int order)
+{
+	size_t size = 0;
+	for (auto& t : tracks_) {
+		size = (!size)
+			   ? t.getPatternFromOrderNumber(order).getSize()
+			   : std::min(
+					 size,
+					 t.getPatternFromOrderNumber(order).getSize()
+					 );
+	}
+	return size;
+}
 
 SongStyle Song::getStyle() const
 {

@@ -18,6 +18,7 @@
 #include "s98_tag.hpp"
 #include "chips/scci/scci.h"
 #include "effect.hpp"
+#include "playback.hpp"
 #include "misc.hpp"
 
 class AbstractBank;
@@ -342,10 +343,9 @@ private:
 	CommandManager comMan_;
 	std::shared_ptr<InstrumentsManager> instMan_;
 	std::unique_ptr<JamManager> jamMan_;
-	std::unique_ptr<OPNAController> opnaCtrl_;
-
-    TickCounter tickCounter_;
-
+	std::shared_ptr<OPNAController> opnaCtrl_;
+	std::shared_ptr<TickCounter> tickCounter_;
+	std::unique_ptr<PlaybackManager> playback_;
 	std::shared_ptr<Module> mod_;
 
 	// Current status
@@ -353,78 +353,17 @@ private:
 	int curSongNum_;
 	SongStyle songStyle_;
 	int curTrackNum_;
-	int curOrderNum_, playOrderNum_;
-	int curStepNum_, playStepNum_;
+	int curOrderNum_, curStepNum_;
 	///	-1: not set
 	int curInstNum_;
-	/// High nibble - play type
-	///		bit 4: If high, loop pattern
-	/// Low nibble - read state
-	///		bit 0: playing
-	///		bit 1: have read first step data
-	unsigned int playState_;
 	std::vector<bool> muteStateFM_, muteStateSSG_, muteStateDrum_;
-
-	int nextReadOrder_, nextReadStep_;
 
 	bool isFollowPlay_;
 
 	static const uint32_t CHIP_CLOCK;
 
 	// Play song
-	bool isFindNextStep_;
 	void startPlay();
-	bool stepDown();
-	void findNextStep();
-	void readStep();
-	void readTick(int rest);
-
-	void checkFMDelayEventsInTick(Step& step, int ch);
-	void readTickFMForNoteDelay(Step& step, int ch);
-	void envelopeResetEffectFM(Step& step, int ch);
-	void checkSSGDelayEventsInTick(Step& step, int ch);
-	void checkDrumDelayEventsInTick(Step& step, int ch);
-
-	void clearEffectQueues();
-	void clearNoteDelayCounts();
-	void clearDelayBeyondStepCounts();
-	void clearFMDelayBeyondStepCounts(int ch);
-	void clearSSGDelayBeyondStepCounts(int ch);
-	void clearDrumDelayBeyondStepCounts(int ch);
-	void updateDelayEventCounts();
-
-	bool readFMStep(Step& step, int ch);
-	bool readFMEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
-	bool readSSGStep(Step& step, int ch);
-	bool readSSGEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
-	bool readDrumStep(Step& step, int ch);
-	bool readDrumEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
-
-	std::vector<std::vector<Effect>> keyOnBasedEffsFM_, stepBeginBasedEffsFM_, stepEndBasedEffsFM_;
-	std::vector<std::vector<Effect>> keyOnBasedEffsSSG_, stepBeginBasedEffsSSG_, stepEndBasedEffsSSG_;
-	std::vector<std::vector<Effect>> keyOnBasedEffsDrum_, stepBeginBasedEffsDrum_, stepEndBasedEffsDrum_;
-	bool setEffectToQueueFM(int ch, Effect eff);
-	bool readFMEffectFromQueue(int ch);
-	bool setEffectToQueueSSG(int ch, Effect eff);
-	bool readSSGEffectFromQueue(int ch);
-	bool setEffectToQueueDrum(int ch, Effect eff);
-	bool readDrumEffectFromQueue(int ch);
-
-	bool effPositionJump(int nextOrder);
-	void effTrackEnd();
-	bool effPatternBreak(int nextStep);
-	void effSpeedChange(int speed);
-	void effTempoChange(int tempo);
-	void effGrooveChange(int num);
-	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;
-	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
-	std::vector<int> ntDlyCntDrum_, ntCutDlyCntDrum_, volDlyCntDrum_;
-	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
-	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
-	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
 
 	void checkNextPositionOfLastStep(int& endOrder, int& endStep) const;
-
-	bool isRetrieveChannel_;
-	void retrieveChannelStates();
 };

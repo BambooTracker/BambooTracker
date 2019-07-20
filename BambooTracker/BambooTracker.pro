@@ -56,6 +56,7 @@ SOURCES += \
     chips/nuked/ym3438.c \
     bamboo_tracker.cpp \
     module/effect.cpp \
+    playback.cpp \
     stream/audio_stream.cpp \
     stream/audio_stream_mixier.cpp \
     jam_manager.cpp \
@@ -216,6 +217,7 @@ HEADERS += \
     chips/resampler.hpp \
     bamboo_tracker.hpp \
     module/effect.hpp \
+    playback.hpp \
     stream/audio_stream.hpp \
     stream/audio_stream_mixier.hpp \
     chips/chip_def.h \

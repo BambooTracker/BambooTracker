@@ -1,4 +1,6 @@
 #include "pattern.hpp"
+#include "effect.hpp"
+#include "misc.hpp"
 
 Pattern::Pattern(int n, size_t defSize)
 	: num_(n), size_(defSize), steps_(defSize), usedCnt_(0)
@@ -43,10 +45,18 @@ Step& Pattern::getStep(int n)
 size_t Pattern::getSize() const
 {
 	for (size_t i = 0; i < size_; ++i) {
-		if (steps_[i].checkEffectID("0B") != -1
-				|| steps_[i].checkEffectID("0C") != -1
-				|| steps_[i].checkEffectID("0D") != -1)
-			return i + 1;
+		for (int j = 0; j < 4; ++j) {
+			switch (Effect::makeEffectData(	// "SoundSource::FM" is dummy
+						SoundSource::FM, steps_[i].getEffectID(j), steps_[i].getEffectValue(j)
+						).type) {
+			case EffectType::PositionJump:
+			case EffectType::SongEnd:
+			case EffectType::PatternBreak:
+				return i + 1;
+			default:
+				break;
+			}
+		}
 	}
 	return size_;
 }

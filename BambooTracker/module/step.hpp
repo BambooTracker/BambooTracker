@@ -22,6 +22,7 @@ public:
 	int getEffectValue(int n) const;
 	void setEffectValue(int n, int v);
 
+	/// NOTE: Deprecated
 	int checkEffectID(std::string str) const;
 
 	bool existCommand() const;

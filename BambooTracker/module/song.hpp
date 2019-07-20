@@ -28,6 +28,7 @@ public:
 	int getSpeed() const;
 	void setDefaultPatternSize(size_t size);
 	size_t getDefaultPatternSize() const;
+	size_t getPatternSizeFromOrderNumber(int order);
 
 	SongStyle getStyle() const;
 	std::vector<TrackAttribute> getTrackAttributes() const;
