@@ -6,6 +6,7 @@
 - [#136] - Add instrument bank (thanks [@papiezak], [@jpcima])
 - Keep selected file filter in instrument and bank import
 - Load instrument and bank by drag and drop
+- Add sample instruments (thanks [@papiezak])
 
 ### Fixed
 - [#143] - Fix the corruption of note delay effect without note on (thanks [@ImATrackMan])

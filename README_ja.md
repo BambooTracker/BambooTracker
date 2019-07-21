@@ -338,6 +338,7 @@ pkg install bambootracker
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
 - トラッカーのアイコンに関してDecidettoさん
 - サンプル曲を提供してくださったmaakさん、SuperJet Spadeさん、Dippyさん
+- サンプルインストゥルメントを提供してくださったpapiezakさん
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
 - S98ファイルのフォーマットのドキュメントに関してRu^3さん
 - SCCIライブラリに関してSCCI開発チームの方々

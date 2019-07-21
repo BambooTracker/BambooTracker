@@ -334,6 +334,7 @@ I would like to thank the following people for making it:
 - Decidetto for the application icon
 - Vitaly Novichkov (Wohlstand) for WOPN instrument format files
 - maak, SuperJet Spade and Dippy for sample modules
+- papiezak for sample instruments
 - Ru^3 for S98 file format documentation
 - SCCI team for SCCI libraries
 - Gary P. Scavone and others for RtMidi libraries
