@@ -846,7 +846,7 @@ std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvel
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& seq : opSeqFM_.at(param)) {
-		if (seq->isEdited()) idcs.push_back(n);
+		if (seq->isUserInstrument() || seq->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
@@ -964,7 +964,7 @@ std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& arp : arpFM_) {
-		if (arp->isEdited()) idcs.push_back(n);
+		if (arp->isUserInstrument() || arp->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
@@ -1087,7 +1087,7 @@ std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& pt : ptFM_) {
-		if (pt->isEdited()) idcs.push_back(n);
+		if (pt->isUserInstrument() || pt->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
@@ -1196,7 +1196,7 @@ std::vector<int> InstrumentsManager::getWaveFormSSGEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& wf : wfSSG_) {
-		if (wf->isEdited()) idcs.push_back(n);
+		if (wf->isUserInstrument() || wf->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
@@ -1304,7 +1304,7 @@ std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& tn : tnSSG_) {
-		if (tn->isEdited()) idcs.push_back(n);
+		if (tn->isUserInstrument() || tn->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
@@ -1412,7 +1412,7 @@ std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& env : envSSG_) {
-		if (env->isEdited()) idcs.push_back(n);
+		if (env->isUserInstrument() || env->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
@@ -1530,7 +1530,7 @@ std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& arp : arpSSG_) {
-		if (arp->isEdited()) idcs.push_back(n);
+		if (arp->isUserInstrument() || arp->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
@@ -1648,7 +1648,7 @@ std::vector<int> InstrumentsManager::getPitchSSGEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& pt : ptSSG_) {
-		if (pt->isEdited()) idcs.push_back(n);
+		if (pt->isUserInstrument() || pt->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
