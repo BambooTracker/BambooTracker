@@ -10,9 +10,11 @@
 
 ### Fixed
 - [#143] - Fix the corruption of note delay effect without note on (thanks [@ImATrackMan])
+- [#146] - Fix the replay corruption after song-end effect (thanks [@papiezak])
 
 [#143]: https://github.com/rerrahkr/BambooTracker/issues/143
 [#136]: https://github.com/rerrahkr/BambooTracker/issues/136
+[#146]: https://github.com/rerrahkr/BambooTracker/issues/146
 
 ## v0.2.2 (2019-06-25)
 ### Added

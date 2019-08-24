@@ -1218,8 +1218,11 @@ int BambooTracker::streamCountUp()
 {
 	int state = playback_->streamCountUp();
 	if (!state && isFollowPlay_) {	// Step
-		curOrderNum_ = playback_->getPlayingOrderNumber();
-		curStepNum_ = playback_->getPlayingStepNumber();
+		int odr = playback_->getPlayingOrderNumber();
+		if (odr >= 0) {
+			curOrderNum_ = odr;
+			curStepNum_ = playback_->getPlayingStepNumber();
+		}
 	}
 	return state;
 }
