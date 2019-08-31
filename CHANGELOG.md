@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.2.3 (2019-08-31)
 ### Added
 - Add the selection of effect value initialization upon entering effect id
 - [#136] - Add instrument bank (thanks [@papiezak], [@jpcima])

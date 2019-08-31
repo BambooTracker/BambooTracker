@@ -2751,7 +2751,6 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = propCtr.readUint16(opSeqCsr);
 					opSeqCsr += 2;
-					if (version < Version::toBCD(1, 2, 1)) opSeqCsr += 2;
 					if (l == 0)
 						instMan.lock()->setOperatorSequenceFMSequenceCommand(param, opSeqNum, 0, data, 0);
 					else
