@@ -38,7 +38,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   tr("Volume slide, x: up (0-F), y: down (0-F)"));
 	addRow("0Bxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
-		   tr("Jump to begginning of order xx"));
+		   tr("Jump to beginning of order xx"));
 	addRow("0Cxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("End of song"));
