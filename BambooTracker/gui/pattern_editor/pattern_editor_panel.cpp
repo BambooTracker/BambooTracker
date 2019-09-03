@@ -1109,7 +1109,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		}
 	}
 	else if (id == "0B") {
-		effDetail = tr("0Bxx - Jump to begginning of order xx");
+		effDetail = tr("0Bxx - Jump to beginning of order xx");
 	}
 	else if (id == "0C") {
 		effDetail = tr("0Cxx - End of song");
