@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- [#147], [#148] - Fix some typos (thanks [@alexmyczko])
+- Ignore instrument addition when the instrument list has filled (thanks [@maakmusic])
+
+[#147]: https://github.com/rerrahkr/BambooTracker/pull/147
+[#148]: https://github.com/rerrahkr/BambooTracker/pull/148
 
 ## v0.2.3 (2019-08-31)
 ### Added

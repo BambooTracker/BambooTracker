@@ -738,6 +738,8 @@ void MainWindow::addInstrument()
 		auto& list = ui->instrumentListWidget;
 
 		int num = bt_->findFirstFreeInstrumentNumber();
+		if (num == -1) return;	// Maximum count check
+
 		QString name = tr("Instrument %1").arg(num);
 		bt_->addInstrument(num, name.toUtf8().toStdString());
 
