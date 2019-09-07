@@ -52,7 +52,7 @@ void DecreaseNoteKeyInPatternCommand::undo()
 	}
 }
 
-int DecreaseNoteKeyInPatternCommand::getID() const
+CommandId DecreaseNoteKeyInPatternCommand::getID() const
 {
-	return 0x31;
+	return CommandId::DecreaseNoteKeyInPattern;
 }

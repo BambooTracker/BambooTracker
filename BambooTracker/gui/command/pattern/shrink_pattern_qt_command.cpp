@@ -1,4 +1,5 @@
 #include "shrink_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 ShrinkPatternQtCommand::ShrinkPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void ShrinkPatternQtCommand::undo()
 
 int ShrinkPatternQtCommand::id() const
 {
-	return 0x35;
+	return CommandId::ShrinkPattern;
 }

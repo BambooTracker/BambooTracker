@@ -29,9 +29,9 @@ void PasteCopiedDataToOrderCommand::undo()
 	setCells(prevCells_);
 }
 
-int PasteCopiedDataToOrderCommand::getID() const
+CommandId PasteCopiedDataToOrderCommand::getID() const
 {
-	return 0x43;
+	return CommandId::PasteCopiedDataToOrder;
 }
 
 void PasteCopiedDataToOrderCommand::setCells(std::vector<std::vector<std::string>>& cells)

@@ -41,7 +41,7 @@ void SetKeyOffToStepCommand::undo()
 	}
 }
 
-int SetKeyOffToStepCommand::getID() const
+CommandId SetKeyOffToStepCommand::getID() const
 {
-	return 0x21;
+	return CommandId::SetKeyOffToStep;
 }

@@ -1,4 +1,5 @@
 #include "erase_effect_value_in_step_qt_command.hpp"
+#include "command_id.hpp"
 
 EraseEffectValueInStepQtCommand::EraseEffectValueInStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void EraseEffectValueInStepQtCommand::undo()
 
 int EraseEffectValueInStepQtCommand::id() const
 {
-	return 0x2a;
+	return CommandId::EraseEffectValueInStep;
 }

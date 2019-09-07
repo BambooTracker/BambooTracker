@@ -1,4 +1,5 @@
 #include "interpolate_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 InterpolatePatternQtCommand::InterpolatePatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void InterpolatePatternQtCommand::undo()
 
 int InterpolatePatternQtCommand::id() const
 {
-	return 0x36;
+	return CommandId::InterpolatePattern;
 }

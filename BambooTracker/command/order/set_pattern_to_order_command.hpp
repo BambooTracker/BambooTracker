@@ -10,7 +10,7 @@ public:
 	SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int patternNum);
 	void redo() override;
 	void undo() override;
-	int getID() const override;
+	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
 
 	int getSong() const;

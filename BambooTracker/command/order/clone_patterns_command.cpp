@@ -44,7 +44,7 @@ void ClonePatternsCommand::undo()
 	}
 }
 
-int ClonePatternsCommand::getID() const
+CommandId ClonePatternsCommand::getID() const
 {
-	return 0x46;
+	return CommandId::ClonePatterns;
 }

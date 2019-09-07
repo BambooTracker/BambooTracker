@@ -282,7 +282,7 @@ void InterpolatePatternCommand::undo()
 	}
 }
 
-int InterpolatePatternCommand::getID() const
+CommandId InterpolatePatternCommand::getID() const
 {
-	return 0x37;
+	return CommandId::InterpolatePattern;
 }

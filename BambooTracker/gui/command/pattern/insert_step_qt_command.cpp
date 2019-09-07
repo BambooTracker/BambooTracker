@@ -1,4 +1,5 @@
 #include "insert_step_qt_command.hpp"
+#include "command_id.hpp"
 
 InsertStepQtCommand::InsertStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void InsertStepQtCommand::undo()
 
 int InsertStepQtCommand::id() const
 {
-	return 0x2b;
+	return CommandId::InsertStep;
 }

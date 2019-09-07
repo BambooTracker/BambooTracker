@@ -18,9 +18,9 @@ void MoveOrderCommand::undo()
 	swap();
 }
 
-int MoveOrderCommand::getID() const
+CommandId MoveOrderCommand::getID() const
 {
-	return 0x45;
+	return CommandId::MoveOrder;
 }
 
 void MoveOrderCommand::swap()

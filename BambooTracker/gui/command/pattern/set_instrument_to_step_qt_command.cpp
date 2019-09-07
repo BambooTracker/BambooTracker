@@ -1,4 +1,5 @@
 #include "set_instrument_to_step_qt_command.hpp"
+#include "command_id.hpp"
 
 SetInstrumentToStepQtCommand::SetInstrumentToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,7 +21,7 @@ void SetInstrumentToStepQtCommand::undo()
 
 int SetInstrumentToStepQtCommand::id() const
 {
-	return 0x23;
+	return CommandId::SetInstrumentInStep;
 }
 
 bool SetInstrumentToStepQtCommand::mergeWith(const QUndoCommand* other)

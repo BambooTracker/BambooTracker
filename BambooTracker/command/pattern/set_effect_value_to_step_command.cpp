@@ -30,9 +30,9 @@ void SetEffectValueToStepCommand::undo()
 			.getStep(step_).setEffectValue(n_, prevVal_);
 }
 
-int SetEffectValueToStepCommand::getID() const
+CommandId SetEffectValueToStepCommand::getID() const
 {
-	return 0x29;
+	return CommandId::SetEffectValueToStep;
 }
 
 bool SetEffectValueToStepCommand::mergeWith(const AbstractCommand* other)

@@ -24,7 +24,7 @@ void SetEchoBufferAccessCommand::undo()
 			.getStep(step_).setNoteNumber(prevNote_);
 }
 
-int SetEchoBufferAccessCommand::getID() const
+CommandId SetEchoBufferAccessCommand::getID() const
 {
-	return 0x36;
+	return CommandId::SetEchoBufferAccess;
 }

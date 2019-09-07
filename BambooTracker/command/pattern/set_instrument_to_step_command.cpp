@@ -25,9 +25,9 @@ void SetInstrumentToStepCommand::undo()
 					.getStep(step_).setInstrumentNumber(prevInst_);
 }
 
-int SetInstrumentToStepCommand::getID() const
+CommandId SetInstrumentToStepCommand::getID() const
 {
-	return 0x23;
+	return CommandId::SetInstrumentInStep;
 }
 
 bool SetInstrumentToStepCommand::mergeWith(const AbstractCommand* other)

@@ -19,7 +19,7 @@ void InsertStepCommand::undo()
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).deletePreviousStep(step_ + 1);
 }
 
-int InsertStepCommand::getID() const
+CommandId InsertStepCommand::getID() const
 {
-	return 0x2b;
+	return CommandId::InsertStep;
 }

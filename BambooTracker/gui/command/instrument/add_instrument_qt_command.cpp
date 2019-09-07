@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QRegularExpression>
+#include "command_id.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
@@ -60,5 +61,5 @@ void AddInstrumentQtCommand::redo()
 
 int AddInstrumentQtCommand::id() const
 {
-	return 0x10;
+	return CommandId::AddInstrument;
 }

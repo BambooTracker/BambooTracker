@@ -15,7 +15,7 @@ void cloneInstrumentCommand::undo()
 	manager_.lock()->removeInstrument(cloneInstNum_);
 }
 
-int cloneInstrumentCommand::getID() const
+CommandId cloneInstrumentCommand::getID() const
 {
-	return 0x13;
+	return CommandId::CloneInstrument;
 }

@@ -17,7 +17,7 @@ void InsertOrderBelowCommand::undo()
 	mod_.lock()->getSong(song_).deleteOrder(order_ + 1);
 }
 
-int InsertOrderBelowCommand::getID() const
+CommandId InsertOrderBelowCommand::getID() const
 {
-	return 0x41;
+	return CommandId::InsertOrderBelow;
 }

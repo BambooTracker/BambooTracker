@@ -1,4 +1,5 @@
 #include "increase_note_key_in_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 IncreaseNoteKeyInPatternQtCommand::IncreaseNoteKeyInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void IncreaseNoteKeyInPatternQtCommand::undo()
 
 int IncreaseNoteKeyInPatternQtCommand::id() const
 {
-	return 0x30;
+	return CommandId::IncreaseNoteKeyInPattern;
 }

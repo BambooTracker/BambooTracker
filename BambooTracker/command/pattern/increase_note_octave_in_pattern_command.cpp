@@ -53,7 +53,7 @@ void IncreaseNoteOctaveInPatternCommand::undo()
 	}
 }
 
-int IncreaseNoteOctaveInPatternCommand::getID() const
+CommandId IncreaseNoteOctaveInPatternCommand::getID() const
 {
-	return 0x32;
+	return CommandId::IncreaseNoteOctaveInPattern;
 }

@@ -200,6 +200,7 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
+    command/command_id.hpp \
     gui/effect_list_dialog.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \

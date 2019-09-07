@@ -1,4 +1,5 @@
 #include "erase_volume_in_step_qt_command.hpp"
+#include "command_id.hpp"
 
 EraseVolumeInStepQtCommand::EraseVolumeInStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void EraseVolumeInStepQtCommand::undo()
 
 int EraseVolumeInStepQtCommand::id() const
 {
-	return 0x26;
+	return CommandId::EraseVolumeInStep;
 }

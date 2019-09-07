@@ -1,4 +1,5 @@
 #include "erase_cells_in_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 EraseCellsInPatternQtCommand::EraseCellsInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void EraseCellsInPatternQtCommand::undo()
 
 int EraseCellsInPatternQtCommand::id() const
 {
-	return 0x2e;
+	return CommandId::EraseCellsInPattern;
 }

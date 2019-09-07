@@ -1,4 +1,5 @@
 #include "clone_patterns_qt_command.hpp"
+#include "command_id.hpp"
 
 ClonePatternsQtCommand::ClonePatternsQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,5 +21,5 @@ void ClonePatternsQtCommand::undo()
 
 int ClonePatternsQtCommand::id() const
 {
-	return 0x46;
+	return CommandId::ClonePatterns;
 }

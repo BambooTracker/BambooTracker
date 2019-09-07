@@ -1,4 +1,5 @@
 #include "delete_order_qt_command.hpp"
+#include "command_id.hpp"
 
 DeleteOrderQtCommand::DeleteOrderQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,5 +21,5 @@ void DeleteOrderQtCommand::undo()
 
 int DeleteOrderQtCommand::id() const
 {
-   return 0x42;
+   return CommandId::DeleteOrder;
 }

@@ -83,9 +83,9 @@ void PasteCopiedDataToPatternCommand::undo()
 	setCells(prevCells_);
 }
 
-int PasteCopiedDataToPatternCommand::getID() const
+CommandId PasteCopiedDataToPatternCommand::getID() const
 {
-	return 0x2d;
+	return CommandId::PasteCopiedDataToPattern;
 }
 
 void PasteCopiedDataToPatternCommand::setCells(std::vector<std::vector<std::string>>& cells)

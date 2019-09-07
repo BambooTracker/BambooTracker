@@ -236,7 +236,7 @@ void PasteOverwriteCopiedDataToPatternCommand::undo()
 	}
 }
 
-int PasteOverwriteCopiedDataToPatternCommand::getID() const
+CommandId PasteOverwriteCopiedDataToPatternCommand::getID() const
 {
-	return 0x3a;
+	return CommandId::PasteOverwriteCopiedDataToPattern;
 }

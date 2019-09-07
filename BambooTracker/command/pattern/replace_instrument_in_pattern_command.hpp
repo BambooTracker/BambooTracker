@@ -13,7 +13,7 @@ public:
 									  int endTrack, int endStep, int newInst);
 	  void redo() override;
 	  void undo() override;
-	  int getID() const override;
+	  CommandId getID() const override;
 
   private:
 	  std::weak_ptr<Module> mod_;

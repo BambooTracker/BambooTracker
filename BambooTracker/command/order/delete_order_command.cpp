@@ -22,7 +22,7 @@ void DeleteOrderCommand::undo()
 	}
 }
 
-int DeleteOrderCommand::getID() const
+CommandId DeleteOrderCommand::getID() const
 {
-	return 0x42;
+	return CommandId::DeleteOrder;
 }

@@ -226,7 +226,7 @@ void PasteMixCopiedDataToPatternCommand::undo()
 	}
 }
 
-int PasteMixCopiedDataToPatternCommand::getID() const
+CommandId PasteMixCopiedDataToPatternCommand::getID() const
 {
-	return 0x2f;
+	return CommandId::PasteMixCopiedDataToPattern;
 }

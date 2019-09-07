@@ -268,7 +268,7 @@ void ShrinkPatternCommand::undo()
 	}
 }
 
-int ShrinkPatternCommand::getID() const
+CommandId ShrinkPatternCommand::getID() const
 {
-	return 0x35;
+	return CommandId::ShrinkPattern;
 }

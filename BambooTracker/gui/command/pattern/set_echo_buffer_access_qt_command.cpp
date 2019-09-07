@@ -1,4 +1,5 @@
 #include "set_echo_buffer_access_qt_command.hpp"
+#include "command_id.hpp"
 
 SetEchoBufferAccessQtCommand::SetEchoBufferAccessQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void SetEchoBufferAccessQtCommand::undo()
 
 int SetEchoBufferAccessQtCommand::id() const
 {
-	return 0x36;
+	return CommandId::SetEchoBufferAccess;
 }

@@ -1,4 +1,5 @@
 #include "change_instrument_name_qt_command.hpp"
+#include "command_id.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "misc.hpp"
@@ -70,5 +71,5 @@ void ChangeInstrumentNameQtCommand::undo()
 
 int ChangeInstrumentNameQtCommand::id() const
 {
-	return 0x12;
+	return CommandId::ChangeInstrumentName;
 }

@@ -1,4 +1,5 @@
 #include "set_key_on_to_step_qt_command.hpp"
+#include "command_id.hpp"
 
 SetKeyOnToStepQtCommand::SetKeyOnToStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void SetKeyOnToStepQtCommand::undo()
 
 int SetKeyOnToStepQtCommand::id() const
 {
-	return 0x20;
+	return CommandId::SetKeyOnToStep;
 }

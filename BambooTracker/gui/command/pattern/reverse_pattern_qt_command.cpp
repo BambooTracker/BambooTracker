@@ -1,4 +1,5 @@
 #include "reverse_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 ReversePatternQtCommand::ReversePatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void ReversePatternQtCommand::undo()
 
 int ReversePatternQtCommand::id() const
 {
-	return 0x38;
+	return CommandId::ReversePattern;
 }

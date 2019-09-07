@@ -12,7 +12,7 @@ public:
 
 	void redo() override;
 	void undo() override;
-	int getID() const override;
+	CommandId getID() const override;
 
 private:
 	std::weak_ptr<InstrumentsManager> manager_;

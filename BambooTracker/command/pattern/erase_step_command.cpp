@@ -41,7 +41,7 @@ void EraseStepCommand::undo()
 	}
 }
 
-int EraseStepCommand::getID() const
+CommandId EraseStepCommand::getID() const
 {
-	return 0x22;
+	return CommandId::EraseStep;
 }

@@ -1,4 +1,5 @@
 #include "erase_step_qt_command.hpp"
+#include "command_id.hpp"
 
 EraseStepQtCommand::EraseStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void EraseStepQtCommand::undo()
 
 int EraseStepQtCommand::id() const
 {
-	return 0x22;
+	return CommandId::EraseStep;
 }

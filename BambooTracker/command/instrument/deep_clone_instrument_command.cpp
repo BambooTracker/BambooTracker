@@ -15,7 +15,7 @@ void DeepCloneInstrumentCommand::undo()
 	manager_.lock()->removeInstrument(cloneInstNum_);
 }
 
-int DeepCloneInstrumentCommand::getID() const
+CommandId DeepCloneInstrumentCommand::getID() const
 {
-	return 0x14;
+	return CommandId::DeepCloneInstrument;
 }

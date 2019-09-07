@@ -1,4 +1,5 @@
 #include "deep_clone_instrument_qt_command.hpp"
+#include "command_id.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 
@@ -53,5 +54,5 @@ void DeepCloneInstrumentQtCommand::undo()
 
 int DeepCloneInstrumentQtCommand::id() const
 {
-	return 0x14;
+	return CommandId::DeepCloneInstrument;
 }

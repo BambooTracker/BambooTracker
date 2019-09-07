@@ -1,4 +1,5 @@
 #include "paste_mix_copied_data_to_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 PasteMixCopiedDataToPatternQtCommand::PasteMixCopiedDataToPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void PasteMixCopiedDataToPatternQtCommand::undo()
 
 int PasteMixCopiedDataToPatternQtCommand::id() const
 {
-	return 0x2f;
+	return CommandId::PasteMixCopiedDataToPattern;
 }

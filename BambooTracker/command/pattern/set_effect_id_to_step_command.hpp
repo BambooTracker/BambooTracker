@@ -12,7 +12,7 @@ public:
 							 int n, std::string id, bool fillValue00);
 	void redo() override;
 	void undo() override;
-	int getID() const override;
+	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
 
 	int getSong() const;

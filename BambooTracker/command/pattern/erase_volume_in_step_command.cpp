@@ -23,7 +23,7 @@ void EraseVolumeInStepCommand::undo()
 					.getStep(step_).setVolume(prevVol_);
 }
 
-int EraseVolumeInStepCommand::getID() const
+CommandId EraseVolumeInStepCommand::getID() const
 {
-	return 0x26;
+	return CommandId::EraseVolumeInStep;
 }

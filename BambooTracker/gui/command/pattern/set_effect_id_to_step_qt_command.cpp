@@ -1,4 +1,5 @@
 #include "set_effect_id_to_step_qt_command.hpp"
+#include "command_id.hpp"
 
 SetEffectIDToStepQtCommand::SetEffectIDToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,7 +21,7 @@ void SetEffectIDToStepQtCommand::undo()
 
 int SetEffectIDToStepQtCommand::id() const
 {
-	return 0x27;
+	return CommandId::SetEffectIDToStep;
 }
 
 bool SetEffectIDToStepQtCommand::mergeWith(const QUndoCommand* other)

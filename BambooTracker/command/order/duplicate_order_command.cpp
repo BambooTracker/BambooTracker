@@ -22,7 +22,7 @@ void DuplicateOrderCommand::undo()
 	mod_.lock()->getSong(song_).deleteOrder(order_ + 1);
 }
 
-int DuplicateOrderCommand::getID() const
+CommandId DuplicateOrderCommand::getID() const
 {
-	return 0x44;
+	return CommandId::DuplicateOrder;
 }

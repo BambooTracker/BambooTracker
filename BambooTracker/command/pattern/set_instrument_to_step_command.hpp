@@ -10,7 +10,7 @@ public:
 	SetInstrumentToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int instNum);
 	void redo() override;
 	void undo() override;
-	int getID() const override;
+	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
 
 	int getSong() const;

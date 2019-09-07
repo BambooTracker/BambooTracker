@@ -50,7 +50,7 @@ void ReplaceInstrumentInPatternCommand::undo()
 	}
 }
 
-int ReplaceInstrumentInPatternCommand::getID() const
+CommandId ReplaceInstrumentInPatternCommand::getID() const
 {
-	return 0x39;
+	return CommandId::ReplaceInstrumentInPattern;
 }

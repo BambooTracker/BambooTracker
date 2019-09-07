@@ -1,4 +1,5 @@
 #include "move_order_qt_command.hpp"
+#include "command_id.hpp"
 
 MoveOrderQtCommand::MoveOrderQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,5 +21,5 @@ void MoveOrderQtCommand::undo()
 
 int MoveOrderQtCommand::id() const
 {
-	return 0x45;
+	return CommandId::MoveOrder;
 }

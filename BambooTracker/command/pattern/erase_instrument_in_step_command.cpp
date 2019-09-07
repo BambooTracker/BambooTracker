@@ -23,7 +23,7 @@ void EraseInstrumentInStepCommand::undo()
 					.getStep(step_).setInstrumentNumber(prevInst_);
 }
 
-int EraseInstrumentInStepCommand::getID() const
+CommandId EraseInstrumentInStepCommand::getID() const
 {
-	return 0x24;
+	return CommandId::EraseInstrumentInStep;
 }

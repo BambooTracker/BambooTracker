@@ -1,4 +1,5 @@
 #include "delete_previous_step_qt_command.hpp"
+#include "command_id.hpp"
 
 DeletePreviousStepQtCommand::DeletePreviousStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void DeletePreviousStepQtCommand::undo()
 
 int DeletePreviousStepQtCommand::id() const
 {
-	return 0x2c;
+	return CommandId::DeletePreviousStep;
 }

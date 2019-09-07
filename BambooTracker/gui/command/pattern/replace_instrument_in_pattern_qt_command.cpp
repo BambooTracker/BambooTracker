@@ -1,4 +1,5 @@
 #include "replace_instrument_in_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 ReplaceInstrumentInPatternQtCommand::ReplaceInstrumentInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void ReplaceInstrumentInPatternQtCommand::undo()
 
 int ReplaceInstrumentInPatternQtCommand::id() const
 {
-	return 0x39;
+	return CommandId::ReplaceInstrumentInPattern;
 }

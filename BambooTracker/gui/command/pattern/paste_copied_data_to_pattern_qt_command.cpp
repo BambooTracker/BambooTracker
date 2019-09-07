@@ -1,4 +1,5 @@
 #include "paste_copied_data_to_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 PasteCopiedDataToPatternQtCommand::PasteCopiedDataToPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void PasteCopiedDataToPatternQtCommand::undo()
 
 int PasteCopiedDataToPatternQtCommand::id() const
 {
-	return 0x2d;
+	return CommandId::PasteCopiedDataToPattern;
 }

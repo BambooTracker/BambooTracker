@@ -1,4 +1,5 @@
 #include "duplicate_order_qt_command.hpp"
+#include "command_id.hpp"
 
 DuplicateOrderQtCommand::DuplicateOrderQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,5 +21,5 @@ void DuplicateOrderQtCommand::undo()
 
 int DuplicateOrderQtCommand::id() const
 {
-	return 0x44;
+	return CommandId::DuplicateOrder;
 }

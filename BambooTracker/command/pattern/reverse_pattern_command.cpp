@@ -222,7 +222,7 @@ void ReversePatternCommand::undo()
 	}
 }
 
-int ReversePatternCommand::getID() const
+CommandId ReversePatternCommand::getID() const
 {
-	return 0x38;
+	return CommandId::ReversePattern;
 }

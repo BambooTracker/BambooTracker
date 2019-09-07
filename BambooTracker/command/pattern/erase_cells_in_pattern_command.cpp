@@ -210,7 +210,7 @@ void EraseCellsInPatternCommand::undo()
 	}
 }
 
-int EraseCellsInPatternCommand::getID() const
+CommandId EraseCellsInPatternCommand::getID() const
 {
-	return 0x2e;
+	return CommandId::EraseCellsInPattern;
 }

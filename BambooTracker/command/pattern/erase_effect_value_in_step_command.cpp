@@ -24,7 +24,7 @@ void EraseEffectValueInStepCommand::undo()
 			.getStep(step_).setEffectValue(n_, prevVal_);
 }
 
-int EraseEffectValueInStepCommand::getID() const
+CommandId EraseEffectValueInStepCommand::getID() const
 {
-	return 0x2a;
+	return CommandId::EraseEffectValueInStep;
 }

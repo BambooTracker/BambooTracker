@@ -1,4 +1,5 @@
 #include "set_pattern_to_order_qt_command.hpp"
+#include "command_id.hpp"
 
 SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -22,7 +23,7 @@ void SetPatternToOrderQtCommand::undo()
 
 int SetPatternToOrderQtCommand::id() const
 {
-	return 0x40;
+	return CommandId::SetPatternToOrder;
 }
 
 bool SetPatternToOrderQtCommand::mergeWith(const QUndoCommand* other)

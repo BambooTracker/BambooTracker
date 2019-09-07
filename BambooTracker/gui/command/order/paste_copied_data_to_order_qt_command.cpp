@@ -1,4 +1,5 @@
 #include "paste_copied_data_to_order_qt_command.hpp"
+#include "command_id.hpp"
 
 PasteCopiedDataToOrderQtCommand::PasteCopiedDataToOrderQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,5 +21,5 @@ void PasteCopiedDataToOrderQtCommand::undo()
 
 int PasteCopiedDataToOrderQtCommand::id() const
 {
-   return 0x43;
+   return CommandId::PasteCopiedDataToOrder;
 }

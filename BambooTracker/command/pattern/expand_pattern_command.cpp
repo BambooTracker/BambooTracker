@@ -243,7 +243,7 @@ void ExpandPatternCommand::undo()
 	}
 }
 
-int ExpandPatternCommand::getID() const
+CommandId ExpandPatternCommand::getID() const
 {
-	return 0x34;
+	return CommandId::ExpandPattern;
 }

@@ -28,9 +28,9 @@ void SetVolumeToStepCommand::undo()
 			.getStep(step_).setVolume(prevVol_);
 }
 
-int SetVolumeToStepCommand::getID() const
+CommandId SetVolumeToStepCommand::getID() const
 {
-	return 0x25;
+	return CommandId::SetVolumeToStep;
 }
 
 bool SetVolumeToStepCommand::mergeWith(const AbstractCommand* other)

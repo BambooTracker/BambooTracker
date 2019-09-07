@@ -16,7 +16,7 @@ void RemoveInstrumentCommand::undo()
 	manager_.lock()->addInstrument(std::move(inst_));
 }
 
-int RemoveInstrumentCommand::getID() const
+CommandId RemoveInstrumentCommand::getID() const
 {
-	return 0x11;
+	return CommandId::RemoveInstrument;
 }

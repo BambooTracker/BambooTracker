@@ -1,4 +1,5 @@
 #include "insert_order_below_qt_command.hpp"
+#include "command_id.hpp"
 
 InsertOrderBelowQtCommand::InsertOrderBelowQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,5 +21,5 @@ void InsertOrderBelowQtCommand::undo()
 
 int InsertOrderBelowQtCommand::id() const
 {
-	return 0x41;
+	return CommandId::InsertOrderBelow;
 }

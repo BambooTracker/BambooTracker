@@ -28,7 +28,7 @@ void SetKeyOnToStepCommand::undo()
 	st.setInstrumentNumber(prevInst_);
 }
 
-int SetKeyOnToStepCommand::getID() const
+CommandId SetKeyOnToStepCommand::getID() const
 {
-	return 0x20;
+	return CommandId::SetKeyOnToStep;
 }

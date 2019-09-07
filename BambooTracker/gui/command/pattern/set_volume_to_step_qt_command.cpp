@@ -1,4 +1,5 @@
 #include "set_volume_to_step_qt_command.hpp"
+#include "command_id.hpp"
 
 SetVolumeToStepQtCommand::SetVolumeToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -20,7 +21,7 @@ void SetVolumeToStepQtCommand::undo()
 
 int SetVolumeToStepQtCommand::id() const
 {
-	return 0x25;
+	return CommandId::SetVolumeToStep;
 }
 
 bool SetVolumeToStepQtCommand::mergeWith(const QUndoCommand* other)

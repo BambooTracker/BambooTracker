@@ -1,4 +1,5 @@
 #include "increase_note_octave_in_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 IncreaseNoteOctaveInPatternQtCommand::IncreaseNoteOctaveInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void IncreaseNoteOctaveInPatternQtCommand::undo()
 
 int IncreaseNoteOctaveInPatternQtCommand::id() const
 {
-	return 0x32;
+	return CommandId::IncreaseNoteOctaveInPattern;
 }

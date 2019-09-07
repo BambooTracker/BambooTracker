@@ -1,4 +1,5 @@
 #include "expand_pattern_qt_command.hpp"
+#include "command_id.hpp"
 
 ExpandPatternQtCommand::ExpandPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void ExpandPatternQtCommand::undo()
 
 int ExpandPatternQtCommand::id() const
 {
-	return 0x34;
+	return CommandId::ExpandPattern;
 }

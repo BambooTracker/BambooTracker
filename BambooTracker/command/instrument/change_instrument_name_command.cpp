@@ -17,7 +17,7 @@ void ChangeInstrumentNameCommand::undo()
 	manager_.lock()->setInstrumentName(instNum_, oldName_);
 }
 
-int ChangeInstrumentNameCommand::getID() const
+CommandId ChangeInstrumentNameCommand::getID() const
 {
-	return 0x12;
+	return CommandId::ChangeInstrumentName;
 }

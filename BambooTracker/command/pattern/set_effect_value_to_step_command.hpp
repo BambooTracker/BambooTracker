@@ -11,7 +11,7 @@ public:
 								int orderNum, int stepNum, int n, int value, bool isFMReversed);
 	void redo() override;
 	void undo() override;
-	int getID() const override;
+	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
 
 	int getSong() const;

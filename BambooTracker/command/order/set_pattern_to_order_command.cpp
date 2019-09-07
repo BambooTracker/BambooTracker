@@ -22,9 +22,9 @@ void SetPatternToOrderCommand::undo()
 	mod_.lock()->getSong(song_).getTrack(track_).registerPatternToOrder(order_, prevPattern_);
 }
 
-int SetPatternToOrderCommand::getID() const
+CommandId SetPatternToOrderCommand::getID() const
 {
-	return 0x40;
+	return CommandId::SetPatternToOrder;
 }
 
 bool SetPatternToOrderCommand::mergeWith(const AbstractCommand* other)

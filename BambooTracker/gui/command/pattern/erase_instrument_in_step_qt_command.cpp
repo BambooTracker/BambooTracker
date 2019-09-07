@@ -1,4 +1,5 @@
 #include "erase_instrument_in_step_qt_command.hpp"
+#include "command_id.hpp"
 
 EraseInstrumentInStepQtCommand::EraseInstrumentInStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),
@@ -18,5 +19,5 @@ void EraseInstrumentInStepQtCommand::undo()
 
 int EraseInstrumentInStepQtCommand::id() const
 {
-	return 0x24;
+	return CommandId::EraseInstrumentInStep;
 }

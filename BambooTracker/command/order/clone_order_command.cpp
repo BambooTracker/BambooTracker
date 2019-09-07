@@ -29,7 +29,7 @@ void CloneOrderCommand::undo()
 	sng.deleteOrder(order_ + 1);
 }
 
-int CloneOrderCommand::getID() const
+CommandId CloneOrderCommand::getID() const
 {
-	return 0x47;
+	return CommandId::CloneOrder;
 }
