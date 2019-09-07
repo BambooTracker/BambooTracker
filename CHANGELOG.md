@@ -4,6 +4,9 @@
 ### Fixed
 - [#147], [#148] - Fix some typos (thanks [@alexmyczko])
 - Ignore instrument addition when the instrument list has filled (thanks [@maakmusic])
+- Fix incorrect key off controls before key on (thanks [@CommodoreKulor])
+
+[@CommodoreKulor]: https://github.com/CommodoreKulor
 
 [#147]: https://github.com/rerrahkr/BambooTracker/pull/147
 [#148]: https://github.com/rerrahkr/BambooTracker/pull/148

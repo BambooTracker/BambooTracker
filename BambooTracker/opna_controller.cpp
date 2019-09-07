@@ -224,10 +224,10 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 					uint8_t mask = 0;
 					switch (ch)
 					{
-					case 2:	mask = 0x1;	break;
-					case 6:	mask = 0x2;	break;
-					case 7:	mask = 0x4;	break;
-					case 8:	mask = 0x8;	break;
+					case 2:	mask = 0xe;	break;
+					case 6:	mask = 0xd;	break;
+					case 7:	mask = 0xb;	break;
+					case 8:	mask = 0x7;	break;
 					default:
 						break;
 					}
