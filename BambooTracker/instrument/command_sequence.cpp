@@ -200,7 +200,7 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 		switch (seq_->release_.type) {
 		case ReleaseType::NO_RELEASE:
 			break;
-		case ReleaseType::FIX:
+		case ReleaseType::FIXED:
 			next = seq_->release_.begin;
 			break;
 		case ReleaseType::ABSOLUTE:

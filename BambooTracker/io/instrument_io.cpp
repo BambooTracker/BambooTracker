@@ -272,7 +272,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				case ReleaseType::NO_RELEASE:
 					ctr.appendUint8(0x00);
 					break;
-				case ReleaseType::FIX:
+				case ReleaseType::FIXED:
 					ctr.appendUint8(0x01);
 					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
@@ -312,7 +312,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -351,7 +351,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -397,7 +397,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -437,7 +437,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -478,7 +478,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -518,7 +518,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -558,7 +558,7 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 			case ReleaseType::NO_RELEASE:
 				ctr.appendUint8(0x00);
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -1453,12 +1453,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					case 0x00:	// No release
 						instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
-					case 0x01:	// Fix
+					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
 						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-						if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::FIX, pos);
+						if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::FIXED, pos);
 						else instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 					}
@@ -1525,12 +1525,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					case 0x00:	// No release
 						instMan.lock()->setPitchFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
-					case 0x01:	// Fix
+					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
 						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-						if (pos < seqLen) instMan.lock()->setPitchFMRelease(idx, ReleaseType::FIX, pos);
+						if (pos < seqLen) instMan.lock()->setPitchFMRelease(idx, ReleaseType::FIXED, pos);
 						else instMan.lock()->setPitchFMRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 					}
@@ -1598,12 +1598,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					case 0x00:	// No release
 						instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
-					case 0x01:	// Fix
+					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
 						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-						if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::FIX, pos);
+						if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::FIXED, pos);
 						else instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 					}
@@ -1657,12 +1657,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					case 0x00:	// No release
 						instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
-					case 0x01:	// Fix
+					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
 						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-						if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::FIX, pos);
+						if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::FIXED, pos);
 						else instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 					}
@@ -1725,11 +1725,11 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 						instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-					case 0x01:	// Fix
+					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::FIX, pos);
+						if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::FIXED, pos);
 						else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 					}
@@ -1799,12 +1799,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					case 0x00:	// No release
 						instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
-					case 0x01:	// Fix
+					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
 						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-						if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::FIX, pos);
+						if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::FIXED, pos);
 						else instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 					}
@@ -1858,12 +1858,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					case 0x00:	// No release
 						instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
-					case 0x01:	// Fix
+					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
 						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-						if (pos < seqLen) instMan.lock()->setPitchSSGRelease(idx, ReleaseType::FIX, pos);
+						if (pos < seqLen) instMan.lock()->setPitchSSGRelease(idx, ReleaseType::FIXED, pos);
 						else instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NO_RELEASE, -1);
 						break;
 					}
@@ -1928,12 +1928,12 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	case 0x00:	// No release
 		instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NO_RELEASE, -1);
 		break;
-	case 0x01:	// Fix
+	case 0x01:	// Fixed
 	{
 		uint16_t pos = ctr.readUint16(csr);
 		csr += 2;
 		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-		if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::FIX, pos);
+		if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::FIXED, pos);
 		else instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NO_RELEASE, -1);
 		break;
 	}
@@ -2775,12 +2775,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				case 0x00:	// No release
 					instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x01:	// Fix
+				case 0x01:	// Fixed
 				{
 					uint16_t pos = propCtr.readUint16(opSeqCsr);
 					opSeqCsr += 2;
 					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-					if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::FIX, pos);
+					if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::FIXED, pos);
 					else instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NO_RELEASE, -1);
 					break;
 				}
@@ -2846,12 +2846,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 						case 0x00:	// No release
 							instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::NO_RELEASE, -1);
 							break;
-						case 0x01:	// Fix
+						case 0x01:	// Fixed
 						{
 							uint16_t pos = propCtr.readUint16(arpCsr);
 							arpCsr += 2;
 							// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-							if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::FIX, pos);
+							if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::FIXED, pos);
 							else instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::NO_RELEASE, -1);
 							break;
 						}
@@ -2924,12 +2924,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 						case 0x00:	// No release
 							instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::NO_RELEASE, -1);
 							break;
-						case 0x01:	// Fix
+						case 0x01:	// Fixed
 						{
 							uint16_t pos = propCtr.readUint16(ptCsr);
 							ptCsr += 2;
 							// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-							if (pos < seqLen) instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::FIX, pos);
+							if (pos < seqLen) instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::FIXED, pos);
 							else instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::NO_RELEASE, -1);
 							break;
 						}
@@ -3009,12 +3009,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				case 0x00:	// No release
 					instMan.lock()->setWaveFormSSGRelease(wfNum, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x01:	// Fix
+				case 0x01:	// Fixed
 				{
 					uint16_t pos = propCtr.readUint16(wfCsr);
 					wfCsr += 2;
 					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-					if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(wfNum, ReleaseType::FIX, pos);
+					if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(wfNum, ReleaseType::FIXED, pos);
 					else instMan.lock()->setWaveFormSSGRelease(wfNum, ReleaseType::NO_RELEASE, -1);
 					break;
 				}
@@ -3068,12 +3068,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				case 0x00:	// No release
 					instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x01:	// Fix
+				case 0x01:	// Fixed
 				{
 					uint16_t pos = propCtr.readUint16(tnCsr);
 					tnCsr += 2;
 					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-					if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::FIX, pos);
+					if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::FIXED, pos);
 					else instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::NO_RELEASE, -1);
 					break;
 				}
@@ -3131,11 +3131,11 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 					instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::NO_RELEASE, -1);
 					break;
 					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-				case 0x01:	// Fix
+				case 0x01:	// Fixed
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::FIX, pos);
+					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::FIXED, pos);
 					else instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::NO_RELEASE, -1);
 					break;
 				}
@@ -3205,12 +3205,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				case 0x00:	// No release
 					instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x01:	// Fix
+				case 0x01:	// Fixed
 				{
 					uint16_t pos = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
 					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-					if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::FIX, pos);
+					if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::FIXED, pos);
 					else instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::NO_RELEASE, -1);
 					break;
 				}
@@ -3266,12 +3266,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				case 0x00:	// No release
 					instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::NO_RELEASE, -1);
 					break;
-				case 0x01:	// Fix
+				case 0x01:	// Fixed
 				{
 					uint16_t pos = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
 					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-					if (pos < seqLen) instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::FIX, pos);
+					if (pos < seqLen) instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::FIXED, pos);
 					else instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::NO_RELEASE, -1);
 					break;
 				}

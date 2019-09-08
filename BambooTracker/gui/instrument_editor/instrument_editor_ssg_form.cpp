@@ -205,7 +205,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->arpEditor->setMMLDisplay0As(-48);
 
 	ui->arpTypeComboBox->addItem(tr("Absolute"), 0);
-	ui->arpTypeComboBox->addItem(tr("Fix"), 1);
+	ui->arpTypeComboBox->addItem(tr("Fixed"), 1);
 	ui->arpTypeComboBox->addItem(tr("Relative"), 2);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
@@ -357,8 +357,8 @@ ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForData(VisualizedInstrum
 	switch (type) {
 	case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
 		return ReleaseType::NO_RELEASE;
-	case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
-		return ReleaseType::FIX;
+	case VisualizedInstrumentMacroEditor::ReleaseType::FIXED:
+		return ReleaseType::FIXED;
 	case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
 		return ReleaseType::ABSOLUTE;
 	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
@@ -373,8 +373,8 @@ VisualizedInstrumentMacroEditor::ReleaseType InstrumentEditorSSGForm::convertRel
 	switch (type) {
 	case ReleaseType::NO_RELEASE:
 		return VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE;
-	case ReleaseType::FIX:
-		return VisualizedInstrumentMacroEditor::ReleaseType::FIX;
+	case ReleaseType::FIXED:
+		return VisualizedInstrumentMacroEditor::ReleaseType::FIXED;
 	case ReleaseType::ABSOLUTE:
 		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
 	case ReleaseType::RELATIVE:

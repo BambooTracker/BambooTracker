@@ -378,8 +378,8 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 			case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
 				type = "";
 				break;
-			case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
-				type = tr("Fix");
+			case VisualizedInstrumentMacroEditor::ReleaseType::FIXED:
+				type = tr("Fixed");
 				break;
 			case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
 				type = tr("Absolute");
@@ -426,7 +426,7 @@ void VisualizedInstrumentMacroEditor::makeMML()
 	for (int cnt = 0; cnt < seqLen; ++cnt) {
 		if (release_.point == cnt) {
 			switch (release_.type) {
-			case ReleaseType::FIX:		text += "| ";	break;
+			case ReleaseType::FIXED:	text += "| ";	break;
 			case ReleaseType::ABSOLUTE:	text += "/ ";	break;
 			case ReleaseType::RELATIVE:	text += ": ";	break;
 			default:									break;
@@ -702,7 +702,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 				{
 					if (release_.point == -1 || pressCol_ < release_.point) {	// New release
 						release_.type = (release_.type == VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE)
-										? VisualizedInstrumentMacroEditor::ReleaseType::FIX
+										? VisualizedInstrumentMacroEditor::ReleaseType::FIXED
 										: release_.type;
 						release_.point = pressCol_;
 						makeMML();
@@ -710,7 +710,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 					}
 					else if (isMultiReleaseState_) {	// Change release type
 						switch (release_.type) {
-						case VisualizedInstrumentMacroEditor::ReleaseType::FIX:
+						case VisualizedInstrumentMacroEditor::ReleaseType::FIXED:
 							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
 							break;
 						case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
@@ -718,7 +718,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 							break;
 						case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
 						case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
-							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::FIX;
+							release_.type = VisualizedInstrumentMacroEditor::ReleaseType::FIXED;
 							break;
 						}
 						makeMML();
@@ -914,7 +914,7 @@ void VisualizedInstrumentMacroEditor::on_lineEdit_editingFinished()
 		m = QRegularExpression("^\\|").match(text);
 		if (m.hasMatch()) {
 			if (release.point > -1) return;
-			release = { ReleaseType::FIX, cnt };
+			release = { ReleaseType::FIXED, cnt };
 			text.remove(QRegularExpression("^\\|"));
 			continue;
 		}

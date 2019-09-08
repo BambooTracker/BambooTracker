@@ -259,7 +259,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				case ReleaseType::NO_RELEASE:
 					ctr.appendUint8(0x00);
 					break;
-				case ReleaseType::FIX:
+				case ReleaseType::FIXED:
 					ctr.appendUint8(0x01);
 					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
@@ -311,7 +311,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -362,7 +362,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -414,7 +414,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -465,7 +465,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -518,7 +518,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -569,7 +569,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -620,7 +620,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIX:
+			case ReleaseType::FIXED:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;

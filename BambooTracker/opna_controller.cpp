@@ -1634,7 +1634,7 @@ void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
 		keyToneFM_[ch].note = pair.second;
 		break;
 	}
-	case 1:	// Fix
+	case 1:	// Fixed
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItFM_[ch]->getCommandType());
 		keyToneFM_[ch].octave = pair.first;
@@ -2835,7 +2835,7 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 		keyToneSSG_[ch].note = pair.second;
 		break;
 	}
-	case 1:	// Fix
+	case 1:	// Fixed
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItSSG_[ch]->getCommandType());
 		keyToneSSG_[ch].octave = pair.first;

@@ -35,7 +35,7 @@ struct Loop
 enum ReleaseType
 {
 	NO_RELEASE,
-	FIX,
+	FIXED,
 	ABSOLUTE,
 	RELATIVE
 };

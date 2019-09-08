@@ -40,7 +40,7 @@ Some instrument editors can set performance sequences. One column corresponds to
 It also corresponds to specifying the sequence loop / release point. Left click to create point or increase count / type change, right click to delete point or decrease count. You can move the position by dragging the edge of the point.
 For the release type, you can select from the following three types only for envelope setting of SSG.
 
-- Fix: Run at specified volume from release point at Key Off
+- Fixed: Run at specified volume from release point at Key Off
 - Absolute: Run from the first point after the release point to reach the volume at Key Off
 - Relative: Execute from the release point with the volume set as the maximum volume at Key Off
 
@@ -62,7 +62,7 @@ Note the tracker reads digits from text in the order of appearance. Please remov
 In the SSG Editor, you can configure the
 
 1. Waveform
-2. Tone / noise
+2. Tone/Noise
 3. Envelope
 4. Arpeggio
 5. Pitch

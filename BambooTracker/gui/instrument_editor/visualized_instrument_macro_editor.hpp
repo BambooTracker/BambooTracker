@@ -53,7 +53,7 @@ public:
 	enum class ReleaseType
 	{
 		NO_RELEASE,
-		FIX,
+		FIXED,
 		ABSOLUTE,
 		RELATIVE
 	};

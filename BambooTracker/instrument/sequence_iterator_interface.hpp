@@ -8,7 +8,7 @@ public:
 	/// else: position in the sequence
 	virtual int getPosition() const = 0;
 	/// 0: absolute
-	/// 1: fix
+	/// 1: fixed
 	/// 1: relative
 	virtual int getSequenceType() const = 0;
 	virtual int getCommandType() const = 0;
