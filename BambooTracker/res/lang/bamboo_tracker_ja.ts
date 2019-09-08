@@ -1804,67 +1804,67 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="838"/>
         <source>BambooTracker instrument (*.bti)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="839"/>
         <source>DefleMask preset (*.dmp)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="840"/>
         <source>TFM Music Maker instrument (*.tfi)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="841"/>
         <source>VGM Music Maker instrument (*.vgi)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="842"/>
         <source>WOPN instrument (*.opni)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="843"/>
         <source>Gens KMod dump (*.y12)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="844"/>
         <source>MVSTracker instrument (*.ins)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="892"/>
         <source>BambooTracker instrument file (*.bti)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="909"/>
         <source>BambooTracker bank (*.btb)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="910"/>
         <source>WOPN bank (*.wopn)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="977"/>
         <source>Select instruments to save:</source>
-        <translation type="unfinished"></translation>
+        <translation>保存するインストゥルメントを選択:</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="982"/>
         <source>Save bank</source>
-        <translation type="unfinished"></translation>
+        <translation>バンク保存</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="983"/>
         <source>BambooTracker bank file (*.btb)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1109"/>
@@ -1967,7 +1967,7 @@
         <location filename="../../gui/mainwindow.cpp" line="2091"/>
         <location filename="../../gui/mainwindow.cpp" line="2149"/>
         <source>BambooTracker module file (*.btm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2148"/>
@@ -2275,7 +2275,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1112"/>
         <source>0Bxx - Jump to beginning of order xx</source>
-        <translation type="unfinished"></translation>
+        <translation>0Bxx - オーダーxxの先頭へジャンプ</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1124"/>
