@@ -2267,8 +2267,8 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 	if (event->button() == Qt::LeftButton) {
 		if (mousePressPos_.order == -2 && mousePressPos_.track >= 0) {
 			int w = calculateTracksWidthWithRowNum(leftTrackNum_, mousePressPos_.track - 1)
-					+ hdMuteToggleWidth_ + widthSpace_;
-			if (w < event->pos().x() && event->pos().x() < w + hdEffCompandButtonWidth_ + widthSpace_) {
+					+ hdMuteToggleWidth_ + stepFontWidth_ / 2;
+			if (w < event->pos().x() && event->pos().x() < w + hdEffCompandButtonWidth_ + stepFontWidth_) {
 				if (event->pos().y() < headerHeight_ / 2) isPressedPlus_ = true;
 				else isPressedMinus_ = true;
 			}

@@ -1,15 +1,20 @@
 # Changelog
 
 ## Unreleased
+### Changed
+- Update translation: ja
+
 ### Fixed
 - [#147], [#148] - Fix some typos (thanks [@alexmyczko])
 - Ignore instrument addition when the instrument list has filled (thanks [@maakmusic])
-- Fix incorrect key off controls before key on (thanks [@CommodoreKulor])
+- [#149] - Fix incorrect key off controls before key on (thanks [@CommodoreKulor])
+- Fix size of track companding button in the pattern editor
 
 [@CommodoreKulor]: https://github.com/CommodoreKulor
 
 [#147]: https://github.com/rerrahkr/BambooTracker/pull/147
 [#148]: https://github.com/rerrahkr/BambooTracker/pull/148
+[#149]: https://github.com/rerrahkr/BambooTracker/issues/149
 
 ## v0.2.3 (2019-08-31)
 ### Added
