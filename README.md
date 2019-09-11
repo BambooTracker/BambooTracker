@@ -21,6 +21,9 @@ On Linux:
 
 - See below chapters "Build on Linux" - "Install package on Debian or Ubuntu".
 
+## Wiki
+- [BambooTracker Wiki (GitHub Wiki)](https://github.com/rerrahkr/BambooTracker/wiki)
+
 ## Glossary
 The files created by this tracker are called "modules". One such module contains songs (song data), instruments (tone data) and settings common to each song.
 In a song, the channel of each sound source is assigned to a track, and the track holds multiple patterns (performance patterns).
