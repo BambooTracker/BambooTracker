@@ -60,7 +60,7 @@ void OrderListEditor::setConfiguration(std::weak_ptr<Configuration> config)
 	ui->panel->setConfiguration(config);
 }
 
-void OrderListEditor::setColorPallete(std::weak_ptr<ColorPalette> palette)
+void OrderListEditor::setColorPallete(std::shared_ptr<ColorPalette> palette)
 {
 	ui->panel->setColorPallete(palette);
 }

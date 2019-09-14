@@ -12,7 +12,7 @@ WaveVisual::WaveVisual(QWidget *parent)
 	setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
-void WaveVisual::setColorPalette(std::weak_ptr<ColorPalette> palette)
+void WaveVisual::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
 }
@@ -40,20 +40,19 @@ void WaveVisual::paintEvent(QPaintEvent *event)
 	Q_UNUSED(event);
 	QPainter painter(this);
 
-	std::shared_ptr<ColorPalette> palette = palette_.lock();
-	if (!palette)
+	if (!palette_)
 		return;
 
 	int w = width();
 	int h = height();
-	painter.fillRect(0, 0, w, h, palette->wavBackColor);
+	painter.fillRect(0, 0, w, h, palette_->wavBackColor);
 
 	const int16_t *samples = samples_.data();
 	size_t frames = samples_.size();
 	if (frames <= 0)
 		return;
 
-	painter.setPen(palette->wavDrawColor);
+	painter.setPen(palette_->wavDrawColor);
 
 	int lastY = h / 2;
 	for (int x = 0; x < w; ++x) {

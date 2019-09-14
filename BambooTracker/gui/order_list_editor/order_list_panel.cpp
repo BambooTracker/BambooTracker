@@ -73,7 +73,7 @@ void OrderListPanel::setConfiguration(std::weak_ptr<Configuration> config)
 	config_ = config;
 }
 
-void OrderListPanel::setColorPallete(std::weak_ptr<ColorPalette> palette)
+void OrderListPanel::setColorPallete(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
 }
@@ -109,24 +109,24 @@ void OrderListPanel::drawRows(int maxWidth)
 	/* Current row */
 	// Fill row
 	painter.fillRect(0, curRowY_, maxWidth, rowFontHeight_,
-					 bt_->isJamMode() ? palette_.lock()->odrCurRowColor : palette_.lock()->odrCurEditRowColor);
+					 bt_->isJamMode() ? palette_->odrCurRowColor : palette_->odrCurEditRowColor);
 	// Row number
-	painter.setPen(palette_.lock()->odrRowNumColor);
+	painter.setPen(palette_->odrRowNumColor);
 	painter.drawText(1, curRowBaselineY_, QString("%1").arg(
 						 curPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 						 ).toUpper());
 	// Order data
 	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
-	painter.setPen(palette_.lock()->odrCurTextColor);
+	painter.setPen(palette_->odrCurTextColor);
 	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		if (trackNum == curPos_.track)	// Paint current cell
-			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_.lock()->odrCurCellColor);
+			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_->odrCurCellColor);
 		if (((hovPos_.row == curPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
 				|| (hovPos_.track == -2 && hovPos_.row == curPos_.row))	// Paint hover
-			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_.lock()->odrHovCellColor);
+			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
 		if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 				&& isSelectedCell(trackNum, curPos_.row))	// Paint selected
-			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_.lock()->odrSelCellColor);
+			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
 		painter.drawText(
 					x + textOffset,
 					curRowBaselineY_,
@@ -149,18 +149,18 @@ void OrderListPanel::drawRows(int maxWidth)
 		 rowY -= rowFontHeight_, baseY -= rowFontHeight_, --rowNum) {
 		QColor rowColor, textColor;
 		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum) {
-			rowColor = palette_.lock()->odrPlayRowColor;
-			textColor = palette_.lock()->odrPlayTextColor;
+			rowColor = palette_->odrPlayRowColor;
+			textColor = palette_->odrPlayTextColor;
 		}
 		else {
-			rowColor = palette_.lock()->odrDefRowColor;
-			textColor = palette_.lock()->odrDefTextColor;
+			rowColor = palette_->odrDefRowColor;
+			textColor = palette_->odrDefTextColor;
 		}
 
 		// Fill row
 		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
 		// Row number
-		painter.setPen(palette_.lock()->odrRowNumColor);
+		painter.setPen(palette_->odrRowNumColor);
 		painter.drawText(1, baseY, QString("%1").arg(
 							 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 							 ).toUpper());
@@ -170,10 +170,10 @@ void OrderListPanel::drawRows(int maxWidth)
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_.lock()->odrHovCellColor);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_.lock()->odrSelCellColor);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
 			painter.drawText(
 						x + textOffset,
 						baseY,
@@ -194,18 +194,18 @@ void OrderListPanel::drawRows(int maxWidth)
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
 		QColor rowColor, textColor;
 		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum) {
-			rowColor = palette_.lock()->odrPlayRowColor;
-			textColor = palette_.lock()->odrPlayTextColor;
+			rowColor = palette_->odrPlayRowColor;
+			textColor = palette_->odrPlayTextColor;
 		}
 		else {
-			rowColor = palette_.lock()->odrDefRowColor;
-			textColor = palette_.lock()->odrDefTextColor;
+			rowColor = palette_->odrDefRowColor;
+			textColor = palette_->odrDefTextColor;
 		}
 
 		// Fill row
 		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
 		// Row number
-		painter.setPen(palette_.lock()->odrRowNumColor);
+		painter.setPen(palette_->odrRowNumColor);
 		painter.drawText(1, baseY, QString("%1").arg(
 							 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 							 ).toUpper());
@@ -215,10 +215,10 @@ void OrderListPanel::drawRows(int maxWidth)
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_.lock()->odrHovCellColor);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_.lock()->odrSelCellColor);
+				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
 			painter.drawText(
 						x + textOffset,
 						baseY,
@@ -237,8 +237,8 @@ void OrderListPanel::drawHeaders(int maxWidth)
 	QPainter painter(pixmap_.get());
 	painter.setFont(headerFont_);
 
-	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_.lock()->odrHeaderRowColor);
-	painter.setPen(palette_.lock()->odrHeaderTextColor);
+	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->odrHeaderRowColor);
+	painter.setPen(palette_->odrHeaderTextColor);
 	int x, trackNum;
 	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		QString str;

@@ -14,14 +14,14 @@ class WaveVisual : public QWidget
 
 public:
 	explicit WaveVisual(QWidget *parent = nullptr);
-	void setColorPalette(std::weak_ptr<ColorPalette> palette);
+	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 	void setStereoSamples(const int16_t *buffer, size_t frames);
 
 protected:
 	void paintEvent(QPaintEvent *event) override;
 
 private:
-	std::weak_ptr<ColorPalette> palette_;
+	std::shared_ptr<ColorPalette> palette_;
 	std::vector<int16_t> samples_;
 };
 

@@ -69,7 +69,7 @@ void PatternEditor::setConfiguration(std::weak_ptr<Configuration> config)
 	ui->panel->setConfiguration(config);
 }
 
-void PatternEditor::setColorPallete(std::weak_ptr<ColorPalette> palette)
+void PatternEditor::setColorPallete(std::shared_ptr<ColorPalette> palette)
 {
 	ui->panel->setColorPallete(palette);
 }

@@ -33,7 +33,7 @@ public:
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 	void setConfiguration(std::weak_ptr<Configuration> config);
-	void setColorPallete(std::weak_ptr<ColorPalette> palette);
+	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
 	int getFullColmunSize() const;
@@ -117,7 +117,7 @@ private:
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::weak_ptr<Configuration> config_;
-	std::weak_ptr<ColorPalette> palette_;
+	std::shared_ptr<ColorPalette> palette_;
 
 	QFont stepFont_, headerFont_;
 	int stepFontWidth_, stepFontHeight_, stepFontAscend_, stepFontLeading_;
