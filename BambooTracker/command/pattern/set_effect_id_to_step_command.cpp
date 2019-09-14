@@ -49,7 +49,12 @@ bool SetEffectIDToStepCommand::mergeWith(const AbstractCommand* other)
 		}
 	}
 
-	isComplete_ = true;
+	// Enterd only 1 character
+	if (!isComplete_) {
+		effID_ = "0" + effID_;
+		isComplete_ = true;
+	}
+
 	return false;
 }
 

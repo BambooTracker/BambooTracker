@@ -9,6 +9,7 @@
 - Ignore instrument addition when the instrument list has filled (thanks [@maakmusic])
 - [#149] - Fix incorrect key off controls before key on (thanks [@CommodoreKulor])
 - Fix size of track companding button in the pattern editor
+- [#137] - Fix redo behavior of effect ID entry when only 1 character is enterd (thanks [@SMB7])
 
 [@CommodoreKulor]: https://github.com/CommodoreKulor
 
