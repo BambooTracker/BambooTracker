@@ -11,6 +11,7 @@
 - Fix size of track companding button in the pattern editor
 - [#137] - Fix redo behavior of effect ID entry when only 1 character is enterd (thanks [@SMB7])
 - [#151] - Fix some code (thanks [@jimbo1qaz])
+- Reset cursor position after loading module, song and module properties
 
 [@CommodoreKulor]: https://github.com/CommodoreKulor
 

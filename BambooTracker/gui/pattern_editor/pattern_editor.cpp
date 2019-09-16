@@ -154,9 +154,9 @@ void PatternEditor::setEditableStep(int n)
 
 void PatternEditor::onSongLoaded()
 {
+	ui->horizontalScrollBar->setValue(0);
 	ui->panel->onSongLoaded();
 	ui->horizontalScrollBar->setMaximum(ui->panel->getFullColmunSize());
-	ui->horizontalScrollBar->setValue(0);
 	ui->verticalScrollBar->setMaximum(static_cast<int>(bt_->getPatternSizeFromOrderNumber(
 														   bt_->getCurrentSongNumber(),
 														   bt_->getCurrentOrderNumber())) - 1);
