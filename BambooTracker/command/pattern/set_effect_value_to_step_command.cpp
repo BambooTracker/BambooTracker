@@ -2,7 +2,7 @@
 
 SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
 														 int orderNum, int stepNum, int n, int value,
-														 bool isFMReversed)
+														 bool isFMReversed, bool secondEntry)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
@@ -10,8 +10,8 @@ SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> m
 	  step_(stepNum),
 	  n_(n),
 	  val_(value),
-	  isComplete_(false),
-	  isFMReserved_(isFMReversed)
+	  isFMReserved_(isFMReversed),
+	  isSecond_(secondEntry)
 {
 	prevVal_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
 				 .getStep(stepNum).getEffectValue(n);
@@ -37,18 +37,19 @@ CommandId SetEffectValueToStepCommand::getID() const
 
 bool SetEffectValueToStepCommand::mergeWith(const AbstractCommand* other)
 {
-	if (other->getID() == getID() && !isComplete_) {
+	if (other->getID() == getID() && !isSecond_) {
 		auto com = dynamic_cast<const SetEffectValueToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
-				&& com->getOrder() == order_ && com->getStep() == step_ && com->getN() == n_) {
+				&& com->getOrder() == order_ && com->getStep() == step_ && com->getN() == n_
+				&& com->isSecondEntry()) {
 			val_ = (val_ << 4) + com->getEffectValue();
 			redo();
-			isComplete_ = true;
+			isSecond_ = true;
 			return true;
 		}
 	}
 
-	isComplete_ = true;
+	isSecond_ = true;
 	return false;
 }
 
@@ -75,6 +76,11 @@ int SetEffectValueToStepCommand::getStep() const
 int SetEffectValueToStepCommand::getN() const
 {
 	return n_;
+}
+
+bool SetEffectValueToStepCommand::isSecondEntry() const
+{
+	return isSecond_;
 }
 
 int SetEffectValueToStepCommand::getEffectValue() const

@@ -1556,9 +1556,9 @@ std::vector<OrderData> BambooTracker::getOrderData(int songNum, int orderNum) co
 	return mod_->getSong(songNum).getOrderData(orderNum);
 }
 
-void BambooTracker::setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum)
+void BambooTracker::setOrderPatternDigit(int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry)
 {
-	comMan_.invoke(std::make_unique<SetPatternToOrderCommand>(mod_, songNum, trackNum, orderNum, patternNum));
+	comMan_.invoke(std::make_unique<SetPatternToOrderCommand>(mod_, songNum, trackNum, orderNum, patternNum, secondEntry));
 }
 
 void BambooTracker::insertOrderBelow(int songNum, int orderNum)
@@ -1665,9 +1665,9 @@ int BambooTracker::getStepInstrument(int songNum, int trackNum, int orderNum, in
 			.getStep(stepNum).getInstrumentNumber();
 }
 
-void BambooTracker::setStepInstrument(int songNum, int trackNum, int orderNum, int stepNum, int instNum)
+void BambooTracker::setStepInstrumentDigit(int songNum, int trackNum, int orderNum, int stepNum, int instNum, bool secondEntry)
 {
-	comMan_.invoke(std::make_unique<SetInstrumentToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, instNum));
+	comMan_.invoke(std::make_unique<SetInstrumentToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, instNum, secondEntry));
 }
 
 void BambooTracker::eraseStepInstrument(int songNum, int trackNum, int orderNum, int stepNum)
@@ -1681,9 +1681,9 @@ int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int st
 			.getStep(stepNum).getVolume();
 }
 
-void BambooTracker::setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed)
+void BambooTracker::setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry)
 {	
-	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, isFMReversed));
+	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, isFMReversed, secondEntry));
 }
 
 void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum)
@@ -1697,9 +1697,9 @@ std::string BambooTracker::getStepEffectID(int songNum, int trackNum, int orderN
 			.getStep(stepNum).getEffectID(n);
 }
 
-void BambooTracker::setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00)
+void BambooTracker::setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry)
 {
-	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, id, fillValue00));
+	comMan_.invoke(std::make_unique<SetEffectIDToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, id, fillValue00, secondEntry));
 }
 
 int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const
@@ -1708,9 +1708,9 @@ int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, i
 			.getStep(stepNum).getEffectValue(n);
 }
 
-void BambooTracker::setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, bool isFMReversed)
+void BambooTracker::setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, bool isFMReversed, bool secondEntry)
 {
-	comMan_.invoke(std::make_unique<SetEffectValueToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, value, isFMReversed));
+	comMan_.invoke(std::make_unique<SetEffectValueToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, value, isFMReversed, secondEntry));
 }
 
 void BambooTracker::eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n)

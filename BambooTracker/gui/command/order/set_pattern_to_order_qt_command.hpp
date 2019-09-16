@@ -8,18 +8,19 @@
 class SetPatternToOrderQtCommand : public QUndoCommand
 {
 public:
-	SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, QUndoCommand* parent = nullptr);
+	SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, bool secondEntry, QUndoCommand* parent = nullptr);
 	void redo() Q_DECL_OVERRIDE;
 	void undo() Q_DECL_OVERRIDE;
 	int id() const Q_DECL_OVERRIDE;
 	bool mergeWith(const QUndoCommand* other) Q_DECL_OVERRIDE;
 
 	OrderPosition getPos() const;
+	bool isSecondEntry() const;
 
 private:
 	OrderListPanel* panel_;
 	OrderPosition pos_;
-	bool isComplete_;
+	bool isSecond_;
 };
 
 #endif // SET_PATTERN_TO_ORDER_QT_COMMAND_HPP

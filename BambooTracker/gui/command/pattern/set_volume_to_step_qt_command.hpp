@@ -8,18 +8,19 @@
 class SetVolumeToStepQtCommand : public QUndoCommand
 {
 public:
-	SetVolumeToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, QUndoCommand* parent = nullptr);
+	SetVolumeToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, bool secondEntry, QUndoCommand* parent = nullptr);
 	void redo() Q_DECL_OVERRIDE;
 	void undo() Q_DECL_OVERRIDE;
 	int id() const Q_DECL_OVERRIDE;
 	bool mergeWith(const QUndoCommand* other) Q_DECL_OVERRIDE;
 
 	PatternPosition getPos() const;
+	bool isSecondEntry() const;
 
 private:
 	PatternEditorPanel* panel_;
 	PatternPosition pos_;
-	bool isComplete_;
+	bool isSecond_;
 };
 
 #endif // SET_VOLUME_TO_STEP_QT_COMMAND_HPP

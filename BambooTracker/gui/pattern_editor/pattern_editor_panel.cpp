@@ -24,7 +24,6 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  curSongNum_(0),
 	  curPos_{ 0, 0, 0, 0, },
 	  hovPos_{ -1, -1, -1, -1 },
-	  editPos_{ -1, -1, -1, -1 },
 	  mousePressPos_{ -1, -1, -1, -1 },
 	  mouseReleasePos_{ -1, -1, -1, -1 },
 	  selLeftAbovePos_{ -1, -1, -1, -1 },
@@ -628,6 +627,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 
 	TracksWidthFromLeftToEnd_
 			= calculateTracksWidthWithRowNum(leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	entryCnt_ = 0;
 
 	if (curPos_.track != oldTrackNum)
 		bt_->setCurrentTrack(curPos_.track);
@@ -689,6 +689,8 @@ void PatternEditorPanel::moveCursorToDown(int n)
 	if (curPos_.order != oldOdr)
 		bt_->setCurrentOrderNumber(curPos_.order);
 	bt_->setCurrentStepNumber(curPos_.step);
+
+	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_)
 		emit currentStepChanged(
@@ -920,15 +922,13 @@ bool PatternEditorPanel::enterInstrumentData(int key)
 
 void PatternEditorPanel::setStepInstrument(int num)
 {
-	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
-	editPos_ = curPos_;
-	bt_->setStepInstrument(curSongNum_, editPos_.track, editPos_.order, editPos_.step, num);
-	comStack_.lock()->push(new SetInstrumentToStepQtCommand(this, editPos_));
+	bt_->setStepInstrumentDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, num, (entryCnt_ == 1));
+	comStack_.lock()->push(new SetInstrumentToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	emit instrumentEntered(
-				bt_->getStepInstrument(curSongNum_, editPos_.track, editPos_.order, editPos_.step));
+				bt_->getStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step));
 
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(editableStepCnt_);
+	if (!bt_->isPlaySong() && !updateEntryCount()) moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterVolumeData(int key)
@@ -956,14 +956,12 @@ bool PatternEditorPanel::enterVolumeData(int key)
 
 void PatternEditorPanel::setStepVolume(int volume)
 {
-	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
-	editPos_ = curPos_;
 	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source == SoundSource::FM
 					  && config_.lock()->getReverseFMVolumeOrder());
-	bt_->setStepVolume(curSongNum_, editPos_.track, editPos_.order, editPos_.step, volume, isReversed);
-	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, editPos_));
+	bt_->setStepVolumeDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, volume, isReversed, (entryCnt_ == 1));
+	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(editableStepCnt_);
+	if (!bt_->isPlaySong() && !updateEntryCount()) moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterEffectID(int key)
@@ -1011,23 +1009,21 @@ bool PatternEditorPanel::enterEffectID(int key)
 
 void PatternEditorPanel::setStepEffectID(QString str)
 {
-	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
-	editPos_ = curPos_;
-	bt_->setStepEffectID(curSongNum_, editPos_.track, editPos_.order, editPos_.step,
-						 (editPos_.colInTrack - 3) / 2, str.toStdString(),
-						 config_.lock()->getFill00ToEffectValue());
-	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, editPos_));
+	bt_->setStepEffectIDCharacter(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
+						 (curPos_.colInTrack - 3) / 2, str.toStdString(),
+						 config_.lock()->getFill00ToEffectValue(), (entryCnt_ == 1));
+	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
-	if (!bt_->isPlaySong() && !entryCnt_) {
+	if (!bt_->isPlaySong() && !updateEntryCount()) {
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
 	}
 
 	// Send effect description
 	QString effDetail = tr("Invalid effect");
-	std::string id = bt_->getStepEffectID(curSongNum_, editPos_.track, editPos_.order,
-										  editPos_.step, (editPos_.colInTrack - 3) / 2);
-	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(editPos_.track)).source;
+	std::string id = bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order,
+										  curPos_.step, (curPos_.colInTrack - 3) / 2);
+	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curPos_.track)).source;
 	if (id == "00") {
 		switch (src) {
 		case SoundSource::FM:
@@ -1212,17 +1208,15 @@ bool PatternEditorPanel::enterEffectValue(int key)
 
 void PatternEditorPanel::setStepEffectValue(int value)
 {
-	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
-	editPos_ = curPos_;
-	int n = (editPos_.colInTrack - 4) / 2;
-	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(editPos_.track)].source == SoundSource::FM
+	int n = (curPos_.colInTrack - 4) / 2;
+	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source == SoundSource::FM
 					  && config_.lock()->getReverseFMVolumeOrder()
-					  && bt_->getStepEffectID(curSongNum_, editPos_.track, editPos_.order, editPos_.step, n)
+					  && bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n)
 					  .front() == 'M');
-	bt_->setStepEffectValue(curSongNum_, editPos_.track, editPos_.order, editPos_.step, n, value, isReversed);
-	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, editPos_));
+	bt_->setStepEffectValueDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n, value, isReversed, (entryCnt_ == 1));
+	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
-	if (!bt_->isPlaySong() && !entryCnt_) {
+	if (!bt_->isPlaySong() && !updateEntryCount()) {
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
 	}
@@ -1683,7 +1677,6 @@ void PatternEditorPanel::onOrderListEdited()
 {
 	// Reset position memory
 	hovPos_ = { -1, -1, -1, -1 };
-	editPos_ = { -1, -1, -1, -1 };
 	mousePressPos_ = { -1, -1, -1, -1 };
 	mouseReleasePos_ = { -1, -1, -1, -1 };
 	selLeftAbovePos_ = { -1, -1, -1, -1 };
@@ -1743,7 +1736,6 @@ void PatternEditorPanel::onSongLoaded()
 			= calculateTracksWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 
 	hovPos_ = { -1, -1, -1, -1 };
-	editPos_ = { -1, -1, -1, -1 };
 	mousePressPos_ = { -1, -1, -1, -1 };
 	mouseReleasePos_ = { -1, -1, -1, -1 };
 	selLeftAbovePos_ = { -1, -1, -1, -1 };

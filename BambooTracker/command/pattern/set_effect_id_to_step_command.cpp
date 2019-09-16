@@ -1,6 +1,6 @@
 #include "set_effect_id_to_step_command.hpp"
 
-SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00)
+SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
@@ -8,7 +8,7 @@ SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, in
 	  step_(stepNum),
 	  n_(n),
 	  effID_(id),
-	  isComplete_(false)
+	  isSecond_(secondEntry)
 {
 	Step& step = mod_.lock()->getSong(songNum).getTrack(trackNum)
 				 .getPatternFromOrderNumber(orderNum).getStep(stepNum);
@@ -18,7 +18,7 @@ SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, in
 
 void SetEffectIDToStepCommand::redo()
 {
-	std::string str = isComplete_ ? effID_ : ("0" + effID_);
+	std::string str = isSecond_ ? effID_ : ("0" + effID_);
 	Step& step = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
 	step.setEffectID(n_, str);
 	if (filledValue00_) step.setEffectValue(n_, 0);
@@ -38,21 +38,22 @@ CommandId SetEffectIDToStepCommand::getID() const
 
 bool SetEffectIDToStepCommand::mergeWith(const AbstractCommand* other)
 {
-	if (other->getID() == getID() && !isComplete_) {
+	if (other->getID() == getID() && !isSecond_) {
 		auto com = dynamic_cast<const SetEffectIDToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
-				&& com->getOrder() == order_ && com->getStep() == step_ && com->getN() == n_) {
+				&& com->getOrder() == order_ && com->getStep() == step_ && com->getN() == n_
+				&& com->isSecondEntry()) {
 			effID_ = effID_ + com->getEffectID();
-			isComplete_ = true;
+			isSecond_ = true;
 			redo();
 			return true;
 		}
 	}
 
 	// Enterd only 1 character
-	if (!isComplete_) {
+	if (!isSecond_) {
 		effID_ = "0" + effID_;
-		isComplete_ = true;
+		isSecond_ = true;
 	}
 
 	return false;
@@ -81,6 +82,11 @@ int SetEffectIDToStepCommand::getStep() const
 int SetEffectIDToStepCommand::getN() const
 {
 	return n_;
+}
+
+bool SetEffectIDToStepCommand::isSecondEntry() const
+{
+	return isSecond_;
 }
 
 std::string SetEffectIDToStepCommand::getEffectID() const

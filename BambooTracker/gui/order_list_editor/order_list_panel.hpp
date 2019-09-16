@@ -106,7 +106,7 @@ private:
 	SongStyle songStyle_;
 
 	int curSongNum_;
-	OrderPosition curPos_, hovPos_, editPos_;
+	OrderPosition curPos_, hovPos_;
 	OrderPosition mousePressPos_, mouseReleasePos_;
 	OrderPosition selLeftAbovePos_, selRightBelowPos_;
 	OrderPosition shiftPressedPos_;

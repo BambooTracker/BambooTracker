@@ -268,7 +268,7 @@ public:
 	size_t getEffectDisplayWidth(int songNum, int trackNum) const;
 	/*----- Order -----*/
 	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
-	void setOrderPattern(int songNum, int trackNum, int orderNum, int patternNum);
+	void setOrderPatternDigit(int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry);
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
 	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
@@ -286,15 +286,15 @@ public:
 	void setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum);
 	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);
 	int getStepInstrument(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepInstrument(int songNum, int trackNum, int orderNum, int stepNum, int instNum);
+	void setStepInstrumentDigit(int songNum, int trackNum, int orderNum, int stepNum, int instNum, bool secondEntry);
 	void eraseStepInstrument(int songNum, int trackNum, int orderNum, int stepNum);
 	int getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepVolume(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed);
+	void setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry);
 	void eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum);
 	std::string getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
-	void setStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00);
+	void setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry);
 	int getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
-	void setStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, bool isFMReversed);
+	void setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, bool isFMReversed, bool secondEntry);
 	void eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n);
 	void eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n);
 	void deletePreviousStep(int songNum, int trackNum, int orderNum, int stepNum);

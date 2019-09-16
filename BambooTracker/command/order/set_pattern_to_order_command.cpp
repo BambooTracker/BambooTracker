@@ -1,12 +1,12 @@
 #include "set_pattern_to_order_command.hpp"
 
-SetPatternToOrderCommand::SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int patternNum)
+SetPatternToOrderCommand::SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  pattern_(patternNum << 4),
-	  isComplete_(false)
+	  isSecond_(secondEntry)
 {
 	prevPattern_ = mod_.lock()->getSong(songNum).getTrack(trackNum)
 				   .getPatternFromOrderNumber(orderNum).getNumber();
@@ -29,18 +29,18 @@ CommandId SetPatternToOrderCommand::getID() const
 
 bool SetPatternToOrderCommand::mergeWith(const AbstractCommand* other)
 {
-	if (other->getID() == getID() && !isComplete_) {
+	if (other->getID() == getID() && !isSecond_) {
 		auto com = dynamic_cast<const SetPatternToOrderCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
-				&& com->getOrder() == order_) {
+				&& com->getOrder() == order_ && com->isSecondEntry()) {
 			pattern_ += (com->getPattern() >> 4);
 			redo();
-			isComplete_ = true;
+			isSecond_ = true;
 			return true;
 		}
 	}
 
-	isComplete_ = true;
+	isSecond_ = true;
 	return false;
 }
 
@@ -57,6 +57,11 @@ int SetPatternToOrderCommand::getTrack() const
 int SetPatternToOrderCommand::getOrder() const
 {
 	return order_;
+}
+
+bool SetPatternToOrderCommand::isSecondEntry() const
+{
+	return isSecond_;
 }
 
 int SetPatternToOrderCommand::getPattern() const

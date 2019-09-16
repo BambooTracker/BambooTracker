@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Changed
+- Finish value entry in the cell of pattern editor and order list when the cursor is moved
 - Update translation: ja
 
 ### Fixed

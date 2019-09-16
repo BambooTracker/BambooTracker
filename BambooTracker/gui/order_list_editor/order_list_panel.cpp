@@ -23,7 +23,6 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  curSongNum_(0),
 	  curPos_{ 0, 0 },
 	  hovPos_{ -1, -1 },
-	  editPos_{ -1, -1 },
 	  mousePressPos_{ -1, -1 },
 	  mouseReleasePos_{ -1, -1 },
 	  selLeftAbovePos_{ -1, -1 },
@@ -374,6 +373,7 @@ void OrderListPanel::moveCursorToRight(int n)
 
 	columnsWidthFromLeftToEnd_
 			= calculateColumnsWidthWithRowNum(leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curPos_.track);	// Send to slider
 
@@ -410,6 +410,8 @@ void OrderListPanel::moveCursorToDown(int n)
 			}
 		}
 	}
+
+	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_)		// Send to slider
 		emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
@@ -450,11 +452,10 @@ bool OrderListPanel::enterOrder(int key)
 
 void OrderListPanel::setCellOrderNum(int n)
 {
-	entryCnt_ = (entryCnt_ == 1 && curPos_ == editPos_) ? 0 : 1;
-	editPos_ = curPos_;
-	bt_->setOrderPattern(curSongNum_, editPos_.track, editPos_.row, n);
-	comStack_.lock()->push(new SetPatternToOrderQtCommand(this, editPos_));
+	bt_->setOrderPatternDigit(curSongNum_, curPos_.track, curPos_.row, n, (entryCnt_ == 1));
+	comStack_.lock()->push(new SetPatternToOrderQtCommand(this, curPos_, (entryCnt_ == 1)));
 
+	entryCnt_ = (entryCnt_ + 1) % 2;
 	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
 }
 
@@ -697,7 +698,6 @@ void OrderListPanel::onSongLoaded()
 	setMaximumWidth(columnsWidthFromLeftToEnd_);
 
 	hovPos_ = { -1, -1 };
-	editPos_ = { -1, -1 };
 	mousePressPos_ = { -1, -1 };
 	mouseReleasePos_ = { -1, -1 };
 	selLeftAbovePos_ = { -1, -1 };

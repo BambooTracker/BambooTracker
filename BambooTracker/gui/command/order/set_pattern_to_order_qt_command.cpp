@@ -1,11 +1,11 @@
 #include "set_pattern_to_order_qt_command.hpp"
 #include "command_id.hpp"
 
-SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, QUndoCommand* parent)
+SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, bool secondEntry, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  panel_(panel),
 	  pos_(pos),
-	  isComplete_(false)
+	  isSecond_(secondEntry)
 {
 }
 
@@ -28,20 +28,25 @@ int SetPatternToOrderQtCommand::id() const
 
 bool SetPatternToOrderQtCommand::mergeWith(const QUndoCommand* other)
 {
-	if (other->id() == id() && !isComplete_) {
+	if (other->id() == id() && !isSecond_) {
 		auto com = dynamic_cast<const SetPatternToOrderQtCommand*>(other);
-		if (com->getPos() == pos_) {
-			isComplete_ = true;
+		if (com->getPos() == pos_ && com->isSecondEntry()) {
+			isSecond_ = true;
 			redo();
 			return true;
 		}
 	}
 
-	isComplete_ = true;
+	isSecond_ = true;
 	return false;
 }
 
 OrderPosition SetPatternToOrderQtCommand::getPos() const
 {
 	return pos_;
+}
+
+bool SetPatternToOrderQtCommand::isSecondEntry() const
+{
+	return isSecond_;
 }

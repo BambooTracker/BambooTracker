@@ -1,11 +1,11 @@
 #include "set_instrument_to_step_qt_command.hpp"
 #include "command_id.hpp"
 
-SetInstrumentToStepQtCommand::SetInstrumentToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, QUndoCommand* parent)
+SetInstrumentToStepQtCommand::SetInstrumentToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, bool secondEntry, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  panel_(panel),
 	  pos_(pos),
-	  isComplete_(false)
+	  isSecond_(secondEntry)
 {
 }
 
@@ -26,20 +26,25 @@ int SetInstrumentToStepQtCommand::id() const
 
 bool SetInstrumentToStepQtCommand::mergeWith(const QUndoCommand* other)
 {
-	if (other->id() == id() && !isComplete_) {
+	if (other->id() == id() && !isSecond_) {
 		auto com = dynamic_cast<const SetInstrumentToStepQtCommand*>(other);
-		if (com->getPos() == pos_) {
-			isComplete_ = true;
+		if (com->getPos() == pos_ && com->isSecondEntry()) {
+			isSecond_ = true;
 			redo();
 			return true;
 		}
 	}
 
-	isComplete_ = true;
+	isSecond_ = true;
 	return false;
 }
 
 PatternPosition SetInstrumentToStepQtCommand::getPos() const
 {
 	return pos_;
+}
+
+bool SetInstrumentToStepQtCommand::isSecondEntry() const
+{
+	return isSecond_;
 }

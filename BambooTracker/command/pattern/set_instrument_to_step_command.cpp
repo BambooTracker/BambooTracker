@@ -1,13 +1,13 @@
 #include "set_instrument_to_step_command.hpp"
 
-SetInstrumentToStepCommand::SetInstrumentToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int instNum)
+SetInstrumentToStepCommand::SetInstrumentToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int instNum, bool secondEntry)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
 	  inst_(instNum),
-	  isComplete_(false)
+	  isSecond_(secondEntry)
 {
 	prevInst_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
 				.getStep(stepNum).getInstrumentNumber();
@@ -32,18 +32,19 @@ CommandId SetInstrumentToStepCommand::getID() const
 
 bool SetInstrumentToStepCommand::mergeWith(const AbstractCommand* other)
 {
-	if (other->getID() == getID() && !isComplete_) {
+	if (other->getID() == getID() && !isSecond_) {
 		auto com = dynamic_cast<const SetInstrumentToStepCommand*>(other);
 		if (com->getSong() == song_ && com->getTrack() == track_
-				&& com->getOrder() == order_ && com->getStep() == step_) {
+				&& com->getOrder() == order_ && com->getStep() == step_
+				&& com->isSecondEntry()) {
 			inst_ = (inst_ << 4) + com->getInst();
 			redo();
-			isComplete_ = true;
+			isSecond_ = true;
 			return true;
 		}
 	}
 
-	isComplete_ = true;
+	isSecond_ = true;
 	return false;
 }
 
@@ -65,6 +66,11 @@ int SetInstrumentToStepCommand::getOrder() const
 int SetInstrumentToStepCommand::getStep() const
 {
 	return step_;
+}
+
+bool SetInstrumentToStepCommand::isSecondEntry() const
+{
+	return isSecond_;
 }
 
 int SetInstrumentToStepCommand::getInst() const

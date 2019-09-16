@@ -141,7 +141,7 @@ private:
 	SongStyle songStyle_;
 
 	int curSongNum_;
-	PatternPosition curPos_, hovPos_, editPos_;
+	PatternPosition curPos_, hovPos_;
 	PatternPosition mousePressPos_, mouseReleasePos_;
 	PatternPosition selLeftAbovePos_, selRightBelowPos_;
 	PatternPosition shiftPressedPos_;
@@ -194,6 +194,12 @@ private:
 	void setStepEffectID(QString str);
 	bool enterEffectValue(int key);
 	void setStepEffectValue(int value);
+
+	inline int updateEntryCount()
+	{
+		entryCnt_ = (entryCnt_ + 1) % 2;
+		return entryCnt_;
+	}
 
 	void insertStep();
 	void deletePreviousStep();
