@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.2.4 (2019-09-17)
 ### Changed
 - Finish value entry in the cell of pattern editor and order list when the cursor is moved
 - Update translation: ja
