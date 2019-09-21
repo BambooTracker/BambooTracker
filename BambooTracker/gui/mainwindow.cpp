@@ -40,6 +40,7 @@
 #include "chips/scci/SCCIDefines.h"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
+#include "audio_stream_rtaudio.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -178,16 +179,19 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
 		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
 	}
-	stream_ = std::make_shared<AudioStream>(
-				  bt_->getStreamRate(), bt_->getStreamDuration(), bt_->getModuleTickFrequency(),
-				  QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-									static_cast<int>(config.lock()->getSoundDevice().length())));
+	stream_ = std::make_shared<AudioStreamRtAudio>();
+	stream_->initialize(
+				static_cast<uint32_t>(bt_->getStreamRate()),
+				static_cast<uint32_t>(bt_->getStreamDuration()),
+				bt_->getModuleTickFrequency(),
+				QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+								  static_cast<int>(config.lock()->getSoundDevice().length())));
+	stream_->setCallback(+[](int16_t* container, size_t nSamples, void* cbPtr) {
+		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
+		bt->getStreamSamples(container, nSamples);
+	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
-	QObject::connect(stream_.get(), &AudioStream::bufferPrepared,
-					 this, [&](int16_t *container, size_t nSamples) {
-		bt_->getStreamSamples(container, nSamples);
-	}, Qt::DirectConnection);
 	if (config.lock()->getUseSCCI()) {
 		stream_->stop();
 		timer_ = std::make_unique<Timer>();
@@ -450,6 +454,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 MainWindow::~MainWindow()
 {
 	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
+	stream_->shutdown();
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -690,7 +695,7 @@ void MainWindow::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_
 {
 	MainWindow *self = reinterpret_cast<MainWindow *>(userData);
 
-	Q_UNUSED(delay);
+	Q_UNUSED(delay)
 
 	// Note-On/Note-Off
 	if (len == 3 && (msg[0] & 0xe0) == 0x80) {
@@ -1045,7 +1050,7 @@ void MainWindow::loadModule()
 	loadSong();
 
 	// Set tick frequency
-	stream_->setInturuption(bt_->getModuleTickFrequency());
+	stream_->setInterruption(bt_->getModuleTickFrequency());
 	if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 
@@ -1217,9 +1222,10 @@ void MainWindow::changeConfiguration()
 	else {
 		timer_.reset();
 		bt_->useSCCI(nullptr);
-		stream_->setRate(config_.lock()->getSampleRate());
-		stream_->setDuration(config_.lock()->getBufferLength());
-		stream_->setDevice(
+		stream_->initialize(
+					config_.lock()->getSampleRate(),
+					config_.lock()->getBufferLength(),
+					bt_->getModuleTickFrequency(),
 					QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
 									  static_cast<int>(config_.lock()->getSoundDevice().length())));
 		stream_->start();

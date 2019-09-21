@@ -1,39 +1,59 @@
 #pragma once
 
 #include <QObject>
-#include <QAudioOutput>
-#include <QAudioDeviceInfo>
-#include <QAudioFormat>
+#include <QSemaphore>
 #include <QString>
+#include <thread>
+#include <mutex>
 #include <memory>
-#include "audio_stream_mixier.hpp"
+#include <atomic>
+#include <cstdint>
 
 class AudioStream : public QObject
 {
 	Q_OBJECT
 
 public:
+	explicit AudioStream(QObject* parent = nullptr);
+	virtual ~AudioStream();
+
+	using Callback = void (int16_t*, size_t, void*);
+	void setCallback(Callback* cb, void* cbPtr);
+
 	// duration: miliseconds
-	AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate, QString device);
-	~AudioStream();
+	virtual void initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device);
+	virtual void shutdown() = 0;
+
+	virtual std::vector<std::string> getAvailableDevices() = 0;
+
+	void setInterruption(uint32_t inrtRate);
 
 	void start();
 	void stop();
 
-	void setRate(uint32_t rate);
-	void setDuration(uint32_t duration);
-	void setInturuption(uint32_t rate);
-	void setDevice(QString device);
-
 signals:
 	void streamInterrupted();
-	void bufferPrepared(int16_t *container, size_t nSamples);
+
+protected:
+	static const std::string AUDIO_OUT_CLIENT_NAME;
+	void generate(int16_t* container, uint32_t nSamples);
 
 private:
-	QAudioDeviceInfo info_;
-	QAudioFormat format_;
-	std::unique_ptr<QAudioOutput> audio_;
-	std::unique_ptr<AudioStreamMixier> mixer_;
+	uint32_t rate_;
+	uint32_t intrRate_;
+	uint32_t intrCount_;
+	uint32_t intrCountRest_;
 
-	void setDeviceFromString(QString device);
+	std::mutex mutex_;
+	Callback* cb_;
+	void* cbPtr_;
+	bool started_;
+
+	std::atomic_bool quitNotify_;
+	QSemaphore tickNotifierSem_;
+	std::thread tickNotifier_;
+
+	void generateTick();
+
+	void tickNotifierRun();
 };
