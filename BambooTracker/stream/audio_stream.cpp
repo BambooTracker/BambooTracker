@@ -9,8 +9,9 @@ AudioStream::AudioStream(QObject *parent)
 	  intrRate_(0),
 	  intrCount_(0),
 	  intrCountRest_(0),
-	  cb_(nullptr),
-	  cbPtr_(nullptr),
+	  gcb_(nullptr),
+	  gcbPtr_(nullptr),
+	  tuState_(-1),
 	  started_(false),
 	  quitNotify_(false),
 	  tickNotifier_([this]() { tickNotifierRun(); })
@@ -24,11 +25,18 @@ AudioStream::~AudioStream()
 	tickNotifier_.join();
 }
 
-void AudioStream::setCallback(Callback* cb, void* cbPtr)
+void AudioStream::setGenerateCallback(GenerateCallback* cb, void* cbPtr)
 {
 	std::lock_guard<std::mutex> lock(mutex_);
-	cb_ = cb;
-	cbPtr_ = cbPtr;
+	gcb_ = cb;
+	gcbPtr_ = cbPtr;
+}
+
+void AudioStream::setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr)
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	tucb_ = cb;
+	tucbPtr_ = cbPtr;
 }
 
 void AudioStream::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device)
@@ -62,18 +70,20 @@ void AudioStream::stop()
 
 void AudioStream::generate(int16_t* container, uint32_t nSamples)
 {
-	Callback* cb = nullptr;
-	void* cbPtr = nullptr;
+	GenerateCallback* gcb = nullptr;
+	void* gcbPtr = nullptr;
+	TickUpdateCallback* tucb = nullptr;
 	bool started = false;
 
 	std::unique_lock<std::mutex> lock(mutex_, std::try_to_lock);
 	if (lock.owns_lock()) {
-		cb = cb_;
-		cbPtr = cbPtr_;
+		gcb = gcb_;
+		gcbPtr = gcbPtr_;
+		tucb = tucb_;
 		started = started_;
 	}
 
-	if (!cb || !started) {
+	if (!gcb || !tucb || !started) {
 		std::fill(container, container + (nSamples << 1), 0);
 		return;
 	}
@@ -89,7 +99,7 @@ void AudioStream::generate(int16_t* container, uint32_t nSamples)
 		nSamples -= count;
 		intrCountRest_ -= count;
 
-		cb(destPtr, count, cbPtr);
+		gcb(destPtr, count, gcbPtr);
 
 		destPtr += (count << 1);	// Move head
 	}
@@ -97,6 +107,7 @@ void AudioStream::generate(int16_t* container, uint32_t nSamples)
 
 void AudioStream::generateTick()
 {
+	tuState_.store(tucb_(tucbPtr_));
 	tickNotifierSem_.release();
 }
 
@@ -107,6 +118,6 @@ void AudioStream::tickNotifierRun()
 
 		if (quitNotify_.load()) return;
 
-		emit streamInterrupted();
+		emit streamInterrupted(tuState_.load());
 	}
 }

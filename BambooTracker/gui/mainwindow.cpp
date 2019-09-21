@@ -186,7 +186,11 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 				bt_->getModuleTickFrequency(),
 				QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
 								  static_cast<int>(config.lock()->getSoundDevice().length())));
-	stream_->setCallback(+[](int16_t* container, size_t nSamples, void* cbPtr) {
+	stream_->setTickUpdateCallback(+[](void* cbPtr) -> int {
+		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
+		return bt->streamCountUp();
+	}, bt_.get());
+	stream_->setGenerateCallback(+[](int16_t* container, size_t nSamples, void* cbPtr) {
 		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
 		bt->getStreamSamples(container, nSamples);
 	}, bt_.get());
@@ -2405,9 +2409,9 @@ void MainWindow::on_actionOverwrite_triggered()
 	if (isEditedPattern_) ui->patternEditor->onPasteOverwritePressed();
 }
 
-void MainWindow::onNewTickSignaled()
+void MainWindow::onNewTickSignaled(int state)
 {
-	if (!bt_->streamCountUp()) {	// New step
+	if (!state) {	// New step
 		int order = bt_->getPlayingOrderNumber();
 		if (order > -1) {
 			ui->orderList->update();

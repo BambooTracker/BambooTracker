@@ -17,8 +17,11 @@ public:
 	explicit AudioStream(QObject* parent = nullptr);
 	virtual ~AudioStream();
 
-	using Callback = void (int16_t*, size_t, void*);
-	void setCallback(Callback* cb, void* cbPtr);
+	using GenerateCallback = void (int16_t*, size_t, void*);
+	void setGenerateCallback(GenerateCallback* cb, void* cbPtr);
+
+	using TickUpdateCallback = int (void*);
+	void setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr);
 
 	// duration: miliseconds
 	virtual void initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device);
@@ -32,7 +35,7 @@ public:
 	void stop();
 
 signals:
-	void streamInterrupted();
+	void streamInterrupted(int state);
 
 protected:
 	static const std::string AUDIO_OUT_CLIENT_NAME;
@@ -45,8 +48,11 @@ private:
 	uint32_t intrCountRest_;
 
 	std::mutex mutex_;
-	Callback* cb_;
-	void* cbPtr_;
+	GenerateCallback* gcb_;
+	void* gcbPtr_;
+	TickUpdateCallback* tucb_;
+	void* tucbPtr_;
+	std::atomic_int tuState_;
 	bool started_;
 
 	std::atomic_bool quitNotify_;
