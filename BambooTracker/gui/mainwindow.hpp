@@ -235,10 +235,17 @@ private slots:
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{
-		return (QMessageBox::warning(this, "Warning",
-									 text + " If you execute this command, the command history is reset.",
+		return (QMessageBox::warning(this, tr("Warning"),
+									 text + tr(" If you execute this command, the command history is reset."),
 									 QMessageBox::Yes | QMessageBox::No,
 									 QMessageBox::No) == QMessageBox::Yes);
+	}
+
+	inline void showStreamFailedDialog()
+	{
+		QMessageBox::critical(this, tr("Error"),
+							  tr("Could not open the audio stream. Please change the sound settings in Configuration."),
+							  QMessageBox::Ok, QMessageBox::Ok);
 	}
 };
 

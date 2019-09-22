@@ -24,15 +24,15 @@ public:
 	void setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr);
 
 	// duration: miliseconds
-	virtual void initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device);
+	virtual bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device);
 	virtual void shutdown() = 0;
 
 	virtual std::vector<std::string> getAvailableDevices() = 0;
 
 	void setInterruption(uint32_t inrtRate);
 
-	void start();
-	void stop();
+	virtual void start();
+	virtual void stop();
 
 signals:
 	void streamInterrupted(int state);

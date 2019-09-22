@@ -11,7 +11,7 @@ AudioStreamRtAudio::~AudioStreamRtAudio()
 {
 }
 
-void AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device)
+bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device)
 {
 	RtAudio* audio = audio_.get();
 	const std::string deviceUtf8 = device.toStdString();
@@ -44,8 +44,13 @@ void AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 	};
 
 	unsigned int bufferSize = rate * duration / 1000;
-	audio->openStream(&param, nullptr, RTAUDIO_SINT16, rate, &bufferSize, callback, this, &opts);
-	audio->startStream();
+	try {
+		audio->openStream(&param, nullptr, RTAUDIO_SINT16, rate, &bufferSize, callback, this, &opts);
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
 }
 
 void AudioStreamRtAudio::shutdown()
@@ -65,4 +70,16 @@ std::vector<std::string> AudioStreamRtAudio::getAvailableDevices()
 	}
 
 	return devices;
+}
+
+void AudioStreamRtAudio::start()
+{
+	AudioStream::start();
+	if (audio_->isStreamOpen()) audio_->startStream();
+}
+
+void AudioStreamRtAudio::stop()
+{
+	AudioStream::stop();
+	if (audio_->isStreamOpen()) audio_->stopStream();
 }

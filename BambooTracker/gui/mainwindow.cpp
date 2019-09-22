@@ -180,12 +180,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
 	}
 	stream_ = std::make_shared<AudioStreamRtAudio>();
-	stream_->initialize(
-				static_cast<uint32_t>(bt_->getStreamRate()),
-				static_cast<uint32_t>(bt_->getStreamDuration()),
-				bt_->getModuleTickFrequency(),
-				QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-								  static_cast<int>(config.lock()->getSoundDevice().length())));
 	stream_->setTickUpdateCallback(+[](void* cbPtr) -> int {
 		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
 		return bt->streamCountUp();
@@ -196,6 +190,13 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
+	bool streamState = stream_->initialize(
+				static_cast<uint32_t>(bt_->getStreamRate()),
+				static_cast<uint32_t>(bt_->getStreamDuration()),
+				bt_->getModuleTickFrequency(),
+				QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+								  static_cast<int>(config.lock()->getSoundDevice().length())));
+	if (!streamState) showStreamFailedDialog();
 	if (config.lock()->getUseSCCI()) {
 		stream_->stop();
 		timer_ = std::make_unique<Timer>();
@@ -1226,12 +1227,13 @@ void MainWindow::changeConfiguration()
 	else {
 		timer_.reset();
 		bt_->useSCCI(nullptr);
-		stream_->initialize(
+		bool streamState = stream_->initialize(
 					config_.lock()->getSampleRate(),
 					config_.lock()->getBufferLength(),
 					bt_->getModuleTickFrequency(),
 					QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
 									  static_cast<int>(config_.lock()->getSoundDevice().length())));
+		if (!streamState) showStreamFailedDialog();
 		stream_->start();
 	}
 

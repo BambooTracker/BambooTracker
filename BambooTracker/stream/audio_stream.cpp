@@ -39,7 +39,7 @@ void AudioStream::setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr)
 	tucbPtr_ = cbPtr;
 }
 
-void AudioStream::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device)
+bool AudioStream::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device)
 {
 	Q_UNUSED(duration)
 	Q_UNUSED(device)
@@ -47,6 +47,7 @@ void AudioStream::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate
 	started_ = false;
 	rate_ = rate;
 	setInterruption(intrRate);
+	return true;
 }
 
 void AudioStream::setInterruption(uint32_t intrRate)
