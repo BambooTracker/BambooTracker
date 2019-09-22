@@ -1724,7 +1724,7 @@ void PatternEditorPanel::onSongLoaded()
 		bt_->getCurrentStepNumber()
 	};
 	songStyle_ = bt_->getSongStyle(curSongNum_);
-	int trackCnt;
+	int trackCnt = 0;
 	switch (songStyle_.type) {
 	case SongType::STD:		trackCnt = 15;	break;
 	case SongType::FMEX:	trackCnt = 18;	break;
