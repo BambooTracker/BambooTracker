@@ -225,6 +225,7 @@ private slots:
 	void on_actionS98_triggered();
 	void on_actionMix_triggered();
 	void on_actionOverwrite_triggered();
+	void onNewTickSignaledRealChip();
 	void onNewTickSignaled(int state);
 	void on_actionClear_triggered();
 	void on_keyRepeatCheckBox_stateChanged(int arg1);

@@ -342,7 +342,7 @@ pkg install bambootracker
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
 - S98ファイルのフォーマットのドキュメントに関してRu^3さん
 - SCCIライブラリに関してSCCI開発チームの方々
-- RtMidiライブラリに関してGary P. Scavoneさん他
+- RtAudioとRtMidiライブラリに関してGary P. Scavoneさん他
 - Nuked OPN-Modエミュレーションに関してAlexey Khokholov (Nuke.YKT)さん、Jean Pierre Cimalandoさん
 - nowideライブラリに関してArtyom Beilisさん
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん

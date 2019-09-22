@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Changed
+- Use RtAudio for sound processing 
 
 ## v0.2.4 (2019-09-17)
 ### Changed

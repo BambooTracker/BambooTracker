@@ -201,7 +201,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		stream_->stop();
 		timer_ = std::make_unique<Timer>();
 		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
-		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaled()");
+		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
 		Q_ASSERT(tickEventMethod_ != -1);
 		timer_->setFunction([&]{
 			QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
@@ -1204,7 +1204,7 @@ void MainWindow::changeConfiguration()
 		if (!timer_) {
 			timer_ = std::make_unique<Timer>();
 			timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
-			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaled()");
+			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
 			Q_ASSERT(tickEventMethod_ != -1);
 			timer_->setFunction([&]{
 				QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
@@ -1936,6 +1936,7 @@ void MainWindow::on_actionAbout_triggered()
 						 "- nowide by (C) Artyom Beilis (BSL v1.0)<br>"
 						 "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
 						 "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
+						 "- RtAudio by (C) Gary P. Scavone (RtAudio License)<br>"
 						 "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
 						 "- SCCI (SCCI License)<br>"
 						 "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
@@ -2409,6 +2410,11 @@ void MainWindow::on_actionMix_triggered()
 void MainWindow::on_actionOverwrite_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onPasteOverwritePressed();
+}
+
+void MainWindow::onNewTickSignaledRealChip()
+{
+	onNewTickSignaled(bt_->streamCountUp());
 }
 
 void MainWindow::onNewTickSignaled(int state)

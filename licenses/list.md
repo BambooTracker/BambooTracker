@@ -9,6 +9,8 @@
 - Nuked OPN-MOD (added OPNA functionality to [Nuked-OPN2](https://github.com/nukeykt/Nuked-OPN2) by Alexey Khokholov (Nuke.YKT)) by Jean Pierre Cimalando - LGPL v2.1
   - BambooTracker/chips/nuked/ym3438.*
 - [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3
+- [RtAudio](http://www.music.mcgill.ca/~gary/rtaudio/) by Gary P. Scavone - [rtaudio_license.txt](./rtaudio_license.txt)
+  - BambooTracker/stream/RtAudio/*
 - [RtMidi](https://github.com/Wohlstand/rtmidi) by Gary P. Scavone - [rtmidi_license.txt](./rtmidi_license.txt)
   - BambooTracker/midi/RtMidi/*
 - [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) - [scci_license.txt](./scci_license.txt)
