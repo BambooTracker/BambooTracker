@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <mutex>
 #include "opna_controller.hpp"
 #include "instruments_manager.hpp"
 #include "module.hpp"
@@ -44,6 +45,8 @@ private:
 	std::weak_ptr<InstrumentsManager> instMan_;
 	std::weak_ptr<TickCounter> tickCounter_;
 	std::weak_ptr<Module> mod_;
+
+	std::mutex mutex_;
 
 	int curSongNum_;
 	SongStyle songStyle_;
