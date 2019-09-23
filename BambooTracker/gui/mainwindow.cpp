@@ -167,64 +167,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 	ui->subToolBar->addWidget(highlight2_);
 
-	/* Audio stream */
-	bool savedDeviceExists = false;
-	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
-			savedDeviceExists = true;
-			break;
-		}
-	}
-	if (!savedDeviceExists) {
-		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
-		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
-	}
-	stream_ = std::make_shared<AudioStreamRtAudio>();
-	stream_->setTickUpdateCallback(+[](void* cbPtr) -> int {
-		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
-		return bt->streamCountUp();
-	}, bt_.get());
-	stream_->setGenerateCallback(+[](int16_t* container, size_t nSamples, void* cbPtr) {
-		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
-		bt->getStreamSamples(container, nSamples);
-	}, bt_.get());
-	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
-					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
-	bool streamState = stream_->initialize(
-				static_cast<uint32_t>(bt_->getStreamRate()),
-				static_cast<uint32_t>(bt_->getStreamDuration()),
-				bt_->getModuleTickFrequency(),
-				QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-								  static_cast<int>(config.lock()->getSoundDevice().length())));
-	if (!streamState) showStreamFailedDialog();
-	if (config.lock()->getUseSCCI()) {
-		stream_->stop();
-		timer_ = std::make_unique<Timer>();
-		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
-		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
-		Q_ASSERT(tickEventMethod_ != -1);
-		timer_->setFunction([&]{
-			QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
-			method.invoke(this, Qt::QueuedConnection);
-		});
-
-		scciDll_->load();
-		if (scciDll_->isLoaded()) {
-			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
-													scciDll_->resolve("getSoundInterfaceManager"));
-			bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
-		}
-		else {
-			bt_->useSCCI(nullptr);
-		}
-
-		timer_->start();
-	}
-	else {
-		bt_->useSCCI(nullptr);
-		stream_->start();
-	}
-
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
 					 this, [&](QString str) {
@@ -440,6 +382,65 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		else if (isEditedPattern_) updateMenuByPattern();
 	});
 
+	/* Audio stream */
+	bool savedDeviceExists = false;
+	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
+			savedDeviceExists = true;
+			break;
+		}
+	}
+	if (!savedDeviceExists) {
+		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
+		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
+	}
+	stream_ = std::make_shared<AudioStreamRtAudio>();
+	stream_->setTickUpdateCallback(+[](void* cbPtr) -> int {
+		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
+		return bt->streamCountUp();
+	}, bt_.get());
+	stream_->setGenerateCallback(+[](int16_t* container, size_t nSamples, void* cbPtr) {
+		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
+		bt->getStreamSamples(container, nSamples);
+	}, bt_.get());
+	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
+					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
+	bool streamState = stream_->initialize(
+				static_cast<uint32_t>(bt_->getStreamRate()),
+				static_cast<uint32_t>(bt_->getStreamDuration()),
+				bt_->getModuleTickFrequency(),
+				QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+								  static_cast<int>(config.lock()->getSoundDevice().length())));
+	if (!streamState) showStreamFailedDialog();
+	if (config.lock()->getUseSCCI()) {
+		stream_->stop();
+		timer_ = std::make_unique<Timer>();
+		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
+		Q_ASSERT(tickEventMethod_ != -1);
+		timer_->setFunction([&]{
+			QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
+			method.invoke(this, Qt::QueuedConnection);
+		});
+
+		scciDll_->load();
+		if (scciDll_->isLoaded()) {
+			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
+													scciDll_->resolve("getSoundInterfaceManager"));
+			bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
+		}
+		else {
+			bt_->useSCCI(nullptr);
+		}
+
+		timer_->start();
+	}
+	else {
+		bt_->useSCCI(nullptr);
+		stream_->start();
+	}
+
+	/* Load module */
 	if (filePath.isEmpty()) {
 		loadModule();
 		setInitialSelectedInstrument();
