@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- Fix to draw the playing cursor when follow mode is turned off
 
 ## v0.2.4 (2019-09-17)
 ### Changed
