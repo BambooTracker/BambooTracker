@@ -15,6 +15,7 @@ public:
 	explicit WaveExportSettingsDialog(QWidget *parent = nullptr);
 	~WaveExportSettingsDialog();
 
+	int getSampleRate() const;
 	int getLoopCount() const;
 
 private:
