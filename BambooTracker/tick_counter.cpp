@@ -104,6 +104,7 @@ void TickCounter::resetRest()
 		tickDifSum_ += tickDif_;
 		int castedTickDifSum = static_cast<int>(tickDifSum_);
 		restTickToNextStep_ = defStepSize_ + castedTickDifSum;
+		if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;	// Prevent wait count changing to 0 (freeze)
 		tickDifSum_ -= castedTickDifSum;
 	}
 	else {

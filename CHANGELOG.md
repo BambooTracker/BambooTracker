@@ -3,6 +3,11 @@
 ## Unreleased
 ### Changed
 - Use RtAudio for sound processing 
+### Fixed
+- Fix to draw the playing cursor when follow mode is turned off
+- [#152] - Prevent real step size setting to 0 (thanks [@OPNA2608])
+
+[#152]: https://github.com/rerrahkr/BambooTracker/pull/152
 
 ## v0.2.4 (2019-09-17)
 ### Changed
