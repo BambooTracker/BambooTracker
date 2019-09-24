@@ -131,7 +131,12 @@ void PlaybackManager::startPlay()
 void PlaybackManager::stopPlaySong()
 {
 	std::lock_guard<std::mutex> lock(mutex_);
+	stopPlay();
+}
 
+void PlaybackManager::stopPlay()
+{
+	// No mutex to call from PlaybackManager::streamCountUp
 	opnaCtrl_.lock()->reset();
 
 	tickCounter_.lock()->setPlayState(false);
@@ -171,7 +176,7 @@ int PlaybackManager::streamCountUp()
 			if (!isFindNextStep_) findNextStep();
 		}
 		else {
-			stopPlaySong();
+			stopPlay();
 		}
 	}
 	else {

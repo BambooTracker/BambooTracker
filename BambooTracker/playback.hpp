@@ -62,6 +62,7 @@ private:
 	// Play song
 	bool isFindNextStep_;
 	void startPlay();
+	void stopPlay();
 	bool stepDown();
 	void findNextStep();
 
