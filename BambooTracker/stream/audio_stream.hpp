@@ -24,10 +24,12 @@ public:
 	void setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr);
 
 	// duration: miliseconds
-	virtual bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device);
+	virtual bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& backend, const QString& device);
 	virtual void shutdown() = 0;
 
-	virtual std::vector<std::string> getAvailableDevices() = 0;
+	virtual std::vector<std::string> getAvailableDevices() const = 0;
+	virtual std::vector<std::string> getAvailableBackends() const = 0;
+	virtual std::string getCurrentBackend() const = 0;
 
 	void setInterruption(uint32_t inrtRate);
 

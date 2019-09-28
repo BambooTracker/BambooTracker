@@ -406,11 +406,13 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
 					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
 	bool streamState = stream_->initialize(
-				static_cast<uint32_t>(bt_->getStreamRate()),
-				static_cast<uint32_t>(bt_->getStreamDuration()),
-				bt_->getModuleTickFrequency(),
-				QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-								  static_cast<int>(config.lock()->getSoundDevice().length())));
+						   static_cast<uint32_t>(bt_->getStreamRate()),
+						   static_cast<uint32_t>(bt_->getStreamDuration()),
+						   bt_->getModuleTickFrequency(),
+						   QString::fromUtf8(config.lock()->getSoundAPI().c_str(),
+											 static_cast<int>(config.lock()->getSoundAPI().length())),
+						   QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
+											 static_cast<int>(config.lock()->getSoundDevice().length())));
 	if (!streamState) showStreamFailedDialog();
 	if (config.lock()->getUseSCCI()) {
 		stream_->stop();
@@ -1229,11 +1231,13 @@ void MainWindow::changeConfiguration()
 		timer_.reset();
 		bt_->useSCCI(nullptr);
 		bool streamState = stream_->initialize(
-					config_.lock()->getSampleRate(),
-					config_.lock()->getBufferLength(),
-					bt_->getModuleTickFrequency(),
-					QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
-									  static_cast<int>(config_.lock()->getSoundDevice().length())));
+							   config_.lock()->getSampleRate(),
+							   config_.lock()->getBufferLength(),
+							   bt_->getModuleTickFrequency(),
+							   QString::fromUtf8(config_.lock()->getSoundAPI().c_str(),
+												 static_cast<int>(config_.lock()->getSoundAPI().length())),
+							   QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
+												 static_cast<int>(config_.lock()->getSoundDevice().length())));
 		if (!streamState) showStreamFailedDialog();
 		stream_->start();
 	}
@@ -1977,7 +1981,7 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	ConfigurationDialog diag(config_.lock());
+	ConfigurationDialog diag(config_.lock(), stream_->getCurrentBackend(), stream_->getAvailableBackends());
 	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
 	if (diag.exec() == QDialog::Accepted) {

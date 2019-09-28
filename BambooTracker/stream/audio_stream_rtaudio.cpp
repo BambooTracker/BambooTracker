@@ -1,4 +1,6 @@
 #include "audio_stream_rtaudio.hpp"
+#include <string>
+#include <vector>
 #include "RtAudio/RtAudio.h"
 
 AudioStreamRtAudio::AudioStreamRtAudio(QObject* parent)
@@ -11,14 +13,16 @@ AudioStreamRtAudio::~AudioStreamRtAudio()
 {
 }
 
-bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& device)
+bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& backend, const QString& device)
 {
-	RtAudio* audio = audio_.get();
-	const std::string deviceUtf8 = device.toStdString();
-
 	shutdown();
 
-	AudioStream::initialize(rate, duration, intrRate, device);
+	setBackend(backend);
+
+	AudioStream::initialize(rate, duration, intrRate, backend, device);
+
+	RtAudio* audio = audio_.get();
+	const std::string deviceUtf8 = device.toStdString();
 
 	RtAudio::StreamParameters param;
 	param.nChannels = 2;
@@ -58,7 +62,23 @@ void AudioStreamRtAudio::shutdown()
 	if (audio_->isStreamOpen())	audio_->closeStream();
 }
 
-std::vector<std::string> AudioStreamRtAudio::getAvailableDevices()
+void AudioStreamRtAudio::setBackend(const QString& backend)
+{
+	std::vector<RtAudio::Api> apis;
+	RtAudio::getCompiledApi(apis);
+	size_t i = 0;
+	for (const auto& api : apis) {
+		std::string name = RtAudio::getApiDisplayName(api);
+		if (backend == QString::fromStdString(name)) {
+			audio_.reset(new RtAudio(apis[i]));
+			return;
+		}
+		++i;
+	}
+	audio_.reset(new RtAudio);
+}
+
+std::vector<std::string> AudioStreamRtAudio::getAvailableDevices() const
 {
 	RtAudio* audio = audio_.get();
 	std::vector<std::string> devices;
@@ -70,6 +90,20 @@ std::vector<std::string> AudioStreamRtAudio::getAvailableDevices()
 	}
 
 	return devices;
+}
+
+std::vector<std::string> AudioStreamRtAudio::getAvailableBackends() const
+{
+	std::vector<RtAudio::Api> apis;
+	std::vector<std::string> names;
+	RtAudio::getCompiledApi(apis);
+	for (const auto& api : apis) names.push_back(RtAudio::getApiDisplayName(api));
+	return names;
+}
+
+std::string AudioStreamRtAudio::getCurrentBackend() const
+{
+	return RtAudio::getApiDisplayName(audio_->getCurrentApi());
 }
 
 void AudioStreamRtAudio::start()

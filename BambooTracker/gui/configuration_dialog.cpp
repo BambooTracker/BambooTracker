@@ -13,7 +13,8 @@
 #include "jam_manager.hpp"
 #include "chips/chip_misc.h"
 
-ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent)
+ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::string curApi,
+										 std::vector<std::string> apis, QWidget *parent)
 	: QDialog(parent),
 	  ui(new Ui::ConfigurationDialog),
 	  config_(config)
@@ -108,6 +109,15 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, QW
 	ui->emulatorComboBox->setCurrentIndex(ui->emulatorComboBox->findData(configLocked->getEmulator()));
 
 	// Sound //
+	int apiRow = -1;
+	int defApiRow = 0;
+	for (auto& name : apis) {
+		ui->soundAPIComboBox->addItem(QString::fromUtf8(name.c_str(), static_cast<int>(name.length())));
+		if (name == configLocked->getSoundAPI()) apiRow = ui->soundAPIComboBox->count() - 1;
+		if (name == curApi) defApiRow = apiRow = ui->soundAPIComboBox->count() - 1;
+	}
+	ui->soundAPIComboBox->setCurrentIndex((apiRow == -1) ? defApiRow : apiRow);
+
 	int devRow = -1;
 	int defDevRow = 0;
 	for (auto& info : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
@@ -228,6 +238,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 
 	// Sound //
 	configLocked->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
+	configLocked->setSoundAPI(ui->soundAPIComboBox->currentText().toUtf8().toStdString());
 	configLocked->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
 	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
@@ -405,7 +416,7 @@ void ConfigurationDialog::on_envelopeTypeListWidget_currentRowChanged(int curren
 
 void ConfigurationDialog::on_keyboardTypeComboBox_currentIndexChanged(int index)
 {
-	Q_UNUSED(index);
+	Q_UNUSED(index)
 	bool enableCustomLayoutInterface = ui->keyboardTypeComboBox->currentIndex() == 0;
 	ui->lowHighKeysTabWidget->setEnabled(enableCustomLayoutInterface);
 	ui->customLayoutResetButton->setEnabled(enableCustomLayoutInterface);

@@ -47,6 +47,7 @@ Configuration::Configuration()
 	noteEntryLayout_ = QWERTY;
 
 	// Sound //
+	sndAPI_ = u8"";
 	sndDevice_ = u8"";
 	useSCCI_ = false;
 	emulator_ = 0;
@@ -941,6 +942,16 @@ std::map<std::string, JamKey> Configuration::getCustomLayoutKeys() const
 }
 
 // Sound //
+void Configuration::setSoundAPI(std::string api)
+{
+	sndAPI_ = api;
+}
+
+std::string Configuration::getSoundAPI() const
+{
+	return sndAPI_;
+}
+
 void Configuration::setSoundDevice(std::string device)
 {
 	sndDevice_ = device;
