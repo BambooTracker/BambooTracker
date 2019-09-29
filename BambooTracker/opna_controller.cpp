@@ -2573,9 +2573,10 @@ void OPNAController::writeSquareWaveForm(int ch)
 	}
 	}
 
-	if (isBuzzEffSSG_[ch]) isBuzzEffSSG_[ch] = false;
-
-	if (wfSSG_[ch].type != SSGWaveFormType::SQUARE) setHardEnvIfNecessary_[ch] = true;
+	if (isBuzzEffSSG_[ch]) {
+		isBuzzEffSSG_[ch] = false;
+		setHardEnvIfNecessary_[ch] = true;
+	}
 
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
