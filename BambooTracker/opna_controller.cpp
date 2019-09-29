@@ -1901,7 +1901,6 @@ void OPNAController::setRealVolumeSSG(int ch)
 
 	opna_->setRegister(0x08 + static_cast<uint32_t>(ch), static_cast<uint8_t>(volume));
 	needEnvSetSSG_[ch] = false;
-	setHardEnvIfNecessary_[ch] = false;
 }
 
 void OPNAController::setMasterVolumeSSG(double dB)
@@ -2072,6 +2071,8 @@ void OPNAController::setFrontSSGSequences(int ch)
 {
 	if (isMuteSSG(ch)) return;
 
+	setHardEnvIfNecessary_[ch] = false;
+
 	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->front());
 	else writeSquareWaveForm(ch);
 
@@ -2089,7 +2090,6 @@ void OPNAController::setFrontSSGSequences(int ch)
 	}
 	if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
 	else setRealVolumeSSG(ch);
-	setHardEnvIfNecessary_[ch] = false;
 
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->front());
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
@@ -2113,6 +2113,8 @@ void OPNAController::setFrontSSGSequences(int ch)
 void OPNAController::releaseStartSSGSequences(int ch)
 {
 	if (isMuteSSG(ch)) return;
+
+	setHardEnvIfNecessary_[ch] = false;
 
 	if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next(true));
 
@@ -2138,7 +2140,6 @@ void OPNAController::releaseStartSSGSequences(int ch)
 			isHardEnvSSG_[ch] = false;
 		}
 	}
-	setHardEnvIfNecessary_[ch] = false;
 
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
@@ -2168,6 +2169,8 @@ void OPNAController::tickEventSSG(int ch)
 	else {
 		if (isMuteSSG(ch)) return;
 
+		setHardEnvIfNecessary_[ch] = false;
+
 		if (wfItSSG_[ch]) writeWaveFormSSGToRegister(ch, wfItSSG_[ch]->next());
 
 		if (treItSSG_[ch]) {
@@ -2184,7 +2187,6 @@ void OPNAController::tickEventSSG(int ch)
 		else if (needToneSetSSG_[ch] || needEnvSetSSG_[ch]) {
 			setRealVolumeSSG(ch);
 		}
-		setHardEnvIfNecessary_[ch] = false;
 
 		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
 		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
@@ -2824,7 +2826,7 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(static_cast<uint32_t>(0x08 + ch), 0x10);
 			isHardEnvSSG_[ch] = true;
 		}
-		setHardEnvIfNecessary_[ch] = false;
+		// setHardEnvIfNecessary_[ch] = false;
 	}
 }
 
