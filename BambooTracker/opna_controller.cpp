@@ -1901,6 +1901,7 @@ void OPNAController::setRealVolumeSSG(int ch)
 
 	opna_->setRegister(0x08 + static_cast<uint32_t>(ch), static_cast<uint8_t>(volume));
 	needEnvSetSSG_[ch] = false;
+	setHardEnvIfNecessary_[ch] = false;
 }
 
 void OPNAController::setMasterVolumeSSG(double dB)
@@ -2046,6 +2047,7 @@ void OPNAController::initSSG()
 		arpItSSG_[ch].reset();
 		ptItSSG_[ch].reset();
 		needEnvSetSSG_[ch] = false;
+		setHardEnvIfNecessary_[ch] = false;
 		needMixSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = false;
 		needSqMaskFreqSetSSG_[ch] = false;
@@ -2087,6 +2089,7 @@ void OPNAController::setFrontSSGSequences(int ch)
 	}
 	if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
 	else setRealVolumeSSG(ch);
+	setHardEnvIfNecessary_[ch] = false;
 
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->front());
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
@@ -2135,6 +2138,7 @@ void OPNAController::releaseStartSSGSequences(int ch)
 			isHardEnvSSG_[ch] = false;
 		}
 	}
+	setHardEnvIfNecessary_[ch] = false;
 
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
@@ -2180,6 +2184,7 @@ void OPNAController::tickEventSSG(int ch)
 		else if (needToneSetSSG_[ch] || needEnvSetSSG_[ch]) {
 			setRealVolumeSSG(ch);
 		}
+		setHardEnvIfNecessary_[ch] = false;
 
 		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
 		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
@@ -2568,6 +2573,8 @@ void OPNAController::writeSquareWaveForm(int ch)
 
 	if (isBuzzEffSSG_[ch]) isBuzzEffSSG_[ch] = false;
 
+	if (wfSSG_[ch].type != SSGWaveFormType::SQUARE) setHardEnvIfNecessary_[ch] = true;
+
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
 	needSqMaskFreqSetSSG_[ch] = false;
@@ -2793,7 +2800,7 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 	}
 	else {	// Hardware envelope
 		int data = envItSSG_[ch]->getCommandData();
-		if (envSSG_[ch].data != data) {
+		if (envSSG_[ch].data != data || setHardEnvIfNecessary_[ch]) {
 			envSSG_[ch].data = data;
 			if (CommandSequenceUnit::isRatioData(data)) {
 				/* Envelope frequency is set in writePitchSSG */
@@ -2808,7 +2815,7 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 		else {
 			needEnvSetSSG_[ch] = false;
 		}
-		if (envSSG_[ch].type != type || !isKeyOnSSG_[ch]) {
+		if (envSSG_[ch].type != type || !isKeyOnSSG_[ch] || setHardEnvIfNecessary_[ch]) {
 			opna_->setRegister(0x0d, static_cast<uint8_t>(type - 16 + 8));
 			envSSG_[ch].type = type;
 			if (CommandSequenceUnit::isRatioData(data)) needEnvSetSSG_[ch] = true;
@@ -2817,6 +2824,7 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(static_cast<uint32_t>(0x08 + ch), 0x10);
 			isHardEnvSSG_[ch] = true;
 		}
+		setHardEnvIfNecessary_[ch] = false;
 	}
 }
 

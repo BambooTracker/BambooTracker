@@ -191,7 +191,7 @@ public:
 	int getPlayingStepNumber() const;
 
 	// Export
-	bool exportToWav(std::string file, int loopCnt, std::function<bool()> f);
+	bool exportToWav(std::string file, int rate, int loopCnt, std::function<bool()> f);
 	bool exportToVgm(std::string file, int target, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f);
 	bool exportToS98(std::string file, int target, bool tagEnabled, S98Tag tag, int rate, std::function<bool()> f);
 

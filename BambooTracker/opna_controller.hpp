@@ -239,6 +239,7 @@ private:
 	bool isMuteSSG_[3];
 	bool hasPreSetTickEventSSG_[3];
 	bool needEnvSetSSG_[3];
+	bool setHardEnvIfNecessary_[3];
 	bool needMixSetSSG_[3];
 	bool needToneSetSSG_[3];
 	bool needSqMaskFreqSetSSG_[3];

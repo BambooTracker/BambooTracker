@@ -8,11 +8,20 @@ WaveExportSettingsDialog::WaveExportSettingsDialog(QWidget *parent) :
 	ui->setupUi(this);
 
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
+
+	ui->sampleRateComboBox->addItem("44100Hz", 44100);
+	ui->sampleRateComboBox->addItem("48000Hz", 48000);
+	ui->sampleRateComboBox->addItem("55466Hz", 55466);
 }
 
 WaveExportSettingsDialog::~WaveExportSettingsDialog()
 {
 	delete ui;
+}
+
+int WaveExportSettingsDialog::getSampleRate() const
+{
+	return ui->sampleRateComboBox->currentData().toInt();
 }
 
 int WaveExportSettingsDialog::getLoopCount() const

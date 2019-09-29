@@ -2294,7 +2294,7 @@ void MainWindow::on_actionWAV_triggered()
 	stream_->stop();
 
 	try {
-		bool res = bt_->exportToWav(file.toStdString(), diag.getLoopCount(),
+		bool res = bt_->exportToWav(file.toStdString(), diag.getSampleRate(), diag.getLoopCount(),
 									[&progress]() -> bool {
 										QApplication::processEvents();
 										progress.setValue(progress.value() + 1);

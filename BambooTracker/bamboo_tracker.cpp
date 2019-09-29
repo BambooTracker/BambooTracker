@@ -978,8 +978,10 @@ int BambooTracker::getPlayingStepNumber() const
 }
 
 /********** Export **********/
-bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<bool()> f)
+bool BambooTracker::exportToWav(std::string file, int rate, int loopCnt, std::function<bool()> f)
 {
+	int tmpRate = opnaCtrl_->getRate();
+	opnaCtrl_->setRate(rate);
 	size_t sampCnt = static_cast<size_t>(opnaCtrl_->getRate() * opnaCtrl_->getDuration() / 1000);
 	size_t intrCnt = static_cast<size_t>(opnaCtrl_->getRate()) / mod_->getTickFrequency();
 	size_t intrCntRest = 0;
@@ -1030,9 +1032,10 @@ bool BambooTracker::exportToWav(std::string file, int loopCnt, std::function<boo
 	opnaCtrl_->setExportContainer();
 	stopPlaySong();
 	isFollowPlay_ = tmpFollow;
+	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeWave(file, exCntr->getStream(), static_cast<uint32_t>(opnaCtrl_->getRate()));
+		ExportHandler::writeWave(file, exCntr->getStream(), static_cast<uint32_t>(rate));
 		f();
 		return true;
 	}
