@@ -66,6 +66,8 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 /********** Play song **********/
 void PlaybackManager::startPlaySong(int order)
 {
+	std::lock_guard<std::mutex> lock(mutex_);
+
 	startPlay();
 	playState_ = 0x01;
 	playStepNum_ = 0;
@@ -76,6 +78,8 @@ void PlaybackManager::startPlaySong(int order)
 
 void PlaybackManager::startPlayFromStart()
 {
+	std::lock_guard<std::mutex> lock(mutex_);
+
 	startPlay();
 	playState_ = 0x01;
 	playOrderNum_ = 0;
@@ -85,6 +89,8 @@ void PlaybackManager::startPlayFromStart()
 
 void PlaybackManager::startPlayPattern(int order)
 {
+	std::lock_guard<std::mutex> lock(mutex_);
+
 	startPlay();
 	playState_ = 0x11;
 	playStepNum_ = 0;
@@ -95,6 +101,8 @@ void PlaybackManager::startPlayPattern(int order)
 
 void PlaybackManager::startPlayFromCurrentStep(int order, int step)
 {
+	std::lock_guard<std::mutex> lock(mutex_);
+
 	startPlay();
 	playState_ = 0x01;
 	playOrderNum_ = order;
@@ -122,6 +130,13 @@ void PlaybackManager::startPlay()
 
 void PlaybackManager::stopPlaySong()
 {
+	std::lock_guard<std::mutex> lock(mutex_);
+	stopPlay();
+}
+
+void PlaybackManager::stopPlay()
+{
+	// No mutex to call from PlaybackManager::streamCountUp
 	opnaCtrl_.lock()->reset();
 
 	tickCounter_.lock()->setPlayState(false);
@@ -148,6 +163,8 @@ int PlaybackManager::getPlayingStepNumber() const
 /********** Stream events **********/
 int PlaybackManager::streamCountUp()
 {
+	std::lock_guard<std::mutex> lock(mutex_);
+
 	int state = tickCounter_.lock()->countUp();
 
 	if (state > 0) {
@@ -159,7 +176,7 @@ int PlaybackManager::streamCountUp()
 			if (!isFindNextStep_) findNextStep();
 		}
 		else {
-			stopPlaySong();
+			stopPlay();
 		}
 	}
 	else {

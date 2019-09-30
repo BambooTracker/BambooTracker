@@ -18,7 +18,8 @@ class ConfigurationDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit ConfigurationDialog(std::weak_ptr<Configuration> config, QWidget *parent = nullptr);
+	ConfigurationDialog(std::weak_ptr<Configuration> config, std::string curApi,
+						std::vector<std::string> apis, QWidget *parent = nullptr);
 	~ConfigurationDialog() override;
 
 signals:

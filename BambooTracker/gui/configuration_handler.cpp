@@ -116,6 +116,9 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 
 		// Sound //
 		settings.beginGroup("Sound");
+		settings.setValue("soundAPI",
+						  QString::fromUtf8(configLocked->getSoundAPI().c_str(),
+											static_cast<int>(configLocked->getSoundAPI().length())));
 		settings.setValue("soundDevice",
 						  QString::fromUtf8(configLocked->getSoundDevice().c_str(),
 											static_cast<int>(configLocked->getSoundDevice().length())));
@@ -272,6 +275,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 
 		// Sound //
 		settings.beginGroup("Sound");
+		configLocked->setSoundAPI(settings.value("soundAPI", QString::fromStdString(configLocked->getSoundAPI())).toString().toUtf8().toStdString());
 		configLocked->setSoundDevice(settings.value("soundDevice", QString::fromStdString(configLocked->getSoundDevice())).toString().toUtf8().toStdString());
 		configLocked->setUseSCCI(settings.value("useSCCI", configLocked->getUseSCCI()).toBool());
 		configLocked->setEmulator(settings.value("emulator", configLocked->getEmulator()).toInt());

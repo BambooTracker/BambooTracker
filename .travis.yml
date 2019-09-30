@@ -17,6 +17,8 @@ addons:
       - qtmultimedia5-dev
       - libqt5multimedia5-plugins
       - libasound2-dev
+      - libjack-dev
+      - libpulse-dev
   homebrew:
     packages:
       - qt5

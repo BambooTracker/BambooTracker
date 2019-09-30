@@ -58,7 +58,6 @@ SOURCES += \
     module/effect.cpp \
     playback.cpp \
     stream/audio_stream.cpp \
-    stream/audio_stream_mixier.cpp \
     jam_manager.cpp \
     pitch_converter.cpp \
     instrument/instruments_manager.cpp \
@@ -78,6 +77,7 @@ SOURCES += \
     instrument/instrument.cpp \
     instrument/envelope_fm.cpp \
     gui/event_guard.cpp \
+    stream/audio_stream_rtaudio.cpp \
     tick_counter.cpp \
     module/module.cpp \
     module/song.cpp \
@@ -220,7 +220,6 @@ HEADERS += \
     module/effect.hpp \
     playback.hpp \
     stream/audio_stream.hpp \
-    stream/audio_stream_mixier.hpp \
     chips/chip_def.h \
     jam_manager.hpp \
     misc.hpp \
@@ -244,6 +243,7 @@ HEADERS += \
     instrument/instrument.hpp \
     instrument/envelope_fm.hpp \
     gui/event_guard.hpp \
+    stream/audio_stream_rtaudio.hpp \
     tick_counter.hpp \
     module/module.hpp \
     module/song.hpp \
@@ -416,6 +416,7 @@ TRANSLATIONS += \
     res/lang/bamboo_tracker_fr.ts \
     res/lang/bamboo_tracker_ja.ts
 
+include("stream/RtAudio/RtAudio.pri")
 include("midi/RtMidi/RtMidi.pri")
 
 equals(QT_MAJOR_VERSION, 5) {

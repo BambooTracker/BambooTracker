@@ -275,7 +275,7 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 - .s98 (S98 file)
 
 ## 言語
-BambooTrackerでは以下の言語に対応しています:
+BambooTrackerでは以下の言語に対応しています。
 
 - 英語 (デフォルト)
 - フランス語
@@ -288,13 +288,17 @@ Ubuntu 18.04:
 > make  
 > Qt5 (qmake)  
 > Qt5 Multimedia  
-> Qt5 Multimedia plugins
+> Qt5 Multimedia plugins  
+> libasound2
 
 ```bash
 sudo apt-get install \
   build-essential \
-  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins \
+  libasound2-dev
 ```
+
+PulseAudioを使用する場合は`libpulse-dev`を、JACKを使用する場合は`libjack-dev`もインストールして下さい。
 
 ### コンパイル
 ```bash
@@ -302,6 +306,11 @@ cd BambooTracker
 qmake
 make
 ```
+
+PulseAudioやJACKを使用する場合は、`qmake`に以下のオプションを付けて下さい。
+
+- PulseAudio: `qmake DEFINES+=__LINUX_PULSE__`
+- JACK: `qmake DEFINES+=__UNIX_JACK__`
 
 ## FreeBSDでのパッケージのインストールまたはビルド
 ### ビルド
@@ -342,7 +351,7 @@ pkg install bambootracker
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
 - S98ファイルのフォーマットのドキュメントに関してRu^3さん
 - SCCIライブラリに関してSCCI開発チームの方々
-- RtMidiライブラリに関してGary P. Scavoneさん他
+- RtAudioとRtMidiライブラリに関してGary P. Scavoneさん他
 - Nuked OPN-Modエミュレーションに関してAlexey Khokholov (Nuke.YKT)さん、Jean Pierre Cimalandoさん
 - nowideライブラリに関してArtyom Beilisさん
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん

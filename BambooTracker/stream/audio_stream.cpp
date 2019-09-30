@@ -1,92 +1,125 @@
 #include "audio_stream.hpp"
-#include <QSysInfo>
-#include <QAudio>
+#include <algorithm>
 
-AudioStream::AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate, QString device)
+const std::string AudioStream::AUDIO_OUT_CLIENT_NAME = "BambooTracker";
+
+AudioStream::AudioStream(QObject *parent)
+	: QObject(parent),
+	  rate_(0),
+	  intrRate_(0),
+	  intrCount_(0),
+	  intrCountRest_(0),
+	  gcb_(nullptr),
+	  gcbPtr_(nullptr),
+	  tuState_(-1),
+	  started_(false),
+	  quitNotify_(false),
+	  tickNotifier_([this]() { tickNotifierRun(); })
 {
-	setDeviceFromString(device);
-
-	format_.setByteOrder(QAudioFormat::Endian(QSysInfo::ByteOrder));
-	format_.setChannelCount(2); // Stereo
-	format_.setCodec("audio/pcm");
-	format_.setSampleRate(static_cast<int>(rate));
-	format_.setSampleSize(16);   // int16
-	format_.setSampleType(QAudioFormat::SignedInt);
-
-	audio_ = std::make_unique<QAudioOutput>(info_, format_);
-	mixer_ = std::make_unique<AudioStreamMixier>(rate, duration, intrRate);
-	QObject::connect(mixer_.get(), &AudioStreamMixier::streamInterrupted,
-					 this, [&]() { emit streamInterrupted(); }, Qt::DirectConnection);
-	QObject::connect(mixer_.get(), &AudioStreamMixier::bufferPrepared,
-					 this, [&](int16_t *container, size_t nSamples) {
-		emit bufferPrepared(container, nSamples);
-	}, Qt::DirectConnection);
-
-	start();
 }
 
 AudioStream::~AudioStream()
 {
-	stop();
+	quitNotify_.store(true);
+	tickNotifierSem_.release();
+	tickNotifier_.join();
+}
+
+void AudioStream::setGenerateCallback(GenerateCallback* cb, void* cbPtr)
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	gcb_ = cb;
+	gcbPtr_ = cbPtr;
+}
+
+void AudioStream::setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr)
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	tucb_ = cb;
+	tucbPtr_ = cbPtr;
+}
+
+bool AudioStream::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& backend, const QString& device)
+{
+	Q_UNUSED(duration)
+	Q_UNUSED(backend)
+	Q_UNUSED(device)
+
+	started_ = false;
+	rate_ = rate;
+	setInterruption(intrRate);
+	return true;
+}
+
+void AudioStream::setInterruption(uint32_t intrRate)
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	intrRate_ = intrRate;
+	intrCount_ = rate_ / intrRate_;
 }
 
 void AudioStream::start()
 {
-	if (!mixer_->hasRun()) mixer_->start();
-	if (audio_->state() != QAudio::ActiveState) audio_->start(mixer_.get());
+	std::lock_guard<std::mutex> lock(mutex_);
+	started_ = true;
 }
 
 void AudioStream::stop()
 {
-	if (mixer_->hasRun()) mixer_->stop();
-	if (audio_->state() != QAudio::StoppedState) audio_->stop();
+	std::lock_guard<std::mutex> lock(mutex_);
+	started_ = false;
 }
 
-void AudioStream::setRate(uint32_t rate)
+void AudioStream::generate(int16_t* container, uint32_t nSamples)
 {
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
-	format_.setSampleRate(static_cast<int>(rate));
-	audio_ = std::make_unique<QAudioOutput>(info_, format_);
-	mixer_->setRate(rate);
-	if (hasRun) start();
-}
+	GenerateCallback* gcb = nullptr;
+	void* gcbPtr = nullptr;
+	TickUpdateCallback* tucb = nullptr;
+	bool started = false;
 
-void AudioStream::setDuration(uint32_t duration)
-{
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
-	mixer_->setDuration(duration);
-	if (hasRun) start();
-}
+	std::unique_lock<std::mutex> lock(mutex_, std::try_to_lock);
+	if (lock.owns_lock()) {
+		gcb = gcb_;
+		gcbPtr = gcbPtr_;
+		tucb = tucb_;
+		started = started_;
+	}
 
-void AudioStream::setInturuption(uint32_t rate)
-{
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
-	mixer_->setInterruption(rate);
-	if (hasRun) start();
-}
-
-void AudioStream::setDevice(QString device)
-{
-	bool hasRun = mixer_->hasRun();
-	if (hasRun) stop();
-	setDeviceFromString(device);
-	audio_ = std::make_unique<QAudioOutput>(info_, format_);
-	if (hasRun) start();
-}
-
-void AudioStream::setDeviceFromString(QString device)
-{
-	if (device == QAudioDeviceInfo::defaultOutputDevice().deviceName()) {
-		info_ = QAudioDeviceInfo::defaultOutputDevice();
+	if (!gcb || !tucb || !started) {
+		std::fill(container, container + (nSamples << 1), 0);
 		return;
 	}
-	for (auto& i : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-		if (device == i.deviceName()) {
-			info_ = i;
-			break;
+
+	int16_t* destPtr = container;
+	while (nSamples) {
+		if (!intrCountRest_) {	// Interruption
+			intrCountRest_ = intrCount_;    // Set counts to next interruption
+			generateTick();
 		}
+
+		size_t count = std::min(intrCountRest_, nSamples);
+		nSamples -= count;
+		intrCountRest_ -= count;
+
+		gcb(destPtr, count, gcbPtr);
+
+		destPtr += (count << 1);	// Move head
+	}
+}
+
+void AudioStream::generateTick()
+{
+	tuState_.store(tucb_(tucbPtr_));
+	tickNotifierSem_.release();
+}
+
+void AudioStream::tickNotifierRun()
+{
+	while (true) {
+		tickNotifierSem_.acquire();
+
+		if (quitNotify_.load()) return;
+
+		emit streamInterrupted(tuState_.load());
 	}
 }

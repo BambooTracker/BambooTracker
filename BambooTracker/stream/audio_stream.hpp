@@ -1,39 +1,67 @@
 #pragma once
 
 #include <QObject>
-#include <QAudioOutput>
-#include <QAudioDeviceInfo>
-#include <QAudioFormat>
+#include <QSemaphore>
 #include <QString>
+#include <thread>
+#include <mutex>
 #include <memory>
-#include "audio_stream_mixier.hpp"
+#include <atomic>
+#include <cstdint>
 
 class AudioStream : public QObject
 {
 	Q_OBJECT
 
 public:
+	explicit AudioStream(QObject* parent = nullptr);
+	virtual ~AudioStream();
+
+	using GenerateCallback = void (int16_t*, size_t, void*);
+	void setGenerateCallback(GenerateCallback* cb, void* cbPtr);
+
+	using TickUpdateCallback = int (void*);
+	void setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr);
+
 	// duration: miliseconds
-	AudioStream(uint32_t rate, uint32_t duration, uint32_t intrRate, QString device);
-	~AudioStream();
+	virtual bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& backend, const QString& device);
+	virtual void shutdown() = 0;
 
-	void start();
-	void stop();
+	virtual std::vector<std::string> getAvailableDevices() const = 0;
+	virtual std::vector<std::string> getAvailableBackends() const = 0;
+	virtual std::string getCurrentBackend() const = 0;
 
-	void setRate(uint32_t rate);
-	void setDuration(uint32_t duration);
-	void setInturuption(uint32_t rate);
-	void setDevice(QString device);
+	void setInterruption(uint32_t inrtRate);
+
+	virtual void start();
+	virtual void stop();
 
 signals:
-	void streamInterrupted();
-	void bufferPrepared(int16_t *container, size_t nSamples);
+	void streamInterrupted(int state);
+
+protected:
+	static const std::string AUDIO_OUT_CLIENT_NAME;
+	void generate(int16_t* container, uint32_t nSamples);
 
 private:
-	QAudioDeviceInfo info_;
-	QAudioFormat format_;
-	std::unique_ptr<QAudioOutput> audio_;
-	std::unique_ptr<AudioStreamMixier> mixer_;
+	uint32_t rate_;
+	uint32_t intrRate_;
+	uint32_t intrCount_;
+	uint32_t intrCountRest_;
 
-	void setDeviceFromString(QString device);
+	std::mutex mutex_;
+	GenerateCallback* gcb_;
+	void* gcbPtr_;
+	TickUpdateCallback* tucb_;
+	void* tucbPtr_;
+	std::atomic_int tuState_;
+	bool started_;
+
+	std::atomic_bool quitNotify_;
+	QSemaphore tickNotifierSem_;
+	std::thread tickNotifier_;
+
+	void generateTick();
+
+	void tickNotifierRun();
 };

@@ -286,13 +286,17 @@ On Ubuntu 18.04:
 > make  
 > Qt5 (including qmake)  
 > Qt5 Multimedia  
-> Qt5 Multimedia plugins
+> Qt5 Multimedia plugins  
+> libasound2
 
 ```bash
 sudo apt-get install \
   build-essential \
-  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins \
+  libasound2-dev
 ```
+
+You also need to install `libpulse-dev` if you use PulseAudio, or `libjack-dev`  if you use Jack.
 
 ### Compilation
 ```bash
@@ -300,6 +304,11 @@ cd BambooTracker
 qmake
 make
 ```
+
+If you use PulseAudio or JACK, add the option to `qmake`:
+
+- PulseAudio: `qmake DEFINES+=__LINUX_PULSE__`
+- JACK: `qmake DEFINES+=__UNIX_JACK__`
 
 ## Install package or build on FreeBSD
 ### Build
@@ -340,7 +349,7 @@ I would like to thank the following people for making it:
 - papiezak for sample instruments
 - Ru^3 for S98 file format documentation
 - SCCI team for SCCI libraries
-- Gary P. Scavone and others for RtMidi libraries
+- Gary P. Scavone and others for RtAudio and RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - Artyom Beilis for nowide library
 - Jean Pierre Cimalando and Olivier Humbert for French translation

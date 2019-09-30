@@ -225,7 +225,8 @@ private slots:
 	void on_actionS98_triggered();
 	void on_actionMix_triggered();
 	void on_actionOverwrite_triggered();
-	void onNewTickSignaled();
+	void onNewTickSignaledRealChip();
+	void onNewTickSignaled(int state);
 	void on_actionClear_triggered();
 	void on_keyRepeatCheckBox_stateChanged(int arg1);
 	void updateVisuals();
@@ -235,10 +236,17 @@ private slots:
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{
-		return (QMessageBox::warning(this, "Warning",
-									 text + " If you execute this command, the command history is reset.",
+		return (QMessageBox::warning(this, tr("Warning"),
+									 text + tr(" If you execute this command, the command history is reset."),
 									 QMessageBox::Yes | QMessageBox::No,
 									 QMessageBox::No) == QMessageBox::Yes);
+	}
+
+	inline void showStreamFailedDialog()
+	{
+		QMessageBox::critical(this, tr("Error"),
+							  tr("Could not open the audio stream. Please change the sound settings in Configuration."),
+							  QMessageBox::Ok, QMessageBox::Ok);
 	}
 };
 

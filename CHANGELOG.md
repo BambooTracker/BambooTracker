@@ -4,6 +4,9 @@
 ### Added
 - Add sample rate selection in wav export
 
+### Changed
+- [#152] - Use RtAudio for sound processing ([#96]; thanks [@jpcima], [@OPNA2608] and others)
+
 ### Fixed
 - Fix to draw the playing cursor when follow mode is turned off
 - [#152] - Prevent real step size setting to 0 (thanks [@OPNA2608])
