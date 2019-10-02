@@ -403,8 +403,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
 		bt->getStreamSamples(container, nSamples);
 	}, bt_.get());
-	QObject::connect(stream_.get(), &AudioStream::streamInterrupted,
-					 this, &MainWindow::onNewTickSignaled, Qt::DirectConnection);
+	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
 	bool streamState = stream_->initialize(
 						   static_cast<uint32_t>(bt_->getStreamRate()),
 						   static_cast<uint32_t>(bt_->getStreamDuration()),
