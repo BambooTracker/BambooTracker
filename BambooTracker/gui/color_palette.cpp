@@ -61,7 +61,6 @@ ColorPalette::ColorPalette()
 	ptnCurRowColor = QColor::fromRgb(110, 90, 140, 255);
 	ptnCurEditRowColor = QColor::fromRgb(140, 90, 110, 255);
 	ptnCurCellColor = QColor::fromRgb(255, 255, 255, 127);
-	ptnPlayTextColor = QColor::fromRgb(255, 255, 255, 255);
 	ptnPlayRowColor = QColor::fromRgb(90, 90, 140, 255);
 	ptnSelCellColor = QColor::fromRgb(100, 100, 200, 192);
 	ptnHovCellColor = QColor::fromRgb(255, 255, 255, 64);
@@ -80,6 +79,7 @@ ColorPalette::ColorPalette()
 	ptnBorderColor = QColor::fromRgb(120, 120, 120, 255);
 	ptnMuteColor = QColor::fromRgb(255, 0, 0, 255);
 	ptnUnmuteColor = QColor::fromRgb(0, 255, 0, 255);
+	ptnBackColor = QColor::fromRgb(0, 0, 0, 255);
 
 	// Wave visual
 	wavBackColor = QColor::fromRgb(0, 0, 33, 255);

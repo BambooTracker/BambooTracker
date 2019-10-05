@@ -107,8 +107,18 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 
 	if (watched == ui->panel) {
 		switch (event->type()) {
-		case QEvent::FocusIn:	emit focusIn();		return false;
-		case QEvent::FocusOut:	emit focusOut();	return false;
+		case QEvent::FocusIn:
+			ui->panel->redrawByHeaderChanged();
+			emit focusIn();
+			return false;
+		case QEvent::FocusOut:
+			ui->panel->redrawByHeaderChanged();
+			emit focusOut();
+			return false;
+		case QEvent::HoverEnter:
+		case QEvent::HoverLeave:
+			ui->panel->redrawByHeaderChanged();
+			return false;
 		default:	return false;
 		}
 	}

@@ -9,12 +9,12 @@ EraseCellsInPatternQtCommand::EraseCellsInPatternQtCommand(PatternEditorPanel* p
 
 void EraseCellsInPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void EraseCellsInPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int EraseCellsInPatternQtCommand::id() const

@@ -44,6 +44,12 @@ public:
 
 	int getCurrentTrack() const;
 
+	void redrawByPatternChanged();
+	void redrawByCursorChanged();
+	void redrawByPositionChanged();
+	void redrawByHeaderChanged();
+	void redrawBySizeChanged();
+
 public slots:
 	void setCurrentCellInRow(int num);
 	void setCurrentStep(int num);
@@ -113,7 +119,7 @@ private slots:
 	void midiKeyEvent(uchar status, uchar key, uchar velocity);
 
 private:
-	std::unique_ptr<QPixmap> pixmap_;
+	std::unique_ptr<QPixmap> completePixmap_, stepBackPixmap_, stepForePixmap_, headerPixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::weak_ptr<Configuration> config_;
@@ -159,15 +165,24 @@ private:
 	int hl1Cnt_, hl2Cnt_;
 	int editableStepCnt_;
 
+	int viewedRowCnt_;
+	int viewedRegionHeight_;
+	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
+	PatternPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
+
+	bool patternChanged_, cursorChanged_, posChanged_, headerChanged_, sizeChanged_, tickChanged_;
+	int tickUpdateRequestCnt_;
+
 	// Meta methods
 	int midiKeyEventMethod_;
 
 	void initDisplay();
 	void drawPattern(const QRect& rect);
 	void drawRows(int maxWidth);
+	void quickDrawRows(int maxWidth);
 	/// Return:
 	///		track width
-	int drawStep(QPainter& painter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY);
+	int drawStep(QPainter& forePainter, QPainter& backPainter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY, bool changeFore);
 	void drawHeaders(int maxWidth);
 	void drawBorders(int maxWidth);
 	void drawShadow();
@@ -176,6 +191,7 @@ private:
 	int calculateColNumInRow(int trackNum, int colNumInTrack, bool isExpanded = false) const;
 	int calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn, bool isExpanded = false) const;
 	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
+	PatternPosition calculatePositionFrom(int order, int step, int by) const;
 	QPoint calculateCurrentCursorPosition() const;
 
 	void moveCursorToRight(int n);

@@ -9,12 +9,12 @@ ReplaceInstrumentInPatternQtCommand::ReplaceInstrumentInPatternQtCommand(Pattern
 
 void ReplaceInstrumentInPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void ReplaceInstrumentInPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int ReplaceInstrumentInPatternQtCommand::id() const

@@ -9,12 +9,12 @@ EraseVolumeInStepQtCommand::EraseVolumeInStepQtCommand(PatternEditorPanel* panel
 
 void EraseVolumeInStepQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void EraseVolumeInStepQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int EraseVolumeInStepQtCommand::id() const

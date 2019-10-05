@@ -11,12 +11,12 @@ SetVolumeToStepQtCommand::SetVolumeToStepQtCommand(PatternEditorPanel* panel, Pa
 
 void SetVolumeToStepQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void SetVolumeToStepQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int SetVolumeToStepQtCommand::id() const

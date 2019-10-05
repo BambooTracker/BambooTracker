@@ -9,12 +9,12 @@ PasteMixCopiedDataToPatternQtCommand::PasteMixCopiedDataToPatternQtCommand(Patte
 
 void PasteMixCopiedDataToPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void PasteMixCopiedDataToPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int PasteMixCopiedDataToPatternQtCommand::id() const
