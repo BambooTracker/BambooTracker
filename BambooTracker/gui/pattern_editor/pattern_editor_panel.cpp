@@ -150,31 +150,31 @@ int PatternEditorPanel::getCurrentTrack() const
 void PatternEditorPanel::redrawByPatternChanged()
 {
 	patternChanged_ = true;
-	update();
+	repaint();
 }
 
 void PatternEditorPanel::redrawByCursorChanged()
 {
 	cursorChanged_ = true;
-	update();
+	repaint();
 }
 
 void PatternEditorPanel::redrawByPositionChanged()
 {
 	posChanged_ = true;
-	update();
+	repaint();
 }
 
 void PatternEditorPanel::redrawByHeaderChanged()
 {
 	headerChanged_ = true;
-	update();
+	repaint();
 }
 
 void PatternEditorPanel::redrawBySizeChanged()
 {
 	sizeChanged_ = true;
-	update();
+	repaint();
 }
 
 void PatternEditorPanel::drawPattern(const QRect &rect)
@@ -1069,7 +1069,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 	stepChanged_ = !stepUpdateRequestCnt_++;
 	if (isFirstUpdate) stepChanged_ = false;	// Redraw entire area in first update
 	posChanged_ = true;
-	update();
+	repaint();
 }
 
 JamKey PatternEditorPanel::getJamKeyFromLayoutMapping(Qt::Key key) {
@@ -2018,7 +2018,7 @@ void PatternEditorPanel::onSongLoaded()
 	patternChanged_ = true;
 	posChanged_ = true;
 	headerChanged_ = true;
-	update();
+	repaint();
 }
 
 void PatternEditorPanel::onDeletePressed()

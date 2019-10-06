@@ -665,31 +665,31 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 	// Redraw entire area in first update and jumping order
 	if (isFirstUpdate || tmp - 1 != curPos_.row) orderChanged_ = false;
 	posChanged_ = true;
-	update();
+	repaint();
 }
 
 void OrderListPanel::redrawByPatternChanged()
 {
 	rowsChanged_ = true;
-	update();
+	repaint();
 }
 
 void OrderListPanel::redrawByCursorChanged()
 {
 	cursorChanged_ = true;
-	update();
+	repaint();
 }
 
 void OrderListPanel::redrawByPositionChanged()
 {
 	posChanged_ = true;
-	update();
+	repaint();
 }
 
 void OrderListPanel::redrawBySizeChanged()
 {
 	sizeChanged_ = true;
-	update();
+	repaint();
 }
 
 void OrderListPanel::redrawAll()
@@ -697,7 +697,7 @@ void OrderListPanel::redrawAll()
 	rowsChanged_ = true;
 	posChanged_ = true;
 	headerChanged_ = true;
-	update();
+	repaint();
 }
 
 bool OrderListPanel::enterOrder(int key)

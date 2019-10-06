@@ -12,6 +12,8 @@
 - [#152] - Prevent real step size setting to 0 (thanks [@OPNA2608])
 - [#153] - Fix hardware envelope to set data in sequence (thanks [@papiezak])
 - [#154] - Fix position initialization when opening module (thanks [@papiezak])
+- [#96], [#152] - Reduce drawing cost of pattern editor and order list
+- Disable slider operation during playback
 
 [#152]: https://github.com/rerrahkr/BambooTracker/pull/152
 [#153]: https://github.com/rerrahkr/BambooTracker/issues/153
