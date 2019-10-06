@@ -1151,21 +1151,21 @@ void MainWindow::loadSong()
 void MainWindow::startPlaySong()
 {
 	bt_->startPlaySong();
-	ui->patternEditor->updatePosition();
+	ui->patternEditor->updatePositionByStepUpdate();
 	lockControls(true);
 }
 
 void MainWindow::startPlayFromStart()
 {
 	bt_->startPlayFromStart();
-	ui->patternEditor->updatePosition();
+	ui->patternEditor->updatePositionByStepUpdate();
 	lockControls(true);
 }
 
 void MainWindow::startPlayPattern()
 {
 	bt_->startPlayPattern();
-	ui->patternEditor->updatePosition();
+	ui->patternEditor->updatePositionByStepUpdate();
 	lockControls(true);
 }
 
@@ -2426,9 +2426,9 @@ void MainWindow::onNewTickSignaled(int state)
 {
 	if (!state) {	// New step
 		int order = bt_->getPlayingOrderNumber();
-		if (order > -1) {
-			ui->orderList->update();
-			ui->patternEditor->updatePosition();
+		if (order > -1) {	// Playing
+			if (!bt_->getPlayingStepNumber()) ui->orderList->updatePositionByOrderUpdate();	// New order
+			ui->patternEditor->updatePositionByStepUpdate();
 			statusPlayPos_->setText(
 						QString("%1/%2")
 						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))

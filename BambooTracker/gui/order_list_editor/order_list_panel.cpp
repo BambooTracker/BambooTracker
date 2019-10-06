@@ -427,6 +427,13 @@ void OrderListPanel::changeEditable()
 	update();
 }
 
+void OrderListPanel::updatePositionByOrderUpdate()
+{
+	curPos_.row = bt_->getCurrentOrderNumber();
+	emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+	update();
+}
+
 bool OrderListPanel::enterOrder(int key)
 {
 	switch (key) {
@@ -654,12 +661,14 @@ void OrderListPanel::setCurrentTrackForSlider(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.track) moveCursorToRight(dif);
 }
 
 void OrderListPanel::setCurrentOrderForSlider(int num) {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.row) moveCursorToDown(dif);
 }
 
@@ -667,12 +676,14 @@ void OrderListPanel::setCurrentTrack(int num)
 {
 	Ui::EventGuard eg(isIgnoreToPattern_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.track) moveCursorToRight(dif);
 }
 
 void OrderListPanel::setCurrentOrder(int num) {
 	Ui::EventGuard eg(isIgnoreToPattern_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.row) moveCursorToDown(dif);
 }
 

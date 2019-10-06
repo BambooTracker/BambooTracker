@@ -79,9 +79,9 @@ void PatternEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
-void PatternEditor::updatePosition()
+void PatternEditor::updatePositionByStepUpdate()
 {
-	ui->panel->updatePosition();
+	ui->panel->updatePositionByStepUpdate();
 }
 
 void PatternEditor::copySelectedCells()

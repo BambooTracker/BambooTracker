@@ -1056,11 +1056,10 @@ int PatternEditorPanel::getFullColmunSize() const
 	return calculateColNumInRow(static_cast<int>(songStyle_.trackAttribs.size()) - 1, 4 + 2 * rightEffn_.back());
 }
 
-void PatternEditorPanel::updatePosition()
+void PatternEditorPanel::updatePositionByStepUpdate()
 {
 	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 
-	emit currentOrderChanged(curPos_.order, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 	emit currentStepChanged(
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
@@ -1909,6 +1908,7 @@ void PatternEditorPanel::setCurrentCellInRow(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - calculateColNumInRow(curPos_.track, curPos_.colInTrack))
 		moveCursorToRight(dif);
 }
@@ -1917,6 +1917,7 @@ void PatternEditorPanel::setCurrentStep(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.step) moveCursorToDown(dif);
 }
 

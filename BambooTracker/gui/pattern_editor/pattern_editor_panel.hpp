@@ -37,7 +37,7 @@ public:
 
 	void changeEditable();
 	int getFullColmunSize() const;
-	void updatePosition();
+	void updatePositionByStepUpdate();
 
 	void copySelectedCells();
 	void cutSelectedCells();

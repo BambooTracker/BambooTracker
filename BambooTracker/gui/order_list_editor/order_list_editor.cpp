@@ -70,6 +70,11 @@ void OrderListEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
+void OrderListEditor::updatePositionByOrderUpdate()
+{
+	ui->panel->updatePositionByOrderUpdate();
+}
+
 void OrderListEditor::copySelectedCells()
 {
 	ui->panel->copySelectedCells();

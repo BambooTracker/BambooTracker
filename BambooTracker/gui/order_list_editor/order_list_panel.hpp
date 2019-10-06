@@ -33,6 +33,7 @@ public:
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
+	void updatePositionByOrderUpdate();
 
 	void copySelectedCells();
 	void deleteOrder();
