@@ -79,9 +79,9 @@ void PatternEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
-void PatternEditor::updatePositionByStepUpdate()
+void PatternEditor::updatePositionByStepUpdate(bool isFirstUpdate)
 {
-	ui->panel->updatePositionByStepUpdate();
+	ui->panel->updatePositionByStepUpdate(isFirstUpdate);
 }
 
 void PatternEditor::copySelectedCells()
@@ -119,7 +119,8 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 		case QEvent::HoverLeave:
 			ui->panel->redrawByHeaderChanged();
 			return false;
-		default:	return false;
+		default:
+			return false;
 		}
 	}
 

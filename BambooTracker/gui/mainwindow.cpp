@@ -57,6 +57,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	isEditedOrder_(false),
 	isEditedInstList_(false),
 	isSelectedPO_(false),
+	firstViewUpdateRequest_(false),
 	effListDiag_(std::make_unique<EffectListDialog>()),
 	shortcutsDiag_(std::make_unique<KeyboardShortcutListDialog>())
 {
@@ -148,7 +149,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, [&](int count) {
 		bt_->setModuleStepHighlight1Distance(static_cast<size_t>(count));
 		ui->patternEditor->setPatternHighlight1Count(count);
-		ui->patternEditor->update();
 	});
 	ui->subToolBar->addWidget(highlight1_);
 	auto hlLab2 = new QLabel(tr("2nd"));
@@ -163,7 +163,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, [&](int count) {
 		bt_->setModuleStepHighlight2Distance(static_cast<size_t>(count));
 		ui->patternEditor->setPatternHighlight2Count(count);
-		ui->patternEditor->update();
 	});
 	ui->subToolBar->addWidget(highlight2_);
 
@@ -1151,28 +1150,29 @@ void MainWindow::loadSong()
 void MainWindow::startPlaySong()
 {
 	bt_->startPlaySong();
-	ui->patternEditor->updatePositionByStepUpdate();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayFromStart()
 {
 	bt_->startPlayFromStart();
-	ui->patternEditor->updatePositionByStepUpdate();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayPattern()
 {
 	bt_->startPlayPattern();
-	ui->patternEditor->updatePositionByStepUpdate();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayFromCurrentStep()
 {
 	bt_->startPlayFromCurrentStep();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::stopPlaySong()
@@ -2427,8 +2427,9 @@ void MainWindow::onNewTickSignaled(int state)
 	if (!state) {	// New step
 		int order = bt_->getPlayingOrderNumber();
 		if (order > -1) {	// Playing
-			if (!bt_->getPlayingStepNumber()) ui->orderList->updatePositionByOrderUpdate();	// New order
-			ui->patternEditor->updatePositionByStepUpdate();
+			if (!bt_->getPlayingStepNumber()) ui->orderList->updatePositionByOrderUpdate(firstViewUpdateRequest_);	// New order
+			ui->patternEditor->updatePositionByStepUpdate(firstViewUpdateRequest_);
+			firstViewUpdateRequest_ = false;
 			statusPlayPos_->setText(
 						QString("%1/%2")
 						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))

@@ -33,11 +33,17 @@ public:
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
-	void updatePositionByOrderUpdate();
+	void updatePositionByOrderUpdate(bool isFirstUpdate);
 
 	void copySelectedCells();
 	void deleteOrder();
 	void insertOrderBelow();
+
+	void redrawByPatternChanged();
+	void redrawByCursorChanged();
+	void redrawByPositionChanged();
+	void redrawBySizeChanged();
+	void redrawAll();
 
 public slots:
 	void setCurrentTrackForSlider(int num);
@@ -86,7 +92,7 @@ protected:
 	virtual void leaveEvent(QEvent* event) override;
 
 private:
-	std::unique_ptr<QPixmap> pixmap_;
+	std::unique_ptr<QPixmap> completePixmap_, rowForePixmap_, rowBackPixmap_, headerPixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::weak_ptr<Configuration> config_;
@@ -118,10 +124,19 @@ private:
 
 	int selectAllState_;
 
+	int viewedRowCnt_;
+	int viewedRegionHeight_;
+	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
+	OrderPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
+
+	bool rowsChanged_, cursorChanged_, posChanged_, sizeChanged_, headerChanged_, orderChanged_;
+	int orderUpdateRequestCnt_;
+
 	void initDisplay();
 
 	void drawList(const QRect& rect);
 	void drawRows(int maxWidth);
+	void quickDrawRows(int maxWidth);
 	void drawHeaders(int maxWidth);
 	void drawBorders(int maxWidth);
 	void drawShadow();

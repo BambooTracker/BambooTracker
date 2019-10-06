@@ -26,7 +26,7 @@ public:
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
-	void updatePositionByStepUpdate();
+	void updatePositionByStepUpdate(bool isFirstUpdate);
 
 	void copySelectedCells();
 	void cutSelectedCells();

@@ -925,6 +925,11 @@ bool BambooTracker::isPlaySong() const
 	return playback_->isPlaySong();
 }
 
+PlaybackState BambooTracker::getPlaybackState() const
+{
+	return playback_->getPlaybackState();
+}
+
 void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 {
 	auto& ta = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];

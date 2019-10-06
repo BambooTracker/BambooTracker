@@ -70,9 +70,9 @@ void OrderListEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
-void OrderListEditor::updatePositionByOrderUpdate()
+void OrderListEditor::updatePositionByOrderUpdate(bool isFirstUpdate)
 {
-	ui->panel->updatePositionByOrderUpdate();
+	ui->panel->updatePositionByOrderUpdate(isFirstUpdate);
 }
 
 void OrderListEditor::copySelectedCells()
@@ -103,9 +103,20 @@ bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 
 	if (watched == ui->panel) {
 		switch (event->type()) {
-		case QEvent::FocusIn:	emit focusIn();		return false;
-		case QEvent::FocusOut:	emit focusOut();	return false;
-		default:	return false;
+		case QEvent::FocusIn:
+			ui->panel->redrawAll();
+			emit focusIn();
+			return false;
+		case QEvent::FocusOut:
+			ui->panel->redrawAll();
+			emit focusOut();
+			return false;
+		case QEvent::HoverEnter:
+		case QEvent::HoverLeave:
+			ui->panel->redrawAll();
+			return false;
+		default:
+			return false;
 		}
 	}
 

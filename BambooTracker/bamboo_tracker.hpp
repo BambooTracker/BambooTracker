@@ -183,6 +183,7 @@ public:
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
 	bool isPlaySong() const;
+	PlaybackState getPlaybackState() const;
 	void setTrackMuteState(int trackNum, bool isMute);
 	bool isMute(int trackNum);
 	void setFollowPlay(bool isFollowed);

@@ -37,7 +37,7 @@ public:
 
 	void changeEditable();
 	int getFullColmunSize() const;
-	void updatePositionByStepUpdate();
+	void updatePositionByStepUpdate(bool isFirstUpdate);
 
 	void copySelectedCells();
 	void cutSelectedCells();
@@ -170,8 +170,8 @@ private:
 	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
 	PatternPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
 
-	bool patternChanged_, cursorChanged_, posChanged_, headerChanged_, sizeChanged_, tickChanged_;
-	int tickUpdateRequestCnt_;
+	bool patternChanged_, cursorChanged_, posChanged_, headerChanged_, sizeChanged_, stepChanged_;
+	int stepUpdateRequestCnt_;
 
 	// Meta methods
 	int midiKeyEventMethod_;

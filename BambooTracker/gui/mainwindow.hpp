@@ -130,6 +130,8 @@ private:
 
 	bool isSavedModBefore_;
 
+	bool firstViewUpdateRequest_;
+
 	// Sub tool bar
 	QSpinBox* octave_;
 	QSpinBox *highlight1_, *highlight2_;
