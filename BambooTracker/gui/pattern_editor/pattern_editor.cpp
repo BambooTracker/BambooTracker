@@ -9,6 +9,7 @@ PatternEditor::PatternEditor(QWidget *parent) :
 
 	installEventFilter(this);
 	ui->panel->installEventFilter(this);
+	ui->verticalScrollBar->installEventFilter(this);
 
 	ui->panel->setFocus();
 	QObject::connect(ui->panel, &PatternEditorPanel::currentCellInRowChanged,
@@ -119,6 +120,19 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 		case QEvent::HoverLeave:
 			ui->panel->redrawByHeaderChanged();
 			return false;
+		default:
+			return false;
+		}
+	}
+
+	if (watched == ui->verticalScrollBar) {
+		switch (event->type()) {
+		case QEvent::MouseButtonPress:
+		case QEvent::MouseButtonRelease:
+		case QEvent::MouseButtonDblClick:
+		case QEvent::DragMove:
+		case QEvent::Wheel:
+			return (bt_->isPlaySong() && bt_->isFollowPlay());
 		default:
 			return false;
 		}

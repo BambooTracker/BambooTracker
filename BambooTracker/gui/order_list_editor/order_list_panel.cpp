@@ -729,7 +729,7 @@ void OrderListPanel::setCellOrderNum(int n)
 	comStack_.lock()->push(new SetPatternToOrderQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	entryCnt_ = (entryCnt_ + 1) % 2;
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
+	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !entryCnt_) moveCursorToDown(1);
 }
 
 void OrderListPanel::insertOrderBelow()
@@ -989,7 +989,7 @@ void OrderListPanel::onSongLoaded()
 
 void OrderListPanel::onPastePressed()
 {
-	if (!bt_->isPlaySong()) pasteCopiedCells(curPos_);
+	if (!bt_->isJamMode()) pasteCopiedCells(curPos_);
 }
 
 void OrderListPanel::onSelectPressed(int type)
@@ -1118,7 +1118,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		else onSelectPressed(0);
 		return true;
 	case Qt::Key_Up:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -1128,7 +1128,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Down:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -1138,7 +1138,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Home:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -1148,7 +1148,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_End:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -1159,7 +1159,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_PageUp:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -1169,7 +1169,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_PageDown:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -1257,10 +1257,10 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 			moveCursorToRight(1);
 		}
 		if (event->pos().y() < headerHeight_ + rowFontHeight_) {
-			moveCursorToDown(-1);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 		}
 		else if (event->pos().y() > geometry().height() - rowFontHeight_) {
-			moveCursorToDown(1);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(1);
 		}
 	}
 }
@@ -1276,15 +1276,17 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 				int horDif = hovPos_.track - curPos_.track;
 				int verDif = hovPos_.row - curPos_.row;
 				moveCursorToRight(horDif);
-				moveCursorToDown(verDif);
+				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(verDif);
 			}
 			else if (hovPos_.row == -2 && hovPos_.track >= 0) {	// Header
 				int horDif = hovPos_.track - curPos_.track;
 				moveCursorToRight(horDif);
 			}
 			else if (hovPos_.track == -2 && hovPos_.row >= 0) {	// Row number
-				int verDif = hovPos_.row - curPos_.row;
-				moveCursorToDown(verDif);
+				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+					int verDif = hovPos_.row - curPos_.row;
+					moveCursorToDown(verDif);
+				}
 			}
 		}
 		break;
@@ -1350,6 +1352,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 
 void OrderListPanel::wheelEvent(QWheelEvent *event)
 {
+	if (bt_->isPlaySong() && bt_->isFollowPlay()) return;
 	int degree = event->angleDelta().y() / 8;
 	moveCursorToDown(-degree / 15);
 }

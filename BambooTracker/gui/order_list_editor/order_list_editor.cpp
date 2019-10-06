@@ -9,6 +9,7 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 
 	installEventFilter(this);
 	ui->panel->installEventFilter(this);
+	ui->verticalScrollBar->installEventFilter(this);
 
 	QObject::connect(ui->panel, &OrderListPanel::currentTrackChangedForSlider,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
@@ -115,6 +116,19 @@ bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 		case QEvent::HoverLeave:
 			ui->panel->redrawAll();
 			return false;
+		default:
+			return false;
+		}
+	}
+
+	if (watched == ui->verticalScrollBar) {
+		switch (event->type()) {
+		case QEvent::MouseButtonPress:
+		case QEvent::MouseButtonRelease:
+		case QEvent::MouseButtonDblClick:
+		case QEvent::DragMove:
+		case QEvent::Wheel:
+			return (bt_->isPlaySong() && bt_->isFollowPlay());
 		default:
 			return false;
 		}

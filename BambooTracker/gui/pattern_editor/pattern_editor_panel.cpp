@@ -1100,7 +1100,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 								  static_cast<int>(config_.lock()->getKeyOffKey().length()))).toString()) {
 		bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		return true;
 	}
 	else if (seq == QKeySequence(
@@ -1110,7 +1110,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 		if (n > 3) n = 3;
 		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
 		comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		return true;
 	}
 
@@ -1159,7 +1159,7 @@ void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 	if (octave < 8) {
 		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note);
 		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 	}
 }
 
@@ -1194,7 +1194,8 @@ void PatternEditorPanel::setStepInstrument(int num)
 	emit instrumentEntered(
 				bt_->getStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step));
 
-	if (!bt_->isPlaySong() && !updateEntryCount()) moveCursorToDown(editableStepCnt_);
+	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount())
+		moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterVolumeData(int key)
@@ -1227,7 +1228,8 @@ void PatternEditorPanel::setStepVolume(int volume)
 	bt_->setStepVolumeDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, volume, isReversed, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
-	if (!bt_->isPlaySong() && !updateEntryCount()) moveCursorToDown(editableStepCnt_);
+	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount())
+		moveCursorToDown(editableStepCnt_);
 }
 
 bool PatternEditorPanel::enterEffectID(int key)
@@ -1280,7 +1282,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 								  config_.lock()->getFill00ToEffectValue(), (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
-	if (!bt_->isPlaySong() && !updateEntryCount()) {
+	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount()) {
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
 	}
@@ -1482,7 +1484,7 @@ void PatternEditorPanel::setStepEffectValue(int value)
 	bt_->setStepEffectValueDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n, value, isReversed, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
-	if (!bt_->isPlaySong() && !updateEntryCount()) {
+	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount()) {
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
 	}
@@ -1499,7 +1501,7 @@ void PatternEditorPanel::deletePreviousStep()
 	if (curPos_.step) {
 		bt_->deletePreviousStep(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new DeletePreviousStepQtCommand(this));
-		if (!bt_->isPlaySong()) moveCursorToDown(-1);
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 	}
 }
 
@@ -2031,17 +2033,17 @@ void PatternEditorPanel::onDeletePressed()
 		case 0:
 			bt_->eraseStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 1:
 			bt_->eraseStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseInstrumentInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 2:
 			bt_->eraseStepVolume(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseVolumeInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 3:
 		case 5:
@@ -2050,7 +2052,7 @@ void PatternEditorPanel::onDeletePressed()
 			bt_->eraseStepEffect(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
 								 (curPos_.colInTrack - 3) / 2);
 			comStack_.lock()->push(new EraseEffectInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 4:
 		case 6:
@@ -2059,7 +2061,7 @@ void PatternEditorPanel::onDeletePressed()
 			bt_->eraseStepEffectValue(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
 									  (curPos_.colInTrack - 4) / 2);
 			comStack_.lock()->push(new EraseEffectValueInStepQtCommand(this));
-			if (!bt_->isPlaySong()) moveCursorToDown(editableStepCnt_);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		}
 	}
@@ -2067,17 +2069,17 @@ void PatternEditorPanel::onDeletePressed()
 
 void PatternEditorPanel::onPastePressed()
 {
-	if (!bt_->isPlaySong()) pasteCopiedCells(curPos_);
+	if (!bt_->isJamMode()) pasteCopiedCells(curPos_);
 }
 
 void PatternEditorPanel::onPasteMixPressed()
 {
-	if (!bt_->isPlaySong()) pasteMixCopiedCells(curPos_);
+	if (!bt_->isJamMode()) pasteMixCopiedCells(curPos_);
 }
 
 void PatternEditorPanel::onPasteOverwritePressed()
 {
-	if (!bt_->isPlaySong()) pasteOverwriteCopiedCells(curPos_);
+	if (!bt_->isJamMode()) pasteOverwriteCopiedCells(curPos_);
 }
 
 void PatternEditorPanel::onSelectPressed(int type)
@@ -2326,7 +2328,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		else onSelectPressed(0);
 		return true;
 	case Qt::Key_Up:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -2351,7 +2353,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Down:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -2387,7 +2389,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 		return true;
 	case Qt::Key_Home:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -2397,7 +2399,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_End:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -2408,7 +2410,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_PageUp:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -2418,7 +2420,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_PageDown:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -2562,10 +2564,10 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 			moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_)));
 		}
 		if (event->pos().y() < headerHeight_ + stepFontHeight_) {
-			moveCursorToDown(-1);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 		}
 		else if (event->pos().y() > geometry().height() - stepFontHeight_) {
-			moveCursorToDown(1);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(1);
 		}
 	}
 }
@@ -2584,7 +2586,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 				int verDif = calculateStepDistance(curPos_.order, curPos_.step,
 												   hovPos_.order, hovPos_.step);
 				moveCursorToRight(horDif);
-				moveCursorToDown(verDif);
+				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(verDif);
 			}
 			else if (hovPos_.order == -2 && hovPos_.track >= 0) {	// Header
 				if (isPressedPlus_) {
@@ -2605,9 +2607,11 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 				}
 			}
 			else if (hovPos_.track == -2 && hovPos_.order >= 0 && hovPos_.step >= 0) {	// Step number
-				int verDif = calculateStepDistance(curPos_.order, curPos_.step,
-												   hovPos_.order, hovPos_.step);
-				moveCursorToDown(verDif);
+				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+					int verDif = calculateStepDistance(curPos_.order, curPos_.step,
+													   hovPos_.order, hovPos_.step);
+					moveCursorToDown(verDif);
+				}
 			}
 		}
 		break;
@@ -2792,6 +2796,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 
 void PatternEditorPanel::wheelEvent(QWheelEvent *event)
 {
+	if (bt_->isPlaySong() && bt_->isFollowPlay()) return;
 	int degree = event->angleDelta().y() / 8;
 	moveCursorToDown(-degree / 15);
 }
@@ -2807,7 +2812,7 @@ void PatternEditorPanel::midiThreadReceivedEvent(double delay, const uint8_t *ms
 {
 	PatternEditorPanel *self = reinterpret_cast<PatternEditorPanel *>(userData);
 
-	Q_UNUSED(delay);
+	Q_UNUSED(delay)
 
 	// Note-On/Note-Off
 	if (len == 3 && (msg[0] & 0xe0) == 0x80) {
