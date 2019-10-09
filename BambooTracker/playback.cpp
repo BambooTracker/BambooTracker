@@ -3,7 +3,7 @@
 #include "song.hpp"
 #include "misc.hpp"
 
-PlaybackManager::PlaybackManager(std::weak_ptr<OPNAController> opnaCtrl,
+PlaybackManager::PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
 								 std::weak_ptr<InstrumentsManager> instMan, std::weak_ptr<TickCounter> tickCounter,
 								 std::weak_ptr<Module> mod,
 								 bool isRetrieveChannel)
@@ -113,7 +113,7 @@ void PlaybackManager::startPlayFromCurrentStep(int order, int step)
 
 void PlaybackManager::startPlay()
 {
-	opnaCtrl_.lock()->reset();
+	opnaCtrl_->reset();
 
 	Song& song = mod_.lock()->getSong(curSongNum_);
 	tickCounter_.lock()->setTempo(song.getTempo());
@@ -137,7 +137,7 @@ void PlaybackManager::stopPlaySong()
 void PlaybackManager::stopPlay()
 {
 	// No mutex to call from PlaybackManager::streamCountUp
-	opnaCtrl_.lock()->reset();
+	opnaCtrl_->reset();
 
 	tickCounter_.lock()->setPlayState(false);
 	playState_ = 0;
@@ -181,7 +181,7 @@ int PlaybackManager::streamCountUp()
 	}
 	else {
 		for (auto& attrib : songStyle_.trackAttribs) {
-			opnaCtrl_.lock()->tickEvent(attrib.source, attrib.channelInSource);
+			opnaCtrl_->tickEvent(attrib.source, attrib.channelInSource);
 		}
 	}
 
@@ -250,6 +250,7 @@ void PlaybackManager::readStep()
 		case SoundSource::Drum:	isNextSet |= readDrumStep(step, attrib.channelInSource);	break;
 		}
 	}
+	opnaCtrl_->updateKeyOnOffStatusDrum();
 
 	isFindNextStep_ = isNextSet;
 }
@@ -271,7 +272,7 @@ bool PlaybackManager::readFMStep(Step& step, int ch)
 		// Set effect
 		changedNextStep = readFMEffectFromQueue(ch);
 		readTickFMForNoteDelay(step, ch);
-		opnaCtrl_.lock()->tickEvent(SoundSource::FM, ch);
+		opnaCtrl_->tickEvent(SoundSource::FM, ch);
 	}
 	else {
 		changedNextStep = readFMEventsInStep(step, ch);
@@ -288,14 +289,14 @@ bool PlaybackManager::readFMEventsInStep(Step& step, int ch, bool calledByNoteDe
 	// Set volume
 	int vol = step.getVolume();
 	if (0 <= vol && vol < 0x80) {
-		opnaCtrl_.lock()->setVolumeFM(ch, vol);
+		opnaCtrl_->setVolumeFM(ch, vol);
 	}
 
 	// Set instrument
 	if (step.getInstrumentNumber() != -1) {
 		if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
 					instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber())))
-			opnaCtrl_.lock()->setInstrumentFM(ch, inst);
+			opnaCtrl_->setInstrumentFM(ch, inst);
 	}
 
 	// Set effect
@@ -306,28 +307,28 @@ bool PlaybackManager::readFMEventsInStep(Step& step, int ch, bool calledByNoteDe
 	case -1:	// None
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkFMDelayEventsInTick(step, ch);
-			opnaCtrl_.lock()->tickEvent(SoundSource::FM, ch);
+			opnaCtrl_->tickEvent(SoundSource::FM, ch);
 		}
 		break;
 	case -2:	// Key off
-		opnaCtrl_.lock()->keyOffFM(ch);
+		opnaCtrl_->keyOffFM(ch);
 		break;
 	case -3:	// Echo 0
-		opnaCtrl_.lock()->keyOnFM(ch, 0);
+		opnaCtrl_->keyOnFM(ch, 0);
 		break;
 	case -4:	// Echo 1
-		opnaCtrl_.lock()->keyOnFM(ch, 1);
+		opnaCtrl_->keyOnFM(ch, 1);
 		break;
 	case -5:	// Echo 2
-		opnaCtrl_.lock()->keyOnFM(ch, 2);
+		opnaCtrl_->keyOnFM(ch, 2);
 		break;
 	case -6:	// Echo 3
-		opnaCtrl_.lock()->keyOnFM(ch, 3);
+		opnaCtrl_->keyOnFM(ch, 3);
 		break;
 	default:	// Key on
 	{
 		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
-		opnaCtrl_.lock()->keyOnFM(ch, octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnFM(ch, octNote.second, octNote.first, 0);
 		break;
 	}
 	}
@@ -351,7 +352,7 @@ bool PlaybackManager::readSSGStep(Step& step, int ch)
 	if (isNoteDelay) {
 		// Set effect
 		changedNextStep = readSSGEffectFromQueue(ch);
-		opnaCtrl_.lock()->tickEvent(SoundSource::SSG, ch);
+		opnaCtrl_->tickEvent(SoundSource::SSG, ch);
 	}
 	else {
 		changedNextStep = readSSGEventsInStep(step, ch);
@@ -368,14 +369,14 @@ bool PlaybackManager::readSSGEventsInStep(Step& step, int ch, bool calledByNoteD
 	// Set volume
 	int vol = step.getVolume();
 	if (0 <= vol && vol < 0x10) {
-		opnaCtrl_.lock()->setVolumeSSG(ch, vol);
+		opnaCtrl_->setVolumeSSG(ch, vol);
 	}
 
 	// Set instrument
 	if (step.getInstrumentNumber() != -1) {
 		if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
 					instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber())))
-			opnaCtrl_.lock()->setInstrumentSSG(ch, inst);
+			opnaCtrl_->setInstrumentSSG(ch, inst);
 	}
 
 	// Set effect
@@ -386,28 +387,28 @@ bool PlaybackManager::readSSGEventsInStep(Step& step, int ch, bool calledByNoteD
 	case -1:	// None
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkSSGDelayEventsInTick(step, ch);
-			opnaCtrl_.lock()->tickEvent(SoundSource::SSG, ch);
+			opnaCtrl_->tickEvent(SoundSource::SSG, ch);
 		}
 		break;
 	case -2:	// Key off
-		opnaCtrl_.lock()->keyOffSSG(ch);
+		opnaCtrl_->keyOffSSG(ch);
 		break;
 	case -3:	// Echo 0
-		opnaCtrl_.lock()->keyOnSSG(ch, 0);
+		opnaCtrl_->keyOnSSG(ch, 0);
 		break;
 	case -4:	// Echo 1
-		opnaCtrl_.lock()->keyOnSSG(ch, 1);
+		opnaCtrl_->keyOnSSG(ch, 1);
 		break;
 	case -5:	// Echo 2
-		opnaCtrl_.lock()->keyOnSSG(ch, 2);
+		opnaCtrl_->keyOnSSG(ch, 2);
 		break;
 	case -6:	// Echo 3
-		opnaCtrl_.lock()->keyOnSSG(ch, 3);
+		opnaCtrl_->keyOnSSG(ch, 3);
 		break;
 	default:	// Key on
 	{
 		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
-		opnaCtrl_.lock()->keyOnSSG(ch, octNote.second, octNote.first, 0);
+		opnaCtrl_->keyOnSSG(ch, octNote.second, octNote.first, 0);
 		break;
 	}
 	}
@@ -431,7 +432,7 @@ bool PlaybackManager::readDrumStep(Step& step, int ch)
 	if (isNoteDelay) {
 		// Set effect
 		changedNextStep = readDrumEffectFromQueue(ch);
-		opnaCtrl_.lock()->tickEvent(SoundSource::Drum, ch);
+		opnaCtrl_->tickEvent(SoundSource::Drum, ch);
 	}
 	else {
 		changedNextStep = readDrumEventsInStep(step, ch);
@@ -448,7 +449,7 @@ bool PlaybackManager::readDrumEventsInStep(Step& step, int ch, bool calledByNote
 	// Set volume
 	int vol = step.getVolume();
 	if (0 <= vol && vol < 0x20) {
-		opnaCtrl_.lock()->setVolumeDrum(ch, vol);
+		opnaCtrl_->setVolumeDrum(ch, vol);
 	}
 
 	// Set effect
@@ -459,14 +460,14 @@ bool PlaybackManager::readDrumEventsInStep(Step& step, int ch, bool calledByNote
 	case -1:	// None
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkDrumDelayEventsInTick(step, ch);
-			opnaCtrl_.lock()->tickEvent(SoundSource::Drum, ch);
+			opnaCtrl_->tickEvent(SoundSource::Drum, ch);
 		}
 		break;
 	case -2:	// Key off
-		opnaCtrl_.lock()->keyOffDrum(ch);
+		opnaCtrl_->setKeyOffFlagDrum(ch);
 		break;
 	default:	// Key on & Echo
-		opnaCtrl_.lock()->keyOnDrum(ch);
+		opnaCtrl_->setKeyOnFlagDrum(ch);
 		break;
 	}
 
@@ -567,42 +568,42 @@ bool PlaybackManager::readFMEffectFromQueue(int ch)
 		for (const Effect& eff : keyOnBasedEffsFM_.at(uch)) {
 			switch (eff.type) {
 			case EffectType::Arpeggio:
-				opnaCtrl_.lock()->setArpeggioEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setArpeggioEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::PortamentoUp:
-				opnaCtrl_.lock()->setPortamentoEffectFM(ch, eff.value);
+				opnaCtrl_->setPortamentoEffectFM(ch, eff.value);
 				break;
 			case EffectType::PortamentoDown:
-				opnaCtrl_.lock()->setPortamentoEffectFM(ch, -eff.value);
+				opnaCtrl_->setPortamentoEffectFM(ch, -eff.value);
 				break;
 			case EffectType::TonePortamento:
-				opnaCtrl_.lock()->setPortamentoEffectFM(ch, eff.value, true);
+				opnaCtrl_->setPortamentoEffectFM(ch, eff.value, true);
 				break;
 			case EffectType::Vibrato:
-				opnaCtrl_.lock()->setVibratoEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setVibratoEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::Tremolo:
-				opnaCtrl_.lock()->setTremoloEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setTremoloEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::Pan:
-				if (-1 < eff.value && eff.value < 4) opnaCtrl_.lock()->setPanFM(ch, eff.value);
+				if (-1 < eff.value && eff.value < 4) opnaCtrl_->setPanFM(ch, eff.value);
 				break;
 			case EffectType::VolumeSlide:
 			{
 				int hi = eff.value >> 4;
 				int low = eff.value & 0x0f;
-				if (hi && !low) opnaCtrl_.lock()->setVolumeSlideFM(ch, hi, true);	// Slide up
-				else if (!hi) opnaCtrl_.lock()->setVolumeSlideFM(ch, low, false);	// Slide down
+				if (hi && !low) opnaCtrl_->setVolumeSlideFM(ch, hi, true);	// Slide up
+				else if (!hi) opnaCtrl_->setVolumeSlideFM(ch, low, false);	// Slide down
 				break;
 			}
 			case EffectType::Detune:
-				opnaCtrl_.lock()->setDetuneFM(ch, eff.value - 0x80);
+				opnaCtrl_->setDetuneFM(ch, eff.value - 0x80);
 				break;
 			case EffectType::NoteSlideUp:
-				opnaCtrl_.lock()->setNoteSlideFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setNoteSlideFM(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::NoteSlideDown:
-				opnaCtrl_.lock()->setNoteSlideFM(ch, eff.value >> 4, -(eff.value & 0x0f));
+				opnaCtrl_->setNoteSlideFM(ch, eff.value >> 4, -(eff.value & 0x0f));
 				break;
 			case EffectType::NoteCut:
 				ntCutDlyCntFM_.at(uch) = eff.value;
@@ -723,39 +724,39 @@ bool PlaybackManager::readSSGEffectFromQueue(int ch)
 		for (const Effect& eff : keyOnBasedEffsSSG_.at(uch)) {
 			switch (eff.type) {
 			case EffectType::Arpeggio:
-				opnaCtrl_.lock()->setArpeggioEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setArpeggioEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::PortamentoUp:
-				opnaCtrl_.lock()->setPortamentoEffectSSG(ch, eff.value);
+				opnaCtrl_->setPortamentoEffectSSG(ch, eff.value);
 				break;
 			case EffectType::PortamentoDown:
-				opnaCtrl_.lock()->setPortamentoEffectSSG(ch, -eff.value);
+				opnaCtrl_->setPortamentoEffectSSG(ch, -eff.value);
 				break;
 			case EffectType::TonePortamento:
-				opnaCtrl_.lock()->setPortamentoEffectSSG(ch, eff.value, true);
+				opnaCtrl_->setPortamentoEffectSSG(ch, eff.value, true);
 				break;
 			case EffectType::Vibrato:
-				opnaCtrl_.lock()->setVibratoEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setVibratoEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::Tremolo:
-				opnaCtrl_.lock()->setTremoloEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setTremoloEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::VolumeSlide:
 			{
 				int hi = eff.value >> 4;
 				int low = eff.value & 0x0f;
-				if (hi && !low) opnaCtrl_.lock()->setVolumeSlideSSG(ch, hi, true);	// Slide up
-				else if (!hi) opnaCtrl_.lock()->setVolumeSlideSSG(ch, low, false);	// Slide down
+				if (hi && !low) opnaCtrl_->setVolumeSlideSSG(ch, hi, true);	// Slide up
+				else if (!hi) opnaCtrl_->setVolumeSlideSSG(ch, low, false);	// Slide down
 				break;
 			}
 			case EffectType::Detune:
-				opnaCtrl_.lock()->setDetuneSSG(ch, eff.value - 0x80);
+				opnaCtrl_->setDetuneSSG(ch, eff.value - 0x80);
 				break;
 			case EffectType::NoteSlideUp:
-				opnaCtrl_.lock()->setNoteSlideSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setNoteSlideSSG(ch, eff.value >> 4, eff.value & 0x0f);
 				break;
 			case EffectType::NoteSlideDown:
-				opnaCtrl_.lock()->setNoteSlideSSG(ch, eff.value >> 4, -(eff.value & 0x0f));
+				opnaCtrl_->setNoteSlideSSG(ch, eff.value >> 4, -(eff.value & 0x0f));
 				break;
 			case EffectType::NoteCut:
 				ntCutDlyCntSSG_.at(uch) = eff.value;
@@ -867,13 +868,13 @@ bool PlaybackManager::readDrumEffectFromQueue(int ch)
 		for (const Effect& eff : keyOnBasedEffsDrum_.at(uch)) {
 			switch (eff.type) {
 			case EffectType::Pan:
-				if (-1 < eff.value && eff.value < 4) opnaCtrl_.lock()->setPanDrum(ch, eff.value);
+				if (-1 < eff.value && eff.value < 4) opnaCtrl_->setPanDrum(ch, eff.value);
 				break;
 			case EffectType::NoteCut:
 				ntCutDlyCntDrum_.at(uch) = eff.value;
 				break;
 			case EffectType::MasterVolume:
-				if (-1 < eff.value && eff.value < 64) opnaCtrl_.lock()->setMasterVolumeDrum(eff.value);
+				if (-1 < eff.value && eff.value < 64) opnaCtrl_->setMasterVolumeDrum(eff.value);
 				break;
 			case EffectType::VolumeDelay:
 			{
@@ -968,16 +969,17 @@ void PlaybackManager::readTick(int rest)
 			for (int i = 0; i < 4; ++i) {
 				auto&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(i), step.getEffectValue(i));
 				if (eff.type == EffectType::NoteDelay && eff.value > 0) {	// Note delay check
-					opnaCtrl_.lock()->tickEvent(attrib.source, ch);
+					opnaCtrl_->tickEvent(attrib.source, ch);
 					return;
 				}
 			}
 			envelopeResetEffectFM(step, ch);
 		}
 		else {
-			opnaCtrl_.lock()->tickEvent(attrib.source, ch);
+			opnaCtrl_->tickEvent(attrib.source, ch);
 		}
 	}
+	opnaCtrl_->updateKeyOnOffStatusDrum();
 }
 
 void PlaybackManager::checkFMDelayEventsInTick(Step& step, int ch)
@@ -985,13 +987,13 @@ void PlaybackManager::checkFMDelayEventsInTick(Step& step, int ch)
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
 	if (!volDlyCntFM_.at(uch))
-		opnaCtrl_.lock()->setTemporaryVolumeFM(ch, volDlyValueFM_.at(uch));
+		opnaCtrl_->setTemporaryVolumeFM(ch, volDlyValueFM_.at(uch));
 	// Check note cut
 	if (!ntCutDlyCntFM_.at(uch))
-		opnaCtrl_.lock()->keyOffFM(ch);
+		opnaCtrl_->keyOffFM(ch);
 	// Check transpose delay
 	if (!tposeDlyCntFM_.at(uch))
-		opnaCtrl_.lock()->setTransposeEffectFM(ch, tposeDlyValueFM_.at(uch));
+		opnaCtrl_->setTransposeEffectFM(ch, tposeDlyValueFM_.at(uch));
 	// Check note delay and envelope reset
 	readTickFMForNoteDelay(step, ch);
 }
@@ -1012,21 +1014,21 @@ void PlaybackManager::envelopeResetEffectFM(Step& step, int ch)
 {
 	int n = step.getNoteNumber();
 	if ((n >= 0 || n < -2)
-			&& opnaCtrl_.lock()->enableFMEnvelopeReset(ch)) {	// Key on or echo buffer access
+			&& opnaCtrl_->enableFMEnvelopeReset(ch)) {	// Key on or echo buffer access
 		for (int i = 0; i < 4; ++i) {
 			auto&& eff = Effect::makeEffectData(	// "SoundSource::FM" is dummy
 							 SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
 			if (eff.type == EffectType::TonePortamento) {
-				if (eff.value) opnaCtrl_.lock()->tickEvent(SoundSource::FM, ch);
-				else opnaCtrl_.lock()->resetFMChannelEnvelope(ch);
+				if (eff.value) opnaCtrl_->tickEvent(SoundSource::FM, ch);
+				else opnaCtrl_->resetFMChannelEnvelope(ch);
 				return;
 			}
 		}
-		if (opnaCtrl_.lock()->isTonePortamentoFM(ch)) opnaCtrl_.lock()->tickEvent(SoundSource::FM, ch);
-		else opnaCtrl_.lock()->resetFMChannelEnvelope(ch);
+		if (opnaCtrl_->isTonePortamentoFM(ch)) opnaCtrl_->tickEvent(SoundSource::FM, ch);
+		else opnaCtrl_->resetFMChannelEnvelope(ch);
 	}
 	else {
-		opnaCtrl_.lock()->tickEvent(SoundSource::FM, ch);
+		opnaCtrl_->tickEvent(SoundSource::FM, ch);
 	}
 }
 
@@ -1035,13 +1037,13 @@ void PlaybackManager::checkSSGDelayEventsInTick(Step& step, int ch)
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
 	if (!volDlyCntSSG_.at(uch))
-		opnaCtrl_.lock()->setTemporaryVolumeSSG(ch, volDlyValueSSG_.at(uch));
+		opnaCtrl_->setTemporaryVolumeSSG(ch, volDlyValueSSG_.at(uch));
 	// Check note cut
 	if (!ntCutDlyCntSSG_.at(uch))
-		opnaCtrl_.lock()->keyOffSSG(ch);
+		opnaCtrl_->keyOffSSG(ch);
 	// Check transpose delay
 	if (!tposeDlyCntSSG_.at(uch))
-		opnaCtrl_.lock()->setTransposeEffectSSG(ch, tposeDlyValueSSG_.at(uch));
+		opnaCtrl_->setTransposeEffectSSG(ch, tposeDlyValueSSG_.at(uch));
 	// Check note delay
 	if (!ntDlyCntSSG_.at(uch))
 		readSSGEventsInStep(step, ch, true);
@@ -1052,10 +1054,10 @@ void PlaybackManager::checkDrumDelayEventsInTick(Step& step, int ch)
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
 	if (!volDlyCntDrum_.at(uch))
-		opnaCtrl_.lock()->setTemporaryVolumeDrum(ch, volDlyValueDrum_.at(uch));
+		opnaCtrl_->setTemporaryVolumeDrum(ch, volDlyValueDrum_.at(uch));
 	// Check note cut
 	if (!ntCutDlyCntDrum_.at(uch))
-		opnaCtrl_.lock()->keyOnDrum(ch);
+		opnaCtrl_->setKeyOnFlagDrum(ch);
 	// Check note delay
 	if (!ntDlyCntDrum_.at(uch))
 		readDrumEventsInStep(step, ch, true);
@@ -1204,43 +1206,43 @@ void PlaybackManager::retrieveChannelStates()
 					case EffectType::Arpeggio:
 						if (!isSetArpFM.at(uch)) {
 							isSetArpFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setArpeggioEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+							if (isPrevPos) opnaCtrl_->setArpeggioEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::PortamentoUp:
 						if (!isSetPrtFM.at(uch)) {
 							isSetPrtFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPortamentoEffectFM(ch, eff.value);
+							if (isPrevPos) opnaCtrl_->setPortamentoEffectFM(ch, eff.value);
 						}
 						break;
 					case EffectType::PortamentoDown:
 						if (!isSetPrtFM.at(uch)) {
 							isSetPrtFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPortamentoEffectFM(ch, -eff.value);
+							if (isPrevPos) opnaCtrl_->setPortamentoEffectFM(ch, -eff.value);
 						}
 						break;
 					case EffectType::TonePortamento:
 						if (!isSetPrtFM.at(uch)) {
 							isSetPrtFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPortamentoEffectFM(ch, eff.value, true);
+							if (isPrevPos) opnaCtrl_->setPortamentoEffectFM(ch, eff.value, true);
 						}
 						break;
 					case EffectType::Vibrato:
 						if (!isSetVibFM.at(uch)) {
 							isSetVibFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setVibratoEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+							if (isPrevPos) opnaCtrl_->setVibratoEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::Tremolo:
 						if (!isSetTreFM.at(uch)) {
 							isSetTreFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setTremoloEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+							if (isPrevPos) opnaCtrl_->setTremoloEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::Pan:
 						if (-1 < eff.value && eff.value < 4 && !isSetPanFM.at(uch)) {
 							isSetPanFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPanFM(ch, eff.value);
+							if (isPrevPos) opnaCtrl_->setPanFM(ch, eff.value);
 						}
 						break;
 					case EffectType::VolumeSlide:
@@ -1249,8 +1251,8 @@ void PlaybackManager::retrieveChannelStates()
 							if (isPrevPos) {
 								int hi = eff.value >> 4;
 								int low = eff.value & 0x0f;
-								if (hi && !low) opnaCtrl_.lock()->setVolumeSlideFM(ch, hi, true);	// Slide up
-								else if (!hi) opnaCtrl_.lock()->setVolumeSlideFM(ch, low, false);	// Slide down
+								if (hi && !low) opnaCtrl_->setVolumeSlideFM(ch, hi, true);	// Slide up
+								else if (!hi) opnaCtrl_->setVolumeSlideFM(ch, low, false);	// Slide down
 							}
 						}
 						break;
@@ -1275,7 +1277,7 @@ void PlaybackManager::retrieveChannelStates()
 					case EffectType::Detune:
 						if (!isSetDtnFM.at(uch)) {
 							isSetDtnFM.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setDetuneFM(ch, eff.value - 0x80);
+							if (isPrevPos) opnaCtrl_->setDetuneFM(ch, eff.value - 0x80);
 						}
 						break;
 					default:
@@ -1287,7 +1289,7 @@ void PlaybackManager::retrieveChannelStates()
 				if (!isSetVolFM.at(uch) && 0 <= vol && vol < 0x80) {
 					isSetVolFM.at(uch) = true;
 					if (isPrevPos)
-						opnaCtrl_.lock()->setVolumeFM(ch, step.getVolume());
+						opnaCtrl_->setVolumeFM(ch, step.getVolume());
 				}
 				// Instrument
 				if (!isSetInstFM.at(uch) && step.getInstrumentNumber() != -1) {
@@ -1295,7 +1297,7 @@ void PlaybackManager::retrieveChannelStates()
 								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
 						isSetInstFM.at(uch) = true;
 						if (isPrevPos)
-							opnaCtrl_.lock()->setInstrumentFM(ch, inst);
+							opnaCtrl_->setInstrumentFM(ch, inst);
 					}
 				}
 				// Tone
@@ -1326,37 +1328,37 @@ void PlaybackManager::retrieveChannelStates()
 					case EffectType::Arpeggio:
 						if (!isSetArpSSG.at(uch)) {
 							isSetArpSSG.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setArpeggioEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+							if (isPrevPos) opnaCtrl_->setArpeggioEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::PortamentoUp:
 						if (!isSetPrtSSG.at(uch)) {
 							isSetPrtSSG.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPortamentoEffectSSG(ch, eff.value);
+							if (isPrevPos) opnaCtrl_->setPortamentoEffectSSG(ch, eff.value);
 						}
 						break;
 					case EffectType::PortamentoDown:
 						if (!isSetPrtSSG.at(uch)) {
 							isSetPrtSSG.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPortamentoEffectSSG(ch, -eff.value);
+							if (isPrevPos) opnaCtrl_->setPortamentoEffectSSG(ch, -eff.value);
 						}
 						break;
 					case EffectType::TonePortamento:
 						if (!isSetPrtSSG.at(uch)) {
 							isSetPrtSSG.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPortamentoEffectSSG(ch, eff.value, true);
+							if (isPrevPos) opnaCtrl_->setPortamentoEffectSSG(ch, eff.value, true);
 						}
 						break;
 					case EffectType::Vibrato:
 						if (!isSetVibSSG.at(uch)) {
 							isSetVibSSG.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setVibratoEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+							if (isPrevPos) opnaCtrl_->setVibratoEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::Tremolo:
 						if (!isSetTreSSG.at(uch)) {
 							isSetTreSSG.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setTremoloEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+							if (isPrevPos) opnaCtrl_->setTremoloEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::VolumeSlide:
@@ -1365,8 +1367,8 @@ void PlaybackManager::retrieveChannelStates()
 							if (isPrevPos) {
 								int hi = eff.value >> 4;
 								int low = eff.value & 0x0f;
-								if (hi && !low) opnaCtrl_.lock()->setVolumeSlideSSG(ch, hi, true);	// Slide up
-								else if (!hi) opnaCtrl_.lock()->setVolumeSlideSSG(ch, low, false);	// Slide down
+								if (hi && !low) opnaCtrl_->setVolumeSlideSSG(ch, hi, true);	// Slide up
+								else if (!hi) opnaCtrl_->setVolumeSlideSSG(ch, low, false);	// Slide down
 							}
 						}
 						break;
@@ -1391,7 +1393,7 @@ void PlaybackManager::retrieveChannelStates()
 					case EffectType::Detune:
 						if (!isSetDtnSSG.at(uch)) {
 							isSetDtnSSG.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setDetuneSSG(ch, eff.value - 0x80);
+							if (isPrevPos) opnaCtrl_->setDetuneSSG(ch, eff.value - 0x80);
 						}
 						break;
 					default:
@@ -1403,7 +1405,7 @@ void PlaybackManager::retrieveChannelStates()
 				if (!isSetVolSSG.at(uch) && 0 <= vol && vol < 0x10) {
 					isSetVolSSG.at(uch) = true;
 					if (isPrevPos)
-						opnaCtrl_.lock()->setVolumeSSG(ch, vol);
+						opnaCtrl_->setVolumeSSG(ch, vol);
 				}
 				// Instrument
 				if (!isSetInstSSG.at(uch) && step.getInstrumentNumber() != -1) {
@@ -1411,7 +1413,7 @@ void PlaybackManager::retrieveChannelStates()
 								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
 						isSetInstSSG.at(uch) = true;
 						if (isPrevPos)
-							opnaCtrl_.lock()->setInstrumentSSG(ch, inst);
+							opnaCtrl_->setInstrumentSSG(ch, inst);
 					}
 				}
 				// Tone
@@ -1442,7 +1444,7 @@ void PlaybackManager::retrieveChannelStates()
 					case EffectType::Pan:
 						if (-1 < eff.value && eff.value < 4 && !isSetPanDrum.at(uch)) {
 							isSetPanDrum.at(uch) = true;
-							if (isPrevPos) opnaCtrl_.lock()->setPanDrum(ch, eff.value);
+							if (isPrevPos) opnaCtrl_->setPanDrum(ch, eff.value);
 						}
 						break;
 					case EffectType::SpeedTempoChange:
@@ -1466,7 +1468,7 @@ void PlaybackManager::retrieveChannelStates()
 					case EffectType::MasterVolume:
 						if (-1 < eff.value && eff.value < 64 && !isSetMVolDrum) {
 							isSetMVolDrum = true;
-							if (isPrevPos) opnaCtrl_.lock()->setMasterVolumeDrum(eff.value);
+							if (isPrevPos) opnaCtrl_->setMasterVolumeDrum(eff.value);
 						}
 						break;
 					default:
@@ -1478,7 +1480,7 @@ void PlaybackManager::retrieveChannelStates()
 				if (!isSetVolDrum.at(uch) && 0 <= vol && vol < 0x20) {
 					isSetVolDrum.at(uch) = true;
 					if (isPrevPos)
-						opnaCtrl_.lock()->setVolumeDrum(ch, vol);
+						opnaCtrl_->setVolumeDrum(ch, vol);
 				}
 				break;
 			}
@@ -1498,19 +1500,19 @@ void PlaybackManager::retrieveChannelStates()
 		for (size_t i = 0; i < 3; ++i) {
 			if (toneFM.at(ch).at(i) >= 0) {
 				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneFM[ch][i]);
-				opnaCtrl_.lock()->updateEchoBufferFM(static_cast<int>(ch), octNote.first, octNote.second, 0);
+				opnaCtrl_->updateEchoBufferFM(static_cast<int>(ch), octNote.first, octNote.second, 0);
 			}
 		}
-		opnaCtrl_.lock()->haltSequencesFM(static_cast<int>(ch));
+		opnaCtrl_->haltSequencesFM(static_cast<int>(ch));
 	}
 	for (size_t ch = 0; ch < 3; ++ch) {
 		for (size_t i = 0; i < 3; ++i) {
 			if (toneSSG.at(ch).at(i) >= 0) {
 				std::pair<int, Note> octNote = noteNumberToOctaveAndNote(toneSSG[ch][i]);
-				opnaCtrl_.lock()->updateEchoBufferSSG(static_cast<int>(ch), octNote.first, octNote.second, 0);
+				opnaCtrl_->updateEchoBufferSSG(static_cast<int>(ch), octNote.first, octNote.second, 0);
 			}
 		}
-		opnaCtrl_.lock()->haltSequencesSSG(static_cast<int>(ch));
+		opnaCtrl_->haltSequencesSSG(static_cast<int>(ch));
 	}
 }
 

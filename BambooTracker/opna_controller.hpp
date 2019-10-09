@@ -298,8 +298,9 @@ private:
 	/*----- Drum -----*/
 public:
 	// Key on-off
-	void keyOnDrum(int ch);
-	void keyOffDrum(int ch);
+	void setKeyOnFlagDrum(int ch);
+	void setKeyOffFlagDrum(int ch);
+	void updateKeyOnOffStatusDrum();
 
 	// Set volume
 	void setVolumeDrum(int ch, int volume);
@@ -314,6 +315,7 @@ public:
 	bool isMuteDrum(int ch);
 
 private:
+	uint8_t keyOnFlagDrum_, keyOffFlagDrum_;
 	int volDrum_[6], mVolDrum_, tmpVolDrum_[6];
 	/// bit0: right on/off
 	/// bit1: left on/off

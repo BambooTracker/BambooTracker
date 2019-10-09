@@ -682,7 +682,8 @@ void BambooTracker::jamKeyOn(JamKey key)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == SoundSource::Drum) {
-		opnaCtrl_->keyOnDrum(attrib.channelInSource);
+		opnaCtrl_->setKeyOnFlagDrum(attrib.channelInSource);
+		opnaCtrl_->updateKeyOnOffStatusDrum();
 	}
 	else {
 		int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
@@ -745,7 +746,8 @@ void BambooTracker::jamKeyOn(int keyNum)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == SoundSource::Drum) {
-		opnaCtrl_->keyOnDrum(attrib.channelInSource);
+		opnaCtrl_->setKeyOnFlagDrum(attrib.channelInSource);
+		opnaCtrl_->updateKeyOnOffStatusDrum();
 	}
 	else {
 		std::vector<JamKeyData>&& list = jamMan_->keyOn(JamKey::MIDI_KEY, attrib.channelInSource, attrib.source, keyNum);
@@ -806,7 +808,8 @@ void BambooTracker::jamKeyOff(JamKey key)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == SoundSource::Drum) {
-		opnaCtrl_->keyOffDrum(attrib.channelInSource);
+		opnaCtrl_->setKeyOffFlagDrum(attrib.channelInSource);
+		opnaCtrl_->updateKeyOnOffStatusDrum();
 	}
 	else {
 		int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
@@ -839,7 +842,8 @@ void BambooTracker::jamKeyOff(int keyNum)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == SoundSource::Drum) {
-		opnaCtrl_->keyOffDrum(attrib.channelInSource);
+		opnaCtrl_->setKeyOffFlagDrum(attrib.channelInSource);
+		opnaCtrl_->updateKeyOnOffStatusDrum();
 	}
 	else {
 		JamKeyData&& data = jamMan_->keyOff(JamKey::MIDI_KEY, keyNum);

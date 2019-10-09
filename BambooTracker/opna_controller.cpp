@@ -3047,19 +3047,31 @@ void OPNAController::writePitchSSG(int ch)
 
 //---------- Drum ----------//
 /********** Key on-off **********/
-void OPNAController::keyOnDrum(int ch)
+void OPNAController::setKeyOnFlagDrum(int ch)
 {
 	if (isMuteDrum(ch)) return;
 
 	if (tmpVolDrum_[ch] != -1)
 		setVolumeDrum(ch, volDrum_[ch]);
 
-	opna_->setRegister(0x10, static_cast<uint8_t>(1 << ch));
+	keyOnFlagDrum_ |= static_cast<uint8_t>(1 << ch);
 }
 
-void OPNAController::keyOffDrum(int ch)
+void OPNAController::setKeyOffFlagDrum(int ch)
 {
-	opna_->setRegister(0x10, 0x80 | static_cast<uint8_t>(1 << ch));
+	keyOffFlagDrum_ |= static_cast<uint8_t>(1 << ch);
+}
+
+void OPNAController::updateKeyOnOffStatusDrum()
+{
+	if (keyOnFlagDrum_) {
+		opna_->setRegister(0x10, keyOnFlagDrum_);
+		keyOnFlagDrum_ = 0;
+	}
+	if (keyOffFlagDrum_) {
+		opna_->setRegister(0x10, 0x80 | keyOffFlagDrum_);
+		keyOffFlagDrum_ = 0;
+	}
 }
 
 /********** Set volume **********/
@@ -3098,7 +3110,10 @@ void OPNAController::setMuteDrumState(int ch, bool isMute)
 {
 	isMuteDrum_[ch] = isMute;
 
-	if (isMute) keyOffDrum(ch);
+	if (isMute) {
+		setKeyOffFlagDrum(ch);
+		updateKeyOnOffStatusDrum();
+	}
 }
 
 bool OPNAController::isMuteDrum(int ch)
@@ -3109,6 +3124,8 @@ bool OPNAController::isMuteDrum(int ch)
 /***********************************/
 void OPNAController::initDrum()
 {
+	keyOnFlagDrum_ = 0;
+	keyOffFlagDrum_ = 0;
 	mVolDrum_ = 0x3f;
 	opna_->setRegister(0x11, 0x3f);	// Drum total volume
 
