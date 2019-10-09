@@ -858,8 +858,8 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	if (!isIgnoreToOrder_ && curPos_.track != oldTrackNum)	// Send to order list
 		emit currentTrackChanged(curPos_.track);
 
-	headerChanged_ = (leftTrackNum_ != oldLeftTrack);
-	redrawByPositionChanged();
+	headerChanged_ = (leftTrackNum_ != oldLeftTrack);	// Request fore-background repaint if leftmost track is changed
+	redrawByCursorChanged();							// Else request only background repaint
 }
 
 void PatternEditorPanel::moveCursorToDown(int n)
