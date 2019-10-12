@@ -200,6 +200,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int num) {
+		freezeViews();
 		bt_->setCurrentSongNumber(num);
 		loadSong();
 	});
@@ -696,6 +697,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	event->accept();
 }
 
+void MainWindow::freezeViews()
+{
+	ui->orderList->freeze();
+	ui->patternEditor->freeze();
+}
+
 /********** MIDI **********/
 void MainWindow::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData)
 {
@@ -1069,6 +1076,7 @@ void MainWindow::loadModule()
 void MainWindow::openModule(QString file)
 {
 	try {
+		freezeViews();
 		bt_->loadModule(file.toStdString());
 		loadModule();
 
@@ -1080,6 +1088,7 @@ void MainWindow::openModule(QString file)
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());
 		// Init module
+		freezeViews();
 		bt_->makeNewModule();
 		loadModule();
 		isModifiedForNotCommand_ = false;
@@ -1101,6 +1110,8 @@ void MainWindow::loadSong()
 	bt_->setCurrentStepNumber(0);
 
 	// Init ui
+	ui->orderList->unfreeze();
+	ui->patternEditor->unfreeze();
 	ui->orderList->onSongLoaded();
 	ui->orderListGroupBox->setMaximumWidth(
 				ui->orderListGroupBox->contentsMargins().left()
@@ -1838,6 +1849,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 		bt_->stopPlaySong();
 		lockControls(false);
 		dialog.onAccepted();
+		freezeViews();
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
@@ -2051,6 +2063,7 @@ void MainWindow::on_actionNew_triggered()
 
 	bt_->stopPlaySong();
 	lockControls(false);
+	freezeViews();
 	bt_->makeNewModule();
 	loadModule();
 	setInitialSelectedInstrument();

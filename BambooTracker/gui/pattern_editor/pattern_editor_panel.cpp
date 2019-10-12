@@ -3,6 +3,7 @@
 #include <vector>
 #include <utility>
 #include <stdexcept>
+#include <thread>
 #include <QPainter>
 #include <QFontMetrics>
 #include <QPoint>
@@ -50,7 +51,10 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  posChanged_(false),
 	  headerChanged_(false),
 	  sizeChanged_(false),
-	  stepChanged_(false)
+	  stepChanged_(false),
+	  freezed_(false),
+	  repaintable_(true),
+	  repaintingCnt_(0)
 {	
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -142,6 +146,22 @@ void PatternEditorPanel::setColorPallete(std::shared_ptr<ColorPalette> palette)
 	palette_ = palette;
 }
 
+void PatternEditorPanel::freeze()
+{
+	freezed_ = true;
+	while (true) {
+		if (repaintingCnt_.load())
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		else
+			return;
+	}
+}
+
+void PatternEditorPanel::unfreeze()
+{
+	freezed_ = false;
+}
+
 int PatternEditorPanel::getCurrentTrack() const
 {
 	return curPos_.track;
@@ -179,45 +199,55 @@ void PatternEditorPanel::redrawBySizeChanged()
 
 void PatternEditorPanel::drawPattern(const QRect &rect)
 {
-	if (patternChanged_ || cursorChanged_  || posChanged_ || headerChanged_ || sizeChanged_ || stepChanged_) {
-		int maxWidth = std::min(rect.width(), TracksWidthFromLeftToEnd_);
+	if (!freezed_ && repaintable_.load()) {
+		repaintable_.store(false);
+		++repaintingCnt_;	// Use module data after this line
 
-		completePixmap_->fill(palette_->ptnBackColor);
+		if (patternChanged_ || cursorChanged_  || posChanged_ || headerChanged_ || sizeChanged_ || stepChanged_) {
 
-		if (stepChanged_ && curPos_.step > 0 && config_.lock()->getFollowMode()) {
-			quickDrawRows(maxWidth);
+			int maxWidth = std::min(rect.width(), TracksWidthFromLeftToEnd_);
+
+			completePixmap_->fill(palette_->ptnBackColor);
+
+			if (stepChanged_ && curPos_.step > 0 && config_.lock()->getFollowMode()) {
+				quickDrawRows(maxWidth);
+			}
+			else {
+				stepBackPixmap_->fill(Qt::transparent);
+				if (patternChanged_ || posChanged_ || headerChanged_ || sizeChanged_)
+					stepForePixmap_->fill(Qt::transparent);
+				drawRows(maxWidth);
+			}
+
+			if (headerChanged_ || cursorChanged_ || sizeChanged_) {
+				// headerPixmap_->fill(Qt::transparent);
+				drawHeaders(maxWidth);
+			}
+
+			{
+				QPainter mergePainter(completePixmap_.get());
+				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
+				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
+				mergePainter.drawPixmap(inViewRect, *stepBackPixmap_.get(), rowsRect);
+				mergePainter.drawPixmap(inViewRect, *stepForePixmap_.get(), rowsRect);
+				mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
+			}
+
+			drawBorders(maxWidth);
+			if (!hasFocus()) drawShadow();
+
+			patternChanged_ = false;
+			cursorChanged_ = false;
+			posChanged_ = false;
+			headerChanged_ = false;
+			sizeChanged_ = false;
+			stepChanged_ = false;
+			stepUpdateRequestCnt_ = 0;
+
 		}
-		else {
-			stepBackPixmap_->fill(Qt::transparent);
-			if (patternChanged_ || posChanged_ || headerChanged_ || sizeChanged_)
-				stepForePixmap_->fill(Qt::transparent);
-			drawRows(maxWidth);
-		}
 
-		if (headerChanged_ || cursorChanged_ || sizeChanged_) {
-			// headerPixmap_->fill(Qt::transparent);
-			drawHeaders(maxWidth);
-		}
-
-		{
-			QPainter mergePainter(completePixmap_.get());
-			QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
-			QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
-			mergePainter.drawPixmap(inViewRect, *stepBackPixmap_.get(), rowsRect);
-			mergePainter.drawPixmap(inViewRect, *stepForePixmap_.get(), rowsRect);
-			mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
-		}
-
-		drawBorders(maxWidth);
-		if (!hasFocus()) drawShadow();
-
-		patternChanged_ = false;
-		cursorChanged_ = false;
-		posChanged_ = false;
-		headerChanged_ = false;
-		sizeChanged_ = false;
-		stepChanged_ = false;
-		stepUpdateRequestCnt_ = 0;
+		--repaintingCnt_;	// Used module data until this line
+		repaintable_.store(true);
 	}
 
 	QPainter completePainter(this);

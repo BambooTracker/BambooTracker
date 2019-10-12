@@ -17,6 +17,7 @@
 #include <QPoint>
 #include <memory>
 #include <vector>
+#include <atomic>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
 #include "song.hpp"
@@ -49,6 +50,9 @@ public:
 	void redrawByPositionChanged();
 	void redrawByHeaderChanged();
 	void redrawBySizeChanged();
+
+	void freeze();
+	void unfreeze();
 
 public slots:
 	void setCurrentCellInRow(int num);
@@ -172,6 +176,10 @@ private:
 
 	bool patternChanged_, cursorChanged_, posChanged_, headerChanged_, sizeChanged_, stepChanged_;
 	int stepUpdateRequestCnt_;
+
+	bool freezed_;
+	std::atomic_bool repaintable_;	// Recurrensive repaint guard
+	std::atomic_int repaintingCnt_;
 
 	// Meta methods
 	int midiKeyEventMethod_;

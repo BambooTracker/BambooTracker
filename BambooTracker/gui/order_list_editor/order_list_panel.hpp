@@ -16,6 +16,7 @@
 #include <QColor>
 #include <QPoint>
 #include <memory>
+#include <atomic>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
 #include "gui/order_list_editor/order_position.hpp"
@@ -44,6 +45,9 @@ public:
 	void redrawByPositionChanged();
 	void redrawBySizeChanged();
 	void redrawAll();
+
+	void freeze();
+	void unfreeze();
 
 public slots:
 	void setCurrentTrackForSlider(int num);
@@ -131,6 +135,10 @@ private:
 
 	bool rowsChanged_, cursorChanged_, posChanged_, sizeChanged_, headerChanged_, orderChanged_;
 	int orderUpdateRequestCnt_;
+
+	bool freezed_;
+	std::atomic_bool repaintable_;	// Recurrensive repaint guard
+	std::atomic_int repaintingCnt_;
 
 	void initDisplay();
 

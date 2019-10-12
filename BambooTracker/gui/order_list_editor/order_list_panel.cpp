@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
+#include <thread>
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands.hpp"
 #include "playback.hpp"
@@ -43,7 +44,10 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  posChanged_(false),
 	  sizeChanged_(false),
 	  headerChanged_(false),
-	  orderChanged_(false)
+	  orderChanged_(false),
+	  freezed_(false),
+	  repaintable_(true),
+	  repaintingCnt_(0)
 {
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -89,6 +93,22 @@ void OrderListPanel::setColorPallete(std::shared_ptr<ColorPalette> palette)
 	palette_ = palette;
 }
 
+void OrderListPanel::freeze()
+{
+	freezed_ = true;
+	while (true) {
+		if (repaintingCnt_.load())
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		else
+			return;
+	}
+}
+
+void OrderListPanel::unfreeze()
+{
+	freezed_ = false;
+}
+
 void OrderListPanel::initDisplay()
 {
 	completePixmap_ = std::make_unique<QPixmap>(geometry().size());
@@ -112,45 +132,55 @@ void OrderListPanel::initDisplay()
 
 void OrderListPanel::drawList(const QRect &rect)
 {
-	if (rowsChanged_ || cursorChanged_  || posChanged_ || headerChanged_ || sizeChanged_ || orderChanged_) {
-		int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
+	if (!freezed_ && repaintable_.load()) {
+		repaintable_.store(false);
+		++repaintingCnt_;	// Use module data after this line
 
-		completePixmap_->fill(Qt::black);
+		if (rowsChanged_ || cursorChanged_  || posChanged_ || headerChanged_ || sizeChanged_ || orderChanged_) {
 
-		if (orderChanged_ && config_.lock()->getFollowMode()) {
-			quickDrawRows(maxWidth);
+			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
+
+			completePixmap_->fill(Qt::black);
+
+			if (orderChanged_ && config_.lock()->getFollowMode()) {
+				quickDrawRows(maxWidth);
+			}
+			else {
+				rowBackPixmap_->fill(Qt::transparent);
+				if (rowsChanged_ || posChanged_ || headerChanged_ || sizeChanged_)
+					rowForePixmap_->fill(Qt::transparent);
+				drawRows(maxWidth);
+			}
+
+			if (headerChanged_ || cursorChanged_ || sizeChanged_) {
+				// headerPixmap_->fill(Qt::transparent);
+				drawHeaders(maxWidth);
+			}
+
+			{
+				QPainter mergePainter(completePixmap_.get());
+				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
+				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
+				mergePainter.drawPixmap(inViewRect, *rowBackPixmap_.get(), rowsRect);
+				mergePainter.drawPixmap(inViewRect, *rowForePixmap_.get(), rowsRect);
+				mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
+			}
+
+			drawBorders(maxWidth);
+			if (!hasFocus()) drawShadow();
+
+			rowsChanged_ = false;
+			cursorChanged_ = false;
+			posChanged_ = false;
+			headerChanged_ = false;
+			sizeChanged_ = false;
+			orderChanged_ = false;
+			orderUpdateRequestCnt_ = 0;
+
 		}
-		else {
-			rowBackPixmap_->fill(Qt::transparent);
-			if (rowsChanged_ || posChanged_ || headerChanged_ || sizeChanged_)
-				rowForePixmap_->fill(Qt::transparent);
-			drawRows(maxWidth);
-		}
 
-		if (headerChanged_ || cursorChanged_ || sizeChanged_) {
-			// headerPixmap_->fill(Qt::transparent);
-			drawHeaders(maxWidth);
-		}
-
-		{
-			QPainter mergePainter(completePixmap_.get());
-			QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
-			QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
-			mergePainter.drawPixmap(inViewRect, *rowBackPixmap_.get(), rowsRect);
-			mergePainter.drawPixmap(inViewRect, *rowForePixmap_.get(), rowsRect);
-			mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
-		}
-
-		drawBorders(maxWidth);
-		if (!hasFocus()) drawShadow();
-
-		rowsChanged_ = false;
-		cursorChanged_ = false;
-		posChanged_ = false;
-		headerChanged_ = false;
-		sizeChanged_ = false;
-		orderChanged_ = false;
-		orderUpdateRequestCnt_ = 0;
+		--repaintingCnt_;	// Used module data until this line
+		repaintable_.store(true);
 	}
 
 	QPainter completePainter(this);

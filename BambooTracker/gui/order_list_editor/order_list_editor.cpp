@@ -3,7 +3,8 @@
 
 OrderListEditor::OrderListEditor(QWidget *parent) :
 	QFrame(parent),
-	ui(new Ui::OrderListEditor)
+	ui(new Ui::OrderListEditor),
+	freezed_(false)
 {
 	ui->setupUi(this);
 
@@ -91,9 +92,23 @@ void OrderListEditor::insertOrderBelow()
 	ui->panel->insertOrderBelow();
 }
 
+void OrderListEditor::freeze()
+{
+	freezed_ = true;
+	ui->panel->freeze();
+}
+
+void OrderListEditor::unfreeze()
+{
+	freezed_ = false;
+	ui->panel->unfreeze();
+}
+
 bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
+
+	if (freezed_) return true;	// Ignore every events
 
 	if (watched == this) {
 		if (event->type() == QEvent::FocusIn) {

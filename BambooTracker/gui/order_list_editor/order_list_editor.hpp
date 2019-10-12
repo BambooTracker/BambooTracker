@@ -33,6 +33,9 @@ public:
 	void deleteOrder();
 	void insertOrderBelow();
 
+	void freeze();
+	void unfreeze();
+
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num);
@@ -68,6 +71,8 @@ protected:
 private:
 	Ui::OrderListEditor *ui;
 	std::shared_ptr<BambooTracker> bt_;
+
+	bool freezed_;
 };
 
 #endif // ORDER_LIST_EDITOR_HPP

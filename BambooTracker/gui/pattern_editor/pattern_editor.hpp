@@ -31,6 +31,10 @@ public:
 	void copySelectedCells();
 	void cutSelectedCells();
 
+	void freeze();
+	void unfreeze();
+
+
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
@@ -81,6 +85,8 @@ public slots:
 private:
 	Ui::PatternEditor *ui;
 	std::shared_ptr<BambooTracker> bt_;
+
+	bool freezed_;
 };
 
 #endif // PATTERN_EDITOR_HPP

@@ -3,7 +3,8 @@
 
 PatternEditor::PatternEditor(QWidget *parent) :
 	QFrame(parent),
-	ui(new Ui::PatternEditor)
+	ui(new Ui::PatternEditor),
+	freezed_(false)
 {
 	ui->setupUi(this);
 
@@ -95,6 +96,18 @@ void PatternEditor::cutSelectedCells()
 	ui->panel->cutSelectedCells();
 }
 
+void PatternEditor::freeze()
+{
+	freezed_ = true;
+	ui->panel->freeze();
+}
+
+void PatternEditor::unfreeze()
+{
+	freezed_ = false;
+	ui->panel->unfreeze();
+}
+
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
@@ -107,6 +120,8 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 	}
 
 	if (watched == ui->panel) {
+		if (freezed_ && event->type() != QEvent::Paint) return true;
+
 		switch (event->type()) {
 		case QEvent::FocusIn:
 			ui->panel->redrawByHeaderChanged();
@@ -126,6 +141,8 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 	}
 
 	if (watched == ui->verticalScrollBar) {
+		if (freezed_) return true;	// Ignore every events
+
 		switch (event->type()) {
 		case QEvent::MouseButtonPress:
 		case QEvent::MouseButtonRelease:

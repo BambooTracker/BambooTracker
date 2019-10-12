@@ -154,6 +154,8 @@ private:
 	int midiKeyEventMethod_;
 	int midiProgramEventMethod_;
 
+	void freezeViews();
+
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
