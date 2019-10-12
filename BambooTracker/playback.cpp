@@ -214,7 +214,7 @@ void PlaybackManager::findNextStep()
 	nextReadStep_ = playStepNum_;
 
 	// Search
-	if (nextReadStep_ == static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_)) - 1) {
+	if (nextReadStep_ >= static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_)) - 1) {
 		if (!(playState_ & 0x10)) {	// Not play pattern
 			if (nextReadOrder_ == static_cast<int>(getOrderSize(curSongNum_)) - 1) {
 				nextReadOrder_ = 0;
