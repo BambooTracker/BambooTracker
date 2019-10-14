@@ -646,6 +646,7 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 	case EffectType::NoteSlideDown:
 	case EffectType::NoteCut:
 	case EffectType::TransposeDelay:
+	case EffectType::NoiseFrequency:
 	case EffectType::VolumeDelay:
 		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
@@ -764,6 +765,9 @@ bool PlaybackManager::readSSGEffectFromQueue(int ch)
 			case EffectType::TransposeDelay:
 				tposeDlyCntSSG_.at(uch) = (eff.value & 0x70) >> 4;
 				tposeDlyValueSSG_.at(uch) = ((eff.value & 0x80) ? -1 : 1) * (eff.value & 0x0f);
+				break;
+			case EffectType::NoiseFrequency:
+				if (-1 < eff.value && eff.value < 32) opnaCtrl_->setNoiseFrequencySSG(ch, eff.value);
 				break;
 			case EffectType::VolumeDelay:
 			{
@@ -1180,6 +1184,7 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
 	std::vector<bool> isSetVolDrum(6, false), isSetPanDrum(6, false);
 	bool isSetMVolDrum = false;
+	bool isSetNoiseFreqSSG = false;
 	/// bit0: step
 	/// bit1: tempo
 	/// bit2: groove
@@ -1394,6 +1399,12 @@ void PlaybackManager::retrieveChannelStates()
 						if (!isSetDtnSSG.at(uch)) {
 							isSetDtnSSG.at(uch) = true;
 							if (isPrevPos) opnaCtrl_->setDetuneSSG(ch, eff.value - 0x80);
+						}
+						break;
+					case EffectType::NoiseFrequency:
+						if (-1 < eff.value && eff.value < 32 && !isSetNoiseFreqSSG) {
+							isSetNoiseFreqSSG = true;
+							if (isPrevPos) opnaCtrl_->setNoiseFrequencySSG(ch, eff.value);
 						}
 						break;
 					default:

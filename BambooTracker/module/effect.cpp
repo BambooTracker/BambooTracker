@@ -131,9 +131,18 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
-	else if (id == "0V") {switch (src) {
+	else if (id == "0V") {
+		switch (src) {
 		case SoundSource::Drum:
 			return EffectType::MasterVolume;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
+	else if (id == "0W") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::NoiseFrequency;
 		default:
 			return EffectType::NoEffect;
 		}

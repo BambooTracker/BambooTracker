@@ -1966,6 +1966,14 @@ void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 	needToneSetSSG_[ch] = true;
 }
 
+void OPNAController::setNoiseFrequencySSG(int ch, int freq)
+{
+	noiseFreqSSG_ = freq;
+	tnSSG_[ch].noisePeriod_ = freq;
+	opna_->setRegister(0x06, static_cast<uint8_t>(freq));
+	if (tnItSSG_[ch]) tnItSSG_[ch].reset();
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesSSG(int ch)
 {
@@ -2016,6 +2024,7 @@ void OPNAController::initSSG()
 {
 	mixerSSG_ = 0xff;
 	opna_->setRegister(0x07, mixerSSG_);	// SSG mix
+	noiseFreqSSG_ = 0;
 
 	for (int ch = 0; ch < 3; ++ch) {
 		isKeyOnSSG_[ch] = false;
