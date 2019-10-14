@@ -1167,11 +1167,23 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	}
 	else if (id == "0V") {
 		switch (src) {
+		case SoundSource::FM:
+			break;
+		case SoundSource::SSG:
+			effDetail = tr("0Vxx - Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone & noise");
+			break;
 		case SoundSource::Drum:
 			effDetail = tr("0Vxx - Master volume, xx: volume (00-3F)");
 			break;
-		case SoundSource::FM:
+		}
+	}
+	else if (id == "0W") {
+		switch (src) {
 		case SoundSource::SSG:
+			effDetail = tr("0Wxx - Noise frequency, xx: frequency (00-1F)");
+			break;
+			case SoundSource::FM:
+		case SoundSource::Drum:
 			break;
 		}
 	}

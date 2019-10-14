@@ -212,6 +212,7 @@ public:
 	void setDetuneSSG(int ch, int pitch);
 	void setNoteSlideSSG(int ch, int speed, int seminote);
 	void setTransposeEffectSSG(int ch, int seminote);
+	void setToneNoiseMixSSG(int ch, int value);
 	void setNoiseFrequencySSG(int ch, int freq);
 
 	// For state retrieve
@@ -266,6 +267,7 @@ private:
 	int sumNoteSldSSG_[3];
 	bool noteSldSSGSetFlag_;
 	int transposeSSG_[3];
+	int toneNoiseMixSSG_[3];
 	int noiseFreqSSG_;
 	std::unique_ptr<int16_t[]> outputHistory_;
 	size_t outputHistoryIndex_;

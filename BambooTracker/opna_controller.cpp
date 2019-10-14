@@ -1966,6 +1966,21 @@ void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 	needToneSetSSG_[ch] = true;
 }
 
+void OPNAController::setToneNoiseMixSSG(int ch, int value)
+{
+	toneNoiseMixSSG_[ch] = value;
+
+	// Tone
+	if ((tnSSG_[ch].isTone_ = (0x01 & value))) mixerSSG_ &= ~(1 << ch);
+	else mixerSSG_ |= (1 << ch);
+	// Noise
+	if ((tnSSG_[ch].isNoise_ = (0x02 & value))) mixerSSG_ &= ~(1 << (ch + 3));
+	else mixerSSG_ |= (1 << (ch + 3));
+	opna_->setRegister(0x07, mixerSSG_);
+
+	if (tnItSSG_[ch]) tnItSSG_[ch].reset();
+}
+
 void OPNAController::setNoiseFrequencySSG(int ch, int freq)
 {
 	noiseFreqSSG_ = freq;
@@ -2073,6 +2088,7 @@ void OPNAController::initSSG()
 		sumNoteSldSSG_[ch] = 0;
 		noteSldSSGSetFlag_ = false;
 		transposeSSG_[ch] = 0;
+		toneNoiseMixSSG_[ch] = 0;
 	}
 }
 

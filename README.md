@@ -213,30 +213,31 @@ Z X CV B N M, .
 It is able to reverse the order of FM volume (Configuration -> General -> Reverse FM volume order).
 
 ## Effect list
-| Effect | FM                                                                                      | SSG                | Drum                              |
-| ------ | --------------------------------------------------------------------------------------- | ------------------ | --------------------------------- |
-| 00xy   | Arpeggio (x[0-f]: 2nd note, y[0-f]: 3rd note)                                           | Arpeggio           | -                                 |
-| 01xx   | Portamento up (xx[00-ff]: depth)                                                        | Portamento up      | -                                 |
-| 02xx   | Portamento down (xx[00-ff]: depth)                                                      | Portamento down    | -                                 |
-| 03xx   | Tone portamento (xx[00-ff]: depth)                                                      | Tone portamento    | -                                 |
-| 04xy   | Vibrato (x[0-f]: period, y[0-f]: depth)                                                 | Vibrato            | -                                 |
-| 07xy   | Tremolo (x[0-f]: period, y[0-f]: depth)                                                 | Tremolo            | -                                 |
-| 08xx   | Pan (xx: 00=No sound, 01=Right, 02=Left, 03=Center)                                     | -                  | Pan                               |
-| 0A0x   | Volume slide down (x[0-f]: depth)                                                       | Volume slide down  | -                                 |
-| 0Ax0   | Volume slide up (x[0-f]: depth)                                                         | Volume slide up    | -                                 |
-| 0Bxx   | Position jump (xx: order)                                                               | Position jump      | Position jump                     |
-| 0Cxx   | Song end (xx: any number)                                                               | Song end           | Song end                          |
-| 0Dxx   | Pattern break (xx: start step on the next order)                                        | Pattern break      | Pattern break                     |
-| 0Fxx   | Speed/tempo change (xx[00-1f]: speed, [20-ff]: tempo)                                   | Speed/tempo change | Speed/tempo change                |
-| 0Gxx   | Note delay (xx[00-ff]: count)                                                           | Note delay         | Note delay                        |
-| 0Oxx   | Groove (xx[00-ff]: number)                                                              | Groove             | Groove                            |
-| 0Pxx   | Detune (xx[00-ff]: pitch (xx-80))                                                       | Detune             | -                                 |
-| 0Qxy   | Note slide up (x[0-f]: count, y[0-f]: seminote)                                         | Note slide up      | -                                 |
-| 0Rxy   | Note slide down (x[0-f]: count, y[0-f]: seminote)                                       | Note slide down    | -                                 |
-| 0Sxx   | Note cut (xx[01-ff]: count)                                                             | Note cut           | Note cut                          |
-| 0Txy   | Transpose delay (x[1-7]: upwards count, [9-f]: downwards count (x-8), y[0-f]: seminote) | Transpose delay    | -                                 |
-| 0Vxx   | -                                                                                       | -                  | Master volume (xx[00-3f]: volume) |
-| Mxyy   | Volume delay (x[1-f]: count, yy[00-ff]: volume)                                         | Volume delay       | Volume delay                      |
+| Effect | FM                                                                                      | SSG                                                                | Drum                              |
+| ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------- |
+| 00xy   | Arpeggio (x[0-f]: 2nd note, y[0-f]: 3rd note)                                           | Arpeggio                                                           | -                                 |
+| 01xx   | Portamento up (xx[00-ff]: depth)                                                        | Portamento up                                                      | -                                 |
+| 02xx   | Portamento down (xx[00-ff]: depth)                                                      | Portamento down                                                    | -                                 |
+| 03xx   | Tone portamento (xx[00-ff]: depth)                                                      | Tone portamento                                                    | -                                 |
+| 04xy   | Vibrato (x[0-f]: period, y[0-f]: depth)                                                 | Vibrato                                                            | -                                 |
+| 07xy   | Tremolo (x[0-f]: period, y[0-f]: depth)                                                 | Tremolo                                                            | -                                 |
+| 08xx   | Pan (xx: 00=No sound, 01=Right, 02=Left, 03=Center)                                     | -                                                                  | Pan                               |
+| 0A0x   | Volume slide down (x[0-f]: depth)                                                       | Volume slide down                                                  | -                                 |
+| 0Ax0   | Volume slide up (x[0-f]: depth)                                                         | Volume slide up                                                    | -                                 |
+| 0Bxx   | Position jump (xx: order)                                                               | Position jump                                                      | Position jump                     |
+| 0Cxx   | Song end (xx: any number)                                                               | Song end                                                           | Song end                          |
+| 0Dxx   | Pattern break (xx: start step on the next order)                                        | Pattern break                                                      | Pattern break                     |
+| 0Fxx   | Speed/tempo change (xx[00-1f]: speed, [20-ff]: tempo)                                   | Speed/tempo change                                                 | Speed/tempo change                |
+| 0Gxx   | Note delay (xx[00-ff]: count)                                                           | Note delay                                                         | Note delay                        |
+| 0Oxx   | Groove (xx[00-ff]: number)                                                              | Groove                                                             | Groove                            |
+| 0Pxx   | Detune (xx[00-ff]: pitch (xx-80))                                                       | Detune                                                             | -                                 |
+| 0Qxy   | Note slide up (x[0-f]: count, y[0-f]: seminote)                                         | Note slide up                                                      | -                                 |
+| 0Rxy   | Note slide down (x[0-f]: count, y[0-f]: seminote)                                       | Note slide down                                                    | -                                 |
+| 0Sxx   | Note cut (xx[01-ff]: count)                                                             | Note cut                                                           | Note cut                          |
+| 0Txy   | Transpose delay (x[1-7]: upwards count, [9-f]: downwards count (x-8), y[0-f]: seminote) | Transpose delay                                                    | -                                 |
+| 0Vxx   | -                                                                                       | Tone/Noise mix (xx: 00=No sound, 01=Tone, 02=Noise, 03=Tone&Noise) | Master volume (xx[00-3f]: volume) |
+| 0Wxx   | -                                                                                       | Noise frequency (xx[00-1f]: frequency)                             | -                                 |
+| Mxyy   | Volume delay (x[1-f]: count, yy[00-ff]: volume)                                         | Volume delay                                                       | Volume delay                      |
 
 ## File I/O
 ### Module

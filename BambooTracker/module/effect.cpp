@@ -133,6 +133,8 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	}
 	else if (id == "0V") {
 		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::ToneNoiseMix;
 		case SoundSource::Drum:
 			return EffectType::MasterVolume;
 		default:
