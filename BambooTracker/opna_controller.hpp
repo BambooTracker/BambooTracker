@@ -214,6 +214,7 @@ public:
 	void setTransposeEffectSSG(int ch, int seminote);
 	void setToneNoiseMixSSG(int ch, int value);
 	void setNoiseFrequencySSG(int ch, int freq);
+	void setHardEnvelopeFrequency(int ch, bool high, int freq);
 
 	// For state retrieve
 	void haltSequencesSSG(int ch);
@@ -269,6 +270,7 @@ private:
 	int transposeSSG_[3];
 	int toneNoiseMixSSG_[3];
 	int noiseFreqSSG_;
+	int hardEnvFreqHighSSG_, hardEnvFreqLowSSG_;
 	std::unique_ptr<int16_t[]> outputHistory_;
 	size_t outputHistoryIndex_;
 	std::unique_ptr<int16_t[]> outputHistoryReady_;

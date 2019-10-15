@@ -51,6 +51,12 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow("0Gxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Note delay, xx: count (00-FF)"));
+	addRow("0Ixx",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Hardware envelope frequency 1, xx: high byte (00-FF)"));
+	addRow("0Jxx",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Hardware envelope frequency 2, xx: low byte (00-FF)"));
 	addRow("0Oxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Set groove xx"));

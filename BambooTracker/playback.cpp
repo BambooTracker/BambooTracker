@@ -649,6 +649,8 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 	case EffectType::ToneNoiseMix:
 	case EffectType::NoiseFrequency:
 	case EffectType::VolumeDelay:
+	case EffectType::HardEnvHighFreq:
+	case EffectType::HardEnvLowFreq:
 		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -772,6 +774,12 @@ bool PlaybackManager::readSSGEffectFromQueue(int ch)
 				break;
 			case EffectType::NoiseFrequency:
 				if (-1 < eff.value && eff.value < 32) opnaCtrl_->setNoiseFrequencySSG(ch, eff.value);
+				break;
+			case EffectType::HardEnvHighFreq:
+				opnaCtrl_->setHardEnvelopeFrequency(ch, true, eff.value);
+				break;
+			case EffectType::HardEnvLowFreq:
+				opnaCtrl_->setHardEnvelopeFrequency(ch, false, eff.value);
 				break;
 			case EffectType::VolumeDelay:
 			{
@@ -1190,6 +1198,8 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetVolDrum(6, false), isSetPanDrum(6, false);
 	bool isSetMVolDrum = false;
 	bool isSetNoiseFreqSSG = false;
+	bool isSetHardEnvFreqHighSSG = false;
+	bool isSetHardEnvFreqLowSSG = false;
 	/// bit0: step
 	/// bit1: tempo
 	/// bit2: groove
@@ -1416,6 +1426,18 @@ void PlaybackManager::retrieveChannelStates()
 						if (-1 < eff.value && eff.value < 32 && !isSetNoiseFreqSSG) {
 							isSetNoiseFreqSSG = true;
 							if (isPrevPos) opnaCtrl_->setNoiseFrequencySSG(ch, eff.value);
+						}
+						break;
+					case EffectType::HardEnvHighFreq:
+						if (!isSetHardEnvFreqHighSSG) {
+							isSetHardEnvFreqHighSSG = true;
+							if (isPrevPos) opnaCtrl_->setHardEnvelopeFrequency(ch, true, eff.value);
+						}
+						break;
+					case EffectType::HardEnvLowFreq:
+						if (!isSetHardEnvFreqLowSSG) {
+							isSetHardEnvFreqLowSSG = true;
+							if (isPrevPos) opnaCtrl_->setHardEnvelopeFrequency(ch, false, eff.value);
 						}
 						break;
 					default:

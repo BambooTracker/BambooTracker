@@ -89,6 +89,22 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "0G") {
 		return EffectType::NoteDelay;
 	}
+	else if (id == "0I") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::HardEnvHighFreq;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
+	else if (id == "0J") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::HardEnvLowFreq;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else if (id == "0O") {
 		return EffectType::Groove;
 	}

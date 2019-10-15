@@ -1119,6 +1119,26 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	else if (id == "0G") {
 		effDetail = tr("0Gxx - Note delay, xx: count (00-FF)");
 	}
+	else if (id == "0I") {
+		switch (src) {
+		case SoundSource::SSG:
+			effDetail = tr("0Ixx - Hardware envelope frequency 1, xx: high byte (00-FF)");
+			break;
+		case SoundSource::FM:
+		case SoundSource::Drum:
+			break;
+		}
+	}
+	else if (id == "0J") {
+		switch (src) {
+		case SoundSource::SSG:
+			effDetail = tr("0Jxx - Hardware envelope frequency 2, xx: low byte (00-FF)");
+			break;
+		case SoundSource::FM:
+		case SoundSource::Drum:
+			break;
+		}
+	}
 	else if (id == "0O") {
 		effDetail = tr("0Oxx - Set groove xx");
 	}
