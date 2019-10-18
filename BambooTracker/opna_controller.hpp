@@ -213,8 +213,8 @@ public:
 	void setNoteSlideSSG(int ch, int speed, int seminote);
 	void setTransposeEffectSSG(int ch, int seminote);
 	void setToneNoiseMixSSG(int ch, int value);
-	void setNoiseFrequencySSG(int ch, int freq);
-	void setHardEnvelopeFrequency(int ch, bool high, int freq);
+	void setNoisePitchSSG(int ch, int pitch);
+	void setHardEnvelopePeriod(int ch, bool high, int period);
 	void setAutoEnvelopeSSG(int ch, int shift, int shape);
 
 	// For state retrieve
@@ -270,8 +270,8 @@ private:
 	bool noteSldSSGSetFlag_;
 	int transposeSSG_[3];
 	int toneNoiseMixSSG_[3];
-	int noiseFreqSSG_;
-	int hardEnvFreqHighSSG_, hardEnvFreqLowSSG_;
+	int noisePitchSSG_;
+	int hardEnvPeriodHighSSG_, hardEnvPeriodLowSSG_;
 	std::unique_ptr<int16_t[]> outputHistory_;
 	size_t outputHistoryIndex_;
 	std::unique_ptr<int16_t[]> outputHistoryReady_;

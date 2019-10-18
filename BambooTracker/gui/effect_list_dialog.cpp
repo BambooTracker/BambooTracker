@@ -56,10 +56,10 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   tr("Auto envelope, x: shift amount (0-F), y: shape (0-F"));
 	addRow("0Ixx",
 		   static_cast<int>(SoundSource::SSG),
-		   tr("Hardware envelope frequency 1, xx: high byte (00-FF)"));
+		   tr("Hardware envelope period 1, xx: high byte (00-FF)"));
 	addRow("0Jxx",
 		   static_cast<int>(SoundSource::SSG),
-		   tr("Hardware envelope frequency 2, xx: low byte (00-FF)"));
+		   tr("Hardware envelope period 2, xx: low byte (00-FF)"));
 	addRow("0Oxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Set groove xx"));
@@ -89,7 +89,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   tr("Master volume, xx: volume (00-3F)"));
 	addRow("0Wxx",
 		   static_cast<int>(SoundSource::SSG),
-		   tr("Noise frequency, xx: frequency (00-1F)"));
+		   tr("Noise pitch, xx: pitch (00-1F)"));
 	addRow("Mxyy",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Volume delay, x: count (1-F), yy: volume (00-FF)"));

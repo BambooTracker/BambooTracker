@@ -647,10 +647,10 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 	case EffectType::NoteCut:
 	case EffectType::TransposeDelay:
 	case EffectType::ToneNoiseMix:
-	case EffectType::NoiseFrequency:
+	case EffectType::NoisePitch:
 	case EffectType::VolumeDelay:
-	case EffectType::HardEnvHighFreq:
-	case EffectType::HardEnvLowFreq:
+	case EffectType::HardEnvHighPeriod:
+	case EffectType::HardEnvLowPeriod:
 	case EffectType::AutoEnvelope:
 		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
@@ -773,14 +773,14 @@ bool PlaybackManager::readSSGEffectFromQueue(int ch)
 			case EffectType::ToneNoiseMix:
 				if (-1 < eff.value && eff.value < 4) opnaCtrl_->setToneNoiseMixSSG(ch, eff.value);
 				break;
-			case EffectType::NoiseFrequency:
-				if (-1 < eff.value && eff.value < 32) opnaCtrl_->setNoiseFrequencySSG(ch, eff.value);
+			case EffectType::NoisePitch:
+				if (-1 < eff.value && eff.value < 32) opnaCtrl_->setNoisePitchSSG(ch, eff.value);
 				break;
-			case EffectType::HardEnvHighFreq:
-				opnaCtrl_->setHardEnvelopeFrequency(ch, true, eff.value);
+			case EffectType::HardEnvHighPeriod:
+				opnaCtrl_->setHardEnvelopePeriod(ch, true, eff.value);
 				break;
-			case EffectType::HardEnvLowFreq:
-				opnaCtrl_->setHardEnvelopeFrequency(ch, false, eff.value);
+			case EffectType::HardEnvLowPeriod:
+				opnaCtrl_->setHardEnvelopePeriod(ch, false, eff.value);
 				break;
 			case EffectType::VolumeDelay:
 			{
@@ -1201,9 +1201,9 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetTNMixSSG(3, false);
 	std::vector<bool> isSetVolDrum(6, false), isSetPanDrum(6, false);
 	bool isSetMVolDrum = false;
-	bool isSetNoiseFreqSSG = false;
-	bool isSetHardEnvFreqHighSSG = false;
-	bool isSetHardEnvFreqLowSSG = false;
+	bool isSetNoisePitchSSG = false;
+	bool isSetHardEnvPeriodHighSSG = false;
+	bool isSetHardEnvPeriodLowSSG = false;
 	bool isSetAutoEnvSSG = false;
 	/// bit0: step
 	/// bit1: tempo
@@ -1427,22 +1427,22 @@ void PlaybackManager::retrieveChannelStates()
 							if (isPrevPos) opnaCtrl_->setToneNoiseMixSSG(ch, eff.value);
 						}
 						break;
-					case EffectType::NoiseFrequency:
-						if (-1 < eff.value && eff.value < 32 && !isSetNoiseFreqSSG) {
-							isSetNoiseFreqSSG = true;
-							if (isPrevPos) opnaCtrl_->setNoiseFrequencySSG(ch, eff.value);
+					case EffectType::NoisePitch:
+						if (-1 < eff.value && eff.value < 32 && !isSetNoisePitchSSG) {
+							isSetNoisePitchSSG = true;
+							if (isPrevPos) opnaCtrl_->setNoisePitchSSG(ch, eff.value);
 						}
 						break;
-					case EffectType::HardEnvHighFreq:
-						if (!isSetHardEnvFreqHighSSG) {
-							isSetHardEnvFreqHighSSG = true;
-							if (isPrevPos) opnaCtrl_->setHardEnvelopeFrequency(ch, true, eff.value);
+					case EffectType::HardEnvHighPeriod:
+						if (!isSetHardEnvPeriodHighSSG) {
+							isSetHardEnvPeriodHighSSG = true;
+							if (isPrevPos) opnaCtrl_->setHardEnvelopePeriod(ch, true, eff.value);
 						}
 						break;
-					case EffectType::HardEnvLowFreq:
-						if (!isSetHardEnvFreqLowSSG) {
-							isSetHardEnvFreqLowSSG = true;
-							if (isPrevPos) opnaCtrl_->setHardEnvelopeFrequency(ch, false, eff.value);
+					case EffectType::HardEnvLowPeriod:
+						if (!isSetHardEnvPeriodLowSSG) {
+							isSetHardEnvPeriodLowSSG = true;
+							if (isPrevPos) opnaCtrl_->setHardEnvelopePeriod(ch, false, eff.value);
 						}
 						break;
 					case EffectType::AutoEnvelope:

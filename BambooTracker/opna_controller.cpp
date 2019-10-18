@@ -1981,31 +1981,31 @@ void OPNAController::setToneNoiseMixSSG(int ch, int value)
 	if (tnItSSG_[ch]) tnItSSG_[ch].reset();
 }
 
-void OPNAController::setNoiseFrequencySSG(int ch, int freq)
+void OPNAController::setNoisePitchSSG(int ch, int pitch)
 {
-	noiseFreqSSG_ = freq;
-	tnSSG_[ch].noisePeriod_ = freq;
-	opna_->setRegister(0x06, static_cast<uint8_t>(freq));
+	noisePitchSSG_ = pitch;
+	tnSSG_[ch].noisePeriod_ = pitch;
+	opna_->setRegister(0x06, static_cast<uint8_t>(pitch));
 }
 
-void OPNAController::setHardEnvelopeFrequency(int ch, bool high, int freq)
+void OPNAController::setHardEnvelopePeriod(int ch, bool high, int period)
 {
 	bool sendable = isHardEnvSSG_[ch]
 					&& (CommandSequenceUnit::checkDataType(envSSG_[ch].data) == CommandSequenceUnit::RAW);
 	if (high) {
-		hardEnvFreqHighSSG_ = freq;
+		hardEnvPeriodHighSSG_ = period;
 		if (sendable) {
-			envSSG_[ch].data = (freq << 8) | (envSSG_[ch].data & 0x00ff);
+			envSSG_[ch].data = (period << 8) | (envSSG_[ch].data & 0x00ff);
 			envSSG_[ch].data |= ~(1 << 16);	// raw data flag
-			opna_->setRegister(0x0c, static_cast<uint8_t>(freq));
+			opna_->setRegister(0x0c, static_cast<uint8_t>(period));
 		}
 	}
 	else {
-		hardEnvFreqLowSSG_ = freq;
+		hardEnvPeriodLowSSG_ = period;
 		if (sendable) {
-			envSSG_[ch].data = (envSSG_[ch].data & 0xff00) | freq;
+			envSSG_[ch].data = (envSSG_[ch].data & 0xff00) | period;
 			envSSG_[ch].data |= ~(1 << 16);	// raw data flag
-			opna_->setRegister(0x0b, static_cast<uint8_t>(freq));
+			opna_->setRegister(0x0b, static_cast<uint8_t>(period));
 		}
 	}
 }
@@ -2052,9 +2052,9 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 		opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		isHardEnvSSG_[ch] = true;
 		if (shift == -8) {	// Raw
-			envSSG_[ch].data = (hardEnvFreqHighSSG_ << 8) | hardEnvFreqLowSSG_;
-			opna_->setRegister(0x0c, static_cast<uint8_t>(hardEnvFreqHighSSG_));
-			opna_->setRegister(0x0b, static_cast<uint8_t>(hardEnvFreqLowSSG_));
+			envSSG_[ch].data = (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_;
+			opna_->setRegister(0x0c, static_cast<uint8_t>(hardEnvPeriodHighSSG_));
+			opna_->setRegister(0x0b, static_cast<uint8_t>(hardEnvPeriodLowSSG_));
 		}
 		else {
 			envSSG_[ch].data = CommandSequenceUnit::shift2data(shift);
@@ -2119,9 +2119,9 @@ void OPNAController::initSSG()
 {
 	mixerSSG_ = 0xff;
 	opna_->setRegister(0x07, mixerSSG_);	// SSG mix
-	noiseFreqSSG_ = 0;
-	hardEnvFreqHighSSG_ = 0;
-	hardEnvFreqLowSSG_ = 0;
+	noisePitchSSG_ = 0;
+	hardEnvPeriodHighSSG_ = 0;
+	hardEnvPeriodLowSSG_ = 0;
 
 	for (int ch = 0; ch < 3; ++ch) {
 		isKeyOnSSG_[ch] = false;
@@ -2913,7 +2913,7 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 		if (envSSG_[ch].data != data || setHardEnvIfNecessary_[ch]) {
 			envSSG_[ch].data = data;
 			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
-				/* Envelope frequency is set in writePitchSSG */
+				/* Envelope period is set in writePitchSSG */
 				needEnvSetSSG_[ch] = true;
 			}
 			else {
@@ -3052,9 +3052,9 @@ void OPNAController::writePitchSSG(int ch)
 				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
 				auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
 				hz = mul * hz * ratio.second / ratio.first;
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				opna_->setRegister(0x0b, 0x00ff & freq);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(freq >> 8));
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
+				opna_->setRegister(0x0b, 0x00ff & period);
+				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 				break;
 			}
 			case CommandSequenceUnit::LSHIFT:
@@ -3067,11 +3067,11 @@ void OPNAController::writePitchSSG(int ch)
 				int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
 				shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
 				shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				if (shift < 0) freq <<= -shift;
-				else freq >>= shift;
-				opna_->setRegister(0x0b, 0x00ff & freq);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(freq >> 8));
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
+				if (shift < 0) period <<= -shift;
+				else period >>= shift;
+				opna_->setRegister(0x0b, 0x00ff & period);
+				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 				break;
 			}
 			default:
@@ -3088,9 +3088,9 @@ void OPNAController::writePitchSSG(int ch)
 				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
 				auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
 				hz = mul * hz * ratio.second / ratio.first;
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				opna_->setRegister(0x0b, 0x00ff & freq);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(freq >> 8));
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
+				opna_->setRegister(0x0b, 0x00ff & period);
+				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 				break;
 			}
 			case CommandSequenceUnit::LSHIFT:
@@ -3103,11 +3103,11 @@ void OPNAController::writePitchSSG(int ch)
 				int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
 				shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
 				shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				if (shift < 0) freq <<= -shift;
-				else freq >>= shift;
-				opna_->setRegister(0x0b, 0x00ff & freq);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(freq >> 8));
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
+				if (shift < 0) period <<= -shift;
+				else period >>= shift;
+				opna_->setRegister(0x0b, 0x00ff & period);
+				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 				break;
 			}
 			default:
@@ -3144,10 +3144,10 @@ void OPNAController::writePitchSSG(int ch)
 				double hz = opna_->getClock() / 2048.0 / pitch;
 				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
 				hz = hz * ratio.second / ratio.first;
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
-				opna_->setRegister(0x00 + offset, freq & 0x00ff);
-				opna_->setRegister(0x01 + offset, freq >> 8);
+				opna_->setRegister(0x00 + offset, period & 0x00ff);
+				opna_->setRegister(0x01 + offset, period >> 8);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
@@ -3155,10 +3155,10 @@ void OPNAController::writePitchSSG(int ch)
 				double hz = opna_->getClock() / 2048.0 / pitch;
 				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
 				hz = hz * ratio.second / ratio.first;
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
-				opna_->setRegister(0x00 + offset, freq & 0x00ff);
-				opna_->setRegister(0x01 + offset, freq >> 8);
+				opna_->setRegister(0x00 + offset, period & 0x00ff);
+				opna_->setRegister(0x01 + offset, period >> 8);
 			}
 		}
 		break;
@@ -3175,9 +3175,9 @@ void OPNAController::writePitchSSG(int ch)
 				double hz = opna_->getClock() / 1024.0 / pitch;
 				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
 				hz = hz * ratio.second / ratio.first;
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				opna_->setRegister(0x0b, freq & 0x00ff);
-				opna_->setRegister(0x0c, freq >> 8);
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				opna_->setRegister(0x0b, period & 0x00ff);
+				opna_->setRegister(0x0c, period >> 8);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
@@ -3185,9 +3185,9 @@ void OPNAController::writePitchSSG(int ch)
 				double hz = opna_->getClock() / 1024.0 / pitch;
 				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
 				hz = hz * ratio.second / ratio.first;
-				uint16_t freq = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				opna_->setRegister(0x0b, freq & 0x00ff);
-				opna_->setRegister(0x0c, freq >> 8);
+				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
+				opna_->setRegister(0x0b, period & 0x00ff);
+				opna_->setRegister(0x0c, period >> 8);
 			}
 		}
 		break;

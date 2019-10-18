@@ -100,7 +100,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "0I") {
 		switch (src) {
 		case SoundSource::SSG:
-			return EffectType::HardEnvHighFreq;
+			return EffectType::HardEnvHighPeriod;
 		default:
 			return EffectType::NoEffect;
 		}
@@ -108,7 +108,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "0J") {
 		switch (src) {
 		case SoundSource::SSG:
-			return EffectType::HardEnvLowFreq;
+			return EffectType::HardEnvLowPeriod;
 		default:
 			return EffectType::NoEffect;
 		}
@@ -168,7 +168,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "0W") {
 		switch (src) {
 		case SoundSource::SSG:
-			return EffectType::NoiseFrequency;
+			return EffectType::NoisePitch;
 		default:
 			return EffectType::NoEffect;
 		}

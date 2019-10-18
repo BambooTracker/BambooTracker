@@ -230,8 +230,8 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Fxx   | Speed/tempo change (xx[00-1F]: speed, [20-FF]: tempo)                                   | Speed/tempo change                                                 | Speed/tempo change                |
 | 0Gxx   | Note delay (xx[00-FF]: count)                                                           | Note delay                                                         | Note delay                        |
 | 0Hxy   | -                                                                                       | Auto envelope  (x[0-F]: shift amount (x-8), y[0-F]: shape)         | -                                 |
-| 0Ixx   | -                                                                                       | Hardware envelope frequency 1 (xx[00-FF]: high byte)               | -                                 |
-| 0Jxx   | -                                                                                       | Hardware envelope frequency 2 (xx[00-FF]: low byte)                | -                                 |
+| 0Ixx   | -                                                                                       | Hardware envelope preriod 1 (xx[00-FF]: high byte)                 | -                                 |
+| 0Jxx   | -                                                                                       | Hardware envelope period 2 (xx[00-FF]: low byte)                   | -                                 |
 | 0Oxx   | Groove (xx[00-FF]: number)                                                              | Groove                                                             | Groove                            |
 | 0Pxx   | Detune (xx[00-FF]: pitch (xx-80))                                                       | Detune                                                             | -                                 |
 | 0Qxy   | Note slide up (x[0-F]: count, y[0-F]: seminote)                                         | Note slide up                                                      | -                                 |
@@ -239,7 +239,7 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Sxx   | Note cut (xx[01-FF]: count)                                                             | Note cut                                                           | Note cut                          |
 | 0Txy   | Transpose delay (x[1-7]: upwards count, [9-F]: downwards count (x-8), y[0-F]: seminote) | Transpose delay                                                    | -                                 |
 | 0Vxx   | -                                                                                       | Tone/Noise mix (xx: 00=No sound, 01=Tone, 02=Noise, 03=Tone&Noise) | Master volume (xx[00-3F]: volume) |
-| 0Wxx   | -                                                                                       | Noise frequency (xx[00-1F]: frequency)                             | -                                 |
+| 0Wxx   | -                                                                                       | Noise pitch (xx[00-1F]: pitch)                                     | -                                 |
 | Mxyy   | Volume delay (x[1-F]: count, yy[00-FF]: volume)                                         | Volume delay                                                       | Volume delay                      |
 
 ## File I/O
