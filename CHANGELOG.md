@@ -14,6 +14,7 @@
 - [#153] - Fix hardware envelope to set data in sequence (thanks [@papiezak])
 - [#154] - Fix position initialization when opening module (thanks [@papiezak])
 - Fix corruption after `0Bxx`, `0Cxx` and `0Dxx` are set the position before current playback row
+- Fix incorrect square-mask pitch in square-masked saw and inversed saw
 
 [#152]: https://github.com/rerrahkr/BambooTracker/pull/152
 [#153]: https://github.com/rerrahkr/BambooTracker/issues/153

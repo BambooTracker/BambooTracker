@@ -3176,8 +3176,9 @@ void OPNAController::writePitchSSG(int ch)
 				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
 				hz = hz * ratio.second / ratio.first;
 				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				opna_->setRegister(0x0b, period & 0x00ff);
-				opna_->setRegister(0x0c, period >> 8);
+				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				opna_->setRegister(0x00 + offset, period & 0x00ff);
+				opna_->setRegister(0x01 + offset, period >> 8);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
@@ -3186,8 +3187,9 @@ void OPNAController::writePitchSSG(int ch)
 				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
 				hz = hz * ratio.second / ratio.first;
 				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				opna_->setRegister(0x0b, period & 0x00ff);
-				opna_->setRegister(0x0c, period >> 8);
+				uint8_t offset = static_cast<uint8_t>(ch << 1);
+				opna_->setRegister(0x00 + offset, period & 0x00ff);
+				opna_->setRegister(0x01 + offset, period >> 8);
 			}
 		}
 		break;
