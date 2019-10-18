@@ -229,8 +229,9 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Dxx   | Pattern break (xx: start step on the next order)                                        | Pattern break                                                      | Pattern break                     |
 | 0Fxx   | Speed/tempo change (xx[00-1F]: speed, [20-FF]: tempo)                                   | Speed/tempo change                                                 | Speed/tempo change                |
 | 0Gxx   | Note delay (xx[00-FF]: count)                                                           | Note delay                                                         | Note delay                        |
-| 0Ixx   | -                                                                                       | Hardware envelope frequency 1 (xx[00-FF]: high byte)            | -                                 |
-| 0Jxx   | -                                                                                       | Hardware envelope frequency 2 (xx[00-FF]: low byte)             | -                                 |
+| 0Hxy   | -                                                                                       | Auto envelope  (x[0-F]: shift amount (x-8), y[0-F]: shape)         | -                                 |
+| 0Ixx   | -                                                                                       | Hardware envelope frequency 1 (xx[00-FF]: high byte)               | -                                 |
+| 0Jxx   | -                                                                                       | Hardware envelope frequency 2 (xx[00-FF]: low byte)                | -                                 |
 | 0Oxx   | Groove (xx[00-FF]: number)                                                              | Groove                                                             | Groove                            |
 | 0Pxx   | Detune (xx[00-FF]: pitch (xx-80))                                                       | Detune                                                             | -                                 |
 | 0Qxy   | Note slide up (x[0-F]: count, y[0-F]: seminote)                                         | Note slide up                                                      | -                                 |

@@ -9,13 +9,24 @@ struct CommandSequenceUnit
 {
 	int type;
 	/// In SSG waveform and envelope,
-	///		- If bit 16 is 1, bit 0-7 is 2nd and bit 8-15 is 1st ratio value
-	///		- If bit 16 is 0, bit 0-15 is raw data
+	///		- If bit 17 is 0,
+	///			* If bit 16 is 0, bit 0-15 is raw data
+	///			* If bit 16 is 1, bit 0-7 is 2nd and bit 8-15 is 1st ratio value
+	///		- If bit 17 is 1,
+	///			* If bit 16 is 0, bit 0-15 is right shift value
+	///			* If bit 16 is 1, bit 0-15 is left shift value
 	int data;
 
-	inline static bool isRatioData(int data)
+	enum DataType
 	{
-		return (data > -1 && data & 0x00010000);
+		RAW, RATIO, LSHIFT, RSHIFT
+	};
+
+	inline static DataType checkDataType(int data)
+	{
+		if (0x20000 & data) return (0x10000 & data ? DataType::LSHIFT : DataType::RSHIFT);
+		else if (0x10000 & data) return DataType::RATIO;
+		else return DataType::RAW;
 	}
 
 	inline static int ratio2data(int first, int second)
@@ -25,7 +36,19 @@ struct CommandSequenceUnit
 
 	inline static std::pair<int, int> data2ratio(int data)
 	{
-		return std::pair<int, int>((data & 0x0000ff00) >> 8, data & 0x000000ff);
+		return std::make_pair((data & 0x0000ff00) >> 8, data & 0x000000ff);
+	}
+
+	inline static int shift2data(int rshift)
+	{
+		if (rshift > 0) return ((2 << 16) | rshift);
+		else return ((3 << 16) | -rshift);
+	}
+
+	/// Check whether data is left shift or right shift before call this method
+	inline static int data2shift(int data)
+	{
+		return 0xffff & data;
 	}
 };
 

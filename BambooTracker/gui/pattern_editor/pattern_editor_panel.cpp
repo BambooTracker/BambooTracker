@@ -1119,6 +1119,16 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	else if (id == "0G") {
 		effDetail = tr("0Gxx - Note delay, xx: count (00-FF)");
 	}
+	else if (id == "0H") {
+		switch (src) {
+		case SoundSource::SSG:
+			effDetail = tr("0Hxy - Auto envelope, x: shift amount (0-F), y: shape (0-F)");
+			break;
+		case SoundSource::FM:
+		case SoundSource::Drum:
+			break;
+		}
+	}
 	else if (id == "0I") {
 		switch (src) {
 		case SoundSource::SSG:

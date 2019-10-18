@@ -215,6 +215,7 @@ public:
 	void setToneNoiseMixSSG(int ch, int value);
 	void setNoiseFrequencySSG(int ch, int freq);
 	void setHardEnvelopeFrequency(int ch, bool high, int freq);
+	void setAutoEnvelopeSSG(int ch, int shift, int shape);
 
 	// For state retrieve
 	void haltSequencesSSG(int ch);

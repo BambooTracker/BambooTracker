@@ -51,6 +51,9 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow("0Gxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Note delay, xx: count (00-FF)"));
+	addRow("0Hxy",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Auto envelope, x: shift amount (0-F), y: shape (0-F"));
 	addRow("0Ixx",
 		   static_cast<int>(SoundSource::SSG),
 		   tr("Hardware envelope frequency 1, xx: high byte (00-FF)"));

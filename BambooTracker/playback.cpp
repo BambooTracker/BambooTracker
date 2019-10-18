@@ -651,6 +651,7 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 	case EffectType::VolumeDelay:
 	case EffectType::HardEnvHighFreq:
 	case EffectType::HardEnvLowFreq:
+	case EffectType::AutoEnvelope:
 		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -790,6 +791,9 @@ bool PlaybackManager::readSSGEffectFromQueue(int ch)
 				}
 				break;
 			}
+			case EffectType::AutoEnvelope:
+				opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.value >> 4) - 8, eff.value & 0x0f);
+				break;
 			default:
 				break;
 			}
@@ -1200,6 +1204,7 @@ void PlaybackManager::retrieveChannelStates()
 	bool isSetNoiseFreqSSG = false;
 	bool isSetHardEnvFreqHighSSG = false;
 	bool isSetHardEnvFreqLowSSG = false;
+	bool isSetAutoEnvSSG = false;
 	/// bit0: step
 	/// bit1: tempo
 	/// bit2: groove
@@ -1438,6 +1443,12 @@ void PlaybackManager::retrieveChannelStates()
 						if (!isSetHardEnvFreqLowSSG) {
 							isSetHardEnvFreqLowSSG = true;
 							if (isPrevPos) opnaCtrl_->setHardEnvelopeFrequency(ch, false, eff.value);
+						}
+						break;
+					case EffectType::AutoEnvelope:
+						if (!isSetAutoEnvSSG) {
+							isSetAutoEnvSSG = true;
+							if (isPrevPos) opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.value >> 4) - 8, eff.value & 0x0f);
 						}
 						break;
 					default:

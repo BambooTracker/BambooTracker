@@ -89,6 +89,14 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "0G") {
 		return EffectType::NoteDelay;
 	}
+	else if (id == "0H") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::AutoEnvelope;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else if (id == "0I") {
 		switch (src) {
 		case SoundSource::SSG:
