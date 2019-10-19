@@ -23,6 +23,7 @@ void SetInstrumentToStepCommand::undo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
 					.getStep(step_).setInstrumentNumber(prevInst_);
+	isSecond_ = true;	// Forced complete
 }
 
 CommandId SetInstrumentToStepCommand::getID() const

@@ -197,6 +197,11 @@ void PatternEditorPanel::redrawBySizeChanged()
 	repaint();
 }
 
+void PatternEditorPanel::resetEntryCount()
+{
+	entryCnt_ = 0;
+}
+
 void PatternEditorPanel::drawPattern(const QRect &rect)
 {
 	if (!freezed_ && repaintable_.load()) {

@@ -17,6 +17,7 @@ void SetVolumeToStepQtCommand::redo()
 void SetVolumeToStepQtCommand::undo()
 {
 	panel_->redrawByPatternChanged();
+	panel_->resetEntryCount();
 }
 
 int SetVolumeToStepQtCommand::id() const

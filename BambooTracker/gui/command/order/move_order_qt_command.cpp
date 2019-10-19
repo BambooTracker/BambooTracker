@@ -10,13 +10,13 @@ MoveOrderQtCommand::MoveOrderQtCommand(OrderListPanel* panel, QUndoCommand* pare
 void MoveOrderQtCommand::redo()
 {
 	panel_->onOrderEdited();
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void MoveOrderQtCommand::undo()
 {
 	panel_->onOrderEdited();
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int MoveOrderQtCommand::id() const

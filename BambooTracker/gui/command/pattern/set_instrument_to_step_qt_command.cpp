@@ -17,6 +17,7 @@ void SetInstrumentToStepQtCommand::redo()
 void SetInstrumentToStepQtCommand::undo()
 {
 	panel_->redrawByPatternChanged();
+	panel_->resetEntryCount();
 }
 
 int SetInstrumentToStepQtCommand::id() const

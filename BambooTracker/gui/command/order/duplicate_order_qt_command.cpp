@@ -10,13 +10,13 @@ DuplicateOrderQtCommand::DuplicateOrderQtCommand(OrderListPanel* panel, QUndoCom
 void DuplicateOrderQtCommand::redo()
 {
 	panel_->onOrderEdited();
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void DuplicateOrderQtCommand::undo()
 {
 	panel_->onOrderEdited();
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int DuplicateOrderQtCommand::id() const

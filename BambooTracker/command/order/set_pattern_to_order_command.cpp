@@ -20,6 +20,7 @@ void SetPatternToOrderCommand::redo()
 void SetPatternToOrderCommand::undo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).registerPatternToOrder(order_, prevPattern_);
+	isSecond_ = true;	// Forced complete
 }
 
 CommandId SetPatternToOrderCommand::getID() const

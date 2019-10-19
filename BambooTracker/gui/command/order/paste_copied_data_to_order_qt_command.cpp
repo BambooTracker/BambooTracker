@@ -10,12 +10,12 @@ PasteCopiedDataToOrderQtCommand::PasteCopiedDataToOrderQtCommand(OrderListPanel*
 void PasteCopiedDataToOrderQtCommand::redo()
 {
 	panel_->onOrderEdited();
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void PasteCopiedDataToOrderQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 	panel_->onOrderEdited();
 }
 

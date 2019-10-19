@@ -17,6 +17,7 @@ void SetEffectValueToStepQtCommand::redo()
 void SetEffectValueToStepQtCommand::undo()
 {
 	panel_->redrawByPatternChanged();
+	panel_->resetEntryCount();
 }
 
 int SetEffectValueToStepQtCommand::id() const

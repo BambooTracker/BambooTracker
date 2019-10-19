@@ -10,13 +10,13 @@ ClonePatternsQtCommand::ClonePatternsQtCommand(OrderListPanel* panel, QUndoComma
 void ClonePatternsQtCommand::redo()
 {
 	panel_->onOrderEdited();
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void ClonePatternsQtCommand::undo()
 {
 	panel_->onOrderEdited();
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int ClonePatternsQtCommand::id() const

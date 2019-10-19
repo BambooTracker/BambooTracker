@@ -26,6 +26,7 @@ void SetVolumeToStepCommand::undo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
 			.getStep(step_).setVolume(prevVol_);
+	isSecond_ = true;	// Forced complete
 }
 
 CommandId SetVolumeToStepCommand::getID() const

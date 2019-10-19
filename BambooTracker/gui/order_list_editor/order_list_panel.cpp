@@ -93,6 +93,11 @@ void OrderListPanel::setColorPallete(std::shared_ptr<ColorPalette> palette)
 	palette_ = palette;
 }
 
+void OrderListPanel::resetEntryCount()
+{
+	entryCnt_ = 0;
+}
+
 void OrderListPanel::freeze()
 {
 	freezed_ = true;

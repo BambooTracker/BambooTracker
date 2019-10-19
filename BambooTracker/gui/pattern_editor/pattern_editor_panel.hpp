@@ -51,6 +51,8 @@ public:
 	void redrawByHeaderChanged();
 	void redrawBySizeChanged();
 
+	void resetEntryCount();
+
 	void freeze();
 	void unfreeze();
 

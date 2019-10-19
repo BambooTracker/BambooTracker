@@ -28,6 +28,7 @@ void SetEffectValueToStepCommand::undo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
 			.getStep(step_).setEffectValue(n_, prevVal_);
+	isSecond_ = true;	// Forced complete
 }
 
 CommandId SetEffectValueToStepCommand::getID() const

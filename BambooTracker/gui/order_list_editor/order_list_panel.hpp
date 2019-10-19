@@ -46,6 +46,8 @@ public:
 	void redrawBySizeChanged();
 	void redrawAll();
 
+	void resetEntryCount();
+
 	void freeze();
 	void unfreeze();
 
