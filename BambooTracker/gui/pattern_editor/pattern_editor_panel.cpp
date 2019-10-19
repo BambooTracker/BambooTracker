@@ -1417,6 +1417,36 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	else if (id == "0G") {
 		effDetail = tr("0Gxx - Note delay, xx: count (00-FF)");
 	}
+	else if (id == "0H") {
+		switch (src) {
+		case SoundSource::SSG:
+			effDetail = tr("0Hxy - Auto envelope, x: shift amount (0-F), y: shape (0-F)");
+			break;
+		case SoundSource::FM:
+		case SoundSource::Drum:
+			break;
+		}
+	}
+	else if (id == "0I") {
+		switch (src) {
+		case SoundSource::SSG:
+			effDetail = tr("0Ixx - Hardware envelope period 1, xx: high byte (00-FF)");
+			break;
+		case SoundSource::FM:
+		case SoundSource::Drum:
+			break;
+		}
+	}
+	else if (id == "0J") {
+		switch (src) {
+		case SoundSource::SSG:
+			effDetail = tr("0Jxx - Hardware envelope period 2, xx: low byte (00-FF)");
+			break;
+		case SoundSource::FM:
+		case SoundSource::Drum:
+			break;
+		}
+	}
 	else if (id == "0O") {
 		effDetail = tr("0Oxx - Set groove xx");
 	}
@@ -1465,11 +1495,23 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	}
 	else if (id == "0V") {
 		switch (src) {
+		case SoundSource::FM:
+			break;
+		case SoundSource::SSG:
+			effDetail = tr("0Vxx - Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone & noise");
+			break;
 		case SoundSource::Drum:
 			effDetail = tr("0Vxx - Master volume, xx: volume (00-3F)");
 			break;
-		case SoundSource::FM:
+		}
+	}
+	else if (id == "0W") {
+		switch (src) {
 		case SoundSource::SSG:
+			effDetail = tr("0Wxx - Noise pitch, xx: pitch (00-1F)");
+			break;
+			case SoundSource::FM:
+		case SoundSource::Drum:
 			break;
 		}
 	}

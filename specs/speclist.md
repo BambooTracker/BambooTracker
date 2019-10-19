@@ -33,13 +33,16 @@ Version table between tracker, module specification and instrument specification
       <td>0.2.0</td><td>1.2.0</td><td>1.2.0</td>
     </tr>
     <tr>
-      <td>0.2.1</td><td rowspan=3>1.2.2</td><td rowspan=3>1.2.1</td>
+      <td>0.2.1</td><td rowspan=4>1.2.2</td><td rowspan=4>1.2.1</td>
     </tr>
     <tr>
       <td>0.2.2</td>
     </tr>
     <tr>
-      <td>0.2.3</td><td>1.0.0</td>
+      <td>0.2.3</td><td rowspan=1>1.0.0</td>
+    </tr>
+    <tr>
+      <td>0.2.4</td>
     </tr>
   </tbody>
 </table>

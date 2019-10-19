@@ -51,6 +51,15 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow("0Gxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Note delay, xx: count (00-FF)"));
+	addRow("0Hxy",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Auto envelope, x: shift amount (0-F), y: shape (0-F"));
+	addRow("0Ixx",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Hardware envelope period 1, xx: high byte (00-FF)"));
+	addRow("0Jxx",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Hardware envelope period 2, xx: low byte (00-FF)"));
 	addRow("0Oxx",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Set groove xx"));
@@ -73,8 +82,14 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG),
 		   tr("Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)"));
 	addRow("0Vxx",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone & noise"));
+	addRow("0Vxx",
 		   static_cast<int>(SoundSource::Drum),
 		   tr("Master volume, xx: volume (00-3F)"));
+	addRow("0Wxx",
+		   static_cast<int>(SoundSource::SSG),
+		   tr("Noise pitch, xx: pitch (00-1F)"));
 	addRow("Mxyy",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Volume delay, x: count (1-F), yy: volume (00-FF)"));

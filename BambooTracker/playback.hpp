@@ -18,7 +18,7 @@ enum class PlaybackState
 class PlaybackManager
 {
 public:
-	PlaybackManager(std::weak_ptr<OPNAController> opnaCtrl,
+	PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
 					std::weak_ptr<InstrumentsManager> instMan,
 					std::weak_ptr<TickCounter> tickCounter,
 					std::weak_ptr<Module> mod, bool isRetrieveChannel);
@@ -47,7 +47,7 @@ public:
 	void setChannelRetrieving(bool enabled);
 
 private:
-	std::weak_ptr<OPNAController> opnaCtrl_;
+	std::shared_ptr<OPNAController> opnaCtrl_;
 	std::weak_ptr<InstrumentsManager> instMan_;
 	std::weak_ptr<TickCounter> tickCounter_;
 	std::weak_ptr<Module> mod_;

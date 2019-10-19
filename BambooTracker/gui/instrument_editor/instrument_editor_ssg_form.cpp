@@ -528,7 +528,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 	for (auto& com : instSSG->getWaveFormSequence()) {
 		QString str("");
 		if (isModulatedWaveFormSSG(com.type)) {
-			if (CommandSequenceUnit::isRatioData(com.data)) {
+			if (CommandSequenceUnit::checkDataType(com.data) == CommandSequenceUnit::RATIO) {
 				auto ratio = CommandSequenceUnit::data2ratio(com.data);
 				str = QString::number(ratio.first) + "/" + QString::number(ratio.second);
 			}
@@ -709,7 +709,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	for (auto& com : instSSG->getEnvelopeSequence()) {
 		QString str("");
 		if (com.type >= 16) {
-			if (CommandSequenceUnit::isRatioData(com.data)) {
+			if (CommandSequenceUnit::checkDataType(com.data) == CommandSequenceUnit::RATIO) {
 				auto ratio = CommandSequenceUnit::data2ratio(com.data);
 				str = QString::number(ratio.first) + "/" + QString::number(ratio.second);
 			}

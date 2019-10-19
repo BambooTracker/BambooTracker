@@ -89,6 +89,30 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "0G") {
 		return EffectType::NoteDelay;
 	}
+	else if (id == "0H") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::AutoEnvelope;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
+	else if (id == "0I") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::HardEnvHighPeriod;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
+	else if (id == "0J") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::HardEnvLowPeriod;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else if (id == "0O") {
 		return EffectType::Groove;
 	}
@@ -131,9 +155,20 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
-	else if (id == "0V") {switch (src) {
+	else if (id == "0V") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::ToneNoiseMix;
 		case SoundSource::Drum:
 			return EffectType::MasterVolume;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
+	else if (id == "0W") {
+		switch (src) {
+		case SoundSource::SSG:
+			return EffectType::NoisePitch;
 		default:
 			return EffectType::NoEffect;
 		}
