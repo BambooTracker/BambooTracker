@@ -1317,6 +1317,8 @@ void PatternEditorPanel::setStepEffectID(QString str)
 								  config_.lock()->getFill00ToEffectValue(), (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
+	PatternPosition editPos = curPos_;
+
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount()) {
 		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
@@ -1324,8 +1326,8 @@ void PatternEditorPanel::setStepEffectID(QString str)
 
 	// Send effect description
 	QString effDetail = tr("Invalid effect");
-	std::string id = bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order,
-										  curPos_.step, (curPos_.colInTrack - 3) / 2);
+	std::string id = bt_->getStepEffectID(curSongNum_, editPos.track, editPos.order,
+										  editPos.step, (editPos.colInTrack - 3) / 2);
 	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curPos_.track)).source;
 	if (id == "00") {
 		switch (src) {

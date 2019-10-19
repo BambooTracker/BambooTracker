@@ -23,6 +23,7 @@
 - Fix corruption after `0Bxx`, `0Cxx` and `0Dxx` are set the position before current playback row
 - Fix incorrect square-mask pitch in square-masked saw and inversed saw
 - Reset character entry position in pattern editor and order list after undoing
+- Fix effect description in status bar after entering the 2nd character
 
 [#152]: https://github.com/rerrahkr/BambooTracker/pull/152
 [#153]: https://github.com/rerrahkr/BambooTracker/issues/153
