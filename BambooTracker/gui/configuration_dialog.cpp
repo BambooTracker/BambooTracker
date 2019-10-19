@@ -64,37 +64,37 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(configLocked->getNoteEntryLayout()));
 
 	customLayoutKeysMap = {
-		{JamKey::LOW_C,     ui->lowCEdit},
-		{JamKey::LOW_CS,    ui->lowCSEdit},
-		{JamKey::LOW_D,     ui->lowDEdit},
-		{JamKey::LOW_DS,    ui->lowDSEdit},
-		{JamKey::LOW_E,     ui->lowEEdit},
-		{JamKey::LOW_F,     ui->lowFEdit},
-		{JamKey::LOW_FS,    ui->lowFSEdit},
-		{JamKey::LOW_G,     ui->lowGEdit},
-		{JamKey::LOW_GS,    ui->lowGSEdit},
-		{JamKey::LOW_A,     ui->lowAEdit},
-		{JamKey::LOW_AS,    ui->lowASEdit},
-		{JamKey::LOW_B,     ui->lowBEdit},
-		{JamKey::LOW_C_H,   ui->lowHighCEdit},
-		{JamKey::LOW_CS_H,  ui->lowHighCSEdit},
-		{JamKey::LOW_D_H,   ui->lowHighDEdit},
+		{ JamKey::LOW_C,     ui->lowCEdit },
+		{ JamKey::LOW_CS,    ui->lowCSEdit },
+		{ JamKey::LOW_D,     ui->lowDEdit },
+		{ JamKey::LOW_DS,    ui->lowDSEdit },
+		{ JamKey::LOW_E,     ui->lowEEdit },
+		{ JamKey::LOW_F,     ui->lowFEdit },
+		{ JamKey::LOW_FS,    ui->lowFSEdit },
+		{ JamKey::LOW_G,     ui->lowGEdit },
+		{ JamKey::LOW_GS,    ui->lowGSEdit },
+		{ JamKey::LOW_A,     ui->lowAEdit },
+		{ JamKey::LOW_AS,    ui->lowASEdit },
+		{ JamKey::LOW_B,     ui->lowBEdit },
+		{ JamKey::LOW_C_H,   ui->lowHighCEdit },
+		{ JamKey::LOW_CS_H,  ui->lowHighCSEdit },
+		{ JamKey::LOW_D_H,   ui->lowHighDEdit },
 
-		{JamKey::HIGH_C,    ui->highCEdit},
-		{JamKey::HIGH_CS,   ui->highCSEdit},
-		{JamKey::HIGH_D,    ui->highDEdit},
-		{JamKey::HIGH_DS,   ui->highDSEdit},
-		{JamKey::HIGH_E,    ui->highEEdit},
-		{JamKey::HIGH_F,    ui->highFEdit},
-		{JamKey::HIGH_FS,   ui->highFSEdit},
-		{JamKey::HIGH_G,    ui->highGEdit},
-		{JamKey::HIGH_GS,   ui->highGSEdit},
-		{JamKey::HIGH_A,    ui->highAEdit},
-		{JamKey::HIGH_AS,   ui->highASEdit},
-		{JamKey::HIGH_B,    ui->highBEdit},
-		{JamKey::HIGH_C_H,  ui->highHighCEdit},
-		{JamKey::HIGH_CS_H, ui->highHighCSEdit},
-		{JamKey::HIGH_D_H,  ui->highHighDEdit}
+		{ JamKey::HIGH_C,    ui->highCEdit },
+		{ JamKey::HIGH_CS,   ui->highCSEdit },
+		{ JamKey::HIGH_D,    ui->highDEdit },
+		{ JamKey::HIGH_DS,   ui->highDSEdit },
+		{ JamKey::HIGH_E,    ui->highEEdit },
+		{ JamKey::HIGH_F,    ui->highFEdit },
+		{ JamKey::HIGH_FS,   ui->highFSEdit },
+		{ JamKey::HIGH_G,    ui->highGEdit },
+		{ JamKey::HIGH_GS,   ui->highGSEdit },
+		{ JamKey::HIGH_A,    ui->highAEdit },
+		{ JamKey::HIGH_AS,   ui->highASEdit },
+		{ JamKey::HIGH_B,    ui->highBEdit },
+		{ JamKey::HIGH_C_H,  ui->highHighCEdit },
+		{ JamKey::HIGH_CS_H, ui->highHighCSEdit },
+		{ JamKey::HIGH_D_H,  ui->highHighDEdit }
 	};
 	std::map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
 	std::map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
@@ -156,7 +156,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Mixer //
 	ui->masterMixerSlider->setText(tr("Master"));
 	ui->masterMixerSlider->setSuffix("%");
-	ui->masterMixerSlider->setMaximum(100);
+	ui->masterMixerSlider->setMaximum(200);
 	ui->masterMixerSlider->setMinimum(0);
 	ui->masterMixerSlider->setTickPosition(QSlider::TicksBothSides);
 	ui->masterMixerSlider->setTickInterval(20);

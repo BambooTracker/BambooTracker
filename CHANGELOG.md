@@ -14,6 +14,7 @@
 - [#96], [#152] - Reduce drawing cost of pattern editor and order list (thanks [@OPNA2608])
 - Disable slider operation during playback
 - [#156] - Change key-on/off of multiple drum instruments to write to register at once (thanks [@ImATrackMan], [@ValleyBell])
+- Increase the maximum value of the master mixer to 200%
 
 ### Fixed
 - Fix to draw the playing cursor when follow mode is turned off
