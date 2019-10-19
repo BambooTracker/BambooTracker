@@ -15,6 +15,7 @@ PlaybackManager::PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
 	  playOrderNum_(-1),
 	  playStepNum_(-1),
 	  playState_(0),
+	  managerState_(PlaybackState::Stop),
 	  isFindNextStep_(false),
 	  isRetrieveChannel_(isRetrieveChannel)
 {
@@ -70,6 +71,7 @@ void PlaybackManager::startPlaySong(int order)
 
 	startPlay();
 	playState_ = 0x01;
+	managerState_ = PlaybackState::PlaySong;
 	playStepNum_ = 0;
 	playOrderNum_ = order;
 	findNextStep();
@@ -82,6 +84,7 @@ void PlaybackManager::startPlayFromStart()
 
 	startPlay();
 	playState_ = 0x01;
+	managerState_ = PlaybackState::PlayFromStart;
 	playOrderNum_ = 0;
 	playStepNum_ = 0;
 	findNextStep();
@@ -93,6 +96,7 @@ void PlaybackManager::startPlayPattern(int order)
 
 	startPlay();
 	playState_ = 0x11;
+	managerState_ = PlaybackState::PlayPattern;
 	playStepNum_ = 0;
 	playOrderNum_ = order;
 	findNextStep();
@@ -105,6 +109,7 @@ void PlaybackManager::startPlayFromCurrentStep(int order, int step)
 
 	startPlay();
 	playState_ = 0x01;
+	managerState_ = PlaybackState::PlayFromCurrentStep;
 	playOrderNum_ = order;
 	playStepNum_ = step;
 	findNextStep();
@@ -141,6 +146,7 @@ void PlaybackManager::stopPlay()
 
 	tickCounter_.lock()->setPlayState(false);
 	playState_ = 0;
+	managerState_ = PlaybackState::Stop;
 	playOrderNum_ = -1;
 	playStepNum_ = -1;
 }
@@ -148,6 +154,11 @@ void PlaybackManager::stopPlay()
 bool PlaybackManager::isPlaySong() const
 {
 	return ((playState_ & 0x01) > 0);
+}
+
+PlaybackState PlaybackManager::getPlaybackState() const
+{
+	return managerState_;
 }
 
 int PlaybackManager::getPlayingOrderNumber() const

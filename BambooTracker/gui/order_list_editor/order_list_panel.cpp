@@ -13,8 +13,10 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
+#include <thread>
 #include "gui/event_guard.hpp"
 #include "gui/command/order/order_commands.hpp"
+#include "playback.hpp"
 #include "track.hpp"
 
 OrderListPanel::OrderListPanel(QWidget *parent)
@@ -31,7 +33,21 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  isIgnoreToSlider_(false),
 	  isIgnoreToPattern_(false),
 	  entryCnt_(0),
-	  selectAllState_(-1)
+	  selectAllState_(-1),
+	  viewedRowCnt_(1),
+	  viewedRowsHeight_(0),
+	  viewedRowOffset_(0),
+	  viewedCenterY_(0),
+	  viewedCenterBaseY_(0),
+	  rowsChanged_(false),
+	  cursorChanged_(false),
+	  posChanged_(false),
+	  sizeChanged_(false),
+	  headerChanged_(false),
+	  orderChanged_(false),
+	  freezed_(false),
+	  repaintable_(true),
+	  repaintingCnt_(0)
 {
 	/* Font */
 	headerFont_ = QApplication::font();
@@ -77,29 +93,107 @@ void OrderListPanel::setColorPallete(std::shared_ptr<ColorPalette> palette)
 	palette_ = palette;
 }
 
+void OrderListPanel::freeze()
+{
+	freezed_ = true;
+	while (true) {
+		if (repaintingCnt_.load())
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		else
+			return;
+	}
+}
+
+void OrderListPanel::unfreeze()
+{
+	freezed_ = false;
+}
+
 void OrderListPanel::initDisplay()
 {
-	pixmap_ = std::make_unique<QPixmap>(geometry().size());
+	completePixmap_ = std::make_unique<QPixmap>(geometry().size());
+
+	int width = geometry().width();
+
+	// Recalculate pixmap sizes
+	viewedRegionHeight_ = std::max((geometry().height() - headerHeight_), rowFontHeight_);
+	int cnt = viewedRegionHeight_ / rowFontHeight_;
+	viewedRowCnt_ = (cnt % 2) ? (cnt + 2) : (cnt + 1);
+	viewedRowsHeight_ = viewedRowCnt_ * rowFontHeight_;
+
+	viewedRowOffset_ = (viewedRowsHeight_ - viewedRegionHeight_) >> 1;
+	viewedCenterY_ = (viewedRowsHeight_ - rowFontHeight_) >> 1;
+	viewedCenterBaseY_ = viewedCenterY_ + rowFontAscend_ - (rowFontLeading_ >> 1);
+
+	rowBackPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
+	rowForePixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
+	headerPixmap_ = std::make_unique<QPixmap>(width, headerHeight_);
 }
 
 void OrderListPanel::drawList(const QRect &rect)
 {
-	int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
+	if (!freezed_ && repaintable_.load()) {
+		repaintable_.store(false);
+		++repaintingCnt_;	// Use module data after this line
 
-	pixmap_->fill(Qt::black);
-	drawRows(maxWidth);
-	drawHeaders(maxWidth);
-	drawBorders(maxWidth);
-	if (!hasFocus()) drawShadow();
+		if (rowsChanged_ || cursorChanged_  || posChanged_ || headerChanged_ || sizeChanged_ || orderChanged_) {
 
-	QPainter painter(this);
-	painter.drawPixmap(rect, *pixmap_.get());
+			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
+
+			completePixmap_->fill(Qt::black);
+
+			if (orderChanged_ && config_.lock()->getFollowMode()) {
+				quickDrawRows(maxWidth);
+			}
+			else {
+				rowBackPixmap_->fill(Qt::transparent);
+				if (rowsChanged_ || posChanged_ || headerChanged_ || sizeChanged_)
+					rowForePixmap_->fill(Qt::transparent);
+				drawRows(maxWidth);
+			}
+
+			if (headerChanged_ || cursorChanged_ || sizeChanged_) {
+				// headerPixmap_->fill(Qt::transparent);
+				drawHeaders(maxWidth);
+			}
+
+			{
+				QPainter mergePainter(completePixmap_.get());
+				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
+				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
+				mergePainter.drawPixmap(inViewRect, *rowBackPixmap_.get(), rowsRect);
+				mergePainter.drawPixmap(inViewRect, *rowForePixmap_.get(), rowsRect);
+				mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
+			}
+
+			drawBorders(maxWidth);
+			if (!hasFocus()) drawShadow();
+
+			rowsChanged_ = false;
+			cursorChanged_ = false;
+			posChanged_ = false;
+			headerChanged_ = false;
+			sizeChanged_ = false;
+			orderChanged_ = false;
+			orderUpdateRequestCnt_ = 0;
+
+		}
+
+		--repaintingCnt_;	// Used module data until this line
+		repaintable_.store(true);
+	}
+
+	QPainter completePainter(this);
+	completePainter.drawPixmap(rect, *completePixmap_.get());
 }
 
 void OrderListPanel::drawRows(int maxWidth)
 {
-	QPainter painter(pixmap_.get());
-	painter.setFont(rowFont_);
+	QPainter forePainter(rowForePixmap_.get());
+	QPainter backPainter(rowBackPixmap_.get());
+	forePainter.setFont(rowFont_);
+
+	bool changeFore = rowsChanged_ || posChanged_ || headerChanged_ || sizeChanged_;
 
 	std::vector<OrderData> orderRowData_;
 	int x, trackNum;
@@ -107,43 +201,48 @@ void OrderListPanel::drawRows(int maxWidth)
 
 	/* Current row */
 	// Fill row
-	painter.fillRect(0, curRowY_, maxWidth, rowFontHeight_,
+	backPainter.fillRect(0, viewedCenterY_, maxWidth, rowFontHeight_,
 					 bt_->isJamMode() ? palette_->odrCurRowColor : palette_->odrCurEditRowColor);
-	// Row number
-	painter.setPen(palette_->odrRowNumColor);
-	painter.drawText(1, curRowBaselineY_, QString("%1").arg(
-						 curPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
-						 ).toUpper());
+	if (changeFore) {
+		// Row number
+		forePainter.setPen(palette_->odrRowNumColor);
+		forePainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(
+								 curPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+								 ).toUpper());
+	}
 	// Order data
 	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
-	painter.setPen(palette_->odrCurTextColor);
+	forePainter.setPen(palette_->odrCurTextColor);
 	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		if (trackNum == curPos_.track)	// Paint current cell
-			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_->odrCurCellColor);
+			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrCurCellColor);
 		if (((hovPos_.row == curPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
 				|| (hovPos_.track == -2 && hovPos_.row == curPos_.row))	// Paint hover
-			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
+			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
 		if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 				&& isSelectedCell(trackNum, curPos_.row))	// Paint selected
-			painter.fillRect(x, curRowY_, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
-		painter.drawText(
-					x + textOffset,
-					curRowBaselineY_,
-					QString("%1")
-					.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
-				);
+			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
+		if (changeFore) {
+			forePainter.drawText(
+						x + textOffset,
+						viewedCenterBaseY_,
+						QString("%1")
+						.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
+						);
+		}
 
 		x += trackWidth_;
 		++trackNum;
 	}
+	viewedCenterPos_.row = curPos_.row;
 
 	int rowNum;
 	int rowY, baseY, endY;
 	int playOdrNum = bt_->getPlayingOrderNumber();
 
 	/* Previous rows */
-	endY = std::max(headerHeight_ - rowFontHeight_, curRowY_ - rowFontHeight_ * curPos_.row);
-	for (rowY = curRowY_ - rowFontHeight_, baseY = curRowBaselineY_ - rowFontHeight_, rowNum = curPos_.row - 1;
+	endY = std::max(headerHeight_ - rowFontHeight_, viewedCenterY_ - rowFontHeight_ * curPos_.row);
+	for (rowY = viewedCenterY_ - rowFontHeight_, baseY = viewedCenterBaseY_ - rowFontHeight_, rowNum = curPos_.row - 1;
 		 rowY >= endY;
 		 rowY -= rowFontHeight_, baseY -= rowFontHeight_, --rowNum) {
 		QColor rowColor, textColor;
@@ -157,38 +256,43 @@ void OrderListPanel::drawRows(int maxWidth)
 		}
 
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
-		// Row number
-		painter.setPen(palette_->odrRowNumColor);
-		painter.drawText(1, baseY, QString("%1").arg(
-							 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
-							 ).toUpper());
+		backPainter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
+		if (changeFore) {
+			// Row number
+			forePainter.setPen(palette_->odrRowNumColor);
+			forePainter.drawText(1, baseY, QString("%1").arg(
+									 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+									 ).toUpper());
+		}
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
-		painter.setPen(textColor);
+		forePainter.setPen(textColor);
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
+				backPainter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
-			painter.drawText(
-						x + textOffset,
-						baseY,
-						QString("%1")
-						.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
-					);
+				backPainter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
+			if (changeFore) {
+				forePainter.drawText(
+							x + textOffset,
+							baseY,
+							QString("%1")
+							.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
+							);
+			}
 
 			x += trackWidth_;
 			++trackNum;
 		}
+		viewedFirstPos_.row = rowNum;
 	}
 
 	/* Next rows */
 	endY = std::min(geometry().height(),
-					curRowY_ + rowFontHeight_ * (static_cast<int>(bt_->getOrderSize(curSongNum_)) - curPos_.row - 1));
-	for (rowY = curRowY_ + rowFontHeight_, baseY = curRowBaselineY_ + rowFontHeight_, rowNum = curPos_.row + 1;
+					viewedCenterY_ + rowFontHeight_ * (static_cast<int>(bt_->getOrderSize(curSongNum_)) - curPos_.row - 1));
+	for (rowY = viewedCenterY_ + rowFontHeight_, baseY = viewedCenterBaseY_ + rowFontHeight_, rowNum = curPos_.row + 1;
 		 rowY <= endY;
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
 		QColor rowColor, textColor;
@@ -202,38 +306,188 @@ void OrderListPanel::drawRows(int maxWidth)
 		}
 
 		// Fill row
-		painter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
-		// Row number
-		painter.setPen(palette_->odrRowNumColor);
-		painter.drawText(1, baseY, QString("%1").arg(
-							 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
-							 ).toUpper());
+		backPainter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
+		if (changeFore) {
+			// Row number
+			forePainter.setPen(palette_->odrRowNumColor);
+			forePainter.drawText(1, baseY, QString("%1").arg(
+									 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+									 ).toUpper());
+		}
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
-		painter.setPen(textColor);
+		forePainter.setPen(textColor);
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
+				backPainter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
 			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
 					&& isSelectedCell(trackNum, rowNum))	// Paint selected
-				painter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
-			painter.drawText(
+				backPainter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
+			if (changeFore) {
+				forePainter.drawText(
+							x + textOffset,
+							baseY,
+							QString("%1")
+							.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
+							);
+			}
+
+			x += trackWidth_;
+			++trackNum;
+		}
+		viewedLastPos_.row = rowNum;
+	}
+}
+
+void OrderListPanel::quickDrawRows(int maxWidth)
+{
+	int halfRowsCnt = viewedRowCnt_ >> 1;
+
+	/* Move up by 1 step */
+	QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
+	rowForePixmap_->scroll(0, -rowFontHeight_, srcRect);
+	rowBackPixmap_->scroll(0, -rowFontHeight_, srcRect);
+	{
+		int fpos = viewedCenterPos_.row + 1 - halfRowsCnt;
+		if (fpos >= 0) viewedFirstPos_.row = fpos;
+	}
+
+	QPainter forePainter(rowForePixmap_.get());
+	QPainter backPainter(rowBackPixmap_.get());
+	forePainter.setFont(rowFont_);
+	forePainter.setCompositionMode(QPainter::CompositionMode_Source);
+
+	std::vector<OrderData> orderRowData_;
+	int x, trackNum;
+	int textOffset = trackWidth_ / 2 - rowFontWidth_;
+
+	/* Clear previous and current row text */
+	forePainter.fillRect(0, viewedCenterY_ - rowFontHeight_, maxWidth, rowFontHeight_ << 1, Qt::transparent);
+
+	/* Redraw previous cursor step */
+	{
+		int y = viewedCenterY_ - rowFontHeight_;
+		int baseY = viewedCenterBaseY_ - rowFontHeight_;
+		QColor rowColor = palette_->odrDefRowColor;
+		QColor textColor = palette_->odrDefTextColor;
+
+		// Fill row
+		backPainter.fillRect(0, y, maxWidth, rowFontHeight_, rowColor);
+		// Row number
+		forePainter.setPen(palette_->odrRowNumColor);
+		forePainter.drawText(1, baseY, QString("%1").arg(
+								 viewedCenterPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+								 ).toUpper());
+		// Order data
+		orderRowData_ = bt_->getOrderData(curSongNum_, viewedCenterPos_.row);
+		forePainter.setPen(textColor);
+		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+			if (((hovPos_.row == viewedCenterPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
+					|| (hovPos_.track == -2 && hovPos_.row == viewedCenterPos_.row))	// Paint hover
+				backPainter.fillRect(x, y, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
+			if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
+					&& isSelectedCell(trackNum, viewedCenterPos_.row))	// Paint selected
+				backPainter.fillRect(x, y, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
+			forePainter.drawText(
 						x + textOffset,
 						baseY,
 						QString("%1")
 						.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
-					);
+						);
 
 			x += trackWidth_;
 			++trackNum;
+		}
+	}
+
+	/* Redraw current cursor step */
+	// Fill row
+	backPainter.fillRect(0, viewedCenterY_, maxWidth, rowFontHeight_,
+						 bt_->isJamMode() ? palette_->odrCurRowColor : palette_->odrCurEditRowColor);
+	// Row number
+	forePainter.setPen(palette_->odrRowNumColor);
+	forePainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(
+							 curPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+							 ).toUpper());
+	// Order data
+	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
+	forePainter.setPen(palette_->odrCurTextColor);
+	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+		if (trackNum == curPos_.track)	// Paint current cell
+			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrCurCellColor);
+		if (((hovPos_.row == curPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
+				|| (hovPos_.track == -2 && hovPos_.row == curPos_.row))	// Paint hover
+			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
+		if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
+				&& isSelectedCell(trackNum, curPos_.row))	// Paint selected
+			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
+		forePainter.drawText(
+					x + textOffset,
+					viewedCenterBaseY_,
+					QString("%1")
+					.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
+					);
+
+		x += trackWidth_;
+		++trackNum;
+	}
+	viewedCenterPos_ = curPos_;
+
+	/* Draw new step at last if necessary */
+	{
+		int y = viewedRowsHeight_ - rowFontHeight_;
+		int baseY = y + (viewedCenterBaseY_ - viewedCenterY_);
+
+		// Clear row text
+		forePainter.fillRect(0, y, maxWidth, rowFontHeight_, Qt::transparent);
+
+		int bpos = viewedCenterPos_.row + halfRowsCnt;
+		if (bpos < static_cast<int>(bt_->getOrderSize(curSongNum_))) {
+			viewedLastPos_.row = bpos;
+
+			QColor rowColor = palette_->odrDefRowColor;
+			QColor textColor = palette_->odrDefTextColor;
+
+			// Fill row
+			backPainter.fillRect(0, y, maxWidth, rowFontHeight_, rowColor);
+			// Row number
+			forePainter.setPen(palette_->odrRowNumColor);
+			forePainter.drawText(1, baseY, QString("%1").arg(
+									 viewedLastPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+									 ).toUpper());
+			// Order data
+			orderRowData_ = bt_->getOrderData(curSongNum_, viewedLastPos_.row);
+			forePainter.setPen(textColor);
+			for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+				if (((hovPos_.row == viewedLastPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
+						|| (hovPos_.track == -2 && hovPos_.row == viewedLastPos_.row))	// Paint hover
+					backPainter.fillRect(x, y, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
+				if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.row >= 0)
+						&& isSelectedCell(trackNum, viewedLastPos_.row))	// Paint selected
+					backPainter.fillRect(x, y, trackWidth_, rowFontHeight_, palette_->odrSelCellColor);
+				forePainter.drawText(
+							x + textOffset,
+							baseY,
+							QString("%1")
+							.arg(orderRowData_.at(static_cast<size_t>(trackNum)).patten, 2, 16, QChar('0')).toUpper()
+							);
+
+				x += trackWidth_;
+				++trackNum;
+			}
+		}
+		else {
+			// Clear row
+			backPainter.setCompositionMode(QPainter::CompositionMode_Source);
+			backPainter.fillRect(0, y, maxWidth, rowFontHeight_, Qt::transparent);
 		}
 	}
 }
 
 void OrderListPanel::drawHeaders(int maxWidth)
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(headerPixmap_.get());
 	painter.setFont(headerFont_);
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->odrHeaderRowColor);
@@ -296,7 +550,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 
 void OrderListPanel::drawBorders(int maxWidth)
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(completePixmap_.get());
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, geometry().height());
@@ -310,7 +564,7 @@ void OrderListPanel::drawBorders(int maxWidth)
 
 void OrderListPanel::drawShadow()
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(completePixmap_.get());
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 
@@ -325,6 +579,7 @@ int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
 
 void OrderListPanel::moveCursorToRight(int n)
 {
+	int oldLeftTrack = leftTrackNum_;
 	int prevTrack = curPos_.track;
 	int tmp = curPos_.track + n;
 	if (n > 0) {
@@ -379,7 +634,8 @@ void OrderListPanel::moveCursorToRight(int n)
 
 	if (!isIgnoreToPattern_) emit currentTrackChanged(curPos_.track);	// Send to pattern editor
 
-	update();
+	headerChanged_ = (leftTrackNum_ != oldLeftTrack);	// Request fore-background repaint if leftmost track is changed
+	redrawByCursorChanged();							// Else request only background repaint
 }
 
 void OrderListPanel::moveCursorToDown(int n)
@@ -419,12 +675,59 @@ void OrderListPanel::moveCursorToDown(int n)
 	if (!isIgnoreToPattern_)	// Send to pattern editor
 		emit currentOrderChanged(curPos_.row);
 
-	update();
+	redrawByPositionChanged();
 }
 
 void OrderListPanel::changeEditable()
 {
-	update();
+	redrawByPatternChanged();
+}
+
+void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
+{
+	int tmp = curPos_.row;
+	curPos_.row = bt_->getCurrentOrderNumber();
+	if (curPos_.row == tmp) return;	// Loop this order
+
+	emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+
+	orderChanged_ = !orderUpdateRequestCnt_++;
+	// Redraw entire area in first update and jumping order
+	if (isFirstUpdate || tmp - 1 != curPos_.row) orderChanged_ = false;
+	posChanged_ = true;
+	repaint();
+}
+
+void OrderListPanel::redrawByPatternChanged()
+{
+	rowsChanged_ = true;
+	repaint();
+}
+
+void OrderListPanel::redrawByCursorChanged()
+{
+	cursorChanged_ = true;
+	repaint();
+}
+
+void OrderListPanel::redrawByPositionChanged()
+{
+	posChanged_ = true;
+	repaint();
+}
+
+void OrderListPanel::redrawBySizeChanged()
+{
+	sizeChanged_ = true;
+	repaint();
+}
+
+void OrderListPanel::redrawAll()
+{
+	rowsChanged_ = true;
+	posChanged_ = true;
+	headerChanged_ = true;
+	repaint();
 }
 
 bool OrderListPanel::enterOrder(int key)
@@ -456,7 +759,7 @@ void OrderListPanel::setCellOrderNum(int n)
 	comStack_.lock()->push(new SetPatternToOrderQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	entryCnt_ = (entryCnt_ + 1) % 2;
-	if (!bt_->isPlaySong() && !entryCnt_) moveCursorToDown(1);
+	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !entryCnt_) moveCursorToDown(1);
 }
 
 void OrderListPanel::insertOrderBelow()
@@ -654,12 +957,14 @@ void OrderListPanel::setCurrentTrackForSlider(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.track) moveCursorToRight(dif);
 }
 
 void OrderListPanel::setCurrentOrderForSlider(int num) {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.row) moveCursorToDown(dif);
 }
 
@@ -667,12 +972,14 @@ void OrderListPanel::setCurrentTrack(int num)
 {
 	Ui::EventGuard eg(isIgnoreToPattern_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.track) moveCursorToRight(dif);
 }
 
 void OrderListPanel::setCurrentOrder(int num) {
 	Ui::EventGuard eg(isIgnoreToPattern_);
 
+	// Skip if position has already changed in panel
 	if (int dif = num - curPos_.row) moveCursorToDown(dif);
 }
 
@@ -707,12 +1014,12 @@ void OrderListPanel::onSongLoaded()
 	selectAllState_ = -1;
 	emit selected(false);
 
-	update();
+	redrawAll();
 }
 
 void OrderListPanel::onPastePressed()
 {
-	if (!bt_->isPlaySong()) pasteCopiedCells(curPos_);
+	if (!bt_->isJamMode()) pasteCopiedCells(curPos_);
 }
 
 void OrderListPanel::onSelectPressed(int type)
@@ -724,7 +1031,6 @@ void OrderListPanel::onSelectPressed(int type)
 		selRightBelowPos_ = { -1, -1 };
 		selectAllState_ = -1;
 		emit selected(false);
-		update();
 		break;
 	}
 	case 1:	// All
@@ -772,7 +1078,7 @@ void OrderListPanel::onSelectPressed(int type)
 	}
 	}
 
-	update();
+	redrawByPatternChanged();
 }
 
 void OrderListPanel::onDuplicatePressed()
@@ -842,7 +1148,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 		else onSelectPressed(0);
 		return true;
 	case Qt::Key_Up:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -852,7 +1158,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Down:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -862,7 +1168,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_Home:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -872,7 +1178,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_End:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -883,7 +1189,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_PageUp:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -893,7 +1199,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return true;
 		}
 	case Qt::Key_PageDown:
-		if (bt_->isPlaySong()) {
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
 		else {
@@ -941,7 +1247,10 @@ void OrderListPanel::resizeEvent(QResizeEvent *event)
 	// Recalculate center row position
 	curRowBaselineY_ = (geometry().height() + headerHeight_) / 2;
 	curRowY_ = curRowBaselineY_ + rowFontLeading_ / 2 - rowFontAscend_;
+
 	initDisplay();
+
+	redrawBySizeChanged();
 }
 
 void OrderListPanel::mousePressEvent(QMouseEvent *event)
@@ -968,7 +1277,7 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 
 		if (hovPos_.track >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
-			update();
+			redrawByCursorChanged();
 		}
 
 		if (event->x() < rowNumWidth_ && leftTrackNum_ > 0) {
@@ -978,10 +1287,10 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 			moveCursorToRight(1);
 		}
 		if (event->pos().y() < headerHeight_ + rowFontHeight_) {
-			moveCursorToDown(-1);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 		}
 		else if (event->pos().y() > geometry().height() - rowFontHeight_) {
-			moveCursorToDown(1);
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(1);
 		}
 	}
 }
@@ -997,18 +1306,17 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 				int horDif = hovPos_.track - curPos_.track;
 				int verDif = hovPos_.row - curPos_.row;
 				moveCursorToRight(horDif);
-				moveCursorToDown(verDif);
-				update();
+				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(verDif);
 			}
 			else if (hovPos_.row == -2 && hovPos_.track >= 0) {	// Header
 				int horDif = hovPos_.track - curPos_.track;
 				moveCursorToRight(horDif);
-				update();
 			}
 			else if (hovPos_.track == -2 && hovPos_.row >= 0) {	// Row number
-				int verDif = hovPos_.row - curPos_.row;
-				moveCursorToDown(verDif);
-				update();
+				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+					int verDif = hovPos_.row - curPos_.row;
+					moveCursorToDown(verDif);
+				}
 			}
 		}
 		break;
@@ -1067,13 +1375,14 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 		}
 	}
 
-	if (hovPos_ != oldPos) update();
+	if (hovPos_ != oldPos) redrawByCursorChanged();
 
 	return true;
 }
 
 void OrderListPanel::wheelEvent(QWheelEvent *event)
 {
+	if (bt_->isPlaySong() && bt_->isFollowPlay()) return;
 	int degree = event->angleDelta().y() / 8;
 	moveCursorToDown(-degree / 15);
 }

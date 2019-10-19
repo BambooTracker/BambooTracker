@@ -9,12 +9,12 @@ SetEchoBufferAccessQtCommand::SetEchoBufferAccessQtCommand(PatternEditorPanel* p
 
 void SetEchoBufferAccessQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void SetEchoBufferAccessQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int SetEchoBufferAccessQtCommand::id() const

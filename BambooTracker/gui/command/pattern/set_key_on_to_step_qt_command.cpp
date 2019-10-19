@@ -9,12 +9,12 @@ SetKeyOnToStepQtCommand::SetKeyOnToStepQtCommand(PatternEditorPanel* panel, QUnd
 
 void SetKeyOnToStepQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void SetKeyOnToStepQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int SetKeyOnToStepQtCommand::id() const

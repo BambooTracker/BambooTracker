@@ -3,12 +3,14 @@
 
 PatternEditor::PatternEditor(QWidget *parent) :
 	QFrame(parent),
-	ui(new Ui::PatternEditor)
+	ui(new Ui::PatternEditor),
+	freezed_(false)
 {
 	ui->setupUi(this);
 
 	installEventFilter(this);
 	ui->panel->installEventFilter(this);
+	ui->verticalScrollBar->installEventFilter(this);
 
 	ui->panel->setFocus();
 	QObject::connect(ui->panel, &PatternEditorPanel::currentCellInRowChanged,
@@ -79,9 +81,9 @@ void PatternEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
-void PatternEditor::updatePosition()
+void PatternEditor::updatePositionByStepUpdate(bool isFirstUpdate)
 {
-	ui->panel->updatePosition();
+	ui->panel->updatePositionByStepUpdate(isFirstUpdate);
 }
 
 void PatternEditor::copySelectedCells()
@@ -92,6 +94,18 @@ void PatternEditor::copySelectedCells()
 void PatternEditor::cutSelectedCells()
 {
 	ui->panel->cutSelectedCells();
+}
+
+void PatternEditor::freeze()
+{
+	freezed_ = true;
+	ui->panel->freeze();
+}
+
+void PatternEditor::unfreeze()
+{
+	freezed_ = false;
+	ui->panel->unfreeze();
 }
 
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
@@ -106,10 +120,38 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 	}
 
 	if (watched == ui->panel) {
+		if (freezed_ && event->type() != QEvent::Paint) return true;
+
 		switch (event->type()) {
-		case QEvent::FocusIn:	emit focusIn();		return false;
-		case QEvent::FocusOut:	emit focusOut();	return false;
-		default:	return false;
+		case QEvent::FocusIn:
+			ui->panel->redrawByHeaderChanged();
+			emit focusIn();
+			return false;
+		case QEvent::FocusOut:
+			ui->panel->redrawByHeaderChanged();
+			emit focusOut();
+			return false;
+		case QEvent::HoverEnter:
+		case QEvent::HoverLeave:
+			ui->panel->redrawByHeaderChanged();
+			return false;
+		default:
+			return false;
+		}
+	}
+
+	if (watched == ui->verticalScrollBar) {
+		if (freezed_) return true;	// Ignore every events
+
+		switch (event->type()) {
+		case QEvent::MouseButtonPress:
+		case QEvent::MouseButtonRelease:
+		case QEvent::MouseButtonDblClick:
+		case QEvent::DragMove:
+		case QEvent::Wheel:
+			return (bt_->isPlaySong() && bt_->isFollowPlay());
+		default:
+			return false;
 		}
 	}
 

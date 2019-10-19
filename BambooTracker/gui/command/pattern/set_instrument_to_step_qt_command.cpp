@@ -11,12 +11,12 @@ SetInstrumentToStepQtCommand::SetInstrumentToStepQtCommand(PatternEditorPanel* p
 
 void SetInstrumentToStepQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void SetInstrumentToStepQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int SetInstrumentToStepQtCommand::id() const

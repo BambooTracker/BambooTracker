@@ -11,12 +11,12 @@ SetEffectIDToStepQtCommand::SetEffectIDToStepQtCommand(PatternEditorPanel* panel
 
 void SetEffectIDToStepQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void SetEffectIDToStepQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int SetEffectIDToStepQtCommand::id() const

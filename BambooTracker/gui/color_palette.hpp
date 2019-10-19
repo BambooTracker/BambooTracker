@@ -43,7 +43,7 @@ public:
 	// Pattern editor
 	QColor ptnDefTextColor, ptnDefRowColor, ptnHl1RowColor, ptnHl2RowColor;
 	QColor ptnCurTextColor, ptnCurRowColor, ptnCurEditRowColor, ptnCurCellColor;
-	QColor ptnPlayTextColor, ptnPlayRowColor;
+	QColor ptnPlayRowColor;
 	QColor ptnSelCellColor;
 	QColor ptnHovCellColor;
 	QColor ptnDefStepNumColor, ptnHl1StepNumColor, ptnHl2StepNumColor;
@@ -53,6 +53,7 @@ public:
 	QColor ptnMaskColor;
 	QColor ptnBorderColor;
 	QColor ptnMuteColor, ptnUnmuteColor;
+	QColor ptnBackColor;
 
 	// Wave visual
 	QColor wavBackColor;

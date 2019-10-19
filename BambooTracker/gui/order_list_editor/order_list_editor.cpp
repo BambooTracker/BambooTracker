@@ -3,12 +3,14 @@
 
 OrderListEditor::OrderListEditor(QWidget *parent) :
 	QFrame(parent),
-	ui(new Ui::OrderListEditor)
+	ui(new Ui::OrderListEditor),
+	freezed_(false)
 {
 	ui->setupUi(this);
 
 	installEventFilter(this);
 	ui->panel->installEventFilter(this);
+	ui->verticalScrollBar->installEventFilter(this);
 
 	QObject::connect(ui->panel, &OrderListPanel::currentTrackChangedForSlider,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
@@ -70,6 +72,11 @@ void OrderListEditor::changeEditable()
 	ui->panel->changeEditable();
 }
 
+void OrderListEditor::updatePositionByOrderUpdate(bool isFirstUpdate)
+{
+	ui->panel->updatePositionByOrderUpdate(isFirstUpdate);
+}
+
 void OrderListEditor::copySelectedCells()
 {
 	ui->panel->copySelectedCells();
@@ -85,9 +92,23 @@ void OrderListEditor::insertOrderBelow()
 	ui->panel->insertOrderBelow();
 }
 
+void OrderListEditor::freeze()
+{
+	freezed_ = true;
+	ui->panel->freeze();
+}
+
+void OrderListEditor::unfreeze()
+{
+	freezed_ = false;
+	ui->panel->unfreeze();
+}
+
 bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
+
+	if (freezed_) return true;	// Ignore every events
 
 	if (watched == this) {
 		if (event->type() == QEvent::FocusIn) {
@@ -98,9 +119,33 @@ bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 
 	if (watched == ui->panel) {
 		switch (event->type()) {
-		case QEvent::FocusIn:	emit focusIn();		return false;
-		case QEvent::FocusOut:	emit focusOut();	return false;
-		default:	return false;
+		case QEvent::FocusIn:
+			ui->panel->redrawAll();
+			emit focusIn();
+			return false;
+		case QEvent::FocusOut:
+			ui->panel->redrawAll();
+			emit focusOut();
+			return false;
+		case QEvent::HoverEnter:
+		case QEvent::HoverLeave:
+			ui->panel->redrawAll();
+			return false;
+		default:
+			return false;
+		}
+	}
+
+	if (watched == ui->verticalScrollBar) {
+		switch (event->type()) {
+		case QEvent::MouseButtonPress:
+		case QEvent::MouseButtonRelease:
+		case QEvent::MouseButtonDblClick:
+		case QEvent::DragMove:
+		case QEvent::Wheel:
+			return (bt_->isPlaySong() && bt_->isFollowPlay());
+		default:
+			return false;
 		}
 	}
 

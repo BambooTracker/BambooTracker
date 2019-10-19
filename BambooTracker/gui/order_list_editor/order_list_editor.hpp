@@ -27,10 +27,14 @@ public:
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
+	void updatePositionByOrderUpdate(bool isFirstUpdate);
 
 	void copySelectedCells();
 	void deleteOrder();
 	void insertOrderBelow();
+
+	void freeze();
+	void unfreeze();
 
 signals:
 	void currentTrackChanged(int num);
@@ -67,6 +71,8 @@ protected:
 private:
 	Ui::OrderListEditor *ui;
 	std::shared_ptr<BambooTracker> bt_;
+
+	bool freezed_;
 };
 
 #endif // ORDER_LIST_EDITOR_HPP

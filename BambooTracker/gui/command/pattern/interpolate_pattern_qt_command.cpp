@@ -9,12 +9,12 @@ InterpolatePatternQtCommand::InterpolatePatternQtCommand(PatternEditorPanel* pan
 
 void InterpolatePatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void InterpolatePatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int InterpolatePatternQtCommand::id() const

@@ -9,12 +9,12 @@ DecreaseNoteKeyInPatternQtCommand::DecreaseNoteKeyInPatternQtCommand(PatternEdit
 
 void DecreaseNoteKeyInPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void DecreaseNoteKeyInPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int DecreaseNoteKeyInPatternQtCommand::id() const

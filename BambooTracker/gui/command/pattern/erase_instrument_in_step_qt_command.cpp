@@ -9,12 +9,12 @@ EraseInstrumentInStepQtCommand::EraseInstrumentInStepQtCommand(PatternEditorPane
 
 void EraseInstrumentInStepQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void EraseInstrumentInStepQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int EraseInstrumentInStepQtCommand::id() const

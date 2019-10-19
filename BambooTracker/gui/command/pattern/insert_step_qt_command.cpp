@@ -9,12 +9,12 @@ InsertStepQtCommand::InsertStepQtCommand(PatternEditorPanel* panel, QUndoCommand
 
 void InsertStepQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void InsertStepQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int InsertStepQtCommand::id() const

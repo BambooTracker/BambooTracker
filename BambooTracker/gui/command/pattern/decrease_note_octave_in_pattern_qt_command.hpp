@@ -4,7 +4,6 @@
 #include <QUndoCommand>
 #include "gui/pattern_editor/pattern_editor_panel.hpp"
 
-
 class DecreaseNoteOctaveInPatternQtCommand : public QUndoCommand
 {
 public:

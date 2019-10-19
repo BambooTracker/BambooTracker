@@ -57,6 +57,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	isEditedOrder_(false),
 	isEditedInstList_(false),
 	isSelectedPO_(false),
+	firstViewUpdateRequest_(false),
 	effListDiag_(std::make_unique<EffectListDialog>()),
 	shortcutsDiag_(std::make_unique<KeyboardShortcutListDialog>())
 {
@@ -148,7 +149,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, [&](int count) {
 		bt_->setModuleStepHighlight1Distance(static_cast<size_t>(count));
 		ui->patternEditor->setPatternHighlight1Count(count);
-		ui->patternEditor->update();
 	});
 	ui->subToolBar->addWidget(highlight1_);
 	auto hlLab2 = new QLabel(tr("2nd"));
@@ -163,7 +163,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, [&](int count) {
 		bt_->setModuleStepHighlight2Distance(static_cast<size_t>(count));
 		ui->patternEditor->setPatternHighlight2Count(count);
-		ui->patternEditor->update();
 	});
 	ui->subToolBar->addWidget(highlight2_);
 
@@ -201,6 +200,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int num) {
+		freezeViews();
 		bt_->setCurrentSongNumber(num);
 		loadSong();
 	});
@@ -697,6 +697,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	event->accept();
 }
 
+void MainWindow::freezeViews()
+{
+	ui->orderList->freeze();
+	ui->patternEditor->freeze();
+}
+
 /********** MIDI **********/
 void MainWindow::midiThreadReceivedEvent(double delay, const uint8_t *msg, size_t len, void *userData)
 {
@@ -1070,6 +1076,7 @@ void MainWindow::loadModule()
 void MainWindow::openModule(QString file)
 {
 	try {
+		freezeViews();
 		bt_->loadModule(file.toStdString());
 		loadModule();
 
@@ -1081,6 +1088,7 @@ void MainWindow::openModule(QString file)
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());
 		// Init module
+		freezeViews();
 		bt_->makeNewModule();
 		loadModule();
 		isModifiedForNotCommand_ = false;
@@ -1102,6 +1110,8 @@ void MainWindow::loadSong()
 	bt_->setCurrentStepNumber(0);
 
 	// Init ui
+	ui->orderList->unfreeze();
+	ui->patternEditor->unfreeze();
 	ui->orderList->onSongLoaded();
 	ui->orderListGroupBox->setMaximumWidth(
 				ui->orderListGroupBox->contentsMargins().left()
@@ -1151,28 +1161,29 @@ void MainWindow::loadSong()
 void MainWindow::startPlaySong()
 {
 	bt_->startPlaySong();
-	ui->patternEditor->updatePosition();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayFromStart()
 {
 	bt_->startPlayFromStart();
-	ui->patternEditor->updatePosition();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayPattern()
 {
 	bt_->startPlayPattern();
-	ui->patternEditor->updatePosition();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayFromCurrentStep()
 {
 	bt_->startPlayFromCurrentStep();
 	lockControls(true);
+	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::stopPlaySong()
@@ -1838,6 +1849,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 		bt_->stopPlaySong();
 		lockControls(false);
 		dialog.onAccepted();
+		freezeViews();
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
@@ -2051,6 +2063,7 @@ void MainWindow::on_actionNew_triggered()
 
 	bt_->stopPlaySong();
 	lockControls(false);
+	freezeViews();
 	bt_->makeNewModule();
 	loadModule();
 	setInitialSelectedInstrument();
@@ -2426,9 +2439,10 @@ void MainWindow::onNewTickSignaled(int state)
 {
 	if (!state) {	// New step
 		int order = bt_->getPlayingOrderNumber();
-		if (order > -1) {
-			ui->orderList->update();
-			ui->patternEditor->updatePosition();
+		if (order > -1) {	// Playing
+			if (!bt_->getPlayingStepNumber()) ui->orderList->updatePositionByOrderUpdate(firstViewUpdateRequest_);	// New order
+			ui->patternEditor->updatePositionByStepUpdate(firstViewUpdateRequest_);
+			firstViewUpdateRequest_ = false;
 			statusPlayPos_->setText(
 						QString("%1/%2")
 						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))

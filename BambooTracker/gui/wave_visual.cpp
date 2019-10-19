@@ -2,7 +2,6 @@
 #include "gui/color_palette.hpp"
 #include <limits>
 #include <QPainter>
-#include <QDebug>
 //Xcode 8.3: "no member names 'abs' in namespace 'std'
 #include <cstdlib>
 
@@ -22,22 +21,23 @@ void WaveVisual::setStereoSamples(const int16_t *buffer, size_t frames)
 	// identify the highest of the 2 input signals
 	int32_t sum = 0;
 	for (size_t i = 0; i < frames; ++i) {
-		sum += std::abs(buffer[2 * i]);
-		sum -= std::abs(buffer[2 * i + 1]);
+		size_t p = i << 1;
+		sum += std::abs(buffer[p]);
+		sum -= std::abs(buffer[p + 1]);
 	}
 
 	// use this signal as display data
 	samples_.resize(frames);
 	int16_t *samples = samples_.data();
 	for (size_t i = 0; i < frames; ++i)
-		samples[i] = buffer[2 * i + (sum < 0)];
+		samples[i] = buffer[(i << 1) + (sum < 0)];
 
 	repaint();
 }
 
 void WaveVisual::paintEvent(QPaintEvent *event)
 {
-	Q_UNUSED(event);
+	Q_UNUSED(event)
 	QPainter painter(this);
 
 	if (!palette_)
@@ -45,6 +45,7 @@ void WaveVisual::paintEvent(QPaintEvent *event)
 
 	int w = width();
 	int h = height();
+	int centerh = h >> 1;
 	painter.fillRect(0, 0, w, h, palette_->wavBackColor);
 
 	const int16_t *samples = samples_.data();
@@ -54,18 +55,18 @@ void WaveVisual::paintEvent(QPaintEvent *event)
 
 	painter.setPen(palette_->wavDrawColor);
 
-	int lastY = h / 2;
+	int lastY = centerh;
+	const int16_t range = std::numeric_limits<int16_t>::max() >> 1;
 	for (int x = 0; x < w; ++x) {
 		size_t index = (size_t)(x * ((double)frames / w));
 
 		int16_t sample = samples[index];
-		const int16_t range = std::numeric_limits<int16_t>::max() / 2;
-		int y = (h / 2) - ((h / 2) * sample  / range);
+		int y = centerh - (centerh * sample  / range);
 		painter.drawPoint(x, y);
 
 		// draw intermediate points
 		int y1 = lastY, y2 = y;
-		int yM = (y1 + y2) / 2;
+		int yM = (y1 + y2) >> 1;
 		while (y1 != y2) {
 			bool b = (y1 > yM) ^ (y1 > y2);
 			painter.drawPoint(x - !b, y1);

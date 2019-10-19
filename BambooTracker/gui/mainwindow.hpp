@@ -130,6 +130,8 @@ private:
 
 	bool isSavedModBefore_;
 
+	bool firstViewUpdateRequest_;
+
 	// Sub tool bar
 	QSpinBox* octave_;
 	QSpinBox *highlight1_, *highlight2_;
@@ -151,6 +153,8 @@ private:
 	int tickEventMethod_;
 	int midiKeyEventMethod_;
 	int midiProgramEventMethod_;
+
+	void freezeViews();
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);

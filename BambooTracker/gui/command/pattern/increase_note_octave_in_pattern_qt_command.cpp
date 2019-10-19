@@ -9,12 +9,12 @@ IncreaseNoteOctaveInPatternQtCommand::IncreaseNoteOctaveInPatternQtCommand(Patte
 
 void IncreaseNoteOctaveInPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void IncreaseNoteOctaveInPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int IncreaseNoteOctaveInPatternQtCommand::id() const

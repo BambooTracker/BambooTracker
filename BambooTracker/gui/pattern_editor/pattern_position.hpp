@@ -13,6 +13,20 @@ struct PatternPosition
 
 	int compareCols(const PatternPosition& b) const;
 	int compareRows(const PatternPosition& b) const;
+
+	static bool inRowRange(const PatternPosition& pos,
+								   const PatternPosition& begin, const PatternPosition& last)
+	{
+		return (begin.compareRows(pos) <= 0 && pos.compareRows(last) <= 0);
+	}
+
+	static bool inRowRange(const PatternPosition& srcBegin, const PatternPosition& srcLast,
+								 const PatternPosition& tgtBegin, const PatternPosition& tgtLast)
+	{
+		if (PatternPosition::inRowRange(srcBegin, tgtBegin, tgtLast)) return true;
+		else if (PatternPosition::inRowRange(srcLast, tgtBegin, tgtLast)) return true;
+		else return (srcBegin.compareRows(tgtBegin) < 0 && tgtLast.compareRows(srcLast));
+	}
 };
 
 inline bool operator==(const PatternPosition& a, const PatternPosition& b)

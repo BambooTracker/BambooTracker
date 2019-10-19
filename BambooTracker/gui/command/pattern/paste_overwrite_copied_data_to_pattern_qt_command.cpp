@@ -9,12 +9,12 @@ PasteOverwriteCopiedDataToPatternQtCommand::PasteOverwriteCopiedDataToPatternQtC
 
 void PasteOverwriteCopiedDataToPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void PasteOverwriteCopiedDataToPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int PasteOverwriteCopiedDataToPatternQtCommand::id() const

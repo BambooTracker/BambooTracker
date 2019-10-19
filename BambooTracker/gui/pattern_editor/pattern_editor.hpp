@@ -26,10 +26,14 @@ public:
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
-	void updatePosition();
+	void updatePositionByStepUpdate(bool isFirstUpdate);
 
 	void copySelectedCells();
 	void cutSelectedCells();
+
+	void freeze();
+	void unfreeze();
+
 
 signals:
 	void currentTrackChanged(int num);
@@ -81,6 +85,8 @@ public slots:
 private:
 	Ui::PatternEditor *ui;
 	std::shared_ptr<BambooTracker> bt_;
+
+	bool freezed_;
 };
 
 #endif // PATTERN_EDITOR_HPP

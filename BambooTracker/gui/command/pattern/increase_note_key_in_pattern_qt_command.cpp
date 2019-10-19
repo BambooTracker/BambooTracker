@@ -9,12 +9,12 @@ IncreaseNoteKeyInPatternQtCommand::IncreaseNoteKeyInPatternQtCommand(PatternEdit
 
 void IncreaseNoteKeyInPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 void IncreaseNoteKeyInPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged();
 }
 
 int IncreaseNoteKeyInPatternQtCommand::id() const
