@@ -179,9 +179,11 @@ int PlaybackManager::streamCountUp()
 	int state = tickCounter_.lock()->countUp();
 
 	if (state > 0) {
+		checkValidPosition();
 		readTick(state);
 	}
 	else if (!state) {
+		checkValidPosition();
 		if (stepDown()) {
 			readStep();
 			if (!isFindNextStep_) findNextStep();
@@ -225,9 +227,10 @@ void PlaybackManager::findNextStep()
 	nextReadStep_ = playStepNum_;
 
 	// Search
-	if (nextReadStep_ >= static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_)) - 1) {
+	int ptnSize = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_));
+	if (!ptnSize || nextReadStep_ >= ptnSize - 1) {
 		if (!(playState_ & 0x10)) {	// Not play pattern
-			if (nextReadOrder_ == static_cast<int>(getOrderSize(curSongNum_)) - 1) {
+			if (nextReadOrder_ >= static_cast<int>(getOrderSize(curSongNum_)) - 1) {
 				nextReadOrder_ = 0;
 			}
 			else {
@@ -241,6 +244,32 @@ void PlaybackManager::findNextStep()
 	}
 
 	isFindNextStep_ = true;
+}
+
+void PlaybackManager::checkValidPosition()
+{
+	auto& song = mod_.lock()->getSong(curSongNum_);
+	int orderSize = static_cast<int>(song.getOrderSize());
+	if (playOrderNum_ >= orderSize) {
+		playOrderNum_ = 0;
+		playStepNum_ = 0;
+		nextReadOrder_ = 0;
+		nextReadStep_ = 0;
+	}
+	else if (playStepNum_ >= static_cast<int>(song.getPatternSizeFromOrderNumber(playOrderNum_))) {
+		if (playOrderNum_ == orderSize - 1) {
+			playOrderNum_ = 0;
+			playStepNum_ = 0;
+			nextReadOrder_ = 0;
+			nextReadStep_ = 0;
+		}
+		else {
+			++playOrderNum_;
+			playStepNum_ = 0;
+			nextReadOrder_ = playOrderNum_;
+			nextReadStep_ = 0;
+		}
+	}
 }
 
 /// Register update order: volume -> instrument -> effect -> key on

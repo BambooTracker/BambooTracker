@@ -11,6 +11,8 @@
 
 ### Changed
 - [#152] - Use RtAudio for sound processing ([#96]; thanks [@jpcima], [@OPNA2608] and others)
+- [#96], [#152] - Reduce drawing cost of pattern editor and order list (thanks [@OPNA2608])
+- Disable slider operation during playback
 - [#156] - Change key-on/off of multiple drum instruments to write to register at once (thanks [@ImATrackMan], [@ValleyBell])
 
 ### Fixed
@@ -18,12 +20,11 @@
 - [#152] - Prevent real step size setting to 0 (thanks [@OPNA2608])
 - [#153] - Fix hardware envelope to set data in sequence (thanks [@papiezak])
 - [#154] - Fix position initialization when opening module (thanks [@papiezak])
-- [#96], [#152] - Reduce drawing cost of pattern editor and order list (thanks [@OPNA2608])
-- Disable slider operation during playback
 - Fix corruption after `0Bxx`, `0Cxx` and `0Dxx` are set the position before current playback row
 - Fix incorrect square-mask pitch in square-masked saw and inversed saw
 - Reset character entry position in pattern editor and order list after undoing
 - Fix effect description in status bar after entering the 2nd character
+- Reset playback position when it is out of song range by editing pattern during playback
 
 [#152]: https://github.com/rerrahkr/BambooTracker/pull/152
 [#153]: https://github.com/rerrahkr/BambooTracker/issues/153

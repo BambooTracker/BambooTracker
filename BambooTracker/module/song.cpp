@@ -117,14 +117,11 @@ size_t Song::getDefaultPatternSize() const
 
 size_t Song::getPatternSizeFromOrderNumber(int order)
 {
+	if (static_cast<int>(getOrderSize()) <= order) return 0;	// Ilegal value
 	size_t size = 0;
 	for (auto& t : tracks_) {
-		size = (!size)
-			   ? t.getPatternFromOrderNumber(order).getSize()
-			   : std::min(
-					 size,
-					 t.getPatternFromOrderNumber(order).getSize()
-					 );
+		size_t ptnSize = t.getPatternFromOrderNumber(order).getSize();
+		size = !size ? ptnSize : std::min(size, ptnSize);
 	}
 	return size;
 }

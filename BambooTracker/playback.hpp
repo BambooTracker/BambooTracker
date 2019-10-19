@@ -72,6 +72,7 @@ private:
 	void stopPlay();
 	bool stepDown();
 	void findNextStep();
+	void checkValidPosition();
 
 	void readStep();
 
