@@ -2,6 +2,11 @@
 
 ## Unreleased
 ### Added
+- [#132] - 5 new pattern effects
+  - `0Hxy`: SSG auto envelope ([#3]; thanks [@marysiamzawka])
+  - `0Ixx`, `0Jxx`: SSG hardware envelope period
+  - `0Vxx`: SSG tone/noise mix
+  - `0Wxx`: SSG noise pitch
 - Add sample rate selection in wav export
 
 ### Changed
@@ -13,7 +18,7 @@
 - [#152] - Prevent real step size setting to 0 (thanks [@OPNA2608])
 - [#153] - Fix hardware envelope to set data in sequence (thanks [@papiezak])
 - [#154] - Fix position initialization when opening module (thanks [@papiezak])
-- [#96], [#152] - Reduce drawing cost of pattern editor and order list
+- [#96], [#152] - Reduce drawing cost of pattern editor and order list (thanks [@OPNA2608])
 - Disable slider operation during playback
 - Fix corruption after `0Bxx`, `0Cxx` and `0Dxx` are set the position before current playback row
 - Fix incorrect square-mask pitch in square-masked saw and inversed saw
@@ -22,6 +27,7 @@
 [#153]: https://github.com/rerrahkr/BambooTracker/issues/153
 [#154]: https://github.com/rerrahkr/BambooTracker/issues/154
 [#156]: https://github.com/rerrahkr/BambooTracker/issues/156
+[#132]: https://github.com/rerrahkr/BambooTracker/issues/132
 
 [@ValleyBell]: https://github.com/ValleyBell
 
