@@ -2062,7 +2062,7 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 	}
 	else {
 		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = { -1, -1 };
+		envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 		// Clear hard envelope in setRealVolumeSSG
 	}
 	needEnvSetSSG_[ch] = true;
@@ -2136,7 +2136,7 @@ void OPNAController::initSSG()
 
 		keyToneSSG_[ch].octave = -1;
 		sumPitchSSG_[ch] = 0;
-		tnSSG_[ch] = { false, false, -1 };
+		tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
 		baseVolSSG_[ch] = 0xf;	// Init volume
 		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
@@ -2145,9 +2145,9 @@ void OPNAController::initSSG()
 		// Init sequence
 		hasPreSetTickEventSSG_[ch] = false;
 		wfItSSG_[ch].reset();
-		wfSSG_[ch] = { SSGWaveFormType::UNSET, -1 };
+		wfSSG_[ch] = { SSGWaveFormType::UNSET, CommandSequenceUnit::NODATA };
 		envItSSG_[ch].reset();
-		envSSG_[ch] = { -1, -1 };
+		envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 		tnItSSG_[ch].reset();
 		arpItSSG_[ch].reset();
 		ptItSSG_[ch].reset();
@@ -2365,12 +2365,12 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, -1 };
+		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveFormType::TRIANGLE, -1 };
+		wfSSG_[ch] = { SSGWaveFormType::TRIANGLE, CommandSequenceUnit::NODATA };
 		return;
 	}
 	case SSGWaveFormType::SAW:
@@ -2412,12 +2412,12 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, -1 };
+		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveFormType::SAW, -1 };
+		wfSSG_[ch] = { SSGWaveFormType::SAW, CommandSequenceUnit::NODATA };
 		return;
 	}
 	case SSGWaveFormType::INVSAW:
@@ -2459,12 +2459,12 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, -1 };
+		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveFormType::INVSAW, -1 };
+		wfSSG_[ch] = { SSGWaveFormType::INVSAW, CommandSequenceUnit::NODATA };
 		return;
 	}
 	case SSGWaveFormType::SQM_TRIANGLE:
@@ -2522,7 +2522,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, -1 };
+		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2584,7 +2584,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, -1 };
+		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2646,7 +2646,7 @@ void OPNAController::writeWaveFormSSGToRegister(int ch, int seqPos)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, -1 };
+		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2688,7 +2688,7 @@ void OPNAController::writeSquareWaveForm(int ch)
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
 	needSqMaskFreqSetSSG_[ch] = false;
-	wfSSG_[ch] = { SSGWaveFormType::SQUARE, -1 };
+	wfSSG_[ch] = { SSGWaveFormType::SQUARE, CommandSequenceUnit::NODATA };
 }
 
 void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
@@ -2709,11 +2709,11 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 				case SSGWaveFormType::INVSAW:
 					mixerSSG_ |= (1 << ch);
 					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { false, false, -1 };
+					tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
 					break;
 				default:
 					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { true, false, -1 };
+					tnSSG_[ch] = { true, false, CommandSequenceUnit::NODATA };
 					break;
 				}
 			}
@@ -2724,7 +2724,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 				case SSGWaveFormType::INVSAW:
 					mixerSSG_ |= (1 << ch);
 					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { false, false, -1 };
+					tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
 					break;
 				default:
 					break;
@@ -2739,12 +2739,12 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 				case SSGWaveFormType::SAW:
 				case SSGWaveFormType::INVSAW:
 					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { false, false, -1 };
+					tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
 					break;
 				default:
 					mixerSSG_ &= ~(1 << ch);
 					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { true, false, -1 };
+					tnSSG_[ch] = { true, false, CommandSequenceUnit::NODATA };
 					break;
 				}
 			}
@@ -2757,7 +2757,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 				default:
 					mixerSSG_ &= ~(1 << ch);
 					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { true, false, -1 };
+					tnSSG_[ch] = { true, false, CommandSequenceUnit::NODATA };
 					break;
 				}
 			}
@@ -2904,7 +2904,7 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 	int type = envItSSG_[ch]->getCommandType();
 	if (type < 16) {	// Software envelope
 		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = { type, -1 };
+		envSSG_[ch] = { type, CommandSequenceUnit::NODATA };
 		setRealVolumeSSG(ch);
 		needEnvSetSSG_[ch] = false;
 	}

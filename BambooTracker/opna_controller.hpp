@@ -24,6 +24,12 @@ struct ToneNoise
 	int noisePeriod_;
 };
 
+struct WaveForm
+{
+	SSGWaveFormType type;
+	int data;	// Same format with CommandSequenceUnit::data
+};
+
 class OPNAController
 {
 public:
@@ -248,11 +254,7 @@ private:
 	bool needToneSetSSG_[3];
 	bool needSqMaskFreqSetSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
-	struct
-	{
-		SSGWaveFormType type;
-		int data;
-	} wfSSG_[3];
+	WaveForm wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandSequenceUnit envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];

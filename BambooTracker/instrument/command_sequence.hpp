@@ -17,14 +17,19 @@ struct CommandSequenceUnit
 	///			* If bit 16 is 1, bit 0-15 is left shift value
 	int data;
 
-	enum DataType
+	enum DataType : int
 	{
-		RAW, RATIO, LSHIFT, RSHIFT
+		NODATA = -1,
+		RAW,
+		RATIO,
+		LSHIFT,
+		RSHIFT
 	};
 
 	inline static DataType checkDataType(int data)
 	{
-		if (0x20000 & data) return (0x10000 & data ? DataType::LSHIFT : DataType::RSHIFT);
+		if (data < 0) return DataType::NODATA;
+		else if (0x20000 & data) return (0x10000 & data ? DataType::LSHIFT : DataType::RSHIFT);
 		else if (0x10000 & data) return DataType::RATIO;
 		else return DataType::RAW;
 	}
