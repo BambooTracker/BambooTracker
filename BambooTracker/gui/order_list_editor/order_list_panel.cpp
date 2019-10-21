@@ -57,7 +57,11 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	rowFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
 	// Check font size
 	QFontMetrics metrics(rowFont_);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+	rowFontWidth_ = metrics.horizontalAdvance('0');
+#else
 	rowFontWidth_ = metrics.width('0');
+#endif
 	rowFontAscend_ = metrics.ascent();
 	rowFontLeading_ = metrics.descent() / 2;
 	rowFontHeight_ = rowFontAscend_ + rowFontLeading_;
@@ -544,7 +548,11 @@ void OrderListPanel::drawHeaders(int maxWidth)
 		}
 
 		QFontMetrics metrics(headerFont_);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+		int rw = trackWidth_ - metrics.horizontalAdvance(str);
+#else
 		int rw = trackWidth_ - metrics.width(str);
+#endif
 		rw = (rw < 0) ? 0 : (rw / 2);
 		painter.drawText(x + rw, rowFontLeading_ + rowFontAscend_, str);
 

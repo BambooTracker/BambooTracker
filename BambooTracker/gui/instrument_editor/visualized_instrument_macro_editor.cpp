@@ -37,7 +37,11 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	/* Font */
 	font_.setPointSize(10);
 	// Check font size
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+	fontWidth_ = met_.horizontalAdvance('0');
+#else
 	fontWidth_ = met_.width('0');
+#endif
 	fontAscend_ = met_.ascent();
 	fontHeight_ = met_.height();
 	fontLeading_ = met_.leading();
@@ -262,8 +266,13 @@ void VisualizedInstrumentMacroEditor::setLabelDiaplayMode(bool isOmitted)
 
 void VisualizedInstrumentMacroEditor::autoFitLabelWidth()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+	int w = met_.horizontalAdvance(VisualizedInstrumentMacroEditor::tr("Release") + " ");
+	for (auto& lab : labels_) w = std::max(w, met_.horizontalAdvance(lab + " "));
+#else
 	int w = met_.width(VisualizedInstrumentMacroEditor::tr("Release") + " ");
 	for (auto& lab : labels_) w = std::max(w, met_.width(lab + " "));
+#endif
 	labWidth_ = w;
 }
 

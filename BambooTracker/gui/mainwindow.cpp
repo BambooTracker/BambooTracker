@@ -17,6 +17,7 @@
 #include <QDesktopWidget>
 #include <QAudioDeviceInfo>
 #include <QMetaMethod>
+#include <QScreen>
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -65,7 +66,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	if (config.lock()->getMainWindowX() == -1) {	// When unset
 		QRect rec = geometry();
-		rec.moveCenter(QApplication::desktop()->availableGeometry().center());
+		rec.moveCenter(QGuiApplication::screens().front()->geometry().center());
 		setGeometry(rec);
 		config.lock()->setMainWindowX(x());
 		config.lock()->setMainWindowY(y());

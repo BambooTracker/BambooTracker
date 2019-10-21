@@ -64,7 +64,11 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	stepFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
 	// Check font size
 	QFontMetrics metrics(stepFont_);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+	stepFontWidth_ = metrics.horizontalAdvance('0');
+#else
 	stepFontWidth_ = metrics.width('0');
+#endif
 	stepFontAscend_ = metrics.ascent();
 	stepFontLeading_ = metrics.descent() / 2;
 	stepFontHeight_ = stepFontAscend_ + stepFontLeading_;
@@ -82,7 +86,11 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	effWidth_ = effIDWidth_ + effValWidth_ + widthSpaceDbl_;
 	baseTrackWidth_ = toneNameWidth_ + instWidth_ + volWidth_
 					  + effIDWidth_ + effValWidth_ + widthSpaceDbl_ * 4;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+	hdEffCompandButtonWidth_ = m.horizontalAdvance("+");
+#else
 	hdEffCompandButtonWidth_ = m.width("+");
+#endif
 	hdMuteToggleWidth_ = baseTrackWidth_ - hdEffCompandButtonWidth_ - stepFontWidth_ / 2 * 3;
 	headerHeight_ = stepFontHeight_ * 2;
 	hdPlusY_ = headerHeight_ / 4 + m.height() / 2 - m.leading() / 2 - m.descent();
