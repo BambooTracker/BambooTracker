@@ -111,9 +111,9 @@ void ModulePropertiesDialog::setCustomMixerLevels(double fm, double ssg)
 	ssgMixer_ = ssg;
 
 	QString fmSign = (fm > -1) ? "+" : "";
-	ui->customMixerFMLevelLabel->setText(fmSign + QString::number(fmMixer_, 'f', 2) + "dB");
+	ui->customMixerFMLevelLabel->setText(fmSign + QString::number(fmMixer_, 'f', 1) + "dB");
 	QString ssgSign = (ssg > -1) ? "+" : "";
-	ui->customMixerSSGLevelLabel->setText(ssgSign + QString::number(ssgMixer_, 'f', 2) + "dB");
+	ui->customMixerSSGLevelLabel->setText(ssgSign + QString::number(ssgMixer_, 'f', 1) + "dB");
 }
 
 /******************************/
