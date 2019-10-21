@@ -39,7 +39,7 @@ Mixer type is defined as:
 
 | Value  | Type                     | FM level (dB)                                             | SSG level (dB)                                            |
 | ------ | ------------------------ | --------------------------------------------------------- | --------------------------------------------------------- |
-| `0x00` | -                        | Use the value specified in the mixer in the configulation | Use the value specified in the mixer in the configulation |
+| `0x00` | -                        | Use the value specified in the mixer in the configuration | Use the value specified in the mixer in the configuration |
 | `0x01` | Custom                   | the value  of custom mixer FM                             | the value of custom mixer SSG                             |
 | `0x02` | PC-9821 with PC-9801-86  | 0                                                         | -5.5                                                      |
 | `0x03` | PC-9821 with Speak Board | 0                                                         | -3.0                                                      |
