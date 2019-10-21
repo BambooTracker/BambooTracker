@@ -11,7 +11,10 @@ Module::Module(std::string filePath, std::string title, std::string author, std:
 	  comment_(comment),
 	  tickFreq_(tickFreq),
 	  stepHl1Dist_(4),
-	  stepHl2Dist_(16)
+	  stepHl2Dist_(16),
+	  mixType_(MixerType::PC_9821_PC_9801_86),
+	  customLevelFM_(0),
+	  customLevelSSG_(0)
 {
 	songs_.emplace_back(0);
 	grooves_.emplace_back();
@@ -105,6 +108,36 @@ size_t Module::getSongCount() const
 size_t Module::getGrooveCount() const
 {
 	return grooves_.size();
+}
+
+void Module::setMixerType(MixerType type)
+{
+	mixType_ = type;
+}
+
+MixerType Module::getMixerType() const
+{
+	return mixType_;
+}
+
+void Module::setCustomMixerFMLevel(double level)
+{
+	customLevelFM_ = level;
+}
+
+double Module::getCustomMixerFMLevel() const
+{
+	return customLevelFM_;
+}
+
+void Module::setCustomMixerSSGLevel(double level)
+{
+	customLevelSSG_ = level;
+}
+
+double Module::getCustomMixerSSGLevel() const
+{
+	return customLevelSSG_;
 }
 
 void Module::addSong(SongType songType, std::string title)

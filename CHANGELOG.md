@@ -7,6 +7,7 @@
   - `0Ixx`, `0Jxx`: SSG hardware envelope period
   - `0Vxx`: SSG tone/noise mix
   - `0Wxx`: SSG noise pitch
+- [#72] - Add module mixer settings (thanks [@ImATrackMan])
 - Add sample rate selection in wav export
 
 ### Changed
@@ -32,6 +33,7 @@
 [#154]: https://github.com/rerrahkr/BambooTracker/issues/154
 [#156]: https://github.com/rerrahkr/BambooTracker/issues/156
 [#132]: https://github.com/rerrahkr/BambooTracker/issues/132
+[#72]: https://github.com/rerrahkr/BambooTracker/issues/72
 
 [@ValleyBell]: https://github.com/ValleyBell
 

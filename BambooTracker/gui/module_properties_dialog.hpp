@@ -17,7 +17,8 @@ class ModulePropertiesDialog : public QDialog
 	Q_OBJECT
 
 public:
-	ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, QWidget *parent = nullptr);
+	ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, double configFmMixer,
+						   double configSsgMixer, QWidget *parent = nullptr);
 	~ModulePropertiesDialog() override;
 
 public slots:
@@ -31,13 +32,22 @@ private slots:
 	void on_songTreeWidget_itemSelectionChanged();
 	void on_editTitleLineEdit_textEdited(const QString &arg1);
 
+	void on_mixerTypeComboBox_currentIndexChanged(int index);
+
+	void on_customMixerSetPushButton_clicked();
+
 private:
 	Ui::ModulePropertiesDialog *ui;
 	std::weak_ptr<BambooTracker> bt_;
 
+	double fmMixer_, ssgMixer_;
+	double configFmMixer_, configSsgMixer_;
+
 	void insertSong(int row, QString title, SongType type, int prevNum = -1);
 	void checkButtonsEnabled();
 	void swapset(int aboveRow, int belowRow);
+
+	void setCustomMixerLevels(double fm, double ssg);
 };
 
 #endif // MODULE_PROPERTIES_DIALOG_HPP

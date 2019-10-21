@@ -142,6 +142,7 @@ private:
 	QLabel* statusInst_;
 	QLabel* statusOctave_;
 	QLabel* statusIntr_;
+	QLabel* statusMixer_;
 	QLabel* statusBpm_;
 	QLabel* statusPlayPos_;
 

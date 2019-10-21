@@ -363,6 +363,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	statusInst_ = new QLabel();
 	statusOctave_ = new QLabel();
 	statusIntr_ = new QLabel();
+	statusMixer_ = new QLabel();
 	statusBpm_ = new QLabel();
 	statusPlayPos_ = new QLabel();
 	ui->statusBar->addWidget(statusDetail_, 4);
@@ -370,6 +371,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->statusBar->addPermanentWidget(statusInst_, 1);
 	ui->statusBar->addPermanentWidget(statusOctave_, 1);
 	ui->statusBar->addPermanentWidget(statusIntr_, 1);
+	ui->statusBar->addPermanentWidget(statusMixer_, 1);
 	ui->statusBar->addPermanentWidget(statusBpm_, 1);
 	ui->statusBar->addPermanentWidget(statusPlayPos_, 1);
 	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
@@ -1066,6 +1068,42 @@ void MainWindow::loadModule()
 	stream_->setInterruption(bt_->getModuleTickFrequency());
 	if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
+
+	// Set mixer
+	QString text;
+	switch (bt_->getModuleMixerType()) {
+	case MixerType::UNSPECIFIED:
+		bt_->setMasterVolumeFM(config_.lock()->getMixerVolumeFM());
+		bt_->setMasterVolumeSSG(config_.lock()->getMixerVolumeSSG());
+		text = tr("-");
+		break;
+	case MixerType::CUSTOM:
+		bt_->setMasterVolumeFM(bt_->getModuleCustomMixerFMLevel());
+		bt_->setMasterVolumeSSG(bt_->getModuleCustomMixerSSGLevel());
+		text = tr("Custom");
+		break;
+	case MixerType::PC_9821_PC_9801_86:
+		bt_->setMasterVolumeFM(0);
+		bt_->setMasterVolumeSSG(-5.5);
+		text = tr("PC-9821 with PC-9801-86");
+		break;
+	case MixerType::PC_9821_SPEAK_BOARD:
+		bt_->setMasterVolumeFM(0);
+		bt_->setMasterVolumeSSG(-3.0);
+		text = tr("PC-9821 with Speak Board");
+		break;
+	case MixerType::PC_8801_VA2:
+		bt_->setMasterVolumeFM(0);
+		bt_->setMasterVolumeSSG(1.5);
+		text = tr("PC-88VA2");
+		break;
+	case MixerType::PC_8801_MKII_SR:
+		bt_->setMasterVolumeFM(0);
+		bt_->setMasterVolumeSSG(2.5);
+		text = tr("NEC PC-8801mkIISR");
+		break;
+	}
+	statusMixer_->setText(text);
 
 	// Clear records
 	QApplication::clipboard()->clear();
@@ -1842,7 +1880,7 @@ void MainWindow::on_actionRemove_Order_triggered()
 
 void MainWindow::on_actionModule_Properties_triggered()
 {
-	ModulePropertiesDialog dialog(bt_);
+	ModulePropertiesDialog dialog(bt_, config_.lock()->getMixerVolumeFM(), config_.lock()->getMixerVolumeSSG());
 	if (dialog.exec() == QDialog::Accepted
 			&& showUndoResetWarningDialog(tr("Do you want to change song properties?"))) {
 		int instRow = ui->instrumentListWidget->currentRow();

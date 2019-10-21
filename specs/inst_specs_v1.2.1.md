@@ -1,16 +1,18 @@
 # BambooTracker Instrument File (.bti) Format Specification
-v1.2.1 - 2019-06-07
+v1.2.1 - 2019-06-07 (Modified descriptions: 2019-10-21)
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
 
 ---
 
+## Header
 | Type              | Field           | Description                                                               |
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
 | string (16 bytes) | File identifier | Format string, must be `BambooTrackerIst`.                                |
 | uint32            | EOF offset      | Relative offset to end of file. i.e. File length - 18.                    |
-| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.2.0 is stored as `0x00010200`. |
+| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.2.1 is stored as `0x00010201`. |
+
 
 ## Instrument Section
 | Type             | Field                     | Description                                                                                                   |
@@ -22,6 +24,7 @@ v1.2.1 - 2019-06-07
 | uint8            | Instrument type           | Sound souce of the instrument. `0x00` is FM, and `0x01` is SSG.                                               |
 
 The following data change depending on sound source of the instrument.
+
 
 ### FM
 | Type  | Field                         | Description                                                                                                                                                            |
@@ -37,6 +40,7 @@ The following data change depending on sound source of the instrument.
 | uint8 | Operator 2 pitch number       | If bit 7 is clear, operator 2 pitch is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                        |
 | uint8 | Operator 3 pitch number       | If bit 7 is clear, operator 3 pitch is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                        |
 | uint8 | Operator 4 pitch number       | If bit 7 is clear, operator 4 pitch is enabled. bit 0-6 are the number: n-th FM pitch property. n have to be 0 if it is unused.                                        |
+
 
 ## Instrument Property Section
 | Type            | Field                              | Description                                            |
@@ -73,6 +77,7 @@ Subsection identifier is defined as:
 And repeats sequence data block.  
 Note that multiple FM arpeggio and pitch sequences can be described for each operator.
 
+
 ### FM envelope
 | Type  | Field  | Description                                           |
 | ----- | ------ | ----------------------------------------------------- |
@@ -90,6 +95,7 @@ After this, repeat parameters in the table below for each operator.
 | uint8 | TL        | Total level.                                                                                      |
 | uint8 | SSGEGs/ML | Low nibble is multiple, high nibble is type of SSGEG. If SSGEG is disabled, high nibble is `0x8`. |
 
+
 ### LFO
 | Type  | Field         | Description                                                                                                                                                      |
 | ----- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -97,6 +103,7 @@ After this, repeat parameters in the table below for each operator.
 | uint8 | Frequency/PMS | High nibble is LFO moduletion frequency, and low nibble is phase modulation sensitivity.                                                                         |
 | uint8 | AMops/AMS     | high nibble is AM operator flags and low nibble is amplitude modulation sensitivity. Bit 4 is operator 1 and bit 7 is operator 4. If flag is set, AM is enabled. |
 | uint8 | Start count   | Tick wait count before beginning LFO.                                                                                                                            |
+
 
 ### Sequence
 Sequence-type data block (e.g. FM arpeggio, SSG envelope) is defined as:
@@ -108,14 +115,10 @@ Sequence-type data block (e.g. FM arpeggio, SSG envelope) is defined as:
 
 And repeat sequence data units.
 
-| Type   | Field        | Description                                                                           |
-| ------ | ------------ | ------------------------------------------------------------------------------------- |
-| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor.                     |
-| int32  | Unit subdata | Unit subdata. Only used by SSG waveform and envelope, and omitted in other sequences. |
-
-Unit subdata is used in SSG waveform and envelope sequence.  
-In waveform sequence, it indecates square mask frequency.  
-In envelope sequence, it indecates hardware envelope frequency.
+| Type   | Field        | Description                                                                                                                            |
+| ------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| uint16 | Unit data    | Value of unit. This also indicates row number of sequence editor. For details, see the subsection *Sequence Unit*.                     |
+| int32  | Unit subdata | Unit subdata. Only used by SSG waveform and envelope, and omitted in other sequences. For details, see the subsection *Sequence Unit*. |
 
 After sequences, loops are stored.
 
@@ -133,10 +136,10 @@ Loop unit is defined as the table below. If it is stored `0x00` in loop counts i
 
 There is release details in the end of subsequence block.
 
-| Type   | Field         | Description                                                                                                                                                               |
-| ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| uint8  | Release type  | `0x00`: no release, `0x01`: fix, `0x02`: absolute, `0x03`: releative. SSG envelope can be selected from all of these, and other properties can use only `0x00` or `0x01`. |
-| uint16 | Release point | Count from head of sequence where loop starts. If release type is `0x00`, this field is omitted.                                                                          |
+| Type   | Field         | Description                                                                                                                                                                 |
+| ------ | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| uint8  | Release type  | `0x00`: no release, `0x01`: fixed, `0x02`: absolute, `0x03`: releative. SSG envelope can be selected from all of these, and other properties can use only `0x00` or `0x01`. |
+| uint16 | Release point | Count from head of sequence where loop starts. If release type is `0x00`, this field is omitted.                                                                            |
 
 | Type  | Field         | Description                                    |
 | ----- | ------------- | ---------------------------------------------- |
@@ -147,10 +150,60 @@ Sequence type is defined as:
 | Value  | Type      |
 | ------ | --------- |
 | `0x00` | Absolute. |
-| `0x01` | Fix.      |
+| `0x01` | Fixed.    |
 | `0x02` | Relative. |
 
 FM/SSG arpeggio can be selected from all of these, FM/SSG pitch can be absolute or relative, and other properties must be set to `0x00`.
+
+
+#### Sequence Unit
+In FM Operator sequence, unit data is the value of operator parameter.
+
+In FM and SSG arpeggio, unit data has 2 interpretations depending on its sequence type:
+
+- Absolute, Relative: Tone distance from the criterion 0.
+- Fixed: Tone distance from C4.
+
+In FM and SSG pitch, unit data is the tone distance from the criterion 0.
+
+In SSG wave form, unit data represents the waveform:
+
+| Unit data | Wave form                       |
+| --------- | ------------------------------- |
+| `0x00`    | Square                          |
+| `0x01`    | Triangle                        |
+| `0x02`    | Sawtooth                        |
+| `0x03`    | Inversed sawtooth               |
+| `0x04`    | Square-masked triangle          |
+| `0x05`    | Square-masked sawtooth          |
+| `0x06`    | Square-masked inversed sawtooth |
+
+When wave form is square-masked, unit subdata is set one of the 2 types of data:
+
+- If bit 16 is 0, it is raw data. Bit 0-11 is square mask period.
+- If bit 16 is 1, it is tone/mask ratio. Bit 0-7 is mask part and bit 8-15 is tone part.
+
+The other wave form set unit subdata to `-1`.
+
+In SSG tone/noise, unit data defined as:
+
+| Unit data     | Type                                               |
+| ------------- | -------------------------------------------------- |
+| `0x00`        | Tone.                                              |
+| `0x01`-`0x20` | Noise. The period is set as `value` - 1.           |
+| `0x21`-`0x40` | Tone & Noise. Noise period is set as `value` - 33. |
+
+In SSG envelope, unit data defined as:
+
+| Unit data     | Type                                                                                     |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| `0x00`-`0x0F` | Software envelope. The value represents SSG channel volume. Unit subdata is set as `-1`. |
+| `0x10`-`0x17` | Hardware envelope. The envelope shape number is specified as `value` - 16.               |
+
+When unit data is set to use hardware envelope, unit subdata is set one of the 2 types of data:
+
+- If bit 16 is 0, it is raw data. Bit 0-15 is hardware envelope period.
+- If bit 16 is 1, it is tone/hard ratio. Bit 0-7 is hard part and bit 8-15 is tone part.
 
 ---
 

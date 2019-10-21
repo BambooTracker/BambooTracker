@@ -1,5 +1,5 @@
-# BambooTracker Bank File (.btb) Format Specification
-v1.0.0 - 2019-07-14 (Modified descriptions: 2019-10-21)
+# BambooTracker Module File (.btm) Format Specification
+v1.3.0 - 2019-10-21
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -10,9 +10,41 @@ v1.0.0 - 2019-07-14 (Modified descriptions: 2019-10-21)
 
 | Type              | Field           | Description                                                               |
 | ----------------- | --------------- | ------------------------------------------------------------------------- |
-| string (16 bytes) | File identifier | Format string, must be `BambooTrackerBnk`.                                |
+| string (16 bytes) | File identifier | Format string, must be `BambooTrackerMod`.                                |
 | uint32            | EOF offset      | Relative offset to end of file. i.e. File length - 18.                    |
-| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.0.0 is stored as `0x00010000`. |
+| uint32            | File version    | Version number in BCD-Code. e.g. Version 1.3.0 is stored as `0x00010300`. |
+
+
+## Module Section
+| Type             | Field                       | Description                                                                                                                         |
+| ---------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| string (8 bytes) | Section identifier          | Must be `MODULE  `.                                                                                                                 |
+| uint32           | Module section offset       | Relative offset to end of module section.                                                                                           |
+| uint32           | Title length                | Byte length of title string.                                                                                                        |
+| string (N bytes) | Title                       | Title string. Character encoding is UTF-8. If module is untitled, it is omitted.                                                    |
+| uint32           | Author length               | Byte length of author string.                                                                                                       |
+| string (N bytes) | Author                      | String of author. Character encoding is UTF-8. If author anme is not described, this field is omitted.                              |
+| uint32           | Copyright length            | Byte length of copyright string.                                                                                                    |
+| string (N bytes) | Copyright                   | String of copyright. Character encoding is UTF-8. If copyright is not described, this field is omitted.                             |
+| uint32           | Comment length              | Byte length of module comment.                                                                                                      |
+| string (N bytes) | Comment                     | String of Module comment. Character encoding is UTF-8. If there is no comment, this field is omitted.                               |
+| uint32           | Tick frequency              | Tick frequency. e.g. `0x0000003C` (60) is NTSC, `0x00000032` (50) is PAL.                                                           |
+| uint32           | 1st step highlight distance | 1st step highlight distance.                                                                                                        |
+| uint32           | 2nd step highlight distance | 2nd step highlight distance.                                                                                                        |
+| uint8            | Mixer type                  | Mixer type of the module. See below table for details.                                                                              |
+| int8             | Custom mixer FM             | FM mixer level in custom mixer. `value` / 10 = FM level (dB). This field is omitted if Mixer type doesn't select `0x00` (custom).   |
+| int8             | Custom mixer SSG            | SSG mixer level in custom mixer. `value` / 10 = SSG level (dB). This field is omitted if Mixer type doesn't select `0x01` (custom). |
+
+Mixer type is defined as:
+
+| Value  | Type                     | FM level (dB)                                             | SSG level (dB)                                            |
+| ------ | ------------------------ | --------------------------------------------------------- | --------------------------------------------------------- |
+| `0x00` | -                        | Use the value specified in the mixer in the configulation | Use the value specified in the mixer in the configulation |
+| `0x01` | Custom                   | the value  of custom mixer FM                             | the value of custom mixer SSG                             |
+| `0x02` | PC-9821 with PC-9801-86  | 0                                                         | -5.5                                                      |
+| `0x03` | PC-9821 with Speak Board | 0                                                         | -3.0                                                      |
+| `0x04` | PC-88VA2                 | 0                                                         | +1.5                                                      |
+| `0x05` | PC-8801mkIISR            | 0                                                         | +2.5                                                      |
 
 
 ## Instrument Section
@@ -117,6 +149,7 @@ Subsection identifier is defined as:
 
  And repeats sequence data block.
 
+
 ### FM Envelope
 | Type  | Field  | Description                                           |
 | ----- | ------ | ----------------------------------------------------- |
@@ -135,6 +168,7 @@ After this, repeat parameters in the table below for each operator.
 | uint8 | TL        | Total level.                                                                                      |
 | uint8 | SSGEGs/ML | Low nibble is multiple, high nibble is type of SSGEG. If SSGEG is disabled, high nibble is `0x8`. |
 
+
 ### LFO
 | Type  | Field         | Description                                                                                                                                                      |
 | ----- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -143,6 +177,7 @@ After this, repeat parameters in the table below for each operator.
 | uint8 | Frequency/PMS | High nibble is LFO moduletion frequency, and low nibble is phase modulation sensitivity.                                                                         |
 | uint8 | AMops/AMS     | high nibble is AM operator flags and low nibble is amplitude modulation sensitivity. Bit 4 is operator 1 and bit 7 is operator 4. If flag is set, AM is enabled. |
 | uint8 | Start count   | Tick wait count before beginning LFO.                                                                                                                            |
+
 
 ### Sequence
 Sequence-type data block (e.g. FM arpeggio, SSG envelope) is defined as:
@@ -245,9 +280,124 @@ When unit data is set to use hardware envelope, unit subdata is set one of the 2
 - If bit 16 is 0, it is raw data. Bit 0-15 is hardware envelope period.
 - If bit 16 is 1, it is tone/hard ratio. Bit 0-7 is hard part and bit 8-15 is tone part.
 
+
+## Groove Section
+| Type            | Field                 | Description                               |
+| --------------- | --------------------- | ----------------------------------------- |
+| string (8bytes) | Seciton identifier    | Must be `GROOVE  `.                       |
+| uint32          | Groove section offset | Relative offset to end of groove section. |
+| uint8           | Groove count          | Number of groove sequences - 1.           |
+
+Groove sequences are repeated after groove count.
+
+| Type  | Field           | Description         |
+| ----- | --------------- | ------------------- |
+| uint8 | Index           | Index of sequence.  |
+| uint8 | Sequence length | Length of sequence. |
+
+And sequence are stored after sequence length as uint8.
+
+
+## Song Section
+| Type            | Field               | Description                             |
+| --------------- | ------------------- | --------------------------------------- |
+| string (8bytes) | Seciton identifier  | Must be `SONG    `.                     |
+| uint32          | Song section offset | Relative offset to end of song section. |
+| uint8           | Song count          | Number of songs.                        |
+
+Each song block is defined as:
+
+| Type             | Field                           | Description                                                                                                  |
+| ---------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| uint8            | Index                           | Index number.                                                                                                |
+| uint32           | Offset                          | Relative offset to end of the song block.                                                                    |
+| uint32           | Title length                    | Length of song title.                                                                                        |
+| string (N bytes) | Title                           | Song title string. Character encoding is UTF-8. If song is untitled, it is omitted.                          |
+| uint32           | Tempo                           | Tempo.                                                                                                       |
+| uint8            | Groove index, Tempo/Groove flag | Bit 0-6 is index of using groove. If bit 7 is set, Tempo is enabled. If bit 7 is cleared, groove is enabled. |
+| uint32           | Speed                           | Speed.                                                                                                       |
+| uint8            | Pattern size                    | Stored default pattern size - 1.                                                                             |
+| uint8            | Song type                       | Type of tracks. See table below for details.                                                                 |
+
+Song type defined number and order of tracks.
+
+| Type                    | Track0 | Track1 | Track2    | Track3    | Track4    | Track5    | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 | Track15 | Track16 | Track17 |
+| ----------------------- | ------ | ------ | --------- | --------- | --------- | --------- | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
+| `0x00` (Standard)       | FM1ch  | FM2ch  | FM3ch     | FM4ch     | FM5ch     | FM6ch     | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     | -       | -       | -       |
+| `0x01` (FM3ch expanded) | FM1ch  | FM2ch  | FM3ch-op1 | FM3ch-op2 | FM3ch-op3 | FM3ch-op4 | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch  | SSG3ch  | BD      | SD      | TOP     | HH      | TOM     | RIM     |
+
+Song section includes some track subblock.
+
+| Type      | Field               | Description                                                                               |
+| --------- | ------------------- | ----------------------------------------------------------------------------------------- |
+| uint8     | Track number        | Number of the track.                                                                      |
+| uint32    | Track offset        | Relative offset to end of track subblock.                                                 |
+| uint8     | Order length        | Set Length of order - 1.                                                                  |
+| uint8 x N | Order data          | Stored order data list.                                                                   |
+| uint8     | Effect column width | Set display width of pattern effect columns (number of pairs of effect ID and value - 1). |
+
+After order data, repeat pattern subblocks.
+
+| Type   | Field          | Description                                 |
+| ------ | -------------- | ------------------------------------------- |
+| uint8  | Pattern number | Number of the pattern.                      |
+| uint32 | Pattern offset | Relative offset to end of pattern subblock. |
+
+And repeat step unit which is stored event.
+
+| Type   | Field      | Description                                                 |
+| ------ | ---------- | ----------------------------------------------------------- |
+| uint8  | Step index | Index of the step.                                          |
+| uint16 | Event flag | Flag whether event is entried. See table below for details. |
+
+Event flag is flags of step events. If flag is set (1), the event is described after event flag.
+
+| bit | Event          |
+| --- | -------------- |
+| 0   | Key (Note)     |
+| 1   | Instrument     |
+| 2   | Volume         |
+| 3   | Effect 1 ID    |
+| 4   | Effect 1 value |
+| 5   | Effect 2 ID    |
+| 6   | Effect 2 value |
+| 7   | Effect 3 ID    |
+| 8   | Effect 3 value |
+| 9   | Effect 4 ID    |
+| 10  | Effect 4 value |
+
+Step events stored in the order of event flag (Key -> Instrument -> Volume -> ...).
+
+| Type             | Event                                   |
+| ---------------- | --------------------------------------- |
+| int8             | Key event. See table below for details. |
+| uint8            | Instrument number.                      |
+| uint8            | Volume.                                 |
+| string (2 bytes) | Effect ID.                              |
+| uint8            | Effect value.                           |
+
+Key event details:
+
+| Value | Description                                                                         |
+| ----- | ----------------------------------------------------------------------------------- |
+| 0<=   | Key on. Octave is `value % 12`. Note is `value / 12`. Note `0` is C, and `11` is B. |
+| -2    | Key off.                                                                            |
+| -3    | Echo buffer 0 access.                                                               |
+| -4    | Echo buffer 1 access.                                                               |
+| -5    | Echo buffer 2 access.                                                               |
+| -6    | Echo buffer 3 access.                                                               |
+
 ---
 
 ## History
-| Version | Date       | Detail           |
-| ------- | ---------- | ---------------- |
-| 1.0.0   | 2019-07-14 | Initial release. |
+| Version | Date       | Detail                                                             |
+| ------- | ---------- | ------------------------------------------------------------------ |
+| 1.3.0   | 2019-10-21 | Add mixer settings.                                                |
+| 1.2.2   | 2019-06-07 | Revised to fix unit data skipping bug of FM operator sequence.     |
+| 1.2.1   | 2019-05-20 | Added display width of effect columns in tracks.                   |
+| 1.2.0   | 2019-04-10 | Added and changed for SSG tone/hard or square-mask ratio settings. |
+| 1.1.0   | 2019-03-24 | Added fields for FM3ch expanded mode.                              |
+| 1.0.3   | 2019-03-18 | Added 2nd step hilight.                                            |
+| 1.0.2   | 2018-12-29 | Revised for the change of FM octave range.                         |
+| 1.0.1   | 2018-12-10 | Added instrument sequence type.                                    |
+| 1.0.0   | 2018-11-23 | Initial release.                                                   |

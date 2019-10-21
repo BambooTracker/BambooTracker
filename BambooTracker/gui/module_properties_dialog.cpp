@@ -3,10 +3,13 @@
 #include <vector>
 #include <utility>
 
-ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::ModulePropertiesDialog),
-	bt_(core)
+ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, double configFmMixer,
+											   double configSsgMixer, QWidget *parent)
+	: QDialog(parent),
+	  ui(new Ui::ModulePropertiesDialog),
+	  bt_(core),
+	  configFmMixer_(configFmMixer),
+	  configSsgMixer_(configSsgMixer)
 {
 	ui->setupUi(this);
 
@@ -19,6 +22,16 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 	case 50:	ui->palRadioButton->setChecked(true);				break;
 	default:	ui->customTickFreqRadioButton->setChecked(true);	break;
 	}
+
+	MixerType mixType = core.lock()->getModuleMixerType();
+	if (mixType == MixerType::UNSPECIFIED) {
+		ui->mixerGroupBox->setChecked(false);
+	}
+	else {
+		ui->mixerGroupBox->setChecked(true);
+		ui->mixerTypeComboBox->setCurrentIndex(static_cast<int>(mixType) - 1);
+	}
+	setCustomMixerLevels(core.lock()->getModuleCustomMixerFMLevel(), core.lock()->getModuleCustomMixerSSGLevel());
 
 	ui->songTreeWidget->setColumnCount(3);
 	ui->songTreeWidget->setHeaderLabels({ tr("Number"), tr("Title"), tr("Song type") });
@@ -92,6 +105,17 @@ void ModulePropertiesDialog::swapset(int aboveRow, int belowRow)
 	}
 }
 
+void ModulePropertiesDialog::setCustomMixerLevels(double fm, double ssg)
+{
+	fmMixer_ = fm;
+	ssgMixer_ = ssg;
+
+	QString fmSign = (fm > -1) ? "+" : "";
+	ui->customMixerFMLevelLabel->setText(fmSign + QString::number(fmMixer_, 'f', 2) + "dB");
+	QString ssgSign = (ssg > -1) ? "+" : "";
+	ui->customMixerSSGLevelLabel->setText(ssgSign + QString::number(ssgMixer_, 'f', 2) + "dB");
+}
+
 /******************************/
 void ModulePropertiesDialog::on_upToolButton_clicked()
 {
@@ -155,6 +179,19 @@ void ModulePropertiesDialog::onAccepted()
 	else tickFreq = static_cast<unsigned int>(ui->customTickFreqSpinBox->value());
 	bt_.lock()->setModuleTickFrequency(tickFreq);
 
+	// Set mixer
+	if (ui->mixerGroupBox->isChecked()) {
+		auto mixType = static_cast<MixerType>(ui->mixerTypeComboBox->currentIndex() + 1);
+		bt_.lock()->setModuleMixerType(mixType);
+		if (mixType == MixerType::CUSTOM) {
+			bt_.lock()->setModuleCustomMixerFMLevel(fmMixer_);
+			bt_.lock()->setModuleCustomMixerSSGLevel(ssgMixer_);
+		}
+	}
+	else {
+		bt_.lock()->setModuleMixerType(MixerType::UNSPECIFIED);
+	}
+
 	auto* tree = ui->songTreeWidget;
 	std::vector<int> newSongNums;
 
@@ -175,4 +212,14 @@ void ModulePropertiesDialog::onAccepted()
 
 	// Sort songs
 	bt_.lock()->sortSongs(std::move(newSongNums));
+}
+
+void ModulePropertiesDialog::on_mixerTypeComboBox_currentIndexChanged(int index)
+{
+	ui->mixerCustomGroupBox->setEnabled(index == 0);
+}
+
+void ModulePropertiesDialog::on_customMixerSetPushButton_clicked()
+{
+	setCustomMixerLevels(configFmMixer_, configSsgMixer_);
 }

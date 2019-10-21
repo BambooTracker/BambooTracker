@@ -6,6 +6,16 @@
 #include "song.hpp"
 #include "groove.hpp"
 
+enum class MixerType : int
+{
+	UNSPECIFIED = 0,
+	CUSTOM = 1,
+	PC_9821_PC_9801_86 = 2,
+	PC_9821_SPEAK_BOARD = 3,
+	PC_8801_VA2 = 4,
+	PC_8801_MKII_SR = 5
+};
+
 class Module
 {
 public:
@@ -30,6 +40,12 @@ public:
 	size_t getStepHighlight2Distance() const;
 	size_t getSongCount() const;
 	size_t getGrooveCount() const;
+	void setMixerType(MixerType type);
+	MixerType getMixerType() const;
+	void setCustomMixerFMLevel(double level);
+	double getCustomMixerFMLevel() const;
+	void setCustomMixerSSGLevel(double level);
+	double getCustomMixerSSGLevel() const;
 
 	void addSong(SongType songType, std::string title);
 	void addSong(int n, SongType songType, std::string title, bool isUsedTempo,
@@ -57,4 +73,6 @@ private:
 	size_t stepHl1Dist_, stepHl2Dist_;
 	std::vector<Song> songs_;
 	std::vector<Groove> grooves_;
+	MixerType mixType_;
+	double customLevelFM_, customLevelSSG_;
 };

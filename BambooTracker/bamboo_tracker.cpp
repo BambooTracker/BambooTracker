@@ -43,8 +43,10 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 	setStreamRate(static_cast<int>(config.lock()->getSampleRate()));
 	setStreamDuration(static_cast<int>(config.lock()->getBufferLength()));
 	setMasterVolume(config.lock()->getMixerVolumeMaster());
-	setMasterVolumeFM(config.lock()->getMixerVolumeFM());
-	setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
+	if (mod_->getMixerType() == MixerType::UNSPECIFIED) {
+		setMasterVolumeFM(config.lock()->getMixerVolumeFM());
+		setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
+	}
 	playback_->setChannelRetrieving(config.lock()->getRetrieveChannelState());
 }
 
@@ -1424,6 +1426,36 @@ void BambooTracker::setModuleStepHighlight2Distance(size_t dist)
 size_t BambooTracker::getModuleStepHighlight2Distance() const
 {
 	return mod_->getStepHighlight2Distance();
+}
+
+void BambooTracker::setModuleMixerType(MixerType type)
+{
+	mod_->setMixerType(type);
+}
+
+MixerType BambooTracker::getModuleMixerType() const
+{
+	return mod_->getMixerType();
+}
+
+void BambooTracker::setModuleCustomMixerFMLevel(double level)
+{
+	mod_->setCustomMixerFMLevel(level);
+}
+
+double BambooTracker::getModuleCustomMixerFMLevel() const
+{
+	return mod_->getCustomMixerFMLevel();
+}
+
+void BambooTracker::setModuleCustomMixerSSGLevel(double level)
+{
+	mod_->setCustomMixerSSGLevel(level);
+}
+
+double BambooTracker::getModuleCustomMixerSSGLevel() const
+{
+	return mod_->getCustomMixerSSGLevel();
 }
 
 size_t BambooTracker::getGrooveCount() const

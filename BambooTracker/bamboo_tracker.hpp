@@ -243,6 +243,12 @@ public:
 	size_t getModuleStepHighlight1Distance() const;
 	void setModuleStepHighlight2Distance(size_t dist);
 	size_t getModuleStepHighlight2Distance() const;
+	void setModuleMixerType(MixerType type);
+	MixerType getModuleMixerType() const;
+	void setModuleCustomMixerFMLevel(double level);
+	double getModuleCustomMixerFMLevel() const;
+	void setModuleCustomMixerSSGLevel(double level);
+	double getModuleCustomMixerSSGLevel() const;
 	size_t getGrooveCount() const;
 	void setGroove(int num, std::vector<int> seq);
 	void setGrooves(std::vector<std::vector<int>> seqs);

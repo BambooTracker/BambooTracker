@@ -38,6 +38,12 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 	ctr.appendUint32(mod.lock()->getTickFrequency());
 	ctr.appendUint32(mod.lock()->getStepHighlight1Distance());
 	ctr.appendUint32(mod.lock()->getStepHighlight2Distance());
+	MixerType mixType = mod.lock()->getMixerType();
+	ctr.appendUint8(static_cast<uint8_t>(mixType));
+	if (mixType == MixerType::CUSTOM) {
+		ctr.appendInt8(static_cast<int8_t>(mod.lock()->getCustomMixerFMLevel() * 10));
+		ctr.appendInt8(static_cast<int8_t>(mod.lock()->getCustomMixerSSGLevel() * 10));
+	}
 	ctr.writeUint32(modOfs, ctr.size() - modOfs);
 
 
@@ -797,6 +803,17 @@ size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 	}
 	else {
 		mod.lock()->setStepHighlight2Distance(mod.lock()->getStepHighlight1Distance() * 4);
+	}
+	if (version >= Version::toBCD(1, 3, 0)) {
+		auto mixType = static_cast<MixerType>(ctr.readUint8(modCsr++));
+		mod.lock()->setMixerType(mixType);
+		if (mixType == MixerType::CUSTOM) {
+			mod.lock()->setCustomMixerFMLevel(ctr.readInt8(modCsr++) / 10.0);
+			mod.lock()->setCustomMixerSSGLevel(ctr.readInt8(modCsr++) / 10.0);
+		}
+	}
+	else {
+		mod.lock()->setMixerType(MixerType::UNSPECIFIED);
 	}
 
 	return globCsr + modOfs;
