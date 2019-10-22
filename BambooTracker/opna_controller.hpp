@@ -80,7 +80,6 @@ public:
 	void keyOnFM(int ch, Note note, int octave, int pitch, bool isJam = false);
 	void keyOnFM(int ch, int echoBuf);
 	void keyOffFM(int ch, bool isJam = false);
-	void resetFMChannelEnvelope(int ch);
 	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
 
 	// Set Instrument
@@ -89,6 +88,8 @@ public:
 	void updateInstrumentFMEnvelopeParameter(int envNum, FMEnvelopeParameter param);
 	void setInstrumentFMOperatorEnabled(int envNum, int opNum);
 	void updateInstrumentFMLFOParameter(int lfoNum, FMLFOParameter param);
+	void resetFMChannelEnvelope(int ch);
+	void restoreFMEnvelopeFromReset(int ch);
 
 	// Set volume
 	void setVolumeFM(int ch, int volume);
@@ -134,7 +135,7 @@ private:
 	/// bit1: left on/off
 	uint8_t panFM_[6];
 	bool isMuteFM_[9];
-	bool enableEnvResetFM_[9];
+	bool enableEnvResetFM_[9], hasResetEnvFM_[9];
 	int lfoFreq_;
 	int lfoStartCntFM_[6];
 	bool hasPreSetTickEventFM_[9];

@@ -301,6 +301,7 @@ void OPNAController::keyOffFM(int ch, bool isJam)
 void OPNAController::resetFMChannelEnvelope(int ch)
 {
 	keyOffFM(ch);
+	hasResetEnvFM_[ch] = true;
 
 	if (mode_ == SongType::FMEX && toInternalFMChannel(ch) == 2) {
 		FMEnvelopeParameter param;
@@ -357,49 +358,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 							 | static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(3) << 3);
 	}
 	else {
-		switch (mode_) {
-		case SongType::STD:
-		{
-			if (refInstFM_[inch]->getEnvelopeResetEnabled(FMOperatorType::All)) {	// Restore envelope from reset
-				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
-												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
-				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
-												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
-				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
-												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
-				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
-												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
-			}
-			break;
-		}
-		case SongType::FMEX:
-		{
-			if (refInstFM_[inch]->getEnvelopeResetEnabled(opType)) {	// Restore envelope from reset
-				if (inch == 2) {
-					FMEnvelopeParameter param;
-					switch (ch) {
-					case 2:	param = FMEnvelopeParameter::RR1;	break;
-					case 6:	param = FMEnvelopeParameter::RR2;	break;
-					case 7:	param = FMEnvelopeParameter::RR3;	break;
-					case 8:	param = FMEnvelopeParameter::RR4;	break;
-					default:	throw std::out_of_range("out of range.");
-					}
-					writeFMEnveropeParameterToRegister(2, param, refInstFM_[2]->getEnvelopeParameter(param));
-				}
-				else {
-					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
-													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
-					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
-													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
-					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
-													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
-					writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
-													   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
-				}
-			}
-			break;
-		}
-		}
+		restoreFMEnvelopeFromReset(ch);
 	}
 
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
@@ -772,6 +731,7 @@ void OPNAController::initFM()
 		baseVolFM_[ch] = 0;	// Init volume
 		tmpVolFM_[ch] = -1;
 		enableEnvResetFM_[ch] = false;
+		hasResetEnvFM_[ch] = false;
 
 		// Init sequence
 		hasPreSetTickEventFM_[ch] = false;
@@ -1336,6 +1296,59 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 		data = judgeSSEGRegisterValue(tmp);
 		opna_->setRegister(0x90 + bch + 12, data);
 		break;
+	}
+}
+
+void OPNAController::restoreFMEnvelopeFromReset(int ch)
+{
+	if (hasResetEnvFM_[ch] == false) return;
+
+	int inch = toInternalFMChannel(ch);
+	switch (mode_) {
+	case SongType::STD:
+	{
+		if (refInstFM_[inch]->getEnvelopeResetEnabled(FMOperatorType::All)) {
+			hasResetEnvFM_[inch] = false;
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
+											   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
+											   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
+											   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
+											   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
+		}
+		break;
+	}
+	case SongType::FMEX:
+	{
+		if (refInstFM_[inch]->getEnvelopeResetEnabled(toChannelOperatorType(ch))) {
+			if (inch == 2) {
+				FMEnvelopeParameter param;
+				switch (ch) {
+				case 2:	param = FMEnvelopeParameter::RR1;	break;
+				case 6:	param = FMEnvelopeParameter::RR2;	break;
+				case 7:	param = FMEnvelopeParameter::RR3;	break;
+				case 8:	param = FMEnvelopeParameter::RR4;	break;
+				default:	throw std::out_of_range("out of range.");
+				}
+				hasResetEnvFM_[ch] = false;
+				writeFMEnveropeParameterToRegister(2, param, refInstFM_[2]->getEnvelopeParameter(param));
+			}
+			else {
+				hasResetEnvFM_[inch] = false;
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR1,
+												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR1));
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR2,
+												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR2));
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR3,
+												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR3));
+				writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::RR4,
+												   refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::RR4));
+			}
+		}
+		break;
+	}
 	}
 }
 

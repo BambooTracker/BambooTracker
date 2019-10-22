@@ -338,6 +338,9 @@ bool PlaybackManager::readFMEventsInStep(Step& step, int ch, bool calledByNoteDe
 					instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber())))
 			opnaCtrl_->setInstrumentFM(ch, inst);
 	}
+	else {
+		opnaCtrl_->restoreFMEnvelopeFromReset(ch);
+	}
 
 	// Set effect
 	bool changedNextStep = readFMEffectFromQueue(ch);

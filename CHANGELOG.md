@@ -27,6 +27,7 @@
 - Reset character entry position in pattern editor and order list after undoing
 - Fix effect description in status bar after entering the 2nd character
 - Reset playback position when it is out of song range by editing pattern during playback
+- Restore FM RR parameters in key-on without instrument set after envelope reset
 
 [#152]: https://github.com/rerrahkr/BambooTracker/pull/152
 [#153]: https://github.com/rerrahkr/BambooTracker/issues/153
