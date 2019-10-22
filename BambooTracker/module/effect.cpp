@@ -181,11 +181,21 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
-	else if (id.front() == 'M') {
-		return EffectType::VolumeDelay;
+	else {
+		switch (id.front()) {
+		case 'M':
+			return EffectType::VolumeDelay;
+		case 'T':
+			switch (src) {
+			case SoundSource::FM:
+				return EffectType::TLControl;
+			default:
+				return EffectType::NoEffect;
+			}
+		default:
+			return EffectType::NoEffect;
+		}
 	}
-
-	return EffectType::NoEffect;
 }
 
 Effect Effect::makeEffectData(SoundSource src, std::string id, int value)
@@ -200,6 +210,7 @@ Effect Effect::makeEffectData(SoundSource src, std::string id, int value)
 		v = -1;
 		break;
 	case EffectType::VolumeDelay:
+	case EffectType::TLControl:
 		v = (ctohex(id[1]) << 8) | value;
 		break;
 	default:

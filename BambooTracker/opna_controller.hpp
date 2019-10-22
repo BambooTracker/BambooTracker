@@ -109,6 +109,7 @@ public:
 	void setNoteSlideFM(int ch, int speed, int seminote);
 	void setTransposeEffectFM(int ch, int seminote);
 	void setFBControlFM(int ch, int value);
+	void setTLControlFM(int ch, int op, int value);
 
 	// For state retrieve
 	void haltSequencesFM(int ch);
@@ -155,7 +156,7 @@ private:
 	int sumNoteSldFM_[9];
 	bool noteSldFMSetFlag_[9];
 	int transposeFM_[9];
-	bool isFBCtrlFM_[6];
+	bool isFBCtrlFM_[6], isTLCtrlFM_[6][4];
 
 	void initFM();
 
@@ -188,6 +189,17 @@ private:
 	void setInstrumentFMProperties(int ch);
 
 	bool isCareer(int op, int al);
+
+	inline FMEnvelopeParameter getParameterTL(int op) const
+	{
+		switch (op) {
+		case 0:	return FMEnvelopeParameter::TL1;
+		case 1:	return FMEnvelopeParameter::TL2;
+		case 2:	return FMEnvelopeParameter::TL3;
+		case 3:	return FMEnvelopeParameter::TL4;
+		default:	throw std::invalid_argument("Invalid operator value.");
+		}
+	}
 
 	inline uint8_t calculateTL(int ch, uint8_t data) const
 	{

@@ -1544,6 +1544,16 @@ void PatternEditorPanel::setStepEffectID(QString str)
 		if (ctohex(*(id.begin() + 1)) > 0)
 			effDetail = tr("Mxyy - Volume delay, x: count (1-F), yy: volume (00-FF)");
 	}
+	else if (id.front() == 'T') {
+		switch (src) {
+		case SoundSource::FM:
+			effDetail = tr("Txyy - TL control, x: operator (0-3), yy: total level (00-7F)");
+			break;
+			case SoundSource::SSG:
+		case SoundSource::Drum:
+			break;
+		}
+	}
 
 	emit effectEntered(effDetail);
 }
