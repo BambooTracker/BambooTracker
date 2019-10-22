@@ -173,6 +173,14 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
+	else if (id == "11") {
+		switch (src) {
+		case SoundSource::FM:
+			return EffectType::FBControl;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else if (id.front() == 'M') {
 		return EffectType::VolumeDelay;
 	}

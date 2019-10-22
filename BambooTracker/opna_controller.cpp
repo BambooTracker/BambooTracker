@@ -358,15 +358,26 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 							 | static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(3) << 3);
 	}
 	else {
+		if (isFBCtrlFM_[inch]) {
+			isFBCtrlFM_[inch] = false;
+			writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::FB,
+											   inst->getEnvelopeParameter(FMEnvelopeParameter::FB));
+		}
 		restoreFMEnvelopeFromReset(ch);
 	}
 
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
 	for (auto& p : getFMEnvelopeParametersForOperator(opType)) {
-		if (refInstFM_[inch]->getOperatorSequenceEnabled(p))
+		if (refInstFM_[inch]->getOperatorSequenceEnabled(p)) {
 			opSeqItFM_[inch].at(p) = refInstFM_[inch]->getOperatorSequenceSequenceIterator(p);
-		else
+			switch (p) {
+			case FMEnvelopeParameter::FB:	isFBCtrlFM_[ch] = false;	break;
+			default:	break;
+			}
+		}
+		else {
 			opSeqItFM_[inch].at(p).reset();
+		}
 	}
 	if (!isArpEffFM_[ch]) {
 		if (refInstFM_[inch]->getArpeggioEnabled(opType))
@@ -604,6 +615,14 @@ void OPNAController::setTransposeEffectFM(int ch, int seminote)
 	needToneSetFM_[ch] = true;
 }
 
+void OPNAController::setFBControlFM(int ch, int value)
+{
+	int inch = toInternalFMChannel(ch);
+	writeFMEnveropeParameterToRegister(inch, FMEnvelopeParameter::FB, value);
+	isFBCtrlFM_[inch] = true;
+	opSeqItFM_[inch].at(FMEnvelopeParameter::FB).reset();
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesFM(int ch)
 {
@@ -713,6 +732,8 @@ void OPNAController::initFM()
 		}
 
 		lfoStartCntFM_[inch] = -1;
+
+		isFBCtrlFM_[inch] = false;
 	}
 
 	size_t fmch = getFMChannelCount(mode_);
@@ -1991,7 +2012,7 @@ void OPNAController::setToneNoiseMixSSG(int ch, int value)
 	else mixerSSG_ |= (1 << (ch + 3));
 	opna_->setRegister(0x07, mixerSSG_);
 
-	if (tnItSSG_[ch]) tnItSSG_[ch].reset();
+	tnItSSG_[ch].reset();
 }
 
 void OPNAController::setNoisePitchSSG(int ch, int pitch)
@@ -2079,7 +2100,7 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 		// Clear hard envelope in setRealVolumeSSG
 	}
 	needEnvSetSSG_[ch] = true;
-	if (envItSSG_[ch]) envItSSG_[ch].reset();
+	envItSSG_[ch].reset();
 }
 
 /********** For state retrieve **********/

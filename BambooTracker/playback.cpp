@@ -534,6 +534,7 @@ bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
 	case EffectType::NoteCut:
 	case EffectType::TransposeDelay:
 	case EffectType::VolumeDelay:
+	case EffectType::FBControl:
 		keyOnBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -664,6 +665,9 @@ bool PlaybackManager::readFMEffectFromQueue(int ch)
 				}
 				break;
 			}
+			case EffectType::FBControl:
+				if (-1 < eff.value && eff.value < 8) opnaCtrl_->setFBControlFM(ch, eff.value);
+				break;
 			default:
 				break;
 			}
@@ -1239,6 +1243,7 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetInstFM(fmch, false), isSetVolFM(fmch, false), isSetArpFM(fmch, false);
 	std::vector<bool> isSetPrtFM(fmch, false), isSetVibFM(fmch, false), isSetTreFM(fmch, false);
 	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
+	std::vector<bool> isSetFBCtrlFM(fmch, false);
 	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
 	std::vector<bool> isSetTNMixSSG(3, false);
@@ -1272,50 +1277,50 @@ void PlaybackManager::retrieveChannelStates()
 					Effect eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Arpeggio:
-						if (!isSetArpFM.at(uch)) {
-							isSetArpFM.at(uch) = true;
+						if (!isSetArpFM[uch]) {
+							isSetArpFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setArpeggioEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::PortamentoUp:
-						if (!isSetPrtFM.at(uch)) {
-							isSetPrtFM.at(uch) = true;
+						if (!isSetPrtFM[uch]) {
+							isSetPrtFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPortamentoEffectFM(ch, eff.value);
 						}
 						break;
 					case EffectType::PortamentoDown:
-						if (!isSetPrtFM.at(uch)) {
-							isSetPrtFM.at(uch) = true;
+						if (!isSetPrtFM[uch]) {
+							isSetPrtFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPortamentoEffectFM(ch, -eff.value);
 						}
 						break;
 					case EffectType::TonePortamento:
-						if (!isSetPrtFM.at(uch)) {
-							isSetPrtFM.at(uch) = true;
+						if (!isSetPrtFM[uch]) {
+							isSetPrtFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPortamentoEffectFM(ch, eff.value, true);
 						}
 						break;
 					case EffectType::Vibrato:
-						if (!isSetVibFM.at(uch)) {
-							isSetVibFM.at(uch) = true;
+						if (!isSetVibFM[uch]) {
+							isSetVibFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setVibratoEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::Tremolo:
-						if (!isSetTreFM.at(uch)) {
-							isSetTreFM.at(uch) = true;
+						if (!isSetTreFM[uch]) {
+							isSetTreFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setTremoloEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::Pan:
-						if (-1 < eff.value && eff.value < 4 && !isSetPanFM.at(uch)) {
-							isSetPanFM.at(uch) = true;
+						if (-1 < eff.value && eff.value < 4 && !isSetPanFM[uch]) {
+							isSetPanFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPanFM(ch, eff.value);
 						}
 						break;
 					case EffectType::VolumeSlide:
-						if (!isSetVolSldFM.at(uch)) {
-							isSetVolSldFM.at(uch) = true;
+						if (!isSetVolSldFM[uch]) {
+							isSetVolSldFM[uch] = true;
 							if (isPrevPos) {
 								int hi = eff.value >> 4;
 								int low = eff.value & 0x0f;
@@ -1343,27 +1348,34 @@ void PlaybackManager::retrieveChannelStates()
 						}
 						break;
 					case EffectType::Detune:
-						if (!isSetDtnFM.at(uch)) {
-							isSetDtnFM.at(uch) = true;
+						if (!isSetDtnFM[uch]) {
+							isSetDtnFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setDetuneFM(ch, eff.value - 0x80);
 						}
 						break;
+					case EffectType::FBControl:
+						if (!isSetFBCtrlFM[uch]) {
+							isSetFBCtrlFM[uch] = true;
+							if (isPrevPos) {
+								if (-1 < eff.value && eff.value < 8) opnaCtrl_->setFBControlFM(ch, eff.value);
+							}
+						}
 					default:
 						break;
 					}
 				}
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolFM.at(uch) && 0 <= vol && vol < 0x80) {
-					isSetVolFM.at(uch) = true;
+				if (!isSetVolFM[uch] && 0 <= vol && vol < 0x80) {
+					isSetVolFM[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeFM(ch, step.getVolume());
 				}
 				// Instrument
-				if (!isSetInstFM.at(uch) && step.getInstrumentNumber() != -1) {
+				if (!isSetInstFM[uch] && step.getInstrumentNumber() != -1) {
 					if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
 								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
-						isSetInstFM.at(uch) = true;
+						isSetInstFM[uch] = true;
 						if (isPrevPos)
 							opnaCtrl_->setInstrumentFM(ch, inst);
 					}
@@ -1371,15 +1383,15 @@ void PlaybackManager::retrieveChannelStates()
 				// Tone
 				int t = step.getNoteNumber();
 				if (isPrevPos && t != -1 && t != -2) {
-					--tonesCntFM.at(uch);
-					for (auto it2 = toneFM.at(uch).rbegin();
-						 it2 != toneFM.at(uch).rend(); ++it2) {
-						if (*it2 == -1 || *it2 == tonesCntFM.at(uch)) {
+					--tonesCntFM[uch];
+					for (auto it2 = toneFM[uch].rbegin();
+						 it2 != toneFM[uch].rend(); ++it2) {
+						if (*it2 == -1 || *it2 == tonesCntFM[uch]) {
 							if (t >= 0) {
 								*it2 = t;
 							}
 							else if (t < -2) {
-								*it2 = tonesCntFM.at(uch) - t + 2;
+								*it2 = tonesCntFM[uch] - t + 2;
 							}
 							break;
 						}
@@ -1394,44 +1406,44 @@ void PlaybackManager::retrieveChannelStates()
 					Effect eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Arpeggio:
-						if (!isSetArpSSG.at(uch)) {
-							isSetArpSSG.at(uch) = true;
+						if (!isSetArpSSG[uch]) {
+							isSetArpSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setArpeggioEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::PortamentoUp:
-						if (!isSetPrtSSG.at(uch)) {
-							isSetPrtSSG.at(uch) = true;
+						if (!isSetPrtSSG[uch]) {
+							isSetPrtSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPortamentoEffectSSG(ch, eff.value);
 						}
 						break;
 					case EffectType::PortamentoDown:
-						if (!isSetPrtSSG.at(uch)) {
-							isSetPrtSSG.at(uch) = true;
+						if (!isSetPrtSSG[uch]) {
+							isSetPrtSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPortamentoEffectSSG(ch, -eff.value);
 						}
 						break;
 					case EffectType::TonePortamento:
-						if (!isSetPrtSSG.at(uch)) {
-							isSetPrtSSG.at(uch) = true;
+						if (!isSetPrtSSG[uch]) {
+							isSetPrtSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPortamentoEffectSSG(ch, eff.value, true);
 						}
 						break;
 					case EffectType::Vibrato:
-						if (!isSetVibSSG.at(uch)) {
-							isSetVibSSG.at(uch) = true;
+						if (!isSetVibSSG[uch]) {
+							isSetVibSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setVibratoEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::Tremolo:
-						if (!isSetTreSSG.at(uch)) {
-							isSetTreSSG.at(uch) = true;
+						if (!isSetTreSSG[uch]) {
+							isSetTreSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setTremoloEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
 						}
 						break;
 					case EffectType::VolumeSlide:
-						if (!isSetVolSldSSG.at(uch)) {
-							isSetVolSldSSG.at(uch) = true;
+						if (!isSetVolSldSSG[uch]) {
+							isSetVolSldSSG[uch] = true;
 							if (isPrevPos) {
 								int hi = eff.value >> 4;
 								int low = eff.value & 0x0f;
@@ -1459,8 +1471,8 @@ void PlaybackManager::retrieveChannelStates()
 						}
 						break;
 					case EffectType::Detune:
-						if (!isSetDtnSSG.at(uch)) {
-							isSetDtnSSG.at(uch) = true;
+						if (!isSetDtnSSG[uch]) {
+							isSetDtnSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setDetuneSSG(ch, eff.value - 0x80);
 						}
 						break;
@@ -1500,16 +1512,16 @@ void PlaybackManager::retrieveChannelStates()
 				}
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolSSG.at(uch) && 0 <= vol && vol < 0x10) {
-					isSetVolSSG.at(uch) = true;
+				if (!isSetVolSSG[uch] && 0 <= vol && vol < 0x10) {
+					isSetVolSSG[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeSSG(ch, vol);
 				}
 				// Instrument
-				if (!isSetInstSSG.at(uch) && step.getInstrumentNumber() != -1) {
+				if (!isSetInstSSG[uch] && step.getInstrumentNumber() != -1) {
 					if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
 								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
-						isSetInstSSG.at(uch) = true;
+						isSetInstSSG[uch] = true;
 						if (isPrevPos)
 							opnaCtrl_->setInstrumentSSG(ch, inst);
 					}
@@ -1517,15 +1529,15 @@ void PlaybackManager::retrieveChannelStates()
 				// Tone
 				int t = step.getNoteNumber();
 				if (isPrevPos && t != -1 && t != -2) {
-					--tonesCntSSG.at(uch);
-					for (auto it2 = toneSSG.at(uch).rbegin();
-						 it2 != toneSSG.at(uch).rend(); ++it2) {
-						if (*it2 == -1 || *it2 == tonesCntSSG.at(uch)) {
+					--tonesCntSSG[uch];
+					for (auto it2 = toneSSG[uch].rbegin();
+						 it2 != toneSSG[uch].rend(); ++it2) {
+						if (*it2 == -1 || *it2 == tonesCntSSG[uch]) {
 							if (t >= 0) {
 								*it2 = t;
 							}
 							else if (t < -2) {
-								*it2 = tonesCntSSG.at(uch) - t + 2;
+								*it2 = tonesCntSSG[uch] - t + 2;
 							}
 							break;
 						}
@@ -1540,8 +1552,8 @@ void PlaybackManager::retrieveChannelStates()
 					Effect eff = Effect::makeEffectData(SoundSource::Drum, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Pan:
-						if (-1 < eff.value && eff.value < 4 && !isSetPanDrum.at(uch)) {
-							isSetPanDrum.at(uch) = true;
+						if (-1 < eff.value && eff.value < 4 && !isSetPanDrum[uch]) {
+							isSetPanDrum[uch] = true;
 							if (isPrevPos) opnaCtrl_->setPanDrum(ch, eff.value);
 						}
 						break;
@@ -1575,8 +1587,8 @@ void PlaybackManager::retrieveChannelStates()
 				}
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolDrum.at(uch) && 0 <= vol && vol < 0x20) {
-					isSetVolDrum.at(uch) = true;
+				if (!isSetVolDrum[uch] && 0 <= vol && vol < 0x20) {
+					isSetVolDrum[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeDrum(ch, vol);
 				}

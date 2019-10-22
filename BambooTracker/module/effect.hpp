@@ -9,7 +9,7 @@ enum class EffectType
 	Arpeggio, PortamentoUp, PortamentoDown, TonePortamento, Vibrato, Tremolo, Pan, VolumeSlide, PositionJump,
 	SongEnd, PatternBreak, SpeedTempoChange, NoteDelay, Groove, Detune, NoteSlideUp, NoteSlideDown,
 	NoteCut, TransposeDelay, MasterVolume, VolumeDelay, ToneNoiseMix, NoisePitch, HardEnvHighPeriod,
-	HardEnvLowPeriod, AutoEnvelope
+	HardEnvLowPeriod, AutoEnvelope, FBControl
 };
 
 struct Effect

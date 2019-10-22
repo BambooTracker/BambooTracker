@@ -108,6 +108,7 @@ public:
 	void setDetuneFM(int ch, int pitch);
 	void setNoteSlideFM(int ch, int speed, int seminote);
 	void setTransposeEffectFM(int ch, int seminote);
+	void setFBControlFM(int ch, int value);
 
 	// For state retrieve
 	void haltSequencesFM(int ch);
@@ -154,6 +155,7 @@ private:
 	int sumNoteSldFM_[9];
 	bool noteSldFMSetFlag_[9];
 	int transposeFM_[9];
+	bool isFBCtrlFM_[6];
 
 	void initFM();
 
