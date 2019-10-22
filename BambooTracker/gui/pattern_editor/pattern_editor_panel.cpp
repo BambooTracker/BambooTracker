@@ -1530,6 +1530,16 @@ void PatternEditorPanel::setStepEffectID(QString str)
 			break;
 		}
 	}
+	else if (id == "FB") {
+		switch (src) {
+		case SoundSource::FM:
+			effDetail = tr("FBxx - FB control, xx: feedback value (00-07)");
+			break;
+			case SoundSource::SSG:
+		case SoundSource::Drum:
+			break;
+		}
+	}
 	else if (id.front() == 'M') {
 		if (ctohex(*(id.begin() + 1)) > 0)
 			effDetail = tr("Mxyy - Volume delay, x: count (1-F), yy: volume (00-FF)");

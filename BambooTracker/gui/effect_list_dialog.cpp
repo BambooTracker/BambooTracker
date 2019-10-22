@@ -90,6 +90,9 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow("0Wxx",
 		   static_cast<int>(SoundSource::SSG),
 		   tr("Noise pitch, xx: pitch (00-1F)"));
+	addRow("FBxx",
+		   static_cast<int>(SoundSource::FM),
+		   tr("FB control, xx: feedback value (00-07)"));
 	addRow("Mxyy",
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum),
 		   tr("Volume delay, x: count (1-F), yy: volume (00-FF)"));
