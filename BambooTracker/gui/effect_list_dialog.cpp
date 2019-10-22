@@ -98,7 +98,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   tr("Volume delay, x: count (1-F), yy: volume (00-FF)"));
 	addRow("Txyy",
 		   static_cast<int>(SoundSource::FM),
-		   tr("Txyy - TL control, x: operator (0-3), yy: total level (00-7F)"));
+		   tr("Txyy - TL control, x: operator (1-4), yy: total level (00-7F)"));
 }
 
 EffectListDialog::~EffectListDialog()

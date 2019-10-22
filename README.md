@@ -242,7 +242,7 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Wxx   | -                                                                                       | Noise pitch (xx[00-1F]: pitch)                                     | -                                 |
 | FBxx   | FB control (xx[00-07]: feedback value)                                                  | -                                                                  | -                                 |
 | Mxyy   | Volume delay (x[1-F]: count, yy[00-FF]: volume)                                         | Volume delay                                                       | Volume delay                      |
-| Txyy   | TL control (x[0-3]: operator (x-1), yy[00-7F]: total level)                             | -                                                                  | -                                 |
+| Txyy   | TL control (x[1-4]: operator (x-1), yy[00-7F]: total level)                             | -                                                                  | -                                 |
 
 ## File I/O
 ### Module

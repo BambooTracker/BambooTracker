@@ -1547,7 +1547,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	else if (id.front() == 'T') {
 		switch (src) {
 		case SoundSource::FM:
-			effDetail = tr("Txyy - TL control, x: operator (0-3), yy: total level (00-7F)");
+			effDetail = tr("Txyy - TL control, x: operator (1-4), yy: total level (00-7F)");
 			break;
 			case SoundSource::SSG:
 		case SoundSource::Drum:

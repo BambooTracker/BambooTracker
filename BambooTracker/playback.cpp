@@ -673,7 +673,7 @@ bool PlaybackManager::readFMEffectFromQueue(int ch)
 			{
 				int op = eff.value >> 8;
 				int val = eff.value & 0x00ff;
-				if (-1 < op && op < 4 && -1 < val && val < 128) opnaCtrl_->setTLControlFM(ch, op, val);
+				if (0 < op && op < 5 && -1 < val && val < 128) opnaCtrl_->setTLControlFM(ch, op - 1, val);
 				break;
 			}
 			default:
@@ -1375,8 +1375,8 @@ void PlaybackManager::retrieveChannelStates()
 							if (isPrevPos) {
 								int op = eff.value >> 8;
 								int val = eff.value & 0x00ff;
-								if (-1 < op && op < 4 && -1 < val && val < 128)
-									opnaCtrl_->setTLControlFM(ch, op, val);
+								if (0 < op && op < 5 && -1 < val && val < 128)
+									opnaCtrl_->setTLControlFM(ch, op - 1, val);
 							}
 						}
 						break;
