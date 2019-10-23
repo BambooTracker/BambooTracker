@@ -706,7 +706,8 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 
 	orderChanged_ = !orderUpdateRequestCnt_++;
 	// Redraw entire area in first update and jumping order
-	if (isFirstUpdate || tmp - 1 != curPos_.row) orderChanged_ = false;
+	if (isFirstUpdate || tmp - 1 != curPos_.row || (tmp == 1 && curPos_.row == 0))
+		orderChanged_ = false;
 	posChanged_ = true;
 	repaint();
 }

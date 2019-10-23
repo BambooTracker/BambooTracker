@@ -15,7 +15,7 @@
 
 ### Changed
 - [#152] - Use RtAudio for sound processing ([#96]; thanks [@jpcima], [@OPNA2608] and others)
-- [#96], [#152] - Reduce drawing cost of pattern editor and order list (thanks [@OPNA2608])
+- [#96], [#152], [#158] - Reduce drawing cost of pattern editor and order list (thanks [@OPNA2608], [@papiezak])
 - Disable slider operation during playback
 - [#156] - Change key-on/off of multiple drum instruments to write to register at once (thanks [@ImATrackMan], [@ValleyBell])
 - Increase the maximum value of the master mixer to 200%
@@ -38,6 +38,7 @@
 [#156]: https://github.com/rerrahkr/BambooTracker/issues/156
 [#132]: https://github.com/rerrahkr/BambooTracker/issues/132
 [#72]: https://github.com/rerrahkr/BambooTracker/issues/72
+[#158]: https://github.com/rerrahkr/BambooTracker/issues/158
 
 [@ValleyBell]: https://github.com/ValleyBell
 
