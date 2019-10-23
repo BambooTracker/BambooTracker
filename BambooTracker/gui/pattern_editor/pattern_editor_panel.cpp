@@ -2493,9 +2493,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 					redrawByHeaderChanged();
 				}
 				else {
-					bt_->setTrackMuteState(hovPos_.track, !bt_->isMute(hovPos_.track));	// Toggle mute
-					isMuteElse_ = false;
-
+					onToggleTrackPressed(hovPos_.track);
 					int horDif = calculateColumnDistance(curPos_.track, curPos_.colInTrack,
 														 hovPos_.track, 0);
 					moveCursorToRight(horDif);

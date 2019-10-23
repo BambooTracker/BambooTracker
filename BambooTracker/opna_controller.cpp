@@ -1364,9 +1364,10 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 
 void OPNAController::restoreFMEnvelopeFromReset(int ch)
 {
-	if (hasResetEnvFM_[ch] == false) return;
-
 	int inch = toInternalFMChannel(ch);
+
+	if (hasResetEnvFM_[ch] == false || !refInstFM_[inch]) return;
+
 	switch (mode_) {
 	case SongType::STD:
 	{

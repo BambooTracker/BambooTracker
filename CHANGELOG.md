@@ -31,6 +31,7 @@
 - Fix effect description in status bar after entering the 2nd character
 - Reset playback position when it is out of song range by editing pattern during playback
 - Restore FM RR parameters in key-on without instrument set after envelope reset
+- [#159] - Fix corruption happened by toggling track during playback (thanks [@papiezak])
 
 [#152]: https://github.com/rerrahkr/BambooTracker/pull/152
 [#153]: https://github.com/rerrahkr/BambooTracker/issues/153
@@ -39,6 +40,7 @@
 [#132]: https://github.com/rerrahkr/BambooTracker/issues/132
 [#72]: https://github.com/rerrahkr/BambooTracker/issues/72
 [#158]: https://github.com/rerrahkr/BambooTracker/issues/158
+[#159]: https://github.com/rerrahkr/BambooTracker/issues/159
 
 [@ValleyBell]: https://github.com/ValleyBell
 
