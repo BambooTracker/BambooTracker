@@ -241,6 +241,7 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Vxx   | -                                                                                       | Tone/Noise mix (xx: 00=No sound, 01=Tone, 02=Noise, 03=Tone&Noise) | Master volume (xx[00-3F]: volume) |
 | 0Wxx   | -                                                                                       | Noise pitch (xx[00-1F]: pitch)                                     | -                                 |
 | Axyy   | AR control (x[1-4]: operator, y[00-1F]: attack rate)                                    | -                                                                  | -                                 |
+| Dxyy   | AR control (x[1-4]: operator, y[00-1F]: decay rate)                                     | -                                                                  | -                                 |
 | FBxx   | FB control (xx[00-07]: feedback value)                                                  | -                                                                  | -                                 |
 | Mxyy   | Volume delay (x[1-F]: count, yy[00-FF]: volume)                                         | Volume delay                                                       | Volume delay                      |
 | MLxy   | ML control (x[1-4]: operator, y[0-F]: multiple)                                         | -                                                                  | -                                 |

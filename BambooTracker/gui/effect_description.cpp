@@ -29,6 +29,7 @@ const std::map<EffectType, EffectDescription::EffectDetail> EffectDescription::d
 	{ EffectType::MasterVolume, { "0Vxx", tr("Master volume, xx: volume (00-3F)") } },
 	{ EffectType::NoisePitch, { "0Wxx", tr("Noise pitch, xx: pitch (00-1F)") } },
 	{ EffectType::ARControl, { "Axyy", tr("AR control, x: operator (1-4), yy: attack rate (00-1F)") } },
+	{ EffectType::DRControl, { "Dxyy", tr("DR control, x: operator (1-4), yy: decay rate (00-1F)") } },
 	{ EffectType::FBControl, { "FBxx", tr("FB control, xx: feedback value (00-07)") } },
 	{ EffectType::MLControl, { "MLxy", tr("ML control, x: operator (1-4), y: multiple (0-F)") } },
 	{ EffectType::VolumeDelay, { "Mxyy", tr("Volume delay, x: count (1-F), yy: volume (00-FF)") } },

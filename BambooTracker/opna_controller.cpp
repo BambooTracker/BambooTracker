@@ -379,6 +379,11 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 				FMEnvelopeParameter ar = getParameterAR(op);
 				writeFMEnveropeParameterToRegister(inch, ar, inst->getEnvelopeParameter(ar));
 			}
+			if (isDRCtrlFM_[inch][op]) {
+				isDRCtrlFM_[inch][op] = false;
+				FMEnvelopeParameter dr = getParameterDR(op);
+				writeFMEnveropeParameterToRegister(inch, dr, inst->getEnvelopeParameter(dr));
+			}
 		}
 		restoreFMEnvelopeFromReset(ch);
 	}
@@ -401,6 +406,10 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 			case FMEnvelopeParameter::AR2:	isARCtrlFM_[inch][1] = false;	break;
 			case FMEnvelopeParameter::AR3:	isARCtrlFM_[inch][2] = false;	break;
 			case FMEnvelopeParameter::AR4:	isARCtrlFM_[inch][3] = false;	break;
+			case FMEnvelopeParameter::DR1:	isDRCtrlFM_[inch][0] = false;	break;
+			case FMEnvelopeParameter::DR2:	isDRCtrlFM_[inch][1] = false;	break;
+			case FMEnvelopeParameter::DR3:	isDRCtrlFM_[inch][2] = false;	break;
+			case FMEnvelopeParameter::DR4:	isDRCtrlFM_[inch][3] = false;	break;
 			default:	break;
 			}
 		}
@@ -679,6 +688,15 @@ void OPNAController::setARControlFM(int ch, int op, int value)
 	opSeqItFM_[inch].at(param).reset();
 }
 
+void OPNAController::setDRControlFM(int ch, int op, int value)
+{
+	int inch = toInternalFMChannel(ch);
+	FMEnvelopeParameter param = getParameterDR(op);
+	writeFMEnveropeParameterToRegister(inch, param, value);
+	isDRCtrlFM_[inch][op] = true;
+	opSeqItFM_[inch].at(param).reset();
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesFM(int ch)
 {
@@ -794,6 +812,7 @@ void OPNAController::initFM()
 			isTLCtrlFM_[inch][op] = false;
 			isMLCtrlFM_[inch][op] = false;
 			isARCtrlFM_[inch][op] = false;
+			isDRCtrlFM_[inch][op] = false;
 		}
 	}
 

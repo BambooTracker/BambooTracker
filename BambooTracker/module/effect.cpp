@@ -198,6 +198,13 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			default:
 				return EffectType::NoEffect;
 			}
+		case 'D':
+			switch (src) {
+			case SoundSource::FM:
+				return EffectType::DRControl;
+			default:
+				return EffectType::NoEffect;
+			}
 		case 'M':
 			return EffectType::VolumeDelay;
 		case 'T':
@@ -227,6 +234,7 @@ Effect Effect::makeEffectData(SoundSource src, std::string id, int value)
 	case EffectType::VolumeDelay:
 	case EffectType::TLControl:
 	case EffectType::ARControl:
+	case EffectType::DRControl:
 		v = (ctohex(id[1]) << 8) | value;
 		break;
 	default:
