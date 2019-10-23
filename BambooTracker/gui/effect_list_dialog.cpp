@@ -63,6 +63,8 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   static_cast<int>(SoundSource::Drum));
 	addRow(EffectType::NoisePitch,
 		   static_cast<int>(SoundSource::SSG));
+	addRow(EffectType::ARControl,
+		   static_cast<int>(SoundSource::FM));
 	addRow(EffectType::FBControl,
 		   static_cast<int>(SoundSource::FM));
 	addRow(EffectType::VolumeDelay,

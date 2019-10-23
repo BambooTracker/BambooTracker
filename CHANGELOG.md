@@ -2,11 +2,12 @@
 
 ## Unreleased
 ### Added
-- [#132] - 8 new pattern effects
+- [#132] - 9 new pattern effects
   - `0Hxy`: SSG auto envelope ([#3]; thanks [@marysiamzawka])
   - `0Ixx`, `0Jxx`: SSG hardware envelope period
   - `0Vxx`: SSG tone/noise mix
   - `0Wxx`: SSG noise pitch
+  - `Axyy`: FM AR control
   - `FBxx`: FM FB control
   - `MLxy`: FM ML control
   - `Txyy`: FM TL control

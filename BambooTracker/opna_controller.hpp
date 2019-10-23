@@ -111,6 +111,7 @@ public:
 	void setFBControlFM(int ch, int value);
 	void setTLControlFM(int ch, int op, int value);
 	void setMLControlFM(int ch, int op, int value);
+	void setARControlFM(int ch, int op, int value);
 
 	// For state retrieve
 	void haltSequencesFM(int ch);
@@ -157,7 +158,7 @@ private:
 	int sumNoteSldFM_[9];
 	bool noteSldFMSetFlag_[9];
 	int transposeFM_[9];
-	bool isFBCtrlFM_[6], isTLCtrlFM_[6][4], isMLCtrlFM_[6][4];
+	bool isFBCtrlFM_[6], isTLCtrlFM_[6][4], isMLCtrlFM_[6][4], isARCtrlFM_[6][4];
 
 	void initFM();
 
@@ -209,6 +210,17 @@ private:
 		case 1:	return FMEnvelopeParameter::ML2;
 		case 2:	return FMEnvelopeParameter::ML3;
 		case 3:	return FMEnvelopeParameter::ML4;
+		default:	throw std::invalid_argument("Invalid operator value.");
+		}
+	}
+
+	inline FMEnvelopeParameter getParameterAR(int op) const
+	{
+		switch (op) {
+		case 0:	return FMEnvelopeParameter::AR1;
+		case 1:	return FMEnvelopeParameter::AR2;
+		case 2:	return FMEnvelopeParameter::AR3;
+		case 3:	return FMEnvelopeParameter::AR4;
 		default:	throw std::invalid_argument("Invalid operator value.");
 		}
 	}
