@@ -536,6 +536,7 @@ bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
 	case EffectType::VolumeDelay:
 	case EffectType::FBControl:
 	case EffectType::TLControl:
+	case EffectType::MLControl:
 		keyOnBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -674,6 +675,13 @@ bool PlaybackManager::readFMEffectFromQueue(int ch)
 				int op = eff.value >> 8;
 				int val = eff.value & 0x00ff;
 				if (0 < op && op < 5 && -1 < val && val < 128) opnaCtrl_->setTLControlFM(ch, op - 1, val);
+				break;
+			}
+			case EffectType::MLControl:
+			{
+				int op = eff.value >> 4;
+				int val = eff.value & 0x0f;
+				if (0 < op && op < 5 && -1 < val && val < 16) opnaCtrl_->setMLControlFM(ch, op - 1, val);
 				break;
 			}
 			default:
@@ -1251,7 +1259,7 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetInstFM(fmch, false), isSetVolFM(fmch, false), isSetArpFM(fmch, false);
 	std::vector<bool> isSetPrtFM(fmch, false), isSetVibFM(fmch, false), isSetTreFM(fmch, false);
 	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
-	std::vector<bool> isSetFBCtrlFM(fmch, false), isSetTLCtrlFM(fmch, false);
+	std::vector<bool> isSetFBCtrlFM(fmch, false), isSetTLCtrlFM(fmch, false), isSetMLCtrlFM(fmch, false);
 	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
 	std::vector<bool> isSetTNMixSSG(3, false);
@@ -1377,6 +1385,17 @@ void PlaybackManager::retrieveChannelStates()
 								int val = eff.value & 0x00ff;
 								if (0 < op && op < 5 && -1 < val && val < 128)
 									opnaCtrl_->setTLControlFM(ch, op - 1, val);
+							}
+						}
+						break;
+					case EffectType::MLControl:
+						if (!isSetMLCtrlFM[uch]) {
+							isSetMLCtrlFM[uch] = true;
+							if (isPrevPos) {
+								int op = eff.value >> 4;
+								int val = eff.value & 0x0f;
+								if (0 < op && op < 5 && -1 < val && val < 16)
+									opnaCtrl_->setMLControlFM(ch, op - 1, val);
 							}
 						}
 						break;

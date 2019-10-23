@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QString>
+#include "effect.hpp"
 #include "misc.hpp"
 
 namespace Ui {
@@ -20,7 +21,7 @@ public:
 private:
 	Ui::EffectListDialog *ui;
 
-	void addRow(QString effect, int flag, QString text);
+	void addRow(EffectType effect, int flag);
 };
 
 #endif // EFFECT_LIST_DIALOG_HPP

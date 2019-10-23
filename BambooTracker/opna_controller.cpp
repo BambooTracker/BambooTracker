@@ -369,6 +369,11 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 				FMEnvelopeParameter tl = getParameterTL(op);
 				writeFMEnveropeParameterToRegister(inch, tl, inst->getEnvelopeParameter(tl));
 			}
+			if (isMLCtrlFM_[inch][op]) {
+				isMLCtrlFM_[inch][op] = false;
+				FMEnvelopeParameter ml = getParameterML(op);
+				writeFMEnveropeParameterToRegister(inch, ml, inst->getEnvelopeParameter(ml));
+			}
 		}
 		restoreFMEnvelopeFromReset(ch);
 	}
@@ -383,6 +388,10 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 			case FMEnvelopeParameter::TL2:	isTLCtrlFM_[inch][1] = false;	break;
 			case FMEnvelopeParameter::TL3:	isTLCtrlFM_[inch][2] = false;	break;
 			case FMEnvelopeParameter::TL4:	isTLCtrlFM_[inch][3] = false;	break;
+			case FMEnvelopeParameter::ML1:	isMLCtrlFM_[inch][0] = false;	break;
+			case FMEnvelopeParameter::ML2:	isMLCtrlFM_[inch][1] = false;	break;
+			case FMEnvelopeParameter::ML3:	isMLCtrlFM_[inch][2] = false;	break;
+			case FMEnvelopeParameter::ML4:	isMLCtrlFM_[inch][3] = false;	break;
 			default:	break;
 			}
 		}
@@ -643,6 +652,15 @@ void OPNAController::setTLControlFM(int ch, int op, int value)
 	opSeqItFM_[inch].at(param).reset();
 }
 
+void OPNAController::setMLControlFM(int ch, int op, int value)
+{
+	int inch = toInternalFMChannel(ch);
+	FMEnvelopeParameter param = getParameterML(op);
+	writeFMEnveropeParameterToRegister(inch, param, value);
+	isMLCtrlFM_[inch][op] = true;
+	opSeqItFM_[inch].at(param).reset();
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesFM(int ch)
 {
@@ -756,6 +774,7 @@ void OPNAController::initFM()
 		isFBCtrlFM_[inch] = false;
 		for (int op = 0; op < 4; ++op) {
 			isTLCtrlFM_[inch][op] = false;
+			isMLCtrlFM_[inch][op] = false;
 		}
 	}
 

@@ -2,13 +2,14 @@
 
 ## Unreleased
 ### Added
-- [#132] - 7 new pattern effects
-  - `FBxx`: FB control
-  - `Txyy`: TL control
+- [#132] - 8 new pattern effects
   - `0Hxy`: SSG auto envelope ([#3]; thanks [@marysiamzawka])
   - `0Ixx`, `0Jxx`: SSG hardware envelope period
   - `0Vxx`: SSG tone/noise mix
   - `0Wxx`: SSG noise pitch
+  - `FBxx`: FM FB control
+  - `MLxy`: FM ML control
+  - `Txyy`: FM TL control
 - [#72] - Add module mixer settings (thanks [@ImATrackMan])
 - Add sample rate selection in wav export
 

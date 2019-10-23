@@ -41,6 +41,7 @@ else {
 CONFIG += c++14
 
 SOURCES += \
+    gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
     main.cpp \
@@ -201,6 +202,7 @@ SOURCES += \
 
 HEADERS += \
     command/command_id.hpp \
+    gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \

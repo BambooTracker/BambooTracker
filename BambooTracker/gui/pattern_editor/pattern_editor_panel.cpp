@@ -18,6 +18,7 @@
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
+#include "gui/effect_description.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -666,9 +667,11 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter& backPainter, i
 		if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
 				&& isSelectedCell(trackNum, pos.colInTrack, orderNum, stepNum))	// Paint selected
 			backPainter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, palette_->ptnSelCellColor);
+		std::string effId;
 		QString effStr;
 		if (changeFore) {
-			effStr = QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackNum, orderNum, stepNum, i));
+			effId = bt_->getStepEffectID(curSongNum_, trackNum, orderNum, stepNum, i);
+			effStr = QString::fromStdString(effId);
 			if (effStr == "--") {
 				forePainter.setPen(textColor);
 				forePainter.drawText(offset, baseY, effStr);
@@ -699,7 +702,8 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter& backPainter, i
 			}
 			else {
 				forePainter.setPen(palette_->ptnEffValColor);
-				if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder() && effStr.at(0) == 'M')
+				if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder()
+						&& Effect::toEffectType(SoundSource::FM, effId) == EffectType::VolumeDelay)
 					effVal = 0x7f - effVal;
 				forePainter.drawText(offset, baseY, QString("%1").arg(effVal, 2, 16, QChar('0')).toUpper());
 			}
@@ -1337,225 +1341,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	std::string id = bt_->getStepEffectID(curSongNum_, editPos.track, editPos.order,
 										  editPos.step, (editPos.colInTrack - 3) / 2);
 	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curPos_.track)).source;
-	if (id == "00") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("00xy - Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "01") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("01xx - Portamento up, xx: depth (00-FF)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "02") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("02xx - Portamento down, xx: depth (00-FF)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "03") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("03xx - Tone portamento, xx: depth (00-FF)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "04") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("04xy - Vibrato, x: period (0-F), y: depth (0-F)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "07") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("07xx - Tremolo, x: period (0-F), y: depth (0-F)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "08") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::Drum:
-			effDetail = tr("08xx - Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center");
-			break;
-		case SoundSource::SSG:
-			break;
-		}
-	}
-	else if (id == "0A") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("0Axy - Volume slide, x: up (0-F), y: down (0-F)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0B") {
-		effDetail = tr("0Bxx - Jump to beginning of order xx");
-	}
-	else if (id == "0C") {
-		effDetail = tr("0Cxx - End of song");
-	}
-	else if (id == "0D") {
-		effDetail = tr("0Dxx - Jump to step xx of next order");
-	}
-	else if (id == "0F") {
-		effDetail = tr("0Fxx - Change speed (xx: 00-1F), change tempo (xx: 20-FF)");
-	}
-	else if (id == "0G") {
-		effDetail = tr("0Gxx - Note delay, xx: count (00-FF)");
-	}
-	else if (id == "0H") {
-		switch (src) {
-		case SoundSource::SSG:
-			effDetail = tr("0Hxy - Auto envelope, x: shift amount (0-F), y: shape (0-F)");
-			break;
-		case SoundSource::FM:
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0I") {
-		switch (src) {
-		case SoundSource::SSG:
-			effDetail = tr("0Ixx - Hardware envelope period 1, xx: high byte (00-FF)");
-			break;
-		case SoundSource::FM:
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0J") {
-		switch (src) {
-		case SoundSource::SSG:
-			effDetail = tr("0Jxx - Hardware envelope period 2, xx: low byte (00-FF)");
-			break;
-		case SoundSource::FM:
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0O") {
-		effDetail = tr("0Oxx - Set groove xx");
-	}
-	else if (id == "0P") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("0Pxx - Detune, xx: pitch (00-FF)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0Q") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0R") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("0Rxy - Note slide down, x: count (0-F), y: seminote (0-F)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0S") {
-		effDetail = tr("0Sxx - Note cut, xx: count (01-FF)");
-	}
-	else if (id == "0T") {
-		switch (src) {
-		case SoundSource::FM:
-		case SoundSource::SSG:
-			effDetail = tr("0Txy - Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)");
-			break;
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "0V") {
-		switch (src) {
-		case SoundSource::FM:
-			break;
-		case SoundSource::SSG:
-			effDetail = tr("0Vxx - Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone & noise");
-			break;
-		case SoundSource::Drum:
-			effDetail = tr("0Vxx - Master volume, xx: volume (00-3F)");
-			break;
-		}
-	}
-	else if (id == "0W") {
-		switch (src) {
-		case SoundSource::SSG:
-			effDetail = tr("0Wxx - Noise pitch, xx: pitch (00-1F)");
-			break;
-			case SoundSource::FM:
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id == "FB") {
-		switch (src) {
-		case SoundSource::FM:
-			effDetail = tr("FBxx - FB control, xx: feedback value (00-07)");
-			break;
-			case SoundSource::SSG:
-		case SoundSource::Drum:
-			break;
-		}
-	}
-	else if (id.front() == 'M') {
-		if (ctohex(*(id.begin() + 1)) > 0)
-			effDetail = tr("Mxyy - Volume delay, x: count (1-F), yy: volume (00-FF)");
-	}
-	else if (id.front() == 'T') {
-		switch (src) {
-		case SoundSource::FM:
-			effDetail = tr("Txyy - TL control, x: operator (1-4), yy: total level (00-7F)");
-			break;
-			case SoundSource::SSG:
-		case SoundSource::Drum:
-			break;
-		}
-	}
-
-	emit effectEntered(effDetail);
+	emit effectEntered(EffectDescription::getEffectFormatAndDetailString(Effect::toEffectType(src, id)));
 }
 
 bool PatternEditorPanel::enterEffectValue(int key)
@@ -1586,8 +1372,10 @@ void PatternEditorPanel::setStepEffectValue(int value)
 	int n = (curPos_.colInTrack - 4) / 2;
 	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source == SoundSource::FM
 					  && config_.lock()->getReverseFMVolumeOrder()
-					  && bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n)
-					  .front() == 'M');
+					  && Effect::toEffectType(
+						  SoundSource::FM,
+						  bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n))
+					  == EffectType::VolumeDelay);
 	bt_->setStepEffectValueDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n, value, isReversed, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 

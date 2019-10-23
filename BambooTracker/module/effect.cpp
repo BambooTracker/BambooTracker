@@ -181,6 +181,14 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
+	else if (id == "ML") {
+		switch (src) {
+		case SoundSource::FM:
+			return EffectType::MLControl;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else {
 		switch (id.front()) {
 		case 'M':
