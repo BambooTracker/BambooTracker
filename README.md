@@ -245,6 +245,7 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | FBxx   | FB control (xx[00-07]: feedback value)                                                  | -                                                                  | -                                 |
 | Mxyy   | Volume delay (x[1-F]: count, yy[00-FF]: volume)                                         | Volume delay                                                       | Volume delay                      |
 | MLxy   | ML control (x[1-4]: operator, y[0-F]: multiple)                                         | -                                                                  | -                                 |
+| RRxy   | RR control (x[1-4]: operator, y[0-F]: release rate)                                     | -                                                                  | -                                 |
 | Txyy   | TL control (x[1-4]: operator, yy[00-7F]: total level)                                   | -                                                                  | -                                 |
 
 ## File I/O

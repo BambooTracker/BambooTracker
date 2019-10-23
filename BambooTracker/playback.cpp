@@ -539,6 +539,7 @@ bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
 	case EffectType::MLControl:
 	case EffectType::ARControl:
 	case EffectType::DRControl:
+	case EffectType::RRControl:
 		keyOnBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -698,6 +699,13 @@ bool PlaybackManager::readFMEffectFromQueue(int ch)
 				int op = eff.value >> 8;
 				int val = eff.value & 0x00ff;
 				if (0 < op && op < 5 && -1 < val && val < 32) opnaCtrl_->setDRControlFM(ch, op - 1, val);
+				break;
+			}
+			case EffectType::RRControl:
+			{
+				int op = eff.value >> 4;
+				int val = eff.value & 0x0f;
+				if (0 < op && op < 5 && -1 < val && val < 16) opnaCtrl_->setRRControlFM(ch, op - 1, val);
 				break;
 			}
 			default:
@@ -1276,7 +1284,7 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetPrtFM(fmch, false), isSetVibFM(fmch, false), isSetTreFM(fmch, false);
 	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
 	std::vector<bool> isSetFBCtrlFM(fmch, false), isSetTLCtrlFM(fmch, false), isSetMLCtrlFM(fmch, false);
-	std::vector<bool> isSetARCtrlFM(fmch, false), isSetDRCtrlFM(fmch, false);
+	std::vector<bool> isSetARCtrlFM(fmch, false), isSetDRCtrlFM(fmch, false), isSetRRCtrlFM(fmch, false);
 	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
 	std::vector<bool> isSetTNMixSSG(3, false);
@@ -1305,6 +1313,22 @@ void PlaybackManager::retrieveChannelStates()
 			switch (it->source) {
 			case SoundSource::FM:
 			{
+				// Volume
+				int vol = step.getVolume();
+				if (!isSetVolFM[uch] && 0 <= vol && vol < 0x80) {
+					isSetVolFM[uch] = true;
+					if (isPrevPos)
+						opnaCtrl_->setVolumeFM(ch, step.getVolume());
+				}
+				// Instrument
+				if (!isSetInstFM[uch] && step.getInstrumentNumber() != -1) {
+					if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
+								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
+						isSetInstFM[uch] = true;
+						if (isPrevPos)
+							opnaCtrl_->setInstrumentFM(ch, inst);
+					}
+				}
 				// Effects
 				for (int i = 3; i > -1; --i) {
 					Effect eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
@@ -1438,24 +1462,19 @@ void PlaybackManager::retrieveChannelStates()
 							}
 						}
 						break;
+					case EffectType::RRControl:
+						if (!isSetRRCtrlFM[uch]) {
+							isSetRRCtrlFM[uch] = true;
+							if (isPrevPos) {
+								int op = eff.value >> 4;
+								int val = eff.value & 0x0f;
+								if (0 < op && op < 5 && -1 < val && val < 16)
+									opnaCtrl_->setRRControlFM(ch, op - 1, val);
+							}
+						}
+						break;
 					default:
 						break;
-					}
-				}
-				// Volume
-				int vol = step.getVolume();
-				if (!isSetVolFM[uch] && 0 <= vol && vol < 0x80) {
-					isSetVolFM[uch] = true;
-					if (isPrevPos)
-						opnaCtrl_->setVolumeFM(ch, step.getVolume());
-				}
-				// Instrument
-				if (!isSetInstFM[uch] && step.getInstrumentNumber() != -1) {
-					if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
-								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
-						isSetInstFM[uch] = true;
-						if (isPrevPos)
-							opnaCtrl_->setInstrumentFM(ch, inst);
 					}
 				}
 				// Tone
@@ -1479,6 +1498,22 @@ void PlaybackManager::retrieveChannelStates()
 			}
 			case SoundSource::SSG:
 			{
+				// Volume
+				int vol = step.getVolume();
+				if (!isSetVolSSG[uch] && 0 <= vol && vol < 0x10) {
+					isSetVolSSG[uch] = true;
+					if (isPrevPos)
+						opnaCtrl_->setVolumeSSG(ch, vol);
+				}
+				// Instrument
+				if (!isSetInstSSG[uch] && step.getInstrumentNumber() != -1) {
+					if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
+								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
+						isSetInstSSG[uch] = true;
+						if (isPrevPos)
+							opnaCtrl_->setInstrumentSSG(ch, inst);
+					}
+				}
 				// Effects
 				for (int i = 3; i > -1; --i) {
 					Effect eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
@@ -1588,22 +1623,6 @@ void PlaybackManager::retrieveChannelStates()
 						break;
 					}
 				}
-				// Volume
-				int vol = step.getVolume();
-				if (!isSetVolSSG[uch] && 0 <= vol && vol < 0x10) {
-					isSetVolSSG[uch] = true;
-					if (isPrevPos)
-						opnaCtrl_->setVolumeSSG(ch, vol);
-				}
-				// Instrument
-				if (!isSetInstSSG[uch] && step.getInstrumentNumber() != -1) {
-					if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
-								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
-						isSetInstSSG[uch] = true;
-						if (isPrevPos)
-							opnaCtrl_->setInstrumentSSG(ch, inst);
-					}
-				}
 				// Tone
 				int t = step.getNoteNumber();
 				if (isPrevPos && t != -1 && t != -2) {
@@ -1625,6 +1644,13 @@ void PlaybackManager::retrieveChannelStates()
 			}
 			case SoundSource::Drum:
 			{
+				// Volume
+				int vol = step.getVolume();
+				if (!isSetVolDrum[uch] && 0 <= vol && vol < 0x20) {
+					isSetVolDrum[uch] = true;
+					if (isPrevPos)
+						opnaCtrl_->setVolumeDrum(ch, vol);
+				}
 				// Effects
 				for (int i = 3; i > -1; --i) {
 					Effect eff = Effect::makeEffectData(SoundSource::Drum, step.getEffectID(i), step.getEffectValue(i));
@@ -1662,13 +1688,6 @@ void PlaybackManager::retrieveChannelStates()
 					default:
 						break;
 					}
-				}
-				// Volume
-				int vol = step.getVolume();
-				if (!isSetVolDrum[uch] && 0 <= vol && vol < 0x20) {
-					isSetVolDrum[uch] = true;
-					if (isPrevPos)
-						opnaCtrl_->setVolumeDrum(ch, vol);
 				}
 				break;
 			}

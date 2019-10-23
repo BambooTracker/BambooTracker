@@ -73,6 +73,8 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
 	addRow(EffectType::MLControl,
 		   static_cast<int>(SoundSource::FM));
+	addRow(EffectType::RRControl,
+		   static_cast<int>(SoundSource::FM));
 	addRow(EffectType::TLControl,
 		   static_cast<int>(SoundSource::FM));
 }

@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Added
-- [#132] - 10 new pattern effects
+- [#132] - 11 new pattern effects
   - `0Hxy`: SSG auto envelope ([#3]; thanks [@marysiamzawka])
   - `0Ixx`, `0Jxx`: SSG hardware envelope period
   - `0Vxx`: SSG tone/noise mix (thanks [@pedipanol])
@@ -11,6 +11,7 @@
   - `Dxyy`: FM DR control (thanks [@papiezak])
   - `FBxx`: FM FB control
   - `MLxy`: FM ML control
+  - `RRxy`: FM RR control
   - `Txyy`: FM TL control
 - [#72] - Add module mixer settings (thanks [@ImATrackMan])
 - Add sample rate selection in wav export

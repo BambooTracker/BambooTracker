@@ -33,6 +33,7 @@ const std::map<EffectType, EffectDescription::EffectDetail> EffectDescription::d
 	{ EffectType::FBControl, { "FBxx", tr("FB control, xx: feedback value (00-07)") } },
 	{ EffectType::MLControl, { "MLxy", tr("ML control, x: operator (1-4), y: multiple (0-F)") } },
 	{ EffectType::VolumeDelay, { "Mxyy", tr("Volume delay, x: count (1-F), yy: volume (00-FF)") } },
+	{ EffectType::RRControl, { "RRxy", tr("RR control, x: operator (1-4), y: release rate (0-F)") } },
 	{ EffectType::TLControl, { "Txyy", tr("TL control, x: operator (1-4), yy: total level (00-7F)") } },
 	{ EffectType::NoEffect, { "", tr("Invalid effect") } }
 };

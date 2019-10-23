@@ -189,6 +189,14 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
+	else if (id == "RR") {
+		switch (src) {
+		case SoundSource::FM:
+			return EffectType::RRControl;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else {
 		switch (id.front()) {
 		case 'A':
