@@ -532,29 +532,27 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		return;
 	}
 
-	/* Pressed alt */
-	if (event->modifiers().testFlag(Qt::AltModifier)) {
-		switch (key) {
-		case Qt::Key_L:
-			ui->instrumentListWidget->setFocus();
-			updateMenuByInstrumentList();
-			return;
-		case Qt::Key_O:
-			ui->orderList->setFocus();
-			return;
-		case Qt::Key_P:
-			ui->patternEditor->setFocus();
-			return;
-		}
-	}
-
 	/* General keys */
-	if (!event->isAutoRepeat()) {
-		// Musical keyboard
-		Qt::Key qtKey = static_cast<Qt::Key> (key);
-		try {
-			bt_->jamKeyOn (getJamKeyFromLayoutMapping (qtKey));
-		} catch (std::invalid_argument &) {}
+	switch (key) {
+	case Qt::Key_F2:
+		ui->patternEditor->setFocus();
+		return;
+	case Qt::Key_F3:
+		ui->orderList->setFocus();
+		return;
+	case Qt::Key_F4:
+		ui->instrumentListWidget->setFocus();
+		updateMenuByInstrumentList();
+		return;
+	default:
+		if (!event->isAutoRepeat()) {
+			// Musical keyboard
+			Qt::Key qtKey = static_cast<Qt::Key>(key);
+			try {
+				bt_->jamKeyOn(getJamKeyFromLayoutMapping(qtKey));
+			} catch (std::invalid_argument &) {}
+		}
+		break;
 	}
 }
 

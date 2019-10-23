@@ -22,6 +22,10 @@
 - Disable slider operation during playback
 - [#156] - Change key-on/off of multiple drum instruments to write to register at once (thanks [@ImATrackMan], [@ValleyBell])
 - Increase the maximum value of the master mixer to 200%
+- Change 3 shortcuts
+  - F2: Focus on pattern editor
+  - F3: Focus on order list
+  - F4: Focus on instrument list
 
 ### Fixed
 - Fix to draw the playing cursor when follow mode is turned off

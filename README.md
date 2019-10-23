@@ -123,15 +123,15 @@ It can also be specified with `0Oxx` effect.
 | Ctrl+P | Open module property dialog    |
 | Ctrl+I | Open current instrument editor |
 | Return | Play/stop song                 |
+| Space  | Toggle jam/edit mode           |
 | F1     | Show effect list dialog        |
+| F2     | Focus on pattern editor        |
+| F3     | Focus on order list            |
+| F4     | Focus on instrument list       |
 | F5     | Play from start                |
 | F6     | Play pattern                   |
 | F7     | Play from current position     |
 | F8     | Stop song                      |
-| Space  | Toggle jam/edit mode           |
-| Alt+L  | Focus on instrument list       |
-| Alt+O  | Focus on order list            |
-| Alt+P  | Focus on pattern editor        |
 | F12    | Kill sound                     |
 
 ### Instrument list
