@@ -971,28 +971,6 @@ void PatternEditorPanel::moveCursorToDown(int n)
 	redrawByPositionChanged();
 }
 
-void PatternEditorPanel::expandEffect(int trackNum)
-{
-	size_t tn = static_cast<size_t>(trackNum);
-	if (rightEffn_.at(tn) == 3) return;
-	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(++rightEffn_[tn]));
-	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
-									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
-
-	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
-}
-
-void PatternEditorPanel::shrinkEffect(int trackNum)
-{
-	size_t tn = static_cast<size_t>(trackNum);
-	if (rightEffn_.at(tn) == 0) return;
-	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(--rightEffn_[tn]));
-	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
-									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
-
-	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
-}
-
 int PatternEditorPanel::calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn, bool isExpanded) const
 {
 	return (calculateColNumInRow(endTrack, endColumn, isExpanded)
@@ -1711,6 +1689,11 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(pos.track); });
 	QAction* solo = menu.addAction(tr("&Solo Track"));
 	QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(pos.track); });
+	menu.addSeparator();
+	QAction* exeff = menu.addAction(tr("Expand E&ffect Column"));
+	QObject::connect(exeff, &QAction::triggered, this, [&] { onExpandEffectColumnPressed(pos.track); });
+	QAction* sheff = menu.addAction(tr("Shrin&k Effect Column"));
+	QObject::connect(sheff, &QAction::triggered, this, [&] { onShrinkEffectColumnPressed(pos.track); });
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	undo->setShortcutVisibleInContextMenu(true);
 	redo->setShortcutVisibleInContextMenu(true);
@@ -1729,6 +1712,8 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	inOct->setShortcutVisibleInContextMenu(true);
 	toggle->setShortcutVisibleInContextMenu(true);
 	solo->setShortcutVisibleInContextMenu(true);
+	exeff->setShortcutVisibleInContextMenu(true);
+	sheff->setShortcutVisibleInContextMenu(true);
 #endif
 	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
 	redo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
@@ -1748,6 +1733,8 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	inOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4));
 	toggle->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
 	solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
+	exeff->setShortcut(QKeySequence(Qt::ALT + Qt::Key_L));
+	sheff->setShortcut(QKeySequence(Qt::ALT + Qt::Key_K));
 
 	if (bt_->isJamMode() || pos.order < 0 || pos.track < 0) {
 		copy->setEnabled(false);
@@ -1799,6 +1786,8 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	if (pos.track < 0) {
 		toggle->setEnabled(false);
 		solo->setEnabled(false);
+		exeff->setEnabled(false);
+		sheff->setEnabled(false);
 	}
 
 	menu.exec(mapToGlobal(point));
@@ -2187,6 +2176,32 @@ void PatternEditorPanel::onReplaceInstrumentPressed()
 	}
 }
 
+void PatternEditorPanel::onExpandEffectColumnPressed(int trackNum)
+{
+	size_t tn = static_cast<size_t>(trackNum);
+	if (rightEffn_.at(tn) == 3) return;
+	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(++rightEffn_[tn]));
+	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
+									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+
+	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+
+	redrawByHeaderChanged();
+}
+
+void PatternEditorPanel::onShrinkEffectColumnPressed(int trackNum)
+{
+	size_t tn = static_cast<size_t>(trackNum);
+	if (rightEffn_.at(tn) == 0) return;
+	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(--rightEffn_[tn]));
+	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
+									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+
+	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+
+	redrawByHeaderChanged();
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -2485,12 +2500,10 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			}
 			else if (hovPos_.order == -2 && hovPos_.track >= 0) {	// Header
 				if (isPressedPlus_) {
-					expandEffect(hovPos_.track);
-					redrawByHeaderChanged();
+					onExpandEffectColumnPressed(hovPos_.track);
 				}
 				else if (isPressedMinus_) {
-					shrinkEffect(hovPos_.track);
-					redrawByHeaderChanged();
+					onShrinkEffectColumnPressed(hovPos_.track);
 				}
 				else {
 					onToggleTrackPressed(hovPos_.track);

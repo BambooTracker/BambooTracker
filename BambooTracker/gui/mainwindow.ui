@@ -597,6 +597,9 @@
     <addaction name="actionToggle_Track"/>
     <addaction name="actionSolo_Track"/>
     <addaction name="separator"/>
+    <addaction name="actionE_xpand_Effect_Column"/>
+    <addaction name="actionS_hrink_Effect_Column"/>
+    <addaction name="separator"/>
     <addaction name="actionKill_Sound"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -1240,6 +1243,22 @@
   <action name="actionExport_To_Bank_File">
    <property name="text">
     <string>E&amp;xport To Bank File...</string>
+   </property>
+  </action>
+  <action name="actionE_xpand_Effect_Column">
+   <property name="text">
+    <string>E&amp;xpand Effect Column</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+L</string>
+   </property>
+  </action>
+  <action name="actionS_hrink_Effect_Column">
+   <property name="text">
+    <string>S&amp;hrink Effect Column</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+K</string>
    </property>
   </action>
  </widget>

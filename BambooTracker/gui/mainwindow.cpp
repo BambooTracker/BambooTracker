@@ -2534,3 +2534,13 @@ void MainWindow::on_actionExport_To_Bank_File_triggered()
 {
 	exportInstrumentsToBank();
 }
+
+void MainWindow::on_actionE_xpand_Effect_Column_triggered()
+{
+	ui->patternEditor->onExpandEffectColumn();
+}
+
+void MainWindow::on_actionS_hrink_Effect_Column_triggered()
+{
+	ui->patternEditor->onShrinkEffectColumn();
+}

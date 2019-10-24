@@ -91,6 +91,8 @@ public slots:
 	void onInterpolatePressed();
 	void onReversePressed();
 	void onReplaceInstrumentPressed();
+	void onExpandEffectColumnPressed(int trackNum);
+	void onShrinkEffectColumnPressed(int trackNum);
 
 signals:
 	void currentCellInRowChanged(int num);
@@ -206,9 +208,6 @@ private:
 
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
-
-	void expandEffect(int trackNum);
-	void shrinkEffect(int trackNum);
 
 	bool enterToneData(QKeyEvent* event);
 	void setStepKeyOn(Note note, int octave);

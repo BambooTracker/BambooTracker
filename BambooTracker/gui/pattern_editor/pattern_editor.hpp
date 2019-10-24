@@ -76,6 +76,8 @@ public slots:
 	void onTransposePressed(bool isOctave, bool isIncreased);
 	void onToggleTrackPressed();
 	void onSoloTrackPressed();
+	void onExpandEffectColumn();
+	void onShrinkEffectColumn();
 	void onExpandPressed();
 	void onShrinkPressed();
 	void onInterpolatePressed();

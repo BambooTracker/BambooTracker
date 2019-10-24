@@ -15,6 +15,7 @@
   - `Txyy`: FM TL control
 - [#72] - Add module mixer settings (thanks [@ImATrackMan])
 - Add sample rate selection in wav export
+- Add shortcuts of expanding/shrinking effect column
 
 ### Changed
 - [#152] - Use RtAudio for sound processing ([#96]; thanks [@jpcima], [@OPNA2608] and others)
