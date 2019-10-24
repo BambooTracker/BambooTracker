@@ -1,6 +1,7 @@
 #include "order_list_panel.hpp"
 #include <QPainter>
 #include <QFontMetrics>
+#include <QFontInfo>
 #include <QApplication>
 #include <QClipboard>
 #include <QMenu>
@@ -49,32 +50,17 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  repaintable_(true),
 	  repaintingCnt_(0)
 {
-	/* Font */
+	// Initialize font
 	headerFont_ = QApplication::font();
 	headerFont_.setPointSize(10);
 	rowFont_ = QFont("Monospace", 10);
 	rowFont_.setStyleHint(QFont::TypeWriter);
 	rowFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
-	// Check font size
-	QFontMetrics metrics(rowFont_);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
-	rowFontWidth_ = metrics.horizontalAdvance('0');
-#else
-	rowFontWidth_ = metrics.width('0');
-#endif
-	rowFontAscend_ = metrics.ascent();
-	rowFontLeading_ = metrics.descent() / 2;
-	rowFontHeight_ = rowFontAscend_ + rowFontLeading_;
 
-	/* Width & height */
-	widthSpace_ = rowFontWidth_ / 4;
-	trackWidth_ = rowFontWidth_ * 3 + widthSpace_ * 2;
-	rowNumWidth_ = rowFontWidth_ * 2 + widthSpace_;
-	headerHeight_ = rowFontHeight_;
-
-	initDisplay();
+	updateSizes();
 
 	setAttribute(Qt::WA_Hover);
+	setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
 void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
@@ -116,6 +102,58 @@ void OrderListPanel::freeze()
 void OrderListPanel::unfreeze()
 {
 	freezed_ = false;
+}
+
+QString OrderListPanel::getHeaderFont() const
+{
+	return QFontInfo(headerFont_).family();
+}
+
+int OrderListPanel::getHeaderFontSize() const
+{
+	return QFontInfo(headerFont_).pointSize();
+}
+
+QString OrderListPanel::getRowsFont() const
+{
+	return QFontInfo(rowFont_).family();
+}
+int OrderListPanel::getRowsFontSize() const
+{
+	return QFontInfo(rowFont_).pointSize();
+}
+
+void OrderListPanel::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+{
+	headerFont_ = QFont(headerFont, headerSize);
+	rowFont_ = QFont(rowsFont, rowsSize);
+
+	updateSizes();
+
+	headerChanged_ = true;
+	rowsChanged_ = true;
+	repaint();
+}
+
+void OrderListPanel::updateSizes()
+{
+	QFontMetrics metrics(rowFont_);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+	rowFontWidth_ = metrics.horizontalAdvance('0');
+#else
+	rowFontWidth_ = metrics.width('0');
+#endif
+	rowFontAscend_ = metrics.ascent();
+	rowFontLeading_ = metrics.descent() / 2;
+	rowFontHeight_ = rowFontAscend_ + rowFontLeading_;
+
+	/* Width & height */
+	widthSpace_ = rowFontWidth_ / 4;
+	trackWidth_ = rowFontWidth_ * 3 + widthSpace_ * 2;
+	rowNumWidth_ = rowFontWidth_ * 2 + widthSpace_;
+	headerHeight_ = rowFontHeight_;
+
+	initDisplay();
 }
 
 void OrderListPanel::initDisplay()

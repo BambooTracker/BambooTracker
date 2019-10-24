@@ -185,6 +185,28 @@ public:
 	void setFMEnvelopeTexts(std::vector<FMEnvelopeText> texts);
 	std::vector<FMEnvelopeText> getFMEnvelopeTexts() const;
 
+	// Appearance //
+public:
+	void setPatternEditorHeaderFont(std::string font);
+	std::string getPatternEditorHeaderFont() const;
+	void setPatternEditorHeaderFontSize(int size);
+	int getPatternEditorHeaderFontSize() const;
+	void setPatternEditorRowsFont(std::string font);
+	std::string getPatternEditorRowsFont() const;
+	void setPatternEditorRowsFontSize(int size);
+	int getPatternEditorRowsFontSize() const;
+	void setOrderListHeaderFont(std::string font);
+	std::string getOrderListHeaderFont() const;
+	void setOrderListHeaderFontSize(int size);
+	int getOrderListHeaderFontSize() const;
+	void setOrderListRowsFont(std::string font);
+	std::string getOrderListRowsFont() const;
+	void setOrderListRowsFontSize(int size);
+	int getOrderListRowsFontSize() const;
+private:
+	std::string ptnHdFont_, ptnRowFont_, odrHdFont_, odrRowFont_;
+	int ptnHdFontSize_, ptnRowFontSize_, odrHdFontSize_, odrRowFontSize_;
+
 private:
 	std::vector<FMEnvelopeText> fmEnvelopeTexts_;
 };

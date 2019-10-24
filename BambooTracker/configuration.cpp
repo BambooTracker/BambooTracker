@@ -580,11 +580,21 @@ Configuration::Configuration()
 	};
 	mappingCustom = {};
 	mappingLayouts = {
-		{Custom, mappingCustom},
-		{QWERTY, mappingQWERTY},
-		{QWERTZ, mappingQWERTZ},
-		{AZERTY, mappingAZERTY}
+		{ Custom, mappingCustom },
+		{ QWERTY, mappingQWERTY },
+		{ QWERTZ, mappingQWERTZ },
+		{ AZERTY, mappingAZERTY }
 	};
+
+	// Appearance
+	ptnHdFont_ = u8"";
+	ptnHdFontSize_ = 10;
+	ptnRowFont_ = u8"";
+	ptnRowFontSize_ = 10;
+	odrHdFont_ = u8"";
+	odrHdFontSize_ = 10;
+	odrRowFont_ = u8"";
+	odrRowFontSize_ = 10;
 }
 
 // Internal //
@@ -1055,3 +1065,83 @@ std::vector<FMEnvelopeText> Configuration::getFMEnvelopeTexts() const
 	return fmEnvelopeTexts_;
 }
 
+// Appearrance
+void Configuration::setPatternEditorHeaderFont(std::string font)
+{
+	ptnHdFont_ = font;
+}
+
+std::string Configuration::getPatternEditorHeaderFont() const
+{
+	return ptnHdFont_;
+}
+
+void Configuration::setPatternEditorHeaderFontSize(int size)
+{
+	ptnHdFontSize_ = size;
+}
+
+int Configuration::getPatternEditorHeaderFontSize() const
+{
+	return ptnHdFontSize_;
+}
+
+void Configuration::setPatternEditorRowsFont(std::string font)
+{
+	ptnRowFont_ = font;
+}
+
+std::string Configuration::getPatternEditorRowsFont() const
+{
+	return ptnRowFont_;
+}
+
+void Configuration::setPatternEditorRowsFontSize(int size)
+{
+	ptnRowFontSize_ = size;
+}
+
+int Configuration::getPatternEditorRowsFontSize() const
+{
+	return ptnRowFontSize_;
+}
+
+void Configuration::setOrderListHeaderFont(std::string font)
+{
+	odrHdFont_ = font;
+}
+
+std::string Configuration::getOrderListHeaderFont() const
+{
+	return odrHdFont_;
+}
+
+void Configuration::setOrderListHeaderFontSize(int size)
+{
+	odrHdFontSize_ = size;
+}
+
+int Configuration::getOrderListHeaderFontSize() const
+{
+	return odrHdFontSize_;
+}
+
+void Configuration::setOrderListRowsFont(std::string font)
+{
+	odrRowFont_ = font;
+}
+
+std::string Configuration::getOrderListRowsFont() const
+{
+	return odrRowFont_;
+}
+
+void Configuration::setOrderListRowsFontSize(int size)
+{
+	odrRowFontSize_ = size;
+}
+
+int Configuration::getOrderListRowsFontSize() const
+{
+	return odrRowFontSize_;
+}

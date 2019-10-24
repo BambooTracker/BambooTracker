@@ -108,6 +108,31 @@ void PatternEditor::unfreeze()
 	ui->panel->unfreeze();
 }
 
+QString PatternEditor::getHeaderFont() const
+{
+	return ui->panel->getHeaderFont();
+}
+
+int PatternEditor::getHeaderFontSize() const
+{
+	return ui->panel->getHeaderFontSize();
+}
+
+QString PatternEditor::getRowsFont() const
+{
+	return ui->panel->getRowsFont();
+}
+
+int PatternEditor::getRowsFontSize() const
+{
+	return ui->panel->getRowsFontSize();
+}
+
+void PatternEditor::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+{
+	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
+}
+
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)

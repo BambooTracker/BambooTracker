@@ -51,6 +51,12 @@ public:
 	void freeze();
 	void unfreeze();
 
+	QString getHeaderFont() const;
+	int getHeaderFontSize() const;
+	QString getRowsFont() const;
+	int getRowsFontSize() const;
+	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
+
 public slots:
 	void setCurrentTrackForSlider(int num);
 	void setCurrentOrderForSlider(int num);
@@ -142,6 +148,7 @@ private:
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard
 	std::atomic_int repaintingCnt_;
 
+	void updateSizes();
 	void initDisplay();
 
 	void drawList(const QRect& rect);

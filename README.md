@@ -175,7 +175,7 @@ It can also be specified with `0Oxx` effect.
 | Alt+F10     | Solo track                         |
 | Alt+S       | Replace instrument                 |
 | Alt+L       | Expand effect column               |
-| Alt+K       | SHrink effect column               |
+| Alt+K       | Shrink effect column               |
 | Tab         | Jump to right track                |
 | BackTab     | Jump to left track                 |
 | Home        | Jump to first step                 |

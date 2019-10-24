@@ -56,6 +56,12 @@ public:
 	void freeze();
 	void unfreeze();
 
+	QString getHeaderFont() const;
+	int getHeaderFontSize() const;
+	QString getRowsFont() const;
+	int getRowsFontSize() const;
+	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
+
 public slots:
 	void setCurrentCellInRow(int num);
 	void setCurrentStep(int num);
@@ -188,6 +194,7 @@ private:
 	// Meta methods
 	int midiKeyEventMethod_;
 
+	void updateSizes();
 	void initDisplay();
 	void drawPattern(const QRect& rect);
 	void drawRows(int maxWidth);

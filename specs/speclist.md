@@ -45,7 +45,7 @@ Version table between tracker, module specification and instrument specification
       <td>0.2.4</td>
     </tr>
     <tr>
-      <td>0.2.5</td><td>1.3.0</td>
+      <td>0.3.0</td><td>1.3.0</td>
     </tr>
   </tbody>
 </table>

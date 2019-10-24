@@ -104,6 +104,31 @@ void OrderListEditor::unfreeze()
 	ui->panel->unfreeze();
 }
 
+QString OrderListEditor::getHeaderFont() const
+{
+	return ui->panel->getHeaderFont();
+}
+
+int OrderListEditor::getHeaderFontSize() const
+{
+	return ui->panel->getHeaderFontSize();
+}
+
+QString OrderListEditor::getRowsFont() const
+{
+	return ui->panel->getRowsFont();
+}
+
+int OrderListEditor::getRowsFontSize() const
+{
+	return ui->panel->getRowsFontSize();
+}
+
+void OrderListEditor::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+{
+	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
+}
+
 bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)

@@ -36,6 +36,12 @@ public:
 	void freeze();
 	void unfreeze();
 
+	QString getHeaderFont() const;
+	int getHeaderFontSize() const;
+	QString getRowsFont() const;
+	int getRowsFontSize() const;
+	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
+
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num);

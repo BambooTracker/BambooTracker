@@ -112,6 +112,7 @@ private:
 	// Configuration change
 	void changeConfiguration();
 	void setMidiConfiguration();
+	void updateFonts();
 
 	// History change
 	void changeFileHistory(QString file);

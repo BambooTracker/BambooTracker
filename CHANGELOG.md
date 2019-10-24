@@ -16,6 +16,7 @@
 - [#72] - Add module mixer settings (thanks [@ImATrackMan])
 - Add sample rate selection in wav export
 - Add shortcuts of expanding/shrinking effect column
+- [#145] - Add configuration of font family and size of the pattern editor and the order list (thanks [@jimbo1qaz])
 
 ### Changed
 - [#152] - Use RtAudio for sound processing ([#96]; thanks [@jpcima], [@OPNA2608] and others)
@@ -49,6 +50,7 @@
 [#72]: https://github.com/rerrahkr/BambooTracker/issues/72
 [#158]: https://github.com/rerrahkr/BambooTracker/issues/158
 [#159]: https://github.com/rerrahkr/BambooTracker/issues/159
+[#145]: https://github.com/rerrahkr/BambooTracker/issues/145
 
 [@ValleyBell]: https://github.com/ValleyBell
 

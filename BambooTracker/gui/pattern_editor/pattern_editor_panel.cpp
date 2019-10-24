@@ -6,6 +6,7 @@
 #include <thread>
 #include <QPainter>
 #include <QFontMetrics>
+#include <QFontInfo>
 #include <QPoint>
 #include <QApplication>
 #include <QClipboard>
@@ -57,13 +58,32 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  repaintable_(true),
 	  repaintingCnt_(0)
 {	
-	/* Font */
+	// Initialize font
 	headerFont_ = QApplication::font();
 	headerFont_.setPointSize(10);
 	stepFont_ = QFont("Monospace", 10);
 	stepFont_.setStyleHint(QFont::TypeWriter);
 	stepFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
-	// Check font size
+
+	updateSizes();
+
+	rightEffn_ = std::vector<int>(15);
+
+	setAttribute(Qt::WA_Hover);
+	setContextMenuPolicy(Qt::CustomContextMenu);
+
+	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
+	Q_ASSERT(midiKeyEventMethod_ != -1);
+	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
+}
+
+PatternEditorPanel::~PatternEditorPanel()
+{
+	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
+}
+
+void PatternEditorPanel::updateSizes()
+{
 	QFontMetrics metrics(stepFont_);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
 	stepFontWidth_ = metrics.horizontalAdvance('0');
@@ -97,21 +117,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	hdPlusY_ = headerHeight_ / 4 + m.height() / 2 - m.leading() / 2 - m.descent();
 	hdMinusY_ = headerHeight_ / 2 + hdPlusY_;
 
-	rightEffn_ = std::vector<int>(15);
-
 	initDisplay();
-
-	setAttribute(Qt::WA_Hover);
-	setContextMenuPolicy(Qt::CustomContextMenu);
-
-	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
-	Q_ASSERT(midiKeyEventMethod_ != -1);
-	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
-}
-
-PatternEditorPanel::~PatternEditorPanel()
-{
-	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
 }
 
 void PatternEditorPanel::initDisplay()
@@ -169,6 +175,38 @@ void PatternEditorPanel::freeze()
 void PatternEditorPanel::unfreeze()
 {
 	freezed_ = false;
+}
+
+QString PatternEditorPanel::getHeaderFont() const
+{
+	return QFontInfo(headerFont_).family();
+}
+
+int PatternEditorPanel::getHeaderFontSize() const
+{
+	return QFontInfo(headerFont_).pointSize();
+}
+
+QString PatternEditorPanel::getRowsFont() const
+{
+	return QFontInfo(stepFont_).family();
+}
+
+int PatternEditorPanel::getRowsFontSize() const
+{
+	return QFontInfo(stepFont_).pointSize();
+}
+
+void PatternEditorPanel::setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize)
+{
+	headerFont_ = QFont(headerFont, headerSize);
+	stepFont_ = QFont(rowsFont, rowsSize);
+
+	updateSizes();
+
+	headerChanged_ = true;
+	patternChanged_ = true;
+	repaint();
 }
 
 int PatternEditorPanel::getCurrentTrack() const

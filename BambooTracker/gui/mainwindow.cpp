@@ -79,7 +79,19 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
 	ui->waveVisual->setVisible(config_.lock()->getShowWaveVisual());
 	bt_->setFollowPlay(config.lock()->getFollowMode());
-
+	if (config.lock()->getPatternEditorHeaderFont().empty()) {
+		config.lock()->setPatternEditorHeaderFont(ui->patternEditor->getHeaderFont().toStdString());
+	}
+	if (config.lock()->getPatternEditorRowsFont().empty()) {
+		config.lock()->setPatternEditorRowsFont(ui->patternEditor->getRowsFont().toStdString());
+	}
+	if (config.lock()->getOrderListHeaderFont().empty()) {
+		config.lock()->setOrderListHeaderFont(ui->orderList->getHeaderFont().toStdString());
+	}
+	if (config.lock()->getOrderListRowsFont().empty()) {
+		config.lock()->setOrderListRowsFont(ui->orderList->getRowsFont().toStdString());
+	}
+	updateFonts();
 	setMidiConfiguration();
 
 	/* Command stack */
@@ -1290,6 +1302,7 @@ void MainWindow::changeConfiguration()
 	}
 
 	setMidiConfiguration();
+	updateFonts();
 	instForms_->updateByConfiguration();
 
 	bt_->changeConfiguration(config_);
@@ -1308,6 +1321,24 @@ void MainWindow::setMidiConfiguration()
 		midiIntf.openInputPortByName(midiInPortName);
 	else if (midiIntf.supportsVirtualPort())
 		midiIntf.openInputPort(~0u);
+}
+
+void MainWindow::updateFonts()
+{
+	ui->patternEditor->setFonts(
+				QString::fromUtf8(config_.lock()->getPatternEditorHeaderFont().c_str(),
+								  static_cast<int>(config_.lock()->getPatternEditorHeaderFont().length())),
+				config_.lock()->getPatternEditorHeaderFontSize(),
+				QString::fromUtf8(config_.lock()->getPatternEditorRowsFont().c_str(),
+								  static_cast<int>(config_.lock()->getPatternEditorRowsFont().length())),
+				config_.lock()->getPatternEditorRowsFontSize());
+	ui->orderList->setFonts(
+				QString::fromUtf8(config_.lock()->getOrderListHeaderFont().c_str(),
+								  static_cast<int>(config_.lock()->getOrderListHeaderFont().length())),
+				config_.lock()->getOrderListHeaderFontSize(),
+				QString::fromUtf8(config_.lock()->getOrderListRowsFont().c_str(),
+								  static_cast<int>(config_.lock()->getOrderListRowsFont().length())),
+				config_.lock()->getOrderListRowsFontSize());
 }
 
 /********** History change **********/
