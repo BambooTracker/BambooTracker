@@ -12,12 +12,16 @@
 [English](./README.md)
 
 ## ダウンロード
-Windows:
+**Windows**:
 
 - <https://github.com/rerrahkr/BambooTracker/releases>
-- **開発版**: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
+- *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
 
-Linux:
+**macOS**:
+
+- <https://github.com/rerrahkr/BambooTracker/releases>
+
+**Linux**:
 
 - "Linuxでのビルド方法" - "DebianまたはUbuntuでのパッケージのインストール"の章を参照してください。
 
@@ -114,6 +118,11 @@ SSGエディタでは、
 0Oxxエフェクトで指定することもできます。
 
 ## ショートカット
+macosでは一部のキーを以下のものに置き換えてください。
+
+- Ctrl → Command
+- Alt → Option
+
 ### 全般
 | キー   | コマンド                                   |
 | ------ | ------------------------------------------ |

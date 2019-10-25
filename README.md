@@ -12,12 +12,16 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 [日本語](./README_ja.md)
 
 ## Downloads
-On Windows:
+**On Windows**:
 
 - <https://github.com/rerrahkr/BambooTracker/releases>
-- **Development builds**: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
+- *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
-On Linux:
+**On macOS**:
+
+- <https://github.com/rerrahkr/BambooTracker/releases>
+
+**On Linux**:
 
 - See below chapters "Build on Linux" - "Install package on Debian or Ubuntu".
 
@@ -114,6 +118,11 @@ Specify the groove number set in the Groove Editor. When using groove, all other
 It can also be specified with `0Oxx` effect.
 
 ## Key commands
+Please replace some keys with the following in macos:
+
+- Ctrl → Command
+- Alt → Option
+
 ### General
 | Key    | Command                        |
 | ------ | ------------------------------ |
