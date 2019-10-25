@@ -214,6 +214,8 @@ Current octave
 Z X CV B N M, .
 ```
 
+The keyboard layout can be changed in the configuration.
+
 ## Volume range
 |      | Minimum | Maximum |
 | ---- | ------- | ------- |
