@@ -213,6 +213,12 @@ private:
 	PatternPosition calculatePositionFrom(int order, int step, int by) const;
 	QPoint calculateCurrentCursorPosition() const;
 
+	inline void updateTracksWidthFromLeftToEnd()
+	{
+		TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
+					leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	}
+
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
 

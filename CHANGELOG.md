@@ -16,7 +16,7 @@
 - [#72] - Add module mixer settings (thanks [@ImATrackMan])
 - Add sample rate selection in wav export
 - Add shortcuts of expanding/shrinking effect column
-- [#145] - Add configuration of font family and size of the pattern editor and the order list (thanks [@jimbo1qaz])
+- [#145] - Add configuration of font family and size of the pattern editor and the order list (thanks [@jimbo1qaz], [@papiezak])
 
 ### Changed
 - [#152] - Use RtAudio for sound processing ([#96]; thanks [@jpcima], [@OPNA2608] and others)

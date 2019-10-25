@@ -203,6 +203,7 @@ void PatternEditorPanel::setFonts(QString headerFont, int headerSize, QString ro
 	stepFont_ = QFont(rowsFont, rowsSize);
 
 	updateSizes();
+	updateTracksWidthFromLeftToEnd();
 
 	headerChanged_ = true;
 	patternChanged_ = true;
@@ -930,8 +931,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 		if (curPos_.track < leftTrackNum_) leftTrackNum_ = curPos_.track;
 	}
 
-	TracksWidthFromLeftToEnd_
-			= calculateTracksWidthWithRowNum(leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	updateTracksWidthFromLeftToEnd();
 	entryCnt_ = 0;
 
 	if (curPos_.track != oldTrackNum)
@@ -1908,6 +1908,7 @@ void PatternEditorPanel::setEditableStep(int n)
 
 void PatternEditorPanel::onSongLoaded()
 {
+	// Initialize cursor position
 	curSongNum_ = bt_->getCurrentSongNumber();
 	curPos_ = {
 		bt_->getCurrentTrackAttribute().number,
@@ -1921,11 +1922,11 @@ void PatternEditorPanel::onSongLoaded()
 	case SongType::STD:		trackCnt = 15;	break;
 	case SongType::FMEX:	trackCnt = 18;	break;
 	}
-	rightEffn_ = std::vector<int>(18);
+	rightEffn_ = std::vector<int>(static_cast<size_t>(trackCnt));
 	for (int i = 0; i < trackCnt; ++i)
 		rightEffn_[static_cast<size_t>(i)] = static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, i));
-	TracksWidthFromLeftToEnd_
-			= calculateTracksWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	leftTrackNum_ = 0;
+	updateTracksWidthFromLeftToEnd();
 
 	hovPos_ = { -1, -1, -1, -1 };
 	mousePressPos_ = { -1, -1, -1, -1 };
@@ -2219,8 +2220,7 @@ void PatternEditorPanel::onExpandEffectColumnPressed(int trackNum)
 	size_t tn = static_cast<size_t>(trackNum);
 	if (rightEffn_.at(tn) == 3) return;
 	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(++rightEffn_[tn]));
-	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
-									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	updateTracksWidthFromLeftToEnd();
 
 	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
 
@@ -2232,8 +2232,7 @@ void PatternEditorPanel::onShrinkEffectColumnPressed(int trackNum)
 	size_t tn = static_cast<size_t>(trackNum);
 	if (rightEffn_.at(tn) == 0) return;
 	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(--rightEffn_[tn]));
-	TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
-									leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	updateTracksWidthFromLeftToEnd();
 
 	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
 
