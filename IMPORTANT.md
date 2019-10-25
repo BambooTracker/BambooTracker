@@ -2,7 +2,7 @@
 The following changes affect module playback critically.
 In some cases, you need to modify modules.
 
-- Before BambooTracker v0.2.5, square-masked saw and square-masked inversed saw were not actually square-masked.
+- Before BambooTracker v0.3.0, square-masked saw and square-masked inversed saw were not actually square-masked.
 - In BambooTracker v0.2.1, the start position of effect sequence when declaring sequence type effect after key on was changed from 2nd to 1st.
 - In BambooTracker v0.2.1, execution routine of pattern effects is revised. Some effects (especially delay effects) may behave differently than before.
 - Since BambooTracker v0.2.0, a bug is fixed that increases tone by octave when changing from SMTri (previous: Tri w) to Saw in SSG waveform sequence.

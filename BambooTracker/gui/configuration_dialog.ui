@@ -33,8 +33,21 @@
       <attribute name="title">
        <string>General</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="1" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0" rowspan="2">
         <widget class="QGroupBox" name="generalSettingsGroupBox">
          <property name="title">
           <string>General settings</string>
@@ -164,7 +177,7 @@
          </layout>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <widget class="QGroupBox" name="editSettingsGroupBox">
          <property name="title">
           <string>Edit settings</string>
@@ -192,19 +205,6 @@
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>

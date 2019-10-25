@@ -1,7 +1,10 @@
 # Changelog
 
 ## Unreleased
+
+## v0.3.0 (2019-10-25)
 ### Added
+- [#96] - macOS support (thanks [@OPNA2608], [@jpcima] and others)
 - [#132] - 11 new pattern effects
   - `0Hxy`: SSG auto envelope ([#3]; thanks [@marysiamzawka])
   - `0Ixx`, `0Jxx`: SSG hardware envelope period
