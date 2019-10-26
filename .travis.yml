@@ -53,7 +53,7 @@ deploy:
   provider: releases
   api_key:
     secure: cZtUOLRT6zHXsmcyZvhQzZVEjG4vJ0j3FYYu+/HAgRdZ8Rf+8hpNuELMcabMlxd4/7AOkjGDo6gqIOt0VlwtqgWtzlJwvUbMXIgNyw2bjIETUsh6rrGBtZNm9r5my7Iv4xtFw9SBCOdyykKo/kVUpomdPwPm1VwhCjgKW9eNzKW49tcmG2BHZiL2ZBibxAqGJmSEG0RkYa6Ycxbx4qFSJ6hb40MiCrtAyyyFnzdpHEdBsgpbXO/wBeQDRYaf88lC+tuh2uz81m8wNkLBFU6fIA7XgKcChy2C1tMdsMhSILSx6Zgthfb3l/EsGcbwx8dj+uWJybPc3kWHly17bdS3hjNG8N/IpNHSetmk6tPXNxiGVFxFiCjEPJohMuSksx5MFrdJgUkOUhT9Vr2ZPXOoXTjhnXAasJAgGklMlcxni+H2hCSAzIokFMOGwxRObCmXjsD9U2TvujAblYf2VU2cimoxkERlZdAwt9QZkWJ6xSW2sD8DaxQ9hcJcovXIEC9QEfqSA0klkz1GQHgJ/lMvyZPYJPzq7KkbQiwIk3yYtvlpigoWgvOslCh9hgTgXVqvHF2rcOQTgYt1q6IRIu4NwSqqhBj2BcJdM+wfNsjoiJ2+0+O6Tdc9SPSnfi9b4+i6k32FeCcNICuE+eXU2GYCosviBAC6KpfSH6Fw467ygds=
-  file: $TRAVIS_BUILD_DIR/BambooTracker-$TRAVIS_TAG-mac.zip
+  file: $TRAVIS_BUILD_DIR/BambooTracker-$TRAVIS_TAG-macOS.zip
   skip_cleanup: true
   on:
     repo: rerrahkr/BambooTracker
