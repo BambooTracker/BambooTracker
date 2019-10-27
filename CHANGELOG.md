@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Added
+- Add selection whether auto-set current instrument upon entering note
 
 ## v0.3.0 (2019-10-25)
 ### Added

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>405</height>
+    <width>523</width>
+    <height>432</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -154,6 +154,14 @@
             <item>
              <property name="text">
               <string>Fill 00 to effect value</string>
+             </property>
+             <property name="checkState">
+              <enum>Checked</enum>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Autoset instrument</string>
              </property>
              <property name="checkState">
               <enum>Checked</enum>

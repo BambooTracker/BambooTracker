@@ -48,6 +48,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("showFMDetuneAsSigned",	configLocked->getShowFMDetuneAsSigned());
 		settings.setValue("showWaveVisual",			configLocked->getShowWaveVisual());
 		settings.setValue("fill00ToEffectValue",	configLocked->getFill00ToEffectValue());
+		settings.setValue("autosetInstrument",		configLocked->getAutosetInstrument());
 		settings.endGroup();
 
 		// Edit settings
@@ -213,6 +214,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setShowFMDetuneAsSigned(settings.value("showFMDetuneAsSigned", configLocked->getShowFMDetuneAsSigned()).toBool());
 		configLocked->setShowWaveVisual(settings.value("showWaveVisual", configLocked->getShowWaveVisual()).toBool());
 		configLocked->setFill00ToEffectValue(settings.value("fill00ToEffectValue", configLocked->getFill00ToEffectValue()).toBool());
+		configLocked->setAutosetInstrument(settings.value("autosetInstrument", configLocked->getAutosetInstrument()).toBool());
 		settings.endGroup();
 
 		// Edit settings

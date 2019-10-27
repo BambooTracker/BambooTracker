@@ -87,6 +87,8 @@ public:
 	bool getShowWaveVisual() const;
 	void setFill00ToEffectValue(bool enabled);
 	bool getFill00ToEffectValue() const;
+	void setAutosetInstrument(bool enabled);
+	bool getAutosetInstrument() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
@@ -96,6 +98,7 @@ private:
 	bool showFMDetuneSigned_;
 	bool showWaveVisual_;
 	bool fill00ToEffectValue_;
+	bool autosetInstrument_;
 
 	// Edit settings
 public:

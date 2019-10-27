@@ -1220,7 +1220,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 {
 	if (octave < 8) {
-		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note);
+		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note, config_.lock()->getAutosetInstrument());
 		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 	}

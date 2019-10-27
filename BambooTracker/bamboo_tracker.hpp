@@ -288,7 +288,7 @@ public:
 	bool canAddNewOrder(int songNum) const;
 	/*----- Pattern -----*/
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note);
+	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool autosetInst);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
 	void setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum);
 	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);

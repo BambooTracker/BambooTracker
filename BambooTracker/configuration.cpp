@@ -33,6 +33,7 @@ Configuration::Configuration()
 	showFMDetuneSigned_ = false;
 	showWaveVisual_ = true;
 	fill00ToEffectValue_ = true;
+	autosetInstrument_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -857,6 +858,16 @@ void Configuration::setFill00ToEffectValue(bool enabled)
 bool Configuration::getFill00ToEffectValue() const
 {
 	return fill00ToEffectValue_;
+}
+
+void Configuration::setAutosetInstrument(bool enabled)
+{
+	autosetInstrument_ = enabled;
+}
+
+bool Configuration::getAutosetInstrument() const
+{
+	return autosetInstrument_;
 }
 
 // Edit settings

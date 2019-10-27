@@ -1673,19 +1673,17 @@ int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, in
 			.getStep(stepNum).getNoteNumber();
 }
 
-void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note)
+void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool autosetInst)
 {
 	int nn = octaveAndNoteToNoteNumber(octave, note);
 
-	int in;
-	if (curInstNum_ != -1
+	int in = -1;
+	if (autosetInst && curInstNum_ != -1
 			&& (songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source
 				== instMan_->getInstrumentSharedPtr(curInstNum_)->getSoundSource()))
 		in = curInstNum_;
-	else
-		in = -1;
 
-	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, in));
+	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, autosetInst, in));
 }
 
 void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum)
