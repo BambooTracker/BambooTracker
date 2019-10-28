@@ -44,6 +44,8 @@ void OPNAController::initChip()
 {
 	opna_->setRegister(0x29, 0x80);		// Init interrupt / YM2608 mode
 
+	registerSetBuf_.clear();
+
 	initFM();
 	initSSG();
 	initDrum();
@@ -56,6 +58,41 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 	case SoundSource::FM:	tickEventFM(ch);	break;
 	case SoundSource::SSG:	tickEventSSG(ch);	break;
 	case SoundSource::Drum:	break;
+	}
+}
+
+/********** Direct register set **********/
+void OPNAController::sendRegisterAddress(int bank, int address)
+{
+	address = (bank << 8) | address;
+
+	if (registerSetBuf_.empty() || registerSetBuf_.back().hasCompleted)
+		registerSetBuf_.push_back({ address, 0, false });
+	else
+		registerSetBuf_.back().address = address;
+}
+
+void OPNAController::sendRegisterValue(int value)
+{
+	if (!registerSetBuf_.empty()) {
+		auto& unit = registerSetBuf_.back();
+		unit.value = value;
+		unit.hasCompleted = true;
+	}
+}
+
+/********** Update register states after tick process **********/
+void OPNAController::updateRegisterStates()
+{
+	updateKeyOnOffStatusDrum();
+
+	// Check direct register set
+	if (!registerSetBuf_.empty()) {
+		if (!registerSetBuf_.back().hasCompleted) registerSetBuf_.pop_back();
+		for (auto& unit : registerSetBuf_) {
+			opna_->setRegister(static_cast<uint32_t>(unit.address), static_cast<uint8_t>(unit.value));
+		}
+		registerSetBuf_.clear();
 	}
 }
 
@@ -3354,18 +3391,6 @@ void OPNAController::setKeyOffFlagDrum(int ch)
 	keyOffFlagDrum_ |= static_cast<uint8_t>(1 << ch);
 }
 
-void OPNAController::updateKeyOnOffStatusDrum()
-{
-	if (keyOnFlagDrum_) {
-		opna_->setRegister(0x10, keyOnFlagDrum_);
-		keyOnFlagDrum_ = 0;
-	}
-	if (keyOffFlagDrum_) {
-		opna_->setRegister(0x10, 0x80 | keyOffFlagDrum_);
-		keyOffFlagDrum_ = 0;
-	}
-}
-
 /********** Set volume **********/
 void OPNAController::setVolumeDrum(int ch, int volume)
 {
@@ -3428,5 +3453,17 @@ void OPNAController::initDrum()
 		// Init pan
 		panDrum_[ch] = 3;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), 0xdf);
+	}
+}
+
+void OPNAController::updateKeyOnOffStatusDrum()
+{
+	if (keyOnFlagDrum_) {
+		opna_->setRegister(0x10, keyOnFlagDrum_);
+		keyOnFlagDrum_ = 0;
+	}
+	if (keyOffFlagDrum_) {
+		opna_->setRegister(0x10, 0x80 | keyOffFlagDrum_);
+		keyOffFlagDrum_ = 0;
 	}
 }

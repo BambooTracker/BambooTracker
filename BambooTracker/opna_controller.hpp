@@ -11,6 +11,12 @@
 #include "chips/scci/scci.h"
 #include "misc.hpp"
 
+struct RegisterUnit
+{
+	int address, value;
+	bool hasCompleted;
+};
+
 struct ToneDetail
 {
 	int octave;
@@ -41,6 +47,13 @@ public:
 	// Forward instrument sequence
 	void tickEvent(SoundSource src, int ch);
 
+	// Direct register set
+	void sendRegisterAddress(int bank, int address);
+	void sendRegisterValue(int value);
+
+	// Update register states after tick process
+	void updateRegisterStates();
+
 	// Stream type
 	void useSCCI(SoundInterfaceManager* manager);
 	bool isUsedSCCI() const;
@@ -68,6 +81,8 @@ public:
 private:
 	std::unique_ptr<chip::OPNA> opna_;
 	SongType mode_;
+
+	std::vector<RegisterUnit> registerSetBuf_;
 
 	void initChip();
 
@@ -373,7 +388,6 @@ public:
 	// Key on-off
 	void setKeyOnFlagDrum(int ch);
 	void setKeyOffFlagDrum(int ch);
-	void updateKeyOnOffStatusDrum();
 
 	// Set volume
 	void setVolumeDrum(int ch, int volume);
@@ -396,4 +410,6 @@ private:
 	bool isMuteDrum_[6];
 
 	void initDrum();
+
+	void updateKeyOnOffStatusDrum();
 };

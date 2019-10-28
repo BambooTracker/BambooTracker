@@ -173,6 +173,15 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
+	else if (id == "0X") {
+		return EffectType::RegisterAddress0;
+	}
+	else if (id == "0Y") {
+		return EffectType::RegisterAddress1;
+	}
+	else if (id == "0Z") {
+		return EffectType::RegisterValue;
+	}
 	else if (id == "FB") {
 		switch (src) {
 		case SoundSource::FM:

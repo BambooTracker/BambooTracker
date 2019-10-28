@@ -3,6 +3,9 @@
 ## Unreleased
 ### Added
 - Add selection whether auto-set current instrument upon entering note
+- [#132] - 3 new pattern effects
+  - `0Xxx`, `0Yxx`: register address set
+  - `0Zxx`: register value set
 
 ## v0.3.0 (2019-10-25)
 ### Added

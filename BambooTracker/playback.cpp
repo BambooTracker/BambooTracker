@@ -290,7 +290,7 @@ void PlaybackManager::readStep()
 		case SoundSource::Drum:	isNextSet |= readDrumStep(step, attrib.channelInSource);	break;
 		}
 	}
-	opnaCtrl_->updateKeyOnOffStatusDrum();
+	opnaCtrl_->updateRegisterStates();
 
 	isFindNextStep_ = isNextSet;
 }
@@ -540,6 +540,9 @@ bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
 	case EffectType::ARControl:
 	case EffectType::DRControl:
 	case EffectType::RRControl:
+	case EffectType::RegisterAddress0:
+	case EffectType::RegisterAddress1:
+	case EffectType::RegisterValue:
 		keyOnBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -708,6 +711,21 @@ bool PlaybackManager::readFMEffectFromQueue(int ch)
 				if (0 < op && op < 5 && -1 < val && val < 16) opnaCtrl_->setRRControlFM(ch, op - 1, val);
 				break;
 			}
+			case EffectType::RegisterAddress0:
+			{
+				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.value);
+				break;
+			}
+			case EffectType::RegisterAddress1:
+			{
+				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.value);
+				break;
+			}
+			case EffectType::RegisterValue:
+			{
+				if (-1 < eff.value) opnaCtrl_->sendRegisterValue(eff.value);
+				break;
+			}
 			default:
 				break;
 			}
@@ -739,6 +757,9 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 	case EffectType::HardEnvHighPeriod:
 	case EffectType::HardEnvLowPeriod:
 	case EffectType::AutoEnvelope:
+	case EffectType::RegisterAddress0:
+	case EffectType::RegisterAddress1:
+	case EffectType::RegisterValue:
 		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -881,6 +902,21 @@ bool PlaybackManager::readSSGEffectFromQueue(int ch)
 			case EffectType::AutoEnvelope:
 				opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.value >> 4) - 8, eff.value & 0x0f);
 				break;
+			case EffectType::RegisterAddress0:
+			{
+				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.value);
+				break;
+			}
+			case EffectType::RegisterAddress1:
+			{
+				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.value);
+				break;
+			}
+			case EffectType::RegisterValue:
+			{
+				if (-1 < eff.value) opnaCtrl_->sendRegisterValue(eff.value);
+				break;
+			}
 			default:
 				break;
 			}
@@ -898,6 +934,9 @@ bool PlaybackManager::setEffectToQueueDrum(int ch, Effect eff)
 	case EffectType::NoteCut:
 	case EffectType::MasterVolume:
 	case EffectType::VolumeDelay:
+	case EffectType::RegisterAddress0:
+	case EffectType::RegisterAddress1:
+	case EffectType::RegisterValue:
 		keyOnBasedEffsDrum_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
 		break;
 	case EffectType::SpeedTempoChange:
@@ -990,6 +1029,21 @@ bool PlaybackManager::readDrumEffectFromQueue(int ch)
 					volDlyCntDrum_.at(uch) = count;
 					volDlyValueDrum_.at(uch) = eff.value & 0x00ff;
 				}
+				break;
+			}
+			case EffectType::RegisterAddress0:
+			{
+				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.value);
+				break;
+			}
+			case EffectType::RegisterAddress1:
+			{
+				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.value);
+				break;
+			}
+			case EffectType::RegisterValue:
+			{
+				if (-1 < eff.value) opnaCtrl_->sendRegisterValue(eff.value);
 				break;
 			}
 			default:
@@ -1086,7 +1140,7 @@ void PlaybackManager::readTick(int rest)
 			opnaCtrl_->tickEvent(attrib.source, ch);
 		}
 	}
-	opnaCtrl_->updateKeyOnOffStatusDrum();
+	opnaCtrl_->updateRegisterStates();
 }
 
 void PlaybackManager::checkFMDelayEventsInTick(Step& step, int ch)
