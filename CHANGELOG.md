@@ -7,6 +7,9 @@
   - `0Xxx`, `0Yxx`: register address set
   - `0Zxx`: register value set
 
+### Changed
+- Change width of items in status bar
+
 ## v0.3.0 (2019-10-25)
 ### Added
 - [#96] - macOS support (thanks [@OPNA2608], [@jpcima] and others)

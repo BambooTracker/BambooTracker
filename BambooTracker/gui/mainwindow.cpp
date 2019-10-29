@@ -372,13 +372,21 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	/* Status bar */
 	statusDetail_ = new QLabel();
+	statusDetail_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 	statusStyle_ = new QLabel();
+	statusStyle_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	statusInst_ = new QLabel();
+	statusInst_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	statusOctave_ = new QLabel();
+	statusOctave_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	statusIntr_ = new QLabel();
+	statusIntr_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	statusMixer_ = new QLabel();
+	statusMixer_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	statusBpm_ = new QLabel();
+	statusBpm_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	statusPlayPos_ = new QLabel();
+	statusPlayPos_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	ui->statusBar->addWidget(statusDetail_, 4);
 	ui->statusBar->addPermanentWidget(statusStyle_, 1);
 	ui->statusBar->addPermanentWidget(statusInst_, 1);
