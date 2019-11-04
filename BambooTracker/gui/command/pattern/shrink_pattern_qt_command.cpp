@@ -9,12 +9,12 @@ ShrinkPatternQtCommand::ShrinkPatternQtCommand(PatternEditorPanel* panel, QUndoC
 
 void ShrinkPatternQtCommand::redo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged(true);
 }
 
 void ShrinkPatternQtCommand::undo()
 {
-	panel_->update();
+	panel_->redrawByPatternChanged(true);
 }
 
 int ShrinkPatternQtCommand::id() const

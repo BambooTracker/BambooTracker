@@ -9,12 +9,12 @@ EraseEffectInStepQtCommand::EraseEffectInStepQtCommand(PatternEditorPanel* panel
 
 void EraseEffectInStepQtCommand::redo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 void EraseEffectInStepQtCommand::undo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 int EraseEffectInStepQtCommand::id() const

@@ -9,12 +9,12 @@ ReversePatternQtCommand::ReversePatternQtCommand(PatternEditorPanel* panel, QUnd
 
 void ReversePatternQtCommand::redo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 void ReversePatternQtCommand::undo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 int ReversePatternQtCommand::id() const

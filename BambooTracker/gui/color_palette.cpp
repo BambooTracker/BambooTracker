@@ -75,7 +75,7 @@ ColorPalette::ColorPalette()
 	ptnErrorColor = QColor::fromRgb(255, 0, 0, 255);
 	ptnHeaderTextColor = QColor::fromRgb(240, 240, 200, 255);
 	ptnHeaderRowColor = QColor::fromRgb(60, 60, 60, 255);
-	ptnMaskColor = QColor::fromRgb(0, 0, 0, 128);
+	ptnMaskColor = QColor::fromRgb(0, 0, 0, 127);
 	ptnBorderColor = QColor::fromRgb(120, 120, 120, 255);
 	ptnMuteColor = QColor::fromRgb(255, 0, 0, 255);
 	ptnUnmuteColor = QColor::fromRgb(0, 255, 0, 255);

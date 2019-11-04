@@ -45,11 +45,11 @@ public:
 
 	int getCurrentTrack() const;
 
-	void redrawByPatternChanged();
-	void redrawByCursorChanged();
-	void redrawByPositionChanged();
-	void redrawByHeaderChanged();
-	void redrawBySizeChanged();
+	void redrawByPatternChanged(bool patternSizeChanged = false);
+	void redrawByFocusChanged();
+	void redrawByHoverChanged();
+	void redrawByMaskChanged();
+	void redrawAll();
 
 	void resetEntryCount();
 
@@ -133,7 +133,7 @@ private slots:
 	void midiKeyEvent(uchar status, uchar key, uchar velocity);
 
 private:
-	std::unique_ptr<QPixmap> completePixmap_, stepBackPixmap_, stepForePixmap_, headerPixmap_;
+	std::unique_ptr<QPixmap> completePixmap_, backPixmap_, textPixmap_, forePixmap_, headerPixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::weak_ptr<Configuration> config_;
@@ -148,7 +148,7 @@ private:
 	int toneNameWidth_, instWidth_;
 	int volWidth_;
 	int effWidth_, effIDWidth_, effValWidth_;
-	int TracksWidthFromLeftToEnd_;
+	int tracksWidthFromLeftToEnd_;
 	int hdMuteToggleWidth_, hdEffCompandButtonWidth_;
 	int headerHeight_;
 	int hdPlusY_, hdMinusY_;
@@ -184,7 +184,8 @@ private:
 	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
 	PatternPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
 
-	bool patternChanged_, cursorChanged_, posChanged_, headerChanged_, sizeChanged_, stepChanged_;
+	bool backChanged_, textChanged_, foreChanged_, headerChanged_, focusChanged_, stepChanged_;
+	bool hasFocussedBefore_;
 	int stepUpdateRequestCnt_;
 
 	bool freezed_;
@@ -201,7 +202,7 @@ private:
 	void quickDrawRows(int maxWidth);
 	/// Return:
 	///		track width
-	int drawStep(QPainter& forePainter, QPainter& backPainter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY, bool changeFore);
+	int drawStep(QPainter& forePainter, QPainter& textPainter, QPainter& backPainter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY);
 	void drawHeaders(int maxWidth);
 	void drawBorders(int maxWidth);
 	void drawShadow();
@@ -215,7 +216,7 @@ private:
 
 	inline void updateTracksWidthFromLeftToEnd()
 	{
-		TracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
+		tracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
 					leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 	}
 

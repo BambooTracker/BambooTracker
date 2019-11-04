@@ -9,12 +9,12 @@ ExpandPatternQtCommand::ExpandPatternQtCommand(PatternEditorPanel* panel, QUndoC
 
 void ExpandPatternQtCommand::redo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 void ExpandPatternQtCommand::undo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 int ExpandPatternQtCommand::id() const

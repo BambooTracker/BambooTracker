@@ -9,12 +9,12 @@ DeletePreviousStepQtCommand::DeletePreviousStepQtCommand(PatternEditorPanel* pan
 
 void DeletePreviousStepQtCommand::redo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 void DeletePreviousStepQtCommand::undo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 int DeletePreviousStepQtCommand::id() const

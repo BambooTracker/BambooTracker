@@ -9,12 +9,12 @@ PasteCopiedDataToPatternQtCommand::PasteCopiedDataToPatternQtCommand(PatternEdit
 
 void PasteCopiedDataToPatternQtCommand::redo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 void PasteCopiedDataToPatternQtCommand::undo()
 {
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 int PasteCopiedDataToPatternQtCommand::id() const

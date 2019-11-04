@@ -9,6 +9,7 @@
 
 ### Changed
 - Change width of items in status bar
+- Reduce pattern drawing cost in playback
 
 ## v0.3.0 (2019-10-25)
 ### Added
