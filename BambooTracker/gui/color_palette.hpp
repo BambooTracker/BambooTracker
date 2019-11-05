@@ -28,6 +28,11 @@ public:
 	QColor instSeqBorderColor;
 	QColor instSeqMaskColor;
 
+	// Tone/Noise editor
+	QColor tnToneCellColor, tnToneTextColor;
+	QColor tnNoiseCellColor, tnNoiseTextColor;
+	QColor tnToneBackColor, tnNoiseBackColor;
+
 	// Order list
 	QColor odrDefTextColor, odrDefRowColor;
 	QColor odrCurTextColor, odrCurRowColor;

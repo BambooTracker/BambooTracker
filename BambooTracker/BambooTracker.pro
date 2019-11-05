@@ -43,6 +43,7 @@ CONFIG += c++14
 SOURCES += \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
+    gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
     main.cpp \
     gui/mainwindow.cpp \
@@ -204,6 +205,7 @@ HEADERS += \
     command/command_id.hpp \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \
+    gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
     chips/mame/2608intf.h \

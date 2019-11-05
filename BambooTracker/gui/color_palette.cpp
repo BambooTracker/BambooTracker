@@ -36,6 +36,14 @@ ColorPalette::ColorPalette()
 	instSeqBorderColor = QColor::fromRgb(50, 50, 50, 255);
 	instSeqMaskColor = QColor::fromRgb(0, 0, 0, 128);
 
+	// Tone/Noise editor
+	tnToneCellColor = QColor::fromRgb(225, 209, 47, 255);
+	tnToneTextColor = QColor::fromRgb(255, 255, 126, 255);
+	tnNoiseCellColor = QColor::fromRgb(210, 40, 180, 255);
+	tnNoiseTextColor = QColor::fromRgb(240, 110, 220, 255);
+	tnToneBackColor = QColor::fromRgb(0, 0, 0, 255);
+	tnNoiseBackColor = QColor::fromRgb(25, 25, 25, 255);
+
 	// Order list
 	odrDefTextColor = QColor::fromRgb(180, 180, 180, 255);
 	odrDefRowColor = QColor::fromRgb(40, 40, 80, 255);

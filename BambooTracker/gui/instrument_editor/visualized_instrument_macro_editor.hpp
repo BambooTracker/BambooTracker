@@ -90,18 +90,7 @@ protected:
 	void leaveEventInView();
 	void wheelEventInView(QWheelEvent* event);
 
-private slots:
-	void on_colIncrToolButton_clicked();
-	void on_colDecrToolButton_clicked();
-	void on_verticalScrollBar_valueChanged(int value);
-	void on_lineEdit_editingFinished();
-	void onLoopChanged();
-
-private:
-	Ui::VisualizedInstrumentMacroEditor *ui;
-
 	std::unique_ptr<QPixmap> pixmap_;
-
 	std::shared_ptr<ColorPalette> palette_;
 
 	QFont font_;
@@ -116,7 +105,44 @@ private:
 	int upperRow_, defaultRow_;
 
 	int hovRow_, hovCol_;
+
+	virtual void drawField();
+
+	struct Column
+	{
+		int row, data;
+		QString text;
+	};
+
+	std::vector<QString> labels_;
+	std::vector<Column> cols_;
+
+	bool isLabelOmitted_;
+
+	virtual int detectRowNumberForMouseEvent(int col, int internalRow) const;
+
+	virtual int maxInMML() const;
+
+	int panelWidth() const;
+
+	inline int getDisplayedRowCount() const
+	{
+		int labCnt = static_cast<int>(labels_.size());
+		return (maxDispRowCnt_ > labCnt) ? labCnt : maxDispRowCnt_;
+	}
+
+private slots:
+	void on_colIncrToolButton_clicked();
+	void on_colDecrToolButton_clicked();
+	void on_verticalScrollBar_valueChanged(int value);
+	void on_lineEdit_editingFinished();
+	void onLoopChanged();
+
+private:
+	Ui::VisualizedInstrumentMacroEditor *ui;
+
 	int pressRow_, pressCol_;
+	int prevPressRow_, prevPressCol_;
 
 	int loopY_, releaseY_;
 	int loopBaseY_, releaseBaseY_;
@@ -139,24 +165,14 @@ private:
 	std::vector<Loop> loops_;
 	Release release_;
 
-	struct Column
-	{
-		int row, data;
-		QString text;
-	};
-
-	std::vector<QString> labels_;
-	std::vector<Column> cols_;
-
 	bool isMultiReleaseState_;
-	bool isLabelOmitted_;
 
 	int mmlBase_;
 
 	bool isIgnoreEvent_;
 
 	void initDisplay();
-	void drawField();
+
 	void drawLoop();
 	void drawRelease();
 	void drawBorder();
@@ -169,12 +185,6 @@ private:
 
 	void updateColumnWidth();
 	void updateRowHeight();
-
-	inline int getDisplayedRowCount() const
-	{
-		int labCnt = static_cast<int>(labels_.size());
-		return (maxDispRowCnt_ > labCnt) ? labCnt : maxDispRowCnt_;
-	}
 
 	inline void scrollUp(int pos)
 	{

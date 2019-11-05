@@ -209,7 +209,7 @@
            </widget>
           </item>
           <item row="1" column="0" colspan="4">
-           <widget class="VisualizedInstrumentMacroEditor" name="tnEditor" native="true"/>
+           <widget class="ToneNoiseMacroEditor" name="tnEditor" native="true"/>
           </item>
           <item row="0" column="0">
            <widget class="QSpinBox" name="tnNumSpinBox">
@@ -558,6 +558,12 @@
    <header>gui/instrument_editor/visualized_instrument_macro_editor.hpp</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>ToneNoiseMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/tone_noise_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
@@ -587,7 +593,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="squareMaskButtonGroup"/>
   <buttongroup name="hardFreqButtonGroup"/>
+  <buttongroup name="squareMaskButtonGroup"/>
  </buttongroups>
 </ui>

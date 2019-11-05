@@ -75,17 +75,6 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	});
 
 	//========== Tone/Noise ==========//
-	ui->tnEditor->setMaximumDisplayedRowCount(16);
-	ui->tnEditor->setDefaultRow(0);
-	ui->tnEditor->AddRow("T", false);
-	for (int i = 0; i < 32; ++i) {
-		ui->tnEditor->AddRow("N " + QString::number(i), false);
-	}
-	for (int i = 0; i < 32; ++i) {
-		ui->tnEditor->AddRow("T&N " + QString::number(i), false);
-	}
-	ui->tnEditor->autoFitLabelWidth();
-
 	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
