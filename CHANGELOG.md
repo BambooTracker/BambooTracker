@@ -9,7 +9,7 @@
 
 ### Changed
 - Change width of items in status bar
-- Reduce pattern drawing cost in playback
+- Reduce drawing cost of the pattern editor and the order list
 - Improve SSG tone/noise editor
 
 ## v0.3.0 (2019-10-25)

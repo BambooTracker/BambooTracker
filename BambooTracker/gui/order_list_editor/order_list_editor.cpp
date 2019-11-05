@@ -145,16 +145,16 @@ bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 	if (watched == ui->panel) {
 		switch (event->type()) {
 		case QEvent::FocusIn:
-			ui->panel->redrawAll();
+			ui->panel->redrawByFocusChanged();
 			emit focusIn();
 			return false;
 		case QEvent::FocusOut:
-			ui->panel->redrawAll();
+			ui->panel->redrawByFocusChanged();
 			emit focusOut();
 			return false;
 		case QEvent::HoverEnter:
 		case QEvent::HoverLeave:
-			ui->panel->redrawAll();
+			ui->panel->redrawByHoverChanged();
 			return false;
 		default:
 			return false;

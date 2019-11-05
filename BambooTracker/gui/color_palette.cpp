@@ -59,6 +59,7 @@ ColorPalette::ColorPalette()
 	odrHeaderTextColor = QColor::fromRgb(240, 240, 200, 255);
 	odrHeaderRowColor = QColor::fromRgb(60, 60, 60, 255);
 	odrBorderColor = QColor::fromRgb(120, 120, 120, 255);
+	odrBackColor = QColor::fromRgb(0, 0, 0, 255);
 
 	// Pattern editor
 	ptnDefTextColor = QColor::fromRgb(180, 180, 180, 255);

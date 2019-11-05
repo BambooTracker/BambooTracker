@@ -10,13 +10,13 @@ InsertOrderBelowQtCommand::InsertOrderBelowQtCommand(OrderListPanel* panel, QUnd
 void InsertOrderBelowQtCommand::redo()
 {
 	panel_->onOrderEdited();
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 void InsertOrderBelowQtCommand::undo()
 {
 	panel_->onOrderEdited();
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 int InsertOrderBelowQtCommand::id() const

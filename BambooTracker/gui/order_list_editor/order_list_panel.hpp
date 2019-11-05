@@ -40,10 +40,9 @@ public:
 	void deleteOrder();
 	void insertOrderBelow();
 
-	void redrawByPatternChanged();
-	void redrawByCursorChanged();
-	void redrawByPositionChanged();
-	void redrawBySizeChanged();
+	void redrawByPatternChanged(bool ordersLengthChanged = false);
+	void redrawByFocusChanged();
+	void redrawByHoverChanged();
 	void redrawAll();
 
 	void resetEntryCount();
@@ -104,7 +103,7 @@ protected:
 	virtual void leaveEvent(QEvent* event) override;
 
 private:
-	std::unique_ptr<QPixmap> completePixmap_, rowForePixmap_, rowBackPixmap_, headerPixmap_;
+	std::unique_ptr<QPixmap> completePixmap_, textPixmap_, backPixmap_, headerPixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::weak_ptr<Configuration> config_;
@@ -141,7 +140,8 @@ private:
 	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
 	OrderPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
 
-	bool rowsChanged_, cursorChanged_, posChanged_, sizeChanged_, headerChanged_, orderChanged_;
+	bool backChanged_, textChanged_, headerChanged_, focusChanged_, orderChanged_;
+	bool hasFocussedBefore_;
 	int orderUpdateRequestCnt_;
 
 	bool freezed_;

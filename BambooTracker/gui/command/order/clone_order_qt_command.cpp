@@ -10,13 +10,13 @@ CloneOrderQtCommand::CloneOrderQtCommand(OrderListPanel* panel, QUndoCommand* pa
 void CloneOrderQtCommand::redo()
 {
 	panel_->onOrderEdited();
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 void CloneOrderQtCommand::undo()
 {
 	panel_->onOrderEdited();
-	panel_->redrawByPatternChanged();
+	panel_->redrawByPatternChanged(true);
 }
 
 int CloneOrderQtCommand::id() const

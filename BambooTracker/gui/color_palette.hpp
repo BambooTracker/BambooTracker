@@ -44,6 +44,7 @@ public:
 	QColor odrRowNumColor;
 	QColor odrHeaderTextColor, odrHeaderRowColor;
 	QColor odrBorderColor;
+	QColor odrBackColor;
 
 	// Pattern editor
 	QColor ptnDefTextColor, ptnDefRowColor, ptnHl1RowColor, ptnHl2RowColor;
