@@ -14,10 +14,7 @@ ToneNoiseMacroEditor::ToneNoiseMacroEditor(QWidget *parent)
 	autoFitLabelWidth();
 }
 
-ToneNoiseMacroEditor::~ToneNoiseMacroEditor()
-{
-
-}
+ToneNoiseMacroEditor::~ToneNoiseMacroEditor() {}
 
 void ToneNoiseMacroEditor::drawField()
 {

@@ -1795,7 +1795,7 @@ void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
 	if (seqPos == -1) return;
 
 	switch (arpItFM_[ch]->getSequenceType()) {
-	case 0:	// Absolute
+	case SequenceType::Absolute:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(baseToneFM_[ch].front().octave,
@@ -1805,14 +1805,14 @@ void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
 		keyToneFM_[ch].note = pair.second;
 		break;
 	}
-	case 1:	// Fixed
+	case SequenceType::Fixed:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItFM_[ch]->getCommandType());
 		keyToneFM_[ch].octave = pair.first;
 		keyToneFM_[ch].note = pair.second;
 		break;
 	}
-	case 2:	// Relative
+	case SequenceType::Relative:	// Relative
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(keyToneFM_[ch].octave, keyToneFM_[ch].note)
@@ -1821,6 +1821,8 @@ void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
 		keyToneFM_[ch].note = pair.second;
 		break;
 	}
+	default:
+		break;
 	}
 
 	needToneSetFM_[ch] = true;
@@ -1865,11 +1867,13 @@ void OPNAController::checkRealToneFMByPitch(int ch, int seqPos)
 	if (seqPos == -1) return;
 
 	switch (ptItFM_[ch]->getSequenceType()) {
-	case 0:	// Absolute
+	case SequenceType::Absolute:
 		sumPitchFM_[ch] = ptItFM_[ch]->getCommandType() - 127;
 		break;
-	case 2:	// Relative
+	case SequenceType::Relative:
 		sumPitchFM_[ch] += (ptItFM_[ch]->getCommandType() - 127);
+		break;
+	default:
 		break;
 	}
 
@@ -3115,7 +3119,7 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 	if (seqPos == -1) return;
 
 	switch (arpItSSG_[ch]->getSequenceType()) {
-	case 0:	// Absolute
+	case SequenceType::Absolute:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(baseToneSSG_[ch].front().octave,
@@ -3125,14 +3129,14 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 		keyToneSSG_[ch].note = pair.second;
 		break;
 	}
-	case 1:	// Fixed
+	case SequenceType::Fixed:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItSSG_[ch]->getCommandType());
 		keyToneSSG_[ch].octave = pair.first;
 		keyToneSSG_[ch].note = pair.second;
 		break;
 	}
-	case 2:	// Relative
+	case SequenceType::Relative:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(keyToneSSG_[ch].octave, keyToneSSG_[ch].note)
@@ -3141,6 +3145,8 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 		keyToneSSG_[ch].note = pair.second;
 		break;
 	}
+	default:
+		break;
 	}
 
 	needToneSetSSG_[ch] = true;

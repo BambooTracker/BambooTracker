@@ -57,6 +57,14 @@ struct CommandSequenceUnit
 	}
 };
 
+enum SequenceType
+{
+	NoType,
+	Absolute,
+	Fixed,
+	Relative
+};
+
 struct Loop
 {
 	int begin, end, times;
@@ -79,7 +87,7 @@ struct Release
 class CommandSequence : public AbstractInstrumentProperty
 {
 public:
-	CommandSequence(int num, int seqType, int comType = 0, int comData = -1);
+	CommandSequence(int num, SequenceType seqType = SequenceType::NoType, int comType = 0, int comData = -1);
 	CommandSequence(const CommandSequence& other);
 	virtual ~CommandSequence() = default;
 	std::unique_ptr<CommandSequence> clone();
@@ -87,8 +95,8 @@ public:
 	/// 0: Absolute
 	/// 1: Fix
 	/// 2: Relative
-	void setType(int type);
-	int getType() const;
+	void setType(SequenceType type);
+	SequenceType getType() const;
 
 	size_t getSequenceSize() const;
 	int getSequenceTypeAt(int n);
@@ -139,7 +147,7 @@ private:
 	const int DEF_COM_TYPE;
 	const int DEF_COM_DATA;
 
-	int type_;
+	SequenceType type_;
 	std::vector<CommandSequenceUnit> seq_;
 	std::vector<Loop> loops_;
 	Release release_;

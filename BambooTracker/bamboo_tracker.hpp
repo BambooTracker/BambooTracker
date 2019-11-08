@@ -81,7 +81,7 @@ public:
 	void setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
 	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 
-	void setArpeggioFMType(int arpNum, int type);
+	void setArpeggioFMType(int arpNum, SequenceType type);
 	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioFMSequenceCommand(int arpNum);
 	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
@@ -91,7 +91,7 @@ public:
 	void setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::vector<int> getArpeggioFMUsers(int arpNum) const;
 
-	void setPitchFMType(int ptNum, int type);
+	void setPitchFMType(int ptNum, SequenceType type);
 	void addPitchFMSequenceCommand(int ptNum, int type, int data);
 	void removePitchFMSequenceCommand(int ptNum);
 	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
@@ -131,7 +131,7 @@ public:
 	void setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled);
 	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
 
-	void setArpeggioSSGType(int arpNum, int type);
+	void setArpeggioSSGType(int arpNum, SequenceType type);
 	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioSSGSequenceCommand(int arpNum);
 	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
@@ -141,7 +141,7 @@ public:
 	void setInstrumentSSGArpeggioEnabled(int instNum, bool enabled);
 	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
 
-	void setPitchSSGType(int ptNum, int type);
+	void setPitchSSGType(int ptNum, SequenceType type);
 	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
 	void removePitchSSGSequenceCommand(int ptNum);
 	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);

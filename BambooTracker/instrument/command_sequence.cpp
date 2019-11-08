@@ -1,6 +1,6 @@
 #include "command_sequence.hpp"
 
-CommandSequence::CommandSequence(int num, int seqType, int comType, int comData)
+CommandSequence::CommandSequence(int num, SequenceType seqType, int comType, int comData)
 	: AbstractInstrumentProperty(num),
 	  DEF_COM_TYPE(comType),
 	  DEF_COM_DATA(comData),
@@ -27,12 +27,12 @@ std::unique_ptr<CommandSequence> CommandSequence::clone()
 	return clone;
 }
 
-void CommandSequence::setType(int type)
+void CommandSequence::setType(SequenceType type)
 {
 	type_ = type;
 }
 
-int CommandSequence::getType() const
+SequenceType CommandSequence::getType() const
 {
 	return type_;
 }

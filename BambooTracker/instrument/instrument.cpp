@@ -298,7 +298,7 @@ int InstrumentFM::getArpeggioNumber(FMOperatorType op) const
 	return arpNum_.at(op);
 }
 
-int InstrumentFM::getArpeggioType(FMOperatorType op) const
+SequenceType InstrumentFM::getArpeggioType(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMType(arpNum_.at(op));
 }
@@ -343,7 +343,7 @@ int InstrumentFM::getPitchNumber(FMOperatorType op) const
 	return ptNum_.at(op);
 }
 
-int InstrumentFM::getPitchType(FMOperatorType op) const
+SequenceType InstrumentFM::getPitchType(FMOperatorType op) const
 {
 	return owner_->getPitchFMType(ptNum_.at(op));
 }
@@ -541,7 +541,7 @@ int InstrumentSSG::getArpeggioNumber() const
 	return arpNum_;
 }
 
-int InstrumentSSG::getArpeggioType() const
+SequenceType InstrumentSSG::getArpeggioType() const
 {
 	return owner_->getArpeggioSSGType(arpNum_);
 }
@@ -586,7 +586,7 @@ int InstrumentSSG::getPitchNumber() const
 	return ptNum_;
 }
 
-int InstrumentSSG::getPitchType() const
+SequenceType InstrumentSSG::getPitchType() const
 {
 	return owner_->getPitchSSGType(ptNum_);
 }

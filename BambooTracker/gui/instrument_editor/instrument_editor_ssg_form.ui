@@ -435,7 +435,7 @@
            </widget>
           </item>
           <item row="1" column="0" colspan="6">
-           <widget class="VisualizedInstrumentMacroEditor" name="arpEditor" native="true"/>
+           <widget class="ArpeggioMacroEditor" name="arpEditor" native="true"/>
           </item>
           <item row="0" column="3">
            <spacer name="horizontalSpacer_4">
@@ -559,6 +559,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ArpeggioMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/arpeggio_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ToneNoiseMacroEditor</class>
    <extends>QWidget</extends>
    <header>gui/instrument_editor/tone_noise_macro_editor.hpp</header>
@@ -593,7 +599,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="hardFreqButtonGroup"/>
   <buttongroup name="squareMaskButtonGroup"/>
+  <buttongroup name="hardFreqButtonGroup"/>
  </buttongroups>
 </ui>

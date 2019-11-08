@@ -50,15 +50,26 @@ public:
 
 	void addLoop(int begin, int end, int times);
 
-	enum class ReleaseType
+	enum SequenceType
 	{
-		NO_RELEASE,
-		FIXED,
-		ABSOLUTE,
-		RELATIVE
+		NoType,
+		Fixed,
+		Absolute,
+		Relative
 	};
 
-	void setRelease(VisualizedInstrumentMacroEditor::ReleaseType type, int point);
+	void setSequenceType(SequenceType type);
+
+	enum ReleaseType : int
+	{
+		NO_RELEASE = 0,
+		FIXED = 1,
+		ABSOLUTE = 2,
+		RELATIVE = 4
+	};
+
+	void setPermittedReleaseTypes(int types);
+	void setRelease(ReleaseType type, int point);
 
 	void clearData();
 	void clearRow();
@@ -77,7 +88,7 @@ signals:
 	void sequenceCommandAdded(int row, int col);
 	void sequenceCommandRemoved();
 	void loopChanged(std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void releaseChanged(VisualizedInstrumentMacroEditor::ReleaseType type, int point);
+	void releaseChanged(ReleaseType type, int point);
 
 protected:
 	bool eventFilter(QObject*object, QEvent* event) override;
@@ -107,6 +118,9 @@ protected:
 	int hovRow_, hovCol_;
 
 	virtual void drawField();
+	virtual void updateLabels();
+
+	SequenceType type_;
 
 	struct Column
 	{
@@ -117,11 +131,32 @@ protected:
 	std::vector<QString> labels_;
 	std::vector<Column> cols_;
 
+	int permittedReleaseType_;
+
 	bool isLabelOmitted_;
 
 	virtual int detectRowNumberForMouseEvent(int col, int internalRow) const;
 
+	struct Loop
+	{
+		int begin, end, times;
+	};
+
+	struct Release
+	{
+		ReleaseType type;
+		int point;
+	};
+
+	std::vector<Loop> loops_;
+	Release release_;
+
+
+	void printMML();
+	virtual QString convertSequenceDataUnitToMML(Column col);
 	virtual int maxInMML() const;
+	void interpretMML();
+	virtual bool interpretDataInMML(QString& text, int& cnt, std::vector<Column>& column);
 
 	int panelWidth() const;
 
@@ -151,20 +186,6 @@ private:
 	bool isGrabLoopHead_;
 	bool isGrabRelease_;
 
-	struct Loop
-	{
-		int begin, end, times;
-	};
-
-	struct Release
-	{
-		VisualizedInstrumentMacroEditor::ReleaseType type;
-		int point;
-	};
-
-	std::vector<Loop> loops_;
-	Release release_;
-
 	bool isMultiReleaseState_;
 
 	int mmlBase_;
@@ -177,8 +198,6 @@ private:
 	void drawRelease();
 	void drawBorder();
 	void drawShadow();
-
-	void makeMML();
 
 	int checkLoopRegion(int col);
 	void moveLoop();

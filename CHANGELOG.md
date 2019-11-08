@@ -11,6 +11,7 @@
 - Change width of items in status bar
 - Reduce drawing cost of the pattern editor and the order list
 - Improve SSG tone/noise editor
+- Change MML text in SSG arpeggio editor from numbers to notes
 
 ## v0.3.0 (2019-10-25)
 ### Added

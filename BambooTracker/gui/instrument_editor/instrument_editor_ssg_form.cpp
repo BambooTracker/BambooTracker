@@ -131,6 +131,10 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	}
 	ui->envEditor->autoFitLabelWidth();
 	ui->envEditor->setMultipleReleaseState(true);
+	ui->envEditor->setPermittedReleaseTypes(
+				VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE
+				| VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE
+				| VisualizedInstrumentMacroEditor::ReleaseType::FIXED);
 
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -180,22 +184,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	});
 
 	//========== Arpeggio ==========//
-	ui->arpEditor->setMaximumDisplayedRowCount(15);
-	ui->arpEditor->setDefaultRow(48);
-	ui->arpEditor->setLabelDiaplayMode(true);
-	for (int i = 0; i < 96; ++i) {
-		int d = i - 48;
-		auto text = QString::number(d);
-		if (d > 0) text = "+" + text;
-		ui->arpEditor->AddRow(text, false);
-	}
-	ui->arpEditor->autoFitLabelWidth();
-	ui->arpEditor->setUpperRow(55);
-	ui->arpEditor->setMMLDisplay0As(-48);
-
-	ui->arpTypeComboBox->addItem(tr("Absolute"), 0);
-	ui->arpTypeComboBox->addItem(tr("Fixed"), 1);
-	ui->arpTypeComboBox->addItem(tr("Relative"), 2);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::Absolute);
+	ui->arpTypeComboBox->addItem(tr("Fixed"), VisualizedInstrumentMacroEditor::SequenceType::Fixed);
+	ui->arpTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::Relative);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -259,8 +250,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem(tr("Absolute"), 0);
-	ui->ptTypeComboBox->addItem(tr("Relative"), 2);
+	ui->ptTypeComboBox->addItem("Absolute", VisualizedInstrumentMacroEditor::SequenceType::Absolute);
+	ui->ptTypeComboBox->addItem("Relative", VisualizedInstrumentMacroEditor::SequenceType::Relative);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -339,6 +330,38 @@ void InstrumentEditorSSGForm::setColorPalette(std::shared_ptr<ColorPalette> pale
 	ui->envEditor->setColorPalette(palette);
 	ui->arpEditor->setColorPalette(palette);
 	ui->ptEditor->setColorPalette(palette);
+}
+
+SequenceType InstrumentEditorSSGForm::convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type)
+{
+	switch (type) {
+	case VisualizedInstrumentMacroEditor::SequenceType::NoType:
+		return SequenceType::NoType;
+	case VisualizedInstrumentMacroEditor::SequenceType::Fixed:
+		return SequenceType::Fixed;
+	case VisualizedInstrumentMacroEditor::SequenceType::Absolute:
+		return SequenceType::Absolute;
+	case VisualizedInstrumentMacroEditor::SequenceType::Relative:
+		return SequenceType::Relative;
+	default:
+		throw std::invalid_argument("Unexpected SequenceType.");
+	}
+}
+
+VisualizedInstrumentMacroEditor::SequenceType InstrumentEditorSSGForm::convertSequenceTypeForUI(SequenceType type)
+{
+	switch (type) {
+	case SequenceType::NoType:
+		return VisualizedInstrumentMacroEditor::SequenceType::NoType;
+	case SequenceType::Fixed:
+		return VisualizedInstrumentMacroEditor::SequenceType::Fixed;
+	case SequenceType::Absolute:
+		return VisualizedInstrumentMacroEditor::SequenceType::Absolute;
+	case SequenceType::Relative:
+		return VisualizedInstrumentMacroEditor::SequenceType::Relative;
+	default:
+		throw std::invalid_argument("Unexpected SequenceType.");
+	}
 }
 
 ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type)
@@ -809,7 +832,13 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 	}
 	ui->arpEditor->setRelease(convertReleaseTypeForUI(instSSG->getArpeggioRelease().type),
 							  instSSG->getArpeggioRelease().begin);
-	ui->arpTypeComboBox->setCurrentIndex(instSSG->getArpeggioType());
+	for (int i = 0; i < ui->arpTypeComboBox->count(); ++i) {
+		if (instSSG->getArpeggioType() == convertSequenceTypeForData(
+					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->arpTypeComboBox->itemData(i).toInt()))) {
+			ui->arpTypeComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
 	if (instSSG->getArpeggioEnabled()) {
 		ui->arpEditGroupBox->setChecked(true);
 		onArpeggioNumberChanged();
@@ -845,30 +874,15 @@ void InstrumentEditorSSGForm::onArpeggioTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
+	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(
+					ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(),
-									   ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
+		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), convertSequenceTypeForData(type));
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
 
-	// Update labels
-	if (index == 1) {
-		QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 12; ++j) {
-				ui->arpEditor->setLabel(i * 12 + j, tn[j] + QString::number(i));
-			}
-		}
-	}
-	else {
-		for (int i = 0; i < 96; ++i) {
-			int d = i - 48;
-			auto text = QString::number(d);
-			if (d > 0) text = "+" + text;
-			ui->arpEditor->setLabel(i, text);
-		}
-	}
+	ui->arpEditor->setSequenceType(type);
 }
 
 void InstrumentEditorSSGForm::on_arpEditGroupBox_toggled(bool arg1)
@@ -914,7 +928,8 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 	ui->ptEditor->setRelease(convertReleaseTypeForUI(instSSG->getPitchRelease().type),
 							 instSSG->getPitchRelease().begin);
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instSSG->getPitchType()) {
+		if (instSSG->getPitchType() == convertSequenceTypeForData(
+					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -954,12 +969,14 @@ void InstrumentEditorSSGForm::onPitchTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
+	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(),
-									ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
+		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(), convertSequenceTypeForData(type));
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}
+
+	ui->ptEditor->setSequenceType(type);
 }
 
 void InstrumentEditorSSGForm::on_ptEditGroupBox_toggled(bool arg1)

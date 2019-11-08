@@ -531,16 +531,16 @@ void InstrumentsManager::clearAll()
 		envFM_[i] = std::make_shared<EnvelopeFM>(i);
 		lfoFM_[i] = std::make_shared<LFOFM>(i);
 		for (auto& p : opSeqFM_) {
-			p.second[i] = std::make_shared<CommandSequence>(i, 0);
+			p.second[i] = std::make_shared<CommandSequence>(i);
 		}
-		arpFM_[i] = std::make_shared<CommandSequence>(i, 0, 48);
-		ptFM_[i] = std::make_shared<CommandSequence>(i, 0, 127);
+		arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
+		ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
 
-		wfSSG_[i] = std::make_shared<CommandSequence>(i, 0);
-		tnSSG_[i] = std::make_shared<CommandSequence>(i, 0);
-		envSSG_[i] = std::make_shared<CommandSequence>(i, 0, 15);
-		arpSSG_[i] = std::make_shared<CommandSequence>(i, 0, 48);
-		ptSSG_[i] = std::make_shared<CommandSequence>(i, 0, 127);
+		wfSSG_[i] = std::make_shared<CommandSequence>(i);
+		tnSSG_[i] = std::make_shared<CommandSequence>(i);
+		envSSG_[i] = std::make_shared<CommandSequence>(i,SequenceType::NoType, 15);
+		arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
+		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
 	}
 }
 
@@ -592,23 +592,23 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			lfoFM_[i] = std::make_shared<LFOFM>(i);
 		for (auto& p : opSeqFM_) {
 			if (!p.second[i]->isUserInstrument())
-				p.second[i] = std::make_shared<CommandSequence>(i, 0);
+				p.second[i] = std::make_shared<CommandSequence>(i);
 		}
 		if (!arpFM_[i]->isUserInstrument())
-			arpFM_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+			arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
 		if (!ptFM_[i]->isUserInstrument())
-			ptFM_[i] = std::make_shared<CommandSequence>(i, 0, 127);
+			ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
 
 		if (!wfSSG_[i]->isUserInstrument())
-			wfSSG_[i] = std::make_shared<CommandSequence>(i, 0);
+			wfSSG_[i] = std::make_shared<CommandSequence>(i);
 		if (!tnSSG_[i]->isUserInstrument())
-			tnSSG_[i] = std::make_shared<CommandSequence>(i, 0);
+			tnSSG_[i] = std::make_shared<CommandSequence>(i);
 		if (!envSSG_[i]->isUserInstrument())
-			envSSG_[i] = std::make_shared<CommandSequence>(i, 0, 15);
+			envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NoType, 15);
 		if (!arpSSG_[i]->isUserInstrument())
-			arpSSG_[i] = std::make_shared<CommandSequence>(i, 0, 48);
+			arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
 		if (!ptSSG_[i]->isUserInstrument())
-			ptSSG_[i] = std::make_shared<CommandSequence>(i, 0, 127);
+			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
 	}
 }
 
@@ -899,12 +899,12 @@ int InstrumentsManager::getInstrumentFMArpeggio(int instNum, FMOperatorType op)
 	return std::dynamic_pointer_cast<InstrumentFM>(insts_[static_cast<size_t>(instNum)])->getArpeggioNumber(op);
 }
 
-void InstrumentsManager::setArpeggioFMType(int arpNum, int type)
+void InstrumentsManager::setArpeggioFMType(int arpNum, SequenceType type)
 {
 	arpFM_.at(static_cast<size_t>(arpNum))->setType(type);
 }
 
-int InstrumentsManager::getArpeggioFMType(int arpNum) const
+SequenceType InstrumentsManager::getArpeggioFMType(int arpNum) const
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getType();
 }
@@ -1017,12 +1017,12 @@ int InstrumentsManager::getInstrumentFMPitch(int instNum, FMOperatorType op)
 	return std::dynamic_pointer_cast<InstrumentFM>(insts_[static_cast<size_t>(instNum)])->getPitchNumber(op);
 }
 
-void InstrumentsManager::setPitchFMType(int ptNum, int type)
+void InstrumentsManager::setPitchFMType(int ptNum, SequenceType type)
 {
 	ptFM_.at(static_cast<size_t>(ptNum))->setType(type);
 }
 
-int InstrumentsManager::getPitchFMType(int ptNum) const
+SequenceType InstrumentsManager::getPitchFMType(int ptNum) const
 {
 	return ptFM_.at(static_cast<size_t>(ptNum))->getType();
 }
@@ -1465,12 +1465,12 @@ int InstrumentsManager::getInstrumentSSGArpeggio(int instNum)
 	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)])->getArpeggioNumber();
 }
 
-void InstrumentsManager::setArpeggioSSGType(int arpNum, int type)
+void InstrumentsManager::setArpeggioSSGType(int arpNum, SequenceType type)
 {
 	arpSSG_.at(static_cast<size_t>(arpNum))->setType(type);
 }
 
-int InstrumentsManager::getArpeggioSSGType(int arpNum) const
+SequenceType InstrumentsManager::getArpeggioSSGType(int arpNum) const
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getType();
 }
@@ -1583,12 +1583,12 @@ int InstrumentsManager::getInstrumentSSGPitch(int instNum)
 	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)])->getPitchNumber();
 }
 
-void InstrumentsManager::setPitchSSGType(int ptNum, int type)
+void InstrumentsManager::setPitchSSGType(int ptNum, SequenceType type)
 {
 	ptSSG_.at(static_cast<size_t>(ptNum))->setType(type);
 }
 
-int InstrumentsManager::getPitchSSGType(int ptNum) const
+SequenceType InstrumentsManager::getPitchSSGType(int ptNum) const
 {
 	return ptSSG_.at(static_cast<size_t>(ptNum))->getType();
 }

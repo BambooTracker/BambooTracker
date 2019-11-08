@@ -88,8 +88,8 @@ public:
 	bool getInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op) const;
 	void setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum);
 	int getInstrumentFMArpeggio(int instNum, FMOperatorType op);
-	void setArpeggioFMType(int arpNum, int type);
-	int getArpeggioFMType(int arpNum) const;
+	void setArpeggioFMType(int arpNum, SequenceType type);
+	SequenceType getArpeggioFMType(int arpNum) const;
 	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioFMSequenceCommand(int arpNum);
 	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
@@ -108,8 +108,8 @@ public:
 	bool getInstrumentFMPitchEnabled(int instNum, FMOperatorType op) const;
 	void setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum);
 	int getInstrumentFMPitch(int instNum, FMOperatorType op);
-	void setPitchFMType(int ptNum, int type);
-	int getPitchFMType(int ptNum) const;
+	void setPitchFMType(int ptNum, SequenceType type);
+	SequenceType getPitchFMType(int ptNum) const;
 	void addPitchFMSequenceCommand(int ptNum, int type, int data);
 	void removePitchFMSequenceCommand(int ptNum);
 	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
@@ -202,8 +202,8 @@ public:
 	bool getInstrumentSSGArpeggioEnabled(int instNum) const;
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
 	int getInstrumentSSGArpeggio(int instNum);
-	void setArpeggioSSGType(int arpNum, int type);
-	int getArpeggioSSGType(int arpNum) const;
+	void setArpeggioSSGType(int arpNum, SequenceType type);
+	SequenceType getArpeggioSSGType(int arpNum) const;
 	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
 	void removeArpeggioSSGSequenceCommand(int arpNum);
 	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
@@ -222,8 +222,8 @@ public:
 	bool getInstrumentSSGPitchEnabled(int instNum) const;
 	void setInstrumentSSGPitch(int instNum, int ptNum);
 	int getInstrumentSSGPitch(int instNum);
-	void setPitchSSGType(int ptNum, int type);
-	int getPitchSSGType(int ptNum) const;
+	void setPitchSSGType(int ptNum, SequenceType type);
+	SequenceType getPitchSSGType(int ptNum) const;
 	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
 	void removePitchSSGSequenceCommand(int ptNum);
 	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);

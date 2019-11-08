@@ -56,6 +56,9 @@ private:
 	std::shared_ptr<ColorPalette> palette_;
 	std::weak_ptr<Configuration> config_;
 
+	SequenceType convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type);
+	VisualizedInstrumentMacroEditor::SequenceType convertSequenceTypeForUI(SequenceType type);
+
 	ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
 	VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
 

@@ -402,22 +402,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->arpOpComboBox->addItem("Op3", static_cast<int>(FMOperatorType::Op3));
 	ui->arpOpComboBox->addItem("Op4", static_cast<int>(FMOperatorType::Op4));
 
-	ui->arpEditor->setMaximumDisplayedRowCount(15);
-	ui->arpEditor->setDefaultRow(48);
-	ui->arpEditor->setLabelDiaplayMode(true);
-	for (int i = 0; i < 96; ++i) {
-		int d = i - 48;
-		auto text = QString::number(d);
-		if (d > 0) text = "+" + text;
-		ui->arpEditor->AddRow(text, false);
-	}
-	ui->arpEditor->autoFitLabelWidth();
-	ui->arpEditor->setUpperRow(55);
-	ui->arpEditor->setMMLDisplay0As(-48);
-
-	ui->arpTypeComboBox->addItem(tr("Absolute"), 0);
-	ui->arpTypeComboBox->addItem(tr("Fixed"), 1);
-	ui->arpTypeComboBox->addItem(tr("Relative"), 2);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::Absolute);
+	ui->arpTypeComboBox->addItem(tr("Fixed"), VisualizedInstrumentMacroEditor::SequenceType::Fixed);
+	ui->arpTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::Relative);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -490,8 +477,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem("Absolute", 0);
-	ui->ptTypeComboBox->addItem("Relative", 2);
+	ui->ptTypeComboBox->addItem("Absolute", VisualizedInstrumentMacroEditor::SequenceType::Absolute);
+	ui->ptTypeComboBox->addItem("Relative", VisualizedInstrumentMacroEditor::SequenceType::Relative);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -634,6 +621,38 @@ void InstrumentEditorFMForm::setColorPalette(std::shared_ptr<ColorPalette> palet
 	ui->opSeqEditor->setColorPalette(palette);
 	ui->arpEditor->setColorPalette(palette);
 	ui->ptEditor->setColorPalette(palette);
+}
+
+SequenceType InstrumentEditorFMForm::convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type)
+{
+	switch (type) {
+	case VisualizedInstrumentMacroEditor::SequenceType::NoType:
+		return SequenceType::NoType;
+	case VisualizedInstrumentMacroEditor::SequenceType::Fixed:
+		return SequenceType::Fixed;
+	case VisualizedInstrumentMacroEditor::SequenceType::Absolute:
+		return SequenceType::Absolute;
+	case VisualizedInstrumentMacroEditor::SequenceType::Relative:
+		return SequenceType::Relative;
+	default:
+		throw std::invalid_argument("Unexpected SequenceType.");
+	}
+}
+
+VisualizedInstrumentMacroEditor::SequenceType InstrumentEditorFMForm::convertSequenceTypeForUI(SequenceType type)
+{
+	switch (type) {
+	case SequenceType::NoType:
+		return VisualizedInstrumentMacroEditor::SequenceType::NoType;
+	case SequenceType::Fixed:
+		return VisualizedInstrumentMacroEditor::SequenceType::Fixed;
+	case SequenceType::Absolute:
+		return VisualizedInstrumentMacroEditor::SequenceType::Absolute;
+	case SequenceType::Relative:
+		return VisualizedInstrumentMacroEditor::SequenceType::Relative;
+	default:
+		throw std::invalid_argument("Unexpected SequenceType.");
+	}
 }
 
 ReleaseType InstrumentEditorFMForm::convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type)
@@ -1691,7 +1710,13 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 	}
 	ui->arpEditor->setRelease(convertReleaseTypeForUI(instFM->getArpeggioRelease(param).type),
 							  instFM->getArpeggioRelease(param).begin);
-	ui->arpTypeComboBox->setCurrentIndex(instFM->getArpeggioType(param));
+	for (int i = 0; i < ui->arpTypeComboBox->count(); ++i) {
+		if (instFM->getArpeggioType(param) == convertSequenceTypeForData(
+					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->arpTypeComboBox->itemData(i).toInt()))) {
+			ui->arpTypeComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
 	if (instFM->getArpeggioEnabled(param)) {
 		ui->arpEditGroupBox->setChecked(true);
 		onArpeggioNumberChanged();
@@ -1734,30 +1759,15 @@ void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
+	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(
+					ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(),
-									  ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
+		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(), convertSequenceTypeForData(type));
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
 
-	// Update labels
-	if (index == 1) {
-		QString tn[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 12; ++j) {
-				ui->arpEditor->setLabel(i * 12 + j, tn[j] + QString::number(i));
-			}
-		}
-	}
-	else {
-		for (int i = 0; i < 96; ++i) {
-			int d = i - 48;
-			auto text = QString::number(d);
-			if (d > 0) text = "+" + text;
-			ui->arpEditor->setLabel(i, text);
-		}
-	}
+	ui->arpEditor->setSequenceType(type);
 }
 
 void InstrumentEditorFMForm::on_arpEditGroupBox_toggled(bool arg1)
@@ -1810,7 +1820,8 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 	ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease(param).type),
 							 instFM->getPitchRelease(param).begin);
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (ui->ptTypeComboBox->itemData(i, Qt::UserRole).toInt() == instFM->getPitchType(param)) {
+		if (instFM->getPitchType(param) == convertSequenceTypeForData(
+					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -1857,12 +1868,14 @@ void InstrumentEditorFMForm::onPitchTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
+	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(),
-								   ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
+		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(), convertSequenceTypeForData(type));
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}
+
+	ui->ptEditor->setSequenceType(type);
 }
 
 void InstrumentEditorFMForm::on_ptEditGroupBox_toggled(bool arg1)

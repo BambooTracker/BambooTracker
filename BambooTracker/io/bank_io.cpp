@@ -324,7 +324,12 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioFMType(idx)));
+			switch (instMan.lock()->getArpeggioFMType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Fixed:		ctr.appendUint8(0x01);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -375,7 +380,11 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchFMType(idx)));
+			switch (instMan.lock()->getPitchFMType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -582,7 +591,12 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioSSGType(idx)));
+			switch (instMan.lock()->getArpeggioSSGType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Fixed:		ctr.appendUint8(0x01);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -633,7 +647,11 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchSSGType(idx)));
+			switch (instMan.lock()->getPitchSSGType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}

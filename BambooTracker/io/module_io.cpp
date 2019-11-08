@@ -325,7 +325,12 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioFMType(idx)));
+			switch (instMan.lock()->getArpeggioFMType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Fixed:		ctr.appendUint8(0x01);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -370,7 +375,11 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchFMType(idx)));
+			switch (instMan.lock()->getPitchFMType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -553,7 +562,12 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getArpeggioSSGType(idx)));
+			switch (instMan.lock()->getArpeggioSSGType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Fixed:		ctr.appendUint8(0x01);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -598,7 +612,11 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getPitchSSGType(idx)));
+			switch (instMan.lock()->getPitchSSGType(idx)) {
+			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
+			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
 	}
@@ -1399,7 +1417,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
-					instMan.lock()->setArpeggioFMType(idx, ctr.readUint8(csr++));
+					switch (ctr.readUint8(csr++)) {
+					case 0x00:	// Absolute
+						instMan.lock()->setArpeggioFMType(idx, SequenceType::Absolute);
+						break;
+					case 0x01:	// Fixed
+						instMan.lock()->setArpeggioFMType(idx, SequenceType::Fixed);
+						break;
+					case 0x02:	// Relative
+						instMan.lock()->setArpeggioFMType(idx, SequenceType::Relative);
+						break;
+					default:
+						throw FileCorruptionError(FileIO::FileType::MOD);
+					}
 				}
 
 				instPropCsr += ofs;
@@ -1457,7 +1487,16 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
-					instMan.lock()->setPitchFMType(idx, ctr.readUint8(csr++));
+					switch (ctr.readUint8(csr++)) {
+					case 0x00:	// Absolute
+						instMan.lock()->setPitchFMType(idx, SequenceType::Absolute);
+						break;
+					case 0x02:	// Relative
+						instMan.lock()->setPitchFMType(idx, SequenceType::Relative);
+						break;
+					default:
+						throw FileCorruptionError(FileIO::FileType::MOD);
+					}
 				}
 
 				instPropCsr += ofs;
@@ -1727,7 +1766,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
-					instMan.lock()->setArpeggioSSGType(idx, ctr.readUint8(csr++));
+					switch (ctr.readUint8(csr++)) {
+					case 0x00:	// Absolute
+						instMan.lock()->setArpeggioSSGType(idx, SequenceType::Absolute);
+						break;
+					case 0x01:	// Fixed
+						instMan.lock()->setArpeggioSSGType(idx, SequenceType::Fixed);
+						break;
+					case 0x02:	// Relative
+						instMan.lock()->setArpeggioSSGType(idx, SequenceType::Relative);
+						break;
+					default:
+						throw FileCorruptionError(FileIO::FileType::MOD);
+					}
 				}
 
 				instPropCsr += ofs;
@@ -1785,7 +1836,16 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					throw FileCorruptionError(FileIO::FileType::MOD);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
-					instMan.lock()->setPitchSSGType(idx, ctr.readUint8(csr++));
+					switch (ctr.readUint8(csr++)) {
+					case 0x00:	// Absolute
+						instMan.lock()->setPitchSSGType(idx, SequenceType::Absolute);
+						break;
+					case 0x02:	// Relative
+						instMan.lock()->setPitchSSGType(idx, SequenceType::Relative);
+						break;
+					default:
+						throw FileCorruptionError(FileIO::FileType::MOD);
+					}
 				}
 
 				instPropCsr += ofs;

@@ -267,7 +267,7 @@ std::vector<int> BambooTracker::getOperatorSequenceFMUsers(FMEnvelopeParameter p
 	return instMan_->getOperatorSequenceFMUsers(param, opSeqNum);
 }
 
-void BambooTracker::setArpeggioFMType(int arpNum, int type)
+void BambooTracker::setArpeggioFMType(int arpNum, SequenceType type)
 {
 	instMan_->setArpeggioFMType(arpNum, type);
 }
@@ -314,7 +314,7 @@ std::vector<int> BambooTracker::getArpeggioFMUsers(int arpNum) const
 	return instMan_->getArpeggioFMUsers(arpNum);
 }
 
-void BambooTracker::setPitchFMType(int ptNum, int type)
+void BambooTracker::setPitchFMType(int ptNum, SequenceType type)
 {
 	instMan_->setPitchFMType(ptNum, type);
 }
@@ -494,7 +494,7 @@ std::vector<int> BambooTracker::getEnvelopeSSGUsers(int envNum) const
 	return instMan_->getEnvelopeSSGUsers(envNum);
 }
 
-void BambooTracker::setArpeggioSSGType(int arpNum, int type)
+void BambooTracker::setArpeggioSSGType(int arpNum, SequenceType type)
 {
 	instMan_->setArpeggioSSGType(arpNum, type);
 }
@@ -541,7 +541,7 @@ std::vector<int> BambooTracker::getArpeggioSSGUsers(int arpNum) const
 	return instMan_->getArpeggioSSGUsers(arpNum);
 }
 
-void BambooTracker::setPitchSSGType(int ptNum, int type)
+void BambooTracker::setPitchSSGType(int ptNum, SequenceType type)
 {
 	instMan_->setPitchSSGType(ptNum, type);
 }
