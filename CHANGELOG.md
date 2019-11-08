@@ -13,6 +13,9 @@
 - Improve SSG tone/noise editor
 - Change MML text in SSG arpeggio editor from numbers to notes
 
+### Fixed
+- [#161] - Fix drawing error after loading song (thanks [@papiezak])
+
 [#161]: https://github.com/rerrahkr/BambooTracker/issues/161
 
 ## v0.3.0 (2019-10-25)
