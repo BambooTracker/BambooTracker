@@ -46,24 +46,24 @@ bool ArpeggioMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vecto
 			QString tone = m.captured(1);
 			int oct = tone.right(1).toInt();
 			int d = 12 * oct;
-			if (tone.front() == 'C') {
+			if (tone.left(1) == "C") {
 				if (tone.mid(1, 1) == "-") ;
 				else d += 1;
 			}
-			else if (tone.front() == 'D') {
+			else if (tone.left(1) == "D") {
 				if (tone.mid(1, 1) == "-") d += 2;
 				else d += 3;
 			}
-			else if (tone.front() == 'E') d +=4;
-			else if (tone.front() == 'F') {
+			else if (tone.left(1) == "E") d +=4;
+			else if (tone.left(1) == "F") {
 				if (tone.mid(1, 1) == "-") d += 5;
 				else d += 6;
 			}
-			else if (tone.front() == 'G') {
+			else if (tone.left(1) == "G") {
 				if (tone.mid(1, 1) == "-") d += 7;
 				else d += 8;
 			}
-			else if (tone.front() == 'A') {
+			else if (tone.left(1) == "A") {
 				if (tone.mid(1, 1) == "-") d += 9;
 				else d += 10;
 			}

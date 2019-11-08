@@ -9,9 +9,11 @@
 
 ### Changed
 - Change width of items in status bar
-- Reduce drawing cost of the pattern editor and the order list
+- [#161] - Reduce drawing cost of the pattern editor and the order list (thanks [@papiezak])
 - Improve SSG tone/noise editor
 - Change MML text in SSG arpeggio editor from numbers to notes
+
+[#161]: https://github.com/rerrahkr/BambooTracker/issues/161
 
 ## v0.3.0 (2019-10-25)
 ### Added

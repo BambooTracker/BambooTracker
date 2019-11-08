@@ -596,6 +596,13 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 			int y = viewedCenterY_ + static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, viewedCenterPos_.order)) * stepFontHeight_;
 			forePainter.fillRect(0, y, maxWidth, viewedRowsHeight_ - y, palette_->ptnMaskColor);
 		}
+		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+			int w = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackNum));
+			if (foreChanged_ && bt_->isMute(trackNum))	// Paint mute mask
+				forePainter.fillRect(x, 0, w, viewedRowsHeight_, palette_->ptnMaskColor);
+			x += w;
+			++trackNum;
+		}
 	}
 }
 
