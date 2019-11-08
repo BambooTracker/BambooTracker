@@ -595,9 +595,9 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 	if (mime->hasUrls() && mime->urls().length() == 1) {
 		switch (FileIO::judgeFileTypeFromExtension(
 					QFileInfo(mime->urls().first().toLocalFile()).suffix().toStdString())) {
-		case FileIO::FileType::MOD:
-		case FileIO::FileType::INST:
-		case FileIO::FileType::BANK:
+		case FileIO::FileType::Mod:
+		case FileIO::FileType::Inst:
+		case FileIO::FileType::Bank:
 			event->acceptProposedAction();
 			break;
 		default:
@@ -611,7 +611,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 	QString file = event->mimeData()->urls().first().toLocalFile();
 
 	switch (FileIO::judgeFileTypeFromExtension(QFileInfo(file).suffix().toStdString())) {
-	case FileIO::FileType::MOD:
+	case FileIO::FileType::Mod:
 	{
 		if (isWindowModified()) {
 			auto modTitleStd = bt_->getModuleTitle();
@@ -640,12 +640,12 @@ void MainWindow::dropEvent(QDropEvent* event)
 		openModule(file);
 		break;
 	}
-	case FileIO::FileType::INST:
+	case FileIO::FileType::Inst:
 	{
 		funcLoadInstrument(file);
 		break;
 	}
-	case FileIO::FileType::BANK:
+	case FileIO::FileType::Bank:
 	{
 		funcImportInstrumentsFromBank(file);
 		break;
@@ -787,7 +787,7 @@ void MainWindow::addInstrument()
 		ui->instrumentListWidget->setCurrentRow(num);
 		break;
 	}
-	case SoundSource::Drum:
+	case SoundSource::DRUM:
 		break;
 	}
 }
@@ -1184,8 +1184,8 @@ void MainWindow::loadSong()
 	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), static_cast<int>(title.length())));
 	ui->songTitleLineEdit->setCursorPosition(0);
 	switch (bt_->getSongStyle(curSong).type) {
-	case SongType::STD:		ui->songStyleLineEdit->setText(tr("Standard"));			break;
-	case SongType::FMEX:	ui->songStyleLineEdit->setText(tr("FM3ch expanded"));	break;
+	case SongType::Standard:		ui->songStyleLineEdit->setText(tr("Standard"));			break;
+	case SongType::FM3chExpanded:	ui->songStyleLineEdit->setText(tr("FM3ch expanded"));	break;
 	}
 	ui->songStyleLineEdit->setCursorPosition(0);
 	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
@@ -1208,8 +1208,8 @@ void MainWindow::loadSong()
 
 	setWindowTitle();
 	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
-	case SongType::STD:		statusStyle_->setText(tr("Standard"));			break;
-	case SongType::FMEX:	statusStyle_->setText(tr("FM3ch expanded"));	break;
+	case SongType::Standard:		statusStyle_->setText(tr("Standard"));			break;
+	case SongType::FM3chExpanded:	statusStyle_->setText(tr("FM3ch expanded"));	break;
 	}
 	statusPlayPos_->setText("00/00");
 }
@@ -1487,7 +1487,7 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	}
 	else {
 		switch (bt_->getCurrentTrackAttribute().source) {
-		case SoundSource::Drum:	add->setEnabled(false);	break;
+		case SoundSource::DRUM:	add->setEnabled(false);	break;
 		default:	break;
 		}
 	}
@@ -2551,10 +2551,10 @@ void MainWindow::on_keyRepeatCheckBox_stateChanged(int arg1)
 
 void MainWindow::updateVisuals()
 {
-	int16_t wave[2 * OPNAController::OutputHistorySize];
+	int16_t wave[2 * OPNAController::OUTPUT_HISTORY_SIZE];
 	bt_->getOutputHistory(wave);
 
-	ui->waveVisual->setStereoSamples(wave, OPNAController::OutputHistorySize);
+	ui->waveVisual->setStereoSamples(wave, OPNAController::OUTPUT_HISTORY_SIZE);
 }
 
 void MainWindow::on_action_Effect_List_triggered()

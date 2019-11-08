@@ -5,7 +5,7 @@ CommandSequence::CommandSequence(int num, SequenceType seqType, int comType, int
 	  DEF_COM_TYPE(comType),
 	  DEF_COM_DATA(comData),
 	  type_(seqType),
-	  release_{ ReleaseType::NO_RELEASE, -1 }
+	  release_{ ReleaseType::NoRelease, -1 }
 {
 	seq_.push_back({ comType, comData });
 }
@@ -198,12 +198,12 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 		loopStack_.clear();
 		isRelease_ = true;
 		switch (seq_->release_.type) {
-		case ReleaseType::NO_RELEASE:
+		case ReleaseType::NoRelease:
 			break;
-		case ReleaseType::FIXED:
+		case ReleaseType::FixedRelease:
 			next = seq_->release_.begin;
 			break;
-		case ReleaseType::ABSOLUTE:
+		case ReleaseType::AbsoluteRelease:
 		{
 			int crtr;
 			if (pos_ == -1) {
@@ -228,7 +228,7 @@ int CommandSequence::Iterator::next(bool isReleaseBegin)
 			}
 			break;
 		}
-		case ReleaseType::RELATIVE:
+		case ReleaseType::RelativeRelease:
 		{
 			if (pos_ == -1) {
 				int prevIdx = seq_->release_.begin - 1;

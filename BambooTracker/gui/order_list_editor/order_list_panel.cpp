@@ -542,10 +542,10 @@ void OrderListPanel::drawHeaders(int maxWidth)
 		switch (attrib.source) {
 		case SoundSource::FM:
 			switch (songStyle_.type) {
-			case SongType::STD:
+			case SongType::Standard:
 				str = "FM" + QString::number(attrib.channelInSource + 1);
 				break;
-			case SongType::FMEX:
+			case SongType::FM3chExpanded:
 				switch (attrib.channelInSource) {
 				case 2:
 					str= "OP1";
@@ -569,7 +569,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 		case SoundSource::SSG:
 			str = "SG" + QString::number(attrib.channelInSource + 1);
 			break;
-		case SoundSource::Drum:
+		case SoundSource::DRUM:
 			switch (attrib.channelInSource) {
 			case 0:	str = "BD";	break;
 			case 1:	str = "SD";	break;

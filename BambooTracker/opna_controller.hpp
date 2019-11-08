@@ -62,7 +62,7 @@ public:
 	void getStreamSamples(int16_t* container, size_t nSamples);
 	void getOutputHistory(int16_t* history);
 
-	enum { OutputHistorySize = 1024 };
+	enum { OUTPUT_HISTORY_SIZE = 1024 };
 
 	// Chip mode
 	void setMode(SongType mode);

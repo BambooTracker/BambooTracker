@@ -53,11 +53,11 @@ const FMOperatorType FileIO::OP_FM_TYPES[4] = {
 std::string FileIO::fileTypeToString(const FileType type)
 {
 	switch (type) {
-	case FileType::MOD:		return "module";
-	case FileType::INST:	return "instrument";
+	case FileType::Mod:		return "module";
+	case FileType::Inst:	return "instrument";
 	case FileType::WAV:		return "wav";
 	case FileType::VGM:		return "vgm";
-	case FileType::BANK:	return "bank";
+	case FileType::Bank:	return "bank";
 	case FileType::S98:		return "s98";
 	default:	throw std::invalid_argument("Unexpected FileType.");
 	}
@@ -72,22 +72,22 @@ std::string FileIO::getExtension(const std::string path)
 
 FileIO::FileType FileIO::judgeFileTypeFromExtension(const std::string ext)
 {
-	if (ext == "btm") return FileType::MOD;
+	if (ext == "btm") return FileType::Mod;
 
-	if (ext == "bti") return FileType::INST;
-	if (ext == "dmp") return FileType::INST;
-	if (ext == "tfi") return FileType::INST;
-	if (ext == "vgi") return FileType::INST;
-	if (ext == "opni") return FileType::INST;
-	if (ext == "y12") return FileType::INST;
-	if (ext == "ins") return FileType::INST;
+	if (ext == "bti") return FileType::Inst;
+	if (ext == "dmp") return FileType::Inst;
+	if (ext == "tfi") return FileType::Inst;
+	if (ext == "vgi") return FileType::Inst;
+	if (ext == "opni") return FileType::Inst;
+	if (ext == "y12") return FileType::Inst;
+	if (ext == "ins") return FileType::Inst;
 
-	if (ext == "btb") return FileType::BANK;
-	if (ext == "wopn") return FileType::BANK;
+	if (ext == "btb") return FileType::Bank;
+	if (ext == "wopn") return FileType::Bank;
 
 	if (ext == "vgm") return FileType::VGM;
 	if (ext == "s98") return FileType::S98;
 	if (ext == "wav") return FileType::WAV;
 
-	return FileType::UNKNOWN;
+	return FileType::Unknown;
 }

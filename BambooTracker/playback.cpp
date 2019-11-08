@@ -287,7 +287,7 @@ void PlaybackManager::readStep()
 		switch (attrib.source) {
 		case SoundSource::FM:	isNextSet |= readFMStep(step, attrib.channelInSource);		break;
 		case SoundSource::SSG:	isNextSet |= readSSGStep(step, attrib.channelInSource);		break;
-		case SoundSource::Drum:	isNextSet |= readDrumStep(step, attrib.channelInSource);	break;
+		case SoundSource::DRUM:	isNextSet |= readDrumStep(step, attrib.channelInSource);	break;
 		}
 	}
 	opnaCtrl_->updateRegisterStates();
@@ -467,7 +467,7 @@ bool PlaybackManager::readDrumStep(Step& step, int ch)
 
 	// Set effects to queue
 	for (int i = 0; i < 4; ++i) {
-		Effect&& eff = Effect::makeEffectData(SoundSource::Drum, step.getEffectID(i), step.getEffectValue(i));
+		Effect&& eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
 		isNoteDelay |= setEffectToQueueDrum(ch, std::move(eff));
 	}
 
@@ -475,7 +475,7 @@ bool PlaybackManager::readDrumStep(Step& step, int ch)
 	if (isNoteDelay) {
 		// Set effect
 		changedNextStep = readDrumEffectFromQueue(ch);
-		opnaCtrl_->tickEvent(SoundSource::Drum, ch);
+		opnaCtrl_->tickEvent(SoundSource::DRUM, ch);
 	}
 	else {
 		changedNextStep = readDrumEventsInStep(step, ch);
@@ -503,7 +503,7 @@ bool PlaybackManager::readDrumEventsInStep(Step& step, int ch, bool calledByNote
 	case -1:	// None
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkDrumDelayEventsInTick(step, ch);
-			opnaCtrl_->tickEvent(SoundSource::Drum, ch);
+			opnaCtrl_->tickEvent(SoundSource::DRUM, ch);
 		}
 		break;
 	case -2:	// Key off
@@ -1120,7 +1120,7 @@ void PlaybackManager::readTick(int rest)
 		switch (attrib.source) {
 		case SoundSource::FM:	checkFMDelayEventsInTick(curStep, ch);		break;
 		case SoundSource::SSG:	checkSSGDelayEventsInTick(curStep, ch);		break;
-		case SoundSource::Drum:	checkDrumDelayEventsInTick(curStep, ch);	break;
+		case SoundSource::DRUM:	checkDrumDelayEventsInTick(curStep, ch);	break;
 		}
 
 		if (rest == 1 && nextReadOrder_ != -1 && attrib.source == SoundSource::FM) {
@@ -1696,7 +1696,7 @@ void PlaybackManager::retrieveChannelStates()
 				}
 				break;
 			}
-			case SoundSource::Drum:
+			case SoundSource::DRUM:
 			{
 				// Volume
 				int vol = step.getVolume();
@@ -1707,7 +1707,7 @@ void PlaybackManager::retrieveChannelStates()
 				}
 				// Effects
 				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(SoundSource::Drum, step.getEffectID(i), step.getEffectValue(i));
+					Effect eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Pan:
 						if (-1 < eff.value && eff.value < 4 && !isSetPanDrum[uch]) {

@@ -38,7 +38,7 @@ void LFOFM::setParameterValue(FMLFOParameter param, int value)
 	case FMLFOParameter::FREQ:	freq_ = value;		break;
 	case FMLFOParameter::PMS:	pms_ = value;		break;
 	case FMLFOParameter::AMS:	ams_ = value;		break;
-	case FMLFOParameter::COUNT:	cnt_ = value;		break;
+	case FMLFOParameter::Count:	cnt_ = value;		break;
 	case FMLFOParameter::AM1:	amOp_[0] = value;	break;
 	case FMLFOParameter::AM2:	amOp_[1] = value;	break;
 	case FMLFOParameter::AM3:	amOp_[2] = value;	break;
@@ -52,7 +52,7 @@ int LFOFM::getParameterValue(FMLFOParameter param) const
 	case FMLFOParameter::FREQ:	return freq_;
 	case FMLFOParameter::PMS:	return pms_;
 	case FMLFOParameter::AMS:	return ams_;
-	case FMLFOParameter::COUNT:	return cnt_;
+	case FMLFOParameter::Count:	return cnt_;
 	case FMLFOParameter::AM1:	return amOp_[0];
 	case FMLFOParameter::AM2:	return amOp_[1];
 	case FMLFOParameter::AM3:	return amOp_[2];

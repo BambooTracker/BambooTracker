@@ -533,14 +533,14 @@ void InstrumentsManager::clearAll()
 		for (auto& p : opSeqFM_) {
 			p.second[i] = std::make_shared<CommandSequence>(i);
 		}
-		arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
-		ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
+		arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 48);
+		ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 127);
 
 		wfSSG_[i] = std::make_shared<CommandSequence>(i);
 		tnSSG_[i] = std::make_shared<CommandSequence>(i);
-		envSSG_[i] = std::make_shared<CommandSequence>(i,SequenceType::NoType, 15);
-		arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
-		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
+		envSSG_[i] = std::make_shared<CommandSequence>(i,SequenceType::NoSequenceType, 15);
+		arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 48);
+		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 127);
 	}
 }
 
@@ -595,20 +595,20 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 				p.second[i] = std::make_shared<CommandSequence>(i);
 		}
 		if (!arpFM_[i]->isUserInstrument())
-			arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
+			arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 48);
 		if (!ptFM_[i]->isUserInstrument())
-			ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
+			ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 127);
 
 		if (!wfSSG_[i]->isUserInstrument())
 			wfSSG_[i] = std::make_shared<CommandSequence>(i);
 		if (!tnSSG_[i]->isUserInstrument())
 			tnSSG_[i] = std::make_shared<CommandSequence>(i);
 		if (!envSSG_[i]->isUserInstrument())
-			envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NoType, 15);
+			envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NoSequenceType, 15);
 		if (!arpSSG_[i]->isUserInstrument())
-			arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 48);
+			arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 48);
 		if (!ptSSG_[i]->isUserInstrument())
-			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::Absolute, 127);
+			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::AbsoluteSequence, 127);
 	}
 }
 

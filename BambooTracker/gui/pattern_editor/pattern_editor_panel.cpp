@@ -724,7 +724,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			switch (src) {
 			case SoundSource::FM:	volLim = 0x80;	break;
 			case SoundSource::SSG:	volLim = 0x10;	break;
-			case SoundSource::Drum:	volLim = 0x20;	break;
+			case SoundSource::DRUM:	volLim = 0x20;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
 			if (src == SoundSource::FM && vol < volLim && config_.lock()->getReverseFMVolumeOrder()) {
@@ -815,10 +815,10 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		switch (attrib.source) {
 		case SoundSource::FM:
 			switch (songStyle_.type) {
-			case SongType::STD:
+			case SongType::Standard:
 				srcName = "FM" + QString::number(attrib.channelInSource + 1);
 				break;
-			case SongType::FMEX:
+			case SongType::FM3chExpanded:
 				switch (attrib.channelInSource) {
 				case 2:
 					srcName = "FM3-OP1";
@@ -842,7 +842,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		case SoundSource::SSG:
 			srcName = "SSG" + QString::number(attrib.channelInSource + 1);
 			break;
-		case SoundSource::Drum:
+		case SoundSource::DRUM:
 			switch (attrib.channelInSource) {
 			case 0:	srcName = "Bass drum";	break;
 			case 1:	srcName = "Snare drum";	break;
@@ -1234,26 +1234,26 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 			JamKey possibleJamKey = getJamKeyFromLayoutMapping (qtKey);
 			int octaveOffset = 0;
 			switch (possibleJamKey) {
-			case JamKey::HIGH_D_H:
-			case JamKey::HIGH_CS_H:
-			case JamKey::HIGH_C_H:
+			case JamKey::HighD2:
+			case JamKey::HighCS2:
+			case JamKey::HighC2:
 				octaveOffset = 2;
 				break;
-			case JamKey::HIGH_B:
-			case JamKey::HIGH_AS:
-			case JamKey::HIGH_A:
-			case JamKey::HIGH_GS:
-			case JamKey::HIGH_G:
-			case JamKey::HIGH_FS:
-			case JamKey::HIGH_F:
-			case JamKey::HIGH_E:
-			case JamKey::HIGH_DS:
-			case JamKey::HIGH_D:
-			case JamKey::HIGH_CS:
-			case JamKey::HIGH_C:
-			case JamKey::LOW_D_H:
-			case JamKey::LOW_CS_H:
-			case JamKey::LOW_C_H:
+			case JamKey::HighB:
+			case JamKey::HighAS:
+			case JamKey::HighA:
+			case JamKey::HighGS:
+			case JamKey::HighG:
+			case JamKey::HighFS:
+			case JamKey::HighF:
+			case JamKey::HighE:
+			case JamKey::HighDS:
+			case JamKey::HighD:
+			case JamKey::HighCS:
+			case JamKey::HighC:
+			case JamKey::LowD2:
+			case JamKey::LowCS2:
+			case JamKey::LowC2:
 				octaveOffset = 1;
 				break;
 			default:
@@ -1974,8 +1974,8 @@ void PatternEditorPanel::onSongLoaded()
 	songStyle_ = bt_->getSongStyle(curSongNum_);
 	int trackCnt = 0;
 	switch (songStyle_.type) {
-	case SongType::STD:		trackCnt = 15;	break;
-	case SongType::FMEX:	trackCnt = 18;	break;
+	case SongType::Standard:		trackCnt = 15;	break;
+	case SongType::FM3chExpanded:	trackCnt = 18;	break;
 	}
 	rightEffn_ = std::vector<int>(static_cast<size_t>(trackCnt));
 	for (int i = 0; i < trackCnt; ++i)

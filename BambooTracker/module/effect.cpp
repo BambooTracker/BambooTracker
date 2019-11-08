@@ -59,7 +59,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "08") {
 		switch (src) {
 		case SoundSource::FM:
-		case SoundSource::Drum:
+		case SoundSource::DRUM:
 			return EffectType::Pan;
 		default:
 			return EffectType::NoEffect;
@@ -159,7 +159,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::SSG:
 			return EffectType::ToneNoiseMix;
-		case SoundSource::Drum:
+		case SoundSource::DRUM:
 			return EffectType::MasterVolume;
 		default:
 			return EffectType::NoEffect;

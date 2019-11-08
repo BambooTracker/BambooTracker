@@ -11,7 +11,7 @@ struct SongStyle;
 class Song
 {
 public:
-	Song(int number, SongType songType = SongType::STD, std::string title = u8"", bool isUsedTempo = true,
+	Song(int number, SongType songType = SongType::Standard, std::string title = u8"", bool isUsedTempo = true,
 		 int tempo = 150, int groove = 0, int speed = 6, size_t defaultPatternSize = 64);
 
 	void setNumber(int n);

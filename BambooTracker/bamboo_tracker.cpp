@@ -683,7 +683,7 @@ bool BambooTracker::isJamMode() const
 void BambooTracker::jamKeyOn(JamKey key)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::Drum) {
+	if (attrib.source == SoundSource::DRUM) {
 		opnaCtrl_->setKeyOnFlagDrum(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
@@ -694,7 +694,7 @@ void BambooTracker::jamKeyOn(JamKey key)
 			JamKeyData& offData = list[1];
 			switch (offData.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FMEX && offData.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && offData.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
@@ -723,7 +723,7 @@ void BambooTracker::jamKeyOn(JamKey key)
 		case SoundSource::FM:
 			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
 				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
-			if (songStyle_.type == SongType::FMEX && onData.channelInSource == 2) {
+			if (songStyle_.type == SongType::FM3chExpanded && onData.channelInSource == 2) {
 				opnaCtrl_->keyOnFM(2, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(6, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(7, note, octave, pitch, true);
@@ -747,17 +747,17 @@ void BambooTracker::jamKeyOn(JamKey key)
 void BambooTracker::jamKeyOn(int keyNum)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::Drum) {
+	if (attrib.source == SoundSource::DRUM) {
 		opnaCtrl_->setKeyOnFlagDrum(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {
-		std::vector<JamKeyData>&& list = jamMan_->keyOn(JamKey::MIDI_KEY, attrib.channelInSource, attrib.source, keyNum);
+		std::vector<JamKeyData>&& list = jamMan_->keyOn(JamKey::MidiKey, attrib.channelInSource, attrib.source, keyNum);
 		if (list.size() == 2) {	// Key off
 			JamKeyData& offData = list[1];
 			switch (offData.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FMEX && offData.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && offData.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
@@ -785,7 +785,7 @@ void BambooTracker::jamKeyOn(int keyNum)
 		case SoundSource::FM:
 			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
 				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
-			if (songStyle_.type == SongType::FMEX && onData.channelInSource == 2) {
+			if (songStyle_.type == SongType::FM3chExpanded && onData.channelInSource == 2) {
 				opnaCtrl_->keyOnFM(2, octNote.second, octNote.first, pitch, true);
 				opnaCtrl_->keyOnFM(6, octNote.second, octNote.first, pitch, true);
 				opnaCtrl_->keyOnFM(7, octNote.second, octNote.first, pitch, true);
@@ -809,7 +809,7 @@ void BambooTracker::jamKeyOn(int keyNum)
 void BambooTracker::jamKeyOff(JamKey key)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::Drum) {
+	if (attrib.source == SoundSource::DRUM) {
 		opnaCtrl_->setKeyOffFlagDrum(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
@@ -820,7 +820,7 @@ void BambooTracker::jamKeyOff(JamKey key)
 		if (data.channelInSource > -1) {	// Key still sound
 			switch (data.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FMEX && data.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && data.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
@@ -843,17 +843,17 @@ void BambooTracker::jamKeyOff(JamKey key)
 void BambooTracker::jamKeyOff(int keyNum)
 {
 	auto attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	if (attrib.source == SoundSource::Drum) {
+	if (attrib.source == SoundSource::DRUM) {
 		opnaCtrl_->setKeyOffFlagDrum(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {
-		JamKeyData&& data = jamMan_->keyOff(JamKey::MIDI_KEY, keyNum);
+		JamKeyData&& data = jamMan_->keyOff(JamKey::MidiKey, keyNum);
 
 		if (data.channelInSource > -1) {	// Key still sound
 			switch (data.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FMEX && data.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && data.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
@@ -949,7 +949,7 @@ void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 		muteStateSSG_.at(static_cast<size_t>(ch)) = isMute;
 		if (isPlaySong()) opnaCtrl_->setMuteSSGState(ch, isMute);
 		break;
-	case SoundSource::Drum:
+	case SoundSource::DRUM:
 		muteStateDrum_.at(static_cast<size_t>(ch)) = isMute;
 		if (isPlaySong()) opnaCtrl_->setMuteDrumState(ch, isMute);
 		break;
@@ -963,7 +963,7 @@ bool BambooTracker::isMute(int trackNum)
 	switch (ta.source) {
 	case SoundSource::FM:	return muteStateFM_.at(ch);
 	case SoundSource::SSG:	return muteStateSSG_.at(ch);
-	case SoundSource::Drum:	return muteStateDrum_.at(ch);
+	case SoundSource::DRUM:	return muteStateDrum_.at(ch);
 	default:	return false;	// Dummy
 	}
 }

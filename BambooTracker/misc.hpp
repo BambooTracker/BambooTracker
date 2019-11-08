@@ -13,13 +13,13 @@ enum class SoundSource : int
 {
 	FM = 1,
 	SSG = 2,
-	Drum = 4
+	DRUM = 4
 };
 
 enum class SongType : int
 {
-	STD,
-	FMEX
+	Standard,
+	FM3chExpanded
 };
 
 enum class Note : int
@@ -158,8 +158,8 @@ DECL_MAYBE_UNUSED
 inline static size_t getFMChannelCount(SongType type)
 {
 	switch (type) {
-	case SongType::STD:		return 6;
-	case SongType::FMEX:	return 9;
+	case SongType::Standard:		return 6;
+	case SongType::FM3chExpanded:	return 9;
 	default:	throw std::invalid_argument("Invalid SongType.");
 	}
 }

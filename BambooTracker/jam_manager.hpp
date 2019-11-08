@@ -44,8 +44,8 @@ struct JamKeyData
 
 enum class JamKey
 {
-	LOW_C, LOW_CS, LOW_D, LOW_DS, LOW_E, LOW_F, LOW_FS, LOW_G,
-	LOW_GS, LOW_A, LOW_AS, LOW_B, LOW_C_H, LOW_CS_H, LOW_D_H,
-	HIGH_C, HIGH_CS, HIGH_D, HIGH_DS, HIGH_E, HIGH_F, HIGH_FS, HIGH_G,
-	HIGH_GS, HIGH_A, HIGH_AS, HIGH_B, HIGH_C_H, HIGH_CS_H, HIGH_D_H, MIDI_KEY
+	LowC, LowCS, LowD, LowDS, LowE, LowF, LowFS, LowG,
+	LowGS, LowA, LowAS, LowB, LowC2, LowCS2, LowD2,
+	HighC, HighCS, HighD, HighDS, HighE, HighF, HighFS, HighG,
+	HighGS, HighA, HighAS, HighB, HighC2, HighCS2, HighD2, MidiKey
 };

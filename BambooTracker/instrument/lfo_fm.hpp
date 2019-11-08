@@ -35,6 +35,6 @@ private:
 
 enum class FMLFOParameter
 {
-	FREQ, AMS, PMS, COUNT,
+	FREQ, AMS, PMS, Count,
 	AM1, AM2, AM3, AM4
 };

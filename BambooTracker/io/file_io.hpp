@@ -11,7 +11,7 @@ public:
 
 	enum class FileType
 	{
-		MOD, INST, WAV, VGM, BANK, S98, UNKNOWN
+		Mod, Inst, WAV, VGM, Bank, S98, Unknown
 	};
 
 	static std::string fileTypeToString(const FileType type);

@@ -13,7 +13,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 	  defPtnSize_(defaultPatternSize)
 {
 	switch (songType) {
-	case SongType::STD:
+	case SongType::Standard:
 		tracks_.reserve(15);
 		for (int i = 0; i < 6; ++i) {
 			tracks_.emplace_back(i, SoundSource::FM, i, defaultPatternSize);
@@ -22,10 +22,10 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 			tracks_.emplace_back(i + 6, SoundSource::SSG, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i + 9, SoundSource::Drum, i, defaultPatternSize);
+			tracks_.emplace_back(i + 9, SoundSource::DRUM, i, defaultPatternSize);
 		}
 		break;
-	case SongType::FMEX:
+	case SongType::FM3chExpanded:
 		tracks_.reserve(18);
 		for (int i = 0; i < 9; ++i) {
 			int ch = (i < 3) ? i
@@ -36,7 +36,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 			tracks_.emplace_back(i + 9, SoundSource::SSG, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i + 12, SoundSource::Drum, i, defaultPatternSize);
+			tracks_.emplace_back(i + 12, SoundSource::DRUM, i, defaultPatternSize);
 		}
 		break;
 	}

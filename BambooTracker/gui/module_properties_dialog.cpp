@@ -43,8 +43,8 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 				   core.lock()->getSongStyle(i).type, i);
 	}
 
-	ui->insertTypeComboBox->addItem(tr("Standard"), static_cast<int>(SongType::STD));
-	ui->insertTypeComboBox->addItem(tr("FM3ch expanded"), static_cast<int>(SongType::FMEX));
+	ui->insertTypeComboBox->addItem(tr("Standard"), static_cast<int>(SongType::Standard));
+	ui->insertTypeComboBox->addItem(tr("FM3ch expanded"), static_cast<int>(SongType::FM3chExpanded));
 }
 
 ModulePropertiesDialog::~ModulePropertiesDialog()
@@ -59,8 +59,8 @@ void ModulePropertiesDialog::insertSong(int row, QString title, SongType type, i
 	item->setData(0, Qt::UserRole, prevNum);
 	item->setText(1, title);
 	switch (type) {
-	case SongType::STD:		item->setText(2, tr("Standard"));		break;
-	case SongType::FMEX:	item->setText(2, tr("FM3ch expanded"));	break;
+	case SongType::Standard:		item->setText(2, tr("Standard"));		break;
+	case SongType::FM3chExpanded:	item->setText(2, tr("FM3ch expanded"));	break;
 	}
 	item->setData(2, Qt::UserRole, static_cast<int>(type));
 	ui->songTreeWidget->insertTopLevelItem(row, item);

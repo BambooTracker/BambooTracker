@@ -84,7 +84,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				ctr.appendUint8(instSSG->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
-			case SoundSource::Drum:
+			case SoundSource::DRUM:
 				break;
 			}
 			ctr.writeUint32(iOfs, ctr.size() - iOfs);
@@ -220,7 +220,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::AM1) << 4)
 				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::AMS));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::COUNT));
+			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::Count));
 			ctr.appendUint8(tmp);
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
@@ -256,18 +256,18 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				}
 				auto release = instMan.lock()->getOperatorSequenceFMRelease(FileIO::ENV_FM_PARAMS[i], idx);
 				switch (release.type) {
-				case ReleaseType::NO_RELEASE:
+				case ReleaseType::NoRelease:
 					ctr.appendUint8(0x00);
 					break;
-				case ReleaseType::FIXED:
+				case ReleaseType::FixedRelease:
 					ctr.appendUint8(0x01);
 					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
-				case ReleaseType::ABSOLUTE:
+				case ReleaseType::AbsoluteRelease:
 					ctr.appendUint8(0x02);
 					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
-				case ReleaseType::RELATIVE:
+				case ReleaseType::RelativeRelease:
 					ctr.appendUint8(0x03);
 					ctr.appendUint16(static_cast<uint16_t>(release.begin));
 					break;
@@ -307,27 +307,27 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 			}
 			auto release = instMan.lock()->getArpeggioFMRelease(idx);
 			switch (release.type) {
-			case ReleaseType::NO_RELEASE:
+			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FixedRelease:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::AbsoluteRelease:
 				ctr.appendUint8(0x02);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RelativeRelease:
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			switch (instMan.lock()->getArpeggioFMType(idx)) {
-			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
-			case SequenceType::Fixed:		ctr.appendUint8(0x01);	break;
-			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -363,26 +363,26 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 			}
 			auto release = instMan.lock()->getPitchFMRelease(idx);
 			switch (release.type) {
-			case ReleaseType::NO_RELEASE:
+			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FixedRelease:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::AbsoluteRelease:
 				ctr.appendUint8(0x02);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RelativeRelease:
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			switch (instMan.lock()->getPitchFMType(idx)) {
-			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
-			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -419,19 +419,19 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 			}
 			auto release = instMan.lock()->getWaveFormSSGRelease(idx);
 			switch (release.type) {
-			case ReleaseType::NO_RELEASE:
+			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FixedRelease:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::AbsoluteRelease:
 				ctr.appendUint8(0x02);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RelativeRelease:
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -470,19 +470,19 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 			}
 			auto release = instMan.lock()->getToneNoiseSSGRelease(idx);
 			switch (release.type) {
-			case ReleaseType::NO_RELEASE:
+			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FixedRelease:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::AbsoluteRelease:
 				ctr.appendUint8(0x02);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RelativeRelease:
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -523,19 +523,19 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 			auto release = instMan.lock()->getEnvelopeSSGRelease(idx);
 
 			switch (release.type) {
-			case ReleaseType::NO_RELEASE:
+			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FixedRelease:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::AbsoluteRelease:
 				ctr.appendUint8(0x02);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RelativeRelease:
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
@@ -574,27 +574,27 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 			}
 			auto release = instMan.lock()->getArpeggioSSGRelease(idx);
 			switch (release.type) {
-			case ReleaseType::NO_RELEASE:
+			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FixedRelease:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::AbsoluteRelease:
 				ctr.appendUint8(0x02);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RelativeRelease:
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			switch (instMan.lock()->getArpeggioSSGType(idx)) {
-			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
-			case SequenceType::Fixed:		ctr.appendUint8(0x01);	break;
-			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -630,26 +630,26 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 			}
 			auto release = instMan.lock()->getPitchSSGRelease(idx);
 			switch (release.type) {
-			case ReleaseType::NO_RELEASE:
+			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FixedRelease:
 				ctr.appendUint8(0x01);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::AbsoluteRelease:
 				ctr.appendUint8(0x02);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RelativeRelease:
 				ctr.appendUint8(0x03);
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
 			switch (instMan.lock()->getPitchSSGType(idx)) {
-			case SequenceType::Absolute:	ctr.appendUint8(0x00);	break;
-			case SequenceType::Relative:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -660,7 +660,7 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
 
-	if (!ctr.save(path)) throw FileOutputError(FileIO::FileType::BANK);
+	if (!ctr.save(path)) throw FileOutputError(FileIO::FileType::Bank);
 }
 
 AbstractBank* BankIO::loadBank(std::string path)
@@ -668,24 +668,24 @@ AbstractBank* BankIO::loadBank(std::string path)
 	std::string ext = FileIO::getExtension(path);
 	if (ext.compare("wopn") == 0) return BankIO::loadWOPNFile(path);
 	if (ext.compare("btb") == 0) return BankIO::loadBTBFile(path);
-	throw FileInputError(FileIO::FileType::BANK);
+	throw FileInputError(FileIO::FileType::Bank);
 }
 
 AbstractBank* BankIO::loadBTBFile(std::string path)
 {
 	BinaryContainer ctr;
 
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::BANK);
+	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Bank);
 
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerBnk")
-		throw FileCorruptionError(FileIO::FileType::BANK);
+		throw FileCorruptionError(FileIO::FileType::Bank);
 	globCsr += 16;
 	/*size_t eofOfs = */ctr.readUint32(globCsr);
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
 	if (fileVersion > Version::ofBankFileInBCD())
-		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIO::FileType::BANK);
+		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIO::FileType::Bank);
 	globCsr += 4;
 
 
@@ -693,7 +693,7 @@ AbstractBank* BankIO::loadBTBFile(std::string path)
 	std::vector<int> ids;
 	std::vector<std::string> names;
 	std::vector<BinaryContainer> instCtrs;
-	if (ctr.readString(globCsr, 8) != "INSTRMNT") throw FileCorruptionError(FileIO::FileType::BANK);
+	if (ctr.readString(globCsr, 8) != "INSTRMNT") throw FileCorruptionError(FileIO::FileType::Bank);
 	globCsr += 8;
 	size_t instOfs = ctr.readUint32(globCsr);
 	size_t instCsr = globCsr + 4;
@@ -721,7 +721,7 @@ AbstractBank* BankIO::loadBTBFile(std::string path)
 
 
 	/***** Instrument property section *****/
-	if (ctr.readString(globCsr, 8) != "INSTPROP") throw FileCorruptionError(FileIO::FileType::INST);
+	if (ctr.readString(globCsr, 8) != "INSTPROP") throw FileCorruptionError(FileIO::FileType::Inst);
 	globCsr += 8;
 	size_t instPropOfs = ctr.readUint32(globCsr);
 	BinaryContainer propCtr = ctr.getSubcontainer(globCsr + 4, instPropOfs - 4);
@@ -742,15 +742,15 @@ AbstractBank* BankIO::loadWOPNFile(std::string path)
 	std::streampos size = in.tellg();
 
 	if (!in)
-		throw FileInputError(FileIO::FileType::BANK);
+		throw FileInputError(FileIO::FileType::Bank);
 	else {
 		std::unique_ptr<char[]> buf(new char[size]);
 		in.seekg(0, std::ios::beg);
 		if (!in.read(buf.get(), size) || in.gcount() != size)
-			throw FileInputError(FileIO::FileType::BANK);
+			throw FileInputError(FileIO::FileType::Bank);
 		wopn.reset(WOPN_LoadBankFromMem(buf.get(), size, nullptr));
 		if (!wopn)
-			throw FileCorruptionError(FileIO::FileType::BANK);
+			throw FileCorruptionError(FileIO::FileType::Bank);
 	}
 
 	WopnBank *bank = new WopnBank(wopn.get());

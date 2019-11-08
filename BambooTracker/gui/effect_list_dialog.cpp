@@ -26,19 +26,19 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::Tremolo,
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::Pan,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::VolumeSlide,
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::PositionJump,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::SongEnd,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::PatternBreak,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::SpeedTempoChange,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::NoteDelay,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::AutoEnvelope,
 		   static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::HardEnvHighPeriod,
@@ -46,7 +46,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::HardEnvLowPeriod,
 		   static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::Groove,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::Detune,
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::NoteSlideUp,
@@ -54,13 +54,13 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::NoteSlideDown,
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::NoteCut,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::TransposeDelay,
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::ToneNoiseMix,
 		   static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::MasterVolume,
-		   static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::NoisePitch,
 		   static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::ARControl,
@@ -70,7 +70,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::FBControl,
 		   static_cast<int>(SoundSource::FM));
 	addRow(EffectType::VolumeDelay,
-		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::Drum));
+		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG) | static_cast<int>(SoundSource::DRUM));
 	addRow(EffectType::MLControl,
 		   static_cast<int>(SoundSource::FM));
 	addRow(EffectType::RRControl,
@@ -93,7 +93,7 @@ void EffectListDialog::addRow(EffectType effect, int flag)
 	QString type("");
 	if (flag & static_cast<int>(SoundSource::FM)) type += "FM";
 	if (flag & static_cast<int>(SoundSource::SSG)) type = type + (type.isEmpty() ? "" : ", ") + "SSG";
-	if (flag & static_cast<int>(SoundSource::Drum)) type = type + (type.isEmpty() ? "" : ", ") + "Drum";
+	if (flag & static_cast<int>(SoundSource::DRUM)) type = type + (type.isEmpty() ? "" : ", ") + "Drum";
 	ui->tableWidget->setItem(row, 1, new QTableWidgetItem(type));
 	ui->tableWidget->setItem(row, 2, new QTableWidgetItem(EffectDescription::getEffectDescription(effect)));
 }

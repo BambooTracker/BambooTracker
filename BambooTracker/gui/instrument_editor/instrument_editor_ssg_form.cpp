@@ -336,13 +336,13 @@ SequenceType InstrumentEditorSSGForm::convertSequenceTypeForData(VisualizedInstr
 {
 	switch (type) {
 	case VisualizedInstrumentMacroEditor::SequenceType::NoType:
-		return SequenceType::NoType;
+		return SequenceType::NoSequenceType;
 	case VisualizedInstrumentMacroEditor::SequenceType::Fixed:
-		return SequenceType::Fixed;
+		return SequenceType::FixedSequence;
 	case VisualizedInstrumentMacroEditor::SequenceType::Absolute:
-		return SequenceType::Absolute;
+		return SequenceType::AbsoluteSequence;
 	case VisualizedInstrumentMacroEditor::SequenceType::Relative:
-		return SequenceType::Relative;
+		return SequenceType::RelativeSequence;
 	default:
 		throw std::invalid_argument("Unexpected SequenceType.");
 	}
@@ -351,13 +351,13 @@ SequenceType InstrumentEditorSSGForm::convertSequenceTypeForData(VisualizedInstr
 VisualizedInstrumentMacroEditor::SequenceType InstrumentEditorSSGForm::convertSequenceTypeForUI(SequenceType type)
 {
 	switch (type) {
-	case SequenceType::NoType:
+	case SequenceType::NoSequenceType:
 		return VisualizedInstrumentMacroEditor::SequenceType::NoType;
-	case SequenceType::Fixed:
+	case SequenceType::FixedSequence:
 		return VisualizedInstrumentMacroEditor::SequenceType::Fixed;
-	case SequenceType::Absolute:
+	case SequenceType::AbsoluteSequence:
 		return VisualizedInstrumentMacroEditor::SequenceType::Absolute;
-	case SequenceType::Relative:
+	case SequenceType::RelativeSequence:
 		return VisualizedInstrumentMacroEditor::SequenceType::Relative;
 	default:
 		throw std::invalid_argument("Unexpected SequenceType.");
@@ -368,13 +368,13 @@ ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForData(VisualizedInstrum
 {
 	switch (type) {
 	case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
-		return ReleaseType::NO_RELEASE;
+		return ReleaseType::NoRelease;
 	case VisualizedInstrumentMacroEditor::ReleaseType::FIXED:
-		return ReleaseType::FIXED;
+		return ReleaseType::FixedRelease;
 	case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
-		return ReleaseType::ABSOLUTE;
+		return ReleaseType::AbsoluteRelease;
 	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
-		return ReleaseType::RELATIVE;
+		return ReleaseType::RelativeRelease;
 	default:
 		throw std::invalid_argument("Unexpected ReleaseType.");
 	}
@@ -383,13 +383,13 @@ ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForData(VisualizedInstrum
 VisualizedInstrumentMacroEditor::ReleaseType InstrumentEditorSSGForm::convertReleaseTypeForUI(ReleaseType type)
 {
 	switch (type) {
-	case ReleaseType::NO_RELEASE:
+	case ReleaseType::NoRelease:
 		return VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE;
-	case ReleaseType::FIXED:
+	case ReleaseType::FixedRelease:
 		return VisualizedInstrumentMacroEditor::ReleaseType::FIXED;
-	case ReleaseType::ABSOLUTE:
+	case ReleaseType::AbsoluteRelease:
 		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
-	case ReleaseType::RELATIVE:
+	case ReleaseType::RelativeRelease:
 		return VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE;
 	default:
 		throw std::invalid_argument("Unexpected ReleaseType.");
