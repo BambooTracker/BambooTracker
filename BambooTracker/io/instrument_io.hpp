@@ -45,7 +45,7 @@ public:
 												 BinaryContainer propCtr,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum,
-												 uint32_t version);
+												 uint32_t bankVersion);
 
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(

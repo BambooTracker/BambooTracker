@@ -4,6 +4,7 @@
 #include "file_io_error.hpp"
 #include "file_io.hpp"
 #include "pitch_converter.hpp"
+#include "effect.hpp"
 
 ModuleIO::ModuleIO() {}
 
@@ -1588,6 +1589,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
+					if (version < Version::toBCD(1, 3, 1)) {
+						if (data > 0) {
+							uint16_t tmp = data - 1;
+							data = tmp / 32 * 32 + (31 - tmp % 32) + 1;
+						}
+					}
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
 						instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
@@ -2003,6 +2010,7 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 			if (version >= Version::toBCD(1, 2, 1)) {
 				track.setEffectDisplayWidth(ctr.readUint8(tcsr++));
 			}
+			SoundSource sndsrc = track.getAttribute().source;
 
 			// Pattern
 			while (tcsr < trackEnd) {
@@ -2033,26 +2041,58 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 					}
 					if (eventFlag & 0x0002)	step.setInstrumentNumber(ctr.readUint8(pcsr++));
 					if (eventFlag & 0x0004)	step.setVolume(ctr.readUint8(pcsr++));
+					EffectType efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0008)	{
-						step.setEffectID(0, ctr.readString(pcsr, 2));
+						std::string id = ctr.readString(pcsr, 2);
+						step.setEffectID(0, id);
+						efftype = Effect::toEffectType(sndsrc, id);
 						pcsr += 2;
 					}
-					if (eventFlag & 0x0010)	step.setEffectValue(0, ctr.readUint8(pcsr++));
+					if (eventFlag & 0x0010)	{
+						int v = ctr.readUint8(pcsr++);
+						if (version < Version::toBCD(1, 3, 1) && efftype == EffectType::NoisePitch && v < 32)
+							v = 31 - v;
+						step.setEffectValue(0, v);
+					}
+					efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0020)	{
-						step.setEffectID(1, ctr.readString(pcsr, 2));
+						std::string id = ctr.readString(pcsr, 2);
+						step.setEffectID(1, id);
+						efftype = Effect::toEffectType(sndsrc, id);
 						pcsr += 2;
 					}
-					if (eventFlag & 0x0040)	step.setEffectValue(1, ctr.readUint8(pcsr++));
+					if (eventFlag & 0x0040)	{
+						int v = ctr.readUint8(pcsr++);
+						if (version < Version::toBCD(1, 3, 1) && efftype == EffectType::NoisePitch && v < 32)
+							v = 31 - v;
+						step.setEffectValue(1, v);
+					}
+					efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0080)	{
-						step.setEffectID(2, ctr.readString(pcsr, 2));
+						std::string id = ctr.readString(pcsr, 2);
+						step.setEffectID(2, id);
+						efftype = Effect::toEffectType(sndsrc, id);
 						pcsr += 2;
 					}
-					if (eventFlag & 0x0100)	step.setEffectValue(2, ctr.readUint8(pcsr++));
+					if (eventFlag & 0x0100)	{
+						int v = ctr.readUint8(pcsr++);
+						if (version < Version::toBCD(1, 3, 1) && efftype == EffectType::NoisePitch && v < 32)
+							v = 31 - v;
+						step.setEffectValue(2, v);
+					}
+					efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0200)	{
-						step.setEffectID(3, ctr.readString(pcsr, 2));
+						std::string id = ctr.readString(pcsr, 2);
+						step.setEffectID(3, id);
+						efftype = Effect::toEffectType(sndsrc, id);
 						pcsr += 2;
 					}
-					if (eventFlag & 0x0400)	step.setEffectValue(3, ctr.readUint8(pcsr++));
+					if (eventFlag & 0x0400)	{
+						int v = ctr.readUint8(pcsr++);
+						if (version < Version::toBCD(1, 3, 1) && efftype == EffectType::NoisePitch && v < 32)
+							v = 31 - v;
+						step.setEffectValue(3, v);
+					}
 				}
 			}
 

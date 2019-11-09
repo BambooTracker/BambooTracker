@@ -1671,6 +1671,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = ctr.readUint16(csr);
 						csr += 2;
+						if (fileVersion < Version::toBCD(1, 2, 2)) {
+							if (data > 0) {
+								uint16_t tmp = data - 1;
+								data = tmp / 32 * 32 + (31 - tmp % 32) + 1;
+							}
+						}
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
 							instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
@@ -2655,10 +2661,8 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 													BinaryContainer propCtr,
 													std::weak_ptr<InstrumentsManager> instMan,
-													int instNum, uint32_t version)
+													int instNum, uint32_t bankVersion)
 {
-	(void)version;
-
 	size_t instCsr = 5;	// Skip instrument id and offset
 	size_t nameLen = instCtr.readUint32(instCsr);
 	instCsr += 4;
@@ -3125,6 +3129,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				for (uint16_t l = 0; l < seqLen; ++l) {
 					uint16_t data = propCtr.readUint16(tnCsr);
 					tnCsr += 2;
+					if (bankVersion < Version::toBCD(1, 0, 1)) {
+						if (data > 0) {
+							uint16_t tmp = data - 1;
+							data = tmp / 32 * 32 + (31 - tmp % 32) + 1;
+						}
+					}
 					if (l == 0)
 						instMan.lock()->setToneNoiseSSGSequenceCommand(tnNum, 0, data, 0);
 					else

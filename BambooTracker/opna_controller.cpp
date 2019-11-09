@@ -2160,7 +2160,7 @@ void OPNAController::setNoisePitchSSG(int ch, int pitch)
 {
 	noisePitchSSG_ = pitch;
 	tnSSG_[ch].noisePeriod_ = pitch;
-	opna_->setRegister(0x06, static_cast<uint8_t>(pitch));
+	opna_->setRegister(0x06, static_cast<uint8_t>(31 - pitch));	// Reverse order
 }
 
 void OPNAController::setHardEnvelopePeriod(int ch, bool high, int period)
@@ -3008,7 +3008,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 
 			int p = type - 33;
 			if (tnSSG_[ch].noisePeriod_ != p) {
-				opna_->setRegister(0x06, static_cast<uint8_t>(p));
+				opna_->setRegister(0x06, static_cast<uint8_t>(31 - p));	// Reverse order
 				tnSSG_->noisePeriod_ = p;
 			}
 		}
@@ -3032,7 +3032,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 
 			int p = type - 1;
 			if (tnSSG_[ch].noisePeriod_ != p) {
-				opna_->setRegister(0x06, static_cast<uint8_t>(p));
+				opna_->setRegister(0x06, static_cast<uint8_t>(31- p));	// Reverse order
 				tnSSG_->noisePeriod_ = p;
 			}
 		}
