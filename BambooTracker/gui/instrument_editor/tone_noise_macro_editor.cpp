@@ -1,5 +1,6 @@
 #include "tone_noise_macro_editor.hpp"
 #include <QPainter>
+#include <QRegularExpression>
 
 ToneNoiseMacroEditor::ToneNoiseMacroEditor(QWidget *parent)
 	: VisualizedInstrumentMacroEditor(parent)
@@ -135,4 +136,50 @@ int ToneNoiseMacroEditor::detectRowNumberForMouseEvent(int col, int internalRow)
 int ToneNoiseMacroEditor::maxInMML() const
 {
 	return 65;
+}
+
+QString ToneNoiseMacroEditor::convertSequenceDataUnitToMML(Column col)
+{
+	if (col.row == 0) return "t";
+	else {
+		int p = (col.row - 1) % 32;
+		if (col.row < 33) return QString("%1n").arg(p);
+		else return QString("%1tn").arg(p);
+	}
+}
+
+bool ToneNoiseMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column)
+{
+	// Tone+Noise
+	QRegularExpressionMatch m = QRegularExpression("^(\\d+)(nt|tn)").match(text);
+	if (m.hasMatch()) {
+		int p = m.captured(1).toInt();
+		if (p < 0 || 31 < p) return false;
+		column.push_back({ 33 + p, -1, "" });
+		++cnt;
+		text.remove(QRegularExpression("^\\d+(nt|tn)"));
+		return true;
+	}
+
+	// Noise
+	m = QRegularExpression("^(\\d+)n").match(text);
+	if (m.hasMatch()) {
+		int p = m.captured(1).toInt();
+		if (p < 0 || 31 < p) return false;
+		column.push_back({ 1 + p, -1, "" });
+		++cnt;
+		text.remove(QRegularExpression("^\\d+n"));
+		return true;
+	}
+
+	// Noise
+	m = QRegularExpression(R"(^(\d+)?t)").match(text);
+	if (m.hasMatch()) {
+		column.push_back({ 0, -1, "" });
+		++cnt;
+		text.remove(QRegularExpression("^(\\d+)?t"));
+		return true;
+	}
+
+	return false;
 }

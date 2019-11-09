@@ -11,7 +11,7 @@
 - Change width of items in status bar
 - [#161] - Reduce drawing cost of the pattern editor and the order list (thanks [@papiezak])
 - Improve SSG tone/noise editor
-- Change MML text in SSG arpeggio editor from numbers to notes
+- Change MML text in FM/SSG arpeggio editor from numbers to notes
 
 ### Fixed
 - [#161] - Fix drawing error after loading song (thanks [@papiezak])

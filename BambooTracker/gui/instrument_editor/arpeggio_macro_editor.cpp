@@ -41,30 +41,30 @@ QString ArpeggioMacroEditor::convertSequenceDataUnitToMML(Column col)
 bool ArpeggioMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column)
 {
 	if (type_ == SequenceType::Fixed) {
-		QRegularExpressionMatch m = QRegularExpression("^([a-gA-G][-#][0-7])").match(text);
+		QRegularExpressionMatch m = QRegularExpression("^([A-G][-#])([0-7])").match(text);
 		if (m.hasMatch()) {
 			QString tone = m.captured(1);
-			int oct = tone.right(1).toInt();
+			int oct = m.captured(2).toInt();
 			int d = 12 * oct;
 			if (tone.left(1) == "C") {
-				if (tone.mid(1, 1) == "-") ;
+				if (tone.right(1) == "-") ;
 				else d += 1;
 			}
 			else if (tone.left(1) == "D") {
-				if (tone.mid(1, 1) == "-") d += 2;
+				if (tone.right(1) == "-") d += 2;
 				else d += 3;
 			}
 			else if (tone.left(1) == "E") d +=4;
 			else if (tone.left(1) == "F") {
-				if (tone.mid(1, 1) == "-") d += 5;
+				if (tone.right(1) == "-") d += 5;
 				else d += 6;
 			}
 			else if (tone.left(1) == "G") {
-				if (tone.mid(1, 1) == "-") d += 7;
+				if (tone.right(1) == "-") d += 7;
 				else d += 8;
 			}
 			else if (tone.left(1) == "A") {
-				if (tone.mid(1, 1) == "-") d += 9;
+				if (tone.right(1) == "-") d += 9;
 				else d += 10;
 			}
 			else d += 11;	// 'B'

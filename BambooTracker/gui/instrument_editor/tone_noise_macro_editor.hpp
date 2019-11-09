@@ -20,6 +20,8 @@ protected:
 
 	int detectRowNumberForMouseEvent(int col, int internalRow) const override;
 	int maxInMML() const override;
+	QString convertSequenceDataUnitToMML(Column col) override;
+	bool interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column) override;
 };
 
 #endif // TONENOISEMACROEDITOR_HPP
