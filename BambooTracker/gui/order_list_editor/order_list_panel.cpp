@@ -94,8 +94,10 @@ void OrderListPanel::freeze()
 	while (true) {
 		if (repaintingCnt_.load())
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		else
+		else {
+			curPos_.row = 0;	// Init
 			return;
+		}
 	}
 }
 
