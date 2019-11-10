@@ -5,11 +5,8 @@ ColorPalette::ColorPalette()
 	// Instrument list
 	ilistTextColor = QColor::fromRgb(255, 255, 255, 255);
 	ilistBackColor = QColor::fromRgb(0, 0, 0, 255);
-	ilistSelTextColor = QColor::fromRgb(255, 255, 255, 255);
 	ilistSelBackColor = QColor::fromRgb(110, 90, 140, 255);
-	ilistHovTextColor = QColor::fromRgb(255, 255, 255, 255);
 	ilistHovBackColor = QColor::fromRgb(255, 255, 255, 75);
-	ilistHovSelTextColor = QColor::fromRgb(255, 255, 255, 255);
 	ilistHovSelBackColor = QColor::fromRgb(140, 120, 170, 255);
 
 	// Instrument editor
@@ -51,7 +48,6 @@ ColorPalette::ColorPalette()
 	odrCurRowColor = QColor::fromRgb(110, 90, 140, 255);
 	odrCurEditRowColor = QColor::fromRgb(140, 90, 110, 255);
 	odrCurCellColor = QColor::fromRgb(255, 255, 255, 127);
-	odrPlayTextColor = QColor::fromRgb(255, 255, 255, 255);
 	odrPlayRowColor = QColor::fromRgb(90, 90, 140, 255);
 	odrSelCellColor = QColor::fromRgb(100, 100, 200, 192);
 	odrHovCellColor = QColor::fromRgb(255, 255, 255, 64);
@@ -63,24 +59,23 @@ ColorPalette::ColorPalette()
 
 	// Pattern editor
 	ptnDefTextColor = QColor::fromRgb(180, 180, 180, 255);
-	ptnDefRowColor = QColor::fromRgb(0, 0, 40, 255);
-	ptnHl1RowColor = QColor::fromRgb(30, 40, 70, 255);
-	ptnHl2RowColor = QColor::fromRgb(60, 60, 100, 255);
+	ptnDefStepColor = QColor::fromRgb(0, 0, 40, 255);
+	ptnHl1StepColor = QColor::fromRgb(30, 40, 70, 255);
+	ptnHl2StepColor = QColor::fromRgb(60, 60, 100, 255);
 	ptnCurTextColor = QColor::fromRgb(255, 255, 255, 255);
-	ptnCurRowColor = QColor::fromRgb(110, 90, 140, 255);
-	ptnCurEditRowColor = QColor::fromRgb(140, 90, 110, 255);
+	ptnCurStepColor = QColor::fromRgb(110, 90, 140, 255);
+	ptnCurEditStepColor = QColor::fromRgb(140, 90, 110, 255);
 	ptnCurCellColor = QColor::fromRgb(255, 255, 255, 127);
-	ptnPlayRowColor = QColor::fromRgb(90, 90, 140, 255);
+	ptnPlayStepColor = QColor::fromRgb(90, 90, 140, 255);
 	ptnSelCellColor = QColor::fromRgb(100, 100, 200, 192);
 	ptnHovCellColor = QColor::fromRgb(255, 255, 255, 64);
 	ptnDefStepNumColor = QColor::fromRgb(255, 200, 180, 255);
 	ptnHl1StepNumColor = QColor::fromRgb(255, 140, 160, 255);
 	ptnHl2StepNumColor = QColor::fromRgb(255, 140, 160, 255);
-	ptnToneColor = QColor::fromRgb(210, 230, 64, 255);
+	ptnNoteColor = QColor::fromRgb(210, 230, 64, 255);
 	ptnInstColor = QColor::fromRgb(82, 179, 217, 255);
 	ptnVolColor = QColor::fromRgb(226, 156, 80, 255);
-	ptnEffIDColor = QColor::fromRgb(42, 187, 155, 255);
-	ptnEffValColor = QColor::fromRgb(42, 187, 155, 255);
+	ptnEffColor = QColor::fromRgb(42, 187, 155, 255);
 	ptnErrorColor = QColor::fromRgb(255, 0, 0, 255);
 	ptnHeaderTextColor = QColor::fromRgb(240, 240, 200, 255);
 	ptnHeaderRowColor = QColor::fromRgb(60, 60, 60, 255);

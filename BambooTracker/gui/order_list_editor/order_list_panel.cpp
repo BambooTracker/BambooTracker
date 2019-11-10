@@ -247,7 +247,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	/* Current row */
 	// Fill row
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, rowFontHeight_,
-					 bt_->isJamMode() ? palette_->odrCurRowColor : palette_->odrCurEditRowColor);
+						 bt_->isJamMode() ? palette_->odrCurRowColor : palette_->odrCurEditRowColor);
 	if (textChanged_) {
 		// Row number
 		textPainter.setPen(palette_->odrRowNumColor);
@@ -290,14 +290,12 @@ void OrderListPanel::drawRows(int maxWidth)
 	for (rowY = viewedCenterY_ - rowFontHeight_, baseY = viewedCenterBaseY_ - rowFontHeight_, rowNum = curPos_.row - 1;
 		 rowY >= endY;
 		 rowY -= rowFontHeight_, baseY -= rowFontHeight_, --rowNum) {
-		QColor rowColor, textColor;
+		QColor rowColor;
 		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum) {
 			rowColor = palette_->odrPlayRowColor;
-			textColor = palette_->odrPlayTextColor;
 		}
 		else {
 			rowColor = palette_->odrDefRowColor;
-			textColor = palette_->odrDefTextColor;
 		}
 
 		// Fill row
@@ -311,7 +309,7 @@ void OrderListPanel::drawRows(int maxWidth)
 		}
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
-		textPainter.setPen(textColor);
+		textPainter.setPen(palette_->odrDefTextColor);
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
@@ -340,15 +338,11 @@ void OrderListPanel::drawRows(int maxWidth)
 	for (rowY = viewedCenterY_ + rowFontHeight_, baseY = viewedCenterBaseY_ + rowFontHeight_, rowNum = curPos_.row + 1;
 		 rowY <= endY;
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
-		QColor rowColor, textColor;
-		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum) {
+		QColor rowColor;
+		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum)
 			rowColor = palette_->odrPlayRowColor;
-			textColor = palette_->odrPlayTextColor;
-		}
-		else {
+		else
 			rowColor = palette_->odrDefRowColor;
-			textColor = palette_->odrDefTextColor;
-		}
 
 		// Fill row
 		backPainter.fillRect(0, rowY, maxWidth, rowFontHeight_, rowColor);
@@ -361,7 +355,7 @@ void OrderListPanel::drawRows(int maxWidth)
 		}
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
-		textPainter.setPen(textColor);
+		textPainter.setPen(palette_->odrDefTextColor);
 		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
@@ -993,7 +987,7 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 		}
 		QString clipText = QApplication::clipboard()->text();
 		if (!clipText.startsWith("ORDER_COPY")) {
-				paste->setEnabled(false);
+			paste->setEnabled(false);
 		}
 		if (bt_->getOrderSize(curSongNum_) == 1) {
 			remove->setEnabled(false);
@@ -1413,7 +1407,7 @@ bool OrderListPanel::mouseHoverd(QHoverEvent *event)
 
 	// Detect row
 	if (pos.y() <= headerHeight_) {
-		 hovPos_.row = -2;	// Header
+		hovPos_.row = -2;	// Header
 	}
 	else {
 		if (pos.y() < curRowY_) {

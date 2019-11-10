@@ -253,43 +253,18 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	/* Instrument list */
 	ui->instrumentListWidget->setStyleSheet(
-				QString(
-					"QListWidget {"
-					"	color: rgba(%1, %2, %3, %4);"
-					"	background: rgba(%5, %6, %7, %8);"
-					"}"
-					).arg(palette_->ilistTextColor.red()).arg(palette_->ilistTextColor.green())
-				.arg(palette_->ilistTextColor.blue()).arg(palette_->ilistTextColor.alpha())
-				.arg(palette_->ilistBackColor.red()).arg(palette_->ilistBackColor.green())
-				.arg(palette_->ilistBackColor.blue()).arg(palette_->ilistBackColor.alpha())
-				+ QString(
-					"QListWidget::item:hover {"
-					"	color: rgba(%1, %2, %3, %4);"
-					"	background: rgba(%5, %6, %7, %8);"
-					"}"
-					).arg(palette_->ilistHovTextColor.red()).arg(palette_->ilistHovTextColor.green())
-				.arg(palette_->ilistHovTextColor.blue()).arg(palette_->ilistHovTextColor.alpha())
-				.arg(palette_->ilistHovBackColor.red()).arg(palette_->ilistHovBackColor.green())
-				.arg(palette_->ilistHovBackColor.blue()).arg(palette_->ilistHovBackColor.alpha())
-				+ QString(
-					"QListWidget::item:selected {"
-					"	color: rgba(%1, %2, %3, %4);"
-					"	background: rgba(%5, %6, %7, %8);"
-					"}"
-					).arg(palette_->ilistSelTextColor.red()).arg(palette_->ilistSelTextColor.green())
-				.arg(palette_->ilistSelTextColor.blue()).arg(palette_->ilistSelTextColor.alpha())
-				.arg(palette_->ilistSelBackColor.red()).arg(palette_->ilistSelBackColor.green())
-				.arg(palette_->ilistSelBackColor.blue()).arg(palette_->ilistSelBackColor.alpha())
-				+ QString(
-					"QListWidget::item:selected:hover {"
-					"	color: rgba(%1, %2, %3, %4);"
-					"	background: rgba(%5, %6, %7, %8);"
-					"}"
-					).arg(palette_->ilistHovSelTextColor.red()).arg(palette_->ilistHovSelTextColor.green())
-				.arg(palette_->ilistHovSelTextColor.blue()).arg(palette_->ilistHovSelTextColor.alpha())
-				.arg(palette_->ilistHovSelBackColor.red()).arg(palette_->ilistHovSelBackColor.green())
-				.arg(palette_->ilistHovSelBackColor.blue()).arg(palette_->ilistHovSelBackColor.alpha())
-				);
+				QString("QListWidget { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistBackColor.name(QColor::HexArgb))
+				+ QString("QListWidget::item:hover { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistHovBackColor.name(QColor::HexArgb))
+				+ QString("QListWidget::item:selected { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistSelBackColor.name(QColor::HexArgb))
+				+ QString("QListWidget::item:selected:hover { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistHovSelBackColor.name(QColor::HexArgb)));
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,

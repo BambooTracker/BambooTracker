@@ -341,7 +341,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 	/* Current row */
 	// Fill row
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, stepFontHeight_,
-						 bt_->isJamMode() ? palette_->ptnCurRowColor : palette_->ptnCurEditRowColor);
+						 bt_->isJamMode() ? palette_->ptnCurStepColor : palette_->ptnCurEditStepColor);
 	// Step number
 	if (hovPos_.track == -2 && hovPos_.order == curPos_.order && hovPos_.step == curPos_.step)
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
@@ -388,12 +388,12 @@ void PatternEditorPanel::drawRows(int maxWidth)
 
 		QColor rowColor;
 		if (!config_.lock()->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
-			rowColor = palette_->ptnPlayRowColor;
+			rowColor = palette_->ptnPlayStepColor;
 		}
 		else {
-			rowColor = !(stepNum % hl2Cnt_) ? palette_->ptnHl2RowColor
-											: !(stepNum % hl1Cnt_) ? palette_->ptnHl1RowColor
-																   : palette_->ptnDefRowColor;
+			rowColor = !(stepNum % hl2Cnt_) ? palette_->ptnHl2StepColor
+											: !(stepNum % hl1Cnt_) ? palette_->ptnHl1StepColor
+																   : palette_->ptnDefStepColor;
 		}
 
 		// Fill row
@@ -442,12 +442,12 @@ void PatternEditorPanel::drawRows(int maxWidth)
 
 		QColor rowColor;
 		if (!config_.lock()->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
-			rowColor = palette_->ptnPlayRowColor;
+			rowColor = palette_->ptnPlayStepColor;
 		}
 		else {
-			rowColor = !(stepNum % hl2Cnt_) ? palette_->ptnHl2RowColor
-											: !(stepNum % hl1Cnt_) ? palette_->ptnHl1RowColor
-																   : palette_->ptnDefRowColor;
+			rowColor = !(stepNum % hl2Cnt_) ? palette_->ptnHl2StepColor
+											: !(stepNum % hl1Cnt_) ? palette_->ptnHl1StepColor
+																   : palette_->ptnDefStepColor;
 		}
 
 		// Fill row
@@ -513,9 +513,9 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 	/* Redraw previous cursor step */
 	{
 		int baseY = viewedCenterBaseY_ - stepFontHeight_;
-		QColor rowColor = !(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2RowColor
-															 : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1RowColor
-																								  : palette_->ptnDefRowColor;
+		QColor rowColor = !(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepColor
+															 : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1StepColor
+																								  : palette_->ptnDefStepColor;
 		// Fill row
 		backPainter.fillRect(0, prevY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
@@ -535,7 +535,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 	/* Redraw current cursor step */
 	// Fill row
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, stepFontHeight_,
-						 bt_->isJamMode() ? palette_->ptnCurRowColor : palette_->ptnCurEditRowColor);
+						 bt_->isJamMode() ? palette_->ptnCurStepColor : palette_->ptnCurEditStepColor);
 	// Step number
 	if (hovPos_.track == -2 && hovPos_.order == curPos_.order && hovPos_.step == curPos_.step)
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
@@ -568,9 +568,9 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 		else {
 			viewedLastPos_ = std::move(bpos);
 
-			QColor rowColor = !(viewedLastPos_.step % hl2Cnt_) ? palette_->ptnHl2RowColor
-															   : !(viewedLastPos_.step % hl1Cnt_) ? palette_->ptnHl1RowColor
-																								  : palette_->ptnDefRowColor;
+			QColor rowColor = !(viewedLastPos_.step % hl2Cnt_) ? palette_->ptnHl2StepColor
+															   : !(viewedLastPos_.step % hl1Cnt_) ? palette_->ptnHl1StepColor
+																								  : palette_->ptnDefStepColor;
 			// Fill row
 			backPainter.fillRect(0, lastY, maxWidth, stepFontHeight_, rowColor);
 			// Step number
@@ -636,22 +636,22 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			break;
 		case -2:	// Key off
 			textPainter.fillRect(offset, rowY + stepFontHeight_ * 2 / 5,
-								 toneNameWidth_, stepFontHeight_ / 5, palette_->ptnToneColor);
+								 toneNameWidth_, stepFontHeight_ / 5, palette_->ptnNoteColor);
 			break;
 		case -3:	// Echo 0
-			textPainter.setPen(palette_->ptnToneColor);
+			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^0");
 			break;
 		case -4:	// Echo 1
-			textPainter.setPen(palette_->ptnToneColor);
+			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^1");
 			break;
 		case -5:	// Echo 2
-			textPainter.setPen(palette_->ptnToneColor);
+			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^2");
 			break;
 		case -6:	// Echo 3
-			textPainter.setPen(palette_->ptnToneColor);
+			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset + stepFontWidth_ / 2, baseY, "^3");
 			break;
 		default:	// Convert tone name
@@ -671,7 +671,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			case 10:	toneStr = "A#";	break;
 			case 11:	toneStr = "B-";	break;
 			}
-			textPainter.setPen(palette_->ptnToneColor);
+			textPainter.setPen(palette_->ptnNoteColor);
 			textPainter.drawText(offset, baseY, toneStr + QString::number(noteNum / 12));
 			break;
 		}
@@ -757,7 +757,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 				textPainter.drawText(offset, baseY, effStr);
 			}
 			else {
-				textPainter.setPen(palette_->ptnEffIDColor);
+				textPainter.setPen(palette_->ptnEffColor);
 				textPainter.drawText(offset, baseY, effStr);
 			}
 		}
@@ -779,7 +779,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 				textPainter.drawText(offset, baseY, "--");
 			}
 			else {
-				textPainter.setPen(palette_->ptnEffValColor);
+				textPainter.setPen(palette_->ptnEffColor);
 				if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder()
 						&& Effect::toEffectType(SoundSource::FM, effId) == EffectType::VolumeDelay)
 					effVal = 0x7f - effVal;

@@ -10,9 +10,9 @@ public:
 
 	// Instrument list
 	QColor ilistTextColor, ilistBackColor;
-	QColor ilistSelTextColor, ilistSelBackColor;
-	QColor ilistHovTextColor, ilistHovBackColor;
-	QColor ilistHovSelTextColor, ilistHovSelBackColor;
+	QColor ilistSelBackColor;
+	QColor ilistHovBackColor;
+	QColor ilistHovSelBackColor;
 
 	// Instrument editor
 	QColor instFMEnvLine1Color, instFMEnvLine2Color;
@@ -38,7 +38,7 @@ public:
 	QColor odrCurTextColor, odrCurRowColor;
 	QColor odrCurEditRowColor;
 	QColor odrCurCellColor;
-	QColor odrPlayTextColor, odrPlayRowColor;
+	QColor odrPlayRowColor;
 	QColor odrSelCellColor;
 	QColor odrHovCellColor;
 	QColor odrRowNumColor;
@@ -47,13 +47,13 @@ public:
 	QColor odrBackColor;
 
 	// Pattern editor
-	QColor ptnDefTextColor, ptnDefRowColor, ptnHl1RowColor, ptnHl2RowColor;
-	QColor ptnCurTextColor, ptnCurRowColor, ptnCurEditRowColor, ptnCurCellColor;
-	QColor ptnPlayRowColor;
+	QColor ptnDefTextColor, ptnDefStepColor, ptnHl1StepColor, ptnHl2StepColor;
+	QColor ptnCurTextColor, ptnCurStepColor, ptnCurEditStepColor, ptnCurCellColor;
+	QColor ptnPlayStepColor;
 	QColor ptnSelCellColor;
 	QColor ptnHovCellColor;
 	QColor ptnDefStepNumColor, ptnHl1StepNumColor, ptnHl2StepNumColor;
-	QColor ptnToneColor, ptnInstColor, ptnVolColor, ptnEffIDColor, ptnEffValColor;
+	QColor ptnNoteColor, ptnInstColor, ptnVolColor, ptnEffColor;
 	QColor ptnErrorColor;
 	QColor ptnHeaderTextColor, ptnHeaderRowColor;
 	QColor ptnMaskColor;
