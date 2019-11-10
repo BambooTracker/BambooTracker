@@ -48,10 +48,23 @@ void TickCounter::setGroove(std::vector<int> seq)
 	if (nextGroovePos_ != -1) nextGroovePos_ = 0;
 }
 
-void TickCounter::setGrooveEnebled(bool enabled)
+void TickCounter::setGrooveTrigger(GrooveTrigger trigger)
 {
-	nextGroovePos_ = enabled ? (static_cast<int>(grooves_.size()) - 1) : -1;
-	resetRest();
+	switch (trigger) {
+	case GrooveTrigger::ValidByGlobal:
+		nextGroovePos_ = static_cast<int>(grooves_.size()) - 1;
+		resetRest();
+		break;
+	case GrooveTrigger::ValidByLocal:
+		nextGroovePos_ = 0;
+		resetRest();
+		--restTickToNextStep_;	// Count down by step head
+		break;
+	case GrooveTrigger::Invalid:
+		nextGroovePos_ = -1;
+		resetRest();
+		break;
+	}
 }
 
 bool TickCounter::getGrooveEnabled() const

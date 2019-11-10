@@ -615,7 +615,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tickCounter_->setTempo(song.getTempo());
 	tickCounter_->setSpeed(song.getSpeed());
 	tickCounter_->setGroove(mod_->getGroove(song.getGroove()).getSequence());
-	tickCounter_->setGrooveEnebled(!song.isUsedTempo());
+	tickCounter_->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
+													  : GrooveTrigger::ValidByGlobal);
 
 	size_t fmch = getFMChannelCount(songStyle_.type);
 	muteStateFM_ = std::vector<bool>(fmch, false);
@@ -1519,7 +1520,8 @@ int BambooTracker::getSongGroove(int songNum) const
 void BambooTracker::toggleTempoOrGrooveInSong(int songNum, bool isTempo)
 {
 	mod_->getSong(songNum).toggleTempoOrGroove(isTempo);
-	tickCounter_->setGrooveEnebled(!isTempo);
+	tickCounter_->setGrooveTrigger(isTempo ? GrooveTrigger::Invalid
+										   : GrooveTrigger::ValidByGlobal);
 }
 
 bool BambooTracker::isUsedTempoInSong(int songNum) const

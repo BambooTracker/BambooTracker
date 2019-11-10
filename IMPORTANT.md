@@ -2,6 +2,7 @@
 The following changes affect module playback critically.
 In some cases, you need to modify modules.
 
+- In BambooTracker v0.3.1, the bug of groove start position is fixed that happened when setting groove by groove set pattern effect.
 - Before BambooTracker v0.3.0, square-masked saw and square-masked inversed saw were not actually square-masked.
 - In BambooTracker v0.2.1, the start position of effect sequence when declaring sequence type effect after key on was changed from 2nd to 1st.
 - In BambooTracker v0.2.1, execution routine of pattern effects is revised. Some effects (especially delay effects) may behave differently than before.

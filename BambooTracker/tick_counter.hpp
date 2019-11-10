@@ -4,6 +4,13 @@
 #include <cstddef>
 #include <vector>
 
+enum class GrooveTrigger
+{
+	ValidByGlobal,
+	ValidByLocal,
+	Invalid
+};
+
 class TickCounter
 {
 public:
@@ -14,7 +21,7 @@ public:
 	void setSpeed(int speed);
 	int getSpeed() const;
 	void setGroove(std::vector<int> seq);
-	void setGrooveEnebled(bool enabled);
+	void setGrooveTrigger(GrooveTrigger trigger);
 	bool getGrooveEnabled() const;
 	void setPlayState(bool isPlaySong);
 	int countUp();
