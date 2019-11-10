@@ -914,6 +914,9 @@ void OrderListPanel::setSelectedRectangle(const OrderPosition& start, const Orde
 	}
 
 	emit selected(true);
+
+	backChanged_ = true;
+	repaint();
 }
 
 bool OrderListPanel::isSelectedCell(int track, int row)
@@ -1087,6 +1090,8 @@ void OrderListPanel::onSelectPressed(int type)
 		selRightBelowPos_ = { -1, -1 };
 		selectAllState_ = -1;
 		emit selected(false);
+		backChanged_ = true;
+		repaint();
 		break;
 	}
 	case 1:	// All
@@ -1133,8 +1138,6 @@ void OrderListPanel::onSelectPressed(int type)
 		break;
 	}
 	}
-
-	backChanged_ = true;
 }
 
 void OrderListPanel::onDuplicatePressed()
@@ -1341,9 +1344,6 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 
 		if (hovPos_.track >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
-
-			backChanged_ = true;
-			repaint();
 		}
 
 		if (event->x() < rowNumWidth_ && leftTrackNum_ > 0) {

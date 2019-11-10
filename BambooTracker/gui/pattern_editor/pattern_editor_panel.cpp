@@ -1706,6 +1706,9 @@ void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, cons
 	}
 
 	emit selected(true);
+
+	backChanged_ = true;
+	repaint();
 }
 
 bool PatternEditorPanel::isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum)
@@ -2066,6 +2069,8 @@ void PatternEditorPanel::onSelectPressed(int type)
 		selRightBelowPos_ = { -1, -1, -1, -1 };
 		selectAllState_ = -1;
 		emit selected(false);
+		backChanged_ = true;
+		repaint();
 		break;
 	}
 	case 1:	// All
@@ -2134,9 +2139,6 @@ void PatternEditorPanel::onSelectPressed(int type)
 		break;
 	}
 	}
-
-	backChanged_ = true;
-	repaint();
 }
 
 void PatternEditorPanel::onTransposePressed(bool isOctave, bool isIncreased)
@@ -2560,9 +2562,6 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 
 		if (hovPos_.track >= 0 && hovPos_.order >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
-
-			backChanged_ = true;
-			repaint();
 		}
 
 		if (event->x() < stepNumWidth_ && leftTrackNum_ > 0) {
