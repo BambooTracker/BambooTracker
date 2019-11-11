@@ -31,12 +31,12 @@ int main(int argc, char *argv[])
 		w->show();
 		int ret = a->exec();
 		ConfigurationHandler::saveConfiguration(config);
-		if (ret) QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occured."));
+		if (ret) QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occurred."));
 		return ret;
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(nullptr, QObject::tr("Error"),
-							  QObject::tr("An unknown error occured.\n%1").arg(e.what()));
+							  QObject::tr("An unknown error occurred.\n%1").arg(e.what()));
 		return 1;
 	}
 }

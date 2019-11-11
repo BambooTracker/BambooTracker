@@ -47,7 +47,7 @@ before_deploy:
   - mv lang BambooTracker.app/Contents/Resources
   - mv BambooTracker.app ..
   - cd ..
-  - zip -r BambooTracker-$TRAVIS_TAG-mac.zip BambooTracker.app *.md img demos licenses specs LICENSE
+  - zip -r BambooTracker-$TRAVIS_TAG-mac.zip BambooTracker.app *.md img demos licenses specs skins LICENSE
 
 deploy:
   provider: releases

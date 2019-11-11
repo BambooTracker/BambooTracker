@@ -2,10 +2,11 @@
 
 ## Unreleased
 ### Added
-- Add selection whether auto-set current instrument upon entering note
 - [#132] - 3 new pattern effects
   - `0Xxx`, `0Yxx`: register address set
   - `0Zxx`: register value set
+- Add selection whether auto-set current instrument upon entering note
+- Add color scheme settings
 
 ### Changed
 - Change width of items in status bar

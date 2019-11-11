@@ -78,7 +78,7 @@ build_script:
 after_build:
   - cd %APPVEYOR_BUILD_FOLDER%
   - set DEPLOY_FILES=%APPVEYOR_BUILD_FOLDER%\BambooTracker\bin\*
-  - set DEPLOY_FILES=%DEPLOY_FILES% licenses img demos specs
+  - set DEPLOY_FILES=%DEPLOY_FILES% licenses img demos specs skins
   - set DEPLOY_FILES=%DEPLOY_FILES% *.md LICENSE
   - 7z a -tzip %DEST% %DEPLOY_FILES%
 

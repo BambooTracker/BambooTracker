@@ -42,6 +42,7 @@
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
 #include "audio_stream_rtaudio.hpp"
+#include "color_palette_handler.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -91,6 +92,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	if (config.lock()->getOrderListRowsFont().empty()) {
 		config.lock()->setOrderListRowsFont(ui->orderList->getRowsFont().toStdString());
 	}
+	ColorPaletteHandler::loadPalette(palette_);
 	updateFonts();
 	setMidiConfiguration();
 
@@ -861,13 +863,11 @@ void MainWindow::loadInstrument()
 
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
 												filters.join(";;"), &defaultFilter);
-	if (file.isNull()) {
-		return;
-	}
-	else {
-		int index = getSelectedFileFilter(file, filters);
-		if (index != -1) config_.lock()->setInstrumentOpenFormat(index);
-	}
+	if (file.isNull()) return;
+
+	int index = getSelectedFileFilter(file, filters);
+	if (index != -1) config_.lock()->setInstrumentOpenFormat(index);
+
 
 	funcLoadInstrument(file);
 }
@@ -2043,13 +2043,14 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	ConfigurationDialog diag(config_.lock(), stream_->getCurrentBackend(), stream_->getAvailableBackends());
+	ConfigurationDialog diag(config_.lock(), palette_, stream_->getCurrentBackend(), stream_->getAvailableBackends());
 	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->stopPlaySong();
 		changeConfiguration();
 		ConfigurationHandler::saveConfiguration(config_.lock());
+		ColorPaletteHandler::savePalette(palette_);
 		lockControls(false);
 	}
 }

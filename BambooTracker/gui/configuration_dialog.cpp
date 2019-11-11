@@ -8,17 +8,22 @@
 #include <QAudio>
 #include <QAudioDeviceInfo>
 #include <QFont>
+#include <QColorDialog>
+#include <QFileDialog>
+#include <QApplication>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
 #include "chips/chip_misc.h"
+#include "color_palette_handler.hpp"
 
-ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::string curApi,
-										 std::vector<std::string> apis, QWidget *parent)
+ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
+										 std::string curApi, std::vector<std::string> apis, QWidget *parent)
 	: QDialog(parent),
 	  ui(new Ui::ConfigurationDialog),
-	  config_(config)
+	  config_(config),
+	  palette_(palette)
 {
 	ui->setupUi(this);
 
@@ -184,11 +189,14 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->ssgMixerSlider->setTickInterval(20);
 	ui->ssgMixerSlider->setValue(static_cast<int>(configLocked->getMixerVolumeSSG() * 10));
 
-	// Input //
+	// Formats //
 	fmEnvelopeTexts_ = configLocked->getFMEnvelopeTexts();
 	updateEnvelopeSetUi();
 
 	// Appearance //
+	ui->colorsTreeWidget->setColumnWidth(0, 250);
+	updateColorTree();
+
 	ui->ptnHdFontComboBox->setCurrentFont(
 				QFont(QString::fromUtf8(configLocked->getPatternEditorHeaderFont().c_str(),
 										static_cast<int>(configLocked->getPatternEditorHeaderFont().size()))));
@@ -272,12 +280,68 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setMixerVolumeFM(ui->fmMixerSlider->value() * 0.1);
 	configLocked->setMixerVolumeSSG(ui->ssgMixerSlider->value() * 0.1);
 
-	// Input //
+	// Formats //
 	std::sort(fmEnvelopeTexts_.begin(), fmEnvelopeTexts_.end(),
 			  [](const FMEnvelopeText& a, const FMEnvelopeText& b) -> bool { return (a.name < b.name); });
 	configLocked->setFMEnvelopeTexts(fmEnvelopeTexts_);
 
 	// Appearance //
+	auto* pl = palette_.lock().get();
+	QTreeWidgetItem* ptnColors = ui->colorsTreeWidget->topLevelItem(0);
+	pl->ptnDefTextColor = ptnColors->child(0)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnDefStepColor = ptnColors->child(1)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnHl1StepColor = ptnColors->child(2)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnHl2StepColor = ptnColors->child(3)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnCurTextColor = ptnColors->child(4)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnCurStepColor = ptnColors->child(5)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnCurEditStepColor = ptnColors->child(6)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnCurCellColor = ptnColors->child(7)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnPlayStepColor = ptnColors->child(8)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnSelCellColor = ptnColors->child(9)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnHovCellColor = ptnColors->child(10)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnDefStepNumColor = ptnColors->child(11)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnHl1StepNumColor = ptnColors->child(12)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnHl2StepNumColor = ptnColors->child(13)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnNoteColor = ptnColors->child(14)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnInstColor = ptnColors->child(15)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnVolColor = ptnColors->child(16)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnEffColor = ptnColors->child(17)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnErrorColor = ptnColors->child(18)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnHeaderTextColor = ptnColors->child(19)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnHeaderRowColor = ptnColors->child(20)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnMaskColor = ptnColors->child(21)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnBorderColor = ptnColors->child(22)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnMuteColor = ptnColors->child(23)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnUnmuteColor = ptnColors->child(24)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnBackColor = ptnColors->child(25)->data(1, Qt::BackgroundRole).value<QColor>();
+
+	QTreeWidgetItem* odrColors = ui->colorsTreeWidget->topLevelItem(1);
+	pl->odrDefTextColor = odrColors->child(0)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrDefRowColor = odrColors->child(1)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrCurTextColor = odrColors->child(2)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrCurRowColor = odrColors->child(3)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrCurEditRowColor = odrColors->child(4)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrCurCellColor = odrColors->child(5)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrPlayRowColor = odrColors->child(6)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrSelCellColor = odrColors->child(7)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrHovCellColor = odrColors->child(8)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrRowNumColor = odrColors->child(9)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrHeaderTextColor = odrColors->child(10)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrHeaderRowColor = odrColors->child(11)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrBorderColor = odrColors->child(12)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->odrBackColor = odrColors->child(13)->data(1, Qt::BackgroundRole).value<QColor>();
+
+	QTreeWidgetItem* ilistColors = ui->colorsTreeWidget->topLevelItem(2);
+	pl->ilistTextColor = ilistColors->child(0)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ilistBackColor = ilistColors->child(1)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ilistSelBackColor = ilistColors->child(2)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ilistHovBackColor = ilistColors->child(3)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ilistHovSelBackColor = ilistColors->child(4)->data(1, Qt::BackgroundRole).value<QColor>();
+
+	QTreeWidgetItem* wavColors = ui->colorsTreeWidget->topLevelItem(3);
+	pl->wavBackColor = wavColors->child(0)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->wavDrawColor = wavColors->child(1)->data(1, Qt::BackgroundRole).value<QColor>();
+
 	configLocked->setPatternEditorHeaderFont(ui->ptnHdFontComboBox->currentFont().family().toStdString());
 	configLocked->setPatternEditorHeaderFontSize(ui->ptnHdFontSizeComboBox->currentText().toInt());
 	configLocked->setPatternEditorRowsFont(ui->ptnRowFontComboBox->currentFont().family().toStdString());
@@ -386,18 +450,7 @@ void ConfigurationDialog::on_midiInputChoiceButton_clicked()
 	}
 }
 
-/***** Input *****/
-void ConfigurationDialog::updateEnvelopeSetUi()
-{
-	std::sort(fmEnvelopeTexts_.begin(), fmEnvelopeTexts_.end(),
-			  [](const FMEnvelopeText& a, const FMEnvelopeText& b) -> bool { return (a.name < b.name); });
-
-	ui->envelopeTypeListWidget->clear();
-	for (auto& texts : fmEnvelopeTexts_)
-		ui->envelopeTypeListWidget->addItem(
-					QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
-}
-
+/*****Formats *****/
 void ConfigurationDialog::on_addEnvelopeSetPushButton_clicked()
 {
 	auto name = QString("Set %1").arg(fmEnvelopeTexts_.size() + 1);
@@ -448,6 +501,18 @@ void ConfigurationDialog::on_envelopeTypeListWidget_currentRowChanged(int curren
 	}
 }
 
+void ConfigurationDialog::updateEnvelopeSetUi()
+{
+	std::sort(fmEnvelopeTexts_.begin(), fmEnvelopeTexts_.end(),
+			  [](const FMEnvelopeText& a, const FMEnvelopeText& b) -> bool { return (a.name < b.name); });
+
+	ui->envelopeTypeListWidget->clear();
+	for (auto& texts : fmEnvelopeTexts_)
+		ui->envelopeTypeListWidget->addItem(
+					QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
+}
+
+/***** Keys *****/
 void ConfigurationDialog::on_keyboardTypeComboBox_currentIndexChanged(int index)
 {
 	Q_UNUSED(index)
@@ -464,4 +529,101 @@ void ConfigurationDialog::on_customLayoutResetButton_clicked()
 		customLayoutKeysMap.at(QWERTYLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(QWERTYLayoutMappingIterator->first)));
 		QWERTYLayoutMappingIterator++;
 	}
+}
+
+/***** Appearance *****/
+void ConfigurationDialog::on_colorEditPushButton_clicked()
+{
+	QTreeWidgetItem* item = ui->colorsTreeWidget->currentItem();
+	if (item == nullptr || item->parent() == nullptr) return;
+	QColorDialog diag(item->data(1, Qt::BackgroundRole).value<QColor>());
+	diag.setOption(QColorDialog::ShowAlphaChannel);
+	if (diag.exec() == QDialog::Accepted)
+		item->setData(1, Qt::BackgroundRole, diag.currentColor());
+}
+
+void ConfigurationDialog::on_colorLoadPushButton_clicked()
+{
+	QString file = QFileDialog::getOpenFileName(this, tr("Open color scheme"),
+												QApplication::applicationDirPath() + "/skins",
+												tr("ini file (*.ini)"));
+	if (file.isNull()) return;
+
+	if (ColorPaletteHandler::loadPalette(file, palette_)) {
+		updateColorTree();
+	}
+	else {
+		QMessageBox::critical(this, tr("Error"), tr("An unknown error occurred while loading the color scheme."));
+	}
+}
+
+void ConfigurationDialog::on_colorSavePushButton_clicked()
+{
+	QString file = QFileDialog::getSaveFileName(this, tr("Save color scheme"),
+												QApplication::applicationDirPath() + "/skins",
+												tr("ini file (*.ini)"));
+	if (file.isNull()) return;
+	if (!file.endsWith(".ini")) file += ".ini";	// For linux
+
+	if (!ColorPaletteHandler::savePalette(file, palette_))
+		QMessageBox::critical(this, tr("Error"), tr("Failed to save the color scheme."));
+}
+
+void ConfigurationDialog::updateColorTree()
+{
+	auto* pl = palette_.lock().get();
+	QTreeWidgetItem* ptnColors = ui->colorsTreeWidget->topLevelItem(0);
+	ptnColors->child(0)->setData(1, Qt::BackgroundRole, pl->ptnDefTextColor);
+	ptnColors->child(1)->setData(1, Qt::BackgroundRole, pl->ptnDefStepColor);
+	ptnColors->child(2)->setData(1, Qt::BackgroundRole, pl->ptnHl1StepColor);
+	ptnColors->child(3)->setData(1, Qt::BackgroundRole, pl->ptnHl2StepColor);
+	ptnColors->child(4)->setData(1, Qt::BackgroundRole, pl->ptnCurTextColor);
+	ptnColors->child(5)->setData(1, Qt::BackgroundRole, pl->ptnCurStepColor);
+	ptnColors->child(6)->setData(1, Qt::BackgroundRole, pl->ptnCurEditStepColor);
+	ptnColors->child(7)->setData(1, Qt::BackgroundRole, pl->ptnCurCellColor);
+	ptnColors->child(8)->setData(1, Qt::BackgroundRole, pl->ptnPlayStepColor);
+	ptnColors->child(9)->setData(1, Qt::BackgroundRole, pl->ptnSelCellColor);
+	ptnColors->child(10)->setData(1, Qt::BackgroundRole, pl->ptnHovCellColor);
+	ptnColors->child(11)->setData(1, Qt::BackgroundRole, pl->ptnDefStepNumColor);
+	ptnColors->child(12)->setData(1, Qt::BackgroundRole, pl->ptnHl1StepNumColor);
+	ptnColors->child(13)->setData(1, Qt::BackgroundRole, pl->ptnHl2StepNumColor);
+	ptnColors->child(14)->setData(1, Qt::BackgroundRole, pl->ptnNoteColor);
+	ptnColors->child(15)->setData(1, Qt::BackgroundRole, pl->ptnInstColor);
+	ptnColors->child(16)->setData(1, Qt::BackgroundRole, pl->ptnVolColor);
+	ptnColors->child(17)->setData(1, Qt::BackgroundRole, pl->ptnEffColor);
+	ptnColors->child(18)->setData(1, Qt::BackgroundRole, pl->ptnErrorColor);
+	ptnColors->child(19)->setData(1, Qt::BackgroundRole, pl->ptnHeaderTextColor);
+	ptnColors->child(20)->setData(1, Qt::BackgroundRole, pl->ptnHeaderRowColor);
+	ptnColors->child(21)->setData(1, Qt::BackgroundRole, pl->ptnMaskColor);
+	ptnColors->child(22)->setData(1, Qt::BackgroundRole, pl->ptnBorderColor);
+	ptnColors->child(23)->setData(1, Qt::BackgroundRole, pl->ptnMuteColor);
+	ptnColors->child(24)->setData(1, Qt::BackgroundRole, pl->ptnUnmuteColor);
+	ptnColors->child(25)->setData(1, Qt::BackgroundRole, pl->ptnBackColor);
+
+	QTreeWidgetItem* odrColors = ui->colorsTreeWidget->topLevelItem(1);
+	odrColors->child(0)->setData(1, Qt::BackgroundRole, pl->odrDefTextColor);
+	odrColors->child(1)->setData(1, Qt::BackgroundRole, pl->odrDefRowColor);
+	odrColors->child(2)->setData(1, Qt::BackgroundRole, pl->odrCurTextColor);
+	odrColors->child(3)->setData(1, Qt::BackgroundRole, pl->odrCurRowColor);
+	odrColors->child(4)->setData(1, Qt::BackgroundRole, pl->odrCurEditRowColor);
+	odrColors->child(5)->setData(1, Qt::BackgroundRole, pl->odrCurCellColor);
+	odrColors->child(6)->setData(1, Qt::BackgroundRole, pl->odrPlayRowColor);
+	odrColors->child(7)->setData(1, Qt::BackgroundRole, pl->odrSelCellColor);
+	odrColors->child(8)->setData(1, Qt::BackgroundRole, pl->odrHovCellColor);
+	odrColors->child(9)->setData(1, Qt::BackgroundRole, pl->odrRowNumColor);
+	odrColors->child(10)->setData(1, Qt::BackgroundRole, pl->odrHeaderTextColor);
+	odrColors->child(11)->setData(1, Qt::BackgroundRole, pl->odrHeaderRowColor);
+	odrColors->child(12)->setData(1, Qt::BackgroundRole, pl->odrBorderColor);
+	odrColors->child(13)->setData(1, Qt::BackgroundRole, pl->odrBackColor);
+
+	QTreeWidgetItem* ilistColors = ui->colorsTreeWidget->topLevelItem(2);
+	ilistColors->child(0)->setData(1, Qt::BackgroundRole, pl->ilistTextColor);
+	ilistColors->child(1)->setData(1, Qt::BackgroundRole, pl->ilistBackColor);
+	ilistColors->child(2)->setData(1, Qt::BackgroundRole, pl->ilistSelBackColor);
+	ilistColors->child(3)->setData(1, Qt::BackgroundRole, pl->ilistHovBackColor);
+	ilistColors->child(4)->setData(1, Qt::BackgroundRole, pl->ilistHovSelBackColor);
+
+	QTreeWidgetItem* wavColors = ui->colorsTreeWidget->topLevelItem(3);
+	wavColors->child(0)->setData(1, Qt::BackgroundRole, pl->wavBackColor);
+	wavColors->child(1)->setData(1, Qt::BackgroundRole, pl->wavDrawColor);
 }

@@ -446,7 +446,7 @@
        <string>Appearance</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_18">
-       <item row="0" column="0">
+       <item row="1" column="0">
         <widget class="QGroupBox" name="fontSizeGroupBox">
          <property name="title">
           <string>Font and size</string>
@@ -695,18 +695,323 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
-        <spacer name="verticalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="colorsGroupBox">
+         <property name="title">
+          <string>Colors</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+         <layout class="QGridLayout" name="gridLayout_20">
+          <item row="0" column="1">
+           <spacer name="verticalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="1">
+           <widget class="QPushButton" name="colorEditPushButton">
+            <property name="text">
+             <string>Edit</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" rowspan="4">
+           <widget class="QTreeWidget" name="colorsTreeWidget">
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectItems</enum>
+            </property>
+            <column>
+             <property name="text">
+              <string>Item</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Color</string>
+             </property>
+            </column>
+            <item>
+             <property name="text">
+              <string>Pattern editor</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Default step text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Default step background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Highlighted step 1 background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Highlighted step 2 background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current step text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current step background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current editing step background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current cell background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current playing step background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Selection background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Hovered cell background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Default step number</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Highlighted step 1 number</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Highlighted step 2 number</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Note text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Instrument text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Volume text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Effect text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Error text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Header text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Header background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Mask</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Border</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Mute</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Unmute</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Background</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>Order list</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Default row text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Default row background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current row text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current row background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current editing row background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current cell background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current playing row background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Selection background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Hovered cell background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Row number</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Header text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Header background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Border</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Background</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>Instrument list</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Default text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Selected background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Hovered background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Selected hovered background</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>Oscilloscope</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Background</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Foreground</string>
+              </property>
+             </item>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QPushButton" name="colorSavePushButton">
+            <property name="text">
+             <string>Save</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="colorLoadPushButton">
+            <property name="text">
+             <string>Load</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -887,7 +1192,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -2291,6 +2596,10 @@ color: rgb(255, 255, 255);</string>
   <tabstop>midiInputNameLine</tabstop>
   <tabstop>midiInputChoiceButton</tabstop>
   <tabstop>mixerResetPushButton</tabstop>
+  <tabstop>colorsTreeWidget</tabstop>
+  <tabstop>colorLoadPushButton</tabstop>
+  <tabstop>colorSavePushButton</tabstop>
+  <tabstop>colorEditPushButton</tabstop>
   <tabstop>ptnHdFontComboBox</tabstop>
   <tabstop>ptnHdFontSizeComboBox</tabstop>
   <tabstop>ptnRowFontComboBox</tabstop>

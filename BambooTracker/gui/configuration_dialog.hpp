@@ -5,9 +5,11 @@
 #include <memory>
 #include <map>
 #include <vector>
-#include "configuration.hpp"
-#include "misc.hpp"
 #include <QKeySequenceEdit>
+#include <QTreeWidgetItem>
+#include "configuration.hpp"
+#include "color_palette.hpp"
+#include "misc.hpp"
 
 namespace Ui {
 	class ConfigurationDialog;
@@ -18,8 +20,8 @@ class ConfigurationDialog : public QDialog
 	Q_OBJECT
 
 public:
-	ConfigurationDialog(std::weak_ptr<Configuration> config, std::string curApi,
-						std::vector<std::string> apis, QWidget *parent = nullptr);
+	ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
+						std::string curApi, std::vector<std::string> apis, QWidget *parent = nullptr);
 	~ConfigurationDialog() override;
 
 signals:
@@ -31,6 +33,7 @@ private slots:
 private:
 	Ui::ConfigurationDialog *ui;
 	std::weak_ptr<Configuration> config_;
+	std::weak_ptr<ColorPalette> palette_;
 
 	inline Qt::CheckState toCheckState(bool enabled)
 	{
@@ -56,16 +59,9 @@ private slots:
 private slots:
 	void on_midiInputChoiceButton_clicked();
 
-	/***** Input *****/
+	/***** Formats *****/
 private:
 	std::vector<FMEnvelopeText> fmEnvelopeTexts_;
-
-	/***** Keys *****/
-private slots:
-	void on_keyboardTypeComboBox_currentIndexChanged(int index);
-	void on_customLayoutResetButton_clicked();
-
-	void updateEnvelopeSetUi();
 
 private slots:
 	void on_addEnvelopeSetPushButton_clicked();
@@ -73,6 +69,21 @@ private slots:
 	void on_editEnvelopeSetPushButton_clicked();
 	void on_envelopeSetNameLineEdit_textChanged(const QString &arg1);
 	void on_envelopeTypeListWidget_currentRowChanged(int currentRow);
+	void updateEnvelopeSetUi();
+
+	/***** Keys *****/
+private slots:
+	void on_keyboardTypeComboBox_currentIndexChanged(int index);
+	void on_customLayoutResetButton_clicked();
+
+	/***** Appearance *****/
+private slots:
+	void on_colorEditPushButton_clicked();
+	void on_colorLoadPushButton_clicked();
+	void on_colorSavePushButton_clicked();
+
+private:
+	void updateColorTree();
 };
 
 #endif // CONFIGURATION_DIALOG_HPP

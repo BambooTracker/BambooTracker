@@ -41,6 +41,7 @@ else {
 CONFIG += c++14
 
 SOURCES += \
+    gui/color_palette_handler.cpp \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
     gui/instrument_editor/arpeggio_macro_editor.cpp \
@@ -204,6 +205,7 @@ SOURCES += \
 
 HEADERS += \
     command/command_id.hpp \
+    gui/color_palette_handler.hpp \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
