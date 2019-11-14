@@ -190,7 +190,7 @@ void OrderListPanel::drawList(const QRect &rect)
 			completePixmap_->fill(palette_->odrBackColor);
 
 			if (!focusChanged_) {
-				if (orderChanged_ && config_.lock()->getFollowMode()) {
+				if (orderChanged_ && config_.lock()->getFollowMode() && curPos_.row > 0) {
 					quickDrawRows(maxWidth);
 				}
 				else {
@@ -744,7 +744,7 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 
 	orderChanged_ = !orderUpdateRequestCnt_++;
 	// Redraw entire area in first update and jumping order
-	if (isFirstUpdate || tmp - 1 != curPos_.row || (tmp == 1 && curPos_.row == 0))
+	if (isFirstUpdate || tmp != curPos_.row - 1)
 		orderChanged_ = false;
 	redrawAll();
 }

@@ -1174,13 +1174,15 @@ int PatternEditorPanel::getFullColmunSize() const
 
 void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 {
+	PatternPosition tmp = curPos_;
 	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 
 	emit currentStepChanged(
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
 	stepChanged_ = !stepUpdateRequestCnt_++;	// Step changed by playback
-	if (isFirstUpdate) stepChanged_ = false;	// Redraw entire area in first update
+	if (isFirstUpdate || (tmp.order < curPos_.order - 1) || (tmp.order > curPos_.order))
+		stepChanged_ = false;	// Redraw entire area in first update
 	redrawAll();								// If stepChanged is false, repaint all pattern
 }
 
