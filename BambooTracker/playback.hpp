@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <unordered_map>
 #include "opna_controller.hpp"
 #include "instruments_manager.hpp"
 #include "module.hpp"
@@ -13,6 +14,19 @@ enum class PlaybackState
 {
 	PlaySong, PlayFromStart, PlayPattern, PlayFromCurrentStep, Stop
 };
+
+#ifdef __GNUC__
+namespace std {
+  template <class T>
+  struct hash {
+	static_assert(is_enum<T>::value, "...");
+	size_t operator()(T x) const noexcept {
+	  using type = typename underlying_type<T>::type;
+	  return hash<type>{}(static_cast<type>(x));
+	}
+  };
+}
+#endif
 
 /// Divede playback routine from main class BambooTracker
 class PlaybackManager
@@ -74,36 +88,36 @@ private:
 	void findNextStep();
 	void checkValidPosition();
 
-	void readStep();
+	void stepProcess();
+	std::vector<bool> isNoteDelayFM_, isNoteDelaySSG_, isNoteDelayDrum_;
 
-	bool readFMStep(Step& step, int ch);
-	bool readFMEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
-	bool readSSGStep(Step& step, int ch);
-	bool readSSGEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
-	bool readDrumStep(Step& step, int ch);
-	bool readDrumEventsInStep(Step& step, int ch, bool calledByNoteDelay = false);
+	void executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
+	void executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
+	void executeDrumStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 
-	std::vector<std::vector<Effect>> keyOnBasedEffsFM_, stepBeginBasedEffsFM_, stepEndBasedEffsFM_;
-	std::vector<std::vector<Effect>> keyOnBasedEffsSSG_, stepBeginBasedEffsSSG_, stepEndBasedEffsSSG_;
-	std::vector<std::vector<Effect>> keyOnBasedEffsDrum_, stepBeginBasedEffsDrum_, stepEndBasedEffsDrum_;
-	bool setEffectToQueueFM(int ch, Effect eff);
-	bool readFMEffectFromQueue(int ch);
-	bool setEffectToQueueSSG(int ch, Effect eff);
-	bool readSSGEffectFromQueue(int ch);
-	bool setEffectToQueueDrum(int ch, Effect eff);
-	bool readDrumEffectFromQueue(int ch);
+	std::unordered_map<EffectType, int> stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
+	std::vector<std::vector<Effect>> keyOnBasedEffsFM_, stepBeginBasedEffsFM_;
+	std::vector<std::vector<Effect>> keyOnBasedEffsSSG_, stepBeginBasedEffsSSG_;
+	std::vector<std::vector<Effect>> keyOnBasedEffsDrum_, stepBeginBasedEffsDrum_;
+	bool executeQueuedEffectsGlobal();
+	bool pushEffectToQueueFM(int ch, Effect eff);
+	void executeQueuedEffectsFM(int ch);
+	bool pushEffectToQueueSSG(int ch, Effect eff);
+	void executeQueuedEffectsSSG(int ch);
+	bool pushEffectToQueueDrum(int ch, Effect eff);
+	void executeQueuedEffectsDrum(int ch);
 
 	bool effPositionJump(int nextOrder);
-	void effTrackEnd();
+	void effSongEnd();
 	bool effPatternBreak(int nextStep);
 	void effSpeedChange(int speed);
 	void effTempoChange(int tempo);
 	void effGrooveChange(int num);
 
-	void readTick(int rest);
+	void tickProcess(int rest);
 
 	void checkFMDelayEventsInTick(Step& step, int ch);
-	void readTickFMForNoteDelay(Step& step, int ch);
+	void checkFMNoteDelayAndEnvelopeReset(Step& step, int ch);
 	void envelopeResetEffectFM(Step& step, int ch);
 	void checkSSGDelayEventsInTick(Step& step, int ch);
 	void checkDrumDelayEventsInTick(Step& step, int ch);

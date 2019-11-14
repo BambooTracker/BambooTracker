@@ -35,9 +35,9 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	/* opna mode is changed in BambooTracker class */
 
 	size_t fmch = getFMChannelCount(songStyle_.type);
+	isNoteDelayFM_ = std::vector<bool>(fmch);
 	keyOnBasedEffsFM_ = std::vector<std::vector<Effect>>(fmch);
 	stepBeginBasedEffsFM_ = std::vector<std::vector<Effect>>(fmch);
-	stepEndBasedEffsFM_ = std::vector<std::vector<Effect>>(fmch);
 	ntDlyCntFM_ = std::vector<int>(fmch);
 	ntCutDlyCntFM_ = std::vector<int>(fmch);
 	volDlyCntFM_ = std::vector<int>(fmch);
@@ -45,9 +45,9 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	tposeDlyCntFM_ = std::vector<int>(fmch);
 	tposeDlyValueFM_ = std::vector<int>(fmch);
 
+	isNoteDelaySSG_ = std::vector<bool>(3);
 	keyOnBasedEffsSSG_ = std::vector<std::vector<Effect>>(3);
 	stepBeginBasedEffsSSG_ = std::vector<std::vector<Effect>>(3);
-	stepEndBasedEffsSSG_ = std::vector<std::vector<Effect>>(3);
 	ntDlyCntSSG_ = std::vector<int>(3);
 	ntCutDlyCntSSG_ = std::vector<int>(3);
 	volDlyCntSSG_ = std::vector<int>(3);
@@ -55,9 +55,9 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	tposeDlyCntSSG_ = std::vector<int>(3);
 	tposeDlyValueSSG_ = std::vector<int>(3);
 
+	isNoteDelayDrum_ = std::vector<bool>(6);
 	keyOnBasedEffsDrum_ = std::vector<std::vector<Effect>>(6);
 	stepBeginBasedEffsDrum_ = std::vector<std::vector<Effect>>(6);
-	stepEndBasedEffsDrum_ = std::vector<std::vector<Effect>>(6);
 	ntDlyCntDrum_ = std::vector<int>(6);
 	ntCutDlyCntDrum_ = std::vector<int>(6);
 	volDlyCntDrum_ = std::vector<int>(6);
@@ -181,12 +181,12 @@ int PlaybackManager::streamCountUp()
 
 	if (state > 0) {
 		checkValidPosition();
-		readTick(state);
+		tickProcess(state);
 	}
 	else if (!state) {
 		checkValidPosition();
 		if (stepDown()) {
-			readStep();
+			stepProcess();
 			if (!isFindNextStep_) findNextStep();
 		}
 		else {
@@ -274,55 +274,100 @@ void PlaybackManager::checkValidPosition()
 }
 
 /// Register update order: volume -> instrument -> effect -> key on
-void PlaybackManager::readStep()
+void PlaybackManager::stepProcess()
 {
-	bool isNextSet = false;
-
 	clearNoteDelayCounts();
 	updateDelayEventCounts();
 
 	auto& song = mod_.lock()->getSong(curSongNum_);
+
+	// Store effects from the step to queue
+	for (auto& attrib : songStyle_.trackAttribs) {
+		auto& step = song.getTrack(attrib.number)
+					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
+		size_t uch = static_cast<size_t>(attrib.channelInSource);
+		switch (attrib.source) {
+		case SoundSource::FM:
+		{
+			keyOnBasedEffsFM_.at(uch).clear();
+			bool isDelay = false;
+			for (int i = 0; i < 4; ++i) {
+				Effect&& eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
+				isDelay |= pushEffectToQueueFM(attrib.channelInSource, std::move(eff));
+			}
+			isNoteDelayFM_.at(uch) = isDelay;
+			break;
+		}
+		case SoundSource::SSG:
+		{
+			keyOnBasedEffsSSG_.at(uch).clear();
+			bool isDelay = false;
+			for (int i = 0; i < 4; ++i) {
+				Effect&& eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
+				isDelay |= pushEffectToQueueSSG(attrib.channelInSource, std::move(eff));
+			}
+			isNoteDelaySSG_.at(uch) = isDelay;
+			break;
+		}
+		case SoundSource::DRUM:
+		{
+			keyOnBasedEffsDrum_.at(uch).clear();
+			bool isDelay = false;
+			for (int i = 0; i < 4; ++i) {
+				Effect&& eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
+				isDelay |= pushEffectToQueueDrum(attrib.channelInSource, std::move(eff));
+			}
+			isNoteDelayDrum_.at(uch) = isDelay;
+			break;
+		}
+		}
+	}
+
+	// Execute step events
+	bool isNextSet = executeQueuedEffectsGlobal();
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
-		case SoundSource::FM:	isNextSet |= readFMStep(step, attrib.channelInSource);		break;
-		case SoundSource::SSG:	isNextSet |= readSSGStep(step, attrib.channelInSource);		break;
-		case SoundSource::DRUM:	isNextSet |= readDrumStep(step, attrib.channelInSource);	break;
+		case SoundSource::FM:
+			if (isNoteDelayFM_.at(attrib.channelInSource)) {
+				// Set effect
+				executeQueuedEffectsFM(attrib.channelInSource);
+				checkFMNoteDelayAndEnvelopeReset(step, attrib.channelInSource);
+				opnaCtrl_->tickEvent(SoundSource::FM, attrib.channelInSource);
+			}
+			else {
+				executeFMStepEvents(step, attrib.channelInSource);
+			}
+			break;
+		case SoundSource::SSG:
+			if (isNoteDelaySSG_.at(attrib.channelInSource)) {
+				// Set effect
+				executeQueuedEffectsSSG(attrib.channelInSource);
+				opnaCtrl_->tickEvent(SoundSource::SSG, attrib.channelInSource);
+			}
+			else {
+				executeSSGStepEvents(step, attrib.channelInSource);
+			}
+			break;
+		case SoundSource::DRUM:
+			if (isNoteDelayDrum_.at(attrib.channelInSource)) {
+				// Set effect
+				executeQueuedEffectsDrum(attrib.channelInSource);
+				opnaCtrl_->tickEvent(SoundSource::DRUM, attrib.channelInSource);
+			}
+			else {
+				executeDrumStepEvents(step, attrib.channelInSource);
+			}
+			break;
 		}
 	}
-	opnaCtrl_->updateRegisterStates();
+	opnaCtrl_->updateRegisterStates();	// Update for other changes
 
 	isFindNextStep_ = isNextSet;
 }
 
-bool PlaybackManager::readFMStep(Step& step, int ch)
-{
-	bool isNoteDelay = false;
-
-	keyOnBasedEffsFM_.at(static_cast<size_t>(ch)).clear();
-
-	// Set effects to queue
-	for (int i = 0; i < 4; ++i) {
-		Effect&& eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
-		isNoteDelay |= setEffectToQueueFM(ch, std::move(eff));
-	}
-
-	bool changedNextStep;
-	if (isNoteDelay) {
-		// Set effect
-		changedNextStep = readFMEffectFromQueue(ch);
-		readTickFMForNoteDelay(step, ch);
-		opnaCtrl_->tickEvent(SoundSource::FM, ch);
-	}
-	else {
-		changedNextStep = readFMEventsInStep(step, ch);
-	}
-
-	return changedNextStep;
-}
-
-bool PlaybackManager::readFMEventsInStep(Step& step, int ch, bool calledByNoteDelay)
+void PlaybackManager::executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay)
 {
 	int noteNum = step.getNoteNumber();
 	if (!calledByNoteDelay && noteNum != -1) clearFMDelayBeyondStepCounts(ch);	// Except no key event
@@ -344,7 +389,7 @@ bool PlaybackManager::readFMEventsInStep(Step& step, int ch, bool calledByNoteDe
 	}
 
 	// Set effect
-	bool changedNextStep = readFMEffectFromQueue(ch);
+	executeQueuedEffectsFM(ch);
 
 	// Set key
 	switch (noteNum) {
@@ -376,36 +421,9 @@ bool PlaybackManager::readFMEventsInStep(Step& step, int ch, bool calledByNoteDe
 		break;
 	}
 	}
-
-	return changedNextStep;
 }
 
-bool PlaybackManager::readSSGStep(Step& step, int ch)
-{
-	bool isNoteDelay = false;
-
-	keyOnBasedEffsSSG_.at(static_cast<size_t>(ch)).clear();
-
-	// Set effects to queue
-	for (int i = 0; i < 4; ++i) {
-		Effect&& eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
-		isNoteDelay |= setEffectToQueueSSG(ch, std::move(eff));
-	}
-
-	bool changedNextStep;
-	if (isNoteDelay) {
-		// Set effect
-		changedNextStep = readSSGEffectFromQueue(ch);
-		opnaCtrl_->tickEvent(SoundSource::SSG, ch);
-	}
-	else {
-		changedNextStep = readSSGEventsInStep(step, ch);
-	}
-
-	return changedNextStep;
-}
-
-bool PlaybackManager::readSSGEventsInStep(Step& step, int ch, bool calledByNoteDelay)
+void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay)
 {
 	int noteNum = step.getNoteNumber();
 	if (!calledByNoteDelay && noteNum != -1) clearSSGDelayBeyondStepCounts(ch);	// Except no key event
@@ -424,7 +442,7 @@ bool PlaybackManager::readSSGEventsInStep(Step& step, int ch, bool calledByNoteD
 	}
 
 	// Set effect
-	bool changedNextStep = readSSGEffectFromQueue(ch);
+	executeQueuedEffectsSSG(ch);
 
 	// Set key
 	switch (noteNum) {
@@ -456,36 +474,9 @@ bool PlaybackManager::readSSGEventsInStep(Step& step, int ch, bool calledByNoteD
 		break;
 	}
 	}
-
-	return changedNextStep;
 }
 
-bool PlaybackManager::readDrumStep(Step& step, int ch)
-{
-	bool isNoteDelay = false;
-
-	keyOnBasedEffsDrum_.at(static_cast<size_t>(ch)).clear();
-
-	// Set effects to queue
-	for (int i = 0; i < 4; ++i) {
-		Effect&& eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
-		isNoteDelay |= setEffectToQueueDrum(ch, std::move(eff));
-	}
-
-	bool changedNextStep;
-	if (isNoteDelay) {
-		// Set effect
-		changedNextStep = readDrumEffectFromQueue(ch);
-		opnaCtrl_->tickEvent(SoundSource::DRUM, ch);
-	}
-	else {
-		changedNextStep = readDrumEventsInStep(step, ch);
-	}
-
-	return changedNextStep;
-}
-
-bool PlaybackManager::readDrumEventsInStep(Step& step, int ch, bool calledByNoteDelay)
+void PlaybackManager::executeDrumStepEvents(Step& step, int ch, bool calledByNoteDelay)
 {
 	int noteNum = step.getNoteNumber();
 	if (!calledByNoteDelay && noteNum != -1) clearDrumDelayBeyondStepCounts(ch);	// Except no key event
@@ -497,7 +488,7 @@ bool PlaybackManager::readDrumEventsInStep(Step& step, int ch, bool calledByNote
 	}
 
 	// Set effect
-	bool changedNextStep = readDrumEffectFromQueue(ch);
+	executeQueuedEffectsDrum(ch);
 
 	// Set key
 	switch (noteNum) {
@@ -514,11 +505,53 @@ bool PlaybackManager::readDrumEventsInStep(Step& step, int ch, bool calledByNote
 		opnaCtrl_->setKeyOnFlagDrum(ch);
 		break;
 	}
-
-	return changedNextStep;
 }
 
-bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
+bool PlaybackManager::executeQueuedEffectsGlobal()
+{
+	bool changedNextPos = false;
+
+	// Read step end based effects
+	for (const auto& eff : stepEndBasedEffsGlobal_) {
+		switch (eff.first) {
+		case EffectType::PositionJump:
+			changedNextPos |= effPositionJump(eff.second);
+			break;
+		case EffectType::SongEnd:
+			effSongEnd();
+			changedNextPos = true;
+			break;
+		case EffectType::PatternBreak:
+			changedNextPos |= effPatternBreak(eff.second);
+			break;
+		default:
+			break;
+		}
+	}
+	stepEndBasedEffsGlobal_.clear();
+
+	// Read step beginning based effects
+	auto&& it = stepBeginBasedEffsGlobal_.find(EffectType::SpeedTempoChange);
+	if (it != stepBeginBasedEffsGlobal_.end()) {
+		if (it->second < 0x20) effSpeedChange(it->second);
+		else effTempoChange(it->second);
+	}
+	for (const auto& eff : stepBeginBasedEffsGlobal_) {
+		switch (eff.first) {
+		case EffectType::Groove:
+			if (eff.second < static_cast<int>(mod_.lock()->getGrooveCount()))
+				effGrooveChange(eff.second);
+			break;
+		default:
+			break;
+		}
+	}
+	stepBeginBasedEffsGlobal_.clear();
+
+	return changedNextPos;
+}
+
+bool PlaybackManager::pushEffectToQueueFM(int ch, Effect eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -548,7 +581,8 @@ bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
 		break;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
-		stepBeginBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
+		else stepBeginBasedEffsGlobal_.emplace(eff.type, eff.value);
 		break;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
@@ -559,7 +593,8 @@ bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
-		stepEndBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+		if (stepEndBasedEffsGlobal_.count(eff.type)) stepEndBasedEffsGlobal_[eff.type] = eff.value;
+		else stepEndBasedEffsGlobal_.emplace(eff.type, eff.value);
 		break;
 	default:
 		break;
@@ -568,47 +603,17 @@ bool PlaybackManager::setEffectToQueueFM(int ch, Effect eff)
 	return false;
 }
 
-bool PlaybackManager::readFMEffectFromQueue(int ch)
+void PlaybackManager::executeQueuedEffectsFM(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	bool isNoteDelay = false;
-	bool changedNextPos = false;
-
-	// Read step end based effects
-	for (const Effect& eff : stepEndBasedEffsFM_.at(uch)) {
-		switch (eff.type) {
-		case EffectType::PositionJump:
-			changedNextPos |= effPositionJump(eff.value);
-			break;
-		case EffectType::SongEnd:
-			effTrackEnd();
-			changedNextPos = true;
-			break;
-		case EffectType::PatternBreak:
-			changedNextPos |= effPatternBreak(eff.value);
-			break;
-		default:
-			break;
-		}
-	}
-	stepEndBasedEffsFM_.at(uch).clear();
 
 	// Read step beginning based effects
-	for (const Effect& eff : stepBeginBasedEffsFM_.at(uch)) {	// Check speed/tempo change
-		if (eff.type == EffectType::SpeedTempoChange) {
-			if (eff.value < 0x20) effSpeedChange(eff.value);
-			else effTempoChange(eff.value);
-		}
-	}
 	for (const Effect& eff : stepBeginBasedEffsFM_.at(uch)) {
 		switch (eff.type) {
 		case EffectType::NoteDelay:
 			ntDlyCntFM_.at(uch) = eff.value;
 			isNoteDelay = true;
-			break;
-		case EffectType::Groove:
-			if (eff.value < static_cast<int>(mod_.lock()->getGrooveCount()))
-				effGrooveChange(eff.value);
 			break;
 		default:
 			break;
@@ -733,11 +738,9 @@ bool PlaybackManager::readFMEffectFromQueue(int ch)
 		}
 		keyOnBasedEffsFM_.at(uch).clear();
 	}
-
-	return changedNextPos;
 }
 
-bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
+bool PlaybackManager::pushEffectToQueueSSG(int ch, Effect eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -765,7 +768,8 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 		break;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
-		stepBeginBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
+		else stepBeginBasedEffsGlobal_.emplace(eff.type, eff.value);
 		break;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
@@ -776,7 +780,8 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
-		stepEndBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+		if (stepEndBasedEffsGlobal_.count(eff.type)) stepEndBasedEffsGlobal_[eff.type] = eff.value;
+		else stepEndBasedEffsGlobal_.emplace(eff.type, eff.value);
 		break;
 	default:
 		break;
@@ -785,47 +790,17 @@ bool PlaybackManager::setEffectToQueueSSG(int ch, Effect eff)
 	return false;
 }
 
-bool PlaybackManager::readSSGEffectFromQueue(int ch)
+void PlaybackManager::executeQueuedEffectsSSG(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	bool isNoteDelay = false;
-	bool changedNextPos = false;
-
-	// Read step end based effects
-	for (const Effect& eff : stepEndBasedEffsSSG_.at(uch)) {
-		switch (eff.type) {
-		case EffectType::PositionJump:
-			changedNextPos |= effPositionJump(eff.value);
-			break;
-		case EffectType::SongEnd:
-			effTrackEnd();
-			changedNextPos = true;
-			break;
-		case EffectType::PatternBreak:
-			changedNextPos |= effPatternBreak(eff.value);
-			break;
-		default:
-			break;
-		}
-	}
-	stepEndBasedEffsSSG_.at(uch).clear();
 
 	// Read step beginning based effects
-	for (const Effect& eff : stepBeginBasedEffsSSG_.at(uch)) {	// Check speed/tempo change
-		if (eff.type == EffectType::SpeedTempoChange) {
-			if (eff.value < 0x20) effSpeedChange(eff.value);
-			else effTempoChange(eff.value);
-		}
-	}
 	for (const Effect& eff : stepBeginBasedEffsSSG_.at(uch)) {
 		switch (eff.type) {
 		case EffectType::NoteDelay:
 			ntDlyCntSSG_.at(uch) = eff.value;
 			isNoteDelay = true;
-			break;
-		case EffectType::Groove:
-			if (eff.value < static_cast<int>(mod_.lock()->getGrooveCount()))
-				effGrooveChange(eff.value);
 			break;
 		default:
 			break;
@@ -924,11 +899,9 @@ bool PlaybackManager::readSSGEffectFromQueue(int ch)
 		}
 		keyOnBasedEffsSSG_.at(uch).clear();
 	}
-
-	return changedNextPos;
 }
 
-bool PlaybackManager::setEffectToQueueDrum(int ch, Effect eff)
+bool PlaybackManager::pushEffectToQueueDrum(int ch, Effect eff)
 {
 	switch (eff.type) {
 	case EffectType::Pan:
@@ -942,7 +915,8 @@ bool PlaybackManager::setEffectToQueueDrum(int ch, Effect eff)
 		break;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
-		stepBeginBasedEffsDrum_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
+		else stepBeginBasedEffsGlobal_.emplace(eff.type, eff.value);
 		break;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
@@ -953,7 +927,8 @@ bool PlaybackManager::setEffectToQueueDrum(int ch, Effect eff)
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
-		stepEndBasedEffsDrum_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+		if (stepEndBasedEffsGlobal_.count(eff.type)) stepEndBasedEffsGlobal_[eff.type] = eff.value;
+		else stepEndBasedEffsGlobal_.emplace(eff.type, eff.value);
 		break;
 	default:
 		break;
@@ -962,47 +937,17 @@ bool PlaybackManager::setEffectToQueueDrum(int ch, Effect eff)
 	return false;
 }
 
-bool PlaybackManager::readDrumEffectFromQueue(int ch)
+void PlaybackManager::executeQueuedEffectsDrum(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	bool isNoteDelay = false;
-	bool changedNextPos = false;
-
-	// Read step end based effects
-	for (const Effect& eff : stepEndBasedEffsDrum_.at(uch)) {
-		switch (eff.type) {
-		case EffectType::PositionJump:
-			changedNextPos |= effPositionJump(eff.value);
-			break;
-		case EffectType::SongEnd:
-			effTrackEnd();
-			changedNextPos = true;
-			break;
-		case EffectType::PatternBreak:
-			changedNextPos |= effPatternBreak(eff.value);
-			break;
-		default:
-			break;
-		}
-	}
-	stepEndBasedEffsDrum_.at(uch).clear();
 
 	// Read step beginning based effects
-	for (const Effect& eff : stepBeginBasedEffsDrum_.at(uch)) {	// Check speed/tempo change
-		if (eff.type == EffectType::SpeedTempoChange) {
-			if (eff.value < 0x20) effSpeedChange(eff.value);
-			else effTempoChange(eff.value);
-		}
-	}
 	for (const Effect& eff : stepBeginBasedEffsDrum_.at(uch)) {
 		switch (eff.type) {
 		case EffectType::NoteDelay:
 			ntDlyCntDrum_.at(uch) = eff.value;
 			isNoteDelay = true;
-			break;
-		case EffectType::Groove:
-			if (eff.value < static_cast<int>(mod_.lock()->getGrooveCount()))
-				effGrooveChange(eff.value);
 			break;
 		default:
 			break;
@@ -1053,8 +998,6 @@ bool PlaybackManager::readDrumEffectFromQueue(int ch)
 		}
 		keyOnBasedEffsDrum_.at(uch).clear();
 	}
-
-	return changedNextPos;
 }
 
 bool PlaybackManager::effPositionJump(int nextOrder)
@@ -1067,7 +1010,7 @@ bool PlaybackManager::effPositionJump(int nextOrder)
 	return false;
 }
 
-void PlaybackManager::effTrackEnd()
+void PlaybackManager::effSongEnd()
 {
 	nextReadOrder_ = -1;
 	nextReadStep_ = -1;
@@ -1107,7 +1050,7 @@ void PlaybackManager::effGrooveChange(int num)
 	tickCounter_.lock()->setGrooveTrigger(GrooveTrigger::ValidByLocal);
 }
 
-void PlaybackManager::readTick(int rest)
+void PlaybackManager::tickProcess(int rest)
 {
 	if (!(playState_ & 0x02)) return;	// When it has not read first step
 
@@ -1157,14 +1100,14 @@ void PlaybackManager::checkFMDelayEventsInTick(Step& step, int ch)
 	if (!tposeDlyCntFM_.at(uch))
 		opnaCtrl_->setTransposeEffectFM(ch, tposeDlyValueFM_.at(uch));
 	// Check note delay and envelope reset
-	readTickFMForNoteDelay(step, ch);
+	checkFMNoteDelayAndEnvelopeReset(step, ch);
 }
 
-void PlaybackManager::readTickFMForNoteDelay(Step& step, int ch)
+void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(Step& step, int ch)
 {
 	int cnt = ntDlyCntFM_.at(static_cast<size_t>(ch));
 	if (!cnt) {
-		readFMEventsInStep(step, ch, true);
+		executeFMStepEvents(step, ch, true);
 	}
 	else if (cnt == 1) {
 		// Channel envelope reset before next key on
@@ -1208,7 +1151,7 @@ void PlaybackManager::checkSSGDelayEventsInTick(Step& step, int ch)
 		opnaCtrl_->setTransposeEffectSSG(ch, tposeDlyValueSSG_.at(uch));
 	// Check note delay
 	if (!ntDlyCntSSG_.at(uch))
-		readSSGEventsInStep(step, ch, true);
+		executeSSGStepEvents(step, ch, true);
 }
 
 void PlaybackManager::checkDrumDelayEventsInTick(Step& step, int ch)
@@ -1222,22 +1165,22 @@ void PlaybackManager::checkDrumDelayEventsInTick(Step& step, int ch)
 		opnaCtrl_->setKeyOnFlagDrum(ch);
 	// Check note delay
 	if (!ntDlyCntDrum_.at(uch))
-		readDrumEventsInStep(step, ch, true);
+		executeDrumStepEvents(step, ch, true);
 }
 
 void PlaybackManager::clearEffectQueues()
 {
+	stepBeginBasedEffsGlobal_.clear();
+	stepEndBasedEffsGlobal_.clear();
+
 	for (auto& queue : keyOnBasedEffsFM_) queue.clear();
 	for (auto& queue : stepBeginBasedEffsFM_) queue.clear();
-	for (auto& queue : stepEndBasedEffsFM_) queue.clear();
 
 	for (auto& queue : keyOnBasedEffsSSG_) queue.clear();
 	for (auto& queue : stepBeginBasedEffsSSG_) queue.clear();
-	for (auto& queue : stepEndBasedEffsSSG_) queue.clear();
 
 	for (auto& queue : keyOnBasedEffsDrum_) queue.clear();
 	for (auto& queue : stepBeginBasedEffsDrum_) queue.clear();
-	for (auto& queue : stepEndBasedEffsDrum_) queue.clear();
 }
 
 void PlaybackManager::clearNoteDelayCounts()
