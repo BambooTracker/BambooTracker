@@ -326,9 +326,9 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			}
 			switch (instMan.lock()->getArpeggioFMType(arpNum)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -370,8 +370,8 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			}
 			switch (instMan.lock()->getPitchFMType(ptNum)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -541,9 +541,9 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			}
 			switch (instMan.lock()->getArpeggioSSGType(arpNum)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -586,8 +586,8 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 				break;
 			}
 			switch (instMan.lock()->getPitchSSGType(ptNum)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -1487,13 +1487,13 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setArpeggioFMType(idx, SequenceType::AbsoluteSequence);
+							instMan.lock()->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x01:	// Fixed
-							instMan.lock()->setArpeggioFMType(idx, SequenceType::FixedSequence);
+							instMan.lock()->setArpeggioFMType(idx, SequenceType::FIXED_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setArpeggioFMType(idx, SequenceType::RelativeSequence);
+							instMan.lock()->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							throw FileCorruptionError(FileIO::FileType::Inst);
@@ -1571,10 +1571,10 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setPitchFMType(idx, SequenceType::AbsoluteSequence);
+							instMan.lock()->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setPitchFMType(idx, SequenceType::RelativeSequence);
+							instMan.lock()->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							throw FileCorruptionError(FileIO::FileType::Inst);
@@ -1860,13 +1860,13 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setArpeggioSSGType(idx, SequenceType::AbsoluteSequence);
+							instMan.lock()->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x01:	// Fixed
-							instMan.lock()->setArpeggioSSGType(idx, SequenceType::FixedSequence);
+							instMan.lock()->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setArpeggioSSGType(idx, SequenceType::RelativeSequence);
+							instMan.lock()->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							throw FileCorruptionError(FileIO::FileType::Inst);
@@ -1931,10 +1931,10 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setPitchSSGType(idx, SequenceType::AbsoluteSequence);
+							instMan.lock()->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setPitchSSGType(idx, SequenceType::RelativeSequence);
+							instMan.lock()->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2068,7 +2068,7 @@ AbstractInstrument* InstrumentIO::loadDMPFile(std::string path, std::weak_ptr<In
 			ssg->setArpeggioEnabled(true);
 			ssg->setArpeggioNumber(idx);
 			uint8_t arpType = ctr.readUint8(csr + arpSize * 4 + 1);
-			if (arpType == 1) instMan.lock()->setArpeggioSSGType(idx, SequenceType::FixedSequence);
+			if (arpType == 1) instMan.lock()->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
 			for (uint8_t l = 0; l < arpSize; ++l) {
 				int data = ctr.readInt32(csr) + 36;
 				csr += 4;
@@ -2652,7 +2652,7 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
 		instMan.lock()->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
-		instMan.lock()->setArpeggioFMType(arpIdx, SequenceType::AbsoluteSequence);
+		instMan.lock()->setArpeggioFMType(arpIdx, SequenceType::ABSOLUTE_SEQUENCE);
 	}
 
 	return inst;
@@ -2925,13 +2925,13 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 
 						switch (propCtr.readUint8(arpCsr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::AbsoluteSequence);
+							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x01:	// Fixed
-							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::FixedSequence);
+							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::FIXED_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::RelativeSequence);
+							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							throw FileCorruptionError(FileIO::FileType::Inst);
@@ -3015,10 +3015,10 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 
 						switch (propCtr.readUint8(ptCsr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setPitchFMType(ptNum, SequenceType::AbsoluteSequence);
+							instMan.lock()->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setPitchFMType(ptNum, SequenceType::RelativeSequence);
+							instMan.lock()->setPitchFMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							throw FileCorruptionError(FileIO::FileType::Inst);
@@ -3311,13 +3311,13 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 
 				switch (propCtr.readUint8(arpCsr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::AbsoluteSequence);
+					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x01:	// Fixed
-					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::FixedSequence);
+					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::FIXED_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::RelativeSequence);
+					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					throw FileCorruptionError(FileIO::FileType::Inst);
@@ -3384,10 +3384,10 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 
 				switch (propCtr.readUint8(ptCsr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setPitchSSGType(ptNum, SequenceType::AbsoluteSequence);
+					instMan.lock()->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setPitchSSGType(ptNum, SequenceType::RelativeSequence);
+					instMan.lock()->setPitchSSGType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					throw FileCorruptionError(FileIO::FileType::Inst);

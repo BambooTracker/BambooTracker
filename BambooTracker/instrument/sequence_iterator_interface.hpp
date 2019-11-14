@@ -9,7 +9,7 @@ public:
 	virtual int getPosition() const = 0;
 	/// 0: absolute
 	/// 1: fixed
-	/// 1: relative
+	/// 2: relative
 	virtual int getSequenceType() const = 0;
 	virtual int getCommandType() const = 0;
 	virtual int getCommandData() const = 0;

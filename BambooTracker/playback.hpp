@@ -96,16 +96,16 @@ private:
 	void executeDrumStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 
 	std::unordered_map<EffectType, int> stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
-	std::vector<std::vector<Effect>> keyOnBasedEffsFM_, stepBeginBasedEffsFM_;
-	std::vector<std::vector<Effect>> keyOnBasedEffsSSG_, stepBeginBasedEffsSSG_;
-	std::vector<std::vector<Effect>> keyOnBasedEffsDrum_, stepBeginBasedEffsDrum_;
-	bool executeQueuedEffectsGlobal();
-	bool pushEffectToQueueFM(int ch, Effect eff);
-	void executeQueuedEffectsFM(int ch);
-	bool pushEffectToQueueSSG(int ch, Effect eff);
-	void executeQueuedEffectsSSG(int ch);
-	bool pushEffectToQueueDrum(int ch, Effect eff);
-	void executeQueuedEffectsDrum(int ch);
+	std::vector<std::unordered_map<EffectType, int>> keyOnBasedEffsFM_, stepBeginBasedEffsFM_;
+	std::vector<std::unordered_map<EffectType, int>> keyOnBasedEffsSSG_, stepBeginBasedEffsSSG_;
+	std::vector<std::unordered_map<EffectType, int>> keyOnBasedEffsDrum_, stepBeginBasedEffsDrum_;
+	bool executeStoredEffectsGlobal();
+	bool storeEffectToMapFM(int ch, Effect eff);
+	void executeStoredEffectsFM(int ch);
+	bool storeEffectToMapSSG(int ch, Effect eff);
+	void executeStoredEffectsSSG(int ch);
+	bool storeEffectToMapDrum(int ch, Effect eff);
+	void executeStoredEffectsDrum(int ch);
 
 	bool effPositionJump(int nextOrder);
 	void effSongEnd();
@@ -130,7 +130,7 @@ private:
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
 
-	void clearEffectQueues();
+	void clearEffectMaps();
 	void clearNoteDelayCounts();
 	void clearDelayBeyondStepCounts();
 	void clearFMDelayBeyondStepCounts(int ch);

@@ -325,9 +325,9 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				break;
 			}
 			switch (instMan.lock()->getArpeggioFMType(idx)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -381,8 +381,8 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				break;
 			}
 			switch (instMan.lock()->getPitchFMType(idx)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -592,9 +592,9 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				break;
 			}
 			switch (instMan.lock()->getArpeggioSSGType(idx)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -648,8 +648,8 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 				break;
 			}
 			switch (instMan.lock()->getPitchSSGType(idx)) {
-			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));

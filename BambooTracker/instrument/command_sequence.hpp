@@ -57,12 +57,12 @@ struct CommandSequenceUnit
 	}
 };
 
-enum SequenceType
+enum SequenceType : int
 {
-	NoSequenceType,
-	AbsoluteSequence,
-	FixedSequence,
-	RelativeSequence
+	NO_SEQUENCE_TYPE = -1,
+	ABSOLUTE_SEQUENCE = 0,
+	FIXED_SEQUENCE = 1,
+	RELATIVE_SEQUENCE = 2
 };
 
 struct Loop
@@ -87,7 +87,7 @@ struct Release
 class CommandSequence : public AbstractInstrumentProperty
 {
 public:
-	CommandSequence(int num, SequenceType seqType = SequenceType::NoSequenceType, int comType = 0, int comData = -1);
+	CommandSequence(int num, SequenceType seqType = SequenceType::NO_SEQUENCE_TYPE, int comType = 0, int comData = -1);
 	CommandSequence(const CommandSequence& other);
 	virtual ~CommandSequence() = default;
 	std::unique_ptr<CommandSequence> clone();

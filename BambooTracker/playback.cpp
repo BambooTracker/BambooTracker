@@ -21,7 +21,7 @@ PlaybackManager::PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
 {
 	songStyle_ = mod.lock()->getSong(curSongNum_).getStyle();
 
-	clearEffectQueues();
+	clearEffectMaps();
 	clearNoteDelayCounts();
 	clearDelayBeyondStepCounts();
 }
@@ -36,8 +36,8 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 
 	size_t fmch = getFMChannelCount(songStyle_.type);
 	isNoteDelayFM_ = std::vector<bool>(fmch);
-	keyOnBasedEffsFM_ = std::vector<std::vector<Effect>>(fmch);
-	stepBeginBasedEffsFM_ = std::vector<std::vector<Effect>>(fmch);
+	keyOnBasedEffsFM_ = std::vector<std::unordered_map<EffectType, int>>(fmch);
+	stepBeginBasedEffsFM_ = std::vector<std::unordered_map<EffectType, int>>(fmch);
 	ntDlyCntFM_ = std::vector<int>(fmch);
 	ntCutDlyCntFM_ = std::vector<int>(fmch);
 	volDlyCntFM_ = std::vector<int>(fmch);
@@ -46,8 +46,8 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	tposeDlyValueFM_ = std::vector<int>(fmch);
 
 	isNoteDelaySSG_ = std::vector<bool>(3);
-	keyOnBasedEffsSSG_ = std::vector<std::vector<Effect>>(3);
-	stepBeginBasedEffsSSG_ = std::vector<std::vector<Effect>>(3);
+	keyOnBasedEffsSSG_ = std::vector<std::unordered_map<EffectType, int>>(3);
+	stepBeginBasedEffsSSG_ = std::vector<std::unordered_map<EffectType, int>>(3);
 	ntDlyCntSSG_ = std::vector<int>(3);
 	ntCutDlyCntSSG_ = std::vector<int>(3);
 	volDlyCntSSG_ = std::vector<int>(3);
@@ -56,8 +56,8 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	tposeDlyValueSSG_ = std::vector<int>(3);
 
 	isNoteDelayDrum_ = std::vector<bool>(6);
-	keyOnBasedEffsDrum_ = std::vector<std::vector<Effect>>(6);
-	stepBeginBasedEffsDrum_ = std::vector<std::vector<Effect>>(6);
+	keyOnBasedEffsDrum_ = std::vector<std::unordered_map<EffectType, int>>(6);
+	stepBeginBasedEffsDrum_ = std::vector<std::unordered_map<EffectType, int>>(6);
 	ntDlyCntDrum_ = std::vector<int>(6);
 	ntCutDlyCntDrum_ = std::vector<int>(6);
 	volDlyCntDrum_ = std::vector<int>(6);
@@ -129,7 +129,7 @@ void PlaybackManager::startPlay()
 	tickCounter_.lock()->resetCount();
 	tickCounter_.lock()->setPlayState(true);
 
-	clearEffectQueues();
+	clearEffectMaps();
 	clearNoteDelayCounts();
 	clearDelayBeyondStepCounts();
 }
@@ -281,7 +281,7 @@ void PlaybackManager::stepProcess()
 
 	auto& song = mod_.lock()->getSong(curSongNum_);
 
-	// Store effects from the step to queue
+	// Store effects from the step to map
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
@@ -293,7 +293,7 @@ void PlaybackManager::stepProcess()
 			bool isDelay = false;
 			for (int i = 0; i < 4; ++i) {
 				Effect&& eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
-				isDelay |= pushEffectToQueueFM(attrib.channelInSource, std::move(eff));
+				isDelay |= storeEffectToMapFM(attrib.channelInSource, std::move(eff));
 			}
 			isNoteDelayFM_.at(uch) = isDelay;
 			break;
@@ -304,7 +304,7 @@ void PlaybackManager::stepProcess()
 			bool isDelay = false;
 			for (int i = 0; i < 4; ++i) {
 				Effect&& eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
-				isDelay |= pushEffectToQueueSSG(attrib.channelInSource, std::move(eff));
+				isDelay |= storeEffectToMapSSG(attrib.channelInSource, std::move(eff));
 			}
 			isNoteDelaySSG_.at(uch) = isDelay;
 			break;
@@ -315,7 +315,7 @@ void PlaybackManager::stepProcess()
 			bool isDelay = false;
 			for (int i = 0; i < 4; ++i) {
 				Effect&& eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
-				isDelay |= pushEffectToQueueDrum(attrib.channelInSource, std::move(eff));
+				isDelay |= storeEffectToMapDrum(attrib.channelInSource, std::move(eff));
 			}
 			isNoteDelayDrum_.at(uch) = isDelay;
 			break;
@@ -324,7 +324,7 @@ void PlaybackManager::stepProcess()
 	}
 
 	// Execute step events
-	bool isNextSet = executeQueuedEffectsGlobal();
+	bool isNextSet = executeStoredEffectsGlobal();
 	for (auto& attrib : songStyle_.trackAttribs) {
 		auto& step = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
@@ -332,7 +332,7 @@ void PlaybackManager::stepProcess()
 		case SoundSource::FM:
 			if (isNoteDelayFM_.at(attrib.channelInSource)) {
 				// Set effect
-				executeQueuedEffectsFM(attrib.channelInSource);
+				executeStoredEffectsFM(attrib.channelInSource);
 				checkFMNoteDelayAndEnvelopeReset(step, attrib.channelInSource);
 				opnaCtrl_->tickEvent(SoundSource::FM, attrib.channelInSource);
 			}
@@ -343,7 +343,7 @@ void PlaybackManager::stepProcess()
 		case SoundSource::SSG:
 			if (isNoteDelaySSG_.at(attrib.channelInSource)) {
 				// Set effect
-				executeQueuedEffectsSSG(attrib.channelInSource);
+				executeStoredEffectsSSG(attrib.channelInSource);
 				opnaCtrl_->tickEvent(SoundSource::SSG, attrib.channelInSource);
 			}
 			else {
@@ -353,7 +353,7 @@ void PlaybackManager::stepProcess()
 		case SoundSource::DRUM:
 			if (isNoteDelayDrum_.at(attrib.channelInSource)) {
 				// Set effect
-				executeQueuedEffectsDrum(attrib.channelInSource);
+				executeStoredEffectsDrum(attrib.channelInSource);
 				opnaCtrl_->tickEvent(SoundSource::DRUM, attrib.channelInSource);
 			}
 			else {
@@ -389,7 +389,7 @@ void PlaybackManager::executeFMStepEvents(Step& step, int ch, bool calledByNoteD
 	}
 
 	// Set effect
-	executeQueuedEffectsFM(ch);
+	executeStoredEffectsFM(ch);
 
 	// Set key
 	switch (noteNum) {
@@ -442,7 +442,7 @@ void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNote
 	}
 
 	// Set effect
-	executeQueuedEffectsSSG(ch);
+	executeStoredEffectsSSG(ch);
 
 	// Set key
 	switch (noteNum) {
@@ -488,7 +488,7 @@ void PlaybackManager::executeDrumStepEvents(Step& step, int ch, bool calledByNot
 	}
 
 	// Set effect
-	executeQueuedEffectsDrum(ch);
+	executeStoredEffectsDrum(ch);
 
 	// Set key
 	switch (noteNum) {
@@ -507,7 +507,7 @@ void PlaybackManager::executeDrumStepEvents(Step& step, int ch, bool calledByNot
 	}
 }
 
-bool PlaybackManager::executeQueuedEffectsGlobal()
+bool PlaybackManager::executeStoredEffectsGlobal()
 {
 	bool changedNextPos = false;
 
@@ -551,7 +551,7 @@ bool PlaybackManager::executeQueuedEffectsGlobal()
 	return changedNextPos;
 }
 
-bool PlaybackManager::pushEffectToQueueFM(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -577,8 +577,12 @@ bool PlaybackManager::pushEffectToQueueFM(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-		keyOnBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+	{
+		auto& map = keyOnBasedEffsFM_.at(static_cast<size_t>(ch));
+		if (map.count(eff.type)) map[eff.type] = eff.value;
+		else map.emplace(eff.type, eff.value);
 		break;
+	}
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
 		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
@@ -586,7 +590,9 @@ bool PlaybackManager::pushEffectToQueueFM(int ch, Effect eff)
 		break;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffsFM_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+			auto& map = stepBeginBasedEffsFM_.at(static_cast<size_t>(ch));
+			if (map.count(EffectType::NoteDelay)) map[EffectType::NoteDelay] = eff.value;
+			else map.emplace(eff.type, eff.value);
 			return true;
 		}
 		return false;
@@ -603,16 +609,16 @@ bool PlaybackManager::pushEffectToQueueFM(int ch, Effect eff)
 	return false;
 }
 
-void PlaybackManager::executeQueuedEffectsFM(int ch)
+void PlaybackManager::executeStoredEffectsFM(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	bool isNoteDelay = false;
 
 	// Read step beginning based effects
-	for (const Effect& eff : stepBeginBasedEffsFM_.at(uch)) {
-		switch (eff.type) {
+	for (const auto& eff : stepBeginBasedEffsFM_.at(uch)) {
+		switch (eff.first) {
 		case EffectType::NoteDelay:
-			ntDlyCntFM_.at(uch) = eff.value;
+			ntDlyCntFM_.at(uch) = eff.second;
 			isNoteDelay = true;
 			break;
 		default:
@@ -623,113 +629,113 @@ void PlaybackManager::executeQueuedEffectsFM(int ch)
 
 	// Read note on and step beginning based effects
 	if (!isNoteDelay) {
-		for (const Effect& eff : keyOnBasedEffsFM_.at(uch)) {
-			switch (eff.type) {
+		for (const auto& eff : keyOnBasedEffsFM_.at(uch)) {
+			switch (eff.first) {
 			case EffectType::Arpeggio:
-				opnaCtrl_->setArpeggioEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setArpeggioEffectFM(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::PortamentoUp:
-				opnaCtrl_->setPortamentoEffectFM(ch, eff.value);
+				opnaCtrl_->setPortamentoEffectFM(ch, eff.second);
 				break;
 			case EffectType::PortamentoDown:
-				opnaCtrl_->setPortamentoEffectFM(ch, -eff.value);
+				opnaCtrl_->setPortamentoEffectFM(ch, -eff.second);
 				break;
 			case EffectType::TonePortamento:
-				opnaCtrl_->setPortamentoEffectFM(ch, eff.value, true);
+				opnaCtrl_->setPortamentoEffectFM(ch, eff.second, true);
 				break;
 			case EffectType::Vibrato:
-				opnaCtrl_->setVibratoEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setVibratoEffectFM(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::Tremolo:
-				opnaCtrl_->setTremoloEffectFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setTremoloEffectFM(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::Pan:
-				if (-1 < eff.value && eff.value < 4) opnaCtrl_->setPanFM(ch, eff.value);
+				if (-1 < eff.second && eff.second < 4) opnaCtrl_->setPanFM(ch, eff.second);
 				break;
 			case EffectType::VolumeSlide:
 			{
-				int hi = eff.value >> 4;
-				int low = eff.value & 0x0f;
+				int hi = eff.second >> 4;
+				int low = eff.second & 0x0f;
 				if (hi && !low) opnaCtrl_->setVolumeSlideFM(ch, hi, true);	// Slide up
 				else if (!hi) opnaCtrl_->setVolumeSlideFM(ch, low, false);	// Slide down
 				break;
 			}
 			case EffectType::Detune:
-				opnaCtrl_->setDetuneFM(ch, eff.value - 0x80);
+				opnaCtrl_->setDetuneFM(ch, eff.second - 0x80);
 				break;
 			case EffectType::NoteSlideUp:
-				opnaCtrl_->setNoteSlideFM(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setNoteSlideFM(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::NoteSlideDown:
-				opnaCtrl_->setNoteSlideFM(ch, eff.value >> 4, -(eff.value & 0x0f));
+				opnaCtrl_->setNoteSlideFM(ch, eff.second >> 4, -(eff.second & 0x0f));
 				break;
 			case EffectType::NoteCut:
-				ntCutDlyCntFM_.at(uch) = eff.value;
+				ntCutDlyCntFM_.at(uch) = eff.second;
 				break;
 			case EffectType::TransposeDelay:
-				tposeDlyCntFM_.at(uch) = (eff.value & 0x70) >> 4;
-				tposeDlyValueFM_.at(uch) = ((eff.value & 0x80) ? -1 : 1) * (eff.value & 0x0f);
+				tposeDlyCntFM_.at(uch) = (eff.second & 0x70) >> 4;
+				tposeDlyValueFM_.at(uch) = ((eff.second & 0x80) ? -1 : 1) * (eff.second & 0x0f);
 				break;
 			case EffectType::VolumeDelay:
 			{
-				int count = eff.value >> 8;
+				int count = eff.second >> 8;
 				if (count > 0) {
 					volDlyCntFM_.at(uch) = count;
-					volDlyValueFM_.at(uch) = eff.value & 0x00ff;
+					volDlyValueFM_.at(uch) = eff.second & 0x00ff;
 				}
 				break;
 			}
 			case EffectType::FBControl:
-				if (-1 < eff.value && eff.value < 8) opnaCtrl_->setFBControlFM(ch, eff.value);
+				if (-1 < eff.second && eff.second < 8) opnaCtrl_->setFBControlFM(ch, eff.second);
 				break;
 			case EffectType::TLControl:
 			{
-				int op = eff.value >> 8;
-				int val = eff.value & 0x00ff;
+				int op = eff.second >> 8;
+				int val = eff.second & 0x00ff;
 				if (0 < op && op < 5 && -1 < val && val < 128) opnaCtrl_->setTLControlFM(ch, op - 1, val);
 				break;
 			}
 			case EffectType::MLControl:
 			{
-				int op = eff.value >> 4;
-				int val = eff.value & 0x0f;
+				int op = eff.second >> 4;
+				int val = eff.second & 0x0f;
 				if (0 < op && op < 5 && -1 < val && val < 16) opnaCtrl_->setMLControlFM(ch, op - 1, val);
 				break;
 			}
 			case EffectType::ARControl:
 			{
-				int op = eff.value >> 8;
-				int val = eff.value & 0x00ff;
+				int op = eff.second >> 8;
+				int val = eff.second & 0x00ff;
 				if (0 < op && op < 5 && -1 < val && val < 32) opnaCtrl_->setARControlFM(ch, op - 1, val);
 				break;
 			}
 			case EffectType::DRControl:
 			{
-				int op = eff.value >> 8;
-				int val = eff.value & 0x00ff;
+				int op = eff.second >> 8;
+				int val = eff.second & 0x00ff;
 				if (0 < op && op < 5 && -1 < val && val < 32) opnaCtrl_->setDRControlFM(ch, op - 1, val);
 				break;
 			}
 			case EffectType::RRControl:
 			{
-				int op = eff.value >> 4;
-				int val = eff.value & 0x0f;
+				int op = eff.second >> 4;
+				int val = eff.second & 0x0f;
 				if (0 < op && op < 5 && -1 < val && val < 16) opnaCtrl_->setRRControlFM(ch, op - 1, val);
 				break;
 			}
 			case EffectType::RegisterAddress0:
 			{
-				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.value);
+				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.second);
 				break;
 			}
 			case EffectType::RegisterAddress1:
 			{
-				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.value);
+				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.second);
 				break;
 			}
 			case EffectType::RegisterValue:
 			{
-				if (-1 < eff.value) opnaCtrl_->sendRegisterValue(eff.value);
+				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
 				break;
 			}
 			default:
@@ -740,7 +746,7 @@ void PlaybackManager::executeQueuedEffectsFM(int ch)
 	}
 }
 
-bool PlaybackManager::pushEffectToQueueSSG(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapSSG(int ch, Effect eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -764,8 +770,12 @@ bool PlaybackManager::pushEffectToQueueSSG(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+	{
+		auto& map = keyOnBasedEffsSSG_.at(static_cast<size_t>(ch));
+		if (map.count(eff.type)) map[eff.type] = eff.value;
+		else map.emplace(eff.type, eff.value);
 		break;
+	}
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
 		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
@@ -773,7 +783,9 @@ bool PlaybackManager::pushEffectToQueueSSG(int ch, Effect eff)
 		break;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffsSSG_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+			auto& map = stepBeginBasedEffsSSG_.at(static_cast<size_t>(ch));
+			if (map.count(EffectType::NoteDelay)) map[EffectType::NoteDelay] = eff.value;
+			else map.emplace(eff.type, eff.value);
 			return true;
 		}
 		return false;
@@ -790,16 +802,16 @@ bool PlaybackManager::pushEffectToQueueSSG(int ch, Effect eff)
 	return false;
 }
 
-void PlaybackManager::executeQueuedEffectsSSG(int ch)
+void PlaybackManager::executeStoredEffectsSSG(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	bool isNoteDelay = false;
 
 	// Read step beginning based effects
-	for (const Effect& eff : stepBeginBasedEffsSSG_.at(uch)) {
-		switch (eff.type) {
+	for (const auto& eff : stepBeginBasedEffsSSG_.at(uch)) {
+		switch (eff.first) {
 		case EffectType::NoteDelay:
-			ntDlyCntSSG_.at(uch) = eff.value;
+			ntDlyCntSSG_.at(uch) = eff.second;
 			isNoteDelay = true;
 			break;
 		default:
@@ -810,87 +822,87 @@ void PlaybackManager::executeQueuedEffectsSSG(int ch)
 
 	// Read note on and step beginning based effects
 	if (!isNoteDelay) {
-		for (const Effect& eff : keyOnBasedEffsSSG_.at(uch)) {
-			switch (eff.type) {
+		for (const auto& eff : keyOnBasedEffsSSG_.at(uch)) {
+			switch (eff.first) {
 			case EffectType::Arpeggio:
-				opnaCtrl_->setArpeggioEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setArpeggioEffectSSG(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::PortamentoUp:
-				opnaCtrl_->setPortamentoEffectSSG(ch, eff.value);
+				opnaCtrl_->setPortamentoEffectSSG(ch, eff.second);
 				break;
 			case EffectType::PortamentoDown:
-				opnaCtrl_->setPortamentoEffectSSG(ch, -eff.value);
+				opnaCtrl_->setPortamentoEffectSSG(ch, -eff.second);
 				break;
 			case EffectType::TonePortamento:
-				opnaCtrl_->setPortamentoEffectSSG(ch, eff.value, true);
+				opnaCtrl_->setPortamentoEffectSSG(ch, eff.second, true);
 				break;
 			case EffectType::Vibrato:
-				opnaCtrl_->setVibratoEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setVibratoEffectSSG(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::Tremolo:
-				opnaCtrl_->setTremoloEffectSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setTremoloEffectSSG(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::VolumeSlide:
 			{
-				int hi = eff.value >> 4;
-				int low = eff.value & 0x0f;
+				int hi = eff.second >> 4;
+				int low = eff.second & 0x0f;
 				if (hi && !low) opnaCtrl_->setVolumeSlideSSG(ch, hi, true);	// Slide up
 				else if (!hi) opnaCtrl_->setVolumeSlideSSG(ch, low, false);	// Slide down
 				break;
 			}
 			case EffectType::Detune:
-				opnaCtrl_->setDetuneSSG(ch, eff.value - 0x80);
+				opnaCtrl_->setDetuneSSG(ch, eff.second - 0x80);
 				break;
 			case EffectType::NoteSlideUp:
-				opnaCtrl_->setNoteSlideSSG(ch, eff.value >> 4, eff.value & 0x0f);
+				opnaCtrl_->setNoteSlideSSG(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
 			case EffectType::NoteSlideDown:
-				opnaCtrl_->setNoteSlideSSG(ch, eff.value >> 4, -(eff.value & 0x0f));
+				opnaCtrl_->setNoteSlideSSG(ch, eff.second >> 4, -(eff.second & 0x0f));
 				break;
 			case EffectType::NoteCut:
-				ntCutDlyCntSSG_.at(uch) = eff.value;
+				ntCutDlyCntSSG_.at(uch) = eff.second;
 				break;
 			case EffectType::TransposeDelay:
-				tposeDlyCntSSG_.at(uch) = (eff.value & 0x70) >> 4;
-				tposeDlyValueSSG_.at(uch) = ((eff.value & 0x80) ? -1 : 1) * (eff.value & 0x0f);
+				tposeDlyCntSSG_.at(uch) = (eff.second & 0x70) >> 4;
+				tposeDlyValueSSG_.at(uch) = ((eff.second & 0x80) ? -1 : 1) * (eff.second & 0x0f);
 				break;
 			case EffectType::ToneNoiseMix:
-				if (-1 < eff.value && eff.value < 4) opnaCtrl_->setToneNoiseMixSSG(ch, eff.value);
+				if (-1 < eff.second && eff.second < 4) opnaCtrl_->setToneNoiseMixSSG(ch, eff.second);
 				break;
 			case EffectType::NoisePitch:
-				if (-1 < eff.value && eff.value < 32) opnaCtrl_->setNoisePitchSSG(ch, eff.value);
+				if (-1 < eff.second && eff.second < 32) opnaCtrl_->setNoisePitchSSG(ch, eff.second);
 				break;
 			case EffectType::HardEnvHighPeriod:
-				opnaCtrl_->setHardEnvelopePeriod(ch, true, eff.value);
+				opnaCtrl_->setHardEnvelopePeriod(ch, true, eff.second);
 				break;
 			case EffectType::HardEnvLowPeriod:
-				opnaCtrl_->setHardEnvelopePeriod(ch, false, eff.value);
+				opnaCtrl_->setHardEnvelopePeriod(ch, false, eff.second);
 				break;
 			case EffectType::VolumeDelay:
 			{
-				int count = eff.value >> 8;
+				int count = eff.second >> 8;
 				if (count > 0) {
 					volDlyCntSSG_.at(uch) = count;
-					volDlyValueSSG_.at(uch) = eff.value & 0x00ff;
+					volDlyValueSSG_.at(uch) = eff.second & 0x00ff;
 				}
 				break;
 			}
 			case EffectType::AutoEnvelope:
-				opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.value >> 4) - 8, eff.value & 0x0f);
+				opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.second >> 4) - 8, eff.second & 0x0f);
 				break;
 			case EffectType::RegisterAddress0:
 			{
-				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.value);
+				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.second);
 				break;
 			}
 			case EffectType::RegisterAddress1:
 			{
-				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.value);
+				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.second);
 				break;
 			}
 			case EffectType::RegisterValue:
 			{
-				if (-1 < eff.value) opnaCtrl_->sendRegisterValue(eff.value);
+				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
 				break;
 			}
 			default:
@@ -901,7 +913,7 @@ void PlaybackManager::executeQueuedEffectsSSG(int ch)
 	}
 }
 
-bool PlaybackManager::pushEffectToQueueDrum(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
 {
 	switch (eff.type) {
 	case EffectType::Pan:
@@ -911,8 +923,12 @@ bool PlaybackManager::pushEffectToQueueDrum(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-		keyOnBasedEffsDrum_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+	{
+		auto& map = keyOnBasedEffsDrum_.at(static_cast<size_t>(ch));
+		if (map.count(eff.type)) map[eff.type] = eff.value;
+		else map.emplace(eff.type, eff.value);
 		break;
+	}
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
 		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
@@ -920,7 +936,9 @@ bool PlaybackManager::pushEffectToQueueDrum(int ch, Effect eff)
 		break;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffsDrum_.at(static_cast<size_t>(ch)).push_back(std::move(eff));
+			auto& map = stepBeginBasedEffsDrum_.at(static_cast<size_t>(ch));
+			if (map.count(EffectType::NoteDelay)) map[EffectType::NoteDelay] = eff.value;
+			else map.emplace(eff.type, eff.value);
 			return true;
 		}
 		return false;
@@ -937,16 +955,16 @@ bool PlaybackManager::pushEffectToQueueDrum(int ch, Effect eff)
 	return false;
 }
 
-void PlaybackManager::executeQueuedEffectsDrum(int ch)
+void PlaybackManager::executeStoredEffectsDrum(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	bool isNoteDelay = false;
 
 	// Read step beginning based effects
-	for (const Effect& eff : stepBeginBasedEffsDrum_.at(uch)) {
-		switch (eff.type) {
+	for (const auto& eff : stepBeginBasedEffsDrum_.at(uch)) {
+		switch (eff.first) {
 		case EffectType::NoteDelay:
-			ntDlyCntDrum_.at(uch) = eff.value;
+			ntDlyCntDrum_.at(uch) = eff.second;
 			isNoteDelay = true;
 			break;
 		default:
@@ -957,39 +975,39 @@ void PlaybackManager::executeQueuedEffectsDrum(int ch)
 
 	// Read key on  and step beginning based effects
 	if (!isNoteDelay) {
-		for (const Effect& eff : keyOnBasedEffsDrum_.at(uch)) {
-			switch (eff.type) {
+		for (const auto& eff : keyOnBasedEffsDrum_.at(uch)) {
+			switch (eff.first) {
 			case EffectType::Pan:
-				if (-1 < eff.value && eff.value < 4) opnaCtrl_->setPanDrum(ch, eff.value);
+				if (-1 < eff.second && eff.second < 4) opnaCtrl_->setPanDrum(ch, eff.second);
 				break;
 			case EffectType::NoteCut:
-				ntCutDlyCntDrum_.at(uch) = eff.value;
+				ntCutDlyCntDrum_.at(uch) = eff.second;
 				break;
 			case EffectType::MasterVolume:
-				if (-1 < eff.value && eff.value < 64) opnaCtrl_->setMasterVolumeDrum(eff.value);
+				if (-1 < eff.second && eff.second < 64) opnaCtrl_->setMasterVolumeDrum(eff.second);
 				break;
 			case EffectType::VolumeDelay:
 			{
-				int count = eff.value >> 8;
+				int count = eff.second >> 8;
 				if (count > 0) {
 					volDlyCntDrum_.at(uch) = count;
-					volDlyValueDrum_.at(uch) = eff.value & 0x00ff;
+					volDlyValueDrum_.at(uch) = eff.second & 0x00ff;
 				}
 				break;
 			}
 			case EffectType::RegisterAddress0:
 			{
-				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.value);
+				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.second);
 				break;
 			}
 			case EffectType::RegisterAddress1:
 			{
-				if (-1 < eff.value && eff.value < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.value);
+				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.second);
 				break;
 			}
 			case EffectType::RegisterValue:
 			{
-				if (-1 < eff.value) opnaCtrl_->sendRegisterValue(eff.value);
+				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
 				break;
 			}
 			default:
@@ -1168,19 +1186,19 @@ void PlaybackManager::checkDrumDelayEventsInTick(Step& step, int ch)
 		executeDrumStepEvents(step, ch, true);
 }
 
-void PlaybackManager::clearEffectQueues()
+void PlaybackManager::clearEffectMaps()
 {
 	stepBeginBasedEffsGlobal_.clear();
 	stepEndBasedEffsGlobal_.clear();
 
-	for (auto& queue : keyOnBasedEffsFM_) queue.clear();
-	for (auto& queue : stepBeginBasedEffsFM_) queue.clear();
+	for (auto& map : keyOnBasedEffsFM_) map.clear();
+	for (auto& map : stepBeginBasedEffsFM_) map.clear();
 
-	for (auto& queue : keyOnBasedEffsSSG_) queue.clear();
-	for (auto& queue : stepBeginBasedEffsSSG_) queue.clear();
+	for (auto& map : keyOnBasedEffsSSG_) map.clear();
+	for (auto& map : stepBeginBasedEffsSSG_) map.clear();
 
-	for (auto& queue : keyOnBasedEffsDrum_) queue.clear();
-	for (auto& queue : stepBeginBasedEffsDrum_) queue.clear();
+	for (auto& map : keyOnBasedEffsDrum_) map.clear();
+	for (auto& map : stepBeginBasedEffsDrum_) map.clear();
 }
 
 void PlaybackManager::clearNoteDelayCounts()

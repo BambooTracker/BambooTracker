@@ -627,13 +627,13 @@ SequenceType InstrumentEditorFMForm::convertSequenceTypeForData(VisualizedInstru
 {
 	switch (type) {
 	case VisualizedInstrumentMacroEditor::SequenceType::NoType:
-		return SequenceType::NoSequenceType;
+		return SequenceType::NO_SEQUENCE_TYPE;
 	case VisualizedInstrumentMacroEditor::SequenceType::Fixed:
-		return SequenceType::FixedSequence;
+		return SequenceType::FIXED_SEQUENCE;
 	case VisualizedInstrumentMacroEditor::SequenceType::Absolute:
-		return SequenceType::AbsoluteSequence;
+		return SequenceType::ABSOLUTE_SEQUENCE;
 	case VisualizedInstrumentMacroEditor::SequenceType::Relative:
-		return SequenceType::RelativeSequence;
+		return SequenceType::RELATIVE_SEQUENCE;
 	default:
 		throw std::invalid_argument("Unexpected SequenceType.");
 	}
@@ -642,13 +642,13 @@ SequenceType InstrumentEditorFMForm::convertSequenceTypeForData(VisualizedInstru
 VisualizedInstrumentMacroEditor::SequenceType InstrumentEditorFMForm::convertSequenceTypeForUI(SequenceType type)
 {
 	switch (type) {
-	case SequenceType::NoSequenceType:
+	case SequenceType::NO_SEQUENCE_TYPE:
 		return VisualizedInstrumentMacroEditor::SequenceType::NoType;
-	case SequenceType::FixedSequence:
+	case SequenceType::FIXED_SEQUENCE:
 		return VisualizedInstrumentMacroEditor::SequenceType::Fixed;
-	case SequenceType::AbsoluteSequence:
+	case SequenceType::ABSOLUTE_SEQUENCE:
 		return VisualizedInstrumentMacroEditor::SequenceType::Absolute;
-	case SequenceType::RelativeSequence:
+	case SequenceType::RELATIVE_SEQUENCE:
 		return VisualizedInstrumentMacroEditor::SequenceType::Relative;
 	default:
 		throw std::invalid_argument("Unexpected SequenceType.");
