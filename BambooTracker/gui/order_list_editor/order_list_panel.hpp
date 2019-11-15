@@ -77,6 +77,7 @@ public slots:
 	void onMoveOrderPressed(bool isUp);
 	void onClonePatternsPressed();
 	void onCloneOrderPressed();
+	void onFollowModeChanged();
 
 signals:
 	void currentTrackChangedForSlider(int num);
@@ -140,7 +141,7 @@ private:
 	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
 	OrderPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
 
-	bool backChanged_, textChanged_, headerChanged_, focusChanged_, orderChanged_;
+	bool backChanged_, textChanged_, headerChanged_, focusChanged_, orderChanged_, followModeChanged_;
 	bool hasFocussedBefore_;
 	int orderUpdateRequestCnt_;
 

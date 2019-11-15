@@ -232,3 +232,8 @@ void OrderListEditor::onCloneOrderPressed()
 {
 	ui->panel->onCloneOrderPressed();
 }
+
+void OrderListEditor::onFollowModeChanged()
+{
+	ui->panel->onFollowModeChanged();
+}

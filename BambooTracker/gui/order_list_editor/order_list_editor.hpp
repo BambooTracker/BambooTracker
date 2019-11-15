@@ -70,6 +70,7 @@ public slots:
 	void onMoveOrderPressed(bool isUp);
 	void onClonePatternsPressed();
 	void onCloneOrderPressed();
+	void onFollowModeChanged();
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;

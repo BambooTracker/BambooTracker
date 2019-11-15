@@ -2021,6 +2021,9 @@ void MainWindow::on_actionFollow_Mode_triggered()
 {
 	bt_->setFollowPlay(ui->actionFollow_Mode->isChecked());
 	config_.lock()->setFollowMode(ui->actionFollow_Mode->isChecked());
+
+	ui->orderList->onFollowModeChanged();
+	ui->patternEditor->onFollowModeChanged();
 }
 
 void MainWindow::on_actionGroove_Settings_triggered()

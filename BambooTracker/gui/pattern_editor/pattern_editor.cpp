@@ -304,3 +304,8 @@ void PatternEditor::onReplaceInstrumentPressed()
 {
 	ui->panel->onReplaceInstrumentPressed();
 }
+
+void PatternEditor::onFollowModeChanged()
+{
+	ui->panel->onFollowModeChanged();
+}

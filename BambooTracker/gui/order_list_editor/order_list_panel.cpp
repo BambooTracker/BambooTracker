@@ -45,6 +45,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  headerChanged_(false),
 	  focusChanged_(false),
 	  orderChanged_(false),
+	  followModeChanged_(false),
 	  hasFocussedBefore_(false),
 	  freezed_(false),
 	  repaintable_(true),
@@ -183,14 +184,14 @@ void OrderListPanel::drawList(const QRect &rect)
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
 
-		if (backChanged_ || textChanged_ || headerChanged_ || focusChanged_ || orderChanged_) {
+		if (backChanged_ || textChanged_ || headerChanged_ || focusChanged_ || orderChanged_ || followModeChanged_) {
 
 			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
 
 			completePixmap_->fill(palette_->odrBackColor);
 
 			if (!focusChanged_) {
-				if (orderChanged_ && config_.lock()->getFollowMode() && curPos_.row > 0) {
+				if (orderChanged_ && !followModeChanged_) {
 					quickDrawRows(maxWidth);
 				}
 				else {
@@ -222,6 +223,7 @@ void OrderListPanel::drawList(const QRect &rect)
 			headerChanged_ = false;
 			focusChanged_ = false;
 			orderChanged_ = false;
+			followModeChanged_ = false;
 			orderUpdateRequestCnt_ = 0;
 
 		}
@@ -736,6 +738,12 @@ void OrderListPanel::changeEditable()
 
 void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 {
+	if (!config_.lock()->getFollowMode()) {	// Repaint only background
+		backChanged_ = true;
+		repaint();
+		return;
+	}
+
 	int tmp = curPos_.row;
 	curPos_.row = bt_->getCurrentOrderNumber();
 	if (curPos_.row == tmp) return;	// Loop this order
@@ -746,7 +754,9 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 	// Redraw entire area in first update and jumping order
 	if (isFirstUpdate || tmp != curPos_.row - 1)
 		orderChanged_ = false;
-	redrawAll();
+	textChanged_ = true;
+	backChanged_ = true;
+	repaint();
 }
 
 void OrderListPanel::redrawByPatternChanged(bool ordersLengthChanged)
@@ -1169,6 +1179,18 @@ void OrderListPanel::onCloneOrderPressed()
 {
 	bt_->cloneOrder(curSongNum_, curPos_.row);
 	comStack_.lock()->push(new CloneOrderQtCommand(this));
+}
+
+void OrderListPanel::onFollowModeChanged()
+{
+	curPos_.row = bt_->getCurrentOrderNumber();
+	emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+
+	// Force redraw all area
+	followModeChanged_ = true;
+	textChanged_ = true;
+	backChanged_ = true;
+	repaint();
 }
 
 /********** Events **********/

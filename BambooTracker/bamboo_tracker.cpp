@@ -972,6 +972,13 @@ bool BambooTracker::isMute(int trackNum)
 void BambooTracker::setFollowPlay(bool isFollowed)
 {
 	isFollowPlay_ = isFollowed;
+	if (isFollowed) {
+		int odr = playback_->getPlayingOrderNumber();
+		if (odr >= 0) {
+			curOrderNum_ = odr;
+			curStepNum_ = playback_->getPlayingStepNumber();
+		}
+	}
 }
 
 bool BambooTracker::isFollowPlay() const

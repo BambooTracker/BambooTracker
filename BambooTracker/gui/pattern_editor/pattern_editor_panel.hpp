@@ -99,6 +99,7 @@ public slots:
 	void onReplaceInstrumentPressed();
 	void onExpandEffectColumnPressed(int trackNum);
 	void onShrinkEffectColumnPressed(int trackNum);
+	void onFollowModeChanged();
 
 signals:
 	void currentCellInRowChanged(int num);
@@ -184,7 +185,7 @@ private:
 	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
 	PatternPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
 
-	bool backChanged_, textChanged_, foreChanged_, headerChanged_, focusChanged_, stepChanged_;
+	bool backChanged_, textChanged_, foreChanged_, headerChanged_, focusChanged_, stepChanged_, followModeChanged_;
 	bool hasFocussedBefore_;
 	int stepUpdateRequestCnt_;
 

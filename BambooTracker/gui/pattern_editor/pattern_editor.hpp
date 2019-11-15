@@ -88,6 +88,7 @@ public slots:
 	void onInterpolatePressed();
 	void onReversePressed();
 	void onReplaceInstrumentPressed();
+	void onFollowModeChanged();
 
 private:
 	Ui::PatternEditor *ui;

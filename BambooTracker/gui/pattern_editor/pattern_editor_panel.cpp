@@ -54,6 +54,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  headerChanged_(false),
 	  focusChanged_(false),
 	  stepChanged_(false),
+	  followModeChanged_(false),
 	  hasFocussedBefore_(false),
 	  freezed_(false),
 	  repaintable_(true),
@@ -276,14 +277,13 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
 
-		if (backChanged_ || textChanged_ || foreChanged_ || headerChanged_ || focusChanged_ || stepChanged_) {
+		if (backChanged_ || textChanged_ || foreChanged_ || headerChanged_ || focusChanged_ || stepChanged_ || followModeChanged_) {
 
 			int maxWidth = std::min(rect.width(), tracksWidthFromLeftToEnd_);
 			completePixmap_->fill(palette_->ptnBackColor);
 
 			if (!focusChanged_) {
-				bool shown = config_.lock()->getShowPreviousNextOrders();
-				if (stepChanged_ && (curPos_.step > 0 || (shown && curPos_.order > 0)) && config_.lock()->getFollowMode()) {
+				if (stepChanged_ && !followModeChanged_) {
 					quickDrawRows(maxWidth);
 				}
 				else {
@@ -318,6 +318,7 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 			headerChanged_ = false;
 			focusChanged_ = false;
 			stepChanged_ = false;
+			followModeChanged_ = false;
 			stepUpdateRequestCnt_ = 0;
 		}
 
@@ -1174,6 +1175,12 @@ int PatternEditorPanel::getFullColmunSize() const
 
 void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 {
+	if (!config_.lock()->getFollowMode()) {	// Repaint only background
+		backChanged_ = true;
+		repaint();
+		return;
+	}
+
 	PatternPosition tmp = curPos_;
 	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 
@@ -1181,9 +1188,16 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
 	stepChanged_ = !stepUpdateRequestCnt_++;	// Step changed by playback
-	if (isFirstUpdate || (tmp.order < curPos_.order - 1) || (tmp.order > curPos_.order))
+	if (isFirstUpdate || (tmp.order < curPos_.order - 1) || (tmp.order > curPos_.order)
+			|| (!curPos_.step
+				&& (!config_.lock()->getShowPreviousNextOrders() || !curPos_.order || tmp.order == curPos_.order))) {
 		stepChanged_ = false;	// Redraw entire area in first update
-	redrawAll();								// If stepChanged is false, repaint all pattern
+	}
+	// If stepChanged is false, repaint all pattern
+	foreChanged_ = true;
+	textChanged_ = true;
+	backChanged_ = true;
+	repaint();
 }
 
 JamKey PatternEditorPanel::getJamKeyFromLayoutMapping(Qt::Key key) {
@@ -2294,6 +2308,21 @@ void PatternEditorPanel::onShrinkEffectColumnPressed(int trackNum)
 	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
 
 	redrawAll();
+}
+
+void PatternEditorPanel::onFollowModeChanged()
+{
+	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
+
+	emit currentStepChanged(
+				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
+
+	// Force redraw all area
+	followModeChanged_ = true;
+	foreChanged_ = true;
+	textChanged_ = true;
+	backChanged_ = true;
+	repaint();
 }
 
 /********** Events **********/
