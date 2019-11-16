@@ -309,3 +309,8 @@ void PatternEditor::onFollowModeChanged()
 {
 	ui->panel->onFollowModeChanged();
 }
+
+void PatternEditor::onStoppedPlaySong()
+{
+	ui->panel->onStoppedPlaySong();
+}

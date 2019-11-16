@@ -89,6 +89,7 @@ public slots:
 	void onReversePressed();
 	void onReplaceInstrumentPressed();
 	void onFollowModeChanged();
+	void onStoppedPlaySong();
 
 private:
 	Ui::PatternEditor *ui;

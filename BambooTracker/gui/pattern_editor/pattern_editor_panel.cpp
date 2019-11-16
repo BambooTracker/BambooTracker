@@ -1190,7 +1190,8 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 	stepChanged_ = !stepUpdateRequestCnt_++;	// Step changed by playback
 	if (isFirstUpdate || (tmp.order < curPos_.order - 1) || (tmp.order > curPos_.order)
 			|| (!curPos_.step
-				&& (!config_.lock()->getShowPreviousNextOrders() || !curPos_.order || tmp.order == curPos_.order))) {
+				&& (!config_.lock()->getShowPreviousNextOrders() || !curPos_.order || tmp.order == curPos_.order))
+			|| (tmp.order == curPos_.order - 1 && curPos_.step > 0)) {
 		stepChanged_ = false;	// Redraw entire area in first update
 	}
 	// If stepChanged is false, repaint all pattern
@@ -2320,6 +2321,14 @@ void PatternEditorPanel::onFollowModeChanged()
 	// Force redraw all area
 	followModeChanged_ = true;
 	foreChanged_ = true;
+	textChanged_ = true;
+	backChanged_ = true;
+	repaint();
+}
+
+void PatternEditorPanel::onStoppedPlaySong()
+{
+	followModeChanged_ = true;
 	textChanged_ = true;
 	backChanged_ = true;
 	repaint();

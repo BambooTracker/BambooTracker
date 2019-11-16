@@ -71,6 +71,7 @@ public slots:
 	void onClonePatternsPressed();
 	void onCloneOrderPressed();
 	void onFollowModeChanged();
+	void onStoppedPlaySong();
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;

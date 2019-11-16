@@ -237,3 +237,8 @@ void OrderListEditor::onFollowModeChanged()
 {
 	ui->panel->onFollowModeChanged();
 }
+
+void OrderListEditor::onStoppedPlaySong()
+{
+	ui->panel->onStoppedPlaySong();
+}

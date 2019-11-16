@@ -78,6 +78,7 @@ public slots:
 	void onClonePatternsPressed();
 	void onCloneOrderPressed();
 	void onFollowModeChanged();
+	void onStoppedPlaySong();
 
 signals:
 	void currentTrackChangedForSlider(int num);
@@ -148,6 +149,8 @@ private:
 	bool freezed_;
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard
 	std::atomic_int repaintingCnt_;
+
+	int playingRow_;
 
 	void updateSizes();
 	void initDisplay();

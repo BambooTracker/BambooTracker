@@ -100,6 +100,7 @@ public slots:
 	void onExpandEffectColumnPressed(int trackNum);
 	void onShrinkEffectColumnPressed(int trackNum);
 	void onFollowModeChanged();
+	void onStoppedPlaySong();
 
 signals:
 	void currentCellInRowChanged(int num);

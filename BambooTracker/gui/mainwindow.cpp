@@ -1222,8 +1222,8 @@ void MainWindow::stopPlaySong()
 {
 	bt_->stopPlaySong();
 	lockControls(false);
-	ui->patternEditor->update();
-	ui->orderList->update();
+	ui->patternEditor->onStoppedPlaySong();
+	ui->orderList->onStoppedPlaySong();
 }
 
 void MainWindow::lockControls(bool isLock)
@@ -2495,7 +2495,7 @@ void MainWindow::onNewTickSignaled(int state)
 	if (!state) {	// New step
 		int order = bt_->getPlayingOrderNumber();
 		if (order > -1) {	// Playing
-			if (!bt_->getPlayingStepNumber()) ui->orderList->updatePositionByOrderUpdate(firstViewUpdateRequest_);	// New order
+			ui->orderList->updatePositionByOrderUpdate(firstViewUpdateRequest_);
 			ui->patternEditor->updatePositionByStepUpdate(firstViewUpdateRequest_);
 			firstViewUpdateRequest_ = false;
 			statusPlayPos_->setText(

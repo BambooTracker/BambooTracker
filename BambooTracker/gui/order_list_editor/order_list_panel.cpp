@@ -49,7 +49,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  hasFocussedBefore_(false),
 	  freezed_(false),
 	  repaintable_(true),
-	  repaintingCnt_(0)
+	  repaintingCnt_(0),
+	  playingRow_(-1)
 {
 	// Initialize font
 	headerFont_ = QApplication::font();
@@ -737,16 +738,16 @@ void OrderListPanel::changeEditable()
 }
 
 void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
-{
-	if (!config_.lock()->getFollowMode()) {	// Repaint only background
+{	
+	int prev = std::exchange(playingRow_, bt_->getPlayingOrderNumber());
+	if (!config_.lock()->getFollowMode() && prev != playingRow_) {	// Repaint only background
 		backChanged_ = true;
 		repaint();
 		return;
 	}
 
-	int tmp = curPos_.row;
-	curPos_.row = bt_->getCurrentOrderNumber();
-	if (curPos_.row == tmp) return;	// Loop this order
+	int tmp = std::exchange(curPos_.row, bt_->getCurrentOrderNumber());
+	if (curPos_.row == tmp) return;
 
 	emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
@@ -1187,6 +1188,14 @@ void OrderListPanel::onFollowModeChanged()
 	emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
 	// Force redraw all area
+	followModeChanged_ = true;
+	textChanged_ = true;
+	backChanged_ = true;
+	repaint();
+}
+
+void OrderListPanel::onStoppedPlaySong()
+{
 	followModeChanged_ = true;
 	textChanged_ = true;
 	backChanged_ = true;
