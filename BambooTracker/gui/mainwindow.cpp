@@ -1728,15 +1728,6 @@ void MainWindow::updateMenuByPattern()
 		ui->actionDecrease_Octave->setEnabled(true);
 		ui->actionIncrease_Octave->setEnabled(true);
 	}
-
-	// Song
-	ui->actionInsert_Order->setEnabled(false);
-	ui->actionRemove_Order->setEnabled(false);
-	ui->actionDuplicate_Order->setEnabled(false);
-	ui->actionMove_Order_Up->setEnabled(false);
-	ui->actionMove_Order_Down->setEnabled(false);
-	ui->actionClone_Patterns->setEnabled(false);
-	ui->actionClone_Order->setEnabled(false);
 }
 
 void MainWindow::updateMenuByOrder()
@@ -1754,10 +1745,10 @@ void MainWindow::updateMenuByOrder()
 	// Song
 	bool canAdd = bt_->canAddNewOrder(bt_->getCurrentSongNumber());
 	ui->actionInsert_Order->setEnabled(canAdd);
-	ui->actionRemove_Order->setEnabled(true);
+	//ui->actionRemove_Order->setEnabled(true);
 	ui->actionDuplicate_Order->setEnabled(canAdd);
-	ui->actionMove_Order_Up->setEnabled(true);
-	ui->actionMove_Order_Down->setEnabled(true);
+	//ui->actionMove_Order_Up->setEnabled(true);
+	//ui->actionMove_Order_Down->setEnabled(true);
 	ui->actionClone_Patterns->setEnabled(canAdd);
 	ui->actionClone_Order->setEnabled(canAdd);
 	// Pattern
@@ -1794,15 +1785,6 @@ void MainWindow::updateMenuByInstrumentList()
 	ui->actionIncrease_Note->setEnabled(false);
 	ui->actionDecrease_Octave->setEnabled(false);
 	ui->actionIncrease_Octave->setEnabled(false);
-
-	// Song
-	ui->actionInsert_Order->setEnabled(false);
-	ui->actionRemove_Order->setEnabled(false);
-	ui->actionDuplicate_Order->setEnabled(false);
-	ui->actionMove_Order_Up->setEnabled(false);
-	ui->actionMove_Order_Down->setEnabled(false);
-	ui->actionClone_Patterns->setEnabled(false);
-	ui->actionClone_Order->setEnabled(false);
 }
 
 void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
@@ -1869,12 +1851,12 @@ void MainWindow::on_actionIncrease_Octave_triggered()
 
 void MainWindow::on_actionInsert_Order_triggered()
 {
-	if (isEditedOrder_) ui->orderList->insertOrderBelow();
+	ui->orderList->insertOrderBelow();
 }
 
 void MainWindow::on_actionRemove_Order_triggered()
 {
-	if (isEditedOrder_) ui->orderList->deleteOrder();
+	ui->orderList->deleteOrder();
 }
 
 void MainWindow::on_actionModule_Properties_triggered()

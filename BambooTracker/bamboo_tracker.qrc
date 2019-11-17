@@ -23,6 +23,11 @@
         <file alias="save_inst">res/icon/iconfinder_page_white_put_5609.png</file>
         <file alias="edit_inst">res/icon/iconfinder_pencil_5631.png</file>
         <file alias="record">res/icon/iconfinder_stop_5785.png</file>
+        <file alias="order_down">res/icon/iconfinder_arrow_down_4982.png</file>
+        <file alias="order_up">res/icon/iconfinder_arrow_up_4999.png</file>
+        <file alias="duplicate_order">res/icon/iconfinder_asterisk_yellow_5001.png</file>
+        <file alias="insert_order">res/icon/iconfinder_page_add_5548.png</file>
+        <file alias="remove_order">res/icon/iconfinder_page_delete_5552.png</file>
     </qresource>
     <qresource prefix="/doc">
         <file alias="shortcuts">res/doc/keyboard_shortcuts.html</file>

@@ -647,6 +647,12 @@
    <addaction name="actionCopy"/>
    <addaction name="actionPaste"/>
    <addaction name="separator"/>
+   <addaction name="actionInsert_Order"/>
+   <addaction name="actionRemove_Order"/>
+   <addaction name="actionMove_Order_Down"/>
+   <addaction name="actionMove_Order_Up"/>
+   <addaction name="actionDuplicate_Order"/>
+   <addaction name="separator"/>
    <addaction name="actionModule_Properties"/>
    <addaction name="separator"/>
    <addaction name="actionPlay"/>
@@ -865,11 +871,19 @@
    </property>
   </action>
   <action name="actionInsert_Order">
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/insert_order</normaloff>:/icon/insert_order</iconset>
+   </property>
    <property name="text">
     <string>&amp;Insert Order</string>
    </property>
   </action>
   <action name="actionRemove_Order">
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/remove_order</normaloff>:/icon/remove_order</iconset>
+   </property>
    <property name="text">
     <string>&amp;Remove Order</string>
    </property>
@@ -1088,6 +1102,10 @@
    </property>
   </action>
   <action name="actionDuplicate_Order">
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/duplicate_order</normaloff>:/icon/duplicate_order</iconset>
+   </property>
    <property name="text">
     <string>&amp;Duplicate Order</string>
    </property>
@@ -1096,11 +1114,19 @@
    </property>
   </action>
   <action name="actionMove_Order_Up">
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/order_up</normaloff>:/icon/order_up</iconset>
+   </property>
    <property name="text">
     <string>Move Order &amp;Up</string>
    </property>
   </action>
   <action name="actionMove_Order_Down">
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/order_down</normaloff>:/icon/order_down</iconset>
+   </property>
    <property name="text">
     <string>Move Order Do&amp;wn</string>
    </property>

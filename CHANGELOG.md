@@ -7,6 +7,7 @@
   - `0Zxx`: register value set
 - Add selection whether auto-set current instrument upon entering note
 - Add color scheme settings
+- [#162] - Add order edit icons to the menu bar (thanks [@pedipanol])
 
 ### Changed
 - Change width of items in status bar
