@@ -1745,38 +1745,21 @@ void MainWindow::updateMenuByOrder()
 	isEditedOrder_ = true;
 	isEditedInstList_ = false;
 
-	if (bt_->isJamMode()) {
-		// Edit
-		ui->actionPaste->setEnabled(false);
-		ui->actionDelete->setEnabled(false);
-		// Song
-		ui->actionInsert_Order->setEnabled(false);
-		ui->actionRemove_Order->setEnabled(false);
-		ui->actionDuplicate_Order->setEnabled(false);
-		ui->actionMove_Order_Up->setEnabled(false);
-		ui->actionMove_Order_Down->setEnabled(false);
-		ui->actionClone_Patterns->setEnabled(false);
-		ui->actionClone_Order->setEnabled(false);
-	}
-	else {
-		// Edit
-		bool enabled = QApplication::clipboard()->text().startsWith("ORDER_");
-		ui->actionPaste->setEnabled(enabled);
-		ui->actionDelete->setEnabled(true);
-		// Song
-		bool canAdd = bt_->canAddNewOrder(bt_->getCurrentSongNumber());
-		ui->actionInsert_Order->setEnabled(canAdd);
-		ui->actionRemove_Order->setEnabled(true);
-		ui->actionDuplicate_Order->setEnabled(canAdd);
-		ui->actionMove_Order_Up->setEnabled(true);
-		ui->actionMove_Order_Down->setEnabled(true);
-		ui->actionClone_Patterns->setEnabled(canAdd);
-		ui->actionClone_Order->setEnabled(canAdd);
-	}
 	// Edit
+	bool enabled = QApplication::clipboard()->text().startsWith("ORDER_");
+	ui->actionPaste->setEnabled(enabled);
 	ui->actionMix->setEnabled(false);
 	ui->actionOverwrite->setEnabled(false);
-
+	ui->actionDelete->setEnabled(true);
+	// Song
+	bool canAdd = bt_->canAddNewOrder(bt_->getCurrentSongNumber());
+	ui->actionInsert_Order->setEnabled(canAdd);
+	ui->actionRemove_Order->setEnabled(true);
+	ui->actionDuplicate_Order->setEnabled(canAdd);
+	ui->actionMove_Order_Up->setEnabled(true);
+	ui->actionMove_Order_Down->setEnabled(true);
+	ui->actionClone_Patterns->setEnabled(canAdd);
+	ui->actionClone_Order->setEnabled(canAdd);
 	// Pattern
 	ui->actionInterpolate->setEnabled(false);
 	ui->actionReverse->setEnabled(false);

@@ -13,6 +13,7 @@
 - [#161] - Reduce drawing cost of the pattern editor and the order list (thanks [@papiezak])
 - Improve SSG tone/noise editor
 - Change MML text in FM/SSG arpeggio editor from numbers to notes
+- Allow order list edit in jam mode (thanks [@pedipanol])
 
 ### Fixed
 - [#161] - Fix drawing error after loading song (thanks [@papiezak])
@@ -21,6 +22,7 @@
 - Fix corruption after changing song type
 
 [#161]: https://github.com/rerrahkr/BambooTracker/issues/161
+[#162]: https://github.com/rerrahkr/BambooTracker/issues/162
 
 ## v0.3.0 (2019-10-25)
 ### Added

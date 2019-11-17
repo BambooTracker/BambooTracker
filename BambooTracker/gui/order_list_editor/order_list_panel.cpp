@@ -43,7 +43,6 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  backChanged_(false),
 	  textChanged_(false),
 	  headerChanged_(false),
-	  focusChanged_(false),
 	  orderChanged_(false),
 	  followModeChanged_(false),
 	  hasFocussedBefore_(false),
@@ -185,26 +184,24 @@ void OrderListPanel::drawList(const QRect &rect)
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
 
-		if (backChanged_ || textChanged_ || headerChanged_ || focusChanged_ || orderChanged_ || followModeChanged_) {
+		if (backChanged_ || textChanged_ || headerChanged_ || orderChanged_ || followModeChanged_) {
 
 			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
 
 			completePixmap_->fill(palette_->odrBackColor);
 
-			if (!focusChanged_) {
-				if (orderChanged_ && !followModeChanged_) {
-					quickDrawRows(maxWidth);
-				}
-				else {
-					backPixmap_->fill(Qt::transparent);
-					if (textChanged_) textPixmap_->fill(Qt::transparent);
-					drawRows(maxWidth);
-				}
+			if (orderChanged_ && !followModeChanged_) {
+				quickDrawRows(maxWidth);
+			}
+			else {
+				backPixmap_->fill(Qt::transparent);
+				if (textChanged_) textPixmap_->fill(Qt::transparent);
+				drawRows(maxWidth);
+			}
 
-				if (headerChanged_) {
-					// headerPixmap_->fill(Qt::transparent);
-					drawHeaders(maxWidth);
-				}
+			if (headerChanged_) {
+				// headerPixmap_->fill(Qt::transparent);
+				drawHeaders(maxWidth);
 			}
 
 			{
@@ -222,7 +219,6 @@ void OrderListPanel::drawList(const QRect &rect)
 			backChanged_ = false;
 			textChanged_ = false;
 			headerChanged_ = false;
-			focusChanged_ = false;
 			orderChanged_ = false;
 			followModeChanged_ = false;
 			orderUpdateRequestCnt_ = 0;
@@ -250,7 +246,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	/* Current row */
 	// Fill row
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, rowFontHeight_,
-						 bt_->isJamMode() ? palette_->odrCurRowColor : palette_->odrCurEditRowColor);
+						 hasFocus() ? palette_->odrCurEditRowColor : palette_->odrCurRowColor);
 	if (textChanged_) {
 		// Row number
 		textPainter.setPen(palette_->odrRowNumColor);
@@ -446,7 +442,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 	/* Redraw current cursor step */
 	// Fill row
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, rowFontHeight_,
-						 bt_->isJamMode() ? palette_->odrCurRowColor : palette_->odrCurEditRowColor);
+						 hasFocus() ? palette_->odrCurEditRowColor : palette_->odrCurRowColor);
 	// Row number
 	textPainter.setPen(palette_->odrRowNumColor);
 	textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(
@@ -773,7 +769,7 @@ void OrderListPanel::redrawByPatternChanged(bool ordersLengthChanged)
 void OrderListPanel::redrawByFocusChanged()
 {
 	if (hasFocussedBefore_) {
-		focusChanged_ = true;
+		backChanged_ = true;
 		repaint();
 	}
 	else {
@@ -831,7 +827,6 @@ void OrderListPanel::setCellOrderNum(int n)
 
 void OrderListPanel::insertOrderBelow()
 {
-	if (bt_->isJamMode()) return;
 	if (!bt_->canAddNewOrder(curSongNum_)) return;
 
 	bt_->insertOrderBelow(curSongNum_, curPos_.row);
@@ -840,8 +835,6 @@ void OrderListPanel::insertOrderBelow()
 
 void OrderListPanel::deleteOrder()
 {
-	if (bt_->isJamMode()) return;
-
 	if (bt_->getOrderSize(curSongNum_) > 1) {
 		bt_->deleteOrder(curSongNum_, curPos_.row);
 		comStack_.lock()->push(new DeleteOrderQtCommand(this));
@@ -972,51 +965,38 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
 
-	if (bt_->isJamMode()) {
-		insert->setEnabled(false);
+	if (pos.row < 0 || pos.track < 0) {
 		remove->setEnabled(false);
-		duplicate->setEnabled(false);
-		clonep->setEnabled(false);
-		cloneo->setEnabled(false);
 		moveUp->setEnabled(false);
 		moveDown->setEnabled(false);
 		copy->setEnabled(false);
 		paste->setEnabled(false);
 	}
-	else {
-		if (pos.row < 0 || pos.track < 0) {
-			remove->setEnabled(false);
-			moveUp->setEnabled(false);
-			moveDown->setEnabled(false);
-			copy->setEnabled(false);
-			paste->setEnabled(false);
-		}
-		if (!bt_->canAddNewOrder(curSongNum_)) {
-			insert->setEnabled(false);
-			duplicate->setEnabled(false);
-			moveUp->setEnabled(false);
-			moveDown->setEnabled(false);
-			copy->setEnabled(false);
-			paste->setEnabled(false);
-		}
-		QString clipText = QApplication::clipboard()->text();
-		if (!clipText.startsWith("ORDER_COPY")) {
-			paste->setEnabled(false);
-		}
-		if (bt_->getOrderSize(curSongNum_) == 1) {
-			remove->setEnabled(false);
-		}
-		if (selRightBelowPos_.row < 0
-				|| !isSelectedCell(pos.track, pos.row)) {
-			clonep->setEnabled(false);
-			copy->setEnabled(false);
-		}
-		if (pos.row == 0) {
-			moveUp->setEnabled(false);
-		}
-		if (pos.row == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
-			moveDown->setEnabled(false);
-		}
+	if (!bt_->canAddNewOrder(curSongNum_)) {
+		insert->setEnabled(false);
+		duplicate->setEnabled(false);
+		moveUp->setEnabled(false);
+		moveDown->setEnabled(false);
+		copy->setEnabled(false);
+		paste->setEnabled(false);
+	}
+	QString clipText = QApplication::clipboard()->text();
+	if (!clipText.startsWith("ORDER_COPY")) {
+		paste->setEnabled(false);
+	}
+	if (bt_->getOrderSize(curSongNum_) == 1) {
+		remove->setEnabled(false);
+	}
+	if (selRightBelowPos_.row < 0
+			|| !isSelectedCell(pos.track, pos.row)) {
+		clonep->setEnabled(false);
+		copy->setEnabled(false);
+	}
+	if (pos.row == 0) {
+		moveUp->setEnabled(false);
+	}
+	if (pos.row == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
+		moveDown->setEnabled(false);
 	}
 
 	menu.exec(mapToGlobal(point));
@@ -1089,7 +1069,7 @@ void OrderListPanel::onSongLoaded()
 
 void OrderListPanel::onPastePressed()
 {
-	if (!bt_->isJamMode()) pasteCopiedCells(curPos_);
+	pasteCopiedCells(curPos_);
 }
 
 void OrderListPanel::onSelectPressed(int type)
@@ -1307,7 +1287,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 					QPoint(calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track), curRowY_ - 8));
 		return true;
 	default:
-		if (!bt_->isJamMode() && event->modifiers().testFlag(Qt::NoModifier)) {
+		if (event->modifiers().testFlag(Qt::NoModifier)) {
 			return enterOrder(event->key());
 		}
 		return false;

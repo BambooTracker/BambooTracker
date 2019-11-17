@@ -142,7 +142,7 @@ private:
 	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
 	OrderPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
 
-	bool backChanged_, textChanged_, headerChanged_, focusChanged_, orderChanged_, followModeChanged_;
+	bool backChanged_, textChanged_, headerChanged_, orderChanged_, followModeChanged_;
 	bool hasFocussedBefore_;
 	int orderUpdateRequestCnt_;
 
