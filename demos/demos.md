@@ -1,5 +1,5 @@
 ## Sample modules
-- [maak] - breeze 2608
+- [maak] - breeze 2608, Rude Buster
 - Rerrah - Lotus
 - [Dippy] - Neo Megalopolis
 - [SuperJet Spade] - Underwater Ruins

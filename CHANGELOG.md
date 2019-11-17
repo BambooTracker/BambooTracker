@@ -5,6 +5,7 @@
 - [#132] - 3 new pattern effects
   - `0Xxx`, `0Yxx`: register address set
   - `0Zxx`: register value set
+- Add 1 sample module (thanks [@maakmusic])
 - Add selection whether auto-set current instrument upon entering note
 - Add color scheme settings
 - [#162] - Add order edit icons to the menu bar (thanks [@pedipanol])
