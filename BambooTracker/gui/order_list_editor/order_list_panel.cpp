@@ -11,6 +11,7 @@
 #include <QRegularExpressionMatch>
 #include <QPoint>
 #include <QString>
+#include <QIcon>
 #include <algorithm>
 #include <vector>
 #include <utility>
@@ -935,10 +936,13 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	QMenu menu;
 	// Leave Before Qt5.7.0 style due to windows xp
 	QAction* insert = menu.addAction(tr("&Insert Order"));
+	insert->setIcon(QIcon(":/icon/insert_order"));
 	QObject::connect(insert, &QAction::triggered, this, [&]() { insertOrderBelow(); });
 	QAction* remove = menu.addAction(tr("&Remove Order"));
+	remove->setIcon(QIcon(":/icon/remove_order"));
 	QObject::connect(remove, &QAction::triggered, this, [&]() { deleteOrder(); });
 	QAction* duplicate = menu.addAction(tr("&Duplicate Order"));
+	duplicate->setIcon(QIcon(":/icon/duplicate_order"));
 	QObject::connect(duplicate, &QAction::triggered, this, &OrderListPanel::onDuplicatePressed);
 	QAction* clonep = menu.addAction(tr("&Clone Patterns"));
 	QAction::connect(clonep, &QAction::triggered, this, &OrderListPanel::onClonePatternsPressed);
@@ -946,13 +950,17 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	QObject::connect(cloneo, &QAction::triggered, this, &OrderListPanel::onCloneOrderPressed);
 	menu.addSeparator();
 	QAction* moveUp = menu.addAction(tr("Move Order &Up"));
+	moveUp->setIcon(QIcon(":/icon/order_up"));
 	QObject::connect(moveUp, &QAction::triggered, this, [&]() { onMoveOrderPressed(true); });
 	QAction* moveDown = menu.addAction(tr("Move Order Do&wn"));
+	moveDown->setIcon(QIcon(":/icon/order_down"));
 	QObject::connect(moveDown, &QAction::triggered, this, [&]() { onMoveOrderPressed(false); });
 	menu.addSeparator();
 	QAction* copy = menu.addAction(tr("Cop&y"));
+	copy->setIcon(QIcon(":/icon/copy"));
 	QObject::connect(copy, &QAction::triggered, this, &OrderListPanel::copySelectedCells);
 	QAction* paste = menu.addAction(tr("&Paste"));
+	paste->setIcon(QIcon(":/icon/paste"));
 	QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(pos); });
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	duplicate->setShortcutVisibleInContextMenu(true);

@@ -15,6 +15,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QMetaMethod>
+#include <QIcon>
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "midi/midi.hpp"
@@ -1740,21 +1741,26 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QMenu menu;
 	// Leave Before Qt5.7.0 style due to windows xp
 	QAction* undo = menu.addAction(tr("&Undo"));
+	undo->setIcon(QIcon(":/icon/undo"));
 	QObject::connect(undo, &QAction::triggered, this, [&]() {
 		bt_->undo();
 		comStack_.lock()->undo();
 	});
 	QAction* redo = menu.addAction(tr("&Redo"));
+	redo->setIcon(QIcon(":/icon/redo"));
 	QObject::connect(redo, &QAction::triggered, this, [&]() {
 		bt_->redo();
 		comStack_.lock()->redo();
 	});
 	menu.addSeparator();
 	QAction* copy = menu.addAction(tr("&Copy"));
+	copy->setIcon(QIcon(":/icon/copy"));
 	QObject::connect(copy, &QAction::triggered, this, &PatternEditorPanel::copySelectedCells);
 	QAction* cut = menu.addAction(tr("Cu&t"));
+	cut->setIcon(QIcon(":/icon/cut"));
 	QObject::connect(cut, &QAction::triggered, this, &PatternEditorPanel::cutSelectedCells);
 	QAction* paste = menu.addAction(tr("&Paste"));
+	paste->setIcon(QIcon(":/icon/paste"));
 	QObject::connect(paste, &QAction::triggered, this, [&]() { pasteCopiedCells(pos); });
 	auto pasteSp = new QMenu(tr("Paste Specia&l"));
 	menu.addMenu(pasteSp);
