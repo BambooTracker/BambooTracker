@@ -13,7 +13,8 @@
 - [#161] - Reduce drawing cost of the pattern editor and the order list (thanks [@papiezak])
 - Improve SSG tone/noise editor
 - Change MML text in FM/SSG arpeggio editor from numbers to notes
-- Allow order list edit in jam mode (thanks [@pedipanol])
+- [#162] - Allow order list edit in jam mode (thanks [@pedipanol])
+- [#162] - Reverse the input order of the order numbers (thanks [@pedipanol])
 
 ### Fixed
 - [#161] - Fix drawing error after loading song (thanks [@papiezak])
