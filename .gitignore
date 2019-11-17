@@ -208,3 +208,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/qt,c++,linux,macos,emacs,windows,visualstudiocode
+
+!/BambooTracker/res/icon
