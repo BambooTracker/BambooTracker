@@ -18,6 +18,7 @@
 - [#161] - Fix drawing error after loading song (thanks [@papiezak])
 - Fix groove start position (thanks [@maakmusic])
 - Fix some drawing errors in pattern editor and order list
+- Fix corruption after changing song type
 
 [#161]: https://github.com/rerrahkr/BambooTracker/issues/161
 

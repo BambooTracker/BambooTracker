@@ -216,8 +216,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int num) {
 		freezeViews();
+		if (!timer_) stream_->stop();
 		bt_->setCurrentSongNumber(num);
 		loadSong();
+		if (!timer_) stream_->start();
 	});
 
 	/* Song settings */
@@ -1109,13 +1111,12 @@ void MainWindow::openModule(QString file)
 {
 	try {
 		freezeViews();
+		if (!timer_) stream_->stop();
 		bt_->loadModule(file.toStdString());
 		loadModule();
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 		changeFileHistory(file);
-		isModifiedForNotCommand_ = false;
-		setWindowModified(false);
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(this, tr("Error"), e.what());
@@ -1123,9 +1124,11 @@ void MainWindow::openModule(QString file)
 		freezeViews();
 		bt_->makeNewModule();
 		loadModule();
-		isModifiedForNotCommand_ = false;
-		setWindowModified(false);
 	}
+
+	isModifiedForNotCommand_ = false;
+	setWindowModified(false);
+	if (!timer_) stream_->start();
 	setInitialSelectedInstrument();
 }
 
@@ -1901,10 +1904,12 @@ void MainWindow::on_actionModule_Properties_triggered()
 		lockControls(false);
 		dialog.onAccepted();
 		freezeViews();
+		if (!timer_) stream_->stop();
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
 		ui->instrumentListWidget->setCurrentRow(instRow);
+		if (!timer_) stream_->start();
 	}
 }
 
@@ -2119,11 +2124,13 @@ void MainWindow::on_actionNew_triggered()
 	bt_->stopPlaySong();
 	lockControls(false);
 	freezeViews();
+	if (!timer_) stream_->stop();
 	bt_->makeNewModule();
 	loadModule();
 	setInitialSelectedInstrument();
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
+	if (!timer_) stream_->start();
 }
 
 void MainWindow::on_actionComments_triggered()
