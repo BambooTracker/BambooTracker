@@ -23,9 +23,11 @@
 - Fix groove start position (thanks [@maakmusic])
 - Fix some drawing errors in pattern editor and order list
 - Fix corruption after changing song type
+- [#163] - Fix the bug that the item is hidden in the instrument list (thanks [@galap-1])
 
 [#161]: https://github.com/rerrahkr/BambooTracker/issues/161
 [#162]: https://github.com/rerrahkr/BambooTracker/issues/162
+[#163]: https://github.com/rerrahkr/BambooTracker/issues/163
 
 ## v0.3.0 (2019-10-25)
 ### Added
