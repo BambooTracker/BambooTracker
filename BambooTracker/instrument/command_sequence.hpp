@@ -17,6 +17,13 @@ struct CommandSequenceUnit
 	///			* If bit 16 is 1, bit 0-15 is left shift value
 	int data;
 
+	friend bool operator==(const CommandSequenceUnit& a, const CommandSequenceUnit& b)
+	{
+		return (a.type == b.type && a.data == b.data);
+	}
+
+	friend bool operator!=(const CommandSequenceUnit& a, const CommandSequenceUnit& b) { return !(a == b); }
+
 	enum DataType : int
 	{
 		NODATA = -1,
@@ -68,6 +75,13 @@ enum SequenceType : int
 struct Loop
 {
 	int begin, end, times;
+
+	friend bool operator==(const Loop& a, const Loop& b)
+	{
+		return (a.begin == b.begin && a.end == b.end && a.times == b.times);
+	}
+
+	friend bool operator!=(const Loop& a, const Loop& b) { return !(a == b); }
 };
 
 enum ReleaseType
@@ -82,6 +96,13 @@ struct Release
 {
 	ReleaseType type;
 	int begin;
+
+	friend bool operator==(const Release& a, const Release& b)
+	{
+		return (a.type == b.type && a.begin == b.begin);
+	}
+
+	friend bool operator!=(const Release& a, const Release& b) { return !(a == b); }
 };
 
 class CommandSequence : public AbstractInstrumentProperty
@@ -90,6 +111,8 @@ public:
 	CommandSequence(int num, SequenceType seqType = SequenceType::NO_SEQUENCE_TYPE, int comType = 0, int comData = -1);
 	CommandSequence(const CommandSequence& other);
 	virtual ~CommandSequence() = default;
+	friend bool operator==(const CommandSequence& a, const CommandSequence& b);
+	friend bool operator!=(const CommandSequence& a, const CommandSequence& b) { return !(a == b); }
 	std::unique_ptr<CommandSequence> clone();
 
 	/// 0: Absolute

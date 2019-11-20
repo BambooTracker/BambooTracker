@@ -178,6 +178,11 @@ std::vector<std::string> BambooTracker::getInstrumentNames() const
 	return instMan_->getInstrumentNameList();
 }
 
+std::vector<std::vector<int>> BambooTracker::checkDuplicateInstruments() const
+{
+	return instMan_->checkDuplicateInstruments();
+}
+
 //--- FM
 void BambooTracker::setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value)
 {

@@ -12,6 +12,9 @@ public:
 	explicit EnvelopeFM(int num);
 	EnvelopeFM(const EnvelopeFM& other);
 
+	friend bool operator==(const EnvelopeFM& a, const EnvelopeFM& b);
+	friend bool operator!=(const EnvelopeFM& a, const EnvelopeFM& b) { return !(a == b); }
+
 	std::unique_ptr<EnvelopeFM> clone();
 
 	bool getOperatorEnabled(int num) const;
@@ -38,6 +41,13 @@ private:
 		int ml_;
 		int dt_;
 		int ssgeg_;	// -1: No use
+
+		friend bool operator==(const FMOperator& a, const FMOperator& b) {
+			return (a.enabled_ == b.enabled_ && a.ar_ == b.ar_ && a.dr_ == b.dr_
+					&& a.sr_ == b.sr_ && a.rr_ == b.rr_ && a.sl_ == b.sl_ && a.tl_ == b.tl_
+					&& a.ks_ == b.ks_ && a.ml_ == b.ml_ && a.dt_ == b.dt_ && a.ssgeg_ == b.ssgeg_);
+		}
+		friend bool operator!=(const FMOperator& a, const FMOperator& b) { return !(a == b); }
 	};
 	FMOperator op_[4];
 

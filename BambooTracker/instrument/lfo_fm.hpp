@@ -12,6 +12,9 @@ public:
 	explicit LFOFM(int n);
 	LFOFM(const LFOFM& other);
 
+	friend bool operator==(const LFOFM& a, const LFOFM& b);
+	friend bool operator!=(const LFOFM& a, const LFOFM& b) { return !(a == b); }
+
 	std::unique_ptr<LFOFM> clone();
 
 	void setParameterValue(FMLFOParameter param, int value);

@@ -625,6 +625,54 @@ int InstrumentsManager::findFirstFreeInstrument() const
 	return -1;
 }
 
+std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() const
+{
+	std::vector<std::vector<int>> dupList;
+	std::vector<int> idcs = getEntriedInstrumentIndices();
+	for (size_t i = 0; i < idcs.size(); ++i) {
+		int baseIdx = idcs[i];
+		std::vector<int> group { baseIdx };
+		std::shared_ptr<AbstractInstrument> base = insts_[baseIdx];
+
+		for (size_t j = i + 1; j < idcs.size();) {
+			int tgtIdx = idcs[j];
+			std::shared_ptr<AbstractInstrument> tgt = insts_[tgtIdx];
+
+			if (base->getSoundSource() == tgt->getSoundSource()) {
+				switch (base->getSoundSource()) {
+				case SoundSource::FM:
+				{
+					if (equalPropertiesFM(std::dynamic_pointer_cast<InstrumentFM>(base),
+										  std::dynamic_pointer_cast<InstrumentFM>(tgt))) {
+						group.push_back(tgtIdx);
+						idcs.erase(idcs.begin() + j);
+						continue;
+					}
+					break;
+				}
+				case SoundSource::SSG:
+				{
+					if (equalPropertiesSSG(std::dynamic_pointer_cast<InstrumentSSG>(base),
+										  std::dynamic_pointer_cast<InstrumentSSG>(tgt))) {
+						group.push_back(tgtIdx);
+						idcs.erase(idcs.begin() + j);
+						continue;
+					}
+					break;
+				}
+				case SoundSource::DRUM:
+					break;
+				}
+			}
+			++j;
+		}
+
+		if (group.size() > 1) dupList.push_back(group);
+	}
+
+	return dupList;
+}
+
 //----- FM methods -----
 void InstrumentsManager::setInstrumentFMEnvelope(int instNum, int envNum)
 {
@@ -1108,6 +1156,38 @@ int InstrumentsManager::findFirstFreePlainPitchFM() const
 			return static_cast<int>(i);
 	}
 	return -1;
+}
+
+bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<InstrumentFM> a, std::shared_ptr<InstrumentFM> b) const
+{
+	if (*envFM_[a->getEnvelopeNumber()].get() != *envFM_[b->getEnvelopeNumber()].get())
+		return false;
+	if (a->getLFOEnabled() != b->getLFOEnabled())
+		return false;
+	if (a->getLFOEnabled() && *lfoFM_[a->getLFONumber()].get() != *lfoFM_[b->getLFONumber()].get())
+		return false;
+	for (auto& pair : opSeqFM_) {
+		if (a->getOperatorSequenceEnabled(pair.first) != b->getOperatorSequenceEnabled(pair.first))
+			return false;
+		if (a->getOperatorSequenceEnabled(pair.first)
+				&& *pair.second[a->getOperatorSequenceNumber(pair.first)].get() != *pair.second[b->getOperatorSequenceNumber(pair.first)].get())
+			return false;
+	}
+	for (auto& type : fmOpTypes_) {
+		if (a->getArpeggioEnabled(type) != b->getArpeggioEnabled(type))
+			return false;
+		if (a->getArpeggioEnabled(type)
+				&& *arpFM_[a->getArpeggioNumber(type)].get() != *arpFM_[b->getArpeggioNumber(type)].get())
+			return false;
+		if (a->getPitchEnabled(type) != b->getPitchEnabled(type))
+			return false;
+		if (a->getPitchEnabled(type)
+				&& *ptFM_[a->getPitchNumber(type)].get() != *ptFM_[b->getPitchNumber(type)].get())
+			return false;
+		if (a->getEnvelopeResetEnabled(type) != b->getEnvelopeResetEnabled(type))
+			return false;
+	}
+	return true;
 }
 
 //----- SSG methods -----
@@ -1669,4 +1749,34 @@ int InstrumentsManager::findFirstFreePlainPitchSSG() const
 			return static_cast<int>(i);
 	}
 	return -1;
+}
+
+bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, std::shared_ptr<InstrumentSSG> b) const
+{
+	if (a->getWaveFormEnabled() != b->getWaveFormEnabled())
+		return false;
+	if (a->getWaveFormEnabled()
+			&& *wfSSG_[a->getWaveFormNumber()].get() != *wfSSG_[b->getWaveFormNumber()].get())
+		return false;
+	if (a->getToneNoiseEnabled() != b->getToneNoiseEnabled())
+		return false;
+	if (a->getToneNoiseEnabled()
+			&& *tnSSG_[a->getToneNoiseNumber()].get() != *tnSSG_[b->getToneNoiseNumber()].get())
+		return false;
+	if (a->getEnvelopeEnabled() != b->getEnvelopeEnabled())
+		return false;
+	if (a->getEnvelopeEnabled()
+			&& *envSSG_[a->getEnvelopeNumber()].get() != *envSSG_[b->getEnvelopeNumber()].get())
+		return false;
+	if (a->getArpeggioEnabled() != b->getArpeggioEnabled())
+		return false;
+	if (a->getArpeggioEnabled()
+			&& *arpSSG_[a->getArpeggioNumber()].get() != *arpSSG_[b->getArpeggioNumber()].get())
+		return false;
+	if (a->getPitchEnabled() != b->getPitchEnabled())
+		return false;
+	if (a->getPitchEnabled()
+			&& *ptSSG_[a->getPitchNumber()].get() != *ptSSG_[b->getPitchNumber()].get())
+		return false;
+	return true;
 }

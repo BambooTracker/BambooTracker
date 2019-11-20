@@ -20,6 +20,11 @@ CommandSequence::CommandSequence(const CommandSequence& other)
 {
 }
 
+bool operator==(const CommandSequence& a, const CommandSequence& b)
+{
+	return (a.type_ == b.type_ && a.seq_ == b.seq_ && a.loops_ == b.loops_ && a.release_ == b.release_);
+}
+
 std::unique_ptr<CommandSequence> CommandSequence::clone()
 {
 	std::unique_ptr<CommandSequence> clone = std::make_unique<CommandSequence>(*this);

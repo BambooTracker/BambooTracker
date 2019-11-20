@@ -75,6 +75,14 @@ EnvelopeFM::EnvelopeFM(const EnvelopeFM &other)
 	initParamMap();
 }
 
+bool operator==(const EnvelopeFM& a, const EnvelopeFM& b) {
+	if (a.al_ != b.al_ || a.fb_ != b.fb_) return false;
+	for (int i = 0; i< 4; ++i) {
+		if (a.op_[0] != b.op_[0]) return false;
+	}
+	return true;
+}
+
 std::unique_ptr<EnvelopeFM> EnvelopeFM::clone()
 {
 	std::unique_ptr<EnvelopeFM> clone = std::make_unique<EnvelopeFM>(*this);

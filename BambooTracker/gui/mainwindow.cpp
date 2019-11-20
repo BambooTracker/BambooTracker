@@ -2269,8 +2269,7 @@ void MainWindow::on_actionOrder_triggered()
 
 void MainWindow::on_actionRemove_Unused_Instruments_triggered()
 {
-	if (showUndoResetWarningDialog(tr("Do you want to remove all unused instruments?")))
-	{
+	if (showUndoResetWarningDialog(tr("Do you want to remove all unused instruments?"))) {
 		bt_->stopPlaySong();
 		lockControls(false);
 
@@ -2291,8 +2290,7 @@ void MainWindow::on_actionRemove_Unused_Instruments_triggered()
 
 void MainWindow::on_actionRemove_Unused_Patterns_triggered()
 {
-	if (showUndoResetWarningDialog(tr("Do you want to remove all unused patterns?")))
-	{
+	if (showUndoResetWarningDialog(tr("Do you want to remove all unused patterns?"))) {
 		bt_->stopPlaySong();
 		lockControls(false);
 
@@ -2533,4 +2531,26 @@ void MainWindow::on_actionE_xpand_Effect_Column_triggered()
 void MainWindow::on_actionS_hrink_Effect_Column_triggered()
 {
 	ui->patternEditor->onShrinkEffectColumn();
+}
+
+void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
+{
+	if (showUndoResetWarningDialog(tr("Do you want to remove all duplicate instruments?"))) {
+		bt_->stopPlaySong();
+		lockControls(false);
+
+		auto list = ui->instrumentListWidget;
+		for (auto& group : bt_->checkDuplicateInstruments()) {
+			for (size_t i = 1; i < group.size(); ++i) {
+				for (int j = 0; j < list->count(); ++j) {
+					if (list->item(j)->data(Qt::UserRole).toInt() == group[i])
+						removeInstrument(j);
+				}
+			}
+		}
+		bt_->clearUnusedInstrumentProperties();
+		bt_->clearCommandHistory();
+		comStack_->clear();
+		setModifiedTrue();
+	}
 }

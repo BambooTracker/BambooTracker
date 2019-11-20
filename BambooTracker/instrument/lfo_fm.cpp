@@ -25,6 +25,13 @@ LFOFM::LFOFM(const LFOFM& other)
 		amOp_[i] = other.amOp_[i];
 }
 
+bool operator==(const LFOFM& a, const LFOFM& b)
+{
+	return (a.freq_ == b.freq_ && a.ams_ == b.ams_ && a.pms_ == b.pms_ && a.cnt_ == b.cnt_
+			&& a.amOp_[0] == b.amOp_[0] && a.amOp_[1] == b.amOp_[1]
+			&& a.amOp_[2] == b.amOp_[2] && a.amOp_[3] == b.amOp_[3]);
+}
+
 std::unique_ptr<LFOFM> LFOFM::clone()
 {
 	std::unique_ptr<LFOFM> clone = std::make_unique<LFOFM>(*this);

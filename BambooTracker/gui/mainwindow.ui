@@ -556,6 +556,7 @@
      </property>
      <addaction name="actionRemove_Unused_Instruments"/>
      <addaction name="actionRemove_Unused_Patterns"/>
+     <addaction name="actionRemove_Duplicate_Instruments"/>
     </widget>
     <addaction name="actionModule_Properties"/>
     <addaction name="actionComments"/>
@@ -1285,6 +1286,11 @@
    </property>
    <property name="shortcut">
     <string>Alt+K</string>
+   </property>
+  </action>
+  <action name="actionRemove_Duplicate_Instruments">
+   <property name="text">
+    <string>Remove &amp;Duplicate Instruments</string>
    </property>
   </action>
  </widget>

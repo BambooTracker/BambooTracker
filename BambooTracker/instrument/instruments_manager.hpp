@@ -12,8 +12,10 @@
 #include "misc.hpp"
 
 class AbstractInstrument;
+class InstrumentFM;
 enum class FMEnvelopeParameter;
 class EnvelopeFM;
+class InstrumentSSG;
 
 class InstrumentsManager
 {
@@ -38,6 +40,8 @@ public:
 	void clearUnusedInstrumentProperties();
 
 	int findFirstFreeInstrument() const;
+
+	std::vector<std::vector<int>> checkDuplicateInstruments() const;
 
 private:
 	std::array<std::shared_ptr<AbstractInstrument>, 128> insts_;
@@ -141,6 +145,8 @@ private:
 	int cloneFMOperatorSequence(FMEnvelopeParameter param, int srcNum);
 	int cloneFMArpeggio(int srcNum);
 	int cloneFMPitch(int srcNum);
+
+	bool equalPropertiesFM(std::shared_ptr<InstrumentFM> a, std::shared_ptr<InstrumentFM> b) const;
 
 	//----- SSG methods -----
 public:
@@ -250,4 +256,6 @@ private:
 	int cloneSSGEnvelope(int srcNum);
 	int cloneSSGArpeggio(int srcNum);
 	int cloneSSGPitch(int srcNum);
+
+	bool equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, std::shared_ptr<InstrumentSSG> b) const;
 };

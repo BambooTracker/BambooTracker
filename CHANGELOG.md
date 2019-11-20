@@ -9,6 +9,7 @@
 - Add selection whether auto-set current instrument upon entering note
 - Add color scheme settings
 - [#162] - Add order edit icons to the menu bar (thanks [@pedipanol])
+- [#150] - Add the optimizing option to remove duplicate instruments (thanks [@papiezak])
 
 ### Changed
 - Change width of items in status bar
@@ -20,7 +21,7 @@
 
 ### Fixed
 - [#161] - Fix drawing error after loading song (thanks [@papiezak])
-- Fix groove start position (thanks [@maakmusic])
+- Fix groove start position by `0Oxx` (thanks [@maakmusic])
 - Fix some drawing errors in pattern editor and order list
 - Fix corruption after changing song type
 - [#163] - Fix the bug that the item is hidden in the instrument list (thanks [@galap-1])
@@ -28,6 +29,7 @@
 [#161]: https://github.com/rerrahkr/BambooTracker/issues/161
 [#162]: https://github.com/rerrahkr/BambooTracker/issues/162
 [#163]: https://github.com/rerrahkr/BambooTracker/issues/163
+[#150]: https://github.com/rerrahkr/BambooTracker/issues/150
 
 ## v0.3.0 (2019-10-25)
 ### Added

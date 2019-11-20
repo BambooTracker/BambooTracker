@@ -60,6 +60,7 @@ public:
 	std::vector<int> getUnusedInstrumentIndices() const;
 	void clearUnusedInstrumentProperties();
 	std::vector<std::string> getInstrumentNames() const;
+	std::vector<std::vector<int>> checkDuplicateInstruments() const;
 
 	//--- FM
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
