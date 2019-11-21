@@ -32,6 +32,7 @@ ColorPalette::ColorPalette()
 	instSeqCellTextColor = QColor::fromRgb(255, 255, 255);
 	instSeqBorderColor = QColor::fromRgb(50, 50, 50, 255);
 	instSeqMaskColor = QColor::fromRgb(0, 0, 0, 128);
+	instSeqOddColColor = QColor::fromRgb(255, 255, 255, 31);
 
 	// Tone/Noise editor
 	tnToneCellColor = QColor::fromRgb(225, 209, 47, 255);

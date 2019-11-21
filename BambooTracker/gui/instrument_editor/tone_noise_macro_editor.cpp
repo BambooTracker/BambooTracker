@@ -71,6 +71,15 @@ void ToneNoiseMacroEditor::drawField()
 					 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + t + 1, 0) + textOffset,
 					 labels_[static_cast<size_t>(0)]);
 
+	for (size_t i = 1; i < cols_.size(); i += 2) {
+		painter.fillRect(labWidth_
+						 + std::accumulate(colWidths_.begin(), colWidths_.begin() + static_cast<int>(i), 0),
+						 0,
+						 colWidths_[i],
+						 std::accumulate(rowHeights_.begin(), rowHeights_.begin() + dispCnt - 2, 0),
+						 palette_->instSeqOddColColor);
+	}
+
 	// Sequence
 	painter.setPen(palette_->instSeqCellTextColor);
 	for (size_t i = 0; i < cols_.size(); ++i) {

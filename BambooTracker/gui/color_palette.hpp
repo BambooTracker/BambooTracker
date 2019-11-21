@@ -27,6 +27,7 @@ public:
 	QColor instSeqCellColor, instSeqCellTextColor;
 	QColor instSeqBorderColor;
 	QColor instSeqMaskColor;
+	QColor instSeqOddColColor;
 
 	// Tone/Noise editor
 	QColor tnToneCellColor, tnToneTextColor;

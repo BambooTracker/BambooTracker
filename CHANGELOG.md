@@ -14,6 +14,7 @@
 ### Changed
 - Change width of items in status bar
 - [#161] - Reduce drawing cost of the pattern editor and the order list (thanks [@papiezak])
+- Change background color of odd columns in the instrument sequence editor
 - Improve SSG tone/noise editor
 - Change MML text in FM/SSG arpeggio editor from numbers to notes
 - [#162] - Allow order list edit in jam mode (thanks [@pedipanol])

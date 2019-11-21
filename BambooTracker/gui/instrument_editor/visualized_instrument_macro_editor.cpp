@@ -328,6 +328,14 @@ void VisualizedInstrumentMacroEditor::drawField()
 		}
 	}
 
+	for (size_t i = 1; i < cols_.size(); i += 2) {
+		painter.fillRect(labWidth_
+						 + std::accumulate(colWidths_.begin(), colWidths_.begin() + static_cast<int>(i), 0),
+						 0,
+						 colWidths_[i], fieldHeight_,
+						 palette_->instSeqOddColColor);
+	}
+
 	// Sequence
 	painter.setPen(palette_->instSeqCellTextColor);
 	for (size_t i = 0; i < cols_.size(); ++i) {
@@ -335,7 +343,8 @@ void VisualizedInstrumentMacroEditor::drawField()
 			int x = labWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + static_cast<int>(i), 0);
 			int hi = upperRow_ - cols_[i].row;
 			int y = std::accumulate(rowHeights_.begin(), rowHeights_.begin() + hi, 0);
-			painter.fillRect(x, y, colWidths_[i], rowHeights_[static_cast<size_t>(hi)], palette_->instSeqCellColor);
+			painter.fillRect(x, y, colWidths_[i],
+							 rowHeights_[static_cast<size_t>(hi)], palette_->instSeqCellColor);
 			painter.drawText(x + 2,
 							 y + rowHeights_[static_cast<size_t>(upperRow_ - cols_[i].row)] + textOffset,
 					cols_[i].text);
@@ -377,8 +386,11 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 				}
 			}
 		}
+
 		if (hovRow_ == -2 && hovCol_ == i)
-			painter.fillRect(w, loopY_, colWidths_[static_cast<size_t>(i)], fontHeight_, palette_->instSeqHovColor);
+			painter.fillRect(w, loopY_, colWidths_[static_cast<size_t>(i)],
+					fontHeight_, palette_->instSeqHovColor);
+
 		w += colWidths_[static_cast<size_t>(i)];
 	}
 }
@@ -416,9 +428,11 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 			painter.setPen(palette_->instSeqReleaseTextColor);
 			painter.drawText(w + 2, releaseBaseY_, type);
 		}
+
 		if (hovRow_ == -3 && hovCol_ == i)
 			painter.fillRect(w, releaseY_, colWidths_[static_cast<size_t>(i)],
 					fontHeight_, palette_->instSeqHovColor);
+
 		w += colWidths_[static_cast<size_t>(i)];
 	}
 }
