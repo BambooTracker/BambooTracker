@@ -3,6 +3,7 @@
 #include <utility>
 #include <set>
 #include <exception>
+#include <unordered_map>
 #include "commands.hpp"
 #include "io_handlers.hpp"
 #include "bank.hpp"
@@ -1494,6 +1495,18 @@ std::vector<int> BambooTracker::getGroove(int num) const
 void BambooTracker::clearUnusedPatterns()
 {
 	mod_->clearUnusedPatterns();
+}
+
+void BambooTracker::replaceDuplicateInstrumentsInPatterns(std::vector<std::vector<int>> list)
+{
+	std::unordered_map<int, int> map;
+	for (auto& group : list) {
+		for (size_t i = 1; i < group.size(); ++i) {
+			map.emplace(group[i], group.front());
+		}
+	}
+
+	mod_->replaceDuplicateInstrumentsInPatterns(map);
 }
 
 /*----- Song -----*/

@@ -3,6 +3,7 @@
 #include <vector>
 #include <set>
 #include <memory>
+#include <unordered_map>
 #include "pattern.hpp"
 #include "misc.hpp"
 
@@ -35,6 +36,7 @@ public:
 	size_t getEffectDisplayWidth() const;
 
 	void clearUnusedPatterns();
+	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
 
 private:
 	std::unique_ptr<TrackAttribute> attrib_;

@@ -151,3 +151,18 @@ void Track::clearUnusedPatterns()
 			patterns_[i].clear();
 	}
 }
+
+void Track::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map)
+{
+	for (size_t i = 0; i < 256; ++i) {
+		Pattern& pattern = patterns_[i];
+		if (pattern.existCommand()) {
+			for (size_t i = 0; i < pattern.getSize(); ++i) {
+				Step& step = pattern.getStep(static_cast<int>(i));
+				int inst = step.getInstrumentNumber();
+				if (map.count(inst)) step.setInstrumentNumber(map[inst]);
+			}
+		}
+
+	}
+}

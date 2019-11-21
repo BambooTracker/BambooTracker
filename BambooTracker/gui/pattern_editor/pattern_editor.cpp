@@ -312,5 +312,10 @@ void PatternEditor::onFollowModeChanged()
 
 void PatternEditor::onStoppedPlaySong()
 {
-	ui->panel->onStoppedPlaySong();
+	ui->panel->redrawPatterns();
+}
+
+void PatternEditor::onDuplicateInstrumentsRemoved()
+{
+	ui->panel->redrawPatterns();
 }

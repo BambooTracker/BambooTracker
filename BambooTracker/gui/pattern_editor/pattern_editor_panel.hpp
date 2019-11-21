@@ -49,6 +49,7 @@ public:
 	void redrawByFocusChanged();
 	void redrawByHoverChanged();
 	void redrawByMaskChanged();
+	void redrawPatterns();
 	void redrawAll();
 
 	void resetEntryCount();
@@ -100,7 +101,6 @@ public slots:
 	void onExpandEffectColumnPressed(int trackNum);
 	void onShrinkEffectColumnPressed(int trackNum);
 	void onFollowModeChanged();
-	void onStoppedPlaySong();
 
 signals:
 	void currentCellInRowChanged(int num);

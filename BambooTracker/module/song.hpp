@@ -3,6 +3,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include "track.hpp"
 #include "misc.hpp"
 
@@ -44,6 +45,7 @@ public:
 	std::set<int> getRegisteredInstruments() const;
 
 	void clearUnusedPatterns();
+	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
 
 private:
 	int num_;

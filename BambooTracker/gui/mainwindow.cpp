@@ -2539,8 +2539,9 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 		bt_->stopPlaySong();
 		lockControls(false);
 
+		std::vector<std::vector<int>> duplicates = bt_->checkDuplicateInstruments();
 		auto list = ui->instrumentListWidget;
-		for (auto& group : bt_->checkDuplicateInstruments()) {
+		for (auto& group : duplicates) {
 			for (size_t i = 1; i < group.size(); ++i) {
 				for (int j = 0; j < list->count(); ++j) {
 					if (list->item(j)->data(Qt::UserRole).toInt() == group[i])
@@ -2548,9 +2549,11 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 				}
 			}
 		}
+		bt_->replaceDuplicateInstrumentsInPatterns(duplicates);
 		bt_->clearUnusedInstrumentProperties();
 		bt_->clearCommandHistory();
 		comStack_->clear();
+		ui->patternEditor->onDuplicateInstrumentsRemoved();
 		setModifiedTrue();
 	}
 }

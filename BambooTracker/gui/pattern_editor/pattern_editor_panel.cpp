@@ -258,13 +258,18 @@ void PatternEditorPanel::redrawByMaskChanged()
 	repaint();
 }
 
-void PatternEditorPanel::redrawAll()
+void PatternEditorPanel::redrawPatterns()
 {
-	headerChanged_ = true;
 	backChanged_ = true;
 	textChanged_ = true;
 	foreChanged_ = true;
 	repaint();
+}
+
+void PatternEditorPanel::redrawAll()
+{
+	headerChanged_ = true;
+	redrawPatterns();
 }
 
 void PatternEditorPanel::resetEntryCount()
@@ -2326,18 +2331,7 @@ void PatternEditorPanel::onFollowModeChanged()
 
 	// Force redraw all area
 	followModeChanged_ = true;
-	foreChanged_ = true;
-	textChanged_ = true;
-	backChanged_ = true;
-	repaint();
-}
-
-void PatternEditorPanel::onStoppedPlaySong()
-{
-	followModeChanged_ = true;
-	textChanged_ = true;
-	backChanged_ = true;
-	repaint();
+	redrawPatterns();
 }
 
 /********** Events **********/

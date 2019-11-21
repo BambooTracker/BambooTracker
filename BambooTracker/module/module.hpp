@@ -3,6 +3,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include "song.hpp"
 #include "groove.hpp"
 
@@ -62,6 +63,7 @@ public:
 	std::set<int> getRegisterdInstruments() const;
 
 	void clearUnusedPatterns();
+	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
 
 private:
 	std::string filePath_;

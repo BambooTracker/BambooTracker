@@ -223,3 +223,8 @@ void Module::clearUnusedPatterns()
 {
 	for (auto& song : songs_) song.clearUnusedPatterns();
 }
+
+void Module::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map)
+{
+	for (auto& song : songs_) song.replaceDuplicateInstrumentsInPatterns(map);
+}
