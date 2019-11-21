@@ -103,9 +103,9 @@ std::vector<int> Pattern::getEditedStepIndices() const
 	return list;
 }
 
-std::set<int> Pattern::getRegisteredInstruments() const
+std::unordered_set<int> Pattern::getRegisteredInstruments() const
 {
-	std::set<int> set;
+	std::unordered_set<int> set;
 	for (size_t i = 0; i < size_; ++i) {
 		int n = steps_.at(i).getInstrumentNumber();
 		if (n > -1) set.insert(n);

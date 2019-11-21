@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <unordered_map>
 #include "version.hpp"
 #include "file_io.hpp"
 #include "file_io_error.hpp"
@@ -2857,7 +2858,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 		/* Arpeggio */
 		{
 			std::map<FMOperatorType, int> tmpMap;
-			std::map<int, FMOperatorType> orgNumMap;
+			std::unordered_map<int, FMOperatorType> orgNumMap;
 			tmpMap.emplace(FMOperatorType::All, instCtr.readUint8(instCsr));
 			instCsr += 3;
 			tmpMap.emplace(FMOperatorType::Op1, instCtr.readUint8(instCsr++));
@@ -2947,7 +2948,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 		/* Pitch */
 		{
 			std::map<FMOperatorType, int> tmpMap;
-			std::map<int, FMOperatorType> orgNumMap;
+			std::unordered_map<int, FMOperatorType> orgNumMap;
 			tmpMap.emplace(FMOperatorType::All, instCtr.readUint8(instCsr));
 			instCsr += 6;
 			tmpMap.emplace(FMOperatorType::Op1, instCtr.readUint8(instCsr++));

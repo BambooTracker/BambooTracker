@@ -1,7 +1,7 @@
 #include "bamboo_tracker.hpp"
 #include <algorithm>
 #include <utility>
-#include <set>
+#include <unordered_set>
 #include <exception>
 #include <unordered_map>
 #include "commands.hpp"
@@ -161,7 +161,7 @@ std::vector<int> BambooTracker::getInstrumentIndices() const
 std::vector<int> BambooTracker::getUnusedInstrumentIndices() const
 {
 	std::vector<int> unused;
-	std::set<int> regdInsts = mod_->getRegisterdInstruments();
+	std::unordered_set<int> regdInsts = mod_->getRegisterdInstruments();
 	for (auto& inst : instMan_->getInstrumentIndices()) {
 		if (regdInsts.find(inst) == regdInsts.end())
 			unused.push_back(inst);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <set>
+#include <unordered_set>
 #include <memory>
 #include <unordered_map>
 #include "pattern.hpp"
@@ -23,7 +23,7 @@ public:
 	int searchFirstUneditedUnusedPattern() const;
 	int clonePattern(int num);
 	std::vector<int> getEditedPatternIndices() const;
-	std::set<int> getRegisteredInstruments() const;
+	std::unordered_set<int> getRegisteredInstruments() const;
 
 	void registerPatternToOrder(int order, int pattern);
 	void insertOrderBelow(int order);

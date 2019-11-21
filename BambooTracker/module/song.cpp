@@ -190,9 +190,9 @@ void Song::swapOrder(int a, int b)
 	}
 }
 
-std::set<int> Song::getRegisteredInstruments() const
+std::unordered_set<int> Song::getRegisteredInstruments() const
 {
-	std::set<int> set;
+	std::unordered_set<int> set;
 	for (auto& track : tracks_) {
 		for (auto& n : track.getRegisteredInstruments()) {
 			set.insert(n);

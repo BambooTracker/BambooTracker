@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <set>
+#include <unordered_set>
 #include <string>
 #include <unordered_map>
 #include "song.hpp"
@@ -60,7 +60,7 @@ public:
 	void setGrooves(std::vector<std::vector<int>> seqs);
 	Groove& getGroove(int num);
 
-	std::set<int> getRegisterdInstruments() const;
+	std::unordered_set<int> getRegisterdInstruments() const;
 
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);

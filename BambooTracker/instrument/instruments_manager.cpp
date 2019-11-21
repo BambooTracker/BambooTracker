@@ -1,6 +1,6 @@
 #include "instruments_manager.hpp"
 #include <utility>
-#include <set>
+#include <unordered_map>
 #include "instrument.hpp"
 
 InstrumentsManager::InstrumentsManager()
@@ -244,7 +244,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			}
 		}
 
-		std::map<int, int> arpNums;
+		std::unordered_map<int, int> arpNums;
 		for (auto t : fmOpTypes_) {
 			if (refFm->getArpeggioEnabled(t)) {
 				cloneFm->setArpeggioEnabled(t, true);
@@ -260,7 +260,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			}
 		}
 
-		std::map<int, int> ptNums;
+		std::unordered_map<int, int> ptNums;
 		for (auto t : fmOpTypes_) {
 			if (refFm->getPitchEnabled(t)) {
 				cloneFm->setPitchEnabled(t, true);

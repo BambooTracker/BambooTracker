@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <set>
+#include <unordered_set>
 #include <string>
 #include <unordered_map>
 #include "track.hpp"
@@ -42,7 +42,7 @@ public:
 	void deleteOrder(int order);
 	void swapOrder(int a, int b);
 
-	std::set<int> getRegisteredInstruments() const;
+	std::unordered_set<int> getRegisteredInstruments() const;
 
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);

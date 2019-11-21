@@ -208,9 +208,9 @@ Groove& Module::getGroove(int num)
 	return grooves_.at(static_cast<size_t>(num));
 }
 
-std::set<int> Module::getRegisterdInstruments() const
+std::unordered_set<int> Module::getRegisterdInstruments() const
 {
-	std::set<int> set;
+	std::unordered_set<int> set;
 	for (auto& song : songs_) {
 		for (auto& n : song.getRegisteredInstruments()) {
 			set.insert(n);

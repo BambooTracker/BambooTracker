@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QString>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include "instrument/envelope_fm.hpp"
 #include "misc.hpp"
 
@@ -53,7 +53,7 @@ public slots:
 	void onInstrumentSSGPitchNumberChanged();
 
 private:
-	std::map<int, std::unique_ptr<QWidget>> map_;
+	std::unordered_map<int, std::unique_ptr<QWidget>> map_;
 };
 
 

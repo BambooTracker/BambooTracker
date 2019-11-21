@@ -88,9 +88,9 @@ std::vector<int> Track::getEditedPatternIndices() const
 	return list;
 }
 
-std::set<int> Track::getRegisteredInstruments() const
+std::unordered_set<int> Track::getRegisteredInstruments() const
 {
-	std::set<int> set;
+	std::unordered_set<int> set;
 	for (auto& pattern : patterns_) {
 		for (auto& n : pattern.getRegisteredInstruments()) {
 			set.insert(n);

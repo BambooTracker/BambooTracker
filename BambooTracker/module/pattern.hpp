@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <set>
+#include <unordered_set>
 #include <cstddef>
 #include "step.hpp"
 
@@ -27,7 +27,7 @@ public:
 
 	bool existCommand() const;
 	std::vector<int> getEditedStepIndices() const;
-	std::set<int> getRegisteredInstruments() const;
+	std::unordered_set<int> getRegisteredInstruments() const;
 
 	Pattern clone(int asNumber);
 
