@@ -1,8 +1,9 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include "abstract_instrument_property.hpp"
+#include "enum_hash.hpp"
 
 enum class FMEnvelopeParameter;
 
@@ -60,7 +61,7 @@ private:
 		{ true, 31, 0, 0, 7, 0,  0, 0, 0, 0, -1 }
 	};
 
-	std::map<FMEnvelopeParameter, int&> paramMap_;
+	std::unordered_map<FMEnvelopeParameter, int&> paramMap_;
 
 	void initParamMap();
 };

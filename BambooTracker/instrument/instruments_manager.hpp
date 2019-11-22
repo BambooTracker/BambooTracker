@@ -4,11 +4,12 @@
 #include <memory>
 #include <array>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
 #include "command_sequence.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 class AbstractInstrument;
@@ -133,7 +134,7 @@ public:
 private:
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
 	std::array<std::shared_ptr<LFOFM>, 128> lfoFM_;
-	std::map<FMEnvelopeParameter, std::array<std::shared_ptr<CommandSequence>, 128>> opSeqFM_;
+	std::unordered_map<FMEnvelopeParameter, std::array<std::shared_ptr<CommandSequence>, 128>> opSeqFM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> arpFM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> ptFM_;
 

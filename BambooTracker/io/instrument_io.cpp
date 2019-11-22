@@ -4,12 +4,12 @@
 #include <locale>
 #include <vector>
 #include <algorithm>
-#include <map>
 #include <unordered_map>
 #include "version.hpp"
 #include "file_io.hpp"
 #include "file_io_error.hpp"
 #include "pitch_converter.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 InstrumentIO::InstrumentIO() {}
@@ -655,7 +655,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
 			name = ctr.readString(instCsr, nameLen);
 			instCsr += nameLen;
 		}
-		std::map<FMOperatorType, int> fmArpMap, fmPtMap;
+		std::unordered_map<FMOperatorType, int> fmArpMap, fmPtMap;
 		AbstractInstrument* inst = nullptr;
 		switch (ctr.readUint8(instCsr++)) {
 		case 0x00:	// FM
@@ -2857,7 +2857,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 
 		/* Arpeggio */
 		{
-			std::map<FMOperatorType, int> tmpMap;
+			std::unordered_map<FMOperatorType, int> tmpMap;
 			std::unordered_map<int, FMOperatorType> orgNumMap;
 			tmpMap.emplace(FMOperatorType::All, instCtr.readUint8(instCsr));
 			instCsr += 3;
@@ -2947,7 +2947,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 
 		/* Pitch */
 		{
-			std::map<FMOperatorType, int> tmpMap;
+			std::unordered_map<FMOperatorType, int> tmpMap;
 			std::unordered_map<int, FMOperatorType> orgNumMap;
 			tmpMap.emplace(FMOperatorType::All, instCtr.readUint8(instCsr));
 			instCsr += 6;

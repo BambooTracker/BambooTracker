@@ -480,7 +480,7 @@ Configuration::Configuration()
 	};
 
 	// Layouts
-	const std::map<std::string, JamKey> mappingQWERTY = {
+	const std::unordered_map<std::string, JamKey> mappingQWERTY = {
 		{u8"Z",         JamKey::LowC},
 		{u8"S",         JamKey::LowCS},
 		{u8"X",         JamKey::LowD},
@@ -513,7 +513,7 @@ Configuration::Configuration()
 		{u8"9",         JamKey::HighCS2},
 		{u8"O",         JamKey::HighD2},
 	};
-	const std::map<std::string, JamKey> mappingQWERTZ = {
+	const std::unordered_map<std::string, JamKey> mappingQWERTZ = {
 		{u8"Y",         JamKey::LowC},
 		{u8"S",         JamKey::LowCS},
 		{u8"X",         JamKey::LowD},
@@ -546,7 +546,7 @@ Configuration::Configuration()
 		{u8"9",         JamKey::HighCS2},
 		{u8"O",         JamKey::HighD2},
 	};
-	const std::map<std::string, JamKey> mappingAZERTY = {
+	const std::unordered_map<std::string, JamKey> mappingAZERTY = {
 		{u8"W",         JamKey::LowC},
 		{u8"S",         JamKey::LowCS},
 		{u8"X",         JamKey::LowD},
@@ -952,12 +952,12 @@ Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const
 	return noteEntryLayout_;
 }
 
-void Configuration::setCustomLayoutKeys(std::map<std::string, JamKey> mapping)
+void Configuration::setCustomLayoutKeys(std::unordered_map<std::string, JamKey> mapping)
 {
 	mappingLayouts[KeyboardLayout::Custom] = mapping;
 }
 
-std::map<std::string, JamKey> Configuration::getCustomLayoutKeys() const
+std::unordered_map<std::string, JamKey> Configuration::getCustomLayoutKeys() const
 {
 	return mappingLayouts.at(KeyboardLayout::Custom);
 }

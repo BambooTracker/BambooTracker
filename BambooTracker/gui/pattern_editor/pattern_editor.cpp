@@ -317,5 +317,5 @@ void PatternEditor::onStoppedPlaySong()
 
 void PatternEditor::onDuplicateInstrumentsRemoved()
 {
-	ui->panel->redrawPatterns();
+	ui->panel->redrawByPatternChanged();
 }

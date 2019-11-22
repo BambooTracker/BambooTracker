@@ -3,8 +3,9 @@
 #include <cstdint>
 #include <cstddef>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <vector>
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 enum class JamKey : int;
@@ -131,13 +132,13 @@ public:
 		QWERTZ,
 		AZERTY
 	};
-	static const std::map<std::string, JamKey> mappingQWERTY, mappingQWERTZ, mappingAZERTY;
-	std::map<std::string, JamKey> mappingCustom;
-	std::map<KeyboardLayout, std::map<std::string, JamKey>> mappingLayouts;
+	static const std::unordered_map<std::string, JamKey> mappingQWERTY, mappingQWERTZ, mappingAZERTY;
+	std::unordered_map<std::string, JamKey> mappingCustom;
+	std::unordered_map<KeyboardLayout, std::unordered_map<std::string, JamKey>> mappingLayouts;
 	void setNoteEntryLayout(KeyboardLayout layout);
 	KeyboardLayout getNoteEntryLayout() const;
-	void setCustomLayoutKeys(std::map<std::string, JamKey> mapping);
-	std::map<std::string, JamKey> getCustomLayoutKeys() const;
+	void setCustomLayoutKeys(std::unordered_map<std::string, JamKey> mapping);
+	std::unordered_map<std::string, JamKey> getCustomLayoutKeys() const;
 
 private:
 	std::string keyOffKey_, octUpKey_, octDownKey_, echoKey_;

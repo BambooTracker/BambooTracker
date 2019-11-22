@@ -1,10 +1,11 @@
 #ifndef EFFECTDESCRIPTION_HPP
 #define EFFECTDESCRIPTION_HPP
 
-#include <map>
+#include <unordered_map>
 #include <QObject>
 #include <QString>
 #include "effect.hpp"
+#include "enum_hash.hpp"
 
 class EffectDescription : public QObject
 {
@@ -25,7 +26,7 @@ private:
 		QString mergedString() const { return format + " - " + desc; }
 	};
 
-	static const std::map<EffectType, EffectDetail> details_;
+	static const std::unordered_map<EffectType, EffectDetail> details_;
 };
 
 #endif // EFFECTDESCRIPTION_HPP

@@ -205,6 +205,7 @@ SOURCES += \
 
 HEADERS += \
     command/command_id.hpp \
+    enum_hash.hpp \
     gui/color_palette_handler.hpp \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \

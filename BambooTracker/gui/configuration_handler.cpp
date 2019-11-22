@@ -1,7 +1,9 @@
 #include "configuration_handler.hpp"
 #include <vector>
+#include <unordered_map>
 #include <QSettings>
 #include "jam_manager.hpp"
+#include"enum_hash.hpp"
 
 // config path (*nix): ~/.config/<organization>/<application>.ini
 const QString ConfigurationHandler::organization = "BambooTracker";
@@ -73,8 +75,8 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 						  QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
 											static_cast<int>(configLocked->getEchoBufferKey().length())));
 		settings.setValue("noteEntryLayout",	static_cast<int>(configLocked->getNoteEntryLayout()));
-		std::map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
-		const std::map<JamKey, std::string> keyToNameMapping = {
+		std::unordered_map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
+		const std::unordered_map<JamKey, std::string> keyToNameMapping = {
 			{JamKey::LowC,     "lowC"},
 			{JamKey::LowCS,    "lowCS"},
 			{JamKey::LowD,     "lowD"},
@@ -107,7 +109,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 			{JamKey::HighCS2, "highHighCS"},
 			{JamKey::HighD2,  "highHighD"}
 		};
-		std::map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
+		std::unordered_map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
 		while (customLayoutMappingIterator != customLayoutMapping.end()) {
 			settings.setValue(QString::fromStdString("customLayout_" + keyToNameMapping.at(customLayoutMappingIterator->second)),
 							  QString::fromUtf8(customLayoutMappingIterator->first.c_str(), static_cast<int> (customLayoutMappingIterator->first.length())));
@@ -237,8 +239,8 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(
 											 settings.value("noteEntryLayout",
 															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));
-		std::map<std::string, JamKey> customLayoutNewKeys = {};
-		const std::map<std::string, JamKey> nameToKeyMapping = {
+		std::unordered_map<std::string, JamKey> customLayoutNewKeys = {};
+		const std::unordered_map<std::string, JamKey> nameToKeyMapping = {
 			{"lowC",       JamKey::LowC},
 			{"lowCS",      JamKey::LowCS},
 			{"lowD",       JamKey::LowD},
@@ -271,7 +273,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 			{"highHighCS", JamKey::HighCS2},
 			{"highHighD",  JamKey::HighD2}
 		};
-		std::map<std::string, JamKey>::const_iterator nameToKeyMappingIterator = nameToKeyMapping.begin();
+		std::unordered_map<std::string, JamKey>::const_iterator nameToKeyMappingIterator = nameToKeyMapping.begin();
 		while (nameToKeyMappingIterator != nameToKeyMapping.end()) {
 			JamKey currentlyWantedJamKey = nameToKeyMappingIterator->second;
 			customLayoutNewKeys[

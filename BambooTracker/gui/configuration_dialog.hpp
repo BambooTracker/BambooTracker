@@ -3,12 +3,13 @@
 
 #include <QDialog>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include <QKeySequenceEdit>
 #include <QTreeWidgetItem>
 #include "configuration.hpp"
 #include "color_palette.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 namespace Ui {
@@ -45,7 +46,7 @@ private:
 		return (state == Qt::Checked) ? true : false;
 	}
 
-	std::map<JamKey, QKeySequenceEdit *> customLayoutKeysMap;
+	std::unordered_map<JamKey, QKeySequenceEdit *> customLayoutKeysMap;
 
 	/***** General *****/
 private slots:

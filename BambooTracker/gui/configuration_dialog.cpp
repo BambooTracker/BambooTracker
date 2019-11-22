@@ -103,8 +103,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ JamKey::HighCS2, ui->highHighCSEdit },
 		{ JamKey::HighD2,  ui->highHighDEdit }
 	};
-	std::map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
-	std::map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
+	std::unordered_map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
+	std::unordered_map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
 	while (customLayoutMappingIterator != customLayoutMapping.end()) {
 		customLayoutKeysMap.at(customLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(customLayoutMappingIterator->first)));
 		customLayoutMappingIterator++;
@@ -249,8 +249,8 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
 	configLocked->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
 	configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
-	std::map<std::string, JamKey> customLayoutNewKeys = {};
-	std::map<JamKey, QKeySequenceEdit *>::const_iterator customLayoutKeysMapIterator = customLayoutKeysMap.begin();
+	std::unordered_map<std::string, JamKey> customLayoutNewKeys = {};
+	std::unordered_map<JamKey, QKeySequenceEdit *>::const_iterator customLayoutKeysMapIterator = customLayoutKeysMap.begin();
 	while (customLayoutKeysMapIterator != customLayoutKeysMap.end()) {
 		customLayoutNewKeys[customLayoutKeysMapIterator->second->keySequence().toString().toStdString()] = customLayoutKeysMapIterator->first;
 		customLayoutKeysMapIterator++;
@@ -523,8 +523,8 @@ void ConfigurationDialog::on_keyboardTypeComboBox_currentIndexChanged(int index)
 
 void ConfigurationDialog::on_customLayoutResetButton_clicked()
 {
-	std::map<std::string, JamKey> QWERTYLayoutMapping = config_.lock()->mappingLayouts.at (Configuration::KeyboardLayout::QWERTY);
-	std::map<std::string, JamKey>::const_iterator QWERTYLayoutMappingIterator = QWERTYLayoutMapping.begin();
+	std::unordered_map<std::string, JamKey> QWERTYLayoutMapping = config_.lock()->mappingLayouts.at (Configuration::KeyboardLayout::QWERTY);
+	std::unordered_map<std::string, JamKey>::const_iterator QWERTYLayoutMappingIterator = QWERTYLayoutMapping.begin();
 	while (QWERTYLayoutMappingIterator != QWERTYLayoutMapping.end()) {
 		customLayoutKeysMap.at(QWERTYLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(QWERTYLayoutMappingIterator->first)));
 		QWERTYLayoutMappingIterator++;

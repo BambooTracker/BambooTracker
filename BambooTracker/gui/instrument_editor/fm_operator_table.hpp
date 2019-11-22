@@ -1,7 +1,7 @@
 #ifndef FM_OPERATOR_TABLE_HPP
 #define FM_OPERATOR_TABLE_HPP
 
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <vector>
 #include <QFrame>
@@ -10,6 +10,7 @@
 #include <QString>
 #include "gui/labeled_vertical_slider.hpp"
 #include "gui/color_palette.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 namespace Ui {
@@ -60,7 +61,7 @@ private:
 	Ui::FMOperatorTable *ui;
 	std::shared_ptr<ColorPalette> palette_;
 	int number_;
-	std::map<Ui::FMOperatorParameter, LabeledVerticalSlider*> sliderMap_;
+	std::unordered_map<Ui::FMOperatorParameter, LabeledVerticalSlider*> sliderMap_;
 	std::vector<QString> envelopeTypes_;
 	bool isDTNegative_;
 	bool isIgnoreEvent_;

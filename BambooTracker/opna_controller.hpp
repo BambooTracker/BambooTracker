@@ -2,13 +2,14 @@
 
 #include <cstdint>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <deque>
 #include "opna.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
 #include "chips/chip_misc.h"
 #include "chips/scci/scci.h"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 struct RegisterUnit
@@ -161,7 +162,7 @@ private:
 	int lfoStartCntFM_[6];
 	bool hasPreSetTickEventFM_[9];
 	bool needToneSetFM_[9];
-	std::map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
+	std::unordered_map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
 	std::unique_ptr<SequenceIteratorInterface> arpItFM_[9];
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[9];
 	bool isArpEffFM_[9];

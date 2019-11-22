@@ -259,7 +259,7 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | *0Yxx* | *Register address bank 1 (xx: address [00-B6])*                                         | *Register address bank 1*                                          | *Registe address bank 1*          |
 | *0Zxx* | *Regisetr value set (xx: value [00-FF])*                                                | *Register value set*                                               | *Register value set*              |
 | Axyy   | AR control (x[1-4]: operator, y[00-1F]: attack rate)                                    | -                                                                  | -                                 |
-| Dxyy   | AR control (x[1-4]: operator, y[00-1F]: decay rate)                                     | -                                                                  | -                                 |
+| Dxyy   | DR control (x[1-4]: operator, y[00-1F]: decay rate)                                     | -                                                                  | -                                 |
 | FBxx   | FB control (xx[00-07]: feedback value)                                                  | -                                                                  | -                                 |
 | Mxyy   | Volume delay (x[1-F]: count, yy[00-FF]: volume)                                         | Volume delay                                                       | Volume delay                      |
 | MLxy   | ML control (x[1-4]: operator, y[0-F]: multiple)                                         | -                                                                  | -                                 |

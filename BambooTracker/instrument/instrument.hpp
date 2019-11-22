@@ -2,12 +2,13 @@
 
 #include <string>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include "instruments_manager.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
 #include "command_sequence.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 class InstrumentsManager;
@@ -89,14 +90,14 @@ private:
 	int envNum_;
 	bool lfoEnabled_;
 	int lfoNum_;
-	std::map<FMEnvelopeParameter, bool> opSeqEnabled_;
-	std::map<FMEnvelopeParameter, int> opSeqNum_;
-	std::map<FMOperatorType, bool> arpEnabled_;
-	std::map<FMOperatorType, int> arpNum_;
-	std::map<FMOperatorType, bool> ptEnabled_;
-	std::map<FMOperatorType, int> ptNum_;
+	std::unordered_map<FMEnvelopeParameter, bool> opSeqEnabled_;
+	std::unordered_map<FMEnvelopeParameter, int> opSeqNum_;
+	std::unordered_map<FMOperatorType, bool> arpEnabled_;
+	std::unordered_map<FMOperatorType, int> arpNum_;
+	std::unordered_map<FMOperatorType, bool> ptEnabled_;
+	std::unordered_map<FMOperatorType, int> ptNum_;
 
-	std::map<FMOperatorType, bool> envResetEnabled_;
+	std::unordered_map<FMOperatorType, bool> envResetEnabled_;
 };
 
 

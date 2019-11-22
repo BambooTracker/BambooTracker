@@ -2,7 +2,7 @@
 
 EffectDescription::EffectDescription() {}
 
-const std::map<EffectType, EffectDescription::EffectDetail> EffectDescription::details_ = {
+const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDescription::details_ = {
 	{ EffectType::Arpeggio, { "00xy", tr("Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)") } },
 	{ EffectType::PortamentoUp, { "01xx", tr("Portamento up, xx: depth (00-FF)") } },
 	{ EffectType::PortamentoDown, { "02xx", tr("Portamento down, xx: depth (00-FF)") } },

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <nowide/fstream.hpp>
 #include <algorithm>
+#include <unordered_map>
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
@@ -43,6 +44,7 @@
 #include "midi/midi.hpp"
 #include "audio_stream_rtaudio.hpp"
 #include "color_palette_handler.hpp"
+#include "enum_hash.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -1345,7 +1347,7 @@ JamKey MainWindow::getJamKeyFromLayoutMapping(Qt::Key key) {
 	std::shared_ptr<Configuration> configLocked = config_.lock();
 	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
 	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-		std::map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+		std::unordered_map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
 		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
 							   [key](const std::pair<std::string, JamKey>& t) -> bool {
 			return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
