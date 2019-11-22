@@ -78,7 +78,7 @@ private:
 	void removeInstrument(int row);
 	void editInstrument();
 	int findRowFromInstrumentList(int instNum);
-	void editInstrumentName();
+	void renameInstrument();
 	void cloneInstrument();
 	void deepCloneInstrument();
 	void loadInstrument();
@@ -242,6 +242,7 @@ private slots:
 	void on_actionE_xpand_Effect_Column_triggered();
 	void on_actionS_hrink_Effect_Column_triggered();
 	void on_actionRemove_Duplicate_Instruments_triggered();
+	void on_actionRename_Instrument_triggered();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

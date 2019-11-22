@@ -10,6 +10,7 @@
 - Add color scheme settings
 - [#162] - Add order edit icons to the menu bar (thanks [@pedipanol])
 - [#150] - Add the optimizing option to remove duplicate instruments (thanks [@papiezak])
+- Add the icon of renaming instrument in the instrument list
 
 ### Changed
 - Change width of items in status bar

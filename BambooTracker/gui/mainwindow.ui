@@ -580,6 +580,8 @@
     <addaction name="actionImport_From_Bank_File"/>
     <addaction name="actionExport_To_Bank_File"/>
     <addaction name="separator"/>
+    <addaction name="actionRename_Instrument"/>
+    <addaction name="separator"/>
     <addaction name="actionEdit"/>
    </widget>
    <widget class="QMenu" name="menuTracker">
@@ -1268,6 +1270,9 @@
    </property>
   </action>
   <action name="actionExport_To_Bank_File">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>E&amp;xport To Bank File...</string>
    </property>
@@ -1291,6 +1296,18 @@
   <action name="actionRemove_Duplicate_Instruments">
    <property name="text">
     <string>Remove &amp;Duplicate Instruments</string>
+   </property>
+  </action>
+  <action name="actionRename_Instrument">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../bamboo_tracker.qrc">
+     <normaloff>:/icon/rename_inst</normaloff>:/icon/rename_inst</iconset>
+   </property>
+   <property name="text">
+    <string>Re&amp;name Instrument</string>
    </property>
   </action>
  </widget>

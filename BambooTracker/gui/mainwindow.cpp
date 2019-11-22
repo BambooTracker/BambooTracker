@@ -285,6 +285,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	instToolBar->addAction(ui->actionSave_To_File);
 	instToolBar->addSeparator();
 	instToolBar->addAction(ui->actionEdit);
+	instToolBar->addSeparator();
+	instToolBar->addAction(ui->actionRename_Instrument);
 	ui->instrumentListGroupBox->layout()->addWidget(instToolBar);
 	ui->instrumentListWidget->installEventFilter(this);
 
@@ -802,7 +804,7 @@ int MainWindow::findRowFromInstrumentList(int instNum)
 	return row;
 }
 
-void MainWindow::editInstrumentName()
+void MainWindow::renameInstrument()
 {
 	auto list = ui->instrumentListWidget;
 	auto item = list->currentItem();
@@ -1419,69 +1421,21 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QMenu menu;
 
 	// Leave Before Qt5.7.0 style due to windows xp
-	QAction* add = menu.addAction(tr("&Add"));
-	add->setIcon(QIcon(":/icon/add_inst"));
-	QObject::connect(add, &QAction::triggered, this, &MainWindow::addInstrument);
-	QAction* remove = menu.addAction(tr("&Remove"));
-	remove->setIcon(QIcon(":/icon/remove_inst"));
-	QObject::connect(remove, &QAction::triggered, this, [&]() {
-		removeInstrument(ui->instrumentListWidget->currentRow());
-	});
+	menu.addAction(ui->actionNew_Instrument);
+	menu.addAction(ui->actionRemove_Instrument);
 	menu.addSeparator();
-	QAction* name = menu.addAction(tr("Edit &name"));
-	QObject::connect(name, &QAction::triggered, this, &MainWindow::editInstrumentName);
+	menu.addAction(ui->actionRename_Instrument);
 	menu.addSeparator();
-	QAction* clone = menu.addAction(tr("&Clone"));
-	clone->setIcon(QIcon(":/icon/clone_inst"));
-	QObject::connect(clone, &QAction::triggered, this, &MainWindow::cloneInstrument);
-	QAction* dClone = menu.addAction(tr("&Deep clone"));
-	QObject::connect(dClone, &QAction::triggered, this, &MainWindow::deepCloneInstrument);
+	menu.addAction(ui->actionClone_Instrument);
+	menu.addAction(ui->actionDeep_Clone_Instrument);
 	menu.addSeparator();
-	QAction* ldFile = menu.addAction(tr("&Load from file..."));
-	ldFile->setIcon(QIcon(":/icon/load_inst"));
-	QObject::connect(ldFile, &QAction::triggered, this, &MainWindow::loadInstrument);
-	QAction* svFile = menu.addAction(tr("&Save to file..."));
-	svFile->setIcon(QIcon(":/icon/save_inst"));
-	QObject::connect(svFile, &QAction::triggered, this, &MainWindow::saveInstrument);
+	menu.addAction(ui->actionLoad_From_File);
+	menu.addAction(ui->actionSave_To_File);
 	menu.addSeparator();
-	QAction* ldBank = menu.addAction(tr("&Import from bank file..."));
-	QObject::connect(ldBank, &QAction::triggered, this, &MainWindow::importInstrumentsFromBank);
-	QAction* exBank = menu.addAction(tr("E&xport to bank file..."));
-	QObject::connect(exBank, &QAction::triggered, this, &MainWindow::exportInstrumentsToBank);
+	menu.addAction(ui->actionImport_From_Bank_File);
+	menu.addAction(ui->actionExport_To_Bank_File);
 	menu.addSeparator();
-	QAction* edit = menu.addAction(tr("&Edit..."));
-	edit->setIcon(QIcon(":/icon/edit_inst"));
-	QObject::connect(edit, &QAction::triggered, this, &MainWindow::editInstrument);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-	add->setShortcutVisibleInContextMenu(true);
-	remove->setShortcutVisibleInContextMenu(true);
-	edit->setShortcutVisibleInContextMenu(true);
-#endif
-	add->setShortcut(QKeySequence(Qt::Key_Insert));
-	remove->setShortcut(QKeySequence(Qt::Key_Delete));
-	edit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
-
-	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
-		add->setEnabled(false);
-		ldFile->setEnabled(false);
-	}
-	else {
-		switch (bt_->getCurrentTrackAttribute().source) {
-		case SoundSource::DRUM:	add->setEnabled(false);	break;
-		default:	break;
-		}
-	}
-	auto item = list->currentItem();
-	if (item == nullptr) {    // Not selected
-		remove->setEnabled(false);
-		name->setEnabled(false);
-		svFile->setEnabled(false);
-		edit->setEnabled(false);
-	}
-	if (item == nullptr || bt_->findFirstFreeInstrumentNumber() == -1) {
-		clone->setEnabled(false);
-		dClone->setEnabled(false);
-	}
+	menu.addAction(ui->actionEdit);
 
 	menu.exec(globalPos);
 }
@@ -1623,11 +1577,24 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 	else statusInst_->setText(
 				tr("Instrument: ") + QString("%1").arg(num, 2, 16, QChar('0')).toUpper());
 
+	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
+		ui->actionNew_Instrument->setEnabled(false);
+		ui->actionLoad_From_File->setEnabled(false);
+		ui->actionImport_From_Bank_File->setEnabled(false);
+	}
+	else {
+		switch (bt_->getCurrentTrackAttribute().source) {
+		case SoundSource::DRUM:	ui->actionNew_Instrument->setEnabled(false);	break;
+		default:	break;
+		}
+	}
 	bool isEnabled = (num != -1);
 	ui->actionRemove_Instrument->setEnabled(isEnabled);
 	ui->actionClone_Instrument->setEnabled(isEnabled);
 	ui->actionDeep_Clone_Instrument->setEnabled(isEnabled);
 	ui->actionSave_To_File->setEnabled(isEnabled);
+	ui->actionExport_To_Bank_File->setEnabled(isEnabled);
+	ui->actionRename_Instrument->setEnabled(isEnabled);
 	ui->actionEdit->setEnabled(isEnabled);
 }
 
@@ -2558,4 +2525,9 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 		ui->patternEditor->onDuplicateInstrumentsRemoved();
 		setModifiedTrue();
 	}
+}
+
+void MainWindow::on_actionRename_Instrument_triggered()
+{
+	renameInstrument();
 }

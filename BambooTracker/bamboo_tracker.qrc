@@ -28,6 +28,7 @@
         <file alias="duplicate_order">res/icon/iconfinder_asterisk_yellow_5001.png</file>
         <file alias="insert_order">res/icon/iconfinder_page_add_5548.png</file>
         <file alias="remove_order">res/icon/iconfinder_page_delete_5552.png</file>
+        <file alias="rename_inst">res/icon/iconfinder_textfield_rename_5877.png</file>
     </qresource>
     <qresource prefix="/doc">
         <file alias="shortcuts">res/doc/keyboard_shortcuts.html</file>
