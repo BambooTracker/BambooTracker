@@ -65,6 +65,8 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 		   static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::ARControl,
 		   static_cast<int>(SoundSource::FM));
+	addRow(EffectType::Brightness,
+		   static_cast<int>(SoundSource::FM));
 	addRow(EffectType::DRControl,
 		   static_cast<int>(SoundSource::FM));
 	addRow(EffectType::FBControl,
