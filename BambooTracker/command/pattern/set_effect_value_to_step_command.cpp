@@ -2,7 +2,7 @@
 
 SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
 														 int orderNum, int stepNum, int n, int value,
-														 bool isFMReversed, bool secondEntry)
+														 EffectDisplayControl ctrl, bool secondEntry)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
@@ -10,7 +10,7 @@ SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> m
 	  step_(stepNum),
 	  n_(n),
 	  val_(value),
-	  isFMReserved_(isFMReversed),
+	  ctrl_(ctrl),
 	  isSecond_(secondEntry)
 {
 	prevVal_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
@@ -19,7 +19,18 @@ SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> m
 
 void SetEffectValueToStepCommand::redo()
 {
-	int value = (isFMReserved_ && val_ < 0x80) ? (0x7f - val_) : val_;	// For effect Mxyy of FM
+	int value;
+	switch (ctrl_) {
+	case EffectDisplayControl::Unset:
+		value = val_;
+		break;
+	case EffectDisplayControl::ReverseFMVolumeDelay:
+		value = (val_ < 0x80) ? (0x7f - val_) : val_;
+		break;
+	case EffectDisplayControl::ReverseFMBrightness:
+		value = (val_ > 0) ? (0xff - val_ + 1) : val_;
+		break;
+	}
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
 			.getStep(step_).setEffectValue(n_, value);
 }

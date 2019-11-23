@@ -303,7 +303,7 @@ public:
 	std::string getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
 	void setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry);
 	int getStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
-	void setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, bool isFMReversed, bool secondEntry);
+	void setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, EffectDisplayControl ctrl, bool secondEntry);
 	void eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n);
 	void eraseStepEffectValue(int songNum, int trackNum, int orderNum, int stepNum, int n);
 	void deletePreviousStep(int songNum, int trackNum, int orderNum, int stepNum);

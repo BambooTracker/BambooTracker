@@ -401,8 +401,9 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 											   inst->getEnvelopeParameter(FMEnvelopeParameter::FB));
 		}
 		for (int op = 0; op < 4; ++op) {
-			if (isTLCtrlFM_[inch][op]) {
+			if (isTLCtrlFM_[inch][op] || isBrightFM_[inch][op]) {
 				isTLCtrlFM_[inch][op] = false;
+				isBrightFM_[inch][op] = false;
 				FMEnvelopeParameter tl = getParameterTL(op);
 				writeFMEnveropeParameterToRegister(inch, tl, inst->getEnvelopeParameter(tl));
 			}
@@ -436,10 +437,22 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 			opSeqItFM_[inch].at(p) = refInstFM_[inch]->getOperatorSequenceSequenceIterator(p);
 			switch (p) {
 			case FMEnvelopeParameter::FB:	isFBCtrlFM_[inch] = false;		break;
-			case FMEnvelopeParameter::TL1:	isTLCtrlFM_[inch][0] = false;	break;
-			case FMEnvelopeParameter::TL2:	isTLCtrlFM_[inch][1] = false;	break;
-			case FMEnvelopeParameter::TL3:	isTLCtrlFM_[inch][2] = false;	break;
-			case FMEnvelopeParameter::TL4:	isTLCtrlFM_[inch][3] = false;	break;
+			case FMEnvelopeParameter::TL1:
+				isTLCtrlFM_[inch][0] = false;
+				isBrightFM_[inch][0] = false;
+				break;
+			case FMEnvelopeParameter::TL2:
+				isTLCtrlFM_[inch][1] = false;
+				isBrightFM_[inch][1] = false;
+				break;
+			case FMEnvelopeParameter::TL3:
+				isTLCtrlFM_[inch][2] = false;
+				isBrightFM_[inch][2] = false;
+				break;
+			case FMEnvelopeParameter::TL4:
+				isTLCtrlFM_[inch][3] = false;
+				isBrightFM_[inch][3] = false;
+				break;
 			case FMEnvelopeParameter::ML1:	isMLCtrlFM_[inch][0] = false;	break;
 			case FMEnvelopeParameter::ML2:	isMLCtrlFM_[inch][1] = false;	break;
 			case FMEnvelopeParameter::ML3:	isMLCtrlFM_[inch][2] = false;	break;
@@ -752,6 +765,21 @@ void OPNAController::setRRControlFM(int ch, int op, int value)
 	opSeqItFM_[inch].at(param).reset();
 }
 
+void OPNAController::setBrightnessFM(int ch, int value)
+{
+	int inch = toInternalFMChannel(ch);
+	std::vector<int> ops = getOperatorsInLevel(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL));
+	for (auto& op : ops) {
+		FMEnvelopeParameter param = getParameterTL(op);
+		int v = envFM_[inch]->getParameterValue(param) + value;
+		if (v < 0) v = 0;
+		else if (v > 127) v = 127;
+		writeFMEnveropeParameterToRegister(inch, param, v);
+		isBrightFM_[inch][op] = true;
+		opSeqItFM_[inch].at(param).reset();
+	}
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesFM(int ch)
 {
@@ -869,6 +897,7 @@ void OPNAController::initFM()
 			isARCtrlFM_[inch][op] = false;
 			isDRCtrlFM_[inch][op] = false;
 			isRRCtrlFM_[inch][op] = false;
+			isBrightFM_[inch][op] = false;
 		}
 	}
 
@@ -1932,7 +1961,84 @@ bool OPNAController::isCareer(int op, int al)
 	case 3:
 		return true;
 	default:
-		return false;
+		throw std::invalid_argument("Invalid operator.");
+	}
+}
+
+std::vector<int> OPNAController::getOperatorsInLevel(int level, int al)
+{
+	switch (level) {
+	case 0:
+		switch (al) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			return { 3 };
+		case 4:
+			return { 1, 3 };
+		case 5:
+		case 6:
+			return { 1, 2, 3 };
+		case 7:
+			return { 0, 1, 2, 4 };
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	case 1:
+		switch (al) {
+		case 0:
+		case 1:
+			return { 2 };
+		case 2:
+			return { 0, 2 };
+		case 3:
+			return { 1, 2 };
+		case 4:
+			return { 0, 2 };
+		case 5:
+		case 6:
+			return { 0 };
+		case 7:
+			return {};
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	case 2:
+		switch (al) {
+		case 0:
+			return { 1 };
+		case 1:
+			return { 0, 1 };
+		case 2:
+			return { 1 };
+		case 3:
+			return { 0 };
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			return {};
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	case 3:
+		switch (al) {
+		case 0:
+			return { 1 };
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			return {};
+		default:
+			throw std::invalid_argument("Invalid algorithm.");
+		}
+	default:
+		throw std::invalid_argument("Invalid operator level.");
 	}
 }
 

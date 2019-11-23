@@ -788,9 +788,23 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			}
 			else {
 				textPainter.setPen(palette_->ptnEffColor);
+				switch (Effect::toEffectType(src, effId)) {
+				case EffectType::VolumeDelay:
+					if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder() && effVal < 0x80)
+						effVal = 0x7f - effVal;
+					break;
+				case EffectType::Brightness:
+					if (config_.lock()->getReverseFMVolumeOrder() && effVal > 0)
+						effVal = 0xff - effVal + 1;
+					break;
+				default:
+					break;
+				}
 				if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder()
-						&& Effect::toEffectType(SoundSource::FM, effId) == EffectType::VolumeDelay)
-					effVal = 0x7f - effVal;
+						&& Effect::toEffectType(SoundSource::FM, effId) == EffectType::VolumeDelay) {
+
+
+				}
 				textPainter.drawText(offset, baseY, QString("%1").arg(effVal, 2, 16, QChar('0')).toUpper());
 			}
 		}
@@ -1459,13 +1473,22 @@ bool PatternEditorPanel::enterEffectValue(int key)
 void PatternEditorPanel::setStepEffectValue(int value)
 {
 	int n = (curPos_.colInTrack - 4) / 2;
-	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source == SoundSource::FM
-					  && config_.lock()->getReverseFMVolumeOrder()
-					  && Effect::toEffectType(
-						  SoundSource::FM,
-						  bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n))
-					  == EffectType::VolumeDelay);
-	bt_->setStepEffectValueDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n, value, isReversed, (entryCnt_ == 1));
+	EffectDisplayControl ctrl = EffectDisplayControl::Unset;
+	SoundSource src = songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source;
+	switch (Effect::toEffectType(
+				src,
+				bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n))) {
+	case EffectType::VolumeDelay:
+		if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder())
+			ctrl = EffectDisplayControl::ReverseFMVolumeDelay;
+		break;
+	case EffectType::Brightness:
+		if (config_.lock()->getReverseFMVolumeOrder()) ctrl = EffectDisplayControl::ReverseFMBrightness;
+		break;
+	default:
+		break;
+	}
+	bt_->setStepEffectValueDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n, value, ctrl, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount()) {

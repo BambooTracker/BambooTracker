@@ -1776,9 +1776,9 @@ int BambooTracker::getStepEffectValue(int songNum, int trackNum, int orderNum, i
 			.getStep(stepNum).getEffectValue(n);
 }
 
-void BambooTracker::setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, bool isFMReversed, bool secondEntry)
+void BambooTracker::setStepEffectValueDigit(int songNum, int trackNum, int orderNum, int stepNum, int n, int value, EffectDisplayControl ctrl, bool secondEntry)
 {
-	comMan_.invoke(std::make_unique<SetEffectValueToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, value, isFMReversed, secondEntry));
+	comMan_.invoke(std::make_unique<SetEffectValueToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, n, value, ctrl, secondEntry));
 }
 
 void BambooTracker::eraseStepEffect(int songNum, int trackNum, int orderNum, int stepNum, int n)

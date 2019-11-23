@@ -64,6 +64,11 @@ enum class SSGWaveFormType : int
 	SQM_INVSAW = 6
 };
 
+enum class EffectDisplayControl
+{
+	Unset, ReverseFMVolumeDelay, ReverseFMBrightness
+};
+
 DECL_MAYBE_UNUSED
 static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
 {

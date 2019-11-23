@@ -3,12 +3,14 @@
 #include "abstract_command.hpp"
 #include <memory>
 #include "module.hpp"
+#include "misc.hpp"
 
 class SetEffectValueToStepCommand : public AbstractCommand
 {
 public:
 	SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
-								int orderNum, int stepNum, int n, int value, bool isFMReversed, bool secondEntry);
+								int orderNum, int stepNum, int n, int value,
+								EffectDisplayControl ctrl, bool secondEntry);
 	void redo() override;
 	void undo() override;
 	CommandId getID() const override;
@@ -26,6 +28,6 @@ private:
 	std::weak_ptr<Module> mod_;
 	int song_, track_, order_, step_, n_;
 	int val_, prevVal_;
-	bool isFMReserved_;
+	EffectDisplayControl ctrl_;
 	bool isSecond_;
 };

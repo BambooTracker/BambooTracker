@@ -182,6 +182,14 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 	else if (id == "0Z") {
 		return EffectType::RegisterValue;
 	}
+	else if (id == "B0") {
+		switch (src) {
+		case SoundSource::FM:
+			return EffectType::Brightness;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else if (id == "FB") {
 		switch (src) {
 		case SoundSource::FM:

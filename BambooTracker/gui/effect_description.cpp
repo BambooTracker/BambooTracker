@@ -32,6 +32,7 @@ const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDesc
 	{ EffectType::RegisterAddress1, { "0Yxx", tr("Register address bank 1, xx: address (00-6B)") } },
 	{ EffectType::RegisterValue, { "0Zxx", tr("Register value set, xx: value (00-FF)") } },
 	{ EffectType::ARControl, { "Axyy", tr("AR control, x: operator (1-4), yy: attack rate (00-1F)") } },
+	{ EffectType::Brightness, { "B0xx", tr("Brightness, xx: relavtive value (01-FF)") } },
 	{ EffectType::DRControl, { "Dxyy", tr("DR control, x: operator (1-4), yy: decay rate (00-1F)") } },
 	{ EffectType::FBControl, { "FBxx", tr("FB control, xx: feedback value (00-07)") } },
 	{ EffectType::MLControl, { "MLxy", tr("ML control, x: operator (1-4), y: multiple (0-F)") } },

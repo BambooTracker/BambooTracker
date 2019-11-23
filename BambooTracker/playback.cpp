@@ -577,6 +577,7 @@ bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
+	case EffectType::Brightness:
 		keyOnBasedEffsFM_.at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
@@ -726,6 +727,11 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 			case EffectType::RegisterValue:
 			{
 				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
+				break;
+			}
+			case EffectType::Brightness:
+			{
+				if (0 < eff.second) opnaCtrl_->setBrightnessFM(ch, eff.second - 0x80);
 				break;
 			}
 			default:
@@ -1271,6 +1277,7 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
 	std::vector<bool> isSetFBCtrlFM(fmch, false), isSetTLCtrlFM(fmch, false), isSetMLCtrlFM(fmch, false);
 	std::vector<bool> isSetARCtrlFM(fmch, false), isSetDRCtrlFM(fmch, false), isSetRRCtrlFM(fmch, false);
+	std::vector<bool> isSetBrightFM(fmch, false);
 	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
 	std::vector<bool> isSetTNMixSSG(3, false);
@@ -1456,6 +1463,14 @@ void PlaybackManager::retrieveChannelStates()
 								int val = eff.value & 0x0f;
 								if (0 < op && op < 5 && -1 < val && val < 16)
 									opnaCtrl_->setRRControlFM(ch, op - 1, val);
+							}
+						}
+						break;
+					case EffectType::Brightness:
+						if (!isSetBrightFM[uch]) {
+							isSetBrightFM[uch] = true;
+							if (isPrevPos) {
+								if (0 < eff.value) opnaCtrl_->setBrightnessFM(ch, eff.value - 0x80);
 							}
 						}
 						break;

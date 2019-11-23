@@ -19,6 +19,25 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	ui->groupBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Init sliders
+	ui->arSlider->setText("AR");
+	ui->arSlider->setMaximum(31);
+	ui->drSlider->setText("DR");
+	ui->drSlider->setMaximum(31);
+	ui->srSlider->setText("SR");
+	ui->srSlider->setMaximum(31);
+	ui->rrSlider->setText("RR");
+	ui->rrSlider->setMaximum(15);
+	ui->slSlider->setText("SL");
+	ui->slSlider->setMaximum(15);
+	ui->tlSlider->setText("TL");
+	ui->tlSlider->setMaximum(127);
+	ui->ksSlider->setText("KS");
+	ui->ksSlider->setMaximum(3);
+	ui->mlSlider->setText("ML");
+	ui->mlSlider->setMaximum(15);
+	ui->dtSlider->setText("DT");
+	ui->dtSlider->setMaximum(7);
+
 	sliderMap_ = {
 		{ Ui::FMOperatorParameter::AR, ui->arSlider },
 		{ Ui::FMOperatorParameter::DR, ui->drSlider },
@@ -31,13 +50,8 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		{ Ui::FMOperatorParameter::DT, ui->dtSlider }
 	};
 
-	QString name[] = { "AR", "DR", "SR", "RR", "SL", "TL", "KS", "ML", "DT"};
-	int maxValue[] = { 31, 31, 31, 15, 15, 127, 3, 15, 7};
-
 	int n = 0;
 	for (auto& pair : sliderMap_) {
-		pair.second->setText(name[n]);
-		pair.second->setMaximum(maxValue[n]);
 		if (pair.second == ui->dtSlider) {
 			QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
 							 this, [&](int value) {
@@ -60,7 +74,6 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 				if (!isIgnoreEvent_) emit operatorValueChanged(pair.first, value);
 			});
 		}
-		++n;
 	}
 
 	ui->ssgegSlider->setEnabled(false);

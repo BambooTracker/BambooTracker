@@ -130,6 +130,7 @@ public:
 	void setARControlFM(int ch, int op, int value);
 	void setDRControlFM(int ch, int op, int value);
 	void setRRControlFM(int ch, int op, int value);
+	void setBrightnessFM(int ch, int value);
 
 	// For state retrieve
 	void haltSequencesFM(int ch);
@@ -178,6 +179,7 @@ private:
 	int transposeFM_[9];
 	bool isFBCtrlFM_[6], isTLCtrlFM_[6][4], isMLCtrlFM_[6][4], isARCtrlFM_[6][4];
 	bool isDRCtrlFM_[6][4], isRRCtrlFM_[6][4];
+	bool isBrightFM_[6][4];
 
 	void initFM();
 
@@ -209,7 +211,8 @@ private:
 
 	void setInstrumentFMProperties(int ch);
 
-	bool isCareer(int op, int al);
+	static bool isCareer(int op, int al);
+	static std::vector<int> getOperatorsInLevel(int level, int al);
 
 	inline FMEnvelopeParameter getParameterTL(int op) const
 	{
