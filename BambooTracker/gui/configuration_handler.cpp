@@ -239,7 +239,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(
 											 settings.value("noteEntryLayout",
 															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));
-		std::unordered_map<std::string, JamKey> customLayoutNewKeys = {};
+		std::unordered_map<std::string, JamKey> customLayoutNewKeys;
 		const std::unordered_map<std::string, JamKey> nameToKeyMapping = {
 			{"lowC",       JamKey::LowC},
 			{"lowCS",      JamKey::LowCS},

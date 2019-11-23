@@ -577,36 +577,26 @@ bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-	{
-		auto& map = keyOnBasedEffsFM_.at(static_cast<size_t>(ch));
-		if (map.count(eff.type)) map[eff.type] = eff.value;
-		else map.emplace(eff.type, eff.value);
-		break;
-	}
+		keyOnBasedEffsFM_.at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
-		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
-		else stepBeginBasedEffsGlobal_.emplace(eff.type, eff.value);
-		break;
+		stepBeginBasedEffsGlobal_[eff.type] = eff.value;
+		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			auto& map = stepBeginBasedEffsFM_.at(static_cast<size_t>(ch));
-			if (map.count(EffectType::NoteDelay)) map[EffectType::NoteDelay] = eff.value;
-			else map.emplace(eff.type, eff.value);
+			stepBeginBasedEffsFM_.at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
-		if (stepEndBasedEffsGlobal_.count(eff.type)) stepEndBasedEffsGlobal_[eff.type] = eff.value;
-		else stepEndBasedEffsGlobal_.emplace(eff.type, eff.value);
-		break;
+		stepEndBasedEffsGlobal_[eff.type] = eff.value;
+		return false;
 	default:
-		break;
+		return false;
 	}
-
-	return false;
 }
 
 void PlaybackManager::executeStoredEffectsFM(int ch)
@@ -770,36 +760,26 @@ bool PlaybackManager::storeEffectToMapSSG(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-	{
-		auto& map = keyOnBasedEffsSSG_.at(static_cast<size_t>(ch));
-		if (map.count(eff.type)) map[eff.type] = eff.value;
-		else map.emplace(eff.type, eff.value);
-		break;
-	}
+		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
-		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
-		else stepBeginBasedEffsGlobal_.emplace(eff.type, eff.value);
-		break;
+		stepBeginBasedEffsGlobal_[eff.type] = eff.value;
+		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			auto& map = stepBeginBasedEffsSSG_.at(static_cast<size_t>(ch));
-			if (map.count(EffectType::NoteDelay)) map[EffectType::NoteDelay] = eff.value;
-			else map.emplace(eff.type, eff.value);
+			stepBeginBasedEffsSSG_.at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
-		if (stepEndBasedEffsGlobal_.count(eff.type)) stepEndBasedEffsGlobal_[eff.type] = eff.value;
-		else stepEndBasedEffsGlobal_.emplace(eff.type, eff.value);
-		break;
+		stepEndBasedEffsGlobal_[eff.type] = eff.value;
+		return false;
 	default:
-		break;
+		return false;
 	}
-
-	return false;
 }
 
 void PlaybackManager::executeStoredEffectsSSG(int ch)
@@ -923,36 +903,26 @@ bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-	{
-		auto& map = keyOnBasedEffsDrum_.at(static_cast<size_t>(ch));
-		if (map.count(eff.type)) map[eff.type] = eff.value;
-		else map.emplace(eff.type, eff.value);
-		break;
-	}
+		keyOnBasedEffsDrum_.at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
-		if (stepBeginBasedEffsGlobal_.count(eff.type)) stepBeginBasedEffsGlobal_[eff.type] = eff.value;
-		else stepBeginBasedEffsGlobal_.emplace(eff.type, eff.value);
-		break;
+		stepBeginBasedEffsGlobal_[eff.type] = eff.value;
+		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			auto& map = stepBeginBasedEffsDrum_.at(static_cast<size_t>(ch));
-			if (map.count(EffectType::NoteDelay)) map[EffectType::NoteDelay] = eff.value;
-			else map.emplace(eff.type, eff.value);
+			stepBeginBasedEffsDrum_.at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
 	case EffectType::PositionJump:
 	case EffectType::SongEnd:
 	case EffectType::PatternBreak:
-		if (stepEndBasedEffsGlobal_.count(eff.type)) stepEndBasedEffsGlobal_[eff.type] = eff.value;
-		else stepEndBasedEffsGlobal_.emplace(eff.type, eff.value);
-		break;
+		stepEndBasedEffsGlobal_[eff.type] = eff.value;
+		return false;
 	default:
-		break;
+		return false;
 	}
-
-	return false;
 }
 
 void PlaybackManager::executeStoredEffectsDrum(int ch)

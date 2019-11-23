@@ -249,7 +249,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
 	configLocked->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
 	configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
-	std::unordered_map<std::string, JamKey> customLayoutNewKeys = {};
+	std::unordered_map<std::string, JamKey> customLayoutNewKeys;
 	std::unordered_map<JamKey, QKeySequenceEdit *>::const_iterator customLayoutKeysMapIterator = customLayoutKeysMap.begin();
 	while (customLayoutKeysMapIterator != customLayoutKeysMap.end()) {
 		customLayoutNewKeys[customLayoutKeysMapIterator->second->keySequence().toString().toStdString()] = customLayoutKeysMapIterator->first;

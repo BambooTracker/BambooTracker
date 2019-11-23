@@ -163,8 +163,7 @@ std::vector<int> BambooTracker::getUnusedInstrumentIndices() const
 	std::vector<int> unused;
 	std::unordered_set<int> regdInsts = mod_->getRegisterdInstruments();
 	for (auto& inst : instMan_->getInstrumentIndices()) {
-		if (regdInsts.find(inst) == regdInsts.end())
-			unused.push_back(inst);
+		if (!regdInsts.count(inst)) unused.push_back(inst);
 	}
 	return unused;
 }
