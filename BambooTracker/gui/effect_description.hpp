@@ -21,9 +21,10 @@ private:
 
 	struct EffectDetail
 	{
-		const QString format, desc;
+		const QString format;
+		const char* desc;
 
-		QString mergedString() const { return format + " - " + desc; }
+		QString mergedString() const { return format + " - " + tr(desc); }
 	};
 
 	static const std::unordered_map<EffectType, EffectDetail> details_;
