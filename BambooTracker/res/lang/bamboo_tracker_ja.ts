@@ -30,7 +30,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="312"/>
         <source>API</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="325"/>
@@ -49,188 +49,188 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="420"/>
         <source>The level setting for each part is valid when the mixer in the module properties is not checked.</source>
-        <translation type="unfinished"></translation>
+        <translation>各パートの音量レベル設定はモジュールプロパティのミキサーがチェックされていない時のみ有効になります。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="446"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>外観</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="452"/>
         <source>Font and size</source>
-        <translation type="unfinished"></translation>
+        <translation>フォントとサイズ</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="470"/>
         <source>Order list rows</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーリスト行</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="477"/>
         <source>Pattern editor rows</source>
-        <translation type="unfinished"></translation>
+        <translation>パターンエディター行</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="484"/>
         <source>Pattern editor header</source>
-        <translation type="unfinished"></translation>
+        <translation>パターンエディターヘッダー</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="491"/>
         <source>Order list header</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーリストヘッダー</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="701"/>
         <source>Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>カラースキーム</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="734"/>
         <source>Item</source>
-        <translation type="unfinished"></translation>
+        <translation>アイテム</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="739"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>色</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="744"/>
         <source>Pattern editor</source>
-        <translation type="unfinished"></translation>
+        <translation>パターンエディター</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="748"/>
         <source>Default step text</source>
-        <translation type="unfinished"></translation>
+        <translation>デフォルトステップテキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="753"/>
         <source>Default step background</source>
-        <translation type="unfinished"></translation>
+        <translation>デフォルトステップ背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="758"/>
         <source>Highlighted step 1 background</source>
-        <translation type="unfinished"></translation>
+        <translation>ハイライトステップ1背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="763"/>
         <source>Highlighted step 2 background</source>
-        <translation type="unfinished"></translation>
+        <translation>ハイライトステップ2背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="768"/>
         <source>Current step text</source>
-        <translation type="unfinished"></translation>
+        <translation>現在のステップテキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="773"/>
         <source>Current step background</source>
-        <translation type="unfinished"></translation>
+        <translation>現在のステップ</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="778"/>
         <source>Current editing step background</source>
-        <translation type="unfinished"></translation>
+        <translation>現在編集中のステップ背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="783"/>
         <location filename="../../gui/configuration_dialog.ui" line="908"/>
         <source>Current cell background</source>
-        <translation type="unfinished"></translation>
+        <translation>現在のセル背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="788"/>
         <source>Current playing step background</source>
-        <translation type="unfinished"></translation>
+        <translation>現在再生中のステップ背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="793"/>
         <location filename="../../gui/configuration_dialog.ui" line="918"/>
         <source>Selection background</source>
-        <translation type="unfinished"></translation>
+        <translation>選択領域背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="798"/>
         <location filename="../../gui/configuration_dialog.ui" line="923"/>
         <source>Hovered cell background</source>
-        <translation type="unfinished"></translation>
+        <translation>マウスカーソルのセル背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="803"/>
         <source>Default step number</source>
-        <translation type="unfinished"></translation>
+        <translation>デフォルトステップ番号</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="808"/>
         <source>Highlighted step 1 number</source>
-        <translation type="unfinished"></translation>
+        <translation>ハイライトステップ1番号</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="813"/>
         <source>Highlighted step 2 number</source>
-        <translation type="unfinished"></translation>
+        <translation>ハイライトステップ2番号</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="818"/>
         <source>Note text</source>
-        <translation type="unfinished"></translation>
+        <translation>音符テキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="823"/>
         <source>Instrument text</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメントテキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="828"/>
         <source>Volume text</source>
-        <translation type="unfinished"></translation>
+        <translation>音量テキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="833"/>
         <source>Effect text</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクトテキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="838"/>
         <source>Error text</source>
-        <translation type="unfinished"></translation>
+        <translation>エラーテキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="843"/>
         <location filename="../../gui/configuration_dialog.ui" line="933"/>
         <source>Header text</source>
-        <translation type="unfinished"></translation>
+        <translation>ヘッダーテキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="848"/>
         <location filename="../../gui/configuration_dialog.ui" line="938"/>
         <source>Header background</source>
-        <translation type="unfinished"></translation>
+        <translation>ヘッダー背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="853"/>
         <source>Mask</source>
-        <translation type="unfinished"></translation>
+        <translation>マスク</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="858"/>
         <location filename="../../gui/configuration_dialog.ui" line="943"/>
         <source>Border</source>
-        <translation type="unfinished"></translation>
+        <translation>境界線</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="863"/>
         <source>Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>ミュート状態</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="868"/>
         <source>Unmute</source>
-        <translation type="unfinished"></translation>
+        <translation>ミュート解除状態</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="873"/>
@@ -238,92 +238,92 @@
         <location filename="../../gui/configuration_dialog.ui" line="963"/>
         <location filename="../../gui/configuration_dialog.ui" line="988"/>
         <source>Background</source>
-        <translation type="unfinished"></translation>
+        <translation>背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="879"/>
         <source>Order list</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーリスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="883"/>
         <source>Default row text</source>
-        <translation type="unfinished"></translation>
+        <translation>デフォルト行テキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="888"/>
         <source>Default row background</source>
-        <translation type="unfinished"></translation>
+        <translation>デフォルト行背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="893"/>
         <source>Current row text</source>
-        <translation type="unfinished"></translation>
+        <translation>現在の行テキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="898"/>
         <source>Current row background</source>
-        <translation type="unfinished"></translation>
+        <translation>現在の行背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="903"/>
         <source>Current editing row background</source>
-        <translation type="unfinished"></translation>
+        <translation>現在編集中の行背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="913"/>
         <source>Current playing row background</source>
-        <translation type="unfinished"></translation>
+        <translation>現在再生中の行背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="928"/>
         <source>Row number</source>
-        <translation type="unfinished"></translation>
+        <translation>行番号</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="954"/>
         <source>Instrument list</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメントリスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="958"/>
         <source>Default text</source>
-        <translation type="unfinished"></translation>
+        <translation>デフォルトテキスト</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="968"/>
         <source>Selected background</source>
-        <translation type="unfinished"></translation>
+        <translation>選択背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="973"/>
         <source>Hovered background</source>
-        <translation type="unfinished"></translation>
+        <translation>マウスカーソル背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="978"/>
         <source>Selected hovered background</source>
-        <translation type="unfinished"></translation>
+        <translation>マウスカーソル選択背景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="984"/>
         <source>Oscilloscope</source>
-        <translation type="unfinished"></translation>
+        <translation>オシロスコープ</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="993"/>
         <source>Foreground</source>
-        <translation type="unfinished"></translation>
+        <translation>前景</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1002"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>保存</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1009"/>
         <source>Load</source>
-        <translation type="unfinished"></translation>
+        <translation>読み込み</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1020"/>
@@ -547,7 +547,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="164"/>
         <source>Autoset instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメント自動入力</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="181"/>
@@ -716,7 +716,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="405"/>
         <source>Set current instrument upon entering note.</source>
-        <translation type="unfinished"></translation>
+        <translation>音符入力時に現在のインストゥルメントを自動で入力します。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="411"/>
@@ -726,34 +726,34 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="547"/>
         <source>Open color scheme</source>
-        <translation type="unfinished"></translation>
+        <translation>カラースキームの読み込み</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="549"/>
         <location filename="../../gui/configuration_dialog.cpp" line="564"/>
         <source>ini file (*.ini)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="556"/>
         <location filename="../../gui/configuration_dialog.cpp" line="569"/>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="556"/>
         <source>An unknown error occurred while loading the color scheme.</source>
-        <translation type="unfinished"></translation>
+        <translation>カラースキームの読み込み中に不明なエラーが発生しました。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="562"/>
         <source>Save color scheme</source>
-        <translation type="unfinished"></translation>
+        <translation>カラースキームの保存</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="569"/>
         <source>Failed to save the color scheme.</source>
-        <translation type="unfinished"></translation>
+        <translation>カラースキームの保存に失敗しました。</translation>
     </message>
 </context>
 <context>
@@ -761,187 +761,187 @@
     <message>
         <location filename="../../gui/effect_description.cpp" line="6"/>
         <source>Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>アルペジオ, x: 第2音(0-F), y: 第3音(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="7"/>
         <source>Portamento up, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ポルタメント・アップ, xx: デプス(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="8"/>
         <source>Portamento down, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ポルタメント・ダウン, xx: デプス(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="9"/>
         <source>Tone portamento, xx: depth (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>トーン・ポルタメント, xx: デプス(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="10"/>
         <source>Vibrato, x: period (0-F), y: depth (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>ビブラート, x: ピリオド(0-F), y: デプス(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="11"/>
         <source>Tremolo, x: period (0-F), y: depth (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>トレモロ, x: ピリオド(0-F), y: デプス(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="12"/>
         <source>Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
-        <translation type="unfinished"></translation>
+        <translation>パン, xx: 00 = 無音, 01 = 右, 02 = 左, 03 = 中央</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="13"/>
         <source>Volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>ボリューム・スライド, x: アップ(0-F), y: ダウン(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="14"/>
         <source>Jump to beginning of order xx</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーxxの先頭へジャンプ</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="15"/>
         <source>End of song</source>
-        <translation type="unfinished"></translation>
+        <translation>ソングの停止</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="16"/>
         <source>Jump to step xx of next order</source>
-        <translation type="unfinished"></translation>
+        <translation>次のオーダーのステップxxへジャンプ</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="17"/>
         <source>Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>スピード変更(xx: 00-1F), テンポ変更(xx: 20-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="18"/>
         <source>Note delay, xx: count (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ノート・ディレイ, xx: カウント(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="19"/>
         <source>Auto envelope, x: shift amount (0-F), y: shape (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>オートエンベロープ, x: シフト量(x-8), y: エンベロープ形状(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="20"/>
         <source>Hardware envelope period 1, xx: high byte (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアエンベロープ周期1, xx: 上位バイト(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="21"/>
         <source>Hardware envelope period 2, xx: low byte (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアエンベロープ周期2, xx: 下位バイト(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="22"/>
         <source>Set groove xx</source>
-        <translation type="unfinished"></translation>
+        <translation>グルーブをxxに設定</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="23"/>
         <source>Detune, xx: pitch (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>デチューン, xx: ピッチ(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="24"/>
         <source>Note slide up, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>ノート・スライドアップ, x: カウント(0-F), y: 半音数(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="25"/>
         <source>Note slide down, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>ノート・スライドダウン, x: カウント(0-F), y: 半音数(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="26"/>
         <source>Note cut, xx: count (01-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ノート・カット, xx: カウント(01-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="27"/>
         <source>Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>トランスポーズ・ディレイ, x: カウント(1-7: アップ, 9-F: ダウン), y: 半音数(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="28"/>
         <source>Tone/Noise mix, xx: 00 = no sound, 01 = tone, 02 = noise, 03 = tone &amp; noise</source>
-        <translation type="unfinished"></translation>
+        <translation>トーン/ノイズ・ミックス, xx: 00=消音, 01=トーン, 02=ノイズ, 03=トーン &amp; ノイズ</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="29"/>
         <source>Master volume, xx: volume (00-3F)</source>
-        <translation type="unfinished"></translation>
+        <translation>マスターボリューム, xx: 音量(00-3F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="30"/>
         <source>Noise pitch, xx: pitch (00-1F)</source>
-        <translation type="unfinished"></translation>
+        <translation>ノイズ・ピッチ, xx: ピッチ(00-1F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="31"/>
         <source>Register address bank 0, xx: address (00-6B)</source>
-        <translation type="unfinished"></translation>
+        <translation>レジスタ番地指定 バンク0, xx: 番地(00-B6)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="32"/>
         <source>Register address bank 1, xx: address (00-6B)</source>
-        <translation type="unfinished"></translation>
+        <translation>レジスタ番地指定 バンク1, xx: 番地(00-B6)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="33"/>
         <source>Register value set, xx: value (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>レジスタ値指定, xx: レジスタ値(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="34"/>
         <source>AR control, x: operator (1-4), yy: attack rate (00-1F)</source>
-        <translation type="unfinished"></translation>
+        <translation>ARコントロール, x: オペレーター(1-4), yy: AR値(00-1F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="35"/>
         <source>Brightness, xx: relavtive value (01-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ブライトネス, xx: 相対値(01-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="36"/>
         <source>DR control, x: operator (1-4), yy: decay rate (00-1F)</source>
-        <translation type="unfinished"></translation>
+        <translation>DRコントロール, x: オペレーター(1-4), yy: DR値(00-1F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="37"/>
         <source>FB control, xx: feedback value (00-07)</source>
-        <translation type="unfinished"></translation>
+        <translation>FBコントロール, xx: フィードバック値(00-07)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="38"/>
         <source>ML control, x: operator (1-4), y: multiple (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>MLコントロール, x: オペレーター(1-4), y: ML値(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="39"/>
         <source>Volume delay, x: count (1-F), yy: volume (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ボリューム・ディレイ, x: カウント(1-F), yy: 音量(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="40"/>
         <source>RR control, x: operator (1-4), y: release rate (0-F)</source>
-        <translation type="unfinished"></translation>
+        <translation>RRコントロール, x: オペレーター(1-4), y: RR値(0-F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="41"/>
         <source>TL control, x: operator (1-4), yy: total level (00-7F)</source>
-        <translation type="unfinished"></translation>
+        <translation>TLコントロール, x: オペレーター(1-4), yy: TL値(00-7F)</translation>
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="42"/>
         <source>Invalid effect</source>
-        <translation type="unfinished">無効なエフェクト</translation>
+        <translation>無効なエフェクト</translation>
     </message>
 </context>
 <context>
@@ -2096,32 +2096,32 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1282"/>
         <source>E&amp;xpand Effect Column</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクト列の拡張(&amp;X)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1285"/>
         <source>Alt+L</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1290"/>
         <source>S&amp;hrink Effect Column</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクト列の縮小(&amp;H)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1293"/>
         <source>Alt+K</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1298"/>
         <source>Remove &amp;Duplicate Instruments</source>
-        <translation type="unfinished"></translation>
+        <translation>重複したインストゥルメントの削除(&amp;D)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1310"/>
         <source>Re&amp;name Instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>名前を編集(&amp;N)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1230"/>
@@ -2306,32 +2306,32 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1078"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1083"/>
         <source>Custom</source>
-        <translation type="unfinished">カスタム</translation>
+        <translation>カスタム</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1088"/>
         <source>PC-9821 with PC-9801-86</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1093"/>
         <source>PC-9821 with Speak Board</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1098"/>
         <source>PC-88VA2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1103"/>
         <source>NEC PC-8801mkIISR</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1170"/>
@@ -2342,7 +2342,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2507"/>
         <source>Do you want to remove all duplicate instruments?</source>
-        <translation type="unfinished"></translation>
+        <translation>重複したインストゥルメントを削除しますか?</translation>
     </message>
     <message>
         <source>&amp;Add</source>
@@ -2413,7 +2413,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1936"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- nowide by (C) Artyom Beilis (BSL v1.0)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2089"/>
@@ -2502,17 +2502,17 @@
     <message>
         <location filename="../../gui/mainwindow.hpp" line="249"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>注意</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.hpp" line="250"/>
         <source> If you execute this command, the command history is reset.</source>
-        <translation type="unfinished"></translation>
+        <translation>この操作を実行すると、すべてのコマンド履歴は消去されます。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.hpp" line="258"/>
         <source>Could not open the audio stream. Please change the sound settings in Configuration.</source>
-        <translation type="unfinished"></translation>
+        <translation>オーディオストリームを開けませんでした。環境設定でサウンド設定を変更してください。</translation>
     </message>
 </context>
 <context>
@@ -2546,47 +2546,47 @@
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="82"/>
         <source>Mixer</source>
-        <translation type="unfinished">ミキサー</translation>
+        <translation>ミキサー</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="103"/>
         <source>PC-9821 with PC-9801-86</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="108"/>
         <source>PC-9821 with Speak Board</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="113"/>
         <source>PC-88VA2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="118"/>
         <source>PC-8801mkIISR</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="129"/>
         <source>Custom mixer</source>
-        <translation type="unfinished"></translation>
+        <translation>カスタムミキサー</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="135"/>
         <source>FM</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="161"/>
         <source>SSG</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="187"/>
         <source>Set</source>
-        <translation type="unfinished"></translation>
+        <translation>設定</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="200"/>
@@ -2920,12 +2920,12 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1835"/>
         <source>Expand E&amp;ffect Column</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクト列の拡張(&amp;F)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1837"/>
         <source>Shrin&amp;k Effect Column</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクト列の縮小(&amp;K)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2695"/>
@@ -2956,13 +2956,14 @@
     <message>
         <location filename="../../main.cpp" line="34"/>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>不明なエラーが発生しました。</translation>
     </message>
     <message>
         <location filename="../../main.cpp" line="39"/>
         <source>An unknown error occurred.
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>不明なエラーが発生しました。
+%1</translation>
     </message>
 </context>
 <context>
@@ -3129,12 +3130,12 @@
     <message>
         <location filename="../../gui/instrument_editor/tone_noise_macro_editor.cpp" line="10"/>
         <source>Tone</source>
-        <translation type="unfinished"></translation>
+        <translation>トーン</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/tone_noise_macro_editor.cpp" line="11"/>
         <source>Noise</source>
-        <translation type="unfinished"></translation>
+        <translation>ノイズ</translation>
     </message>
 </context>
 <context>
@@ -3381,7 +3382,7 @@
     <message>
         <location filename="../../gui/wave_export_settings_dialog.ui" line="44"/>
         <source>Sample rate</source>
-        <translation type="unfinished">サンプルレート</translation>
+        <translation>サンプルレート</translation>
     </message>
 </context>
 </TS>
