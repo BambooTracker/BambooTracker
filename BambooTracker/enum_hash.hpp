@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __GNUC__
+#if (defined __GNUC__) && (!defined __clang__)
 #if (__GNUC__ < 6) || ((__GNUC__ == 6) && (__GNUC_MINOR__ < 1))
 // Unsupport std::hash with enum types before gcc 6.1.
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60970
