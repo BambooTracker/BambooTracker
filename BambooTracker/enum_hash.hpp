@@ -1,6 +1,5 @@
 #pragma once
 
-#ifdef __GNUC__
 #include <unordered_map>
 
 namespace std {
@@ -13,4 +12,3 @@ namespace std {
 	}
   };
 }
-#endif
