@@ -3404,8 +3404,12 @@
     </message>
     <message>
         <location filename="../../gui/wave_export_settings_dialog.ui" line="30"/>
+        <source>Loop</source>
+        <translation type="unfinished">Boucle</translation>
+    </message>
+    <message>
         <source>Loop:</source>
-        <translation>Boucle :</translation>
+        <translation type="vanished">Boucle :</translation>
     </message>
     <message>
         <location filename="../../gui/wave_export_settings_dialog.ui" line="44"/>

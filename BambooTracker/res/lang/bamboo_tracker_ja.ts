@@ -3380,8 +3380,12 @@
     </message>
     <message>
         <location filename="../../gui/wave_export_settings_dialog.ui" line="30"/>
+        <source>Loop</source>
+        <translation>ループ</translation>
+    </message>
+    <message>
         <source>Loop:</source>
-        <translation>ループ:</translation>
+        <translation type="vanished">ループ:</translation>
     </message>
     <message>
         <location filename="../../gui/wave_export_settings_dialog.ui" line="44"/>

@@ -5,6 +5,7 @@
 - [#132] - 3 new pattern effects
   - `0Xxx`, `0Yxx`: register address set
   - `0Zxx`: register value set
+  - `B0xx`: FM brightness ([#118]; thanks [@jpcima])
 - Add 1 sample module (thanks [@maakmusic])
 - Add selection whether auto-set current instrument upon entering note
 - Add color scheme settings
@@ -20,6 +21,7 @@
 - Change MML text in FM/SSG arpeggio editor from numbers to notes
 - [#162] - Allow order list edit in jam mode (thanks [@pedipanol])
 - [#162] - Reverse the input order of the order numbers (thanks [@pedipanol])
+- Update translation: ja
 
 ### Fixed
 - [#161] - Fix drawing error after loading song (thanks [@papiezak])
@@ -27,11 +29,14 @@
 - Fix some drawing errors in pattern editor and order list
 - Fix corruption after changing song type
 - [#163] - Fix the bug that the item is hidden in the instrument list (thanks [@galap-1])
+- [#165] - Fix directive about std::hash with enum (thanks [@jpcima])
 
 [#161]: https://github.com/rerrahkr/BambooTracker/issues/161
 [#162]: https://github.com/rerrahkr/BambooTracker/issues/162
 [#163]: https://github.com/rerrahkr/BambooTracker/issues/163
 [#150]: https://github.com/rerrahkr/BambooTracker/issues/150
+[#118]: https://github.com/rerrahkr/BambooTracker/issues/118
+[#165]: https://github.com/rerrahkr/BambooTracker/issues/165
 
 ## v0.3.0 (2019-10-25)
 ### Added

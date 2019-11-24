@@ -244,7 +244,7 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Dxx   | Pattern break (xx: start step on the next order)                                        | Pattern break                                                      | Pattern break                     |
 | 0Fxx   | Speed/tempo change (xx[00-1F]: speed, [20-FF]: tempo)                                   | Speed/tempo change                                                 | Speed/tempo change                |
 | 0Gxx   | Note delay (xx[00-FF]: count)                                                           | Note delay                                                         | Note delay                        |
-| 0Hxy   | -                                                                                       | Auto envelope  (x[0-F]: shift amount (x-8), y[0-F]: shape)         | -                                 |
+| 0Hxy   | -                                                                                       | Auto envelope (x[0-F]: shift amount (x-8), y[0-F]: shape)          | -                                 |
 | 0Ixx   | -                                                                                       | Hardware envelope period 1 (xx[00-FF]: high byte)                  | -                                 |
 | 0Jxx   | -                                                                                       | Hardware envelope period 2 (xx[00-FF]: low byte)                   | -                                 |
 | 0Oxx   | Groove (xx[00-FF]: number)                                                              | Groove                                                             | Groove                            |
@@ -255,11 +255,11 @@ It is able to reverse the order of FM volume (Configuration -> General -> Revers
 | 0Txy   | Transpose delay (x[1-7]: upwards count, [9-F]: downwards count (x-8), y[0-F]: seminote) | Transpose delay                                                    | -                                 |
 | 0Vxx   | -                                                                                       | Tone/Noise mix (xx: 00=No sound, 01=Tone, 02=Noise, 03=Tone&Noise) | Master volume (xx[00-3F]: volume) |
 | 0Wxx   | -                                                                                       | Noise pitch (xx[00-1F]: pitch)                                     | -                                 |
-| *0Xxx* | *Register address bank 0 (xx[00-B6]: address*)                                          | *Register address bank 0*                                          | *Registe address bank 0*          |
-| *0Yxx* | *Register address bank 1 (xx[00-B6]: address)*                                          | *Register address bank 1*                                          | *Registe address bank 1*          |
-| *0Zxx* | *Regisetr value set (xx[00-FF]: value)*                                                 | *Register value set*                                               | *Register value set*              |
+| 0Xxx   | Register address bank 0 (xx[00-B6]: address)                                            | Register address bank 0                                            | Registe address bank 0            |
+| 0Yxx   | Register address bank 1 (xx[00-B6]: address)                                            | Register address bank 1                                            | Registe address bank 1            |
+| 0Zxx   | Regisetr value set (xx[00-FF]: value)                                                   | Register value set                                                 | Register value set                |
 | Axyy   | AR control (x[1-4]: operator, y[00-1F]: attack rate)                                    | -                                                                  | -                                 |
-| *B0xx* | *Brightness (xx[01-FF]: relative value (xx-80))*                                        | -                                                                  | -                                 |
+| B0xx   | Brightness (xx[01-FF]: relative value (xx-80))                                          | -                                                                  | -                                 |
 | Dxyy   | DR control (x[1-4]: operator, y[00-1F]: decay rate)                                     | -                                                                  | -                                 |
 | FBxx   | FB control (xx[00-07]: feedback value)                                                  | -                                                                  | -                                 |
 | Mxyy   | Volume delay (x[1-F]: count, yy[00-FF]: volume)                                         | Volume delay                                                       | Volume delay                      |
