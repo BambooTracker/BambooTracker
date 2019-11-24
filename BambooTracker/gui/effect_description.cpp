@@ -32,7 +32,7 @@ const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDesc
 	{ EffectType::RegisterAddress1, { "0Yxx", QT_TR_NOOP("Register address bank 1, xx: address (00-6B)") } },
 	{ EffectType::RegisterValue, { "0Zxx", QT_TR_NOOP("Register value set, xx: value (00-FF)") } },
 	{ EffectType::ARControl, { "Axyy", QT_TR_NOOP("AR control, x: operator (1-4), yy: attack rate (00-1F)") } },
-	{ EffectType::Brightness, { "B0xx", QT_TR_NOOP("Brightness, xx: relavtive value (01-FF)") } },
+	{ EffectType::Brightness, { "B0xx", QT_TR_NOOP("Brightness, xx: relative value (01-FF)") } },
 	{ EffectType::DRControl, { "Dxyy", QT_TR_NOOP("DR control, x: operator (1-4), yy: decay rate (00-1F)") } },
 	{ EffectType::FBControl, { "FBxx", QT_TR_NOOP("FB control, xx: feedback value (00-07)") } },
 	{ EffectType::MLControl, { "MLxy", QT_TR_NOOP("ML control, x: operator (1-4), y: multiple (0-F)") } },

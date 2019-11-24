@@ -894,7 +894,7 @@
     </message>
     <message>
         <location filename="../../gui/effect_description.cpp" line="35"/>
-        <source>Brightness, xx: relavtive value (01-FF)</source>
+        <source>Brightness, xx: relative value (01-FF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
