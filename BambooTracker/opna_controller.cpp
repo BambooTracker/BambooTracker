@@ -1099,7 +1099,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL1));
 	// Adjust volume
 	if (mode_ == SongType::FM3chExpanded && inch == 2) data1 = calculateTL(2, data1);
-	else if (isCareer(0, al)) data1 = calculateTL(inch, data1);
+	else if (isCarrier(0, al)) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -1148,7 +1148,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL2));
 	// Adjust volume
 	if (mode_ == SongType::FM3chExpanded && inch == 2) data1 = calculateTL(6, data1);
-	else if (isCareer(1, al)) data1 = calculateTL(inch, data1);
+	else if (isCarrier(1, al)) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -1197,7 +1197,7 @@ void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
 	data1 = static_cast<uint8_t>(refInstFM_[inch]->getEnvelopeParameter(FMEnvelopeParameter::TL3));
 	// Adjust volume
 	if (mode_ == SongType::FM3chExpanded && inch == 2) data1 = calculateTL(7, data1);
-	else if (isCareer(2, al)) data1 = calculateTL(inch, data1);
+	else if (isCarrier(2, al)) data1 = calculateTL(inch, data1);
 	envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data1);
 	opna_->setRegister(0x40 + offset, data1);
 
@@ -1311,7 +1311,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 			data = calculateTL(2, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
 		}
-		else if (isCareer(0, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+		else if (isCarrier(0, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
 			data = calculateTL(inch, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL1, data);	// Update
 		}
@@ -1357,7 +1357,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 			data = calculateTL(6, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
 		}
-		else if (isCareer(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+		else if (isCarrier(1, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
 			data = calculateTL(inch, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL2, data);	// Update
 		}
@@ -1403,7 +1403,7 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 			data = calculateTL(7, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
 		}
-		else if (isCareer(2, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
+		else if (isCarrier(2, envFM_[inch]->getParameterValue(FMEnvelopeParameter::AL))) {
 			data = calculateTL(inch, data);
 			envFM_[inch]->setParameterValue(FMEnvelopeParameter::TL3, data);	// Update
 		}
@@ -1758,25 +1758,25 @@ void OPNAController::checkVolumeEffectFM(int ch)
 	case FMOperatorType::All:
 	{
 		int al = envFM_[ch]->getParameterValue(FMEnvelopeParameter::AL);
-		if (isCareer(0, al)) {	// Operator 1
+		if (isCarrier(0, al)) {	// Operator 1
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL1) + v;
 			if (data > 127) data = 127;
 			else if (data < 0) data = 0;
 			opna_->setRegister(0x40 + bch, static_cast<uint8_t>(data));
 		}
-		if (isCareer(1, al)) {	// Operator 2
+		if (isCarrier(1, al)) {	// Operator 2
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL2) + v;
 			if (data > 127) data = 127;
 			else if (data < 0) data = 0;
 			opna_->setRegister(0x40 + bch + 8, static_cast<uint8_t>(data));
 		}
-		if (isCareer(2, al)) {	// Operator 3
+		if (isCarrier(2, al)) {	// Operator 3
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL3) + v;
 			if (data > 127) data = 127;
 			else if (data < 0) data = 0;
 			opna_->setRegister(0x40 + bch + 4, static_cast<uint8_t>(data));
 		}
-		if (isCareer(3, al)) {	// Operator 4
+		if (isCarrier(3, al)) {	// Operator 4
 			int data = envFM_[ch]->getParameterValue(FMEnvelopeParameter::TL4) + v;
 			if (data > 127) data = 127;
 			else if (data < 0) data = 0;
@@ -1934,7 +1934,7 @@ void OPNAController::setInstrumentFMProperties(int ch)
 	enableEnvResetFM_[ch] = refInstFM_[inch]->getEnvelopeResetEnabled(opType);
 }
 
-bool OPNAController::isCareer(int op, int al)
+bool OPNAController::isCarrier(int op, int al)
 {
 	switch (op) {
 	case 0:

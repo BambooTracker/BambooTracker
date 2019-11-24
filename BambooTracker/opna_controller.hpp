@@ -211,7 +211,7 @@ private:
 
 	void setInstrumentFMProperties(int ch);
 
-	static bool isCareer(int op, int al);
+	static bool isCarrier(int op, int al);
 	static std::vector<int> getOperatorsInLevel(int level, int al);
 
 	inline FMEnvelopeParameter getParameterTL(int op) const
