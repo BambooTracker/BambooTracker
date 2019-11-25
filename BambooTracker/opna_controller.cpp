@@ -1981,7 +1981,7 @@ std::vector<int> OPNAController::getOperatorsInLevel(int level, int al)
 		case 6:
 			return { 1, 2, 3 };
 		case 7:
-			return { 0, 1, 2, 4 };
+			return { 0, 1, 2, 3 };
 		default:
 			throw std::invalid_argument("Invalid algorithm.");
 		}
@@ -2025,7 +2025,7 @@ std::vector<int> OPNAController::getOperatorsInLevel(int level, int al)
 	case 3:
 		switch (al) {
 		case 0:
-			return { 1 };
+			return { 0 };
 		case 1:
 		case 2:
 		case 3:
