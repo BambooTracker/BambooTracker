@@ -294,7 +294,10 @@ void OPNAController::keyOnFM(int ch, int echoBuf)
 
 void OPNAController::keyOffFM(int ch, bool isJam)
 {
-	if (!isKeyOnFM_[ch]) return;
+	if (!isKeyOnFM_[ch]) {
+		tickEventFM(ch);
+		return;
+	}
 	releaseStartFMSequences(ch);
 	hasPreSetTickEventFM_[ch] = isJam;
 
@@ -912,7 +915,9 @@ void OPNAController::initFM()
 			td.octave = -1;
 		}
 
+		keyToneFM_[ch].note = Note::C;	// Dummy
 		keyToneFM_[ch].octave = -1;
+		keyToneFM_[ch].pitch = 0;	// Dummy
 		sumPitchFM_[ch] = 0;
 		baseVolFM_[ch] = 0;	// Init volume
 		tmpVolFM_[ch] = -1;
@@ -1911,6 +1916,8 @@ void OPNAController::checkRealToneFMByPitch(int ch, int seqPos)
 
 void OPNAController::writePitchFM(int ch)
 {
+	if (keyToneFM_[ch].octave == -1) return;	// Not set note yet
+
 	uint16_t p = PitchConverter::getPitchFM(
 					 keyToneFM_[ch].note,
 					 keyToneFM_[ch].octave,
@@ -2086,7 +2093,10 @@ void OPNAController::keyOnSSG(int ch, int echoBuf)
 
 void OPNAController::keyOffSSG(int ch, bool isJam)
 {
-	if (!isKeyOnSSG_[ch]) return;
+	if (!isKeyOnSSG_[ch]) {
+		tickEventSSG(ch);
+		return;
+	}
 	releaseStartSSGSequences(ch);
 	hasPreSetTickEventSSG_[ch] = isJam;
 	isKeyOnSSG_[ch] = false;
@@ -2415,7 +2425,9 @@ void OPNAController::initSSG()
 			td.octave = -1;
 		}
 
+		keyToneSSG_[ch].note = Note::C;	// Dummy
 		keyToneSSG_[ch].octave = -1;
+		keyToneSSG_[ch].pitch = 0;	// Dummy
 		sumPitchSSG_[ch] = 0;
 		tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
 		baseVolSSG_[ch] = 0xf;	// Init volume
@@ -3310,6 +3322,8 @@ void OPNAController::checkRealToneSSGByPitch(int ch, int seqPos)
 
 void OPNAController::writePitchSSG(int ch)
 {
+	if (keyToneSSG_[ch].octave == -1) return;	// Not set note yet
+
 	int p = keyToneSSG_[ch].pitch
 			+ sumPitchSSG_[ch]
 			+ (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
