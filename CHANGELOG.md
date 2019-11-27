@@ -31,6 +31,7 @@
 - [#163] - Fix the bug that the item is hidden in the instrument list (thanks [@galap-1])
 - [#165] - Fix directive about std::hash with enum (thanks [@jpcima])
 - [#166] - Fix uninitialized variables (thanks [@OPNA2608])
+- [#167] - Fix the instrument list to disable the icons when it is empty (thanks [@OPNA2608])
 
 [#161]: https://github.com/rerrahkr/BambooTracker/issues/161
 [#162]: https://github.com/rerrahkr/BambooTracker/issues/162
@@ -39,6 +40,7 @@
 [#118]: https://github.com/rerrahkr/BambooTracker/issues/118
 [#165]: https://github.com/rerrahkr/BambooTracker/issues/165
 [#166]: https://github.com/rerrahkr/BambooTracker/issues/166
+[#167]: https://github.com/rerrahkr/BambooTracker/issues/167
 
 ## v0.3.0 (2019-10-25)
 ### Added

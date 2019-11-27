@@ -1034,6 +1034,7 @@ void MainWindow::loadModule()
 {
 	instForms_->clearAll();
 	ui->instrumentListWidget->clear();
+	on_instrumentListWidget_itemSelectionChanged();
 
 	auto modTitle = bt_->getModuleTitle();
 	ui->modTitleLineEdit->setText(
