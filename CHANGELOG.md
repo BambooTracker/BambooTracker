@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.3.1 (2019-11-30)
 ### Added
 - [#132] - 3 new pattern effects
   - `0Xxx`, `0Yxx`: register address set
