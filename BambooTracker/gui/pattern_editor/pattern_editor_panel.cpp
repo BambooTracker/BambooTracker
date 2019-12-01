@@ -620,7 +620,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 {
 	int offset = x + widthSpace_;
 	PatternPosition pos{ trackNum, 0, orderNum, stepNum };
-	QColor textColor = (stepNum == curPos_.step) ? palette_->ptnCurTextColor : palette_->ptnDefTextColor;
+	QColor textColor = (orderNum == curPos_.order && stepNum == curPos_.step) ? palette_->ptnCurTextColor : palette_->ptnDefTextColor;
 	bool isHovTrack = (hovPos_.order == -2 && hovPos_.track == trackNum);
 	bool isHovStep = (hovPos_.track == -2 && hovPos_.order == orderNum && hovPos_.step == stepNum);
 	bool isMuteTrack = bt_->isMute(trackNum);
