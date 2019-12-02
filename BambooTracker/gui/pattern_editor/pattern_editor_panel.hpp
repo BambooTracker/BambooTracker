@@ -186,9 +186,9 @@ private:
 	int viewedRowsHeight_, viewedRowOffset_, viewedCenterY_, viewedCenterBaseY_;
 	PatternPosition viewedFirstPos_, viewedCenterPos_, viewedLastPos_;
 
-	bool backChanged_, textChanged_, foreChanged_, headerChanged_, focusChanged_, stepChanged_, followModeChanged_;
+	bool backChanged_, textChanged_, foreChanged_, headerChanged_, focusChanged_, followModeChanged_;
 	bool hasFocussedBefore_;
-	int stepUpdateRequestCnt_;
+	int stepDownCount_;
 
 	bool freezed_;
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard

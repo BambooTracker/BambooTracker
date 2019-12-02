@@ -16,8 +16,14 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
 	QObject::connect(ui->panel, &OrderListPanel::currentOrderChangedForSlider,
 					 this, [&](int num, int max) {
-		ui->verticalScrollBar->setMaximum(max);
-		ui->verticalScrollBar->setValue(num);
+		if (ui->verticalScrollBar->maximum() < num) {
+			ui->verticalScrollBar->setMaximum(max);
+			ui->verticalScrollBar->setValue(num);
+		}
+		else {
+			ui->verticalScrollBar->setValue(num);
+			ui->verticalScrollBar->setMaximum(max);
+		}
 	});
 	QObject::connect(ui->panel, &OrderListPanel::currentTrackChanged,
 					 this, [&](int num) { emit currentTrackChanged(num); });

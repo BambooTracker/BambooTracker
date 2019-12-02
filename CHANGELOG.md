@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- Fix incorrect text painting in the pattern editor
+- [#168] - Fix pattern rendering glitches (thanks [@OPNA2608], [@YuzuMSX])
+
+[@YuzuMSX]: https://github.com/YuzuMSX
+
+[#168]: https://github.com/rerrahkr/BambooTracker/issues/168
 
 ## v0.3.1 (2019-11-30)
 ### Added

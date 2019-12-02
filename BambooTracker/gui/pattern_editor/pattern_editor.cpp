@@ -17,8 +17,14 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
 	QObject::connect(ui->panel, &PatternEditorPanel::currentStepChanged,
 					 this, [&](int num, int max) {
-		ui->verticalScrollBar->setMaximum(max);
-		ui->verticalScrollBar->setValue(num);
+		if (ui->verticalScrollBar->maximum() < num) {
+			ui->verticalScrollBar->setMaximum(max);
+			ui->verticalScrollBar->setValue(num);
+		}
+		else {
+			ui->verticalScrollBar->setValue(num);
+			ui->verticalScrollBar->setMaximum(max);
+		}
 	});
 	QObject::connect(ui->panel, &PatternEditorPanel::currentTrackChanged,
 					 this, [&](int num) { emit currentTrackChanged(num); });
@@ -27,8 +33,14 @@ PatternEditor::PatternEditor(QWidget *parent) :
 
 	QObject::connect(ui->panel, &PatternEditorPanel::effectColsCompanded,
 					 this, [&](int num, int max) {
-		ui->horizontalScrollBar->setMaximum(max);
-		ui->horizontalScrollBar->setValue(num);
+		if (ui->horizontalScrollBar->maximum() < num) {
+			ui->horizontalScrollBar->setMaximum(max);
+			ui->horizontalScrollBar->setValue(num);
+		}
+		else {
+			ui->horizontalScrollBar->setValue(num);
+			ui->horizontalScrollBar->setMaximum(max);
+		}
 	});
 	QObject::connect(ui->panel, &PatternEditorPanel::selected,
 					 this, [&](bool isSelected) { emit selected(isSelected); });

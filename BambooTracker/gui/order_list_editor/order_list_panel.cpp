@@ -286,6 +286,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	int playOdrNum = bt_->getPlayingOrderNumber();
 
 	/* Previous rows */
+	viewedFirstPos_.row = curPos_.row;
 	endY = std::max(headerHeight_ - rowFontHeight_, viewedCenterY_ - rowFontHeight_ * curPos_.row);
 	for (rowY = viewedCenterY_ - rowFontHeight_, baseY = viewedCenterBaseY_ - rowFontHeight_, rowNum = curPos_.row - 1;
 		 rowY >= endY;
@@ -333,6 +334,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	}
 
 	/* Next rows */
+	viewedLastPos_.row = curPos_.row;
 	endY = std::min(geometry().height(),
 					viewedCenterY_ + rowFontHeight_ * (static_cast<int>(bt_->getOrderSize(curSongNum_)) - curPos_.row - 1));
 	for (rowY = viewedCenterY_ + rowFontHeight_, baseY = viewedCenterBaseY_ + rowFontHeight_, rowNum = curPos_.row + 1;
