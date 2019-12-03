@@ -133,6 +133,8 @@ void OrderListPanel::setFonts(QString headerFont, int headerSize, QString rowsFo
 	rowFont_ = QFont(rowsFont, rowsSize);
 
 	updateSizes();
+	updateTracksWidthFromLeftToEnd();
+	setMaximumWidth(columnsWidthFromLeftToEnd_);
 
 	redrawAll();
 }
@@ -671,8 +673,7 @@ void OrderListPanel::moveCursorToRight(int n)
 		if (curPos_.track < leftTrackNum_) leftTrackNum_ = curPos_.track;
 	}
 
-	columnsWidthFromLeftToEnd_
-			= calculateColumnsWidthWithRowNum(leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	updateTracksWidthFromLeftToEnd();
 	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curPos_.track);	// Send to slider
@@ -1060,8 +1061,8 @@ void OrderListPanel::onSongLoaded()
 	curSongNum_ = bt_->getCurrentSongNumber();
 	curPos_ = { bt_->getCurrentTrackAttribute().number, bt_->getCurrentOrderNumber() };
 	songStyle_ = bt_->getSongStyle(curSongNum_);
-	columnsWidthFromLeftToEnd_
-			= calculateColumnsWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	leftTrackNum_ = 0;
+	updateTracksWidthFromLeftToEnd();
 	setMaximumWidth(columnsWidthFromLeftToEnd_);
 
 	hovPos_ = { -1, -1 };

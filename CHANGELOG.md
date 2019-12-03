@@ -4,10 +4,12 @@
 ### Fixed
 - Fix incorrect text painting in the pattern editor
 - [#168] - Fix pattern rendering glitches (thanks [@OPNA2608], [@YuzuMSX])
+- [#169] - Fix the order list corruption after changing font (thanks [@jimbo1qaz])
 
 [@YuzuMSX]: https://github.com/YuzuMSX
 
 [#168]: https://github.com/rerrahkr/BambooTracker/issues/168
+[#169]: https://github.com/rerrahkr/BambooTracker/issues/169
 
 ## v0.3.1 (2019-11-30)
 ### Added

@@ -164,6 +164,12 @@ private:
 
 	int calculateColumnsWidthWithRowNum(int begin, int end) const;
 
+	inline void updateTracksWidthFromLeftToEnd()
+	{
+		columnsWidthFromLeftToEnd_
+				= calculateColumnsWidthWithRowNum(0, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+	}
+
 	void moveCursorToRight(int n);
 	void moveCursorToDown(int n);
 
