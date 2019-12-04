@@ -1221,7 +1221,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 	emit currentStepChanged(
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
-	if (isFirstUpdate || (cmp < 0) || (!curPos_.step && !config_.lock()->getShowPreviousNextOrders())) {
+	if (isFirstUpdate || (cmp < 0) || (cmp && !config_.lock()->getShowPreviousNextOrders())) {
 		stepDownCount_ = 0;	// Redraw entire area in first update
 	}
 	else {
