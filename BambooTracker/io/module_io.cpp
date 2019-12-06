@@ -1,5 +1,5 @@
 #include "module_io.hpp"
-#include <nowide/fstream.hpp>
+#include <string>
 #include "version.hpp"
 #include "file_io_error.hpp"
 #include "file_io.hpp"
@@ -8,11 +8,9 @@
 
 ModuleIO::ModuleIO() {}
 
-void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
+void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 						  std::weak_ptr<InstrumentsManager> instMan)
 {
-	BinaryContainer ctr;
-
 	ctr.appendString("BambooTrackerMod");
 	size_t eofOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy EOF offset
@@ -740,19 +738,11 @@ void ModuleIO::saveModule(std::string path, std::weak_ptr<Module> mod,
 	ctr.writeUint32(songSecOfs, ctr.size() - songSecOfs);
 
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
-
-	mod.lock()->setFilePath(path);
-
-	if (!ctr.save(path)) throw FileOutputError(FileIO::FileType::Mod);
 }
 
-void ModuleIO::loadModule(std::string path, std::weak_ptr<Module> mod,
+void ModuleIO::loadModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 						  std::weak_ptr<InstrumentsManager> instMan)
 {
-	BinaryContainer ctr;
-
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Mod);
-
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerMod")
 		throw FileCorruptionError(FileIO::FileType::Mod);
@@ -779,8 +769,6 @@ void ModuleIO::loadModule(std::string path, std::weak_ptr<Module> mod,
 		else
 			throw FileCorruptionError(FileIO::FileType::Mod);
 	}
-
-	mod.lock()->setFilePath(path);
 }
 
 size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
@@ -2101,15 +2089,4 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 	}
 
 	return globCsr + songOfs;
-}
-
-void ModuleIO::backupModule(std::string path)
-{
-	try {
-		nowide::ifstream ifs(path, std::ios::binary);
-		nowide::ofstream ofs(path + ".bak", std::ios::binary);
-		ofs << ifs.rdbuf();
-	} catch (...) {
-		throw FileOutputError(FileIO::FileType::Mod);
-	}
 }

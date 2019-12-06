@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <vector>
 #include "gd3_tag.hpp"
 #include "s98_tag.hpp"

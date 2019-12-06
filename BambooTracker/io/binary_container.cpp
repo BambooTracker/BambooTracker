@@ -133,6 +133,11 @@ void BinaryContainer::appendVector(const std::vector<uint8_t> vec)
 	std::copy(vec.begin(), vec.end(), std::back_inserter(buf_));
 }
 
+void BinaryContainer::appendVector(const std::vector<char> vec)
+{
+	std::copy(vec.begin(), vec.end(), std::back_inserter(buf_));
+}
+
 void BinaryContainer::writeInt8(size_t offset, const int8_t v)
 {
 	buf_.at(offset) = static_cast<char>(v);

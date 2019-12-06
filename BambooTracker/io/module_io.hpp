@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include "module.hpp"
 #include "instruments_manager.hpp"
 #include "binary_container.hpp"
@@ -9,11 +8,10 @@
 class ModuleIO
 {
 public:
-	static void saveModule(std::string path, std::weak_ptr<Module> mod,
+	static void saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 						   std::weak_ptr<InstrumentsManager> instMan);
-	static void loadModule(std::string path, std::weak_ptr<Module> mod,
+	static void loadModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 						   std::weak_ptr<InstrumentsManager> instMan);
-	static void backupModule(std::string path);
 
 private:
 	ModuleIO();

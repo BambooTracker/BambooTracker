@@ -13,7 +13,6 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QFileInfo>
-#include <QDataStream>
 #include <QMimeData>
 #include <QProgressDialog>
 #include <QRect>
@@ -28,6 +27,7 @@
 #include "bank.hpp"
 #include "bank_io.hpp"
 #include "file_io.hpp"
+#include "file_io_error.hpp"
 #include "version.hpp"
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -1120,7 +1120,17 @@ void MainWindow::openModule(QString file)
 	try {
 		freezeViews();
 		if (!timer_) stream_->stop();
-		bt_->loadModule(file.toStdString());
+
+		BinaryContainer container;
+		QFile fp(file);
+		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::Mod);
+		QByteArray array = fp.readAll();
+		fp.close();
+
+		container.appendVector(std::vector<char>(array.begin(), array.end()));
+		bt_->loadModule(container);
+		bt_->setModulePath(file.toStdString());
+
 		loadModule();
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
@@ -2086,17 +2096,21 @@ bool MainWindow::on_actionSave_triggered()
 	auto path = QString::fromStdString(bt_->getModulePath());
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
 		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
-			try {
-				bt_->backupModule(path.toStdString());
-			}
-			catch (...) {
+			if (!QFile::copy(path, path + ".bak")) {
 				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
 				return false;
 			}
 		}
 
 		try {
-			bt_->saveModule(bt_->getModulePath());
+			BinaryContainer container;
+			bt_->saveModule(container);
+
+			QFile fp(path);
+			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Mod);
+			fp.write(container.getPointer(), container.size());
+			fp.close();
+
 			isModifiedForNotCommand_ = false;
 			isSavedModBefore_ = true;
 			setWindowModified(false);
@@ -2123,12 +2137,9 @@ bool MainWindow::on_actionSave_As_triggered()
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
-	if (nowide::ifstream(file.toStdString()).is_open()) {	// Already exists
+	if (QFile::exists(file)) {	// Already exists
 		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
-			try {
-				bt_->backupModule(file.toStdString());
-			}
-			catch (...) {
+			if (!QFile::copy(file, file + ".bak")) {
 				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
 				return false;
 			}
@@ -2137,7 +2148,14 @@ bool MainWindow::on_actionSave_As_triggered()
 
 	bt_->setModulePath(file.toStdString());
 	try {
-		bt_->saveModule(bt_->getModulePath());
+		BinaryContainer container;
+		bt_->saveModule(container);
+
+		QFile fp(file);
+		if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Mod);
+		fp.write(container.getPointer(), container.size());
+		fp.close();
+
 		isModifiedForNotCommand_ = false;
 		isSavedModBefore_ = true;
 		setWindowModified(false);
@@ -2314,13 +2332,8 @@ void MainWindow::on_actionWAV_triggered()
 		bool res = bt_->exportToWav(container, diag.getSampleRate(), diag.getLoopCount(), bar);
 		if (res) {
 			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) {
-				QMessageBox::critical(this, tr("Error"), tr("Failed to export to wav file."));
-				return;
-			}
-
-			QDataStream out(&fp);
-			out.writeRawData(container.getPointer(), static_cast<int>(container.size()));
+			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::WAV);
+			fp.write(container.getPointer(), container.size());
 			fp.close();
 			bar();
 
@@ -2375,13 +2388,8 @@ void MainWindow::on_actionVGM_triggered()
 		bool res = bt_->exportToVgm(container, diag.getExportTarget(), diag.enabledGD3(), tag, bar);
 		if (res) {
 			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) {
-				QMessageBox::critical(this, tr("Error"), tr("Failed to export to vgm file."));
-				return;
-			}
-
-			QDataStream out(&fp);
-			out.writeRawData(container.getPointer(), static_cast<int>(container.size()));
+			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::VGM);
+			fp.write(container.getPointer(), container.size());
 			fp.close();
 			bar();
 
@@ -2437,13 +2445,8 @@ void MainWindow::on_actionS98_triggered()
 									tag, diag.getResolution(), bar);
 		if (res) {
 			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) {
-				QMessageBox::critical(this, tr("Error"), tr("Failed to export to s98 file."));
-				return;
-			}
-
-			QDataStream out(&fp);
-			out.writeRawData(container.getPointer(), static_cast<int>(container.size()));
+			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::S98);
+			fp.write(container.getPointer(), container.size());
 			fp.close();
 			bar();
 

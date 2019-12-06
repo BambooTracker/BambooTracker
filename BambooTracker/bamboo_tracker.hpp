@@ -194,9 +194,6 @@ public:
 	int getPlayingStepNumber() const;
 
 	// Export
-
-	// Backup
-	void backupModule(std::string file);
 	bool exportToWav(BinaryContainer& container, int rate, int loopCnt, std::function<bool()> bar);
 	bool exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
 					 GD3Tag tag, std::function<bool()> bar);
@@ -229,8 +226,8 @@ public:
 	// Module details
 	/*----- Module -----*/
 	void makeNewModule();
-	void loadModule(std::string path);
-	void saveModule(std::string path);
+	void loadModule(BinaryContainer& container);
+	void saveModule(BinaryContainer& container);
 	void setModulePath(std::string path);
 	std::string getModulePath() const;
 	void setModuleTitle(std::string title);

@@ -1227,12 +1227,6 @@ void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) con
 	}
 }
 
-/********** Backup **********/
-void BambooTracker::backupModule(std::string file)
-{
-	ModuleIO::backupModule(file);
-}
-
 /********** Stream type **********/
 void BambooTracker::useSCCI(SoundInterfaceManager* manager)
 {
@@ -1335,13 +1329,13 @@ void BambooTracker::makeNewModule()
 	clearCommandHistory();
 }
 
-void BambooTracker::loadModule(std::string path)
+void BambooTracker::loadModule(BinaryContainer& container)
 {
 	makeNewModule();
 
 	std::exception_ptr ep;
 	try {
-		ModuleIO::loadModule(path, mod_, instMan_);
+		ModuleIO::loadModule(container, mod_, instMan_);
 	}
 	catch (...) {
 		ep = std::current_exception();
@@ -1354,9 +1348,9 @@ void BambooTracker::loadModule(std::string path)
 	if (ep) std::rethrow_exception(ep);
 }
 
-void BambooTracker::saveModule(std::string path)
+void BambooTracker::saveModule(BinaryContainer& container)
 {
-	ModuleIO::saveModule(path, mod_, instMan_);
+	ModuleIO::saveModule(container, mod_, instMan_);
 }
 
 void BambooTracker::setModulePath(std::string path)
