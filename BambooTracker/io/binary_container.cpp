@@ -123,6 +123,16 @@ void BinaryContainer::appendString(const std::string str)
 	std::copy(str.begin(), str.end(), std::back_inserter(buf_));
 }
 
+void BinaryContainer::appendArray(const uint8_t* array, size_t size)
+{
+	std::copy(array, array + size, std::back_inserter(buf_));
+}
+
+void BinaryContainer::appendVector(const std::vector<uint8_t> vec)
+{
+	std::copy(vec.begin(), vec.end(), std::back_inserter(buf_));
+}
+
 void BinaryContainer::writeInt8(size_t offset, const int8_t v)
 {
 	buf_.at(offset) = static_cast<char>(v);
@@ -228,6 +238,11 @@ BinaryContainer BinaryContainer::getSubcontainer(size_t offset, size_t length) c
 	std::vector<char> tmp;
 	std::copy_n(buf_.begin() + static_cast<int>(offset), length, std::back_inserter(tmp));
 	return BinaryContainer(std::move(tmp));
+}
+
+const char* BinaryContainer::getPointer() const
+{
+	return &buf_[0];
 }
 
 void BinaryContainer::append(std::vector<char> a)

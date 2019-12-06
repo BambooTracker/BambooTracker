@@ -19,6 +19,7 @@
 #include "chips/scci/scci.h"
 #include "effect.hpp"
 #include "playback.hpp"
+#include "binary_container.hpp"
 #include "misc.hpp"
 
 class AbstractBank;
@@ -193,12 +194,14 @@ public:
 	int getPlayingStepNumber() const;
 
 	// Export
-	bool exportToWav(std::string file, int rate, int loopCnt, std::function<bool()> f);
-	bool exportToVgm(std::string file, int target, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f);
-	bool exportToS98(std::string file, int target, bool tagEnabled, S98Tag tag, int rate, std::function<bool()> f);
 
 	// Backup
 	void backupModule(std::string file);
+	bool exportToWav(BinaryContainer& container, int rate, int loopCnt, std::function<bool()> bar);
+	bool exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
+					 GD3Tag tag, std::function<bool()> bar);
+	bool exportToS98(BinaryContainer& container, int target, bool tagEnabled, S98Tag tag,
+					 int rate, std::function<bool()> bar);
 
 	// Stream type
 	void useSCCI(SoundInterfaceManager* manager);

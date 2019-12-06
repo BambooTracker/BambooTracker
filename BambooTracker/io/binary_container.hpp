@@ -27,6 +27,8 @@ public:
 	void appendUint32(const uint32_t v);
 	void appendChar(const char c);
 	void appendString(const std::string str);
+	void appendArray(const uint8_t* array, size_t size);
+	void appendVector(const std::vector<uint8_t> vec);
 
 	void writeInt8(size_t offset, const int8_t v);
 	void writeUint8(size_t offset, const uint8_t v);
@@ -47,6 +49,8 @@ public:
 	std::string readString(size_t offset, size_t length) const;
 
 	BinaryContainer getSubcontainer(size_t offset, size_t length) const;
+
+	const char* getPointer() const;
 
 private:
 	std::vector<char> buf_;

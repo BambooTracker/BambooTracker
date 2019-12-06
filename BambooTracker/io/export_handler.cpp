@@ -1,51 +1,46 @@
 #include "export_handler.hpp"
-#include <nowide/fstream.hpp>
 #include "file_io.hpp"
 #include "file_io_error.hpp"
 
-ExportHandler::ExportHandler()
-{
-}
+ExportHandler::ExportHandler() {}
 
-void ExportHandler::writeWave(std::string path, std::vector<int16_t> samples, uint32_t sampRate)
+void ExportHandler::writeWave(BinaryContainer& container, std::vector<int16_t> samples, uint32_t sampRate)
 {
 	try {
-		nowide::ofstream ofs(path, std::ios::binary);
-
 		// RIFF header
-		ofs.write("RIFF", 4);
+		container.appendString("RIFF");
 		uint32_t offset = samples.size() * sizeof(short) + 36;
-		ofs.write(reinterpret_cast<char*>(&offset), 4);
-		ofs.write("WAVE", 4);
+		container.appendUint32(offset);
+		container.appendString("WAVE");
 
 		// fmt chunk
-		ofs.write("fmt ", 4);
+		container.appendString("fmt ");
 		uint32_t chunkOfs = 16;
-		ofs.write(reinterpret_cast<char*>(&chunkOfs), 4);
+		container.appendUint32(chunkOfs);
 		uint16_t fmtId = 1;
-		ofs.write(reinterpret_cast<char*>(&fmtId), 2);
+		container.appendUint16(fmtId);
 		uint16_t chCnt = 2;
-		ofs.write(reinterpret_cast<char*>(&chCnt), 2);
-		ofs.write(reinterpret_cast<char*>(&sampRate), 4);
+		container.appendUint16(chCnt);
+		container.appendUint32(sampRate);
 		uint16_t bitSize = sizeof(int16_t) * 8;
 		uint16_t blockSize = bitSize / 8 * chCnt;
 		uint32_t byteRate = blockSize * sampRate;
-		ofs.write(reinterpret_cast<char*>(&byteRate), 4);
-		ofs.write(reinterpret_cast<char*>(&blockSize), 2);
-		ofs.write(reinterpret_cast<char*>(&bitSize), 2);
+		container.appendUint32(byteRate);
+		container.appendUint16(blockSize);
+		container.appendUint16(bitSize);
 
 		// Data chunk
-		ofs.write("data", 4);
+		container.appendString("data");
 		uint32_t dataSize = samples.size() * bitSize / 8;
-		ofs.write(reinterpret_cast<char*>(&dataSize), 4);
-		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(dataSize));
+		container.appendUint32(dataSize);
+		container.appendArray(reinterpret_cast<uint8_t*>(&samples[0]), dataSize);
 	}
 	catch (...) {
 		throw FileOutputError(FileIO::FileType::WAV);
 	}
 }
 
-void ExportHandler::writeVgm(std::string path, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+void ExportHandler::writeVgm(BinaryContainer& container, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
 							 bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
 							 bool gd3TagEnabled, GD3Tag tag)
 {
@@ -61,8 +56,6 @@ void ExportHandler::writeVgm(std::string path, int target, std::vector<uint8_t> 
 	}
 
 	try {
-		nowide::ofstream ofs(path, std::ios::binary);
-
 		// Header
 		// 0x00: "Vgm " ident
 		uint8_t header[0x100] = {'V', 'g', 'm', ' '};
@@ -119,95 +112,81 @@ void ExportHandler::writeVgm(std::string path, int target, std::vector<uint8_t> 
 			break;
 		}
 
-		ofs.write(reinterpret_cast<char *>(header), 0x100);
+		container.appendArray(header, 0x100);
 
 		// Commands
-		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(samples.size()));
-		uint8_t end = 0x66;
-		ofs.write(reinterpret_cast<char*>(&end), 1);
+		container.appendVector(samples);
+		container.appendUint8(0x66);	// End
 
 		// GD3 tag
 		if (gd3TagEnabled) {
 			// "Gd3 " ident
-			ofs.write("Gd3 ", 4);
+			container.appendString("Gd3 ");
 			// Version [v1.00]
 			uint32_t gd3Version = 0x100;
-			ofs.write(reinterpret_cast<char*>(&gd3Version), 4);
+			container.appendUint32(gd3Version);
 			// Data size
-			ofs.write(reinterpret_cast<char*>(&tagDataLen), 4);
+			container.appendUint32(tagDataLen);
 			// Track name in english
-			ofs.write(reinterpret_cast<char*>(&tag.trackNameEn[0]),
-					static_cast<std::streamsize>(tag.trackNameEn.length()));
+			container.appendString(tag.trackNameEn);
 			// Track name in japanes
-			ofs.write(reinterpret_cast<char*>(&tag.trackNameJp[0]),
-					static_cast<std::streamsize>(tag.trackNameJp.length()));
+			container.appendString(tag.trackNameJp);
 			// Game name in english
-			ofs.write(reinterpret_cast<char*>(&tag.gameNameEn[0]),
-					static_cast<std::streamsize>(tag.gameNameEn.length()));
+			container.appendString(tag.gameNameEn);
 			// Game name in japanese
-			ofs.write(reinterpret_cast<char*>(&tag.gameNameJp[0]),
-					static_cast<std::streamsize>(tag.gameNameJp.length()));
+			container.appendString(tag.gameNameJp);
 			// System name in english
-			ofs.write(reinterpret_cast<char*>(&tag.systemNameEn[0]),
-					static_cast<std::streamsize>(tag.systemNameEn.length()));
+			container.appendString(tag.systemNameEn);
 			// System name in japanese
-			ofs.write(reinterpret_cast<char*>(&tag.systemNameJp[0]),
-					static_cast<std::streamsize>(tag.systemNameJp.length()));
+			container.appendString(tag.systemNameJp);
 			// Track author in english
-			ofs.write(reinterpret_cast<char*>(&tag.authorEn[0]),
-					static_cast<std::streamsize>(tag.authorEn.length()));
+			container.appendString(tag.authorEn);
 			// Track author in japanese
-			ofs.write(reinterpret_cast<char*>(&tag.authorJp[0]),
-					static_cast<std::streamsize>(tag.authorJp.length()));
+			container.appendString(tag.authorJp);
 			// Release date
-			ofs.write(reinterpret_cast<char*>(&tag.releaseDate[0]),
-					static_cast<std::streamsize>(tag.releaseDate.length()));
+			container.appendString(tag.releaseDate);
 			// VGM creator
-			ofs.write(reinterpret_cast<char*>(&tag.vgmCreator[0]),
-					static_cast<std::streamsize>(tag.vgmCreator.length()));
+			container.appendString(tag.vgmCreator);
 			// Notes
-			ofs.write(reinterpret_cast<char*>(&tag.notes[0]),
-					static_cast<std::streamsize>(tag.notes.length()));
+			container.appendString(tag.notes);
 		}
 	} catch (...) {
 		throw FileOutputError(FileIO::FileType::VGM);
 	}
 }
 
-void ExportHandler::writeS98(std::string path, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
+void ExportHandler::writeS98(BinaryContainer& container, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
 							 bool loopFlag, uint32_t loopPoint, bool tagEnabled, S98Tag tag)
 {
 	try {
-		nowide::ofstream ofs(path, std::ios::binary);
-
 		// Header
 		// 0x00: Magic "S98"
-		ofs.write("S98", 3);
+		container.appendString("S98");
 		// 0x03: Format version 3
 		uint8_t version = 0x33;
-		ofs.write(reinterpret_cast<char*>(&version), 1);
+		container.appendUint8(version);
 		// 0x04: Timer info (sync numerator)
 		uint32_t timeNum = 1;
-		ofs.write(reinterpret_cast<char*>(&timeNum), 4);
+		container.appendUint32(timeNum);
 		// 0x08: Timer info 2 (sync denominator)
-		ofs.write(reinterpret_cast<char*>(&rate), 4);
+		container.appendUint32(rate);
 		// 0x0c: Deprecated
 		uint32_t zero = 0;
-		ofs.write(reinterpret_cast<char*>(&zero), 4);
+		container.appendUint32(zero);
 		// 0x10: Tag offset
 		uint32_t tagOffset = tagEnabled ? (0x80 + samples.size() + 1) : 0;
-		ofs.write(reinterpret_cast<char*>(&tagOffset), 4);
+		container.appendUint32(tagOffset);
 		// 0x14: Dump data offset
 		uint32_t dumpOffset = 0x80;
-		ofs.write(reinterpret_cast<char*>(&dumpOffset), 4);
+		container.appendUint32(dumpOffset);
 		// 0x18: Loop offset
 		uint32_t loopOffset = loopFlag ? (0x80 + loopPoint) : 0;
-		ofs.write(reinterpret_cast<char*>(&loopOffset), 4);
+		container.appendUint32(loopOffset);
 		// 0x1c: Device count
 		uint32_t deviceCnt = 1;
 		if ((target & Export_SsgMask) != Export_InternalSsg)
 			deviceCnt = 2;
-		ofs.write(reinterpret_cast<char*>(&deviceCnt), 4);
+		container.appendUint32(deviceCnt);
 
 		// 0x20-0x2f: Device info
 		// 0x20: Device type
@@ -228,13 +207,13 @@ void ExportHandler::writeS98(std::string path, int target, std::vector<uint8_t> 
 			deviceClock = clock / 2;
 			break;
 		}
-		ofs.write(reinterpret_cast<char*>(&deviceType), 4);
+		container.appendUint32(deviceType);
 		// 0x24: Clock
-		ofs.write(reinterpret_cast<char*>(&deviceClock), 4);
+		container.appendUint32(deviceClock);
 		// 0x28: Pan (Unused)
-		ofs.write(reinterpret_cast<char*>(&zero), 4);
+		container.appendUint32(zero);
 		// 0x2c: Reserved
-		ofs.write(reinterpret_cast<char*>(&zero), 4);
+		container.appendUint32(zero);
 
 		if ((target & Export_SsgMask) != Export_InternalSsg) {
 			// 0x30-0x3f: Device info
@@ -252,82 +231,63 @@ void ExportHandler::writeS98(std::string path, int target, std::vector<uint8_t> 
 				subdeviceClock = clock / 2;
 				break;
 			}
-			ofs.write(reinterpret_cast<char*>(&subdeviceType), 4);
+			container.appendUint32(subdeviceType);
 			// 0x34: Clock
-			ofs.write(reinterpret_cast<char*>(&subdeviceClock), 4);
+			container.appendUint32(subdeviceClock);
 			// 0x38: Pan (Unused)
-			ofs.write(reinterpret_cast<char*>(&zero), 4);
+			container.appendUint32(zero);
 			// 0x3c: Reserved
-			ofs.write(reinterpret_cast<char*>(&zero), 4);
+			container.appendUint32(zero);
 		}
 
 		// 0x??-0x7f: Unused
 		for (uint32_t i = 0; i < (24 - 4 * deviceCnt); ++i)
-			ofs.write(reinterpret_cast<char*>(&zero), 4);
+			container.appendUint32(zero);
 
 		// Commands
-		ofs.write(reinterpret_cast<char*>(&samples[0]), static_cast<std::streamsize>(samples.size()));
-		uint8_t end = 0xfd;
-		ofs.write(reinterpret_cast<char*>(&end), 1);
+		container.appendVector(samples);
+		container.appendUint8(0xfd);	// End
 
 		// GD3 tag
 		if (tagEnabled) {
 			// Tag ident
-			ofs.write("[S98]", 5);
+			container.appendString("[S98]");
 			// BOM
 			uint8_t bom[] = { 0xef, 0xbb, 0xbf };
-			ofs.write(reinterpret_cast<char*>(bom), 3);
+			container.appendArray(bom, 3);
 
 			uint8_t nl = 0x0a;
 
 			// Title
-			ofs.write("title=", 6);
-			ofs.write(reinterpret_cast<char*>(&tag.title[0]),
-					static_cast<std::streamsize>(tag.title.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("title=" + tag.title);
+			container.appendUint8(nl);
 			// Artist
-			ofs.write("artist=", 7);
-			ofs.write(reinterpret_cast<char*>(&tag.artist[0]),
-					static_cast<std::streamsize>(tag.artist.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("artist=" + tag.artist);
+			container.appendUint8(nl);
 			// Game
-			ofs.write("game=", 5);
-			ofs.write(reinterpret_cast<char*>(&tag.game[0]),
-					static_cast<std::streamsize>(tag.game.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("game=" + tag.game);
+			container.appendUint8(nl);
 			// Year
-			ofs.write("year=", 5);
-			ofs.write(reinterpret_cast<char*>(&tag.year[0]),
-					static_cast<std::streamsize>(tag.year.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("year=" + tag.year);
+			container.appendUint8(nl);
 			// Genre
-			ofs.write("genre=", 6);
-			ofs.write(reinterpret_cast<char*>(&tag.genre[0]),
-					static_cast<std::streamsize>(tag.genre.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("genre=" + tag.genre);
+			container.appendUint8(nl);
 			// Comment
-			ofs.write("comment=", 8);
-			ofs.write(reinterpret_cast<char*>(&tag.comment[0]),
-					static_cast<std::streamsize>(tag.comment.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("comment=" + tag.comment);
+			container.appendUint8(nl);
 			// Copyright
-			ofs.write("copyright=", 10);
-			ofs.write(reinterpret_cast<char*>(&tag.copyright[0]),
-					static_cast<std::streamsize>(tag.copyright.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("copyright=" + tag.copyright);
+			container.appendUint8(nl);
 			// S98by
-			ofs.write("s98by=", 6);
-			ofs.write(reinterpret_cast<char*>(&tag.s98by[0]),
-					static_cast<std::streamsize>(tag.s98by.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("s98by=" + tag.s98by);
+			container.appendUint8(nl);
 			// System
-			ofs.write("system=", 7);
-			ofs.write(reinterpret_cast<char*>(&tag.system[0]),
-					static_cast<std::streamsize>(tag.system.length()));
-			ofs.write(reinterpret_cast<char*>(&nl), 1);
+			container.appendString("system=" + tag.system);
+			container.appendUint8(nl);
 
 			uint8_t end = 0;
-			ofs.write(reinterpret_cast<char*>(&end), 1);
+			container.appendUint8(end);
 		}
 	} catch (...) {
 		throw FileOutputError(FileIO::FileType::S98);

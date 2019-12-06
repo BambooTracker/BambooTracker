@@ -11,7 +11,9 @@
 #include <QDialog>
 #include <QRegularExpression>
 #include <QFileDialog>
+#include <QFile>
 #include <QFileInfo>
+#include <QDataStream>
 #include <QMimeData>
 #include <QProgressDialog>
 #include <QRect>
@@ -44,6 +46,7 @@
 #include "midi/midi.hpp"
 #include "audio_stream_rtaudio.hpp"
 #include "color_palette_handler.hpp"
+#include "binary_container.hpp"
 #include "enum_hash.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -2277,12 +2280,12 @@ void MainWindow::on_actionWAV_triggered()
 	if (diag.exec() != QDialog::Accepted) return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(
+	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to wav"),
 					   QString("%1/%2.wav").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
 					   "WAV signed 16-bit PCM (*.wav)");
-	if (file.isNull()) return;
-	if (!file.endsWith(".wav")) file += ".wav";	// For linux
+	if (path.isNull()) return;
+	if (!path.endsWith(".wav")) path += ".wav";	// For linux
 
 	QProgressDialog progress(
 				tr("Export to WAV"),
@@ -2301,13 +2304,28 @@ void MainWindow::on_actionWAV_triggered()
 	stream_->stop();
 
 	try {
-		bool res = bt_->exportToWav(file.toStdString(), diag.getSampleRate(), diag.getLoopCount(),
-									[&progress]() -> bool {
-										QApplication::processEvents();
-										progress.setValue(progress.value() + 1);
-										return progress.wasCanceled();
-									});
-		if (res) config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		BinaryContainer container;
+		auto bar = [&progress]() -> bool {
+				   QApplication::processEvents();
+				   progress.setValue(progress.value() + 1);
+				   return progress.wasCanceled();
+	};
+
+		bool res = bt_->exportToWav(container, diag.getSampleRate(), diag.getLoopCount(), bar);
+		if (res) {
+			QFile fp(path);
+			if (!fp.open(QIODevice::WriteOnly)) {
+				QMessageBox::critical(this, tr("Error"), tr("Failed to export to wav file."));
+				return;
+			}
+
+			QDataStream out(&fp);
+			out.writeRawData(container.getPointer(), static_cast<int>(container.size()));
+			fp.close();
+			bar();
+
+			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+		}
 	}
 	catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Failed to export to wav file."));
@@ -2323,12 +2341,12 @@ void MainWindow::on_actionVGM_triggered()
 	GD3Tag tag = diag.getGD3Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(
+	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to vgm"),
 					   QString("%1/%2.vgm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
 					   "VGM file (*.vgm)");
-	if (file.isNull()) return;
-	if (!file.endsWith(".vgm")) file += ".vgm";	// For linux
+	if (path.isNull()) return;
+	if (!path.endsWith(".vgm")) path += ".vgm";	// For linux
 
 	QProgressDialog progress(
 				tr("Export to VGM"),
@@ -2347,16 +2365,28 @@ void MainWindow::on_actionVGM_triggered()
 	stream_->stop();
 
 	try {
-		bool res = bt_->exportToVgm(file.toStdString(),
-									diag.getExportTarget(),
-									diag.enabledGD3(),
-									tag,
-									[&progress]() -> bool {
-										QApplication::processEvents();
-										progress.setValue(progress.value() + 1);
-										return progress.wasCanceled();
-									});
-		if (res) config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		BinaryContainer container;
+		auto bar = [&progress]() -> bool {
+				   QApplication::processEvents();
+				   progress.setValue(progress.value() + 1);
+				   return progress.wasCanceled();
+	};
+
+		bool res = bt_->exportToVgm(container, diag.getExportTarget(), diag.enabledGD3(), tag, bar);
+		if (res) {
+			QFile fp(path);
+			if (!fp.open(QIODevice::WriteOnly)) {
+				QMessageBox::critical(this, tr("Error"), tr("Failed to export to vgm file."));
+				return;
+			}
+
+			QDataStream out(&fp);
+			out.writeRawData(container.getPointer(), static_cast<int>(container.size()));
+			fp.close();
+			bar();
+
+			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+		}
 	}
 	catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Failed to export to vgm file."));
@@ -2372,12 +2402,12 @@ void MainWindow::on_actionS98_triggered()
 	S98Tag tag = diag.getS98Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getSaveFileName(
+	QString path = QFileDialog::getSaveFileName(
 					   this, tr("Export to s98"),
 					   QString("%1/%2.s98").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
 					   "S98 file (*.s98)");
-	if (file.isNull()) return;
-	if (!file.endsWith(".s98")) file += ".s98";	// For linux
+	if (path.isNull()) return;
+	if (!path.endsWith(".s98")) path += ".s98";	// For linux
 
 	QProgressDialog progress(
 				tr("Export to S98"),
@@ -2396,17 +2426,29 @@ void MainWindow::on_actionS98_triggered()
 	stream_->stop();
 
 	try {
-		bool res = bt_->exportToS98(file.toStdString(),
-									diag.getExportTarget(),
-									diag.enabledTag(),
-									tag,
-									diag.getResolution(),
-									[&progress]() -> bool {
-										QApplication::processEvents();
-										progress.setValue(progress.value() + 1);
-										return progress.wasCanceled();
-									});
-		if (res) config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+		BinaryContainer container;
+		auto bar = [&progress]() -> bool {
+				   QApplication::processEvents();
+				   progress.setValue(progress.value() + 1);
+				   return progress.wasCanceled();
+	};
+
+		bool res = bt_->exportToS98(container, diag.getExportTarget(), diag.enabledTag(),
+									tag, diag.getResolution(), bar);
+		if (res) {
+			QFile fp(path);
+			if (!fp.open(QIODevice::WriteOnly)) {
+				QMessageBox::critical(this, tr("Error"), tr("Failed to export to s98 file."));
+				return;
+			}
+
+			QDataStream out(&fp);
+			out.writeRawData(container.getPointer(), static_cast<int>(container.size()));
+			fp.close();
+			bar();
+
+			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+		}
 	}
 	catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Failed to export to s98 file."));

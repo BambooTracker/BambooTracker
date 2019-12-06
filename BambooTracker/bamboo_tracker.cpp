@@ -1002,7 +1002,7 @@ int BambooTracker::getPlayingStepNumber() const
 }
 
 /********** Export **********/
-bool BambooTracker::exportToWav(std::string file, int rate, int loopCnt, std::function<bool()> f)
+bool BambooTracker::exportToWav(BinaryContainer& container, int rate, int loopCnt, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(rate);
@@ -1027,7 +1027,7 @@ bool BambooTracker::exportToWav(std::string file, int rate, int loopCnt, std::fu
 				intrCntRest = intrCnt;    // Set counts to next interruption
 
 				if (!streamCountUp()) {
-					if (f()) {	// Update lambda function
+					if (bar()) {	// Update lambda function
 						stopPlaySong();
 						isFollowPlay_ = tmpFollow;
 						return false;
@@ -1059,8 +1059,7 @@ bool BambooTracker::exportToWav(std::string file, int rate, int loopCnt, std::fu
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeWave(file, exCntr->getStream(), static_cast<uint32_t>(rate));
-		f();
+		ExportHandler::writeWave(container, exCntr->getStream(), static_cast<uint32_t>(rate));
 		return true;
 	}
 	catch (...) {
@@ -1068,7 +1067,8 @@ bool BambooTracker::exportToWav(std::string file, int rate, int loopCnt, std::fu
 	}
 }
 
-bool BambooTracker::exportToVgm(std::string file, int target, bool gd3TagEnabled, GD3Tag tag, std::function<bool()> f)
+bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
+								GD3Tag tag, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -1094,7 +1094,7 @@ bool BambooTracker::exportToVgm(std::string file, int target, bool gd3TagEnabled
 
 	while (true) {
 		if (!streamCountUp()) {
-			if (f()) {	// Update lambda function
+			if (bar()) {	// Update lambda function
 				stopPlaySong();
 				isFollowPlay_ = tmpFollow;
 				return false;
@@ -1122,17 +1122,17 @@ bool BambooTracker::exportToVgm(std::string file, int target, bool gd3TagEnabled
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeVgm(file, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+		ExportHandler::writeVgm(container, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
 								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
 								exCntr->getSampleLength(), gd3TagEnabled, tag);
-		f();
 		return true;
 	} catch (...) {
 		throw;
 	}
 }
 
-bool BambooTracker::exportToS98(std::string file, int target, bool tagEnabled, S98Tag tag, int rate, std::function<bool()> f)
+bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tagEnabled,
+								S98Tag tag, int rate, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(rate);
@@ -1157,7 +1157,7 @@ bool BambooTracker::exportToS98(std::string file, int target, bool tagEnabled, S
 	while (true) {
 		exCntr->getData();	// Set wait counts
 		if (!streamCountUp()) {
-			if (f()) {	// Update lambda function
+			if (bar()) {	// Update lambda function
 				stopPlaySong();
 				isFollowPlay_ = tmpFollow;
 				return false;
@@ -1184,9 +1184,8 @@ bool BambooTracker::exportToS98(std::string file, int target, bool tagEnabled, S
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeS98(file, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(rate),
+		ExportHandler::writeS98(container, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(rate),
 								loopFlag, loopPoint, tagEnabled, tag);
-		f();
 		return true;
 	} catch (...) {
 		throw;
