@@ -133,9 +133,9 @@ void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
-void BambooTracker::exportInstruments(std::string path, std::vector<size_t> instNums)
+void BambooTracker::exportInstruments(BinaryContainer& container, std::vector<size_t> instNums)
 {
-	BankIO::saveBank(path, instNums, instMan_);
+	BankIO::saveBank(container, instNums, instMan_);
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const

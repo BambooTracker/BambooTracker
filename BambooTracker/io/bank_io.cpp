@@ -1,21 +1,15 @@
 #include "bank_io.hpp"
 #include <algorithm>
 #include <iterator>
-#include <nowide/fstream.hpp>
 #include "file_io.hpp"
 #include "file_io_error.hpp"
-#include "binary_container.hpp"
 #include "version.hpp"
 
-BankIO::BankIO()
-{
-}
+BankIO::BankIO() {}
 
-void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
+void BankIO::saveBank(BinaryContainer& ctr, std::vector<size_t> instNums,
 					  std::weak_ptr<InstrumentsManager> instMan)
 {
-	BinaryContainer ctr;
-
 	ctr.appendString("BambooTrackerBnk");
 	size_t eofOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy EOF offset
@@ -659,24 +653,18 @@ void BankIO::saveBank(std::string path, std::vector<size_t> instNums,
 	ctr.writeUint32(instPropOfs, ctr.size() - instPropOfs);
 
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
-
-	if (!ctr.save(path)) throw FileOutputError(FileIO::FileType::Bank);
 }
 
-AbstractBank* BankIO::loadBank(std::string path)
+AbstractBank* BankIO::loadBank(BinaryContainer& ctr, std::string path)
 {
 	std::string ext = FileIO::getExtension(path);
-	if (ext.compare("wopn") == 0) return BankIO::loadWOPNFile(path);
-	if (ext.compare("btb") == 0) return BankIO::loadBTBFile(path);
+	if (ext.compare("wopn") == 0) return BankIO::loadWOPNFile(ctr);
+	if (ext.compare("btb") == 0) return BankIO::loadBTBFile(ctr);
 	throw FileInputError(FileIO::FileType::Bank);
 }
 
-AbstractBank* BankIO::loadBTBFile(std::string path)
+AbstractBank* BankIO::loadBTBFile(BinaryContainer& ctr)
 {
-	BinaryContainer ctr;
-
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Bank);
-
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerBnk")
 		throw FileCorruptionError(FileIO::FileType::Bank);
@@ -729,7 +717,7 @@ AbstractBank* BankIO::loadBTBFile(std::string path)
 	return new BtBank(std::move(ids), std::move(names), std::move(instCtrs), std::move(propCtr), fileVersion);
 }
 
-AbstractBank* BankIO::loadWOPNFile(std::string path)
+AbstractBank* BankIO::loadWOPNFile(BinaryContainer& ctr)
 {
 	struct WOPNDeleter {
 		void operator()(WOPNFile *x) { WOPN_Free(x); }
@@ -737,21 +725,10 @@ AbstractBank* BankIO::loadWOPNFile(std::string path)
 
 	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
 
-	nowide::ifstream in(path, std::ios::binary);
-	in.seekg(0, std::ios::end);
-	std::streampos size = in.tellg();
-
-	if (!in)
-		throw FileInputError(FileIO::FileType::Bank);
-	else {
-		std::unique_ptr<char[]> buf(new char[size]);
-		in.seekg(0, std::ios::beg);
-		if (!in.read(buf.get(), size) || in.gcount() != size)
-			throw FileInputError(FileIO::FileType::Bank);
-		wopn.reset(WOPN_LoadBankFromMem(buf.get(), size, nullptr));
-		if (!wopn)
-			throw FileCorruptionError(FileIO::FileType::Bank);
-	}
+	std::unique_ptr<char[]> buf(new char[ctr.size()]);
+	wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
+	if (!wopn)
+		throw FileCorruptionError(FileIO::FileType::Bank);
 
 	WopnBank *bank = new WopnBank(wopn.get());
 	wopn.release();

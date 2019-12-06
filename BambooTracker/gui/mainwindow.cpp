@@ -956,7 +956,15 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 {
 	std::unique_ptr<AbstractBank> bank;
 	try {
-		bank.reset(BankIO::loadBank(file.toStdString()));
+		QFile fp(file);
+		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::Bank);
+		QByteArray array = fp.readAll();
+		fp.close();
+
+		BinaryContainer container;
+		container.appendVector(std::vector<char>(array.begin(), array.end()));
+
+		bank.reset(BankIO::loadBank(container, file.toStdString()));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
@@ -1016,7 +1024,14 @@ void MainWindow::exportInstrumentsToBank()
 	if (selection.empty()) return;
 
 	try {
-		bt_->exportInstruments(file.toStdString(), selection);
+		BinaryContainer container;
+		bt_->exportInstruments(container, selection);
+
+		QFile fp(file);
+		if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Bank);
+		fp.write(container.getPointer(), container.size());
+		fp.close();
+
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {

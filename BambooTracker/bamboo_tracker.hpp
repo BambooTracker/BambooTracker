@@ -53,7 +53,7 @@ public:
 	void loadInstrument(std::string path, int instNum);
 	void saveInstrument(std::string path, int instNum);
 	void importInstrument(const AbstractBank &bank, size_t index, int instNum);
-	void exportInstruments(std::string path, std::vector<size_t> instNums);
+	void exportInstruments(BinaryContainer& container, std::vector<size_t> instNums);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void clearAllInstrument();
