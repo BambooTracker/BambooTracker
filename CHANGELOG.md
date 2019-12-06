@@ -5,6 +5,7 @@
 - Fix incorrect text painting in the pattern editor
 - [#168] - Fix pattern rendering glitches (thanks [@OPNA2608], [@YuzuMSX])
 - [#169] - Fix the order list corruption after changing font (thanks [@jimbo1qaz])
+- Fix pattern jump calculation
 
 [@YuzuMSX]: https://github.com/YuzuMSX
 

@@ -495,7 +495,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 	textPixmap_->scroll(0, -shift, srcRect);
 	backPixmap_->scroll(0, -shift, srcRect);
 	{
-		PatternPosition fpos = calculatePositionFrom(viewedCenterPos_.order, viewedCenterPos_.step, 1 - halfRowsCnt);
+		PatternPosition fpos = calculatePositionFrom(viewedCenterPos_.order, viewedCenterPos_.step, stepDownCount_ - halfRowsCnt);
 		if (fpos.order != -1) viewedFirstPos_ = std::move(fpos);
 	}
 
@@ -1134,14 +1134,12 @@ int PatternEditorPanel::calculateStepDistance(int beginOrder, int beginStep, int
 
 PatternPosition PatternEditorPanel::calculatePositionFrom(int order, int step, int by) const
 {
-	PatternPosition pos{ -1, -1, order, step };
+	PatternPosition pos{ -1, -1, order, step + by };
 
-	step += by;
 	if (by > 0) {
 		while (true) {
-			int dif = step - static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, order));
+			int dif = pos.step - static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, pos.order));
 			if (dif < 0) {
-				pos.step = step;
 				break;
 			}
 			else {
@@ -1151,23 +1149,22 @@ PatternPosition PatternEditorPanel::calculatePositionFrom(int order, int step, i
 				else {
 					++pos.order;
 				}
-				step = dif;
+				pos.step = dif;
 			}
 		}
 	}
 	else {
 		while (true) {
-			if (step < 0) {
+			if (pos.step < 0) {
 				if (pos.order == 0) {
 					return { -1, -1, -1, -1 };
 				}
 				else {
 					--pos.order;
 				}
-				step += bt_->getPatternSizeFromOrderNumber(curSongNum_, pos.order);
+				pos.step += bt_->getPatternSizeFromOrderNumber(curSongNum_, pos.order);
 			}
 			else {
-				pos.step = step;
 				break;
 			}
 		}

@@ -392,7 +392,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 	textPixmap_->scroll(0, -shift, srcRect);
 	backPixmap_->scroll(0, -shift, srcRect);
 	{
-		int fpos = viewedCenterPos_.row + 1 - halfRowsCnt;
+		int fpos = viewedCenterPos_.row + orderDownCount_ - halfRowsCnt;
 		if (fpos >= 0) viewedFirstPos_.row = fpos;
 	}
 
