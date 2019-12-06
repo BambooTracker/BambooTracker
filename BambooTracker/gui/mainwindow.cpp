@@ -261,19 +261,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 
 	/* Instrument list */
-	ui->instrumentListWidget->setStyleSheet(
-				QString("QListWidget { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistBackColor.name(QColor::HexArgb))
-				+ QString("QListWidget::item:hover { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistHovBackColor.name(QColor::HexArgb))
-				+ QString("QListWidget::item:selected { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistSelBackColor.name(QColor::HexArgb))
-				+ QString("QListWidget::item:selected:hover { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistHovSelBackColor.name(QColor::HexArgb)));
+	updateInstrumentListColors();
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
@@ -708,6 +696,23 @@ void MainWindow::freezeViews()
 {
 	ui->orderList->freeze();
 	ui->patternEditor->freeze();
+}
+
+void MainWindow::updateInstrumentListColors()
+{
+	ui->instrumentListWidget->setStyleSheet(
+				QString("QListWidget { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistBackColor.name(QColor::HexArgb))
+				+ QString("QListWidget::item:hover { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistHovBackColor.name(QColor::HexArgb))
+				+ QString("QListWidget::item:selected { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistSelBackColor.name(QColor::HexArgb))
+				+ QString("QListWidget::item:selected:hover { color: %1; background: %2; }")
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
+				.arg(palette_->ilistHovSelBackColor.name(QColor::HexArgb)));
 }
 
 /********** MIDI **********/
@@ -1312,6 +1317,8 @@ void MainWindow::changeConfiguration()
 	bt_->changeConfiguration(config_);
 
 	ui->waveVisual->setVisible(config_.lock()->getShowWaveVisual());
+
+	updateInstrumentListColors();
 
 	update();
 }

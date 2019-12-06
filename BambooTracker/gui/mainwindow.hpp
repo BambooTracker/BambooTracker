@@ -156,6 +156,7 @@ private:
 	int midiKeyEventMethod_;
 	int midiProgramEventMethod_;
 
+	void updateInstrumentListColors();
 	void freezeViews();
 
 private slots:
