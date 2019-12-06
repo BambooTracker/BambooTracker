@@ -380,6 +380,5 @@ pkg install bambootracker
 - SCCIライブラリに関してSCCI開発チームの方々
 - RtAudioとRtMidiライブラリに関してGary P. Scavoneさん他
 - Nuked OPN-Modエミュレーションに関してAlexey Khokholov (Nuke.YKT)さん、Jean Pierre Cimalandoさん
-- nowideライブラリに関してArtyom Beilisさん
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん
 - そしてこのプロジェクトに手助けしてくださるみなさん!

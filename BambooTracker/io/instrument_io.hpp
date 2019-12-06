@@ -9,31 +9,32 @@
 class InstrumentIO
 {
 public:
-	static void saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum);
-	static AbstractInstrument* loadInstrument(std::string path,
+	static void saveInstrument(BinaryContainer& ctr, std::weak_ptr<InstrumentsManager> instMan, int instNum);
+	static AbstractInstrument* loadInstrument(BinaryContainer& ctr,
+											  std::string path,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum);
 
 private:
-	static AbstractInstrument* loadBTIFile(std::string path,
+	static AbstractInstrument* loadBTIFile(BinaryContainer& ctr,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadDMPFile(std::string path,
+	static AbstractInstrument* loadDMPFile(BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadTFIFile(std::string path,
+	static AbstractInstrument* loadTFIFile(BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadVGIFile(std::string path,
+	static AbstractInstrument* loadVGIFile(BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadOPNIFile(std::string path,
+	static AbstractInstrument* loadOPNIFile(BinaryContainer& ctr,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadY12File(std::string path,
+	static AbstractInstrument* loadY12File(BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadINSFile(std::string path,
+	static AbstractInstrument* loadINSFile(BinaryContainer& ctr,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
 

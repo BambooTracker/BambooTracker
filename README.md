@@ -380,6 +380,5 @@ I would like to thank the following people for making it:
 - SCCI team for SCCI libraries
 - Gary P. Scavone and others for RtAudio and RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
-- Artyom Beilis for nowide library
 - Jean Pierre Cimalando and Olivier Humbert for French translation
 - And everyone who helps this project!

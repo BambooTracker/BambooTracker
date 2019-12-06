@@ -114,16 +114,16 @@ void BambooTracker::deepCloneInstrument(int num, int refNum)
 	comMan_.invoke(std::make_unique<DeepCloneInstrumentCommand>(instMan_, num, refNum));
 }
 
-void BambooTracker::loadInstrument(std::string path, int instNum)
+void BambooTracker::loadInstrument(BinaryContainer& container, std::string path, int instNum)
 {
-	auto inst = InstrumentIO::loadInstrument(path, instMan_, instNum);
+	auto inst = InstrumentIO::loadInstrument(container, path, instMan_, instNum);
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
-void BambooTracker::saveInstrument(std::string path, int instNum)
+void BambooTracker::saveInstrument(BinaryContainer& container, int instNum)
 {
-	InstrumentIO::saveInstrument(path, instMan_, instNum);
+	InstrumentIO::saveInstrument(container, instMan_, instNum);
 }
 
 void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)

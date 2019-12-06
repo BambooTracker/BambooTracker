@@ -1,5 +1,4 @@
 #include "binary_container.hpp"
-#include <nowide/fstream.hpp>
 #include <algorithm>
 #include <iterator>
 #include <utility>
@@ -40,31 +39,6 @@ void BinaryContainer::setEndian(bool isLittleEndian)
 bool BinaryContainer::isLittleEndian() const
 {
 	return isLE_;
-}
-
-bool BinaryContainer::load(std::string path)
-{
-	try {
-		nowide::ifstream ifs(path, std::ios::binary);
-		buf_.resize(static_cast<size_t>(ifs.seekg(0, std::ios::end).tellg()));
-		ifs.seekg(0, std::ios::beg).read(&buf_[0], static_cast<std::streamsize>(buf_.size()));
-		return true;
-	}
-	catch (...) {
-		return false;
-	}
-}
-
-bool BinaryContainer::save(std::string path)
-{
-	try {
-		nowide::ofstream ofs(path, std::ios::binary);
-		ofs.write(&buf_[0], static_cast<std::streamsize>(buf_.size()));
-		return true;
-	}
-	catch (...) {
-		return false;
-	}
 }
 
 void BinaryContainer::appendInt8(const int8_t v)

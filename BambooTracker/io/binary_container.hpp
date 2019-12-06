@@ -16,9 +16,6 @@ public:
 	void setEndian(bool isLittleEndian);
 	bool isLittleEndian() const;
 
-	bool load(std::string path);
-	bool save(std::string path);
-
 	void appendInt8(const int8_t v);
 	void appendUint8(const uint8_t v);
 	void appendInt16(const int16_t v);

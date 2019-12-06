@@ -50,8 +50,8 @@ public:
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
-	void loadInstrument(std::string path, int instNum);
-	void saveInstrument(std::string path, int instNum);
+	void loadInstrument(BinaryContainer& container, std::string path, int instNum);
+	void saveInstrument(BinaryContainer& container, int instNum);
 	void importInstrument(const AbstractBank &bank, size_t index, int instNum);
 	void exportInstruments(BinaryContainer& container, std::vector<size_t> instNums);
 	int findFirstFreeInstrumentNumber() const;

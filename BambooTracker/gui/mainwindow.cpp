@@ -1,6 +1,5 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-#include <nowide/fstream.hpp>
 #include <algorithm>
 #include <unordered_map>
 #include <QString>
@@ -892,7 +891,15 @@ void MainWindow::funcLoadInstrument(QString file)
 	if (n == -1) QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
 
 	try {
-		bt_->loadInstrument(file.toStdString(), n);
+		QFile fp(file);
+		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::Inst);
+		QByteArray array = fp.readAll();
+		fp.close();
+
+		BinaryContainer contaner;
+		contaner.appendVector(std::vector<char>(array.begin(), array.end()));
+		bt_->loadInstrument(contaner, file.toStdString(), n);
+
 		auto inst = bt_->getInstrument(n);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(
@@ -922,7 +929,14 @@ void MainWindow::saveInstrument()
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
 	try {
-		bt_->saveInstrument(file.toStdString(), n);
+		BinaryContainer container;
+		bt_->saveInstrument(container, n);
+
+		QFile fp(file);
+		if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Inst);
+		fp.write(container.getPointer(), container.size());
+		fp.close();
+
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (std::exception& e) {
@@ -1975,7 +1989,6 @@ void MainWindow::on_actionAbout_triggered()
 						 "Libraries:<br>"
 						 "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
 						 "- MAME (MAME License)<br>"
-						 "- nowide by (C) Artyom Beilis (BSL v1.0)<br>"
 						 "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"
 						 "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
 						 "- RtAudio by (C) Gary P. Scavone (RtAudio License)<br>"

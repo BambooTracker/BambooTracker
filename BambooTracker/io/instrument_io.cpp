@@ -1,6 +1,5 @@
 #include "instrument_io.hpp"
 #include "file_io.hpp"
-#include <nowide/fstream.hpp>
 #include <locale>
 #include <vector>
 #include <algorithm>
@@ -14,10 +13,8 @@
 
 InstrumentIO::InstrumentIO() {}
 
-void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum)
+void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
-	BinaryContainer ctr;
-
 	ctr.appendString("BambooTrackerIst");
 	size_t eofOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy EOF offset
@@ -602,33 +599,27 @@ void InstrumentIO::saveInstrument(std::string path, std::weak_ptr<InstrumentsMan
 	ctr.writeUint32(instPropOfs, ctr.size() - instPropOfs);
 
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
-
-	if (!ctr.save(path)) throw FileOutputError(FileIO::FileType::Inst);
 }
 
-AbstractInstrument* InstrumentIO::loadInstrument(std::string path,
+AbstractInstrument* InstrumentIO::loadInstrument(BinaryContainer& ctr, std::string path,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum)
 {
 	std::string ext = FileIO::getExtension(path);
-	if (ext.compare("dmp") == 0) return InstrumentIO::loadDMPFile(path, instMan, instNum);
-	if (ext.compare("tfi") == 0) return InstrumentIO::loadTFIFile(path, instMan, instNum);
-	if (ext.compare("vgi") == 0) return InstrumentIO::loadVGIFile(path, instMan, instNum);
-	if (ext.compare("opni") == 0) return InstrumentIO::loadOPNIFile(path, instMan, instNum);
-	if (ext.compare("y12") == 0) return InstrumentIO::loadY12File(path, instMan, instNum);
-	if (ext.compare("ins") == 0) return InstrumentIO::loadINSFile(path, instMan, instNum);
-	if (ext.compare("bti") == 0) return InstrumentIO::loadBTIFile(path, instMan, instNum);
+	if (ext.compare("dmp") == 0) return InstrumentIO::loadDMPFile(ctr, path, instMan, instNum);
+	if (ext.compare("tfi") == 0) return InstrumentIO::loadTFIFile(ctr, path, instMan, instNum);
+	if (ext.compare("vgi") == 0) return InstrumentIO::loadVGIFile(ctr, path, instMan, instNum);
+	if (ext.compare("opni") == 0) return InstrumentIO::loadOPNIFile(ctr, instMan, instNum);
+	if (ext.compare("y12") == 0) return InstrumentIO::loadY12File(ctr, path, instMan, instNum);
+	if (ext.compare("ins") == 0) return InstrumentIO::loadINSFile(ctr, instMan, instNum);
+	if (ext.compare("bti") == 0) return InstrumentIO::loadBTIFile(ctr, instMan, instNum);
 	throw FileInputError(FileIO::FileType::Inst);
 }
 
-AbstractInstrument* InstrumentIO::loadBTIFile(std::string path,
+AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
-	BinaryContainer ctr;
-
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Inst);
-
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerIst")
 		throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2015,9 +2006,7 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	return ofs;
 }
 
-AbstractInstrument* InstrumentIO::loadDMPFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
-	BinaryContainer ctr;
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Inst);
+AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
@@ -2235,9 +2224,7 @@ int InstrumentIO::convertTFIVGMDT(int dt)
 	}
 }
 
-AbstractInstrument* InstrumentIO::loadTFIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
-	BinaryContainer ctr;
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Inst);
+AbstractInstrument* InstrumentIO::loadTFIFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	if (ctr.size() != 42) throw FileCorruptionError(FileIO::FileType::Inst);
 	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2304,9 +2291,7 @@ AbstractInstrument* InstrumentIO::loadTFIFile(std::string path, std::weak_ptr<In
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadVGIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
-	BinaryContainer ctr;
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Inst);
+AbstractInstrument* InstrumentIO::loadVGIFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	if (ctr.size() != 43) throw FileCorruptionError(FileIO::FileType::Inst);
 	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2391,33 +2376,18 @@ AbstractInstrument* InstrumentIO::loadVGIFile(std::string path, std::weak_ptr<In
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadOPNIFile(std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+AbstractInstrument* InstrumentIO::loadOPNIFile(BinaryContainer& ctr, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	OPNIFile opni;
-
-	nowide::ifstream in(path, std::ios::binary);
-	in.seekg(0, std::ios::end);
-	std::streampos size = in.tellg();
-
-	if (!in)
-		throw FileInputError(FileIO::FileType::Inst);
-	else {
-		std::unique_ptr<char[]> buf(new char[static_cast<size_t>(size)]);
-		in.seekg(0, std::ios::beg);
-		if (!in.read(buf.get(), static_cast<int>(size)) || in.gcount() != size)
-			throw FileInputError(FileIO::FileType::Inst);
-		if (WOPN_LoadInstFromMem(&opni, buf.get(), static_cast<size_t>(size)) != 0)
-			throw FileCorruptionError(FileIO::FileType::Inst);
-	}
+	if (WOPN_LoadInstFromMem(&opni, const_cast<char*>(ctr.getPointer()), static_cast<size_t>(ctr.size())) != 0)
+		throw FileCorruptionError(FileIO::FileType::Inst);
 
 	return loadWOPNInstrument(opni.inst, instMan, instNum);
 }
 
-AbstractInstrument* InstrumentIO::loadY12File(std::string path,
+AbstractInstrument* InstrumentIO::loadY12File(BinaryContainer& ctr, std::string path,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
-	BinaryContainer ctr;
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Inst);
 	if (ctr.size() != 128) throw FileCorruptionError(FileIO::FileType::Inst);
 	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2514,12 +2484,10 @@ AbstractInstrument* InstrumentIO::loadY12File(std::string path,
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadINSFile(std::string path,
+AbstractInstrument* InstrumentIO::loadINSFile(BinaryContainer& ctr,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
-	BinaryContainer ctr;
-	if (!ctr.load(path)) throw FileInputError(FileIO::FileType::Inst);
 	size_t csr = 0;
 	if (ctr.readString(csr, 4).compare("MVSI") != 0) throw FileInputError(FileIO::FileType::Inst);
 	csr += 4;

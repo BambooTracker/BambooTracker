@@ -724,8 +724,6 @@ AbstractBank* BankIO::loadWOPNFile(BinaryContainer& ctr)
 	};
 
 	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
-
-	std::unique_ptr<char[]> buf(new char[ctr.size()]);
 	wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
 	if (!wopn)
 		throw FileCorruptionError(FileIO::FileType::Bank);
