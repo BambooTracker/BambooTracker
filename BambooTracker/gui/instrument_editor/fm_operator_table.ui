@@ -39,7 +39,7 @@
      <property name="checkable">
       <bool>true</bool>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,5">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="6,4">
       <property name="spacing">
        <number>3</number>
       </property>
@@ -192,20 +192,15 @@
        </layout>
       </item>
       <item>
-       <widget class="QGraphicsView" name="envelopeGraphicsView">
-        <property name="styleSheet">
-         <string notr="true">QGraphicsView {
-	background-color: transparent;
-}</string>
+       <widget class="QFrame" name="envFrame">
+        <property name="frameShape">
+         <enum>QFrame::Panel</enum>
         </property>
-        <property name="backgroundBrush">
-         <brush brushstyle="NoBrush">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
         </property>
        </widget>
       </item>

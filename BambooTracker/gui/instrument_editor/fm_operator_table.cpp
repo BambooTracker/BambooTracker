@@ -1,11 +1,11 @@
 #include "fm_operator_table.hpp"
 #include "ui_fm_operator_table.h"
 #include <QString>
-#include <QGraphicsScene>
 #include <QPen>
-#include <QBrush>
 #include <QMenu>
 #include <QClipboard>
+#include <QPointF>
+#include <QPainter>
 #include "gui/event_guard.hpp"
 
 FMOperatorTable::FMOperatorTable(QWidget *parent) :
@@ -85,9 +85,9 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, value);
 	});
 
-	// Init graph
-	auto scene = new QGraphicsScene(0, 0, 201, 128, ui->envelopeGraphicsView);
-	ui->envelopeGraphicsView->setScene(scene);
+	envmap_ = std::make_unique<QPixmap>();
+
+	ui->envFrame->installEventFilter(this);
 }
 
 FMOperatorTable::~FMOperatorTable()
@@ -203,6 +203,17 @@ QString FMOperatorTable::toString() const
 	return str;
 }
 
+bool FMOperatorTable::eventFilter(QObject* obj, QEvent* event)
+{
+	if (obj == ui->envFrame) {
+		if (event->type() == QEvent::Paint) {
+			QPainter painter(ui->envFrame);
+			painter.eraseRect(ui->envFrame->rect());
+			painter.drawPixmap(ui->envFrame->rect(), *envmap_.get(), envmap_->rect());
+		}
+	}
+}
+
 void FMOperatorTable::showEvent(QShowEvent* event)
 {
 	Q_UNUSED(event)
@@ -214,165 +225,204 @@ void FMOperatorTable::resizeEvent(QResizeEvent* event)
 {
 	Q_UNUSED(event)
 	resizeGraph();
+	repaintGraph();
 }
 
 void FMOperatorTable::resizeGraph()
 {
-	ui->envelopeGraphicsView->fitInView(ui->envelopeGraphicsView->scene()->sceneRect());
+	envmap_ = std::make_unique<QPixmap>(ui->envFrame->size());
 }
 
 void FMOperatorTable::repaintGraph()
 {
 	if (!palette_) return;
 
-	auto scene = ui->envelopeGraphicsView->scene();
-	double envHeight = ui->ssgegCheckBox->isChecked() ? (scene->height() - 40) : scene->height();
-	double startx = 0;
+	QPointF p0, p1, p2, p3, p4;
+	const double marginHorizon = 100;
+	const double marginAr = 50;
+	const double marginDr = 150;
+	const double marginSr = 400;
 
-	double tly, tlx;
-	if (ui->arSlider->value()) {
-		tly = (127 - ui->tlSlider->value()) / 127.0 * envHeight;
-	}
-	else {
-		tly = 0;
-	}
-	tlx = 50 * (31 - ui->arSlider->value()) / 31 * tly / envHeight;
+	if (ui->arSlider->value() && ui->tlSlider->value() < 127) {
+		p1.setY(127 - ui->tlSlider->value());
+		if (ui->arSlider->value() < 31) {
+			double ar = 127. / (marginAr * (31 - ui->arSlider->value()) / 30.);
+			p1.setX(p1.y() / ar);
+		}
 
-	double sly, slx;
-	if (ui->drSlider->value()) {
-		sly = (15 - ui->slSlider->value()) / 15.0 * tly;
-		slx = 100 / envHeight * (31 - ui->drSlider->value()) / 31 * (tly - sly);
-	}
-	else {
-		sly = tly;
-		if (ui->slSlider->value()) {
-			slx = 100 * sly / envHeight;
+		if (ui->drSlider->value()) {
+			p2.setY(p1.y() * (1. - ui->slSlider->value() / 15.));
+			if (ui->drSlider->value() == 31) {
+				p2.setX(p1.x());
+				if (ui->slSlider->value() == 15) {
+					p3 = p2;
+				}
+				else {
+					if (ui->srSlider->value()) {
+						p3.setY(p2.y() / 2.);
+						if (ui->srSlider->value() == 31) {
+							p3.setX(p2.x());
+						}
+						else {
+							double sr = 127. / (marginSr * (31 - ui->srSlider->value()) / 30.);
+							p3.setX(p2.x() + p3.y() / 2. / sr);
+						}
+					}
+					else {
+						p3 = { p2.x() + ((ui->slSlider->value() == 15) ? 0 : marginHorizon), p2.y() };
+					}
+				}
+			}
+			else {
+				double dr = 127. / (marginDr * (31 - ui->drSlider->value()) / 30.);
+				p2.setX(p1.x() + (p1.y() - p2.y()) / dr);
+				if (ui->srSlider->value()) {
+					p3.setY(p2.y() / 2.);
+					if (ui->srSlider->value() == 31) {
+						p3.setX(p2.x());
+					}
+					else {
+						double sr = 127. / (marginSr * (31 - ui->srSlider->value()) / 30.);
+						p3.setX(p2.x() + p3.y() / 2. / sr);
+					}
+				}
+				else {
+					p3 = { p2.x() + ((ui->slSlider->value() == 15) ? 0 : marginHorizon), p2.y() };
+				}
+			}
 		}
 		else {
-			slx = 0;
+			if (ui->slSlider->value()) {
+				p2 = { p1.x() + marginHorizon, p1.y() };
+				p3 = p2;
+			}
+			else {
+				p2 = p1;
+				if (ui->srSlider->value()) {
+					p3.setY(p2.y() / 2.);
+					if (ui->srSlider->value() == 31) {
+						p3.setX(p2.x());
+					}
+					else {
+						double sr = 127. / (marginSr * (31 - ui->srSlider->value()) / 30.);
+						p3.setX(p2.x() + p3.y() / 2. / sr);
+					}
+				}
+				else {
+					p3 = { p2.x() + marginHorizon, p2.y() };
+				}
+			}
 		}
-	}
-	slx += tlx;
-	tly = envHeight - tly;
 
-	double rry, rrx;
-	if (!ui->drSlider->value() && ui->slSlider->value()) {
-		rry = sly;
-		rrx = 0;
-	}
-	else {
-		if (ui->srSlider->value()) {
-			rry = 0.5 * sly;
-			rrx = 100 / envHeight * (31 - ui->srSlider->value()) / 31 * (sly - rry);
+		if (!ui->rrSlider->value()) {
+			p4 = { 200, p3.y() };
+		}
+		else if (ui->rrSlider->value() == 31) {
+			p4.setX(p3.x());
 		}
 		else {
-			rry = sly;
-			rrx = 100;
+			double rr = 127. / (marginAr * (15 - ui->rrSlider->value()) / 14.);
+			p4.setX(p3.x() + p3.y() / rr);
 		}
 	}
-	rrx += slx;
-	sly = envHeight - sly;
 
-	double endy, endx;
-	if (ui->rrSlider->value()) {
-		endy = 0;
-		endx = (100 * rry / envHeight) * (15 - ui->rrSlider->value()) / 15 + rrx;
-	}
-	else {
-		endy = rry;
-		endx = 200;
-	}
-	rry = envHeight - rry;
-	endy = envHeight - endy;
+	double envHeight = (ui->ssgegCheckBox->isChecked() ? 87 : 127);
+	double envHrate = envHeight / 127.;
+	double xr = envmap_->width() / 200.;
+	double yr = envmap_->height() / 127.;
+	p0 = { p0.x() * xr, (127. - p0.y()) * envHrate * yr };
+	p1 = { p1.x() * xr, (127. - p1.y()) * envHrate * yr };
+	p2 = { p2.x() * xr, (127. - p2.y()) * envHrate * yr };
+	p3 = { p3.x() * xr, (127. - p3.y()) * envHrate * yr };
+	p4 = { p4.x() * xr, (127. - p4.y()) * envHrate * yr };
 
-	scene->clear();
-	scene->addRect(0, 0, scene->width(), scene->height(),
-				   QPen(palette_->instFMEnvBackColor), QBrush(palette_->instFMEnvBackColor));
+	envmap_->fill(palette_->instFMEnvBackColor);
+	QPainter painter(envmap_.get());
 
-	auto linePen = QPen(QBrush(palette_->instFMEnvLine1Color), 2);
-	scene->addLine(startx, envHeight, tlx, tly, linePen);
-	scene->addLine(tlx, tly, slx, sly, linePen);
-	scene->addLine(slx, sly, rrx, rry, linePen);
-	scene->addLine(rrx, rry, endx, endy, linePen);
-
-	auto cclPen = QPen(palette_->instFMEnvCirclePenColor);
-	auto cclBrush = QBrush(palette_->instFMEnvCircleBrushColor);
-	scene->addEllipse(tlx-1, tly, 4, 4, cclPen, cclBrush);
-	scene->addEllipse(slx-1, sly, 4, 4, cclPen, cclBrush);
-	scene->addEllipse(rrx-1, rry, 4, 4, cclPen, cclBrush);
+	painter.setPen(QPen(palette_->instFMEnvGridColor, 1));
+	painter.drawLine(p1.x(), 0, p1.x(), envHeight * yr);
+	painter.drawLine(p2.x(), 0, p2.x(), envHeight * yr);
+	painter.drawLine(p3.x(), 0, p3.x(), envHeight * yr);
+	painter.setPen(QPen(palette_->instFMEnvLine1Color, 2));
+	painter.drawLines({ QLineF(p0, p1), QLineF(p1, p2), QLineF(p2, p3) });
+	painter.setPen(QPen(palette_->instFMEnvLine2Color, 2));
+	painter.drawLine(QLineF(p3, p4));
 
 	if (ui->ssgegCheckBox->isChecked()) {
-		double seph = scene->height() - 39;
-		scene->addLine(0, seph, 200, seph, QPen(palette_->instFMEnvBorderColor));
+		double seph = 88;
+		painter.setPen(QPen(palette_->instFMEnvBorderColor, 1));
+		painter.drawLine(0, seph * yr, 200 * xr, seph * yr);
 		double toph = seph + 2;
-		double both = scene->height();
-		linePen.setBrush(palette_->instFMEnvLine2Color);
+		double both = 127;
+		painter.setPen(QPen(palette_->instFMEnvLine3Color, 2));
 		switch (ui->ssgegSlider->value()) {
 		case 0:
 		{
 			for (int i = 0; i < 5; ++i) {
-				scene->addLine(40 * i, both, 40 * i, toph, linePen);
-				scene->addLine(40 * i, toph, 40 * (i + 1), both, linePen);
+				painter.drawLine(40 * i * xr, both * yr, 40 * i * xr, toph * yr);
+				painter.drawLine(40 * i * xr, toph * yr, 40 * (i + 1) * xr, both * yr);
 			}
 		}
 			break;
 		case 1:
 		{
-			scene->addLine(0, both, 0, toph, linePen);
-			scene->addLine(0, toph, 40, both, linePen);
-			scene->addLine(40, both, 200, both, linePen);
+			painter.drawLine(0, both * yr, 0, toph * yr);
+			painter.drawLine(0, toph * yr, 40 * xr, both * yr);
+			painter.drawLine(40 * xr, both * yr, 200 * xr, both * yr);
 		}
 			break;
 		case 2:
 		{
-			scene->addLine(0, both, 0, toph, linePen);
-			scene->addLine(0, toph, 40, both, linePen);
+			painter.drawLine(0, both * yr, 0, toph * yr);
+			painter.drawLine(0, toph * yr, 40 * xr, both * yr);
 			for (int i = 0; i < 2; ++i) {
-				scene->addLine(40 + 80 * i, both, 80 + 80 * i, toph, linePen);
-				scene->addLine(80 + 80 * i, toph, 40 + 80 * (i + 1), both, linePen);
+				painter.drawLine((40 + 80 * i) * xr, both * yr, (80 + 80 * i) * xr, toph * yr);
+				painter.drawLine((80 + 80 * i) * xr, toph * yr, (40 + 80 * (i + 1)) * xr, both * yr);
 			}
 		}
 			break;
 		case 3:
 		{
-			scene->addLine(0, both, 0, toph, linePen);
-			scene->addLine(0, toph, 40, both, linePen);
-			scene->addLine(40, both, 40, toph, linePen);
-			scene->addLine(40, toph, 200, toph, linePen);
+			painter.drawLine(0, both * yr, 0, toph * yr);
+			painter.drawLine(0, toph * yr, 40 * xr, both * yr);
+			painter.drawLine(40 * xr, both * yr, 40 * xr, toph * yr);
+			painter.drawLine(40 * xr, toph * yr, 200 * xr, toph * yr);
 		}
 			break;
 		case 4:
 		{
 			for (int i = 0; i < 5; ++i) {
-				scene->addLine(40 * i, both, 40 * (i + 1), toph, linePen);
-				scene->addLine(40 * (i + 1), toph, 40 * (i + 1), both, linePen);
+				painter.drawLine(40 * i * xr, both * yr, 40 * (i + 1) * xr, toph * yr);
+				painter.drawLine(40 * (i + 1) * xr, toph * yr, 40 * (i + 1) * xr, both * yr);
 			}
 		}
 			break;
 		case 5:
 		{
-			scene->addLine(0, both, 40, toph, linePen);
-			scene->addLine(40, toph, 200, toph, linePen);
+			painter.drawLine(0, both * yr, 40 * xr, toph * yr);
+			painter.drawLine(40 * xr, toph * yr, 200 * xr, toph * yr);
 		}
 			break;
 		case 6:
 		{
 			for (int i = 0; i < 2; ++i) {
-				scene->addLine(80 * i, both, 40 + 80 * i, toph, linePen);
-				scene->addLine(40 + 80 * i, toph, 80 * (i + 1), both, linePen);
+				painter.drawLine(80 * i * xr, both * yr, (40 + 80 * i) * xr, toph * yr);
+				painter.drawLine((40 + 80 * i) * xr, toph * yr, 80 * (i + 1) * xr, both * yr);
 			}
-			scene->addLine(160, both, 200, toph, linePen);
+			painter.drawLine(160 * xr, both * yr, 200 * xr, toph * yr);
 		}
 			break;
 		case 7:
 		{
-			scene->addLine(0, both, 40, toph, linePen);
-			scene->addLine(40, toph, 40, both, linePen);
-			scene->addLine(40, both, 200, both, linePen);
+			painter.drawLine(0, both * yr, 40 * xr, toph * yr);
+			painter.drawLine(40 * xr, toph * yr, 40 * xr, both * yr);
+			painter.drawLine(40 * xr, both * yr, 200 * xr, both * yr);
 		}
 			break;
 		}
 	}
+
+	ui->envFrame->repaint();
 }
 
 void FMOperatorTable::on_ssgegCheckBox_stateChanged(int arg1)

@@ -8,6 +8,7 @@
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QString>
+#include <QPixmap>
 #include "gui/labeled_vertical_slider.hpp"
 #include "gui/color_palette.hpp"
 #include "enum_hash.hpp"
@@ -40,6 +41,7 @@ public:
 	QString toString() const;
 
 protected:
+	bool eventFilter(QObject* obj, QEvent* event) override;
 	void showEvent(QShowEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 
@@ -67,6 +69,7 @@ private:
 	bool isIgnoreEvent_;
 
 	// Envelope graph
+	std::unique_ptr<QPixmap> envmap_;
 	void resizeGraph();
 	void repaintGraph();
 };
