@@ -56,84 +56,37 @@
        <number>3</number>
       </property>
       <item>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="topMargin">
          <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <item row="0" column="3" rowspan="4">
-         <widget class="LabeledVerticalSlider" name="rrSlider">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="7" rowspan="4">
-         <widget class="LabeledVerticalSlider" name="mlSlider">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" rowspan="4">
+        <item>
          <widget class="LabeledVerticalSlider" name="arSlider">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="5" rowspan="4">
-         <widget class="LabeledVerticalSlider" name="tlSlider">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="6" rowspan="4">
-         <widget class="LabeledVerticalSlider" name="ksSlider">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="9" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="ssgegLabel">
           <property name="minimumSize">
            <size>
-            <width>0</width>
-            <height>12</height>
+            <width>31</width>
+            <height>0</height>
            </size>
           </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>12</height>
-           </size>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
-          <property name="text">
-           <string>SSGEG</string>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
           </property>
          </widget>
         </item>
-        <item row="0" column="1" rowspan="4">
+        <item>
          <widget class="LabeledVerticalSlider" name="drSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -142,18 +95,14 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="8" rowspan="4">
-         <widget class="LabeledVerticalSlider" name="dtSlider">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="4">
+        <item>
          <widget class="LabeledVerticalSlider" name="srSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -162,8 +111,30 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="4" rowspan="4">
+        <item>
+         <widget class="LabeledVerticalSlider" name="rrSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="LabeledVerticalSlider" name="slSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -172,8 +143,14 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="9" rowspan="2">
-         <widget class="LabeledVerticalSlider" name="ssgegSlider">
+        <item>
+         <widget class="LabeledVerticalSlider" name="tlSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -182,25 +159,127 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="9" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="ssgegCheckBox">
-          <property name="text">
-           <string/>
+        <item>
+         <widget class="LabeledVerticalSlider" name="ksSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
           </property>
          </widget>
+        </item>
+        <item>
+         <widget class="LabeledVerticalSlider" name="mlSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="LabeledVerticalSlider" name="dtSlider">
+          <property name="minimumSize">
+           <size>
+            <width>31</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="ssgegLabel">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>12</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>12</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>SSGEG</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QCheckBox" name="ssgegCheckBox">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="LabeledVerticalSlider" name="ssgegSlider">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>70</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
       <item>
        <widget class="QFrame" name="envFrame">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="frameShape">
-         <enum>QFrame::Panel</enum>
+         <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Sunken</enum>
         </property>
         <property name="lineWidth">
-         <number>2</number>
+         <number>1</number>
         </property>
        </widget>
       </item>
