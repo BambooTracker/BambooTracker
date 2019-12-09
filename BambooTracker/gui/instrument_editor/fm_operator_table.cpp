@@ -50,7 +50,6 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		{ Ui::FMOperatorParameter::DT, ui->dtSlider }
 	};
 
-	int n = 0;
 	for (auto& pair : sliderMap_) {
 		if (pair.second == ui->dtSlider) {
 			QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
@@ -212,6 +211,8 @@ bool FMOperatorTable::eventFilter(QObject* obj, QEvent* event)
 			painter.drawPixmap(ui->envFrame->rect(), *envmap_.get(), envmap_->rect());
 		}
 	}
+
+	return false;
 }
 
 void FMOperatorTable::showEvent(QShowEvent* event)
