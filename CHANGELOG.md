@@ -3,6 +3,7 @@
 ## Unreleased
 ### Changed
 - Change drawing method of FM envelope in FM instrument editor
+- Use Qt for file I/O
 
 ### Fixed
 - Fix incorrect text painting in the pattern editor
@@ -10,6 +11,7 @@
 - [#169] - Fix the order list corruption after changing font (thanks [@jimbo1qaz])
 - Fix pattern jump calculation
 - Change colors of the instrument list when appearance settings are changed
+- Fix text position in row of the order list and the pattern editor
 
 [@YuzuMSX]: https://github.com/YuzuMSX
 

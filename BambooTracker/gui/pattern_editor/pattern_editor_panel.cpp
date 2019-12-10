@@ -94,12 +94,16 @@ void PatternEditorPanel::updateSizes()
 #else
 	stepFontWidth_ = metrics.width('0');
 #endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
 	stepFontAscent_ = metrics.capHeight();
-	stepFontLeading_ = (metrics.lineSpacing() - stepFontAscent_) / 2;
+#else
+	stepFontAscent_ = metrics.boundingRect('X').height();
+#endif
+	stepFontLeading_ = metrics.ascent() - stepFontAscent_ + metrics.descent() / 2;
 	stepFontHeight_ = stepFontAscent_ + stepFontLeading_;
 
 	QFontMetrics m(headerFont_);
-	headerFontAscent_ = m.ascent();
+	headerFontAscent_ = m.ascent() + 2;
 
 	/* Width & height */
 	widthSpace_ = stepFontWidth_ / 5 * 2;
@@ -119,7 +123,7 @@ void PatternEditorPanel::updateSizes()
 	hdEffCompandButtonWidth_ = m.width("+");
 #endif
 	hdMuteToggleWidth_ = baseTrackWidth_ - hdEffCompandButtonWidth_ - stepFontWidth_ / 2 * 3;
-	headerHeight_ = stepFontHeight_ * 2;
+	headerHeight_ = m.height() * 2;
 	hdPlusY_ = headerHeight_ / 4 + m.lineSpacing() / 2 - m.leading() / 2 - m.descent();
 	hdMinusY_ = headerHeight_ / 2 + hdPlusY_;
 

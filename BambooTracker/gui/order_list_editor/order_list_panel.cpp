@@ -146,13 +146,17 @@ void OrderListPanel::updateSizes()
 #else
 	rowFontWidth_ = metrics.width('0');
 #endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
 	rowFontAscent_ = metrics.capHeight();
-	rowFontLeading_ = (metrics.lineSpacing() - rowFontAscent_) / 2;
+#else
+	rowFontAscent_ = metrics.boundingRect('X').height();
+#endif
+	rowFontLeading_ = metrics.ascent() - rowFontAscent_ + metrics.descent() / 2;
 	rowFontHeight_ = rowFontAscent_ + rowFontLeading_;
 
 	hdFontMets_ = std::make_unique<QFontMetrics>(headerFont_);
-	headerHeight_ = hdFontMets_->height();
-	headerFontAscent_ = hdFontMets_->ascent();
+	headerHeight_ = hdFontMets_->height() + 4;
+	headerFontAscent_ = hdFontMets_->ascent() + 2;
 
 	/* Width & height */
 	widthSpace_ = rowFontWidth_ / 4;
