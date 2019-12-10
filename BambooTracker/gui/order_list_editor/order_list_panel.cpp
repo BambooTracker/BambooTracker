@@ -6,7 +6,6 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QAction>
-#include <QFontMetrics>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QPoint>
@@ -147,15 +146,18 @@ void OrderListPanel::updateSizes()
 #else
 	rowFontWidth_ = metrics.width('0');
 #endif
-	rowFontAscend_ = metrics.ascent();
-	rowFontLeading_ = metrics.descent() / 2;
-	rowFontHeight_ = rowFontAscend_ + rowFontLeading_;
+	rowFontAscent_ = metrics.capHeight();
+	rowFontLeading_ = (metrics.lineSpacing() - rowFontAscent_) / 2;
+	rowFontHeight_ = rowFontAscent_ + rowFontLeading_;
+
+	hdFontMets_ = std::make_unique<QFontMetrics>(headerFont_);
+	headerHeight_ = hdFontMets_->height();
+	headerFontAscent_ = hdFontMets_->ascent();
 
 	/* Width & height */
 	widthSpace_ = rowFontWidth_ / 4;
 	trackWidth_ = rowFontWidth_ * 3 + widthSpace_ * 2;
 	rowNumWidth_ = rowFontWidth_ * 2 + widthSpace_;
-	headerHeight_ = rowFontHeight_;
 
 	initDisplay();
 }
@@ -174,7 +176,7 @@ void OrderListPanel::initDisplay()
 
 	viewedRowOffset_ = (viewedRowsHeight_ - viewedRegionHeight_) >> 1;
 	viewedCenterY_ = (viewedRowsHeight_ - rowFontHeight_) >> 1;
-	viewedCenterBaseY_ = viewedCenterY_ + rowFontAscend_ - (rowFontLeading_ >> 1);
+	viewedCenterBaseY_ = viewedCenterY_ + rowFontAscent_ + (rowFontLeading_ >> 1);
 
 	backPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
 	textPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
@@ -586,14 +588,13 @@ void OrderListPanel::drawHeaders(int maxWidth)
 			break;
 		}
 
-		QFontMetrics metrics(headerFont_);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
-		int rw = trackWidth_ - metrics.horizontalAdvance(str);
+		int rw = trackWidth_ - hdFontMets_->horizontalAdvance(str);
 #else
-		int rw = trackWidth_ - metrics.width(str);
+		int rw = trackWidth_ - hdFontMets_->width(str);
 #endif
 		rw = (rw < 0) ? 0 : (rw / 2);
-		painter.drawText(x + rw, rowFontLeading_ + rowFontAscend_, str);
+		painter.drawText(x + rw, headerFontAscent_, str);
 
 		x += trackWidth_;
 		++trackNum;
@@ -1340,7 +1341,7 @@ void OrderListPanel::resizeEvent(QResizeEvent *event)
 
 	// Recalculate center row position
 	curRowBaselineY_ = (geometry().height() + headerHeight_) / 2;
-	curRowY_ = curRowBaselineY_ + rowFontLeading_ / 2 - rowFontAscend_;
+	curRowY_ = curRowBaselineY_ + rowFontLeading_ / 2 - rowFontAscent_;
 
 	initDisplay();
 

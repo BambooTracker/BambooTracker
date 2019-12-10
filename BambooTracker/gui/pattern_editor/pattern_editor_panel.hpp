@@ -142,7 +142,8 @@ private:
 	std::shared_ptr<ColorPalette> palette_;
 
 	QFont stepFont_, headerFont_;
-	int stepFontWidth_, stepFontHeight_, stepFontAscend_, stepFontLeading_;
+	int stepFontWidth_, stepFontHeight_, stepFontAscent_, stepFontLeading_;
+	int headerFontAscent_;
 
 	int widthSpace_, widthSpaceDbl_;
 	int stepNumWidth_;

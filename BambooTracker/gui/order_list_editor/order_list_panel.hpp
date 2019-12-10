@@ -5,6 +5,7 @@
 #include <QUndoStack>
 #include <QPixmap>
 #include <QFont>
+#include <QFontMetrics>
 #include <QPaintEvent>
 #include <QResizeEvent>
 #include <QKeyEvent>
@@ -112,7 +113,9 @@ private:
 	std::shared_ptr<ColorPalette> palette_;
 
 	QFont rowFont_, headerFont_;
-	int rowFontWidth_, rowFontHeight_, rowFontAscend_, rowFontLeading_;
+	std::unique_ptr<QFontMetrics> hdFontMets_;
+	int rowFontWidth_, rowFontHeight_, rowFontAscent_, rowFontLeading_;
+	int headerFontAscent_;
 
 	int widthSpace_;
 	int rowNumWidth_;

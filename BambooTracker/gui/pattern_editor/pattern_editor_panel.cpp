@@ -94,10 +94,12 @@ void PatternEditorPanel::updateSizes()
 #else
 	stepFontWidth_ = metrics.width('0');
 #endif
-	stepFontAscend_ = metrics.ascent();
-	stepFontLeading_ = metrics.descent() / 2;
-	stepFontHeight_ = stepFontAscend_ + stepFontLeading_;
+	stepFontAscent_ = metrics.capHeight();
+	stepFontLeading_ = (metrics.lineSpacing() - stepFontAscent_) / 2;
+	stepFontHeight_ = stepFontAscent_ + stepFontLeading_;
+
 	QFontMetrics m(headerFont_);
+	headerFontAscent_ = m.ascent();
 
 	/* Width & height */
 	widthSpace_ = stepFontWidth_ / 5 * 2;
@@ -118,7 +120,7 @@ void PatternEditorPanel::updateSizes()
 #endif
 	hdMuteToggleWidth_ = baseTrackWidth_ - hdEffCompandButtonWidth_ - stepFontWidth_ / 2 * 3;
 	headerHeight_ = stepFontHeight_ * 2;
-	hdPlusY_ = headerHeight_ / 4 + m.height() / 2 - m.leading() / 2 - m.descent();
+	hdPlusY_ = headerHeight_ / 4 + m.lineSpacing() / 2 - m.leading() / 2 - m.descent();
 	hdMinusY_ = headerHeight_ / 2 + hdPlusY_;
 
 	initDisplay();
@@ -138,7 +140,7 @@ void PatternEditorPanel::initDisplay()
 
 	viewedRowOffset_ = (viewedRowsHeight_ - viewedRegionHeight_) >> 1;
 	viewedCenterY_ = (viewedRowsHeight_ - stepFontHeight_) >> 1;
-	viewedCenterBaseY_ = viewedCenterY_ + stepFontAscend_ - (stepFontLeading_ >> 1);
+	viewedCenterBaseY_ = viewedCenterY_ + stepFontAscent_ + (stepFontLeading_ >> 1);
 
 	backPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
 	textPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
@@ -886,7 +888,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 			}
 			break;
 		}
-		painter.drawText(x, stepFontLeading_ + stepFontAscend_, srcName);
+		painter.drawText(x, headerFontAscent_, srcName);
 
 		painter.fillRect(x, headerHeight_ - 4, hdMuteToggleWidth_, 2,
 						 bt_->isMute(trackNum) ? palette_->ptnMuteColor : palette_->ptnUnmuteColor);
@@ -2594,7 +2596,7 @@ void PatternEditorPanel::resizeEvent(QResizeEvent *event)
 
 	// Recalculate center row position
 	curRowY_ = (geometry().height() + headerHeight_ - stepFontHeight_) >> 1;
-	curRowBaselineY_ = curRowY_ + stepFontAscend_ - (stepFontLeading_ >> 1);
+	curRowBaselineY_ = curRowY_ + stepFontAscent_ - (stepFontLeading_ >> 1);
 
 	initDisplay();
 
