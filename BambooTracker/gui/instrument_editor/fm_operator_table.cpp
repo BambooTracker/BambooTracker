@@ -4,8 +4,6 @@
 #include <QPen>
 #include <QMenu>
 #include <QClipboard>
-#include <QPointF>
-#include <QPainter>
 #include "gui/event_guard.hpp"
 
 FMOperatorTable::FMOperatorTable(QWidget *parent) :
@@ -232,6 +230,8 @@ void FMOperatorTable::resizeEvent(QResizeEvent* event)
 void FMOperatorTable::resizeGraph()
 {
 	envmap_ = std::make_unique<QPixmap>(ui->envFrame->size());
+	xr_ = (envmap_->width() - (ENV_LINE_W_ + 1) * 2.) / ENV_W_;
+	yr_ = (envmap_->height() - (ENV_LINE_W_ + 1) * 2.) / ENV_H_;
 }
 
 void FMOperatorTable::repaintGraph()
@@ -316,7 +316,7 @@ void FMOperatorTable::repaintGraph()
 		}
 
 		if (!ui->rrSlider->value()) {
-			p4 = { 200, p3.y() };
+			p4 = { ENV_W_, p3.y() };
 		}
 		else if (ui->rrSlider->value() == 31) {
 			p4.setX(p3.x());
@@ -327,97 +327,99 @@ void FMOperatorTable::repaintGraph()
 		}
 	}
 
-	double envHeight = (ui->ssgegCheckBox->isChecked() ? 87 : 127);
+	double envHeight = ui->ssgegCheckBox->isChecked() ? (ENV_H_ - SSGEG_H_) : ENV_H_;
 	double envHrate = envHeight / 127.;
-	double xr = envmap_->width() / 200.;
-	double yr = envmap_->height() / 127.;
-	p0 = { p0.x() * xr, (127. - p0.y()) * envHrate * yr };
-	p1 = { p1.x() * xr, (127. - p1.y()) * envHrate * yr };
-	p2 = { p2.x() * xr, (127. - p2.y()) * envHrate * yr };
-	p3 = { p3.x() * xr, (127. - p3.y()) * envHrate * yr };
-	p4 = { p4.x() * xr, (127. - p4.y()) * envHrate * yr };
+	p0.setY((127. - p0.y()) * envHrate);
+	p1.setY((127. - p1.y()) * envHrate);
+	p2.setY((127. - p2.y()) * envHrate);
+	p3.setY((127. - p3.y()) * envHrate);
+	p4.setY((127. - p4.y()) * envHrate);
 
 	envmap_->fill(palette_->instFMEnvBackColor);
 	QPainter painter(envmap_.get());
 
-	painter.setPen(QPen(palette_->instFMEnvGridColor, 1));
-	painter.drawLine(p1.x(), 0, p1.x(), envHeight * yr);
-	painter.drawLine(p2.x(), 0, p2.x(), envHeight * yr);
-	painter.drawLine(p3.x(), 0, p3.x(), envHeight * yr);
-	painter.setPen(QPen(palette_->instFMEnvLine1Color, 2));
-	painter.drawLines({ QLineF(p0, p1), QLineF(p1, p2), QLineF(p2, p3) });
-	painter.setPen(QPen(palette_->instFMEnvLine2Color, 2));
-	painter.drawLine(QLineF(p3, p4));
+	painter.setPen(QPen(palette_->instFMEnvGridColor, ENV_LINE_T_));
+	drawLine(painter, p1.x(), 0, p1.x(), envHeight);
+	drawLine(painter, p2.x(), 0, p2.x(), envHeight);
+	drawLine(painter, p3.x(), 0, p3.x(), envHeight);
+
+	painter.setPen(QPen(palette_->instFMEnvLine1Color, ENV_LINE_W_));
+	drawLines(painter, { p0, p1, p2, p3 });
+	painter.setPen(QPen(palette_->instFMEnvLine2Color, ENV_LINE_W_));
+	drawLine(painter, p3, p4);
 
 	if (ui->ssgegCheckBox->isChecked()) {
-		double seph = 88;
-		painter.setPen(QPen(palette_->instFMEnvBorderColor, 1));
-		painter.drawLine(0, seph * yr, 200 * xr, seph * yr);
-		double toph = seph + 2;
-		double both = 127;
-		painter.setPen(QPen(palette_->instFMEnvLine3Color, 2));
+		const double seph = envHeight + 1;
+		painter.setPen(QPen(palette_->instFMEnvBorderColor, ENV_LINE_T_));
+		drawLine(painter, 0, seph, ENV_W_, seph);
+
+		const double toph = seph + 2;
+		const double both = ENV_H_;
+		const double horsec = ENV_W_ / 5.;
+		const double dhorsec = horsec * 2;
+		painter.setPen(QPen(palette_->instFMEnvLine3Color, ENV_LINE_W_));
 		switch (ui->ssgegSlider->value()) {
 		case 0:
 		{
 			for (int i = 0; i < 5; ++i) {
-				painter.drawLine(40 * i * xr, both * yr, 40 * i * xr, toph * yr);
-				painter.drawLine(40 * i * xr, toph * yr, 40 * (i + 1) * xr, both * yr);
+				drawLine(painter, horsec * i, both, horsec * i, toph);
+				drawLine(painter, horsec * i, toph, horsec * (i + 1), both);
 			}
 		}
 			break;
 		case 1:
 		{
-			painter.drawLine(0, both * yr, 0, toph * yr);
-			painter.drawLine(0, toph * yr, 40 * xr, both * yr);
-			painter.drawLine(40 * xr, both * yr, 200 * xr, both * yr);
+			drawLine(painter, 0, both, 0, toph);
+			drawLine(painter, 0, toph, horsec, both);
+			drawLine(painter, horsec, both, ENV_W_, both);
 		}
 			break;
 		case 2:
 		{
-			painter.drawLine(0, both * yr, 0, toph * yr);
-			painter.drawLine(0, toph * yr, 40 * xr, both * yr);
+			drawLine(painter, 0, both, 0, toph);
+			drawLine(painter, 0, toph, horsec, both);
 			for (int i = 0; i < 2; ++i) {
-				painter.drawLine((40 + 80 * i) * xr, both * yr, (80 + 80 * i) * xr, toph * yr);
-				painter.drawLine((80 + 80 * i) * xr, toph * yr, (40 + 80 * (i + 1)) * xr, both * yr);
+				drawLine(painter, horsec + dhorsec * i, both, dhorsec + dhorsec * i, toph);
+				drawLine(painter, dhorsec + dhorsec * i, toph, horsec + dhorsec * (i + 1), both);
 			}
 		}
 			break;
 		case 3:
 		{
-			painter.drawLine(0, both * yr, 0, toph * yr);
-			painter.drawLine(0, toph * yr, 40 * xr, both * yr);
-			painter.drawLine(40 * xr, both * yr, 40 * xr, toph * yr);
-			painter.drawLine(40 * xr, toph * yr, 200 * xr, toph * yr);
+			drawLine(painter, 0, both, 0, toph);
+			drawLine(painter, 0, toph, horsec, both);
+			drawLine(painter, horsec, both, horsec, toph);
+			drawLine(painter, horsec, toph, ENV_W_, toph);
 		}
 			break;
 		case 4:
 		{
 			for (int i = 0; i < 5; ++i) {
-				painter.drawLine(40 * i * xr, both * yr, 40 * (i + 1) * xr, toph * yr);
-				painter.drawLine(40 * (i + 1) * xr, toph * yr, 40 * (i + 1) * xr, both * yr);
+				drawLine(painter, horsec * i, both, horsec * (i + 1), toph);
+				drawLine(painter, horsec * (i + 1), toph, horsec * (i + 1), both);
 			}
 		}
 			break;
 		case 5:
 		{
-			painter.drawLine(0, both * yr, 40 * xr, toph * yr);
-			painter.drawLine(40 * xr, toph * yr, 200 * xr, toph * yr);
+			drawLine(painter, 0, both, horsec, toph);
+			drawLine(painter, horsec, toph, ENV_W_, toph);
 		}
 			break;
 		case 6:
 		{
 			for (int i = 0; i < 2; ++i) {
-				painter.drawLine(80 * i * xr, both * yr, (40 + 80 * i) * xr, toph * yr);
-				painter.drawLine((40 + 80 * i) * xr, toph * yr, 80 * (i + 1) * xr, both * yr);
+				drawLine(painter, dhorsec * i, both, horsec + dhorsec * i, toph);
+				drawLine(painter, horsec + dhorsec * i, toph, dhorsec * (i + 1), both);
 			}
-			painter.drawLine(160 * xr, both * yr, 200 * xr, toph * yr);
+			drawLine(painter, dhorsec * 2, both, ENV_W_, toph);
 		}
 			break;
 		case 7:
 		{
-			painter.drawLine(0, both * yr, 40 * xr, toph * yr);
-			painter.drawLine(40 * xr, toph * yr, 40 * xr, both * yr);
-			painter.drawLine(40 * xr, both * yr, 200 * xr, both * yr);
+			drawLine(painter, 0, both, horsec, toph);
+			drawLine(painter, horsec, toph, horsec, both);
+			drawLine(painter, horsec, both, ENV_W_, both);
 		}
 			break;
 		}
