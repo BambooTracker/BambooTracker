@@ -9,6 +9,8 @@
 #include <QResizeEvent>
 #include <QString>
 #include <QPixmap>
+#include <QPainter>
+#include <QPointF>
 #include "gui/labeled_vertical_slider.hpp"
 #include "gui/color_palette.hpp"
 #include "enum_hash.hpp"
@@ -70,8 +72,33 @@ private:
 
 	// Envelope graph
 	std::unique_ptr<QPixmap> envmap_;
+	static constexpr int ENV_H_ = 127;
+	static constexpr int ENV_W_ = 200;
+	static constexpr int SSGEG_H_ = 35;
+	static constexpr int ENV_LINE_W_ = 2;
+	static constexpr int ENV_LINE_T_ = 1;
+	double xr_, yr_;
+
 	void resizeGraph();
 	void repaintGraph();
+
+	inline void drawLine(QPainter& painter, qreal x1, qreal y1, qreal x2, qreal y2)
+	{
+		painter.drawLine(ENV_LINE_W_ + x1 * xr_ + 1, ENV_LINE_W_ + y1 * yr_ + 1,
+						 ENV_LINE_W_ + x2 * xr_ + 1, ENV_LINE_W_ + y2 * yr_ + 1);
+	}
+
+	inline void drawLine(QPainter& painter, const QPointF& p1, const QPointF& p2)
+	{
+		drawLine(painter, p1.x(), p1.y(), p2.x(), p2.y());
+	}
+
+	inline void drawLines(QPainter& painter, const QVector<QPointF>& ps)
+	{
+		for (int i = 1; i < ps.size(); ++i) {
+			drawLine(painter, ps[i-1], ps[i]);
+		}
+	}
 };
 
 namespace Ui {

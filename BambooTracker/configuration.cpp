@@ -10,7 +10,7 @@ Configuration::Configuration()
 	mainX_ = -1;	// Dummy
 	mainY_ = -1;	// Dummy
 	instFMW_ = 570;
-	instFMH_ = 680;
+	instFMH_ = 750;
 	instSSGW_ = 500;
 	instSSGH_ = 390;
 	followMode_ = true;

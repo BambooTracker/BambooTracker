@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>570</width>
-    <height>680</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,7 +46,7 @@
         <x>0</x>
         <y>0</y>
         <width>570</width>
-        <height>680</height>
+        <height>750</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_17">
@@ -722,15 +722,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>VisualizedInstrumentMacroEditor</class>
-   <extends>QWidget</extends>
-   <header>gui/instrument_editor/visualized_instrument_macro_editor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>LabeledVerticalSlider</class>
    <extends>QFrame</extends>
    <header>gui/labeled_vertical_slider.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VisualizedInstrumentMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/visualized_instrument_macro_editor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
