@@ -4,6 +4,7 @@
 ### Changed
 - Change drawing method of FM envelope in FM instrument editor
 - Use Qt for file I/O
+- Modify FM envelope graph in FM instrument editor
 
 ### Fixed
 - Fix incorrect text painting in the pattern editor
