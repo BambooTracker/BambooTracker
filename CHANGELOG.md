@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.3.2 (2019-12-13)
 ### Changed
 - Change drawing method of FM envelope in FM instrument editor
 - Use Qt for file I/O
