@@ -11,7 +11,7 @@
 class BankIO
 {
 public:
-	static void saveBank(BinaryContainer& ctr, std::vector<size_t> instNums,
+	static void saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 						 std::weak_ptr<InstrumentsManager> instMan);
 	static AbstractBank* loadBank(BinaryContainer& ctr, std::string path);
 	static AbstractBank* loadBTBFile(BinaryContainer& ctr);

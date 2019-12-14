@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- [#170] - Fix selected instrument indexing in bank export (thanks [@Ravancloak], [@ImATrackMan])
+
+[@Ravancloak]: https://github.com/Ravancloak
+
+[#170]: https://github.com/rerrahkr/BambooTracker/issues/170
 
 ## v0.3.2 (2019-12-13)
 ### Changed

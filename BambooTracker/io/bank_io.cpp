@@ -7,7 +7,7 @@
 
 BankIO::BankIO() {}
 
-void BankIO::saveBank(BinaryContainer& ctr, std::vector<size_t> instNums,
+void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 					  std::weak_ptr<InstrumentsManager> instMan)
 {
 	ctr.appendString("BambooTrackerBnk");

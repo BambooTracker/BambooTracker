@@ -1022,7 +1022,8 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 
 void MainWindow::exportInstrumentsToBank()
 {
-	std::shared_ptr<BtBank> bank(std::make_shared<BtBank>(bt_->getInstrumentIndices(), bt_->getInstrumentNames()));
+	std::vector<int> ids = bt_->getInstrumentIndices();
+	std::shared_ptr<BtBank> bank(std::make_shared<BtBank>(ids, bt_->getInstrumentNames()));
 
 	InstrumentSelectionDialog dlg(*bank, tr("Select instruments to save:"), this);
 	if (dlg.exec() != QDialog::Accepted)
@@ -1033,13 +1034,16 @@ void MainWindow::exportInstrumentsToBank()
 												tr("BambooTracker bank file (*.btb)"));
 	if (file.isNull()) return;
 
-	std::vector<size_t> selection = dlg.currentInstrumentSelection().toStdVector();
-	std::sort(selection.begin(), selection.end());
+	QVector<size_t> selection = dlg.currentInstrumentSelection();
 	if (selection.empty()) return;
+	std::vector<int> sel;
+	std::transform(selection.begin(), selection.end(), std::back_inserter(sel),
+				   [&ids](size_t i) { return ids.at(i); });
+	std::sort(sel.begin(), sel.end());
 
 	try {
 		BinaryContainer container;
-		bt_->exportInstruments(container, selection);
+		bt_->exportInstruments(container, sel);
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Bank);
