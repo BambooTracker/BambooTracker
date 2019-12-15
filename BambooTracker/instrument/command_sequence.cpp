@@ -14,6 +14,7 @@ CommandSequence::CommandSequence(const CommandSequence& other)
 	: AbstractInstrumentProperty(other),
 	  DEF_COM_TYPE(other.DEF_COM_TYPE),
 	  DEF_COM_DATA(other.DEF_COM_DATA),
+	  type_(other.type_),
 	  seq_(other.seq_),
 	  loops_(other.loops_),
 	  release_(other.release_)
