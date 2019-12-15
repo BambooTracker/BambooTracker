@@ -1419,6 +1419,21 @@ JamKey MainWindow::getJamKeyFromLayoutMapping(Qt::Key key) {
 	} else throw std::out_of_range("Unmapped Layout");
 }
 
+/********** Backup **********/
+bool MainWindow::backupModule(QString srcFile)
+{
+	if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
+		bool err = false;
+		QString backup = srcFile + ".bak";
+		if (QFile::exists(backup)) err = !QFile::remove(backup);
+		if (err || !QFile::copy(srcFile, backup)) {
+			QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
+			return false;
+		}
+	}
+	return true;
+}
+
 /******************************/
 void MainWindow::setWindowTitle()
 {
@@ -2134,12 +2149,7 @@ bool MainWindow::on_actionSave_triggered()
 {
 	auto path = QString::fromStdString(bt_->getModulePath());
 	if (!path.isEmpty() && QFileInfo::exists(path) && QFileInfo(path).isFile()) {
-		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
-			if (!QFile::copy(path, path + ".bak")) {
-				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
-				return false;
-			}
-		}
+		if (!backupModule(path)) return false;
 
 		try {
 			BinaryContainer container;
@@ -2176,13 +2186,8 @@ bool MainWindow::on_actionSave_As_triggered()
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
-	if (QFile::exists(file)) {	// Already exists
-		if (!isSavedModBefore_ && config_.lock()->getBackupModules()) {
-			if (!QFile::copy(file, file + ".bak")) {
-				QMessageBox::critical(this, tr("Error"), tr("Failed to backup module."));
-				return false;
-			}
-		}
+	if (QFile::exists(file)) {	// Backup if the module already exists
+		if (!backupModule(file)) return false;
 	}
 
 	bt_->setModulePath(file.toStdString());

@@ -120,6 +120,9 @@ private:
 	// Layout decypherer
 	JamKey getJamKeyFromLayoutMapping(Qt::Key key);
 
+	// Backup
+	bool backupModule(QString srcFile);
+
 	void setWindowTitle();
 	void setModifiedTrue();
 	void setInitialSelectedInstrument();

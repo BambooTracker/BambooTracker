@@ -3,6 +3,7 @@
 ## Unreleased
 ### Fixed
 - [#170] - Fix selected instrument indexing in bank export (thanks [@Ravancloak], [@ImATrackMan])
+- Update backup if it already exists
 
 [@Ravancloak]: https://github.com/Ravancloak
 
