@@ -1467,7 +1467,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
 						if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::FixedRelease, pos);
 						else instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
@@ -1488,7 +1489,15 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							instMan.lock()->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							if (fileVersion < Version::toBCD(1, 2, 3)) {
+								// Recover deep clone bug
+								// https://github.com/rerrahkr/BambooTracker/issues/170
+								instMan.lock()->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							}
+							else {
+								throw FileCorruptionError(FileIO::FileType::Inst);
+							}
 						}
 					}
 
@@ -1551,7 +1560,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
 						if (pos < seqLen) instMan.lock()->setPitchFMRelease(idx, ReleaseType::FixedRelease, pos);
 						else instMan.lock()->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
@@ -1569,7 +1579,15 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							instMan.lock()->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							if (fileVersion < Version::toBCD(1, 2, 3)) {
+								// Recover deep clone bug
+								// https://github.com/rerrahkr/BambooTracker/issues/170
+								instMan.lock()->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							}
+							else {
+								throw FileCorruptionError(FileIO::FileType::Inst);
+							}
 						}
 					}
 
@@ -1633,7 +1651,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
 						if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::FixedRelease, pos);
 						else instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
@@ -1698,7 +1717,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
 						if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::FixedRelease, pos);
 						else instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
@@ -1761,7 +1781,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					case 0x00:	// No release
 						instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
-						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
 					case 0x01:	// Fixed
 					{
 						uint16_t pos = ctr.readUint16(csr);
@@ -1840,7 +1861,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
 						if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::FixedRelease, pos);
 						else instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
@@ -1861,7 +1883,15 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							instMan.lock()->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							if (fileVersion < Version::toBCD(1, 2, 3)) {
+								// Recover deep clone bug
+								// https://github.com/rerrahkr/BambooTracker/issues/170
+								instMan.lock()->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							}
+							else {
+								throw FileCorruptionError(FileIO::FileType::Inst);
+							}
 						}
 					}
 
@@ -1911,7 +1941,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
 						if (pos < seqLen) instMan.lock()->setPitchSSGRelease(idx, ReleaseType::FixedRelease, pos);
 						else instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
@@ -1929,7 +1960,15 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							instMan.lock()->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							if (fileVersion < Version::toBCD(1, 2, 3)) {
+								// Recover deep clone bug
+								// https://github.com/rerrahkr/BambooTracker/issues/170
+								instMan.lock()->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							}
+							else {
+								throw FileCorruptionError(FileIO::FileType::Inst);
+							}
 						}
 					}
 
@@ -1990,7 +2029,8 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	{
 		uint16_t pos = ctr.readUint16(csr);
 		csr += 2;
-		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+		// Release point check (prevents a bug)
+		// https://github.com/rerrahkr/BambooTracker/issues/11
 		if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
 		else instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
 		break;
@@ -2565,7 +2605,7 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 													 std::weak_ptr<InstrumentsManager> instMan,
 													 int instNum) {
 	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
-	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
+	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 	const char *name = srcInst.inst_name;
 
 	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
@@ -2604,7 +2644,7 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 
 	if (srcInst.lfosens != 0) {
 		int lfoIdx = instMan.lock()->findFirstFreePlainLFOFM();
-		if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
+		if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 		inst->setLFOEnabled(true);
 		inst->setLFONumber(lfoIdx);
 		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, srcInst.lfosens & 7);
@@ -2617,7 +2657,7 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 
 	if (srcInst.note_offset != 0) {
 		int arpIdx = instMan.lock()->findFirstFreePlainArpeggioFM();
-		if (arpIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
+		if (arpIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
 		instMan.lock()->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
@@ -2650,7 +2690,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 		{
 			auto orgEnvNum = instCtr.readUint8(instCsr++);
 			int envNum = instMan.lock()->findFirstFreePlainEnvelopeFM();
-			if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+			if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 			fm->setEnvelopeNumber(envNum);
 			size_t envCsr = getPropertyPositionForBTB(propCtr, 0x00, orgEnvNum);
 			uint8_t tmp = propCtr.readUint8(envCsr++);
@@ -2745,7 +2785,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				fm->setLFOEnabled(true);
 				uint8_t orgLFONum = 0x7f & tmp;
 				int lfoNum = instMan.lock()->findFirstFreePlainLFOFM();
-				if (lfoNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+				if (lfoNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				fm->setLFONumber(lfoNum);
 				size_t lfoCsr = getPropertyPositionForBTB(propCtr, 0x01, orgLFONum);
 				tmp = propCtr.readUint8(lfoCsr++);
@@ -2775,7 +2815,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				fm->setOperatorSequenceEnabled(param, true);
 				uint8_t orgOpSeqNum = 0x7f & tmp;
 				int opSeqNum = instMan.lock()->findFirstFreePlainOperatorSequenceFM(param);
-				if (opSeqNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+				if (opSeqNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				fm->setOperatorSequenceNumber(param, opSeqNum);
 				size_t opSeqCsr = getPropertyPositionForBTB(propCtr, 0x02 + tmpCnt, orgOpSeqNum);
 
@@ -2812,13 +2852,14 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				{
 					uint16_t pos = propCtr.readUint16(opSeqCsr);
 					opSeqCsr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					throw FileCorruptionError(FileIO::FileType::Bank);
 				}
 			}
 		}
@@ -2846,7 +2887,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgArpNum, pair.first);
 						int arpNum = instMan.lock()->findFirstFreePlainArpeggioFM();
-						if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+						if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 						fm->setArpeggioNumber(pair.first, arpNum);
 						size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x28, orgArpNum);
 
@@ -2883,13 +2924,14 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 						{
 							uint16_t pos = propCtr.readUint16(arpCsr);
 							arpCsr += 2;
-							// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+							// Release point check (prevents a bug)
+							// https://github.com/rerrahkr/BambooTracker/issues/11
 							if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::FixedRelease, pos);
 							else instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
 							break;
 						}
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							throw FileCorruptionError(FileIO::FileType::Bank);
 						}
 
 						switch (propCtr.readUint8(arpCsr++)) {
@@ -2903,7 +2945,15 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							if (bankVersion < Version::toBCD(1, 0, 2)) {
+								// Recover deep clone bug
+								// https://github.com/rerrahkr/BambooTracker/issues/170
+								instMan.lock()->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							}
+							else {
+								throw FileCorruptionError(FileIO::FileType::Bank);
+							}
 						}
 					}
 					else {	// Use registered property
@@ -2936,7 +2986,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgPtNum, pair.first);
 						int ptNum = instMan.lock()->findFirstFreePlainPitchFM();
-						if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+						if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 						fm->setPitchNumber(pair.first, ptNum);
 						size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x29, orgPtNum);
 
@@ -2973,13 +3023,14 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 						{
 							uint16_t pos = propCtr.readUint16(ptCsr);
 							ptCsr += 2;
-							// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+							// Release point check (prevents a bug)
+							// https://github.com/rerrahkr/BambooTracker/issues/11
 							if (pos < seqLen) instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::FixedRelease, pos);
 							else instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
 							break;
 						}
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							throw FileCorruptionError(FileIO::FileType::Bank);
 						}
 
 						switch (propCtr.readUint8(ptCsr++)) {
@@ -2990,7 +3041,15 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 							instMan.lock()->setPitchFMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
-							throw FileCorruptionError(FileIO::FileType::Inst);
+							if (bankVersion < Version::toBCD(1, 0, 2)) {
+								// Recover deep clone bug
+								// https://github.com/rerrahkr/BambooTracker/issues/170
+								instMan.lock()->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							}
+							else {
+								throw FileCorruptionError(FileIO::FileType::Bank);
+							}
 						}
 					}
 					else {	// Use registered property
@@ -3027,7 +3086,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				ssg->setWaveFormEnabled(true);
 				uint8_t orgWfNum = 0x7f & tmp;
 				int wfNum = instMan.lock()->findFirstFreePlainWaveFormSSG();
-				if (wfNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+				if (wfNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setWaveFormNumber(wfNum);
 				size_t wfCsr = getPropertyPositionForBTB(propCtr, 0x30, orgWfNum);
 
@@ -3067,13 +3126,14 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				{
 					uint16_t pos = propCtr.readUint16(wfCsr);
 					wfCsr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(wfNum, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setWaveFormSSGRelease(wfNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					throw FileCorruptionError(FileIO::FileType::Bank);
 				}
 			}
 		}
@@ -3089,7 +3149,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				ssg->setToneNoiseEnabled(true);
 				uint8_t orgTnNum = 0x7f & tmp;
 				int tnNum = instMan.lock()->findFirstFreePlainToneNoiseSSG();
-				if (tnNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+				if (tnNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setToneNoiseNumber(tnNum);
 				size_t tnCsr = getPropertyPositionForBTB(propCtr, 0x31, orgTnNum);
 
@@ -3132,13 +3192,14 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				{
 					uint16_t pos = propCtr.readUint16(tnCsr);
 					tnCsr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					throw FileCorruptionError(FileIO::FileType::Bank);
 				}
 			}
 		}
@@ -3154,7 +3215,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				ssg->setEnvelopeEnabled(true);
 				uint8_t orgEnvNum = 0x7f & tmp;
 				int envNum = instMan.lock()->findFirstFreePlainEnvelopeSSG();
-				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPositionForBTB(propCtr, 0x32, orgEnvNum);
 
@@ -3190,7 +3251,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				case 0x00:	// No release
 					instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 				case 0x01:	// Fixed
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
@@ -3216,7 +3278,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					throw FileCorruptionError(FileIO::FileType::Bank);
 				}
 			}
 		}
@@ -3232,7 +3294,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				ssg->setArpeggioEnabled(true);
 				uint8_t orgArpNum = 0x7f & tmp;
 				int arpNum = instMan.lock()->findFirstFreePlainArpeggioSSG();
-				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x33, orgArpNum);
 
@@ -3269,13 +3331,14 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				{
 					uint16_t pos = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					throw FileCorruptionError(FileIO::FileType::Bank);
 				}
 
 				switch (propCtr.readUint8(arpCsr++)) {
@@ -3289,7 +3352,15 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					if (bankVersion < Version::toBCD(1, 0, 2)) {
+						// Recover deep clone bug
+						// https://github.com/rerrahkr/BambooTracker/issues/170
+						instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+						break;
+					}
+					else {
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -3305,7 +3376,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				ssg->setPitchEnabled(true);
 				uint8_t orgPtNum = 0x7f & tmp;
 				int ptNum = instMan.lock()->findFirstFreePlainPitchSSG();
-				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x34, orgPtNum);
 
@@ -3342,13 +3413,14 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				{
 					uint16_t pos = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					throw FileCorruptionError(FileIO::FileType::Bank);
 				}
 
 				switch (propCtr.readUint8(ptCsr++)) {
@@ -3359,7 +3431,15 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 					instMan.lock()->setPitchSSGType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst);
+					if (bankVersion < Version::toBCD(1, 0, 2)) {
+						// Recover deep clone bug
+						// https://github.com/rerrahkr/BambooTracker/issues/170
+						instMan.lock()->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+						break;
+					}
+					else {
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -3367,6 +3447,6 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 		return ssg;
 	}
 	default:
-		throw FileCorruptionError(FileIO::FileType::Inst);
+		throw FileCorruptionError(FileIO::FileType::Bank);
 	}
 }

@@ -4,6 +4,7 @@
 ### Fixed
 - [#170] - Fix selected instrument indexing in bank export (thanks [@Ravancloak], [@ImATrackMan])
 - Update backup if it already exists
+- [#170] - Copy command sequence type in deep clone instrument (thanks [@Ravancloak], [@ImATrackMan], [@galap-1])
 
 [@Ravancloak]: https://github.com/Ravancloak
 

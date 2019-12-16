@@ -13,4 +13,5 @@ In some cases, you need to modify modules.
 
 And the found critical bugs about file I/O.
 
+- Files made by BambooTracker before v0.3.3 (Module: &lt;v1.3.2, Instrument: &lt;v1.2.3, Bank: &lt;v1.0.2), deep-cloned instrument sequence type of FM/SSG arpeggio and pitch might be saved as an incorrect value. The later version tracker loads these files by replacing an incorrect value with "Absolute" type, so you may need to modify appropriate sequence types after loading old files.
 - In BambooTracker v0.2.0, there is the bug that unit subdata of FM operator sequence is not omitted when saving a module and an instrument. To read them made by v0.2.0 and used operator sequence, please use the fixed version tracker.

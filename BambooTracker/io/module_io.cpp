@@ -1397,7 +1397,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
@@ -1417,7 +1418,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						instMan.lock()->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Mod);
+						if (version < Version::toBCD(1, 3, 2)) {
+							// Recover deep clone bug
+							// https://github.com/rerrahkr/BambooTracker/issues/170
+							instMan.lock()->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							break;
+						}
+						else {
+							throw FileCorruptionError(FileIO::FileType::Mod);
+						}
 					}
 				}
 
@@ -1467,7 +1476,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setPitchFMRelease(idx, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
@@ -1484,7 +1494,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						instMan.lock()->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Mod);
+						if (version < Version::toBCD(1, 3, 2)) {
+							// Recover deep clone bug
+							// https://github.com/rerrahkr/BambooTracker/issues/170
+							instMan.lock()->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							break;
+						}
+						else {
+							throw FileCorruptionError(FileIO::FileType::Mod);
+						}
 					}
 				}
 
@@ -1548,7 +1566,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
@@ -1612,7 +1631,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
@@ -1674,7 +1694,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				case 0x00:	// No release
 					instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 				case 0x01:	// Fixed
 				{
 					uint16_t pos = ctr.readUint16(csr);
@@ -1752,7 +1773,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
@@ -1772,7 +1794,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						instMan.lock()->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Mod);
+						if (version < Version::toBCD(1, 3, 2)) {
+							// Recover deep clone bug
+							// https://github.com/rerrahkr/BambooTracker/issues/170
+							instMan.lock()->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							break;
+						}
+						else {
+							throw FileCorruptionError(FileIO::FileType::Mod);
+						}
 					}
 				}
 
@@ -1822,7 +1852,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+					// Release point check (prevents a bug)
+					// https://github.com/rerrahkr/BambooTracker/issues/11
 					if (pos < seqLen) instMan.lock()->setPitchSSGRelease(idx, ReleaseType::FixedRelease, pos);
 					else instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
@@ -1839,7 +1870,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						instMan.lock()->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Mod);
+						if (version < Version::toBCD(1, 3, 2)) {
+							// Recover deep clone bug
+							// https://github.com/rerrahkr/BambooTracker/issues/170
+							instMan.lock()->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							break;
+						}
+						else {
+							throw FileCorruptionError(FileIO::FileType::Mod);
+						}
 					}
 				}
 
