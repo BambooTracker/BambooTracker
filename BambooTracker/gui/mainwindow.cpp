@@ -2524,9 +2524,11 @@ void MainWindow::onNewTickSignaled(int state)
 	if (!state) {	// New step
 		int order = bt_->getPlayingOrderNumber();
 		if (order > -1) {	// Playing
-			ui->orderList->updatePositionByOrderUpdate(firstViewUpdateRequest_);
-			ui->patternEditor->updatePositionByStepUpdate(firstViewUpdateRequest_);
-			firstViewUpdateRequest_ = false;
+			if (isVisible() && !isMinimized()) {
+				ui->orderList->updatePositionByOrderUpdate(firstViewUpdateRequest_);
+				ui->patternEditor->updatePositionByStepUpdate(firstViewUpdateRequest_);
+				firstViewUpdateRequest_ = false;
+			}
 			statusPlayPos_->setText(
 						QString("%1/%2")
 						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))

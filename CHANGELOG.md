@@ -5,10 +5,12 @@
 - [#170] - Fix selected instrument indexing in bank export (thanks [@Ravancloak], [@ImATrackMan])
 - Update backup if it already exists
 - [#170] - Copy command sequence type in deep clone instrument (thanks [@Ravancloak], [@ImATrackMan], [@galap-1])
+- [#171] - Fix drawing error of the pattern editor when minimizing and showing the window during playback (thanks [@bryc])
 
 [@Ravancloak]: https://github.com/Ravancloak
 
 [#170]: https://github.com/rerrahkr/BambooTracker/issues/170
+[#171]: https://github.com/rerrahkr/BambooTracker/issues/171
 
 ## v0.3.2 (2019-12-13)
 ### Changed
