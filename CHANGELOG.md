@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.3.3 (2019-12-17)
 ### Fixed
 - [#170] - Fix selected instrument indexing in bank export (thanks [@Ravancloak], [@ImATrackMan])
 - Update backup if it already exists
