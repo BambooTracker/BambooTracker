@@ -22,16 +22,24 @@ int main(int argc, char *argv[])
 {
 	try {
 		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
+
 		std::shared_ptr<Configuration> config = std::make_shared<Configuration>();
 		ConfigurationHandler::loadConfiguration(config);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+		QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
 		std::unique_ptr<QApplicationWrapper> a(std::make_unique<QApplicationWrapper>(argc, argv));
 		if (config->getEnableTranslation()) setupTranslations();
 		a->setWindowIcon(QIcon(":/icon/app_icon"));
 		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath));
 		w->show();
 		int ret = a->exec();
+
 		ConfigurationHandler::saveConfiguration(config);
 		if (ret) QMessageBox::critical(nullptr, QObject::tr("Error"), QObject::tr("An unknown error occurred."));
+
 		return ret;
 	}
 	catch (std::exception& e) {
