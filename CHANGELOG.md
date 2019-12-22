@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- [#172], [#173] - (thanks [@OPNA2608], [@jpcima])
+
+[#172]: https://github.com/rerrahkr/BambooTracker/issues/172
+[#173]: https://github.com/rerrahkr/BambooTracker/pull/173
 
 ## v0.3.3 (2019-12-17)
 ### Fixed
