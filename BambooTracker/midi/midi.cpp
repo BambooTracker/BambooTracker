@@ -33,14 +33,32 @@ void MidiInterface::switchApi(RtMidi::Api api)
 	if (inputClient_ && api == inputClient_->getCurrentApi())
 		return;
 
-	RtMidiIn *inputClient = new RtMidiIn(api, MIDI_INP_CLIENT_NAME, MidiBufferSize);
+	RtMidiIn *inputClient = nullptr;
+	try {
+		inputClient = new RtMidiIn(api, MIDI_INP_CLIENT_NAME, MidiBufferSize);
+	}
+	catch (RtMidiError &error) {
+		fprintf(stderr, "Cannot initialize MIDI In.\n");
+	}
+	if (!inputClient)
+		inputClient = new RtMidiIn(RtMidi::RTMIDI_DUMMY, MIDI_INP_CLIENT_NAME, MidiBufferSize);
+
 	inputClient->ignoreTypes(MIDI_INP_IGNORE_SYSEX, MIDI_INP_IGNORE_TIME, MIDI_INP_IGNORE_SENSE);
 	inputClient_.reset(inputClient);
 	inputClient->setErrorCallback(&onMidiError, this);
 	inputClient->setCallback(&onMidiInput, this);
 	hasOpenInputPort_ = false;
 
-	RtMidiOut *outputClient = new RtMidiOut(api, MIDI_OUT_CLIENT_NAME);
+	RtMidiOut *outputClient = nullptr;
+	try {
+		outputClient = new RtMidiOut(api, MIDI_OUT_CLIENT_NAME);
+	}
+	catch (RtMidiError &error) {
+		fprintf(stderr, "Cannot initialize MIDI Out.\n");
+	}
+	if (!outputClient)
+		outputClient = new RtMidiOut(RtMidi::RTMIDI_DUMMY, MIDI_OUT_CLIENT_NAME);
+
 	outputClient_.reset(outputClient);
 	outputClient->setErrorCallback(&onMidiError, this);
 	hasOpenOutputPort_ = false;

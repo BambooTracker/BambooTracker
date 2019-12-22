@@ -16,3 +16,5 @@ macx {
     DEFINES += __MACOSX_CORE__
     LIBS += -framework CoreMIDI -framework CoreAudio -framework CoreFoundation
 }
+
+DEFINES += __RTMIDI_DUMMY__
