@@ -3,6 +3,7 @@
 ## Unreleased
 ### Fixed
 - [#172], [#173] - Check MIDI in api(thanks [@OPNA2608], [@jpcima])
+- Fix drawing of pattern editor and order list
 
 [#172]: https://github.com/rerrahkr/BambooTracker/issues/172
 [#173]: https://github.com/rerrahkr/BambooTracker/pull/173

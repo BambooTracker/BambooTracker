@@ -576,7 +576,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 	/* Draw new step at last if necessary */
 	{
 		PatternPosition bpos = calculatePositionFrom(viewedCenterPos_.order, viewedCenterPos_.step, halfRowsCnt);
-		if (bpos.order == -1 || (!config_.lock()->getShowPreviousNextOrders() && viewedCenterPos_.order != bpos.order)) {
+		if (!config_.lock()->getShowPreviousNextOrders() && viewedCenterPos_.order != bpos.order) {
 			// Clear row
 			backPainter.setCompositionMode(QPainter::CompositionMode_Source);
 			backPainter.fillRect(0, lastY, maxWidth, shift, Qt::transparent);
@@ -586,7 +586,17 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 			bpos = std::exchange(viewedLastPos_, bpos);
 			while (true) {
 				if (bpos.compareRows(viewedLastPos_) == 0) break;
-				bpos = calculatePositionFrom(bpos.order, bpos.step, 1);
+				PatternPosition tmpBpos = calculatePositionFrom(bpos.order, bpos.step, 1);
+				if (tmpBpos.order == -1) {	// when viewedLastPos_.row == -1 (viewedlastPos_.row < viewedCenterPos_.row + halRowsCnt)
+					viewedLastPos_ = bpos;
+					// Clear row
+					backPainter.setCompositionMode(QPainter::CompositionMode_Source);
+					backPainter.fillRect(0, lastY, maxWidth, shift, Qt::transparent);
+					break;
+				}
+				else {
+					bpos = tmpBpos;
+				}
 
 				QColor rowColor = !(bpos.step % hl2Cnt_) ? palette_->ptnHl2StepColor
 														 : !(bpos.step % hl1Cnt_) ? palette_->ptnHl1StepColor
