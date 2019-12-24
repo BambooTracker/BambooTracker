@@ -209,6 +209,20 @@
  </widget>
  <tabstops>
   <tabstop>grooveListWidget</tabstop>
+  <tabstop>seqListWidget</tabstop>
+  <tabstop>upToolButton</tabstop>
+  <tabstop>downToolButton</tabstop>
+  <tabstop>expandPushButton</tabstop>
+  <tabstop>shrinkPushButton</tabstop>
+  <tabstop>genPushButton</tabstop>
+  <tabstop>numeratorSpinBox</tabstop>
+  <tabstop>denominatorSpinBox</tabstop>
+  <tabstop>padPushButton</tabstop>
+  <tabstop>padSpinBox</tabstop>
+  <tabstop>copyPushButton</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>addButton</tabstop>
+  <tabstop>removeButton</tabstop>
  </tabstops>
  <resources/>
  <connections>
