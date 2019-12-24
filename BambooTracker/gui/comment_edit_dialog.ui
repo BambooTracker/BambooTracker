@@ -13,11 +13,11 @@
   <property name="windowTitle">
    <string>Module Comment</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
     <widget class="QPlainTextEdit" name="plainTextEdit"/>
    </item>
-   <item row="1" column="0">
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

@@ -13,8 +13,8 @@
   <property name="windowTitle">
    <string>VGM export settings</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="2,0,0,0">
-   <item row="0" column="0" rowspan="2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
     <widget class="QGroupBox" name="gd3GroupBox">
      <property name="title">
       <string>GD3 tag</string>
@@ -337,17 +337,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
+   <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Target</string>
@@ -559,6 +549,16 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
     </widget>
    </item>
   </layout>

@@ -190,7 +190,7 @@
          <property name="title">
           <string>Edit settings</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QFormLayout" name="formLayout_3">
           <item row="0" column="0">
            <widget class="QLabel" name="pageJumpLengthLabel">
             <property name="text">
@@ -226,8 +226,8 @@
          <property name="title">
           <string>Sample rate</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
            <widget class="QComboBox" name="sampleRateComboBox"/>
           </item>
          </layout>
@@ -251,8 +251,8 @@
          <property name="title">
           <string>Buffer length</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
            <widget class="QSlider" name="bufferLengthHorizontalSlider">
             <property name="minimum">
              <number>1</number>
@@ -265,10 +265,13 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0" alignment="Qt::AlignHCenter">
+          <item>
            <widget class="QLabel" name="bufferLengthLabel">
             <property name="text">
              <string>1ms</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -280,11 +283,11 @@
          <property name="title">
           <string>Device</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
            <widget class="QComboBox" name="soundDeviceComboBox"/>
           </item>
-          <item row="1" column="0">
+          <item>
            <widget class="QCheckBox" name="useSCCICheckBox">
             <property name="text">
              <string>Use SCCI (beta)</string>
@@ -311,8 +314,8 @@
          <property name="title">
           <string>API</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_17">
-          <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
            <widget class="QComboBox" name="soundAPIComboBox"/>
           </item>
          </layout>
@@ -387,6 +390,12 @@
          <layout class="QGridLayout" name="gridLayout_11">
           <item row="1" column="0">
            <widget class="LabeledVerticalSlider" name="fmMixerSlider">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -397,6 +406,12 @@
           </item>
           <item row="1" column="1">
            <widget class="LabeledVerticalSlider" name="ssgMixerSlider">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -406,14 +421,7 @@
            </widget>
           </item>
           <item row="0" column="0" colspan="2">
-           <layout class="QGridLayout" name="gridLayout_10">
-            <item row="0" column="1">
-             <widget class="QPushButton" name="mixerResetPushButton">
-              <property name="text">
-               <string>Reset</string>
-              </property>
-             </widget>
-            </item>
+           <layout class="QFormLayout" name="formLayout_4">
             <item row="0" column="0">
              <widget class="QLabel" name="mixPartLabel">
               <property name="text">
@@ -421,6 +429,13 @@
               </property>
               <property name="wordWrap">
                <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="mixerResetPushButton">
+              <property name="text">
+               <string>Reset</string>
               </property>
              </widget>
             </item>
