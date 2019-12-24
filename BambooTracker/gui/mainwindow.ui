@@ -17,7 +17,10 @@
    <string>BambooTracker</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,7" columnstretch="4,0,0,0">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -30,351 +33,501 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <item row="1" column="0" colspan="4">
-     <layout class="QGridLayout" name="gridLayout_8">
-      <item row="0" column="0">
-       <widget class="PatternEditor" name="patternEditor"/>
-      </item>
-     </layout>
-    </item>
-    <item row="0" column="0" colspan="4">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,2,2,2">
-      <property name="leftMargin">
-       <number>9</number>
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <property name="topMargin">
-       <number>9</number>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
       </property>
-      <property name="rightMargin">
-       <number>9</number>
-      </property>
-      <property name="bottomMargin">
-       <number>9</number>
-      </property>
-      <item>
-       <widget class="QGroupBox" name="orderListGroupBox">
-        <property name="title">
-         <string>Order List</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="leftMargin">
-          <number>3</number>
-         </property>
-         <property name="topMargin">
-          <number>3</number>
-         </property>
-         <property name="rightMargin">
-          <number>3</number>
-         </property>
-         <property name="bottomMargin">
-          <number>3</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="OrderListEditor" name="orderList"/>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+      <widget class="QWidget" name="">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
         <property name="spacing">
-         <number>3</number>
+         <number>9</number>
+        </property>
+        <property name="leftMargin">
+         <number>9</number>
+        </property>
+        <property name="topMargin">
+         <number>9</number>
+        </property>
+        <property name="rightMargin">
+         <number>9</number>
+        </property>
+        <property name="bottomMargin">
+         <number>9</number>
         </property>
         <item>
-         <widget class="QGroupBox" name="moduleSettingsGroupBox">
-          <property name="title">
-           <string>Module Settings</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <property name="leftMargin">
-            <number>3</number>
-           </property>
-           <property name="topMargin">
-            <number>3</number>
-           </property>
-           <property name="rightMargin">
-            <number>3</number>
-           </property>
-           <property name="bottomMargin">
-            <number>3</number>
-           </property>
-           <property name="spacing">
-            <number>3</number>
-           </property>
-           <item row="2" column="0" colspan="2">
-            <widget class="QLineEdit" name="copyrightLineEdit">
-             <property name="placeholderText">
-              <string>Copyright</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QLineEdit" name="modTitleLineEdit">
-             <property name="placeholderText">
-              <string>Module Title</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QLineEdit" name="authorLineEdit">
-             <property name="placeholderText">
-              <string>Author</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="WaveVisual" name="waveVisual" native="true">
+         <widget class="QGroupBox" name="orderListGroupBox">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>45</height>
-           </size>
+          <property name="title">
+           <string>Order List</string>
           </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="OrderListEditor" name="orderList">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="editSettingsGroupBox">
-          <property name="title">
-           <string>Edit settings</string>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
+           <number>3</number>
           </property>
-          <layout class="QGridLayout" name="gridLayout_9">
-           <property name="leftMargin">
-            <number>3</number>
-           </property>
-           <property name="topMargin">
-            <number>3</number>
-           </property>
-           <property name="rightMargin">
-            <number>3</number>
-           </property>
-           <property name="bottomMargin">
-            <number>3</number>
-           </property>
-           <property name="spacing">
-            <number>3</number>
-           </property>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="editableStepSpinBox">
-             <property name="keyboardTracking">
-              <bool>false</bool>
-             </property>
-             <property name="minimum">
-              <number>0</number>
-             </property>
-             <property name="maximum">
-              <number>256</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" alignment="Qt::AlignRight">
-            <widget class="QLabel" name="editableStepLabel">
-             <property name="text">
-              <string>Editable step</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QCheckBox" name="keyRepeatCheckBox">
-             <property name="text">
-              <string>Key repetition</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QGridLayout" name="gridLayout_7">
-        <property name="spacing">
-         <number>3</number>
-        </property>
-        <item row="1" column="0" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="songNumLabel">
-          <property name="text">
-           <string>Song</string>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="songNumSpinBox">
-          <property name="keyboardTracking">
-           <bool>false</bool>
-          </property>
-          <property name="prefix">
-           <string notr="true">#</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QGroupBox" name="songSettingsGroupBox">
-          <property name="title">
-           <string>Song Settings</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <property name="leftMargin">
-            <number>3</number>
-           </property>
-           <property name="topMargin">
-            <number>3</number>
-           </property>
-           <property name="rightMargin">
-            <number>3</number>
-           </property>
-           <property name="bottomMargin">
-            <number>3</number>
-           </property>
-           <property name="spacing">
-            <number>3</number>
-           </property>
-           <item row="6" column="0" alignment="Qt::AlignRight">
-            <widget class="QLabel" name="speedLabel">
-             <property name="text">
-              <string>Speed</string>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0" alignment="Qt::AlignRight">
-            <widget class="QLabel" name="patternSizeLabel">
-             <property name="text">
-              <string>Pattern Size</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0" alignment="Qt::AlignRight">
-            <widget class="QLabel" name="tempoLabel">
-             <property name="text">
-              <string>Tempo</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QSpinBox" name="speedSpinBox">
-             <property name="keyboardTracking">
-              <bool>false</bool>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>31</number>
-             </property>
-             <property name="value">
+          <item>
+           <widget class="QGroupBox" name="songSettingsGroupBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Song Settings</string>
+            </property>
+            <layout class="QFormLayout" name="formLayout">
+             <property name="horizontalSpacing">
               <number>6</number>
              </property>
-            </widget>
-           </item>
-           <item row="7" column="1">
-            <widget class="QSpinBox" name="patternSizeSpinBox">
-             <property name="keyboardTracking">
-              <bool>false</bool>
+             <property name="verticalSpacing">
+              <number>6</number>
              </property>
-             <property name="minimum">
-              <number>1</number>
+             <property name="leftMargin">
+              <number>6</number>
              </property>
-             <property name="maximum">
-              <number>256</number>
+             <property name="topMargin">
+              <number>6</number>
              </property>
-             <property name="value">
-              <number>64</number>
+             <property name="rightMargin">
+              <number>6</number>
              </property>
-            </widget>
-           </item>
-           <item row="3" column="0" alignment="Qt::AlignRight">
-            <widget class="QLabel" name="songStyleLabel">
-             <property name="text">
-              <string>Style</string>
+             <property name="bottomMargin">
+              <number>6</number>
              </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QSpinBox" name="tempoSpinBox">
-             <property name="keyboardTracking">
-              <bool>false</bool>
+             <item row="0" column="0">
+              <widget class="QLabel" name="tempoLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Tempo</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="tempoSpinBox">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>32</number>
+               </property>
+               <property name="maximum">
+                <number>255</number>
+               </property>
+               <property name="value">
+                <number>150</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="speedLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Speed</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="speedSpinBox">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>31</number>
+               </property>
+               <property name="value">
+                <number>6</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="patternSizeLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Pattern size</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="patternSizeSpinBox">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>256</number>
+               </property>
+               <property name="value">
+                <number>64</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="grooveCheckBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Groove</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QSpinBox" name="grooveSpinBox">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="prefix">
+                <string>#</string>
+               </property>
+               <property name="maximum">
+                <number>127</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="editSettingsGroupBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Edit settings</string>
+            </property>
+            <layout class="QFormLayout" name="formLayout_2">
+             <property name="horizontalSpacing">
+              <number>6</number>
              </property>
-             <property name="minimum">
-              <number>32</number>
+             <property name="verticalSpacing">
+              <number>6</number>
              </property>
-             <property name="maximum">
-              <number>255</number>
+             <property name="leftMargin">
+              <number>6</number>
              </property>
-             <property name="value">
-              <number>150</number>
+             <property name="topMargin">
+              <number>6</number>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QLineEdit" name="songTitleLineEdit">
-             <property name="enabled">
-              <bool>false</bool>
+             <property name="rightMargin">
+              <number>3</number>
              </property>
-             <property name="readOnly">
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="editableStepLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Editable step</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="editableStepSpinBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>256</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QCheckBox" name="keyRepeatCheckBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Key repetition</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
+          </property>
+          <item>
+           <widget class="QGroupBox" name="moduleSettingsGroupBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Module Settings</string>
+            </property>
+            <layout class="QFormLayout" name="formLayout_3">
+             <property name="leftMargin">
+              <number>6</number>
+             </property>
+             <property name="topMargin">
+              <number>6</number>
+             </property>
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <item row="2" column="0" colspan="2">
+              <widget class="QLineEdit" name="copyrightLineEdit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="placeholderText">
+                <string>Copyright</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QLineEdit" name="authorLineEdit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="placeholderText">
+                <string>Author</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QLineEdit" name="modTitleLineEdit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="placeholderText">
+                <string>Title</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="WaveVisual" name="waveVisual" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>180</width>
+              <height>45</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="songsGroupBox">
+            <property name="title">
+             <string>Songs</string>
+            </property>
+            <layout class="QFormLayout" name="formLayout_4">
+             <property name="leftMargin">
+              <number>6</number>
+             </property>
+             <property name="topMargin">
+              <number>6</number>
+             </property>
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <item row="0" column="0" colspan="2">
+              <widget class="QComboBox" name="songComboBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="instrumentListGroupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title">
+           <string>Instruments</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item>
+            <widget class="QListWidget" name="instrumentListWidget">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+             <property name="isWrapping" stdset="0">
               <bool>true</bool>
              </property>
-             <property name="placeholderText">
-              <string>Untitled</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="songStyleLineEdit">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QCheckBox" name="grooveCheckBox">
-             <property name="text">
-              <string>Groove</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QSpinBox" name="grooveSpinBox">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="keyboardTracking">
-              <bool>false</bool>
-             </property>
-             <property name="prefix">
-              <string>#</string>
-             </property>
-             <property name="maximum">
-              <number>127</number>
+             <property name="resizeMode">
+              <enum>QListView::Adjust</enum>
              </property>
             </widget>
            </item>
@@ -382,54 +535,16 @@
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="instrumentListGroupBox">
-        <property name="title">
-         <string>Instruments</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>3</number>
-         </property>
-         <property name="topMargin">
-          <number>3</number>
-         </property>
-         <property name="rightMargin">
-          <number>3</number>
-         </property>
-         <property name="bottomMargin">
-          <number>3</number>
-         </property>
-         <item>
-          <widget class="QListWidget" name="instrumentListWidget">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Panel</enum>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="isWrapping" stdset="0">
-            <bool>true</bool>
-           </property>
-           <property name="resizeMode">
-            <enum>QListView::Adjust</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
+      </widget>
+      <widget class="PatternEditor" name="patternEditor">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -439,7 +554,7 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1333,19 +1448,17 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>modTitleLineEdit</tabstop>
-  <tabstop>authorLineEdit</tabstop>
-  <tabstop>copyrightLineEdit</tabstop>
-  <tabstop>editableStepSpinBox</tabstop>
-  <tabstop>keyRepeatCheckBox</tabstop>
-  <tabstop>songNumSpinBox</tabstop>
-  <tabstop>songTitleLineEdit</tabstop>
-  <tabstop>songStyleLineEdit</tabstop>
   <tabstop>tempoSpinBox</tabstop>
   <tabstop>speedSpinBox</tabstop>
   <tabstop>patternSizeSpinBox</tabstop>
   <tabstop>grooveCheckBox</tabstop>
   <tabstop>grooveSpinBox</tabstop>
+  <tabstop>editableStepSpinBox</tabstop>
+  <tabstop>keyRepeatCheckBox</tabstop>
+  <tabstop>modTitleLineEdit</tabstop>
+  <tabstop>authorLineEdit</tabstop>
+  <tabstop>copyrightLineEdit</tabstop>
+  <tabstop>songComboBox</tabstop>
   <tabstop>instrumentListWidget</tabstop>
  </tabstops>
  <resources>

@@ -33,6 +33,8 @@ public:
 	int getMainWindowX() const;
 	void setMainWindowY(int y);
 	int getMainWindowY() const;
+	void setMainWindowVerticalSplit(int y);
+	int getMainWindowVerticalSplit() const;
 	void setInstrumentFMWindowWidth(int w);
 	int getInstrumentFMWindowWidth() const;
 	void setInstrumentFMWindowHeight(int h);
@@ -53,6 +55,7 @@ private:
 	int mainW_, mainH_;
 	bool mainMax_;
 	int mainX_, mainY_;
+	int mainVSplit_;
 	int instFMW_, instFMH_;
 	int instSSGW_, instSSGH_;
 	bool followMode_;

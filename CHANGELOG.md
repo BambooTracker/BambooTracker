@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Changed
+- Change layout of the main window
+
 ### Fixed
 - [#172], [#173] - Check MIDI in api(thanks [@OPNA2608], [@jpcima])
 - Fix drawing of pattern editor and order list

@@ -9,6 +9,7 @@ Configuration::Configuration()
 	mainMax_ = false;
 	mainX_ = -1;	// Dummy
 	mainY_ = -1;	// Dummy
+	mainVSplit_ = -1;	// Dummy
 	instFMW_ = 570;
 	instFMH_ = 750;
 	instSSGW_ = 500;
@@ -647,6 +648,16 @@ void Configuration::setMainWindowY(int y)
 int Configuration::getMainWindowY() const
 {
 	return mainY_;
+}
+
+void Configuration::setMainWindowVerticalSplit(int y)
+{
+	mainVSplit_ = y;
+}
+
+int Configuration::getMainWindowVerticalSplit() const
+{
+	return mainVSplit_;
 }
 
 void Configuration::setInstrumentFMWindowWidth(int w)

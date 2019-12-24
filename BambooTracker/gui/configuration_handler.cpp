@@ -24,6 +24,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("mainWindowMaximized",       configLocked->getMainWindowMaximized());
 		settings.setValue("mainWindowX",               configLocked->getMainWindowX());
 		settings.setValue("mainWindowY",               configLocked->getMainWindowY());
+		settings.setValue("mainWindowVerticalSplit",	configLocked->getMainWindowVerticalSplit());
 		settings.setValue("instrumentFMWindowWidth",   configLocked->getInstrumentFMWindowWidth());
 		settings.setValue("instrumentFMWindowHeight",  configLocked->getInstrumentFMWindowHeight());
 		settings.setValue("instrumentSSGWindowWidth",  configLocked->getInstrumentSSGWindowWidth());
@@ -190,6 +191,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setMainWindowMaximized(settings.value("mainWindowMaximized", configLocked->getMainWindowMaximized()).toBool());
 		configLocked->setMainWindowX(settings.value("mainWindowX", configLocked->getMainWindowX()).toInt());
 		configLocked->setMainWindowY(settings.value("mainWindowY", configLocked->getMainWindowY()).toInt());
+		configLocked->setMainWindowVerticalSplit(settings.value("mainWindowVerticalSplit", configLocked->getMainWindowVerticalSplit()).toInt());
 		configLocked->setInstrumentFMWindowWidth(settings.value("instrumentFMWindowWidth", configLocked->getInstrumentFMWindowWidth()).toInt());
 		configLocked->setInstrumentFMWindowHeight(settings.value("instrumentFMWindowHeight", configLocked->getInstrumentFMWindowHeight()).toInt());
 		configLocked->setInstrumentSSGWindowWidth(settings.value("instrumentSSGWindowWidth", configLocked->getInstrumentSSGWindowWidth()).toInt());

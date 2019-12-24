@@ -19,6 +19,7 @@
 #include <QAudioDeviceInfo>
 #include <QMetaMethod>
 #include <QScreen>
+#include <QComboBox>
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -59,10 +60,12 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	scciDll_(std::make_unique<QLibrary>("scci")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	isModifiedForNotCommand_(false),
+	hasLockedWigets_(false),
 	isEditedPattern_(true),
 	isEditedOrder_(false),
 	isEditedInstList_(false),
 	isSelectedPO_(false),
+	hasShownOnce_(false),
 	firstViewUpdateRequest_(false),
 	effListDiag_(std::make_unique<EffectListDialog>()),
 	shortcutsDiag_(std::make_unique<KeyboardShortcutListDialog>())
@@ -185,6 +188,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 	ui->subToolBar->addWidget(highlight2_);
 
+	/* Splitter */
+	ui->splitter->setStretchFactor(0, 0);
+	ui->splitter->setStretchFactor(1, 1);
+
 	/* Module settings */
 	QObject::connect(ui->modTitleLineEdit, &QLineEdit::textEdited,
 					 this, [&](QString str) {
@@ -215,10 +222,11 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	ui->keyRepeatCheckBox->setCheckState(config.lock()->getKeyRepetition() ? Qt::Checked : Qt::Unchecked);
 
-	/* Song number */
+	/* Song */
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(ui->songNumSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+	QObject::connect(ui->songComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, [&](int num) {
+		if (num == -1) return;
 		freezeViews();
 		if (!timer_) stream_->stop();
 		bt_->setCurrentSongNumber(num);
@@ -345,7 +353,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	/* Status bar */
 	statusDetail_ = new QLabel();
-	statusDetail_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+	statusDetail_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 	statusStyle_ = new QLabel();
 	statusStyle_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	statusInst_ = new QLabel();
@@ -506,6 +514,22 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
+void MainWindow::showEvent(QShowEvent* event)
+{
+	Q_UNUSED(event)
+
+	if (!hasShownOnce_)	{
+		int y = config_.lock()->getMainWindowVerticalSplit();
+		if (y == -1) {
+			config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().front());
+		}
+		else {
+			ui->splitter->setSizes({ y, ui->splitter->height() - ui->splitter->handleWidth() - y });
+		}
+		hasShownOnce_ = true;
+	}
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
 	int key = event->key();
@@ -608,7 +632,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 		}
 
 		bt_->stopPlaySong();
-		lockControls(false);
+		lockWidgets(false);
 
 		openModule(file);
 		break;
@@ -682,6 +706,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		config_.lock()->setMainWindowX(x());
 		config_.lock()->setMainWindowY(y());
 	}
+	config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().front());
 	config_.lock()->setFollowMode(bt_->isFollowPlay());
 
 	instForms_->closeAll();
@@ -1089,7 +1114,13 @@ void MainWindow::loadModule()
 	ui->copyrightLineEdit->setText(
 				QString::fromUtf8(modCopyright.c_str(), static_cast<int>(modCopyright.length())));
 	ui->copyrightLineEdit->setCursorPosition(0);
-	ui->songNumSpinBox->setMaximum(static_cast<int>(bt_->getSongCount()) - 1);
+	ui->songComboBox->clear();
+	for (size_t i = 0; i < bt_->getSongCount(); ++i) {
+		std::string srcTitle = bt_->getSongTitle(static_cast<int>(i));
+		QString title = QString::fromUtf8(srcTitle.c_str(), static_cast<int>(srcTitle.length()));
+		if (title.isEmpty()) title = tr("Untitled");
+		ui->songComboBox->addItem(QString("#%1 %2").arg(i).arg(title));
+	}
 	highlight1_->setValue(static_cast<int>(bt_->getModuleStepHighlight1Distance()));
 	highlight2_->setValue(static_cast<int>(bt_->getModuleStepHighlight2Distance()));
 
@@ -1192,7 +1223,7 @@ void MainWindow::loadSong()
 {
 	// Init position
 	int songCnt = static_cast<int>(bt_->getSongCount());
-	if (ui->songNumSpinBox->value() >= songCnt)
+	if (ui->songComboBox->currentIndex() >= songCnt)
 		bt_->setCurrentSongNumber(songCnt - 1);
 	else
 		bt_->setCurrentSongNumber(bt_->getCurrentSongNumber());
@@ -1213,15 +1244,7 @@ void MainWindow::loadSong()
 	ui->patternEditor->onSongLoaded();
 
 	int curSong = bt_->getCurrentSongNumber();
-	ui->songNumSpinBox->setValue(curSong);
-	auto title = bt_->getSongTitle(curSong);
-	ui->songTitleLineEdit->setText(QString::fromUtf8(title.c_str(), static_cast<int>(title.length())));
-	ui->songTitleLineEdit->setCursorPosition(0);
-	switch (bt_->getSongStyle(curSong).type) {
-	case SongType::Standard:		ui->songStyleLineEdit->setText(tr("Standard"));			break;
-	case SongType::FM3chExpanded:	ui->songStyleLineEdit->setText(tr("FM3ch expanded"));	break;
-	}
-	ui->songStyleLineEdit->setCursorPosition(0);
+	ui->songComboBox->setCurrentIndex(curSong);
 	ui->tempoSpinBox->setValue(bt_->getSongTempo(curSong));
 	ui->speedSpinBox->setValue(bt_->getSongSpeed(curSong));
 	ui->patternSizeSpinBox->setValue(static_cast<int>(bt_->getDefaultPatternSize(curSong)));
@@ -1252,42 +1275,43 @@ void MainWindow::loadSong()
 void MainWindow::startPlaySong()
 {
 	bt_->startPlaySong();
-	lockControls(true);
+	lockWidgets(true);
 	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayFromStart()
 {
 	bt_->startPlayFromStart();
-	lockControls(true);
+	lockWidgets(true);
 	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayPattern()
 {
 	bt_->startPlayPattern();
-	lockControls(true);
+	lockWidgets(true);
 	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::startPlayFromCurrentStep()
 {
 	bt_->startPlayFromCurrentStep();
-	lockControls(true);
+	lockWidgets(true);
 	firstViewUpdateRequest_ = true;
 }
 
 void MainWindow::stopPlaySong()
 {
 	bt_->stopPlaySong();
-	lockControls(false);
+	lockWidgets(false);
 	ui->patternEditor->onStoppedPlaySong();
 	ui->orderList->onStoppedPlaySong();
 }
 
-void MainWindow::lockControls(bool isLock)
+void MainWindow::lockWidgets(bool isLock)
 {
-	ui->songNumSpinBox->setEnabled(!isLock);
+	hasLockedWigets_ = isLock;
+	ui->songComboBox->setEnabled(!isLock);
 }
 
 /********** Octave change **********/
@@ -1910,7 +1934,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 			&& showUndoResetWarningDialog(tr("Do you want to change song properties?"))) {
 		int instRow = ui->instrumentListWidget->currentRow();
 		bt_->stopPlaySong();
-		lockControls(false);
+		lockWidgets(false);
 		dialog.onAccepted();
 		freezeViews();
 		if (!timer_) stream_->stop();
@@ -2050,7 +2074,7 @@ void MainWindow::on_actionGroove_Settings_triggered()
 	diag.setGrooveSquences(seqs);
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->stopPlaySong();
-		lockControls(false);
+		lockWidgets(false);
 		bt_->setGrooves(diag.getGrooveSequences());
 		ui->grooveSpinBox->setMaximum(static_cast<int>(bt_->getGrooveCount()) - 1);
 		setModifiedTrue();
@@ -2067,7 +2091,7 @@ void MainWindow::on_actionConfiguration_triggered()
 		changeConfiguration();
 		ConfigurationHandler::saveConfiguration(config_.lock());
 		ColorPaletteHandler::savePalette(palette_);
-		lockControls(false);
+		lockWidgets(false);
 	}
 }
 
@@ -2130,7 +2154,7 @@ void MainWindow::on_actionNew_triggered()
 	}
 
 	bt_->stopPlaySong();
-	lockControls(false);
+	lockWidgets(false);
 	freezeViews();
 	if (!timer_) stream_->stop();
 	bt_->makeNewModule();
@@ -2249,7 +2273,7 @@ void MainWindow::on_actionOpen_triggered()
 	if (file.isNull()) return;
 
 	bt_->stopPlaySong();
-	lockControls(false);
+	lockWidgets(false);
 
 	openModule(file);
 }
@@ -2312,7 +2336,7 @@ void MainWindow::on_actionRemove_Unused_Instruments_triggered()
 {
 	if (showUndoResetWarningDialog(tr("Do you want to remove all unused instruments?"))) {
 		bt_->stopPlaySong();
-		lockControls(false);
+		lockWidgets(false);
 
 		auto list = ui->instrumentListWidget;
 		for (auto& n : bt_->getUnusedInstrumentIndices()) {
@@ -2333,7 +2357,7 @@ void MainWindow::on_actionRemove_Unused_Patterns_triggered()
 {
 	if (showUndoResetWarningDialog(tr("Do you want to remove all unused patterns?"))) {
 		bt_->stopPlaySong();
-		lockControls(false);
+		lockWidgets(false);
 
 		bt_->clearUnusedPatterns();
 		bt_->clearCommandHistory();
@@ -2368,7 +2392,7 @@ void MainWindow::on_actionWAV_triggered()
 	progress.show();
 
 	bt_->stopPlaySong();
-	lockControls(false);
+	lockWidgets(false);
 	stream_->stop();
 
 	try {
@@ -2424,7 +2448,7 @@ void MainWindow::on_actionVGM_triggered()
 	progress.show();
 
 	bt_->stopPlaySong();
-	lockControls(false);
+	lockWidgets(false);
 	stream_->stop();
 
 	try {
@@ -2480,7 +2504,7 @@ void MainWindow::on_actionS98_triggered()
 	progress.show();
 
 	bt_->stopPlaySong();
-	lockControls(false);
+	lockWidgets(false);
 	stream_->stop();
 
 	try {
@@ -2540,6 +2564,9 @@ void MainWindow::onNewTickSignaled(int state)
 						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))
 						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
 		}
+	}
+	else if (state == -1) {
+		if (hasLockedWigets_) lockWidgets(false);
 	}
 
 	// Update BPM status
@@ -2604,7 +2631,7 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 {
 	if (showUndoResetWarningDialog(tr("Do you want to remove all duplicate instruments?"))) {
 		bt_->stopPlaySong();
-		lockControls(false);
+		lockWidgets(false);
 
 		std::vector<std::vector<int>> duplicates = bt_->checkDuplicateInstruments();
 		auto list = ui->instrumentListWidget;

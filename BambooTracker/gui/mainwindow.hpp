@@ -11,6 +11,7 @@
 #include <QCloseEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QShowEvent>
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QMoveEvent>
@@ -44,6 +45,7 @@ public:
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;
+	void showEvent(QShowEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
 	void dragEnterEvent(QDragEnterEvent* event) override;
@@ -104,7 +106,8 @@ private:
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
 	void stopPlaySong();
-	void lockControls(bool isLock);
+	bool hasLockedWigets_;
+	void lockWidgets(bool isLock);
 
 	// Octave change
 	void changeOctave(bool upFlag);
@@ -131,6 +134,8 @@ private:
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPO_;
+
+	bool hasShownOnce_;
 
 	bool isSavedModBefore_;
 
