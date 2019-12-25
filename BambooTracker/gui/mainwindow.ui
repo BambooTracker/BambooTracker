@@ -41,7 +41,7 @@
       <property name="childrenCollapsible">
        <bool>false</bool>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
         <property name="spacing">
          <number>9</number>
@@ -69,7 +69,7 @@
           <property name="title">
            <string>Order List</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_3">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
            <property name="leftMargin">
             <number>3</number>
            </property>
@@ -82,7 +82,7 @@
            <property name="bottomMargin">
             <number>3</number>
            </property>
-           <item row="0" column="0">
+           <item>
             <widget class="OrderListEditor" name="orderList">
              <property name="sizePolicy">
               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
@@ -120,13 +120,7 @@
             <property name="title">
              <string>Song Settings</string>
             </property>
-            <layout class="QFormLayout" name="formLayout">
-             <property name="horizontalSpacing">
-              <number>6</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>6</number>
-             </property>
+            <layout class="QGridLayout" name="gridLayout_2">
              <property name="leftMargin">
               <number>6</number>
              </property>
@@ -137,6 +131,9 @@
               <number>6</number>
              </property>
              <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <property name="spacing">
               <number>6</number>
              </property>
              <item row="0" column="0">
@@ -278,13 +275,7 @@
             <property name="title">
              <string>Edit settings</string>
             </property>
-            <layout class="QFormLayout" name="formLayout_2">
-             <property name="horizontalSpacing">
-              <number>6</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>6</number>
-             </property>
+            <layout class="QGridLayout" name="gridLayout">
              <property name="leftMargin">
               <number>6</number>
              </property>
@@ -295,6 +286,9 @@
               <number>3</number>
              </property>
              <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <property name="spacing">
               <number>6</number>
              </property>
              <item row="0" column="0">
@@ -372,7 +366,7 @@
             <property name="title">
              <string>Module Settings</string>
             </property>
-            <layout class="QFormLayout" name="formLayout_3">
+            <layout class="QVBoxLayout" name="verticalLayout_5">
              <property name="leftMargin">
               <number>6</number>
              </property>
@@ -385,8 +379,8 @@
              <property name="bottomMargin">
               <number>6</number>
              </property>
-             <item row="2" column="0" colspan="2">
-              <widget class="QLineEdit" name="copyrightLineEdit">
+             <item>
+              <widget class="QLineEdit" name="modTitleLineEdit">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -394,11 +388,11 @@
                 </sizepolicy>
                </property>
                <property name="placeholderText">
-                <string>Copyright</string>
+                <string>Title</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="0" colspan="2">
+             <item>
               <widget class="QLineEdit" name="authorLineEdit">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -411,8 +405,8 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="0" colspan="2">
-              <widget class="QLineEdit" name="modTitleLineEdit">
+             <item>
+              <widget class="QLineEdit" name="copyrightLineEdit">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -420,7 +414,7 @@
                 </sizepolicy>
                </property>
                <property name="placeholderText">
-                <string>Title</string>
+                <string>Copyright</string>
                </property>
               </widget>
              </item>
@@ -448,7 +442,7 @@
             <property name="title">
              <string>Songs</string>
             </property>
-            <layout class="QFormLayout" name="formLayout_4">
+            <layout class="QVBoxLayout" name="verticalLayout_2">
              <property name="leftMargin">
               <number>6</number>
              </property>
@@ -461,7 +455,7 @@
              <property name="bottomMargin">
               <number>6</number>
              </property>
-             <item row="0" column="0" colspan="2">
+             <item>
               <widget class="QComboBox" name="songComboBox">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
