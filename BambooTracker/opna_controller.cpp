@@ -392,10 +392,10 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 			|| refInstFM_[inch]->getNumber() != inst->getNumber()) {
 		refInstFM_[inch] = inst;
 		writeFMEnvelopeToRegistersFromInstrument(inch);
-		fmOpEnables_[inch] = static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(0))
-							 | static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(1) << 1)
-							 | static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(2) << 2)
-							 | static_cast<uint8_t>(refInstFM_[inch]->getOperatorEnabled(3) << 3);
+		fmOpEnables_[inch] = static_cast<uint8_t>(inst->getOperatorEnabled(0))
+							 | static_cast<uint8_t>(inst->getOperatorEnabled(1) << 1)
+							 | static_cast<uint8_t>(inst->getOperatorEnabled(2) << 2)
+							 | static_cast<uint8_t>(inst->getOperatorEnabled(3) << 3);
 	}
 	else {
 		if (isFBCtrlFM_[inch]) {
@@ -2114,26 +2114,26 @@ void OPNAController::setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> ins
 {
 	refInstSSG_[ch] = inst;
 
-	if (refInstSSG_[ch]->getWaveFormEnabled())
-		wfItSSG_[ch] = refInstSSG_[ch]->getWaveFormSequenceIterator();
+	if (inst->getWaveFormEnabled())
+		wfItSSG_[ch] = inst->getWaveFormSequenceIterator();
 	else
 		wfItSSG_[ch].reset();
-	if (refInstSSG_[ch]->getToneNoiseEnabled())
-		tnItSSG_[ch] = refInstSSG_[ch]->getToneNoiseSequenceIterator();
+	if (inst->getToneNoiseEnabled())
+		tnItSSG_[ch] = inst->getToneNoiseSequenceIterator();
 	else
 		tnItSSG_[ch].reset();
-	if (refInstSSG_[ch]->getEnvelopeEnabled())
-		envItSSG_[ch] = refInstSSG_[ch]->getEnvelopeSequenceIterator();
+	if (inst->getEnvelopeEnabled())
+		envItSSG_[ch] = inst->getEnvelopeSequenceIterator();
 	else
 		envItSSG_[ch].reset();
 	if (!isArpEffSSG_[ch]) {
-		if (refInstSSG_[ch]->getArpeggioEnabled())
-			arpItSSG_[ch] = refInstSSG_[ch]->getArpeggioSequenceIterator();
+		if (inst->getArpeggioEnabled())
+			arpItSSG_[ch] = inst->getArpeggioSequenceIterator();
 		else
 			arpItSSG_[ch].reset();
 	}
-	if (refInstSSG_[ch]->getPitchEnabled())
-		ptItSSG_[ch] = refInstSSG_[ch]->getPitchSequenceIterator();
+	if (inst->getPitchEnabled())
+		ptItSSG_[ch] = inst->getPitchSequenceIterator();
 	else
 		ptItSSG_[ch].reset();
 }
