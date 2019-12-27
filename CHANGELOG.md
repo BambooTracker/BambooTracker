@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+### Added
+- 1 new sample instrument bank
+
 ### Changed
 - Change layout of the main window
 - Modify several words in the tracker

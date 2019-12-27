@@ -6,7 +6,7 @@
 
 ## Sample instruments
 - [papiezak] - 2 banks (32 instruments)
-- Rerrah - 2 banks (43 instruments)
+- Rerrah - 3 banks (54 instruments)
 
 Thanks all for samples!
 
