@@ -34,7 +34,7 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Operator </string>
+      <string notr="true">Operator</string>
      </property>
      <property name="checkable">
       <bool>true</bool>

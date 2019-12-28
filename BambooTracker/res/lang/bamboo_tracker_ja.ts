@@ -1025,9 +1025,8 @@
 <context>
     <name>FMOperatorTable</name>
     <message>
-        <location filename="../../gui/instrument_editor/fm_operator_table.ui" line="37"/>
         <source>Operator </source>
-        <translation>オペレーター</translation>
+        <translation type="vanished">オペレーター</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.ui" line="104"/>
@@ -1141,109 +1140,109 @@
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="111"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="261"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="410"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="590"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="661"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="264"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="328"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="603"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="677"/>
         <source>Users:</source>
         <translation>ユーザー:</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="188"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="191"/>
         <source>LFO/Operator sequence</source>
         <translation>LFO/オペレーターシーケンス</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="287"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="293"/>
         <source>LFO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="381"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="372"/>
         <source>Start count:</source>
         <translation>開始カウント:</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="344"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="388"/>
         <source>AM operators</source>
         <translation>AMオペレーター</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="350"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="454"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="394"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="467"/>
         <source>Operator 1</source>
         <translation>オペレーター1</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="357"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="461"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="401"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="474"/>
         <source>Operator 2</source>
         <translation>オペレーター2</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="364"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="468"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="408"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="481"/>
         <source>Operator 3</source>
         <translation>オペレーター3</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="371"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="475"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="415"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="488"/>
         <source>Operator 4</source>
         <translation>オペレーター4</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="432"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="445"/>
         <source>Envelope reset</source>
         <translation>エンベロープリセット</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="438"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="451"/>
         <source>Reset envelope before key on</source>
         <translation>キーオン前にエンベロープを初期化</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="194"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="197"/>
         <source>Operator sequence</source>
         <translation>オペレーターシーケンス</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="200"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="516"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="622"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="203"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="529"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="638"/>
         <source>Operator:</source>
         <translation>オペレーター:</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="223"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="539"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="642"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="226"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="552"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="658"/>
         <source>Sequence</source>
         <translation>シーケンス</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="448"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="461"/>
         <source>FM 3ch</source>
         <translation>FM 3ch</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="504"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="517"/>
         <source>Arpeggio/Pitch</source>
         <translation>アルペジオ/ピッチ</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="613"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="629"/>
         <source>Arpeggio</source>
         <translation>アルペジオ</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="580"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="654"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="593"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="670"/>
         <source>Type:</source>
         <translation>タイプ:</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="510"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.ui" line="523"/>
         <source>Pitch</source>
         <translation>ピッチ</translation>
     </message>

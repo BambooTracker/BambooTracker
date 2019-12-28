@@ -65,8 +65,8 @@
              <property name="title">
               <string>Envelope</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_6" rowstretch="1,2,2,2,2">
-              <item row="0" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,2,2,2,2">
+              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="6,4">
                 <item>
                  <layout class="QGridLayout" name="gridLayout_2">
@@ -105,10 +105,13 @@
                       </property>
                      </widget>
                     </item>
-                    <item alignment="Qt::AlignRight">
+                    <item>
                      <widget class="QLabel" name="envUsersLabel">
                       <property name="text">
                        <string>Users:</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                       </property>
                      </widget>
                     </item>
@@ -138,7 +141,7 @@
                 </item>
                </layout>
               </item>
-              <item row="1" column="0">
+              <item>
                <widget class="FMOperatorTable" name="op1Table">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -148,7 +151,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
+              <item>
                <widget class="FMOperatorTable" name="op2Table">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -158,7 +161,7 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
+              <item>
                <widget class="FMOperatorTable" name="op3Table">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -168,7 +171,7 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
+              <item>
                <widget class="FMOperatorTable" name="op4Table">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -255,10 +258,13 @@
                    </property>
                   </spacer>
                  </item>
-                 <item row="0" column="1" alignment="Qt::AlignRight">
+                 <item row="0" column="1">
                   <widget class="QLabel" name="opSeqUsersLabel">
                    <property name="text">
                     <string>Users:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -293,6 +299,16 @@
               <bool>false</bool>
              </property>
              <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="3">
+               <widget class="QLineEdit" name="lfoUsersLineEdit">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
               <item row="0" column="1">
                <widget class="QSpinBox" name="lfoNumSpinBox">
                 <property name="keyboardTracking">
@@ -306,8 +322,28 @@
                 </property>
                </widget>
               </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="lfoUsersLabel">
+                <property name="text">
+                 <string>Users:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
               <item row="1" column="0" colspan="5">
                <layout class="QGridLayout" name="gridLayout_7">
+                <item row="0" column="0" rowspan="3">
+                 <widget class="LabeledVerticalSlider" name="lfoFreqSlider">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
                 <item row="0" column="2" rowspan="3">
                  <widget class="LabeledVerticalSlider" name="amsSlider">
                   <property name="frameShape">
@@ -328,17 +364,25 @@
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="0" rowspan="3">
-                 <widget class="LabeledVerticalSlider" name="lfoFreqSlider">
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
+                <item row="1" column="3">
+                 <layout class="QFormLayout" name="formLayout">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="lfoStartLabel">
+                    <property name="text">
+                     <string>Start count:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QSpinBox" name="lfoStartSpinBox">
+                    <property name="keyboardTracking">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
-                <item row="2" column="3" colspan="2">
+                <item row="2" column="3">
                  <widget class="QGroupBox" name="amOpsGroupBox">
                   <property name="title">
                    <string>AM operators</string>
@@ -375,20 +419,6 @@
                   </layout>
                  </widget>
                 </item>
-                <item row="1" column="3">
-                 <widget class="QLabel" name="lfoStartLabel">
-                  <property name="text">
-                   <string>Start count:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="4">
-                 <widget class="QSpinBox" name="lfoStartSpinBox">
-                  <property name="keyboardTracking">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
                 <item row="0" column="3">
                  <spacer name="verticalSpacer">
                   <property name="orientation">
@@ -404,23 +434,6 @@
                 </item>
                </layout>
               </item>
-              <item row="0" column="2">
-               <widget class="QLabel" name="lfoUsersLabel">
-                <property name="text">
-                 <string>Users:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLineEdit" name="lfoUsersLineEdit">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
              </layout>
             </widget>
            </item>
@@ -431,8 +444,8 @@
                <property name="title">
                 <string>Envelope reset</string>
                </property>
-               <layout class="QGridLayout" name="gridLayout_15">
-                <item row="0" column="0">
+               <layout class="QVBoxLayout" name="verticalLayout_3">
+                <item>
                  <widget class="QCheckBox" name="envResetCheckBox">
                   <property name="text">
                    <string>Reset envelope before key on</string>
@@ -442,7 +455,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="0">
+                <item>
                  <widget class="QGroupBox" name="envResetFm3GroupBox">
                   <property name="title">
                    <string>FM 3ch</string>
@@ -584,10 +597,13 @@
                  <item row="1" column="0" colspan="6">
                   <widget class="VisualizedInstrumentMacroEditor" name="ptEditor" native="true"/>
                  </item>
-                 <item row="0" column="1" alignment="Qt::AlignRight">
+                 <item row="0" column="1">
                   <widget class="QLabel" name="ptUsersLabel">
                    <property name="text">
                     <string>Users:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -655,10 +671,13 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1" alignment="Qt::AlignRight">
+                 <item row="0" column="1">
                   <widget class="QLabel" name="arpUsersLabel">
                    <property name="text">
                     <string>Users:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -753,6 +772,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>scrollArea</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>envNumSpinBox</tabstop>
   <tabstop>alGraphicsView</tabstop>
@@ -779,7 +799,6 @@
   <tabstop>ptEditGroupBox</tabstop>
   <tabstop>ptNumSpinBox</tabstop>
   <tabstop>ptTypeComboBox</tabstop>
-  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>
  <connections/>
