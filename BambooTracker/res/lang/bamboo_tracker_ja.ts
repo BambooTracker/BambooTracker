@@ -40,11 +40,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="340"/>
         <source>MIDI input</source>
-        <translation>MIDI IN</translation>
-    </message>
-    <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
+        <translation>MIDI In</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="428"/>
@@ -460,10 +456,6 @@
         <translation>エコーバッファ</translation>
     </message>
     <message>
-        <source>Note entry</source>
-        <translation type="vanished">ノート入力</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.ui" line="191"/>
         <source>Edit settings</source>
         <translation>エディット設定</translation>
@@ -579,14 +571,6 @@
         <location filename="../../gui/configuration_dialog.ui" line="334"/>
         <source>Device</source>
         <translation>デバイス</translation>
-    </message>
-    <message>
-        <source>Use SCCI (beta)</source>
-        <translation type="vanished">SCCI使用 (ベータ版)</translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="vanished">入力</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1041"/>
@@ -721,16 +705,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="411"/>
         <source>Description: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>説明: %1</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="456"/>
         <source>Set %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Description: </source>
-        <translation type="vanished">説明: </translation>
+        <translation>セット%1</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="547"/>
@@ -918,10 +898,6 @@
         <translation>ブライトネス, xx: 相対値(01-FF)</translation>
     </message>
     <message>
-        <source>Brightness, xx: relavtive value (01-FF)</source>
-        <translation type="vanished">ブライトネス, xx: 相対値(01-FF)</translation>
-    </message>
-    <message>
         <location filename="../../gui/effect_description.cpp" line="36"/>
         <source>DR control, x: operator (1-4), yy: decay rate (00-1F)</source>
         <translation>DRコントロール, x: オペレーター(1-4), yy: DR値(00-1F)</translation>
@@ -995,11 +971,7 @@
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="52"/>
         <source>Set digit types in the order of appearence.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set digit types in the order of appearence:</source>
-        <translation type="vanished">出現順に数字のタイプを設定:</translation>
+        <translation>数字に対応するパラメーターを出現順に設定します。</translation>
     </message>
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.ui" line="62"/>
@@ -1019,15 +991,11 @@
     <message>
         <location filename="../../gui/fm_envelope_set_edit_dialog.cpp" line="89"/>
         <source>Skip</source>
-        <translation type="unfinished"></translation>
+        <translation>スキップ</translation>
     </message>
 </context>
 <context>
     <name>FMOperatorTable</name>
-    <message>
-        <source>Operator </source>
-        <translation type="vanished">オペレーター</translation>
-    </message>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.ui" line="104"/>
         <source>SSGEG</source>
@@ -1041,7 +1009,7 @@
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="108"/>
         <source>Operator %1</source>
-        <translation type="unfinished"></translation>
+        <translation>オペレーター%1</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="458"/>
@@ -1097,10 +1065,6 @@
         <translation>Fxxでコピー</translation>
     </message>
     <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
         <location filename="../../gui/groove_settings_dialog.ui" line="108"/>
         <source>Expand</source>
         <translation>拡大</translation>
@@ -1121,13 +1085,9 @@
         <translation>パッド</translation>
     </message>
     <message>
-        <source>Speed: </source>
-        <translation type="vanished">スピード: </translation>
-    </message>
-    <message>
         <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
         <source>Speed: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>スピード: %1</translation>
     </message>
 </context>
 <context>
@@ -1253,19 +1213,15 @@
         <translation>絶対</translation>
     </message>
     <message>
-        <source>Fix</source>
-        <translation type="vanished">固定</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="222"/>
         <source>Freq</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="399"/>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="461"/>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="406"/>
@@ -1319,14 +1275,10 @@
 <context>
     <name>InstrumentEditorSSGForm</name>
     <message>
-        <source>Wave form</source>
-        <translation type="vanished">波形</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="24"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="30"/>
         <source>Waveform</source>
-        <translation type="unfinished"></translation>
+        <translation>波形</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="65"/>
@@ -1356,28 +1308,12 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="271"/>
         <source>Hardware envelope frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアエンベロープ周波数</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="306"/>
         <source>Tone/Env ratio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>/</source>
-        <translation type="vanished">/</translation>
-    </message>
-    <message>
-        <source>Hard frequency</source>
-        <translation type="vanished">ハードウェアエンベロープ周波数</translation>
-    </message>
-    <message>
-        <source>Tone/Hard ratio</source>
-        <translation type="vanished">トーン/ハード比</translation>
-    </message>
-    <message>
-        <source>Square mask:</source>
-        <translation type="vanished">矩形波マスク:</translation>
+        <translation>トーン/ハード比</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="176"/>
@@ -1390,10 +1326,6 @@
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="250"/>
         <source>Envelope</source>
         <translation>エンベロープ</translation>
-    </message>
-    <message>
-        <source>Hard frequency:</source>
-        <translation type="vanished">ハード周波数:</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="399"/>
@@ -1416,42 +1348,42 @@
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="21"/>
         <source>Sq</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="22"/>
         <source>Tri</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="23"/>
         <source>Saw</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="24"/>
         <source>InvSaw</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="25"/>
         <source>SMTri</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="26"/>
         <source>SMSaw</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="27"/>
         <source>SMInvSaw</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="130"/>
         <source>HEnv %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="187"/>
@@ -1463,10 +1395,6 @@
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="188"/>
         <source>Fixed</source>
         <translation>固定</translation>
-    </message>
-    <message>
-        <source>Fix</source>
-        <translation type="vanished">固定</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="189"/>
@@ -1519,10 +1447,6 @@
         <translation>モジュール設定</translation>
     </message>
     <message>
-        <source>Tick Freq</source>
-        <translation type="vanished">ティック</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="417"/>
         <source>Copyright</source>
         <translation>著作権</translation>
@@ -1533,21 +1457,9 @@
         <translation>作曲者</translation>
     </message>
     <message>
-        <source>Module Title</source>
-        <translation type="vanished">タイトル</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="276"/>
         <source>Edit settings</source>
         <translation>エディット設定</translation>
-    </message>
-    <message>
-        <source>Editable step</source>
-        <translation type="vanished">ステップ</translation>
-    </message>
-    <message>
-        <source>Song</source>
-        <translation type="vanished">ソング</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="257"/>
@@ -1565,17 +1477,9 @@
         <translation>スピード</translation>
     </message>
     <message>
-        <source>Pattern Size</source>
-        <translation type="vanished">パターン長</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="148"/>
         <source>Tempo</source>
         <translation>テンポ</translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="vanished">スタイル</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="126"/>
@@ -1637,10 +1541,6 @@
         <translation>トランスポーズ(&amp;T)</translation>
     </message>
     <message>
-        <source>&amp;Song</source>
-        <translation type="vanished">ソング(&amp;S)</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="660"/>
         <source>&amp;Module</source>
         <translation>モジュール(&amp;M)</translation>
@@ -1654,10 +1554,6 @@
         <location filename="../../gui/mainwindow.ui" line="679"/>
         <source>&amp;Instrument</source>
         <translation>インストゥルメント(&amp;I)</translation>
-    </message>
-    <message>
-        <source>T&amp;racker</source>
-        <translation type="vanished">トラッカー(&amp;R)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="719"/>
@@ -1767,12 +1663,12 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="212"/>
         <source>Pattern size</source>
-        <translation type="unfinished"></translation>
+        <translation>パターン長</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="303"/>
         <source>Step</source>
-        <translation type="unfinished"></translation>
+        <translation>ステップ</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="338"/>
@@ -1782,12 +1678,12 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="391"/>
         <source>Title</source>
-        <translation type="unfinished">タイトル</translation>
+        <translation>タイトル</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="443"/>
         <source>Songs</source>
-        <translation type="unfinished"></translation>
+        <translation>ソング</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="569"/>
@@ -2256,10 +2152,6 @@
         <translation>オクターブ</translation>
     </message>
     <message>
-        <source>Step highlight</source>
-        <translation type="vanished">ステップハイライト</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.cpp" line="379"/>
         <location filename="../../gui/mainwindow.cpp" line="1323"/>
         <source>Octave: %1</source>
@@ -2444,33 +2336,33 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1390"/>
         <source>Could not initialize MIDI input.</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI Inを初期化できませんでした。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2034"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation></translation>
+        <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2214"/>
         <location filename="../../gui/mainwindow.cpp" line="2271"/>
         <source>BambooTracker module (*.btm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2377"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2433"/>
         <source>VGM file (*.vgm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2489"/>
         <source>S98 file (*.s98)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2631"/>
@@ -2478,50 +2370,10 @@
         <translation>重複したインストゥルメントを削除しますか?</translation>
     </message>
     <message>
-        <source>&amp;Add</source>
-        <translation type="vanished">追加(&amp;A)</translation>
-    </message>
-    <message>
-        <source>&amp;Remove</source>
-        <translation type="vanished">削除(&amp;R)</translation>
-    </message>
-    <message>
-        <source>Edit &amp;name</source>
-        <translation type="vanished">名前の編集(&amp;N)</translation>
-    </message>
-    <message>
-        <source>&amp;Clone</source>
-        <translation type="vanished">クローン(&amp;C)</translation>
-    </message>
-    <message>
-        <source>&amp;Deep clone</source>
-        <translation type="vanished">ディープクローン(&amp;D)</translation>
-    </message>
-    <message>
-        <source>&amp;Load from file...</source>
-        <translation type="vanished">ファイルから読み込む(&amp;L)...</translation>
-    </message>
-    <message>
-        <source>&amp;Save to file...</source>
-        <translation type="vanished">ファイルに保存(&amp;S)...</translation>
-    </message>
-    <message>
-        <source>&amp;Import from bank file...</source>
-        <translation type="vanished">バンクファイルから取り込み(&amp;I)...</translation>
-    </message>
-    <message>
-        <source>E&amp;xport to bank file...</source>
-        <translation type="vanished">バンクファイルへ書き出し(&amp;X)...</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.cpp" line="1677"/>
         <source>Instrument: %1</source>
         <oldsource>Instrument: </oldsource>
         <translation>インストゥルメント: %1</translation>
-    </message>
-    <message>
-        <source>Instrument: </source>
-        <translation type="vanished">インストゥルメント: </translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1934"/>
@@ -2569,10 +2421,6 @@
         <translation>未使用のパターンを削除しますか?</translation>
     </message>
     <message>
-        <source>Export to wav</source>
-        <translation type="vanished">WAV書き出し</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.cpp" line="2375"/>
         <location filename="../../gui/mainwindow.cpp" line="2382"/>
         <source>Export to WAV</source>
@@ -2591,10 +2439,6 @@
         <translation>WAVの書き出しに失敗しました。</translation>
     </message>
     <message>
-        <source>Export to vgm</source>
-        <translation type="vanished">VGM書き出し</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.cpp" line="2431"/>
         <location filename="../../gui/mainwindow.cpp" line="2438"/>
         <source>Export to VGM</source>
@@ -2604,10 +2448,6 @@
         <location filename="../../gui/mainwindow.cpp" line="2473"/>
         <source>Failed to export to vgm file.</source>
         <translation>VGMの書き出しに失敗しました。</translation>
-    </message>
-    <message>
-        <source>Export to s98</source>
-        <translation type="vanished">S98書き出し</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2487"/>
@@ -2628,11 +2468,7 @@
     <message>
         <location filename="../../gui/mainwindow.hpp" line="259"/>
         <source>%1 If you execute this command, the command history is reset.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> If you execute this command, the command history is reset.</source>
-        <translation type="vanished">この操作を実行すると、すべてのコマンド履歴は消去されます。</translation>
+        <translation>%1この操作を実行すると、すべてのコマンド履歴は消去されます。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.hpp" line="267"/>
@@ -2727,14 +2563,6 @@
         <location filename="../../gui/module_properties_dialog.ui" line="257"/>
         <source>Insert song</source>
         <translation>ソング追加</translation>
-    </message>
-    <message>
-        <source>Title:</source>
-        <translation type="vanished">タイトル:</translation>
-    </message>
-    <message>
-        <source>Song type:</source>
-        <translation type="vanished">ソングタイプ:</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="305"/>
@@ -2832,98 +2660,6 @@
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1469"/>
         <source>Invalid effect</source>
         <translation>無効なエフェクト</translation>
-    </message>
-    <message>
-        <source>00xy - Arpeggio, x: 2nd note (0-F), y: 3rd note (0-F)</source>
-        <translation type="vanished">00xy - アルペジオ, x: 第2音(0-F), y: 第3音(0-F)</translation>
-    </message>
-    <message>
-        <source>01xx - Portamento up, xx: depth (00-FF)</source>
-        <translation type="vanished">01xx - ポルタメント・アップ, xx: デプス(00-FF)</translation>
-    </message>
-    <message>
-        <source>02xx - Portamento down, xx: depth (00-FF)</source>
-        <translation type="vanished">02xx - ポルタメント・ダウン, xx: デプス(00-FF)</translation>
-    </message>
-    <message>
-        <source>03xx - Tone portamento, xx: depth (00-FF)</source>
-        <translation type="vanished">03 - トーン・ポルタメント, xx: デプス(00-FF)</translation>
-    </message>
-    <message>
-        <source>04xy - Vibrato, x: period (0-F), y: depth (0-F)</source>
-        <translation type="vanished">04xy - ビブラート, x: ピリオド(0-F), y: デプス(0-F)</translation>
-    </message>
-    <message>
-        <source>07xx - Tremolo, x: period (0-F), y: depth (0-F)</source>
-        <translation type="vanished">07xy - トレモロ, x: ピリオド(0-F), y: デプス(0-F)</translation>
-    </message>
-    <message>
-        <source>08xx - Pan, xx: 00 = no sound, 01 = right, 02 = left, 03 = center</source>
-        <translation type="vanished">08xx - パン, xx: 00 = 無音, 01 = 右, 02 = 左, 03 = 中央</translation>
-    </message>
-    <message>
-        <source>0Axy - Volume slide, x: up (0-F), y: down (0-F)</source>
-        <translation type="vanished">0Axy - ボリューム・スライド, x: アップ(0-F), y: ダウン(0-F)</translation>
-    </message>
-    <message>
-        <source>0Bxx - Jump to begginning of order xx</source>
-        <translation type="vanished">0Bxx - オーダーxxの先頭へジャンプ</translation>
-    </message>
-    <message>
-        <source>0Cxx - End of song</source>
-        <translation type="vanished">0Cxx - ソングの停止</translation>
-    </message>
-    <message>
-        <source>0Dxx - Jump to step xx of next order</source>
-        <translation type="vanished">0Dxx - 次のオーダーのステップxxへジャンプ</translation>
-    </message>
-    <message>
-        <source>0Oxx - Set groove xx</source>
-        <translation type="vanished">0Oxx - グルーブをxxに設定</translation>
-    </message>
-    <message>
-        <source>0Pxx - Detune, xx: pitch (00-FF)</source>
-        <translation type="vanished">0Pxx - デチューン, xx: ピッチ(00-FF)</translation>
-    </message>
-    <message>
-        <source>0Qxy - Note slide up, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="vanished">0Qxy - ノート・スライドアップ, x: カウント(0-F), y: 半音数(0-F)</translation>
-    </message>
-    <message>
-        <source>0Rxy - Note slide down, x: count (0-F), y: seminote (0-F)</source>
-        <translation type="vanished">0Rxy - ノート・スライドダウン, x: カウント(0-F), y: 半音数(0-F)</translation>
-    </message>
-    <message>
-        <source>0Sxx - Note cut, xx: count (01-0F)</source>
-        <translation type="vanished">0Sxx - ノート・カット, xx: カウント(01-FF)</translation>
-    </message>
-    <message>
-        <source>0Txy - Transpose delay, x: count (1-7: up, 9-F: down), y: seminote (0-F)</source>
-        <translation type="vanished">0Txy - トランスポーズ・ディレイ, x: カウント(1-7: アップ, 9-F: ダウン), y: 半音数(0-F)</translation>
-    </message>
-    <message>
-        <source>0Fxx - Change speed (xx: 00-1F), change tempo (xx: 20-FF)</source>
-        <translation type="vanished">0Fxx - スピード変更(xx: 00-1F), テンポ変更(xx: 20-FF)</translation>
-    </message>
-    <message>
-        <source>0Bxx - Jump to beginning of order xx</source>
-        <translation type="vanished">0Bxx - オーダーxxの先頭へジャンプ</translation>
-    </message>
-    <message>
-        <source>0Gxx - Note delay, xx: count (00-FF)</source>
-        <translation type="vanished">0Gxx - ノート・ディレイ, xx: カウント(00-FF)</translation>
-    </message>
-    <message>
-        <source>0Sxx - Note cut, xx: count (01-FF)</source>
-        <translation type="vanished">0Sxx - ノート・カット, xx: カウント(01-FF)</translation>
-    </message>
-    <message>
-        <source>0Vxx - Master volume, xx: volume (00-3F)</source>
-        <translation type="vanished">0Vxx - マスターボリューム, xx: 音量(00-3F)</translation>
-    </message>
-    <message>
-        <source>Mxyy - Volume delay, x: count (1-F), yy: volume (00-FF)</source>
-        <translation type="vanished">Mxyy - ボリューム・ディレイ, x: カウント(1-F), yy: 音量(00-FF)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1798"/>
@@ -3073,10 +2809,6 @@
 %1</source>
         <translation>不明なエラーが発生しました。
 %1</translation>
-    </message>
-    <message>
-        <source>An unknown error occured.</source>
-        <translation type="vanished">不明なエラーが発生しました。</translation>
     </message>
     <message>
         <location filename="../../main.cpp" line="41"/>
@@ -3230,11 +2962,7 @@
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="307"/>
         <source>Drums</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rhythm</source>
-        <translation type="vanished">リズム音源</translation>
+        <translation>ドラム</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="333"/>
@@ -3426,11 +3154,7 @@
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="499"/>
         <source>Drums</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rhythm</source>
-        <translation type="vanished">リズム音源</translation>
+        <translation>ドラム</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="525"/>
@@ -3451,10 +3175,6 @@
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.ui" line="69"/>
         <source>Size: 1</source>
         <translation>長さ: 1</translation>
-    </message>
-    <message>
-        <source>Release </source>
-        <translation type="vanished">リリース </translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="161"/>
@@ -3486,10 +3206,6 @@
         <translation>リリース</translation>
     </message>
     <message>
-        <source>Fix</source>
-        <translation type="vanished">固定</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/visualized_instrument_macro_editor.cpp" line="422"/>
         <source>Absolute</source>
         <translation>絶対</translation>
@@ -3511,10 +3227,6 @@
         <location filename="../../gui/wave_export_settings_dialog.ui" line="30"/>
         <source>Loop</source>
         <translation>ループ</translation>
-    </message>
-    <message>
-        <source>Loop:</source>
-        <translation type="vanished">ループ:</translation>
     </message>
     <message>
         <location filename="../../gui/wave_export_settings_dialog.ui" line="20"/>
