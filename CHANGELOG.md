@@ -6,7 +6,7 @@
 
 ### Changed
 - Change layout of the main window
-- Modify several words in the tracker
+- Modify some words in the tracker
 
 ### Fixed
 - [#172], [#173] - Check MIDI in api(thanks [@OPNA2608], [@jpcima])

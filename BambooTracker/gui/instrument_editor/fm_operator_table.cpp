@@ -105,7 +105,7 @@ void FMOperatorTable::setColorPalette(std::shared_ptr<ColorPalette> palette)
 void FMOperatorTable::setOperatorNumber(int n)
 {
 	number_ = n;
-	ui->groupBox->setTitle(tr("Operator ") + QString::number(n + 1));
+	ui->groupBox->setTitle(tr("Operator %1").arg(n + 1));
 }
 
 int FMOperatorTable::operatorNumber() const

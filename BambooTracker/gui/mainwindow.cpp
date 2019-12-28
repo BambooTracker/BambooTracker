@@ -726,17 +726,17 @@ void MainWindow::updateInstrumentListColors()
 {
 	ui->instrumentListWidget->setStyleSheet(
 				QString("QListWidget { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistBackColor.name(QColor::HexArgb))
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb),
+					 palette_->ilistBackColor.name(QColor::HexArgb))
 				+ QString("QListWidget::item:hover { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistHovBackColor.name(QColor::HexArgb))
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb),
+					 palette_->ilistHovBackColor.name(QColor::HexArgb))
 				+ QString("QListWidget::item:selected { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistSelBackColor.name(QColor::HexArgb))
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb),
+					 palette_->ilistSelBackColor.name(QColor::HexArgb))
 				+ QString("QListWidget::item:selected:hover { color: %1; background: %2; }")
-				.arg(palette_->ilistTextColor.name(QColor::HexArgb))
-				.arg(palette_->ilistHovSelBackColor.name(QColor::HexArgb)));
+				.arg(palette_->ilistTextColor.name(QColor::HexArgb),
+					 palette_->ilistHovSelBackColor.name(QColor::HexArgb)));
 }
 
 /********** MIDI **********/
@@ -949,7 +949,7 @@ void MainWindow::saveInstrument()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save instrument"),
 					   QString("%1/%2.bti").arg(dir.isEmpty() ? "." : dir, name),
-					   tr("BambooTracker instrument file (*.bti)"));
+					   tr("BambooTracker instrument (*.bti)"));
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
@@ -1056,7 +1056,7 @@ void MainWindow::exportInstrumentsToBank()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getSaveFileName(this, tr("Save bank"), (dir.isEmpty() ? "./" : dir),
-												tr("BambooTracker bank file (*.btb)"));
+												tr("BambooTracker bank (*.btb)"));
 	if (file.isNull()) return;
 
 	QVector<size_t> selection = dlg.currentInstrumentSelection();
@@ -1674,7 +1674,7 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 
 	if (num == -1) statusInst_->setText(tr("No instrument"));
 	else statusInst_->setText(
-				tr("Instrument: ") + QString("%1").arg(num, 2, 16, QChar('0')).toUpper());
+				tr("Instrument: %1").arg(QString("%1").arg(num, 2, 16, QChar('0')).toUpper()));
 
 	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
 		ui->actionNew_Instrument->setEnabled(false);
@@ -2029,9 +2029,8 @@ void MainWindow::on_actionAbout_triggered()
 {
 	QMessageBox box(QMessageBox::NoIcon,
 					tr("About"),
-					QString("<h2>BambooTracker v")
-					+ QString::fromStdString(Version::ofApplicationInString())
-					+ QString("</h2>")
+					QString("<h2>BambooTracker v%1</h2>").arg(
+						QString::fromStdString(Version::ofApplicationInString()))
 					+ tr("<b>YM2608 (OPNA) Music Tracker<br>"
 						 "Copyright (C) 2018, 2019 Rerrah</b><br>"
 						 "<hr>"
@@ -2212,7 +2211,7 @@ bool MainWindow::on_actionSave_As_triggered()
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save module"),
 					   QString("%1/%2.btm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   tr("BambooTracker module file (*.btm)"));
+					   tr("BambooTracker module (*.btm)"));
 	if (file.isNull()) return false;
 	if (!file.endsWith(".btm")) file += ".btm";	// For linux
 
@@ -2269,7 +2268,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Open module"), (dir.isEmpty() ? "./" : dir),
-												tr("BambooTracker module file (*.btm)"));
+												tr("BambooTracker module (*.btm)"));
 	if (file.isNull()) return;
 
 	bt_->stopPlaySong();
@@ -2373,9 +2372,9 @@ void MainWindow::on_actionWAV_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
-					   this, tr("Export to wav"),
+					   this, tr("Export to WAV"),
 					   QString("%1/%2.wav").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   "WAV signed 16-bit PCM (*.wav)");
+					   tr("WAV signed 16-bit PCM (*.wav)"));
 	if (path.isNull()) return;
 	if (!path.endsWith(".wav")) path += ".wav";	// For linux
 
@@ -2429,9 +2428,9 @@ void MainWindow::on_actionVGM_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
-					   this, tr("Export to vgm"),
+					   this, tr("Export to VGM"),
 					   QString("%1/%2.vgm").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   "VGM file (*.vgm)");
+					   tr("VGM file (*.vgm)"));
 	if (path.isNull()) return;
 	if (!path.endsWith(".vgm")) path += ".vgm";	// For linux
 
@@ -2485,9 +2484,9 @@ void MainWindow::on_actionS98_triggered()
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
-					   this, tr("Export to s98"),
+					   this, tr("Export to S98"),
 					   QString("%1/%2.s98").arg(dir.isEmpty() ? "." : dir, getModuleFileBaseName()),
-					   "S98 file (*.s98)");
+					   tr("S98 file (*.s98)"));
 	if (path.isNull()) return;
 	if (!path.endsWith(".s98")) path += ".s98";	// For linux
 
@@ -2571,7 +2570,7 @@ void MainWindow::onNewTickSignaled(int state)
 
 	// Update BPM status
 	if (bt_->getStreamGrooveEnabled()) {
-		statusBpm_->setText("Groove");
+		statusBpm_->setText(tr("Groove"));
 	}
 	else {
 		// BPM = tempo * 6 / speed * 4 / 1st highlight

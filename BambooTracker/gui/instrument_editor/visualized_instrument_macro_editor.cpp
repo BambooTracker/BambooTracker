@@ -697,7 +697,7 @@ int VisualizedInstrumentMacroEditor::panelWidth() const
 /********** Events **********/
 bool VisualizedInstrumentMacroEditor::eventFilter(QObject*object, QEvent* event)
 {
-	if (object->objectName() == "panel") {
+	if (object == ui->panel) {
 		switch (event->type()) {
 		case QEvent::Paint:
 			paintEventInView(dynamic_cast<QPaintEvent*>(event));

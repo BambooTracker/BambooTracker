@@ -563,10 +563,10 @@ void OrderListPanel::drawHeaders(int maxWidth)
 			case SongType::FM3chExpanded:
 				switch (attrib.channelInSource) {
 				case 2:
-					str= "OP1";
+					str = "OP1";
 					break;
 				case 6:
-					str= "OP2";
+					str = "OP2";
 					break;
 				case 7:
 					str = "OP3";

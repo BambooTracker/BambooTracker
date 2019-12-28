@@ -581,9 +581,8 @@
         <translation>デバイス</translation>
     </message>
     <message>
-        <location filename="../../gui/configuration_dialog.ui" line="293"/>
         <source>Use SCCI (beta)</source>
-        <translation>SCCI使用 (ベータ版)</translation>
+        <translation type="vanished">SCCI使用 (ベータ版)</translation>
     </message>
     <message>
         <source>Input</source>
@@ -611,8 +610,9 @@
         <translation>削除</translation>
     </message>
     <message>
+        <location filename="../../gui/configuration_dialog.ui" line="293"/>
         <source>Use SCCI</source>
-        <translation type="vanished">SCCI使用</translation>
+        <translation>SCCI使用</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="382"/>
@@ -720,8 +720,17 @@
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="411"/>
+        <source>Description: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/configuration_dialog.cpp" line="456"/>
+        <source>Set %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Description: </source>
-        <translation>説明: </translation>
+        <translation type="vanished">説明: </translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="547"/>
@@ -1007,12 +1016,16 @@
         <source>Type</source>
         <translation>タイプ</translation>
     </message>
+    <message>
+        <location filename="../../gui/fm_envelope_set_edit_dialog.cpp" line="89"/>
+        <source>Skip</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FMOperatorTable</name>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.ui" line="37"/>
-        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="108"/>
         <source>Operator </source>
         <translation>オペレーター</translation>
     </message>
@@ -1025,6 +1038,11 @@
         <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="77"/>
         <source>Type</source>
         <translation>タイプ</translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="108"/>
+        <source>Operator %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/fm_operator_table.cpp" line="458"/>
@@ -1104,9 +1122,13 @@
         <translation>パッド</translation>
     </message>
     <message>
-        <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
         <source>Speed: </source>
-        <translation>スピード: </translation>
+        <translation type="vanished">スピード: </translation>
+    </message>
+    <message>
+        <location filename="../../gui/groove_settings_dialog.cpp" line="143"/>
+        <source>Speed: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1227,6 +1249,7 @@
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="405"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="477"/>
         <source>Absolute</source>
         <translation>絶対</translation>
     </message>
@@ -1235,49 +1258,61 @@
         <translation type="vanished">固定</translation>
     </message>
     <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="222"/>
+        <source>Freq</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="399"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="461"/>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="406"/>
         <source>Fixed</source>
         <translation>固定</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="407"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="478"/>
         <source>Relative</source>
         <translation>相対</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="969"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1036"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="966"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1033"/>
         <source>Error</source>
         <translation>エラー</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="970"/>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1037"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="967"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1034"/>
         <source>Did not match the clipboard text format with %1.</source>
         <translation>クリップボードのテキストの形式が%1と一致しません。</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1352"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1349"/>
         <source>Copy envelope</source>
         <translation>エンベロープをコピー</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1354"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1351"/>
         <source>Paste envelope</source>
         <translation>エンベロープを張り付け</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1357"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1354"/>
         <source>Paste envelope From</source>
         <translation>エンベロープを形式貼り付け</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1476"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1473"/>
         <source>Copy LFO parameters</source>
         <translation>LFOパラメーターをコピー</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1480"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_fm_form.cpp" line="1477"/>
         <source>Paste LFO parameters</source>
         <translation>LFOパラメーターを張り付け</translation>
     </message>
@@ -1285,10 +1320,14 @@
 <context>
     <name>InstrumentEditorSSGForm</name>
     <message>
+        <source>Wave form</source>
+        <translation type="vanished">波形</translation>
+    </message>
+    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="24"/>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="30"/>
-        <source>Wave form</source>
-        <translation>波形</translation>
+        <source>Waveform</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="65"/>
@@ -1316,18 +1355,26 @@
         <translation>トーン/マスク比</translation>
     </message>
     <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="271"/>
+        <source>Hardware envelope frequency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="306"/>
+        <source>Tone/Env ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>/</source>
         <translation type="vanished">/</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="271"/>
         <source>Hard frequency</source>
-        <translation>ハードウェアエンベロープ周波数</translation>
+        <translation type="vanished">ハードウェアエンベロープ周波数</translation>
     </message>
     <message>
-        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.ui" line="306"/>
         <source>Tone/Hard ratio</source>
-        <translation>トーン/ハード比</translation>
+        <translation type="vanished">トーン/ハード比</translation>
     </message>
     <message>
         <source>Square mask:</source>
@@ -1368,7 +1415,48 @@
         <translation>ピッチ</translation>
     </message>
     <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="21"/>
+        <source>Sq</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="22"/>
+        <source>Tri</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="23"/>
+        <source>Saw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="24"/>
+        <source>InvSaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="25"/>
+        <source>SMTri</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="26"/>
+        <source>SMSaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="27"/>
+        <source>SMInvSaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="130"/>
+        <source>HEnv %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="187"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="250"/>
         <source>Absolute</source>
         <translation>絶対</translation>
     </message>
@@ -1383,6 +1471,7 @@
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="189"/>
+        <location filename="../../gui/instrument_editor/instrument_editor_ssg_form.cpp" line="251"/>
         <source>Relative</source>
         <translation>相対</translation>
     </message>
@@ -1454,9 +1543,8 @@
         <translation>エディット設定</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.ui" line="303"/>
         <source>Editable step</source>
-        <translation>ステップ</translation>
+        <translation type="vanished">ステップ</translation>
     </message>
     <message>
         <source>Song</source>
@@ -1498,13 +1586,14 @@
         <location filename="../../gui/mainwindow.cpp" line="1474"/>
         <location filename="../../gui/mainwindow.cpp" line="1476"/>
         <location filename="../../gui/mainwindow.cpp" line="1502"/>
-        <location filename="../../gui/mainwindow.cpp" line="2138"/>
-        <location filename="../../gui/mainwindow.cpp" line="2252"/>
+        <location filename="../../gui/mainwindow.cpp" line="2137"/>
+        <location filename="../../gui/mainwindow.cpp" line="2251"/>
         <source>Untitled</source>
         <translation>無題</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="244"/>
+        <location filename="../../gui/mainwindow.cpp" line="2573"/>
         <source>Groove</source>
         <translation>グルーブ</translation>
     </message>
@@ -1679,6 +1768,11 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="212"/>
         <source>Pattern size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.ui" line="303"/>
+        <source>Step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2177,8 +2271,8 @@
         <location filename="../../gui/mainwindow.cpp" line="129"/>
         <location filename="../../gui/mainwindow.cpp" line="619"/>
         <location filename="../../gui/mainwindow.cpp" line="683"/>
-        <location filename="../../gui/mainwindow.cpp" line="2141"/>
-        <location filename="../../gui/mainwindow.cpp" line="2255"/>
+        <location filename="../../gui/mainwindow.cpp" line="2140"/>
+        <location filename="../../gui/mainwindow.cpp" line="2254"/>
         <source>Save changes to %1?</source>
         <oldsource>Save changes to </oldsource>
         <translation>%1の変更を保存しますか?</translation>
@@ -2194,11 +2288,11 @@
         <location filename="../../gui/mainwindow.cpp" line="1209"/>
         <location filename="../../gui/mainwindow.cpp" line="1389"/>
         <location filename="../../gui/mainwindow.cpp" line="1460"/>
-        <location filename="../../gui/mainwindow.cpp" line="2200"/>
-        <location filename="../../gui/mainwindow.cpp" line="2242"/>
-        <location filename="../../gui/mainwindow.cpp" line="2418"/>
-        <location filename="../../gui/mainwindow.cpp" line="2474"/>
-        <location filename="../../gui/mainwindow.cpp" line="2531"/>
+        <location filename="../../gui/mainwindow.cpp" line="2199"/>
+        <location filename="../../gui/mainwindow.cpp" line="2241"/>
+        <location filename="../../gui/mainwindow.cpp" line="2417"/>
+        <location filename="../../gui/mainwindow.cpp" line="2473"/>
+        <location filename="../../gui/mainwindow.cpp" line="2530"/>
         <location filename="../../gui/mainwindow.hpp" line="266"/>
         <source>Error</source>
         <translation>エラー</translation>
@@ -2258,6 +2352,7 @@
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="892"/>
+        <location filename="../../gui/mainwindow.cpp" line="952"/>
         <source>BambooTracker instrument (*.bti)</source>
         <translation></translation>
     </message>
@@ -2292,12 +2387,8 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="952"/>
-        <source>BambooTracker instrument file (*.bti)</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.cpp" line="976"/>
+        <location filename="../../gui/mainwindow.cpp" line="1059"/>
         <source>BambooTracker bank (*.btb)</source>
         <translation></translation>
     </message>
@@ -2315,11 +2406,6 @@
         <location filename="../../gui/mainwindow.cpp" line="1058"/>
         <source>Save bank</source>
         <translation>バンク保存</translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="1059"/>
-        <source>BambooTracker bank file (*.btb)</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1151"/>
@@ -2362,12 +2448,33 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2035"/>
+        <location filename="../../gui/mainwindow.cpp" line="2034"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2632"/>
+        <location filename="../../gui/mainwindow.cpp" line="2214"/>
+        <location filename="../../gui/mainwindow.cpp" line="2271"/>
+        <source>BambooTracker module (*.btm)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="2377"/>
+        <source>WAV signed 16-bit PCM (*.wav)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="2433"/>
+        <source>VGM file (*.vgm)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="2489"/>
+        <source>S98 file (*.s98)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="2631"/>
         <source>Do you want to remove all duplicate instruments?</source>
         <translation>重複したインストゥルメントを削除しますか?</translation>
     </message>
@@ -2408,14 +2515,14 @@
         <translation type="vanished">バンクファイルへ書き出し(&amp;X)...</translation>
     </message>
     <message>
+        <location filename="../../gui/mainwindow.cpp" line="1677"/>
         <source>Instrument: %1</source>
         <oldsource>Instrument: </oldsource>
-        <translation type="vanished">インストゥルメント: %1</translation>
+        <translation>インストゥルメント: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1677"/>
         <source>Instrument: </source>
-        <translation>インストゥルメント: </translation>
+        <translation type="vanished">インストゥルメント: </translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1934"/>
@@ -2443,80 +2550,74 @@
         <translation>モジュールのバックアップ作成に失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2213"/>
+        <location filename="../../gui/mainwindow.cpp" line="2212"/>
         <source>Save module</source>
         <translation>モジュール保存</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2215"/>
-        <location filename="../../gui/mainwindow.cpp" line="2272"/>
-        <source>BambooTracker module file (*.btm)</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../gui/mainwindow.cpp" line="2271"/>
+        <location filename="../../gui/mainwindow.cpp" line="2270"/>
         <source>Open module</source>
         <translation>モジュールを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2337"/>
+        <location filename="../../gui/mainwindow.cpp" line="2336"/>
         <source>Do you want to remove all unused instruments?</source>
         <translation>未使用のインストゥルメントを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2358"/>
+        <location filename="../../gui/mainwindow.cpp" line="2357"/>
         <source>Do you want to remove all unused patterns?</source>
         <translation>未使用のパターンを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2376"/>
         <source>Export to wav</source>
-        <translation>WAV書き出し</translation>
+        <translation type="vanished">WAV書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2383"/>
+        <location filename="../../gui/mainwindow.cpp" line="2375"/>
+        <location filename="../../gui/mainwindow.cpp" line="2382"/>
         <source>Export to WAV</source>
         <translation>WAV書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2384"/>
-        <location filename="../../gui/mainwindow.cpp" line="2440"/>
-        <location filename="../../gui/mainwindow.cpp" line="2496"/>
+        <location filename="../../gui/mainwindow.cpp" line="2383"/>
+        <location filename="../../gui/mainwindow.cpp" line="2439"/>
+        <location filename="../../gui/mainwindow.cpp" line="2495"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2418"/>
+        <location filename="../../gui/mainwindow.cpp" line="2417"/>
         <source>Failed to export to wav file.</source>
         <translation>WAVの書き出しに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2432"/>
         <source>Export to vgm</source>
-        <translation>VGM書き出し</translation>
+        <translation type="vanished">VGM書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2439"/>
+        <location filename="../../gui/mainwindow.cpp" line="2431"/>
+        <location filename="../../gui/mainwindow.cpp" line="2438"/>
         <source>Export to VGM</source>
         <translation>VGM書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2474"/>
+        <location filename="../../gui/mainwindow.cpp" line="2473"/>
         <source>Failed to export to vgm file.</source>
         <translation>VGMの書き出しに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2488"/>
         <source>Export to s98</source>
-        <translation>S98書き出し</translation>
+        <translation type="vanished">S98書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2495"/>
+        <location filename="../../gui/mainwindow.cpp" line="2487"/>
+        <location filename="../../gui/mainwindow.cpp" line="2494"/>
         <source>Export to S98</source>
         <translation>S98書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2531"/>
+        <location filename="../../gui/mainwindow.cpp" line="2530"/>
         <source>Failed to export to s98 file.</source>
         <translation>S98の書き出しに失敗しました。</translation>
     </message>
@@ -2527,8 +2628,12 @@
     </message>
     <message>
         <location filename="../../gui/mainwindow.hpp" line="259"/>
+        <source>%1 If you execute this command, the command history is reset.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source> If you execute this command, the command history is reset.</source>
-        <translation>この操作を実行すると、すべてのコマンド履歴は消去されます。</translation>
+        <translation type="vanished">この操作を実行すると、すべてのコマンド履歴は消去されます。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.hpp" line="267"/>
@@ -3125,8 +3230,12 @@
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="307"/>
+        <source>Drums</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Rhythm</source>
-        <translation>リズム音源</translation>
+        <translation type="vanished">リズム音源</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="333"/>
@@ -3317,8 +3426,12 @@
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="499"/>
+        <source>Drums</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Rhythm</source>
-        <translation>リズム音源</translation>
+        <translation type="vanished">リズム音源</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="525"/>

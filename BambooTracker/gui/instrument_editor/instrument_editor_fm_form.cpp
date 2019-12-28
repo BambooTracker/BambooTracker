@@ -219,7 +219,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	/******************** LFO editor ********************/
 	ui->lfoGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
-	ui->lfoFreqSlider->setText("Freq");
+	ui->lfoFreqSlider->setText(tr("Freq"));
 	ui->lfoFreqSlider->setMaximum(7);
 	QObject::connect(ui->lfoFreqSlider, &LabeledVerticalSlider::valueChanged,
 					 this, [&](int v) {
@@ -396,7 +396,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 					 this, &InstrumentEditorFMForm::onOperatorSequenceTypeChanged);
 
 	//========== Arpeggio ==========//
-	ui->arpOpComboBox->addItem("All", static_cast<int>(FMOperatorType::All));
+	ui->arpOpComboBox->addItem(tr("All"), static_cast<int>(FMOperatorType::All));
 	ui->arpOpComboBox->addItem("Op1", static_cast<int>(FMOperatorType::Op1));
 	ui->arpOpComboBox->addItem("Op2", static_cast<int>(FMOperatorType::Op2));
 	ui->arpOpComboBox->addItem("Op3", static_cast<int>(FMOperatorType::Op3));
@@ -458,7 +458,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 					 this, &InstrumentEditorFMForm::onArpeggioOperatorChanged);
 
 	//========== Pitch ==========//
-	ui->ptOpComboBox->addItem("All", static_cast<int>(FMOperatorType::All));
+	ui->ptOpComboBox->addItem(tr("All"), static_cast<int>(FMOperatorType::All));
 	ui->ptOpComboBox->addItem("Op1", static_cast<int>(FMOperatorType::Op1));
 	ui->ptOpComboBox->addItem("Op2", static_cast<int>(FMOperatorType::Op2));
 	ui->ptOpComboBox->addItem("Op3", static_cast<int>(FMOperatorType::Op3));
@@ -468,17 +468,14 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->ptEditor->setDefaultRow(127);
 	ui->ptEditor->setLabelDiaplayMode(true);
 	for (int i = 0; i < 255; ++i) {
-		int d = i - 127;
-		auto text = QString::number(d);
-		if (d > 0) text = "+" + text;
-		ui->ptEditor->AddRow(text, false);
+		ui->ptEditor->AddRow(QString::asprintf("%+d", i - 127), false);
 	}
 	ui->ptEditor->autoFitLabelWidth();
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem("Absolute", VisualizedInstrumentMacroEditor::SequenceType::Absolute);
-	ui->ptTypeComboBox->addItem("Relative", VisualizedInstrumentMacroEditor::SequenceType::Relative);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::Absolute);
+	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::Relative);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {

@@ -408,7 +408,7 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		text = "";
 		break;
 	}
-	ui->descPlainTextEdit->setPlainText(tr("Description: ") + text);
+	ui->descPlainTextEdit->setPlainText(tr("Description: %1").arg(text));
 }
 
 /***** Mixer *****/
@@ -453,7 +453,7 @@ void ConfigurationDialog::on_midiInputChoiceButton_clicked()
 /*****Formats *****/
 void ConfigurationDialog::on_addEnvelopeSetPushButton_clicked()
 {
-	auto name = QString("Set %1").arg(fmEnvelopeTexts_.size() + 1);
+	auto name = tr("Set %1").arg(fmEnvelopeTexts_.size() + 1);
 	fmEnvelopeTexts_.push_back({ name.toUtf8().toStdString(), std::vector<FMEnvelopeTextType>() });
 	updateEnvelopeSetUi();
 	for (int i = ui->envelopeTypeListWidget->count() - 1; i >= 0; --i) {

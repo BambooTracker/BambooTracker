@@ -19,10 +19,7 @@ ArpeggioMacroEditor::ArpeggioMacroEditor(QWidget* parent)
 	setDefaultRow(48);
 	setLabelDiaplayMode(true);
 	for (int i = 0; i < 96; ++i) {
-		int d = i - 48;
-		auto text = QString::number(d);
-		if (d > 0) text = "+" + text;
-		AddRow(text, false);
+		AddRow(QString::asprintf("%+d", i - 48), false);
 	}
 	autoFitLabelWidth();
 	setUpperRow(55);
@@ -88,11 +85,7 @@ void ArpeggioMacroEditor::updateLabels()
 			setLabel(i, TONE_LABS_[i]);
 	}
 	else {
-		for (int i = 0; i < 96; ++i) {
-			int d = i - 48;
-			auto text = QString::number(d);
-			if (d > 0) text = "+" + text;
-			setLabel(i, text);
-		}
+		for (int i = 0; i < 96; ++i)
+			setLabel(i, QString::asprintf("%+d", i - 48));
 	}
 }

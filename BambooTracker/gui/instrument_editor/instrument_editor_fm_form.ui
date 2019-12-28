@@ -722,15 +722,21 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>LabeledVerticalSlider</class>
-   <extends>QFrame</extends>
-   <header>gui/labeled_vertical_slider.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>VisualizedInstrumentMacroEditor</class>
    <extends>QWidget</extends>
    <header>gui/instrument_editor/visualized_instrument_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ArpeggioMacroEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/arpeggio_macro_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LabeledVerticalSlider</class>
+   <extends>QFrame</extends>
+   <header>gui/labeled_vertical_slider.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -743,12 +749,6 @@
    <class>LabeledHorizontalSlider</class>
    <extends>QFrame</extends>
    <header>gui/labeled_horizontal_slider.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ArpeggioMacroEditor</class>
-   <extends>QWidget</extends>
-   <header>gui/instrument_editor/arpeggio_macro_editor.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -95,7 +95,7 @@ void EffectListDialog::addRow(EffectType effect, int flag)
 	QString type("");
 	if (flag & static_cast<int>(SoundSource::FM)) type += "FM";
 	if (flag & static_cast<int>(SoundSource::SSG)) type = type + (type.isEmpty() ? "" : ", ") + "SSG";
-	if (flag & static_cast<int>(SoundSource::DRUM)) type = type + (type.isEmpty() ? "" : ", ") + "Drum";
+	if (flag & static_cast<int>(SoundSource::DRUM)) type = type + (type.isEmpty() ? "" : ", ") + "Drums";
 	ui->tableWidget->setItem(row, 1, new QTableWidgetItem(type));
 	ui->tableWidget->setItem(row, 2, new QTableWidgetItem(EffectDescription::getEffectDescription(effect)));
 }

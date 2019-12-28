@@ -18,13 +18,13 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	//========== Wave form ==========//
 	ui->waveEditor->setMaximumDisplayedRowCount(7);
 	ui->waveEditor->setDefaultRow(0);
-	ui->waveEditor->AddRow("Sq", false);
-	ui->waveEditor->AddRow("Tri", false);
-	ui->waveEditor->AddRow("Saw", false);
-	ui->waveEditor->AddRow("InvSaw", false);
-	ui->waveEditor->AddRow("SMTri", false);
-	ui->waveEditor->AddRow("SMSaw", false);
-	ui->waveEditor->AddRow("SMInvSaw", false);
+	ui->waveEditor->AddRow(tr("Sq"), false);
+	ui->waveEditor->AddRow(tr("Tri"), false);
+	ui->waveEditor->AddRow(tr("Saw"), false);
+	ui->waveEditor->AddRow(tr("InvSaw"), false);
+	ui->waveEditor->AddRow(tr("SMTri"), false);
+	ui->waveEditor->AddRow(tr("SMSaw"), false);
+	ui->waveEditor->AddRow(tr("SMInvSaw"), false);
 	ui->waveEditor->autoFitLabelWidth();
 
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
@@ -127,7 +127,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 		ui->envEditor->AddRow(QString::number(i), false);
 	}
 	for (int i = 0; i < 8; ++i) {
-		ui->envEditor->AddRow("Hard " + QString::number(i), false);
+		ui->envEditor->AddRow(tr("HEnv %1").arg(i), false);
 	}
 	ui->envEditor->autoFitLabelWidth();
 	ui->envEditor->setMultipleReleaseState(true);
@@ -241,17 +241,14 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptEditor->setDefaultRow(127);
 	ui->ptEditor->setLabelDiaplayMode(true);
 	for (int i = 0; i < 255; ++i) {
-		int d = i - 127;
-		auto text = QString::number(d);
-		if (d > 0) text = "+" + text;
-		ui->ptEditor->AddRow(text, false);
+		ui->ptEditor->AddRow(QString::asprintf("%+d", i - 127), false);
 	}
 	ui->ptEditor->autoFitLabelWidth();
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem("Absolute", VisualizedInstrumentMacroEditor::SequenceType::Absolute);
-	ui->ptTypeComboBox->addItem("Relative", VisualizedInstrumentMacroEditor::SequenceType::Relative);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::Absolute);
+	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::Relative);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -542,7 +539,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 		if (isModulatedWaveFormSSG(com.type)) {
 			if (CommandSequenceUnit::checkDataType(com.data) == CommandSequenceUnit::RATIO) {
 				auto ratio = CommandSequenceUnit::data2ratio(com.data);
-				str = QString::number(ratio.first) + "/" + QString::number(ratio.second);
+				str = QString("%1/%2").arg(ratio.first).arg(ratio.second);
 			}
 			else {
 				str = QString::number(com.data);
@@ -723,7 +720,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 		if (com.type >= 16) {
 			if (CommandSequenceUnit::checkDataType(com.data) == CommandSequenceUnit::RATIO) {
 				auto ratio = CommandSequenceUnit::data2ratio(com.data);
-				str = QString::number(ratio.first) + "/" + QString::number(ratio.second);
+				str = QString("%1/%2").arg(ratio.first).arg(ratio.second);
 			}
 			else {
 				str = QString::number(com.data);

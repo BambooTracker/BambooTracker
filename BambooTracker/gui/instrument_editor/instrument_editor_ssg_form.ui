@@ -21,13 +21,13 @@
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
-       <string>Wave form</string>
+       <string>Waveform</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
         <widget class="QGroupBox" name="waveEditGroupBox">
          <property name="title">
-          <string>Wave form</string>
+          <string>Waveform</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -268,7 +268,7 @@
              </sizepolicy>
             </property>
             <property name="title">
-             <string>Hard frequency</string>
+             <string>Hardware envelope frequency</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
@@ -303,7 +303,7 @@
              <item>
               <widget class="QRadioButton" name="hardFreqRatioRadioButton">
                <property name="text">
-                <string>Tone/Hard ratio</string>
+                <string>Tone/Env ratio</string>
                </property>
                <attribute name="buttonGroup">
                 <string notr="true">hardFreqButtonGroup</string>
@@ -599,7 +599,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="squareMaskButtonGroup"/>
   <buttongroup name="hardFreqButtonGroup"/>
+  <buttongroup name="squareMaskButtonGroup"/>
  </buttongroups>
 </ui>

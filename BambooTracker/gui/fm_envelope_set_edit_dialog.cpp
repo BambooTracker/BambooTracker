@@ -86,7 +86,7 @@ void FMEnvelopeSetEditDialog::insertRow(int row, FMEnvelopeTextType type)
 QComboBox* FMEnvelopeSetEditDialog::makeCombobox()
 {
 	auto box = new QComboBox();
-	box->addItem("Skip", static_cast<int>(FMEnvelopeTextType::Skip));
+	box->addItem(tr("Skip"), static_cast<int>(FMEnvelopeTextType::Skip));
 	box->addItem("AL", static_cast<int>(FMEnvelopeTextType::AL));
 	box->addItem("FB", static_cast<int>(FMEnvelopeTextType::FB));
 	box->addItem("AR1", static_cast<int>(FMEnvelopeTextType::AR1));

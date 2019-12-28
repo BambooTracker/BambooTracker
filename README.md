@@ -219,16 +219,16 @@ Z X CV B N M, .
 The keyboard layout can be changed in the configuration.
 
 ## Volume range
-|      | Minimum | Maximum |
-| ---- | ------- | ------- |
-| FM   | 7F      | 00      |
-| SSG  | 00      | 0F      |
-| Drum | 00      | 1F      |
+|       | Minimum | Maximum |
+| ----- | ------- | ------- |
+| FM    | 7F      | 00      |
+| SSG   | 00      | 0F      |
+| Drums | 00      | 1F      |
 
 It is able to reverse the order of FM volume (Configuration -> General -> Reverse FM volume order).
 
 ## Effect list
-| Effect | FM                                                                                      | SSG                                                                | Drum                              |
+| Effect | FM                                                                                      | SSG                                                                | Drums                             |
 | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------- |
 | 00xy   | Arpeggio (x[0-F]: 2nd note, y[0-F]: 3rd note)                                           | Arpeggio                                                           | -                                 |
 | 01xx   | Portamento up (xx[00-FF]: depth)                                                        | Portamento up                                                      | -                                 |

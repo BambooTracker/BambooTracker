@@ -290,7 +290,7 @@
           <item>
            <widget class="QCheckBox" name="useSCCICheckBox">
             <property name="text">
-             <string>Use SCCI (beta)</string>
+             <string>Use SCCI</string>
             </property>
            </widget>
           </item>

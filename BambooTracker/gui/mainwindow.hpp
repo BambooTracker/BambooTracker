@@ -256,7 +256,7 @@ private slots:
 	inline bool showUndoResetWarningDialog(QString text)
 	{
 		return (QMessageBox::warning(this, tr("Warning"),
-									 text + tr(" If you execute this command, the command history is reset."),
+									 tr("%1 If you execute this command, the command history is reset.").arg(text),
 									 QMessageBox::Yes | QMessageBox::No,
 									 QMessageBox::No) == QMessageBox::Yes);
 	}
