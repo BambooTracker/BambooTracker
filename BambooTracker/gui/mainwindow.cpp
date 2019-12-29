@@ -1385,7 +1385,7 @@ void MainWindow::setMidiConfiguration()
 	MidiInterface &midiIntf = MidiInterface::instance();
 	std::string midiInPortName = config_.lock()->getMidiInputPort();
 
-	if (midiIntf.currentApi() == RtMidi::RTMIDI_DUMMY) {
+	if (!midiIntf.hasInitializedInput()) {
 		QMessageBox::critical(this, tr("Error"),
 							  tr("Could not initialize MIDI input."),
 							  QMessageBox::Ok, QMessageBox::Ok);

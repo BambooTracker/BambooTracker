@@ -15,6 +15,10 @@ MidiInterface &MidiInterface::instance()
 }
 
 MidiInterface::MidiInterface()
+	: hasInitializedMidiIn_(false),
+	  hasInitializedMidiOut_(false),
+	  hasOpenInputPort_(false),
+	  hasOpenOutputPort_(false)
 {
 	switchApi(RtMidi::UNSPECIFIED);
 }
@@ -36,8 +40,10 @@ void MidiInterface::switchApi(RtMidi::Api api)
 	RtMidiIn *inputClient = nullptr;
 	try {
 		inputClient = new RtMidiIn(api, MIDI_INP_CLIENT_NAME, MidiBufferSize);
+		hasInitializedMidiIn_ = true;
 	}
 	catch (RtMidiError &error) {
+		hasInitializedMidiIn_ = false;
 		fprintf(stderr, "Cannot initialize MIDI In.\n");
 	}
 	if (!inputClient)
@@ -52,8 +58,10 @@ void MidiInterface::switchApi(RtMidi::Api api)
 	RtMidiOut *outputClient = nullptr;
 	try {
 		outputClient = new RtMidiOut(api, MIDI_OUT_CLIENT_NAME);
+		hasInitializedMidiOut_ = false;
 	}
 	catch (RtMidiError &error) {
+		hasInitializedMidiOut_ = true;
 		fprintf(stderr, "Cannot initialize MIDI Out.\n");
 	}
 	if (!outputClient)
@@ -98,6 +106,16 @@ std::vector<std::string> MidiInterface::getRealOutputPorts()
 	for (unsigned i = 0; i < count; ++i)
 		ports.push_back(client.getPortName(i));
 	return ports;
+}
+
+bool MidiInterface::hasInitializedInput() const
+{
+	return hasInitializedMidiIn_;
+}
+
+bool MidiInterface::hasInitializedOutput() const
+{
+	return hasInitializedMidiOut_;
 }
 
 void MidiInterface::closeInputPort()

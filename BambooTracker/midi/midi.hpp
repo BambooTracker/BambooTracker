@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
-#include <stdint.h>
+#include <cstdint>
 
 class MidiInterface
 {
@@ -21,6 +21,9 @@ public:
 	bool supportsVirtualPort() const;
 	std::vector<std::string> getRealInputPorts();
 	std::vector<std::string> getRealOutputPorts();
+
+	bool hasInitializedInput() const;
+	bool hasInitializedOutput() const;
 
 	void closeInputPort();
 	void closeOutputPort();
@@ -41,8 +44,8 @@ private:
 
 	std::unique_ptr<RtMidiIn> inputClient_;
 	std::unique_ptr<RtMidiOut> outputClient_;
-	bool hasOpenInputPort_ = false;
-	bool hasOpenOutputPort_ = false;
+	bool hasInitializedMidiIn_, hasInitializedMidiOut_;
+	bool hasOpenInputPort_, hasOpenOutputPort_;
 	std::mutex inputHandlersMutex_;
 	std::vector<std::pair<InputHandler *, void *>> inputHandlers_;
 
