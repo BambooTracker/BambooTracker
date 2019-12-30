@@ -28,6 +28,7 @@
 #include "gui/file_history.hpp"
 #include "gui/effect_list_dialog.hpp"
 #include "gui/keyboard_shortcut_list_dialog.hpp"
+#include "file_io_error.hpp"
 
 class AbstractBank;
 
@@ -131,6 +132,8 @@ private:
 	void setInitialSelectedInstrument();
 	QString getModuleFileBaseName() const;
 	int getSelectedFileFilter(QString& file, QStringList& filters) const;
+
+	void showFileIODialog(const FileIOError &e);
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPO_;

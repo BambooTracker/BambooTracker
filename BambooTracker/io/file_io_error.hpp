@@ -4,40 +4,36 @@
 #include <cstdint>
 #include "file_io.hpp"
 
-class FileInputError : public std::runtime_error
+class FileIOError : public std::runtime_error
+{
+public:
+	FileIO::FileType getFileType() const;
+
+protected:
+	FileIOError(std::string text, const FileIO::FileType type);
+	const FileIO::FileType type_;
+};
+
+class FileInputError : public FileIOError
 {
 public:
 	FileInputError(const FileIO::FileType type);
-
-private:
-	std::string makeText(const FileIO::FileType type);
 };
 
-class FileOutputError : public std::runtime_error
+class FileOutputError : public FileIOError
 {
 public:
 	FileOutputError(const FileIO::FileType type);
-
-private:
-	std::string makeText(const FileIO::FileType type);
 };
 
-class FileVersionError : public std::runtime_error
+class FileVersionError : public FileIOError
 {
 public:
-	FileVersionError(const uint32_t fileVersionBCD,
-				 const uint32_t appVersionBCD, const FileIO::FileType type);
-
-private:
-	std::string makeText(const uint32_t fileVersionBCD,
-						 const uint32_t appVersionBCD, const FileIO::FileType type);
+	FileVersionError(const FileIO::FileType type);
 };
 
-class FileCorruptionError : public std::runtime_error
+class FileCorruptionError : public FileIOError
 {
 public:
 	FileCorruptionError(const FileIO::FileType type);
-
-private:
-	std::string makeText(const FileIO::FileType type);
 };

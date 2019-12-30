@@ -27,7 +27,6 @@
 #include "bank.hpp"
 #include "bank_io.hpp"
 #include "file_io.hpp"
-#include "file_io_error.hpp"
 #include "version.hpp"
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -1509,6 +1508,36 @@ int MainWindow::getSelectedFileFilter(QString& file, QStringList& filters) const
 	for (int i = 0; i < filters.size(); ++i)
 		if (ex == re.match(filters[i]).captured(1)) return i;
 	return -1;
+}
+
+void MainWindow::showFileIODialog(const FileIOError &e)
+{
+	const FileIOError *err = &e;
+	QString text, type;
+
+	switch (err->getFileType()) {
+	case FileIO::FileType::Mod:		type = tr("module");		break;
+	case FileIO::FileType::S98:		type = tr("s98");			break;
+	case FileIO::FileType::VGM:		type = tr("vgm");			break;
+	case FileIO::FileType::WAV:		type = tr("wav");			break;
+	case FileIO::FileType::Bank:	type = tr("bank");			break;
+	case FileIO::FileType::Inst:	type = tr("instrument");	break;
+	default:	break;
+	}
+
+	if (dynamic_cast<const FileInputError*>(err)) {
+		text = tr("Failed to load the %1.").arg(type);
+	}
+	else if (dynamic_cast<const FileOutputError*>(err)) {
+		text = tr("Failed to save the %1.").arg(type);
+	}
+	else if (dynamic_cast<const FileVersionError*>(err)) {
+		text = tr("Could not load the %1 properly. "
+				  "Please make sure that you have the latest version of BambooTracker.").arg(type);
+	}
+	else if (dynamic_cast<const FileCorruptionError*>(err)) {
+		text = tr("Could not load the %1. It may be corrupted.").arg(type);
+	}
 }
 
 /******************************/

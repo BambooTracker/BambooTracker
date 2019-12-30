@@ -628,7 +628,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
 	if (fileVersion > Version::ofInstrumentFileInBCD())
-		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIO::FileType::Inst);
+		throw FileVersionError(FileIO::FileType::Inst);
 	globCsr += 4;
 
 

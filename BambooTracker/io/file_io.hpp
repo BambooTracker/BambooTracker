@@ -14,7 +14,6 @@ public:
 		Mod, Inst, WAV, VGM, Bank, S98, Unknown
 	};
 
-	static std::string fileTypeToString(const FileType type);
 	static std::string getExtension(const std::string path);
 	static FileType judgeFileTypeFromExtension(const std::string ext);
 

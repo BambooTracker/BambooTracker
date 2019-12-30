@@ -673,7 +673,7 @@ AbstractBank* BankIO::loadBTBFile(BinaryContainer& ctr)
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
 	if (fileVersion > Version::ofBankFileInBCD())
-		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIO::FileType::Bank);
+		throw FileVersionError(FileIO::FileType::Bank);
 	globCsr += 4;
 
 

@@ -7,9 +7,10 @@
 ### Changed
 - Change layout of the main window
 - Modify some words in the tracker
+- Update translation: ja
 
 ### Fixed
-- [#172], [#173] - Check MIDI in api(thanks [@OPNA2608], [@jpcima])
+- [#172], [#173] - Check MIDI in api(thanks [@OPNA2608], [@jpcima], [@papiezak])
 - Fix drawing of pattern editor and order list
 
 [#172]: https://github.com/rerrahkr/BambooTracker/issues/172

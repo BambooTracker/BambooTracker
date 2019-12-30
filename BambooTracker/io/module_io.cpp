@@ -752,7 +752,7 @@ void ModuleIO::loadModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
 	if (fileVersion > Version::ofModuleFileInBCD())
-		throw FileVersionError(fileVersion, Version::ofApplicationInBCD(), FileIO::FileType::Mod);
+		throw FileVersionError(FileIO::FileType::Mod);
 	globCsr += 4;
 
 	while (globCsr < eof) {

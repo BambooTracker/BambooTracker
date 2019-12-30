@@ -50,19 +50,6 @@ const FMOperatorType FileIO::OP_FM_TYPES[4] = {
 	FMOperatorType::Op4
 };
 
-std::string FileIO::fileTypeToString(const FileType type)
-{
-	switch (type) {
-	case FileType::Mod:		return "module";
-	case FileType::Inst:	return "instrument";
-	case FileType::WAV:		return "wav";
-	case FileType::VGM:		return "vgm";
-	case FileType::Bank:	return "bank";
-	case FileType::S98:		return "s98";
-	default:	throw std::invalid_argument("Unexpected FileType.");
-	}
-}
-
 std::string FileIO::getExtension(const std::string path)
 {
 	std::string ext = path.substr(path.find_last_of(".") + 1);
