@@ -7,6 +7,7 @@
 ### Changed
 - Change layout of the main window
 - Modify some words in the tracker
+- [#175] - Sound B7 when do key-on higher keys by keyboard (thanks [@papiezak])
 - Update translation: ja
 
 ### Fixed
@@ -15,6 +16,7 @@
 
 [#172]: https://github.com/rerrahkr/BambooTracker/issues/172
 [#173]: https://github.com/rerrahkr/BambooTracker/pull/173
+[#175]: https://github.com/rerrahkr/BambooTracker/issues/175
 
 ## v0.3.3 (2019-12-17)
 ### Fixed

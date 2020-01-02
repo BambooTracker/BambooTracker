@@ -2061,7 +2061,7 @@ void MainWindow::on_actionAbout_triggered()
 					QString("<h2>BambooTracker v%1</h2>").arg(
 						QString::fromStdString(Version::ofApplicationInString()))
 					+ tr("<b>YM2608 (OPNA) Music Tracker<br>"
-						 "Copyright (C) 2018, 2019 Rerrah</b><br>"
+						 "Copyright (C) 2018-2020 Rerrah</b><br>"
 						 "<hr>"
 						 "Libraries:<br>"
 						 "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"

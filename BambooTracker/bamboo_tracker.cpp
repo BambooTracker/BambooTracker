@@ -723,6 +723,10 @@ void BambooTracker::jamKeyOn(JamKey key)
 
 		Note note = JamManager::jamKeyToNote(onData.key);
 		int octave = JamManager::calcOctave(octave_, onData.key);
+		if (octave > 7) {	// Tone range check
+			octave = 7;
+			note = Note::B;
+		}
 		int pitch = 0;
 
 		switch (onData.source) {
