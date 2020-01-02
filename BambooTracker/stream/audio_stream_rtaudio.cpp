@@ -109,11 +109,11 @@ std::string AudioStreamRtAudio::getCurrentBackend() const
 void AudioStreamRtAudio::start()
 {
 	AudioStream::start();
-	if (audio_->isStreamOpen()) audio_->startStream();
+	if (audio_->isStreamOpen() && !audio_->isStreamRunning()) audio_->startStream();
 }
 
 void AudioStreamRtAudio::stop()
 {
 	AudioStream::stop();
-	if (audio_->isStreamOpen()) audio_->stopStream();
+	if (audio_->isStreamOpen() && audio_->isStreamRunning()) audio_->stopStream();
 }
