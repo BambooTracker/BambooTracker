@@ -22,6 +22,7 @@
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
+	  rowNumWidthCnt_(2),
 	  leftTrackNum_(0),
 	  curSongNum_(0),
 	  curPos_{ 0, 0 },
@@ -161,7 +162,8 @@ void OrderListPanel::updateSizes()
 	/* Width & height */
 	widthSpace_ = rowFontWidth_ / 4;
 	trackWidth_ = rowFontWidth_ * 3 + widthSpace_ * 2;
-	rowNumWidth_ = rowFontWidth_ * 2 + widthSpace_;
+	if (!config_.expired()) rowNumWidthCnt_ = config_.lock()->getShowRowNumberInHex() ? 2 : 3;
+	rowNumWidth_ = rowFontWidth_ * rowNumWidthCnt_ + widthSpace_;
 
 	initDisplay();
 }
@@ -259,7 +261,7 @@ void OrderListPanel::drawRows(int maxWidth)
 		// Row number
 		textPainter.setPen(palette_->odrRowNumColor);
 		textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(
-								 curPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+								 curPos_.row, rowNumWidthCnt_, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 								 ).toUpper());
 	}
 	// Order data
@@ -312,7 +314,7 @@ void OrderListPanel::drawRows(int maxWidth)
 			// Row number
 			textPainter.setPen(palette_->odrRowNumColor);
 			textPainter.drawText(1, baseY, QString("%1").arg(
-									 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+									 rowNum, rowNumWidthCnt_, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 									 ).toUpper());
 		}
 		// Order data
@@ -359,7 +361,7 @@ void OrderListPanel::drawRows(int maxWidth)
 			// Row number
 			textPainter.setPen(palette_->odrRowNumColor);
 			textPainter.drawText(1, baseY, QString("%1").arg(
-									 rowNum, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+									 rowNum, rowNumWidthCnt_, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 									 ).toUpper());
 		}
 		// Order data
@@ -428,7 +430,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 		// Row number
 		textPainter.setPen(palette_->odrRowNumColor);
 		textPainter.drawText(1, baseY, QString("%1").arg(
-								 viewedCenterPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+								 viewedCenterPos_.row, rowNumWidthCnt_, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 								 ).toUpper());
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, viewedCenterPos_.row);
@@ -459,7 +461,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 	// Row number
 	textPainter.setPen(palette_->odrRowNumColor);
 	textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(
-							 curPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+							 curPos_.row, rowNumWidthCnt_, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 							 ).toUpper());
 	// Order data
 	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
@@ -514,7 +516,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 			// Row number
 			textPainter.setPen(palette_->odrRowNumColor);
 			textPainter.drawText(1, baseY, QString("%1").arg(
-									 viewedLastPos_.row, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
+									 viewedLastPos_.row, rowNumWidthCnt_, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0')
 									 ).toUpper());
 			// Order data
 			orderRowData_ = bt_->getOrderData(curSongNum_, viewedLastPos_.row);
