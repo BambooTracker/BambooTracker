@@ -1267,7 +1267,7 @@ void MainWindow::loadSong()
 	case SongType::Standard:		statusStyle_->setText(tr("Standard"));			break;
 	case SongType::FM3chExpanded:	statusStyle_->setText(tr("FM3ch expanded"));	break;
 	}
-	statusPlayPos_->setText("00/00");
+	statusPlayPos_->setText(config_.lock()->getShowRowNumberInHex() ? "00/00" : "000/000");
 }
 
 /********** Play song **********/
@@ -2587,10 +2587,20 @@ void MainWindow::onNewTickSignaled(int state)
 				ui->patternEditor->updatePositionByStepUpdate(firstViewUpdateRequest_);
 				firstViewUpdateRequest_ = false;
 			}
+
+			int width, base;
+			if (config_.lock()->getShowRowNumberInHex()) {
+				width = 2;
+				base = 16;
+			}
+			else {
+				width = 3;
+				base = 10;
+			}
 			statusPlayPos_->setText(
 						QString("%1/%2")
-						.arg(order, 2, (config_.lock()->getShowRowNumberInHex() ? 16 : 10), QChar('0'))
-						.arg(bt_->getPlayingStepNumber(), 2, 16, QChar('0')).toUpper());
+						.arg(order, width, base, QChar('0'))
+						.arg(bt_->getPlayingStepNumber(), width, base, QChar('0')).toUpper());
 		}
 	}
 	else if (state == -1) {

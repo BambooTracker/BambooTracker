@@ -8,15 +8,19 @@
 - Change layout of the main window
 - Modify some words in the tracker
 - [#175] - Sound B7 when do key-on higher keys by keyboard (thanks [@papiezak])
+- [#176] - Enable to show pattern step numbers in decimal (thanks [@Midi-In])
 - Update translation: ja
 
 ### Fixed
 - [#172], [#173] - Check MIDI in api(thanks [@OPNA2608], [@jpcima], [@papiezak])
 - Fix drawing of pattern editor and order list
 
+[@Midi-In]: https://github.com/Midi-In
+
 [#172]: https://github.com/rerrahkr/BambooTracker/issues/172
 [#173]: https://github.com/rerrahkr/BambooTracker/pull/173
 [#175]: https://github.com/rerrahkr/BambooTracker/issues/175
+[#176]: https://github.com/rerrahkr/BambooTracker/issues/176
 
 ## v0.3.3 (2019-12-17)
 ### Fixed

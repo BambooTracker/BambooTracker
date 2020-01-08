@@ -118,7 +118,7 @@ private:
 	int headerFontAscent_;
 
 	int widthSpace_;
-	int rowNumWidthCnt_, rowNumWidth_;
+	int rowNumWidthCnt_, rowNumWidth_, rowNumBase_;
 	int trackWidth_;
 	int columnsWidthFromLeftToEnd_;
 	int headerHeight_;

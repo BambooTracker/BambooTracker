@@ -146,7 +146,7 @@ private:
 	int headerFontAscent_;
 
 	int widthSpace_, widthSpaceDbl_;
-	int stepNumWidth_;
+	int stepNumWidthCnt_, stepNumWidth_, stepNumBase_;
 	int baseTrackWidth_;
 	int toneNameWidth_, instWidth_;
 	int volWidth_;

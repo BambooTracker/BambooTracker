@@ -368,7 +368,7 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		text = tr("Move to previous or next order when reaching top or bottom in the pattern editor.");
 		break;
 	case 2:		// Show row numbers in hex
-		text = tr("Display order numbers and the order count on the status bar in hexadecimal.");
+		text = tr("Display row numbers and the playback position on the status bar in hexadecimal.");
 		break;
 	case 3:		// Preview previous/next orders
 		text = tr("Preview previous and next orders in the pattern editor.");

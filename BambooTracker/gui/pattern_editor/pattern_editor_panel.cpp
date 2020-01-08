@@ -108,7 +108,16 @@ void PatternEditorPanel::updateSizes()
 	/* Width & height */
 	widthSpace_ = stepFontWidth_ / 5 * 2;
 	widthSpaceDbl_ = widthSpace_ * 2;
-	stepNumWidth_ = stepFontWidth_ * 2 + widthSpace_;
+	if (!config_.expired()) stepNumWidthCnt_ = config_.lock()->getShowRowNumberInHex() ? 2 : 3;
+	if (config_.expired() || config_.lock()->getShowRowNumberInHex()) {
+		stepNumWidthCnt_ = 2;
+		stepNumBase_ = 16;
+	}
+	else {
+		stepNumWidthCnt_ = 3;
+		stepNumBase_ = 10;
+	}
+	stepNumWidth_ = stepFontWidth_ * stepNumWidthCnt_ + widthSpace_;
 	toneNameWidth_ = stepFontWidth_ * 3;
 	instWidth_ = stepFontWidth_ * 2;
 	volWidth_ = stepFontWidth_ * 2;
@@ -367,7 +376,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 		else {
 			textPainter.setPen(palette_->ptnHl2StepNumColor);
 		}
-		textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(curPos_.step, 2, 16, QChar('0')).toUpper());
+		textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(curPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 	}
 	// Step data
 	for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
@@ -419,7 +428,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			textPainter.setPen(!(stepNum % hl2Cnt_) ? palette_->ptnHl2StepNumColor
 													: !(stepNum % hl1Cnt_) ? palette_->ptnHl1StepNumColor
 																		   : palette_->ptnDefStepNumColor);
-			textPainter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
+			textPainter.drawText(1, baseY, QString("%1").arg(stepNum, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		}
 		// Step data
 		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
@@ -474,7 +483,7 @@ void PatternEditorPanel::drawRows(int maxWidth)
 			textPainter.setPen(!(stepNum % hl2Cnt_) ? palette_->ptnHl2StepNumColor
 													: !(stepNum % hl1Cnt_) ? palette_->ptnHl1StepNumColor
 																		   : palette_->ptnDefStepNumColor);
-			textPainter.drawText(1, baseY, QString("%1").arg(stepNum, 2, 16, QChar('0')).toUpper());
+			textPainter.drawText(1, baseY, QString("%1").arg(stepNum, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		}
 		// Step data
 		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
@@ -542,7 +551,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 			textPainter.setPen(!(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
 																  : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
 																									   : palette_->ptnDefStepNumColor);
-			textPainter.drawText(1, baseY, QString("%1").arg(viewedCenterPos_.step, 2, 16, QChar('0')).toUpper());
+			textPainter.drawText(1, baseY, QString("%1").arg(viewedCenterPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		// Step data
 		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 			x += drawStep(forePainter, textPainter, backPainter, trackNum, viewedCenterPos_.order, viewedCenterPos_.step, x, baseY, prevY);
@@ -565,7 +574,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 	else {
 		textPainter.setPen(palette_->ptnHl2StepNumColor);
 	}
-	textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(curPos_.step, 2, 16, QChar('0')).toUpper());
+	textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(curPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 	// Step data
 	for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 		x += drawStep(forePainter, textPainter, backPainter, trackNum, curPos_.order, curPos_.step, x, viewedCenterBaseY_, viewedCenterY_);
@@ -609,7 +618,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 				textPainter.setPen(!(bpos.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
 														  : !(bpos.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
 																				   : palette_->ptnDefStepNumColor);
-				textPainter.drawText(1, baseY, QString("%1").arg(bpos.step, 2, 16, QChar('0')).toUpper());
+				textPainter.drawText(1, baseY, QString("%1").arg(bpos.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 				// Step data
 				for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
 					x += drawStep(forePainter, textPainter, backPainter, trackNum, bpos.order, bpos.step, x, baseY, lastY);
