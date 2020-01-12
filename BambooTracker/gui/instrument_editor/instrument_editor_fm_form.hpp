@@ -9,6 +9,7 @@
 #include "bamboo_tracker.hpp"
 #include "instrument.hpp"
 #include "configuration.hpp"
+#include "jam_manager.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 #include "gui/color_palette.hpp"
 
@@ -30,8 +31,8 @@ public:
 	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
 signals:
-	void jamKeyOnEvent(QKeyEvent* event);
-	void jamKeyOffEvent(QKeyEvent* event);
+	void jamKeyOnEvent(JamKey key);
+	void jamKeyOffEvent(JamKey key);
 	void octaveChanged(bool upFlag);
 	void modified();
 	/// 0: play song

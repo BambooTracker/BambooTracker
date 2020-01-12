@@ -737,8 +737,8 @@ void InstrumentEditorFMForm::keyPressEvent(QKeyEvent *event)
 			// Musical keyboard
 			Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 			try {
-				getJamKeyFromLayoutMapping(qtKey, config_);
-				emit jamKeyOnEvent(event);
+				JamKey jk = getJamKeyFromLayoutMapping(qtKey, config_);
+				emit jamKeyOnEvent(jk);
 			} catch (std::invalid_argument&) {}
 		}
 		break;
@@ -752,8 +752,8 @@ void InstrumentEditorFMForm::keyReleaseEvent(QKeyEvent *event)
 	if (!event->isAutoRepeat()) {
 		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 		try {
-			getJamKeyFromLayoutMapping(qtKey, config_);
-			emit jamKeyOffEvent(event);
+			JamKey jk = getJamKeyFromLayoutMapping(qtKey, config_);
+			emit jamKeyOffEvent(jk);
 		} catch (std::invalid_argument&) {}
 	}
 }

@@ -581,7 +581,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 		// Musical keyboard
 		Qt::Key qtKey = static_cast<Qt::Key>(key);
 		try {
-			bt_->jamKeyOff (getJamKeyFromLayoutMapping(qtKey, config_));
+			bt_->jamKeyOff(getJamKeyFromLayoutMapping(qtKey, config_));
 		} catch (std::invalid_argument&) {}
 	}
 }
@@ -1562,6 +1562,8 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	// Set core data to editor when add insrument
 	int n = ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt();
 	auto& form = instForms_->getForm(n);
+	auto jamKeyOnFunc = [&](JamKey key) { bt_->jamKeyOn(key); };
+	auto jamKeyOffFunc = [&](JamKey key) { bt_->jamKeyOff(key); };
 	auto playFunc = [&](int stat) {
 		switch (stat) {
 		case -1:	stopPlaySong();				break;
@@ -1603,9 +1605,9 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		QObject::connect(fmForm, &InstrumentEditorFMForm::pitchParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchParameterChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
-						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
+						 this, jamKeyOnFunc, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
-						 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
+						 this, jamKeyOffFunc, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::octaveChanged,
 						 this, &MainWindow::changeOctave, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
@@ -1651,9 +1653,9 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchParameterChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOnEvent,
-						 this, &MainWindow::keyPressEvent, Qt::DirectConnection);
+						 this, jamKeyOnFunc, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,
-						 this, &MainWindow::keyReleaseEvent, Qt::DirectConnection);
+						 this, jamKeyOffFunc, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::octaveChanged,
 						 this, &MainWindow::changeOctave, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,

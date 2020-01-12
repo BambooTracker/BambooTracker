@@ -371,6 +371,10 @@ private:
 
 	static const uint32_t CHIP_CLOCK;
 
+	// Jam mode
+	void funcJamKeyOn(JamKey key, int keyNum);
+	void funcJamKeyOff(JamKey key, int keyNum);
+
 	// Play song
 	void startPlay();
 
