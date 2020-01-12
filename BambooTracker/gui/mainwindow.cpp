@@ -40,6 +40,7 @@
 #include "gui/instrument_selection_dialog.hpp"
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
+#include "gui/jam_layout.hpp"
 #include "chips/scci/SCCIDefines.h"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
@@ -565,8 +566,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 			// Musical keyboard
 			Qt::Key qtKey = static_cast<Qt::Key>(key);
 			try {
-				bt_->jamKeyOn(getJamKeyFromLayoutMapping(qtKey));
-			} catch (std::invalid_argument &) {}
+				bt_->jamKeyOn(getJamKeyFromLayoutMapping(qtKey, config_));
+			} catch (std::invalid_argument&) {}
 		}
 		break;
 	}
@@ -578,10 +579,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 	if (!event->isAutoRepeat()) {
 		// Musical keyboard
-		Qt::Key qtKey = static_cast<Qt::Key> (key);
+		Qt::Key qtKey = static_cast<Qt::Key>(key);
 		try {
-			bt_->jamKeyOff (getJamKeyFromLayoutMapping (qtKey));
-		} catch (std::invalid_argument &) {}
+			bt_->jamKeyOff (getJamKeyFromLayoutMapping(qtKey, config_));
+		} catch (std::invalid_argument&) {}
 	}
 }
 
@@ -1425,27 +1426,6 @@ void MainWindow::changeFileHistory(QString file)
 		QAction* action = ui->menu_Recent_Files->addAction(QString("&%1 %2").arg(i + 1).arg(fileHistory_->at(i)));
 		action->setData(fileHistory_->at(i));
 	}
-}
-
-/********** Layout decypherer **********/
-JamKey MainWindow::getJamKeyFromLayoutMapping(Qt::Key key) {
-	std::shared_ptr<Configuration> configLocked = config_.lock();
-	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
-	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-		std::unordered_map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
-		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
-							   [key](const std::pair<std::string, JamKey>& t) -> bool {
-			return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
-		});
-		if (it != selectedLayoutMapping.end()) {
-			return (*it).second;
-		}
-		else {
-			throw std::invalid_argument("Unmapped key");
-		}
-		//something has gone wrong, current layout has no layout map
-		//TODO: handle cleanly?
-	} else throw std::out_of_range("Unmapped Layout");
 }
 
 /********** Backup **********/

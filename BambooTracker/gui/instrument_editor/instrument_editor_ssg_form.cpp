@@ -6,6 +6,7 @@
 #include "gui/event_guard.hpp"
 #include "pitch_converter.hpp"
 #include "command_sequence.hpp"
+#include "gui/jam_layout.hpp"
 #include "misc.hpp"
 
 InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
@@ -441,41 +442,11 @@ void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
 	default:
 		if (!event->isAutoRepeat()) {
 			// Musical keyboard
-			switch (event->key()) {
-			case Qt::Key_Z:
-			case Qt::Key_S:
-			case Qt::Key_X:
-			case Qt::Key_D:
-			case Qt::Key_C:
-			case Qt::Key_V:
-			case Qt::Key_G:
-			case Qt::Key_B:
-			case Qt::Key_H:
-			case Qt::Key_N:
-			case Qt::Key_J:
-			case Qt::Key_M:
-			case Qt::Key_Comma:
-			case Qt::Key_L:
-			case Qt::Key_Period:
-			case Qt::Key_Q:
-			case Qt::Key_2:
-			case Qt::Key_W:
-			case Qt::Key_3:
-			case Qt::Key_E:
-			case Qt::Key_R:
-			case Qt::Key_5:
-			case Qt::Key_T:
-			case Qt::Key_6:
-			case Qt::Key_Y:
-			case Qt::Key_7:
-			case Qt::Key_U:
-			case Qt::Key_I:
-			case Qt::Key_9:
-			case Qt::Key_O:
+			Qt::Key qtKey = static_cast<Qt::Key>(event->key());
+			try {
+				getJamKeyFromLayoutMapping(qtKey, config_);
 				emit jamKeyOnEvent(event);
-				break;
-			default: break;
-			}
+			} catch (std::invalid_argument&) {}
 		}
 		break;
 	}
@@ -486,41 +457,11 @@ void InstrumentEditorSSGForm::keyReleaseEvent(QKeyEvent *event)
 {
 	// For jam key off
 	if (!event->isAutoRepeat()) {
-		switch (event->key()) {
-		case Qt::Key_Z:
-		case Qt::Key_S:
-		case Qt::Key_X:
-		case Qt::Key_D:
-		case Qt::Key_C:
-		case Qt::Key_V:
-		case Qt::Key_G:
-		case Qt::Key_B:
-		case Qt::Key_H:
-		case Qt::Key_N:
-		case Qt::Key_J:
-		case Qt::Key_M:
-		case Qt::Key_Comma:
-		case Qt::Key_L:
-		case Qt::Key_Period:
-		case Qt::Key_Q:
-		case Qt::Key_2:
-		case Qt::Key_W:
-		case Qt::Key_3:
-		case Qt::Key_E:
-		case Qt::Key_R:
-		case Qt::Key_5:
-		case Qt::Key_T:
-		case Qt::Key_6:
-		case Qt::Key_Y:
-		case Qt::Key_7:
-		case Qt::Key_U:
-		case Qt::Key_I:
-		case Qt::Key_9:
-		case Qt::Key_O:
+		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
+		try {
+			getJamKeyFromLayoutMapping(qtKey, config_);
 			emit jamKeyOffEvent(event);
-			break;
-		default: break;
-		}
+		} catch (std::invalid_argument&) {}
 	}
 }
 

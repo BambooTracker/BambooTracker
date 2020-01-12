@@ -121,9 +121,6 @@ private:
 	// History change
 	void changeFileHistory(QString file);
 
-	// Layout decypherer
-	JamKey getJamKeyFromLayoutMapping(Qt::Key key);
-
 	// Backup
 	bool backupModule(QString srcFile);
 

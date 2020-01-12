@@ -211,6 +211,7 @@ HEADERS += \
     gui/effect_list_dialog.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
+    gui/jam_layout.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
     chips/mame/2608intf.h \

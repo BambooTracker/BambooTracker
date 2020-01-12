@@ -14,6 +14,7 @@
 ### Fixed
 - [#172], [#173] - Check MIDI in api(thanks [@OPNA2608], [@jpcima], [@papiezak])
 - Fix drawing of pattern editor and order list
+- Fix jamming ignorance in FM & SSG editor using key layouts except QWERTY
 
 [@Midi-In]: https://github.com/Midi-In
 
