@@ -642,13 +642,9 @@
         <translation>パターンの上下の端から前後のパターンへ移動します。</translation>
     </message>
     <message>
-        <source>Display order numbers and the order count on the status bar in hexadecimal.</source>
-        <translation type="vanished">オーダー番号を16進数で表示します。</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.cpp" line="371"/>
         <source>Display row numbers and the playback position on the status bar in hexadecimal.</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダー番号とステップ番号を16進数で表示します。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="374"/>
@@ -2343,10 +2339,6 @@
         <translation>MIDI Inを初期化できませんでした。</translation>
     </message>
     <message>
-        <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="vanished">&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.cpp" line="2232"/>
         <location filename="../../gui/mainwindow.cpp" line="2289"/>
         <source>BambooTracker module (*.btm)</source>
@@ -2406,57 +2398,57 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1508"/>
         <source>module</source>
-        <translation type="unfinished"></translation>
+        <translation>モジュール</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1509"/>
         <source>s98</source>
-        <translation type="unfinished"></translation>
+        <translation>S98</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1510"/>
         <source>vgm</source>
-        <translation type="unfinished"></translation>
+        <translation>VGM</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1511"/>
         <source>wav</source>
-        <translation type="unfinished"></translation>
+        <translation>WAV</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1512"/>
         <source>bank</source>
-        <translation type="unfinished"></translation>
+        <translation>バンク</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1513"/>
         <source>instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメント</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1518"/>
         <source>Failed to load the %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1の読み込みに失敗しました。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1521"/>
         <source>Failed to save the %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1の保存に失敗しました。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1524"/>
         <source>Could not load the %1 properly. Please make sure that you have the latest version of BambooTracker.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1を読み込めませんでした。最新版のBambooTrackerで読み込みを行なってください。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1528"/>
         <source>Could not load the %1. It may be corrupted.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1を読み込めませんでした。ファイルが破損している可能性があります。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2052"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="unfinished">&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018, 2019 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。 {2608 ?} {2018-2020 ?} {2.1)?} {1.3 ?} {2.5)?} {2+?} {3)?} {2)?}</translation>
+        <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2230"/>
