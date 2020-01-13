@@ -771,8 +771,17 @@ void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 	int k = static_cast<int>(key) - 12;
 
 	octave_->setValue(k / 12);
-	bt_->jamKeyOff(k); // possibility to recover on stuck note
-	if (!release) bt_->jamKeyOn(k);
+
+	int n = instForms_->checkActivatedFormNumber();
+	if (n == -1) {
+		bt_->jamKeyOff(k); // possibility to recover on stuck note
+		if (!release) bt_->jamKeyOn(k);
+	}
+	else {
+		SoundSource src = instForms_->getFormInstrumentSoundSource(n);
+		bt_->jamKeyOffForced(k, src); // possibility to recover on stuck note
+		if (!release) bt_->jamKeyOnForced(k, src);
+	}
 }
 
 void MainWindow::midiProgramEvent(uchar status, uchar program)

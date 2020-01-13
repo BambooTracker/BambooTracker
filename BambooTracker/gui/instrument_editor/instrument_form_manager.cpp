@@ -1,6 +1,7 @@
 #include "instrument_form_manager.hpp"
 #include <map>
 #include <utility>
+#include <QApplication>
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "misc.hpp"
@@ -97,6 +98,17 @@ void InstrumentFormManager::setFormInstrumentName(int n, QString name)
 SoundSource InstrumentFormManager::getFormInstrumentSoundSource(int n) const
 {
 	return static_cast<SoundSource>(map_.at(n)->property("SoundSource").toInt());
+}
+
+int InstrumentFormManager::checkActivatedFormNumber() const
+{
+	const QWidget* win = QApplication::activeWindow();
+	auto it = std::find_if(map_.begin(), map_.end(),
+						   [win](const std::pair<const int, std::unique_ptr<QWidget>>& p) {
+		return p.second.get() == win;
+	});
+
+	return (it == map_.end() ? -1 : it->first);
 }
 
 /********** Slots **********/

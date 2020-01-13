@@ -29,6 +29,8 @@ public:
 	void setFormInstrumentName(int n, QString name);
 	SoundSource getFormInstrumentSoundSource(int n) const;
 
+	int checkActivatedFormNumber() const;
+
 public slots:
 	void onInstrumentFMEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void onInstrumentFMEnvelopeNumberChanged();
