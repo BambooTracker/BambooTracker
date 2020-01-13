@@ -1562,8 +1562,6 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	// Set core data to editor when add insrument
 	int n = ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt();
 	auto& form = instForms_->getForm(n);
-	auto jamKeyOnFunc = [&](JamKey key) { bt_->jamKeyOn(key); };
-	auto jamKeyOffFunc = [&](JamKey key) { bt_->jamKeyOff(key); };
 	auto playFunc = [&](int stat) {
 		switch (stat) {
 		case -1:	stopPlaySong();				break;
@@ -1605,9 +1603,9 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		QObject::connect(fmForm, &InstrumentEditorFMForm::pitchParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchParameterChanged);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
-						 this, jamKeyOnFunc, Qt::DirectConnection);
+						 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::FM); }, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
-						 this, jamKeyOffFunc, Qt::DirectConnection);
+						 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::FM); }, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::octaveChanged,
 						 this, &MainWindow::changeOctave, Qt::DirectConnection);
 		QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
@@ -1653,9 +1651,9 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchParameterChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOnEvent,
-						 this, jamKeyOnFunc, Qt::DirectConnection);
+						 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::SSG); }, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,
-						 this, jamKeyOffFunc, Qt::DirectConnection);
+						 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::SSG); }, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::octaveChanged,
 						 this, &MainWindow::changeOctave, Qt::DirectConnection);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,

@@ -177,6 +177,10 @@ public:
 	void jamKeyOn(int keyNum);
 	void jamKeyOff(JamKey key);
 	void jamKeyOff(int keyNum);
+	void jamKeyOnForced(JamKey key, SoundSource src);
+	void jamKeyOnForced(int keyNum, SoundSource src);
+	void jamKeyOffForced(JamKey key, SoundSource src);
+	void jamKeyOffForced(int keyNum, SoundSource src);
 
 	// Play song
 	void startPlaySong();
@@ -372,8 +376,8 @@ private:
 	static const uint32_t CHIP_CLOCK;
 
 	// Jam mode
-	void funcJamKeyOn(JamKey key, int keyNum);
-	void funcJamKeyOff(JamKey key, int keyNum);
+	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib);
+	void funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& attrib);
 
 	// Play song
 	void startPlay();

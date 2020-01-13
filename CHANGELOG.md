@@ -9,6 +9,7 @@
 - Modify some words in the tracker
 - [#175] - Sound B7 when do key-on higher keys by keyboard (thanks [@papiezak])
 - [#176] - Enable to show pattern step numbers in decimal (thanks [@Midi-In])
+- Sound editing instrument in jamming
 - Update translation: ja
 
 ### Fixed
