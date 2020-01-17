@@ -10,6 +10,7 @@
 - [#175] - Sound B7 when do key-on higher keys by keyboard (thanks [@papiezak])
 - [#176] - Enable to show pattern step numbers in decimal (thanks [@Midi-In])
 - Sound editing instrument in jamming
+- Keep step position of the pattern cursor in changing the current order
 - Update translation: ja
 
 ### Fixed

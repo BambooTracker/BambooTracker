@@ -2000,7 +2000,8 @@ void PatternEditorPanel::setCurrentOrder(int num)
 {
 	Ui::EventGuard eg(isIgnoreToOrder_);
 
-	int dif = calculateStepDistance(curPos_.order, curPos_.step, num, 0);
+	int step = std::min(curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, num)) - 1);
+	int dif = calculateStepDistance(curPos_.order, curPos_.step, num, step);
 	moveCursorToDown(dif);
 }
 
