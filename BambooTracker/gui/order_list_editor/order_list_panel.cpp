@@ -1435,6 +1435,18 @@ void OrderListPanel::mouseReleaseEvent(QMouseEvent* event)
 		showContextMenu(mousePressPos_, event->pos());
 		break;
 
+	case Qt::XButton1:
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+			moveCursorToDown(-1);
+		}
+		break;
+
+	case Qt::XButton2:
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+			moveCursorToDown(1);
+		}
+		break;
+
 	default:
 		break;
 	}
