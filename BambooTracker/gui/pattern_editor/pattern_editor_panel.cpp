@@ -2750,6 +2750,34 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 		break;
 	}
 
+	case Qt::XButton1:
+	{
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+			int order = curPos_.order - 1;
+			if (order < 0) order = static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1;
+			int step = std::min(
+						   curPos_.step,
+						   static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, order)) - 1);
+			int d = calculateStepDistance(curPos_.order, curPos_.step, order, step);
+			moveCursorToDown(d);
+		}
+		break;
+	}
+
+	case Qt::XButton2:
+	{
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+			int order = curPos_.order + 1;
+			if (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1 < order) order = 0;
+			int step = std::min(
+						   curPos_.step,
+						   static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, order)) - 1);
+			int d = calculateStepDistance(curPos_.order, curPos_.step, order, step);
+			moveCursorToDown(d);
+		}
+		break;
+	}
+
 	default:
 		break;
 	}

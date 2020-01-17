@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- [#179] - Jump to previous/next order or pattern by forward/backward mouse button (thanks [@Midi-In])
 - 1 new sample instrument bank
 
 ### Changed
@@ -24,6 +25,7 @@
 [#173]: https://github.com/rerrahkr/BambooTracker/pull/173
 [#175]: https://github.com/rerrahkr/BambooTracker/issues/175
 [#176]: https://github.com/rerrahkr/BambooTracker/issues/176
+[#179]: https://github.com/rerrahkr/BambooTracker/issues/179
 
 ## v0.3.3 (2019-12-17)
 ### Fixed
