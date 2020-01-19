@@ -51,6 +51,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->generalSettingsListWidget->item(11)->setCheckState(toCheckState(configLocked->getShowWaveVisual()));
 	ui->generalSettingsListWidget->item(12)->setCheckState(toCheckState(configLocked->getFill00ToEffectValue()));
 	ui->generalSettingsListWidget->item(13)->setCheckState(toCheckState(configLocked->getAutosetInstrument()));
+	ui->generalSettingsListWidget->item(14)->setCheckState(toCheckState(configLocked->getMoveCursorByHorizontalScroll()));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -239,6 +240,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setShowWaveVisual(fromCheckState(ui->generalSettingsListWidget->item(11)->checkState()));
 	configLocked->setFill00ToEffectValue(fromCheckState(ui->generalSettingsListWidget->item(12)->checkState()));
 	configLocked->setAutosetInstrument(fromCheckState(ui->generalSettingsListWidget->item(13)->checkState()));
+	configLocked->setMoveCursorByHorizontalScroll(fromCheckState(ui->generalSettingsListWidget->item(14)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
@@ -403,6 +405,9 @@ void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 		break;
 	case 13:	// Autoset instrument
 		text = tr("Set current instrument upon entering note.");
+		break;
+	case 14:	// Move cursor by horizontal scroll
+		text = tr("Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.");
 		break;
 	default:
 		text = "";

@@ -1035,8 +1035,14 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	if (curPos_.track != oldTrackNum)
 		bt_->setCurrentTrack(curPos_.track);
 
-	if (!isIgnoreToSlider_)
-		emit currentCellInRowChanged(calculateColNumInRow(curPos_.track, curPos_.colInTrack));
+	if (!isIgnoreToSlider_) {
+		if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+			emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.track, curPos_.colInTrack));
+		}
+		else if (curPos_.track != oldTrackNum) {
+			emit hScrollBarChangeRequested(leftTrackNum_);
+		}
+	}
 
 	if (!isIgnoreToOrder_ && curPos_.track != oldTrackNum)	// Send to order list
 		emit currentTrackChanged(curPos_.track);
@@ -1049,6 +1055,33 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	}
 	backChanged_ = true;
 	repaint();
+}
+
+void PatternEditorPanel::moveViewToRight(int n)
+{
+	leftTrackNum_ += n;
+	updateTracksWidthFromLeftToEnd();
+
+	// Calculate cursor position
+	int track = curPos_.track + n;
+	int col = std::min(curPos_.colInTrack,
+								  4 + 2 * rightEffn_.at(static_cast<size_t>(track)));
+
+	// Check visible
+	int width = stepNumWidth_;
+	for (int i = leftTrackNum_; i <= track; ++i) {
+		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(i)));
+		if (geometry().width() < width) {
+			track = i - 1;
+			col = 4 + 2 * rightEffn_.at(static_cast<size_t>(track));
+		}
+	}
+
+	// Move cursor and repaint all
+	headerChanged_ = true;
+	foreChanged_ = true;
+	textChanged_ = true;
+	moveCursorToRight(calculateColumnDistance(curPos_.track, curPos_.colInTrack, track, col));
 }
 
 void PatternEditorPanel::moveCursorToDown(int n)
@@ -1103,7 +1136,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_)
-		emit currentStepChanged(
+		emit vScrollBarChangeRequested(
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
 	if (!isIgnoreToOrder_ && curPos_.order != oldOdr)	// Send to order list
@@ -1216,6 +1249,20 @@ QPoint PatternEditorPanel::calculateCurrentCursorPosition() const
 	return QPoint(w, curRowY_);
 }
 
+int PatternEditorPanel::getScrollableCountByTrack() const
+{
+	int width = stepNumWidth_;
+	size_t i = songStyle_.trackAttribs.size();
+	do {
+		--i;
+		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(i));
+		if (geometry().width() < width) {
+			return static_cast<int>(i + 1);
+		}
+	} while (i);
+	return 0;
+}
+
 void PatternEditorPanel::changeEditable()
 {
 	backChanged_ = true;
@@ -1240,7 +1287,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 	int cmp = curPos_.compareRows(tmp);
 	if (!cmp && !isFirstUpdate) return;	// Delayed call, already updated.
 
-	emit currentStepChanged(
+	emit vScrollBarChangeRequested(
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
 	if (isFirstUpdate || (cmp < 0) || (cmp && !config_.lock()->getShowPreviousNextOrders())) {
@@ -1971,16 +2018,22 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 }
 
 /********** Slots **********/
-void PatternEditorPanel::setCurrentCellInRow(int num)
+void PatternEditorPanel::onHScrollBarChanged(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
 	// Skip if position has already changed in panel
-	if (int dif = num - calculateColNumInRow(curPos_.track, curPos_.colInTrack))
-		moveCursorToRight(dif);
+	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+		if (int dif = num - calculateColNumInRow(curPos_.track, curPos_.colInTrack))
+			moveCursorToRight(dif);
+	}
+	else {
+		if (int dif = num - leftTrackNum_)
+			moveViewToRight(dif);
+	}
 }
 
-void PatternEditorPanel::setCurrentStep(int num)
+void PatternEditorPanel::onVScrollBarChanged(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
@@ -2365,7 +2418,12 @@ void PatternEditorPanel::onExpandEffectColumnPressed(int trackNum)
 	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(++rightEffn_[tn]));
 	updateTracksWidthFromLeftToEnd();
 
-	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+		emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+	}
+	else {
+		emit effectColsCompanded(leftTrackNum_, getScrollableCountByTrack());
+	}
 
 	redrawAll();
 }
@@ -2377,7 +2435,12 @@ void PatternEditorPanel::onShrinkEffectColumnPressed(int trackNum)
 	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(--rightEffn_[tn]));
 	updateTracksWidthFromLeftToEnd();
 
-	emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+		emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+	}
+	else {
+		emit effectColsCompanded(leftTrackNum_, getScrollableCountByTrack());
+	}
 
 	redrawAll();
 }
@@ -2386,7 +2449,7 @@ void PatternEditorPanel::onFollowModeChanged()
 {
 	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 
-	emit currentStepChanged(
+	emit vScrollBarChangeRequested(
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
 	// Force redraw all area
@@ -2665,10 +2728,20 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		if (event->x() < stepNumWidth_ && leftTrackNum_ > 0) {
-			moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_) - 1)));
+			if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+				moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_) - 1)));
+			}
+			else {
+				moveViewToRight(-1);
+			}
 		}
 		else if (event->x() > geometry().width() - stepNumWidth_ && hovPos_.track != -1) {
-			moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_)));
+			if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+				moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_)));
+			}
+			else {
+				moveViewToRight(1);
+			}
 		}
 		if (event->pos().y() < headerHeight_ + stepFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);

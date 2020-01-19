@@ -39,6 +39,7 @@ public:
 	void changeEditable();
 	int getFullColmunSize() const;
 	void updatePositionByStepUpdate(bool isFirstUpdate);
+	int getScrollableCountByTrack() const;
 
 	void copySelectedCells();
 	void cutSelectedCells();
@@ -64,8 +65,8 @@ public:
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
 public slots:
-	void setCurrentCellInRow(int num);
-	void setCurrentStep(int num);
+	void onHScrollBarChanged(int num);
+	void onVScrollBarChanged(int num);
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num);
 
@@ -103,8 +104,8 @@ public slots:
 	void onFollowModeChanged();
 
 signals:
-	void currentCellInRowChanged(int num);
-	void currentStepChanged(int num, int max);
+	void hScrollBarChangeRequested(int num);
+	void vScrollBarChangeRequested(int num, int max);
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
 	void effectColsCompanded(int num, int max);
@@ -224,6 +225,7 @@ private:
 	}
 
 	void moveCursorToRight(int n);
+	void moveViewToRight(int n);
 	void moveCursorToDown(int n);
 
 	bool enterToneData(QKeyEvent* event);

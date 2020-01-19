@@ -93,16 +93,17 @@ public:
 	bool getFill00ToEffectValue() const;
 	void setAutosetInstrument(bool enabled);
 	bool getAutosetInstrument() const;
+	void setMoveCursorByHorizontalScroll(bool enabled);
+	bool getMoveCursorByHorizontalScroll() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
 	bool backupModules_, dontSelectOnDoubleClick_;
 	bool reverseFMVolumeOrder_, moveCursorToRight_;
 	bool retrieveChannelState_, enableTranslation_;
-	bool showFMDetuneSigned_;
-	bool showWaveVisual_;
-	bool fill00ToEffectValue_;
-	bool autosetInstrument_;
+	bool showFMDetuneSigned_, showWaveVisual_;
+	bool fill00ToEffectValue_, autosetInstrument_;
+	bool moveCursorHScroll_;
 
 	// Edit settings
 public:

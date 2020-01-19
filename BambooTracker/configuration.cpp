@@ -35,6 +35,7 @@ Configuration::Configuration()
 	showWaveVisual_ = true;
 	fill00ToEffectValue_ = true;
 	autosetInstrument_ = true;
+	moveCursorHScroll_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -879,6 +880,16 @@ void Configuration::setAutosetInstrument(bool enabled)
 bool Configuration::getAutosetInstrument() const
 {
 	return autosetInstrument_;
+}
+
+void Configuration::setMoveCursorByHorizontalScroll(bool enabled)
+{
+	moveCursorHScroll_ = enabled;
+}
+
+bool Configuration::getMoveCursorByHorizontalScroll() const
+{
+	return moveCursorHScroll_;
 }
 
 // Edit settings

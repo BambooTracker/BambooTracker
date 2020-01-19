@@ -167,6 +167,14 @@
               <enum>Checked</enum>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Move cursor by horizontal scroll</string>
+             </property>
+             <property name="checkState">
+              <enum>Checked</enum>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="1" column="0">

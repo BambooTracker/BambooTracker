@@ -40,6 +40,8 @@ public:
 	int getRowsFontSize() const;
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
+	void setHorizontalScrollMode(bool cellBased, bool refresh = true);
+
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
@@ -53,6 +55,7 @@ signals:
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;
+	void showEvent(QShowEvent* event) override;
 
 public slots:
 	void setCurrentTrack(int num);
@@ -97,6 +100,9 @@ private:
 	std::shared_ptr<BambooTracker> bt_;
 
 	bool freezed_;
+
+	bool hScrollCellMove_;
+	void updateHorizontalSliderMaximum();
 };
 
 #endif // PATTERN_EDITOR_HPP

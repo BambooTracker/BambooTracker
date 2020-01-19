@@ -4,7 +4,8 @@
 PatternEditor::PatternEditor(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::PatternEditor),
-	freezed_(false)
+	freezed_(false),
+	hScrollCellMove_(true)
 {
 	ui->setupUi(this);
 
@@ -13,9 +14,9 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	ui->verticalScrollBar->installEventFilter(this);
 
 	ui->panel->setFocus();
-	QObject::connect(ui->panel, &PatternEditorPanel::currentCellInRowChanged,
+	QObject::connect(ui->panel, &PatternEditorPanel::hScrollBarChangeRequested,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
-	QObject::connect(ui->panel, &PatternEditorPanel::currentStepChanged,
+	QObject::connect(ui->panel, &PatternEditorPanel::vScrollBarChangeRequested,
 					 this, [&](int num, int max) {
 		if (ui->verticalScrollBar->maximum() < num) {
 			ui->verticalScrollBar->setMaximum(max);
@@ -54,11 +55,11 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	auto focusSlot = [&] { ui->panel->setFocus(); };
 
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::valueChanged,
-					 ui->panel, &PatternEditorPanel::setCurrentCellInRow);
+					 ui->panel, &PatternEditorPanel::onHScrollBarChanged);
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
 
 	QObject::connect(ui->verticalScrollBar, &QScrollBar::valueChanged,
-					 ui->panel, &PatternEditorPanel::setCurrentStep);
+					 ui->panel, &PatternEditorPanel::onVScrollBarChanged);
 	QObject::connect(ui->verticalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
 }
 
@@ -145,6 +146,12 @@ void PatternEditor::setFonts(QString headerFont, int headerSize, QString rowsFon
 	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
 }
 
+void PatternEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
+{
+	hScrollCellMove_ = cellBased;
+	if (refresh) updateHorizontalSliderMaximum();
+}
+
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
@@ -195,6 +202,14 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
+void PatternEditor::showEvent(QShowEvent* event)
+{
+	Q_UNUSED(event)
+
+	// Set initial horizontal limit
+	updateHorizontalSliderMaximum();
+}
+
 /********** Slots **********/
 void PatternEditor::setCurrentTrack(int num)
 {
@@ -235,7 +250,7 @@ void PatternEditor::onSongLoaded()
 {
 	ui->horizontalScrollBar->setValue(0);
 	ui->panel->onSongLoaded();
-	ui->horizontalScrollBar->setMaximum(ui->panel->getFullColmunSize());
+	updateHorizontalSliderMaximum();
 	ui->verticalScrollBar->setMaximum(static_cast<int>(bt_->getPatternSizeFromOrderNumber(
 														   bt_->getCurrentSongNumber(),
 														   bt_->getCurrentOrderNumber())) - 1);
@@ -330,4 +345,10 @@ void PatternEditor::onStoppedPlaySong()
 void PatternEditor::onDuplicateInstrumentsRemoved()
 {
 	ui->panel->redrawByPatternChanged();
+}
+
+void PatternEditor::updateHorizontalSliderMaximum()
+{
+	int max = hScrollCellMove_ ? ui->panel->getFullColmunSize() : ui->panel->getScrollableCountByTrack();
+	ui->horizontalScrollBar->setMaximum(max);
 }
