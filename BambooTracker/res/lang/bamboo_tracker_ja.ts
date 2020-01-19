@@ -25,7 +25,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="172"/>
         <source>Move cursor by horizontal scroll</source>
-        <translation type="unfinished"></translation>
+        <translation>横スクロールでカーソルを移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="311"/>
@@ -710,7 +710,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="410"/>
         <source>Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーリストとパターンエディターにおいて横スクロールバーでカーソルをセル単位で移動させます。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="416"/>
