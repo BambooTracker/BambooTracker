@@ -210,6 +210,14 @@ void PatternEditor::showEvent(QShowEvent* event)
 	updateHorizontalSliderMaximum();
 }
 
+void PatternEditor::resizeEvent(QResizeEvent* event)
+{
+	Q_UNUSED(event)
+
+	// For view-based scroll
+	updateHorizontalSliderMaximum();
+}
+
 /********** Slots **********/
 void PatternEditor::setCurrentTrack(int num)
 {

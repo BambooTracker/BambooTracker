@@ -198,6 +198,14 @@ void OrderListEditor::showEvent(QShowEvent* event)
 	updateHorizontalSliderMaximum();
 }
 
+void OrderListEditor::resizeEvent(QResizeEvent* event)
+{
+	Q_UNUSED(event)
+
+	// For view-based scroll
+	updateHorizontalSliderMaximum();
+}
+
 /********** Slots **********/
 void OrderListEditor::setCurrentTrack(int num)
 {

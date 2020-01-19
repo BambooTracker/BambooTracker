@@ -56,6 +56,7 @@ signals:
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;
 	void showEvent(QShowEvent* event) override;
+	void resizeEvent(QResizeEvent* event) override;
 
 public slots:
 	void setCurrentTrack(int num);

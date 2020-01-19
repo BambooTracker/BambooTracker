@@ -1074,6 +1074,7 @@ void PatternEditorPanel::moveViewToRight(int n)
 		if (geometry().width() < width) {
 			track = i - 1;
 			col = 4 + 2 * rightEffn_.at(static_cast<size_t>(track));
+			break;
 		}
 	}
 
