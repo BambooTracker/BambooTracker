@@ -101,7 +101,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}
 	ColorPaletteHandler::loadPalette(palette_);
 	updateFonts();
-	ui->patternEditor->setHorizontalScrollMode(config_.lock()->getMoveCursorByHorizontalScroll(), false);
+	ui->orderList->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll(), false);
+	ui->patternEditor->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll(), false);
 	setMidiConfiguration();
 
 	/* Command stack */
@@ -1379,6 +1380,7 @@ void MainWindow::changeConfiguration()
 
 	setMidiConfiguration();
 	updateFonts();
+	ui->orderList->setHorizontalScrollMode(config_.lock()->getMoveCursorByHorizontalScroll());
 	ui->patternEditor->setHorizontalScrollMode(config_.lock()->getMoveCursorByHorizontalScroll());
 	instForms_->updateByConfiguration();
 

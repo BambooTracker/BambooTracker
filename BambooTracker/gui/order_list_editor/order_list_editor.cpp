@@ -4,7 +4,8 @@
 OrderListEditor::OrderListEditor(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::OrderListEditor),
-	freezed_(false)
+	freezed_(false),
+	hScrollCellMove_(false)
 {
 	ui->setupUi(this);
 
@@ -12,9 +13,9 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 	ui->panel->installEventFilter(this);
 	ui->verticalScrollBar->installEventFilter(this);
 
-	QObject::connect(ui->panel, &OrderListPanel::currentTrackChangedForSlider,
+	QObject::connect(ui->panel, &OrderListPanel::hScrollBarChangeRequested,
 					 ui->horizontalScrollBar, &QScrollBar::setValue);
-	QObject::connect(ui->panel, &OrderListPanel::currentOrderChangedForSlider,
+	QObject::connect(ui->panel, &OrderListPanel::vScrollBarChangeRequested,
 					 this, [&](int num, int max) {
 		if (ui->verticalScrollBar->maximum() < num) {
 			ui->verticalScrollBar->setMaximum(max);
@@ -39,11 +40,11 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 	auto focusSlot = [&] { ui->panel->setFocus(); };
 
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::valueChanged,
-					 ui->panel, &OrderListPanel::setCurrentTrackForSlider);
+					 ui->panel, &OrderListPanel::onHScrollBarChanged);
 	QObject::connect(ui->horizontalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
 
 	QObject::connect(ui->verticalScrollBar, &QScrollBar::valueChanged,
-					 ui->panel, &OrderListPanel::setCurrentOrderForSlider);
+					 ui->panel, &OrderListPanel::onVScrollBarChanged);
 	QObject::connect(ui->verticalScrollBar, &QScrollBar::sliderPressed, this, focusSlot);
 }
 
@@ -135,6 +136,12 @@ void OrderListEditor::setFonts(QString headerFont, int headerSize, QString rowsF
 	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
 }
 
+void OrderListEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
+{
+	hScrollCellMove_ = cellBased;
+	if (refresh) updateHorizontalSliderMaximum();
+}
+
 bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
@@ -183,6 +190,14 @@ bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
+void OrderListEditor::showEvent(QShowEvent* event)
+{
+	Q_UNUSED(event)
+
+	// Set initial horizontal limit
+	updateHorizontalSliderMaximum();
+}
+
 /********** Slots **********/
 void OrderListEditor::setCurrentTrack(int num)
 {
@@ -204,7 +219,7 @@ void OrderListEditor::onSongLoaded()
 
 	setMaximumWidth(ui->panel->maximumWidth() + ui->verticalScrollBar->width() + 2);
 	int song = bt_->getCurrentSongNumber();
-	ui->horizontalScrollBar->setMaximum(static_cast<int>(bt_->getSongStyle(song).trackAttribs.size()) - 1);
+	updateHorizontalSliderMaximum();
 	ui->verticalScrollBar->setValue(0);	// Left here to set appropriate order size before initialization of order position
 	ui->verticalScrollBar->setMaximum(static_cast<int>(bt_->getOrderSize(song)) - 1);
 }
@@ -247,4 +262,12 @@ void OrderListEditor::onFollowModeChanged()
 void OrderListEditor::onStoppedPlaySong()
 {
 	ui->panel->onStoppedPlaySong();
+}
+
+void OrderListEditor::updateHorizontalSliderMaximum()
+{
+	int song = bt_->getCurrentSongNumber();
+	int max = hScrollCellMove_ ? static_cast<int>(bt_->getSongStyle(song).trackAttribs.size()) - 1
+							   : ui->panel->getScrollableCountByTrack();
+	ui->horizontalScrollBar->setMaximum(max);
 }

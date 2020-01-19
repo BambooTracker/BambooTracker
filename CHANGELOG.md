@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#179] - Jump to previous/next order or pattern by forward/backward mouse button (thanks [@Midi-In])
+- [#178] - View-based horizontal scroll in the order list and the pattern editor (thanks [@Midi-In])
 - 1 new sample instrument bank
 
 ### Changed
@@ -26,6 +27,7 @@
 [#175]: https://github.com/rerrahkr/BambooTracker/issues/175
 [#176]: https://github.com/rerrahkr/BambooTracker/issues/176
 [#179]: https://github.com/rerrahkr/BambooTracker/issues/179
+[#178]: https://github.com/rerrahkr/BambooTracker/issues/178
 
 ## v0.3.3 (2019-12-17)
 ### Fixed

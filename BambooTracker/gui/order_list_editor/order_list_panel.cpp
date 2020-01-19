@@ -698,7 +698,14 @@ void OrderListPanel::moveCursorToRight(int n)
 	updateTracksWidthFromLeftToEnd();
 	entryCnt_ = 0;
 
-	if (!isIgnoreToSlider_) emit currentTrackChangedForSlider(curPos_.track);	// Send to slider
+	if (!isIgnoreToSlider_) {	// Send to slider
+		if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+			emit hScrollBarChangeRequested(curPos_.track);
+		}
+		else {
+			emit hScrollBarChangeRequested(leftTrackNum_);
+		}
+	}
 
 	if (!isIgnoreToPattern_) emit currentTrackChanged(curPos_.track);	// Send to pattern editor
 
@@ -709,6 +716,17 @@ void OrderListPanel::moveCursorToRight(int n)
 	}
 	backChanged_ = true;
 	repaint();
+}
+
+void OrderListPanel::moveViewToRight(int n)
+{
+	leftTrackNum_ += n;
+	updateTracksWidthFromLeftToEnd();
+
+	// Move cursor and repaint all
+	headerChanged_ = true;
+	textChanged_ = true;
+	moveCursorToRight(n);
 }
 
 void OrderListPanel::moveCursorToDown(int n)
@@ -743,7 +761,7 @@ void OrderListPanel::moveCursorToDown(int n)
 	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_)		// Send to slider
-		emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+		emit vScrollBarChangeRequested(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
 	if (!isIgnoreToPattern_)	// Send to pattern editor
 		emit currentOrderChanged(curPos_.row);
@@ -772,7 +790,7 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 	int d = curPos_.row - tmp;
 	if (!d) return;
 
-	emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+	emit vScrollBarChangeRequested(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
 	// Redraw entire area in first update and jumping order
 	orderDownCount_ = (isFirstUpdate || d < 0 || viewedRowCnt_ < d) ? 0 : d;
@@ -780,6 +798,20 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 	textChanged_ = true;
 	backChanged_ = true;
 	repaint();
+}
+
+int OrderListPanel::getScrollableCountByTrack() const
+{
+	int width = rowNumWidth_;
+	size_t i = songStyle_.trackAttribs.size();
+	do {
+		--i;
+		width += trackWidth_;
+		if (geometry().width() < width) {
+			return static_cast<int>(i + 1);
+		}
+	} while (i);
+	return 0;
 }
 
 void OrderListPanel::redrawByPatternChanged(bool ordersLengthChanged)
@@ -1036,15 +1068,20 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 }
 
 /********** Slots **********/
-void OrderListPanel::setCurrentTrackForSlider(int num)
+void OrderListPanel::onHScrollBarChanged(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
 	// Skip if position has already changed in panel
-	if (int dif = num - curPos_.track) moveCursorToRight(dif);
+	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+		if (int dif = num - curPos_.track) moveCursorToRight(dif);
+	}
+	else {
+		if (int dif = num - leftTrackNum_) moveViewToRight(dif);
+	}
 }
 
-void OrderListPanel::setCurrentOrderForSlider(int num) {
+void OrderListPanel::onVScrollBarChanged(int num) {
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
 	// Skip if position has already changed in panel
@@ -1198,7 +1235,7 @@ void OrderListPanel::onCloneOrderPressed()
 void OrderListPanel::onFollowModeChanged()
 {
 	curPos_.row = bt_->getCurrentOrderNumber();
-	emit currentOrderChangedForSlider(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+	emit vScrollBarChangeRequested(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
 	// Force redraw all area
 	followModeChanged_ = true;
@@ -1391,10 +1428,16 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		if (event->x() < rowNumWidth_ && leftTrackNum_ > 0) {
-			moveCursorToRight(-1);
+			if (config_.lock()->getMoveCursorByHorizontalScroll())
+				moveCursorToRight(-1);
+			else
+				moveViewToRight(-1);
 		}
 		else if (event->x() > geometry().width() - rowNumWidth_ && hovPos_.track != -1) {
-			moveCursorToRight(1);
+			if (config_.lock()->getMoveCursorByHorizontalScroll())
+				moveCursorToRight(1);
+			else
+				moveViewToRight(1);
 		}
 		if (event->pos().y() < headerHeight_ + rowFontHeight_) {
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);

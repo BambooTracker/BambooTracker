@@ -36,6 +36,7 @@ public:
 
 	void changeEditable();
 	void updatePositionByOrderUpdate(bool isFirstUpdate);
+	int getScrollableCountByTrack() const;
 
 	void copySelectedCells();
 	void deleteOrder();
@@ -58,8 +59,8 @@ public:
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
 public slots:
-	void setCurrentTrackForSlider(int num);
-	void setCurrentOrderForSlider(int num);
+	void onHScrollBarChanged(int num);
+	void onVScrollBarChanged(int num);
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num);
 
@@ -82,8 +83,8 @@ public slots:
 	void onStoppedPlaySong();
 
 signals:
-	void currentTrackChangedForSlider(int num);
-	void currentOrderChangedForSlider(int num, int max);
+	void hScrollBarChangeRequested(int num);
+	void vScrollBarChangeRequested(int num, int max);
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num);
 
@@ -174,6 +175,7 @@ private:
 	}
 
 	void moveCursorToRight(int n);
+	void moveViewToRight(int n);
 	void moveCursorToDown(int n);
 
 	bool enterOrder(int key);
