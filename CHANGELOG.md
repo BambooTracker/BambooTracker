@@ -14,6 +14,7 @@
 - Sound editing instrument in jamming
 - Keep step position of the pattern cursor in changing the current order
 - Unlock FM AR parameter when using SSG-EG
+- Change default emulation core to Nuked OPN-Mod
 - Update translation: ja
 
 ### Fixed

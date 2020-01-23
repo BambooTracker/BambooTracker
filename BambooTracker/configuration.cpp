@@ -53,7 +53,7 @@ Configuration::Configuration()
 	sndAPI_ = u8"";
 	sndDevice_ = u8"";
 	useSCCI_ = false;
-	emulator_ = 0;
+	emulator_ = 1;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
 
