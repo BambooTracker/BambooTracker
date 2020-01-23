@@ -22,6 +22,20 @@
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
+	  rowFontWidth_(0),
+	  rowFontHeight_(0),
+	  rowFontAscent_(0),
+	  rowFontLeading_(0),
+	  headerFontAscent_(0),
+	  widthSpace_(0),
+	  rowNumWidthCnt_(0),
+	  rowNumWidth_(0),
+	  rowNumBase_(0),
+	  trackWidth_(0),
+	  columnsWidthFromLeftToEnd_(0),
+	  headerHeight_(0),
+	  curRowBaselineY_(0),
+	  curRowY_(0),
 	  leftTrackNum_(0),
 	  curSongNum_(0),
 	  curPos_{ 0, 0 },
@@ -641,7 +655,7 @@ int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
 {
 	int width = rowNumWidth_;
 	for (int i = begin; i <= end; ++i) {
-		width +=  trackWidth_;
+		width += trackWidth_;
 	}
 	return width;
 }
