@@ -13,6 +13,7 @@
 - [#176] - Enable to show pattern step numbers in decimal (thanks [@Midi-In])
 - Sound editing instrument in jamming
 - Keep step position of the pattern cursor in changing the current order
+- Unlock FM AR parameter when using SSG-EG
 - Update translation: ja
 
 ### Fixed

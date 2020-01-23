@@ -433,13 +433,10 @@ void FMOperatorTable::on_ssgegCheckBox_stateChanged(int arg1)
 	Q_UNUSED(arg1)
 	if (ui->ssgegCheckBox->isChecked()) {
 		ui->ssgegSlider->setEnabled(true);
-		ui->arSlider->setValue(31);
-		ui->arSlider->setEnabled(false);
 		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, ui->ssgegSlider->value());
 	}
 	else {
 		ui->ssgegSlider->setEnabled(false);
-		ui->arSlider->setEnabled(true);
 		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, -1);
 	}
 	repaintGraph();
