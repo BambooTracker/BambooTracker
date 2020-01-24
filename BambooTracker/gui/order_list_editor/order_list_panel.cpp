@@ -218,21 +218,22 @@ void OrderListPanel::drawList(const QRect &rect)
 		if (backChanged_ || textChanged_ || headerChanged_ || orderDownCount_ || followModeChanged_) {
 
 			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
+			int trackSize = static_cast<int>(songStyle_.trackAttribs.size());
 
 			completePixmap_->fill(palette_->odrBackColor);
 
 			if (orderDownCount_ && !followModeChanged_) {
-				quickDrawRows(maxWidth);
+				quickDrawRows(maxWidth, trackSize);
 			}
 			else {
 				backPixmap_->fill(Qt::transparent);
 				if (textChanged_) textPixmap_->fill(Qt::transparent);
-				drawRows(maxWidth);
+				drawRows(maxWidth, trackSize);
 			}
 
 			if (headerChanged_) {
 				// headerPixmap_->fill(Qt::transparent);
-				drawHeaders(maxWidth);
+				drawHeaders(maxWidth, trackSize);
 			}
 
 			{
@@ -244,7 +245,7 @@ void OrderListPanel::drawList(const QRect &rect)
 				mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
 			}
 
-			drawBorders(maxWidth);
+			drawBorders(maxWidth, trackSize);
 			if (!hasFocus()) drawShadow();
 
 			backChanged_ = false;
@@ -263,7 +264,7 @@ void OrderListPanel::drawList(const QRect &rect)
 	completePainter.drawPixmap(rect, *completePixmap_.get());
 }
 
-void OrderListPanel::drawRows(int maxWidth)
+void OrderListPanel::drawRows(int maxWidth, int trackSize)
 {
 	QPainter textPainter(textPixmap_.get());
 	QPainter backPainter(backPixmap_.get());
@@ -287,7 +288,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	// Order data
 	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
 	textPainter.setPen(palette_->odrCurTextColor);
-	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 		if (trackNum == curPos_.track)	// Paint current cell
 			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrCurCellColor);
 		if (((hovPos_.row == curPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
@@ -340,7 +341,7 @@ void OrderListPanel::drawRows(int maxWidth)
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
 		textPainter.setPen(palette_->odrDefTextColor);
-		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
 				backPainter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
@@ -387,7 +388,7 @@ void OrderListPanel::drawRows(int maxWidth)
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, rowNum);
 		textPainter.setPen(palette_->odrDefTextColor);
-		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 			if (((hovPos_.row == rowNum || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == rowNum))	// Paint hover
 				backPainter.fillRect(x, rowY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
@@ -410,7 +411,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	}
 }
 
-void OrderListPanel::quickDrawRows(int maxWidth)
+void OrderListPanel::quickDrawRows(int maxWidth, int trackSize)
 {
 	int halfRowsCnt = viewedRowCnt_ >> 1;
 	int shift = rowFontHeight_ * orderDownCount_;
@@ -455,7 +456,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 		// Order data
 		orderRowData_ = bt_->getOrderData(curSongNum_, viewedCenterPos_.row);
 		textPainter.setPen(palette_->odrDefTextColor);
-		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+		for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 			if (((hovPos_.row == viewedCenterPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
 					|| (hovPos_.track == -2 && hovPos_.row == viewedCenterPos_.row))	// Paint hover
 				backPainter.fillRect(x, prevY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
@@ -486,7 +487,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 	// Order data
 	orderRowData_ = bt_->getOrderData(curSongNum_, curPos_.row);
 	textPainter.setPen(palette_->odrCurTextColor);
-	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 		if (trackNum == curPos_.track)	// Paint current cell
 			backPainter.fillRect(x, viewedCenterY_, trackWidth_, rowFontHeight_, palette_->odrCurCellColor);
 		if (((hovPos_.row == curPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
@@ -541,7 +542,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 			// Order data
 			orderRowData_ = bt_->getOrderData(curSongNum_, viewedLastPos_.row);
 			textPainter.setPen(palette_->odrDefTextColor);
-			for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+			for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 				if (((hovPos_.row == viewedLastPos_.row || hovPos_.row == -2) && hovPos_.track == trackNum)
 						|| (hovPos_.track == -2 && hovPos_.row == viewedLastPos_.row))	// Paint hover
 					backPainter.fillRect(x, lastY, trackWidth_, rowFontHeight_, palette_->odrHovCellColor);
@@ -565,7 +566,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 	}
 }
 
-void OrderListPanel::drawHeaders(int maxWidth)
+void OrderListPanel::drawHeaders(int maxWidth, int trackSize)
 {
 	QPainter painter(headerPixmap_.get());
 	painter.setFont(headerFont_);
@@ -573,7 +574,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->odrHeaderRowColor);
 	painter.setPen(palette_->odrHeaderTextColor);
 	int x, trackNum;
-	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
+	for (x = rowNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 		QString str;
 		auto& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
 		switch (attrib.source) {
@@ -631,14 +632,14 @@ void OrderListPanel::drawHeaders(int maxWidth)
 	}
 }
 
-void OrderListPanel::drawBorders(int maxWidth)
+void OrderListPanel::drawBorders(int maxWidth, int trackSize)
 {
 	QPainter painter(completePixmap_.get());
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, geometry().height());
 	int x, trackNum;
-	for (x = rowNumWidth_ + trackWidth_, trackNum = leftTrackNum_; x <= maxWidth; ) {
+	for (x = rowNumWidth_ + trackWidth_, trackNum = leftTrackNum_; x <= maxWidth && trackNum < trackSize; ) {
 		painter.drawLine(x, 0, x, geometry().height());
 		x += trackWidth_;
 		++trackNum;

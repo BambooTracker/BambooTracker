@@ -202,13 +202,13 @@ private:
 	void updateSizes();
 	void initDisplay();
 	void drawPattern(const QRect& rect);
-	void drawRows(int maxWidth);
-	void quickDrawRows(int maxWidth);
+	void drawRows(int maxWidth, int trackSize);
+	void quickDrawRows(int maxWidth, int trackSize);
 	/// Return:
 	///		track width
 	int drawStep(QPainter& forePainter, QPainter& textPainter, QPainter& backPainter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY);
-	void drawHeaders(int maxWidth);
-	void drawBorders(int maxWidth);
+	void drawHeaders(int maxWidth, int trackSize);
+	void drawBorders(int maxWidth, int trackSize);
 	void drawShadow();
 
 	int calculateTracksWidthWithRowNum(int begin, int end) const;

@@ -160,10 +160,10 @@ private:
 	void initDisplay();
 
 	void drawList(const QRect& rect);
-	void drawRows(int maxWidth);
-	void quickDrawRows(int maxWidth);
-	void drawHeaders(int maxWidth);
-	void drawBorders(int maxWidth);
+	void drawRows(int maxWidth, int trackSize);
+	void quickDrawRows(int maxWidth, int trackSize);
+	void drawHeaders(int maxWidth, int trackSize);
+	void drawBorders(int maxWidth, int trackSize);
 	void drawShadow();
 
 	int calculateColumnsWidthWithRowNum(int begin, int end) const;
