@@ -1,6 +1,7 @@
 #include "pattern.hpp"
 #include "effect.hpp"
 #include "misc.hpp"
+#include <algorithm>
 
 Pattern::Pattern(int n, size_t defSize)
 	: num_(n), size_(defSize), steps_(defSize), usedCnt_(0)
@@ -86,11 +87,9 @@ void Pattern::deletePreviousStep(int n)
 
 bool Pattern::existCommand() const
 {
-	for (size_t i = 0; i < size_; ++i) {
-		if (steps_.at(i).existCommand())
-			return true;
-	}
-	return false;
+	auto&& it = std::find_if(steps_.begin(), steps_.begin() + static_cast<int>(size_),
+							 [](const Step& step) { return step.existCommand(); });
+	return (it != steps_.end());
 }
 
 std::vector<int> Pattern::getEditedStepIndices() const

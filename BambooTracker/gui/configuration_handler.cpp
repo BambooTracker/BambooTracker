@@ -152,12 +152,10 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		for (auto texts : config.lock()->getFMEnvelopeTexts()) {
 			settings.setArrayIndex(n++);
 			settings.setValue("type", QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
-			QString data;
-			for (auto type : texts.texts) {
-				data += QString(",%1").arg(static_cast<int>(type));
-			}
-			if (!data.isEmpty()) data.remove(0, 1);
-			settings.setValue("order", data);
+			QStringList typeList;
+			std::transform(texts.texts.begin(), texts.texts.end(), std::back_inserter(typeList),
+						   [](FMEnvelopeTextType type) { return QString::number(static_cast<int>(type)); });
+			settings.setValue("order", typeList.join(","));
 		}
 		settings.endArray();
 		settings.endGroup();

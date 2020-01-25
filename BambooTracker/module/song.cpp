@@ -138,9 +138,8 @@ SongStyle Song::getStyle() const
 std::vector<TrackAttribute> Song::getTrackAttributes() const
 {
 	std::vector<TrackAttribute> ret;
-	for (auto& track : tracks_) {
-		ret.push_back(track.getAttribute());
-	}
+	std::transform(tracks_.begin(), tracks_.end(), std::back_inserter(ret),
+				   [](const Track& track) { return track.getAttribute(); });
 	return ret;
 }
 

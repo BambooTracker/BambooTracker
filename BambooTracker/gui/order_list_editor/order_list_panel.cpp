@@ -652,15 +652,6 @@ void OrderListPanel::drawShadow()
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 
-int OrderListPanel::calculateColumnsWidthWithRowNum(int begin, int end) const
-{
-	int width = rowNumWidth_;
-	for (int i = begin; i <= end; ++i) {
-		width += trackWidth_;
-	}
-	return width;
-}
-
 void OrderListPanel::moveCursorToRight(int n)
 {
 	int oldLeftTrack = leftTrackNum_;

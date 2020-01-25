@@ -207,12 +207,9 @@ void JamManager::clear()
 		unusedChFM_ = std::deque<int>(6);
 		unusedChSSG_= std::deque<int>(3);
 
-		for (size_t i = 0; i < unusedChFM_.size(); ++i) {
-			unusedChFM_[i] = static_cast<int>(i);
-		}
-		for (size_t i = 0; i < unusedChSSG_.size(); ++i) {
-			unusedChSSG_[i] = static_cast<int>(i);
-		}
+		auto gennums = [i = 0]() mutable -> int { return i++; };
+		std::generate(unusedChFM_.begin(), unusedChFM_.end(), gennums);
+		std::generate(unusedChSSG_.begin(), unusedChSSG_.end(), gennums);
 	}
 	else {
 		unusedChFM_.resize(1);

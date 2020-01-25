@@ -523,14 +523,12 @@ void InstrumentEditorSSGForm::setWaveFormSequenceColumn(int col)
 void InstrumentEditorSSGForm::onWaveFormNumberChanged()
 {
 	// Change users view
-	QString str;
 	std::vector<int> users = bt_.lock()->getWaveFormSSGUsers(ui->waveNumSpinBox->value());
-	for (auto& n : users) {
-		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
-	}
-	str.chop(1);
-
-	ui->waveUsersLineEdit->setText(str);
+	QStringList l;
+	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
+		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
+	});
+	ui->waveUsersLineEdit->setText(l.join(","));
 }
 
 void InstrumentEditorSSGForm::onWaveFormParameterChanged(int wfNum)
@@ -604,14 +602,12 @@ void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 void InstrumentEditorSSGForm::onToneNoiseNumberChanged()
 {
 	// Change users view
-	QString str;
 	std::vector<int> users = bt_.lock()->getToneNoiseSSGUsers(ui->tnNumSpinBox->value());
-	for (auto& n : users) {
-		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
-	}
-	str.chop(1);
-
-	ui->tnUsersLineEdit->setText(str);
+	QStringList l;
+	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
+		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
+	});
+	ui->tnUsersLineEdit->setText(l.join((",")));
 }
 
 void InstrumentEditorSSGForm::onToneNoiseParameterChanged(int tnNum)
@@ -703,14 +699,12 @@ void InstrumentEditorSSGForm::setEnvelopeSequenceColumn(int col)
 void InstrumentEditorSSGForm::onEnvelopeNumberChanged()
 {
 	// Change users view
-	QString str;
 	std::vector<int> users = bt_.lock()->getEnvelopeSSGUsers(ui->envNumSpinBox->value());
-	for (auto& n : users) {
-		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
-	}
-	str.chop(1);
-
-	ui->envUsersLineEdit->setText(str);
+	QStringList l;
+	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
+		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
+	});
+	ui->envUsersLineEdit->setText(l.join((",")));
 }
 
 void InstrumentEditorSSGForm::onEnvelopeParameterChanged(int envNum)
@@ -790,14 +784,12 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 void InstrumentEditorSSGForm::onArpeggioNumberChanged()
 {
 	// Change users view
-	QString str;
 	std::vector<int> users = bt_.lock()->getArpeggioSSGUsers(ui->arpNumSpinBox->value());
-	for (auto& n : users) {
-		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
-	}
-	str.chop(1);
-
-	ui->arpUsersLineEdit->setText(str);
+	QStringList l;
+	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
+		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
+	});
+	ui->arpUsersLineEdit->setText(l.join(","));
 }
 
 void InstrumentEditorSSGForm::onArpeggioParameterChanged(int tnNum)
@@ -885,14 +877,12 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 void InstrumentEditorSSGForm::onPitchNumberChanged()
 {
 	// Change users view
-	QString str;
 	std::vector<int> users = bt_.lock()->getPitchSSGUsers(ui->ptNumSpinBox->value());
-	for (auto& n : users) {
-		str += (QString("%1").arg(n, 2, 16, QChar('0')).toUpper() + ",");
-	}
-	str.chop(1);
-
-	ui->ptUsersLineEdit->setText(str);
+	QStringList l;
+	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
+		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
+	});
+	ui->ptUsersLineEdit->setText(l.join(","));
 }
 
 void InstrumentEditorSSGForm::onPitchParameterChanged(int tnNum)

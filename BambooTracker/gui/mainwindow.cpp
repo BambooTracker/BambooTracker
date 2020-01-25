@@ -2086,10 +2086,8 @@ void MainWindow::on_actionFollow_Mode_triggered()
 
 void MainWindow::on_actionGroove_Settings_triggered()
 {
-	std::vector<std::vector<int>> seqs;
-	for (size_t i = 0; i < bt_->getGrooveCount(); ++i) {
-		seqs.push_back(bt_->getGroove(static_cast<int>(i)));
-	}
+	std::vector<std::vector<int>> seqs(bt_->getGrooveCount());
+	std::generate(seqs.begin(), seqs.end(), [&, i = 0]() mutable { return bt_->getGroove(i++); });
 
 	GrooveSettingsDialog diag;
 	diag.setGrooveSquences(seqs);

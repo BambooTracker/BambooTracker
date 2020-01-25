@@ -166,7 +166,10 @@ private:
 	void drawBorders(int maxWidth, int trackSize);
 	void drawShadow();
 
-	int calculateColumnsWidthWithRowNum(int begin, int end) const;
+	inline int calculateColumnsWidthWithRowNum(int begin, int end) const
+	{
+		return rowNumWidth_ + trackWidth_ * (end - begin + 1);
+	}
 
 	inline void updateTracksWidthFromLeftToEnd()
 	{

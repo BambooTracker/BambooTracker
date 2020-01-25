@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <thread>
 #include <unordered_map>
+#include <algorithm>
 #include <QPainter>
 #include <QFontMetrics>
 #include <QFontInfo>
@@ -989,12 +990,8 @@ int PatternEditorPanel::calculateColNumInRow(int trackNum, int colNumInTrack, bo
 		return trackNum * 11 + colNumInTrack;
 	}
 	else {
-		int ret = 0;
-		size_t tn = static_cast<size_t>(trackNum);
-		for (size_t i = 0; i < tn; ++i) {
-			ret += (5 + 2 * rightEffn_.at(i));
-		}
-		return ret + colNumInTrack;
+		return std::accumulate(rightEffn_.begin(), rightEffn_.begin() + trackNum, colNumInTrack,
+							   [](int acc, int v) { return acc + 5 + 2 * v; });
 	}
 }
 
@@ -2145,14 +2142,10 @@ void PatternEditorPanel::onSongLoaded()
 		bt_->getCurrentStepNumber()
 	};
 	songStyle_ = bt_->getSongStyle(curSongNum_);
-	int trackCnt = 0;
-	switch (songStyle_.type) {
-	case SongType::Standard:		trackCnt = 15;	break;
-	case SongType::FM3chExpanded:	trackCnt = 18;	break;
-	}
-	rightEffn_ = std::vector<int>(static_cast<size_t>(trackCnt));
-	for (int i = 0; i < trackCnt; ++i)
-		rightEffn_[static_cast<size_t>(i)] = static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, i));
+	size_t trackCnt = songStyle_.trackAttribs.size();
+	rightEffn_ = std::vector<int>(trackCnt);
+	std::generate(rightEffn_.begin(), rightEffn_.end(), [&, i = 0]() mutable {
+		return static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, i++)); });
 	leftTrackNum_ = 0;
 	updateTracksWidthFromLeftToEnd();
 
