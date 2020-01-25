@@ -990,6 +990,7 @@ int PatternEditorPanel::calculateColNumInRow(int trackNum, int colNumInTrack, bo
 		return trackNum * 11 + colNumInTrack;
 	}
 	else {
+		trackNum = std::min(trackNum, static_cast<int>(rightEffn_.size()));
 		return std::accumulate(rightEffn_.begin(), rightEffn_.begin() + trackNum, colNumInTrack,
 							   [](int acc, int v) { return acc + 5 + 2 * v; });
 	}

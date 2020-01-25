@@ -5,6 +5,7 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::PatternEditor),
 	freezed_(false),
+	hasShown_(false),
 	hScrollCellMove_(true)
 {
 	ui->setupUi(this);
@@ -146,10 +147,10 @@ void PatternEditor::setFonts(QString headerFont, int headerSize, QString rowsFon
 	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
 }
 
-void PatternEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
+void PatternEditor::setHorizontalScrollMode(bool cellBased)
 {
 	hScrollCellMove_ = cellBased;
-	if (refresh) updateHorizontalSliderMaximum();
+	updateHorizontalSliderMaximum();
 }
 
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
@@ -206,6 +207,7 @@ void PatternEditor::showEvent(QShowEvent* event)
 {
 	Q_UNUSED(event)
 
+	hasShown_ = true;
 	// Set initial horizontal limit
 	updateHorizontalSliderMaximum();
 }
@@ -357,6 +359,7 @@ void PatternEditor::onDuplicateInstrumentsRemoved()
 
 void PatternEditor::updateHorizontalSliderMaximum()
 {
+	if (!hasShown_) return;
 	int max = hScrollCellMove_ ? ui->panel->getFullColmunSize() : ui->panel->getScrollableCountByTrack();
 	ui->horizontalScrollBar->setMaximum(max);
 }

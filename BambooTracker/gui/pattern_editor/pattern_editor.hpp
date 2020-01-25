@@ -40,7 +40,7 @@ public:
 	int getRowsFontSize() const;
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
-	void setHorizontalScrollMode(bool cellBased, bool refresh = true);
+	void setHorizontalScrollMode(bool cellBased);
 
 signals:
 	void currentTrackChanged(int num);
@@ -101,6 +101,7 @@ private:
 	std::shared_ptr<BambooTracker> bt_;
 
 	bool freezed_;
+	bool hasShown_;
 
 	bool hScrollCellMove_;
 	void updateHorizontalSliderMaximum();

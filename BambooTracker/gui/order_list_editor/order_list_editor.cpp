@@ -5,7 +5,8 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::OrderListEditor),
 	freezed_(false),
-	hScrollCellMove_(false)
+	hasShown_(false),
+	hScrollCellMove_(true)
 {
 	ui->setupUi(this);
 
@@ -136,10 +137,10 @@ void OrderListEditor::setFonts(QString headerFont, int headerSize, QString rowsF
 	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
 }
 
-void OrderListEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
+void OrderListEditor::setHorizontalScrollMode(bool cellBased)
 {
 	hScrollCellMove_ = cellBased;
-	if (refresh) updateHorizontalSliderMaximum();
+	updateHorizontalSliderMaximum();
 }
 
 bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
@@ -194,6 +195,7 @@ void OrderListEditor::showEvent(QShowEvent* event)
 {
 	Q_UNUSED(event)
 
+	hasShown_ = true;
 	// Set initial horizontal limit
 	updateHorizontalSliderMaximum();
 }
@@ -274,6 +276,7 @@ void OrderListEditor::onStoppedPlaySong()
 
 void OrderListEditor::updateHorizontalSliderMaximum()
 {
+	if (!hasShown_) return;
 	int song = bt_->getCurrentSongNumber();
 	int max = hScrollCellMove_ ? static_cast<int>(bt_->getSongStyle(song).trackAttribs.size()) - 1
 							   : ui->panel->getScrollableCountByTrack();
