@@ -99,10 +99,18 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	if (config.lock()->getOrderListRowsFont().empty()) {
 		config.lock()->setOrderListRowsFont(ui->orderList->getRowsFont().toStdString());
 	}
-	ColorPaletteHandler::loadPalette(palette_);
+	ui->patternEditor->setConfiguration(config_.lock());
+	ui->orderList->setConfiguration(config_.lock());
 	updateFonts();
 	ui->orderList->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll());
 	ui->patternEditor->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll());
+	ui->patternEditor->setCore(bt_);
+	ui->orderList->setCore(bt_);
+	ColorPaletteHandler::loadPalette(palette_);
+	ui->patternEditor->setColorPallete(palette_);
+	ui->orderList->setColorPallete(palette_);
+	updateInstrumentListColors();
+	ui->waveVisual->setColorPalette(palette_);
 	setMidiConfiguration();
 
 	/* Command stack */
@@ -270,7 +278,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 
 	/* Instrument list */
-	updateInstrumentListColors();
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	// Set core data to editor when add insrument
 	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
@@ -291,10 +298,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->instrumentListWidget->installEventFilter(this);
 
 	/* Pattern editor */
-	ui->patternEditor->setCore(bt_);
 	ui->patternEditor->setCommandStack(comStack_);
-	ui->patternEditor->setConfiguration(config_.lock());
-	ui->patternEditor->setColorPallete(palette_);
 	ui->patternEditor->installEventFilter(this);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
 					 ui->orderList, &OrderListEditor::setCurrentTrack);
@@ -325,10 +329,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, [&](QString text) { statusDetail_->setText(text); });
 
 	/* Order List */
-	ui->orderList->setCore(bt_);
 	ui->orderList->setCommandStack(comStack_);
-	ui->orderList->setConfiguration(config_.lock());
-	ui->orderList->setColorPallete(palette_);
 	ui->orderList->installEventFilter(this);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 ui->patternEditor, &PatternEditor::setCurrentTrack);
@@ -347,7 +348,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 
 	/* Visuals */
-	ui->waveVisual->setColorPalette(palette_);
 	visualTimer_.reset(new QTimer);
 	visualTimer_->start(40);
 	QObject::connect(visualTimer_.get(), &QTimer::timeout,

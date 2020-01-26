@@ -22,6 +22,7 @@
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
+	  config_(std::make_shared<Configuration>()),	// Dummy
 	  rowFontWidth_(0),
 	  rowFontHeight_(0),
 	  rowFontAscent_(0),
@@ -88,7 +89,7 @@ void OrderListPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
 	comStack_ = stack;
 }
 
-void OrderListPanel::setConfiguration(std::weak_ptr<Configuration> config)
+void OrderListPanel::setConfiguration(std::shared_ptr<Configuration> config)
 {
 	config_ = config;
 }
@@ -175,7 +176,7 @@ void OrderListPanel::updateSizes()
 	/* Width & height */
 	widthSpace_ = rowFontWidth_ / 4;
 	trackWidth_ = rowFontWidth_ * 3 + widthSpace_ * 2;
-	if (config_.expired() || config_.lock()->getShowRowNumberInHex()) {
+	if (config_->getShowRowNumberInHex()) {
 		rowNumWidthCnt_ = 2;
 		rowNumBase_ = 16;
 	}
@@ -322,7 +323,7 @@ void OrderListPanel::drawRows(int maxWidth, int trackSize)
 		 rowY >= endY;
 		 rowY -= rowFontHeight_, baseY -= rowFontHeight_, --rowNum) {
 		QColor rowColor;
-		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum) {
+		if (!config_->getFollowMode() && rowNum == playOdrNum) {
 			rowColor = palette_->odrPlayRowColor;
 		}
 		else {
@@ -371,7 +372,7 @@ void OrderListPanel::drawRows(int maxWidth, int trackSize)
 		 rowY <= endY;
 		 rowY += rowFontHeight_, baseY += rowFontHeight_, ++rowNum) {
 		QColor rowColor;
-		if (!config_.lock()->getFollowMode() && rowNum == playOdrNum)
+		if (!config_->getFollowMode() && rowNum == playOdrNum)
 			rowColor = palette_->odrPlayRowColor;
 		else
 			rowColor = palette_->odrDefRowColor;
@@ -665,7 +666,7 @@ void OrderListPanel::moveCursorToRight(int n)
 				break;
 			}
 			else {
-				if (config_.lock()->getWarpCursor()) {
+				if (config_->getWarpCursor()) {
 					tmp = sub;
 				}
 				else {
@@ -679,7 +680,7 @@ void OrderListPanel::moveCursorToRight(int n)
 		while (true) {
 			int add = tmp + static_cast<int>(songStyle_.trackAttribs.size());
 			if (tmp < 0) {
-				if (config_.lock()->getWarpCursor()) {
+				if (config_->getWarpCursor()) {
 					tmp = add;
 				}
 				else {
@@ -705,7 +706,7 @@ void OrderListPanel::moveCursorToRight(int n)
 	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_) {	// Send to slider
-		if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+		if (config_->getMoveCursorByHorizontalScroll()) {
 			emit hScrollBarChangeRequested(curPos_.track);
 		}
 		else {
@@ -786,7 +787,7 @@ void OrderListPanel::changeEditable()
 void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
 {	
 	int prev = std::exchange(playingRow_, bt_->getPlayingOrderNumber());
-	if (!config_.lock()->getFollowMode() && prev != playingRow_) {	// Repaint only background
+	if (!config_->getFollowMode() && prev != playingRow_) {	// Repaint only background
 		backChanged_ = true;
 		repaint();
 		return;
@@ -1079,7 +1080,7 @@ void OrderListPanel::onHScrollBarChanged(int num)
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
 	// Skip if position has already changed in panel
-	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+	if (config_->getMoveCursorByHorizontalScroll()) {
 		if (int dif = num - curPos_.track) moveCursorToRight(dif);
 	}
 	else {
@@ -1339,7 +1340,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-static_cast<int>(config_.lock()->getPageJumpLength()));
+			moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -1349,7 +1350,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(static_cast<int>(config_.lock()->getPageJumpLength()));
+			moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -1434,13 +1435,13 @@ void OrderListPanel::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		if (event->x() < rowNumWidth_ && leftTrackNum_ > 0) {
-			if (config_.lock()->getMoveCursorByHorizontalScroll())
+			if (config_->getMoveCursorByHorizontalScroll())
 				moveCursorToRight(-1);
 			else
 				moveViewToRight(-1);
 		}
 		else if (event->x() > geometry().width() - rowNumWidth_ && hovPos_.track != -1) {
-			if (config_.lock()->getMoveCursorByHorizontalScroll())
+			if (config_->getMoveCursorByHorizontalScroll())
 				moveCursorToRight(1);
 			else
 				moveViewToRight(1);

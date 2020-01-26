@@ -65,7 +65,7 @@ void OrderListEditor::setCommandStack(std::weak_ptr<QUndoStack> stack)
 	ui->panel->setCommandStack(stack);
 }
 
-void OrderListEditor::setConfiguration(std::weak_ptr<Configuration> config)
+void OrderListEditor::setConfiguration(std::shared_ptr<Configuration> config)
 {
 	ui->panel->setConfiguration(config);
 }

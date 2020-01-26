@@ -26,6 +26,7 @@
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
+	  config_(std::make_shared<Configuration>()),	// Dummy
 	  stepFontWidth_(0),
 	  stepFontHeight_(0),
 	  stepFontAscent_(0),
@@ -134,8 +135,8 @@ void PatternEditorPanel::updateSizes()
 	/* Width & height */
 	widthSpace_ = stepFontWidth_ / 5 * 2;
 	widthSpaceDbl_ = widthSpace_ * 2;
-	if (!config_.expired()) stepNumWidthCnt_ = config_.lock()->getShowRowNumberInHex() ? 2 : 3;
-	if (config_.expired() || config_.lock()->getShowRowNumberInHex()) {
+	stepNumWidthCnt_ = config_->getShowRowNumberInHex() ? 2 : 3;
+	if (config_->getShowRowNumberInHex()) {
 		stepNumWidthCnt_ = 2;
 		stepNumBase_ = 16;
 	}
@@ -197,7 +198,7 @@ void PatternEditorPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
 	comStack_ = stack;
 }
 
-void PatternEditorPanel::setConfiguration(std::weak_ptr<Configuration> config)
+void PatternEditorPanel::setConfiguration(std::shared_ptr<Configuration> config)
 {
 	config_ = config;
 }
@@ -427,7 +428,7 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 			if (odrNum == 0) {
 				break;
 			}
-			else if (config_.lock()->getShowPreviousNextOrders()) {
+			else if (config_->getShowPreviousNextOrders()) {
 				--odrNum;
 				stepNum = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum)) - 1;
 			}
@@ -437,7 +438,7 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 		}
 
 		QColor rowColor;
-		if (!config_.lock()->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
+		if (!config_->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
 			rowColor = palette_->ptnPlayStepColor;
 		}
 		else {
@@ -481,7 +482,7 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 			if (odrNum == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
 				break;
 			}
-			else if (config_.lock()->getShowPreviousNextOrders()) {
+			else if (config_->getShowPreviousNextOrders()) {
 				++odrNum;
 				stepNum = 0;
 				stepEnd = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, odrNum));
@@ -492,7 +493,7 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 		}
 
 		QColor rowColor;
-		if (!config_.lock()->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
+		if (!config_->getFollowMode() && odrNum == playOdrNum && stepNum == playStepNum) {
 			rowColor = palette_->ptnPlayStepColor;
 		}
 		else {
@@ -612,7 +613,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 	/* Draw new step at last if necessary */
 	{
 		PatternPosition bpos = calculatePositionFrom(viewedCenterPos_.order, viewedCenterPos_.step, halfRowsCnt);
-		if (!config_.lock()->getShowPreviousNextOrders() && viewedCenterPos_.order != bpos.order) {
+		if (!config_->getShowPreviousNextOrders() && viewedCenterPos_.order != bpos.order) {
 			// Clear row
 			backPainter.setCompositionMode(QPainter::CompositionMode_Source);
 			backPainter.fillRect(0, lastY, maxWidth, shift, Qt::transparent);
@@ -798,7 +799,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			case SoundSource::DRUM:	volLim = 0x20;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
-			if (src == SoundSource::FM && vol < volLim && config_.lock()->getReverseFMVolumeOrder()) {
+			if (src == SoundSource::FM && vol < volLim && config_->getReverseFMVolumeOrder()) {
 
 				vol = volLim - vol - 1;
 			}
@@ -853,17 +854,17 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 				textPainter.setPen(palette_->ptnEffColor);
 				switch (Effect::toEffectType(src, effId)) {
 				case EffectType::VolumeDelay:
-					if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder() && effVal < 0x80)
+					if (src == SoundSource::FM && config_->getReverseFMVolumeOrder() && effVal < 0x80)
 						effVal = 0x7f - effVal;
 					break;
 				case EffectType::Brightness:
-					if (config_.lock()->getReverseFMVolumeOrder() && effVal > 0)
+					if (config_->getReverseFMVolumeOrder() && effVal > 0)
 						effVal = 0xff - effVal + 1;
 					break;
 				default:
 					break;
 				}
-				if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder()
+				if (src == SoundSource::FM && config_->getReverseFMVolumeOrder()
 						&& Effect::toEffectType(SoundSource::FM, effId) == EffectType::VolumeDelay) {
 
 
@@ -1010,7 +1011,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 			}
 			else {
 				if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
-					if (config_.lock()->getWarpCursor()) {
+					if (config_->getWarpCursor()) {
 						curPos_.track = 0;
 					}
 					else {
@@ -1032,7 +1033,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 			}
 			else {
 				if (!curPos_.track) {
-					if (config_.lock()->getWarpCursor()) {
+					if (config_->getWarpCursor()) {
 						curPos_.track = static_cast<int>(songStyle_.trackAttribs.size()) - 1;
 					}
 					else {
@@ -1062,7 +1063,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 		bt_->setCurrentTrack(curPos_.track);
 
 	if (!isIgnoreToSlider_) {
-		if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+		if (config_->getMoveCursorByHorizontalScroll()) {
 			emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.track, curPos_.colInTrack));
 		}
 		else if (curPos_.track != oldTrackNum) {
@@ -1124,7 +1125,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 				break;
 			}
 			else {
-				if (config_.lock()->getWarpAcrossOrders()) {
+				if (config_->getWarpAcrossOrders()) {
 					if (curPos_.order == static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1) {
 						curPos_.order = 0;
 					}
@@ -1139,7 +1140,7 @@ void PatternEditorPanel::moveCursorToDown(int n)
 	else {
 		while (true) {
 			if (tmp < 0) {
-				if (config_.lock()->getWarpAcrossOrders()) {
+				if (config_->getWarpAcrossOrders()) {
 					if (curPos_.order == 0) {
 						curPos_.order = static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1;
 					}
@@ -1303,7 +1304,7 @@ int PatternEditorPanel::getFullColmunSize() const
 
 void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 {
-	if (!config_.lock()->getFollowMode()) {	// Repaint only background
+	if (!config_->getFollowMode()) {	// Repaint only background
 		backChanged_ = true;
 		repaint();
 		return;
@@ -1317,7 +1318,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 	emit vScrollBarChangeRequested(
 				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
-	if (isFirstUpdate || (cmp < 0) || (cmp && !config_.lock()->getShowPreviousNextOrders())) {
+	if (isFirstUpdate || (cmp < 0) || (cmp && !config_->getShowPreviousNextOrders())) {
 		stepDownCount_ = 0;	// Redraw entire area in first update
 	}
 	else {
@@ -1332,10 +1333,9 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 }
 
 JamKey PatternEditorPanel::getJamKeyFromLayoutMapping(Qt::Key key) {
-	std::shared_ptr<Configuration> configLocked = config_.lock();
-	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
-	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-		std::unordered_map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+	Configuration::KeyboardLayout selectedLayout = config_->getNoteEntryLayout();
+	if (config_->mappingLayouts.find (selectedLayout) != config_->mappingLayouts.end()) {
+		std::unordered_map<std::string, JamKey> selectedLayoutMapping = config_->mappingLayouts.at (selectedLayout);
 		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
 							   [key](const std::pair<std::string, JamKey>& t) -> bool {
 			return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
@@ -1355,16 +1355,16 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 {
 	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | event->key()).toString();
 	if (seq == QKeySequence(
-				QString::fromUtf8(config_.lock()->getKeyOffKey().c_str(),
-								  static_cast<int>(config_.lock()->getKeyOffKey().length()))).toString()) {
+				QString::fromUtf8(config_->getKeyOffKey().c_str(),
+								  static_cast<int>(config_->getKeyOffKey().length()))).toString()) {
 		bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
 		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		return true;
 	}
 	else if (seq == QKeySequence(
-				 QString::fromUtf8(config_.lock()->getEchoBufferKey().c_str(),
-								   static_cast<int>(config_.lock()->getEchoBufferKey().length()))).toString()) {
+				 QString::fromUtf8(config_->getEchoBufferKey().c_str(),
+								   static_cast<int>(config_->getEchoBufferKey().length()))).toString()) {
 		int n = bt_->getCurrentOctave();
 		if (n > 3) n = 3;
 		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
@@ -1416,7 +1416,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 {
 	if (octave < 8) {
-		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note, config_.lock()->getAutosetInstrument());
+		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note, config_->getAutosetInstrument());
 		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 	}
@@ -1483,7 +1483,7 @@ bool PatternEditorPanel::enterVolumeData(int key)
 void PatternEditorPanel::setStepVolume(int volume)
 {
 	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source == SoundSource::FM
-					  && config_.lock()->getReverseFMVolumeOrder());
+					  && config_->getReverseFMVolumeOrder());
 	bt_->setStepVolumeDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, volume, isReversed, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
@@ -1538,13 +1538,13 @@ void PatternEditorPanel::setStepEffectID(QString str)
 {
 	bt_->setStepEffectIDCharacter(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
 								  (curPos_.colInTrack - 3) / 2, str.toStdString(),
-								  config_.lock()->getFill00ToEffectValue(), (entryCnt_ == 1));
+								  config_->getFill00ToEffectValue(), (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	PatternPosition editPos = curPos_;
 
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount()) {
-		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
+		if (config_->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
 	}
 
@@ -1588,11 +1588,11 @@ void PatternEditorPanel::setStepEffectValue(int value)
 				src,
 				bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n))) {
 	case EffectType::VolumeDelay:
-		if (src == SoundSource::FM && config_.lock()->getReverseFMVolumeOrder())
+		if (src == SoundSource::FM && config_->getReverseFMVolumeOrder())
 			ctrl = EffectDisplayControl::ReverseFMVolumeDelay;
 		break;
 	case EffectType::Brightness:
-		if (config_.lock()->getReverseFMVolumeOrder()) ctrl = EffectDisplayControl::ReverseFMBrightness;
+		if (config_->getReverseFMVolumeOrder()) ctrl = EffectDisplayControl::ReverseFMBrightness;
 		break;
 	default:
 		break;
@@ -1601,7 +1601,7 @@ void PatternEditorPanel::setStepEffectValue(int value)
 	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount()) {
-		if (config_.lock()->getMoveCursorToRight()) moveCursorToRight(1);
+		if (config_->getMoveCursorToRight()) moveCursorToRight(1);
 		else moveCursorToDown(editableStepCnt_);
 	}
 }
@@ -2050,7 +2050,7 @@ void PatternEditorPanel::onHScrollBarChanged(int num)
 	Ui::EventGuard eg(isIgnoreToSlider_);
 
 	// Skip if position has already changed in panel
-	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+	if (config_->getMoveCursorByHorizontalScroll()) {
 		if (int dif = num - calculateColNumInRow(curPos_.track, curPos_.colInTrack))
 			moveCursorToRight(dif);
 	}
@@ -2441,7 +2441,7 @@ void PatternEditorPanel::onExpandEffectColumnPressed(int trackNum)
 	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(++rightEffn_[tn]));
 	updateTracksWidthFromLeftToEnd();
 
-	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+	if (config_->getMoveCursorByHorizontalScroll()) {
 		emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
 	}
 	else {
@@ -2458,7 +2458,7 @@ void PatternEditorPanel::onShrinkEffectColumnPressed(int trackNum)
 	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(--rightEffn_[tn]));
 	updateTracksWidthFromLeftToEnd();
 
-	if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+	if (config_->getMoveCursorByHorizontalScroll()) {
 		emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
 	}
 	else {
@@ -2560,7 +2560,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		}
 	case Qt::Key_Tab:
 		if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
-			if (config_.lock()->getWarpCursor())
+			if (config_->getWarpCursor())
 				moveCursorToRight(-calculateColNumInRow(curPos_.track, curPos_.colInTrack));
 		}
 		else {
@@ -2569,7 +2569,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		return true;
 	case Qt::Key_Backtab:
 		if (curPos_.track == 0) {
-			if (config_.lock()->getWarpCursor())
+			if (config_->getWarpCursor())
 				moveCursorToRight(getFullColmunSize() - 1);
 		}
 		else {
@@ -2602,7 +2602,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-static_cast<int>(config_.lock()->getPageJumpLength()));
+			moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -2612,7 +2612,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(static_cast<int>(config_.lock()->getPageJumpLength()));
+			moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
 			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
 			else onSelectPressed(0);
 			return true;
@@ -2644,7 +2644,7 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	default:
 		if (!bt_->isJamMode()) {
 			// Pattern edit
-			if (!config_.lock()->getKeyRepetition() && event->isAutoRepeat()) return false;
+			if (!config_->getKeyRepetition() && event->isAutoRepeat()) return false;
 			switch (curPos_.colInTrack) {
 			case 0:
 				return enterToneData(event);
@@ -2751,7 +2751,7 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 		}
 
 		if (event->x() < stepNumWidth_ && leftTrackNum_ > 0) {
-			if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+			if (config_->getMoveCursorByHorizontalScroll()) {
 				moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_) - 1)));
 			}
 			else {
@@ -2759,7 +2759,7 @@ void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 			}
 		}
 		else if (event->x() > geometry().width() - stepNumWidth_ && hovPos_.track != -1) {
-			if (config_.lock()->getMoveCursorByHorizontalScroll()) {
+			if (config_->getMoveCursorByHorizontalScroll()) {
 				moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_)));
 			}
 			else {
@@ -2886,7 +2886,7 @@ void PatternEditorPanel::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton) {
 		if (doubleClickPos_.order >= 0) {
-			if (!config_.lock()->getDontSelectOnDoubleClick()) {
+			if (!config_->getDontSelectOnDoubleClick()) {
 				if (doubleClickPos_.track >= 0) {
 					onSelectPressed(4);
 					return;

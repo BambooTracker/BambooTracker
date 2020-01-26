@@ -22,7 +22,7 @@ public:
 	~PatternEditor() override;
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
-	void setConfiguration(std::weak_ptr<Configuration> config);
+	void setConfiguration(std::shared_ptr<Configuration> config);
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();

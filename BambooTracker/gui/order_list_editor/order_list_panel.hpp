@@ -31,7 +31,7 @@ public:
 	explicit OrderListPanel(QWidget *parent = nullptr);
 	void setCore(std::shared_ptr<BambooTracker> core);
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
-	void setConfiguration(std::weak_ptr<Configuration> config);
+	void setConfiguration(std::shared_ptr<Configuration> config);
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
@@ -110,7 +110,7 @@ private:
 	std::unique_ptr<QPixmap> completePixmap_, textPixmap_, backPixmap_, headerPixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
-	std::weak_ptr<Configuration> config_;
+	std::shared_ptr<Configuration> config_;
 	std::shared_ptr<ColorPalette> palette_;
 
 	QFont rowFont_, headerFont_;
