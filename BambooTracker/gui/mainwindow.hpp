@@ -130,7 +130,7 @@ private:
 	QString getModuleFileBaseName() const;
 	int getSelectedFileFilter(QString& file, QStringList& filters) const;
 
-	void showFileIODialog(const FileIOError &e);
+	void showFileIOErrorDialog(const FileIOError& e, const QString sub = "");
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
 	bool isSelectedPO_;

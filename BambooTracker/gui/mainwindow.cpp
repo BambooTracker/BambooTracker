@@ -924,7 +924,10 @@ void MainWindow::loadInstrument()
 void MainWindow::funcLoadInstrument(QString file)
 {
 	int n = bt_->findFirstFreeInstrumentNumber();
-	if (n == -1) QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
+	if (n == -1) {
+		showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst),
+							  tr( "The number of instruments has reached the upper limit."));
+	}
 
 	try {
 		QFile fp(file);
@@ -945,8 +948,11 @@ void MainWindow::funcLoadInstrument(QString file)
 		ui->instrumentListWidget->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
+		showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst), "\n" + QString(e.what()));
 	}
 }
 
@@ -975,8 +981,11 @@ void MainWindow::saveInstrument()
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
+		showFileIOErrorDialog(FileOutputError(FileIO::FileType::Inst), "\n" + QString(e.what()));
 	}
 }
 
@@ -1017,8 +1026,11 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		bank.reset(BankIO::loadBank(container, file.toStdString()));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
+		showFileIOErrorDialog(FileInputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
 		return;
 	}
 
@@ -1034,7 +1046,8 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		for (size_t index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
-				QMessageBox::critical(this, tr("Error"), tr("Failed to load instrument."));
+				showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst),
+									  tr( "The number of instruments has reached the upper limit."));
 				ui->instrumentListWidget->setCurrentRow(lastNum);
 				return;
 			}
@@ -1051,8 +1064,11 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		}
 		ui->instrumentListWidget->setCurrentRow(lastNum);
 	}
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
+		showFileIOErrorDialog(FileInputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
 	}
 }
 
@@ -1088,8 +1104,11 @@ void MainWindow::exportInstrumentsToBank()
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
+		showFileIOErrorDialog(FileOutputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
 	}
 }
 
@@ -1217,7 +1236,12 @@ void MainWindow::openModule(QString file)
 		changeFileHistory(file);
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
+		if (auto ef = dynamic_cast<FileIOError*>(&e)) {
+			showFileIOErrorDialog(*ef);
+		}
+		else {
+			showFileIOErrorDialog(FileInputError(FileIO::FileType::Mod), "\n" + QString(e.what()));
+		}
 		// Init module
 		freezeViews();
 		bt_->makeNewModule();
@@ -1503,7 +1527,7 @@ int MainWindow::getSelectedFileFilter(QString& file, QStringList& filters) const
 	return -1;
 }
 
-void MainWindow::showFileIODialog(const FileIOError &e)
+void MainWindow::showFileIOErrorDialog(const FileIOError& e, const QString sub)
 {
 	const FileIOError *err = &e;
 	QString text, type;
@@ -1522,7 +1546,17 @@ void MainWindow::showFileIODialog(const FileIOError &e)
 		text = tr("Failed to load the %1.").arg(type);
 	}
 	else if (dynamic_cast<const FileOutputError*>(err)) {
-		text = tr("Failed to save the %1.").arg(type);
+		switch (err->getFileType()) {
+		case FileIO::FileType::S98:
+		case FileIO::FileType::VGM:
+		case FileIO::FileType::WAV:
+			text = tr("Failed to export to %1.");
+			break;
+		default:
+			text = tr("Failed to save the %1.");
+			break;
+		}
+		text = text.arg(type);
 	}
 	else if (dynamic_cast<const FileVersionError*>(err)) {
 		text = tr("Could not load the %1 properly. "
@@ -1531,6 +1565,8 @@ void MainWindow::showFileIODialog(const FileIOError &e)
 	else if (dynamic_cast<const FileCorruptionError*>(err)) {
 		text = tr("Could not load the %1. It may be corrupted.").arg(type);
 	}
+
+	QMessageBox::critical(this, tr("Error"), text + sub);
 }
 
 /******************************/
@@ -2215,8 +2251,12 @@ bool MainWindow::on_actionSave_triggered()
 			setWindowTitle();
 			return true;
 		}
+		catch (FileIOError& e) {
+			showFileIOErrorDialog(e);
+			return false;
+		}
 		catch (std::exception& e) {
-			QMessageBox::critical(this, tr("Error"), e.what());
+			showFileIOErrorDialog(FileOutputError(FileIO::FileType::Mod), "\n" + QString(e.what()));
 			return false;
 		}
 	}
@@ -2257,8 +2297,12 @@ bool MainWindow::on_actionSave_As_triggered()
 		changeFileHistory(file);
 		return true;
 	}
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+		return false;
+	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), e.what());
+		showFileIOErrorDialog(FileOutputError(FileIO::FileType::Mod), "\n" + QString(e.what()));
 		return false;
 	}
 }
@@ -2433,8 +2477,11 @@ void MainWindow::on_actionWAV_triggered()
 			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 		}
 	}
-	catch (...) {
-		QMessageBox::critical(this, tr("Error"), tr("Failed to export to wav file."));
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
+	catch (std::exception& e) {
+		showFileIOErrorDialog(FileOutputError(FileIO::FileType::WAV), "\n" + QString(e.what()));
 	}
 
 	stream_->start();
@@ -2489,8 +2536,11 @@ void MainWindow::on_actionVGM_triggered()
 			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 		}
 	}
-	catch (...) {
-		QMessageBox::critical(this, tr("Error"), tr("Failed to export to vgm file."));
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
+	catch (std::exception& e) {
+		showFileIOErrorDialog(FileOutputError(FileIO::FileType::VGM), "\n" + QString(e.what()));
 	}
 
 	stream_->start();
@@ -2546,8 +2596,11 @@ void MainWindow::on_actionS98_triggered()
 			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
 		}
 	}
-	catch (...) {
-		QMessageBox::critical(this, tr("Error"), tr("Failed to export to s98 file."));
+	catch (FileIOError& e) {
+		showFileIOErrorDialog(e);
+	}
+	catch (std::exception& e) {
+		showFileIOErrorDialog(FileOutputError(FileIO::FileType::S98), "\n" + QString(e.what()));
 	}
 
 	stream_->start();
