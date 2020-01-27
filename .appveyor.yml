@@ -10,6 +10,7 @@ branches:
   # whitelist
   only:
     - master
+    - fix-crash-at-launch
 
 # Do not build on tags
 skip_tags: true

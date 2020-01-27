@@ -1,6 +1,6 @@
 #include "pattern_editor.hpp"
 #include "ui_pattern_editor.h"
-
+#include <QDebug>
 PatternEditor::PatternEditor(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::PatternEditor),
@@ -35,6 +35,7 @@ PatternEditor::PatternEditor(QWidget *parent) :
 
 	QObject::connect(ui->panel, &PatternEditorPanel::effectColsCompanded,
 					 this, [&](int num, int max) {
+		qDebug() << "comp";
 		if (ui->horizontalScrollBar->maximum() < num) {
 			ui->horizontalScrollBar->setMaximum(max);
 			ui->horizontalScrollBar->setValue(num);
@@ -206,7 +207,7 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 void PatternEditor::showEvent(QShowEvent* event)
 {
 	Q_UNUSED(event)
-
+qDebug() << "show";
 	hasShown_ = true;
 	// Set initial horizontal limit
 	updateHorizontalSliderMaximum();
@@ -215,7 +216,7 @@ void PatternEditor::showEvent(QShowEvent* event)
 void PatternEditor::resizeEvent(QResizeEvent* event)
 {
 	Q_UNUSED(event)
-
+qDebug() << "res";
 	// For view-based scroll
 	updateHorizontalSliderMaximum();
 }
@@ -360,6 +361,7 @@ void PatternEditor::onDuplicateInstrumentsRemoved()
 void PatternEditor::updateHorizontalSliderMaximum()
 {
 	if (!hasShown_) return;
+	qDebug() << "max";
 	int max = hScrollCellMove_ ? ui->panel->getFullColmunSize() : ui->panel->getScrollableCountByTrack();
 	ui->horizontalScrollBar->setMaximum(max);
 }

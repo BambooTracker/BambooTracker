@@ -23,7 +23,7 @@
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
 #include "gui/effect_description.hpp"
-
+#include <QDebug>
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
 	  config_(std::make_shared<Configuration>()),	// Dummy
@@ -2048,7 +2048,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 void PatternEditorPanel::onHScrollBarChanged(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
-
+qDebug() << "ptn,sldch";
 	// Skip if position has already changed in panel
 	if (config_->getMoveCursorByHorizontalScroll()) {
 		if (int dif = num - calculateColNumInRow(curPos_.track, curPos_.colInTrack))

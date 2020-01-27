@@ -388,6 +388,13 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		else if (isEditedPattern_) updateMenuByPattern();
 	});
 
+	/* MIDI */
+	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
+	Q_ASSERT(midiKeyEventMethod_ != -1);
+	midiProgramEventMethod_ = metaObject()->indexOfSlot("midiProgramEvent(uchar,uchar)");
+	Q_ASSERT(midiProgramEventMethod_ != -1);
+	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
+
 	/* Audio stream */
 	bool savedDeviceExists = false;
 	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
@@ -420,7 +427,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 											 static_cast<int>(config.lock()->getSoundDevice().length())));
 	if (!streamState) showStreamFailedDialog();
 	if (config.lock()->getUseSCCI()) {
-		stream_->stop();
 		timer_ = std::make_unique<Timer>();
 		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
@@ -444,24 +450,17 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}
 	else {
 		bt_->useSCCI(nullptr);
-		stream_->start();
 	}
 
 	/* Load module */
 	if (filePath.isEmpty()) {
 		loadModule();
 		setInitialSelectedInstrument();
+		if (!timer_) stream_->start();
 	}
 	else {
-		openModule(filePath);
+		openModule(filePath);	// If use emulation, stream stars
 	}
-
-	/* MIDI */
-	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
-	Q_ASSERT(midiKeyEventMethod_ != -1);
-	midiProgramEventMethod_ = metaObject()->indexOfSlot("midiProgramEvent(uchar,uchar)");
-	Q_ASSERT(midiProgramEventMethod_ != -1);
-	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
 }
 
 MainWindow::~MainWindow()
