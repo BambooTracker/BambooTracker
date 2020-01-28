@@ -1384,7 +1384,7 @@ bool OrderListPanel::keyReleased(QKeyEvent* event)
 
 void OrderListPanel::paintEvent(QPaintEvent *event)
 {
-	if (bt_ != nullptr) {
+	if (bt_) {
 		const QRect& area = event->rect();
 		if (area.x() == 0 && area.y() == 0) {
 			drawList(area);

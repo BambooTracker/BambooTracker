@@ -23,7 +23,7 @@
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
 #include "gui/effect_description.hpp"
-#include <QDebug>
+
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
 	  config_(std::make_shared<Configuration>()),	// Dummy
@@ -191,6 +191,11 @@ void PatternEditorPanel::initDisplay()
 void PatternEditorPanel::setCore(std::shared_ptr<BambooTracker> core)
 {
 	bt_ = core;
+}
+
+bool PatternEditorPanel::isReadyCore() const
+{
+	return (bt_ != nullptr);
 }
 
 void PatternEditorPanel::setCommandStack(std::weak_ptr<QUndoStack> stack)
@@ -2048,7 +2053,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 void PatternEditorPanel::onHScrollBarChanged(int num)
 {
 	Ui::EventGuard eg(isIgnoreToSlider_);
-qDebug() << "ptn,sldch";
+
 	// Skip if position has already changed in panel
 	if (config_->getMoveCursorByHorizontalScroll()) {
 		if (int dif = num - calculateColNumInRow(curPos_.track, curPos_.colInTrack))
@@ -2685,7 +2690,7 @@ bool PatternEditorPanel::keyReleased(QKeyEvent* event)
 
 void PatternEditorPanel::paintEvent(QPaintEvent *event)
 {	
-	if (bt_ != nullptr) {
+	if (bt_) {
 		// Check order size
 		int odrSize = static_cast<int>(bt_->getOrderSize(curSongNum_));
 		if (curPos_.order >= odrSize) curPos_.setRows(odrSize - 1, 0);

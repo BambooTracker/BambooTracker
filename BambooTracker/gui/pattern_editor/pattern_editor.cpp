@@ -1,11 +1,11 @@
 #include "pattern_editor.hpp"
 #include "ui_pattern_editor.h"
-#include <QDebug>
+
 PatternEditor::PatternEditor(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::PatternEditor),
 	freezed_(false),
-	hasShown_(false),
+	songLoaded_(false),
 	hScrollCellMove_(true)
 {
 	ui->setupUi(this);
@@ -35,7 +35,6 @@ PatternEditor::PatternEditor(QWidget *parent) :
 
 	QObject::connect(ui->panel, &PatternEditorPanel::effectColsCompanded,
 					 this, [&](int num, int max) {
-		qDebug() << "comp";
 		if (ui->horizontalScrollBar->maximum() < num) {
 			ui->horizontalScrollBar->setMaximum(max);
 			ui->horizontalScrollBar->setValue(num);
@@ -148,10 +147,10 @@ void PatternEditor::setFonts(QString headerFont, int headerSize, QString rowsFon
 	ui->panel->setFonts(headerFont, headerSize, rowsFont, rowsSize);
 }
 
-void PatternEditor::setHorizontalScrollMode(bool cellBased)
+void PatternEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
 {
 	hScrollCellMove_ = cellBased;
-	updateHorizontalSliderMaximum();
+	if (refresh) updateHorizontalSliderMaximum();
 }
 
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
@@ -204,19 +203,10 @@ bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
-void PatternEditor::showEvent(QShowEvent* event)
-{
-	Q_UNUSED(event)
-qDebug() << "show";
-	hasShown_ = true;
-	// Set initial horizontal limit
-	updateHorizontalSliderMaximum();
-}
-
 void PatternEditor::resizeEvent(QResizeEvent* event)
 {
 	Q_UNUSED(event)
-qDebug() << "res";
+
 	// For view-based scroll
 	updateHorizontalSliderMaximum();
 }
@@ -261,6 +251,7 @@ void PatternEditor::onSongLoaded()
 {
 	ui->horizontalScrollBar->setValue(0);
 	ui->panel->onSongLoaded();
+	songLoaded_ = true;
 	updateHorizontalSliderMaximum();
 	ui->verticalScrollBar->setMaximum(static_cast<int>(bt_->getPatternSizeFromOrderNumber(
 														   bt_->getCurrentSongNumber(),
@@ -360,8 +351,7 @@ void PatternEditor::onDuplicateInstrumentsRemoved()
 
 void PatternEditor::updateHorizontalSliderMaximum()
 {
-	if (!hasShown_) return;
-	qDebug() << "max";
+	if (!ui->panel->isReadyCore() || !songLoaded_) return;
 	int max = hScrollCellMove_ ? ui->panel->getFullColmunSize() : ui->panel->getScrollableCountByTrack();
 	ui->horizontalScrollBar->setMaximum(max);
 }

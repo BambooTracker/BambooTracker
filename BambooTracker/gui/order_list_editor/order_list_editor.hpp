@@ -42,7 +42,7 @@ public:
 	int getRowsFontSize() const;
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
-	void setHorizontalScrollMode(bool cellBased);
+	void setHorizontalScrollMode(bool cellBased, bool refresh = true);
 
 signals:
 	void currentTrackChanged(int num);
@@ -77,7 +77,6 @@ public slots:
 
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;
-	void showEvent(QShowEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 
 private:
@@ -85,7 +84,7 @@ private:
 	std::shared_ptr<BambooTracker> bt_;
 
 	bool freezed_;
-	bool hasShown_;
+	bool songLoaded_;
 
 	bool hScrollCellMove_;
 	void updateHorizontalSliderMaximum();

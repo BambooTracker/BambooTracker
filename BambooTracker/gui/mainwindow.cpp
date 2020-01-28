@@ -102,8 +102,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->patternEditor->setConfiguration(config_.lock());
 	ui->orderList->setConfiguration(config_.lock());
 	updateFonts();
-	ui->orderList->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll());
-	ui->patternEditor->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll());
+	ui->orderList->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll(), false);
+	ui->patternEditor->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll(), false);
 	ui->patternEditor->setCore(bt_);
 	ui->orderList->setCore(bt_);
 	ColorPaletteHandler::loadPalette(palette_);

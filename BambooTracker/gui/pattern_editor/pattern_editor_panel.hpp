@@ -32,6 +32,7 @@ public:
 	explicit PatternEditorPanel(QWidget *parent = nullptr);
 	~PatternEditorPanel() override;
 	void setCore(std::shared_ptr<BambooTracker> core);
+	bool isReadyCore() const;
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 	void setConfiguration(std::shared_ptr<Configuration> config);
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
