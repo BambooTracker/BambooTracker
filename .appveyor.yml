@@ -3,14 +3,13 @@
 #---------------------------------#
 
 # version format
-version: 0.3.3.{build}
+version: 0.3.4.{build}
 
 # branches to build
 branches:
   # whitelist
   only:
     - master
-    - fix-crash-at-launch
 
 # Do not build on tags
 skip_tags: true

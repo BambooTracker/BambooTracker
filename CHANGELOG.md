@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.3.4 (2020-01-29)
 ### Added
 - [#179] - Jump to previous/next order or pattern by forward/backward mouse button (thanks [@Midi-In])
 - [#178] - View-based horizontal scroll in the order list and the pattern editor (thanks [@Midi-In])
@@ -21,8 +23,10 @@
 - [#172], [#173] - Check MIDI in api (thanks [@OPNA2608], [@jpcima], [@papiezak])
 - Fix drawing of pattern editor and order list
 - Fix jamming ignorance in FM & SSG editor using key layouts except QWERTY
+- [#180] - Fix crash at startup (thanks [@papiezak], [@Ikalou])
 
 [@Midi-In]: https://github.com/Midi-In
+[@Ikalou]: https://github.com/Ikalou
 
 [#172]: https://github.com/rerrahkr/BambooTracker/issues/172
 [#173]: https://github.com/rerrahkr/BambooTracker/pull/173
@@ -30,6 +34,7 @@
 [#176]: https://github.com/rerrahkr/BambooTracker/issues/176
 [#179]: https://github.com/rerrahkr/BambooTracker/issues/179
 [#178]: https://github.com/rerrahkr/BambooTracker/issues/178
+[#180]: https://github.com/rerrahkr/BambooTracker/issues/180
 
 ## v0.3.3 (2019-12-17)
 ### Fixed

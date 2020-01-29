@@ -1663,21 +1663,21 @@
         <translation type="vanished">Style</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="128"/>
-        <location filename="../../gui/mainwindow.cpp" line="618"/>
-        <location filename="../../gui/mainwindow.cpp" line="682"/>
-        <location filename="../../gui/mainwindow.cpp" line="1151"/>
-        <location filename="../../gui/mainwindow.cpp" line="1490"/>
-        <location filename="../../gui/mainwindow.cpp" line="1492"/>
-        <location filename="../../gui/mainwindow.cpp" line="1518"/>
-        <location filename="../../gui/mainwindow.cpp" line="2193"/>
-        <location filename="../../gui/mainwindow.cpp" line="2315"/>
+        <location filename="../../gui/mainwindow.cpp" line="136"/>
+        <location filename="../../gui/mainwindow.cpp" line="617"/>
+        <location filename="../../gui/mainwindow.cpp" line="681"/>
+        <location filename="../../gui/mainwindow.cpp" line="1150"/>
+        <location filename="../../gui/mainwindow.cpp" line="1489"/>
+        <location filename="../../gui/mainwindow.cpp" line="1491"/>
+        <location filename="../../gui/mainwindow.cpp" line="1517"/>
+        <location filename="../../gui/mainwindow.cpp" line="2192"/>
+        <location filename="../../gui/mainwindow.cpp" line="2314"/>
         <source>Untitled</source>
         <translation>Sans titre</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="244"/>
-        <location filename="../../gui/mainwindow.cpp" line="2656"/>
+        <location filename="../../gui/mainwindow.cpp" line="2655"/>
         <source>Groove</source>
         <translation>Groove</translation>
     </message>
@@ -2329,40 +2329,40 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="150"/>
+        <location filename="../../gui/mainwindow.cpp" line="158"/>
         <source>Octave</source>
         <translation>Octave</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="381"/>
-        <location filename="../../gui/mainwindow.cpp" line="1358"/>
+        <location filename="../../gui/mainwindow.cpp" line="1357"/>
         <source>Octave: %1</source>
         <translation>Octave : %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="131"/>
-        <location filename="../../gui/mainwindow.cpp" line="621"/>
-        <location filename="../../gui/mainwindow.cpp" line="685"/>
-        <location filename="../../gui/mainwindow.cpp" line="2196"/>
-        <location filename="../../gui/mainwindow.cpp" line="2318"/>
+        <location filename="../../gui/mainwindow.cpp" line="139"/>
+        <location filename="../../gui/mainwindow.cpp" line="620"/>
+        <location filename="../../gui/mainwindow.cpp" line="684"/>
+        <location filename="../../gui/mainwindow.cpp" line="2195"/>
+        <location filename="../../gui/mainwindow.cpp" line="2317"/>
         <source>Save changes to %1?</source>
         <translation>Sauvegarder les modifications dans %1 ?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1426"/>
-        <location filename="../../gui/mainwindow.cpp" line="1476"/>
-        <location filename="../../gui/mainwindow.cpp" line="1569"/>
+        <location filename="../../gui/mainwindow.cpp" line="1425"/>
+        <location filename="../../gui/mainwindow.cpp" line="1475"/>
+        <location filename="../../gui/mainwindow.cpp" line="1568"/>
         <location filename="../../gui/mainwindow.hpp" line="266"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="808"/>
+        <location filename="../../gui/mainwindow.cpp" line="807"/>
         <source>Instrument %1</source>
         <translation>Instrument %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="913"/>
+        <location filename="../../gui/mainwindow.cpp" line="912"/>
         <source>Open instrument</source>
         <translation>Ouvrir l&apos;instrument</translation>
     </message>
@@ -2371,74 +2371,74 @@
         <translation type="vanished">Le chargement de l&apos;instrument a échoué.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="967"/>
+        <location filename="../../gui/mainwindow.cpp" line="966"/>
         <source>Save instrument</source>
         <translation>Sauvegarder l&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1001"/>
+        <location filename="../../gui/mainwindow.cpp" line="1000"/>
         <source>Open bank</source>
         <translation>Ouvrir la banque</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1037"/>
+        <location filename="../../gui/mainwindow.cpp" line="1036"/>
         <source>Select instruments to load:</source>
         <translation>Sélectionnez les instruments à charger :</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1507"/>
-        <location filename="../../gui/mainwindow.cpp" line="1733"/>
+        <location filename="../../gui/mainwindow.cpp" line="1506"/>
+        <location filename="../../gui/mainwindow.cpp" line="1732"/>
         <source>No instrument</source>
         <translation>Pas d&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1303"/>
+        <location filename="../../gui/mainwindow.cpp" line="1302"/>
         <source>Standard</source>
         <translation>Standard</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="164"/>
+        <location filename="../../gui/mainwindow.cpp" line="172"/>
         <source>Step highlight 1st</source>
         <translation>1er intervalle en surbrillance</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="178"/>
+        <location filename="../../gui/mainwindow.cpp" line="186"/>
         <source>2nd</source>
         <translation>2nd</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="903"/>
-        <location filename="../../gui/mainwindow.cpp" line="969"/>
+        <location filename="../../gui/mainwindow.cpp" line="902"/>
+        <location filename="../../gui/mainwindow.cpp" line="968"/>
         <source>BambooTracker instrument (*.bti)</source>
         <translation>Instrument BambooTracker (*.bti)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="904"/>
+        <location filename="../../gui/mainwindow.cpp" line="903"/>
         <source>DefleMask preset (*.dmp)</source>
         <translation>Préréglage DefleMask (*.dmp)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="905"/>
+        <location filename="../../gui/mainwindow.cpp" line="904"/>
         <source>TFM Music Maker instrument (*.tfi)</source>
         <translation>Instrument TFM Music Maker (*.tfi)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="906"/>
+        <location filename="../../gui/mainwindow.cpp" line="905"/>
         <source>VGM Music Maker instrument (*.vgi)</source>
         <translation>Instrument VGM Music Maker (*.vgi)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="907"/>
+        <location filename="../../gui/mainwindow.cpp" line="906"/>
         <source>WOPN instrument (*.opni)</source>
         <translation>Instrument WOPN (*.opni)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="908"/>
+        <location filename="../../gui/mainwindow.cpp" line="907"/>
         <source>Gens KMod dump (*.y12)</source>
         <translation>Décharge Gens KMod (*.y12)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="909"/>
+        <location filename="../../gui/mainwindow.cpp" line="908"/>
         <source>MVSTracker instrument (*.ins)</source>
         <translation>Instrument MVSTracker (*.ins)</translation>
     </message>
@@ -2447,149 +2447,149 @@
         <translation type="vanished">Fichier instrument BambooTracker (*.bti)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="996"/>
-        <location filename="../../gui/mainwindow.cpp" line="1086"/>
+        <location filename="../../gui/mainwindow.cpp" line="995"/>
+        <location filename="../../gui/mainwindow.cpp" line="1085"/>
         <source>BambooTracker bank (*.btb)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="997"/>
+        <location filename="../../gui/mainwindow.cpp" line="996"/>
         <source>WOPN bank (*.wopn)</source>
         <translation>Banque WOPN (*.wopn)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1080"/>
+        <location filename="../../gui/mainwindow.cpp" line="1079"/>
         <source>Select instruments to save:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1085"/>
+        <location filename="../../gui/mainwindow.cpp" line="1084"/>
         <source>Save bank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1181"/>
+        <location filename="../../gui/mainwindow.cpp" line="1180"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1186"/>
+        <location filename="../../gui/mainwindow.cpp" line="1185"/>
         <source>Custom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1191"/>
+        <location filename="../../gui/mainwindow.cpp" line="1190"/>
         <source>PC-9821 with PC-9801-86</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1196"/>
+        <location filename="../../gui/mainwindow.cpp" line="1195"/>
         <source>PC-9821 with Speak Board</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1201"/>
+        <location filename="../../gui/mainwindow.cpp" line="1200"/>
         <source>PC-88VA2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1206"/>
+        <location filename="../../gui/mainwindow.cpp" line="1205"/>
         <source>NEC PC-8801mkIISR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1304"/>
+        <location filename="../../gui/mainwindow.cpp" line="1303"/>
         <source>FM3ch expanded</source>
         <translation>FM3canaux étendu</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1427"/>
+        <location filename="../../gui/mainwindow.cpp" line="1426"/>
         <source>Could not initialize MIDI input.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1536"/>
+        <location filename="../../gui/mainwindow.cpp" line="1535"/>
         <source>module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1537"/>
+        <location filename="../../gui/mainwindow.cpp" line="1536"/>
         <source>s98</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1538"/>
+        <location filename="../../gui/mainwindow.cpp" line="1537"/>
         <source>vgm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1539"/>
+        <location filename="../../gui/mainwindow.cpp" line="1538"/>
         <source>wav</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1540"/>
+        <location filename="../../gui/mainwindow.cpp" line="1539"/>
         <source>bank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1541"/>
+        <location filename="../../gui/mainwindow.cpp" line="1540"/>
         <source>instrument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1546"/>
+        <location filename="../../gui/mainwindow.cpp" line="1545"/>
         <source>Failed to load the %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1553"/>
+        <location filename="../../gui/mainwindow.cpp" line="1552"/>
         <source>Failed to export to %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1556"/>
+        <location filename="../../gui/mainwindow.cpp" line="1555"/>
         <source>Failed to save the %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1562"/>
+        <location filename="../../gui/mainwindow.cpp" line="1561"/>
         <source>Could not load the %1 properly. Please make sure that you have the latest version of BambooTracker.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1566"/>
+        <location filename="../../gui/mainwindow.cpp" line="1565"/>
         <source>Could not load the %1. It may be corrupted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1735"/>
+        <location filename="../../gui/mainwindow.cpp" line="1734"/>
         <source>Instrument: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2274"/>
-        <location filename="../../gui/mainwindow.cpp" line="2335"/>
+        <location filename="../../gui/mainwindow.cpp" line="2273"/>
+        <location filename="../../gui/mainwindow.cpp" line="2334"/>
         <source>BambooTracker module (*.btm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2441"/>
+        <location filename="../../gui/mainwindow.cpp" line="2440"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2500"/>
+        <location filename="../../gui/mainwindow.cpp" line="2499"/>
         <source>VGM file (*.vgm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2559"/>
+        <location filename="../../gui/mainwindow.cpp" line="2558"/>
         <source>S98 file (*.s98)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2714"/>
+        <location filename="../../gui/mainwindow.cpp" line="2713"/>
         <source>Do you want to remove all duplicate instruments?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2634,43 +2634,43 @@
         <translation type="vanished">Instrument : </translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1992"/>
+        <location filename="../../gui/mainwindow.cpp" line="1991"/>
         <source>Do you want to change song properties?</source>
         <translation>Voulez-vous modifier les propriétés du morceau ?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2067"/>
+        <location filename="../../gui/mainwindow.cpp" line="2066"/>
         <source>Change to jam mode</source>
         <translation>Passage en mode jeu</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2068"/>
+        <location filename="../../gui/mainwindow.cpp" line="2067"/>
         <source>Change to edit mode</source>
         <translation>Passage en mode édition</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2089"/>
+        <location filename="../../gui/mainwindow.cpp" line="2088"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1476"/>
+        <location filename="../../gui/mainwindow.cpp" line="1475"/>
         <source>Failed to backup module.</source>
         <translation>La sauvegarde du module a échoué.</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="929"/>
-        <location filename="../../gui/mainwindow.cpp" line="1050"/>
+        <location filename="../../gui/mainwindow.cpp" line="928"/>
+        <location filename="../../gui/mainwindow.cpp" line="1049"/>
         <source>The number of instruments has reached the upper limit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2092"/>
+        <location filename="../../gui/mainwindow.cpp" line="2091"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2272"/>
+        <location filename="../../gui/mainwindow.cpp" line="2271"/>
         <source>Save module</source>
         <translation>Sauvegarder le module</translation>
     </message>
@@ -2679,17 +2679,17 @@
         <translation type="vanished">Fichier de module BambooTracker (*.btm)</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2334"/>
+        <location filename="../../gui/mainwindow.cpp" line="2333"/>
         <source>Open module</source>
         <translation>Ouvrir le module</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2400"/>
+        <location filename="../../gui/mainwindow.cpp" line="2399"/>
         <source>Do you want to remove all unused instruments?</source>
         <translation>Voulez-vous supprimer tous les instruments inutilisés ?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2421"/>
+        <location filename="../../gui/mainwindow.cpp" line="2420"/>
         <source>Do you want to remove all unused patterns?</source>
         <translation>Voulez-vous supprimer tous les motifs inutilisés ?</translation>
     </message>
@@ -2698,15 +2698,15 @@
         <translation type="vanished">Exporter en wav</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2439"/>
-        <location filename="../../gui/mainwindow.cpp" line="2446"/>
+        <location filename="../../gui/mainwindow.cpp" line="2438"/>
+        <location filename="../../gui/mainwindow.cpp" line="2445"/>
         <source>Export to WAV</source>
         <translation>Exporter en WAV</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2447"/>
-        <location filename="../../gui/mainwindow.cpp" line="2506"/>
-        <location filename="../../gui/mainwindow.cpp" line="2565"/>
+        <location filename="../../gui/mainwindow.cpp" line="2446"/>
+        <location filename="../../gui/mainwindow.cpp" line="2505"/>
+        <location filename="../../gui/mainwindow.cpp" line="2564"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -2719,8 +2719,8 @@
         <translation type="vanished">Exporter en vgm</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2498"/>
-        <location filename="../../gui/mainwindow.cpp" line="2505"/>
+        <location filename="../../gui/mainwindow.cpp" line="2497"/>
+        <location filename="../../gui/mainwindow.cpp" line="2504"/>
         <source>Export to VGM</source>
         <translation>Exporter en VGM</translation>
     </message>
@@ -2733,8 +2733,8 @@
         <translation type="vanished">Exporter en s98</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2557"/>
-        <location filename="../../gui/mainwindow.cpp" line="2564"/>
+        <location filename="../../gui/mainwindow.cpp" line="2556"/>
+        <location filename="../../gui/mainwindow.cpp" line="2563"/>
         <source>Export to S98</source>
         <translation>Exporter en S98</translation>
     </message>
@@ -2898,53 +2898,53 @@
 <context>
     <name>OrderListPanel</name>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1001"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1002"/>
         <source>&amp;Insert Order</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">&amp;Insérer un ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1004"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1005"/>
         <source>&amp;Remove Order</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">Supp&amp;rimer l&apos;ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1007"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1008"/>
         <source>&amp;Duplicate Order</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">&amp;Dupliquer l&apos;ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1010"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1011"/>
         <source>&amp;Clone Patterns</source>
         <translation>&amp;Cloner les motifs</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1012"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1013"/>
         <source>Clone &amp;Order</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">Cloner l&apos;&amp;ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1015"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1016"/>
         <source>Move Order &amp;Up</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">Déplacer l&apos;ordre vers le ha&amp;ut</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1018"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1019"/>
         <source>Move Order Do&amp;wn</source>
         <translatorcomment>Incertitude à propos de la traduction adéquate pour &quot;order&quot;</translatorcomment>
         <translation type="unfinished">Déplacer l&apos;ordre vers le &amp;bas</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1022"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1023"/>
         <source>Cop&amp;y</source>
         <translation>Cop&amp;ier</translation>
     </message>
     <message>
-        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1025"/>
+        <location filename="../../gui/order_list_editor/order_list_panel.cpp" line="1026"/>
         <source>&amp;Paste</source>
         <translation>Co&amp;ller</translation>
     </message>
@@ -2952,7 +2952,7 @@
 <context>
     <name>PatternEditorPanel</name>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1552"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1557"/>
         <source>Invalid effect</source>
         <translation>Effet invalide</translation>
     </message>
@@ -3041,134 +3041,134 @@
         <translation type="vanished">Mxyy - Délai de volume , x : compte (1-F), yy : volume (00-FF)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1881"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1886"/>
         <source>&amp;Undo</source>
         <translation>Ann&amp;uler</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1887"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1892"/>
         <source>&amp;Redo</source>
         <translation>&amp;Rétablir</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1894"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1899"/>
         <source>&amp;Copy</source>
         <translation>&amp;Copier</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1897"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1902"/>
         <source>Cu&amp;t</source>
         <translation>Cou&amp;per</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1900"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1905"/>
         <source>&amp;Paste</source>
         <translation>C&amp;oller</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1903"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1908"/>
         <source>Paste Specia&amp;l</source>
         <translation>Collage spécia&amp;l</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1905"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1910"/>
         <source>&amp;Mix</source>
         <translation>&amp;Mélange</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1907"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1912"/>
         <source>&amp;Overwrite</source>
         <translation>&amp;Écraser</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1909"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1914"/>
         <source>&amp;Erase</source>
         <translation>&amp;Effacer</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1911"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1916"/>
         <source>Select &amp;All</source>
         <translation>Sélectionner &amp;tout</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1914"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1919"/>
         <source>Patter&amp;n</source>
         <translation>&amp;Motif</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1916"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1921"/>
         <source>&amp;Interpolate</source>
         <translation>&amp;Interpoler</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1918"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1923"/>
         <source>&amp;Reverse</source>
         <translation>Inve&amp;rser</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1920"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1925"/>
         <source>R&amp;eplace Instrument</source>
         <translation>R&amp;emplacer l&apos;instrument</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1923"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1928"/>
         <source>E&amp;xpand</source>
         <translation>É&amp;tendre</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1925"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1930"/>
         <source>S&amp;hrink</source>
         <translation>Réd&amp;uire</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1928"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1933"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Transposer</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1930"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1935"/>
         <source>&amp;Decrease Note</source>
         <translation>&amp;Diminuer la note</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1932"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1937"/>
         <source>&amp;Increase Note</source>
         <translation>Aug&amp;menter la note</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1934"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1939"/>
         <source>D&amp;ecrease Octave</source>
         <translation>Diminu&amp;er l&apos;octave</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1936"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1941"/>
         <source>I&amp;ncrease Octave</source>
         <translation>A&amp;ugmenter l&apos;octave</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1939"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2823"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1944"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2828"/>
         <source>To&amp;ggle Track</source>
         <translation>&amp;Basculer la piste</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1941"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2825"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1946"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2830"/>
         <source>&amp;Solo Track</source>
         <translation>Piste &amp;solo</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1944"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1949"/>
         <source>Expand E&amp;ffect Column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1946"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1951"/>
         <source>Shrin&amp;k Effect Column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2827"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2832"/>
         <source>&amp;Unmute All Tracks</source>
         <translation>Rendre a&amp;udibles toutes les pistes</translation>
     </message>

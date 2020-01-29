@@ -2695,139 +2695,139 @@
 <context>
     <name>PatternEditorPanel</name>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1552"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1557"/>
         <source>Invalid effect</source>
         <translation>無効なエフェクト</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1881"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1886"/>
         <source>&amp;Undo</source>
         <translation>元に戻す(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1887"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1892"/>
         <source>&amp;Redo</source>
         <translation>やり直し(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1894"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1899"/>
         <source>&amp;Copy</source>
         <translation>コピー(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1897"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1902"/>
         <source>Cu&amp;t</source>
         <translation>切り取り(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1900"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1905"/>
         <source>&amp;Paste</source>
         <translation>貼り付け(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1903"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1908"/>
         <source>Paste Specia&amp;l</source>
         <translation>特殊貼り付け(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1905"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1910"/>
         <source>&amp;Mix</source>
         <translation>ミックス(&amp;M)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1907"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1912"/>
         <source>&amp;Overwrite</source>
         <translation>上書き(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1909"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1914"/>
         <source>&amp;Erase</source>
         <translation>削除(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1911"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1916"/>
         <source>Select &amp;All</source>
         <translation>全選択(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1914"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1919"/>
         <source>Patter&amp;n</source>
         <translation>パターン(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1916"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1921"/>
         <source>&amp;Interpolate</source>
         <translation>補完(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1918"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1923"/>
         <source>&amp;Reverse</source>
         <translation>反転(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1920"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1925"/>
         <source>R&amp;eplace Instrument</source>
         <translation>インストゥルメント置換(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1923"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1928"/>
         <source>E&amp;xpand</source>
         <translation>拡大(&amp;X)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1925"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1930"/>
         <source>S&amp;hrink</source>
         <translation>縮小(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1928"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1933"/>
         <source>&amp;Transpose</source>
         <translation>トランスポーズ(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1930"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1935"/>
         <source>&amp;Decrease Note</source>
         <translation>半音を下げる(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1932"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1937"/>
         <source>&amp;Increase Note</source>
         <translation>半音上げる(&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1934"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1939"/>
         <source>D&amp;ecrease Octave</source>
         <translation>1オクターブ下げる(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1936"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1941"/>
         <source>I&amp;ncrease Octave</source>
         <translation>1オクターブ上げる(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1939"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2823"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1944"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2828"/>
         <source>To&amp;ggle Track</source>
         <translation>トラックを演奏(&amp;G)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1941"/>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2825"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1946"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2830"/>
         <source>&amp;Solo Track</source>
         <translation>トラックをソロ演奏(&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1944"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1949"/>
         <source>Expand E&amp;ffect Column</source>
         <translation>エフェクト列の拡張(&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1946"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="1951"/>
         <source>Shrin&amp;k Effect Column</source>
         <translation>エフェクト列の縮小(&amp;K)</translation>
     </message>
     <message>
-        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2827"/>
+        <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2832"/>
         <source>&amp;Unmute All Tracks</source>
         <translation>全トラックのミュート解除(&amp;U)</translation>
     </message>
