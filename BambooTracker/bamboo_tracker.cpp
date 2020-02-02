@@ -739,6 +739,9 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			case SoundSource::SSG:
 				opnaCtrl_->keyOffSSG(offData.channelInSource, true);
 				break;
+			case SoundSource::ADPCM:
+				// TODO: adpcm
+				break;
 			default:
 				break;
 			}
@@ -782,6 +785,9 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(tmpInst))
 				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
 			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
+			break;
+		case SoundSource::ADPCM:
+			// TODO: adpcm
 			break;
 		default:
 			break;
@@ -841,6 +847,9 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 				break;
 			case SoundSource::SSG:
 				opnaCtrl_->keyOffSSG(data.channelInSource, true);
+				break;
+			case SoundSource::ADPCM:
+				// TODO: adpcm
 				break;
 			default:
 				break;
@@ -928,6 +937,9 @@ void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
 	case SoundSource::DRUM:
 		muteStateDrum_.at(static_cast<size_t>(ch)) = isMute;
 		if (isPlaySong()) opnaCtrl_->setMuteDrumState(ch, isMute);
+		break;
+	case SoundSource::ADPCM:
+		// TODO: adpcm
 		break;
 	}
 }

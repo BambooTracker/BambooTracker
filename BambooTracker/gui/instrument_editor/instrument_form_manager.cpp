@@ -53,6 +53,9 @@ void InstrumentFormManager::remove(int n)
 		onInstrumentSSGArpeggioNumberChanged();
 		onInstrumentSSGPitchNumberChanged();
 		break;
+	case SoundSource::ADPCM:
+		// TODO: adpcm
+		break;
 	default:
 		break;
 	}

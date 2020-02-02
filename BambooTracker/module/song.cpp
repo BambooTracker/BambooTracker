@@ -24,6 +24,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 		for (int i = 0; i < 6; ++i) {
 			tracks_.emplace_back(i + 9, SoundSource::DRUM, i, defaultPatternSize);
 		}
+		tracks_.emplace_back(15, SoundSource::ADPCM, 0, defaultPatternSize);
 		break;
 	case SongType::FM3chExpanded:
 		tracks_.reserve(18);
@@ -38,6 +39,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 		for (int i = 0; i < 6; ++i) {
 			tracks_.emplace_back(i + 12, SoundSource::DRUM, i, defaultPatternSize);
 		}
+		tracks_.emplace_back(18, SoundSource::ADPCM, 0, defaultPatternSize);
 		break;
 	}
 }

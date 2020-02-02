@@ -118,6 +118,11 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 		insts_.at(static_cast<size_t>(instNum)) = std::move(ssg);
 		break;
 	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
+		break;
+	}
 	default:
 		break;
 	}
@@ -160,6 +165,11 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 			arpSSG_.at(static_cast<size_t>(ssg->getArpeggioNumber()))->registerUserInstrument(num);
 		if (ssg->getPitchEnabled())
 			ptSSG_.at(static_cast<size_t>(ssg->getPitchNumber()))->registerUserInstrument(num);
+		break;
+	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
 		break;
 	}
 	default:
@@ -207,6 +217,11 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		if (refSsg->getArpeggioEnabled()) setInstrumentSSGArpeggioEnabled(cloneInstNum, true);
 		setInstrumentSSGPitch(cloneInstNum, refSsg->getPitchNumber());
 		if (refSsg->getPitchEnabled()) setInstrumentSSGPitchEnabled(cloneInstNum, true);
+		break;
+	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
 		break;
 	}
 	default:
@@ -316,6 +331,11 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			cloneSsg->setPitchNumber(ptNum);
 			ptSSG_[static_cast<size_t>(ptNum)]->registerUserInstrument(cloneInstNum);
 		}
+		break;
+	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
 		break;
 	}
 	default:
@@ -500,6 +520,11 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 			ptSSG_.at(static_cast<size_t>(ssg->getPitchNumber()))->deregisterUserInstrument(instNum);
 		break;
 	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
+		break;
+	}
 	default:
 		break;
 	}
@@ -660,6 +685,11 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 				}
 				case SoundSource::DRUM:
 					break;
+				case SoundSource::ADPCM:
+				{
+					// TODO: adpcm
+					break;
+				}
 				}
 			}
 			++j;

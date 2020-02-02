@@ -799,9 +799,10 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		else {
 			int volLim = 0;	// Dummy set
 			switch (src) {
-			case SoundSource::FM:	volLim = 0x80;	break;
-			case SoundSource::SSG:	volLim = 0x10;	break;
-			case SoundSource::DRUM:	volLim = 0x20;	break;
+			case SoundSource::FM:		volLim = 0x80;	break;
+			case SoundSource::SSG:		volLim = 0x10;	break;
+			case SoundSource::DRUM:		volLim = 0x20;	break;
+			case SoundSource::ADPCM:	volLim = 0x100;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
 			if (src == SoundSource::FM && vol < volLim && config_->getReverseFMVolumeOrder()) {
@@ -942,6 +943,9 @@ void PatternEditorPanel::drawHeaders(int maxWidth, int trackSize)
 			case 4:	srcName = "Tom";		break;
 			case 5:	srcName = "Rim shot";	break;
 			}
+			break;
+		case SoundSource::ADPCM:
+			srcName = "ADPCM";
 			break;
 		}
 		painter.drawText(x, headerFontAscent_, srcName);

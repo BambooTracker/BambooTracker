@@ -798,6 +798,7 @@ void MainWindow::addInstrument()
 	switch (bt_->getCurrentTrackAttribute().source) {
 	case SoundSource::FM:
 	case SoundSource::SSG:
+	case SoundSource::ADPCM:
 	{
 		auto& list = ui->instrumentListWidget;
 
@@ -1717,6 +1718,11 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		instForms_->onInstrumentSSGPitchNumberChanged();
 		break;
 	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
+		break;
+	}
 	default:
 		break;
 	}
@@ -1738,11 +1744,8 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 		ui->actionLoad_From_File->setEnabled(false);
 		ui->actionImport_From_Bank_File->setEnabled(false);
 	}
-	else {
-		switch (bt_->getCurrentTrackAttribute().source) {
-		case SoundSource::DRUM:	ui->actionNew_Instrument->setEnabled(false);	break;
-		default:	break;
-		}
+	else if (bt_->getCurrentTrackAttribute().source == SoundSource::DRUM) {
+		ui->actionNew_Instrument->setEnabled(false);
 	}
 	bool isEnabled = (num != -1);
 	ui->actionRemove_Instrument->setEnabled(isEnabled);

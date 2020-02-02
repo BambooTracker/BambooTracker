@@ -320,6 +320,11 @@ void PlaybackManager::stepProcess()
 			isNoteDelayDrum_.at(uch) = isDelay;
 			break;
 		}
+		case SoundSource::ADPCM:
+		{
+			// TODO: adpcm
+			break;
+		}
 		}
 	}
 
@@ -359,6 +364,9 @@ void PlaybackManager::stepProcess()
 			else {
 				executeDrumStepEvents(step, attrib.channelInSource);
 			}
+			break;
+		case SoundSource::ADPCM:
+			// TODO: adpcm
 			break;
 		}
 	}
@@ -1056,9 +1064,10 @@ void PlaybackManager::tickProcess(int rest)
 						.getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		int ch = attrib.channelInSource;
 		switch (attrib.source) {
-		case SoundSource::FM:	checkFMDelayEventsInTick(curStep, ch);		break;
-		case SoundSource::SSG:	checkSSGDelayEventsInTick(curStep, ch);		break;
-		case SoundSource::DRUM:	checkDrumDelayEventsInTick(curStep, ch);	break;
+		case SoundSource::FM:		checkFMDelayEventsInTick(curStep, ch);		break;
+		case SoundSource::SSG:		checkSSGDelayEventsInTick(curStep, ch);		break;
+		case SoundSource::DRUM:		checkDrumDelayEventsInTick(curStep, ch);	break;
+		case SoundSource::ADPCM:	/* TODO: adpcm */	break;
 		}
 
 		if (rest == 1 && nextReadOrder_ != -1 && attrib.source == SoundSource::FM) {
@@ -1690,6 +1699,11 @@ void PlaybackManager::retrieveChannelStates()
 						break;
 					}
 				}
+				break;
+			}
+			case SoundSource::ADPCM:
+			{
+				// TODO: adpcm
 				break;
 			}
 			}

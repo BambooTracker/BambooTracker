@@ -31,7 +31,7 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 {
 	std::vector<JamKeyData> keyDataList;
 	JamKeyData onData{ key, channel, source, keyNum };
-
+	// TODO: adpcm
 	std::deque<int>* unusedCh = nullptr;
 	switch (source) {
 	case SoundSource::FM:	unusedCh = &unusedChFM_;	break;
@@ -100,6 +100,7 @@ JamKeyData JamManager::keyOff(JamKey key, int keyNum)
 		switch (keyData.source) {
 		case SoundSource::FM:	unusedChFM_.push_front(keyData.channelInSource);	break;
 		case SoundSource::SSG:	unusedChSSG_.push_front(keyData.channelInSource);	break;
+		case SoundSource::ADPCM:	/* TODO: adpcm*/	break;
 		default:	break;
 		}
 		keyOnTable_.erase(it);

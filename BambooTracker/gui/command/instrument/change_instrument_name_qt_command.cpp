@@ -39,6 +39,11 @@ void ChangeInstrumentNameQtCommand::redo()
 		ssgForm->setWindowTitle(title);
 		break;
 	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
+		break;
+	}
 	default:
 		break;
 	}
@@ -62,6 +67,11 @@ void ChangeInstrumentNameQtCommand::undo()
 	{
 		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form);
 		ssgForm->setWindowTitle(title);
+		break;
+	}
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
 		break;
 	}
 	default:

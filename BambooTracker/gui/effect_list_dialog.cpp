@@ -13,6 +13,7 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	ui->tableWidget->setColumnWidth(0, 50);
 	ui->tableWidget->setColumnWidth(1, 100);
 
+	// TODO: adpcm
 	addRow(EffectType::Arpeggio,
 		   static_cast<int>(SoundSource::FM) | static_cast<int>(SoundSource::SSG));
 	addRow(EffectType::PortamentoUp,
@@ -96,6 +97,7 @@ void EffectListDialog::addRow(EffectType effect, int flag)
 	if (flag & static_cast<int>(SoundSource::FM)) type += "FM";
 	if (flag & static_cast<int>(SoundSource::SSG)) type = type + (type.isEmpty() ? "" : ", ") + "SSG";
 	if (flag & static_cast<int>(SoundSource::DRUM)) type = type + (type.isEmpty() ? "" : ", ") + "Drums";
+	if (flag & static_cast<int>(SoundSource::ADPCM)) type = type + (type.isEmpty() ? "" : ", ") + "ADPCM";
 	ui->tableWidget->setItem(row, 1, new QTableWidgetItem(type));
 	ui->tableWidget->setItem(row, 2, new QTableWidgetItem(EffectDescription::getEffectDescription(effect)));
 }

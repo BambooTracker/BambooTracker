@@ -123,6 +123,11 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		}
 		case SoundSource::DRUM:
 			break;
+		case SoundSource::ADPCM:
+		{
+			// TODO: adpcm
+			break;
+		}
 		}
 	}
 	ctr.writeUint32(instOfs, ctr.size() - instOfs);
@@ -594,6 +599,11 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 	}
 	case SoundSource::DRUM:
 		break;
+	case SoundSource::ADPCM:
+	{
+		// TODO: adpcm
+		break;
+	}
 	}
 
 	ctr.writeUint32(instPropOfs, ctr.size() - instPropOfs);

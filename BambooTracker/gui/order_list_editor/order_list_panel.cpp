@@ -610,13 +610,16 @@ void OrderListPanel::drawHeaders(int maxWidth, int trackSize)
 			break;
 		case SoundSource::DRUM:
 			switch (attrib.channelInSource) {
-			case 0:	str = "BD";	break;
-			case 1:	str = "SD";	break;
+			case 0:	str = "BD";		break;
+			case 1:	str = "SD";		break;
 			case 2:	str = "TOP";	break;
-			case 3:	str = "HH";	break;
+			case 3:	str = "HH";		break;
 			case 4:	str = "TOM";	break;
 			case 5:	str = "RIM";	break;
 			}
+			break;
+		case SoundSource::ADPCM:
+			str = "AP";
 			break;
 		}
 

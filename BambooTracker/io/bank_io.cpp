@@ -80,6 +80,11 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 			}
 			case SoundSource::DRUM:
 				break;
+			case SoundSource::ADPCM:
+			{
+				// TODO: adpcm
+				break;
+			}
 			}
 			ctr.writeUint32(iOfs, ctr.size() - iOfs);
 		}
