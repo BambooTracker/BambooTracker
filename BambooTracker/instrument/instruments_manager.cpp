@@ -120,7 +120,25 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		// TODO: adpcm check correct
+		auto adpcm = std::make_shared<InstrumentADPCM>(instNum, name, this);
+		int wfNum = findFirstFreePlainWaveFormADPCM();
+		if (wfNum == -1) wfNum = static_cast<int>(wfADPCM_.size()) - 1;
+		adpcm->setWaveFormNumber(wfNum);
+		wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
+		int envNum = findFirstFreePlainEnvelopeADPCM();
+		if (envNum == -1) envNum = static_cast<int>(envADPCM_.size()) - 1;
+		adpcm->setEnvelopeNumber(envNum);
+		adpcm->setEnvelopeEnabled(false);
+		int arpNum = findFirstFreePlainArpeggioADPCM();
+		if (arpNum == -1) arpNum = static_cast<int>(arpADPCM_.size()) - 1;
+		adpcm->setArpeggioNumber(arpNum);
+		adpcm->setArpeggioEnabled(false);
+		int ptNum = findFirstFreePlainPitchADPCM();
+		if (ptNum == -1) ptNum = static_cast<int>(ptADPCM_.size()) - 1;
+		adpcm->setPitchNumber(ptNum);
+		adpcm->setPitchEnabled(false);
+		insts_.at(static_cast<size_t>(instNum)) = std::move(adpcm);
 		break;
 	}
 	default:
@@ -169,7 +187,15 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		// TODO: adpcm check correct
+		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(num)]);
+		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveFormNumber()))->registerUserInstrument(num);
+		if (adpcm->getEnvelopeEnabled())
+			envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->registerUserInstrument(num);
+		if (adpcm->getArpeggioEnabled())
+			arpADPCM_.at(static_cast<size_t>(adpcm->getArpeggioNumber()))->registerUserInstrument(num);
+		if (adpcm->getPitchEnabled())
+			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->registerUserInstrument(num);
 		break;
 	}
 	default:
@@ -221,7 +247,16 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		// TODO: adpcm check correct
+		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
+		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
+		setInstrumentADPCMWaveForm(cloneInstNum, refAdpcm->getWaveFormNumber());
+		setInstrumentADPCMEnvelope(cloneInstNum, refAdpcm->getEnvelopeNumber());
+		if (refAdpcm->getEnvelopeEnabled()) setInstrumentADPCMEnvelopeEnabled(cloneInstNum, true);
+		setInstrumentADPCMArpeggio(cloneInstNum, refAdpcm->getArpeggioNumber());
+		if (refAdpcm->getArpeggioEnabled()) setInstrumentADPCMArpeggioEnabled(cloneInstNum, true);
+		setInstrumentADPCMPitch(cloneInstNum, refAdpcm->getPitchNumber());
+		if (refAdpcm->getPitchEnabled()) setInstrumentADPCMPitchEnabled(cloneInstNum, true);
 		break;
 	}
 	default:
@@ -335,7 +370,32 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		// TODO: adpcm check correct
+		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
+		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
+
+		wfADPCM_[static_cast<size_t>(cloneAdpcm->getWaveFormNumber())]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
+		int wfNum = cloneADPCMWaveForm(refAdpcm->getWaveFormNumber());
+		cloneAdpcm->setWaveFormNumber(wfNum);
+		wfADPCM_[static_cast<size_t>(wfNum)]->registerUserInstrument(cloneInstNum);
+		if (refAdpcm->getEnvelopeEnabled()) {
+			cloneAdpcm->setEnvelopeEnabled(true);
+			int envNum = cloneADPCMEnvelope(refAdpcm->getEnvelopeNumber());
+			cloneAdpcm->setEnvelopeNumber(envNum);
+			envADPCM_[static_cast<size_t>(envNum)]->registerUserInstrument(cloneInstNum);
+		}
+		if (refAdpcm->getArpeggioEnabled()) {
+			cloneAdpcm->setArpeggioEnabled(true);
+			int arpNum = cloneADPCMArpeggio(refAdpcm->getArpeggioNumber());
+			cloneAdpcm->setArpeggioNumber(arpNum);
+			arpADPCM_[static_cast<size_t>(arpNum)]->registerUserInstrument(cloneInstNum);
+		}
+		if (refAdpcm->getPitchEnabled()) {
+			cloneAdpcm->setPitchEnabled(true);
+			int ptNum = cloneADPCMPitch(refAdpcm->getPitchNumber());
+			cloneAdpcm->setPitchNumber(ptNum);
+			ptADPCM_[static_cast<size_t>(ptNum)]->registerUserInstrument(cloneInstNum);
+		}
 		break;
 	}
 	default:
@@ -483,6 +543,62 @@ int InstrumentsManager::cloneSSGPitch(int srcNum)
 	return cloneNum;
 }
 
+int InstrumentsManager::cloneADPCMWaveForm(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& wf : wfADPCM_) {
+		if (!wf->isUserInstrument()) {
+			wf = wfADPCM_.at(static_cast<size_t>(srcNum))->clone();
+			wf->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
+int InstrumentsManager::cloneADPCMEnvelope(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& env : envADPCM_) {
+		if (!env->isUserInstrument()) {
+			env = envADPCM_.at(static_cast<size_t>(srcNum))->clone();
+			env->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
+int InstrumentsManager::cloneADPCMArpeggio(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& arp : arpADPCM_) {
+		if (!arp->isUserInstrument()) {
+			arp = arpADPCM_.at(static_cast<size_t>(srcNum))->clone();
+			arp->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
+int InstrumentsManager::cloneADPCMPitch(int srcNum)
+{
+	int cloneNum = 0;
+	for (auto& pt : ptADPCM_) {
+		if (!pt->isUserInstrument()) {
+			pt = ptADPCM_.at(static_cast<size_t>(srcNum))->clone();
+			pt->setNumber(cloneNum);
+			break;
+		}
+		++cloneNum;
+	}
+	return cloneNum;
+}
+
 std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
 	switch (insts_.at(static_cast<size_t>(instNum))->getSoundSource()) {
@@ -522,7 +638,15 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		// TODO: adpcm check correct
+		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)]);
+		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveFormNumber()))->deregisterUserInstrument(instNum);
+		if (adpcm->getEnvelopeEnabled())
+			envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->deregisterUserInstrument(instNum);
+		if (adpcm->getArpeggioEnabled())
+			arpADPCM_.at(static_cast<size_t>(adpcm->getArpeggioNumber()))->deregisterUserInstrument(instNum);
+		if (adpcm->getPitchEnabled())
+			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->deregisterUserInstrument(instNum);
 		break;
 	}
 	default:
@@ -564,9 +688,15 @@ void InstrumentsManager::clearAll()
 
 		wfSSG_[i] = std::make_shared<CommandSequence>(i);
 		tnSSG_[i] = std::make_shared<CommandSequence>(i);
-		envSSG_[i] = std::make_shared<CommandSequence>(i,SequenceType::NO_SEQUENCE_TYPE, 15);
+		envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 15);
 		arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
 		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+
+		// TODO: adpcm check correct
+		wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
+		envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
+		arpADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+		ptADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 	}
 }
 
@@ -635,6 +765,16 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
 		if (!ptSSG_[i]->isUserInstrument())
 			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+
+		// TODO: adpcm check correct
+		if (!wfADPCM_[i]->isUserInstrument())
+			wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
+		if (!envADPCM_[i]->isUserInstrument())
+			envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
+		if (!arpADPCM_[i]->isUserInstrument())
+			arpADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+		if (!ptADPCM_[i]->isUserInstrument())
+			ptADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 	}
 }
 
@@ -687,7 +827,13 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 					break;
 				case SoundSource::ADPCM:
 				{
-					// TODO: adpcm
+					// TODO: adpcm check correct
+					if (equalPropertiesADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(base),
+										  std::dynamic_pointer_cast<InstrumentADPCM>(tgt))) {
+						group.push_back(tgtIdx);
+						idcs.erase(idcs.begin() + j);
+						continue;
+					}
 					break;
 				}
 				}
@@ -1779,6 +1925,448 @@ bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, st
 		return false;
 	if (a->getPitchEnabled()
 			&& *ptSSG_[a->getPitchNumber()].get() != *ptSSG_[b->getPitchNumber()].get())
+		return false;
+	return true;
+}
+
+//----- ADPCM methods -----
+void InstrumentsManager::setInstrumentADPCMWaveForm(int instNum, int wfNum)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	wfADPCM_.at(static_cast<size_t>(adpcm->getWaveFormNumber()))->deregisterUserInstrument(instNum);
+	wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
+
+	adpcm->setWaveFormNumber(wfNum);
+}
+
+int InstrumentsManager::getInstrumentADPCMWaveForm(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getWaveFormNumber();
+}
+
+void InstrumentsManager::setWaveFormADPCMRootKeyNumber(int wfNum, int n)
+{
+	wfADPCM_.at(static_cast<size_t>(wfNum))->setRootKeyNumber(n);
+}
+
+int InstrumentsManager::getWaveFormADPCMRootKeyNumber(int wfNum) const
+{
+	return wfADPCM_.at(static_cast<size_t>(wfNum))->getRootKeyNumber();
+}
+
+void InstrumentsManager::setWaveFormADPCMRootDeltaN(int wfNum, int dn)
+{
+	wfADPCM_.at(static_cast<size_t>(wfNum))->setRootDeltaN(dn);
+}
+
+int InstrumentsManager::getWaveFormADPCMRootDeltaN(int wfNum) const
+{
+	return wfADPCM_.at(static_cast<size_t>(wfNum))->getRootDeltaN();
+}
+
+void InstrumentsManager::setWaveFormADPCMRepeatEnabled(int wfNum, bool enabled)
+{
+	wfADPCM_.at(static_cast<size_t>(wfNum))->setRepeatEnabled(enabled);
+}
+
+bool InstrumentsManager::isWaveFormADPCMRepeatable(int wfNum) const
+{
+	return wfADPCM_.at(static_cast<size_t>(wfNum))->isRepeatable();
+}
+
+void InstrumentsManager::storeWaveFormADPCMSamples(int wfNum, std::vector<uint8_t> samples)
+{
+	wfADPCM_.at(static_cast<size_t>(wfNum))->storeSamples(samples);
+}
+
+std::vector<uint8_t> InstrumentsManager::getWaveFormADPCMSamples(int wfNum) const
+{
+	return wfADPCM_.at(static_cast<size_t>(wfNum))->getSamples();
+}
+
+std::vector<int> InstrumentsManager::getWaveFormADPCMUsers(int wfNum) const
+{
+	return wfADPCM_.at(static_cast<size_t>(wfNum))->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getWaveFormADPCMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& wf : wfADPCM_) {
+		if (wf->isUserInstrument() || wf->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeWaveFormADPCM() const
+{
+	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(),
+								 [](const std::shared_ptr<WaveformADPCM>& wf) { return wf->isUserInstrument(); });
+	return (it == wfADPCM_.end() ? -1 : std::distance(wfADPCM_.begin(), it));
+}
+
+int InstrumentsManager::findFirstFreePlainWaveFormADPCM() const
+{
+	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(),
+								 [](const std::shared_ptr<WaveformADPCM>& wf) { return (wf->isUserInstrument() || wf->isEdited()); });
+	return (it == wfADPCM_.end() ? -1 : std::distance(wfADPCM_.begin(), it));
+}
+
+void InstrumentsManager::setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	adpcm->setEnvelopeEnabled(enabled);
+	if (enabled)
+		envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->registerUserInstrument(instNum);
+	else
+		envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentADPCMEnvelopeEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)))->getEnvelopeEnabled();
+}
+
+void InstrumentsManager::setInstrumentADPCMEnvelope(int instNum, int envNum)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	if (adpcm->getEnvelopeEnabled()) {
+		envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->deregisterUserInstrument(instNum);
+		envADPCM_.at(static_cast<size_t>(envNum))->registerUserInstrument(instNum);
+	}
+	adpcm->setEnvelopeNumber(envNum);
+}
+
+int InstrumentsManager::getInstrumentADPCMEnvelope(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getEnvelopeNumber();
+}
+
+void InstrumentsManager::addEnvelopeADPCMSequenceCommand(int envNum, int type, int data)
+{
+	envADPCM_.at(static_cast<size_t>(envNum))->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removeEnvelopeADPCMSequenceCommand(int envNum)
+{
+	envADPCM_.at(static_cast<size_t>(envNum))->removeSequenceCommand();
+}
+
+void InstrumentsManager::setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data)
+{
+	envADPCM_.at(static_cast<size_t>(envNum))->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandSequenceUnit> InstrumentsManager::getEnvelopeADPCMSequence(int envNum)
+{
+	return envADPCM_.at(static_cast<size_t>(envNum))->getSequence();
+}
+
+void InstrumentsManager::setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	envADPCM_.at(static_cast<size_t>(envNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getEnvelopeADPCMLoops(int envNum) const
+{
+	return envADPCM_.at(static_cast<size_t>(envNum))->getLoops();
+}
+
+void InstrumentsManager::setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin)
+{
+	envADPCM_.at(static_cast<size_t>(envNum))->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getEnvelopeADPCMRelease(int envNum) const
+{
+	return envADPCM_.at(static_cast<size_t>(envNum))->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getEnvelopeADPCMIterator(int envNum) const
+{
+	return envADPCM_.at(static_cast<size_t>(envNum))->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getEnvelopeADPCMUsers(int envNum) const
+{
+	return envADPCM_.at(static_cast<size_t>(envNum))->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getEnvelopeADPCMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& env : envADPCM_) {
+		if (env->isUserInstrument() || env->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeEnvelopeADPCM() const
+{
+	auto&& it = std::find_if_not(envADPCM_.begin(), envADPCM_.end(),
+								 [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); });
+	return (it == envADPCM_.end() ? -1 : std::distance(envADPCM_.begin(), it));
+}
+
+int InstrumentsManager::findFirstFreePlainEnvelopeADPCM() const
+{
+	auto&& it = std::find_if_not(envADPCM_.begin(), envADPCM_.end(),
+								 [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); });
+	return (it == envADPCM_.end() ? -1 : std::distance(envADPCM_.begin(), it));
+}
+
+void InstrumentsManager::setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	adpcm->setArpeggioEnabled(enabled);
+	if (enabled)
+		arpADPCM_.at(static_cast<size_t>(adpcm->getArpeggioNumber()))->registerUserInstrument(instNum);
+	else
+		arpADPCM_.at(static_cast<size_t>(adpcm->getArpeggioNumber()))->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentADPCMArpeggioEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)))->getArpeggioEnabled();
+}
+
+void InstrumentsManager::setInstrumentADPCMArpeggio(int instNum, int arpNum)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	if (adpcm->getArpeggioEnabled()) {
+		arpADPCM_.at(static_cast<size_t>(adpcm->getArpeggioNumber()))->deregisterUserInstrument(instNum);
+		arpADPCM_.at(static_cast<size_t>(arpNum))->registerUserInstrument(instNum);
+	}
+	adpcm->setArpeggioNumber(arpNum);
+}
+
+int InstrumentsManager::getInstrumentADPCMArpeggio(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getArpeggioNumber();
+}
+
+void InstrumentsManager::setArpeggioADPCMType(int arpNum, SequenceType type)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->setType(type);
+}
+
+SequenceType InstrumentsManager::getArpeggioADPCMType(int arpNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(arpNum))->getType();
+}
+
+void InstrumentsManager::addArpeggioADPCMSequenceCommand(int arpNum, int type, int data)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removeArpeggioADPCMSequenceCommand(int arpNum)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->removeSequenceCommand();
+}
+
+void InstrumentsManager::setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandSequenceUnit> InstrumentsManager::getArpeggioADPCMSequence(int arpNum)
+{
+	return arpADPCM_.at(static_cast<size_t>(arpNum))->getSequence();
+}
+
+void InstrumentsManager::setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getArpeggioADPCMLoops(int arpNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(arpNum))->getLoops();
+}
+
+void InstrumentsManager::setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getArpeggioADPCMRelease(int arpNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(arpNum))->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioADPCMIterator(int arpNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(arpNum))->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getArpeggioADPCMUsers(int arpNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(arpNum))->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getArpeggioADPCMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& arp : arpADPCM_) {
+		if (arp->isUserInstrument() || arp->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
+int InstrumentsManager::findFirstFreeArpeggioADPCM() const
+{
+	auto&& it = std::find_if_not(arpADPCM_.begin(), arpADPCM_.end(),
+								 [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); });
+	return (it == arpADPCM_.end() ? -1 : std::distance(arpADPCM_.begin(), it));
+}
+
+int InstrumentsManager::findFirstFreePlainArpeggioADPCM() const
+{
+	auto&& it = std::find_if_not(arpADPCM_.begin(), arpADPCM_.end(),
+								 [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); });
+	return (it == arpADPCM_.end() ? -1 : std::distance(arpADPCM_.begin(), it));
+}
+
+void InstrumentsManager::setInstrumentADPCMPitchEnabled(int instNum, bool enabled)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	adpcm->setPitchEnabled(enabled);
+	if (enabled)
+		ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->registerUserInstrument(instNum);
+	else
+		ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->deregisterUserInstrument(instNum);
+}
+
+bool InstrumentsManager::getInstrumentADPCMPitchEnabled(int instNum) const
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)))->getPitchEnabled();
+}
+
+void InstrumentsManager::setInstrumentADPCMPitch(int instNum, int ptNum)
+{
+	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
+	if (adpcm->getPitchEnabled()) {
+		ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->deregisterUserInstrument(instNum);
+		ptADPCM_.at(static_cast<size_t>(ptNum))->registerUserInstrument(instNum);
+	}
+	adpcm->setPitchNumber(ptNum);
+}
+
+int InstrumentsManager::getInstrumentADPCMPitch(int instNum)
+{
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getPitchNumber();
+}
+
+void InstrumentsManager::setPitchADPCMType(int ptNum, SequenceType type)
+{
+	ptADPCM_.at(static_cast<size_t>(ptNum))->setType(type);
+}
+
+SequenceType InstrumentsManager::getPitchADPCMType(int ptNum) const
+{
+	return ptADPCM_.at(static_cast<size_t>(ptNum))->getType();
+}
+
+void InstrumentsManager::addPitchADPCMSequenceCommand(int ptNum, int type, int data)
+{
+	ptADPCM_.at(static_cast<size_t>(ptNum))->addSequenceCommand(type, data);
+}
+
+void InstrumentsManager::removePitchADPCMSequenceCommand(int ptNum)
+{
+	ptADPCM_.at(static_cast<size_t>(ptNum))->removeSequenceCommand();
+}
+
+void InstrumentsManager::setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data)
+{
+	ptADPCM_.at(static_cast<size_t>(ptNum))->setSequenceCommand(cnt, type, data);
+}
+
+std::vector<CommandSequenceUnit> InstrumentsManager::getPitchADPCMSequence(int ptNum)
+{
+	return ptADPCM_.at(static_cast<size_t>(ptNum))->getSequence();
+}
+
+void InstrumentsManager::setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	ptADPCM_.at(static_cast<size_t>(ptNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+}
+
+std::vector<Loop> InstrumentsManager::getPitchADPCMLoops(int ptNum) const
+{
+	return ptADPCM_.at(static_cast<size_t>(ptNum))->getLoops();
+}
+
+void InstrumentsManager::setPitchADPCMRelease(int ptNum, ReleaseType type, int begin)
+{
+	ptADPCM_.at(static_cast<size_t>(ptNum))->setRelease(type, begin);
+}
+
+Release InstrumentsManager::getPitchADPCMRelease(int ptNum) const
+{
+	return ptADPCM_.at(static_cast<size_t>(ptNum))->getRelease();
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchADPCMIterator(int ptNum) const
+{
+	return ptADPCM_.at(static_cast<size_t>(ptNum))->getIterator();
+}
+
+std::vector<int> InstrumentsManager::getPitchADPCMUsers(int ptNum) const
+{
+	return ptADPCM_.at(static_cast<size_t>(ptNum))->getUserInstruments();
+}
+
+std::vector<int> InstrumentsManager::getPitchADPCMEntriedIndices() const
+{
+	std::vector<int> idcs;
+	int n = 0;
+	for (auto& pt : ptADPCM_) {
+		if (pt->isUserInstrument() || pt->isEdited()) idcs.push_back(n);
+		++n;
+	}
+	return idcs;
+}
+
+int InstrumentsManager::findFirstFreePitchADPCM() const
+{
+	auto&& it = std::find_if_not(ptADPCM_.begin(), ptADPCM_.end(),
+								 [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); });
+	return (it == ptADPCM_.end() ? -1 : std::distance(ptADPCM_.begin(), it));
+}
+
+int InstrumentsManager::findFirstFreePlainPitchADPCM() const
+{
+	auto&& it = std::find_if_not(ptADPCM_.begin(), ptADPCM_.end(),
+								 [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); });
+	return (it == ptADPCM_.end() ? -1 : std::distance(ptADPCM_.begin(), it));
+}
+
+bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<InstrumentADPCM> a, std::shared_ptr<InstrumentADPCM> b) const
+{
+	if (*wfADPCM_[a->getWaveFormNumber()].get() != *wfADPCM_[b->getWaveFormNumber()].get())
+		return false;
+	if (a->getEnvelopeEnabled() != b->getEnvelopeEnabled())
+		return false;
+	if (a->getEnvelopeEnabled()
+			&& *envADPCM_[a->getEnvelopeNumber()].get() != *envADPCM_[b->getEnvelopeNumber()].get())
+		return false;
+	if (a->getArpeggioEnabled() != b->getArpeggioEnabled())
+		return false;
+	if (a->getArpeggioEnabled()
+			&& *arpADPCM_[a->getArpeggioNumber()].get() != *arpADPCM_[b->getArpeggioNumber()].get())
+		return false;
+	if (a->getPitchEnabled() != b->getPitchEnabled())
+		return false;
+	if (a->getPitchEnabled()
+			&& *ptADPCM_[a->getPitchNumber()].get() != *ptADPCM_[b->getPitchNumber()].get())
 		return false;
 	return true;
 }

@@ -47,6 +47,7 @@ SOURCES += \
     gui/instrument_editor/arpeggio_macro_editor.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
+    instrument/waveform_adpcm.cpp \
     main.cpp \
     gui/mainwindow.cpp \
     chips/chip.cpp \
@@ -227,6 +228,7 @@ HEADERS += \
     chips/opna.hpp \
     chips/resampler.hpp \
     bamboo_tracker.hpp \
+    instrument/waveform_adpcm.hpp \
     module/effect.hpp \
     playback.hpp \
     stream/audio_stream.hpp \

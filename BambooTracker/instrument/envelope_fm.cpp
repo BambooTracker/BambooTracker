@@ -3,7 +3,7 @@
 constexpr EnvelopeFM::FMOperator EnvelopeFM::DEF_OP[4];
 
 EnvelopeFM::EnvelopeFM(int num)
-	: AbstractInstrumentProperty (num),
+	: AbstractInstrumentProperty(num),
 	  al_(DEF_AL),
 	  fb_(DEF_FB)
 {
@@ -63,8 +63,8 @@ void EnvelopeFM::initParamMap()
 	};
 }
 
-EnvelopeFM::EnvelopeFM(const EnvelopeFM &other)
-	: AbstractInstrumentProperty (other)
+EnvelopeFM::EnvelopeFM(const EnvelopeFM& other)
+	: AbstractInstrumentProperty(other)
 {
 	al_ = other.al_;
 	fb_ = other.fb_;

@@ -8,6 +8,7 @@
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
+#include "waveform_adpcm.hpp"
 #include "command_sequence.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
@@ -17,6 +18,7 @@ class InstrumentFM;
 enum class FMEnvelopeParameter;
 class EnvelopeFM;
 class InstrumentSSG;
+class InstrumentADPCM;
 
 class InstrumentsManager
 {
@@ -259,4 +261,92 @@ private:
 	int cloneSSGPitch(int srcNum);
 
 	bool equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, std::shared_ptr<InstrumentSSG> b) const;
+
+	//----- ADPCM methods -----
+public:
+	void setInstrumentADPCMWaveForm(int instNum, int wfNum);
+	int getInstrumentADPCMWaveForm(int instNum);
+	void setWaveFormADPCMRootKeyNumber(int wfNum, int n);
+	int getWaveFormADPCMRootKeyNumber(int wfNum) const;
+	void setWaveFormADPCMRootDeltaN(int wfNum, int dn);
+	int getWaveFormADPCMRootDeltaN(int wfNum) const;
+	void setWaveFormADPCMRepeatEnabled(int wfNum, bool enabled);
+	bool isWaveFormADPCMRepeatable(int wfNum) const;
+	void storeWaveFormADPCMSamples(int wfNum, std::vector<uint8_t> samples);
+	std::vector<uint8_t> getWaveFormADPCMSamples(int wfNum) const;
+	std::vector<int> getWaveFormADPCMUsers(int wfNum) const;
+	std::vector<int> getWaveFormADPCMEntriedIndices() const;
+	int findFirstFreeWaveFormADPCM() const;
+	int findFirstFreePlainWaveFormADPCM() const;
+
+	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
+	bool getInstrumentADPCMEnvelopeEnabled(int instNum) const;
+	void setInstrumentADPCMEnvelope(int instNum, int envNum);
+	int getInstrumentADPCMEnvelope(int instNum);
+	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
+	void removeEnvelopeADPCMSequenceCommand(int envNum);
+	void setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data);
+	std::vector<CommandSequenceUnit> getEnvelopeADPCMSequence(int envNum);
+	void setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getEnvelopeADPCMLoops(int envNum) const;
+	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
+	Release getEnvelopeADPCMRelease(int envNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getEnvelopeADPCMIterator(int envNum) const;
+	std::vector<int> getEnvelopeADPCMUsers(int envNum) const;
+	std::vector<int> getEnvelopeADPCMEntriedIndices() const;
+	int findFirstFreeEnvelopeADPCM() const;
+	int findFirstFreePlainEnvelopeADPCM() const;
+
+	void setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled);
+	bool getInstrumentADPCMArpeggioEnabled(int instNum) const;
+	void setInstrumentADPCMArpeggio(int instNum, int arpNum);
+	int getInstrumentADPCMArpeggio(int instNum);
+	void setArpeggioADPCMType(int arpNum, SequenceType type);
+	SequenceType getArpeggioADPCMType(int arpNum) const;
+	void addArpeggioADPCMSequenceCommand(int arpNum, int type, int data);
+	void removeArpeggioADPCMSequenceCommand(int arpNum);
+	void setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data);
+	std::vector<CommandSequenceUnit> getArpeggioADPCMSequence(int arpNum);
+	void setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getArpeggioADPCMLoops(int arpNum) const;
+	void setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin);
+	Release getArpeggioADPCMRelease(int arpNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getArpeggioADPCMIterator(int arpNum) const;
+	std::vector<int> getArpeggioADPCMUsers(int arpNum) const;
+	std::vector<int> getArpeggioADPCMEntriedIndices() const;
+	int findFirstFreeArpeggioADPCM() const;
+	int findFirstFreePlainArpeggioADPCM() const;
+
+	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
+	bool getInstrumentADPCMPitchEnabled(int instNum) const;
+	void setInstrumentADPCMPitch(int instNum, int ptNum);
+	int getInstrumentADPCMPitch(int instNum);
+	void setPitchADPCMType(int ptNum, SequenceType type);
+	SequenceType getPitchADPCMType(int ptNum) const;
+	void addPitchADPCMSequenceCommand(int ptNum, int type, int data);
+	void removePitchADPCMSequenceCommand(int ptNum);
+	void setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data);
+	std::vector<CommandSequenceUnit> getPitchADPCMSequence(int ptNum);
+	void setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getPitchADPCMLoops(int ptNum) const;
+	void setPitchADPCMRelease(int ptNum, ReleaseType type, int begin);
+	Release getPitchADPCMRelease(int ptNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getPitchADPCMIterator(int ptNum) const;
+	std::vector<int> getPitchADPCMUsers(int ptNum) const;
+	std::vector<int> getPitchADPCMEntriedIndices() const;
+	int findFirstFreePitchADPCM() const;
+	int findFirstFreePlainPitchADPCM() const;
+
+private:
+	std::array<std::shared_ptr<WaveformADPCM>, 128> wfADPCM_;
+	std::array<std::shared_ptr<CommandSequence>, 128> envADPCM_;
+	std::array<std::shared_ptr<CommandSequence>, 128> arpADPCM_;
+	std::array<std::shared_ptr<CommandSequence>, 128> ptADPCM_;
+
+	int cloneADPCMWaveForm(int srcNum);
+	int cloneADPCMEnvelope(int srcNum);
+	int cloneADPCMArpeggio(int srcNum);
+	int cloneADPCMPitch(int srcNum);
+
+	bool equalPropertiesADPCM(std::shared_ptr<InstrumentADPCM> a, std::shared_ptr<InstrumentADPCM> b) const;
 };

@@ -29,11 +29,11 @@ private:
 	int amOp_[4];
 	int cnt_;
 
-	static constexpr int DEF_FREQ = 0;
-	static constexpr int DEF_PMS = 0;
-	static constexpr int DEF_AMS = 0;
-	static constexpr int DEF_AM_OP[4] = { 0, 0, 0, 0 };
-	static constexpr int DEF_CNT = 0;
+	static constexpr int DEF_FREQ_ = 0;
+	static constexpr int DEF_PMS_ = 0;
+	static constexpr int DEF_AMS_ = 0;
+	static constexpr int DEF_AM_OP_[4] = { 0, 0, 0, 0 };
+	static constexpr int DEF_CNT_ = 0;
 };
 
 enum class FMLFOParameter

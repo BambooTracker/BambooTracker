@@ -610,3 +610,190 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getPitchSequenceIterat
 {
 	return owner_->getPitchSSGIterator(ptNum_);
 }
+
+/****************************************/
+
+InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManager* owner)
+	: AbstractInstrument(number, SoundSource::ADPCM, name, owner),
+	  wfNum_(0),
+	  envEnabled_(false),
+	  envNum_(0),
+	  arpEnabled_(false),
+	  arpNum_(0),
+	  ptEnabled_(false),
+	  ptNum_(0)
+{
+}
+
+std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
+{
+	std::unique_ptr<InstrumentADPCM> c = std::make_unique<InstrumentADPCM>(number_, name_, owner_);
+	c->setWaveFormNumber(wfNum_);
+	c->setEnvelopeEnabled(envEnabled_);
+	c->setEnvelopeNumber(envNum_);
+	c->setArpeggioEnabled(arpEnabled_);
+	c->setArpeggioNumber(arpNum_);
+	c->setPitchEnabled(ptEnabled_);
+	c->setPitchNumber(ptNum_);
+	return std::move(c);
+}
+
+void InstrumentADPCM::setWaveFormNumber(int n)
+{
+	wfNum_ = n;
+}
+
+int InstrumentADPCM::getWaveFormNumber() const
+{
+	return wfNum_;
+}
+
+int InstrumentADPCM::getWaveFormRootKeyNumber() const
+{
+	return owner_->getWaveFormADPCMRootKeyNumber(wfNum_);
+}
+
+int InstrumentADPCM::getWaveFormRootDeltaN() const
+{
+	return owner_->getWaveFormADPCMRootDeltaN(wfNum_);
+}
+
+bool InstrumentADPCM::isWaveFormRepeatable() const
+{
+	return owner_->isWaveFormADPCMRepeatable(wfNum_);
+}
+
+std::vector<uint8_t> InstrumentADPCM::getWaveFormSamples() const
+{
+	return owner_->getWaveFormADPCMSamples(wfNum_);
+}
+
+void InstrumentADPCM::setEnvelopeEnabled(bool enabled)
+{
+	envEnabled_ = enabled;
+}
+
+bool InstrumentADPCM::getEnvelopeEnabled() const
+{
+	return envEnabled_;
+}
+
+void InstrumentADPCM::setEnvelopeNumber(int n)
+{
+	envNum_ = n;
+}
+
+int InstrumentADPCM::getEnvelopeNumber() const
+{
+	return envNum_;
+}
+
+std::vector<CommandSequenceUnit> InstrumentADPCM::getEnvelopeSequence() const
+{
+	return owner_->getEnvelopeADPCMSequence(envNum_);
+}
+
+std::vector<Loop> InstrumentADPCM::getEnvelopeLoops() const
+{
+	return owner_->getEnvelopeADPCMLoops(envNum_);
+}
+
+Release InstrumentADPCM::getEnvelopeRelease() const
+{
+	return owner_->getEnvelopeADPCMRelease(envNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getEnvelopeSequenceIterator() const
+{
+	return owner_->getEnvelopeADPCMIterator(envNum_);
+}
+
+void InstrumentADPCM::setArpeggioEnabled(bool enabled)
+{
+	arpEnabled_ = enabled;
+}
+
+bool InstrumentADPCM::getArpeggioEnabled() const
+{
+	return arpEnabled_;
+}
+
+void InstrumentADPCM::setArpeggioNumber(int n)
+{
+	arpNum_ = n;
+}
+
+int InstrumentADPCM::getArpeggioNumber() const
+{
+	return arpNum_;
+}
+
+SequenceType InstrumentADPCM::getArpeggioType() const
+{
+	return owner_->getArpeggioADPCMType(arpNum_);
+}
+
+std::vector<CommandSequenceUnit> InstrumentADPCM::getArpeggioSequence() const
+{
+	return owner_->getArpeggioADPCMSequence(arpNum_);
+}
+
+std::vector<Loop> InstrumentADPCM::getArpeggioLoops() const
+{
+	return owner_->getArpeggioADPCMLoops(arpNum_);
+}
+
+Release InstrumentADPCM::getArpeggioRelease() const
+{
+	return owner_->getArpeggioADPCMRelease(arpNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getArpeggioSequenceIterator() const
+{
+	return owner_->getArpeggioADPCMIterator(arpNum_);
+}
+
+void InstrumentADPCM::setPitchEnabled(bool enabled)
+{
+	ptEnabled_ = enabled;
+}
+
+bool InstrumentADPCM::getPitchEnabled() const
+{
+	return ptEnabled_;
+}
+
+void InstrumentADPCM::setPitchNumber(int n)
+{
+	ptNum_ = n;
+}
+
+int InstrumentADPCM::getPitchNumber() const
+{
+	return ptNum_;
+}
+
+SequenceType InstrumentADPCM::getPitchType() const
+{
+	return owner_->getPitchADPCMType(ptNum_);
+}
+
+std::vector<CommandSequenceUnit> InstrumentADPCM::getPitchSequence() const
+{
+	return owner_->getPitchADPCMSequence(ptNum_);
+}
+
+std::vector<Loop> InstrumentADPCM::getPitchLoops() const
+{
+	return owner_->getPitchADPCMLoops(ptNum_);
+}
+
+Release InstrumentADPCM::getPitchRelease() const
+{
+	return owner_->getPitchADPCMRelease(ptNum_);
+}
+
+std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getPitchSequenceIterator() const
+{
+	return owner_->getPitchADPCMIterator(ptNum_);
+}

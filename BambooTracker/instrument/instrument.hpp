@@ -166,3 +166,56 @@ private:
 	bool ptEnabled_;
 	int ptNum_;
 };
+
+
+class InstrumentADPCM : public AbstractInstrument
+{
+public:
+	InstrumentADPCM(int number, std::string name, InstrumentsManager* owner);
+	std::unique_ptr<AbstractInstrument> clone() override;
+
+	void setWaveFormNumber(int n);
+	int getWaveFormNumber() const;
+	int getWaveFormRootKeyNumber() const;
+	int getWaveFormRootDeltaN() const;
+	bool isWaveFormRepeatable() const;
+	std::vector<uint8_t> getWaveFormSamples() const;
+
+	void setEnvelopeEnabled(bool enabled);
+	bool getEnvelopeEnabled() const;
+	void setEnvelopeNumber(int n);
+	int getEnvelopeNumber() const;
+	std::vector<CommandSequenceUnit> getEnvelopeSequence() const;
+	std::vector<Loop> getEnvelopeLoops() const;
+	Release getEnvelopeRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSequenceIterator() const;
+
+	void setArpeggioEnabled(bool enabled);
+	bool getArpeggioEnabled() const;
+	void setArpeggioNumber(int n);
+	int getArpeggioNumber() const;
+	SequenceType getArpeggioType() const;
+	std::vector<CommandSequenceUnit> getArpeggioSequence() const;
+	std::vector<Loop> getArpeggioLoops() const;
+	Release getArpeggioRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
+
+	void setPitchEnabled(bool enabled);
+	bool getPitchEnabled() const;
+	void setPitchNumber(int n);
+	int getPitchNumber() const;
+	SequenceType getPitchType() const;
+	std::vector<CommandSequenceUnit> getPitchSequence() const;
+	std::vector<Loop> getPitchLoops() const;
+	Release getPitchRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;
+
+private:
+	int wfNum_;
+	bool envEnabled_;
+	int envNum_;
+	bool arpEnabled_;
+	int arpNum_;
+	bool ptEnabled_;
+	int ptNum_;
+};
