@@ -107,14 +107,14 @@ public:
 	InstrumentSSG(int number, std::string name, InstrumentsManager* owner);
 	std::unique_ptr<AbstractInstrument> clone() override;
 
-	void setWaveFormEnabled(bool enabled);
-	bool getWaveFormEnabled() const;
-	void setWaveFormNumber(int n);
-	int getWaveFormNumber() const;
-	std::vector<CommandSequenceUnit> getWaveFormSequence() const;
-	std::vector<Loop> getWaveFormLoops() const;
-	Release getWaveFormRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getWaveFormSequenceIterator() const;
+	void setWaveformEnabled(bool enabled);
+	bool getWaveformEnabled() const;
+	void setWaveformNumber(int n);
+	int getWaveformNumber() const;
+	std::vector<CommandSequenceUnit> getWaveformSequence() const;
+	std::vector<Loop> getWaveformLoops() const;
+	Release getWaveformRelease() const;
+	std::unique_ptr<CommandSequence::Iterator> getWaveformSequenceIterator() const;
 
 	void setToneNoiseEnabled(bool enabled);
 	bool getToneNoiseEnabled() const;
@@ -174,12 +174,12 @@ public:
 	InstrumentADPCM(int number, std::string name, InstrumentsManager* owner);
 	std::unique_ptr<AbstractInstrument> clone() override;
 
-	void setWaveFormNumber(int n);
-	int getWaveFormNumber() const;
-	int getWaveFormRootKeyNumber() const;
-	int getWaveFormRootDeltaN() const;
-	bool isWaveFormRepeatable() const;
-	std::vector<uint8_t> getWaveFormSamples() const;
+	void setWaveformNumber(int n);
+	int getWaveformNumber() const;
+	int getWaveformRootKeyNumber() const;
+	int getWaveformRootDeltaN() const;
+	bool isWaveformRepeatable() const;
+	std::vector<uint8_t> getWaveformSamples() const;
 
 	void setEnvelopeEnabled(bool enabled);
 	bool getEnvelopeEnabled() const;

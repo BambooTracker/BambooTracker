@@ -47,7 +47,7 @@ void InstrumentFormManager::remove(int n)
 		onInstrumentFMPitchNumberChanged();
 		break;
 	case SoundSource::SSG:
-		onInstrumentSSGWaveFormNumberChanged();
+		onInstrumentSSGWaveformNumberChanged();
 		onInstrumentSSGEnvelopeNumberChanged();
 		onInstrumentSSGToneNoiseNumberChanged();
 		onInstrumentSSGArpeggioNumberChanged();
@@ -210,21 +210,21 @@ void InstrumentFormManager::onInstrumentFMPitchNumberChanged()
 	}
 }
 
-void InstrumentFormManager::onInstrumentSSGWaveFormParameterChanged(int wfNum, int fromInstNum)
+void InstrumentFormManager::onInstrumentSSGWaveformParameterChanged(int wfNum, int fromInstNum)
 {
 	for (auto& pair : map_) {
 		if (pair.first != fromInstNum &&
 				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
-			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onWaveFormParameterChanged(wfNum);
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onWaveformParameterChanged(wfNum);
 		}
 	}
 }
 
-void InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged()
+void InstrumentFormManager::onInstrumentSSGWaveformNumberChanged()
 {
 	for (auto& pair : map_) {
 		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::SSG) {
-			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onWaveFormNumberChanged();
+			qobject_cast<InstrumentEditorSSGForm*>(pair.second.get())->onWaveformNumberChanged();
 		}
 	}
 }

@@ -95,10 +95,10 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	case SoundSource::SSG:
 	{
 		auto ssg = std::make_shared<InstrumentSSG>(instNum, name, this);
-		int wfNum = findFirstFreePlainWaveFormSSG();
+		int wfNum = findFirstFreePlainWaveformSSG();
 		if (wfNum == -1) wfNum = static_cast<int>(wfSSG_.size()) - 1;
-		ssg->setWaveFormNumber(wfNum);
-		ssg->setWaveFormEnabled(false);
+		ssg->setWaveformNumber(wfNum);
+		ssg->setWaveformEnabled(false);
 		int tnNum = findFirstFreePlainToneNoiseSSG();
 		if (tnNum == -1) tnNum = static_cast<int>(tnSSG_.size()) - 1;
 		ssg->setToneNoiseNumber(tnNum);
@@ -122,9 +122,9 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	{
 		// TODO: adpcm check correct
 		auto adpcm = std::make_shared<InstrumentADPCM>(instNum, name, this);
-		int wfNum = findFirstFreePlainWaveFormADPCM();
+		int wfNum = findFirstFreePlainWaveformADPCM();
 		if (wfNum == -1) wfNum = static_cast<int>(wfADPCM_.size()) - 1;
-		adpcm->setWaveFormNumber(wfNum);
+		adpcm->setWaveformNumber(wfNum);
 		wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
 		int envNum = findFirstFreePlainEnvelopeADPCM();
 		if (envNum == -1) envNum = static_cast<int>(envADPCM_.size()) - 1;
@@ -173,8 +173,8 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	case SoundSource::SSG:
 	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(num)]);
-		if (ssg->getWaveFormEnabled())
-			wfSSG_.at(static_cast<size_t>(ssg->getWaveFormNumber()))->registerUserInstrument(num);
+		if (ssg->getWaveformEnabled())
+			wfSSG_.at(static_cast<size_t>(ssg->getWaveformNumber()))->registerUserInstrument(num);
 		if (ssg->getToneNoiseEnabled())
 			tnSSG_.at(static_cast<size_t>(ssg->getToneNoiseNumber()))->registerUserInstrument(num);
 		if (ssg->getEnvelopeEnabled())
@@ -189,7 +189,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	{
 		// TODO: adpcm check correct
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(num)]);
-		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveFormNumber()))->registerUserInstrument(num);
+		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->registerUserInstrument(num);
 		if (adpcm->getEnvelopeEnabled())
 			envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->registerUserInstrument(num);
 		if (adpcm->getArpeggioEnabled())
@@ -233,8 +233,8 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	{
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(cloneInstNum)));
-		setInstrumentSSGWaveForm(cloneInstNum, refSsg->getWaveFormNumber());
-		if (refSsg->getWaveFormEnabled()) setInstrumentSSGWaveFormEnabled(cloneInstNum, true);
+		setInstrumentSSGWaveform(cloneInstNum, refSsg->getWaveformNumber());
+		if (refSsg->getWaveformEnabled()) setInstrumentSSGWaveformEnabled(cloneInstNum, true);
 		setInstrumentSSGToneNoise(cloneInstNum, refSsg->getToneNoiseNumber());
 		if (refSsg->getToneNoiseEnabled()) setInstrumentSSGToneNoiseEnabled(cloneInstNum, true);
 		setInstrumentSSGEnvelope(cloneInstNum, refSsg->getEnvelopeNumber());
@@ -250,7 +250,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		// TODO: adpcm check correct
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
-		setInstrumentADPCMWaveForm(cloneInstNum, refAdpcm->getWaveFormNumber());
+		setInstrumentADPCMWaveform(cloneInstNum, refAdpcm->getWaveformNumber());
 		setInstrumentADPCMEnvelope(cloneInstNum, refAdpcm->getEnvelopeNumber());
 		if (refAdpcm->getEnvelopeEnabled()) setInstrumentADPCMEnvelopeEnabled(cloneInstNum, true);
 		setInstrumentADPCMArpeggio(cloneInstNum, refAdpcm->getArpeggioNumber());
@@ -336,10 +336,10 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(cloneInstNum)));
 
-		if (refSsg->getWaveFormEnabled()) {
-			cloneSsg->setWaveFormEnabled(true);
-			int wfNum = cloneSSGWaveForm(refSsg->getWaveFormNumber());
-			cloneSsg->setWaveFormNumber(wfNum);
+		if (refSsg->getWaveformEnabled()) {
+			cloneSsg->setWaveformEnabled(true);
+			int wfNum = cloneSSGWaveform(refSsg->getWaveformNumber());
+			cloneSsg->setWaveformNumber(wfNum);
 			wfSSG_[static_cast<size_t>(wfNum)]->registerUserInstrument(cloneInstNum);
 		}
 		if (refSsg->getToneNoiseEnabled()) {
@@ -374,9 +374,9 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
 
-		wfADPCM_[static_cast<size_t>(cloneAdpcm->getWaveFormNumber())]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
-		int wfNum = cloneADPCMWaveForm(refAdpcm->getWaveFormNumber());
-		cloneAdpcm->setWaveFormNumber(wfNum);
+		wfADPCM_[static_cast<size_t>(cloneAdpcm->getWaveformNumber())]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
+		int wfNum = cloneADPCMWaveform(refAdpcm->getWaveformNumber());
+		cloneAdpcm->setWaveformNumber(wfNum);
 		wfADPCM_[static_cast<size_t>(wfNum)]->registerUserInstrument(cloneInstNum);
 		if (refAdpcm->getEnvelopeEnabled()) {
 			cloneAdpcm->setEnvelopeEnabled(true);
@@ -473,7 +473,7 @@ int InstrumentsManager::cloneFMPitch(int srcNum)
 	return cloneNum;
 }
 
-int InstrumentsManager::cloneSSGWaveForm(int srcNum)
+int InstrumentsManager::cloneSSGWaveform(int srcNum)
 {
 	int cloneNum = 0;
 	for (auto& wf : wfSSG_) {
@@ -543,7 +543,7 @@ int InstrumentsManager::cloneSSGPitch(int srcNum)
 	return cloneNum;
 }
 
-int InstrumentsManager::cloneADPCMWaveForm(int srcNum)
+int InstrumentsManager::cloneADPCMWaveform(int srcNum)
 {
 	int cloneNum = 0;
 	for (auto& wf : wfADPCM_) {
@@ -624,8 +624,8 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	case SoundSource::SSG:
 	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)]);
-		if (ssg->getWaveFormEnabled())
-			wfSSG_.at(static_cast<size_t>(ssg->getWaveFormNumber()))->deregisterUserInstrument(instNum);
+		if (ssg->getWaveformEnabled())
+			wfSSG_.at(static_cast<size_t>(ssg->getWaveformNumber()))->deregisterUserInstrument(instNum);
 		if (ssg->getToneNoiseEnabled())
 			tnSSG_.at(static_cast<size_t>(ssg->getToneNoiseNumber()))->deregisterUserInstrument(instNum);
 		if (ssg->getEnvelopeEnabled())
@@ -640,7 +640,7 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	{
 		// TODO: adpcm check correct
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)]);
-		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveFormNumber()))->deregisterUserInstrument(instNum);
+		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->deregisterUserInstrument(instNum);
 		if (adpcm->getEnvelopeEnabled())
 			envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->deregisterUserInstrument(instNum);
 		if (adpcm->getArpeggioEnabled())
@@ -1354,87 +1354,87 @@ bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<InstrumentFM> a, std:
 }
 
 //----- SSG methods -----
-void InstrumentsManager::setInstrumentSSGWaveFormEnabled(int instNum, bool enabled)
+void InstrumentsManager::setInstrumentSSGWaveformEnabled(int instNum, bool enabled)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(instNum)));
-	ssg->setWaveFormEnabled(enabled);
+	ssg->setWaveformEnabled(enabled);
 	if (enabled)
-		wfSSG_.at(static_cast<size_t>(ssg->getWaveFormNumber()))->registerUserInstrument(instNum);
+		wfSSG_.at(static_cast<size_t>(ssg->getWaveformNumber()))->registerUserInstrument(instNum);
 	else
-		wfSSG_.at(static_cast<size_t>(ssg->getWaveFormNumber()))->deregisterUserInstrument(instNum);
+		wfSSG_.at(static_cast<size_t>(ssg->getWaveformNumber()))->deregisterUserInstrument(instNum);
 }
 
-bool InstrumentsManager::getInstrumentSSGWaveFormEnabled(int instNum) const
+bool InstrumentsManager::getInstrumentSSGWaveformEnabled(int instNum) const
 {
-	return std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(instNum)))->getWaveFormEnabled();
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(instNum)))->getWaveformEnabled();
 }
 
-void InstrumentsManager::setInstrumentSSGWaveForm(int instNum, int wfNum)
+void InstrumentsManager::setInstrumentSSGWaveform(int instNum, int wfNum)
 {
 	auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(instNum)));
-	if (ssg->getWaveFormEnabled()) {
-		wfSSG_.at(static_cast<size_t>(ssg->getWaveFormNumber()))->deregisterUserInstrument(instNum);
+	if (ssg->getWaveformEnabled()) {
+		wfSSG_.at(static_cast<size_t>(ssg->getWaveformNumber()))->deregisterUserInstrument(instNum);
 		wfSSG_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
 	}
-	ssg->setWaveFormNumber(wfNum);
+	ssg->setWaveformNumber(wfNum);
 }
 
-int InstrumentsManager::getInstrumentSSGWaveForm(int instNum)
+int InstrumentsManager::getInstrumentSSGWaveform(int instNum)
 {
-	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)])->getWaveFormNumber();
+	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)])->getWaveformNumber();
 }
 
-void InstrumentsManager::addWaveFormSSGSequenceCommand(int wfNum, int type, int data)
+void InstrumentsManager::addWaveformSSGSequenceCommand(int wfNum, int type, int data)
 {
 	wfSSG_.at(static_cast<size_t>(wfNum))->addSequenceCommand(type, data);
 }
 
-void InstrumentsManager::removeWaveFormSSGSequenceCommand(int wfNum)
+void InstrumentsManager::removeWaveformSSGSequenceCommand(int wfNum)
 {
 	wfSSG_.at(static_cast<size_t>(wfNum))->removeSequenceCommand();
 }
 
-void InstrumentsManager::setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data)
+void InstrumentsManager::setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data)
 {
 	wfSSG_.at(static_cast<size_t>(wfNum))->setSequenceCommand(cnt, type, data);
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getWaveFormSSGSequence(int wfNum)
+std::vector<CommandSequenceUnit> InstrumentsManager::getWaveformSSGSequence(int wfNum)
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getSequence();
 }
 
-void InstrumentsManager::setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
 {
 	wfSSG_.at(static_cast<size_t>(wfNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
 }
 
-std::vector<Loop> InstrumentsManager::getWaveFormSSGLoops(int wfNum) const
+std::vector<Loop> InstrumentsManager::getWaveformSSGLoops(int wfNum) const
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getLoops();
 }
 
-void InstrumentsManager::setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin)
+void InstrumentsManager::setWaveformSSGRelease(int wfNum, ReleaseType type, int begin)
 {
 	wfSSG_.at(static_cast<size_t>(wfNum))->setRelease(type, begin);
 }
 
-Release InstrumentsManager::getWaveFormSSGRelease(int wfNum) const
+Release InstrumentsManager::getWaveformSSGRelease(int wfNum) const
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getWaveFormSSGIterator(int wfNum) const
+std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getWaveformSSGIterator(int wfNum) const
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getWaveFormSSGUsers(int wfNum) const
+std::vector<int> InstrumentsManager::getWaveformSSGUsers(int wfNum) const
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getUserInstruments();
 }
 
-std::vector<int> InstrumentsManager::getWaveFormSSGEntriedIndices() const
+std::vector<int> InstrumentsManager::getWaveformSSGEntriedIndices() const
 {
 	std::vector<int> idcs;
 	int n = 0;
@@ -1445,14 +1445,14 @@ std::vector<int> InstrumentsManager::getWaveFormSSGEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeWaveFormSSG() const
+int InstrumentsManager::findFirstFreeWaveformSSG() const
 {
 	auto&& it = std::find_if_not(wfSSG_.begin(), wfSSG_.end(),
 								 [](const std::shared_ptr<CommandSequence>& wf) { return wf->isUserInstrument(); });
 	return (it == wfSSG_.end() ? -1 : std::distance(wfSSG_.begin(), it));
 }
 
-int InstrumentsManager::findFirstFreePlainWaveFormSSG() const
+int InstrumentsManager::findFirstFreePlainWaveformSSG() const
 {
 	auto&& it = std::find_if_not(wfSSG_.begin(), wfSSG_.end(),
 								 [](const std::shared_ptr<CommandSequence>& wf) { return (wf->isUserInstrument() || wf->isEdited()); });
@@ -1901,10 +1901,10 @@ int InstrumentsManager::findFirstFreePlainPitchSSG() const
 
 bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, std::shared_ptr<InstrumentSSG> b) const
 {
-	if (a->getWaveFormEnabled() != b->getWaveFormEnabled())
+	if (a->getWaveformEnabled() != b->getWaveformEnabled())
 		return false;
-	if (a->getWaveFormEnabled()
-			&& *wfSSG_[a->getWaveFormNumber()].get() != *wfSSG_[b->getWaveFormNumber()].get())
+	if (a->getWaveformEnabled()
+			&& *wfSSG_[a->getWaveformNumber()].get() != *wfSSG_[b->getWaveformNumber()].get())
 		return false;
 	if (a->getToneNoiseEnabled() != b->getToneNoiseEnabled())
 		return false;
@@ -1930,66 +1930,66 @@ bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, st
 }
 
 //----- ADPCM methods -----
-void InstrumentsManager::setInstrumentADPCMWaveForm(int instNum, int wfNum)
+void InstrumentsManager::setInstrumentADPCMWaveform(int instNum, int wfNum)
 {
 	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
-	wfADPCM_.at(static_cast<size_t>(adpcm->getWaveFormNumber()))->deregisterUserInstrument(instNum);
+	wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->deregisterUserInstrument(instNum);
 	wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
 
-	adpcm->setWaveFormNumber(wfNum);
+	adpcm->setWaveformNumber(wfNum);
 }
 
-int InstrumentsManager::getInstrumentADPCMWaveForm(int instNum)
+int InstrumentsManager::getInstrumentADPCMWaveform(int instNum)
 {
-	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getWaveFormNumber();
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getWaveformNumber();
 }
 
-void InstrumentsManager::setWaveFormADPCMRootKeyNumber(int wfNum, int n)
+void InstrumentsManager::setWaveformADPCMRootKeyNumber(int wfNum, int n)
 {
 	wfADPCM_.at(static_cast<size_t>(wfNum))->setRootKeyNumber(n);
 }
 
-int InstrumentsManager::getWaveFormADPCMRootKeyNumber(int wfNum) const
+int InstrumentsManager::getWaveformADPCMRootKeyNumber(int wfNum) const
 {
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->getRootKeyNumber();
 }
 
-void InstrumentsManager::setWaveFormADPCMRootDeltaN(int wfNum, int dn)
+void InstrumentsManager::setWaveformADPCMRootDeltaN(int wfNum, int dn)
 {
 	wfADPCM_.at(static_cast<size_t>(wfNum))->setRootDeltaN(dn);
 }
 
-int InstrumentsManager::getWaveFormADPCMRootDeltaN(int wfNum) const
+int InstrumentsManager::getWaveformADPCMRootDeltaN(int wfNum) const
 {
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->getRootDeltaN();
 }
 
-void InstrumentsManager::setWaveFormADPCMRepeatEnabled(int wfNum, bool enabled)
+void InstrumentsManager::setWaveformADPCMRepeatEnabled(int wfNum, bool enabled)
 {
 	wfADPCM_.at(static_cast<size_t>(wfNum))->setRepeatEnabled(enabled);
 }
 
-bool InstrumentsManager::isWaveFormADPCMRepeatable(int wfNum) const
+bool InstrumentsManager::isWaveformADPCMRepeatable(int wfNum) const
 {
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->isRepeatable();
 }
 
-void InstrumentsManager::storeWaveFormADPCMSamples(int wfNum, std::vector<uint8_t> samples)
+void InstrumentsManager::storeWaveformADPCMSamples(int wfNum, std::vector<uint8_t> samples)
 {
 	wfADPCM_.at(static_cast<size_t>(wfNum))->storeSamples(samples);
 }
 
-std::vector<uint8_t> InstrumentsManager::getWaveFormADPCMSamples(int wfNum) const
+std::vector<uint8_t> InstrumentsManager::getWaveformADPCMSamples(int wfNum) const
 {
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->getSamples();
 }
 
-std::vector<int> InstrumentsManager::getWaveFormADPCMUsers(int wfNum) const
+std::vector<int> InstrumentsManager::getWaveformADPCMUsers(int wfNum) const
 {
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->getUserInstruments();
 }
 
-std::vector<int> InstrumentsManager::getWaveFormADPCMEntriedIndices() const
+std::vector<int> InstrumentsManager::getWaveformADPCMEntriedIndices() const
 {
 	std::vector<int> idcs;
 	int n = 0;
@@ -2000,14 +2000,14 @@ std::vector<int> InstrumentsManager::getWaveFormADPCMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeWaveFormADPCM() const
+int InstrumentsManager::findFirstFreeWaveformADPCM() const
 {
 	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(),
 								 [](const std::shared_ptr<WaveformADPCM>& wf) { return wf->isUserInstrument(); });
 	return (it == wfADPCM_.end() ? -1 : std::distance(wfADPCM_.begin(), it));
 }
 
-int InstrumentsManager::findFirstFreePlainWaveFormADPCM() const
+int InstrumentsManager::findFirstFreePlainWaveformADPCM() const
 {
 	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(),
 								 [](const std::shared_ptr<WaveformADPCM>& wf) { return (wf->isUserInstrument() || wf->isEdited()); });
@@ -2351,7 +2351,7 @@ int InstrumentsManager::findFirstFreePlainPitchADPCM() const
 
 bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<InstrumentADPCM> a, std::shared_ptr<InstrumentADPCM> b) const
 {
-	if (*wfADPCM_[a->getWaveFormNumber()].get() != *wfADPCM_[b->getWaveFormNumber()].get())
+	if (*wfADPCM_[a->getWaveformNumber()].get() != *wfADPCM_[b->getWaveformNumber()].get())
 		return false;
 	if (a->getEnvelopeEnabled() != b->getEnvelopeEnabled())
 		return false;

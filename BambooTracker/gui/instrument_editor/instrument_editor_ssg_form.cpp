@@ -16,7 +16,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	//========== Wave form ==========//
+	//========== Waveform ==========//
 	ui->waveEditor->setMaximumDisplayedRowCount(7);
 	ui->waveEditor->setDefaultRow(0);
 	ui->waveEditor->AddRow(tr("Sq"), false);
@@ -31,37 +31,37 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (isModulatedWaveFormSSG(row)) setWaveFormSequenceColumn(col);	// Set square-mask frequency
-			bt_.lock()->addWaveFormSSGSequenceCommand(
+			if (isModulatedWaveformSSG(row)) setWaveformSequenceColumn(col);	// Set square-mask frequency
+			bt_.lock()->addWaveformSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), row, ui->waveEditor->getSequenceDataAt(col));
-			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
 					 this, [&]() {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->removeWaveFormSSGSequenceCommand(ui->waveNumSpinBox->value());
-			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			bt_.lock()->removeWaveformSSGSequenceCommand(ui->waveNumSpinBox->value());
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (isModulatedWaveFormSSG(row)) setWaveFormSequenceColumn(col);	// Set square-mask frequency
-			bt_.lock()->setWaveFormSSGSequenceCommand(
+			if (isModulatedWaveformSSG(row)) setWaveformSequenceColumn(col);	// Set square-mask frequency
+			bt_.lock()->setWaveformSSGSequenceCommand(
 						ui->waveNumSpinBox->value(), col, row, ui->waveEditor->getSequenceDataAt(col));
-			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopChanged,
 					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setWaveFormSSGLoops(
+			bt_.lock()->setWaveformSSGLoops(
 						ui->waveNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
-			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
@@ -69,8 +69,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
 			ReleaseType t = convertReleaseTypeForData(type);
-			bt_.lock()->setWaveFormSSGRelease(ui->waveNumSpinBox->value(), t, point);
-			emit waveFormParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			bt_.lock()->setWaveformSSGRelease(ui->waveNumSpinBox->value(), t, point);
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
@@ -403,7 +403,7 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 	auto name = QString::fromUtf8(instSSG->getName().c_str(), static_cast<int>(instSSG->getName().length()));
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
-	setInstrumentWaveFormParameters();
+	setInstrumentWaveformParameters();
 	setInstrumentToneNoiseParameters();
 	setInstrumentEnvelopeParameters();
 	setInstrumentArpeggioParameters();
@@ -465,19 +465,19 @@ void InstrumentEditorSSGForm::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
-//--- Wave form
-void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
+//--- Waveform
+void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instSSG = dynamic_cast<InstrumentSSG*>(inst.get());
 
-	ui->waveNumSpinBox->setValue(instSSG->getWaveFormNumber());
+	ui->waveNumSpinBox->setValue(instSSG->getWaveformNumber());
 	ui->waveEditor->clearData();
-	for (auto& com : instSSG->getWaveFormSequence()) {
+	for (auto& com : instSSG->getWaveformSequence()) {
 		QString str("");
-		if (isModulatedWaveFormSSG(com.type)) {
+		if (isModulatedWaveformSSG(com.type)) {
 			if (CommandSequenceUnit::checkDataType(com.data) == CommandSequenceUnit::RATIO) {
 				auto ratio = CommandSequenceUnit::data2ratio(com.data);
 				str = QString("%1/%2").arg(ratio.first).arg(ratio.second);
@@ -488,21 +488,21 @@ void InstrumentEditorSSGForm::setInstrumentWaveFormParameters()
 		}
 		ui->waveEditor->addSequenceCommand(com.type, str, com.data);
 	}
-	for (auto& l : instSSG->getWaveFormLoops()) {
+	for (auto& l : instSSG->getWaveformLoops()) {
 		ui->waveEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->waveEditor->setRelease(convertReleaseTypeForUI(instSSG->getWaveFormRelease().type),
-							   instSSG->getWaveFormRelease().begin);
-	if (instSSG->getWaveFormEnabled()) {
+	ui->waveEditor->setRelease(convertReleaseTypeForUI(instSSG->getWaveformRelease().type),
+							   instSSG->getWaveformRelease().begin);
+	if (instSSG->getWaveformEnabled()) {
 		ui->waveEditGroupBox->setChecked(true);
-		onWaveFormNumberChanged();
+		onWaveformNumberChanged();
 	}
 	else {
 		ui->waveEditGroupBox->setChecked(false);
 	}
 }
 
-void InstrumentEditorSSGForm::setWaveFormSequenceColumn(int col)
+void InstrumentEditorSSGForm::setWaveformSequenceColumn(int col)
 {
 	auto button = ui->squareMaskButtonGroup->checkedButton();
 	if (button == ui->squareMaskRawRadioButton) {
@@ -520,10 +520,10 @@ void InstrumentEditorSSGForm::setWaveFormSequenceColumn(int col)
 }
 
 /********** Slots **********/
-void InstrumentEditorSSGForm::onWaveFormNumberChanged()
+void InstrumentEditorSSGForm::onWaveformNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getWaveFormSSGUsers(ui->waveNumSpinBox->value());
+	std::vector<int> users = bt_.lock()->getWaveformSSGUsers(ui->waveNumSpinBox->value());
 	QStringList l;
 	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
 		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
@@ -531,36 +531,36 @@ void InstrumentEditorSSGForm::onWaveFormNumberChanged()
 	ui->waveUsersLineEdit->setText(l.join(","));
 }
 
-void InstrumentEditorSSGForm::onWaveFormParameterChanged(int wfNum)
+void InstrumentEditorSSGForm::onWaveformParameterChanged(int wfNum)
 {
 	if (ui->waveNumSpinBox->value() == wfNum) {
 		Ui::EventGuard eg(isIgnoreEvent_);
-		setInstrumentWaveFormParameters();
+		setInstrumentWaveformParameters();
 	}
 }
 
 void InstrumentEditorSSGForm::on_waveEditGroupBox_toggled(bool arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentSSGWaveFormEnabled(instNum_, arg1);
-		setInstrumentWaveFormParameters();
-		emit waveFormNumberChanged();
+		bt_.lock()->setInstrumentSSGWaveformEnabled(instNum_, arg1);
+		setInstrumentWaveformParameters();
+		emit waveformNumberChanged();
 		emit modified();
 	}
 
-	onWaveFormNumberChanged();
+	onWaveformNumberChanged();
 }
 
 void InstrumentEditorSSGForm::on_waveNumSpinBox_valueChanged(int arg1)
 {
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setInstrumentSSGWaveForm(instNum_, arg1);
-		setInstrumentWaveFormParameters();
-		emit waveFormNumberChanged();
+		bt_.lock()->setInstrumentSSGWaveform(instNum_, arg1);
+		setInstrumentWaveformParameters();
+		emit waveformNumberChanged();
 		emit modified();
 	}
 
-	onWaveFormNumberChanged();
+	onWaveformNumberChanged();
 }
 
 void InstrumentEditorSSGForm::on_squareMaskRawSpinBox_valueChanged(int arg1)

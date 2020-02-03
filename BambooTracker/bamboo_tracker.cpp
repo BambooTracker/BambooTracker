@@ -373,46 +373,46 @@ void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorT
 }
 
 //--- SSG
-void BambooTracker::addWaveFormSSGSequenceCommand(int wfNum, int type, int data)
+void BambooTracker::addWaveformSSGSequenceCommand(int wfNum, int type, int data)
 {
-	instMan_->addWaveFormSSGSequenceCommand(wfNum, type, data);
+	instMan_->addWaveformSSGSequenceCommand(wfNum, type, data);
 }
 
-void BambooTracker::removeWaveFormSSGSequenceCommand(int wfNum)
+void BambooTracker::removeWaveformSSGSequenceCommand(int wfNum)
 {
-	instMan_->removeWaveFormSSGSequenceCommand(wfNum);
+	instMan_->removeWaveformSSGSequenceCommand(wfNum);
 }
 
-void BambooTracker::setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data)
+void BambooTracker::setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data)
 {
-	instMan_->setWaveFormSSGSequenceCommand(wfNum, cnt, type, data);
+	instMan_->setWaveformSSGSequenceCommand(wfNum, cnt, type, data);
 }
 
-void BambooTracker::setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
 {
-	instMan_->setWaveFormSSGLoops(wfNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->setWaveformSSGLoops(wfNum, std::move(begins), std::move(ends), std::move(times));
 }
 
-void BambooTracker::setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin)
+void BambooTracker::setWaveformSSGRelease(int wfNum, ReleaseType type, int begin)
 {
-	instMan_->setWaveFormSSGRelease(wfNum, type, begin);
+	instMan_->setWaveformSSGRelease(wfNum, type, begin);
 }
 
-void BambooTracker::setInstrumentSSGWaveForm(int instNum, int wfNum)
+void BambooTracker::setInstrumentSSGWaveform(int instNum, int wfNum)
 {
-	instMan_->setInstrumentSSGWaveForm(instNum, wfNum);
+	instMan_->setInstrumentSSGWaveform(instNum, wfNum);
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
-void BambooTracker::setInstrumentSSGWaveFormEnabled(int instNum, bool enabled)
+void BambooTracker::setInstrumentSSGWaveformEnabled(int instNum, bool enabled)
 {
-	instMan_->setInstrumentSSGWaveFormEnabled(instNum, enabled);
+	instMan_->setInstrumentSSGWaveformEnabled(instNum, enabled);
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
-std::vector<int> BambooTracker::getWaveFormSSGUsers(int wfNum) const
+std::vector<int> BambooTracker::getWaveformSSGUsers(int wfNum) const
 {
-	return instMan_->getWaveFormSSGUsers(wfNum);
+	return instMan_->getWaveformSSGUsers(wfNum);
 }
 
 void BambooTracker::addToneNoiseSSGSequenceCommand(int tnNum, int type, int data)

@@ -59,18 +59,18 @@ private:
 
 	void updateInstrumentParameters();
 
-	//========== Wave form ==========//
+	//========== Waveform ==========//
 signals:
-	void waveFormNumberChanged();
-	void waveFormParameterChanged(int wfNum, int fromInstNum);
+	void waveformNumberChanged();
+	void waveformParameterChanged(int wfNum, int fromInstNum);
 
 public slots:
-	void onWaveFormNumberChanged();
-	void onWaveFormParameterChanged(int wfNum);
+	void onWaveformNumberChanged();
+	void onWaveformParameterChanged(int wfNum);
 
 private:
-	void setInstrumentWaveFormParameters();
-	void setWaveFormSequenceColumn(int col);
+	void setInstrumentWaveformParameters();
+	void setWaveformSequenceColumn(int col);
 
 private slots:
 	void on_waveEditGroupBox_toggled(bool arg1);

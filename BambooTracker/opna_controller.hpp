@@ -31,9 +31,9 @@ struct ToneNoise
 	int noisePeriod_;
 };
 
-struct WaveForm
+struct Waveform
 {
-	SSGWaveFormType type;
+	SSGWaveformType type;
 	int data;	// Same format with CommandSequenceUnit::data
 };
 
@@ -337,7 +337,7 @@ private:
 	bool needToneSetSSG_[3];
 	bool needSqMaskFreqSetSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
-	WaveForm wfSSG_[3];
+	Waveform wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandSequenceUnit envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
@@ -368,8 +368,8 @@ private:
 	void releaseStartSSGSequences(int ch);
 	void tickEventSSG(int ch);
 
-	void writeWaveFormSSGToRegister(int ch, int seqPos);
-	void writeSquareWaveForm(int ch);
+	void writeWaveformSSGToRegister(int ch, int seqPos);
+	void writeSquareWaveform(int ch);
 
 	void writeToneNoiseSSGToRegister(int ch, int seqPos);
 	void writeToneNoiseSSGToRegisterNoReference(int ch);

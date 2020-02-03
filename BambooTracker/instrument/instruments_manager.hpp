@@ -153,23 +153,23 @@ private:
 
 	//----- SSG methods -----
 public:
-	void setInstrumentSSGWaveFormEnabled(int instNum, bool enabled);
-	bool getInstrumentSSGWaveFormEnabled(int instNum) const;
-	void setInstrumentSSGWaveForm(int instNum, int wfNum);
-	int getInstrumentSSGWaveForm(int instNum);
-	void addWaveFormSSGSequenceCommand(int wfNum, int type, int data);
-	void removeWaveFormSSGSequenceCommand(int wfNum);
-	void setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getWaveFormSSGSequence(int wfNum);
-	void setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getWaveFormSSGLoops(int wfNum) const;
-	void setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin);
-	Release getWaveFormSSGRelease(int wfNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getWaveFormSSGIterator(int wfNum) const;
-	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
-	std::vector<int> getWaveFormSSGEntriedIndices() const;
-	int findFirstFreeWaveFormSSG() const;
-	int findFirstFreePlainWaveFormSSG() const;
+	void setInstrumentSSGWaveformEnabled(int instNum, bool enabled);
+	bool getInstrumentSSGWaveformEnabled(int instNum) const;
+	void setInstrumentSSGWaveform(int instNum, int wfNum);
+	int getInstrumentSSGWaveform(int instNum);
+	void addWaveformSSGSequenceCommand(int wfNum, int type, int data);
+	void removeWaveformSSGSequenceCommand(int wfNum);
+	void setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data);
+	std::vector<CommandSequenceUnit> getWaveformSSGSequence(int wfNum);
+	void setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	std::vector<Loop> getWaveformSSGLoops(int wfNum) const;
+	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
+	Release getWaveformSSGRelease(int wfNum) const;
+	std::unique_ptr<CommandSequence::Iterator> getWaveformSSGIterator(int wfNum) const;
+	std::vector<int> getWaveformSSGUsers(int wfNum) const;
+	std::vector<int> getWaveformSSGEntriedIndices() const;
+	int findFirstFreeWaveformSSG() const;
+	int findFirstFreePlainWaveformSSG() const;
 
 	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
 	bool getInstrumentSSGToneNoiseEnabled(int instNum) const;
@@ -254,7 +254,7 @@ private:
 	std::array<std::shared_ptr<CommandSequence>, 128> arpSSG_;
 	std::array<std::shared_ptr<CommandSequence>, 128> ptSSG_;
 
-	int cloneSSGWaveForm(int srcNum);
+	int cloneSSGWaveform(int srcNum);
 	int cloneSSGToneNoise(int srcNum);
 	int cloneSSGEnvelope(int srcNum);
 	int cloneSSGArpeggio(int srcNum);
@@ -264,20 +264,20 @@ private:
 
 	//----- ADPCM methods -----
 public:
-	void setInstrumentADPCMWaveForm(int instNum, int wfNum);
-	int getInstrumentADPCMWaveForm(int instNum);
-	void setWaveFormADPCMRootKeyNumber(int wfNum, int n);
-	int getWaveFormADPCMRootKeyNumber(int wfNum) const;
-	void setWaveFormADPCMRootDeltaN(int wfNum, int dn);
-	int getWaveFormADPCMRootDeltaN(int wfNum) const;
-	void setWaveFormADPCMRepeatEnabled(int wfNum, bool enabled);
-	bool isWaveFormADPCMRepeatable(int wfNum) const;
-	void storeWaveFormADPCMSamples(int wfNum, std::vector<uint8_t> samples);
-	std::vector<uint8_t> getWaveFormADPCMSamples(int wfNum) const;
-	std::vector<int> getWaveFormADPCMUsers(int wfNum) const;
-	std::vector<int> getWaveFormADPCMEntriedIndices() const;
-	int findFirstFreeWaveFormADPCM() const;
-	int findFirstFreePlainWaveFormADPCM() const;
+	void setInstrumentADPCMWaveform(int instNum, int wfNum);
+	int getInstrumentADPCMWaveform(int instNum);
+	void setWaveformADPCMRootKeyNumber(int wfNum, int n);
+	int getWaveformADPCMRootKeyNumber(int wfNum) const;
+	void setWaveformADPCMRootDeltaN(int wfNum, int dn);
+	int getWaveformADPCMRootDeltaN(int wfNum) const;
+	void setWaveformADPCMRepeatEnabled(int wfNum, bool enabled);
+	bool isWaveformADPCMRepeatable(int wfNum) const;
+	void storeWaveformADPCMSamples(int wfNum, std::vector<uint8_t> samples);
+	std::vector<uint8_t> getWaveformADPCMSamples(int wfNum) const;
+	std::vector<int> getWaveformADPCMUsers(int wfNum) const;
+	std::vector<int> getWaveformADPCMEntriedIndices() const;
+	int findFirstFreeWaveformADPCM() const;
+	int findFirstFreePlainWaveformADPCM() const;
 
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
 	bool getInstrumentADPCMEnvelopeEnabled(int instNum) const;
@@ -343,7 +343,7 @@ private:
 	std::array<std::shared_ptr<CommandSequence>, 128> arpADPCM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> ptADPCM_;
 
-	int cloneADPCMWaveForm(int srcNum);
+	int cloneADPCMWaveform(int srcNum);
 	int cloneADPCMEnvelope(int srcNum);
 	int cloneADPCMArpeggio(int srcNum);
 	int cloneADPCMPitch(int srcNum);

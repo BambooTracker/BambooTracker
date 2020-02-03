@@ -106,14 +106,14 @@ public:
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 	//--- SSG
-	void addWaveFormSSGSequenceCommand(int wfNum, int type, int data);
-	void removeWaveFormSSGSequenceCommand(int wfNum);
-	void setWaveFormSSGSequenceCommand(int wfNum, int cnt, int type, int data);
-	void setWaveFormSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setWaveFormSSGRelease(int wfNum, ReleaseType type, int begin);
-	void setInstrumentSSGWaveForm(int instNum, int wfNum);
-	void setInstrumentSSGWaveFormEnabled(int instNum, bool enabled);
-	std::vector<int> getWaveFormSSGUsers(int wfNum) const;
+	void addWaveformSSGSequenceCommand(int wfNum, int type, int data);
+	void removeWaveformSSGSequenceCommand(int wfNum);
+	void setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data);
+	void setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
+	void setInstrumentSSGWaveform(int instNum, int wfNum);
+	void setInstrumentSSGWaveformEnabled(int instNum, bool enabled);
+	std::vector<int> getWaveformSSGUsers(int wfNum) const;
 
 	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
 	void removeToneNoiseSSGSequenceCommand(int tnNum);

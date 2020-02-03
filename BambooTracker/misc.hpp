@@ -53,7 +53,7 @@ enum class FMOperatorType : int
 	All, Op1, Op2, Op3, Op4
 };
 
-enum class SSGWaveFormType : int
+enum class SSGWaveformType : int
 {
 	UNSET = -1,
 	SQUARE = 0,
@@ -171,28 +171,28 @@ inline static size_t getFMChannelCount(SongType type)
 }
 
 DECL_MAYBE_UNUSED
-inline static bool isModulatedWaveFormSSG(SSGWaveFormType type)
+inline static bool isModulatedWaveformSSG(SSGWaveformType type)
 {
 	switch (type) {
-	case SSGWaveFormType::SQUARE:
-	case SSGWaveFormType::TRIANGLE:
-	case SSGWaveFormType::SAW:
-	case SSGWaveFormType::INVSAW:
+	case SSGWaveformType::SQUARE:
+	case SSGWaveformType::TRIANGLE:
+	case SSGWaveformType::SAW:
+	case SSGWaveformType::INVSAW:
 		return false;
-	case SSGWaveFormType::SQM_TRIANGLE:
-	case SSGWaveFormType::SQM_SAW:
-	case SSGWaveFormType::SQM_INVSAW:
+	case SSGWaveformType::SQM_TRIANGLE:
+	case SSGWaveformType::SQM_SAW:
+	case SSGWaveformType::SQM_INVSAW:
 		return true;
 	default:
-		throw std::invalid_argument("Invalid SSGWaveFormType");
+		throw std::invalid_argument("Invalid SSGWaveformType");
 	}
 }
 
 DECL_MAYBE_UNUSED
-inline static bool isModulatedWaveFormSSG(int id)
+inline static bool isModulatedWaveformSSG(int id)
 {
 	try {
-		return isModulatedWaveFormSSG(static_cast<SSGWaveFormType>(id));
+		return isModulatedWaveformSSG(static_cast<SSGWaveformType>(id));
 	} catch (...) {
 		throw std::invalid_argument("Invalid id");
 	}

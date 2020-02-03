@@ -96,8 +96,8 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			{
 				ctr.appendUint8(0x01);
 				auto instSSG = std::dynamic_pointer_cast<InstrumentSSG>(inst);
-				uint8_t tmp = static_cast<uint8_t>(instSSG->getWaveFormNumber());
-				ctr.appendUint8(instSSG->getWaveFormEnabled() ? tmp : (0x80 | tmp));
+				uint8_t tmp = static_cast<uint8_t>(instSSG->getWaveformNumber());
+				ctr.appendUint8(instSSG->getWaveformEnabled() ? tmp : (0x80 | tmp));
 				tmp = static_cast<uint8_t>(instSSG->getToneNoiseNumber());
 				ctr.appendUint8(instSSG->getToneNoiseEnabled() ? tmp : (0x80 | tmp));
 				tmp = static_cast<uint8_t>(instSSG->getEnvelopeNumber());
@@ -388,8 +388,8 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 		}
 	}
 
-	// SSG wave form
-	std::vector<int> wfSSGIdcs = instMan.lock()->getWaveFormSSGEntriedIndices();
+	// SSG waveform
+	std::vector<int> wfSSGIdcs = instMan.lock()->getWaveformSSGEntriedIndices();
 	if (!wfSSGIdcs.empty()) {
 		ctr.appendUint8(0x30);
 		ctr.appendUint8(static_cast<uint8_t>(wfSSGIdcs.size()));
@@ -397,20 +397,20 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getWaveFormSSGSequence(idx);
+			auto seq = instMan.lock()->getWaveformSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getWaveFormSSGLoops(idx);
+			auto loop = instMan.lock()->getWaveformSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getWaveFormSSGRelease(idx);
+			auto release = instMan.lock()->getWaveformSSGRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -905,8 +905,8 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 		{
 			InstrumentSSG* instSSG = new InstrumentSSG(idx, name, instMan.lock().get());
 			uint8_t tmp = ctr.readUint8(iCsr);
-			instSSG->setWaveFormEnabled((0x80 & tmp) ? false : true);
-			instSSG->setWaveFormNumber(0x7f & tmp);
+			instSSG->setWaveformEnabled((0x80 & tmp) ? false : true);
+			instSSG->setWaveformNumber(0x7f & tmp);
 			iCsr += 1;
 			tmp = ctr.readUint8(iCsr);
 			instSSG->setToneNoiseEnabled((0x80 & tmp) ? false : true);
@@ -1515,7 +1515,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			}
 			break;
 		}
-		case 0x30:	// SSG wave form
+		case 0x30:	// SSG waveform
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i) {
@@ -1529,8 +1529,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) {
-						if (data == 3) data = static_cast<int>(SSGWaveFormType::SQM_TRIANGLE);
-						else if (data == 4) data = static_cast<int>(SSGWaveFormType::SQM_SAW);
+						if (data == 3) data = static_cast<int>(SSGWaveformType::SQM_TRIANGLE);
+						else if (data == 4) data = static_cast<int>(SSGWaveformType::SQM_SAW);
 					}
 					int32_t subdata;
 					if (version >= Version::toBCD(1, 2, 0)) {
@@ -1544,9 +1544,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 							subdata = PitchConverter::getPitchSSGSquare(subdata);
 					}
 					if (l == 0)
-						instMan.lock()->setWaveFormSSGSequenceCommand(idx, 0, data, subdata);
+						instMan.lock()->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
 					else
-						instMan.lock()->addWaveFormSSGSequenceCommand(idx, data, subdata);
+						instMan.lock()->addWaveformSSGSequenceCommand(idx, data, subdata);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1560,12 +1560,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setWaveFormSSGLoops(idx, begins, ends, times);
+					instMan.lock()->setWaveformSSGLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1573,8 +1573,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setWaveFormSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::FixedRelease, pos);
+					else instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:

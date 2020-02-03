@@ -66,8 +66,8 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 			{
 				ctr.appendUint8(0x01);
 				auto instSSG = std::dynamic_pointer_cast<InstrumentSSG>(inst);
-				uint8_t tmp = static_cast<uint8_t>(instSSG->getWaveFormNumber());
-				ctr.appendUint8(instSSG->getWaveFormEnabled() ? tmp : (0x80 | tmp));
+				uint8_t tmp = static_cast<uint8_t>(instSSG->getWaveformNumber());
+				ctr.appendUint8(instSSG->getWaveformEnabled() ? tmp : (0x80 | tmp));
 				tmp = static_cast<uint8_t>(instSSG->getToneNoiseNumber());
 				ctr.appendUint8(instSSG->getToneNoiseEnabled() ? tmp : (0x80 | tmp));
 				tmp = static_cast<uint8_t>(instSSG->getEnvelopeNumber());
@@ -388,10 +388,10 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 		}
 	}
 
-	// SSG wave form
+	// SSG waveform
 	std::vector<int> wfSSGIdcs;
-	for (auto& idx : instMan.lock()->getWaveFormSSGEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getWaveFormSSGUsers(idx);
+	for (auto& idx : instMan.lock()->getWaveformSSGEntriedIndices()) {
+		std::vector<int> users = instMan.lock()->getWaveformSSGUsers(idx);
 		std::vector<int> intersection;
 		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
 		if (!intersection.empty()) wfSSGIdcs.push_back(idx);
@@ -403,20 +403,20 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getWaveFormSSGSequence(idx);
+			auto seq = instMan.lock()->getWaveformSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getWaveFormSSGLoops(idx);
+			auto loop = instMan.lock()->getWaveformSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getWaveFormSSGRelease(idx);
+			auto release = instMan.lock()->getWaveformSSGRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);

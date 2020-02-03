@@ -388,8 +388,8 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
 {
 	std::unique_ptr<InstrumentSSG> c = std::make_unique<InstrumentSSG>(number_, name_, owner_);
-	c->setWaveFormEnabled(wfEnabled_);
-	c->setWaveFormNumber(wfNum_);
+	c->setWaveformEnabled(wfEnabled_);
+	c->setWaveformNumber(wfNum_);
 	c->setToneNoiseEnabled(tnEnabled_);
 	c->setToneNoiseNumber(tnNum_);
 	c->setEnvelopeEnabled(envEnabled_);
@@ -401,44 +401,44 @@ std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
 	return std::move(c);
 }
 
-void InstrumentSSG::setWaveFormEnabled(bool enabled)
+void InstrumentSSG::setWaveformEnabled(bool enabled)
 {
 	wfEnabled_ = enabled;
 }
 
-bool InstrumentSSG::getWaveFormEnabled() const
+bool InstrumentSSG::getWaveformEnabled() const
 {
 	return wfEnabled_;
 }
 
-void InstrumentSSG::setWaveFormNumber(int n)
+void InstrumentSSG::setWaveformNumber(int n)
 {
 	wfNum_ = n;
 }
 
-int InstrumentSSG::getWaveFormNumber() const
+int InstrumentSSG::getWaveformNumber() const
 {
 	return wfNum_;
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getWaveFormSequence() const
+std::vector<CommandSequenceUnit> InstrumentSSG::getWaveformSequence() const
 {
-	return owner_->getWaveFormSSGSequence(wfNum_);
+	return owner_->getWaveformSSGSequence(wfNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getWaveFormLoops() const
+std::vector<Loop> InstrumentSSG::getWaveformLoops() const
 {
-	return owner_->getWaveFormSSGLoops(wfNum_);
+	return owner_->getWaveformSSGLoops(wfNum_);
 }
 
-Release InstrumentSSG::getWaveFormRelease() const
+Release InstrumentSSG::getWaveformRelease() const
 {
-	return owner_->getWaveFormSSGRelease(wfNum_);
+	return owner_->getWaveformSSGRelease(wfNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getWaveFormSequenceIterator() const
+std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getWaveformSequenceIterator() const
 {
-	return owner_->getWaveFormSSGIterator(wfNum_);
+	return owner_->getWaveformSSGIterator(wfNum_);
 }
 
 void InstrumentSSG::setToneNoiseEnabled(bool enabled)
@@ -628,7 +628,7 @@ InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManage
 std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
 {
 	std::unique_ptr<InstrumentADPCM> c = std::make_unique<InstrumentADPCM>(number_, name_, owner_);
-	c->setWaveFormNumber(wfNum_);
+	c->setWaveformNumber(wfNum_);
 	c->setEnvelopeEnabled(envEnabled_);
 	c->setEnvelopeNumber(envNum_);
 	c->setArpeggioEnabled(arpEnabled_);
@@ -638,34 +638,34 @@ std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
 	return std::move(c);
 }
 
-void InstrumentADPCM::setWaveFormNumber(int n)
+void InstrumentADPCM::setWaveformNumber(int n)
 {
 	wfNum_ = n;
 }
 
-int InstrumentADPCM::getWaveFormNumber() const
+int InstrumentADPCM::getWaveformNumber() const
 {
 	return wfNum_;
 }
 
-int InstrumentADPCM::getWaveFormRootKeyNumber() const
+int InstrumentADPCM::getWaveformRootKeyNumber() const
 {
-	return owner_->getWaveFormADPCMRootKeyNumber(wfNum_);
+	return owner_->getWaveformADPCMRootKeyNumber(wfNum_);
 }
 
-int InstrumentADPCM::getWaveFormRootDeltaN() const
+int InstrumentADPCM::getWaveformRootDeltaN() const
 {
-	return owner_->getWaveFormADPCMRootDeltaN(wfNum_);
+	return owner_->getWaveformADPCMRootDeltaN(wfNum_);
 }
 
-bool InstrumentADPCM::isWaveFormRepeatable() const
+bool InstrumentADPCM::isWaveformRepeatable() const
 {
-	return owner_->isWaveFormADPCMRepeatable(wfNum_);
+	return owner_->isWaveformADPCMRepeatable(wfNum_);
 }
 
-std::vector<uint8_t> InstrumentADPCM::getWaveFormSamples() const
+std::vector<uint8_t> InstrumentADPCM::getWaveformSamples() const
 {
-	return owner_->getWaveFormADPCMSamples(wfNum_);
+	return owner_->getWaveformADPCMSamples(wfNum_);
 }
 
 void InstrumentADPCM::setEnvelopeEnabled(bool enabled)

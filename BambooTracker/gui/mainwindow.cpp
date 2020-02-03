@@ -1679,10 +1679,10 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		ssgForm->resize(config_.lock()->getInstrumentSSGWindowWidth(),
 						config_.lock()->getInstrumentSSGWindowHeight());
 
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormNumberChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveFormParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveFormParameterChanged);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveformNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveformNumberChanged);
+		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveformParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveformParameterChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGToneNoiseNumberChanged);
 		QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseParameterChanged,
@@ -1711,7 +1711,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 
 		ssgForm->installEventFilter(this);
 
-		instForms_->onInstrumentSSGWaveFormNumberChanged();
+		instForms_->onInstrumentSSGWaveformNumberChanged();
 		instForms_->onInstrumentSSGToneNoiseNumberChanged();
 		instForms_->onInstrumentSSGEnvelopeNumberChanged();
 		instForms_->onInstrumentSSGArpeggioNumberChanged();
