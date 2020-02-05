@@ -380,6 +380,7 @@ private:
 	void checkRealToneSSGByPitch(int ch, int seqPos);
 	void writePitchSSG(int ch);
 	void writeAutoEnvelopePitchSSG(int ch, double tonePitch);
+	void writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle);
 
 	void setRealVolumeSSG(int ch);
 

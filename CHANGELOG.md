@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Fixed
-- Fix AutoEnv pitch calculation
+- Fix AutoEnv and square mask pitch calculation
 
 ## v0.3.4 (2020-01-29)
 ### Added

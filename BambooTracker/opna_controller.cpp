@@ -3372,24 +3372,12 @@ void OPNAController::writePitchSSG(int ch)
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
-				double hz = opna_->getClock() / 2048.0 / pitch;
-				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
-				hz = hz * ratio.second / ratio.first;
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				uint8_t offset = static_cast<uint8_t>(ch << 1);
-				opna_->setRegister(0x00 + offset, period & 0x00ff);
-				opna_->setRegister(0x01 + offset, period >> 8);
+				writeSquareMaskPitchSSG(ch, pitch, true);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
 			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
-				double hz = opna_->getClock() / 2048.0 / pitch;
-				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
-				hz = hz * ratio.second / ratio.first;
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				uint8_t offset = static_cast<uint8_t>(ch << 1);
-				opna_->setRegister(0x00 + offset, period & 0x00ff);
-				opna_->setRegister(0x01 + offset, period >> 8);
+				writeSquareMaskPitchSSG(ch, pitch, true);
 			}
 		}
 		break;
@@ -3403,24 +3391,12 @@ void OPNAController::writePitchSSG(int ch)
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
-				double hz = opna_->getClock() / 1024.0 / pitch;
-				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
-				hz = hz * ratio.second / ratio.first;
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				uint8_t offset = static_cast<uint8_t>(ch << 1);
-				opna_->setRegister(0x00 + offset, period & 0x00ff);
-				opna_->setRegister(0x01 + offset, period >> 8);
+				writeSquareMaskPitchSSG(ch, pitch, false);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
 			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
-				double hz = opna_->getClock() / 1024.0 / pitch;
-				auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
-				hz = hz * ratio.second / ratio.first;
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 64.0 / hz);
-				uint8_t offset = static_cast<uint8_t>(ch << 1);
-				opna_->setRegister(0x00 + offset, period & 0x00ff);
-				opna_->setRegister(0x01 + offset, period >> 8);
+				writeSquareMaskPitchSSG(ch, pitch, false);
 			}
 		}
 		break;
@@ -3436,15 +3412,15 @@ void OPNAController::writePitchSSG(int ch)
 
 void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 {
+	// Multiple frequency if triangle
+	int div = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 32 : 16;
+
 	CommandSequenceUnit::DataType type = CommandSequenceUnit::checkDataType(envSSG_[ch].data);
 	switch (type) {
 	case CommandSequenceUnit::RATIO:
 	{
-		// Multiple frequency if triangle
-		int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
 		auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
-		// Calculate envelope period
-		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * ratio.first / ratio.second / (mul * 16)));
+		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * ratio.first / (ratio.second * div)));
 		opna_->setRegister(0x0b, 0x00ff & period);
 		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 		break;
@@ -3452,10 +3428,7 @@ void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 	case CommandSequenceUnit::LSHIFT:
 	case CommandSequenceUnit::RSHIFT:
 	{
-		// Multiple frequency if triangle
-		int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
-		// Calculate envelope period
-		uint16_t period = static_cast<uint16_t>(std::round(tonePitch / (16 * mul)));
+		uint16_t period = static_cast<uint16_t>(std::round(tonePitch / div));
 		int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
 		shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
 		shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
@@ -3468,6 +3441,17 @@ void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 	default:
 		break;
 	}
+}
+
+void OPNAController::writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle)
+{
+	int mul = isTriangle ? 32 : 16;	// Multiple frequency if triangle
+	auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
+	// Calculate mask period
+	uint16_t period = static_cast<uint16_t>(std::round(ratio.first * mul * tonePitch / ratio.second));
+	uint8_t offset = static_cast<uint8_t>(ch << 1);
+	opna_->setRegister(0x00 + offset, period & 0x00ff);
+	opna_->setRegister(0x01 + offset, period >> 8);
 }
 
 //---------- Drum ----------//
