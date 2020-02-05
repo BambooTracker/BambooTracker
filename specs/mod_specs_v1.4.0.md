@@ -63,7 +63,7 @@ After instrument count, details of each instrument are described.
 | uint32           | instrument offset      | Relative offset to end of the instrument details.                                                             |
 | uint32           | Instrument name length | Length of instrument name.                                                                                    |
 | string (N bytes) | Instrument name        | String of instrument name. Character encoding is UTF-8. If instrument name is not set, this field is omitted. |
-| uint8            | Instrument type        | Sound souce of the instrument. `0x00` is FM, and `0x01` is SSG.                                               |
+| uint8            | Instrument type        | Sound souce of the instrument. `0x00` is FM, `0x01` is SSG, and `0x02` is ADPCM.                              |
 
 The following data change depending on sound source of the instrument.
 
@@ -108,11 +108,20 @@ After FB sequence number, it repeats 9 operator's parameters for each operator (
 ### SSG
 | Type  | Field                      | Description                                                                                               |
 | ----- | -------------------------- | --------------------------------------------------------------------------------------------------------- |
-| uint8 | Wave form sequence number  | Bit 0-6 is wave form sequence number, and bit 7 is flag. If bit 7 is clear, it uses wave form sequence.   |
+| uint8 | Waveform sequence number   | Bit 0-6 is waveform sequence number, and bit 7 is flag. If bit 7 is clear, it uses waveform sequence.     |
 | uint8 | Tone/Noise sequence number | Bit 0-6 is tone/noise sequence number, and bit 7 is flag. If bit 7 is clear, it uses tone/noise sequence. |
 | uint8 | Envelope sequence number   | Bit 0-6 is envelope sequence number, and bit 7 is flag. If bit 7 is clear, it uses envelope sequence.     |
 | uint8 | Arpeggio sequence number   | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses arpeggio sequence.     |
 | uint8 | Pitch sequence number      | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses pitch sequence.           |
+
+
+### ADPCM
+| Type  | Field                    | Description                                                                                           |
+| ----- | ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| uint8 | Waveform number          | Waveform number.                                                                                      |
+| uint8 | Envelope sequence number | Bit 0-6 is envelope sequence number, and bit 7 is flag. If bit 7 is clear, it uses envelope sequence. |
+| uint8 | Arpeggio sequence number | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses arpeggio sequence. |
+| uint8 | Pitch sequence number    | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses pitch sequence.       |
 
 
 ## Instrument Property Section
@@ -142,14 +151,15 @@ Subsection identifier is defined as:
 | `0x1F`-`0x27` | FM operator 4 sequences (in the order defined in instrument section) |
 | `0x28`        | FM arpeggio sequence                                                 |
 | `0x29`        | FM pitch sequence                                                    |
-| `0x30`        | SSG wave form sequence                                               |
+| `0x30`        | SSG waveform sequence                                                |
 | `0x31`        | SSG tone/noise sequence                                              |
 | `0x32`        | SSG envelope sequence                                                |
 | `0x33`        | SSG arpeggio sequence                                                |
 | `0x34`        | SSG pitch sequence                                                   |
-| `0x40`        | ADPCM envelope sequence                                              |
-| `0x41`        | ADPCM arpeggio sequence                                              |
-| `0x42`        | ADPCM pitch sequence                                                 |
+| `0x40`        | ADPCM waveform                                                       |
+| `0x41`        | ADPCM envelope sequence                                              |
+| `0x42`        | ADPCM arpeggio sequence                                              |
+| `0x43`        | ADPCM pitch sequence                                                 |
 
  And repeats sequence data block.
 
@@ -173,7 +183,7 @@ After this, repeat parameters in the table below for each operator.
 | uint8 | SSGEGs/ML | Low nibble is multiple, high nibble is type of SSGEG. If SSGEG is disabled, high nibble is `0x8`. |
 
 
-### LFO
+### FM LFO
 | Type  | Field         | Description                                                                                                                                                      |
 | ----- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | uint8 | Index         | LFO index number.                                                                                                                                                |
@@ -181,6 +191,18 @@ After this, repeat parameters in the table below for each operator.
 | uint8 | Frequency/PMS | High nibble is LFO moduletion frequency, and low nibble is phase modulation sensitivity.                                                                         |
 | uint8 | AMops/AMS     | high nibble is AM operator flags and low nibble is amplitude modulation sensitivity. Bit 4 is operator 1 and bit 7 is operator 4. If flag is set, AM is enabled. |
 | uint8 | Start count   | Tick wait count before beginning LFO.                                                                                                                            |
+
+
+### ADPCM waveform
+| Type      | Field         | Description                                              |
+| --------- | ------------- | -------------------------------------------------------- |
+| uint8     | Index         | Waveform index number.                                   |
+| uint32    | Offset        | Relative offset to end of the waveform block.            |
+| uint8     | Root key      | Root key number.                                         |
+| uint16    | Root delta-N  | Delta-N (sample rate) in root key.                       |
+| uint8     | Repeat flag   | If bit 0 is set, this ADPCM sample is played repeatedly. |
+| uint32    | Sample length | Length of ADPCM sample.                                  |
+| uint8 x N | Sample        | Raw ADPCM sample is stored.                              |
 
 
 ### Sequence
@@ -245,9 +267,9 @@ In FM and SSG arpeggio, unit data has 2 interpretations depending on its sequenc
 
 In FM and SSG pitch, unit data is the tone distance from the criterion 0.
 
-In SSG wave form, unit data represents the waveform:
+In SSG waveform, unit data represents the waveform:
 
-| Unit data | Wave form                       |
+| Unit data | Waveform                        |
 | --------- | ------------------------------- |
 | `0x00`    | Square                          |
 | `0x01`    | Triangle                        |
@@ -257,12 +279,12 @@ In SSG wave form, unit data represents the waveform:
 | `0x05`    | Square-masked sawtooth          |
 | `0x06`    | Square-masked inversed sawtooth |
 
-When wave form is square-masked, unit subdata is set one of the 2 types of data:
+When waveform is square-masked, unit subdata is set one of the 2 types of data:
 
 - If bit 16 is 0, it is raw data. Bit 0-11 is square mask period.
 - If bit 16 is 1, it is tone/mask ratio. Bit 0-7 is mask part and bit 8-15 is tone part.
 
-The other wave form set unit subdata to `-1`.
+The other waveform set unit subdata to `-1`.
 
 In SSG tone/noise, unit data defined as:
 
@@ -326,9 +348,9 @@ Each song block is defined as:
 Song type defined number and order of tracks.
 
 | Type                    | Track0 | Track1 | Track2    | Track3    | Track4    | Track5    | Track6 | Track7 | Track8 | Track9 | Track10 | Track11 | Track12 | Track13 | Track14 | Track15 | Track16 | Track17 | Track18 |
-| ----------------------- | ------ | ------ | --------- | --------- | --------- | --------- | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------- |
-| `0x00` (Standard)       | FM1ch  | FM2ch  | FM3ch     | FM4ch     | FM5ch     | FM6ch     | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     | ADPCM   | -       | -       | -        |
-| `0x01` (FM3ch expanded) | FM1ch  | FM2ch  | FM3ch-op1 | FM3ch-op2 | FM3ch-op3 | FM3ch-op4 | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch  | SSG3ch  | BD      | SD      | TOP     | HH      | TOM     | RIM     | ADPCM    |
+| ----------------------- | ------ | ------ | --------- | --------- | --------- | --------- | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
+| `0x00` (Standard)       | FM1ch  | FM2ch  | FM3ch     | FM4ch     | FM5ch     | FM6ch     | SSG1ch | SSG2ch | SSG3ch | BD     | SD      | TOP     | HH      | TOM     | RIM     | ADPCM   | -       | -       | -       |
+| `0x01` (FM3ch expanded) | FM1ch  | FM2ch  | FM3ch-op1 | FM3ch-op2 | FM3ch-op3 | FM3ch-op4 | FM4ch  | FM5ch  | FM6ch  | SSG1ch | SSG2ch  | SSG3ch  | BD      | SD      | TOP     | HH      | TOM     | RIM     | ADPCM   |
 
 Song section includes some track subblock.
 

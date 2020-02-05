@@ -49,6 +49,7 @@ public:
 	BinaryContainer getSubcontainer(size_t offset, size_t length) const;
 
 	const char* getPointer() const;
+	std::vector<uint8_t> toVector() const;
 
 private:
 	std::vector<char> buf_;

@@ -82,7 +82,16 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 				break;
 			case SoundSource::ADPCM:
 			{
-				// TODO: adpcm
+				// TODO: adpcm check correct
+				ctr.appendUint8(0x02);
+				auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);
+				ctr.appendUint8(static_cast<uint8_t>(instADPCM->getWaveformNumber()));
+				uint8_t tmp = static_cast<uint8_t>(instADPCM->getEnvelopeNumber());
+				ctr.appendUint8(instADPCM->getEnvelopeEnabled() ? tmp : (0x80 | tmp));
+				tmp = static_cast<uint8_t>(instADPCM->getArpeggioNumber());
+				ctr.appendUint8(instADPCM->getArpeggioEnabled() ? tmp : (0x80 | tmp));
+				tmp = static_cast<uint8_t>(instADPCM->getPitchNumber());
+				ctr.appendUint8(instADPCM->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
 			}
@@ -648,6 +657,122 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 			}
 			switch (instMan.lock()->getPitchSSGType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
+		}
+	}
+
+	// ADPCM waveform
+	std::vector<int> wfADPCMIdcs = instMan.lock()->getWaveformSSGEntriedIndices();
+	if (!wfADPCMIdcs.empty()) {
+		ctr.appendUint8(0x40);
+		ctr.appendUint8(static_cast<uint8_t>(wfADPCMIdcs.size()));
+		for (auto& idx : wfADPCMIdcs) {
+			ctr.appendUint8(static_cast<uint8_t>(idx));
+			size_t ofs = ctr.size();
+			ctr.appendUint32(0);	// Dummy offset
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getWaveformADPCMRootKeyNumber(idx)));
+			ctr.appendUint16(static_cast<uint16_t>(instMan.lock()->getWaveformADPCMRootDeltaN(idx)));
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->isWaveformADPCMRepeatable(idx)));
+			std::vector<uint8_t> samples = instMan.lock()->getWaveformADPCMSamples(idx);
+			ctr.appendUint32(samples.size());
+			ctr.appendVector(std::move(samples));
+			ctr.writeUint32(ofs, ctr.size() - ofs);
+		}
+	}
+
+	// ADPCM envelope
+	std::vector<int> envADPCMIdcs = instMan.lock()->getEnvelopeADPCMEntriedIndices();
+	if (!envADPCMIdcs.empty()) {
+		ctr.appendUint8(0x41);
+		ctr.appendUint8(static_cast<uint8_t>(envADPCMIdcs.size()));
+		for (auto& idx : envADPCMIdcs) {
+			ctr.appendUint8(static_cast<uint8_t>(idx));
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getEnvelopeADPCMSequence(idx);
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
+			for (auto& com : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+				ctr.appendInt32(static_cast<int32_t>(com.data));
+			}
+			auto loop = instMan.lock()->getEnvelopeADPCMLoops(idx);
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
+			for (auto& l : loop) {
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			}
+			auto release = instMan.lock()->getEnvelopeADPCMRelease(idx);
+
+			switch (release.type) {
+			case ReleaseType::NoRelease:
+				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
+				break;
+			case ReleaseType::FixedRelease:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			case ReleaseType::AbsoluteRelease:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			case ReleaseType::RelativeRelease:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			}
+			ctr.appendUint8(0);	// Skip sequence type
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
+		}
+	}
+
+	// ADPCM arpeggio
+	std::vector<int> arpADPCMIdcs = instMan.lock()->getArpeggioADPCMEntriedIndices();
+	if (!arpADPCMIdcs.empty()) {
+		ctr.appendUint8(0x42);
+		ctr.appendUint8(static_cast<uint8_t>(arpADPCMIdcs.size()));
+		for (auto& idx : arpADPCMIdcs) {
+			ctr.appendUint8(static_cast<uint8_t>(idx));
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getArpeggioADPCMSequence(idx);
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
+			for (auto& com : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			}
+			auto loop = instMan.lock()->getArpeggioADPCMLoops(idx);
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
+			for (auto& l : loop) {
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			}
+			auto release = instMan.lock()->getArpeggioADPCMRelease(idx);
+			switch (release.type) {
+			case ReleaseType::NoRelease:
+				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
+				break;
+			case ReleaseType::FixedRelease:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			case ReleaseType::AbsoluteRelease:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			case ReleaseType::RelativeRelease:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			}
+			switch (instMan.lock()->getArpeggioADPCMType(idx)) {
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}

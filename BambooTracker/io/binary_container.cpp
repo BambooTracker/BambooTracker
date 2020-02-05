@@ -224,6 +224,14 @@ const char* BinaryContainer::getPointer() const
 	return &buf_[0];
 }
 
+std::vector<uint8_t> BinaryContainer::toVector() const
+{
+	std::vector<uint8_t> vec;
+	std::transform(buf_.begin(), buf_.end(), std::back_inserter(vec),
+				   [](const char v) { return static_cast<uint8_t>(v); });
+	return vec;
+}
+
 void BinaryContainer::append(std::vector<char> a)
 {
 	if (isLE_)
