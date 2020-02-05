@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Fixed
+- Fix AutoEnv pitch calculation
 
 ## v0.3.4 (2020-01-29)
 ### Added

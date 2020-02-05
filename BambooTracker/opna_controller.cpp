@@ -3340,76 +3340,10 @@ void OPNAController::writePitchSSG(int ch)
 			uint8_t offset = static_cast<uint8_t>(ch << 1);
 			opna_->setRegister(0x00 + offset, pitch & 0xff);
 			opna_->setRegister(0x01 + offset, pitch >> 8);
-			CommandSequenceUnit::DataType type = CommandSequenceUnit::checkDataType(envSSG_[ch].data);
-			switch (type) {
-			case CommandSequenceUnit::RATIO:
-			{
-				double hz = opna_->getClock() / 64.0 / pitch;
-				// Multiple frequency if triangle
-				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
-				auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
-				hz = mul * hz * ratio.second / ratio.first;
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				opna_->setRegister(0x0b, 0x00ff & period);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
-				break;
-			}
-			case CommandSequenceUnit::LSHIFT:
-			case CommandSequenceUnit::RSHIFT:
-			{
-				double hz = opna_->getClock() / 64.0 / pitch;
-				// Multiple frequency if triangle
-				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
-				hz = mul * hz;
-				int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
-				shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
-				shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				if (shift < 0) period <<= -shift;
-				else period >>= shift;
-				opna_->setRegister(0x0b, 0x00ff & period);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
-				break;
-			}
-			default:
-				break;
-			}
+			writeAutoEnvelopePitchSSG(ch, pitch);
 		}
 		else if (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) {
-			CommandSequenceUnit::DataType type = CommandSequenceUnit::checkDataType(envSSG_[ch].data);
-			switch (type) {
-			case CommandSequenceUnit::RATIO:
-			{
-				double hz = opna_->getClock() / 64.0 / pitch;
-				// Multiple frequency if triangle
-				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
-				auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
-				hz = mul * hz * ratio.second / ratio.first;
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				opna_->setRegister(0x0b, 0x00ff & period);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
-				break;
-			}
-			case CommandSequenceUnit::LSHIFT:
-			case CommandSequenceUnit::RSHIFT:
-			{
-				double hz = opna_->getClock() / 64.0 / pitch;
-				// Multiple frequency if triangle
-				int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
-				hz = mul * hz;
-				int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
-				shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
-				shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
-				uint16_t period = static_cast<uint16_t>(opna_->getClock() / 1024.0 / hz);
-				if (shift < 0) period <<= -shift;
-				else period >>= shift;
-				opna_->setRegister(0x0b, 0x00ff & period);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
-				break;
-			}
-			default:
-				break;
-			}
+			writeAutoEnvelopePitchSSG(ch, pitch);
 		}
 		break;
 	}
@@ -3498,6 +3432,42 @@ void OPNAController::writePitchSSG(int ch)
 	needToneSetSSG_[ch] = false;
 	needEnvSetSSG_[ch] = false;
 	needSqMaskFreqSetSSG_[ch] = false;
+}
+
+void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
+{
+	CommandSequenceUnit::DataType type = CommandSequenceUnit::checkDataType(envSSG_[ch].data);
+	switch (type) {
+	case CommandSequenceUnit::RATIO:
+	{
+		// Multiple frequency if triangle
+		int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
+		auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
+		// Calculate envelope period
+		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * ratio.first / ratio.second / (mul * 16)));
+		opna_->setRegister(0x0b, 0x00ff & period);
+		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
+		break;
+	}
+	case CommandSequenceUnit::LSHIFT:
+	case CommandSequenceUnit::RSHIFT:
+	{
+		// Multiple frequency if triangle
+		int mul = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 2 : 1;
+		// Calculate envelope period
+		uint16_t period = static_cast<uint16_t>(std::round(tonePitch / (16 * mul)));
+		int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
+		shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
+		shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
+		if (shift < 0) period <<= -shift;
+		else period >>= shift;
+		opna_->setRegister(0x0b, 0x00ff & period);
+		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 //---------- Drum ----------//

@@ -379,6 +379,7 @@ private:
 	void checkPortamentoSSG(int ch);
 	void checkRealToneSSGByPitch(int ch, int seqPos);
 	void writePitchSSG(int ch);
+	void writeAutoEnvelopePitchSSG(int ch, double tonePitch);
 
 	void setRealVolumeSSG(int ch);
 
