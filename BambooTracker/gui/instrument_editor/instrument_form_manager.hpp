@@ -54,6 +54,15 @@ public slots:
 	void onInstrumentSSGPitchParameterChanged(int ptNum, int fromInstNum);
 	void onInstrumentSSGPitchNumberChanged();
 
+	void onInstrumentADPCMWaveformParameterChanged(int wfNum, int fromInstNum);
+	void onInstrumentADPCMWaveformNumberChanged();
+	void onInstrumentADPCMEnvelopeParameterChanged(int envNum, int fromInstNum);
+	void onInstrumentADPCMEnvelopeNumberChanged();
+	void onInstrumentADPCMArpeggioParameterChanged(int arpNum, int fromInstNum);
+	void onInstrumentADPCMArpeggioNumberChanged();
+	void onInstrumentADPCMPitchParameterChanged(int ptNum, int fromInstNum);
+	void onInstrumentADPCMPitchNumberChanged();
+
 private:
 	std::unordered_map<int, std::unique_ptr<QWidget>> map_;
 };

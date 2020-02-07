@@ -7,6 +7,7 @@
 #include "command_id.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 
 AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, SoundSource source,
 											   std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
@@ -47,7 +48,8 @@ void AddInstrumentQtCommand::redo()
 		form = std::make_unique<InstrumentEditorSSGForm>(num_);
 		break;
 	case SoundSource::ADPCM:
-		// TODO: adpcm
+		item = new QListWidgetItem(QIcon(":/icon/inst_adpcm"), title);
+		form = std::make_unique<InstrumentEditorADPCMForm>(num_);
 		break;
 	default:
 		return;

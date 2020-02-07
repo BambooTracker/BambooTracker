@@ -45,6 +45,7 @@ SOURCES += \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
     gui/instrument_editor/arpeggio_macro_editor.cpp \
+    gui/instrument_editor/instrument_editor_adpcm_form.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
     instrument/waveform_adpcm.cpp \
@@ -211,6 +212,7 @@ HEADERS += \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
+    gui/instrument_editor/instrument_editor_adpcm_form.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/jam_layout.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
@@ -392,6 +394,7 @@ HEADERS += \
 
 FORMS += \
     gui/effect_list_dialog.ui \
+    gui/instrument_editor/instrument_editor_adpcm_form.ui \
     gui/keyboard_shortcut_list_dialog.ui \
     gui/mainwindow.ui \
     gui/instrument_editor/instrument_editor_fm_form.ui \

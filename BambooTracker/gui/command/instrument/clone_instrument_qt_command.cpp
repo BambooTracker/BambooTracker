@@ -2,6 +2,7 @@
 #include "command_id.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 
 CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
 												   std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
@@ -32,7 +33,8 @@ void CloneInstrumentQtCommand::redo()
 		form = std::make_unique<InstrumentEditorSSGForm>(cloneNum_);
 		break;
 	case SoundSource::ADPCM:
-		// TODO: adpcm
+		item = new QListWidgetItem(QIcon(":/icon/inst_adpcm"), title);
+		form = std::make_unique<InstrumentEditorADPCMForm>(cloneNum_);
 		break;
 	default:
 		return;

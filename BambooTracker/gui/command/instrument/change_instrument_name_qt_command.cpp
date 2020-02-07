@@ -2,6 +2,7 @@
 #include "command_id.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 #include "misc.hpp"
 
 ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
@@ -41,7 +42,8 @@ void ChangeInstrumentNameQtCommand::redo()
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form);
+		adpcmForm->setWindowTitle(title);
 		break;
 	}
 	default:

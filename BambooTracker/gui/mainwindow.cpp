@@ -31,6 +31,7 @@
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
+#include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 #include "gui/module_properties_dialog.hpp"
 #include "gui/groove_settings_dialog.hpp"
 #include "gui/configuration_dialog.hpp"
@@ -795,7 +796,8 @@ void MainWindow::midiProgramEvent(uchar status, uchar program)
 /********** Instrument list **********/
 void MainWindow::addInstrument()
 {
-	switch (bt_->getCurrentTrackAttribute().source) {
+	SoundSource src = bt_->getCurrentTrackAttribute().source;
+	switch (src) {
 	case SoundSource::FM:
 	case SoundSource::SSG:
 	case SoundSource::ADPCM:
@@ -808,8 +810,7 @@ void MainWindow::addInstrument()
 		QString name = tr("Instrument %1").arg(num);
 		bt_->addInstrument(num, name.toUtf8().toStdString());
 
-		TrackAttribute attrib = bt_->getCurrentTrackAttribute();
-		comStack_->push(new AddInstrumentQtCommand(list, num, name, attrib.source, instForms_));
+		comStack_->push(new AddInstrumentQtCommand(list, num, name, src, instForms_));
 		ui->instrumentListWidget->setCurrentRow(num);
 		break;
 	}
@@ -1721,6 +1722,45 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	case SoundSource::ADPCM:
 	{
 		// TODO: adpcm
+		auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form.get());
+		adpcmForm->setCore(bt_);
+		adpcmForm->setConfiguration(config_.lock());
+		adpcmForm->setColorPalette(palette_);
+		adpcmForm->resize(config_.lock()->getInstrumentSSGWindowWidth(),
+						config_.lock()->getInstrumentSSGWindowHeight());
+
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeNumberChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeParameterChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::arpeggioNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMArpeggioNumberChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::arpeggioParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMArpeggioParameterChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::pitchNumberChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMPitchNumberChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::pitchParameterChanged,
+						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMPitchParameterChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::jamKeyOnEvent,
+						 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::ADPCM); }, Qt::DirectConnection);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::jamKeyOffEvent,
+						 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); }, Qt::DirectConnection);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::octaveChanged,
+						 this, &MainWindow::changeOctave, Qt::DirectConnection);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::modified,
+						 this, &MainWindow::setModifiedTrue);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::playStatusChanged, this, playFunc);
+
+		adpcmForm->installEventFilter(this);
+
+		instForms_->onInstrumentADPCMWaveformNumberChanged();
+		instForms_->onInstrumentADPCMEnvelopeNumberChanged();
+		instForms_->onInstrumentADPCMArpeggioNumberChanged();
+		instForms_->onInstrumentADPCMPitchNumberChanged();
 		break;
 	}
 	default:
