@@ -1828,20 +1828,23 @@ void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
 {
 	if (seqPos == -1) return;
 
+	int type = arpItFM_[ch]->getCommandType();
+	if (type == -1) return;
+
 	switch (arpItFM_[ch]->getSequenceType()) {
 	case SequenceType::ABSOLUTE_SEQUENCE:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(baseToneFM_[ch].front().octave,
 																  baseToneFM_[ch].front().note)
-										+ arpItFM_[ch]->getCommandType() - 48);
+										+ type - 48);
 		keyToneFM_[ch].octave = pair.first;
 		keyToneFM_[ch].note = pair.second;
 		break;
 	}
 	case SequenceType::FIXED_SEQUENCE:
 	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItFM_[ch]->getCommandType());
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(type);
 		keyToneFM_[ch].octave = pair.first;
 		keyToneFM_[ch].note = pair.second;
 		break;
@@ -1850,7 +1853,7 @@ void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(keyToneFM_[ch].octave, keyToneFM_[ch].note)
-										+ arpItFM_[ch]->getCommandType() - 48);
+										+ type - 48);
 		keyToneFM_[ch].octave = pair.first;
 		keyToneFM_[ch].note = pair.second;
 		break;
@@ -1900,15 +1903,13 @@ void OPNAController::checkRealToneFMByPitch(int ch, int seqPos)
 {
 	if (seqPos == -1) return;
 
+	int diff = ptItFM_[ch]->getCommandType() - 127;
+	if (diff < -127) return;	// Skip if command type == -1
+
 	switch (ptItFM_[ch]->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-		sumPitchFM_[ch] = ptItFM_[ch]->getCommandType() - 127;
-		break;
-	case SequenceType::RELATIVE_SEQUENCE:
-		sumPitchFM_[ch] += (ptItFM_[ch]->getCommandType() - 127);
-		break;
-	default:
-		break;
+	case SequenceType::ABSOLUTE_SEQUENCE:	sumPitchFM_[ch] = diff;		break;
+	case SequenceType::RELATIVE_SEQUENCE:	sumPitchFM_[ch] += diff;	break;
+	default:	break;
 	}
 
 	needToneSetFM_[ch] = true;
@@ -2992,7 +2993,8 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 	}
 
 	int type = tnItSSG_[ch]->getCommandType();
-	if (type == 0) {	// tone
+	if (type == -1) return;
+	else if (!type) {	// tone
 		if (tnSSG_[ch].isTone_) {
 			if (tnSSG_[ch].isNoise_) {
 				mixerSSG_ |= (1 << (ch + 3));
@@ -3195,7 +3197,8 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 	}
 
 	int type = envItSSG_[ch]->getCommandType();
-	if (type < 16) {	// Software envelope
+	if (type == -1) return;
+	else if (type < 16) {	// Software envelope
 		isHardEnvSSG_[ch] = false;
 		envSSG_[ch] = { type, CommandSequenceUnit::NODATA };
 		setRealVolumeSSG(ch);
@@ -3236,20 +3239,23 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 {
 	if (seqPos == -1) return;
 
+	int type = arpItSSG_[ch]->getCommandType();
+	if (type == -1) return;
+
 	switch (arpItSSG_[ch]->getSequenceType()) {
 	case SequenceType::ABSOLUTE_SEQUENCE:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(baseToneSSG_[ch].front().octave,
 																  baseToneSSG_[ch].front().note)
-										+ arpItSSG_[ch]->getCommandType() - 48);
+										+ type - 48);
 		keyToneSSG_[ch].octave = pair.first;
 		keyToneSSG_[ch].note = pair.second;
 		break;
 	}
 	case SequenceType::FIXED_SEQUENCE:
 	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItSSG_[ch]->getCommandType());
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(type);
 		keyToneSSG_[ch].octave = pair.first;
 		keyToneSSG_[ch].note = pair.second;
 		break;
@@ -3258,7 +3264,7 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(keyToneSSG_[ch].octave, keyToneSSG_[ch].note)
-										+ arpItSSG_[ch]->getCommandType() - 48);
+										+ type - 48);
 		keyToneSSG_[ch].octave = pair.first;
 		keyToneSSG_[ch].note = pair.second;
 		break;
@@ -3308,13 +3314,13 @@ void OPNAController::checkRealToneSSGByPitch(int ch, int seqPos)
 {
 	if (seqPos == -1) return;
 
+	int diff = ptItSSG_[ch]->getCommandType() - 127;
+	if (diff < -127) return;
+
 	switch (ptItSSG_[ch]->getSequenceType()) {
-	case 0:	// Absolute
-		sumPitchSSG_[ch] = ptItSSG_[ch]->getCommandType() - 127;
-		break;
-	case 2:	// Relative
-		sumPitchSSG_[ch] += (ptItSSG_[ch]->getCommandType() - 127);
-		break;
+	case SequenceType::ABSOLUTE_SEQUENCE: sumPitchSSG_[ch] = diff;	break;
+	case SequenceType::RELATIVE_SEQUENCE: sumPitchSSG_[ch] += diff;	break;
+	default:	break;
 	}
 
 	needToneSetSSG_[ch] = true;

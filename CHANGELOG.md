@@ -3,6 +3,9 @@
 ## Unreleased
 ### Fixed
 - Fix AutoEnv and square mask pitch calculation
+- [#181] - Fix crash when changing length of instrument sequence during jamming (thanks [@papiezak])
+
+[#181]: https://github.com/rerrahkr/BambooTracker/issues/181
 
 ## v0.3.4 (2020-01-29)
 ### Added
