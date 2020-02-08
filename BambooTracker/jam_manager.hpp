@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <deque>
+#include <unordered_map>
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 
@@ -29,7 +31,7 @@ private:
 	bool isJamMode_;
 	bool isPoly_;
 	std::vector<JamKeyData> keyOnTable_;
-	std::deque<int> unusedChFM_, unusedChSSG_;
+	std::unordered_map<SoundSource, std::deque<int>> unusedCh_;
 };
 
 

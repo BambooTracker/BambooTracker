@@ -31,18 +31,12 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 {
 	std::vector<JamKeyData> keyDataList;
 	JamKeyData onData{ key, channel, source, keyNum };
-	// TODO: adpcm
-	std::deque<int>* unusedCh = nullptr;
-	switch (source) {
-	case SoundSource::FM:	unusedCh = &unusedChFM_;	break;
-	case SoundSource::SSG:	unusedCh = &unusedChSSG_;	break;
-	default:	break;
-	}
+	std::deque<int>& unusedCh = unusedCh_.at(source);
 
-	if (!unusedCh->empty()) {
+	if (!unusedCh.empty()) {
 		if (key == JamKey::MidiKey) {
-			if (isPoly_) onData.channelInSource = unusedCh->front();
-			unusedCh->pop_front();
+			if (isPoly_) onData.channelInSource = unusedCh.front();
+			unusedCh.pop_front();
 			keyOnTable_.push_back(onData);
 			keyDataList.push_back(onData);
 		}
@@ -51,8 +45,8 @@ std::vector<JamKeyData> JamManager::keyOn(JamKey key, int channel, SoundSource s
 									 keyOnTable_.end(),
 									 [&](JamKeyData x) { return (x.source == source && x.key == key); });
 			if (it == keyOnTable_.end()) {
-				if (isPoly_) onData.channelInSource = unusedCh->front();
-				unusedCh->pop_front();
+				if (isPoly_) onData.channelInSource = unusedCh.front();
+				unusedCh.pop_front();
 				keyOnTable_.push_back(onData);
 				keyDataList.push_back(onData);
 			}
@@ -97,12 +91,7 @@ JamKeyData JamManager::keyOff(JamKey key, int keyNum)
 		keyData.channelInSource = data.channelInSource;
 		keyData.key = key;
 		keyData.source = data.source;
-		switch (keyData.source) {
-		case SoundSource::FM:	unusedChFM_.push_front(keyData.channelInSource);	break;
-		case SoundSource::SSG:	unusedChSSG_.push_front(keyData.channelInSource);	break;
-		case SoundSource::ADPCM:	/* TODO: adpcm*/	break;
-		default:	break;
-		}
+		unusedCh_.at(keyData.source).push_front(keyData.channelInSource);
 		keyOnTable_.erase(it);
 	}
 
@@ -205,15 +194,15 @@ int JamManager::calcOctave(int baseOctave, JamKey &key)
 void JamManager::clear()
 {
 	if (isPoly_) {
-		unusedChFM_ = std::deque<int>(6);
-		unusedChSSG_= std::deque<int>(3);
+		unusedCh_[SoundSource::FM] = std::deque<int>(6);
+		unusedCh_[SoundSource::SSG] = std::deque<int>(3);
+		unusedCh_[SoundSource::ADPCM] = std::deque<int>(1);
 
-		auto gennums = [i = 0]() mutable -> int { return i++; };
-		std::generate(unusedChFM_.begin(), unusedChFM_.end(), gennums);
-		std::generate(unusedChSSG_.begin(), unusedChSSG_.end(), gennums);
+		for (auto& pair : unusedCh_) {
+			std::generate(pair.second.begin(), pair.second.end(), [i = 0]() mutable -> int { return i++; });
+		}
 	}
 	else {
-		unusedChFM_.resize(1);
-		unusedChSSG_.resize(1);
+		for (auto& pair : unusedCh_) pair.second.resize(1);
 	}
 }
