@@ -2430,22 +2430,15 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 		scsr += 4;
 		size_t ptnSize = ctr.readUint8(scsr) + 1;
 		scsr += 1;
+		SongType songType;
 		switch (ctr.readUint8(scsr++)) {
-		case 0x00:	// Standard
-		{
-			mod.lock()->addSong(idx, SongType::Standard, title, isTempo,
-								static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
-			break;
-		}
-		case 0x01:	// FM3ch expanded
-		{
-			mod.lock()->addSong(idx, SongType::FM3chExpanded, title, isTempo,
-								static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
-			break;
-		}
+		case 0x00:	songType = SongType::Standard;	break;
+		case 0x01:	songType = SongType::FM3chExpanded;	break;
 		default:
 			throw FileCorruptionError(FileIO::FileType::Mod);
 		}
+		mod.lock()->addSong(idx, songType, title, isTempo,
+							static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
 		auto& song = mod.lock()->getSong(idx);
 		while (scsr < songCsr) {
 			// Song
@@ -2553,6 +2546,21 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 			}
 
 			scsr += trackOfs;
+		}
+
+		if (version < Version::toBCD(1, 4, 0)) {	// ADPCM track
+			int odrLen = static_cast<int>(song.getOrderSize());
+			int trackNum;
+			switch (songType) {
+			case SongType::Standard:		trackNum = 15;	break;
+			case SongType::FM3chExpanded:	trackNum = 18;	break;
+			}
+			auto& track = song.getTrack(trackNum);
+			for (int oi = 0; oi < odrLen; ++oi) {
+				if (oi) track.insertOrderBelow(oi - 1);
+				track.registerPatternToOrder(oi, 0);
+			}
+			track.setEffectDisplayWidth(0);
 		}
 	}
 
