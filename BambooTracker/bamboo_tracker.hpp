@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include <map>
 #include "configuration.hpp"
 #include "opna_controller.hpp"
 #include "jam_manager.hpp"
@@ -20,6 +21,7 @@
 #include "effect.hpp"
 #include "playback.hpp"
 #include "binary_container.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 class AbstractBank;
@@ -369,7 +371,7 @@ private:
 	int curOrderNum_, curStepNum_;
 	///	-1: not set
 	int curInstNum_;
-	std::vector<bool> muteStateFM_, muteStateSSG_, muteStateDrum_;
+	std::unordered_map<SoundSource, std::vector<bool>> muteState_;
 
 	bool isFollowPlay_;
 

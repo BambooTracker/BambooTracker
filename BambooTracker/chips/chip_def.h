@@ -7,7 +7,7 @@ typedef int32_t	sample;
 struct intf2608
 {
 	void (*set_ay_emu_core)(uint8_t Emulator);
-	int (*device_start)(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t AYFlags, int* AYrate);
+        int (*device_start)(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t AYFlags, int* AYrate, uint32_t dramSize);
 	void (*device_stop)(uint8_t ChipID);
 	void (*device_reset)(uint8_t ChipID);
 	void (*control_port_a_w)(uint8_t ChipID, uint32_t offset, uint8_t data);

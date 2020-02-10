@@ -25,13 +25,13 @@ struct ToneDetail
 	int pitch;
 };
 
-struct ToneNoise
+struct SSGToneNoise
 {
 	bool isTone_, isNoise_;
 	int noisePeriod_;
 };
 
-struct Waveform
+struct SSGWaveform
 {
 	SSGWaveformType type;
 	int data;	// Same format with CommandSequenceUnit::data
@@ -69,6 +69,10 @@ public:
 	void setMode(SongType mode);
 	SongType getMode() const;
 
+	// Mute
+	void setMuteState(SoundSource src, int chInSrc, bool isMute);
+	bool isMute(SoundSource src, int chInSrc);
+
 	// Stream details
 	int getRate() const;
 	void setRate(int rate);
@@ -84,6 +88,11 @@ private:
 	SongType mode_;
 
 	std::vector<RegisterUnit> registerSetBuf_;
+
+	std::unique_ptr<int16_t[]> outputHistory_;
+	size_t outputHistoryIndex_;
+	std::unique_ptr<int16_t[]> outputHistoryReady_;
+	std::mutex outputHistoryReadyMutex_;
 
 	void initChip();
 
@@ -135,10 +144,6 @@ public:
 	// For state retrieve
 	void haltSequencesFM(int ch);
 
-	// Mute
-	void setMuteFMState(int ch, bool isMuteFM);
-	bool isMuteFM(int ch);
-
 	// Chip details
 	bool isKeyOnFM(int ch) const;
 	bool isTonePortamentoFM(int ch) const;
@@ -182,6 +187,9 @@ private:
 	bool isBrightFM_[6][4];
 
 	void initFM();
+
+	void setMuteFMState(int ch, bool isMuteFM);
+	bool isMuteFM(int ch);
 
 	int toInternalFMChannel(int ch) const;
 	uint8_t getFMKeyOnOffChannelMask(int ch) const;
@@ -309,10 +317,6 @@ public:
 	// For state retrieve
 	void haltSequencesSSG(int ch);
 
-	// Mute
-	void setMuteSSGState(int ch, bool isMuteFM);
-	bool isMuteSSG(int ch);
-
 	// Chip details
 	bool isKeyOnSSG(int ch) const;
 	bool isTonePortamentoSSG(int ch) const;
@@ -325,7 +329,7 @@ private:
 	std::deque<ToneDetail> baseToneSSG_[3];
 	ToneDetail keyToneSSG_[3];
 	int sumPitchSSG_[3];
-	ToneNoise tnSSG_[3];
+	SSGToneNoise tnSSG_[3];
 	int baseVolSSG_[3], tmpVolSSG_[3];
 	bool isBuzzEffSSG_[3];
 	bool isHardEnvSSG_[3];
@@ -337,7 +341,7 @@ private:
 	bool needToneSetSSG_[3];
 	bool needSqMaskFreqSetSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
-	Waveform wfSSG_[3];
+	SSGWaveform wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandSequenceUnit envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
@@ -357,12 +361,11 @@ private:
 	int toneNoiseMixSSG_[3];
 	int noisePitchSSG_;
 	int hardEnvPeriodHighSSG_, hardEnvPeriodLowSSG_;
-	std::unique_ptr<int16_t[]> outputHistory_;
-	size_t outputHistoryIndex_;
-	std::unique_ptr<int16_t[]> outputHistoryReady_;
-	std::mutex outputHistoryReadyMutex_;
 
 	void initSSG();
+
+	void setMuteSSGState(int ch, bool isMuteFM);
+	bool isMuteSSG(int ch);
 
 	void setFrontSSGSequences(int ch);
 	void releaseStartSSGSequences(int ch);
@@ -401,10 +404,6 @@ public:
 	// Set pan
 	void setPanDrum(int ch, int value);
 
-	// Mute
-	void setMuteDrumState(int ch, bool isMute);
-	bool isMuteDrum(int ch);
-
 private:
 	uint8_t keyOnFlagDrum_, keyOffFlagDrum_;
 	int volDrum_[6], mVolDrum_, tmpVolDrum_[6];
@@ -415,5 +414,89 @@ private:
 
 	void initDrum();
 
+	void setMuteDrumState(int ch, bool isMute);
+	bool isMuteDrum(int ch);
+
 	void updateKeyOnOffStatusDrum();
+
+	/*----- ADPCM -----*/
+public:
+	// Key on-off
+	void keyOnADPCM(Note note, int octave, int pitch, bool isJam = false);
+	void keyOnADPCM(int echoBuf);
+	void keyOffADPCM(bool isJam = false);
+	void updateEchoBufferADPCM(int octave, Note note, int pitch);
+
+	// Set Instrument
+//	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);
+//	void updateInstrumentADPCM(int instNum);
+
+	// Set volume
+	void setVolumeADPCM(int volume);
+	void setTemporaryVolumeADPCM(int volume);
+
+	// Set effect
+//	void setArpeggioEffectADPCM(int second, int third);
+//	void setPortamentoEffectADPCM(int depth, bool isTonePortamento = false);
+//	void setVibratoEffectADPCM(int period, int depth);
+//	void setTremoloEffectADPCM(int period, int depth);
+//	void setVolumeSlideADPCM(int depth, bool isUp);
+//	void setDetuneADPCM(int pitch);
+//	void setNoteSlideADPCM(int speed, int seminote);
+//	void setTransposeEffectADPCM(int seminote);
+
+	// For state retrieve
+//	void haltSequencesADPCM();
+
+	// Chip details
+	bool isKeyOnADPCM() const;
+	bool isTonePortamentoADPCM() const;
+	ToneDetail getADPCMTone() const;
+
+private:
+	std::shared_ptr<InstrumentADPCM> refInstADPCM_;
+	bool isKeyOnADPCM_;
+	std::deque<ToneDetail> baseToneADPCM_;
+	ToneDetail keyToneADPCM_;
+	int sumPitchADPCM_;
+	int baseVolADPCM_, tmpVolADPCM_;
+	bool isMuteADPCM_;
+	bool hasPreSetTickEventADPCM_;
+	bool needEnvSetADPCM_;
+	bool needToneSetADPCM_;
+//	std::unique_ptr<CommandSequence::Iterator> wfItADPCM_;
+//	Waveform wfADPCM_;
+	std::unique_ptr<CommandSequence::Iterator> envItADPCM_;
+	CommandSequenceUnit envADPCM_;
+	std::unique_ptr<CommandSequence::Iterator> tnItADPCM_;
+	std::unique_ptr<SequenceIteratorInterface> arpItADPCM_;
+	std::unique_ptr<CommandSequence::Iterator> ptItADPCM_;
+	bool isArpEffADPCM_;
+	int prtmADPCM_;
+	bool isTonePrtmADPCM_;
+	std::unique_ptr<WavingEffectIterator> vibItADPCM_;
+	std::unique_ptr<WavingEffectIterator> treItADPCM_;
+	int volSldADPCM_, sumVolSldADPCM_;
+	int detuneADPCM_;
+	std::unique_ptr<NoteSlideEffectIterator> nsItADPCM_;
+	int sumNoteSldADPCM_;
+	bool noteSldADPCMSetFlag_;
+	int transposeADPCM_;
+int end_, deltan_, rootKey_;	// TODO: dummy
+	void initADPCM();
+
+	void setMuteADPCMState(bool isMuteFM);
+	bool isMuteADPCM();
+
+	void setFrontADPCMSequences();
+	void releaseStartADPCMSequences();
+	void tickEventADPCM();
+
+//	void writeEnvelopeADPCMToRegister(int seqPos);
+//	void checkRealToneADPCMByArpeggio(int seqPos);
+//	void checkPortamentoADPCM();
+//	void checkRealToneADPCMByPitch(int seqPos);
+	void writePitchADPCM();
+
+	void setRealVolumeADPCM();
 };

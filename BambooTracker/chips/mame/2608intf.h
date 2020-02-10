@@ -28,7 +28,7 @@ DEVICE_GET_INFO( ym2608 );
 void ym2608_stream_update(UINT8 ChipID, stream_sample_t **outputs, int samples);
 void ym2608_stream_update_ay(UINT8 ChipID, stream_sample_t **outputs, int samples);
 
-int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags, int* AYrate);
+int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags, int* AYrate, offs_t dramSize);
 void device_stop_ym2608(UINT8 ChipID);
 void device_reset_ym2608(UINT8 ChipID);
 

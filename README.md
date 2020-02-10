@@ -381,4 +381,5 @@ I would like to thank the following people for making it:
 - Gary P. Scavone and others for RtAudio and RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - Jean Pierre Cimalando and Olivier Humbert for French translation
+- Ian Karlsson for ADPCM encoder/decoder
 - And everyone who helps this project!

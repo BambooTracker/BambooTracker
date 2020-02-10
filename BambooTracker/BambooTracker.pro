@@ -206,6 +206,7 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
+    chips/codec/ymb_codec.hpp \
     command/command_id.hpp \
     enum_hash.hpp \
     gui/color_palette_handler.hpp \

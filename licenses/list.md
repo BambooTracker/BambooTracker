@@ -1,7 +1,8 @@
 # List of libraries
-- [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand)
-  - MIT
-    - BambooTracker/format/wopn_file.*
+- [adpcm](https://github.com/superctr/adpcm) by Ian Karlsson (superctr) - Public domain
+  - BambooTracker/chips/codec/*
+- [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand) - MIT
+  - BambooTracker/format/wopn_file.*
 - [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
   - BambooTracker/chips/mame/*
 - Nuked OPN-MOD (added OPNA functionality to [Nuked-OPN2](https://github.com/nukeykt/Nuked-OPN2) by Alexey Khokholov (Nuke.YKT)) by Jean Pierre Cimalando - LGPL v2.1

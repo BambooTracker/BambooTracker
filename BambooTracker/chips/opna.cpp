@@ -18,8 +18,6 @@ extern "C"
 namespace chip
 {
 	size_t OPNA::count_ = 0;
-	
-	const double OPNA::VOL_REDUC = 7.5;
 
 	OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration,
 			   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
@@ -51,7 +49,9 @@ namespace chip
 
 		uint8_t AYDisable = 0;	// Enable
 		uint8_t AYFlags = 0;		// None
-		internalRate_[FM] = intf_->device_start(id_, clock, AYDisable, AYFlags, reinterpret_cast<int*>(&internalRate_[SSG]));
+		internalRate_[FM] = intf_->device_start(
+								id_, clock, AYDisable, AYFlags,
+								reinterpret_cast<int*>(&internalRate_[SSG]), DRAM_SIZE_);
 
 		initResampler();
 
@@ -116,13 +116,13 @@ namespace chip
 	void OPNA::setVolumeFM(double dB)
 	{
 		std::lock_guard<std::mutex> lg(mutex_);
-		volumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC) / 20.0);
+		volumeRatio_[FM] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
 	}
 
 	void OPNA::setVolumeSSG(double dB)
 	{
 		std::lock_guard<std::mutex> lg(mutex_);
-		volumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC) / 20.0);
+		volumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC_) / 20.0);
 	}
 
 	void OPNA::mix(int16_t* stream, size_t nSamples)
@@ -191,5 +191,10 @@ namespace chip
 	bool OPNA::isUsedSCCI() const
 	{
 		return (scciManager_ != nullptr);
+	}
+
+	size_t OPNA::getDRAMSize() const
+	{
+		return DRAM_SIZE_;
 	}
 }

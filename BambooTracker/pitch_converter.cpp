@@ -2,12 +2,12 @@
 
 uint16_t PitchConverter::getPitchFM(Note note, int octave, int pitch)
 {
-	return centTableFM_[calculateIndex(octave, note, pitch)];
+	return centTableFM_[calculatePitchIndex(octave, note, pitch)];
 }
 
 uint16_t PitchConverter::getPitchSSGSquare(Note note, int octave, int pitch)
 {
-	return centTableSSGSquare_[calculateIndex(octave, note, pitch)];
+	return centTableSSGSquare_[calculatePitchIndex(octave, note, pitch)];
 }
 
 uint16_t PitchConverter::getPitchSSGSquare(int n)
@@ -17,12 +17,18 @@ uint16_t PitchConverter::getPitchSSGSquare(int n)
 
 uint16_t PitchConverter::getPitchSSGTriangle(Note note, int octave, int pitch)
 {
-	return centTableSSGTriangle_[calculateIndex(octave, note, pitch)];
+	return centTableSSGTriangle_[calculatePitchIndex(octave, note, pitch)];
 }
 
 uint16_t PitchConverter::getPitchSSGSaw(Note note, int octave, int pitch)
 {
-	return centTableSSGSaw_[calculateIndex(octave, note, pitch)];
+	return centTableSSGSaw_[calculatePitchIndex(octave, note, pitch)];
+}
+
+int PitchConverter::calculatePitchIndex(int octave, Note note, int pitch)
+{
+	int idx = 384 * octave + static_cast<int>(note) + pitch;
+	return clamp(idx, 0, 3071);
 }
 
 const uint16_t PitchConverter::centTableFM_[3072] = {

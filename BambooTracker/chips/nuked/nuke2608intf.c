@@ -121,7 +121,7 @@ void nuke2608_set_ay_emu_core(uint8_t Emulator)
 	return;
 }
 
-int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t AYFlags, int *AYrate)
+int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t AYFlags, int *AYrate, uint32_t dramSize)
 {
 	static const ym2608_interface generic_2608 =
 	{

@@ -26,6 +26,7 @@ namespace chip
 		void mix(int16_t* stream, size_t nSamples) override;
 		void useSCCI(SoundInterfaceManager* manager);
 		bool isUsedSCCI() const;
+		size_t getDRAMSize() const;
 
 	private:
 		static size_t count_;
@@ -36,7 +37,8 @@ namespace chip
 		SoundInterfaceManager* scciManager_;
 		SoundChip* scciChip_;
 
-		static const double VOL_REDUC;
+		static constexpr size_t DRAM_SIZE_ = 262144;	// 256KiB
+		static constexpr double VOL_REDUC_ = 7.5;
 
 		enum SoundSource : int
 		{

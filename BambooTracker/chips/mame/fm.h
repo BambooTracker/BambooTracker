@@ -177,8 +177,10 @@ void ym2203_set_mutemask(void *chip, UINT32 MuteMask);
 //void * ym2608_init(void *param, const device_config *device, int baseclock, int rate,
 //               void *pcmroma,int pcmsizea,
 //               FM_TIMERHANDLER TimerHandler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);
-void * ym2608_init(void *param, int baseclock, int rate,
-               FM_TIMERHANDLER TimerHandler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);
+//void * ym2608_init(void *param, int baseclock, int rate,
+//               FM_TIMERHANDLER TimerHandler, FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);
+void * ym2608_init(void *param, int baseclock, int rate, offs_t dram_size,
+			   FM_TIMERHANDLER TimerHandler, FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);
 void ym2608_shutdown(void *chip);
 void ym2608_reset_chip(void *chip);
 void ym2608_update_one(void *chip, FMSAMPLE **buffer, int length);

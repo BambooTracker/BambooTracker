@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <algorithm>
 #include <stdexcept>
 
 #if !defined(DECL_MAYBE_UNUSED) && defined(__GNUC__)
@@ -196,4 +197,11 @@ inline static bool isModulatedWaveformSSG(int id)
 	} catch (...) {
 		throw std::invalid_argument("Invalid id");
 	}
+}
+
+template <typename T>
+DECL_MAYBE_UNUSED
+inline const T& clamp(const T& value, const T& low, const T& high)
+{
+	return std::min(std::max(value, low), high);
 }

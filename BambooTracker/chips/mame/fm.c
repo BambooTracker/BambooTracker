@@ -3566,8 +3566,10 @@ static void YM2608_deltat_status_reset(void *chip, UINT8 changebits)
 //void * ym2608_init(void *param, const device_config *device, int clock, int rate,
 //               void *pcmrom,int pcmsize,
 //               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
-void * ym2608_init(void *param, int clock, int rate,
-               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
+//void * ym2608_init(void *param, int clock, int rate,
+//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
+void * ym2608_init(void *param, int clock, int rate, offs_t dram_size,
+			   FM_TIMERHANDLER timer_handler, FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
 {
 	YM2608 *F2608;
 
@@ -3598,9 +3600,12 @@ void * ym2608_init(void *param, int clock, int rate,
 	/* DELTA-T */
 	//F2608->deltaT.memory = (UINT8 *)pcmrom;
 	//F2608->deltaT.memory_size = pcmsize;
-	F2608->deltaT.memory = NULL;
-	F2608->deltaT.memory_size = 0x00;
-	F2608->deltaT.memory_mask = 0x00;
+	//F2608->deltaT.memory = NULL;
+	//F2608->deltaT.memory_size = 0x00;
+	//F2608->deltaT.memory_mask = 0x00;
+	F2608->deltaT.memory = (UINT8*)realloc(F2608->deltaT.memory, dram_size);
+	F2608->deltaT.memory_size = dram_size;
+	YM_DELTAT_calc_mem_mask(&F2608->deltaT);
 
 	/*F2608->deltaT.write_time = 20.0 / clock;*/	/* a single byte write takes 20 cycles of main clock */
 	/*F2608->deltaT.read_time  = 18.0 / clock;*/	/* a single byte read takes 18 cycles of main clock */

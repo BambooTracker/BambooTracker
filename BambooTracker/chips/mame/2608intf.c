@@ -238,7 +238,7 @@ void ym2608_stream_update_ay(UINT8 ChipID, stream_sample_t **outputs, int sample
 
 
 //static DEVICE_START( ym2608 )
-int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags, int* AYrate)
+int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags, int* AYrate, offs_t dramSize)
 {
 	static const ym2608_interface generic_2608 =
 	{
@@ -316,9 +316,9 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 	//info->chip = ym2608_init(info,device,device->clock,rate,
 	//	           pcmbufa,pcmsizea,
 	//	           timer_handler,IRQHandler,&psgintf);
-	info->chip = ym2608_init(info, clock, rate, NULL, NULL, &psgintf);
+	//info->chip = ym2608_init(info, clock, rate, NULL, NULL, &psgintf);
 	//assert_always(info->chip != NULL, "Error creating YM2608 chip");
-
+	info->chip = ym2608_init(info, clock, rate, dramSize, NULL, NULL, &psgintf);
 	//state_save_register_postload(device->machine, ym2608_intf_postload, info);
 	
 	return rate;

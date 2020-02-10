@@ -381,4 +381,5 @@ pkg install bambootracker
 - RtAudioとRtMidiライブラリに関してGary P. Scavoneさん他
 - Nuked OPN-Modエミュレーションに関してAlexey Khokholov (Nuke.YKT)さん、Jean Pierre Cimalandoさん
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん
+- ADPCMエンコーダ/デコーダに関してIan Karlssonさん
 - そしてこのプロジェクトに手助けしてくださるみなさん!
