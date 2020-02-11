@@ -31,9 +31,11 @@
  *   - Jean Pierre Cimalando 2019-04-06: add 6-channel FM flag
  *   - Jean Pierre Cimalando 2019-04-06: add ADPCM rhythm channels
  *   - Jean Pierre Cimalando 2019-04-07: raise the channel clipping threshold
+ *   - Jean Pierre Cimalando 2020-02-23: add the ADPCM Delta-T
  */
 
 #include <string.h>
+#include <stdlib.h>
 #include "ym3438.h"
 
 /*OPN-MOD: define the quantization in bits at which channels clip*/
@@ -290,7 +292,7 @@ static const int adpcm_step_inc[8] = { -1*16, -1*16, -1*16, -1*16, 2*16, 5*16, 7
 
 static Bit32u chip_type = ym3438_mode_readmode;
 
-/*OPNMOD: update ADPCM volume*/
+/*OPN-MOD: update ADPCM volume*/
 void OPNmod_RhythmUpdateVolume(ym3438_t *chip, Bit32u channel)
 {
     Bit8u volume = chip->rhythm_tl + chip->rhythm_level[channel];
@@ -586,6 +588,26 @@ void OPN2_DoRegWrite(ym3438_t *chip)
                     chip->psg->Write(chip->psgdata, 0, chip->write_fm_mode_a);
                     chip->psg->Write(chip->psgdata, 1, chip->write_data);
                 }
+                break;
+            }
+        }
+        else if (chip->write_d_en && (chip->write_data & 0x100) == 0x100)
+        {
+            /*OPN-Mod*/
+            switch (chip->write_fm_mode_a & 0xf0)
+            {
+            case 0x00:
+                if (chip->write_fm_mode_a == 0x0e)
+                {
+                    // write to DAC data (unimplemented)
+                }
+                else if (chip->write_fm_mode_a != 0x0f)
+                {
+                    YM_DELTAT_ADPCM_Write(&chip->deltaT, chip->write_fm_mode_a, chip->write_data & 0xff);
+                }
+                break;
+            case 0x10:
+                // IRQ flag control (unimplemented)
                 break;
             }
         }
@@ -1217,7 +1239,7 @@ void OPN2_FMGenerate(ym3438_t *chip)
     chip->fm_out[slot] = output;
 }
 
-/*OPNMOD: generate ADPCM rhythm*/
+/*OPN-MOD: generate ADPCM rhythm*/
 void OPNmod_RhythmGenerate(ym3438_t *chip)
 {
     Bit32u channel = chip->channel;
@@ -1294,6 +1316,32 @@ void OPNmod_RhythmGenerate(ym3438_t *chip)
             chip->rhythml[channel] = panl ? (out >> 1) : 0;
             chip->rhythmr[channel] = panr ? (out >> 1) : 0;
         }
+    }
+}
+
+/*OPN-MOD: generate ADPCM DeltaT*/
+void OPNmod_DeltaTGenerate(ym3438_t *chip)
+{
+    Bit32u channel = chip->channel;
+
+    Bit32s *out = chip->out_deltaT;
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+
+    if (chip->cycles == 0)
+    {
+        if (chip->deltaT.portstate & 0x80 /* && !chip->mute_deltaT */)
+            YM_DELTAT_ADPCM_CALC(&chip->deltaT);
+
+        chip->deltaTl[channel] = (out[2/*LEFT*/] + out[3/*CENTER*/]) / (1 << 8);
+        chip->deltaTr[channel] = (out[1/*RIGHT*/] + out[3/*CENTER*/]) / (1 << 8);
+    }
+    else
+    {
+        chip->deltaTl[channel] = 0;
+        chip->deltaTr[channel] = 0;
     }
 }
 
@@ -1417,10 +1465,25 @@ void OPN2_KeyOn(ym3438_t*chip)
     }
 }
 
-void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks *psg, void *psgdata)
+static void OPNmod_deltat_status_set(void *userdata, Bit8u changebits)
+{
+    ym3438_t *chip = (ym3438_t *)userdata;
+    chip->status |= ~changebits;
+}
+
+static void OPNmod_deltat_status_reset(void *userdata, Bit8u changebits)
+{
+    ym3438_t *chip = (ym3438_t *)userdata;
+    chip->status &= ~changebits;
+}
+
+void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks *psg, void *psgdata, Bit32u dramsize)
 {
     Bit32u i;
+    Bit8u *pcmmem = chip->deltaT.memory;
+    Bit32u pcmoldsize = chip->deltaT.memory_size;
     memset(chip, 0, sizeof(ym3438_t));
+    chip->deltaT.memory = pcmmem;
     for (i = 0; i < 24; i++)
     {
         chip->eg_out[i] = 0x3ff;
@@ -1445,6 +1508,43 @@ void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks
         chip->rhythm_step[i] = (Bit32u)((1 << adpcm_shift) / ((i < 4) ? 3.0 : 6.0));
         OPNmod_RhythmUpdateVolume(chip, i);
     }
+
+    /*OPN-MOD: initialize ADPCM*/
+    //chip->deltaT.memory = (UINT8 *)pcmrom;
+    //chip->deltaT.memory_size = pcmsize;
+    //chip->deltaT.memory = NULL;
+    //chip->deltaT.memory_size = 0x00;
+    //chip->deltaT.memory_mask = 0x00;
+    chip->deltaT.memory = pcmmem = (Bit8u *)realloc(pcmmem, dramsize);
+    chip->deltaT.memory_size = dramsize;
+    if (!pcmmem)
+        abort();
+    if (pcmoldsize < dramsize)
+        memset(pcmmem + pcmoldsize, 0, dramsize - pcmoldsize);
+    YM_DELTAT_calc_mem_mask(&chip->deltaT);
+    /*chip->deltaT.write_time = 20.0 / clock;*/    /* a single byte write takes 20 cycles of main clock */
+    /*chip->deltaT.read_time  = 18.0 / clock;*/    /* a single byte read takes 18 cycles of main clock */
+    chip->deltaT.status_set_handler = &OPNmod_deltat_status_set;
+    chip->deltaT.status_reset_handler = &OPNmod_deltat_status_reset;
+    chip->deltaT.status_change_which_chip = chip;
+    chip->deltaT.status_change_EOS_bit = 0x04;    /* status flag: set bit2 on End Of Sample */
+    chip->deltaT.status_change_BRDY_bit = 0x08;    /* status flag: set bit3 on BRDY */
+    chip->deltaT.status_change_ZERO_bit = 0x10;    /* status flag: set bit4 if silence continues for more than 290 miliseconds while recording the ADPCM */
+    //
+    chip->deltaT.freqbase = 1.0; // TODO(jpc) set the freqbase value to fixed
+    chip->deltaT.output_pointer = chip->out_deltaT;
+    chip->deltaT.portshift = 5;        /* always 5bits shift */ /* ASG */
+    chip->deltaT.output_range = 1<<23;
+    YM_DELTAT_ADPCM_Reset(&chip->deltaT, 3/*CENTER*/, YM_DELTAT_EMULATION_MODE_NORMAL);
+}
+
+void OPN2_Destroy(ym3438_t *chip)
+{
+    if (!chip)
+        return;
+
+    free(chip->deltaT.memory);
+    chip->deltaT.memory = NULL;
 }
 
 void OPN2_SetChipType(Bit32u type)
@@ -1457,6 +1557,8 @@ void OPN2_Clock(ym3438_t *chip, Bit16s *buffer)
     Bit32u slot = chip->cycles;
     Bit16s *rhythml = &chip->rhythml[chip->channel];
     Bit16s *rhythmr = &chip->rhythmr[chip->channel];
+    Bit16s *deltaTl = &chip->deltaTl[chip->channel];
+    Bit16s *deltaTr = &chip->deltaTr[chip->channel];
     chip->lfo_inc = chip->mode_test_21[1];
     chip->pg_read >>= 1;
     chip->eg_read[1] >>= 1;
@@ -1536,6 +1638,7 @@ void OPN2_Clock(ym3438_t *chip, Bit16s *buffer)
     OPN2_FMGenerate(chip);
 
     OPNmod_RhythmGenerate(chip);
+    OPNmod_DeltaTGenerate(chip);
 
     OPN2_PhaseGenerate(chip);
     OPN2_PhaseCalcIncrement(chip);
@@ -1591,6 +1694,9 @@ void OPN2_Clock(ym3438_t *chip, Bit16s *buffer)
     /*OPN-MOD: Rhythm output*/
     buffer[2] = *rhythml;
     buffer[3] = *rhythmr;
+    /*OPN-MOD: DeltaT output*/
+    buffer[4] = *deltaTl;
+    buffer[5] = *deltaTr;
 
     if (chip->status_time)
         chip->status_time--;
@@ -1663,6 +1769,10 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
             chip->status = (chip->busy << 7) | (chip->timer_b_overflow_flag << 1)
                  | chip->timer_a_overflow_flag;
         }
+
+        /*OPN-MOD: status of DeltaT */
+        chip->status |= (chip->deltaT.PCM_BSY & 1) << 5;
+
         if (chip_type & ym3438_mode_ym2612)
         {
             chip->status_time = 300000;
@@ -1684,6 +1794,14 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
             return 1; /* ID code */
         }
     }
+    /*OPN-MOD: read from DeltaT*/
+    if ((port & 3) == 3)
+    {
+        if (chip->address == 0x08)
+        {
+            return YM_DELTAT_ADPCM_Read(&chip->deltaT);
+        }
+    }
     if (chip->status_time)
     {
         return chip->status;
@@ -1694,7 +1812,7 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
 void OPN2_WriteBuffered(ym3438_t *chip, Bit32u port, Bit8u data)
 {
     Bit64u time1, time2;
-    Bit16s buffer[4];
+    Bit16s buffer[6];
     Bit64u skip;
 
     if (chip->writebuf[chip->writebuf_last].port & 0x04)
@@ -1726,10 +1844,32 @@ void OPN2_WriteBuffered(ym3438_t *chip, Bit32u port, Bit8u data)
     chip->writebuf_last = (chip->writebuf_last + 1) % OPN_WRITEBUF_SIZE;
 }
 
+void OPN2_FlushBuffer(ym3438_t *chip)
+{
+    Bit16s buffer[6];
+    Bit64u skip;
+
+    while (chip->writebuf[chip->writebuf_cur].port & 0x04)
+    {
+        chip->writebuf[chip->writebuf_cur].port &= 0x03;
+
+        OPN2_Write(chip, chip->writebuf[chip->writebuf_cur].port,
+                   chip->writebuf[chip->writebuf_cur].data);
+
+        skip = chip->writebuf[chip->writebuf_cur].time - chip->writebuf_samplecnt;
+        chip->writebuf_samplecnt = chip->writebuf[chip->writebuf_cur].time;
+        chip->writebuf_cur = (chip->writebuf_cur + 1) % OPN_WRITEBUF_SIZE;
+        while (skip--)
+        {
+            OPN2_Clock(chip, buffer);
+        }
+    }
+}
+
 void OPN2_Generate(ym3438_t *chip, sample *samples)
 {
     Bit32u i;
-    Bit16s buffer[4];
+    Bit16s buffer[6];
 
     samples[0] = 0;
     samples[1] = 0;
@@ -1744,6 +1884,10 @@ void OPN2_Generate(ym3438_t *chip, sample *samples)
         /*OPN-MOD: mix rhythm samples*/
         samples[0] += buffer[2];
         samples[1] += buffer[3];
+
+        /*OPN-MOD: mix deltaT samples*/
+        samples[0] += buffer[4];
+        samples[1] += buffer[5];
 
         while (chip->writebuf[chip->writebuf_cur].time <= chip->writebuf_samplecnt)
         {
