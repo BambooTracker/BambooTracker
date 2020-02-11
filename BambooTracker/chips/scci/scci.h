@@ -7,7 +7,7 @@
 using DWORD = uint32_t;
 using BOOL = bool;
 using BYTE = uint8_t;
-#ifndef WIN32
+#ifndef _WIN32
 #define __stdcall
 #endif
 
@@ -41,7 +41,7 @@ public:
 	// ---------- LOW LEVEL APIs ----------
 	// get interface count
 	virtual int __stdcall getInterfaceCount() = 0;
-	// get interface information 
+	// get interface information
 	virtual SCCI_INTERFACE_INFO* __stdcall getInterfaceInfo(int iInterfaceNo) = 0;
 	// get interface instance
 	virtual SoundInterface* __stdcall getInterface(int iInterfaceNo) = 0;
@@ -149,3 +149,12 @@ public:
 //----------------------------------------
 typedef SoundInterfaceManager* (__stdcall *SCCIFUNC)(void);
 
+//----------------------------------------
+// pcm callback function
+// void callback(SCCIPCMDATA *pPcm,DWORD dSize)
+//----------------------------------------
+
+typedef struct {
+	int	iL;
+	int	iR;
+} SCCIPCMDATA;

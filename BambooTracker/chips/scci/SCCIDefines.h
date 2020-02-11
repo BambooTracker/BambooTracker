@@ -50,10 +50,16 @@ enum SC_CHIP_TYPE {
 	SC_TYPE_SPPCM,		// SPPCM
 	SC_TYPE_C140,		// NAMCO C140(SPPCMデバイス）
 	SC_TYPE_SEGAPCM,	// SEGAPCM(SPPCMデバイス）
-	SC_TYPE_OTHER,		// その他デバイス用、アドレスがA0-A3で動作する
-	SC_TYPE_UNKNOWN,	// 開発デバイス向け
-	SC_TYPE_YMF825,		// YMF825（暫定）
-	SC_TYPE_MAX
+	SC_TYPE_SPW,		// SPW
+	SC_TYPE_SAM2695,	// SAM2695
+	SC_TYPE_MIDI,		// MIDIインターフェース
+	SC_TYPE_MAX,		// 使用可能デバイスMAX値
+	// 以降は、専用ハード用
+
+	// 実験ハード用
+	SC_TYPE_OTHER = 1000,	// その他デバイス用、アドレスがA0-A3で動作する
+	SC_TYPE_UNKNOWN,		// 開発デバイス向け
+	SC_TYPE_YMF825,			// YMF825（暫定）
 };
 
 // Sound chip clock list
@@ -91,9 +97,8 @@ enum SC_CHIP_LOCATION {
 
 // sound chip Acquisition mode defines
 #define	SC_ACQUISITION_MODE_NEAR	(0x00000000)
-#define	SC_ACQUISITION_MODE_MATCH	(0x00000001)	
+#define	SC_ACQUISITION_MODE_MATCH	(0x00000001)
 
 #define	SC_WAIT_REG			(0xffffffff)	// ウェイとコマンド送信（データは送信するコマンド数）
 #define SC_FLUSH_REG		(0xfffffffe)	// 書き込みデータフラッシュ待ち
 #define SC_DIRECT_BUS		(0x80000000)	// アドレスバスダイレクトモード
-
