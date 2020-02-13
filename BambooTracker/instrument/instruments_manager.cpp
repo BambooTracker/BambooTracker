@@ -1984,6 +1984,26 @@ std::vector<uint8_t> InstrumentsManager::getWaveformADPCMSamples(int wfNum) cons
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->getSamples();
 }
 
+void InstrumentsManager::setWaveformADPCMStartAddress(int wfNum, size_t addr)
+{
+	wfADPCM_.at(static_cast<size_t>(wfNum))->setStartAddress(addr);
+}
+
+size_t InstrumentsManager::getWaveformADPCMStartAddress(int wfNum) const
+{
+	return wfADPCM_.at(static_cast<size_t>(wfNum))->getStartAddress();
+}
+
+void InstrumentsManager::setWaveformADPCMStopAddress(int wfNum, size_t addr)
+{
+	wfADPCM_.at(static_cast<size_t>(wfNum))->setStopAddress(addr);
+}
+
+size_t InstrumentsManager::getWaveformADPCMStopAddress(int wfNum) const
+{
+	return wfADPCM_.at(static_cast<size_t>(wfNum))->getStopAddress();
+}
+
 std::vector<int> InstrumentsManager::getWaveformADPCMUsers(int wfNum) const
 {
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->getUserInstruments();

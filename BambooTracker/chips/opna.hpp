@@ -12,7 +12,7 @@ namespace chip
 	public:
 		// [rate]
 		// 0 = rate is 55466 (FM synthesis rate when clock is 3993600 * 2)
-		OPNA(Emu emu, int clock, int rate, size_t maxDuration,
+		OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 			 std::unique_ptr<AbstractResampler> fmResampler = std::make_unique<LinearResampler>(),
 			 std::unique_ptr<AbstractResampler> ssgResampler = std::make_unique<LinearResampler>(),
 			 std::shared_ptr<ExportContainerInterface> exportContainer = nullptr);
@@ -37,7 +37,6 @@ namespace chip
 		SoundInterfaceManager* scciManager_;
 		SoundChip* scciChip_;
 
-		static constexpr size_t DRAM_SIZE_ = 262144;	// 256KiB
 		static constexpr double VOL_REDUC_ = 7.5;
 
 		enum SoundSource : int

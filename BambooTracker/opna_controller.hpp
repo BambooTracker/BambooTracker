@@ -107,7 +107,7 @@ public:
 	void keyOffFM(int ch, bool isJam = false);
 	void updateEchoBufferFM(int ch, int octave, Note note, int pitch);
 
-	// Set Instrument
+	// Set instrument
 	void setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst);
 	void updateInstrumentFM(int instNum);
 	void updateInstrumentFMEnvelopeParameter(int envNum, FMEnvelopeParameter param);
@@ -121,10 +121,8 @@ public:
 	void setTemporaryVolumeFM(int ch, int volume);
 	void setMasterVolumeFM(double dB);
 
-	// Set pan
-	void setPanFM(int ch, int value);
-
 	// Set effect
+	void setPanFM(int ch, int value);
 	void setArpeggioEffectFM(int ch, int second, int third);
 	void setPortamentoEffectFM(int ch, int depth, bool isTonePortamento = false);
 	void setVibratoEffectFM(int ch, int period, int depth);
@@ -291,7 +289,7 @@ public:
 	void keyOffSSG(int ch, bool isJam = false);
 	void updateEchoBufferSSG(int ch, int octave, Note note, int pitch);
 
-	// Set Instrument
+	// Set instrument
 	void setInstrumentSSG(int ch, std::shared_ptr<InstrumentSSG> inst);
 	void updateInstrumentSSG(int instNum);
 
@@ -401,7 +399,7 @@ public:
 	void setMasterVolumeDrum(int volume);
 	void setTemporaryVolumeDrum(int ch, int volume);
 
-	// Set pan
+	// Set effect
 	void setPanDrum(int ch, int value);
 
 private:
@@ -427,15 +425,19 @@ public:
 	void keyOffADPCM(bool isJam = false);
 	void updateEchoBufferADPCM(int octave, Note note, int pitch);
 
-	// Set Instrument
-//	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);
-//	void updateInstrumentADPCM(int instNum);
+	// Set instrument
+	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);
+	void updateInstrumentADPCM(int instNum);
+	void clearSamplesADPCM();
+	/// return: [0]: start address, [1]: stop address
+	std::vector<size_t> storeSampleADPCM(std::vector<uint8_t> sample);
 
 	// Set volume
 	void setVolumeADPCM(int volume);
 	void setTemporaryVolumeADPCM(int volume);
 
 	// Set effect
+	void setPanADPCM(int value);
 //	void setArpeggioEffectADPCM(int second, int third);
 //	void setPortamentoEffectADPCM(int depth, bool isTonePortamento = false);
 //	void setVibratoEffectADPCM(int period, int depth);
@@ -460,12 +462,13 @@ private:
 	ToneDetail keyToneADPCM_;
 	int sumPitchADPCM_;
 	int baseVolADPCM_, tmpVolADPCM_;
+	uint8_t panADPCM_;
 	bool isMuteADPCM_;
 	bool hasPreSetTickEventADPCM_;
 	bool needEnvSetADPCM_;
 	bool needToneSetADPCM_;
-//	std::unique_ptr<CommandSequence::Iterator> wfItADPCM_;
-//	Waveform wfADPCM_;
+	size_t dramSize_;
+	size_t storePointADPCM_;	// Move by 4 bytes
 	std::unique_ptr<CommandSequence::Iterator> envItADPCM_;
 	CommandSequenceUnit envADPCM_;
 	std::unique_ptr<CommandSequence::Iterator> tnItADPCM_;
@@ -482,7 +485,7 @@ private:
 	int sumNoteSldADPCM_;
 	bool noteSldADPCMSetFlag_;
 	int transposeADPCM_;
-int end_, deltan_, rootKey_;	// TODO: dummy
+
 	void initADPCM();
 
 	void setMuteADPCMState(bool isMuteFM);

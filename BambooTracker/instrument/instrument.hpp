@@ -180,6 +180,8 @@ public:
 	int getWaveformRootDeltaN() const;
 	bool isWaveformRepeatable() const;
 	std::vector<uint8_t> getWaveformSamples() const;
+	size_t getWaveformStartAddress() const;
+	size_t getWaveformStopAddress() const;
 
 	void setEnvelopeEnabled(bool enabled);
 	bool getEnvelopeEnabled() const;

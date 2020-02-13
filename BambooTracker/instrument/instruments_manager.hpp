@@ -274,6 +274,10 @@ public:
 	bool isWaveformADPCMRepeatable(int wfNum) const;
 	void storeWaveformADPCMSamples(int wfNum, std::vector<uint8_t> samples);
 	std::vector<uint8_t> getWaveformADPCMSamples(int wfNum) const;
+	void setWaveformADPCMStartAddress(int wfNum, size_t addr);
+	size_t getWaveformADPCMStartAddress(int wfNum) const;
+	void setWaveformADPCMStopAddress(int wfNum, size_t addr);
+	size_t getWaveformADPCMStopAddress(int wfNum) const;
 	std::vector<int> getWaveformADPCMUsers(int wfNum) const;
 	std::vector<int> getWaveformADPCMEntriedIndices() const;
 	int findFirstFreeWaveformADPCM() const;

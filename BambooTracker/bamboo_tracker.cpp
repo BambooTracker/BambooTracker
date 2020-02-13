@@ -593,6 +593,17 @@ std::vector<int> BambooTracker::getPitchSSGUsers(int ptNum) const
 	return instMan_->getPitchSSGUsers(ptNum);
 }
 
+//--- FM
+void BambooTracker::storeWaveformADPCMSamples()
+{
+	opnaCtrl_->clearSamplesADPCM();
+	for (auto wfNum : instMan_->getWaveformADPCMEntriedIndices()) {
+		std::vector<size_t> addresses = opnaCtrl_->storeSampleADPCM(instMan_->getWaveformADPCMSamples(wfNum));
+		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
+		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);
+	}
+}
+
 /********** Song edit **********/
 int BambooTracker::getCurrentSongNumber() const
 {
@@ -790,9 +801,9 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
 			break;
 		case SoundSource::ADPCM:
-			// TODO: adpcm
-//			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(tmpInst))
-//				opnaCtrl_->setInstrumentADPCM(adpcm);
+			// TODO: adpcm check correct
+			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(tmpInst))
+				opnaCtrl_->setInstrumentADPCM(adpcm);
 			opnaCtrl_->keyOnADPCM(note, octave, pitch, true);
 			break;
 		default:

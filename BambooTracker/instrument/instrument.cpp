@@ -668,6 +668,16 @@ std::vector<uint8_t> InstrumentADPCM::getWaveformSamples() const
 	return owner_->getWaveformADPCMSamples(wfNum_);
 }
 
+size_t InstrumentADPCM::getWaveformStartAddress() const
+{
+	return owner_->getWaveformADPCMStartAddress(wfNum_);
+}
+
+size_t InstrumentADPCM::getWaveformStopAddress() const
+{
+	return owner_->getWaveformADPCMStopAddress(wfNum_);
+}
+
 void InstrumentADPCM::setEnvelopeEnabled(bool enabled)
 {
 	envEnabled_ = enabled;

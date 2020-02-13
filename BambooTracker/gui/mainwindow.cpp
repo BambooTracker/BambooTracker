@@ -817,6 +817,15 @@ void MainWindow::addInstrument()
 	case SoundSource::DRUM:
 		break;
 	}
+
+	// TODO: remove dummy
+	if (timer_) timer_->stop();
+	else stream_->stop();
+	bt_->storeWaveformADPCMSamples();	// Mutex register
+	if (timer_) timer_->start();
+	else stream_->start();
+	// -------------------
+
 }
 
 void MainWindow::removeInstrument(int row)
@@ -1721,7 +1730,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		// TODO: adpcm check correct
 		auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form.get());
 		adpcmForm->setCore(bt_);
 		adpcmForm->setConfiguration(config_.lock());

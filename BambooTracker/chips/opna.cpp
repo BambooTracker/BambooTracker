@@ -19,7 +19,7 @@ namespace chip
 {
 	size_t OPNA::count_ = 0;
 
-	OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration,
+	OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 			   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
 			   std::shared_ptr<ExportContainerInterface> exportContainer)
 		: Chip(count_++, clock, rate, 110933, maxDuration,
@@ -51,7 +51,7 @@ namespace chip
 		uint8_t AYFlags = 0;		// None
 		internalRate_[FM] = intf_->device_start(
 								id_, clock, AYDisable, AYFlags,
-								reinterpret_cast<int*>(&internalRate_[SSG]), DRAM_SIZE_);
+								reinterpret_cast<int*>(&internalRate_[SSG]), dramSize);
 
 		initResampler();
 
@@ -191,10 +191,5 @@ namespace chip
 	bool OPNA::isUsedSCCI() const
 	{
 		return (scciManager_ != nullptr);
-	}
-
-	size_t OPNA::getDRAMSize() const
-	{
-		return DRAM_SIZE_;
 	}
 }

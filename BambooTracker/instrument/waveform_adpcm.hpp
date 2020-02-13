@@ -24,6 +24,10 @@ public:
 	bool isRepeatable() const;
 	void storeSamples(std::vector<uint8_t> samples);
 	std::vector<uint8_t> getSamples() const;
+	void setStartAddress(size_t addr);
+	size_t getStartAddress() const;
+	void setStopAddress(size_t addr);
+	size_t getStopAddress() const;
 
 	bool isEdited() const;
 
@@ -31,6 +35,7 @@ private:
 	int rootKeyNum_, rootDeltaN_;
 	bool isRepeated_;
 	std::vector<uint8_t> samples_;
+	size_t startAddress_, stopAddress_;
 
 	static constexpr int DEF_RT_KEY_ = 60;	// C5
 	static constexpr int DEF_RT_DELTAN_ = 0x49cd;	// 16000Hz

@@ -155,6 +155,9 @@ public:
 	void setInstrumentSSGPitchEnabled(int instNum, bool enabled);
 	std::vector<int> getPitchSSGUsers(int ptNum) const;
 
+	//--- ADPCM
+	void storeWaveformADPCMSamples();
+
 	// Song edit
 	void setCurrentSongNumber(int num);
 	int getCurrentSongNumber() const;

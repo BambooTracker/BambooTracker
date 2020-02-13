@@ -3,9 +3,10 @@
 #include "pitch_converter.hpp"
 
 OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
-	: mode_(SongType::Standard)
+	: mode_(SongType::Standard),
+	  dramSize_(262144)	// 256KiB
 {
-	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration,
+	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration, dramSize_,
 										 std::make_unique<chip::LinearResampler>(),
 										 std::make_unique<chip::LinearResampler>());
 
@@ -661,7 +662,7 @@ void OPNAController::setMasterVolumeFM(double dB)
 	opna_->setVolumeFM(dB);
 }
 
-/********** Set pan **********/
+/********** Set effect **********/
 void OPNAController::setPanFM(int ch, int value)
 {
 	int inch = toInternalFMChannel(ch);
@@ -677,7 +678,6 @@ void OPNAController::setPanFM(int ch, int value)
 	opna_->setRegister(0xb4 + bch, data);
 }
 
-/********** Set effect **********/
 void OPNAController::setArpeggioEffectFM(int ch, int second, int third)
 {
 	if (second || third) {
@@ -3558,7 +3558,7 @@ void OPNAController::setTemporaryVolumeDrum(int ch, int volume)
 	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panDrum_[ch] << 6) | volume));
 }
 
-/********** Set pan **********/
+/********** Set effect **********/
 void OPNAController::setPanDrum(int ch, int value)
 {
 	panDrum_[ch] = static_cast<uint8_t>(value);
@@ -3614,7 +3614,7 @@ void OPNAController::updateKeyOnOffStatusDrum()
 /********** Key on-off **********/
 void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 {
-	if (isMuteADPCM_) return;
+	if (isMuteADPCM_ || !refInstADPCM_) return;
 
 	updateEchoBufferADPCM(octave, note, pitch);
 
@@ -3640,19 +3640,23 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 	setFrontADPCMSequences();
 	hasPreSetTickEventADPCM_ = isJam;
 
-	opna_->setRegister(0x100, 0x30);// if loop 0x30, else 0x20
-	opna_->setRegister(0x101, 0xc0);// pan
-	// start address
-	int startAddress = 0;
-	opna_->setRegister(0x102, (startAddress >> 2) & 0xff);
-	opna_->setRegister(0x103, (startAddress >> 10) & 0xff);
-	// stop address
-	opna_->setRegister(0x104, (end_ >> 2) & 0xff);
-	opna_->setRegister(0x105, (end_ >> 10) & 0xff);
-	// limit address
-	opna_->setRegister(0x10c, 0xff);
-	opna_->setRegister(0x10d, 0xff);
-	opna_->setRegister(0x100, 0xb0);// if loop 0xb0, else 0xa0
+	uint8_t repeatFlag = refInstADPCM_->isWaveformRepeatable() ? 0x10 : 0;
+	opna_->setRegister(0x100, 0x20 | repeatFlag);
+	opna_->setRegister(0x101, panADPCM_);
+
+	size_t startAddress = refInstADPCM_->getWaveformStartAddress();
+	opna_->setRegister(0x102, startAddress & 0xff);
+	opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+
+	size_t stopAddress = refInstADPCM_->getWaveformStopAddress();
+	opna_->setRegister(0x104, stopAddress & 0xff);
+	opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
+
+	size_t dramLim = (dramSize_ - 1) >> 2;
+	opna_->setRegister(0x10c, dramLim & 0xff);	// By 4 bytes
+	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
+
+	opna_->setRegister(0x100, 0xa0 | repeatFlag);
 
 	isKeyOnADPCM_ = true;
 }
@@ -3681,6 +3685,81 @@ void OPNAController::updateEchoBufferADPCM(int octave, Note note, int pitch)
 {
 	baseToneADPCM_.pop_back();
 	baseToneADPCM_.push_front({ octave, note, pitch });
+}
+
+/********** Set instrument **********/
+/// NOTE: inst != nullptr
+void OPNAController::setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst)
+{
+	refInstADPCM_ = inst;
+
+	if (inst->getEnvelopeEnabled())
+		envItADPCM_ = inst->getEnvelopeSequenceIterator();
+	else
+		envItADPCM_.reset();
+	if (!isArpEffADPCM_) {
+		if (inst->getArpeggioEnabled())
+			arpItADPCM_ = inst->getArpeggioSequenceIterator();
+		else
+			arpItADPCM_.reset();
+	}
+	if (inst->getPitchEnabled())
+		ptItADPCM_ = inst->getPitchSequenceIterator();
+	else
+		ptItADPCM_.reset();
+}
+
+void OPNAController::updateInstrumentADPCM(int instNum)
+{
+	if (refInstADPCM_ && refInstADPCM_->isRegisteredWithManager()
+			&& refInstADPCM_->getNumber() == instNum) {
+		if (!refInstADPCM_->getEnvelopeEnabled()) envItADPCM_.reset();
+		if (!refInstADPCM_->getArpeggioEnabled()) arpItADPCM_.reset();
+		if (!refInstADPCM_->getPitchEnabled()) ptItADPCM_.reset();
+	}
+}
+
+void OPNAController::clearSamplesADPCM()
+{
+	storePointADPCM_ = 0;
+}
+
+std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample)
+{
+	std::vector<size_t> addrs(2);
+
+	opna_->setRegister(0x110, 0x80);
+	opna_->setRegister(0x100, 0x61);
+	opna_->setRegister(0x100, 0x60);
+	opna_->setRegister(0x101, 0x00);
+
+	size_t dramLim = (dramSize_ - 1) >> 2;
+	opna_->setRegister(0x10c, dramLim & 0xff);	// By 4 bytes
+	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
+
+	if (storePointADPCM_ < dramLim) {
+		size_t startAddress = storePointADPCM_;
+		opna_->setRegister(0x102, startAddress & 0xff);
+		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+
+		size_t stopAddress = storePointADPCM_ + ((sample.size() - 1) >> 2);	// By 4 bytes
+		stopAddress = std::min(stopAddress, dramLim);
+		opna_->setRegister(0x104, stopAddress & 0xff);
+		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
+		storePointADPCM_ = stopAddress + 1;
+
+		size_t size = std::min(sample.size(), (storePointADPCM_ - startAddress) << 2);
+		for (size_t i = 0; i < size; ++i) {
+			opna_->setRegister(0x108, sample[i]);
+		}
+
+		addrs = { startAddress, stopAddress };
+	}
+
+	opna_->setRegister(0x100, 0x00);
+	opna_->setRegister(0x110, 0x80);
+
+	return addrs;
 }
 
 /********** Set volume **********/
@@ -3719,6 +3798,13 @@ void OPNAController::setRealVolumeADPCM()
 	needEnvSetADPCM_ = false;
 }
 
+/********** Set effect **********/
+void OPNAController::setPanADPCM(int value)
+{
+	panADPCM_ = static_cast<uint8_t>(value << 6);
+	opna_->setRegister(0x101, panADPCM_);
+}
+
 /********** Chip details **********/
 bool OPNAController::isKeyOnADPCM() const
 {
@@ -3736,7 +3822,6 @@ ToneDetail OPNAController::getADPCMTone() const
 }
 
 /***********************************/
-#include "chips/codec/ymb_codec.hpp"	// TODO:
 void OPNAController::initADPCM()
 {
 	isKeyOnADPCM_ = false;
@@ -3755,11 +3840,11 @@ void OPNAController::initADPCM()
 	sumPitchADPCM_ = 0;
 	baseVolADPCM_ = 0xff;	// Init volume
 	tmpVolADPCM_ = -1;
+	panADPCM_ = 0xc0;
 
 	// Init sequence
 	hasPreSetTickEventADPCM_ = false;
-//	wfItADPCM_[ch].reset();
-//	wfADPCM_[ch] = { ADPCMWaveformType::UNSET, CommandSequenceUnit::NODATA };
+	storePointADPCM_ = 0;
 	envItADPCM_.reset();
 	envADPCM_ = { -1, CommandSequenceUnit::NODATA };
 	arpItADPCM_.reset();
@@ -3780,37 +3865,6 @@ void OPNAController::initADPCM()
 	sumNoteSldADPCM_ = 0;
 	noteSldADPCMSetFlag_ = false;
 	transposeADPCM_ = 0;
-
-	// TODO: remove  dummy
-	int rate = 16000;
-	deltan_ = static_cast<int>(std::round((rate << 16) / 55500.));
-	rootKey_ = 60;	//c5
-	int len = 1;
-	int l = len * rate;
-	std::vector<int16_t> w(l);
-	for (int i = 0; i < l; ++i) {
-		w[i] = static_cast<int16_t>(32000 * std::sin(2. * 3.14159265359 * 261.626 * i / rate));
-	}
-	std::vector<uint8_t> d((w.size() + 1) / 2);
-	ymb_encode(w.data(), d.data(), w.size());
-	end_ = d.size() - 1;
-	opna_->setRegister(0x110, 0x80);
-	opna_->setRegister(0x100, 0x61);
-	opna_->setRegister(0x100, 0x60);
-	opna_->setRegister(0x101, 0x00);
-	int startAddress = 0;
-	opna_->setRegister(0x102, (startAddress >> 2) & 0xff);
-	opna_->setRegister(0x103, (startAddress >> 10) & 0xff);
-	opna_->setRegister(0x104, 0xff);
-	opna_->setRegister(0x105, 0xff);
-	opna_->setRegister(0x10c, 0xff);
-	opna_->setRegister(0x10d, 0xff);
-	for (auto v : d) {
-		opna_->setRegister(0x108, v);
-	}
-	opna_->setRegister(0x100, 0x00);
-	opna_->setRegister(0x110, 0x80);
-	// ----------
 }
 
 void OPNAController::setMuteADPCMState(bool isMute)
@@ -3831,7 +3885,7 @@ bool OPNAController::isMuteADPCM()
 
 void OPNAController::setFrontADPCMSequences()
 {
-	if (isMuteADPCM_) return;
+	if (isMuteADPCM_ | !refInstADPCM_) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->front();
@@ -3862,7 +3916,7 @@ void OPNAController::setFrontADPCMSequences()
 
 void OPNAController::releaseStartADPCMSequences()
 {
-	if (isMuteADPCM_) return;
+	if (isMuteADPCM_ | !refInstADPCM_) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->next(true);
@@ -3907,7 +3961,7 @@ void OPNAController::tickEventADPCM()
 		hasPreSetTickEventADPCM_ = false;
 	}
 	else {
-		if (isMuteADPCM_) return;
+		if (isMuteADPCM_ | !refInstADPCM_) return;
 
 		if (treItADPCM_) {
 			treItADPCM_->next();
@@ -3953,8 +4007,9 @@ void OPNAController::writePitchADPCM()
 			+ transposeADPCM_;
 	p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
 
-	int pitchDiff = p - 32 * rootKey_;
-	int deltan = static_cast<int>(std::round(deltan_ * std::pow(2., pitchDiff / 384.)));
+	int pitchDiff = p - 32 * refInstADPCM_->getWaveformRootKeyNumber();
+	int deltan = static_cast<int>(
+					 std::round(refInstADPCM_->getWaveformRootDeltaN() * std::pow(2., pitchDiff / 384.)));
 	opna_->setRegister(0x109, deltan & 0xff);
 	opna_->setRegister(0x10a, (deltan >> 8) & 0xff);
 
