@@ -139,11 +139,21 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	}
 	ui->soundDeviceComboBox->setCurrentIndex((devRow == -1) ? defDevRow : devRow);
 
-	ui->useSCCICheckBox->setCheckState(configLocked->getUseSCCI() ? Qt::Checked : Qt::Unchecked);
+	ui->realChipComboBox->addItem(tr("None"), static_cast<int>(RealChipInterface::NONE));
+	ui->realChipComboBox->addItem("SCCI", static_cast<int>(RealChipInterface::SCCI));
+	ui->realChipComboBox->addItem("C86CTL", static_cast<int>(RealChipInterface::C86CTL));
+	switch (configLocked->getRealChipInterface()) {
+	default:	// Fall through
+	case RealChipInterface::NONE:	ui->realChipComboBox->setCurrentIndex(0);	break;
+	case RealChipInterface::SCCI:	ui->realChipComboBox->setCurrentIndex(1);	break;
+	case RealChipInterface::C86CTL:	ui->realChipComboBox->setCurrentIndex(2);	break;
+	}
+
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
 	ui->sampleRateComboBox->addItem("55466Hz", 55466);
 	switch (configLocked->getSampleRate()) {
+	default:	// Fall through
 	case 44100:	ui->sampleRateComboBox->setCurrentIndex(0);	break;
 	case 48000:	ui->sampleRateComboBox->setCurrentIndex(1);	break;
 	case 55466:	ui->sampleRateComboBox->setCurrentIndex(2);	break;
@@ -270,7 +280,8 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	// Sound //
 	configLocked->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
 	configLocked->setSoundAPI(ui->soundAPIComboBox->currentText().toUtf8().toStdString());
-	configLocked->setUseSCCI(ui->useSCCICheckBox->checkState() == Qt::Checked);
+	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
+										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
 	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
 

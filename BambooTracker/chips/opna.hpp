@@ -4,6 +4,7 @@
 #include "chip_misc.h"
 #include "scci/scci.h"
 #include "scci/SCCIDefines.h"
+#include "c86ctl/c86ctl.h"
 
 namespace chip
 {
@@ -24,8 +25,10 @@ namespace chip
 		void setVolumeFM(double dB);
 		void setVolumeSSG(double dB);
 		void mix(int16_t* stream, size_t nSamples) override;
-		void useSCCI(SoundInterfaceManager* manager);
+		void useSCCI(scci::SoundInterfaceManager* manager);
 		bool isUsedSCCI() const;
+		void useC86CTL(c86ctl::IRealChipBase* base);
+		bool isUsedC86CTL() const;
 
 	private:
 		static size_t count_;
@@ -33,8 +36,13 @@ namespace chip
 		intf2608* intf_;
 
 		// For SCCI
-		SoundInterfaceManager* scciManager_;
-		SoundChip* scciChip_;
+		scci::SoundInterfaceManager* scciManager_;
+		scci::SoundChip* scciChip_;
+
+		// For C86CTL
+		c86ctl::IRealChipBase* c86ctlBase_;
+		c86ctl::IRealChip2* c86ctlRC_;
+		c86ctl::IGimic2* c86ctlGm_;
 
 		static const double VOL_REDUC;
 

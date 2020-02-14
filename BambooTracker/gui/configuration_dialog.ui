@@ -291,16 +291,19 @@
          <property name="title">
           <string>Device</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
-          <item>
-           <widget class="QComboBox" name="soundDeviceComboBox"/>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="useSCCICheckBox">
+         <layout class="QFormLayout" name="formLayout_5">
+          <item row="1" column="0">
+           <widget class="QLabel" name="realChipLabel">
             <property name="text">
-             <string>Use SCCI</string>
+             <string>Real chip interface</string>
             </property>
            </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="QComboBox" name="soundDeviceComboBox"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="realChipComboBox"/>
           </item>
          </layout>
         </widget>
@@ -2613,7 +2616,7 @@ color: rgb(255, 255, 255);</string>
   <tabstop>emulatorComboBox</tabstop>
   <tabstop>soundAPIComboBox</tabstop>
   <tabstop>soundDeviceComboBox</tabstop>
-  <tabstop>useSCCICheckBox</tabstop>
+  <tabstop>realChipComboBox</tabstop>
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>bufferLengthHorizontalSlider</tabstop>
   <tabstop>midiInputNameLine</tabstop>

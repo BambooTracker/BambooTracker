@@ -42,6 +42,7 @@
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
 #include "chips/scci/SCCIDefines.h"
+#include "chips/c86ctl/c86ctl.h"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
 #include "audio_stream_rtaudio.hpp"
@@ -58,6 +59,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	comStack_(std::make_shared<QUndoStack>(this)),
 	fileHistory_(std::make_shared<FileHistory>()),
 	scciDll_(std::make_unique<QLibrary>("scci")),
+	c86ctlDll_(std::make_unique<QLibrary>("c86ctl")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
 	isModifiedForNotCommand_(false),
 	hasLockedWigets_(false),
@@ -426,7 +428,12 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 						   QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
 											 static_cast<int>(config.lock()->getSoundDevice().length())));
 	if (!streamState) showStreamFailedDialog();
-	if (config.lock()->getUseSCCI()) {
+	RealChipInterface intf = config.lock()->getRealChipInterface();
+	if (intf == RealChipInterface::NONE) {
+		bt_->useSCCI(nullptr);
+		bt_->useC86CTL(nullptr);
+	}
+	else {
 		timer_ = std::make_unique<Timer>();
 		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
@@ -436,20 +443,9 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 			method.invoke(this, Qt::QueuedConnection);
 		});
 
-		scciDll_->load();
-		if (scciDll_->isLoaded()) {
-			SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
-													scciDll_->resolve("getSoundInterfaceManager"));
-			bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
-		}
-		else {
-			bt_->useSCCI(nullptr);
-		}
+		setRealChipInterface(intf);
 
 		timer_->start();
-	}
-	else {
-		bt_->useSCCI(nullptr);
 	}
 
 	/* Load module */
@@ -1360,35 +1356,12 @@ void MainWindow::changeOctave(bool upFlag)
 /********** Configuration change **********/
 void MainWindow::changeConfiguration()
 {
-	// SCCI settings
-	if (config_.lock()->getUseSCCI()) {
-		stream_->stop();
-		if (!timer_) {
-			timer_ = std::make_unique<Timer>();
-			timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
-			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
-			Q_ASSERT(tickEventMethod_ != -1);
-			timer_->setFunction([&]{
-				QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
-				method.invoke(this, Qt::QueuedConnection);
-			});
-
-			scciDll_->load();
-			if (scciDll_->isLoaded()) {
-				SCCIFUNC getSoundInterfaceManager = reinterpret_cast<SCCIFUNC>(
-														scciDll_->resolve("getSoundInterfaceManager"));
-				bt_->useSCCI(getSoundInterfaceManager ? getSoundInterfaceManager() : nullptr);
-			}
-			else {
-				bt_->useSCCI(nullptr);
-			}
-
-			timer_->start();
-		}
-	}
-	else {
+	// Real chip interface
+	RealChipInterface intf = config_.lock()->getRealChipInterface();
+	if (intf == RealChipInterface::NONE) {
 		timer_.reset();
 		bt_->useSCCI(nullptr);
+		bt_->useC86CTL(nullptr);
 		bool streamState = stream_->initialize(
 							   config_.lock()->getSampleRate(),
 							   config_.lock()->getBufferLength(),
@@ -1399,6 +1372,26 @@ void MainWindow::changeConfiguration()
 												 static_cast<int>(config_.lock()->getSoundDevice().length())));
 		if (!streamState) showStreamFailedDialog();
 		stream_->start();
+	}
+	else {
+		stream_->stop();
+		if (timer_) {
+			timer_->stop();
+		}
+		else {
+			timer_ = std::make_unique<Timer>();
+			timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
+			Q_ASSERT(tickEventMethod_ != -1);
+			timer_->setFunction([&]{
+				QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
+				method.invoke(this, Qt::QueuedConnection);
+			});
+		}
+
+		setRealChipInterface(intf);
+
+		timer_->start();
 	}
 
 	setMidiConfiguration();
@@ -1414,6 +1407,49 @@ void MainWindow::changeConfiguration()
 	updateInstrumentListColors();
 
 	update();
+}
+
+void MainWindow::setRealChipInterface(RealChipInterface intf)
+{
+	if (intf == bt_->getRealChipinterface()) return;
+
+	if (isWindowModified()
+			&& QMessageBox::warning(this, tr("Warning"),
+									tr("The module has been changed. Do you want to save it?"),
+									QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
+		on_actionSave_As_triggered();
+	}
+
+	switch (intf) {
+	case RealChipInterface::SCCI:
+		bt_->useC86CTL(nullptr);
+		scciDll_->load();
+		if (scciDll_->isLoaded()) {
+			auto getManager = reinterpret_cast<scci::SCCIFUNC>(
+								  scciDll_->resolve("getSoundInterfaceManager"));
+			bt_->useSCCI(getManager ? getManager() : nullptr);
+		}
+		else {
+			bt_->useSCCI(nullptr);
+		}
+		break;
+	case RealChipInterface::C86CTL:
+		bt_->useSCCI(nullptr);
+		c86ctlDll_->load();
+		if (c86ctlDll_->isLoaded()) {
+			c86ctl::IRealChipBase *pChipBase = nullptr;
+			auto createInstance = reinterpret_cast<c86ctl::CreateInstanceFunc>(
+									  c86ctlDll_->resolve("CreateInstance"));
+			createInstance(c86ctl::IID_IRealChipBase, reinterpret_cast<void**>(&pChipBase));
+			bt_->useC86CTL(pChipBase);
+		}
+		else {
+			bt_->useC86CTL(nullptr);
+		}
+		break;
+	default:
+		break;
+	}
 }
 
 void MainWindow::setMidiConfiguration()
@@ -2092,6 +2128,7 @@ void MainWindow::on_actionAbout_triggered()
 						 "Copyright (C) 2018-2020 Rerrah</b><br>"
 						 "<hr>"
 						 "Libraries:<br>"
+						 "- C86CTL by (C) honet (BSD 3-Clause)<br>"
 						 "- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)<br>"
 						 "- MAME (MAME License)<br>"
 						 "- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)<br>"

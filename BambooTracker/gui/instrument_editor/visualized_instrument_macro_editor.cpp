@@ -21,7 +21,7 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	  hovRow_(-1),
 	  hovCol_(-1),
 	  type_(NoType),
-	  permittedReleaseType_(ReleaseType::FIXED),
+	  permittedReleaseType_(ReleaseType::FIXED_RELEASE),
 	  isLabelOmitted_(false),
 	  release_{ ReleaseType::NO_RELEASE, -1 },
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
@@ -415,13 +415,13 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 			case ReleaseType::NO_RELEASE:
 				type = "";
 				break;
-			case ReleaseType::FIXED:
+			case ReleaseType::FIXED_RELEASE:
 				type = tr("Fixed");
 				break;
-			case ReleaseType::ABSOLUTE:
+			case ReleaseType::ABSOLUTE_RELEASE:
 				type = tr("Absolute");
 				break;
-			case ReleaseType::RELATIVE:
+			case ReleaseType::RELATIVE_RELEASE:
 				type = tr("Relative");
 				break;
 			}
@@ -469,9 +469,9 @@ void VisualizedInstrumentMacroEditor::printMML()
 	for (int cnt = 0; cnt < seqLen; ++cnt) {
 		if (release_.point == cnt) {
 			switch (release_.type) {
-			case ReleaseType::FIXED:	text += "| ";	break;
-			case ReleaseType::ABSOLUTE:	text += "/ ";	break;
-			case ReleaseType::RELATIVE:	text += ": ";	break;
+			case ReleaseType::FIXED_RELEASE:	text += "| ";	break;
+			case ReleaseType::ABSOLUTE_RELEASE:	text += "/ ";	break;
+			case ReleaseType::RELATIVE_RELEASE:	text += ": ";	break;
 			default:									break;
 			}
 		}
@@ -547,31 +547,31 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 			continue;
 		}
 
-		if (permittedReleaseType_ & ReleaseType::FIXED) {
+		if (permittedReleaseType_ & ReleaseType::FIXED_RELEASE) {
 			m = QRegularExpression("^\\|").match(text);
 			if (m.hasMatch()) {
 				if (release.point > -1) return;
-				release = { ReleaseType::FIXED, cnt };
+				release = { ReleaseType::FIXED_RELEASE, cnt };
 				text.remove(QRegularExpression("^\\|"));
 				continue;
 			}
 		}
 
-		if (permittedReleaseType_ & ReleaseType::ABSOLUTE) {
+		if (permittedReleaseType_ & ReleaseType::ABSOLUTE_RELEASE) {
 			m = QRegularExpression("^/").match(text);
 			if (m.hasMatch()) {
 				if (release.point > -1) return;
-				release = { ReleaseType::ABSOLUTE, cnt };
+				release = { ReleaseType::ABSOLUTE_RELEASE, cnt };
 				text.remove(QRegularExpression("^/"));
 				continue;
 			}
 		}
 
-		if (permittedReleaseType_ & ReleaseType::RELATIVE) {
+		if (permittedReleaseType_ & ReleaseType::RELATIVE_RELEASE) {
 			m = QRegularExpression("^:").match(text);
 			if (m.hasMatch()) {
 				if (release.point > -1) return;
-				release = { ReleaseType::RELATIVE, cnt };
+				release = { ReleaseType::RELATIVE_RELEASE, cnt };
 				text.remove(QRegularExpression("^:"));
 				continue;
 			}
@@ -871,7 +871,7 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 				{
 					if (release_.point == -1 || pressCol_ < release_.point) {	// New release
 						release_.type = (release_.type == ReleaseType::NO_RELEASE)
-										? ReleaseType::FIXED
+										? ReleaseType::FIXED_RELEASE
 										: release_.type;
 						release_.point = pressCol_;
 						printMML();
@@ -879,15 +879,15 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 					}
 					else if (isMultiReleaseState_) {	// Change release type
 						switch (release_.type) {
-						case ReleaseType::FIXED:
-							release_.type = ReleaseType::ABSOLUTE;
+						case ReleaseType::FIXED_RELEASE:
+							release_.type = ReleaseType::ABSOLUTE_RELEASE;
 							break;
-						case ReleaseType::ABSOLUTE:
-							release_.type = ReleaseType::RELATIVE;
+						case ReleaseType::ABSOLUTE_RELEASE:
+							release_.type = ReleaseType::RELATIVE_RELEASE;
 							break;
 						case ReleaseType::NO_RELEASE:
-						case ReleaseType::RELATIVE:
-							release_.type = ReleaseType::FIXED;
+						case ReleaseType::RELATIVE_RELEASE:
+							release_.type = ReleaseType::FIXED_RELEASE;
 							break;
 						}
 						printMML();

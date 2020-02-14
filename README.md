@@ -378,6 +378,7 @@ I would like to thank the following people for making it:
 - papiezak for sample instruments
 - Ru^3 for S98 file format documentation
 - がし３ (gasshi) for SCCI libraries
+- honet for C86CTL libraries
 - Gary P. Scavone and others for RtAudio and RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - Jean Pierre Cimalando and Olivier Humbert for French translation

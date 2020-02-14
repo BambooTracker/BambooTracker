@@ -9,6 +9,7 @@
 #include "effect_iterator.hpp"
 #include "chips/chip_misc.h"
 #include "chips/scci/scci.h"
+#include "chips/c86ctl/c86ctl.h"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -55,9 +56,11 @@ public:
 	// Update register states after tick process
 	void updateRegisterStates();
 
-	// Stream type
-	void useSCCI(SoundInterfaceManager* manager);
+	// Real chip interface
+	void useSCCI(scci::SoundInterfaceManager* manager);
 	bool isUsedSCCI() const;
+	void useC86CTL(c86ctl::IRealChipBase* base);
+	bool isUsedC86CTL() const;
 
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);

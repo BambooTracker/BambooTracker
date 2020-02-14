@@ -403,9 +403,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->arpOpComboBox->addItem("Op3", static_cast<int>(FMOperatorType::Op3));
 	ui->arpOpComboBox->addItem("Op4", static_cast<int>(FMOperatorType::Op4));
 
-	ui->arpTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::Absolute);
-	ui->arpTypeComboBox->addItem(tr("Fixed"), VisualizedInstrumentMacroEditor::SequenceType::Fixed);
-	ui->arpTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::Relative);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
+	ui->arpTypeComboBox->addItem(tr("Fixed"), VisualizedInstrumentMacroEditor::SequenceType::FixedSequence);
+	ui->arpTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -475,8 +475,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::Absolute);
-	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::Relative);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
+	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -626,11 +626,11 @@ SequenceType InstrumentEditorFMForm::convertSequenceTypeForData(VisualizedInstru
 	switch (type) {
 	case VisualizedInstrumentMacroEditor::SequenceType::NoType:
 		return SequenceType::NO_SEQUENCE_TYPE;
-	case VisualizedInstrumentMacroEditor::SequenceType::Fixed:
+	case VisualizedInstrumentMacroEditor::SequenceType::FixedSequence:
 		return SequenceType::FIXED_SEQUENCE;
-	case VisualizedInstrumentMacroEditor::SequenceType::Absolute:
+	case VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence:
 		return SequenceType::ABSOLUTE_SEQUENCE;
-	case VisualizedInstrumentMacroEditor::SequenceType::Relative:
+	case VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence:
 		return SequenceType::RELATIVE_SEQUENCE;
 	default:
 		throw std::invalid_argument("Unexpected SequenceType.");
@@ -643,11 +643,11 @@ VisualizedInstrumentMacroEditor::SequenceType InstrumentEditorFMForm::convertSeq
 	case SequenceType::NO_SEQUENCE_TYPE:
 		return VisualizedInstrumentMacroEditor::SequenceType::NoType;
 	case SequenceType::FIXED_SEQUENCE:
-		return VisualizedInstrumentMacroEditor::SequenceType::Fixed;
+		return VisualizedInstrumentMacroEditor::SequenceType::FixedSequence;
 	case SequenceType::ABSOLUTE_SEQUENCE:
-		return VisualizedInstrumentMacroEditor::SequenceType::Absolute;
+		return VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence;
 	case SequenceType::RELATIVE_SEQUENCE:
-		return VisualizedInstrumentMacroEditor::SequenceType::Relative;
+		return VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence;
 	default:
 		throw std::invalid_argument("Unexpected SequenceType.");
 	}
@@ -658,11 +658,11 @@ ReleaseType InstrumentEditorFMForm::convertReleaseTypeForData(VisualizedInstrume
 	switch (type) {
 	case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
 		return ReleaseType::NoRelease;
-	case VisualizedInstrumentMacroEditor::ReleaseType::FIXED:
+	case VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE:
 		return ReleaseType::FixedRelease;
-	case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE:
+	case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE:
 		return ReleaseType::AbsoluteRelease;
-	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE:
+	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE:
 		return ReleaseType::RelativeRelease;
 	default:
 		throw std::invalid_argument("Unexpected ReleaseType.");
@@ -675,11 +675,11 @@ VisualizedInstrumentMacroEditor::ReleaseType InstrumentEditorFMForm::convertRele
 	case ReleaseType::NoRelease:
 		return VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE;
 	case ReleaseType::FixedRelease:
-		return VisualizedInstrumentMacroEditor::ReleaseType::FIXED;
+		return VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE;
 	case ReleaseType::AbsoluteRelease:
-		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE;
+		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE;
 	case ReleaseType::RelativeRelease:
-		return VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE;
+		return VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE;
 	default:
 		throw std::invalid_argument("Unexpected ReleaseType.");
 	}

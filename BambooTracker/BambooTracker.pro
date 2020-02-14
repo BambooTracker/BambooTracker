@@ -204,6 +204,7 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
+    chips/c86ctl/c86ctl.h \
     command/command_id.hpp \
     enum_hash.hpp \
     gui/color_palette_handler.hpp \

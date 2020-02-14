@@ -96,8 +96,8 @@ void OPNAController::updateRegisterStates()
 	}
 }
 
-/********** Stream type **********/
-void OPNAController::useSCCI(SoundInterfaceManager* manager)
+/********** Real chip interface **********/
+void OPNAController::useSCCI(scci::SoundInterfaceManager* manager)
 {
 	opna_->useSCCI(manager);
 }
@@ -105,6 +105,16 @@ void OPNAController::useSCCI(SoundInterfaceManager* manager)
 bool OPNAController::isUsedSCCI() const
 {
 	return opna_->isUsedSCCI();
+}
+
+void OPNAController::useC86CTL(c86ctl::IRealChipBase* base)
+{
+	opna_->useC86CTL(base);
+}
+
+bool OPNAController::isUsedC86CTL() const
+{
+	return opna_->isUsedC86CTL();
 }
 
 /********** Stream samples **********/

@@ -1197,10 +1197,22 @@ void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) con
 	}
 }
 
-/********** Stream type **********/
-void BambooTracker::useSCCI(SoundInterfaceManager* manager)
+/********** Real chip interface **********/
+void BambooTracker::useSCCI(scci::SoundInterfaceManager* manager)
 {
 	opnaCtrl_->useSCCI(manager);
+}
+
+void BambooTracker::useC86CTL(c86ctl::IRealChipBase* base)
+{
+	opnaCtrl_->useC86CTL(base);
+}
+
+RealChipInterface BambooTracker::getRealChipinterface() const
+{
+	if (opnaCtrl_->isUsedSCCI()) return RealChipInterface::SCCI;
+	else if (opnaCtrl_->isUsedC86CTL()) return RealChipInterface::C86CTL;
+	else return RealChipInterface::NONE;
 }
 
 /********** Stream events **********/

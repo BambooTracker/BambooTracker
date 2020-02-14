@@ -28,7 +28,10 @@ namespace chip
 			   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
 			   exportContainer),
 		  scciManager_(nullptr),
-		  scciChip_(nullptr)
+		  scciChip_(nullptr),
+		  c86ctlBase_(nullptr),
+		  c86ctlRC_(nullptr),
+		  c86ctlGm_(nullptr)
 	{
 		switch (emu) {
 		default:
@@ -68,6 +71,7 @@ namespace chip
 		--count_;
 
 		useSCCI(nullptr);
+		useC86CTL(nullptr);
 	}
 
 	void OPNA::reset()
@@ -77,6 +81,7 @@ namespace chip
 		intf_->device_reset(id_);
 
 		if (scciChip_) scciChip_->init();
+		if (c86ctlRC_) c86ctlRC_->reset();
 	}
 
 	void OPNA::setRegister(uint32_t offset, uint8_t value)
@@ -96,6 +101,7 @@ namespace chip
 		}
 
 		if (scciChip_) scciChip_->setRegister(offset, value);
+		if (c86ctlRC_) c86ctlRC_->out(offset, value);
 
 		if (exCntr_) exCntr_->recordRegisterChange(offset, value);
 	}
@@ -123,6 +129,13 @@ namespace chip
 	{
 		std::lock_guard<std::mutex> lg(mutex_);
 		volumeRatio_[SSG] = std::pow(10.0, (dB - VOL_REDUC) / 20.0);
+
+		if (c86ctlGm_) {
+			// NOTE: estimate SSG volume roughly
+			uint8_t vol = static_cast<uint8_t>(std::round((dB < -3.0) ? (2.5 * dB + 45.5)
+																	  : (7. * dB + 59.)));
+			c86ctlGm_->setSSGVolume(vol);
+		}
 	}
 
 	void OPNA::mix(int16_t* stream, size_t nSamples)
@@ -165,14 +178,13 @@ namespace chip
 		if (exCntr_) exCntr_->recordStream(stream, nSamples);
 	}
 
-	void OPNA::useSCCI(SoundInterfaceManager* manager)
+	void OPNA::useSCCI(scci::SoundInterfaceManager* manager)
 	{
 		if (manager) {
 			scciManager_ = manager;
 			scciManager_->initializeInstance();
 			scciManager_->reset();
-
-			scciChip_ = scciManager_->getSoundChip(SC_TYPE_YM2608, SC_CLOCK_7987200);
+			scciChip_ = scciManager_->getSoundChip(scci::SC_TYPE_YM2608, scci::SC_CLOCK_7987200);
 			if (!scciChip_) {
 				scciManager_->releaseInstance();
 				scciManager_ = nullptr;
@@ -191,5 +203,50 @@ namespace chip
 	bool OPNA::isUsedSCCI() const
 	{
 		return (scciManager_ != nullptr);
+	}
+
+	void OPNA::useC86CTL(c86ctl::IRealChipBase* base)
+	{
+		if (base) {
+			base->initialize();
+			int nChip = base->getNumberOfChip();
+			for (int i = 0; i < nChip; ++i) {
+				c86ctl::IRealChip2* rc = nullptr;
+				base->getChipInterface(i, c86ctl::IID_IRealChip2, reinterpret_cast<void**>(&rc));
+				if (rc) {
+					rc->reset();
+					c86ctl::IGimic2* gm = nullptr;
+					if (rc->QueryInterface(c86ctl::IID_IGimic2, reinterpret_cast<void**>(&gm)) == S_OK) {
+						c86ctl::ChipType type;
+						gm->getModuleType(&type);
+						if (type == c86ctl::CHIP_OPNA) {
+							c86ctlBase_ = base;
+							c86ctlRC_ = rc;
+							c86ctlGm_ = gm;
+							return;
+						}
+						gm->Release();
+					}
+					rc->Release();
+				}
+			}
+			base->deinitialize();
+		}
+		else {
+			if (!c86ctlBase_) return;
+			c86ctlRC_->reset();
+			c86ctlGm_->Release();
+			c86ctlRC_->Release();
+			c86ctlBase_->deinitialize();
+		}
+
+		c86ctlBase_ = nullptr;
+		c86ctlRC_ = nullptr;
+		c86ctlGm_ = nullptr;
+	}
+
+	bool OPNA::isUsedC86CTL() const
+	{
+		return (c86ctlBase_ != nullptr);
 	}
 }

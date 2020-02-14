@@ -24,20 +24,20 @@ ArpeggioMacroEditor::ArpeggioMacroEditor(QWidget* parent)
 	autoFitLabelWidth();
 	setUpperRow(55);
 	setMMLDisplay0As(-48);
-	setSequenceType(SequenceType::Absolute);
+	setSequenceType(SequenceType::AbsoluteSequence);
 }
 
 ArpeggioMacroEditor::~ArpeggioMacroEditor() {}
 
 QString ArpeggioMacroEditor::convertSequenceDataUnitToMML(Column col)
 {
-	if (type_ == SequenceType::Fixed)	return TONE_LABS_[col.row];
+	if (type_ == SequenceType::FixedSequence)	return TONE_LABS_[col.row];
 	else return VisualizedInstrumentMacroEditor::convertSequenceDataUnitToMML(col);
 }
 
 bool ArpeggioMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column)
 {
-	if (type_ == SequenceType::Fixed) {
+	if (type_ == SequenceType::FixedSequence) {
 		QRegularExpressionMatch m = QRegularExpression("^([A-G][-#])([0-7])").match(text);
 		if (m.hasMatch()) {
 			QString tone = m.captured(1);
@@ -80,7 +80,7 @@ bool ArpeggioMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vecto
 
 void ArpeggioMacroEditor::updateLabels()
 {
-	if (type_ == SequenceType::Fixed) {
+	if (type_ == SequenceType::FixedSequence) {
 		for (int i = 0; i < 96; ++i)
 			setLabel(i, TONE_LABS_[i]);
 	}

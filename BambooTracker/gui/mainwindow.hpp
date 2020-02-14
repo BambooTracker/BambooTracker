@@ -73,7 +73,7 @@ private:
 	std::shared_ptr<QUndoStack> comStack_;
 	std::shared_ptr<FileHistory> fileHistory_;
 
-	std::unique_ptr<QLibrary> scciDll_;
+	std::unique_ptr<QLibrary> scciDll_, c86ctlDll_;
 
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
@@ -115,6 +115,7 @@ private:
 
 	// Configuration change
 	void changeConfiguration();
+	void setRealChipInterface(RealChipInterface intf);
 	void setMidiConfiguration();
 	void updateFonts();
 
@@ -166,6 +167,21 @@ private:
 
 	void updateInstrumentListColors();
 	void freezeViews();
+
+	inline bool showUndoResetWarningDialog(QString text)
+	{
+		return (QMessageBox::warning(this, tr("Warning"),
+									 tr("%1 If you execute this command, the command history is reset.").arg(text),
+									 QMessageBox::Yes | QMessageBox::No,
+									 QMessageBox::No) == QMessageBox::Yes);
+	}
+
+	inline void showStreamFailedDialog()
+	{
+		QMessageBox::critical(this, tr("Error"),
+							  tr("Could not open the audio stream. Please change the sound settings in Configuration."),
+							  QMessageBox::Ok, QMessageBox::Ok);
+	}
 
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
@@ -252,21 +268,6 @@ private slots:
 	void on_actionS_hrink_Effect_Column_triggered();
 	void on_actionRemove_Duplicate_Instruments_triggered();
 	void on_actionRename_Instrument_triggered();
-
-	inline bool showUndoResetWarningDialog(QString text)
-	{
-		return (QMessageBox::warning(this, tr("Warning"),
-									 tr("%1 If you execute this command, the command history is reset.").arg(text),
-									 QMessageBox::Yes | QMessageBox::No,
-									 QMessageBox::No) == QMessageBox::Yes);
-	}
-
-	inline void showStreamFailedDialog()
-	{
-		QMessageBox::critical(this, tr("Error"),
-							  tr("Could not open the audio stream. Please change the sound settings in Configuration."),
-							  QMessageBox::Ok, QMessageBox::Ok);
-	}
 };
 
 #endif // MAINWINDOW_HPP

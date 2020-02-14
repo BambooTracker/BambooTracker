@@ -1,4 +1,6 @@
 # List of libraries
+- [C86CTL](https://github.com/honet/c86ctl) by honet - [BSD 3-Clause](./c86ctl_lisence.txt)
+  - BambooTracker/chips/c86ctl/*
 - [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand)
   - MIT
     - BambooTracker/format/wopn_file.*

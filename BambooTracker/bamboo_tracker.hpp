@@ -17,6 +17,7 @@
 #include "gd3_tag.hpp"
 #include "s98_tag.hpp"
 #include "chips/scci/scci.h"
+#include "chips/c86ctl/c86ctl.h"
 #include "effect.hpp"
 #include "playback.hpp"
 #include "binary_container.hpp"
@@ -204,8 +205,10 @@ public:
 	bool exportToS98(BinaryContainer& container, int target, bool tagEnabled, S98Tag tag,
 					 int rate, std::function<bool()> bar);
 
-	// Stream type
-	void useSCCI(SoundInterfaceManager* manager);
+	// Real chip interface
+	void useSCCI(scci::SoundInterfaceManager* manager);
+	void useC86CTL(c86ctl::IRealChipBase* base);
+	RealChipInterface getRealChipinterface() const;
 
 	// Stream events
 	/// 0<: Tick
