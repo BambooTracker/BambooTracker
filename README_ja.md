@@ -377,7 +377,7 @@ pkg install bambootracker
 - サンプルインストゥルメントを提供してくださったpapiezakさん
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
 - S98ファイルのフォーマットのドキュメントに関してRu^3さん
-- SCCIライブラリに関してSCCI開発チームの方々
+- SCCIライブラリに関してがし３さん
 - RtAudioとRtMidiライブラリに関してGary P. Scavoneさん他
 - Nuked OPN-Modエミュレーションに関してAlexey Khokholov (Nuke.YKT)さん、Jean Pierre Cimalandoさん
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん
