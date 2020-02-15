@@ -99,6 +99,13 @@ private:
 	void fillOutputHistory(const int16_t* outputs, size_t nSamples);
 	void transferReadyHistory();
 
+	void checkRealToneByArpeggio(int seqPos, const std::unique_ptr<SequenceIteratorInterface>& arpIt,
+								 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
+	void checkPortamento(const std::unique_ptr<SequenceIteratorInterface>& arpIt, int prtm, bool isTonePrtm,
+						 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
+	void checkRealToneByPitch(int seqPos, const std::unique_ptr<CommandSequence::Iterator>& ptIt,
+							  int& sumPitch, bool& needToneSet);
+
 	/*----- FM -----*/
 public:
 	// Key on-off
@@ -210,9 +217,23 @@ private:
 
 	void checkOperatorSequenceFM(int ch, int type);
 	void checkVolumeEffectFM(int ch);
-	void checkRealToneFMByArpeggio(int ch, int seqPos);
-	void checkPortamentoFM(int ch);
-	void checkRealToneFMByPitch(int ch, int seqPos);
+
+	inline void checkRealToneFMByArpeggio(int ch, int seqPos)
+	{
+		checkRealToneByArpeggio(seqPos, arpItFM_[ch], baseToneFM_[ch], keyToneFM_[ch], needToneSetFM_[ch]);
+	}
+
+	inline void checkPortamentoFM(int ch)
+	{
+		checkPortamento(arpItFM_[ch], prtmFM_[ch], isTonePrtmFM_[ch], baseToneFM_[ch],
+						keyToneFM_[ch], needToneSetFM_[ch]);
+	}
+
+	inline void checkRealToneFMByPitch(int ch, int seqPos)
+	{
+		checkRealToneByPitch(seqPos, ptItFM_[ch], sumPitchFM_[ch], needToneSetFM_[ch]);
+	}
+
 	void writePitchFM(int ch);
 
 	void setInstrumentFMProperties(int ch);
@@ -376,9 +397,23 @@ private:
 	void writeToneNoiseSSGToRegisterNoReference(int ch);
 
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
-	void checkRealToneSSGByArpeggio(int ch, int seqPos);
-	void checkPortamentoSSG(int ch);
-	void checkRealToneSSGByPitch(int ch, int seqPos);
+
+	inline void checkRealToneSSGByArpeggio(int ch, int seqPos)
+	{
+		checkRealToneByArpeggio(seqPos, arpItSSG_[ch], baseToneSSG_[ch], keyToneSSG_[ch], needToneSetSSG_[ch]);
+	}
+
+	inline void checkPortamentoSSG(int ch)
+	{
+		checkPortamento(arpItSSG_[ch], prtmSSG_[ch], isTonePrtmSSG_[ch], baseToneSSG_[ch],
+						keyToneSSG_[ch], needToneSetSSG_[ch]);
+	}
+
+	inline void checkRealToneSSGByPitch(int ch, int seqPos)
+	{
+		checkRealToneByPitch(seqPos, ptItSSG_[ch], sumPitchSSG_[ch], needToneSetSSG_[ch]);
+	}
+
 	void writePitchSSG(int ch);
 
 	void setRealVolumeSSG(int ch);
@@ -496,9 +531,23 @@ private:
 	void tickEventADPCM();
 
 //	void writeEnvelopeADPCMToRegister(int seqPos);
-	void checkRealToneADPCMByArpeggio(int seqPos);
-	void checkPortamentoADPCM();
-	void checkRealToneADPCMByPitch(int seqPos);
+
+	inline void checkRealToneADPCMByArpeggio(int seqPos)
+	{
+		checkRealToneByArpeggio(seqPos, arpItADPCM_, baseToneADPCM_, keyToneADPCM_, needToneSetADPCM_);
+	}
+
+	inline void checkPortamentoADPCM()
+	{
+		checkPortamento(arpItADPCM_, prtmADPCM_, isTonePrtmADPCM_, baseToneADPCM_,
+						keyToneADPCM_, needToneSetADPCM_);
+	}
+
+	inline void checkRealToneADPCMByPitch(int seqPos)
+	{
+		checkRealToneByPitch(seqPos, ptItADPCM_, sumPitchADPCM_, needToneSetADPCM_);
+	}
+
 	void writePitchADPCM();
 
 	void setRealVolumeADPCM();

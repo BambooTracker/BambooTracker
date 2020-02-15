@@ -226,6 +226,103 @@ void OPNAController::setExportContainer(std::shared_ptr<chip::ExportContainerInt
 	opna_->setExportContainer(cntr);
 }
 
+/********** Internal process **********/
+void OPNAController::checkRealToneByArpeggio(int seqPos,
+											 const std::unique_ptr<SequenceIteratorInterface>& arpIt,
+											 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
+											 bool& needToneSet)
+{
+	if (seqPos == -1) return;
+
+	switch (arpIt->getSequenceType()) {
+	case SequenceType::ABSOLUTE_SEQUENCE:
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
+										octaveAndNoteToNoteNumber(baseTone.front().octave,
+																  baseTone.front().note)
+										+ arpIt->getCommandType() - 48);
+		keyTone.octave = pair.first;
+		keyTone.note = pair.second;
+		break;
+	}
+	case SequenceType::FIXED_SEQUENCE:
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpIt->getCommandType());
+		keyTone.octave = pair.first;
+		keyTone.note = pair.second;
+		break;
+	}
+	case SequenceType::RELATIVE_SEQUENCE:	// Relative
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
+										octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
+										+ arpIt->getCommandType() - 48);
+		keyTone.octave = pair.first;
+		keyTone.note = pair.second;
+		break;
+	}
+	default:
+		return ;
+	}
+
+	needToneSet = true;
+}
+
+void OPNAController::checkPortamento(const std::unique_ptr<SequenceIteratorInterface>& arpIt,
+									 int prtm, bool isTonePrtm, const std::deque<ToneDetail>& baseTone,
+									 ToneDetail& keyTone, bool& needToneSet)
+{
+	if ((!arpIt || arpIt->getPosition() == -1) && prtm) {
+		if (isTonePrtm) {
+			int dif = ( octaveAndNoteToNoteNumber(baseTone.front().octave, baseTone.front().note) * 32
+						+ baseTone.front().pitch )
+					  - ( octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note) * 32
+						  + keyTone.pitch );
+			if (dif > 0) {
+				if (dif - prtm < 0) {
+					keyTone = baseTone.front();
+				}
+				else {
+					keyTone.pitch += prtm;
+				}
+				needToneSet = true;
+			}
+			else if (dif < 0) {
+				if (dif + prtm > 0) {
+					keyTone = baseTone.front();
+				}
+				else {
+					keyTone.pitch -= prtm;
+				}
+				needToneSet = true;
+			}
+		}
+		else {
+			keyTone.pitch += prtm;
+			needToneSet = true;
+		}
+	}
+}
+
+void OPNAController::checkRealToneByPitch(int seqPos, const std::unique_ptr<CommandSequence::Iterator>& ptIt,
+										  int& sumPitch, bool& needToneSet)
+{
+	if (seqPos == -1) return;
+
+	switch (ptIt->getSequenceType()) {
+	case SequenceType::ABSOLUTE_SEQUENCE:
+		sumPitch = ptIt->getCommandType() - 127;
+		break;
+	case SequenceType::RELATIVE_SEQUENCE:
+		sumPitch += (ptIt->getCommandType() - 127);
+		break;
+	default:
+		return;
+	}
+
+	needToneSet = true;
+}
+
 //---------- FM ----------//
 /********** Key on-off **********/
 void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJam)
@@ -1848,96 +1945,6 @@ void OPNAController::checkVolumeEffectFM(int ch)
 	}
 }
 
-void OPNAController::checkRealToneFMByArpeggio(int ch, int seqPos)
-{
-	if (seqPos == -1) return;
-
-	switch (arpItFM_[ch]->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(baseToneFM_[ch].front().octave,
-																  baseToneFM_[ch].front().note)
-										+ arpItFM_[ch]->getCommandType() - 48);
-		keyToneFM_[ch].octave = pair.first;
-		keyToneFM_[ch].note = pair.second;
-		break;
-	}
-	case SequenceType::FIXED_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItFM_[ch]->getCommandType());
-		keyToneFM_[ch].octave = pair.first;
-		keyToneFM_[ch].note = pair.second;
-		break;
-	}
-	case SequenceType::RELATIVE_SEQUENCE:	// Relative
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(keyToneFM_[ch].octave, keyToneFM_[ch].note)
-										+ arpItFM_[ch]->getCommandType() - 48);
-		keyToneFM_[ch].octave = pair.first;
-		keyToneFM_[ch].note = pair.second;
-		break;
-	}
-	default:
-		break;
-	}
-
-	needToneSetFM_[ch] = true;
-}
-
-void OPNAController::checkPortamentoFM(int ch)
-{
-	if ((!arpItFM_[ch] || arpItFM_[ch]->getPosition() == -1) && prtmFM_[ch]) {
-		if (isTonePrtmFM_[ch]) {
-			int dif = ( octaveAndNoteToNoteNumber(baseToneFM_[ch].front().octave, baseToneFM_[ch].front().note) * 32
-						+ baseToneFM_[ch].front().pitch )
-					  - ( octaveAndNoteToNoteNumber(keyToneFM_[ch].octave, keyToneFM_[ch].note) * 32
-						  + keyToneFM_[ch].pitch );
-			if (dif > 0) {
-				if (dif - prtmFM_[ch] < 0) {
-					keyToneFM_[ch] = baseToneFM_[ch].front();
-				}
-				else {
-					keyToneFM_[ch].pitch += prtmFM_[ch];
-				}
-				needToneSetFM_[ch] = true;
-			}
-			else if (dif < 0) {
-				if (dif + prtmFM_[ch] > 0) {
-					keyToneFM_[ch] = baseToneFM_[ch].front();
-				}
-				else {
-					keyToneFM_[ch].pitch -= prtmFM_[ch];
-				}
-				needToneSetFM_[ch] = true;
-			}
-		}
-		else {
-			keyToneFM_[ch].pitch += prtmFM_[ch];
-			needToneSetFM_[ch] = true;
-		}
-	}
-}
-
-void OPNAController::checkRealToneFMByPitch(int ch, int seqPos)
-{
-	if (seqPos == -1) return;
-
-	switch (ptItFM_[ch]->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-		sumPitchFM_[ch] = ptItFM_[ch]->getCommandType() - 127;
-		break;
-	case SequenceType::RELATIVE_SEQUENCE:
-		sumPitchFM_[ch] += (ptItFM_[ch]->getCommandType() - 127);
-		break;
-	default:
-		break;
-	}
-
-	needToneSetFM_[ch] = true;
-}
-
 void OPNAController::writePitchFM(int ch)
 {
 	if (keyToneFM_[ch].octave == -1) return;	// Not set note yet
@@ -3249,96 +3256,6 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 	}
 }
 
-void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
-{
-	if (seqPos == -1) return;
-
-	switch (arpItSSG_[ch]->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(baseToneSSG_[ch].front().octave,
-																  baseToneSSG_[ch].front().note)
-										+ arpItSSG_[ch]->getCommandType() - 48);
-		keyToneSSG_[ch].octave = pair.first;
-		keyToneSSG_[ch].note = pair.second;
-		break;
-	}
-	case SequenceType::FIXED_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItSSG_[ch]->getCommandType());
-		keyToneSSG_[ch].octave = pair.first;
-		keyToneSSG_[ch].note = pair.second;
-		break;
-	}
-	case SequenceType::RELATIVE_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(keyToneSSG_[ch].octave, keyToneSSG_[ch].note)
-										+ arpItSSG_[ch]->getCommandType() - 48);
-		keyToneSSG_[ch].octave = pair.first;
-		keyToneSSG_[ch].note = pair.second;
-		break;
-	}
-	default:
-		break;
-	}
-
-	needToneSetSSG_[ch] = true;
-}
-
-void OPNAController::checkPortamentoSSG(int ch)
-{
-	if ((!arpItSSG_[ch] || arpItSSG_[ch]->getPosition() == -1) && prtmSSG_[ch]) {
-		if (isTonePrtmSSG_[ch]) {
-			int dif = ( octaveAndNoteToNoteNumber(baseToneSSG_[ch].front().octave, baseToneSSG_[ch].front().note) * 32
-						+ baseToneSSG_[ch].front().pitch )
-					  - ( octaveAndNoteToNoteNumber(keyToneSSG_[ch].octave, keyToneSSG_[ch].note) * 32
-						  + keyToneSSG_[ch].pitch );
-			if (dif > 0) {
-				if (dif - prtmSSG_[ch] < 0) {
-					keyToneSSG_[ch] = baseToneSSG_[ch].front();
-				}
-				else {
-					keyToneSSG_[ch].pitch += prtmSSG_[ch];
-				}
-				needToneSetSSG_[ch] = true;
-			}
-			else if (dif < 0) {
-				if (dif + prtmSSG_[ch] > 0) {
-					keyToneSSG_[ch] = baseToneSSG_[ch].front();
-				}
-				else {
-					keyToneSSG_[ch].pitch -= prtmSSG_[ch];
-				}
-				needToneSetSSG_[ch] = true;
-			}
-		}
-		else {
-			keyToneSSG_[ch].pitch += prtmSSG_[ch];
-			needToneSetSSG_[ch] = true;
-		}
-	}
-}
-
-void OPNAController::checkRealToneSSGByPitch(int ch, int seqPos)
-{
-	if (seqPos == -1) return;
-
-	switch (ptItSSG_[ch]->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-		sumPitchSSG_[ch] = ptItSSG_[ch]->getCommandType() - 127;
-		break;
-	case SequenceType::RELATIVE_SEQUENCE:
-		sumPitchSSG_[ch] += (ptItSSG_[ch]->getCommandType() - 127);
-		break;
-	default:
-		break;
-	}
-
-	needToneSetSSG_[ch] = true;
-}
-
 void OPNAController::writePitchSSG(int ch)
 {
 	if (keyToneSSG_[ch].octave == -1) return;	// Not set note yet
@@ -4006,96 +3923,6 @@ void OPNAController::tickEventADPCM()
 
 		if (needToneSetADPCM_) writePitchADPCM();
 	}
-}
-
-void OPNAController::checkRealToneADPCMByArpeggio(int seqPos)
-{
-	if (seqPos == -1) return;
-
-	switch (arpItADPCM_->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(baseToneADPCM_.front().octave,
-																  baseToneADPCM_.front().note)
-										+ arpItADPCM_->getCommandType() - 48);
-		keyToneADPCM_.octave = pair.first;
-		keyToneADPCM_.note = pair.second;
-		break;
-	}
-	case SequenceType::FIXED_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItADPCM_->getCommandType());
-		keyToneADPCM_.octave = pair.first;
-		keyToneADPCM_.note = pair.second;
-		break;
-	}
-	case SequenceType::RELATIVE_SEQUENCE:
-	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
-										octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
-										+ arpItADPCM_->getCommandType() - 48);
-		keyToneADPCM_.octave = pair.first;
-		keyToneADPCM_.note = pair.second;
-		break;
-	}
-	default:
-		break;
-	}
-
-	needToneSetADPCM_ = true;
-}
-
-void OPNAController::checkPortamentoADPCM()
-{
-	if ((!arpItADPCM_ || arpItADPCM_->getPosition() == -1) && prtmADPCM_) {
-		if (isTonePrtmADPCM_) {
-			int dif = ( octaveAndNoteToNoteNumber(baseToneADPCM_.front().octave, baseToneADPCM_.front().note) * 32
-						+ baseToneADPCM_.front().pitch )
-					  - ( octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note) * 32
-						  + keyToneADPCM_.pitch );
-			if (dif > 0) {
-				if (dif - prtmADPCM_ < 0) {
-					keyToneADPCM_ = baseToneADPCM_.front();
-				}
-				else {
-					keyToneADPCM_.pitch += prtmADPCM_;
-				}
-				needToneSetADPCM_ = true;
-			}
-			else if (dif < 0) {
-				if (dif + prtmADPCM_ > 0) {
-					keyToneADPCM_ = baseToneADPCM_.front();
-				}
-				else {
-					keyToneADPCM_.pitch -= prtmADPCM_;
-				}
-				needToneSetADPCM_ = true;
-			}
-		}
-		else {
-			keyToneADPCM_.pitch += prtmADPCM_;
-			needToneSetADPCM_ = true;
-		}
-	}
-}
-
-void OPNAController::checkRealToneADPCMByPitch(int seqPos)
-{
-	if (seqPos == -1) return;
-
-	switch (ptItADPCM_->getSequenceType()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
-		sumPitchADPCM_ = ptItADPCM_->getCommandType() - 127;
-		break;
-	case SequenceType::RELATIVE_SEQUENCE:
-		sumPitchADPCM_ += (ptItADPCM_->getCommandType() - 127);
-		break;
-	default:
-		break;
-	}
-
-	needToneSetADPCM_ = true;
 }
 
 void OPNAController::writePitchADPCM()
