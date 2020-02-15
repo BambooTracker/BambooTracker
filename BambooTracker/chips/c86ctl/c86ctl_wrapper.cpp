@@ -1,14 +1,6 @@
 #include "c86ctl_wrapper.hpp"
 #include "c86ctl.h"
 
-#ifndef _C86CTL_H
-namespace c86ctl {
-	using IRealChipBase = void;
-	using IRealChip2 = void;
-	using IGimic2 = void;
-}
-#endif
-
 C86ctlBase::C86ctlBase(void (*func)())
 	: base_(nullptr)
 {
