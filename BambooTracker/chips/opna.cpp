@@ -81,7 +81,7 @@ namespace chip
 		intf_->device_reset(id_);
 
 		if (scciChip_) scciChip_->init();
-		if (c86ctlRC_) c86ctlRC_->reset();
+		if (c86ctlRC_) c86ctlRC_->resetChip();
 	}
 
 	void OPNA::setRegister(uint32_t offset, uint8_t value)
@@ -205,44 +205,34 @@ namespace chip
 		return (scciManager_ != nullptr);
 	}
 
-	void OPNA::useC86CTL(c86ctl::IRealChipBase* base)
+	void OPNA::useC86CTL(C86ctlBase* base)
 	{
-		if (base) {
-			base->initialize();
-			int nChip = base->getNumberOfChip();
+		if (!base || base->isEmpty()) {
+			if (!c86ctlBase_) return;
+			c86ctlRC_->resetChip();
+			c86ctlGm_.reset();
+			c86ctlRC_.reset();
+			c86ctlBase_->deinitialize();
+		}
+		else {
+			c86ctlBase_.reset(base);
+			c86ctlBase_->initialize();
+			int nChip = c86ctlBase_->getNumberOfChip();
 			for (int i = 0; i < nChip; ++i) {
-				c86ctl::IRealChip2* rc = nullptr;
-				base->getChipInterface(i, c86ctl::IID_IRealChip2, reinterpret_cast<void**>(&rc));
+				C86ctlRealChip* rc = c86ctlBase_->getChipInterface(i);
 				if (rc) {
-					rc->reset();
-					c86ctl::IGimic2* gm = nullptr;
-					if (rc->QueryInterface(c86ctl::IID_IGimic2, reinterpret_cast<void**>(&gm)) == S_OK) {
-						c86ctl::ChipType type;
-						gm->getModuleType(&type);
-						if (type == c86ctl::CHIP_OPNA) {
-							c86ctlBase_ = base;
-							c86ctlRC_ = rc;
-							c86ctlGm_ = gm;
-							return;
-						}
-						gm->Release();
+					c86ctlRC_.reset(rc);
+					c86ctlRC_->resetChip();
+					if (C86ctlGimic* gm = c86ctlRC_->queryInterface()) {
+						c86ctlGm_.reset(gm);
+						return;
 					}
-					rc->Release();
+					c86ctlRC_.reset();
 				}
 			}
 			base->deinitialize();
 		}
-		else {
-			if (!c86ctlBase_) return;
-			c86ctlRC_->reset();
-			c86ctlGm_->Release();
-			c86ctlRC_->Release();
-			c86ctlBase_->deinitialize();
-		}
-
-		c86ctlBase_ = nullptr;
-		c86ctlRC_ = nullptr;
-		c86ctlGm_ = nullptr;
+		c86ctlBase_.reset();
 	}
 
 	bool OPNA::isUsedC86CTL() const

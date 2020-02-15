@@ -7,6 +7,7 @@
 	honet.kk(at)gmail.com
  */
 
+#ifdef _WIN32
 
 #ifndef _C86CTL_H
 #define _C86CTL_H
@@ -124,16 +125,12 @@ void WINAPI c86ctl_out( UINT addr, UCHAR data );	// DEPRECATED
 UCHAR WINAPI c86ctl_in( UINT addr );				// DEPRECATED
 
 
-//--------------
+
 #ifdef __cplusplus
-using CreateInstanceFunc = HRESULT(WINAPI*)(REFIID, void**);
+};
+};
 #endif
-//--------------
 
-
-#ifdef __cplusplus
-};
-};
 #endif
 
 #endif

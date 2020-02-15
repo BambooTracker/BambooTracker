@@ -17,7 +17,7 @@
 #include "gd3_tag.hpp"
 #include "s98_tag.hpp"
 #include "chips/scci/scci.h"
-#include "chips/c86ctl/c86ctl.h"
+#include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "effect.hpp"
 #include "playback.hpp"
 #include "binary_container.hpp"
@@ -207,7 +207,7 @@ public:
 
 	// Real chip interface
 	void useSCCI(scci::SoundInterfaceManager* manager);
-	void useC86CTL(c86ctl::IRealChipBase* base);
+	void useC86CTL(C86ctlBase* base);
 	RealChipInterface getRealChipinterface() const;
 
 	// Stream events

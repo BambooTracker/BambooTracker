@@ -42,7 +42,7 @@
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
 #include "chips/scci/SCCIDefines.h"
-#include "chips/c86ctl/c86ctl.h"
+#include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
 #include "audio_stream_rtaudio.hpp"
@@ -1437,11 +1437,7 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 		bt_->useSCCI(nullptr);
 		c86ctlDll_->load();
 		if (c86ctlDll_->isLoaded()) {
-			c86ctl::IRealChipBase *pChipBase = nullptr;
-			auto createInstance = reinterpret_cast<c86ctl::CreateInstanceFunc>(
-									  c86ctlDll_->resolve("CreateInstance"));
-			createInstance(c86ctl::IID_IRealChipBase, reinterpret_cast<void**>(&pChipBase));
-			bt_->useC86CTL(pChipBase);
+			bt_->useC86CTL(new C86ctlBase(c86ctlDll_->resolve("CreateInstance")));
 		}
 		else {
 			bt_->useC86CTL(nullptr);

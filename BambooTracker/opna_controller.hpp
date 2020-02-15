@@ -9,7 +9,7 @@
 #include "effect_iterator.hpp"
 #include "chips/chip_misc.h"
 #include "chips/scci/scci.h"
-#include "chips/c86ctl/c86ctl.h"
+#include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -59,7 +59,7 @@ public:
 	// Real chip interface
 	void useSCCI(scci::SoundInterfaceManager* manager);
 	bool isUsedSCCI() const;
-	void useC86CTL(c86ctl::IRealChipBase* base);
+	void useC86CTL(C86ctlBase* base);
 	bool isUsedC86CTL() const;
 
 	// Stream samples

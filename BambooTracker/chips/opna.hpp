@@ -1,10 +1,11 @@
 #pragma once
 
 #include "chip.hpp"
+#include <memory>
 #include "chip_misc.h"
 #include "scci/scci.h"
 #include "scci/SCCIDefines.h"
-#include "c86ctl/c86ctl.h"
+#include "c86ctl/c86ctl_wrapper.hpp"
 
 namespace chip
 {
@@ -27,7 +28,7 @@ namespace chip
 		void mix(int16_t* stream, size_t nSamples) override;
 		void useSCCI(scci::SoundInterfaceManager* manager);
 		bool isUsedSCCI() const;
-		void useC86CTL(c86ctl::IRealChipBase* base);
+		void useC86CTL(C86ctlBase* base);
 		bool isUsedC86CTL() const;
 
 	private:
@@ -40,9 +41,9 @@ namespace chip
 		scci::SoundChip* scciChip_;
 
 		// For C86CTL
-		c86ctl::IRealChipBase* c86ctlBase_;
-		c86ctl::IRealChip2* c86ctlRC_;
-		c86ctl::IGimic2* c86ctlGm_;
+		std::unique_ptr<C86ctlBase> c86ctlBase_;
+		std::unique_ptr<C86ctlRealChip> c86ctlRC_;
+		std::unique_ptr<C86ctlGimic> c86ctlGm_;
 
 		static const double VOL_REDUC;
 
