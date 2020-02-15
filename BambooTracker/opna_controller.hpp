@@ -448,7 +448,7 @@ public:
 //	void setTransposeEffectADPCM(int seminote);
 
 	// For state retrieve
-//	void haltSequencesADPCM();
+	void haltSequencesADPCM();
 
 	// Chip details
 	bool isKeyOnADPCM() const;
@@ -496,9 +496,9 @@ private:
 	void tickEventADPCM();
 
 //	void writeEnvelopeADPCMToRegister(int seqPos);
-//	void checkRealToneADPCMByArpeggio(int seqPos);
-//	void checkPortamentoADPCM();
-//	void checkRealToneADPCMByPitch(int seqPos);
+	void checkRealToneADPCMByArpeggio(int seqPos);
+	void checkPortamentoADPCM();
+	void checkRealToneADPCMByPitch(int seqPos);
 	void writePitchADPCM();
 
 	void setRealVolumeADPCM();

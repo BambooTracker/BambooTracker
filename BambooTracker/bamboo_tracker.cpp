@@ -593,7 +593,7 @@ std::vector<int> BambooTracker::getPitchSSGUsers(int ptNum) const
 	return instMan_->getPitchSSGUsers(ptNum);
 }
 
-//--- FM
+//--- ADPCM
 void BambooTracker::storeWaveformADPCMSamples()
 {
 	opnaCtrl_->clearSamplesADPCM();
@@ -602,6 +602,142 @@ void BambooTracker::storeWaveformADPCMSamples()
 		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
 		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);
 	}
+}
+
+void BambooTracker::addEnvelopeADPCMSequenceCommand(int envNum, int type, int data)
+{
+	instMan_->addEnvelopeADPCMSequenceCommand(envNum, type, data);
+}
+
+void BambooTracker::removeEnvelopeADPCMSequenceCommand(int envNum)
+{
+	instMan_->removeEnvelopeADPCMSequenceCommand(envNum);
+}
+
+void BambooTracker::setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data)
+{
+	instMan_->setEnvelopeADPCMSequenceCommand(envNum, cnt, type, data);
+}
+
+void BambooTracker::setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_->setEnvelopeADPCMLoops(envNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin)
+{
+	instMan_->setEnvelopeADPCMRelease(envNum, type, begin);
+}
+
+void BambooTracker::setInstrumentADPCMEnvelope(int instNum, int envNum)
+{
+	instMan_->setInstrumentADPCMEnvelope(instNum, envNum);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+void BambooTracker::setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentADPCMEnvelopeEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+std::vector<int> BambooTracker::getEnvelopeADPCMUsers(int envNum) const
+{
+	return instMan_->getEnvelopeADPCMUsers(envNum);
+}
+
+void BambooTracker::setArpeggioADPCMType(int arpNum, SequenceType type)
+{
+	instMan_->setArpeggioADPCMType(arpNum, type);
+}
+
+void BambooTracker::addArpeggioADPCMSequenceCommand(int arpNum, int type, int data)
+{
+	instMan_->addArpeggioADPCMSequenceCommand(arpNum, type, data);
+}
+
+void BambooTracker::removeArpeggioADPCMSequenceCommand(int arpNum)
+{
+	instMan_->removeArpeggioADPCMSequenceCommand(arpNum);
+}
+
+void BambooTracker::setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data)
+{
+	instMan_->setArpeggioADPCMSequenceCommand(arpNum, cnt, type, data);
+}
+
+void BambooTracker::setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_->setArpeggioADPCMLoops(arpNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin)
+{
+	instMan_->setArpeggioADPCMRelease(arpNum, type, begin);
+}
+
+void BambooTracker::setInstrumentADPCMArpeggio(int instNum, int arpNum)
+{
+	instMan_->setInstrumentADPCMArpeggio(instNum, arpNum);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+void BambooTracker::setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentADPCMArpeggioEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+std::vector<int> BambooTracker::getArpeggioADPCMUsers(int arpNum) const
+{
+	return instMan_->getArpeggioADPCMUsers(arpNum);
+}
+
+void BambooTracker::setPitchADPCMType(int ptNum, SequenceType type)
+{
+	instMan_->setPitchADPCMType(ptNum, type);
+}
+
+void BambooTracker::addPitchADPCMSequenceCommand(int ptNum, int type, int data)
+{
+	instMan_->addPitchADPCMSequenceCommand(ptNum, type, data);
+}
+
+void BambooTracker::removePitchADPCMSequenceCommand(int ptNum)
+{
+	instMan_->removePitchADPCMSequenceCommand(ptNum);
+}
+
+void BambooTracker::setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data)
+{
+	instMan_->setPitchADPCMSequenceCommand(ptNum, cnt, type, data);
+}
+
+void BambooTracker::setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+{
+	instMan_->setPitchADPCMLoops(ptNum, std::move(begins), std::move(ends), std::move(times));
+}
+
+void BambooTracker::setPitchADPCMRelease(int ptNum, ReleaseType type, int begin)
+{
+	instMan_->setPitchADPCMRelease(ptNum, type, begin);
+}
+
+void BambooTracker::setInstrumentADPCMPitch(int instNum, int ptNum)
+{
+	instMan_->setInstrumentADPCMPitch(instNum, ptNum);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+void BambooTracker::setInstrumentADPCMPitchEnabled(int instNum, bool enabled)
+{
+	instMan_->setInstrumentADPCMPitchEnabled(instNum, enabled);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+std::vector<int> BambooTracker::getPitchADPCMUsers(int ptNum) const
+{
+	return instMan_->getPitchADPCMUsers(ptNum);
 }
 
 /********** Song edit **********/

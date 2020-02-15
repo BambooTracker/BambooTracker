@@ -818,7 +818,7 @@ void OPNAController::haltSequencesFM(int ch)
 	if (treItFM_[ch]) treItFM_[ch]->end();
 	if (arpItFM_[ch]) arpItFM_[ch]->end();
 	if (ptItFM_[ch]) ptItFM_[ch]->end();
-	if (vibItFM_[ch]) vibItFM_[ch]->next();
+	if (vibItFM_[ch]) vibItFM_[ch]->end();
 	if (nsItFM_[ch]) nsItFM_[ch]->end();
 }
 
@@ -2391,7 +2391,7 @@ void OPNAController::haltSequencesSSG(int ch)
 	if (tnItSSG_[ch]) tnItSSG_[ch]->end();
 	if (arpItSSG_[ch]) arpItSSG_[ch]->end();
 	if (ptItSSG_[ch]) ptItSSG_[ch]->end();
-	if (vibItSSG_[ch]) vibItSSG_[ch]->next();
+	if (vibItSSG_[ch]) vibItSSG_[ch]->end();
 	if (nsItSSG_[ch]) nsItSSG_[ch]->end();
 }
 
@@ -3326,11 +3326,13 @@ void OPNAController::checkRealToneSSGByPitch(int ch, int seqPos)
 	if (seqPos == -1) return;
 
 	switch (ptItSSG_[ch]->getSequenceType()) {
-	case 0:	// Absolute
+	case SequenceType::ABSOLUTE_SEQUENCE:
 		sumPitchSSG_[ch] = ptItSSG_[ch]->getCommandType() - 127;
 		break;
-	case 2:	// Relative
+	case SequenceType::RELATIVE_SEQUENCE:
 		sumPitchSSG_[ch] += (ptItSSG_[ch]->getCommandType() - 127);
+		break;
+	default:
 		break;
 	}
 
@@ -3805,6 +3807,17 @@ void OPNAController::setPanADPCM(int value)
 	opna_->setRegister(0x101, panADPCM_);
 }
 
+/********** For state retrieve **********/
+void OPNAController::haltSequencesADPCM()
+{
+	if (treItADPCM_) treItADPCM_->end();
+	if (envItADPCM_) envItADPCM_->end();
+	if (arpItADPCM_) arpItADPCM_->end();
+	if (ptItADPCM_) ptItADPCM_->end();
+	if (vibItADPCM_) vibItADPCM_->end();
+	if (nsItADPCM_) nsItADPCM_->end();
+}
+
 /********** Chip details **********/
 bool OPNAController::isKeyOnADPCM() const
 {
@@ -3898,10 +3911,10 @@ void OPNAController::setFrontADPCMSequences()
 	if (envItADPCM_) /*writeEnvelopeADPCMToRegister(envItADPCM_->front())*/;
 	else setRealVolumeADPCM();
 
-//	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->front());
-//	checkPortamentoADPCM();
+	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->front());
+	checkPortamentoADPCM();
 
-//	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->front());
+	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->front());
 	if (vibItADPCM_) {
 		vibItADPCM_->front();
 		needToneSetADPCM_ = true;
@@ -3939,10 +3952,10 @@ void OPNAController::releaseStartADPCMSequences()
 		}
 	}
 
-//	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next(true));
-//	checkPortamentoADPCM();
+	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next(true));
+	checkPortamentoADPCM();
 
-//	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next(true));
+	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next(true));
 	if (vibItADPCM_) {
 		vibItADPCM_->next(true);
 		needToneSetADPCM_ = true;
@@ -3978,10 +3991,10 @@ void OPNAController::tickEventADPCM()
 			setRealVolumeADPCM();
 		}
 
-//		if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next());
-//		checkPortamentoADPCM();
+		if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next());
+		checkPortamentoADPCM();
 
-//		if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next());
+		if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next());
 		if (vibItADPCM_) {
 			vibItADPCM_->next();
 			needToneSetADPCM_ = true;
@@ -3993,6 +4006,96 @@ void OPNAController::tickEventADPCM()
 
 		if (needToneSetADPCM_) writePitchADPCM();
 	}
+}
+
+void OPNAController::checkRealToneADPCMByArpeggio(int seqPos)
+{
+	if (seqPos == -1) return;
+
+	switch (arpItADPCM_->getSequenceType()) {
+	case SequenceType::ABSOLUTE_SEQUENCE:
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
+										octaveAndNoteToNoteNumber(baseToneADPCM_.front().octave,
+																  baseToneADPCM_.front().note)
+										+ arpItADPCM_->getCommandType() - 48);
+		keyToneADPCM_.octave = pair.first;
+		keyToneADPCM_.note = pair.second;
+		break;
+	}
+	case SequenceType::FIXED_SEQUENCE:
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpItADPCM_->getCommandType());
+		keyToneADPCM_.octave = pair.first;
+		keyToneADPCM_.note = pair.second;
+		break;
+	}
+	case SequenceType::RELATIVE_SEQUENCE:
+	{
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
+										octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
+										+ arpItADPCM_->getCommandType() - 48);
+		keyToneADPCM_.octave = pair.first;
+		keyToneADPCM_.note = pair.second;
+		break;
+	}
+	default:
+		break;
+	}
+
+	needToneSetADPCM_ = true;
+}
+
+void OPNAController::checkPortamentoADPCM()
+{
+	if ((!arpItADPCM_ || arpItADPCM_->getPosition() == -1) && prtmADPCM_) {
+		if (isTonePrtmADPCM_) {
+			int dif = ( octaveAndNoteToNoteNumber(baseToneADPCM_.front().octave, baseToneADPCM_.front().note) * 32
+						+ baseToneADPCM_.front().pitch )
+					  - ( octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note) * 32
+						  + keyToneADPCM_.pitch );
+			if (dif > 0) {
+				if (dif - prtmADPCM_ < 0) {
+					keyToneADPCM_ = baseToneADPCM_.front();
+				}
+				else {
+					keyToneADPCM_.pitch += prtmADPCM_;
+				}
+				needToneSetADPCM_ = true;
+			}
+			else if (dif < 0) {
+				if (dif + prtmADPCM_ > 0) {
+					keyToneADPCM_ = baseToneADPCM_.front();
+				}
+				else {
+					keyToneADPCM_.pitch -= prtmADPCM_;
+				}
+				needToneSetADPCM_ = true;
+			}
+		}
+		else {
+			keyToneADPCM_.pitch += prtmADPCM_;
+			needToneSetADPCM_ = true;
+		}
+	}
+}
+
+void OPNAController::checkRealToneADPCMByPitch(int seqPos)
+{
+	if (seqPos == -1) return;
+
+	switch (ptItADPCM_->getSequenceType()) {
+	case SequenceType::ABSOLUTE_SEQUENCE:
+		sumPitchADPCM_ = ptItADPCM_->getCommandType() - 127;
+		break;
+	case SequenceType::RELATIVE_SEQUENCE:
+		sumPitchADPCM_ += (ptItADPCM_->getCommandType() - 127);
+		break;
+	default:
+		break;
+	}
+
+	needToneSetADPCM_ = true;
 }
 
 void OPNAController::writePitchADPCM()

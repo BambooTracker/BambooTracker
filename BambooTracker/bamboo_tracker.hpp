@@ -158,6 +158,35 @@ public:
 	//--- ADPCM
 	void storeWaveformADPCMSamples();
 
+	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
+	void removeEnvelopeADPCMSequenceCommand(int envNum);
+	void setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data);
+	void setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
+	void setInstrumentADPCMEnvelope(int instNum, int envNum);
+	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
+	std::vector<int> getEnvelopeADPCMUsers(int envNum) const;
+
+	void setArpeggioADPCMType(int arpNum, SequenceType type);
+	void addArpeggioADPCMSequenceCommand(int arpNum, int type, int data);
+	void removeArpeggioADPCMSequenceCommand(int arpNum);
+	void setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data);
+	void setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin);
+	void setInstrumentADPCMArpeggio(int instNum, int arpNum);
+	void setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled);
+	std::vector<int> getArpeggioADPCMUsers(int arpNum) const;
+
+	void setPitchADPCMType(int ptNum, SequenceType type);
+	void addPitchADPCMSequenceCommand(int ptNum, int type, int data);
+	void removePitchADPCMSequenceCommand(int ptNum);
+	void setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data);
+	void setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
+	void setPitchADPCMRelease(int ptNum, ReleaseType type, int begin);
+	void setInstrumentADPCMPitch(int instNum, int ptNum);
+	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
+	std::vector<int> getPitchADPCMUsers(int ptNum) const;
+
 	// Song edit
 	void setCurrentSongNumber(int num);
 	int getCurrentSongNumber() const;

@@ -106,9 +106,9 @@ private:
 	void setInstrumentArpeggioParameters();
 
 private slots:
-//	void onArpeggioTypeChanged(int index);
-//	void on_arpEditGroupBox_toggled(bool arg1);
-//	void on_arpNumSpinBox_valueChanged(int arg1);
+	void onArpeggioTypeChanged(int index);
+	void on_arpEditGroupBox_toggled(bool arg1);
+	void on_arpNumSpinBox_valueChanged(int arg1);
 
 	//========== Pitch ==========//
 signals:
@@ -123,9 +123,9 @@ private:
 	void setInstrumentPitchParameters();
 
 private slots:
-//	void onPitchTypeChanged(int index);
-//	void on_ptEditGroupBox_toggled(bool arg1);
-//	void on_ptNumSpinBox_valueChanged(int arg1);
+	void onPitchTypeChanged(int index);
+	void on_ptEditGroupBox_toggled(bool arg1);
+	void on_ptNumSpinBox_valueChanged(int arg1);
 };
 
 #endif // INSTRUMENT_EDITOR_ADPCM_FORM_HPP
