@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+
+## v0.3.5 (2020-02-15)
+### Added
+- Support C86CTL
+
 ### Changed
 - Update SCCI library
 

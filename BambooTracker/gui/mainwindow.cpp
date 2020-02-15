@@ -2131,7 +2131,7 @@ void MainWindow::on_actionAbout_triggered()
 						 "and (C) Jean Pierre Cimalando (LGPL v2.1)<br>"
 						 "- RtAudio by (C) Gary P. Scavone (RtAudio License)<br>"
 						 "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
-						 "- SCCI (SCCI License)<br>"
+						 "- SCCI by (C) gasshi (SCCI License)<br>"
 						 "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
 						 "- Qt (GPL v2+ or LGPL v3)<br>"
 						 "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
