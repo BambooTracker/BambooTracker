@@ -8,6 +8,7 @@
 - Fix AutoEnv and square mask pitch calculation
 - [#181] - Fix crash when changing length of instrument sequence during jamming (thanks [@papiezak])
 - Fix SCCI crash on launching in Windows XP (thanks [@ponzu0147])
+- Fix SSG arpeggio effect crashing on setting `0000` without a instrument
 
 [@ponzu0147]: https://twitter.com/ponzu0147
 

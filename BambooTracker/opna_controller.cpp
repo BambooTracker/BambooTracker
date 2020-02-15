@@ -2218,7 +2218,7 @@ void OPNAController::setArpeggioEffectSSG(int ch, int second, int third)
 		isArpEffSSG_[ch] = true;
 	}
 	else {
-		if (!refInstSSG_[ch]->getArpeggioEnabled()) arpItSSG_[ch].reset();
+		if (!refInstSSG_[ch] || !refInstSSG_[ch]->getArpeggioEnabled()) arpItSSG_[ch].reset();
 		else arpItSSG_[ch] = refInstSSG_[ch]->getArpeggioSequenceIterator();
 		isArpEffSSG_[ch] = false;
 	}
