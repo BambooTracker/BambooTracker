@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string notr="true">Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0">
+  <layout class="QHBoxLayout" name="horizontalLayout_4">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,10 +26,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="verticalSpacing">
-    <number>6</number>
-   </property>
-   <item row="0" column="0">
+   <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -49,8 +46,8 @@
         <height>750</height>
        </rect>
       </property>
-      <layout class="QGridLayout" name="gridLayout_17">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
           <number>0</number>

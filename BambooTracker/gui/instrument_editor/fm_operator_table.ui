@@ -18,7 +18,7 @@
 	border: 0;
 }</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
    <property name="leftMargin">
     <number>3</number>
    </property>
@@ -31,7 +31,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="0" column="0">
+   <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string notr="true">Operator</string>

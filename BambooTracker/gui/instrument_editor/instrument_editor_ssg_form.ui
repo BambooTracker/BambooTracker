@@ -13,8 +13,8 @@
   <property name="windowTitle">
    <string notr="true">Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
@@ -23,8 +23,8 @@
       <attribute name="title">
        <string>Waveform</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
         <widget class="QGroupBox" name="waveEditGroupBox">
          <property name="title">
           <string>Waveform</string>
@@ -175,8 +175,8 @@
       <attribute name="title">
        <string>Tone/Noise</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
         <widget class="QGroupBox" name="tnEditGroupBox">
          <property name="title">
           <string>Tone/Noise</string>
@@ -243,8 +243,8 @@
       <attribute name="title">
        <string>Envelope</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
         <widget class="QGroupBox" name="envEditGroupBox">
          <property name="title">
           <string>Envelope</string>
@@ -398,8 +398,8 @@
       <attribute name="title">
        <string>Arpeggio</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_9">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
         <widget class="QGroupBox" name="arpEditGroupBox">
          <property name="title">
           <string>Arpeggio</string>
@@ -476,8 +476,8 @@
       <attribute name="title">
        <string>Pitch</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_12">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
         <widget class="QGroupBox" name="ptEditGroupBox">
          <property name="title">
           <string>Pitch</string>
