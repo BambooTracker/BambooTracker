@@ -665,7 +665,7 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 	}
 
 	// ADPCM waveform
-	std::vector<int> wfADPCMIdcs = instMan.lock()->getWaveformSSGEntriedIndices();
+	std::vector<int> wfADPCMIdcs = instMan.lock()->getWaveformADPCMEntriedIndices();
 	if (!wfADPCMIdcs.empty()) {
 		ctr.appendUint8(0x40);
 		ctr.appendUint8(static_cast<uint8_t>(wfADPCMIdcs.size()));

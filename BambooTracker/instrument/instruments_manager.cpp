@@ -2014,7 +2014,7 @@ std::vector<int> InstrumentsManager::getWaveformADPCMEntriedIndices() const
 	std::vector<int> idcs;
 	int n = 0;
 	for (auto& wf : wfADPCM_) {
-		if (wf->isUserInstrument() || wf->isEdited()) idcs.push_back(n);
+		if (wf->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;

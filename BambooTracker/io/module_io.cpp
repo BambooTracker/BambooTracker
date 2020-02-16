@@ -635,7 +635,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// ADPCM waveform
-	std::vector<int> wfADPCMIdcs = instMan.lock()->getWaveformSSGEntriedIndices();
+	std::vector<int> wfADPCMIdcs = instMan.lock()->getWaveformADPCMEntriedIndices();
 	if (!wfADPCMIdcs.empty()) {
 		ctr.appendUint8(0x40);
 		ctr.appendUint8(static_cast<uint8_t>(wfADPCMIdcs.size()));
@@ -1101,7 +1101,7 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 			instMan.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(instSSG));
 			break;
 		}
-		case 0x03:	// ADPCM
+		case 0x02:	// ADPCM
 		{
 			// TODO: adpcm check correct
 			auto instADPCM = new InstrumentADPCM(idx, name, instMan.lock().get());
