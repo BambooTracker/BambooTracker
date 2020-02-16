@@ -817,15 +817,6 @@ void MainWindow::addInstrument()
 	case SoundSource::DRUM:
 		break;
 	}
-
-	// TODO: remove dummy
-	if (timer_) timer_->stop();
-	else stream_->stop();
-	bt_->storeWaveformADPCMSamples();	// Mutex register
-	if (timer_) timer_->start();
-	else stream_->start();
-	// -------------------
-
 }
 
 void MainWindow::removeInstrument(int row)
@@ -1742,6 +1733,14 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
+		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformAssignRequested,
+						 this, [&] {
+			if (timer_) timer_->stop();
+			else stream_->stop();
+			bt_->assignWaveformADPCMSamples();	// Mutex register
+			if (timer_) timer_->start();
+			else stream_->start();
+		});
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeNumberChanged);
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeParameterChanged,

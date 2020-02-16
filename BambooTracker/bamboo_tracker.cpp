@@ -594,7 +594,35 @@ std::vector<int> BambooTracker::getPitchSSGUsers(int ptNum) const
 }
 
 //--- ADPCM
-void BambooTracker::storeWaveformADPCMSamples()
+void BambooTracker::setWaveformADPCMRootKeyNumber(int wfNum, int n)
+{
+	instMan_->setWaveformADPCMRootKeyNumber(wfNum, n);
+	// opnaCtrl is changed through refInstADPCM (shared_ptr)
+}
+
+void BambooTracker::setWaveformADPCMRootDeltaN(int wfNum, int dn)
+{
+	instMan_->setWaveformADPCMRootDeltaN(wfNum, dn);
+	// opnaCtrl is changed through refInstADPCM (shared_ptr)
+}
+
+void BambooTracker::setWaveformADPCMRepeatEnabled(int wfNum, bool enabled)
+{
+	instMan_->setWaveformADPCMRepeatEnabled(wfNum, enabled);
+	// opnaCtrl is changed through refInstADPCM (shared_ptr)
+}
+
+void BambooTracker::storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample)
+{
+	instMan_->storeWaveformADPCMSample(wfNum, sample);
+}
+
+void BambooTracker::clearWaveformADPCMSample(int wfNum)
+{
+	instMan_->clearWaveformADPCMSample(wfNum);
+}
+
+void BambooTracker::assignWaveformADPCMSamples()
 {
 	opnaCtrl_->clearSamplesADPCM();
 	for (auto wfNum : instMan_->getWaveformADPCMEntriedIndices()) {
@@ -602,6 +630,17 @@ void BambooTracker::storeWaveformADPCMSamples()
 		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
 		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);
 	}
+}
+
+void BambooTracker::setInstrumentADPCMWaveform(int instNum, int wfNum)
+{
+	instMan_->setInstrumentADPCMWaveform(instNum, wfNum);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+std::vector<int> BambooTracker::getWaveformADPCMUsers(int wfNum) const
+{
+	return instMan_->getWaveformADPCMUsers(wfNum);
 }
 
 void BambooTracker::addEnvelopeADPCMSequenceCommand(int envNum, int type, int data)

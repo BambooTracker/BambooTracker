@@ -272,7 +272,8 @@ public:
 	int getWaveformADPCMRootDeltaN(int wfNum) const;
 	void setWaveformADPCMRepeatEnabled(int wfNum, bool enabled);
 	bool isWaveformADPCMRepeatable(int wfNum) const;
-	void storeWaveformADPCMSamples(int wfNum, std::vector<uint8_t> samples);
+	void storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample);
+	void clearWaveformADPCMSample(int wfNum);
 	std::vector<uint8_t> getWaveformADPCMSamples(int wfNum) const;
 	void setWaveformADPCMStartAddress(int wfNum, size_t addr);
 	size_t getWaveformADPCMStartAddress(int wfNum) const;

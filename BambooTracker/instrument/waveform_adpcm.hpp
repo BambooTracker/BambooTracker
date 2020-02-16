@@ -22,8 +22,9 @@ public:
 	int getRootDeltaN() const;
 	void setRepeatEnabled(bool enabled);
 	bool isRepeatable() const;
-	void storeSamples(std::vector<uint8_t> samples);
+	void storeSample(std::vector<uint8_t> sample);
 	std::vector<uint8_t> getSamples() const;
+	void clearSample();
 	void setStartAddress(size_t addr);
 	size_t getStartAddress() const;
 	void setStopAddress(size_t addr);
@@ -34,7 +35,7 @@ public:
 private:
 	int rootKeyNum_, rootDeltaN_;
 	bool isRepeated_;
-	std::vector<uint8_t> samples_;
+	std::vector<uint8_t> sample_;
 	size_t startAddress_, stopAddress_;
 
 	static constexpr int DEF_RT_KEY_ = 60;	// C5

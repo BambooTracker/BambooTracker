@@ -1,5 +1,6 @@
 #include "instrument_editor_adpcm_form.hpp"
 #include "ui_instrument_editor_adpcm_form.h"
+#include <cmath>
 #include "instrument.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
@@ -11,64 +12,19 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-//	//========== Waveform ==========//
-//	ui->waveEditor->setMaximumDisplayedRowCount(7);
-//	ui->waveEditor->setDefaultRow(0);
-//	ui->waveEditor->AddRow(tr("Sq"), false);
-//	ui->waveEditor->AddRow(tr("Tri"), false);
-//	ui->waveEditor->AddRow(tr("Saw"), false);
-//	ui->waveEditor->AddRow(tr("InvSaw"), false);
-//	ui->waveEditor->AddRow(tr("SMTri"), false);
-//	ui->waveEditor->AddRow(tr("SMSaw"), false);
-//	ui->waveEditor->AddRow(tr("SMInvSaw"), false);
-//	ui->waveEditor->autoFitLabelWidth();
-
-//	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
-//					 this, [&](int row, int col) {
-//		if (!isIgnoreEvent_) {
-//			if (isModulatedWaveformADPCM(row)) setWaveformSequenceColumn(col);	// Set square-mask frequency
-//			bt_.lock()->addWaveformADPCMSequenceCommand(
-//						ui->waveNumSpinBox->value(), row, ui->waveEditor->getSequenceDataAt(col));
-//			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
-//			emit modified();
-//		}
-//	});
-//	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
-//					 this, [&]() {
-//		if (!isIgnoreEvent_) {
-//			bt_.lock()->removeWaveformADPCMSequenceCommand(ui->waveNumSpinBox->value());
-//			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
-//			emit modified();
-//		}
-//	});
-//	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
-//					 this, [&](int row, int col) {
-//		if (!isIgnoreEvent_) {
-//			if (isModulatedWaveformADPCM(row)) setWaveformSequenceColumn(col);	// Set square-mask frequency
-//			bt_.lock()->setWaveformADPCMSequenceCommand(
-//						ui->waveNumSpinBox->value(), col, row, ui->waveEditor->getSequenceDataAt(col));
-//			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
-//			emit modified();
-//		}
-//	});
-//	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopChanged,
-//					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
-//		if (!isIgnoreEvent_) {
-//			bt_.lock()->setWaveformADPCMLoops(
-//						ui->waveNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
-//			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
-//			emit modified();
-//		}
-//	});
-//	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
-//					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
-//		if (!isIgnoreEvent_) {
-//			ReleaseType t = convertReleaseTypeForData(type);
-//			bt_.lock()->setWaveformADPCMRelease(ui->waveNumSpinBox->value(), t, point);
-//			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
-//			emit modified();
-//		}
-//	});
+	//========== Waveform ==========//
+	auto rkfunc = [&](int dummy) {
+		Q_UNUSED(dummy)
+		if (!isIgnoreEvent_) {
+			int rk = ui->rootKeySpinBox->value() * 12 + ui->rootKeyComboBox->currentIndex();
+			bt_.lock()->setWaveformADPCMRootKeyNumber(ui->waveNumSpinBox->value(), rk);
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	};
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(ui->rootKeyComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, rkfunc);
+	QObject::connect(ui->rootKeySpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, rkfunc);
 
 	//========== Envelope ==========//
 	ui->envEditor->setMaximumDisplayedRowCount(64);
@@ -269,7 +225,6 @@ void InstrumentEditorADPCMForm::setConfiguration(std::weak_ptr<Configuration> co
 
 void InstrumentEditorADPCMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
-//	ui->waveEditor->setColorPalette(palette);
 	ui->envEditor->setColorPalette(palette);
 	ui->arpEditor->setColorPalette(palette);
 	ui->ptEditor->setColorPalette(palette);
@@ -348,7 +303,7 @@ void InstrumentEditorADPCMForm::updateInstrumentParameters()
 	auto name = QString::fromUtf8(instADPCM->getName().c_str(), static_cast<int>(instADPCM->getName().length()));
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
-//	setInstrumentWaveformParameters();
+	setInstrumentWaveformParameters();
 	setInstrumentEnvelopeParameters();
 	setInstrumentArpeggioParameters();
 	setInstrumentPitchParameters();
@@ -412,108 +367,105 @@ void InstrumentEditorADPCMForm::keyReleaseEvent(QKeyEvent *event)
 //--- Waveform
 void InstrumentEditorADPCMForm::setInstrumentWaveformParameters()
 {
-//	Ui::EventGuard ev(isIgnoreEvent_);
+	Ui::EventGuard ev(isIgnoreEvent_);
 
-//	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
-//	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
 
-//	ui->waveNumSpinBox->setValue(instADPCM->getWaveformNumber());
-//	ui->waveEditor->clearData();
-//	for (auto& com : instADPCM->getWaveformSequence()) {
-//		QString str("");
-//		if (isModulatedWaveformADPCM(com.type)) {
-//			if (CommandSequenceUnit::checkDataType(com.data) == CommandSequenceUnit::RATIO) {
-//				auto ratio = CommandSequenceUnit::data2ratio(com.data);
-//				str = QString("%1/%2").arg(ratio.first).arg(ratio.second);
-//			}
-//			else {
-//				str = QString::number(com.data);
-//			}
-//		}
-//		ui->waveEditor->addSequenceCommand(com.type, str, com.data);
-//	}
-//	for (auto& l : instADPCM->getWaveformLoops()) {
-//		ui->waveEditor->addLoop(l.begin, l.end, l.times);
-//	}
-//	ui->waveEditor->setRelease(convertReleaseTypeForUI(instADPCM->getWaveformRelease().type),
-//							   instADPCM->getWaveformRelease().begin);
-//	if (instADPCM->getWaveformEnabled()) {
-//		ui->waveEditGroupBox->setChecked(true);
-//		onWaveformNumberChanged();
-//	}
-//	else {
-//		ui->waveEditGroupBox->setChecked(false);
-//	}
-}
+	ui->waveNumSpinBox->setValue(instADPCM->getWaveformNumber());
+	// TODO: adpcm display waveform
 
-void InstrumentEditorADPCMForm::setWaveformSequenceColumn(int col)
-{
-//	auto button = ui->squareMaskButtonGroup->checkedButton();
-//	if (button == ui->squareMaskRawRadioButton) {
-//		ui->waveEditor->setText(col, QString::number(ui->squareMaskRawSpinBox->value()));
-//		ui->waveEditor->setData(col, ui->squareMaskRawSpinBox->value());
-//	}
-//	else {
-//		ui->waveEditor->setText(col, QString::number(ui->squareMaskToneSpinBox->value()) + "/"
-//								+ QString::number(ui->squareMaskMaskSpinBox->value()));
-
-//		ui->waveEditor->setData(col, CommandSequenceUnit::ratio2data(
-//									ui->squareMaskToneSpinBox->value(),
-//									ui->squareMaskMaskSpinBox->value()));
-//	}
+	ui->waveRepeatCheckBox->setChecked(instADPCM->isWaveformRepeatable());
+	int rk = instADPCM->getWaveformRootKeyNumber();
+	ui->rootKeyComboBox->setCurrentIndex(rk % 12);
+	ui->rootKeySpinBox->setValue(rk / 12);
+	ui->rootRateSpinBox->setValue(instADPCM->getWaveformRootDeltaN());
 }
 
 /********** Slots **********/
 void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 {
-//	// Change users view
-//	std::vector<int> users = bt_.lock()->getWaveformADPCMUsers(ui->waveNumSpinBox->value());
-//	QStringList l;
-//	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-//		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-//	});
-//	ui->waveUsersLineEdit->setText(l.join(","));
+	// Change users view
+	std::vector<int> users = bt_.lock()->getWaveformADPCMUsers(ui->waveNumSpinBox->value());
+	QStringList l;
+	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
+		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
+	});
+	ui->waveUsersLineEdit->setText(l.join(","));
 }
 
 void InstrumentEditorADPCMForm::onWaveformParameterChanged(int wfNum)
 {
-//	if (ui->waveNumSpinBox->value() == wfNum) {
-//		Ui::EventGuard eg(isIgnoreEvent_);
-//		setInstrumentWaveformParameters();
-//	}
+	if (ui->waveNumSpinBox->value() == wfNum) {
+		Ui::EventGuard eg(isIgnoreEvent_);
+		setInstrumentWaveformParameters();
+	}
 }
 
-//void InstrumentEditorADPCMForm::on_waveEditGroupBox_toggled(bool arg1)
-//{
-//	if (!isIgnoreEvent_) {
-//		bt_.lock()->setInstrumentADPCMWaveformEnabled(instNum_, arg1);
-//		setInstrumentWaveformParameters();
-//		emit waveformNumberChanged();
-//		emit modified();
-//	}
+void InstrumentEditorADPCMForm::on_waveNumSpinBox_valueChanged(int arg1)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setInstrumentADPCMWaveform(instNum_, arg1);
+		setInstrumentWaveformParameters();
+		emit waveformNumberChanged();
+		emit modified();
+	}
 
-//	onWaveformNumberChanged();
-//}
+	onWaveformNumberChanged();
+}
 
-//void InstrumentEditorADPCMForm::on_waveNumSpinBox_valueChanged(int arg1)
-//{
-//	if (!isIgnoreEvent_) {
-//		bt_.lock()->setInstrumentADPCMWaveform(instNum_, arg1);
-//		setInstrumentWaveformParameters();
-//		emit waveformNumberChanged();
-//		emit modified();
-//	}
+void InstrumentEditorADPCMForm::on_rootRateSpinBox_valueChanged(int arg1)
+{
+	ui->rootRateSpinBox->setSuffix(
+				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
+				+ QString("%1Hz)").arg(QString::number(arg1 * 55500. * std::pow(2., -16.), 'f', 3)));
 
-//	onWaveformNumberChanged();
-//}
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setWaveformADPCMRootDeltaN(ui->waveNumSpinBox->value(), arg1);
+		emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+		emit modified();
+	}
+}
 
-//void InstrumentEditorADPCMForm::on_squareMaskRawSpinBox_valueChanged(int arg1)
-//{
-//	ui->squareMaskRawSpinBox->setSuffix(
-//				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
-//				+ QString("%1Hz)").arg(arg1 ? QString::number(124800.0 / arg1, 'f', 4) : "-")
-//				);
-//}
+void InstrumentEditorADPCMForm::on_waveRepeatCheckBox_toggled(bool checked)
+{
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setWaveformADPCMRepeatEnabled(ui->waveNumSpinBox->value(), checked);
+		emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+		emit modified();
+	}
+}
+#include "chips/codec/ymb_codec.hpp"	// TODO: remove
+void InstrumentEditorADPCMForm::on_waveImportPushButton_clicked()
+{
+	// TODO: remove  dummy
+	const int rate = 16000;
+	int rootKeyNum = 60;	//c5
+	int len = 1;
+	int l = len * rate;
+	std::vector<int16_t> w(l);
+	for (int i = 0; i < l; ++i) {
+		w[i] = static_cast<int16_t>(32000 * std::sin(2. * 3.14159265359 * 261.626 * i / rate));
+	}
+	auto sample = std::vector<uint8_t>((w.size() + 1) / 2);
+	codec::ymb_encode(w.data(), sample.data(), w.size());
+	// ---------------------
+
+	bt_.lock()->storeWaveformADPCMSample(ui->waveNumSpinBox->value(), sample);
+	ui->rootKeyComboBox->setCurrentIndex(rootKeyNum % 12);
+	ui->rootKeySpinBox->setValue(rootKeyNum / 12);
+	ui->rootRateSpinBox->setValue(static_cast<int>(std::round((rate << 16) / 55500.)));
+}
+
+void InstrumentEditorADPCMForm::on_waveClearPushButton_clicked()
+{
+	bt_.lock()->clearWaveformADPCMSample(ui->waveNumSpinBox->value());
+}
+
+void InstrumentEditorADPCMForm::on_waveAssignPushButton_clicked()
+{
+	emit waveformAssignRequested();
+}
 
 //--- Envelope
 void InstrumentEditorADPCMForm::setInstrumentEnvelopeParameters()

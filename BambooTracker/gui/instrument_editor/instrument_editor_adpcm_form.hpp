@@ -61,6 +61,7 @@ private:
 signals:
 	void waveformNumberChanged();
 	void waveformParameterChanged(int wfNum, int fromInstNum);
+	void waveformAssignRequested();
 
 public slots:
 	void onWaveformNumberChanged();
@@ -68,12 +69,14 @@ public slots:
 
 private:
 	void setInstrumentWaveformParameters();
-	void setWaveformSequenceColumn(int col);
 
 private slots:
-//	void on_waveEditGroupBox_toggled(bool arg1);
-//	void on_waveNumSpinBox_valueChanged(int arg1);
-//	void on_squareMaskRawSpinBox_valueChanged(int arg1);
+	void on_waveNumSpinBox_valueChanged(int arg1);
+	void on_rootRateSpinBox_valueChanged(int arg1);
+	void on_waveRepeatCheckBox_toggled(bool checked);
+	void on_waveImportPushButton_clicked();
+	void on_waveClearPushButton_clicked();
+	void on_waveAssignPushButton_clicked();
 
 	//========== Envelope ==========//
 signals:

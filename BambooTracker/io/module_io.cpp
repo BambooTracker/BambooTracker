@@ -2101,7 +2101,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				csr += 4;
 				std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
 				csr += len;
-				instMan.lock()->storeWaveformADPCMSamples(idx, std::move(samples));
+				instMan.lock()->storeWaveformADPCMSample(idx, std::move(samples));
 
 				instPropCsr += ofs;
 			}

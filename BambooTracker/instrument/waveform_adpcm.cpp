@@ -1,28 +1,14 @@
 #include "waveform_adpcm.hpp"
 
-#include "chips/codec/ymb_codec.hpp"	// TODO: remove
 WaveformADPCM::WaveformADPCM(int num)
 	: AbstractInstrumentProperty (num),
 	  rootKeyNum_(DEF_RT_KEY_),
 	  rootDeltaN_(DEF_RT_DELTAN_),
 	  isRepeated_(DEF_REPET_),
-	  samples_(1),
+	  sample_(1),
 	  startAddress_(0),
 	  stopAddress_(0)
 {
-	// TODO: remove  dummy
-	const int rate = 16000;
-	rootDeltaN_ = static_cast<int>(std::round((rate << 16) / 55500.));
-	rootKeyNum_ = 60;	//c5
-	int len = 1;
-	int l = len * rate;
-	std::vector<int16_t> w(l);
-	for (int i = 0; i < l; ++i) {
-		w[i] = static_cast<int16_t>(32000 * std::sin(2. * 3.14159265359 * 261.626 * i / rate));
-	}
-	samples_ = std::vector<uint8_t>((w.size() + 1) / 2);
-	ymb_encode(w.data(), samples_.data(), w.size());
-	// ---------------------
 }
 
 WaveformADPCM::WaveformADPCM(const WaveformADPCM& other)
@@ -31,12 +17,12 @@ WaveformADPCM::WaveformADPCM(const WaveformADPCM& other)
 	rootKeyNum_ = other.rootKeyNum_;
 	rootDeltaN_ = other.rootDeltaN_;
 	isRepeated_ = other.isRepeated_;
-	samples_ = other.samples_;
+	sample_ = other.sample_;
 }
 
 bool operator==(const WaveformADPCM& a, const WaveformADPCM& b) {
 	return (a.rootKeyNum_ == b.rootKeyNum_ && a.rootDeltaN_ == b.rootDeltaN_
-			&& a.isRepeated_ == b.isRepeated_ && a.samples_ == b.samples_);
+			&& a.isRepeated_ == b.isRepeated_ && a.sample_ == b.sample_);
 }
 
 std::unique_ptr<WaveformADPCM> WaveformADPCM::clone()
@@ -76,14 +62,19 @@ bool WaveformADPCM::isRepeatable() const
 	return isRepeated_;
 }
 
-void WaveformADPCM::storeSamples(std::vector<uint8_t> samples)
+void WaveformADPCM::storeSample(std::vector<uint8_t> sample)
 {
-	samples_ = samples;
+	sample_ = sample;
 }
 
 std::vector<uint8_t> WaveformADPCM::getSamples() const
 {
-	return samples_;
+	return sample_;
+}
+
+void WaveformADPCM::clearSample()
+{
+	sample_.clear();
 }
 
 void WaveformADPCM::setStartAddress(size_t addr)
@@ -111,8 +102,8 @@ bool WaveformADPCM::isEdited() const
 	if (rootKeyNum_ != DEF_RT_KEY_
 			|| rootDeltaN_ != DEF_RT_DELTAN_
 			|| isRepeated_ != DEF_REPET_
-			/*|| samples_.size() != 1	// TODO: uncommented
-			|| samples_[0] != 0*/)
+			|| sample_.size() != 1
+			|| sample_[0] != 0)
 		return true;
 	return false;
 }

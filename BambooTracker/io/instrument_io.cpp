@@ -2182,7 +2182,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					csr += 4;
 					std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
 					csr += len;
-					instMan.lock()->storeWaveformADPCMSamples(idx, std::move(samples));
+					instMan.lock()->storeWaveformADPCMSample(idx, std::move(samples));
 
 					instPropCsr += ofs;
 					break;
@@ -3905,7 +3905,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 			wfCsr += 4;
 			std::vector<uint8_t> samples = propCtr.getSubcontainer(wfCsr, len).toVector();
 			wfCsr += len;
-			instMan.lock()->storeWaveformADPCMSamples(wfNum, std::move(samples));
+			instMan.lock()->storeWaveformADPCMSample(wfNum, std::move(samples));
 		}
 
 		/* Envelope */

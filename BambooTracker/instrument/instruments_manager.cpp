@@ -1974,9 +1974,14 @@ bool InstrumentsManager::isWaveformADPCMRepeatable(int wfNum) const
 	return wfADPCM_.at(static_cast<size_t>(wfNum))->isRepeatable();
 }
 
-void InstrumentsManager::storeWaveformADPCMSamples(int wfNum, std::vector<uint8_t> samples)
+void InstrumentsManager::storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->storeSamples(samples);
+	wfADPCM_.at(static_cast<size_t>(wfNum))->storeSample(sample);
+}
+
+void InstrumentsManager::clearWaveformADPCMSample(int wfNum)
+{
+	wfADPCM_.at(static_cast<size_t>(wfNum))->clearSample();
 }
 
 std::vector<uint8_t> InstrumentsManager::getWaveformADPCMSamples(int wfNum) const

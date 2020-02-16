@@ -156,7 +156,14 @@ public:
 	std::vector<int> getPitchSSGUsers(int ptNum) const;
 
 	//--- ADPCM
-	void storeWaveformADPCMSamples();
+	void setWaveformADPCMRootKeyNumber(int wfNum, int n);
+	void setWaveformADPCMRootDeltaN(int wfNum, int dn);
+	void setWaveformADPCMRepeatEnabled(int wfNum, bool enabled);
+	void storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample);
+	void clearWaveformADPCMSample(int wfNum);
+	void assignWaveformADPCMSamples();
+	void setInstrumentADPCMWaveform(int instNum, int wfNum);
+	std::vector<int> getWaveformADPCMUsers(int wfNum) const;
 
 	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
 	void removeEnvelopeADPCMSequenceCommand(int envNum);
