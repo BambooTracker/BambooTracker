@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -92,9 +92,9 @@
       <attribute name="title">
        <string>Envelope</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
-        <widget class="QGroupBox" name="envGroupBox">
+        <widget class="QGroupBox" name="envEditGroupBox">
          <property name="title">
           <string>Envelope</string>
          </property>
@@ -104,6 +104,54 @@
          <property name="checked">
           <bool>false</bool>
          </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QSpinBox" name="envNumSpinBox">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+            <property name="prefix">
+             <string notr="true">#</string>
+            </property>
+            <property name="maximum">
+             <number>127</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="VisualizedInstrumentMacroEditor" name="envEditor" native="true"/>
+          </item>
+          <item row="0" column="1" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="envUsersLabel">
+            <property name="text">
+             <string>Users:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="envUsersLineEdit">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

@@ -3706,7 +3706,7 @@ void OPNAController::setRealVolumeADPCM()
 	int volume = (tmpVolADPCM_ == -1) ? baseVolADPCM_ : tmpVolADPCM_;
 	if (envItADPCM_) {
 		int type = envItADPCM_->getCommandType();
-		volume -= (0xff - type);
+		if (type >= 0) volume -= (0xff - type);
 	}
 	if (treItADPCM_) volume += treItADPCM_->getCommandType();
 	volume += sumVolSldADPCM_;
@@ -3776,7 +3776,6 @@ void OPNAController::initADPCM()
 	hasPreSetTickEventADPCM_ = false;
 	storePointADPCM_ = 0;
 	envItADPCM_.reset();
-	envADPCM_ = { -1, CommandSequenceUnit::NODATA };
 	arpItADPCM_.reset();
 	ptItADPCM_.reset();
 	needEnvSetADPCM_ = false;
@@ -3825,7 +3824,7 @@ void OPNAController::setFrontADPCMSequences()
 		sumVolSldADPCM_ += volSldADPCM_;
 		needEnvSetADPCM_ = true;
 	}
-	if (envItADPCM_) /*writeEnvelopeADPCMToRegister(envItADPCM_->front())*/;
+	if (envItADPCM_) writeEnvelopeADPCMToRegister(envItADPCM_->front());
 	else setRealVolumeADPCM();
 
 	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->front());
@@ -3861,7 +3860,7 @@ void OPNAController::releaseStartADPCMSequences()
 		if (pos == -1) {
 			opna_->setRegister(0x10b, 0);
 		}
-//		else writeEnvelopeADPCMToRegister(pos);
+		else writeEnvelopeADPCMToRegister(pos);
 	}
 	else {
 		if (!hasPreSetTickEventADPCM_) {
@@ -3902,7 +3901,7 @@ void OPNAController::tickEventADPCM()
 			needEnvSetADPCM_ = true;
 		}
 		if (envItADPCM_) {
-//			writeEnvelopeADPCMToRegister(envItADPCM_->next());
+			writeEnvelopeADPCMToRegister(envItADPCM_->next());
 		}
 		else if (needEnvSetADPCM_) {
 			setRealVolumeADPCM();
@@ -3922,6 +3921,14 @@ void OPNAController::tickEventADPCM()
 		}
 
 		if (needToneSetADPCM_) writePitchADPCM();
+	}
+}
+
+void OPNAController::writeEnvelopeADPCMToRegister(int seqPos)
+{
+	if (seqPos != -1 || needEnvSetADPCM_) {
+		setRealVolumeADPCM();
+		needEnvSetADPCM_ = false;
 	}
 }
 

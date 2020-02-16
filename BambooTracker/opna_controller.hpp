@@ -505,7 +505,6 @@ private:
 	size_t dramSize_;
 	size_t storePointADPCM_;	// Move by 4 bytes
 	std::unique_ptr<CommandSequence::Iterator> envItADPCM_;
-	CommandSequenceUnit envADPCM_;
 	std::unique_ptr<CommandSequence::Iterator> tnItADPCM_;
 	std::unique_ptr<SequenceIteratorInterface> arpItADPCM_;
 	std::unique_ptr<CommandSequence::Iterator> ptItADPCM_;
@@ -530,7 +529,7 @@ private:
 	void releaseStartADPCMSequences();
 	void tickEventADPCM();
 
-//	void writeEnvelopeADPCMToRegister(int seqPos);
+	void writeEnvelopeADPCMToRegister(int seqPos);
 
 	inline void checkRealToneADPCMByArpeggio(int seqPos)
 	{
