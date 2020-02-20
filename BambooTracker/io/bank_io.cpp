@@ -665,7 +665,13 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 	}
 
 	// ADPCM waveform
-	std::vector<int> wfADPCMIdcs = instMan.lock()->getWaveformADPCMEntriedIndices();
+	std::vector<int> wfADPCMIdcs;
+	for (auto& idx : instMan.lock()->getWaveformADPCMEntriedIndices()) {
+		std::vector<int> users = instMan.lock()->getWaveformADPCMUsers(idx);
+		std::vector<int> intersection;
+		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
+		if (!intersection.empty()) wfADPCMIdcs.push_back(idx);
+	}
 	if (!wfADPCMIdcs.empty()) {
 		ctr.appendUint8(0x40);
 		ctr.appendUint8(static_cast<uint8_t>(wfADPCMIdcs.size()));
@@ -684,7 +690,13 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 	}
 
 	// ADPCM envelope
-	std::vector<int> envADPCMIdcs = instMan.lock()->getEnvelopeADPCMEntriedIndices();
+	std::vector<int> envADPCMIdcs;
+	for (auto& idx : instMan.lock()->getEnvelopeADPCMEntriedIndices()) {
+		std::vector<int> users = instMan.lock()->getEnvelopeADPCMUsers(idx);
+		std::vector<int> intersection;
+		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
+		if (!intersection.empty()) envADPCMIdcs.push_back(idx);
+	}
 	if (!envADPCMIdcs.empty()) {
 		ctr.appendUint8(0x41);
 		ctr.appendUint8(static_cast<uint8_t>(envADPCMIdcs.size()));
@@ -731,7 +743,13 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 	}
 
 	// ADPCM arpeggio
-	std::vector<int> arpADPCMIdcs = instMan.lock()->getArpeggioADPCMEntriedIndices();
+	std::vector<int> arpADPCMIdcs;
+	for (auto& idx : instMan.lock()->getArpeggioADPCMEntriedIndices()) {
+		std::vector<int> users = instMan.lock()->getArpeggioADPCMUsers(idx);
+		std::vector<int> intersection;
+		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
+		if (!intersection.empty()) arpADPCMIdcs.push_back(idx);
+	}
 	if (!arpADPCMIdcs.empty()) {
 		ctr.appendUint8(0x42);
 		ctr.appendUint8(static_cast<uint8_t>(arpADPCMIdcs.size()));
@@ -773,6 +791,61 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 			switch (instMan.lock()->getArpeggioADPCMType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			default:												break;
+			}
+			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
+		}
+	}
+
+	// ADPCM pitch
+	std::vector<int> ptADPCMIdcs;
+	for (auto& idx : instMan.lock()->getPitchADPCMEntriedIndices()) {
+		std::vector<int> users = instMan.lock()->getPitchADPCMUsers(idx);
+		std::vector<int> intersection;
+		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
+		if (!intersection.empty()) ptADPCMIdcs.push_back(idx);
+	}
+	if (!ptADPCMIdcs.empty()) {
+		ctr.appendUint8(0x43);
+		ctr.appendUint8(static_cast<uint8_t>(ptADPCMIdcs.size()));
+		for (auto& idx : ptADPCMIdcs) {
+			ctr.appendUint8(static_cast<uint8_t>(idx));
+			size_t ofs = ctr.size();
+			ctr.appendUint16(0);	// Dummy offset
+			auto seq = instMan.lock()->getPitchADPCMSequence(idx);
+			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
+			for (auto& com : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			}
+			auto loop = instMan.lock()->getPitchADPCMLoops(idx);
+			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
+			for (auto& l : loop) {
+				ctr.appendUint16(static_cast<uint16_t>(l.begin));
+				ctr.appendUint16(static_cast<uint16_t>(l.end));
+				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			}
+			auto release = instMan.lock()->getPitchADPCMRelease(idx);
+			switch (release.type) {
+			case ReleaseType::NoRelease:
+				ctr.appendUint8(0x00);
+				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
+				break;
+			case ReleaseType::FixedRelease:
+				ctr.appendUint8(0x01);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			case ReleaseType::AbsoluteRelease:
+				ctr.appendUint8(0x02);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			case ReleaseType::RelativeRelease:
+				ctr.appendUint8(0x03);
+				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				break;
+			}
+			switch (instMan.lock()->getPitchADPCMType(idx)) {
+			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}

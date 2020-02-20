@@ -112,7 +112,6 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				break;
 			case SoundSource::ADPCM:
 			{
-				// TODO: adpcm check correct
 				ctr.appendUint8(0x02);
 				auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);
 				ctr.appendUint8(static_cast<uint8_t>(instADPCM->getWaveformNumber()));
@@ -1103,7 +1102,6 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 		}
 		case 0x02:	// ADPCM
 		{
-			// TODO: adpcm check correct
 			auto instADPCM = new InstrumentADPCM(idx, name, instMan.lock().get());
 			instADPCM->setWaveformNumber(ctr.readUint8(iCsr++));
 			uint8_t tmp = ctr.readUint8(iCsr);

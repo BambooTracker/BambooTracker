@@ -125,7 +125,6 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			break;
 		case SoundSource::ADPCM:
 		{
-			// TODO: adpcm check correct
 			ctr.appendUint8(0x02);
 			break;
 		}
@@ -602,13 +601,12 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		break;
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm check correct
 		auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);
 
 		// ADPCM waveform
 		int wfNum = instADPCM->getWaveformNumber();
 		{
-			ctr.appendUint8(0x30);
+			ctr.appendUint8(0x40);
 			size_t ofs = ctr.size();
 			ctr.appendUint32(0);	// Dummy offset
 			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getWaveformADPCMRootKeyNumber(wfNum)));
@@ -623,7 +621,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		// ADPCM envelope
 		if (instADPCM->getEnvelopeEnabled()) {
 			int envNum = instADPCM->getEnvelopeNumber();
-			ctr.appendUint8(0x32);
+			ctr.appendUint8(0x41);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getEnvelopeADPCMSequence(envNum);
@@ -664,7 +662,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		// ADPCM arpeggio
 		if (instADPCM->getArpeggioEnabled()) {
 			int arpNum = instADPCM->getArpeggioNumber();
-			ctr.appendUint8(0x33);
+			ctr.appendUint8(0x42);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getArpeggioADPCMSequence(arpNum);
@@ -709,7 +707,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		// ADPCM pitch
 		if (instADPCM->getPitchEnabled()) {
 			int ptNum = instADPCM->getPitchNumber();
-			ctr.appendUint8(0x34);
+			ctr.appendUint8(0x43);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getPitchADPCMSequence(ptNum);
@@ -4074,7 +4072,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 				int ptNum = instMan.lock()->findFirstFreePlainPitchADPCM();
 				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				adpcm->setPitchNumber(ptNum);
-				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x34, orgPtNum);
+				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x43, orgPtNum);
 
 				uint16_t seqLen = propCtr.readUint16(ptCsr);
 				ptCsr += 2;
