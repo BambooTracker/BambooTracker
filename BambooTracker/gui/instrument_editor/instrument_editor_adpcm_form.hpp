@@ -5,11 +5,13 @@
 #include <QWidget>
 #include <QEvent>
 #include <QKeyEvent>
+#include <QPixmap>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
 #include "jam_manager.hpp"
 #include "gui/color_palette.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
+
 namespace Ui {
 	class InstrumentEditorADPCMForm;
 }
@@ -50,6 +52,7 @@ private:
 
 	std::weak_ptr<BambooTracker> bt_;
 	std::weak_ptr<Configuration> config_;
+	std::shared_ptr<ColorPalette> palette_;
 
 	SequenceType convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type);
 	VisualizedInstrumentMacroEditor::SequenceType convertSequenceTypeForUI(SequenceType type);
@@ -68,10 +71,14 @@ signals:
 public slots:
 	void onWaveformNumberChanged();
 	void onWaveformParameterChanged(int wfNum);
+	void onWaveformSampleMemoryUpdated();
 
 private:
+	std::unique_ptr<QPixmap> pixmap_;
+
 	void setInstrumentWaveformParameters();
 	void importSampleFrom(const QString file);
+	void updateSampleMemoryBar();
 
 private slots:
 	void on_waveNumSpinBox_valueChanged(int arg1);

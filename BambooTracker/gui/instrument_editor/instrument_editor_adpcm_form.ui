@@ -48,7 +48,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignRight">
              <widget class="QLabel" name="waveUsersLabel">
               <property name="text">
                <string>Users:</string>
@@ -74,6 +74,29 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="waveMemoryLabel">
+              <property name="text">
+               <string>Memory:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="waveMemoryWidget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QPushButton" name="waveAssignPushButton">

@@ -157,6 +157,9 @@ public:
 	std::vector<int> getPitchSSGUsers(int ptNum) const;
 
 	//--- ADPCM
+	size_t getADPCMLimit() const;
+	size_t getADPCMStoredSize() const;
+
 	void setWaveformADPCMRootKeyNumber(int wfNum, int n);
 	void setWaveformADPCMRootDeltaN(int wfNum, int dn);
 	void setWaveformADPCMRepeatEnabled(int wfNum, bool enabled);

@@ -1326,6 +1326,7 @@ void MainWindow::assignADPCMSamples()
 	if (timer_) timer_->stop();
 	else stream_->stop();
 	bt_->assignWaveformADPCMSamples();	// Mutex register
+	instForms_->onInstrumentADPCMSampleMemoryUpdated();
 	if (timer_) timer_->start();
 	else stream_->start();
 }

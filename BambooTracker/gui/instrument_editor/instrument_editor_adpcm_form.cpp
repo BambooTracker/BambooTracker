@@ -9,6 +9,9 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QMessageBox>
+#include <QPainter>
+#include <QRect>
+#include <QRectF>
 #include "chips/codec/ymb_codec.hpp"
 #include "instrument.hpp"
 #include "gui/event_guard.hpp"
@@ -17,7 +20,8 @@
 InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::InstrumentEditorADPCMForm),
-	instNum_(num)
+	instNum_(num),
+	pixmap_(std::make_unique<QPixmap>())
 {
 	ui->setupUi(this);
 
@@ -211,6 +215,7 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 					 this, &InstrumentEditorADPCMForm::onPitchTypeChanged);
 
 	ui->tab->installEventFilter(this);
+	ui->waveMemoryWidget->installEventFilter(this);
 }
 
 InstrumentEditorADPCMForm::~InstrumentEditorADPCMForm()
@@ -236,6 +241,7 @@ void InstrumentEditorADPCMForm::setConfiguration(std::weak_ptr<Configuration> co
 
 void InstrumentEditorADPCMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
+	palette_ = palette;
 	ui->envEditor->setColorPalette(palette);
 	ui->arpEditor->setColorPalette(palette);
 	ui->ptEditor->setColorPalette(palette);
@@ -323,25 +329,41 @@ void InstrumentEditorADPCMForm::updateInstrumentParameters()
 /********** Events **********/
 bool InstrumentEditorADPCMForm::eventFilter(QObject* obj, QEvent* ev)
 {
-	// From only waveform tab
-	Q_UNUSED(obj)
-
-	switch (ev->type()) {
-	case QEvent::DragEnter:
-	{
-		auto de = reinterpret_cast<QDragEnterEvent*>(ev);
-		const QMimeData* mime = de->mimeData();
-		if (mime->hasUrls() && mime->urls().length() == 1
-				&& QFileInfo(mime->urls().first().toLocalFile()).suffix().toLower() == "wav") {
-			de->acceptProposedAction();
+	if (obj == ui->waveMemoryWidget) {
+		switch (ev->type()) {
+		case QEvent::Paint:
+		{
+			QPainter painter(ui->waveMemoryWidget);
+			painter.drawPixmap(ui->waveMemoryWidget->rect(), *pixmap_.get());
+			break;
 		}
-		break;
+		case QEvent::Resize:
+			pixmap_ = std::make_unique<QPixmap>(ui->waveMemoryWidget->size());
+			updateSampleMemoryBar();
+			break;
+		default:
+			break;
+		}
 	}
-	case QEvent::Drop:
-		importSampleFrom(reinterpret_cast<QDropEvent*>(ev)->mimeData()->urls().first().toLocalFile());
-		break;
-	default:
-		break;
+
+	if (obj == ui->tab) {
+		switch (ev->type()) {
+		case QEvent::DragEnter:
+		{
+			auto de = reinterpret_cast<QDragEnterEvent*>(ev);
+			const QMimeData* mime = de->mimeData();
+			if (mime->hasUrls() && mime->urls().length() == 1
+					&& QFileInfo(mime->urls().first().toLocalFile()).suffix().toLower() == "wav") {
+				de->acceptProposedAction();
+			}
+			break;
+		}
+		case QEvent::Drop:
+			importSampleFrom(reinterpret_cast<QDropEvent*>(ev)->mimeData()->urls().first().toLocalFile());
+			break;
+		default:
+			break;
+		}
 	}
 
 	return false;
@@ -469,6 +491,27 @@ void InstrumentEditorADPCMForm::importSampleFrom(const QString file)
 	ui->rootRateSpinBox->setValue(static_cast<int>(std::round((wav->getSampleRate() << 16) / 55500.)));
 }
 
+void InstrumentEditorADPCMForm::updateSampleMemoryBar()
+{
+	QPainter painter(pixmap_.get());
+	QRect bar = pixmap_->rect();
+	painter.fillRect(bar, palette_->instADPCMMemBackColor);
+
+	double maxSize = bt_.lock()->getADPCMStoredSize() >> 2;
+	double limit = bt_.lock()->getADPCMLimit() >> 2;	// By 4 bytes
+	QRectF allSamp(0, 0, std::max(1., bar.width() * (maxSize / limit)), rect().height());
+	painter.fillRect(allSamp, palette_->instADPCMMemAllColor);
+
+	std::unique_ptr<InstrumentADPCM> inst(dynamic_cast<InstrumentADPCM*>(bt_.lock()->getInstrument(instNum_).release()));
+	size_t start = inst->getWaveformStartAddress();
+	size_t stop = inst->getWaveformStopAddress();
+	if (start || start != stop) {
+		QRectF curSamp(bar.width() * (start / limit),
+					   0, std::max(1., bar.width() * ((stop - start) / limit)), rect().height());
+		painter.fillRect(curSamp, palette_->instADPCMMemCurColor);
+	}
+}
+
 /********** Slots **********/
 void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 {
@@ -479,6 +522,8 @@ void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
 	});
 	ui->waveUsersLineEdit->setText(l.join(","));
+	updateSampleMemoryBar();
+	ui->waveMemoryWidget->update();
 }
 
 void InstrumentEditorADPCMForm::onWaveformParameterChanged(int wfNum)
@@ -487,6 +532,12 @@ void InstrumentEditorADPCMForm::onWaveformParameterChanged(int wfNum)
 		Ui::EventGuard eg(isIgnoreEvent_);
 		setInstrumentWaveformParameters();
 	}
+}
+
+void InstrumentEditorADPCMForm::onWaveformSampleMemoryUpdated()
+{
+	updateSampleMemoryBar();
+	ui->waveMemoryWidget->update();
 }
 
 void InstrumentEditorADPCMForm::on_waveNumSpinBox_valueChanged(int arg1)

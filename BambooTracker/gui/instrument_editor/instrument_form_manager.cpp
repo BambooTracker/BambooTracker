@@ -7,9 +7,7 @@
 #include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 #include "misc.hpp"
 
-InstrumentFormManager::InstrumentFormManager()
-{
-}
+InstrumentFormManager::InstrumentFormManager() {}
 
 void InstrumentFormManager::updateByConfiguration()
 {
@@ -325,6 +323,15 @@ void InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged()
 	for (auto& pair : map_) {
 		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::ADPCM) {
 			qobject_cast<InstrumentEditorADPCMForm*>(pair.second.get())->onWaveformNumberChanged();
+		}
+	}
+}
+
+void InstrumentFormManager::onInstrumentADPCMSampleMemoryUpdated()
+{
+	for (auto& pair : map_) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::ADPCM) {
+			qobject_cast<InstrumentEditorADPCMForm*>(pair.second.get())->onWaveformSampleMemoryUpdated();
 		}
 	}
 }

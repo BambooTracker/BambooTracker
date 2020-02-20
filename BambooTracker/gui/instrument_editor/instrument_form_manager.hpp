@@ -56,6 +56,7 @@ public slots:
 
 	void onInstrumentADPCMWaveformParameterChanged(int wfNum, int fromInstNum);
 	void onInstrumentADPCMWaveformNumberChanged();
+	void onInstrumentADPCMSampleMemoryUpdated();
 	void onInstrumentADPCMEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void onInstrumentADPCMEnvelopeNumberChanged();
 	void onInstrumentADPCMArpeggioParameterChanged(int arpNum, int fromInstNum);

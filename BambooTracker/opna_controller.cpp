@@ -4,7 +4,8 @@
 
 OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	: mode_(SongType::Standard),
-	  dramSize_(262144)	// 256KiB
+	  dramSize_(262144),	// 256KiB
+	  storePointADPCM_(0)
 {
 	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration, dramSize_,
 										 std::make_unique<chip::LinearResampler>(),
@@ -84,6 +85,12 @@ void OPNAController::sendRegisterValue(int value)
 		unit.value = value;
 		unit.hasCompleted = true;
 	}
+}
+
+/********** DRAM **********/
+size_t OPNAController::getDRAMSize() const
+{
+	return dramSize_;
 }
 
 /********** Update register states after tick process **********/
@@ -3751,6 +3758,11 @@ ToneDetail OPNAController::getADPCMTone() const
 	return baseToneADPCM_.front();
 }
 
+size_t OPNAController::getADPCMStoredSize() const
+{
+	return storePointADPCM_ << 2;
+}
+
 /***********************************/
 void OPNAController::initADPCM()
 {
@@ -3774,7 +3786,6 @@ void OPNAController::initADPCM()
 
 	// Init sequence
 	hasPreSetTickEventADPCM_ = false;
-	storePointADPCM_ = 0;
 	envItADPCM_.reset();
 	arpItADPCM_.reset();
 	ptItADPCM_.reset();

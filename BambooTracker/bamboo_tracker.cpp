@@ -594,6 +594,17 @@ std::vector<int> BambooTracker::getPitchSSGUsers(int ptNum) const
 }
 
 //--- ADPCM
+size_t BambooTracker::getADPCMLimit() const
+{
+	return opnaCtrl_->getDRAMSize();
+}
+
+
+size_t BambooTracker::getADPCMStoredSize() const
+{
+	return opnaCtrl_->getADPCMStoredSize();
+}
+
 void BambooTracker::setWaveformADPCMRootKeyNumber(int wfNum, int n)
 {
 	instMan_->setWaveformADPCMRootKeyNumber(wfNum, n);

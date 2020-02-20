@@ -52,6 +52,9 @@ public:
 	void sendRegisterAddress(int bank, int address);
 	void sendRegisterValue(int value);
 
+	// DRAM
+	size_t getDRAMSize() const;
+
 	// Update register states after tick process
 	void updateRegisterStates();
 
@@ -489,6 +492,7 @@ public:
 	bool isKeyOnADPCM() const;
 	bool isTonePortamentoADPCM() const;
 	ToneDetail getADPCMTone() const;
+	size_t getADPCMStoredSize() const;
 
 private:
 	std::shared_ptr<InstrumentADPCM> refInstADPCM_;
