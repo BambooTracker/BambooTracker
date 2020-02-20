@@ -102,14 +102,20 @@ void BinaryContainer::appendArray(const uint8_t* array, size_t size)
 	std::copy(array, array + size, std::back_inserter(buf_));
 }
 
-void BinaryContainer::appendVector(const std::vector<uint8_t> vec)
+void BinaryContainer::appendVector(const std::vector<uint8_t>& vec)
 {
 	std::copy(vec.begin(), vec.end(), std::back_inserter(buf_));
 }
 
-void BinaryContainer::appendVector(const std::vector<char> vec)
+void BinaryContainer::appendVector(const std::vector<char>& vec)
 {
 	std::copy(vec.begin(), vec.end(), std::back_inserter(buf_));
+}
+
+void BinaryContainer::appendBinaryContainer(const BinaryContainer& bc)
+{
+	const char* bcp = bc.getPointer();
+	std::copy(bcp, bcp + bc.size(), std::back_inserter(buf_));
 }
 
 void BinaryContainer::writeInt8(size_t offset, const int8_t v)

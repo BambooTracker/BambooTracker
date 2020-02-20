@@ -20,6 +20,9 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
       <attribute name="title">
        <string>Waveform</string>
       </attribute>
@@ -138,6 +141,13 @@
              <string>Root key</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QLabel" name="rootKeyLabel">
+               <property name="text">
+                <string>Key</string>
+               </property>
+              </widget>
+             </item>
              <item>
               <widget class="QComboBox" name="rootKeyComboBox">
                <item>

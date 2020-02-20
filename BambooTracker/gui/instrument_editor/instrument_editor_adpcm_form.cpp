@@ -1,6 +1,15 @@
 #include "instrument_editor_adpcm_form.hpp"
 #include "ui_instrument_editor_adpcm_form.h"
 #include <cmath>
+#include <QFile>
+#include <QIODevice>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
+#include <QMessageBox>
+#include "chips/codec/ymb_codec.hpp"
 #include "instrument.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
@@ -200,6 +209,8 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorADPCMForm::onPitchTypeChanged);
+
+	ui->tab->installEventFilter(this);
 }
 
 InstrumentEditorADPCMForm::~InstrumentEditorADPCMForm()
@@ -310,6 +321,32 @@ void InstrumentEditorADPCMForm::updateInstrumentParameters()
 }
 
 /********** Events **********/
+bool InstrumentEditorADPCMForm::eventFilter(QObject* obj, QEvent* ev)
+{
+	// From only waveform tab
+	Q_UNUSED(obj)
+
+	switch (ev->type()) {
+	case QEvent::DragEnter:
+	{
+		auto de = reinterpret_cast<QDragEnterEvent*>(ev);
+		const QMimeData* mime = de->mimeData();
+		if (mime->hasUrls() && mime->urls().length() == 1
+				&& QFileInfo(mime->urls().first().toLocalFile()).suffix().toLower() == "wav") {
+			de->acceptProposedAction();
+		}
+		break;
+	}
+	case QEvent::Drop:
+		importSampleFrom(reinterpret_cast<QDropEvent*>(ev)->mimeData()->urls().first().toLocalFile());
+		break;
+	default:
+		break;
+	}
+
+	return false;
+}
+
 // MUST DIRECT CONNECTION
 void InstrumentEditorADPCMForm::keyPressEvent(QKeyEvent *event)
 {
@@ -382,6 +419,56 @@ void InstrumentEditorADPCMForm::setInstrumentWaveformParameters()
 	ui->rootRateSpinBox->setValue(instADPCM->getWaveformRootDeltaN());
 }
 
+void InstrumentEditorADPCMForm::importSampleFrom(const QString file)
+{
+	std::unique_ptr<WavContainer> wav;
+	try {
+		QFile fp(file);
+		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::WAV);
+		QByteArray array = fp.readAll();
+		fp.close();
+
+		wav = std::make_unique<WavContainer>(BinaryContainer(std::vector<char>(array.begin(), array.end())));
+	}
+	catch (FileIOError& e) {
+		Q_UNUSED(e)
+		QMessageBox::critical(this, tr("Error"), tr("Failed to import the wav."));
+		return;
+	}
+	catch (std::exception& e) {
+		QMessageBox::critical(this, tr("Error"), tr("Failed to import the wav.\n%1").arg(QString(e.what())));
+		return;
+	}
+
+	if (wav->getSampleRate() < 2000 || 16000 < wav->getSampleRate()) {
+		QMessageBox::critical(this, tr("Error"),
+							  tr("Supported sample rate is 2kHz-16kHz, but the rate of selected sample is %1.")
+							  .arg(wav->getSampleRate()));
+		return;
+	}
+
+	if (wav->getChannelCount() != 1) {
+		QMessageBox::critical(this, tr("Error"), tr("The selected sample is not mono channel."));
+		return;
+	}
+
+	BinaryContainer bc = wav->getSample();
+	size_t rawSize = bc.size() / 2;
+	std::vector<int16_t> raw(rawSize);
+	for (size_t i = 0; i < rawSize; ++i) {
+		raw[i] = bc.readInt16(i * 2);
+	}
+	std::vector<uint8_t> adpcm((raw.size() + 1) / 2);
+	codec::ymb_encode(raw.data(), adpcm.data(), static_cast<long>(raw.size()));
+
+	const int ROOT_KEY = 60;	//C5
+
+	bt_.lock()->storeWaveformADPCMSample(ui->waveNumSpinBox->value(), adpcm);
+	ui->rootKeyComboBox->setCurrentIndex(ROOT_KEY % 12);
+	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
+	ui->rootRateSpinBox->setValue(static_cast<int>(std::round((wav->getSampleRate() << 16) / 55500.)));
+}
+
 /********** Slots **********/
 void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 {
@@ -435,26 +522,15 @@ void InstrumentEditorADPCMForm::on_waveRepeatCheckBox_toggled(bool checked)
 		emit modified();
 	}
 }
-#include "chips/codec/ymb_codec.hpp"	// TODO: remove
+
 void InstrumentEditorADPCMForm::on_waveImportPushButton_clicked()
 {
-	// TODO: remove  dummy
-	const int rate = 16000;
-	int rootKeyNum = 60;	//c5
-	int len = 1;
-	int l = len * rate;
-	std::vector<int16_t> w(l);
-	for (int i = 0; i < l; ++i) {
-		w[i] = static_cast<int16_t>(32000 * std::sin(2. * 3.14159265359 * 261.626 * i / rate));
-	}
-	auto sample = std::vector<uint8_t>((w.size() + 1) / 2);
-	codec::ymb_encode(w.data(), sample.data(), w.size());
-	// ---------------------
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
+	QString file = QFileDialog::getOpenFileName(this, tr("Import sample"),
+												(dir.isEmpty() ? "./" : dir), tr("WAV signed 16-bit PCM (*.wav)"));
+	if (file.isNull()) return;
 
-	bt_.lock()->storeWaveformADPCMSample(ui->waveNumSpinBox->value(), sample);
-	ui->rootKeyComboBox->setCurrentIndex(rootKeyNum % 12);
-	ui->rootKeySpinBox->setValue(rootKeyNum / 12);
-	ui->rootRateSpinBox->setValue(static_cast<int>(std::round((rate << 16) / 55500.)));
+	importSampleFrom(file);
 }
 
 void InstrumentEditorADPCMForm::on_waveClearPushButton_clicked()

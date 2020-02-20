@@ -1158,10 +1158,10 @@ int BambooTracker::getPlayingStepNumber() const
 }
 
 /********** Export **********/
-bool BambooTracker::exportToWav(BinaryContainer& container, int rate, int loopCnt, std::function<bool()> bar)
+bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
-	opnaCtrl_->setRate(rate);
+	opnaCtrl_->setRate(static_cast<int>(container.getSampleRate()));
 	size_t sampCnt = static_cast<size_t>(opnaCtrl_->getRate() * opnaCtrl_->getDuration() / 1000);
 	size_t intrCnt = static_cast<size_t>(opnaCtrl_->getRate()) / mod_->getTickFrequency();
 	size_t intrCntRest = 0;
@@ -1214,13 +1214,7 @@ bool BambooTracker::exportToWav(BinaryContainer& container, int rate, int loopCn
 	isFollowPlay_ = tmpFollow;
 	opnaCtrl_->setRate(tmpRate);
 
-	try {
-		ExportHandler::writeWave(container, exCntr->getStream(), static_cast<uint32_t>(rate));
-		return true;
-	}
-	catch (...) {
-		throw;
-	}
+	container.storeSample(exCntr->getStream());
 }
 
 bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,

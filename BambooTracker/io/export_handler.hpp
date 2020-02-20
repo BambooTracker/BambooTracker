@@ -8,7 +8,6 @@
 class ExportHandler
 {
 public:
-	static void writeWave(BinaryContainer& container, std::vector<int16_t> samples, uint32_t rate);
 	static void writeVgm(BinaryContainer& container, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
 						 bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
 						 bool gd3TagEnabled, GD3Tag tag);

@@ -21,6 +21,7 @@
 #include "effect.hpp"
 #include "playback.hpp"
 #include "binary_container.hpp"
+#include "wav_container.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -239,7 +240,7 @@ public:
 	int getPlayingStepNumber() const;
 
 	// Export
-	bool exportToWav(BinaryContainer& container, int rate, int loopCnt, std::function<bool()> bar);
+	bool exportToWav(WavContainer& container, int loopCnt, std::function<bool()> bar);
 	bool exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
 					 GD3Tag tag, std::function<bool()> bar);
 	bool exportToS98(BinaryContainer& container, int target, bool tagEnabled, S98Tag tag,

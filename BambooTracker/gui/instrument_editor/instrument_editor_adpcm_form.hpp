@@ -1,8 +1,9 @@
 #ifndef INSTRUMENT_EDITOR_ADPCM_FORM_HPP
 #define INSTRUMENT_EDITOR_ADPCM_FORM_HPP
 
-#include <QWidget>
 #include <memory>
+#include <QWidget>
+#include <QEvent>
 #include <QKeyEvent>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
@@ -38,6 +39,7 @@ signals:
 	void playStatusChanged(int stat);
 
 protected:
+	bool eventFilter(QObject* obj, QEvent* ev) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
 
@@ -69,6 +71,7 @@ public slots:
 
 private:
 	void setInstrumentWaveformParameters();
+	void importSampleFrom(const QString file);
 
 private slots:
 	void on_waveNumSpinBox_valueChanged(int arg1);

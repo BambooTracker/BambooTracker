@@ -48,6 +48,7 @@
 #include "audio_stream_rtaudio.hpp"
 #include "color_palette_handler.hpp"
 #include "binary_container.hpp"
+#include "wav_container.hpp"
 #include "enum_hash.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -928,6 +929,7 @@ void MainWindow::funcLoadInstrument(QString file)
 	if (n == -1) {
 		showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst),
 							  tr( "The number of instruments has reached the upper limit."));
+		return;
 	}
 
 	try {
@@ -1029,6 +1031,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	}
 	catch (FileIOError& e) {
 		showFileIOErrorDialog(e);
+		return;
 	}
 	catch (std::exception& e) {
 		showFileIOErrorDialog(FileInputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
@@ -1129,6 +1132,8 @@ void MainWindow::redo()
 /********** Load data **********/
 void MainWindow::loadModule()
 {
+	bt_->assignWaveformADPCMSamples();
+
 	instForms_->clearAll();
 	ui->instrumentListWidget->clear();
 	on_instrumentListWidget_itemSelectionChanged();
@@ -1735,6 +1740,8 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformAssignRequested,
 						 this, [&] {
+			bt_->stopPlaySong();
+			lockWidgets(false);
 			if (timer_) timer_->stop();
 			else stream_->stop();
 			bt_->assignWaveformADPCMSamples();	// Mutex register
@@ -2509,18 +2516,19 @@ void MainWindow::on_actionWAV_triggered()
 	stream_->stop();
 
 	try {
-		BinaryContainer container;
+		WavContainer container(0, static_cast<uint32_t>(diag.getSampleRate()));
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
 				   return progress.wasCanceled();
 	};
 
-		bool res = bt_->exportToWav(container, diag.getSampleRate(), diag.getLoopCount(), bar);
+		bool res = bt_->exportToWav(container, diag.getLoopCount(), bar);
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::WAV);
-			fp.write(container.getPointer(), container.size());
+			BinaryContainer bc = container.createWavBinary();
+			fp.write(bc.getPointer(), bc.size());
 			fp.close();
 			bar();
 

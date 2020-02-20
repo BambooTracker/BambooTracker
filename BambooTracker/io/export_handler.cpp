@@ -4,42 +4,6 @@
 
 ExportHandler::ExportHandler() {}
 
-void ExportHandler::writeWave(BinaryContainer& container, std::vector<int16_t> samples, uint32_t sampRate)
-{
-	try {
-		// RIFF header
-		container.appendString("RIFF");
-		uint32_t offset = samples.size() * sizeof(short) + 36;
-		container.appendUint32(offset);
-		container.appendString("WAVE");
-
-		// fmt chunk
-		container.appendString("fmt ");
-		uint32_t chunkOfs = 16;
-		container.appendUint32(chunkOfs);
-		uint16_t fmtId = 1;
-		container.appendUint16(fmtId);
-		uint16_t chCnt = 2;
-		container.appendUint16(chCnt);
-		container.appendUint32(sampRate);
-		uint16_t bitSize = sizeof(int16_t) * 8;
-		uint16_t blockSize = bitSize / 8 * chCnt;
-		uint32_t byteRate = blockSize * sampRate;
-		container.appendUint32(byteRate);
-		container.appendUint16(blockSize);
-		container.appendUint16(bitSize);
-
-		// Data chunk
-		container.appendString("data");
-		uint32_t dataSize = samples.size() * bitSize / 8;
-		container.appendUint32(dataSize);
-		container.appendArray(reinterpret_cast<uint8_t*>(&samples[0]), dataSize);
-	}
-	catch (...) {
-		throw FileOutputError(FileIO::FileType::WAV);
-	}
-}
-
 void ExportHandler::writeVgm(BinaryContainer& container, int target, std::vector<uint8_t> samples, uint32_t clock, uint32_t rate,
 							 bool loopFlag, uint32_t loopPoint, uint32_t loopSamples, uint32_t totalSamples,
 							 bool gd3TagEnabled, GD3Tag tag)

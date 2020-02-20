@@ -25,8 +25,9 @@ public:
 	void appendChar(const char c);
 	void appendString(const std::string str);
 	void appendArray(const uint8_t* array, size_t size);
-	void appendVector(const std::vector<uint8_t> vec);
-	void appendVector(const std::vector<char> vec);
+	void appendVector(const std::vector<uint8_t>& vec);
+	void appendVector(const std::vector<char>& vec);
+	void appendBinaryContainer(const BinaryContainer& bc);
 
 	void writeInt8(size_t offset, const int8_t v);
 	void writeUint8(size_t offset, const uint8_t v);
