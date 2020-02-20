@@ -100,6 +100,7 @@ private:
 	void loadModule();
 	void openModule(QString file);
 	void loadSong();
+	void assignADPCMSamples();
 
 	// Play song
 	void startPlaySong();

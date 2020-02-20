@@ -950,6 +950,8 @@ void MainWindow::funcLoadInstrument(QString file)
 							inst->getSoundSource(), instForms_));
 		ui->instrumentListWidget->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+
+		if (inst->getSoundSource() == SoundSource::ADPCM) assignADPCMSamples();
 	}
 	catch (FileIOError& e) {
 		showFileIOErrorDialog(e);
@@ -1046,6 +1048,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	if (selection.empty()) return;
 
 	try {
+		bool sampleRestoreRequested = false;
 		int lastNum = ui->instrumentListWidget->currentRow();
 		for (size_t index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
@@ -1065,8 +1068,12 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 								QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
 								inst->getSoundSource(), instForms_));
 			lastNum = n;
+
+			sampleRestoreRequested |= (inst->getSoundSource() == SoundSource::ADPCM);
 		}
 		ui->instrumentListWidget->setCurrentRow(lastNum);
+
+		if (sampleRestoreRequested) assignADPCMSamples();
 	}
 	catch (FileIOError& e) {
 		showFileIOErrorDialog(e);
@@ -1310,6 +1317,17 @@ void MainWindow::loadSong()
 	case SongType::FM3chExpanded:	statusStyle_->setText(tr("FM3ch expanded"));	break;
 	}
 	statusPlayPos_->setText(config_.lock()->getShowRowNumberInHex() ? "00/00" : "000/000");
+}
+
+void MainWindow::assignADPCMSamples()
+{
+	bt_->stopPlaySong();
+	lockWidgets(false);
+	if (timer_) timer_->stop();
+	else stream_->stop();
+	bt_->assignWaveformADPCMSamples();	// Mutex register
+	if (timer_) timer_->start();
+	else stream_->start();
 }
 
 /********** Play song **********/
@@ -1739,15 +1757,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformParameterChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformAssignRequested,
-						 this, [&] {
-			bt_->stopPlaySong();
-			lockWidgets(false);
-			if (timer_) timer_->stop();
-			else stream_->stop();
-			bt_->assignWaveformADPCMSamples();	// Mutex register
-			if (timer_) timer_->start();
-			else stream_->start();
-		});
+						 this, &MainWindow::assignADPCMSamples);
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeNumberChanged);
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeParameterChanged,
