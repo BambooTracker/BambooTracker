@@ -489,6 +489,9 @@ void InstrumentEditorADPCMForm::importSampleFrom(const QString file)
 	ui->rootKeyComboBox->setCurrentIndex(ROOT_KEY % 12);
 	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
 	ui->rootRateSpinBox->setValue(static_cast<int>(std::round((wav->getSampleRate() << 16) / 55500.)));
+
+	emit modified();
+	emit waveformAssignRequested();
 }
 
 void InstrumentEditorADPCMForm::updateSampleMemoryBar()
@@ -587,6 +590,7 @@ void InstrumentEditorADPCMForm::on_waveImportPushButton_clicked()
 void InstrumentEditorADPCMForm::on_waveClearPushButton_clicked()
 {
 	bt_.lock()->clearWaveformADPCMSample(ui->waveNumSpinBox->value());
+	emit modified();
 }
 
 void InstrumentEditorADPCMForm::on_waveAssignPushButton_clicked()
