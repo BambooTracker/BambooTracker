@@ -35,9 +35,9 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	/* opna mode is changed in BambooTracker class */
 
 	size_t fmch = getFMChannelCount(songStyle_.type);
-	isNoteDelayFM_ = std::vector<bool>(fmch);
-	keyOnBasedEffsFM_ = std::vector<std::unordered_map<EffectType, int>>(fmch);
-	stepBeginBasedEffsFM_ = std::vector<std::unordered_map<EffectType, int>>(fmch);
+	isNoteDelay_[SoundSource::FM] = std::vector<bool>(fmch);
+	keyOnBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
+	stepBeginBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
 	ntDlyCntFM_ = std::vector<int>(fmch);
 	ntCutDlyCntFM_ = std::vector<int>(fmch);
 	volDlyCntFM_ = std::vector<int>(fmch);
@@ -45,9 +45,9 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	tposeDlyCntFM_ = std::vector<int>(fmch);
 	tposeDlyValueFM_ = std::vector<int>(fmch);
 
-	isNoteDelaySSG_ = std::vector<bool>(3);
-	keyOnBasedEffsSSG_ = std::vector<std::unordered_map<EffectType, int>>(3);
-	stepBeginBasedEffsSSG_ = std::vector<std::unordered_map<EffectType, int>>(3);
+	isNoteDelay_[SoundSource::SSG] = std::vector<bool>(3);
+	keyOnBasedEffs_[SoundSource::SSG] = EffectMemorySource(3);
+	stepBeginBasedEffs_[SoundSource::SSG] = EffectMemorySource(3);
 	ntDlyCntSSG_ = std::vector<int>(3);
 	ntCutDlyCntSSG_ = std::vector<int>(3);
 	volDlyCntSSG_ = std::vector<int>(3);
@@ -55,13 +55,22 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	tposeDlyCntSSG_ = std::vector<int>(3);
 	tposeDlyValueSSG_ = std::vector<int>(3);
 
-	isNoteDelayDrum_ = std::vector<bool>(6);
-	keyOnBasedEffsDrum_ = std::vector<std::unordered_map<EffectType, int>>(6);
-	stepBeginBasedEffsDrum_ = std::vector<std::unordered_map<EffectType, int>>(6);
+	isNoteDelay_[SoundSource::DRUM] = std::vector<bool>(6);
+	keyOnBasedEffs_[SoundSource::DRUM] = EffectMemorySource(6);
+	stepBeginBasedEffs_[SoundSource::DRUM] = EffectMemorySource(6);
 	ntDlyCntDrum_ = std::vector<int>(6);
 	ntCutDlyCntDrum_ = std::vector<int>(6);
 	volDlyCntDrum_ = std::vector<int>(6);
 	volDlyValueDrum_ = std::vector<int>(6, -1);
+
+	// TODO: adpcm
+	isNoteDelay_[SoundSource::ADPCM] = std::vector<bool>(1);
+	keyOnBasedEffs_[SoundSource::ADPCM] = EffectMemorySource(1);
+	stepBeginBasedEffs_[SoundSource::ADPCM] = EffectMemorySource(1);
+//	ntDlyCntDrum_ = std::vector<int>(6);
+//	ntCutDlyCntDrum_ = std::vector<int>(6);
+//	volDlyCntDrum_ = std::vector<int>(6);
+//	volDlyValueDrum_ = std::vector<int>(6, -1);
 }
 
 /********** Play song **********/
@@ -286,46 +295,21 @@ void PlaybackManager::stepProcess()
 		auto& step = song.getTrack(attrib.number)
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		size_t uch = static_cast<size_t>(attrib.channelInSource);
+		keyOnBasedEffs_[attrib.source].at(uch).clear();
+		bool isDelay = false;
+		bool (PlaybackManager::*storeEffectToMap)(int, Effect) = nullptr;
 		switch (attrib.source) {
-		case SoundSource::FM:
-		{
-			keyOnBasedEffsFM_.at(uch).clear();
-			bool isDelay = false;
-			for (int i = 0; i < 4; ++i) {
-				Effect&& eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
-				isDelay |= storeEffectToMapFM(attrib.channelInSource, std::move(eff));
-			}
-			isNoteDelayFM_.at(uch) = isDelay;
-			break;
+		case SoundSource::FM:	storeEffectToMap = &PlaybackManager::storeEffectToMapFM;	break;
+		case SoundSource::SSG:	storeEffectToMap = &PlaybackManager::storeEffectToMapSSG;	break;
+		case SoundSource::DRUM:	storeEffectToMap = &PlaybackManager::storeEffectToMapDrum;	break;
+		case SoundSource::ADPCM:	/* TODO: adpcm */	break;
 		}
-		case SoundSource::SSG:
-		{
-			keyOnBasedEffsSSG_.at(uch).clear();
-			bool isDelay = false;
-			for (int i = 0; i < 4; ++i) {
-				Effect&& eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
-				isDelay |= storeEffectToMapSSG(attrib.channelInSource, std::move(eff));
-			}
-			isNoteDelaySSG_.at(uch) = isDelay;
-			break;
+		for (int i = 0; i < 4; ++i) {
+			Effect&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(i), step.getEffectValue(i));
+			if (attrib.source != SoundSource::ADPCM)
+			isDelay |= (this->*storeEffectToMap)(attrib.channelInSource, std::move(eff));
 		}
-		case SoundSource::DRUM:
-		{
-			keyOnBasedEffsDrum_.at(uch).clear();
-			bool isDelay = false;
-			for (int i = 0; i < 4; ++i) {
-				Effect&& eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
-				isDelay |= storeEffectToMapDrum(attrib.channelInSource, std::move(eff));
-			}
-			isNoteDelayDrum_.at(uch) = isDelay;
-			break;
-		}
-		case SoundSource::ADPCM:
-		{
-			// TODO: adpcm
-			break;
-		}
-		}
+		isNoteDelay_[attrib.source].at(uch) = isDelay;
 	}
 
 	// Execute step events
@@ -335,7 +319,7 @@ void PlaybackManager::stepProcess()
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		switch (attrib.source) {
 		case SoundSource::FM:
-			if (isNoteDelayFM_.at(attrib.channelInSource)) {
+			if (isNoteDelay_[SoundSource::FM].at(attrib.channelInSource)) {
 				// Set effect
 				executeStoredEffectsFM(attrib.channelInSource);
 				checkFMNoteDelayAndEnvelopeReset(step, attrib.channelInSource);
@@ -346,7 +330,7 @@ void PlaybackManager::stepProcess()
 			}
 			break;
 		case SoundSource::SSG:
-			if (isNoteDelaySSG_.at(attrib.channelInSource)) {
+			if (isNoteDelay_[SoundSource::SSG].at(attrib.channelInSource)) {
 				// Set effect
 				executeStoredEffectsSSG(attrib.channelInSource);
 				opnaCtrl_->tickEvent(SoundSource::SSG, attrib.channelInSource);
@@ -356,7 +340,7 @@ void PlaybackManager::stepProcess()
 			}
 			break;
 		case SoundSource::DRUM:
-			if (isNoteDelayDrum_.at(attrib.channelInSource)) {
+			if (isNoteDelay_[SoundSource::DRUM].at(attrib.channelInSource)) {
 				// Set effect
 				executeStoredEffectsDrum(attrib.channelInSource);
 				opnaCtrl_->tickEvent(SoundSource::DRUM, attrib.channelInSource);
@@ -586,7 +570,7 @@ bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
 	case EffectType::Brightness:
-		keyOnBasedEffsFM_.at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		keyOnBasedEffs_[SoundSource::FM].at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
@@ -594,7 +578,7 @@ bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
 		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffsFM_.at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
+			stepBeginBasedEffs_[SoundSource::FM].at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
@@ -614,7 +598,8 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 	bool isNoteDelay = false;
 
 	// Read step beginning based effects
-	for (const auto& eff : stepBeginBasedEffsFM_.at(uch)) {
+	auto& stepBeginBasedEffs = stepBeginBasedEffs_[SoundSource::FM].at(uch);
+	for (const auto& eff : stepBeginBasedEffs) {
 		switch (eff.first) {
 		case EffectType::NoteDelay:
 			ntDlyCntFM_.at(uch) = eff.second;
@@ -624,11 +609,12 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 			break;
 		}
 	}
-	stepBeginBasedEffsFM_.at(uch).clear();
+	stepBeginBasedEffs.clear();
 
 	// Read note on and step beginning based effects
 	if (!isNoteDelay) {
-		for (const auto& eff : keyOnBasedEffsFM_.at(uch)) {
+		auto& keyOnBasedEffs = keyOnBasedEffs_[SoundSource::FM].at(uch);
+		for (auto& eff : keyOnBasedEffs) {
 			switch (eff.first) {
 			case EffectType::Arpeggio:
 				opnaCtrl_->setArpeggioEffectFM(ch, eff.second >> 4, eff.second & 0x0f);
@@ -746,7 +732,7 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 				break;
 			}
 		}
-		keyOnBasedEffsFM_.at(uch).clear();
+		keyOnBasedEffs.clear();
 	}
 }
 
@@ -774,7 +760,7 @@ bool PlaybackManager::storeEffectToMapSSG(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-		keyOnBasedEffsSSG_.at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		keyOnBasedEffs_[SoundSource::SSG].at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
@@ -782,7 +768,7 @@ bool PlaybackManager::storeEffectToMapSSG(int ch, Effect eff)
 		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffsSSG_.at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
+			stepBeginBasedEffs_[SoundSource::SSG].at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
@@ -802,7 +788,8 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 	bool isNoteDelay = false;
 
 	// Read step beginning based effects
-	for (const auto& eff : stepBeginBasedEffsSSG_.at(uch)) {
+	auto& stepBeginBasedEffs = stepBeginBasedEffs_[SoundSource::SSG].at(uch);
+	for (const auto& eff : stepBeginBasedEffs) {
 		switch (eff.first) {
 		case EffectType::NoteDelay:
 			ntDlyCntSSG_.at(uch) = eff.second;
@@ -812,11 +799,12 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 			break;
 		}
 	}
-	stepBeginBasedEffsSSG_.at(uch).clear();
+	stepBeginBasedEffs.clear();
 
 	// Read note on and step beginning based effects
 	if (!isNoteDelay) {
-		for (const auto& eff : keyOnBasedEffsSSG_.at(uch)) {
+		auto& keyOnBasedEffs = keyOnBasedEffs_[SoundSource::SSG].at(uch);
+		for (const auto& eff : keyOnBasedEffs) {
 			switch (eff.first) {
 			case EffectType::Arpeggio:
 				opnaCtrl_->setArpeggioEffectSSG(ch, eff.second >> 4, eff.second & 0x0f);
@@ -903,7 +891,7 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 				break;
 			}
 		}
-		keyOnBasedEffsSSG_.at(uch).clear();
+		keyOnBasedEffs.clear();
 	}
 }
 
@@ -917,7 +905,7 @@ bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-		keyOnBasedEffsDrum_.at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		keyOnBasedEffs_[SoundSource::DRUM].at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
@@ -925,7 +913,7 @@ bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
 		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffsDrum_.at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
+			stepBeginBasedEffs_[SoundSource::DRUM].at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
@@ -945,7 +933,8 @@ void PlaybackManager::executeStoredEffectsDrum(int ch)
 	bool isNoteDelay = false;
 
 	// Read step beginning based effects
-	for (const auto& eff : stepBeginBasedEffsDrum_.at(uch)) {
+	auto& stepBeginBasedEffs = stepBeginBasedEffs_[SoundSource::DRUM].at(uch);
+	for (const auto& eff : stepBeginBasedEffs) {
 		switch (eff.first) {
 		case EffectType::NoteDelay:
 			ntDlyCntDrum_.at(uch) = eff.second;
@@ -955,11 +944,12 @@ void PlaybackManager::executeStoredEffectsDrum(int ch)
 			break;
 		}
 	}
-	stepBeginBasedEffsDrum_.at(uch).clear();
+	stepBeginBasedEffs.clear();
 
-	// Read key on  and step beginning based effects
+	// Read key on and step beginning based effects
 	if (!isNoteDelay) {
-		for (const auto& eff : keyOnBasedEffsDrum_.at(uch)) {
+		auto& keyOnBasedEffs = keyOnBasedEffs_[SoundSource::DRUM].at(uch);
+		for (const auto& eff : keyOnBasedEffs) {
 			switch (eff.first) {
 			case EffectType::Pan:
 				if (-1 < eff.second && eff.second < 4) opnaCtrl_->setPanDrum(ch, eff.second);
@@ -998,7 +988,7 @@ void PlaybackManager::executeStoredEffectsDrum(int ch)
 				break;
 			}
 		}
-		keyOnBasedEffsDrum_.at(uch).clear();
+		keyOnBasedEffs.clear();
 	}
 }
 
@@ -1176,14 +1166,12 @@ void PlaybackManager::clearEffectMaps()
 	stepBeginBasedEffsGlobal_.clear();
 	stepEndBasedEffsGlobal_.clear();
 
-	for (auto& map : keyOnBasedEffsFM_) map.clear();
-	for (auto& map : stepBeginBasedEffsFM_) map.clear();
-
-	for (auto& map : keyOnBasedEffsSSG_) map.clear();
-	for (auto& map : stepBeginBasedEffsSSG_) map.clear();
-
-	for (auto& map : keyOnBasedEffsDrum_) map.clear();
-	for (auto& map : stepBeginBasedEffsDrum_) map.clear();
+	for (auto& maps: keyOnBasedEffs_) {
+		for (EffectMemory& map : maps.second) map.clear();
+	}
+	for (auto& maps: stepBeginBasedEffs_) {
+		for (EffectMemory& map : maps.second) map.clear();
+	}
 }
 
 void PlaybackManager::clearNoteDelayCounts()

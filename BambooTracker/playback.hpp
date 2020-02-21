@@ -76,16 +76,16 @@ private:
 	void checkValidPosition();
 
 	void stepProcess();
-	std::vector<bool> isNoteDelayFM_, isNoteDelaySSG_, isNoteDelayDrum_;
+	std::unordered_map<SoundSource, std::vector<bool>> isNoteDelay_;
 
 	void executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 	void executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 	void executeDrumStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 
-	std::unordered_map<EffectType, int> stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
-	std::vector<std::unordered_map<EffectType, int>> keyOnBasedEffsFM_, stepBeginBasedEffsFM_;
-	std::vector<std::unordered_map<EffectType, int>> keyOnBasedEffsSSG_, stepBeginBasedEffsSSG_;
-	std::vector<std::unordered_map<EffectType, int>> keyOnBasedEffsDrum_, stepBeginBasedEffsDrum_;
+	using EffectMemory = std::unordered_map<EffectType, int>;
+	EffectMemory stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
+	using EffectMemorySource = std::vector<std::unordered_map<EffectType, int>>;
+	std::unordered_map<SoundSource, EffectMemorySource> keyOnBasedEffs_, stepBeginBasedEffs_;
 	bool executeStoredEffectsGlobal();
 	bool storeEffectToMapFM(int ch, Effect eff);
 	void executeStoredEffectsFM(int ch);
