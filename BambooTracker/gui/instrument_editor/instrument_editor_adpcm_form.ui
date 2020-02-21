@@ -92,16 +92,9 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>100</width>
+                <width>140</width>
                 <height>0</height>
                </size>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="waveAssignPushButton">
-              <property name="text">
-               <string>Assign</string>
               </property>
              </widget>
             </item>
@@ -510,7 +503,6 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>waveNumSpinBox</tabstop>
   <tabstop>waveUsersLineEdit</tabstop>
-  <tabstop>waveAssignPushButton</tabstop>
   <tabstop>waveRepeatCheckBox</tabstop>
   <tabstop>waveImportPushButton</tabstop>
   <tabstop>waveClearPushButton</tabstop>

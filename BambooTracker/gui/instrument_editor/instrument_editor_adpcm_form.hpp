@@ -88,7 +88,6 @@ private slots:
 	void on_waveRepeatCheckBox_toggled(bool checked);
 	void on_waveImportPushButton_clicked();
 	void on_waveClearPushButton_clicked();
-	void on_waveAssignPushButton_clicked();
 
 	//========== Envelope ==========//
 signals:

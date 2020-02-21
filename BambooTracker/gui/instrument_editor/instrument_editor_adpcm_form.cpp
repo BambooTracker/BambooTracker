@@ -647,15 +647,13 @@ void InstrumentEditorADPCMForm::on_waveClearPushButton_clicked()
 {
 	bt_.lock()->clearWaveformADPCMSample(ui->waveNumSpinBox->value());
 
+	updateSampleMemoryBar();
+	ui->waveMemoryWidget->update();
+
 	updateSampleView();
 	ui->waveViewWidget->update();
 
 	emit modified();
-}
-
-void InstrumentEditorADPCMForm::on_waveAssignPushButton_clicked()
-{
-	emit waveformAssignRequested();
 }
 
 //--- Envelope
