@@ -3602,8 +3602,6 @@ void OPNAController::keyOffADPCM(bool isJam)
 	}
 	releaseStartADPCMSequences();
 	hasPreSetTickEventADPCM_ = isJam;
-
-	opna_->setRegister(0x100, 0xa1);//force
 	isKeyOnADPCM_ = false;
 }
 
