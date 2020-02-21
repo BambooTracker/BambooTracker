@@ -74,11 +74,13 @@ public slots:
 	void onWaveformSampleMemoryUpdated();
 
 private:
-	std::unique_ptr<QPixmap> pixmap_;
+	std::unique_ptr<QPixmap> wavMemPixmap_;
+	std::unique_ptr<QPixmap> wavViewPixmap_;
 
 	void setInstrumentWaveformParameters();
 	void importSampleFrom(const QString file);
 	void updateSampleMemoryBar();
+	void updateSampleView();
 
 private slots:
 	void on_waveNumSpinBox_valueChanged(int arg1);

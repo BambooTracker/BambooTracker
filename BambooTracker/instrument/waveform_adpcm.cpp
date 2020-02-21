@@ -74,7 +74,7 @@ std::vector<uint8_t> WaveformADPCM::getSamples() const
 
 void WaveformADPCM::clearSample()
 {
-	sample_.clear();
+	sample_ = std::vector<uint8_t>(1);
 }
 
 void WaveformADPCM::setStartAddress(size_t addr)

@@ -1,6 +1,7 @@
 #include "instrument_editor_adpcm_form.hpp"
 #include "ui_instrument_editor_adpcm_form.h"
 #include <cmath>
+#include <limits>
 #include <QFile>
 #include <QIODevice>
 #include <QFileDialog>
@@ -21,7 +22,8 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::InstrumentEditorADPCMForm),
 	instNum_(num),
-	pixmap_(std::make_unique<QPixmap>())
+	wavMemPixmap_(std::make_unique<QPixmap>()),
+	wavViewPixmap_(std::make_unique<QPixmap>())
 {
 	ui->setupUi(this);
 
@@ -38,6 +40,10 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->rootKeyComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, rkfunc);
 	QObject::connect(ui->rootKeySpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, rkfunc);
+
+	ui->tab->installEventFilter(this);
+	ui->waveMemoryWidget->installEventFilter(this);
+	ui->waveViewWidget->installEventFilter(this);
 
 	//========== Envelope ==========//
 	ui->envEditor->setMaximumDisplayedRowCount(64);
@@ -213,9 +219,6 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	// Leave Before Qt5.7.0 style due to windows xp
 	QObject::connect(ui->ptTypeComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 					 this, &InstrumentEditorADPCMForm::onPitchTypeChanged);
-
-	ui->tab->installEventFilter(this);
-	ui->waveMemoryWidget->installEventFilter(this);
 }
 
 InstrumentEditorADPCMForm::~InstrumentEditorADPCMForm()
@@ -334,12 +337,29 @@ bool InstrumentEditorADPCMForm::eventFilter(QObject* obj, QEvent* ev)
 		case QEvent::Paint:
 		{
 			QPainter painter(ui->waveMemoryWidget);
-			painter.drawPixmap(ui->waveMemoryWidget->rect(), *pixmap_.get());
+			painter.drawPixmap(ui->waveMemoryWidget->rect(), *wavMemPixmap_.get());
 			break;
 		}
 		case QEvent::Resize:
-			pixmap_ = std::make_unique<QPixmap>(ui->waveMemoryWidget->size());
+			wavMemPixmap_ = std::make_unique<QPixmap>(ui->waveMemoryWidget->size());
 			updateSampleMemoryBar();
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (obj == ui->waveViewWidget) {
+		switch (ev->type()) {
+		case QEvent::Paint:
+		{
+			QPainter painter(ui->waveViewWidget);
+			painter.drawPixmap(ui->waveViewWidget->rect(), *wavViewPixmap_.get());
+			break;
+		}
+		case QEvent::Resize:
+			wavViewPixmap_ = std::make_unique<QPixmap>(ui->waveViewWidget->size());
+			updateSampleView();
 			break;
 		default:
 			break;
@@ -490,14 +510,17 @@ void InstrumentEditorADPCMForm::importSampleFrom(const QString file)
 	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
 	ui->rootRateSpinBox->setValue(static_cast<int>(std::round((wav->getSampleRate() << 16) / 55500.)));
 
+	updateSampleView();
+	ui->waveViewWidget->update();
+
 	emit modified();
 	emit waveformAssignRequested();
 }
 
 void InstrumentEditorADPCMForm::updateSampleMemoryBar()
 {
-	QPainter painter(pixmap_.get());
-	QRect bar = pixmap_->rect();
+	QPainter painter(wavMemPixmap_.get());
+	QRect bar = wavMemPixmap_->rect();
 	painter.fillRect(bar, palette_->instADPCMMemBackColor);
 
 	double maxSize = bt_.lock()->getADPCMStoredSize() >> 2;
@@ -515,6 +538,35 @@ void InstrumentEditorADPCMForm::updateSampleMemoryBar()
 	}
 }
 
+void InstrumentEditorADPCMForm::updateSampleView()
+{
+	QPainter painter(wavViewPixmap_.get());
+	QRect bar = wavViewPixmap_->rect();
+	painter.fillRect(bar, palette_->instADPCMWaveViewBackColor);
+
+	std::unique_ptr<InstrumentADPCM> inst(dynamic_cast<InstrumentADPCM*>(bt_.lock()->getInstrument(instNum_).release()));
+	std::vector<uint8_t> adpcm = inst->getWaveformSamples();
+	std::vector<int16_t> wave(adpcm.size() * 2);
+	codec::ymb_decode(&adpcm[0], &wave[0], static_cast<long>(wave.size()));
+
+	painter.setPen(palette_->instADPCMWaveViewCenterColor);
+	const int maxX = wavViewPixmap_->width();
+	const int centerY = wavViewPixmap_->height() / 2;
+	painter.drawLine(0, centerY, maxX, centerY);
+
+	painter.setPen(palette_->instADPCMWaveViewForeColor);
+	const int16_t maxY = std::numeric_limits<int16_t>::max();
+	const double size = wave.size();
+	int prevY = centerY;
+	for (int x = 0; x < maxX; ++x) {
+		size_t i = static_cast<size_t>(size * x / maxX);
+		int16_t sample = wave[i];
+		int y = centerY - (centerY * sample / maxY);
+		if (x) painter.drawLine(x - 1, prevY, x, y);
+		prevY = y;
+	}
+}
+
 /********** Slots **********/
 void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 {
@@ -525,8 +577,12 @@ void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
 	});
 	ui->waveUsersLineEdit->setText(l.join(","));
+
 	updateSampleMemoryBar();
 	ui->waveMemoryWidget->update();
+
+	updateSampleView();
+	ui->waveViewWidget->update();
 }
 
 void InstrumentEditorADPCMForm::onWaveformParameterChanged(int wfNum)
@@ -590,6 +646,10 @@ void InstrumentEditorADPCMForm::on_waveImportPushButton_clicked()
 void InstrumentEditorADPCMForm::on_waveClearPushButton_clicked()
 {
 	bt_.lock()->clearWaveformADPCMSample(ui->waveNumSpinBox->value());
+
+	updateSampleView();
+	ui->waveViewWidget->update();
+
 	emit modified();
 }
 
