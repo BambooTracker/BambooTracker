@@ -6,6 +6,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::Arpeggio;
 		default:
 			return EffectType::NoEffect;
@@ -15,6 +16,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::PortamentoUp;
 		default:
 			return EffectType::NoEffect;
@@ -24,6 +26,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::PortamentoDown;
 		default:
 			return EffectType::NoEffect;
@@ -33,6 +36,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::TonePortamento;
 		default:
 			return EffectType::NoEffect;
@@ -42,6 +46,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::Vibrato;
 		default:
 			return EffectType::NoEffect;
@@ -51,6 +56,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::Tremolo;
 		default:
 			return EffectType::NoEffect;
@@ -60,6 +66,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::DRUM:
+		case SoundSource::ADPCM:
 			return EffectType::Pan;
 		default:
 			return EffectType::NoEffect;
@@ -69,6 +76,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::VolumeSlide;
 		default:
 			return EffectType::NoEffect;
@@ -120,6 +128,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::Detune;
 		default:
 			return EffectType::NoEffect;
@@ -129,6 +138,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::NoteSlideUp;
 		default:
 			return EffectType::NoEffect;
@@ -138,6 +148,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::NoteSlideDown;
 		default:
 			return EffectType::NoEffect;
@@ -150,6 +161,7 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 		switch (src) {
 		case SoundSource::FM:
 		case SoundSource::SSG:
+		case SoundSource::ADPCM:
 			return EffectType::TransposeDelay;
 		default:
 			return EffectType::NoEffect;

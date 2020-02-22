@@ -3729,6 +3729,63 @@ void OPNAController::setPanADPCM(int value)
 	opna_->setRegister(0x101, panADPCM_);
 }
 
+void OPNAController::setArpeggioEffectADPCM(int second, int third)
+{
+	if (second || third) {
+		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator>(second, third);
+		isArpEffADPCM_ = true;
+	}
+	else {
+		if (!refInstADPCM_->getArpeggioEnabled()) arpItADPCM_.reset();
+		else arpItADPCM_ = refInstADPCM_->getArpeggioSequenceIterator();
+		isArpEffADPCM_ = false;
+	}
+}
+
+void OPNAController::setPortamentoEffectADPCM(int depth, bool isTonePortamento)
+{
+	prtmADPCM_ = depth;
+	isTonePrtmADPCM_ =  depth ? isTonePortamento : false;
+}
+
+void OPNAController::setVibratoEffectADPCM(int period, int depth)
+{
+	if (period && depth) vibItADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
+	else vibItADPCM_.reset();
+}
+
+void OPNAController::setTremoloEffectADPCM(int period, int depth)
+{
+	if (period && depth) treItADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
+	else treItADPCM_.reset();
+}
+
+void OPNAController::setVolumeSlideADPCM(int depth, bool isUp)
+{
+	volSldADPCM_ = depth * (isUp ? 1 : -1);
+}
+
+void OPNAController::setDetuneADPCM(int pitch)
+{
+	detuneADPCM_ = pitch;
+	needToneSetADPCM_ = true;
+}
+
+void OPNAController::setNoteSlideADPCM(int speed, int seminote)
+{
+	if (seminote) {
+		nsItADPCM_ = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
+		noteSldADPCMSetFlag_ = true;
+	}
+	else nsItADPCM_.reset();
+}
+
+void OPNAController::setTransposeEffectADPCM(int seminote)
+{
+	transposeADPCM_ += (seminote * 32);
+	needToneSetADPCM_ = true;
+}
+
 /********** For state retrieve **********/
 void OPNAController::haltSequencesADPCM()
 {

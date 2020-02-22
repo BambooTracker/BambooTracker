@@ -3,7 +3,9 @@
 
 #include <QDialog>
 #include <QString>
+#include <unordered_set>
 #include "effect.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 namespace Ui {
@@ -21,7 +23,7 @@ public:
 private:
 	Ui::EffectListDialog *ui;
 
-	void addRow(EffectType effect, int flag);
+	void addRow(EffectType effect, std::unordered_set<SoundSource> types);
 };
 
 #endif // EFFECT_LIST_DIALOG_HPP

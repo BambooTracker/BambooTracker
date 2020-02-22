@@ -476,14 +476,14 @@ public:
 
 	// Set effect
 	void setPanADPCM(int value);
-//	void setArpeggioEffectADPCM(int second, int third);
-//	void setPortamentoEffectADPCM(int depth, bool isTonePortamento = false);
-//	void setVibratoEffectADPCM(int period, int depth);
-//	void setTremoloEffectADPCM(int period, int depth);
-//	void setVolumeSlideADPCM(int depth, bool isUp);
-//	void setDetuneADPCM(int pitch);
-//	void setNoteSlideADPCM(int speed, int seminote);
-//	void setTransposeEffectADPCM(int seminote);
+	void setArpeggioEffectADPCM(int second, int third);
+	void setPortamentoEffectADPCM(int depth, bool isTonePortamento = false);
+	void setVibratoEffectADPCM(int period, int depth);
+	void setTremoloEffectADPCM(int period, int depth);
+	void setVolumeSlideADPCM(int depth, bool isUp);
+	void setDetuneADPCM(int pitch);
+	void setNoteSlideADPCM(int speed, int seminote);
+	void setTransposeEffectADPCM(int seminote);
 
 	// For state retrieve
 	void haltSequencesADPCM();

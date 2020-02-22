@@ -81,6 +81,7 @@ private:
 	void executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 	void executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 	void executeDrumStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
+	void executeADPCMStepEvents(Step& step, bool calledByNoteDelay = false);
 
 	using EffectMemory = std::unordered_map<EffectType, int>;
 	EffectMemory stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
@@ -93,6 +94,8 @@ private:
 	void executeStoredEffectsSSG(int ch);
 	bool storeEffectToMapDrum(int ch, Effect eff);
 	void executeStoredEffectsDrum(int ch);
+	bool storeEffectToMapADPCM(int ch, Effect eff);
+	void executeStoredEffectsADPCM();
 
 	bool effPositionJump(int nextOrder);
 	void effSongEnd();
@@ -108,14 +111,19 @@ private:
 	void envelopeResetEffectFM(Step& step, int ch);
 	void checkSSGDelayEventsInTick(Step& step, int ch);
 	void checkDrumDelayEventsInTick(Step& step, int ch);
+	void checkADPCMDelayEventsInTick(Step& step);
 
 
 	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
 	std::vector<int> ntDlyCntDrum_, ntCutDlyCntDrum_, volDlyCntDrum_;
+	int ntDlyCntADPCM_, ntCutDlyCntADPCM_, volDlyCntADPCM_;
 	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
+	int volDlyValueADPCM_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
+	int tposeDlyCntADPCM_;
 	std::vector<int> tposeDlyValueFM_, tposeDlyValueSSG_;
+	int tposeDlyValueADPCM_;
 
 	void clearEffectMaps();
 	void clearNoteDelayCounts();
@@ -123,6 +131,7 @@ private:
 	void clearFMDelayBeyondStepCounts(int ch);
 	void clearSSGDelayBeyondStepCounts(int ch);
 	void clearDrumDelayBeyondStepCounts(int ch);
+	void clearADPCMDelayBeyondStepCounts();
 	void updateDelayEventCounts();
 
 	bool isRetrieveChannel_;
