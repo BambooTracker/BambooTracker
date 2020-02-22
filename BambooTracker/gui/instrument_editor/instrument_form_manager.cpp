@@ -35,9 +35,12 @@ void InstrumentFormManager::add(int n, std::unique_ptr<QWidget> form, QString in
 
 void InstrumentFormManager::remove(int n)
 {
-	map_.at(n)->close();
+	SoundSource src = getFormInstrumentSoundSource(n);
 
-	switch (getFormInstrumentSoundSource(n)) {
+	map_.at(n)->close();
+	map_.erase(n);
+
+	switch (src) {
 	case SoundSource::FM:
 		onInstrumentFMEnvelopeNumberChanged();
 		onInstrumentFMLFONumberChanged();
@@ -53,7 +56,6 @@ void InstrumentFormManager::remove(int n)
 		onInstrumentSSGPitchNumberChanged();
 		break;
 	case SoundSource::ADPCM:
-		// TODO: adpcm check correct
 		onInstrumentADPCMWaveformNumberChanged();
 		onInstrumentADPCMEnvelopeNumberChanged();
 		onInstrumentADPCMArpeggioNumberChanged();
@@ -62,8 +64,6 @@ void InstrumentFormManager::remove(int n)
 	default:
 		break;
 	}
-
-	map_.erase(n);
 }
 
 void InstrumentFormManager::showForm(int n)

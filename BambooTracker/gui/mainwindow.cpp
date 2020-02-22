@@ -896,6 +896,9 @@ void MainWindow::deepCloneInstrument()
 	comStack_->push(new DeepCloneInstrumentQtCommand(
 						ui->instrumentListWidget, num, refNum, instForms_));
 	//----------//
+
+	if (bt_->getInstrument(num)->getSoundSource() == SoundSource::ADPCM)
+		assignADPCMSamples();
 }
 
 void MainWindow::loadInstrument()
@@ -1745,7 +1748,6 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm check correct
 		auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form.get());
 		adpcmForm->setCore(bt_);
 		adpcmForm->setConfiguration(config_.lock());

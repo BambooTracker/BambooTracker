@@ -452,7 +452,6 @@ void InstrumentEditorADPCMForm::setInstrumentWaveformParameters()
 	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
 
 	ui->waveNumSpinBox->setValue(instADPCM->getWaveformNumber());
-	// TODO: adpcm display waveform
 
 	ui->waveRepeatCheckBox->setChecked(instADPCM->isWaveformRepeatable());
 	int rk = instADPCM->getWaveformRootKeyNumber();
@@ -519,8 +518,10 @@ void InstrumentEditorADPCMForm::importSampleFrom(const QString file)
 
 void InstrumentEditorADPCMForm::updateSampleMemoryBar()
 {
-	QPainter painter(wavMemPixmap_.get());
 	QRect bar = wavMemPixmap_->rect();
+	if (!bar.isValid()) return;
+
+	QPainter painter(wavMemPixmap_.get());
 	painter.fillRect(bar, palette_->instADPCMMemBackColor);
 
 	double maxSize = bt_.lock()->getADPCMStoredSize() >> 2;
@@ -540,9 +541,11 @@ void InstrumentEditorADPCMForm::updateSampleMemoryBar()
 
 void InstrumentEditorADPCMForm::updateSampleView()
 {
+	QRect rect = wavViewPixmap_->rect();
+	if (!rect.isValid()) return;
+
 	QPainter painter(wavViewPixmap_.get());
-	QRect bar = wavViewPixmap_->rect();
-	painter.fillRect(bar, palette_->instADPCMWaveViewBackColor);
+	painter.fillRect(rect, palette_->instADPCMWaveViewBackColor);
 
 	std::unique_ptr<InstrumentADPCM> inst(dynamic_cast<InstrumentADPCM*>(bt_.lock()->getInstrument(instNum_).release()));
 	std::vector<uint8_t> adpcm = inst->getWaveformSamples();
@@ -550,8 +553,8 @@ void InstrumentEditorADPCMForm::updateSampleView()
 	codec::ymb_decode(&adpcm[0], &wave[0], static_cast<long>(wave.size()));
 
 	painter.setPen(palette_->instADPCMWaveViewCenterColor);
-	const int maxX = wavViewPixmap_->width();
-	const int centerY = wavViewPixmap_->height() / 2;
+	const int maxX = rect.width();
+	const int centerY = rect.height() / 2;
 	painter.drawLine(0, centerY, maxX, centerY);
 
 	painter.setPen(palette_->instADPCMWaveViewForeColor);

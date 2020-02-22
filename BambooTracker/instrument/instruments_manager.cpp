@@ -120,7 +120,6 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm check correct
 		auto adpcm = std::make_shared<InstrumentADPCM>(instNum, name, this);
 		int wfNum = findFirstFreePlainWaveformADPCM();
 		if (wfNum == -1) wfNum = static_cast<int>(wfADPCM_.size()) - 1;
@@ -187,7 +186,6 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm check correct
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(num)]);
 		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->registerUserInstrument(num);
 		if (adpcm->getEnvelopeEnabled())
@@ -247,7 +245,6 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm check correct
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
 		setInstrumentADPCMWaveform(cloneInstNum, refAdpcm->getWaveformNumber());
@@ -370,7 +367,6 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm check correct
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
 
@@ -638,7 +634,6 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm check correct
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)]);
 		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->deregisterUserInstrument(instNum);
 		if (adpcm->getEnvelopeEnabled())
@@ -692,7 +687,6 @@ void InstrumentsManager::clearAll()
 		arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
 		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
-		// TODO: adpcm check correct
 		wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
 		envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
 		arpADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
@@ -766,7 +760,6 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 		if (!ptSSG_[i]->isUserInstrument())
 			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
-		// TODO: adpcm check correct
 		if (!wfADPCM_[i]->isUserInstrument())
 			wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
 		if (!envADPCM_[i]->isUserInstrument())
@@ -827,7 +820,6 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 					break;
 				case SoundSource::ADPCM:
 				{
-					// TODO: adpcm check correct
 					if (equalPropertiesADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(base),
 										  std::dynamic_pointer_cast<InstrumentADPCM>(tgt))) {
 						group.push_back(tgtIdx);

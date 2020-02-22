@@ -3867,7 +3867,6 @@ void OPNAController::setMuteADPCMState(bool isMute)
 	isMuteADPCM_ = isMute;
 
 	if (isMute) {
-		// TODO: adpcm check correct
 		opna_->setRegister(0x10b, 0);
 		isKeyOnADPCM_ = false;
 	}

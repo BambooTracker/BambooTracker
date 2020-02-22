@@ -1,5 +1,5 @@
 #include "effect.hpp"
-// TODO: adpcm
+
 EffectType Effect::toEffectType(SoundSource src, std::string id)
 {
 	if (id == "00") {

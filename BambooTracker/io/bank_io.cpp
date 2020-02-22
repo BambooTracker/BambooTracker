@@ -82,7 +82,6 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 				break;
 			case SoundSource::ADPCM:
 			{
-				// TODO: adpcm check correct
 				ctr.appendUint8(0x02);
 				auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);
 				ctr.appendUint8(static_cast<uint8_t>(instADPCM->getWaveformNumber()));

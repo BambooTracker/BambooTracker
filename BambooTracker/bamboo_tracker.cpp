@@ -987,7 +987,6 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
 			break;
 		case SoundSource::ADPCM:
-			// TODO: adpcm check correct
 			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(tmpInst))
 				opnaCtrl_->setInstrumentADPCM(adpcm);
 			opnaCtrl_->keyOnADPCM(note, octave, pitch, true);

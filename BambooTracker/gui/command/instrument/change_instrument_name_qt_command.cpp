@@ -73,7 +73,8 @@ void ChangeInstrumentNameQtCommand::undo()
 	}
 	case SoundSource::ADPCM:
 	{
-		// TODO: adpcm
+		auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form);
+		adpcmForm->setWindowTitle(title);
 		break;
 	}
 	default:
