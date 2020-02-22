@@ -161,6 +161,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	octLab->setMargin(6);
 	ui->subToolBar->addWidget(octLab);
 	octave_ = new QSpinBox();
+	octave_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	octave_->setMaximumWidth(80);
 	octave_->setMinimum(0);
 	octave_->setMaximum(7);
 	octave_->setValue(bt_->getCurrentOctave());
@@ -175,6 +177,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	hlLab1->setMargin(6);
 	ui->subToolBar->addWidget(hlLab1);
 	highlight1_ = new QSpinBox();
+	highlight1_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	highlight1_->setMaximumWidth(80);
 	highlight1_->setMinimum(1);
 	highlight1_->setMaximum(256);
 	highlight1_->setValue(8);
@@ -189,6 +193,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	hlLab2->setMargin(6);
 	ui->subToolBar->addWidget(hlLab2);
 	highlight2_ = new QSpinBox();
+	highlight2_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	highlight2_->setMaximumWidth(80);
 	highlight2_->setMinimum(1);
 	highlight2_->setMaximum(256);
 	highlight2_->setValue(8);

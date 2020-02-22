@@ -581,10 +581,10 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 		// Step number
 		if (hovPos_.track == -2 && hovPos_.order == viewedCenterPos_.order && hovPos_.step == viewedCenterPos_.step)
 			backPainter.fillRect(0, prevY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
-			textPainter.setPen(!(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
-																  : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
-																									   : palette_->ptnDefStepNumColor);
-			textPainter.drawText(1, baseY, QString("%1").arg(viewedCenterPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
+		textPainter.setPen(!(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
+															  : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
+																								   : palette_->ptnDefStepNumColor);
+		textPainter.drawText(1, baseY, QString("%1").arg(viewedCenterPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		// Step data
 		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 			x += drawStep(forePainter, textPainter, backPainter, trackNum, viewedCenterPos_.order, viewedCenterPos_.step, x, baseY, prevY);
@@ -1097,7 +1097,7 @@ void PatternEditorPanel::moveViewToRight(int n)
 	// Calculate cursor position
 	int track = curPos_.track + n;
 	int col = std::min(curPos_.colInTrack,
-								  4 + 2 * rightEffn_.at(static_cast<size_t>(track)));
+					   4 + 2 * rightEffn_.at(static_cast<size_t>(track)));
 
 	// Check visible
 	int width = stepNumWidth_;
