@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Added
+- Add shortcuts instead of insert key
 
 ## v0.3.5 (2020-02-15)
 ### Added
