@@ -151,7 +151,7 @@ public:
 private:
 	std::shared_ptr<InstrumentFM> refInstFM_[6];
 	std::unique_ptr<EnvelopeFM> envFM_[6];
-	bool isKeyOnFM_[9];
+	bool isKeyOnFM_[9], hasKeyOnBeforeFM_[9];
 	uint8_t fmOpEnables_[6];
 	std::deque<ToneDetail> baseToneFM_[9];
 	ToneDetail keyToneFM_[9];
@@ -309,7 +309,6 @@ public:
 	void setHardEnvelopePeriod(int ch, bool high, int period);
 	void setAutoEnvelopeSSG(int ch, int shift, int shape);
 
-	// For state retrieve
 	void haltSequencesSSG(int ch);
 
 	// Mute
@@ -323,7 +322,7 @@ public:
 
 private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
-	bool isKeyOnSSG_[3];
+	bool isKeyOnSSG_[3], hasKeyOnBeforeSSG_[9];
 	uint8_t mixerSSG_;
 	std::deque<ToneDetail> baseToneSSG_[3];
 	ToneDetail keyToneSSG_[3];

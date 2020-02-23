@@ -218,7 +218,8 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 
 	updateEchoBufferFM(ch, octave, note, pitch);
 
-	if (isTonePortamentoFM(ch)) {
+	bool isTonePrtm = isTonePrtmFM_[ch] && hasKeyOnBeforeFM_[ch];
+	if (isTonePrtm) {
 		keyToneFM_[ch].pitch += (sumNoteSldFM_[ch] + transposeFM_[ch]);
 	}
 	else {
@@ -240,7 +241,7 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 	setFrontFMSequences(ch);
 	hasPreSetTickEventFM_[ch] = isJam;
 
-	if (!isTonePortamentoFM(ch)) {
+	if (!isTonePrtm) {
 		uint8_t chdata = getFMKeyOnOffChannelMask(ch);
 		switch (mode_) {
 		case SongType::Standard:
@@ -293,6 +294,8 @@ void OPNAController::keyOnFM(int ch, Note note, int octave, int pitch, bool isJa
 		}
 		}
 	}
+
+	hasKeyOnBeforeFM_[ch] = true;
 }
 
 void OPNAController::keyOnFM(int ch, int echoBuf)
@@ -803,7 +806,7 @@ void OPNAController::haltSequencesFM(int ch)
 	if (treItFM_[ch]) treItFM_[ch]->end();
 	if (arpItFM_[ch]) arpItFM_[ch]->end();
 	if (ptItFM_[ch]) ptItFM_[ch]->end();
-	if (vibItFM_[ch]) vibItFM_[ch]->next();
+	if (vibItFM_[ch]) vibItFM_[ch]->end();
 	if (nsItFM_[ch]) nsItFM_[ch]->end();
 }
 
@@ -918,6 +921,7 @@ void OPNAController::initFM()
 	for (size_t ch = 0; ch < fmch; ++ch) {
 		// Init operators key off
 		isKeyOnFM_[ch] = false;
+		hasKeyOnBeforeFM_[ch] = false;
 
 		// Init echo buffer
 		baseToneFM_[ch] = std::deque<ToneDetail>(4);
@@ -2068,7 +2072,7 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 
 	updateEchoBufferSSG(ch, octave, note, pitch);
 
-	if (isTonePortamentoSSG(ch)) {
+	if (isTonePrtmSSG_[ch] && hasKeyOnBeforeSSG_[ch]) {
 		keyToneSSG_[ch].pitch += (sumNoteSldSSG_[ch] +transposeSSG_[ch]);
 	}
 	else {
@@ -2093,6 +2097,7 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 
 	hasPreSetTickEventSSG_[ch] = isJam;
 	isKeyOnSSG_[ch] = true;
+	hasKeyOnBeforeSSG_[ch] = true;
 }
 
 void OPNAController::keyOnSSG(int ch, int echoBuf)
@@ -2380,7 +2385,7 @@ void OPNAController::haltSequencesSSG(int ch)
 	if (tnItSSG_[ch]) tnItSSG_[ch]->end();
 	if (arpItSSG_[ch]) arpItSSG_[ch]->end();
 	if (ptItSSG_[ch]) ptItSSG_[ch]->end();
-	if (vibItSSG_[ch]) vibItSSG_[ch]->next();
+	if (vibItSSG_[ch]) vibItSSG_[ch]->end();
 	if (nsItSSG_[ch]) nsItSSG_[ch]->end();
 }
 
@@ -2427,6 +2432,7 @@ void OPNAController::initSSG()
 
 	for (int ch = 0; ch < 3; ++ch) {
 		isKeyOnSSG_[ch] = false;
+		hasKeyOnBeforeSSG_[ch] = false;
 
 		refInstSSG_[ch].reset();	// Init envelope
 
@@ -3288,7 +3294,7 @@ void OPNAController::checkRealToneSSGByArpeggio(int ch, int seqPos)
 
 void OPNAController::checkPortamentoSSG(int ch)
 {
-	if ((!arpItSSG_[ch] || arpItSSG_[ch]->getPosition() == -1) && prtmSSG_[ch]) {
+	if ((!arpItSSG_[ch] || arpItSSG_[ch]->getPosition() == -1) && prtmSSG_[ch]  && hasKeyOnBeforeSSG_[ch]) {
 		if (isTonePrtmSSG_[ch]) {
 			int dif = ( octaveAndNoteToNoteNumber(baseToneSSG_[ch].front().octave, baseToneSSG_[ch].front().note) * 32
 						+ baseToneSSG_[ch].front().pitch )
