@@ -127,7 +127,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("soundDevice",
 						  QString::fromUtf8(configLocked->getSoundDevice().c_str(),
 											static_cast<int>(configLocked->getSoundDevice().length())));
-		settings.setValue("useSCCI",		configLocked->getUseSCCI());
+                settings.setValue("realChipInterface",	static_cast<int>(configLocked->getRealChipInterface()));
 		settings.setValue("emulator",		configLocked->getEmulator());
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
@@ -294,7 +294,8 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		settings.beginGroup("Sound");
 		configLocked->setSoundAPI(settings.value("soundAPI", QString::fromStdString(configLocked->getSoundAPI())).toString().toUtf8().toStdString());
 		configLocked->setSoundDevice(settings.value("soundDevice", QString::fromStdString(configLocked->getSoundDevice())).toString().toUtf8().toStdString());
-		configLocked->setUseSCCI(settings.value("useSCCI", configLocked->getUseSCCI()).toBool());
+                configLocked->setRealChipInterface(static_cast<RealChipInterface>(
+                                                       settings.value("realChipInterface", static_cast<int>(configLocked->getRealChipInterface())).toInt()));
 		configLocked->setEmulator(settings.value("emulator", configLocked->getEmulator()).toInt());
 		QVariant sampleRateWorkaround;
 		sampleRateWorkaround.setValue(configLocked->getSampleRate());

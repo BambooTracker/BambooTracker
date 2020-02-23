@@ -1,5 +1,5 @@
 # ![icon](./img/icon.png) BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.3.4-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.3.5-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | macos | linux](https://img.shields.io/badge/platform-windows%20|%20macos%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.org/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.org/rerrahkr/BambooTracker)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
@@ -153,56 +153,56 @@ macOSでは一部のキーを以下のものに置き換えてください。
 | Ctrl+I | 選択中のインストゥルメントのエディタを開く |
 
 ### オーダーリスト
-| キー     | コマンド                                               |
-| -------- | ------------------------------------------------------ |
-| Ctrl+C   | 選択範囲コピー                                         |
-| Ctrl+V   | 貼り付け                                               |
-| Ctrl+A   | 1回目:現在のトラックの全オーダ選択, 2回目:オーダ全選択 |
-| Ctrl+D   | オーダーをコピーし次のオーダーとして挿入               |
-| Alt+D    | 選択したパターンをクローンしてその位置に置き換える     |
-| Home     | 最初のオーダーへジャンプ                               |
-| End      | 最後のオーダーへジャンプ                               |
-| PageUp   | 前へオーダージャンプ                                   |
-| PageDown | 後ろへオーダージャンプ                                 |
-| Insert   | オーダー挿入                                           |
-| Delete   | 現在のオーダーを削除し詰める                           |
-| Escape   | 選択解除                                               |
+| キー              | コマンド                                               |
+| ----------------- | ------------------------------------------------------ |
+| Ctrl+C            | 選択範囲コピー                                         |
+| Ctrl+V            | 貼り付け                                               |
+| Ctrl+A            | 1回目:現在のトラックの全オーダ選択, 2回目:オーダ全選択 |
+| Ctrl+D            | オーダーをコピーし次のオーダーとして挿入               |
+| Alt+D             | 選択したパターンをクローンしてその位置に置き換える     |
+| Home              | 最初のオーダーへジャンプ                               |
+| End               | 最後のオーダーへジャンプ                               |
+| PageUp            | 前へオーダージャンプ                                   |
+| PageDown          | 後ろへオーダージャンプ                                 |
+| InsertまたはAlt+B | オーダー挿入                                           |
+| Delete            | 現在のオーダーを削除し詰める                           |
+| Escape            | 選択解除                                               |
 
 ### パターンエディタ
-| キー          | コマンド                                                                   |
-| ------------- | -------------------------------------------------------------------------- |
-| Ctrl+C        | 選択範囲コピー                                                             |
-| Ctrl+X        | 選択範囲カット                                                             |
-| Ctrl+V        | 貼り付け                                                                   |
-| Ctrl+M        | Mix貼り付け                                                                |
-| Ctrl+A        | 1回目:現在のパターン・トラックの全ステップ選択, 2回目:現在のパターン全選択 |
-| Ctrl+G        | 選択範囲のコマンド補完                                                     |
-| Ctrl+R        | 選択範囲のコマンドを逆転                                                   |
-| Ctrl+F1       | 選択範囲または現在のノート半音下げる                                       |
-| Ctrl+F2       | 選択範囲または現在のノート半音上げる                                       |
-| Ctrl+F3       | 選択範囲または現在のノートオクターブ下げる                                 |
-| Ctrl+F4       | 選択範囲または現在のノートオクターブ下げる                                 |
-| Alt+F9        | 現在のトラックをミュート                                                   |
-| Alt+F10       | 現在以外のトラックをミュート                                               |
-| Alt+S         | 選択範囲のインストゥルメントを現在の物に変更                               |
-| Alt+L         | 現在のトラックのエフェクト列の表示数を増やす                               |
-| Alt+K         | 現在のトラックのエフェクト列の表示数を減らす                               |
-| Tab           | 次のトラックへ移動                                                         |
-| BackTab       | 前のトラックへ移動                                                         |
-| Home          | パターンの最初のステップへジャンプ                                         |
-| End           | パターンの最後のステップへジャンプ                                         |
-| PageUp        | 前へステップジャンプ                                                       |
-| PageDown      | 後ろへステップジャンプ                                                     |
-| Ctrl+Up       | 前のハイライトされた1stステップへジャンプ                                  |
-| Ctrl+Down     | 後ろのハイライトされた1stステップへジャンプ                                |
-| Insert        | ステップ挿入                                                               |
-| BackSpace     | 前のステップを削除し詰める                                                 |
-| Delete        | 現在のステップのデータ削除                                                 |
-| Escape        | 選択解除                                                                   |
-| -             | キーオフ                                                                   |
-| \* (テンキー) | 入力オクターブアップ/エコーバッファ番号選択                                |
-| / (テンキー)  | 入力オクターブダウン/エコーバッファ番号選択                                |
-| ^             | エコーバッファ                                                             |
+| キー                  | コマンド                                                                   |
+| --------------------- | -------------------------------------------------------------------------- |
+| Ctrl+C                | 選択範囲コピー                                                             |
+| Ctrl+X                | 選択範囲カット                                                             |
+| Ctrl+V                | 貼り付け                                                                   |
+| Ctrl+M                | Mix貼り付け                                                                |
+| Ctrl+A                | 1回目:現在のパターン・トラックの全ステップ選択, 2回目:現在のパターン全選択 |
+| Ctrl+G                | 選択範囲のコマンド補完                                                     |
+| Ctrl+R                | 選択範囲のコマンドを逆転                                                   |
+| Ctrl+F1               | 選択範囲または現在のノート半音下げる                                       |
+| Ctrl+F2               | 選択範囲または現在のノート半音上げる                                       |
+| Ctrl+F3               | 選択範囲または現在のノートオクターブ下げる                                 |
+| Ctrl+F4               | 選択範囲または現在のノートオクターブ下げる                                 |
+| Alt+F9                | 現在のトラックをミュート                                                   |
+| Alt+F10               | 現在以外のトラックをミュート                                               |
+| Alt+S                 | 選択範囲のインストゥルメントを現在の物に変更                               |
+| Alt+L                 | 現在のトラックのエフェクト列の表示数を増やす                               |
+| Alt+K                 | 現在のトラックのエフェクト列の表示数を減らす                               |
+| Tab                   | 次のトラックへ移動                                                         |
+| BackTab               | 前のトラックへ移動                                                         |
+| Home                  | パターンの最初のステップへジャンプ                                         |
+| End                   | パターンの最後のステップへジャンプ                                         |
+| PageUp                | 前へステップジャンプ                                                       |
+| PageDown              | 後ろへステップジャンプ                                                     |
+| Ctrl+Up               | 前のハイライトされた1stステップへジャンプ                                  |
+| Ctrl+Down             | 後ろのハイライトされた1stステップへジャンプ                                |
+| InsertまたはAlt+Down  | ステップ挿入                                                               |
+| BackSpaceまたはAlt+Up | 前のステップを削除し詰める                                                 |
+| Delete                | 現在のステップのデータ削除                                                 |
+| Escape                | 選択解除                                                                   |
+| -                     | キーオフ                                                                   |
+| \* (テンキー)         | 入力オクターブアップ/エコーバッファ番号選択                                |
+| / (テンキー)          | 入力オクターブダウン/エコーバッファ番号選択                                |
+| ^                     | エコーバッファ                                                             |
 
 音符はキーボードを鍵盤に見立てて入力します。
 キーボードの配置は環境設定で変更可能です。
@@ -377,7 +377,8 @@ pkg install bambootracker
 - サンプルインストゥルメントを提供してくださったpapiezakさん
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
 - S98ファイルのフォーマットのドキュメントに関してRu^3さん
-- SCCIライブラリに関してSCCI開発チームの方々
+- SCCIライブラリに関してがし３さん
+- C86CTLライブラリに関してhonetさん
 - RtAudioとRtMidiライブラリに関してGary P. Scavoneさん他
 - Nuked OPN-Modエミュレーションに関してAlexey Khokholov (Nuke.YKT)さん、Jean Pierre Cimalandoさん
 - フランス語翻訳に関してJean Pierre Cimalandoさん、Olivier Humbertさん

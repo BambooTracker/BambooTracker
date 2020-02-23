@@ -178,7 +178,7 @@ int CommandSequence::Iterator::getSequenceType() const
 
 int CommandSequence::Iterator::getCommandType() const
 {
-	return (pos_ == -1)
+	return (pos_ == -1 || pos_ >= seq_->getSequenceSize())
 			? -1
 			: isRelease_
 			  ? static_cast<int>(seq_->getSequenceTypeAt(pos_) * relReleaseRatio_)
@@ -187,7 +187,7 @@ int CommandSequence::Iterator::getCommandType() const
 
 int CommandSequence::Iterator::getCommandData() const
 {
-	return (pos_ == -1) ? -1 : seq_->getSequenceDataAt(pos_);
+	return (pos_ == -1 || pos_ >= seq_->getSequenceSize()) ? -1 : seq_->getSequenceDataAt(pos_);
 }
 
 int CommandSequence::Iterator::next(bool isReleaseBegin)

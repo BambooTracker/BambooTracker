@@ -9,6 +9,7 @@
 #include "effect_iterator.hpp"
 #include "chips/chip_misc.h"
 #include "chips/scci/scci.h"
+#include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -58,9 +59,11 @@ public:
 	// Update register states after tick process
 	void updateRegisterStates();
 
-	// Stream type
-	void useSCCI(SoundInterfaceManager* manager);
+	// Real chip interface
+	void useSCCI(scci::SoundInterfaceManager* manager);
 	bool isUsedSCCI() const;
+	void useC86CTL(C86ctlBase* base);
+	bool isUsedC86CTL() const;
 
 	// Stream samples
 	void getStreamSamples(int16_t* container, size_t nSamples);
@@ -161,7 +164,7 @@ public:
 private:
 	std::shared_ptr<InstrumentFM> refInstFM_[6];
 	std::unique_ptr<EnvelopeFM> envFM_[6];
-	bool isKeyOnFM_[9];
+	bool isKeyOnFM_[9], hasKeyOnBeforeFM_[9];
 	uint8_t fmOpEnables_[6];
 	std::deque<ToneDetail> baseToneFM_[9];
 	ToneDetail keyToneFM_[9];
@@ -336,7 +339,6 @@ public:
 	void setHardEnvelopePeriod(int ch, bool high, int period);
 	void setAutoEnvelopeSSG(int ch, int shift, int shape);
 
-	// For state retrieve
 	void haltSequencesSSG(int ch);
 
 	// Chip details
@@ -346,7 +348,7 @@ public:
 
 private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
-	bool isKeyOnSSG_[3];
+	bool isKeyOnSSG_[3], hasKeyOnBeforeSSG_[9];
 	uint8_t mixerSSG_;
 	std::deque<ToneDetail> baseToneSSG_[3];
 	ToneDetail keyToneSSG_[3];
@@ -418,6 +420,8 @@ private:
 	}
 
 	void writePitchSSG(int ch);
+	void writeAutoEnvelopePitchSSG(int ch, double tonePitch);
+	void writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle);
 
 	void setRealVolumeSSG(int ch);
 

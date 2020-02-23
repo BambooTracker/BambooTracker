@@ -154,8 +154,8 @@ public:
 	std::string getSoundAPI() const;
 	void setSoundDevice(std::string device);
 	std::string getSoundDevice() const;
-	void setUseSCCI(bool enabled);
-	bool getUseSCCI() const;
+	void setRealChipInterface(RealChipInterface type);
+	RealChipInterface getRealChipInterface() const;
 	void setEmulator(int emulator);
 	int getEmulator() const;
 	void setSampleRate(uint32_t rate);
@@ -164,7 +164,7 @@ public:
 	size_t getBufferLength() const;
 private:
 	std::string sndAPI_, sndDevice_;
-	bool useSCCI_;
+	RealChipInterface realChip_;
 	int emulator_;
 	uint32_t sampleRate_;
 	size_t bufferLength_;

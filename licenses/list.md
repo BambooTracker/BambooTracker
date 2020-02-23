@@ -1,6 +1,8 @@
 # List of libraries
 - [adpcm](https://github.com/superctr/adpcm) by Ian Karlsson (superctr) - Public domain
   - BambooTracker/chips/codec/*
+- [C86CTL](https://github.com/honet/c86ctl) by honet - [BSD 3-Clause](./c86ctl_lisence.txt)
+  - BambooTracker/chips/c86ctl/*
 - [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand) - MIT
   - BambooTracker/format/wopn_file.*
 - [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
@@ -12,7 +14,7 @@
   - BambooTracker/stream/RtAudio/*
 - [RtMidi](https://github.com/Wohlstand/rtmidi) by Gary P. Scavone - [rtmidi_license.txt](./rtmidi_license.txt)
   - BambooTracker/midi/RtMidi/*
-- [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) - [scci_license.txt](./scci_license.txt)
+- [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) by がし３ (gasshi) - [scci_license.txt](./scci_license.txt)
   - BambooTracker/chips/scci/*
 - [Silk icon](https://www.iconfinder.com/iconsets/silk2) set 1.3 by Mark James - CC BY 2.5
   - BambooTracker/res/icon/if_*.png

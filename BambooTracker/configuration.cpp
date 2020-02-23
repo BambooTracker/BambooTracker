@@ -52,7 +52,7 @@ Configuration::Configuration()
 	// Sound //
 	sndAPI_ = u8"";
 	sndDevice_ = u8"";
-	useSCCI_ = false;
+	realChip_ = RealChipInterface::NONE;
 	emulator_ = 1;
 	sampleRate_ = 44100;
 	bufferLength_ = 40;
@@ -1005,14 +1005,14 @@ std::string Configuration::getSoundDevice() const
 	return sndDevice_;
 }
 
-void Configuration::setUseSCCI(bool enabled)
+void Configuration::setRealChipInterface(RealChipInterface type)
 {
-	useSCCI_ = enabled;
+	realChip_ = type;
 }
 
-bool Configuration::getUseSCCI() const
+RealChipInterface Configuration::getRealChipInterface() const
 {
-	return useSCCI_;
+	return realChip_;
 }
 
 void Configuration::setEmulator(int emulator)

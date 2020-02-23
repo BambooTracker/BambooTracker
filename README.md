@@ -1,5 +1,5 @@
 # ![icon](./img/icon.png) BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.3.4-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.3.5-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | macos | linux](https://img.shields.io/badge/platform-windows%20|%20macos%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.org/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.org/rerrahkr/BambooTracker)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
@@ -153,56 +153,56 @@ Please replace some keys with the following in macOS:
 | Ctrl+I | Open current instrument editor |
 
 ### Order list
-| Key      | Command             |
-| -------- | ------------------- |
-| Ctrl+C   | Copy                |
-| Ctrl+V   | Paste               |
-| Ctrl+A   | Select track/all    |
-| Ctrl+D   | Duplicate order     |
-| Alt+D    | Clone order         |
-| Home     | Jump to first order |
-| End      | Jump to last order  |
-| PageUp   | Jump to upper oder  |
-| PageDown | Jump to lower oder  |
-| Insert   | Insert order below  |
-| Delete   | Delete order        |
-| Escape   | Deselect            |
+| Key             | Command             |
+| --------------- | ------------------- |
+| Ctrl+C          | Copy                |
+| Ctrl+V          | Paste               |
+| Ctrl+A          | Select track/all    |
+| Ctrl+D          | Duplicate order     |
+| Alt+D           | Clone order         |
+| Home            | Jump to first order |
+| End             | Jump to last order  |
+| PageUp          | Jump to upper oder  |
+| PageDown        | Jump to lower oder  |
+| Insert or Alt+B | Insert order below  |
+| Delete          | Delete order        |
+| Escape          | Deselect            |
 
 ### Pattern editor
-| Key         | Command                            |
-| ----------- | ---------------------------------- |
-| Ctrl+C      | Copy                               |
-| Ctrl+X      | Cut                                |
-| Ctrl+V      | Paste                              |
-| Ctrl+M      | Paste and mix                      |
-| Ctrl+A      | Select track/all                   |
-| Ctrl+G      | Interpolate                        |
-| Ctrl+R      | Reverse                            |
-| Ctrl+F1     | Decrease note                      |
-| Ctrl+F2     | Increase note                      |
-| Ctrl+F3     | Decrease octave                    |
-| Ctrl+F4     | Increase octave                    |
-| Alt+F9      | Toggle track                       |
-| Alt+F10     | Solo track                         |
-| Alt+S       | Replace instrument                 |
-| Alt+L       | Expand effect column               |
-| Alt+K       | Shrink effect column               |
-| Tab         | Jump to right track                |
-| BackTab     | Jump to left track                 |
-| Home        | Jump to first step                 |
-| End         | Jump to last step                  |
-| PageUp      | Jump to upper step                 |
-| PageDown    | Jump to lower step                 |
-| Ctrl+Up     | Jump to upper 1st highlighted step |
-| Ctrl+Down   | Jump to lower 1st highlighted step |
-| Insert      | Insert step                        |
-| BackSpace   | Delete the step above              |
-| Delete      | Delete commands                    |
-| Escape      | Deselection                        |
-| -           | Key off                            |
-| \* (numpad) | Increase octave/echo buffer number |
-| / (numpad)  | Decrease octave/echo buffer number |
-| ^           | Echo buffer access                 |
+| Key                 | Command                            |
+| ------------------- | ---------------------------------- |
+| Ctrl+C              | Copy                               |
+| Ctrl+X              | Cut                                |
+| Ctrl+V              | Paste                              |
+| Ctrl+M              | Paste and mix                      |
+| Ctrl+A              | Select track/all                   |
+| Ctrl+G              | Interpolate                        |
+| Ctrl+R              | Reverse                            |
+| Ctrl+F1             | Decrease note                      |
+| Ctrl+F2             | Increase note                      |
+| Ctrl+F3             | Decrease octave                    |
+| Ctrl+F4             | Increase octave                    |
+| Alt+F9              | Toggle track                       |
+| Alt+F10             | Solo track                         |
+| Alt+S               | Replace instrument                 |
+| Alt+L               | Expand effect column               |
+| Alt+K               | Shrink effect column               |
+| Tab                 | Jump to right track                |
+| BackTab             | Jump to left track                 |
+| Home                | Jump to first step                 |
+| End                 | Jump to last step                  |
+| PageUp              | Jump to upper step                 |
+| PageDown            | Jump to lower step                 |
+| Ctrl+Up             | Jump to upper 1st highlighted step |
+| Ctrl+Down           | Jump to lower 1st highlighted step |
+| Insert or Alt+Down  | Insert step                        |
+| BackSpace or Alt+Up | Delete the step above              |
+| Delete              | Delete commands                    |
+| Escape              | Deselection                        |
+| -                   | Key off                            |
+| \* (numpad)         | Increase octave/echo buffer number |
+| / (numpad)          | Decrease octave/echo buffer number |
+| ^                   | Echo buffer access                 |
 
 There are two rows of a piano keyboard:
 
@@ -377,7 +377,8 @@ I would like to thank the following people for making it:
 - maak, SuperJet Spade and Dippy for sample modules
 - papiezak for sample instruments
 - Ru^3 for S98 file format documentation
-- SCCI team for SCCI libraries
+- がし３ (gasshi) for SCCI libraries
+- honet for C86CTL libraries
 - Gary P. Scavone and others for RtAudio and RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - Jean Pierre Cimalando and Olivier Humbert for French translation

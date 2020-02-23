@@ -71,6 +71,13 @@ enum class EffectDisplayControl
 	Unset, ReverseFMVolumeDelay, ReverseFMBrightness
 };
 
+enum class RealChipInterface : int
+{
+	NONE = 0,
+	SCCI = 1,
+	C86CTL = 2
+};
+
 DECL_MAYBE_UNUSED
 static std::pair<int, Note> noteNumberToOctaveAndNote(int num)
 {

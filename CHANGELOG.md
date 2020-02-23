@@ -1,6 +1,32 @@
 # Changelog
 
 ## Unreleased
+### Added
+- Add shortcuts instead of insert key
+
+### Changed
+- [#182] - Enable the first note-on when tone portamento is set before the playing start position (thanks [@freq-mod])
+
+[@freq-mod]: https://github.com/freq-mod
+
+[#182]: https://github.com/rerrahkr/BambooTracker/issues/182
+
+## v0.3.5 (2020-02-15)
+### Added
+- Support C86CTL
+
+### Changed
+- Update SCCI library
+
+### Fixed
+- Fix AutoEnv and square mask pitch calculation
+- [#181] - Fix crash when changing length of instrument sequence during jamming (thanks [@papiezak])
+- Fix SCCI crash on launching in Windows XP (thanks [@ponzu0147])
+- Fix SSG arpeggio effect crashing on setting `0000` without a instrument
+
+[@ponzu0147]: https://twitter.com/ponzu0147
+
+[#181]: https://github.com/rerrahkr/BambooTracker/issues/181
 
 ## v0.3.4 (2020-01-29)
 ### Added

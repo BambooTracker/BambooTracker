@@ -581,10 +581,10 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 		// Step number
 		if (hovPos_.track == -2 && hovPos_.order == viewedCenterPos_.order && hovPos_.step == viewedCenterPos_.step)
 			backPainter.fillRect(0, prevY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
-			textPainter.setPen(!(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
-																  : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
-																									   : palette_->ptnDefStepNumColor);
-			textPainter.drawText(1, baseY, QString("%1").arg(viewedCenterPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
+		textPainter.setPen(!(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
+															  : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
+																								   : palette_->ptnDefStepNumColor);
+		textPainter.drawText(1, baseY, QString("%1").arg(viewedCenterPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		// Step data
 		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
 			x += drawStep(forePainter, textPainter, backPainter, trackNum, viewedCenterPos_.order, viewedCenterPos_.step, x, baseY, prevY);
@@ -1101,7 +1101,7 @@ void PatternEditorPanel::moveViewToRight(int n)
 	// Calculate cursor position
 	int track = curPos_.track + n;
 	int col = std::min(curPos_.colInTrack,
-								  4 + 2 * rightEffn_.at(static_cast<size_t>(track)));
+					   4 + 2 * rightEffn_.at(static_cast<size_t>(track)));
 
 	// Check visible
 	int width = stepNumWidth_;
@@ -2528,45 +2528,60 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
-		else {
-			if (event->modifiers().testFlag(Qt::ControlModifier)) {
-				int base;
-				if (curPos_.step) {
-					base = curPos_.step;
-				}
-				else {
-					base = static_cast<int>(bt_->getPatternSizeFromOrderNumber(
-												curSongNum_,
-												(curPos_.order) ? (curPos_.order - 1)
-																: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
-				}
-				moveCursorToDown((base - 1) / hl1Cnt_ * hl1Cnt_ - base);
+		if (event->modifiers().testFlag(Qt::AltModifier)) {
+			if (bt_->isJamMode()) {
+				return false;
 			}
 			else {
-				moveCursorToDown(editableStepCnt_ ? -editableStepCnt_ : -1);
+				deletePreviousStep();
+				return true;
 			}
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
-			return true;
 		}
+		if (event->modifiers().testFlag(Qt::ControlModifier)) {
+			int base;
+			if (curPos_.step) {
+				base = curPos_.step;
+			}
+			else {
+				base = static_cast<int>(bt_->getPatternSizeFromOrderNumber(
+											curSongNum_,
+											(curPos_.order) ? (curPos_.order - 1)
+															: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
+			}
+			moveCursorToDown((base - 1) / hl1Cnt_ * hl1Cnt_ - base);
+		}
+		else {
+			moveCursorToDown(editableStepCnt_ ? -editableStepCnt_ : -1);
+		}
+		if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+		else onSelectPressed(0);
+		return true;
 	case Qt::Key_Down:
 		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
 			return false;
 		}
-		else {
-			if (event->modifiers().testFlag(Qt::ControlModifier)) {
-				int next = (curPos_.step / hl1Cnt_ + 1) * hl1Cnt_;
-				int size = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
-				if (next < size) moveCursorToDown(next - curPos_.step);
-				else moveCursorToDown(size - curPos_.step);
+		if (event->modifiers().testFlag(Qt::AltModifier)) {
+			if (bt_->isJamMode()) {
+				return false;
 			}
 			else {
-				moveCursorToDown(editableStepCnt_ ? editableStepCnt_ : 1);
+				insertStep();
+				moveCursorToDown(1);
+				return true;
 			}
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
-			return true;
 		}
+		if (event->modifiers().testFlag(Qt::ControlModifier)) {
+			int next = (curPos_.step / hl1Cnt_ + 1) * hl1Cnt_;
+			int size = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
+			if (next < size) moveCursorToDown(next - curPos_.step);
+			else moveCursorToDown(size - curPos_.step);
+		}
+		else {
+			moveCursorToDown(editableStepCnt_ ? editableStepCnt_ : 1);
+		}
+		if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+		else onSelectPressed(0);
+		return true;
 	case Qt::Key_Tab:
 		if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
 			if (config_->getWarpCursor())

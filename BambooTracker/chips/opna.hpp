@@ -1,9 +1,11 @@
 #pragma once
 
 #include "chip.hpp"
+#include <memory>
 #include "chip_misc.h"
 #include "scci/scci.h"
 #include "scci/SCCIDefines.h"
+#include "c86ctl/c86ctl_wrapper.hpp"
 
 namespace chip
 {
@@ -24,8 +26,10 @@ namespace chip
 		void setVolumeFM(double dB);
 		void setVolumeSSG(double dB);
 		void mix(int16_t* stream, size_t nSamples) override;
-		void useSCCI(SoundInterfaceManager* manager);
+		void useSCCI(scci::SoundInterfaceManager* manager);
 		bool isUsedSCCI() const;
+		void useC86CTL(C86ctlBase* base);
+		bool isUsedC86CTL() const;
 		size_t getDRAMSize() const;
 
 	private:
@@ -34,8 +38,13 @@ namespace chip
 		intf2608* intf_;
 
 		// For SCCI
-		SoundInterfaceManager* scciManager_;
-		SoundChip* scciChip_;
+		scci::SoundInterfaceManager* scciManager_;
+		scci::SoundChip* scciChip_;
+
+		// For C86CTL
+		std::unique_ptr<C86ctlBase> c86ctlBase_;
+		std::unique_ptr<C86ctlRealChip> c86ctlRC_;
+		std::unique_ptr<C86ctlGimic> c86ctlGm_;
 
 		static constexpr double VOL_REDUC_ = 7.5;
 

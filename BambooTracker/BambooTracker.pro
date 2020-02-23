@@ -41,6 +41,7 @@ else {
 CONFIG += c++14
 
 SOURCES += \
+    chips/c86ctl/c86ctl_wrapper.cpp \
     gui/color_palette_handler.cpp \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
@@ -208,6 +209,8 @@ SOURCES += \
 
 HEADERS += \
     chips/codec/ymb_codec.hpp \
+    chips/c86ctl/c86ctl.h \
+    chips/c86ctl/c86ctl_wrapper.hpp \
     command/command_id.hpp \
     enum_hash.hpp \
     gui/color_palette_handler.hpp \

@@ -1367,6 +1367,12 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 					QPoint(calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track), curRowY_ - 8));
 		return true;
 	default:
+		if (event->modifiers().testFlag(Qt::AltModifier)) {
+			if (event->key() == Qt::Key_B) {
+				insertOrderBelow();
+				return true;
+			}
+		}
 		if (event->modifiers().testFlag(Qt::NoModifier)) {
 			return enterOrder(event->key());
 		}
