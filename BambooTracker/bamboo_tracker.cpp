@@ -1225,6 +1225,8 @@ bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::funct
 	opnaCtrl_->setRate(tmpRate);
 
 	container.storeSample(exCntr->getStream());
+
+	return true;
 }
 
 bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
@@ -1250,6 +1252,7 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 			= std::make_shared<chip::VgmExportContainer>(target, mod_->getTickFrequency());
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
+	assignWaveformADPCMSamples();
 	exCntr->forceMoveLoopPoint();
 
 	while (true) {
@@ -1312,6 +1315,7 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>(target);
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
+	assignWaveformADPCMSamples();
 	exCntr->forceMoveLoopPoint();
 
 	while (true) {
