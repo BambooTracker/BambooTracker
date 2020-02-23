@@ -107,8 +107,9 @@ private:
 
 	void checkRealToneByArpeggio(int seqPos, const std::unique_ptr<SequenceIteratorInterface>& arpIt,
 								 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
-	void checkPortamento(const std::unique_ptr<SequenceIteratorInterface>& arpIt, int prtm, bool isTonePrtm,
-						 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
+	void checkPortamento(const std::unique_ptr<SequenceIteratorInterface>& arpIt, int prtm, bool hasKeyOnBefore,
+						 bool isTonePrtm, const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
+						 bool& needToneSet);
 	void checkRealToneByPitch(int seqPos, const std::unique_ptr<CommandSequence::Iterator>& ptIt,
 							  int& sumPitch, bool& needToneSet);
 
@@ -231,7 +232,7 @@ private:
 
 	inline void checkPortamentoFM(int ch)
 	{
-		checkPortamento(arpItFM_[ch], prtmFM_[ch], isTonePrtmFM_[ch], baseToneFM_[ch],
+		checkPortamento(arpItFM_[ch], prtmFM_[ch], hasKeyOnBeforeFM_[ch], isTonePrtmFM_[ch], baseToneFM_[ch],
 						keyToneFM_[ch], needToneSetFM_[ch]);
 	}
 
@@ -410,7 +411,7 @@ private:
 
 	inline void checkPortamentoSSG(int ch)
 	{
-		checkPortamento(arpItSSG_[ch], prtmSSG_[ch], isTonePrtmSSG_[ch], baseToneSSG_[ch],
+		checkPortamento(arpItSSG_[ch], prtmSSG_[ch], hasKeyOnBeforeSSG_[ch], isTonePrtmSSG_[ch], baseToneSSG_[ch],
 						keyToneSSG_[ch], needToneSetSSG_[ch]);
 	}
 
@@ -500,7 +501,7 @@ public:
 
 private:
 	std::shared_ptr<InstrumentADPCM> refInstADPCM_;
-	bool isKeyOnADPCM_;
+	bool isKeyOnADPCM_, hasKeyOnBeforeADPCM_;
 	std::deque<ToneDetail> baseToneADPCM_;
 	ToneDetail keyToneADPCM_;
 	int sumPitchADPCM_;
@@ -546,7 +547,7 @@ private:
 
 	inline void checkPortamentoADPCM()
 	{
-		checkPortamento(arpItADPCM_, prtmADPCM_, isTonePrtmADPCM_, baseToneADPCM_,
+		checkPortamento(arpItADPCM_, prtmADPCM_, hasKeyOnBeforeADPCM_, isTonePrtmADPCM_, baseToneADPCM_,
 						keyToneADPCM_, needToneSetADPCM_);
 	}
 

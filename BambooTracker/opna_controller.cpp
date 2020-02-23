@@ -205,10 +205,10 @@ void OPNAController::setMuteState(SoundSource src, int chInSrc, bool isMute)
 bool OPNAController::isMute(SoundSource src, int chInSrc)
 {
 	switch (src) {
-	case SoundSource::FM:		isMuteFM(chInSrc);		break;
-	case SoundSource::SSG:		isMuteSSG(chInSrc);		break;
-	case SoundSource::DRUM:		isMuteDrum(chInSrc);	break;
-	case SoundSource::ADPCM:	isMuteADPCM();			break;
+	case SoundSource::FM:		return isMuteFM(chInSrc);
+	case SoundSource::SSG:		return isMuteSSG(chInSrc);
+	case SoundSource::DRUM:		return isMuteDrum(chInSrc);
+	case SoundSource::ADPCM:	return isMuteADPCM();
 	}
 }
 
@@ -286,10 +286,11 @@ void OPNAController::checkRealToneByArpeggio(int seqPos,
 }
 
 void OPNAController::checkPortamento(const std::unique_ptr<SequenceIteratorInterface>& arpIt,
-									 int prtm, bool isTonePrtm, const std::deque<ToneDetail>& baseTone,
+									 int prtm, bool hasKeyOnBefore, bool isTonePrtm,
+									 const std::deque<ToneDetail>& baseTone,
 									 ToneDetail& keyTone, bool& needToneSet)
 {
-	if ((!arpIt || arpIt->getPosition() == -1) && prtm) {
+	if ((!arpIt || arpIt->getPosition() == -1) && prtm && hasKeyOnBefore) {
 		if (isTonePrtm) {
 			int dif = ( octaveAndNoteToNoteNumber(baseTone.front().octave, baseTone.front().note) * 32
 						+ baseTone.front().pitch )
@@ -3516,7 +3517,7 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 
 	updateEchoBufferADPCM(octave, note, pitch);
 
-	if (isTonePrtmADPCM_) {
+	if (isTonePrtmADPCM_ && hasKeyOnBeforeADPCM_) {
 		keyToneADPCM_.pitch += (sumNoteSldADPCM_ + transposeADPCM_);
 	}
 	else {
@@ -3557,6 +3558,7 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 	opna_->setRegister(0x100, 0xa0 | repeatFlag);
 
 	isKeyOnADPCM_ = true;
+	hasKeyOnBeforeADPCM_ = true;
 }
 
 void OPNAController::keyOnADPCM(int echoBuf)
@@ -3794,6 +3796,7 @@ size_t OPNAController::getADPCMStoredSize() const
 void OPNAController::initADPCM()
 {
 	isKeyOnADPCM_ = false;
+	hasKeyOnBeforeADPCM_ = false;
 
 	refInstADPCM_.reset();	// Init envelope
 
