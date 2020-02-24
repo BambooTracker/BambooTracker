@@ -524,8 +524,8 @@ void InstrumentEditorADPCMForm::updateSampleMemoryBar()
 	QPainter painter(wavMemPixmap_.get());
 	painter.fillRect(bar, palette_->instADPCMMemBackColor);
 
-	double maxSize = bt_.lock()->getADPCMStoredSize() >> 2;
-	double limit = bt_.lock()->getADPCMLimit() >> 2;	// By 4 bytes
+	double maxSize = bt_.lock()->getADPCMStoredSize() >> 5;
+	double limit = bt_.lock()->getADPCMLimit() >> 5;	// By 32 bytes
 	QRectF allSamp(0, 0, std::max(1., bar.width() * (maxSize / limit)), rect().height());
 	painter.fillRect(allSamp, palette_->instADPCMMemAllColor);
 

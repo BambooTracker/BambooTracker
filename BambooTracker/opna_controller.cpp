@@ -209,6 +209,7 @@ bool OPNAController::isMute(SoundSource src, int chInSrc)
 	case SoundSource::SSG:		return isMuteSSG(chInSrc);
 	case SoundSource::DRUM:		return isMuteDrum(chInSrc);
 	case SoundSource::ADPCM:	return isMuteADPCM();
+	default:	throw std::invalid_argument("Invalid sound source");
 	}
 }
 
@@ -3541,7 +3542,7 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 
 	uint8_t repeatFlag = refInstADPCM_->isWaveformRepeatable() ? 0x10 : 0;
 	opna_->setRegister(0x100, 0x20 | repeatFlag);
-	opna_->setRegister(0x101, panADPCM_);
+	opna_->setRegister(0x101, panADPCM_ | 0x02);
 
 	size_t startAddress = refInstADPCM_->getWaveformStartAddress();
 	opna_->setRegister(0x102, startAddress & 0xff);
@@ -3551,8 +3552,8 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 	opna_->setRegister(0x104, stopAddress & 0xff);
 	opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
 
-	size_t dramLim = (dramSize_ - 1) >> 2;
-	opna_->setRegister(0x10c, dramLim & 0xff);	// By 4 bytes
+	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 
 	opna_->setRegister(0x100, 0xa0 | repeatFlag);
@@ -3629,10 +3630,10 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 	opna_->setRegister(0x110, 0x80);
 	opna_->setRegister(0x100, 0x61);
 	opna_->setRegister(0x100, 0x60);
-	opna_->setRegister(0x101, 0x00);
+	opna_->setRegister(0x101, 0x02);
 
-	size_t dramLim = (dramSize_ - 1) >> 2;
-	opna_->setRegister(0x10c, dramLim & 0xff);	// By 4 bytes
+	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 
 	if (storePointADPCM_ < dramLim) {
@@ -3640,13 +3641,13 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 		opna_->setRegister(0x102, startAddress & 0xff);
 		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
 
-		size_t stopAddress = storePointADPCM_ + ((sample.size() - 1) >> 2);	// By 4 bytes
+		size_t stopAddress = startAddress + ((sample.size() - 1) >> 5);	// By 32 bytes
 		stopAddress = std::min(stopAddress, dramLim);
 		opna_->setRegister(0x104, stopAddress & 0xff);
 		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
 		storePointADPCM_ = stopAddress + 1;
 
-		size_t size = std::min(sample.size(), (storePointADPCM_ - startAddress) << 2);
+		size_t size = sample.size();
 		for (size_t i = 0; i < size; ++i) {
 			opna_->setRegister(0x108, sample[i]);
 		}
@@ -3700,7 +3701,7 @@ void OPNAController::setRealVolumeADPCM()
 void OPNAController::setPanADPCM(int value)
 {
 	panADPCM_ = static_cast<uint8_t>(value << 6);
-	opna_->setRegister(0x101, panADPCM_);
+	opna_->setRegister(0x101, panADPCM_ | 0x02);
 }
 
 void OPNAController::setArpeggioEffectADPCM(int second, int third)
@@ -3789,7 +3790,7 @@ ToneDetail OPNAController::getADPCMTone() const
 
 size_t OPNAController::getADPCMStoredSize() const
 {
-	return storePointADPCM_ << 2;
+	return storePointADPCM_ << 5;
 }
 
 /***********************************/

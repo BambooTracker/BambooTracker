@@ -512,7 +512,7 @@ private:
 	bool needEnvSetADPCM_;
 	bool needToneSetADPCM_;
 	size_t dramSize_;
-	size_t storePointADPCM_;	// Move by 4 bytes
+	size_t storePointADPCM_;	// Move by 32 bytes
 	std::unique_ptr<CommandSequence::Iterator> envItADPCM_;
 	std::unique_ptr<CommandSequence::Iterator> tnItADPCM_;
 	std::unique_ptr<SequenceIteratorInterface> arpItADPCM_;
