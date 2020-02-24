@@ -19,6 +19,7 @@ struct _ym2608_state
 	void *			psg;
 	int			clock;
 	ym2608_interface intf;
+	uint32_t dramSize;
 };
 
 static uint8_t AY_EMU_CORE = 0x00;
@@ -149,7 +150,7 @@ int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t 
 	if (AYFlags)
 		intf->ay8910_intf.flags = AYFlags;
 
-	info->chip = (ym3438_t *)malloc(sizeof(ym3438_t));
+	info->chip = (ym3438_t *)calloc(1, sizeof(ym3438_t));
 	if (!info->chip)
 		return 0;
 
@@ -180,7 +181,8 @@ int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t 
 		*AYrate = 0;
 	}
 
-	OPN2_Reset(info->chip, clock, &psgintf, info);
+	info->dramSize = dramSize;
+	OPN2_Reset(info->chip, clock, &psgintf, info, dramSize);
 
 	return rate;
 }
@@ -188,6 +190,7 @@ int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t 
 void device_stop_nuke2608(uint8_t ChipID)
 {
 	ym2608_state *info = &YM2608Data[ChipID];
+	OPN2_Destroy(info->chip);
 	free(info->chip);
 	if (info->psg != NULL)
 	{
@@ -209,7 +212,8 @@ void device_stop_nuke2608(uint8_t ChipID)
 void device_reset_nuke2608(uint8_t ChipID)
 {
 	ym2608_state *info = &YM2608Data[ChipID];
-	OPN2_Reset(info->chip, info->clock, &psgintf, info);
+	OPN2_FlushBuffer(info->chip);
+	OPN2_Reset(info->chip, info->clock, &psgintf, info, info->dramSize);
 }
 
 void nuke2608_control_port_a_w(uint8_t ChipID, uint32_t offset, uint8_t data)

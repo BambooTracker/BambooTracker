@@ -37,6 +37,8 @@
 #define YM3438_H
 
 #include "../chip_def.h"
+#include "../mame/mamedef.h"
+#include "../mame/ymdeltat.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,6 +83,9 @@ typedef struct
     /*OPN-MOD: Rhythm channel outputs*/
     Bit16s rhythml[6];
     Bit16s rhythmr[6];
+    /*OPN-MOD: DeltaT channel outputs*/
+    Bit16s deltaTl[6];
+    Bit16s deltaTr[6];
     /* IO */
     Bit16u write_data;
     Bit8u write_a;
@@ -245,9 +250,14 @@ typedef struct
     /*OPN-MOD*/
     const struct OPN2mod_psg_callbacks *psg;
     void *psgdata;
+
+    /*OPN-MOD*/
+    YM_DELTAT deltaT;
+    Bit32s out_deltaT[4];
 } ym3438_t;
 
-void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks *psg, void *psgdata);
+void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks *psg, void *psgdata, Bit32u dramsize);
+void OPN2_Destroy(ym3438_t *chip);
 void OPN2_SetChipType(Bit32u type);
 void OPN2_Clock(ym3438_t *chip, Bit16s *buffer);
 void OPN2_Write(ym3438_t *chip, Bit32u port, Bit8u data);
@@ -258,6 +268,7 @@ Bit8u OPN2_Read(ym3438_t *chip, Bit32u port);
 
 /*EXTRA*/
 void OPN2_WriteBuffered(ym3438_t *chip, Bit32u port, Bit8u data);
+void OPN2_FlushBuffer(ym3438_t *chip);
 void OPN2_Generate(ym3438_t *chip, sample *samples);
 
 /*OPN-MOD*/
