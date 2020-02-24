@@ -3518,7 +3518,8 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 
 	updateEchoBufferADPCM(octave, note, pitch);
 
-	if (isTonePrtmADPCM_ && hasKeyOnBeforeADPCM_) {
+	bool isTonePrtm = isTonePrtmADPCM_ && hasKeyOnBeforeADPCM_;
+	if (isTonePrtm) {
 		keyToneADPCM_.pitch += (sumNoteSldADPCM_ + transposeADPCM_);
 	}
 	else {
@@ -3540,25 +3541,30 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 	setFrontADPCMSequences();
 	hasPreSetTickEventADPCM_ = isJam;
 
-	uint8_t repeatFlag = refInstADPCM_->isWaveformRepeatable() ? 0x10 : 0;
-	opna_->setRegister(0x100, 0x20 | repeatFlag);
-	opna_->setRegister(0x101, panADPCM_ | 0x02);
+	if (!isTonePrtm) {
+		opna_->setRegister(0x100, 0xa1);
 
-	size_t startAddress = refInstADPCM_->getWaveformStartAddress();
-	opna_->setRegister(0x102, startAddress & 0xff);
-	opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+		uint8_t repeatFlag = refInstADPCM_->isWaveformRepeatable() ? 0x10 : 0;
+		opna_->setRegister(0x100, 0x20 | repeatFlag);
+		opna_->setRegister(0x101, panADPCM_ | 0x02);
 
-	size_t stopAddress = refInstADPCM_->getWaveformStopAddress();
-	opna_->setRegister(0x104, stopAddress & 0xff);
-	opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
+		size_t startAddress = refInstADPCM_->getWaveformStartAddress();
+		opna_->setRegister(0x102, startAddress & 0xff);
+		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
 
-	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
-	opna_->setRegister(0x10c, dramLim & 0xff);
-	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
+		size_t stopAddress = refInstADPCM_->getWaveformStopAddress();
+		opna_->setRegister(0x104, stopAddress & 0xff);
+		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
 
-	opna_->setRegister(0x100, 0xa0 | repeatFlag);
+		size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+		opna_->setRegister(0x10c, dramLim & 0xff);
+		opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 
-	isKeyOnADPCM_ = true;
+		opna_->setRegister(0x100, 0xa0 | repeatFlag);
+
+		isKeyOnADPCM_ = true;
+	}
+
 	hasKeyOnBeforeADPCM_ = true;
 }
 
@@ -3836,6 +3842,8 @@ void OPNAController::initADPCM()
 	sumNoteSldADPCM_ = 0;
 	noteSldADPCMSetFlag_ = false;
 	transposeADPCM_ = 0;
+
+	opna_->setRegister(0x100, 0xa1);	// Stop synthesis
 }
 
 void OPNAController::setMuteADPCMState(bool isMute)
