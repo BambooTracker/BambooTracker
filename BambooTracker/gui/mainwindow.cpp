@@ -1495,6 +1495,9 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 	default:
 		break;
 	}
+
+	bt_->assignWaveformADPCMSamples();	// Mutex register
+	instForms_->onInstrumentADPCMSampleMemoryUpdated();
 }
 
 void MainWindow::setMidiConfiguration()
