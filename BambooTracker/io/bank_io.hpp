@@ -16,6 +16,7 @@ public:
 	static AbstractBank* loadBank(BinaryContainer& ctr, std::string path);
 	static AbstractBank* loadBTBFile(BinaryContainer& ctr);
 	static AbstractBank* loadWOPNFile(BinaryContainer& ctr);
+	static AbstractBank* loadPPCFile(BinaryContainer& ctr);
 
 private:
 	BankIO();

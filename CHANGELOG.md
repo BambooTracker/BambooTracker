@@ -2,14 +2,17 @@
 
 ## Unreleased
 ### Added
+- [#6] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Add shortcuts instead of insert key
 
 ### Changed
 - [#182] - Enable the first note-on when tone portamento is set before the playing start position (thanks [@freq-mod])
+- [#183] - Implement ADPCM part in Nuked OPN-Mod (thanks [@jpcima])
 
 [@freq-mod]: https://github.com/freq-mod
 
 [#182]: https://github.com/rerrahkr/BambooTracker/issues/182
+[#183]: https://github.com/rerrahkr/BambooTracker/pull/183
 
 ## v0.3.5 (2020-02-15)
 ### Added

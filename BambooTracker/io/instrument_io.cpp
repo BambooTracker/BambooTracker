@@ -3104,8 +3104,8 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
-													BinaryContainer propCtr,
+AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instCtr,
+													const BinaryContainer& propCtr,
 													std::weak_ptr<InstrumentsManager> instMan,
 													int instNum, uint32_t bankVersion)
 {
@@ -4135,4 +4135,21 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(BinaryContainer instCtr,
 	default:
 		throw FileCorruptionError(FileIO::FileType::Bank);
 	}
+}
+
+AbstractInstrument* InstrumentIO::loadPPCInstrument(const std::vector<uint8_t> sample,
+													std::weak_ptr<InstrumentsManager> instMan,
+													int instNum)
+{
+	int wfIdx = instMan.lock()->findFirstFreePlainWaveformADPCM();
+	if (wfIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instMan.lock().get());
+	adpcm->setWaveformNumber(wfIdx);
+
+	instMan.lock()->storeWaveformADPCMSample(wfIdx, sample);
+	instMan.lock()->setWaveformADPCMRootKeyNumber(wfIdx, 67);	// o5g
+	instMan.lock()->setWaveformADPCMRootDeltaN(wfIdx, calcADPCMDeltaN(16000));
+
+	return adpcm;
 }

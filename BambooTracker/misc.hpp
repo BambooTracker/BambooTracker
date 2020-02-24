@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 #if !defined(DECL_MAYBE_UNUSED) && defined(__GNUC__)
@@ -211,4 +212,10 @@ DECL_MAYBE_UNUSED
 inline const T& clamp(const T& value, const T& low, const T& high)
 {
 	return std::min(std::max(value, low), high);
+}
+
+DECL_MAYBE_UNUSED
+inline static int calcADPCMDeltaN(unsigned int rate)
+{
+	return static_cast<int>(std::round((rate << 16) / 55500.));
 }

@@ -29,8 +29,8 @@ private:
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
 	static AbstractInstrument* loadOPNIFile(BinaryContainer& ctr,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
+											std::weak_ptr<InstrumentsManager> instMan,
+											int instNum);
 	static AbstractInstrument* loadY12File(BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
@@ -42,11 +42,14 @@ public:
 	static AbstractInstrument* loadWOPNInstrument(const WOPNInstrument &srcInst,
 												  std::weak_ptr<InstrumentsManager> instMan,
 												  int instNum);
-	static AbstractInstrument* loadBTBInstrument(BinaryContainer instCtr,
-												 BinaryContainer propCtr,
+	static AbstractInstrument* loadBTBInstrument(const BinaryContainer& instCtr,
+												 const BinaryContainer& propCtr,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum,
 												 uint32_t bankVersion);
+	static AbstractInstrument* loadPPCInstrument(const std::vector<uint8_t> sample,
+												 std::weak_ptr<InstrumentsManager> instMan,
+												 int instNum);
 
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(

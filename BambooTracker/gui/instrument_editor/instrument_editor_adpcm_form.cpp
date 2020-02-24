@@ -507,7 +507,7 @@ void InstrumentEditorADPCMForm::importSampleFrom(const QString file)
 	bt_.lock()->storeWaveformADPCMSample(ui->waveNumSpinBox->value(), adpcm);
 	ui->rootKeyComboBox->setCurrentIndex(ROOT_KEY % 12);
 	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
-	ui->rootRateSpinBox->setValue(static_cast<int>(std::round((wav->getSampleRate() << 16) / 55500.)));
+	ui->rootRateSpinBox->setValue(calcADPCMDeltaN(wav->getSampleRate()));
 
 	updateSampleView();
 	ui->waveViewWidget->update();

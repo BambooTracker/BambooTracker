@@ -45,11 +45,13 @@ AbstractInstrument* BtBank::loadInstrument(size_t index, std::weak_ptr<Instrumen
 }
 
 /******************************/
-void WopnBank::WOPNDeleter::operator()(WOPNFile *x) {
+void WopnBank::WOPNDeleter::operator()(WOPNFile *x)
+{
 	WOPN_Free(x);
 }
 
-struct WopnBank::InstEntry {
+struct WopnBank::InstEntry
+{
 	WOPNInstrument *inst;
 	struct {
 		bool percussive : 1;
@@ -59,7 +61,9 @@ struct WopnBank::InstEntry {
 	};
 };
 
-WopnBank::WopnBank(WOPNFile *wopn) : wopn_(wopn) {
+WopnBank::WopnBank(WOPNFile *wopn)
+	: wopn_(wopn)
+{
 	unsigned numM = wopn->banks_count_melodic;
 	unsigned numP = wopn->banks_count_percussion;
 
@@ -83,26 +87,59 @@ WopnBank::WopnBank(WOPNFile *wopn) : wopn_(wopn) {
 	entries_.shrink_to_fit();
 }
 
-WopnBank::~WopnBank() {
+WopnBank::~WopnBank()
+{
 }
 
-size_t WopnBank::getNumInstruments() const {
+size_t WopnBank::getNumInstruments() const
+{
 	return entries_.size();
 }
 
-std::string WopnBank::getInstrumentIdentifier(size_t index) const {
+std::string WopnBank::getInstrumentIdentifier(size_t index) const
+{
 	const InstEntry &ent = entries_.at(index);
 	char identifier[64];
 	sprintf(identifier, "%c%03d:%03d:%03d", "MP"[ent.percussive], ent.msb, ent.lsb, ent.nth);
 	return identifier;
 }
 
-std::string WopnBank::getInstrumentName(size_t index) const {
+std::string WopnBank::getInstrumentName(size_t index) const
+{
 	const InstEntry &ent = entries_.at(index);
 	return ent.inst->inst_name;
 }
 
-AbstractInstrument* WopnBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const {
+AbstractInstrument* WopnBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
 	const InstEntry &ent = entries_.at(index);
 	return InstrumentIO::loadWOPNInstrument(*ent.inst, instMan, instNum);
+}
+
+/******************************/
+PpcBank::PpcBank(std::vector<int> ids, std::vector<std::vector<uint8_t> > samples)
+	: ids_(ids),
+	  samples_(samples)
+{
+}
+
+size_t PpcBank::getNumInstruments() const
+{
+	return samples_.size();
+}
+
+std::string PpcBank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string PpcBank::getInstrumentName(size_t index) const
+{
+	(void)index;
+	return "";
+}
+
+AbstractInstrument* PpcBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return InstrumentIO::loadPPCInstrument(samples_.at(index), instMan, instNum);
 }
