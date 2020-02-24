@@ -503,6 +503,20 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 		}
 	}
 
+	if (auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(watched)) {
+		// Change current instrument by activating ADPCM editor
+		if (event->type() == QEvent::WindowActivate) {
+			int row = findRowFromInstrumentList(adpcmForm->getInstrumentNumber());
+			ui->instrumentListWidget->setCurrentRow(row);
+			return false;
+		}
+		else if (event->type() == QEvent::Resize) {
+			config_.lock()->setInstrumentADPCMWindowWidth(adpcmForm->width());
+			config_.lock()->setInstrumentADPCMWindowHeight(adpcmForm->height());
+			return false;
+		}
+	}
+
 	if (watched == ui->instrumentListWidget) {
 		switch (event->type()) {
 		case QEvent::KeyPress:
@@ -1790,8 +1804,8 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 		adpcmForm->setCore(bt_);
 		adpcmForm->setConfiguration(config_.lock());
 		adpcmForm->setColorPalette(palette_);
-		adpcmForm->resize(config_.lock()->getInstrumentSSGWindowWidth(),
-						config_.lock()->getInstrumentSSGWindowHeight());
+		adpcmForm->resize(config_.lock()->getInstrumentADPCMWindowWidth(),
+						config_.lock()->getInstrumentADPCMWindowHeight());
 
 		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformNumberChanged,
 						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);

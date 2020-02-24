@@ -12,8 +12,10 @@ Configuration::Configuration()
 	mainVSplit_ = -1;	// Dummy
 	instFMW_ = 570;
 	instFMH_ = 750;
-	instSSGW_ = 500;
+	instSSGW_ = 510;
 	instSSGH_ = 390;
+	instADPCMW_ = 510;
+	instADPCMH_ = 390;
 	followMode_ = true;
 	workDir_ = "";
 	instOpenFormat_ = 0;
@@ -699,6 +701,26 @@ void Configuration::setInstrumentSSGWindowHeight(int h)
 int Configuration::getInstrumentSSGWindowHeight() const
 {
 	return instSSGH_;
+}
+
+void Configuration::setInstrumentADPCMWindowWidth(int w)
+{
+	instADPCMW_ = w;
+}
+
+int Configuration::getInstrumentADPCMWindowWidth() const
+{
+	return instADPCMW_;
+}
+
+void Configuration::setInstrumentADPCMWindowHeight(int h)
+{
+	instADPCMH_ = h;
+}
+
+int Configuration::getInstrumentADPCMWindowHeight() const
+{
+	return instADPCMH_;
 }
 
 void Configuration::setFollowMode(bool enabled)

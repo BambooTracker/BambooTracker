@@ -29,6 +29,8 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("instrumentFMWindowHeight",  configLocked->getInstrumentFMWindowHeight());
 		settings.setValue("instrumentSSGWindowWidth",  configLocked->getInstrumentSSGWindowWidth());
 		settings.setValue("instrumentSSGWindowHeight", configLocked->getInstrumentSSGWindowHeight());
+		settings.setValue("instrumentADPCMWindowWidth",  configLocked->getInstrumentADPCMWindowWidth());
+		settings.setValue("instrumentADPCMWindowHeight", configLocked->getInstrumentADPCMWindowHeight());
 		settings.setValue("followMode",		configLocked->getFollowMode());
 		settings.setValue("workingDirectory",          QString::fromStdString(configLocked->getWorkingDirectory()));
 		settings.setValue("instrumentOpenFormat",		configLocked->getInstrumentOpenFormat());
@@ -195,6 +197,8 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setInstrumentFMWindowHeight(settings.value("instrumentFMWindowHeight", configLocked->getInstrumentFMWindowHeight()).toInt());
 		configLocked->setInstrumentSSGWindowWidth(settings.value("instrumentSSGWindowWidth", configLocked->getInstrumentSSGWindowWidth()).toInt());
 		configLocked->setInstrumentSSGWindowHeight(settings.value("instrumentSSGWindowHeight", configLocked->getInstrumentSSGWindowHeight()).toInt());
+		configLocked->setInstrumentADPCMWindowWidth(settings.value("instrumentADPCMWindowWidth", configLocked->getInstrumentADPCMWindowWidth()).toInt());
+		configLocked->setInstrumentADPCMWindowHeight(settings.value("instrumentADPCMWindowHeight", configLocked->getInstrumentADPCMWindowHeight()).toInt());
 		configLocked->setFollowMode(settings.value("followMode", configLocked->getFollowMode()).toBool());
 		configLocked->setWorkingDirectory(settings.value("workingDirectory", QString::fromStdString(configLocked->getWorkingDirectory())).toString().toStdString());
 		configLocked->setInstrumentOpenFormat(settings.value("instrumentOpenFormat", configLocked->getInstrumentOpenFormat()).toInt());

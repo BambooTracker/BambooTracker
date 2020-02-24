@@ -43,6 +43,10 @@ public:
 	int getInstrumentSSGWindowWidth() const;
 	void setInstrumentSSGWindowHeight(int h);
 	int getInstrumentSSGWindowHeight() const;
+	void setInstrumentADPCMWindowWidth(int w);
+	int getInstrumentADPCMWindowWidth() const;
+	void setInstrumentADPCMWindowHeight(int h);
+	int getInstrumentADPCMWindowHeight() const;
 	void setFollowMode(bool enabled);
 	bool getFollowMode() const;
 	void setWorkingDirectory(std::string path);
@@ -58,6 +62,7 @@ private:
 	int mainVSplit_;
 	int instFMW_, instFMH_;
 	int instSSGW_, instSSGH_;
+	int instADPCMW_, instADPCMH_;
 	bool followMode_;
 	std::string workDir_;
 	int instOpenFormat_, bankOpenFormat_;
