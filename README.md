@@ -282,7 +282,8 @@ The tracker can load instrument from the following files.
 - .y12 (Gens KMod dump file)
 - .ins (MVSTracker instrument file)
 
-It also supports loading plain text of FM envelope.
+It also supports loading plain text of FM envelope.  
+ADPCM waveform editor supports .wav import (16-bit mono 2k-16kHz).
 
 A instrument saves as .bti file.
 
@@ -291,6 +292,8 @@ The tracker can load bank from the following files.
 
 - .btb (BambooTracker bank file)
 - .wopn (WOPN bank file)
+- .ppc (PMD PPC file)
+- .pvi (FMP PVI file)
 
 A bank saves as .btb file.
 

@@ -143,3 +143,31 @@ AbstractInstrument* PpcBank::loadInstrument(size_t index, std::weak_ptr<Instrume
 {
 	return InstrumentIO::loadPPCInstrument(samples_.at(index), instMan, instNum);
 }
+
+/******************************/
+PviBank::PviBank(std::vector<int> ids, std::vector<std::vector<uint8_t> > samples)
+	: ids_(ids),
+	  samples_(samples)
+{
+}
+
+size_t PviBank::getNumInstruments() const
+{
+	return samples_.size();
+}
+
+std::string PviBank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string PviBank::getInstrumentName(size_t index) const
+{
+	(void)index;
+	return "";
+}
+
+AbstractInstrument* PviBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return InstrumentIO::loadPVIInstrument(samples_.at(index), instMan, instNum);
+}

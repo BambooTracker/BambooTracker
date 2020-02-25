@@ -1019,7 +1019,8 @@ void MainWindow::importInstrumentsFromBank()
 	QStringList filters {
 		tr("BambooTracker bank (*.btb)"),
 				tr("WOPN bank (*.wopn)"),
-				tr("PMD PPC (*.ppc)")
+				tr("PMD PPC (*.ppc)"),
+				tr("FMP PVI (*.pvi)")
 	};
 	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
 

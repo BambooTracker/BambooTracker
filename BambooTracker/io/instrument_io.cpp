@@ -4153,3 +4153,20 @@ AbstractInstrument* InstrumentIO::loadPPCInstrument(const std::vector<uint8_t> s
 
 	return adpcm;
 }
+
+AbstractInstrument* InstrumentIO::loadPVIInstrument(const std::vector<uint8_t> sample,
+													std::weak_ptr<InstrumentsManager> instMan,
+													int instNum)
+{
+	int wfIdx = instMan.lock()->findFirstFreePlainWaveformADPCM();
+	if (wfIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instMan.lock().get());
+	adpcm->setWaveformNumber(wfIdx);
+
+	instMan.lock()->storeWaveformADPCMSample(wfIdx, sample);
+	instMan.lock()->setWaveformADPCMRootKeyNumber(wfIdx, 60);	// o5c
+	instMan.lock()->setWaveformADPCMRootDeltaN(wfIdx, calcADPCMDeltaN(16000));
+
+	return adpcm;
+}

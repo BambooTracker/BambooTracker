@@ -281,7 +281,8 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 - .y12 (Gens KMod dump file)
 - .ins (MVSTracker instrument file)
 
-また、FMエンベロープはプレーンテキストの読み込みにも対応しています。
+また、FMエンベロープはプレーンテキストの読み込みにも対応しています。  
+また、ADPCM波形エディターでは.wavファイルの読み込みに対応しています。(16-bit モノラル 2k-16kHzのみ)
 
 書き出しは.btiのみ可能です。
 
@@ -291,6 +292,8 @@ FMの順番は逆転することができます。 (Configuration -> General -> 
 
 - .btb (BambooTracker bank file)
 - .wopn (WOPN bank file)
+- .ppc (PMD PPC file)
+- .pvi (FMP PVI file)
 
 書き出しは.btbのみ対応しています。
 

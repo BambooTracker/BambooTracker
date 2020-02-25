@@ -863,6 +863,7 @@ AbstractBank* BankIO::loadBank(BinaryContainer& ctr, std::string path)
 	if (ext.compare("wopn") == 0) return BankIO::loadWOPNFile(ctr);
 	if (ext.compare("btb") == 0) return BankIO::loadBTBFile(ctr);
 	if (ext.compare("ppc") == 0) return BankIO::loadPPCFile(ctr);
+	if (ext.compare("pvi") == 0) return BankIO::loadPVIFile(ctr);
 	throw FileInputError(FileIO::FileType::Bank);
 }
 
@@ -948,13 +949,38 @@ AbstractBank* BankIO::loadPPCFile(BinaryContainer& ctr)
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
+	BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 256, ids, samples);
+
+	return new PpcBank(std::move(ids), std::move(samples));
+}
+
+AbstractBank* BankIO::loadPVIFile(BinaryContainer& ctr)
+{
+	size_t globCsr = 0;
+	if (ctr.readString(globCsr, 4) != "PVI2")
+		throw FileCorruptionError(FileIO::FileType::Bank);
+	globCsr += 0x10;
+
+	size_t sampOffs = globCsr + 128 * 4;
+	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	std::vector<int> ids;
+	std::vector<std::vector<uint8_t>> samples;
+	BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
+
+	return new PviBank(std::move(ids), std::move(samples));
+}
+
+void BankIO::extractADPCMSamples(const BinaryContainer& ctr, size_t addrPos, size_t sampOffs, int maxCnt,
+								 std::vector<int>& ids, std::vector<std::vector<uint8_t>>& samples)
+{
 	size_t ofs = 0;
-	for (int i = 0; i < 256; ++i) {
-		uint16_t start = ctr.readUint16(globCsr);
-		globCsr += 2;
+	for (int i = 0; i < maxCnt; ++i) {
+		uint16_t start = ctr.readUint16(addrPos);
+		addrPos += 2;
 		if (!i) ofs = start;
-		uint16_t stop = ctr.readUint16(globCsr);
-		globCsr += 2;
+		uint16_t stop = ctr.readUint16(addrPos);
+		addrPos += 2;
 
 		if (stop && start <= stop) {
 			ids.push_back(i);
@@ -963,6 +989,4 @@ AbstractBank* BankIO::loadPPCFile(BinaryContainer& ctr)
 			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
 		}
 	}
-
-	return new PpcBank(std::move(ids), std::move(samples));
 }

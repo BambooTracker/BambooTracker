@@ -17,7 +17,11 @@ public:
 	static AbstractBank* loadBTBFile(BinaryContainer& ctr);
 	static AbstractBank* loadWOPNFile(BinaryContainer& ctr);
 	static AbstractBank* loadPPCFile(BinaryContainer& ctr);
+	static AbstractBank* loadPVIFile(BinaryContainer& ctr);
 
 private:
 	BankIO();
+
+	static void extractADPCMSamples(const BinaryContainer& ctr, size_t addrPos, size_t sampOffs, int maxCnt,
+									std::vector<int>& ids, std::vector<std::vector<uint8_t>>& samples);
 };

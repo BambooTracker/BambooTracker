@@ -50,6 +50,9 @@ public:
 	static AbstractInstrument* loadPPCInstrument(const std::vector<uint8_t> sample,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum);
+	static AbstractInstrument* loadPVIInstrument(const std::vector<uint8_t> sample,
+												 std::weak_ptr<InstrumentsManager> instMan,
+												 int instNum);
 
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
