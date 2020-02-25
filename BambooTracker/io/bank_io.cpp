@@ -985,7 +985,7 @@ void BankIO::extractADPCMSamples(const BinaryContainer& ctr, size_t addrPos, siz
 		if (stop && start <= stop) {
 			ids.push_back(i);
 			size_t st = sampOffs + static_cast<size_t>((start - ofs) << 5);
-			size_t sampSize = std::min(((stop + 1u) - start) << 5, ctr.size() - st);
+			size_t sampSize = std::min(static_cast<size_t>((stop + 1 - start) << 5), ctr.size() - st);
 			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
 		}
 	}
