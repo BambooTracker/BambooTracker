@@ -1,7 +1,5 @@
 # BambooTracker Module File (.btm) Format Specification
-v1.4.0 - 2020-xx-xx
-
-*NOTE: THIS IS A DRAFT SPECS!*
+v1.4.0 - 2020-02-25
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -418,7 +416,7 @@ Key event details:
 ## History
 | Version | Date       | Detail                                                             |
 | ------- | ---------- | ------------------------------------------------------------------ |
-| 1.4.0   | 2020-xx-xx | Added ADPCM instrument.                                            |
+| 1.4.0   | 2020-02-25 | Added ADPCM instrument.                                            |
 | 1.3.2   | 2019-12-16 | Revised to fix the deep copy of instrument sequence types.         |
 | 1.3.1   | 2019-11-09 | Reversed SSG noise pitch order.                                    |
 | 1.3.0   | 2019-10-21 | Add mixer settings.                                                |

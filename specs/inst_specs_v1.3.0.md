@@ -1,7 +1,5 @@
 # BambooTracker Instrument File (.bti) Format Specification
-v1.3.0 - 2020-xx-xx
-
-*NOTE: THIS IS A DRAFT SPECS!*
+v1.3.0 - 2020-02-25
 
 - All data are little endian.
 - Unless otherwise noted, character encoding of string is ASCII.
@@ -227,7 +225,7 @@ When unit data is set to use hardware envelope, unit subdata is set one of the 2
 ## History
 | Version | Date       | Detail                                                             |
 | ------- | ---------- | ------------------------------------------------------------------ |
-| 1.3.0   | 2020-xx-xx | Added ADPCM instrument.                                            |
+| 1.3.0   | 2020-02-25 | Added ADPCM instrument.                                            |
 | 1.2.3   | 2019-12-16 | Revised to fix the deep copy of instrument sequence types.         |
 | 1.2.2   | 2019-11-09 | Reversed SSG noise pitch order.                                    |
 | 1.2.1   | 2019-06-07 | Revised to fix unit data skipping bug of FM operator sequence.     |
