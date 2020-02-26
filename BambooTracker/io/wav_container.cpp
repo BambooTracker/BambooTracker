@@ -129,7 +129,7 @@ BinaryContainer WavContainer::createWavBinary()
 
 	// Data chunk
 	bc.appendString("data");
-	bc.appendUint32(dataSize);
+	bc.appendUint32(buf_.size());
 	bc.appendBinaryContainer(buf_);
 
 	return bc;
