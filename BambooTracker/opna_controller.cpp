@@ -3717,7 +3717,7 @@ void OPNAController::setArpeggioEffectADPCM(int second, int third)
 		isArpEffADPCM_ = true;
 	}
 	else {
-		if (!refInstADPCM_->getArpeggioEnabled()) arpItADPCM_.reset();
+		if (!refInstADPCM_ || !refInstADPCM_->getArpeggioEnabled()) arpItADPCM_.reset();
 		else arpItADPCM_ = refInstADPCM_->getArpeggioSequenceIterator();
 		isArpEffADPCM_ = false;
 	}
@@ -3863,7 +3863,7 @@ bool OPNAController::isMuteADPCM()
 
 void OPNAController::setFrontADPCMSequences()
 {
-	if (isMuteADPCM_ | !refInstADPCM_) return;
+	if (isMuteADPCM_ || !refInstADPCM_) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->front();
@@ -3894,7 +3894,7 @@ void OPNAController::setFrontADPCMSequences()
 
 void OPNAController::releaseStartADPCMSequences()
 {
-	if (isMuteADPCM_ | !refInstADPCM_) return;
+	if (isMuteADPCM_ || !refInstADPCM_) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->next(true);
@@ -3939,7 +3939,7 @@ void OPNAController::tickEventADPCM()
 		hasPreSetTickEventADPCM_ = false;
 	}
 	else {
-		if (isMuteADPCM_ | !refInstADPCM_) return;
+		if (isMuteADPCM_ || !refInstADPCM_) return;
 
 		if (treItADPCM_) {
 			treItADPCM_->next();
