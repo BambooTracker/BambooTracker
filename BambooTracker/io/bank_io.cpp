@@ -942,7 +942,11 @@ AbstractBank* BankIO::loadPPCFile(BinaryContainer& ctr)
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 30) != "ADPCM DATA for  PMD ver.4.4-  ")
 		throw FileCorruptionError(FileIO::FileType::Bank);
-	globCsr += 32;
+	globCsr += 30;
+	uint16_t nextAddr = ctr.readUint16(globCsr);
+	if ((nextAddr - 0x26u) * 0x20u + 0x420u != ctr.size())	// File size check
+		throw FileCorruptionError(FileIO::FileType::Bank);
+	globCsr += 2;
 
 	size_t sampOffs = globCsr + 256 * 4;
 	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank);
