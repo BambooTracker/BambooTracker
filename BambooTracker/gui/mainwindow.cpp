@@ -750,6 +750,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
 
+	effListDiag_->close();
+	shortcutsDiag_->close();
+	bmManForm_->close();
+
 	event->accept();
 }
 
