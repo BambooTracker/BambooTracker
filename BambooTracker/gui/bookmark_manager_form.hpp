@@ -28,8 +28,7 @@ public slots:
 	void onCurrentSongNumberChanged();
 	void onConfigurationChanged(bool showHex);
 	void onBookmarkToggleRequested(int order, int step);
-	void onPreviousBookmarkJumpRequested(int order, int step);
-	void onNextBookmarkJumpRequested(int order, int step);
+	void onBookmarkJumpRequested(bool toNext, int order, int step);
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;

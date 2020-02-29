@@ -218,7 +218,7 @@ int Song::addBookmark(std::string name, int order, int step)
 	return static_cast<int>(bms_.size() - 1);
 }
 
-int Song::changeBookmark(int i, std::string name, int order, int step)
+void Song::changeBookmark(int i, std::string name, int order, int step)
 {
 	Bookmark& bm = bms_.at(static_cast<size_t>(i));
 	bm.name = name;
@@ -269,6 +269,41 @@ std::vector<int> Song::findBookmarks(int order, int step) const
 			idcs.push_back(static_cast<int>(i));
 	}
 	return idcs;
+}
+
+std::vector<Bookmark> Song::getSortedBookmarkList() const
+{
+	std::vector<Bookmark> tmp(bms_);
+	std::stable_sort(tmp.begin(), tmp.end(), [](Bookmark a, Bookmark b) {
+		return ((a.order == b.order) ? (a.step < b.step) : (a.order < b.order));
+	});
+	return tmp;
+}
+
+Bookmark Song::getPreviousBookmark(int order, int step)
+{
+	std::vector<Bookmark> list = getSortedBookmarkList();
+	size_t i = 0;
+	for (; i < list.size(); ++i) {
+		Bookmark& bm = list.at(i);
+		if (order < bm.order || (order == bm.order && step <= bm.step)) {
+			break;
+		}
+	}
+	return list.at((list.size() + i - 1) % list.size());
+}
+
+Bookmark Song::getNextBookmark(int order, int step)
+{
+	std::vector<Bookmark> list = getSortedBookmarkList();
+	size_t i = 0;
+	for (; i < list.size(); ++i) {
+		Bookmark& bm = list.at(i);
+		if (order < bm.order || (order == bm.order && step < bm.step)) {
+			break;
+		}
+	}
+	return list.at(i % list.size());
 }
 
 size_t Song::getBookmarkSize() const

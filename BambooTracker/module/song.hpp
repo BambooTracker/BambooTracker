@@ -49,7 +49,7 @@ public:
 	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
 
 	int addBookmark(std::string name, int order, int step);
-	int changeBookmark(int i, std::string name, int order, int step);
+	void changeBookmark(int i, std::string name, int order, int step);
 	void removeBookmark(int i);
 	void clearBookmark();
 	void swapBookmarks(int a, int b);
@@ -57,6 +57,8 @@ public:
 	void sortBookmarkByName();
 	Bookmark getBookmark(int i) const;
 	std::vector<int> findBookmarks(int order, int step) const;
+	Bookmark getPreviousBookmark(int order, int step);
+	Bookmark getNextBookmark(int order, int step);
 	size_t getBookmarkSize() const;
 
 private:
@@ -71,6 +73,8 @@ private:
 
 	std::vector<Track> tracks_;
 	std::vector<Bookmark> bms_;
+
+	std::vector<Bookmark> getSortedBookmarkList() const;
 };
 
 struct SongStyle

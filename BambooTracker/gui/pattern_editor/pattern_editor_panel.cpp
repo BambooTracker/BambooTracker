@@ -2626,9 +2626,14 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				emit bookmarkJumpRequested(false, curPos_.order, curPos_.step);
+			}
+			else {
+				moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
+				if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+				else onSelectPressed(0);
+			}
 			return true;
 		}
 	case Qt::Key_PageDown:
@@ -2636,9 +2641,14 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				emit bookmarkJumpRequested(true, curPos_.order, curPos_.step);
+			}
+			else {
+				moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
+				if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+				else onSelectPressed(0);
+			}
 			return true;
 		}
 	case Qt::Key_Insert:

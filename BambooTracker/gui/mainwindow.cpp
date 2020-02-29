@@ -408,6 +408,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
 	QObject::connect(ui->patternEditor, &PatternEditor::bookmarkToggleRequested,
 					 bmManForm_.get(), &BookmarkManagerForm::onBookmarkToggleRequested);
+	QObject::connect(ui->patternEditor, &PatternEditor::bookmarkJumpRequested,
+					 bmManForm_.get(), &BookmarkManagerForm::onBookmarkJumpRequested);
 
 	/* Clipboard */
 	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,

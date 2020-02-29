@@ -196,6 +196,8 @@ Please replace some keys with the following in macOS:
 | PageDown            | Jump to lower step                          |
 | Ctrl+Up             | Jump to upper 1st highlighted step          |
 | Ctrl+Down           | Jump to lower 1st highlighted step          |
+| Ctrl+PageUp         | Jump to previous bookmark                   |
+| Ctrl+PageDown       | Jump to next bookmark                       |
 | Insert or Alt+Down  | Insert step                                 |
 | BackSpace or Alt+Up | Delete the step above                       |
 | Delete              | Delete commands                             |

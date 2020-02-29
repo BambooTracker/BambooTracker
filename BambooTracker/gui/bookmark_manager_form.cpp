@@ -154,14 +154,13 @@ void BookmarkManagerForm::onBookmarkToggleRequested(int order, int step)
 	emit modified();
 }
 
-void BookmarkManagerForm::onPreviousBookmarkJumpRequested(int order, int step)
+void BookmarkManagerForm::onBookmarkJumpRequested(bool toNext, int order, int step)
 {
-
-}
-
-void BookmarkManagerForm::onNextBookmarkJumpRequested(int order, int step)
-{
-
+	if (!bt_.lock()->getBookmarkSize(curSong_)) return;
+	Bookmark bm = toNext ? bt_.lock()->getNextBookmark(curSong_, order, step)
+						 : bt_.lock()->getPreviousBookmark(curSong_, order, step);
+	ui->listWidget->setCurrentRow(bt_.lock()->findBookmarks(curSong_, order, step).front());
+	emit positionJumpRequested(bm.order, bm.step);
 }
 
 void BookmarkManagerForm::on_createPushButton_clicked()

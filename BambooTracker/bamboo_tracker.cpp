@@ -1784,7 +1784,7 @@ void BambooTracker::addBookmark(int songNum, std::string name, int order, int st
 	mod_->getSong(songNum).addBookmark(name, order, step);
 }
 
-int BambooTracker::changeBookmark(int songNum, int i, std::string name, int order, int step)
+void BambooTracker::changeBookmark(int songNum, int i, std::string name, int order, int step)
 {
 	mod_->getSong(songNum).changeBookmark(i, name, order, step);
 }
@@ -1821,6 +1821,16 @@ Bookmark BambooTracker::getBookmark(int songNum, int i) const
 std::vector<int> BambooTracker::findBookmarks(int songNum, int order, int step)
 {
 	return mod_->getSong(songNum).findBookmarks(order, step);
+}
+
+Bookmark BambooTracker::getPreviousBookmark(int songNum, int order, int step)
+{
+	return mod_->getSong(songNum).getPreviousBookmark(order, step);
+}
+
+Bookmark BambooTracker::getNextBookmark(int songNum, int order, int step)
+{
+	return mod_->getSong(songNum).getNextBookmark(order, step);
 }
 
 size_t BambooTracker::getBookmarkSize(int songNum) const
