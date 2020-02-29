@@ -13,8 +13,7 @@ BookmarkManagerForm::BookmarkManagerForm(std::weak_ptr<BambooTracker> core, bool
 {
 	ui->setupUi(this);
 	setWindowFlags(windowFlags()
-				   & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint)
-				   | Qt::WindowStaysOnTopHint);
+				   & ~(Qt::WindowContextHelpButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint));
 
 	setNumberSettings(showHex);
 	initList();
@@ -159,7 +158,7 @@ void BookmarkManagerForm::onBookmarkJumpRequested(bool toNext, int order, int st
 	if (!bt_.lock()->getBookmarkSize(curSong_)) return;
 	Bookmark bm = toNext ? bt_.lock()->getNextBookmark(curSong_, order, step)
 						 : bt_.lock()->getPreviousBookmark(curSong_, order, step);
-	ui->listWidget->setCurrentRow(bt_.lock()->findBookmarks(curSong_, order, step).front());
+	ui->listWidget->setCurrentRow(bt_.lock()->findBookmarks(curSong_, bm.order, bm.step).front());
 	emit positionJumpRequested(bm.order, bm.step);
 }
 

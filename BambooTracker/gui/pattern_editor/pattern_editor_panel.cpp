@@ -1332,7 +1332,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool for
 	}
 	else {
 		int d = calculateStepDistance(tmp.order, tmp.step, curPos_.order, curPos_.step);
-		stepDownCount_ = (d < viewedRowCnt_) ? d : 0;
+		stepDownCount_ = (d < (viewedRowCnt_ >> 1)) ? d : 0;
 	}
 	// If stepChanged is false, repaint all pattern
 	foreChanged_ = true;

@@ -12,6 +12,7 @@
 
 ### Fixed
 - Close all windows when the main window closed
+- Fix paint glitches of order list and pattern editor
 
 [@freq-mod]: https://github.com/freq-mod
 

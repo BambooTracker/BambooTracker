@@ -417,7 +417,7 @@ void OrderListPanel::quickDrawRows(int maxWidth, int trackSize)
 	int halfRowsCnt = viewedRowCnt_ >> 1;
 	int shift = rowFontHeight_ * orderDownCount_;
 
-	/* Move up by 1 step */
+	/* Move up by */
 	QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
 	textPixmap_->scroll(0, -shift, srcRect);
 	backPixmap_->scroll(0, -shift, srcRect);
@@ -803,7 +803,7 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJ
 	emit vScrollBarChangeRequested(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
 
 	// Redraw entire area in first update and jumping order
-	orderDownCount_ = (isFirstUpdate || d < 0 || viewedRowCnt_ < d) ? 0 : d;
+	orderDownCount_ = (isFirstUpdate || d < 0 || (viewedRowCnt_ >> 1) < d) ? 0 : d;
 
 	textChanged_ = true;
 	backChanged_ = true;
