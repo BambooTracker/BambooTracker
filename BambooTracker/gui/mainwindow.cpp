@@ -391,6 +391,24 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 
+	/* Bookmark */
+	bmManForm_ = std::make_unique<BookmarkManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
+	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::positionJumpRequested,
+					 this, [&](int order, int step) {
+		if (bt_->isPlaySong()) return;
+		int song = bt_->getCurrentSongNumber();
+		if (static_cast<int>(bt_->getOrderSize(song)) <= order) return;
+		if (static_cast<int>(bt_->getPatternSizeFromOrderNumber(song, order)) <= step) return;
+		bt_->setCurrentOrderNumber(order);
+		bt_->setCurrentStepNumber(step);
+		ui->orderList->updatePositionByPositionJump();
+		ui->patternEditor->updatepositionByPositionJump();
+		activateWindow();
+	});
+	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
+	QObject::connect(ui->patternEditor, &PatternEditor::bookmarkToggleRequested,
+					 bmManForm_.get(), &BookmarkManagerForm::onBookmarkToggleRequested);
+
 	/* Clipboard */
 	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,
 					 this, [&]() {
@@ -1339,7 +1357,7 @@ void MainWindow::loadSong()
 	}
 	statusPlayPos_->setText(config_.lock()->getShowRowNumberInHex() ? "00/00" : "000/000");
 
-	if (bmManForm_) bmManForm_->onCurrentSongNumberChanged();
+	bmManForm_->onCurrentSongNumberChanged();
 }
 
 void MainWindow::assignADPCMSamples()
@@ -1459,7 +1477,7 @@ void MainWindow::changeConfiguration()
 
 	updateInstrumentListColors();
 
-	if (bmManForm_) bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
+	bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
 
 	update();
 }
@@ -2874,23 +2892,6 @@ void MainWindow::on_actionRename_Instrument_triggered()
 
 void MainWindow::on_action_Bookmark_Manager_triggered()
 {
-	if (!bmManForm_) {
-		bmManForm_ = std::make_unique<BookmarkManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
-		QObject::connect(bmManForm_.get(), &BookmarkManagerForm::positionJumpRequested,
-						 this, [&](int order, int step) {
-			if (bt_->isPlaySong()) return;
-			int song = bt_->getCurrentSongNumber();
-			if (static_cast<int>(bt_->getOrderSize(song)) <= order) return;
-			if (static_cast<int>(bt_->getPatternSizeFromOrderNumber(song, order)) <= step) return;
-			bt_->setCurrentOrderNumber(order);
-			bt_->setCurrentStepNumber(step);
-			ui->orderList->updatePositionByPositionJump();
-			ui->patternEditor->updatepositionByPositionJump();
-			activateWindow();
-		});
-		QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
-	}
-
 	if (bmManForm_->isVisible()) bmManForm_->activateWindow();
 	else bmManForm_->show();
 }

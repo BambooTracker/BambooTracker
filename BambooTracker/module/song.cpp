@@ -260,6 +260,17 @@ Bookmark Song::getBookmark(int i) const
 	return bms_.at(static_cast<size_t>(i));
 }
 
+std::vector<int> Song::findBookmarks(int order, int step) const
+{
+	std::vector<int> idcs;
+	for (size_t i = 0; i < bms_.size(); ++i) {
+		const Bookmark& bm = bms_[i];
+		if (bm.order == order && bm.step == step)
+			idcs.push_back(static_cast<int>(i));
+	}
+	return idcs;
+}
+
 size_t Song::getBookmarkSize() const
 {
 	return bms_.size();

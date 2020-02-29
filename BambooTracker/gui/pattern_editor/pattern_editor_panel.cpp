@@ -2667,6 +2667,16 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	}
 	default:
 		if (!bt_->isJamMode()) {
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				switch (event->key()) {
+				case Qt::Key_K:
+					emit bookmarkToggleRequested(curPos_.order, curPos_.step);
+					return true;
+				default:
+					break;
+				}
+			}
+
 			// Pattern edit
 			if (!config_->getKeyRepetition() && event->isAutoRepeat()) return false;
 			switch (curPos_.colInTrack) {

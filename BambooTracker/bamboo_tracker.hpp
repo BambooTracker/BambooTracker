@@ -333,6 +333,7 @@ public:
 	void sortBookmarkByPosition(int songNum);
 	void sortBookmarkByName(int songNum);
 	Bookmark getBookmark(int songNum, int i) const;
+	std::vector<int> findBookmarks(int songNum, int order, int step);
 	size_t getBookmarkSize(int songNum) const;
 	/*----- Track -----*/
 	void setEffectDisplayWidth(int songNum, int trackNum, size_t w);

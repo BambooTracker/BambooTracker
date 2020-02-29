@@ -56,6 +56,7 @@ public:
 	void sortBookmarkByPosition();
 	void sortBookmarkByName();
 	Bookmark getBookmark(int i) const;
+	std::vector<int> findBookmarks(int order, int step) const;
 	size_t getBookmarkSize() const;
 
 private:

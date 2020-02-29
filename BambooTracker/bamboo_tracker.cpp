@@ -1818,6 +1818,11 @@ Bookmark BambooTracker::getBookmark(int songNum, int i) const
 	return mod_->getSong(songNum).getBookmark(i);
 }
 
+std::vector<int> BambooTracker::findBookmarks(int songNum, int order, int step)
+{
+	return mod_->getSong(songNum).findBookmarks(order, step);
+}
+
 size_t BambooTracker::getBookmarkSize(int songNum) const
 {
 	return mod_->getSong(songNum).getBookmarkSize();

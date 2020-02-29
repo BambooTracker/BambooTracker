@@ -1,6 +1,7 @@
 #include "bookmark_manager_form.hpp"
 #include "ui_bookmark_manager_form.h"
 #include <QKeyEvent>
+#include <vector>
 #include "song.hpp"
 
 BookmarkManagerForm::BookmarkManagerForm(std::weak_ptr<BambooTracker> core, bool showHex,
@@ -44,6 +45,12 @@ void BookmarkManagerForm::addBookmark(QString name, int order, int step, bool on
 	if (!onlyUi) {
 		bt_.lock()->addBookmark(curSong_, name.toUtf8().toStdString(), order, step);
 	}
+}
+
+void BookmarkManagerForm::removeBookmark(int i)
+{
+	delete ui->listWidget->takeItem(i);
+	bt_.lock()->removeBookmark(curSong_, i);
 }
 
 QString BookmarkManagerForm::createText(QString name, int order, int step)
@@ -132,6 +139,31 @@ void BookmarkManagerForm::onConfigurationChanged(bool showHex)
 	ui->stepSpinBox->setDisplayIntegerBase(numBase_);
 }
 
+void BookmarkManagerForm::onBookmarkToggleRequested(int order, int step)
+{
+	std::vector<int> idcs = bt_.lock()->findBookmarks(curSong_, order, step);
+	if (idcs.empty()) {
+		int i = static_cast<int>(bt_.lock()->getBookmarkSize(curSong_));
+		addBookmark(tr("Bookmark %1").arg(i), order, step);
+	}
+	else {
+		for (auto&& it = idcs.rbegin(); it != idcs.rend(); ++it) {
+			removeBookmark(*it);	// Remove from back to remain the position
+		}
+	}
+	emit modified();
+}
+
+void BookmarkManagerForm::onPreviousBookmarkJumpRequested(int order, int step)
+{
+
+}
+
+void BookmarkManagerForm::onNextBookmarkJumpRequested(int order, int step)
+{
+
+}
+
 void BookmarkManagerForm::on_createPushButton_clicked()
 {
 	addBookmark(ui->nameLineEdit->text(), ui->orderSpinBox->value(), ui->stepSpinBox->value());
@@ -143,9 +175,7 @@ void BookmarkManagerForm::on_removePushButton_clicked()
 	int row = ui->listWidget->currentRow();
 	if (row == -1) return;
 
-	delete ui->listWidget->takeItem(row);
-	bt_.lock()->removeBookmark(curSong_, row);
-
+	removeBookmark(row);
 	emit modified();
 }
 

@@ -18,7 +18,7 @@ class BookmarkManagerForm : public QWidget
 public:
 	BookmarkManagerForm(std::weak_ptr<BambooTracker> core, bool showHex,
 						QWidget *parent = nullptr);
-	~BookmarkManagerForm();
+	~BookmarkManagerForm() override;
 
 signals:
 	void positionJumpRequested(int order, int step);
@@ -27,6 +27,9 @@ signals:
 public slots:
 	void onCurrentSongNumberChanged();
 	void onConfigurationChanged(bool showHex);
+	void onBookmarkToggleRequested(int order, int step);
+	void onPreviousBookmarkJumpRequested(int order, int step);
+	void onNextBookmarkJumpRequested(int order, int step);
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
@@ -65,6 +68,7 @@ private:
 	}
 
 	void addBookmark(QString name, int order, int step, bool onlyUi = false);
+	void removeBookmark(int i);
 	QString createText(QString name, int order, int step);
 	void sortList(bool byPos);
 };
