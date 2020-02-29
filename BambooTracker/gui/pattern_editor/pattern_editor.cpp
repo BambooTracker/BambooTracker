@@ -100,6 +100,11 @@ void PatternEditor::updatePositionByStepUpdate(bool isFirstUpdate)
 	ui->panel->updatePositionByStepUpdate(isFirstUpdate);
 }
 
+void PatternEditor::updatepositionByPositionJump()
+{
+	ui->panel->updatePositionByStepUpdate(false, true);
+}
+
 void PatternEditor::copySelectedCells()
 {
 	ui->panel->copySelectedCells();

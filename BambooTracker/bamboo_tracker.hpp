@@ -324,6 +324,16 @@ public:
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
 	size_t getAllStepCount(int songNum, int loopCnt) const;
+	/*----- Bookmark -----*/
+	void addBookmark(int songNum, std::string name, int order, int step);
+	int changeBookmark(int songNum, int i, std::string name, int order, int step);
+	void removeBookmark(int songNum, int i);
+	void clearBookmark(int songNum);
+	void swapBookmarks(int songNum, int a, int b);
+	void sortBookmarkByPosition(int songNum);
+	void sortBookmarkByName(int songNum);
+	Bookmark getBookmark(int songNum, int i) const;
+	size_t getBookmarkSize(int songNum) const;
 	/*----- Track -----*/
 	void setEffectDisplayWidth(int songNum, int trackNum, size_t w);
 	size_t getEffectDisplayWidth(int songNum, int trackNum) const;

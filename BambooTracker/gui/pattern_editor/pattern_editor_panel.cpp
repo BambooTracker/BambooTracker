@@ -1311,9 +1311,9 @@ int PatternEditorPanel::getFullColmunSize() const
 	return calculateColNumInRow(static_cast<int>(songStyle_.trackAttribs.size()) - 1, 4 + 2 * rightEffn_.back());
 }
 
-void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
+void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump)
 {
-	if (!config_->getFollowMode()) {	// Repaint only background
+	if (!forceJump && !config_->getFollowMode()) {	// Repaint only background
 		backChanged_ = true;
 		repaint();
 		return;

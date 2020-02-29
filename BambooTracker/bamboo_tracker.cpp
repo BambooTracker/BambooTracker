@@ -1778,6 +1778,51 @@ size_t BambooTracker::getAllStepCount(int songNum, int loopCnt) const
 	}
 }
 
+/*----- Bookmark -----*/
+void BambooTracker::addBookmark(int songNum, std::string name, int order, int step)
+{
+	mod_->getSong(songNum).addBookmark(name, order, step);
+}
+
+int BambooTracker::changeBookmark(int songNum, int i, std::string name, int order, int step)
+{
+	mod_->getSong(songNum).changeBookmark(i, name, order, step);
+}
+
+void BambooTracker::removeBookmark(int songNum, int i)
+{
+	mod_->getSong(songNum).removeBookmark(i);
+}
+
+void BambooTracker::clearBookmark(int songNum)
+{
+	mod_->getSong(songNum).clearBookmark();
+}
+
+void BambooTracker::swapBookmarks(int songNum, int a, int b)
+{
+	mod_->getSong(songNum).swapBookmarks(a, b);
+}
+
+void BambooTracker::sortBookmarkByPosition(int songNum)
+{
+	mod_->getSong(songNum).sortBookmarkByPosition();
+}
+void BambooTracker::sortBookmarkByName(int songNum)
+{
+	mod_->getSong(songNum).sortBookmarkByName();
+}
+
+Bookmark BambooTracker::getBookmark(int songNum, int i) const
+{
+	return mod_->getSong(songNum).getBookmark(i);
+}
+
+size_t BambooTracker::getBookmarkSize(int songNum) const
+{
+	return mod_->getSong(songNum).getBookmarkSize();
+}
+
 /*----- Track -----*/
 void BambooTracker::setEffectDisplayWidth(int songNum, int trackNum, size_t w)
 {

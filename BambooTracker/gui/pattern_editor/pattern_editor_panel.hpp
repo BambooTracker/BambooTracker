@@ -39,7 +39,7 @@ public:
 
 	void changeEditable();
 	int getFullColmunSize() const;
-	void updatePositionByStepUpdate(bool isFirstUpdate);
+	void updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump = false);
 	int getScrollableCountByTrack() const;
 
 	void copySelectedCells();

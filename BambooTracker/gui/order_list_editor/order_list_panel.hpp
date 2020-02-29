@@ -35,7 +35,7 @@ public:
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
-	void updatePositionByOrderUpdate(bool isFirstUpdate);
+	void updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJump = false);
 	int getScrollableCountByTrack() const;
 
 	void copySelectedCells();

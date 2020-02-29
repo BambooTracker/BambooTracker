@@ -787,10 +787,10 @@ void OrderListPanel::changeEditable()
 	repaint();
 }
 
-void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate)
+void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJump)
 {	
 	int prev = std::exchange(playingRow_, bt_->getPlayingOrderNumber());
-	if (!config_->getFollowMode() && prev != playingRow_) {	// Repaint only background
+	if (!forceJump && !config_->getFollowMode() && prev != playingRow_) {	// Repaint only background
 		backChanged_ = true;
 		repaint();
 		return;

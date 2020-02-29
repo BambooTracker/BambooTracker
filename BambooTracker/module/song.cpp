@@ -211,3 +211,61 @@ void Song::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> ma
 {
 	for (auto& track : tracks_) track.replaceDuplicateInstrumentsInPatterns(map);
 }
+
+int Song::addBookmark(std::string name, int order, int step)
+{
+	bms_.push_back(Bookmark(name, order, step));
+	return static_cast<int>(bms_.size() - 1);
+}
+
+int Song::changeBookmark(int i, std::string name, int order, int step)
+{
+	Bookmark& bm = bms_.at(static_cast<size_t>(i));
+	bm.name = name;
+	bm.order = order;
+	bm.step  = step;
+}
+
+void Song::removeBookmark(int i)
+{
+	bms_.erase(bms_.begin() + i);
+}
+
+void Song::clearBookmark()
+{
+	bms_.clear();
+}
+
+void Song::swapBookmarks(int a, int b)
+{
+	std::swap(bms_.at(static_cast<size_t>(a)), bms_.at((static_cast<size_t>(b))));
+}
+
+void Song::sortBookmarkByPosition()
+{
+	std::stable_sort(bms_.begin(), bms_.end(), [](Bookmark a, Bookmark b) {
+		return ((a.order == b.order) ? (a.step < b.step) : (a.order < b.order));
+	});
+}
+
+void Song::sortBookmarkByName()
+{
+	std::stable_sort(bms_.begin(), bms_.end(), [](Bookmark a, Bookmark b) {
+		return (a.name < b.name);
+	});
+}
+
+Bookmark Song::getBookmark(int i) const
+{
+	return bms_.at(static_cast<size_t>(i));
+}
+
+size_t Song::getBookmarkSize() const
+{
+	return bms_.size();
+}
+
+Bookmark::Bookmark(std::string argname, int argorder, int argstep)
+	: name(argname), order(argorder), step(argstep)
+{
+}
