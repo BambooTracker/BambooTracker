@@ -16,38 +16,47 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 	size_t p = 0;
 	assertFormat(bc.readString(p, 4) == "RIFF");
 	p += 4;
-	uint32_t chunkSize = bc.readUint32(p);
+	uint32_t fileSize = bc.readUint32(p) + 8;
+	assertFormat(fileSize == bc.size());
 	p += 4;
 	assertFormat(bc.readString(p, 4) == "WAVE");
 	p += 4;
 
-	assertFormat(bc.readString(p, 4) == "fmt ");
-	p += 4;
-	assertFormat(bc.readUint32(p) == 16);
-	p += 4;
-	assertFormat(bc.readUint16(p) == 1);	// Only support linear PCM
-	p += 2;
-	nCh_ = bc.readUint16(p);
-	p += 2;
-	rate_ = bc.readUint32(p);
-	p += 4;
-	uint32_t byteRate = bc.readUint32(p);
-	p += 4;
-	uint16_t blockSize = bc.readUint16(p);
-	p += 2;
-	bitSize_ = bc.readUint16(p);
-	assertFormat(bitSize_ == 16);	// Only support 16-bit
-	p += 2;
-	assertFormat(byteRate == blockSize * rate_);
-	assertFormat(blockSize == nCh_ * bitSize_ / 8);
+	while (p < fileSize) {
+		std::string id = bc.readString(p, 4);
+		p += 4;
 
-	assertFormat(bc.readString(p, 4) == "data");
-	p += 4;
-	uint32_t dataSize = bc.readUint32(p);
-	assertFormat(chunkSize == dataSize + 36);
-	p += 4;
-	assertFormat(p + dataSize <= bc.size());
-	buf_.appendBinaryContainer(bc.getSubcontainer(p, dataSize));
+		if (id == "fmt ") {
+			uint32_t fmtSize = bc.readUint32(p);
+			size_t fmtp = p + 4;
+			p = fmtp + fmtSize;
+			assertFormat(bc.readUint16(fmtp) == 1);	// Only support linear PCM
+			fmtp += 2;
+			nCh_ = bc.readUint16(fmtp);
+			fmtp += 2;
+			rate_ = bc.readUint32(fmtp);
+			fmtp += 4;
+			uint32_t byteRate = bc.readUint32(fmtp);
+			fmtp += 4;
+			uint16_t blockSize = bc.readUint16(fmtp);
+			fmtp += 2;
+			bitSize_ = bc.readUint16(fmtp);
+			assertFormat(bitSize_ == 16);	// Only support 16-bit
+			fmtp += 2;
+			assertFormat(byteRate == blockSize * rate_);
+			assertFormat(blockSize == nCh_ * bitSize_ / 8);
+		}
+		else if (id == "data") {
+			uint32_t dataSize = bc.readUint32(p);
+			p += 4;
+			assertFormat(p + dataSize <= bc.size());
+			buf_.appendBinaryContainer(bc.getSubcontainer(p, dataSize));
+			p += dataSize;
+		}
+		else {
+			p += (bc.readUint32(p) + 4);	// Jump to next chunk
+		}
+	}
 }
 
 void WavContainer::setChannelCount(uint16_t n)
