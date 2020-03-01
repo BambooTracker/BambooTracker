@@ -142,6 +142,7 @@ void BookmarkManagerForm::onBookmarkToggleRequested(int order, int step)
 {
 	std::vector<int> idcs = bt_.lock()->findBookmarks(curSong_, order, step);
 	if (idcs.empty()) {
+		if (bt_.lock()->getBookmarkSize(curSong_) == 127) return;	// Maximum size
 		int i = static_cast<int>(bt_.lock()->getBookmarkSize(curSong_));
 		addBookmark(tr("Bookmark %1").arg(i), order, step);
 	}
@@ -164,6 +165,7 @@ void BookmarkManagerForm::onBookmarkJumpRequested(bool toNext, int order, int st
 
 void BookmarkManagerForm::on_createPushButton_clicked()
 {
+	if (bt_.lock()->getBookmarkSize(curSong_) == 127) return;	// Maximum size
 	addBookmark(ui->nameLineEdit->text(), ui->orderSpinBox->value(), ui->stepSpinBox->value());
 	emit modified();
 }

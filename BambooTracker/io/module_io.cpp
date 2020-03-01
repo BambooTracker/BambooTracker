@@ -846,6 +846,17 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 		default:	throw FileOutputError(FileIO::FileType::Mod);
 		}
 
+		// Bookmark
+		size_t bmSize = sng.getBookmarkSize();
+		ctr.appendUint8(static_cast<uint8_t>(bmSize));
+		for (size_t i = 0; i < bmSize; ++i) {
+			Bookmark bm = sng.getBookmark(static_cast<int>(i));
+			ctr.appendUint32(bm.name.length());
+			ctr.appendString(bm.name);
+			ctr.appendUint8(static_cast<uint8_t>(bm.order));
+			ctr.appendUint8(static_cast<uint8_t>(bm.step));
+		}
+
 		// Track
 		for (auto& attrib : style.trackAttribs) {
 			ctr.appendUint8(static_cast<uint8_t>(attrib.number));
@@ -2438,8 +2449,23 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 		mod.lock()->addSong(idx, songType, title, isTempo,
 							static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
 		auto& song = mod.lock()->getSong(idx);
+
+		// Bookmark
+		if (Version::toBCD(1, 4, 1) <= version) {
+			int bmSize = ctr.readUint8(scsr++);
+			for (int i = 0; i < bmSize; ++i) {
+				size_t len = ctr.readUint32(scsr);
+				scsr += 4;
+				std::string name = ctr.readString(scsr, len);
+				scsr += len;
+				int order = ctr.readUint8(scsr++);
+				int step = ctr.readUint8(scsr++);
+				song.addBookmark(name, order, step);
+			}
+		}
+
 		while (scsr < songCsr) {
-			// Song
+			// Track
 			uint8_t trackIdx = ctr.readUint8(scsr++);
 			auto& track = song.getTrack(trackIdx);
 			size_t trackOfs = ctr.readUint32(scsr);
