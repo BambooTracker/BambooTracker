@@ -1311,9 +1311,9 @@ int PatternEditorPanel::getFullColmunSize() const
 	return calculateColNumInRow(static_cast<int>(songStyle_.trackAttribs.size()) - 1, 4 + 2 * rightEffn_.back());
 }
 
-void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
+void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump)
 {
-	if (!config_->getFollowMode()) {	// Repaint only background
+	if (!forceJump && !config_->getFollowMode()) {	// Repaint only background
 		backChanged_ = true;
 		repaint();
 		return;
@@ -1332,7 +1332,7 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate)
 	}
 	else {
 		int d = calculateStepDistance(tmp.order, tmp.step, curPos_.order, curPos_.step);
-		stepDownCount_ = (d < viewedRowCnt_) ? d : 0;
+		stepDownCount_ = (d < (viewedRowCnt_ >> 1)) ? d : 0;
 	}
 	// If stepChanged is false, repaint all pattern
 	foreChanged_ = true;
@@ -2626,9 +2626,14 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				emit bookmarkJumpRequested(false, curPos_.order, curPos_.step);
+			}
+			else {
+				moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
+				if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+				else onSelectPressed(0);
+			}
 			return true;
 		}
 	case Qt::Key_PageDown:
@@ -2636,9 +2641,14 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				emit bookmarkJumpRequested(true, curPos_.order, curPos_.step);
+			}
+			else {
+				moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
+				if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+				else onSelectPressed(0);
+			}
 			return true;
 		}
 	case Qt::Key_Insert:
@@ -2667,6 +2677,16 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	}
 	default:
 		if (!bt_->isJamMode()) {
+			if (event->modifiers().testFlag(Qt::ControlModifier)) {
+				switch (event->key()) {
+				case Qt::Key_K:
+					emit bookmarkToggleRequested(curPos_.order, curPos_.step);
+					return true;
+				default:
+					break;
+				}
+			}
+
 			// Pattern edit
 			if (!config_->getKeyRepetition() && event->isAutoRepeat()) return false;
 			switch (curPos_.colInTrack) {

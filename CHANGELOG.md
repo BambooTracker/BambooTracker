@@ -4,10 +4,15 @@
 ### Added
 - [#6], [#184], [#185] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Add shortcuts instead of insert key
+- Add bookmark manager
 
 ### Changed
 - [#182] - Enable the first note-on when tone portamento is set before the playing start position (thanks [@freq-mod])
 - [#183] - Implement ADPCM part in Nuked OPN-Mod (thanks [@jpcima])
+
+### Fixed
+- Close all windows when the main window closed
+- Fix paint glitches of order list and pattern editor
 
 [@freq-mod]: https://github.com/freq-mod
 

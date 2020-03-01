@@ -8,6 +8,7 @@
 #include "misc.hpp"
 
 struct SongStyle;
+struct Bookmark;
 
 class Song
 {
@@ -47,6 +48,19 @@ public:
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
 
+	int addBookmark(std::string name, int order, int step);
+	void changeBookmark(int i, std::string name, int order, int step);
+	void removeBookmark(int i);
+	void clearBookmark();
+	void swapBookmarks(int a, int b);
+	void sortBookmarkByPosition();
+	void sortBookmarkByName();
+	Bookmark getBookmark(int i) const;
+	std::vector<int> findBookmarks(int order, int step) const;
+	Bookmark getPreviousBookmark(int order, int step);
+	Bookmark getNextBookmark(int order, int step);
+	size_t getBookmarkSize() const;
+
 private:
 	int num_;
 	SongType type_;
@@ -58,10 +72,21 @@ private:
 	size_t defPtnSize_;
 
 	std::vector<Track> tracks_;
+	std::vector<Bookmark> bms_;
+
+	std::vector<Bookmark> getSortedBookmarkList() const;
 };
 
 struct SongStyle
 {
 	SongType type;
 	std::vector<TrackAttribute> trackAttribs;
+};
+
+struct Bookmark
+{
+	std::string name = u8"";
+	int order, step;
+
+	Bookmark(std::string argname, int argorder, int argstep);
 };

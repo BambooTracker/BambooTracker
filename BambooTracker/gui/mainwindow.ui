@@ -671,6 +671,7 @@
     <addaction name="actionComments"/>
     <addaction name="separator"/>
     <addaction name="actionGroove_Settings"/>
+    <addaction name="action_Bookmark_Manager"/>
     <addaction name="separator"/>
     <addaction name="menuCleanup"/>
    </widget>
@@ -1417,6 +1418,11 @@
    </property>
    <property name="text">
     <string>Re&amp;name Instrument</string>
+   </property>
+  </action>
+  <action name="action_Bookmark_Manager">
+   <property name="text">
+    <string>&amp;Bookmark Manager...</string>
    </property>
   </action>
  </widget>

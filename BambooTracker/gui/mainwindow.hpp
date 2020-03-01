@@ -28,6 +28,7 @@
 #include "gui/file_history.hpp"
 #include "gui/effect_list_dialog.hpp"
 #include "gui/keyboard_shortcut_list_dialog.hpp"
+#include "gui/bookmark_manager_form.hpp"
 #include "file_io_error.hpp"
 
 class AbstractBank;
@@ -45,7 +46,7 @@ public:
 	~MainWindow() override;
 
 protected:
-	bool eventFilter(QObject *watched, QEvent *event) override;
+	bool eventFilter(QObject* watched, QEvent* event) override;
 	void showEvent(QShowEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
@@ -161,6 +162,9 @@ private:
 	std::unique_ptr<EffectListDialog> effListDiag_;
 	std::unique_ptr<KeyboardShortcutListDialog> shortcutsDiag_;
 
+	// Bookmark
+	std::unique_ptr<BookmarkManagerForm> bmManForm_;
+
 	// Meta methods
 	int tickEventMethod_;
 	int midiKeyEventMethod_;
@@ -269,6 +273,7 @@ private slots:
 	void on_actionS_hrink_Effect_Column_triggered();
 	void on_actionRemove_Duplicate_Instruments_triggered();
 	void on_actionRename_Instrument_triggered();
+	void on_action_Bookmark_Manager_triggered();
 };
 
 #endif // MAINWINDOW_HPP

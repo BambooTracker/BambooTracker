@@ -52,6 +52,12 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 this, [&](int num) { emit instrumentEntered(num); });
 	QObject::connect(ui->panel, &PatternEditorPanel::effectEntered,
 					 this, [&](QString text) { emit effectEntered(text); });
+	QObject::connect(ui->panel, &PatternEditorPanel::bookmarkToggleRequested,
+					 this, [&](int order, int step) { emit bookmarkToggleRequested(order, step); });
+	QObject::connect(ui->panel, &PatternEditorPanel::bookmarkJumpRequested,
+					 this, [&](bool toNext, int order, int step) {
+		emit bookmarkJumpRequested(toNext, order, step);
+	});
 
 	auto focusSlot = [&] { ui->panel->setFocus(); };
 
@@ -98,6 +104,11 @@ void PatternEditor::changeEditable()
 void PatternEditor::updatePositionByStepUpdate(bool isFirstUpdate)
 {
 	ui->panel->updatePositionByStepUpdate(isFirstUpdate);
+}
+
+void PatternEditor::updatepositionByPositionJump()
+{
+	ui->panel->updatePositionByStepUpdate(false, true);
 }
 
 void PatternEditor::copySelectedCells()

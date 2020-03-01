@@ -85,6 +85,11 @@ void OrderListEditor::updatePositionByOrderUpdate(bool isFirstUpdate)
 	ui->panel->updatePositionByOrderUpdate(isFirstUpdate);
 }
 
+void OrderListEditor::updatePositionByPositionJump()
+{
+	ui->panel->updatePositionByOrderUpdate(false, true);
+}
+
 void OrderListEditor::copySelectedCells()
 {
 	ui->panel->copySelectedCells();

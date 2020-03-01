@@ -391,6 +391,26 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	statusOctave_->setText(tr("Octave: %1").arg(bt_->getCurrentOctave()));
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 
+	/* Bookmark */
+	bmManForm_ = std::make_unique<BookmarkManagerForm>(bt_, config_.lock()->getShowRowNumberInHex());
+	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::positionJumpRequested,
+					 this, [&](int order, int step) {
+		if (bt_->isPlaySong()) return;
+		int song = bt_->getCurrentSongNumber();
+		if (static_cast<int>(bt_->getOrderSize(song)) <= order) return;
+		if (static_cast<int>(bt_->getPatternSizeFromOrderNumber(song, order)) <= step) return;
+		bt_->setCurrentOrderNumber(order);
+		bt_->setCurrentStepNumber(step);
+		ui->orderList->updatePositionByPositionJump();
+		ui->patternEditor->updatepositionByPositionJump();
+		activateWindow();
+	});
+	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
+	QObject::connect(ui->patternEditor, &PatternEditor::bookmarkToggleRequested,
+					 bmManForm_.get(), &BookmarkManagerForm::onBookmarkToggleRequested);
+	QObject::connect(ui->patternEditor, &PatternEditor::bookmarkJumpRequested,
+					 bmManForm_.get(), &BookmarkManagerForm::onBookmarkJumpRequested);
+
 	/* Clipboard */
 	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,
 					 this, [&]() {
@@ -473,7 +493,7 @@ MainWindow::~MainWindow()
 	stream_->shutdown();
 }
 
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 {
 	if (auto fmForm = qobject_cast<InstrumentEditorFMForm*>(watched)) {
 		// Change current instrument by activating FM editor
@@ -731,6 +751,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	instForms_->closeAll();
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
+
+	effListDiag_->close();
+	shortcutsDiag_->close();
+	bmManForm_->close();
 
 	event->accept();
 }
@@ -1338,6 +1362,8 @@ void MainWindow::loadSong()
 	case SongType::FM3chExpanded:	statusStyle_->setText(tr("FM3ch expanded"));	break;
 	}
 	statusPlayPos_->setText(config_.lock()->getShowRowNumberInHex() ? "00/00" : "000/000");
+
+	bmManForm_->onCurrentSongNumberChanged();
 }
 
 void MainWindow::assignADPCMSamples()
@@ -1456,6 +1482,8 @@ void MainWindow::changeConfiguration()
 	ui->waveVisual->setVisible(config_.lock()->getShowWaveVisual());
 
 	updateInstrumentListColors();
+
+	bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
 
 	update();
 }
@@ -2866,4 +2894,10 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 void MainWindow::on_actionRename_Instrument_triggered()
 {
 	renameInstrument();
+}
+
+void MainWindow::on_action_Bookmark_Manager_triggered()
+{
+	if (bmManForm_->isVisible()) bmManForm_->activateWindow();
+	else bmManForm_->show();
 }

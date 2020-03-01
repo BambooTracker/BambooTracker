@@ -27,6 +27,7 @@ public:
 
 	void changeEditable();
 	void updatePositionByStepUpdate(bool isFirstUpdate);
+	void updatepositionByPositionJump();
 
 	void copySelectedCells();
 	void cutSelectedCells();
@@ -45,6 +46,8 @@ public:
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
+	void bookmarkToggleRequested(int order, int step);
+	void bookmarkJumpRequested(bool toNext, int order, int step);
 
 	void focusIn();
 	void focusOut();
