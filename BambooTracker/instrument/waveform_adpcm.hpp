@@ -30,7 +30,8 @@ public:
 	void setStopAddress(size_t addr);
 	size_t getStopAddress() const;
 
-	bool isEdited() const;
+	bool isEdited() const override;
+	void clearParameters() override;
 
 private:
 	int rootKeyNum_, rootDeltaN_;

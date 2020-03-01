@@ -24,7 +24,8 @@ public:
 	int getParameterValue(FMEnvelopeParameter param) const;
 	void setParameterValue(FMEnvelopeParameter param, int value);
 
-	bool isEdited() const;
+	bool isEdited() const override;
+	void clearParameters() override;
 
 private:
 	int al_;

@@ -20,7 +20,8 @@ public:
 	void setParameterValue(FMLFOParameter param, int value);
 	int getParameterValue(FMLFOParameter param) const;
 
-	bool isEdited() const;
+	bool isEdited() const override;
+	void clearParameters() override;
 
 private:
 	int freq_;

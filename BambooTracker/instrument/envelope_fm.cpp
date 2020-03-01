@@ -3,15 +3,9 @@
 constexpr EnvelopeFM::FMOperator EnvelopeFM::DEF_OP[4];
 
 EnvelopeFM::EnvelopeFM(int num)
-	: AbstractInstrumentProperty(num),
-	  al_(DEF_AL),
-	  fb_(DEF_FB)
+	: AbstractInstrumentProperty(num)
 {
-	op_[0] = DEF_OP[0];
-	op_[1] = DEF_OP[1];
-	op_[2] = DEF_OP[2];
-	op_[3] = DEF_OP[3];
-
+	clearParameters();
 	initParamMap();
 }
 
@@ -127,4 +121,13 @@ bool EnvelopeFM::isEdited() const
 			return true;
 	}
 	return false;
+}
+
+void EnvelopeFM::clearParameters()
+{
+	al_ = DEF_AL;
+	fb_ = DEF_FB;
+	for (int i = 0; i < 4; ++i) {
+		op_[i] = DEF_OP[i];
+	}
 }

@@ -11,6 +11,7 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QApplication>
+#include <QListWidgetItem>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
@@ -37,21 +38,44 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	std::shared_ptr<Configuration> configLocked = config.lock();
 	// General //
 	// General settings
-	ui->generalSettingsListWidget->item(0)->setCheckState(toCheckState(configLocked->getWarpCursor()));
-	ui->generalSettingsListWidget->item(1)->setCheckState(toCheckState(configLocked->getWarpAcrossOrders()));
-	ui->generalSettingsListWidget->item(2)->setCheckState(toCheckState(configLocked->getShowRowNumberInHex()));
-	ui->generalSettingsListWidget->item(3)->setCheckState(toCheckState(configLocked->getShowPreviousNextOrders()));
-	ui->generalSettingsListWidget->item(4)->setCheckState(toCheckState(configLocked->getBackupModules()));
-	ui->generalSettingsListWidget->item(5)->setCheckState(toCheckState(configLocked->getDontSelectOnDoubleClick()));
-	ui->generalSettingsListWidget->item(6)->setCheckState(toCheckState(configLocked->getReverseFMVolumeOrder()));
-	ui->generalSettingsListWidget->item(7)->setCheckState(toCheckState(configLocked->getMoveCursorToRight()));
-	ui->generalSettingsListWidget->item(8)->setCheckState(toCheckState(configLocked->getRetrieveChannelState()));
-	ui->generalSettingsListWidget->item(9)->setCheckState(toCheckState(configLocked->getEnableTranslation()));
-	ui->generalSettingsListWidget->item(10)->setCheckState(toCheckState(configLocked->getShowFMDetuneAsSigned()));
-	ui->generalSettingsListWidget->item(11)->setCheckState(toCheckState(configLocked->getShowWaveVisual()));
-	ui->generalSettingsListWidget->item(12)->setCheckState(toCheckState(configLocked->getFill00ToEffectValue()));
-	ui->generalSettingsListWidget->item(13)->setCheckState(toCheckState(configLocked->getAutosetInstrument()));
-	ui->generalSettingsListWidget->item(14)->setCheckState(toCheckState(configLocked->getMoveCursorByHorizontalScroll()));
+	auto glfunc = [&](int i, bool enabled, QString desc) {
+		QListWidgetItem* item = ui->generalSettingsListWidget->item(i);
+		item->setCheckState(toCheckState(enabled));
+		item->setData(Qt::UserRole, desc);
+	};
+	glfunc(0, configLocked->getWarpCursor(),
+		   tr("Warp the cursor around the edges of the pattern editor."));
+	glfunc(1, configLocked->getWarpAcrossOrders(),
+		   tr("Move to previous or next order when reaching top or bottom in the pattern editor."));
+	glfunc(2, configLocked->getShowRowNumberInHex(),
+		   tr("Display row numbers and the playback position on the status bar in hexadecimal."));
+	glfunc(3, configLocked->getShowPreviousNextOrders(),
+		   tr("Preview previous and next orders in the pattern editor."));
+	glfunc(4, configLocked->getBackupModules(),
+		   tr("Create a backup copy of the existing file when saving a module."));
+	glfunc(5, configLocked->getDontSelectOnDoubleClick(),
+		   tr("Don't select the whole track when double-clicking in the pattern editor."));
+	glfunc(6, configLocked->getReverseFMVolumeOrder(),
+		   tr("Reverse the order of FM volume so that 00 is the quietest in the pattern editor."));
+	glfunc(7, configLocked->getMoveCursorToRight(),
+		   tr("Move the cursor to right after entering effects in the pattern editor."));
+	glfunc(8, configLocked->getRetrieveChannelState(),
+		   tr("Reconstruct the current channel's state from previous orders upon playing."));
+	glfunc(9, configLocked->getEnableTranslation(),
+		   tr("Translate to your language from the next launch. See readme to check supported languages."));
+	glfunc(10, configLocked->getShowFMDetuneAsSigned(),
+		   tr("Display FM detune values as signed numbers in the FM envelope editor."));
+	glfunc(11, configLocked->getShowWaveVisual(),
+		   tr("Enable an oscilloscope which displays a waveform of the sound output."));
+	glfunc(12, configLocked->getFill00ToEffectValue(),
+		   tr("Fill 00 to effect value column upon entering effect id."));
+	glfunc(13, configLocked->getAutosetInstrument(),
+		   tr("Set current instrument upon entering note."));
+	glfunc(14, configLocked->getMoveCursorByHorizontalScroll(),
+		   tr("Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor."));
+	glfunc(15, configLocked->getOverwriteUnusedUneditedPropety(),
+		   tr("Overwrite unused and unedited instrument properties on creating new properties. "
+			  "When disabled, override unused properties regardless of editing."));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -251,6 +275,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setFill00ToEffectValue(fromCheckState(ui->generalSettingsListWidget->item(12)->checkState()));
 	configLocked->setAutosetInstrument(fromCheckState(ui->generalSettingsListWidget->item(13)->checkState()));
 	configLocked->setMoveCursorByHorizontalScroll(fromCheckState(ui->generalSettingsListWidget->item(14)->checkState()));
+	configLocked->setOverwriteUnusedUneditedPropety(fromCheckState(ui->generalSettingsListWidget->item(15)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
@@ -372,57 +397,9 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 /***** General *****/
 void ConfigurationDialog::on_generalSettingsListWidget_itemSelectionChanged()
 {
-	QString text;
-	switch (ui->generalSettingsListWidget->currentRow()) {
-	case 0:		// Warp cursor
-		text = tr("Warp the cursor around the edges of the pattern editor.");
-		break;
-	case 1:		// Warp across orders
-		text = tr("Move to previous or next order when reaching top or bottom in the pattern editor.");
-		break;
-	case 2:		// Show row numbers in hex
-		text = tr("Display row numbers and the playback position on the status bar in hexadecimal.");
-		break;
-	case 3:		// Preview previous/next orders
-		text = tr("Preview previous and next orders in the pattern editor.");
-		break;
-	case 4:		// Backup modeles
-		text = tr("Create a backup copy of the existing file when saving a module.");
-		break;
-	case 5:		// Don't select on double click
-		text = tr("Don't select the whole track when double-clicking in the pattern editor.");
-		break;
-	case 6:		// Reverse FM volume order
-		text = tr("Reverse the order of FM volume so that 00 is the quietest in the pattern editor.");
-		break;
-	case 7:		// Move cursor to right
-		text = tr("Move the cursor to right after entering effects in the pattern editor.");
-		break;
-	case 8:		// Retrieve channel state
-		text = tr("Reconstruct the current channel's state from previous orders upon playing.");
-		break;
-	case 9:		// Enable translation
-		text = tr("Translate to your language from the next launch. "
-				  "See readme to check supported languages.");
-		break;
-	case 10:	// Show FM detune as signed
-		text = tr("Display FM detune values as signed numbers in the FM envelope editor.");
-		break;
-	case 11:	// Show wave visual
-		text = tr("Enable an oscilloscope which displays a waveform of the sound output.");
-		break;
-	case 12:	// Fill 00 to effect value
-		text = tr("Fill 00 to effect value column upon entering effect id.");
-		break;
-	case 13:	// Autoset instrument
-		text = tr("Set current instrument upon entering note.");
-		break;
-	case 14:	// Move cursor by horizontal scroll
-		text = tr("Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.");
-		break;
-	default:
-		text = "";
-		break;
+	QString text("");
+	if (QListWidgetItem* item = ui->generalSettingsListWidget->currentItem()) {
+		text = item->data(Qt::UserRole).toString();
 	}
 	ui->descPlainTextEdit->setPlainText(tr("Description: %1").arg(text));
 }

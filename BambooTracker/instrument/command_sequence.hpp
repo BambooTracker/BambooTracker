@@ -164,11 +164,13 @@ public:
 
 	std::unique_ptr<CommandSequence::Iterator> getIterator();
 
-	bool isEdited() const;
+	bool isEdited() const override;
+	void clearParameters() override;
 
 private:
-	const int DEF_COM_TYPE;
-	const int DEF_COM_DATA;
+	const int DEF_COM_TYPE_;
+	const int DEF_COM_DATA_;
+	const SequenceType DEF_SEQ_TYPE_;
 
 	SequenceType type_;
 	std::vector<CommandSequenceUnit> seq_;

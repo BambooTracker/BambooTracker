@@ -1,14 +1,9 @@
 #include "waveform_adpcm.hpp"
 
 WaveformADPCM::WaveformADPCM(int num)
-	: AbstractInstrumentProperty (num),
-	  rootKeyNum_(DEF_RT_KEY_),
-	  rootDeltaN_(DEF_RT_DELTAN_),
-	  isRepeated_(DEF_REPET_),
-	  sample_(1),
-	  startAddress_(0),
-	  stopAddress_(0)
+	: AbstractInstrumentProperty (num)
 {
+	clearParameters();
 }
 
 WaveformADPCM::WaveformADPCM(const WaveformADPCM& other)
@@ -108,4 +103,14 @@ bool WaveformADPCM::isEdited() const
 			|| sample_[0] != 0)
 		return true;
 	return false;
+}
+
+void WaveformADPCM::clearParameters()
+{
+	rootKeyNum_ = DEF_RT_KEY_;
+	rootDeltaN_ = DEF_RT_DELTAN_;
+	isRepeated_ = DEF_REPET_;
+	sample_ = std::vector<uint8_t>(1);
+	startAddress_ = 0;
+	stopAddress_ = 0;
 }

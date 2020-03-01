@@ -4,14 +4,9 @@
 constexpr int LFOFM::DEF_AM_OP_[4];
 
 LFOFM::LFOFM(int n)
-	: AbstractInstrumentProperty (n),
-	  freq_(DEF_FREQ_),
-	  pms_(DEF_PMS_),
-	  ams_(DEF_AMS_),
-	  cnt_(DEF_CNT_)
+	: AbstractInstrumentProperty (n)
 {
-	for (int i = 0; i < 4; ++i)
-		amOp_[i] = DEF_AM_OP_[i];
+	clearParameters();
 }
 
 LFOFM::LFOFM(const LFOFM& other)
@@ -79,4 +74,15 @@ bool LFOFM::isEdited() const
 		if (amOp_[i] != DEF_AM_OP_[i]) return true;
 	}
 	return false;
+}
+
+void LFOFM::clearParameters()
+{
+	freq_ = DEF_FREQ_;
+	pms_ = DEF_PMS_;
+	ams_ = DEF_AMS_;
+	cnt_ = DEF_CNT_;
+	for (int i = 0; i < 4; ++i) {
+		amOp_[i] = DEF_AM_OP_[i];
+	}
 }

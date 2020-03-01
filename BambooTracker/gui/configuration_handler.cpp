@@ -55,6 +55,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("fill00ToEffectValue",	configLocked->getFill00ToEffectValue());
 		settings.setValue("autosetInstrument",		configLocked->getAutosetInstrument());
 		settings.setValue("moveCursorByHScroll",	configLocked->getMoveCursorByHorizontalScroll());
+		settings.setValue("overwriteUnusedUnedited",	configLocked->getOverwriteUnusedUneditedPropety());
 		settings.endGroup();
 
 		// Edit settings
@@ -223,6 +224,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setFill00ToEffectValue(settings.value("fill00ToEffectValue", configLocked->getFill00ToEffectValue()).toBool());
 		configLocked->setAutosetInstrument(settings.value("autosetInstrument", configLocked->getAutosetInstrument()).toBool());
 		configLocked->setMoveCursorByHorizontalScroll(settings.value("moveCursorByHScroll", configLocked->getMoveCursorByHorizontalScroll()).toBool());
+		configLocked->setOverwriteUnusedUneditedPropety(settings.value("overwriteUnusedUnedited", configLocked->getOverwriteUnusedUneditedPropety()).toBool());
 		settings.endGroup();
 
 		// Edit settings

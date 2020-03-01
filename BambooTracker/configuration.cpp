@@ -38,6 +38,7 @@ Configuration::Configuration()
 	fill00ToEffectValue_ = true;
 	autosetInstrument_ = true;
 	moveCursorHScroll_ = true;
+	overwriteUnusedUnedited_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -912,6 +913,16 @@ void Configuration::setMoveCursorByHorizontalScroll(bool enabled)
 bool Configuration::getMoveCursorByHorizontalScroll() const
 {
 	return moveCursorHScroll_;
+}
+
+void Configuration::setOverwriteUnusedUneditedPropety(bool enabled)
+{
+	overwriteUnusedUnedited_ = enabled;
+}
+
+bool Configuration::getOverwriteUnusedUneditedPropety()
+{
+	return overwriteUnusedUnedited_;
 }
 
 // Edit settings

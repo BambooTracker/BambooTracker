@@ -17,6 +17,9 @@ public:
 	std::vector<int> getUserInstruments() const;
 	void clearUserInstruments();
 
+	virtual bool isEdited() const = 0;
+	virtual void clearParameters() = 0;
+
 protected:
 	explicit AbstractInstrumentProperty(int num);
 	AbstractInstrumentProperty(const AbstractInstrumentProperty& other);

@@ -2,18 +2,18 @@
 
 CommandSequence::CommandSequence(int num, SequenceType seqType, int comType, int comData)
 	: AbstractInstrumentProperty(num),
-	  DEF_COM_TYPE(comType),
-	  DEF_COM_DATA(comData),
-	  type_(seqType),
-	  release_{ ReleaseType::NoRelease, -1 }
+	  DEF_COM_TYPE_(comType),
+	  DEF_COM_DATA_(comData),
+	  DEF_SEQ_TYPE_(seqType)
 {
-	seq_.push_back({ comType, comData });
+	clearParameters();
 }
 
 CommandSequence::CommandSequence(const CommandSequence& other)
 	: AbstractInstrumentProperty(other),
-	  DEF_COM_TYPE(other.DEF_COM_TYPE),
-	  DEF_COM_DATA(other.DEF_COM_DATA),
+	  DEF_COM_TYPE_(other.DEF_COM_TYPE_),
+	  DEF_COM_DATA_(other.DEF_COM_DATA_),
+	  DEF_SEQ_TYPE_(other.DEF_SEQ_TYPE_),
 	  type_(other.type_),
 	  seq_(other.seq_),
 	  loops_(other.loops_),
@@ -152,8 +152,16 @@ std::unique_ptr<CommandSequence::Iterator> CommandSequence::getIterator()
 
 bool CommandSequence::isEdited() const
 {
-	return  (seq_.size() != 1 || seq_.front().type != DEF_COM_TYPE || seq_.front().data != DEF_COM_DATA
+	return  (seq_.size() != 1 || seq_.front().type != DEF_COM_TYPE_ || seq_.front().data != DEF_COM_DATA_
 			|| loops_.size() || release_.begin > -1);
+}
+
+void CommandSequence::clearParameters()
+{
+	type_ = DEF_SEQ_TYPE_;
+	seq_ = {{ DEF_COM_TYPE_, DEF_COM_DATA_ }};
+	loops_.clear();
+	release_ = { ReleaseType::NoRelease, -1 };
 }
 
 /****************************************/

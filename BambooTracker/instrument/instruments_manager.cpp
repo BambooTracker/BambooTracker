@@ -4,7 +4,8 @@
 #include <algorithm>
 #include "instrument.hpp"
 
-InstrumentsManager::InstrumentsManager()
+InstrumentsManager::InstrumentsManager(bool unedited)
+	: regardingUnedited_(unedited)
 {
 	envFMParams_ = {
 		FMEnvelopeParameter::AL,
@@ -65,23 +66,23 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	case SoundSource::FM:
 	{
 		auto fm = std::make_shared<InstrumentFM>(instNum, name, this);
-		int envNum = findFirstFreePlainEnvelopeFM();
+		int envNum = findFirstAssignableEnvelopeFM();
 		if (envNum == -1) envNum = static_cast<int>(envFM_.size()) - 1;
 		fm->setEnvelopeNumber(envNum);
 		envFM_.at(static_cast<size_t>(envNum))->registerUserInstrument(instNum);
-		int lfoNum = findFirstFreePlainLFOFM();
+		int lfoNum = findFirstAssignableLFOFM();
 		if (lfoNum == -1) lfoNum = static_cast<int>(lfoFM_.size()) - 1;
 		fm->setLFONumber(lfoNum);
 		fm->setLFOEnabled(false);
 		for (auto param : envFMParams_) {
-			int opSeqNum = findFirstFreePlainOperatorSequenceFM(param);
+			int opSeqNum = findFirstAssignableOperatorSequenceFM(param);
 			if (opSeqNum == -1) opSeqNum = static_cast<int>(opSeqFM_.at(param).size()) - 1;
 			fm->setOperatorSequenceNumber(param, opSeqNum);
 			fm->setOperatorSequenceEnabled(param, false);
 		}
-		int arpNum = findFirstFreePlainArpeggioFM();
+		int arpNum = findFirstAssignableArpeggioFM();
 		if (arpNum == -1) arpNum = static_cast<int>(arpFM_.size()) - 1;
-		int ptNum = findFirstFreePlainPitchFM();
+		int ptNum = findFirstAssignablePitchFM();
 		if (ptNum == -1) ptNum = static_cast<int>(ptFM_.size()) - 1;
 		for (auto type : fmOpTypes_) {
 			fm->setArpeggioNumber(type, arpNum);
@@ -95,23 +96,23 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	case SoundSource::SSG:
 	{
 		auto ssg = std::make_shared<InstrumentSSG>(instNum, name, this);
-		int wfNum = findFirstFreePlainWaveformSSG();
+		int wfNum = findFirstAssignableWaveformSSG();
 		if (wfNum == -1) wfNum = static_cast<int>(wfSSG_.size()) - 1;
 		ssg->setWaveformNumber(wfNum);
 		ssg->setWaveformEnabled(false);
-		int tnNum = findFirstFreePlainToneNoiseSSG();
+		int tnNum = findFirstAssignableToneNoiseSSG();
 		if (tnNum == -1) tnNum = static_cast<int>(tnSSG_.size()) - 1;
 		ssg->setToneNoiseNumber(tnNum);
 		ssg->setToneNoiseEnabled(false);
-		int envNum = findFirstFreePlainEnvelopeSSG();
+		int envNum = findFirstAssignableEnvelopeSSG();
 		if (envNum == -1) envNum = static_cast<int>(envSSG_.size()) - 1;
 		ssg->setEnvelopeNumber(envNum);
 		ssg->setEnvelopeEnabled(false);
-		int arpNum = findFirstFreePlainArpeggioSSG();
+		int arpNum = findFirstAssignableArpeggioSSG();
 		if (arpNum == -1) arpNum = static_cast<int>(arpSSG_.size()) - 1;
 		ssg->setArpeggioNumber(arpNum);
 		ssg->setArpeggioEnabled(false);
-		int ptNum = findFirstFreePlainPitchSSG();
+		int ptNum = findFirstAssignablePitchSSG();
 		if (ptNum == -1) ptNum = static_cast<int>(ptSSG_.size()) - 1;
 		ssg->setPitchNumber(ptNum);
 		ssg->setPitchEnabled(false);
@@ -121,19 +122,19 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 	case SoundSource::ADPCM:
 	{
 		auto adpcm = std::make_shared<InstrumentADPCM>(instNum, name, this);
-		int wfNum = findFirstFreePlainWaveformADPCM();
+		int wfNum = findFirstAssignableWaveformADPCM();
 		if (wfNum == -1) wfNum = static_cast<int>(wfADPCM_.size()) - 1;
 		adpcm->setWaveformNumber(wfNum);
 		wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
-		int envNum = findFirstFreePlainEnvelopeADPCM();
+		int envNum = findFirstAssignableEnvelopeADPCM();
 		if (envNum == -1) envNum = static_cast<int>(envADPCM_.size()) - 1;
 		adpcm->setEnvelopeNumber(envNum);
 		adpcm->setEnvelopeEnabled(false);
-		int arpNum = findFirstFreePlainArpeggioADPCM();
+		int arpNum = findFirstAssignableArpeggioADPCM();
 		if (arpNum == -1) arpNum = static_cast<int>(arpADPCM_.size()) - 1;
 		adpcm->setArpeggioNumber(arpNum);
 		adpcm->setArpeggioEnabled(false);
-		int ptNum = findFirstFreePlainPitchADPCM();
+		int ptNum = findFirstAssignablePitchADPCM();
 		if (ptNum == -1) ptNum = static_cast<int>(ptADPCM_.size()) - 1;
 		adpcm->setPitchNumber(ptNum);
 		adpcm->setPitchEnabled(false);
@@ -839,6 +840,11 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 	return dupList;
 }
 
+void InstrumentsManager::setPropertyFindMode(bool unedited)
+{
+	regardingUnedited_ = unedited;
+}
+
 //----- FM methods -----
 void InstrumentsManager::setInstrumentFMEnvelope(int instNum, int envNum)
 {
@@ -890,18 +896,17 @@ std::vector<int> InstrumentsManager::getEnvelopeFMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeEnvelopeFM() const
+int InstrumentsManager::findFirstAssignableEnvelopeFM() const
 {
-	auto&& it = std::find_if_not(envFM_.begin(), envFM_.end(),
-								 [](const std::shared_ptr<EnvelopeFM>& env) { return env->isUserInstrument(); });
-	return (it == envFM_.end() ? -1 : std::distance(envFM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<EnvelopeFM>& env) { return (env->isUserInstrument() || env->isEdited()); }
+	: [](const std::shared_ptr<EnvelopeFM>& env) { return env->isUserInstrument(); };
+	auto&& it = std::find_if_not(envFM_.begin(), envFM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainEnvelopeFM() const
-{
-	auto&& it = std::find_if_not(envFM_.begin(), envFM_.end(),
-								 [](const std::shared_ptr<EnvelopeFM>& env) { return (env->isUserInstrument() || env->isEdited()); });
-	return (it == envFM_.end() ? -1 : std::distance(envFM_.begin(), it));
+	if (it == envFM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(envFM_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentFMLFOEnabled(int instNum, bool enabled)
@@ -957,18 +962,17 @@ std::vector<int> InstrumentsManager::getLFOFMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeLFOFM() const
+int InstrumentsManager::findFirstAssignableLFOFM() const
 {
-	auto&& it = std::find_if_not(lfoFM_.begin(), lfoFM_.end(),
-								 [](const std::shared_ptr<LFOFM>& lfo) { return lfo->isUserInstrument(); });
-	return (it == lfoFM_.end() ? -1 : std::distance(lfoFM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<LFOFM>& lfo) { return (lfo->isUserInstrument() || lfo->isEdited()); }
+	: [](const std::shared_ptr<LFOFM>& lfo) { return lfo->isUserInstrument(); };
+	auto&& it = std::find_if_not(lfoFM_.begin(), lfoFM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainLFOFM() const
-{
-	auto&& it = std::find_if_not(lfoFM_.begin(), lfoFM_.end(),
-								 [](const std::shared_ptr<LFOFM>& lfo) { return (lfo->isUserInstrument() || lfo->isEdited()); });
-	return (it == lfoFM_.end() ? -1 : std::distance(lfoFM_.begin(), it));
+	if (it == lfoFM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(lfoFM_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled)
@@ -1062,20 +1066,18 @@ std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvel
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeOperatorSequenceFM(FMEnvelopeParameter param) const
+int InstrumentsManager::findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter param) const
 {
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& seq) { return (seq->isUserInstrument() || seq->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& seq) { return seq->isUserInstrument(); };
 	auto& opSeq = opSeqFM_.at(param);
-	auto&& it = std::find_if_not(opSeq.begin(), opSeq.end(),
-								 [](const std::shared_ptr<CommandSequence>& seq) { return seq->isUserInstrument(); });
-	return (it == opSeq.end() ? -1 : std::distance(opSeq.begin(), it));
-}
+	auto&& it = std::find_if_not(opSeq.begin(), opSeq.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter param) const
-{
-	auto& opSeq = opSeqFM_.at(param);
-	auto&& it = std::find_if_not(opSeq.begin(), opSeq.end(),
-								 [](const std::shared_ptr<CommandSequence>& seq) { return (seq->isUserInstrument() || seq->isEdited()); });
-	return (it == opSeq.end() ? -1 : std::distance(opSeq.begin(), it));
+	if (it == opSeq.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(opSeq.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled)
@@ -1179,18 +1181,17 @@ std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeArpeggioFM() const
+int InstrumentsManager::findFirstAssignableArpeggioFM() const
 {
-	auto&& it = std::find_if_not(arpFM_.begin(), arpFM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); });
-	return (it == arpFM_.end() ? -1 : std::distance(arpFM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+	auto&& it = std::find_if_not(arpFM_.begin(), arpFM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainArpeggioFM() const
-{
-	auto&& it = std::find_if_not(arpFM_.begin(), arpFM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); });
-	return (it == arpFM_.end() ? -1 : std::distance(arpFM_.begin(), it));
+	if (it == arpFM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(arpFM_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled)
@@ -1299,18 +1300,17 @@ std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreePitchFM() const
+int InstrumentsManager::findFirstAssignablePitchFM() const
 {
-	auto&& it = std::find_if_not(ptFM_.begin(), ptFM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); });
-	return (it == ptFM_.end() ? -1 : std::distance(ptFM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+	auto&& it = std::find_if_not(ptFM_.begin(), ptFM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainPitchFM() const
-{
-	auto&& it = std::find_if_not(ptFM_.begin(), ptFM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); });
-	return (it == ptFM_.end() ? -1 : std::distance(ptFM_.begin(), it));
+	if (it == ptFM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(ptFM_.begin(), it);
 }
 
 bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<InstrumentFM> a, std::shared_ptr<InstrumentFM> b) const
@@ -1437,18 +1437,17 @@ std::vector<int> InstrumentsManager::getWaveformSSGEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeWaveformSSG() const
+int InstrumentsManager::findFirstAssignableWaveformSSG() const
 {
-	auto&& it = std::find_if_not(wfSSG_.begin(), wfSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& wf) { return wf->isUserInstrument(); });
-	return (it == wfSSG_.end() ? -1 : std::distance(wfSSG_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& wf) { return (wf->isUserInstrument() || wf->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& wf) { return wf->isUserInstrument(); };
+	auto&& it = std::find_if_not(wfSSG_.begin(), wfSSG_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainWaveformSSG() const
-{
-	auto&& it = std::find_if_not(wfSSG_.begin(), wfSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& wf) { return (wf->isUserInstrument() || wf->isEdited()); });
-	return (it == wfSSG_.end() ? -1 : std::distance(wfSSG_.begin(), it));
+	if (it == wfSSG_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(wfSSG_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled)
@@ -1542,18 +1541,17 @@ std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeToneNoiseSSG() const
+int InstrumentsManager::findFirstAssignableToneNoiseSSG() const
 {
-	auto&& it = std::find_if_not(tnSSG_.begin(), tnSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& tn) { return tn->isUserInstrument(); });
-	return (it == tnSSG_.end() ? -1 : std::distance(tnSSG_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& tn) { return (tn->isUserInstrument() || tn->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& tn) { return tn->isUserInstrument(); };
+	auto&& it = std::find_if_not(tnSSG_.begin(), tnSSG_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainToneNoiseSSG() const
-{
-	auto&& it = std::find_if_not(tnSSG_.begin(), tnSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& tn) { return (tn->isUserInstrument() || tn->isEdited()); });
-	return (it == tnSSG_.end() ? -1 : std::distance(tnSSG_.begin(), it));
+	if (it == tnSSG_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(tnSSG_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled)
@@ -1647,18 +1645,17 @@ std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeEnvelopeSSG() const
+int InstrumentsManager::findFirstAssignableEnvelopeSSG() const
 {
-	auto&& it = std::find_if_not(envSSG_.begin(), envSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); });
-	return (it == envSSG_.end() ? -1 : std::distance(envSSG_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); };
+	auto&& it = std::find_if_not(envSSG_.begin(), envSSG_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainEnvelopeSSG() const
-{
-	auto&& it = std::find_if_not(envSSG_.begin(), envSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); });
-	return (it == envSSG_.end() ? -1 : std::distance(envSSG_.begin(), it));
+	if (it == envSSG_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(envSSG_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentSSGArpeggioEnabled(int instNum, bool enabled)
@@ -1762,18 +1759,17 @@ std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeArpeggioSSG() const
+int InstrumentsManager::findFirstAssignableArpeggioSSG() const
 {
-	auto&& it = std::find_if_not(arpSSG_.begin(), arpSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); });
-	return (it == arpSSG_.end() ? -1 : std::distance(arpSSG_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+	auto&& it = std::find_if_not(arpSSG_.begin(), arpSSG_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainArpeggioSSG() const
-{
-	auto&& it = std::find_if_not(arpSSG_.begin(), arpSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); });
-	return (it == arpSSG_.end() ? -1 : std::distance(arpSSG_.begin(), it));
+	if (it == arpSSG_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(arpSSG_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentSSGPitchEnabled(int instNum, bool enabled)
@@ -1877,18 +1873,17 @@ std::vector<int> InstrumentsManager::getPitchSSGEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreePitchSSG() const
+int InstrumentsManager::findFirstAssignablePitchSSG() const
 {
-	auto&& it = std::find_if_not(ptSSG_.begin(), ptSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); });
-	return (it == ptSSG_.end() ? -1 : std::distance(ptSSG_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+	auto&& it = std::find_if_not(ptSSG_.begin(), ptSSG_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainPitchSSG() const
-{
-	auto&& it = std::find_if_not(ptSSG_.begin(), ptSSG_.end(),
-								 [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); });
-	return (it == ptSSG_.end() ? -1 : std::distance(ptSSG_.begin(), it));
+	if (it == ptSSG_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(ptSSG_.begin(), it);
 }
 
 bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, std::shared_ptr<InstrumentSSG> b) const
@@ -2017,18 +2012,17 @@ std::vector<int> InstrumentsManager::getWaveformADPCMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeWaveformADPCM() const
+int InstrumentsManager::findFirstAssignableWaveformADPCM() const
 {
-	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(),
-								 [](const std::shared_ptr<WaveformADPCM>& wf) { return wf->isUserInstrument(); });
-	return (it == wfADPCM_.end() ? -1 : std::distance(wfADPCM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<WaveformADPCM>& wf) { return (wf->isUserInstrument() || wf->isEdited()); }
+	: [](const std::shared_ptr<WaveformADPCM>& wf) { return wf->isUserInstrument(); };
+	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainWaveformADPCM() const
-{
-	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(),
-								 [](const std::shared_ptr<WaveformADPCM>& wf) { return (wf->isUserInstrument() || wf->isEdited()); });
-	return (it == wfADPCM_.end() ? -1 : std::distance(wfADPCM_.begin(), it));
+	if (it == wfADPCM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(wfADPCM_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled)
@@ -2122,18 +2116,17 @@ std::vector<int> InstrumentsManager::getEnvelopeADPCMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeEnvelopeADPCM() const
+int InstrumentsManager::findFirstAssignableEnvelopeADPCM() const
 {
-	auto&& it = std::find_if_not(envADPCM_.begin(), envADPCM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); });
-	return (it == envADPCM_.end() ? -1 : std::distance(envADPCM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); };
+	auto&& it = std::find_if_not(envADPCM_.begin(), envADPCM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainEnvelopeADPCM() const
-{
-	auto&& it = std::find_if_not(envADPCM_.begin(), envADPCM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); });
-	return (it == envADPCM_.end() ? -1 : std::distance(envADPCM_.begin(), it));
+	if (it == envADPCM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(envADPCM_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled)
@@ -2237,18 +2230,17 @@ std::vector<int> InstrumentsManager::getArpeggioADPCMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreeArpeggioADPCM() const
+int InstrumentsManager::findFirstAssignableArpeggioADPCM() const
 {
-	auto&& it = std::find_if_not(arpADPCM_.begin(), arpADPCM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); });
-	return (it == arpADPCM_.end() ? -1 : std::distance(arpADPCM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+	auto&& it = std::find_if_not(arpADPCM_.begin(), arpADPCM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainArpeggioADPCM() const
-{
-	auto&& it = std::find_if_not(arpADPCM_.begin(), arpADPCM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); });
-	return (it == arpADPCM_.end() ? -1 : std::distance(arpADPCM_.begin(), it));
+	if (it == arpADPCM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(arpADPCM_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentADPCMPitchEnabled(int instNum, bool enabled)
@@ -2352,18 +2344,17 @@ std::vector<int> InstrumentsManager::getPitchADPCMEntriedIndices() const
 	return idcs;
 }
 
-int InstrumentsManager::findFirstFreePitchADPCM() const
+int InstrumentsManager::findFirstAssignablePitchADPCM() const
 {
-	auto&& it = std::find_if_not(ptADPCM_.begin(), ptADPCM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); });
-	return (it == ptADPCM_.end() ? -1 : std::distance(ptADPCM_.begin(), it));
-}
+	auto cond = regardingUnedited_
+				? [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); }
+	: [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+	auto&& it = std::find_if_not(ptADPCM_.begin(), ptADPCM_.end(), cond);
 
-int InstrumentsManager::findFirstFreePlainPitchADPCM() const
-{
-	auto&& it = std::find_if_not(ptADPCM_.begin(), ptADPCM_.end(),
-								 [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); });
-	return (it == ptADPCM_.end() ? -1 : std::distance(ptADPCM_.begin(), it));
+	if (it == ptADPCM_.end()) return -1;
+
+	if (!regardingUnedited_) (*it)->clearParameters();
+	return std::distance(ptADPCM_.begin(), it);
 }
 
 bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<InstrumentADPCM> a, std::shared_ptr<InstrumentADPCM> b) const

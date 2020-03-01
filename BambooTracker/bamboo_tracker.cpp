@@ -11,7 +11,7 @@
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
 BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
-	: instMan_(std::make_shared<InstrumentsManager>()),
+	: instMan_(std::make_shared<InstrumentsManager>(config.lock()->getOverwriteUnusedUneditedPropety())),
 	  tickCounter_(std::make_shared<TickCounter>()),
 	  mod_(std::make_shared<Module>()),
 	  octave_(4),
@@ -49,6 +49,7 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 		setMasterVolumeSSG(config.lock()->getMixerVolumeSSG());
 	}
 	playback_->setChannelRetrieving(config.lock()->getRetrieveChannelState());
+	instMan_->setPropertyFindMode(config.lock()->getOverwriteUnusedUneditedPropety());
 }
 
 /********** Change octave **********/

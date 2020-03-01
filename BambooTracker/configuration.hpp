@@ -100,6 +100,8 @@ public:
 	bool getAutosetInstrument() const;
 	void setMoveCursorByHorizontalScroll(bool enabled);
 	bool getMoveCursorByHorizontalScroll() const;
+	void setOverwriteUnusedUneditedPropety(bool enabled);
+	bool getOverwriteUnusedUneditedPropety();
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
@@ -108,7 +110,7 @@ private:
 	bool retrieveChannelState_, enableTranslation_;
 	bool showFMDetuneSigned_, showWaveVisual_;
 	bool fill00ToEffectValue_, autosetInstrument_;
-	bool moveCursorHScroll_;
+	bool moveCursorHScroll_, overwriteUnusedUnedited_;
 
 	// Edit settings
 public:

@@ -859,357 +859,357 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 				switch (ctr.readUint8(instPropCsr++)) {
 				case 0x00:	// FM envelope
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainEnvelopeFM());
+					nums.push_back(instMan.lock()->findFirstAssignableEnvelopeFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x01:	// FM LFO
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainLFOFM());
+					nums.push_back(instMan.lock()->findFirstAssignableLFOFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x02:	// FM AL
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::AL));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AL));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x03:	// FM FB
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::FB));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::FB));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x04:	// FM AR1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::AR1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x05:	// FM DR1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DR1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x06:	// FM SR1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SR1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x07:	// FM RR1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::RR1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x08:	// FM SL1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SL1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x09:	// FM TL1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::TL1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0a:	// FM KS1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::KS1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0b:	// FM ML1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::ML1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0c:	// FM DT1
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DT1));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0d:	// FM AR2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::AR2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0e:	// FM DR2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DR2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0f:	// FM SR2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SR2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x10:	// FM RR2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::RR2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x11:	// FM SL2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SL2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x12:	// FM TL2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::TL2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x13:	// FM KS2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::KS2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x14:	// FM ML2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::ML2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x15:	// FM DT2
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DT2));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x16:	// FM AR3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::AR3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x17:	// FM DR3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DR3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x18:	// FM SR3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SR3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x19:	// FM RR3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::RR3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1a:	// FM SL3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SL3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1b:	// FM TL3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::TL3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1c:	// FM KS3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::KS3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1d:	// FM ML3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::ML3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1e:	// FM DT3
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DT3));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1f:	// FM AR4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::AR4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x20:	// FM DR4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DR4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x21:	// FM SR4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SR4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x22:	// FM RR4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::RR4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x23:	// FM SL4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::SL4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x24:	// FM TL4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::TL4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x25:	// FM KS4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::KS4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x26:	// FM ML4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::ML4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x27:	// FM DT4
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainOperatorSequenceFM(FMEnvelopeParameter::DT4));
+					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x28:	// FM arpeggio
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainArpeggioFM());
+					nums.push_back(instMan.lock()->findFirstAssignableArpeggioFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x29:	// FM pitch
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainPitchFM());
+					nums.push_back(instMan.lock()->findFirstAssignablePitchFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x30:	// SSG waveform
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainWaveformSSG());
+					nums.push_back(instMan.lock()->findFirstAssignableWaveformSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x31:	// SSG tone/noise
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainToneNoiseSSG());
+					nums.push_back(instMan.lock()->findFirstAssignableToneNoiseSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x32:	// SSG envelope
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainEnvelopeSSG());
+					nums.push_back(instMan.lock()->findFirstAssignableEnvelopeSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x33:	// SSG arpeggio
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainArpeggioSSG());
+					nums.push_back(instMan.lock()->findFirstAssignableArpeggioSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x34:	// SSG pitch
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainPitchSSG());
+					nums.push_back(instMan.lock()->findFirstAssignablePitchSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x40:	// ADPCM waveform
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainWaveformADPCM());
+					nums.push_back(instMan.lock()->findFirstAssignableWaveformADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x41:	// ADPCM envelope
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainEnvelopeADPCM());
+					nums.push_back(instMan.lock()->findFirstAssignableEnvelopeADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x42:	// ADPCM arpeggio
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainArpeggioADPCM());
+					nums.push_back(instMan.lock()->findFirstAssignableArpeggioADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x43:	// ADPCM pitch
 				{
-					nums.push_back(instMan.lock()->findFirstFreePlainPitchADPCM());
+					nums.push_back(instMan.lock()->findFirstAssignablePitchADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
@@ -2504,7 +2504,7 @@ AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string 
 		auto ssg = dynamic_cast<InstrumentSSG*>(inst);
 		uint8_t envSize = ctr.readUint8(csr++);
 		if (envSize > 0) {
-			int idx = instMan.lock()->findFirstFreePlainEnvelopeSSG();
+			int idx = instMan.lock()->findFirstAssignableEnvelopeSSG();
 			if (idx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 			ssg->setEnvelopeEnabled(true);
 			ssg->setEnvelopeNumber(idx);
@@ -2521,7 +2521,7 @@ AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string 
 		}
 		uint8_t arpSize = ctr.readUint8(csr++);
 		if (arpSize > 0) {
-			int idx = instMan.lock()->findFirstFreePlainArpeggioSSG();
+			int idx = instMan.lock()->findFirstAssignableArpeggioSSG();
 			if (idx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 			ssg->setArpeggioEnabled(true);
 			ssg->setArpeggioNumber(idx);
@@ -2541,7 +2541,7 @@ AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string 
 	}
 	case 0x01:	// FM
 	{
-		int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
+		int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
 		if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 		inst = new InstrumentFM(instNum, name, instMan.lock().get());
 		auto fm = dynamic_cast<InstrumentFM*>(inst);
@@ -2609,7 +2609,7 @@ AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string 
 		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 
 		if (pms || ams) {
-			int lfoIdx = instMan.lock()->findFirstFreePlainLFOFM();
+			int lfoIdx = instMan.lock()->findFirstAssignableLFOFM();
 			if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 			fm->setLFOEnabled(true);
 			fm->setLFONumber(lfoIdx);
@@ -2703,7 +2703,7 @@ int InstrumentIO::convertTFIVGMDT(int dt)
 
 AbstractInstrument* InstrumentIO::loadTFIFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	if (ctr.size() != 42) throw FileCorruptionError(FileIO::FileType::Inst);
-	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
+	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
@@ -2770,7 +2770,7 @@ AbstractInstrument* InstrumentIO::loadTFIFile(BinaryContainer& ctr, std::string 
 
 AbstractInstrument* InstrumentIO::loadVGIFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
 	if (ctr.size() != 43) throw FileCorruptionError(FileIO::FileType::Inst);
-	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
+	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
@@ -2839,7 +2839,7 @@ AbstractInstrument* InstrumentIO::loadVGIFile(BinaryContainer& ctr, std::string 
 	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 
 	if (pams != 0) {
-		int lfoIdx = instMan.lock()->findFirstFreePlainLFOFM();
+		int lfoIdx = instMan.lock()->findFirstAssignableLFOFM();
 		if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 		inst->setLFOEnabled(true);
 		inst->setLFONumber(lfoIdx);
@@ -2866,7 +2866,7 @@ AbstractInstrument* InstrumentIO::loadY12File(BinaryContainer& ctr, std::string 
 											  int instNum)
 {
 	if (ctr.size() != 128) throw FileCorruptionError(FileIO::FileType::Inst);
-	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
+	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
@@ -2977,7 +2977,7 @@ AbstractInstrument* InstrumentIO::loadINSFile(BinaryContainer& ctr,
 
 	if (ctr.size() - csr != 25) throw FileInputError(FileIO::FileType::Inst);
 
-	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
+	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 
 	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
@@ -3041,7 +3041,7 @@ AbstractInstrument* InstrumentIO::loadINSFile(BinaryContainer& ctr,
 AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 													 std::weak_ptr<InstrumentsManager> instMan,
 													 int instNum) {
-	int envIdx = instMan.lock()->findFirstFreePlainEnvelopeFM();
+	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 	const char *name = srcInst.inst_name;
 
@@ -3080,7 +3080,7 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 #undef LOAD_OPERATOR
 
 	if (srcInst.lfosens != 0) {
-		int lfoIdx = instMan.lock()->findFirstFreePlainLFOFM();
+		int lfoIdx = instMan.lock()->findFirstAssignableLFOFM();
 		if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 		inst->setLFOEnabled(true);
 		inst->setLFONumber(lfoIdx);
@@ -3093,7 +3093,7 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 	}
 
 	if (srcInst.note_offset != 0) {
-		int arpIdx = instMan.lock()->findFirstFreePlainArpeggioFM();
+		int arpIdx = instMan.lock()->findFirstAssignableArpeggioFM();
 		if (arpIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
@@ -3126,7 +3126,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 		/* Envelope */
 		{
 			auto orgEnvNum = instCtr.readUint8(instCsr++);
-			int envNum = instMan.lock()->findFirstFreePlainEnvelopeFM();
+			int envNum = instMan.lock()->findFirstAssignableEnvelopeFM();
 			if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 			fm->setEnvelopeNumber(envNum);
 			size_t envCsr = getPropertyPositionForBTB(propCtr, 0x00, orgEnvNum);
@@ -3221,7 +3221,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				fm->setLFOEnabled(true);
 				uint8_t orgLFONum = 0x7f & tmp;
-				int lfoNum = instMan.lock()->findFirstFreePlainLFOFM();
+				int lfoNum = instMan.lock()->findFirstAssignableLFOFM();
 				if (lfoNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				fm->setLFONumber(lfoNum);
 				size_t lfoCsr = getPropertyPositionForBTB(propCtr, 0x01, orgLFONum);
@@ -3251,7 +3251,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				fm->setOperatorSequenceEnabled(param, true);
 				uint8_t orgOpSeqNum = 0x7f & tmp;
-				int opSeqNum = instMan.lock()->findFirstFreePlainOperatorSequenceFM(param);
+				int opSeqNum = instMan.lock()->findFirstAssignableOperatorSequenceFM(param);
 				if (opSeqNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				fm->setOperatorSequenceNumber(param, opSeqNum);
 				size_t opSeqCsr = getPropertyPositionForBTB(propCtr, 0x02 + tmpCnt, orgOpSeqNum);
@@ -3323,7 +3323,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					auto it = orgNumMap.find(orgArpNum);
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgArpNum, pair.first);
-						int arpNum = instMan.lock()->findFirstFreePlainArpeggioFM();
+						int arpNum = instMan.lock()->findFirstAssignableArpeggioFM();
 						if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 						fm->setArpeggioNumber(pair.first, arpNum);
 						size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x28, orgArpNum);
@@ -3422,7 +3422,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					auto it = orgNumMap.find(orgPtNum);
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgPtNum, pair.first);
-						int ptNum = instMan.lock()->findFirstFreePlainPitchFM();
+						int ptNum = instMan.lock()->findFirstAssignablePitchFM();
 						if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 						fm->setPitchNumber(pair.first, ptNum);
 						size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x29, orgPtNum);
@@ -3522,7 +3522,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setWaveformEnabled(true);
 				uint8_t orgWfNum = 0x7f & tmp;
-				int wfNum = instMan.lock()->findFirstFreePlainWaveformSSG();
+				int wfNum = instMan.lock()->findFirstAssignableWaveformSSG();
 				if (wfNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setWaveformNumber(wfNum);
 				size_t wfCsr = getPropertyPositionForBTB(propCtr, 0x30, orgWfNum);
@@ -3585,7 +3585,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setToneNoiseEnabled(true);
 				uint8_t orgTnNum = 0x7f & tmp;
-				int tnNum = instMan.lock()->findFirstFreePlainToneNoiseSSG();
+				int tnNum = instMan.lock()->findFirstAssignableToneNoiseSSG();
 				if (tnNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setToneNoiseNumber(tnNum);
 				size_t tnCsr = getPropertyPositionForBTB(propCtr, 0x31, orgTnNum);
@@ -3651,7 +3651,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setEnvelopeEnabled(true);
 				uint8_t orgEnvNum = 0x7f & tmp;
-				int envNum = instMan.lock()->findFirstFreePlainEnvelopeSSG();
+				int envNum = instMan.lock()->findFirstAssignableEnvelopeSSG();
 				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPositionForBTB(propCtr, 0x32, orgEnvNum);
@@ -3730,7 +3730,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setArpeggioEnabled(true);
 				uint8_t orgArpNum = 0x7f & tmp;
-				int arpNum = instMan.lock()->findFirstFreePlainArpeggioSSG();
+				int arpNum = instMan.lock()->findFirstAssignableArpeggioSSG();
 				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x33, orgArpNum);
@@ -3812,7 +3812,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setPitchEnabled(true);
 				uint8_t orgPtNum = 0x7f & tmp;
-				int ptNum = instMan.lock()->findFirstFreePlainPitchSSG();
+				int ptNum = instMan.lock()->findFirstAssignablePitchSSG();
 				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x34, orgPtNum);
@@ -3890,7 +3890,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 		/* Waveform */
 		{
 			uint8_t orgWfNum = instCtr.readUint8(instCsr++);
-			int wfNum = instMan.lock()->findFirstFreePlainWaveformADPCM();
+			int wfNum = instMan.lock()->findFirstAssignableWaveformADPCM();
 			if (wfNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 			adpcm->setWaveformNumber(wfNum);
 			size_t wfCsr = getPropertyPositionForBTB(propCtr, 0x40, orgWfNum);
@@ -3916,7 +3916,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				adpcm->setEnvelopeEnabled(true);
 				uint8_t orgEnvNum = 0x7f & tmp;
-				int envNum = instMan.lock()->findFirstFreePlainEnvelopeADPCM();
+				int envNum = instMan.lock()->findFirstAssignableEnvelopeADPCM();
 				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				adpcm->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPositionForBTB(propCtr, 0x41, orgEnvNum);
@@ -3995,7 +3995,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				adpcm->setArpeggioEnabled(true);
 				uint8_t orgArpNum = 0x7f & tmp;
-				int arpNum = instMan.lock()->findFirstFreePlainArpeggioADPCM();
+				int arpNum = instMan.lock()->findFirstAssignableArpeggioADPCM();
 				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				adpcm->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x42, orgArpNum);
@@ -4069,7 +4069,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				adpcm->setPitchEnabled(true);
 				uint8_t orgPtNum = 0x7f & tmp;
-				int ptNum = instMan.lock()->findFirstFreePlainPitchADPCM();
+				int ptNum = instMan.lock()->findFirstAssignablePitchADPCM();
 				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				adpcm->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x43, orgPtNum);
@@ -4141,7 +4141,7 @@ AbstractInstrument* InstrumentIO::loadPPCInstrument(const std::vector<uint8_t> s
 													std::weak_ptr<InstrumentsManager> instMan,
 													int instNum)
 {
-	int wfIdx = instMan.lock()->findFirstFreePlainWaveformADPCM();
+	int wfIdx = instMan.lock()->findFirstAssignableWaveformADPCM();
 	if (wfIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 
 	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instMan.lock().get());
@@ -4158,7 +4158,7 @@ AbstractInstrument* InstrumentIO::loadPVIInstrument(const std::vector<uint8_t> s
 													std::weak_ptr<InstrumentsManager> instMan,
 													int instNum)
 {
-	int wfIdx = instMan.lock()->findFirstFreePlainWaveformADPCM();
+	int wfIdx = instMan.lock()->findFirstAssignableWaveformADPCM();
 	if (wfIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 
 	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instMan.lock().get());
