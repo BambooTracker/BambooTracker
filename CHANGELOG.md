@@ -5,6 +5,7 @@
 - [#6], [#184], [#185] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Add shortcuts instead of insert key
 - Add bookmark manager
+- 1 new sample module (thanks RigidatoMS)
 
 ### Changed
 - [#182] - Enable the first note-on when tone portamento is set before the playing start position (thanks [@freq-mod])

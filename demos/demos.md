@@ -1,7 +1,8 @@
 ## Sample modules
+- [Dippy] - Neo Megalopolis
 - [maak] - breeze 2608, Rude Buster
 - Rerrah - Lotus
-- [Dippy] - Neo Megalopolis
+- RigidatoMS - Is This What You Desired?
 - [SuperJet Spade] - Underwater Ruins
 
 ## Sample instruments
