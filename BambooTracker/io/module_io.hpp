@@ -25,7 +25,7 @@ private:
 														uint32_t version);
 	static size_t loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 														 size_t instMemCsr,
-														 std::weak_ptr<InstrumentsManager> instMan,
+														 std::shared_ptr<InstrumentsManager>& instManLocked,
 														 BinaryContainer& ctr, uint32_t version);
 	static size_t loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
 											size_t globCsr, uint32_t version);

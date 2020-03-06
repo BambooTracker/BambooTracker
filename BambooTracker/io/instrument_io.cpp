@@ -15,6 +15,8 @@ InstrumentIO::InstrumentIO() {}
 
 void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
+	const std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+
 	ctr.appendString("BambooTrackerIst");
 	size_t eofOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy EOF offset
@@ -28,7 +30,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 	ctr.appendUint32(0);	// Dummy instrument section offset
 
 	std::vector<int> fmArpNums, fmPtNums;
-	std::shared_ptr<AbstractInstrument> inst = instMan.lock()->getInstrumentSharedPtr(instNum);
+	std::shared_ptr<AbstractInstrument> inst = instManLocked->getInstrumentSharedPtr(instNum);
 	if (inst) {
 		std::string name = inst->getName();
 		ctr.appendUint32(name.length());
@@ -149,84 +151,84 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x00);
 			size_t ofs = ctr.size();
 			ctr.appendUint8(0);	// Dummy offset
-			uint8_t tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL) << 4)
-						  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB));
+			uint8_t tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL) << 4)
+						  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB));
 			ctr.appendUint8(tmp);
 			// Operator 1
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 0);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 0);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1));
 			ctr.appendUint8(tmp);
-			int tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1);
+			int tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1));
 			ctr.appendUint8(tmp);
 			// Operator 2
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 1);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 1);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2));
 			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2);
+			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2));
 			ctr.appendUint8(tmp);
 			// Operator 3
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 2);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 2);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3));
 			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3);
+			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3));
 			ctr.appendUint8(tmp);
 			// Operator 4
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(envNum, 3);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 3);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4));
 			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4);
+			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4));
 			ctr.appendUint8(tmp);
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
@@ -237,16 +239,16 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x01);
 			size_t ofs = ctr.size();
 			ctr.appendUint8(0);	// Dummy offset
-			uint8_t tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::FREQ) << 4)
-						  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::PMS));
+			uint8_t tmp = static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::FREQ) << 4)
+						  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::PMS));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM4) << 7)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM3) << 6)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AM1) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::AMS));
+			tmp = static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::AM4) << 7)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::AM3) << 6)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::AM2) << 5)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::AM1) << 4)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::AMS));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(lfoNum, FMLFOParameter::Count));
+			tmp = static_cast<uint8_t>(instManLocked->getLFOFMparameter(lfoNum, FMLFOParameter::Count));
 			ctr.appendUint8(tmp);
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
@@ -258,19 +260,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				ctr.appendUint8(0x02 + static_cast<uint8_t>(i));
 				size_t ofs = ctr.size();
 				ctr.appendUint16(0);	// Dummy offset
-				auto seq = instMan.lock()->getOperatorSequenceFMSequence(FileIO::ENV_FM_PARAMS[i], seqNum);
+				auto seq = instManLocked->getOperatorSequenceFMSequence(FileIO::ENV_FM_PARAMS[i], seqNum);
 				ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 				for (auto& com : seq) {
 					ctr.appendUint16(static_cast<uint16_t>(com.type));
 				}
-				auto loop = instMan.lock()->getOperatorSequenceFMLoops(FileIO::ENV_FM_PARAMS[i], seqNum);
+				auto loop = instManLocked->getOperatorSequenceFMLoops(FileIO::ENV_FM_PARAMS[i], seqNum);
 				ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 				for (auto& l : loop) {
 					ctr.appendUint16(static_cast<uint16_t>(l.begin));
 					ctr.appendUint16(static_cast<uint16_t>(l.end));
 					ctr.appendUint8(static_cast<uint8_t>(l.times));
 				}
-				auto release = instMan.lock()->getOperatorSequenceFMRelease(FileIO::ENV_FM_PARAMS[i], seqNum);
+				auto release = instManLocked->getOperatorSequenceFMRelease(FileIO::ENV_FM_PARAMS[i], seqNum);
 				switch (release.type) {
 				case ReleaseType::NoRelease:
 					ctr.appendUint8(0x00);
@@ -298,19 +300,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x28);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getArpeggioFMSequence(arpNum);
+			auto seq = instManLocked->getArpeggioFMSequence(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getArpeggioFMLoops(arpNum);
+			auto loop = instManLocked->getArpeggioFMLoops(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getArpeggioFMRelease(arpNum);
+			auto release = instManLocked->getArpeggioFMRelease(arpNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -328,7 +330,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getArpeggioFMType(arpNum)) {
+			switch (instManLocked->getArpeggioFMType(arpNum)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
@@ -342,19 +344,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x29);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getPitchFMSequence(ptNum);
+			auto seq = instManLocked->getPitchFMSequence(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getPitchFMLoops(ptNum);
+			auto loop = instManLocked->getPitchFMLoops(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getPitchFMRelease(ptNum);
+			auto release = instManLocked->getPitchFMRelease(ptNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -372,7 +374,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getPitchFMType(ptNum)) {
+			switch (instManLocked->getPitchFMType(ptNum)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
@@ -391,20 +393,20 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x30);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getWaveformSSGSequence(wfNum);
+			auto seq = instManLocked->getWaveformSSGSequence(wfNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getWaveformSSGLoops(wfNum);
+			auto loop = instManLocked->getWaveformSSGLoops(wfNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getWaveformSSGRelease(wfNum);
+			auto release = instManLocked->getWaveformSSGRelease(wfNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -432,19 +434,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x31);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getToneNoiseSSGSequence(tnNum);
+			auto seq = instManLocked->getToneNoiseSSGSequence(tnNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getToneNoiseSSGLoops(tnNum);
+			auto loop = instManLocked->getToneNoiseSSGLoops(tnNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getToneNoiseSSGRelease(tnNum);
+			auto release = instManLocked->getToneNoiseSSGRelease(tnNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -472,20 +474,20 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x32);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getEnvelopeSSGSequence(envNum);
+			auto seq = instManLocked->getEnvelopeSSGSequence(envNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getEnvelopeSSGLoops(envNum);
+			auto loop = instManLocked->getEnvelopeSSGLoops(envNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getEnvelopeSSGRelease(envNum);
+			auto release = instManLocked->getEnvelopeSSGRelease(envNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -513,19 +515,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x33);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getArpeggioSSGSequence(arpNum);
+			auto seq = instManLocked->getArpeggioSSGSequence(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getArpeggioSSGLoops(arpNum);
+			auto loop = instManLocked->getArpeggioSSGLoops(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getArpeggioSSGRelease(arpNum);
+			auto release = instManLocked->getArpeggioSSGRelease(arpNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -543,7 +545,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getArpeggioSSGType(arpNum)) {
+			switch (instManLocked->getArpeggioSSGType(arpNum)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
@@ -558,19 +560,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x34);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getPitchSSGSequence(ptNum);
+			auto seq = instManLocked->getPitchSSGSequence(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getPitchSSGLoops(ptNum);
+			auto loop = instManLocked->getPitchSSGLoops(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getPitchSSGRelease(ptNum);
+			auto release = instManLocked->getPitchSSGRelease(ptNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -588,7 +590,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getPitchSSGType(ptNum)) {
+			switch (instManLocked->getPitchSSGType(ptNum)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
@@ -609,10 +611,10 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x40);
 			size_t ofs = ctr.size();
 			ctr.appendUint32(0);	// Dummy offset
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getWaveformADPCMRootKeyNumber(wfNum)));
-			ctr.appendUint16(static_cast<uint16_t>(instMan.lock()->getWaveformADPCMRootDeltaN(wfNum)));
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->isWaveformADPCMRepeatable(wfNum)));
-			std::vector<uint8_t> samples = instMan.lock()->getWaveformADPCMSamples(wfNum);
+			ctr.appendUint8(static_cast<uint8_t>(instManLocked->getWaveformADPCMRootKeyNumber(wfNum)));
+			ctr.appendUint16(static_cast<uint16_t>(instManLocked->getWaveformADPCMRootDeltaN(wfNum)));
+			ctr.appendUint8(static_cast<uint8_t>(instManLocked->isWaveformADPCMRepeatable(wfNum)));
+			std::vector<uint8_t> samples = instManLocked->getWaveformADPCMSamples(wfNum);
 			ctr.appendUint32(samples.size());
 			ctr.appendVector(std::move(samples));
 			ctr.writeUint32(ofs, ctr.size() - ofs);
@@ -624,20 +626,20 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x41);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getEnvelopeADPCMSequence(envNum);
+			auto seq = instManLocked->getEnvelopeADPCMSequence(envNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getEnvelopeADPCMLoops(envNum);
+			auto loop = instManLocked->getEnvelopeADPCMLoops(envNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getEnvelopeADPCMRelease(envNum);
+			auto release = instManLocked->getEnvelopeADPCMRelease(envNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -665,19 +667,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x42);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getArpeggioADPCMSequence(arpNum);
+			auto seq = instManLocked->getArpeggioADPCMSequence(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getArpeggioADPCMLoops(arpNum);
+			auto loop = instManLocked->getArpeggioADPCMLoops(arpNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getArpeggioADPCMRelease(arpNum);
+			auto release = instManLocked->getArpeggioADPCMRelease(arpNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -695,7 +697,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getArpeggioADPCMType(arpNum)) {
+			switch (instManLocked->getArpeggioADPCMType(arpNum)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
@@ -710,19 +712,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x43);
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getPitchADPCMSequence(ptNum);
+			auto seq = instManLocked->getPitchADPCMSequence(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getPitchADPCMLoops(ptNum);
+			auto loop = instManLocked->getPitchADPCMLoops(ptNum);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getPitchADPCMRelease(ptNum);
+			auto release = instManLocked->getPitchADPCMRelease(ptNum);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -740,7 +742,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getPitchADPCMType(ptNum)) {
+			switch (instManLocked->getPitchADPCMType(ptNum)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
@@ -775,6 +777,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerIst")
 		throw FileCorruptionError(FileIO::FileType::Inst);
@@ -806,7 +809,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 		switch (ctr.readUint8(instCsr++)) {
 		case 0x00:	// FM
 		{
-			inst = new InstrumentFM(instNum, name, instMan.lock().get());
+			inst = new InstrumentFM(instNum, name, instManLocked.get());
 			auto fm = dynamic_cast<InstrumentFM*>(inst);
 			uint8_t tmp = ctr.readUint8(instCsr++);
 			fm->setEnvelopeResetEnabled(FMOperatorType::All, (tmp & 0x01));
@@ -830,12 +833,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 		}
 		case 0x01:	// SSG
 		{
-			inst = new InstrumentSSG(instNum, name, instMan.lock().get());
+			inst = new InstrumentSSG(instNum, name, instManLocked.get());
 			break;
 		}
 		case 0x02:	// ADPCM
 		{
-			inst = new InstrumentADPCM(instNum, name, instMan.lock().get());
+			inst = new InstrumentADPCM(instNum, name, instManLocked.get());
 			break;
 		}
 		default:
@@ -859,357 +862,357 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 				switch (ctr.readUint8(instPropCsr++)) {
 				case 0x00:	// FM envelope
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableEnvelopeFM());
+					nums.push_back(instManLocked->findFirstAssignableEnvelopeFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x01:	// FM LFO
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableLFOFM());
+					nums.push_back(instManLocked->findFirstAssignableLFOFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x02:	// FM AL
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AL));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AL));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x03:	// FM FB
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::FB));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::FB));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x04:	// FM AR1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x05:	// FM DR1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x06:	// FM SR1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x07:	// FM RR1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x08:	// FM SL1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x09:	// FM TL1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0a:	// FM KS1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0b:	// FM ML1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0c:	// FM DT1
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT1));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT1));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0d:	// FM AR2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0e:	// FM DR2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0f:	// FM SR2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x10:	// FM RR2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x11:	// FM SL2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x12:	// FM TL2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x13:	// FM KS2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x14:	// FM ML2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x15:	// FM DT2
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT2));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT2));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x16:	// FM AR3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x17:	// FM DR3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x18:	// FM SR3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x19:	// FM RR3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1a:	// FM SL3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1b:	// FM TL3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1c:	// FM KS3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1d:	// FM ML3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1e:	// FM DT3
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT3));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT3));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1f:	// FM AR4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x20:	// FM DR4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x21:	// FM SR4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x22:	// FM RR4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x23:	// FM SL4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x24:	// FM TL4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x25:	// FM KS4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x26:	// FM ML4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x27:	// FM DT4
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT4));
+					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT4));
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x28:	// FM arpeggio
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableArpeggioFM());
+					nums.push_back(instManLocked->findFirstAssignableArpeggioFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x29:	// FM pitch
 				{
-					nums.push_back(instMan.lock()->findFirstAssignablePitchFM());
+					nums.push_back(instManLocked->findFirstAssignablePitchFM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x30:	// SSG waveform
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableWaveformSSG());
+					nums.push_back(instManLocked->findFirstAssignableWaveformSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x31:	// SSG tone/noise
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableToneNoiseSSG());
+					nums.push_back(instManLocked->findFirstAssignableToneNoiseSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x32:	// SSG envelope
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableEnvelopeSSG());
+					nums.push_back(instManLocked->findFirstAssignableEnvelopeSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x33:	// SSG arpeggio
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableArpeggioSSG());
+					nums.push_back(instManLocked->findFirstAssignableArpeggioSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x34:	// SSG pitch
 				{
-					nums.push_back(instMan.lock()->findFirstAssignablePitchSSG());
+					nums.push_back(instManLocked->findFirstAssignablePitchSSG());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x40:	// ADPCM waveform
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableWaveformADPCM());
+					nums.push_back(instManLocked->findFirstAssignableWaveformADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x41:	// ADPCM envelope
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableEnvelopeADPCM());
+					nums.push_back(instManLocked->findFirstAssignableEnvelopeADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x42:	// ADPCM arpeggio
 				{
-					nums.push_back(instMan.lock()->findFirstAssignableArpeggioADPCM());
+					nums.push_back(instManLocked->findFirstAssignableArpeggioADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x43:	// ADPCM pitch
 				{
-					nums.push_back(instMan.lock()->findFirstAssignablePitchADPCM());
+					nums.push_back(instManLocked->findFirstAssignablePitchADPCM());
 					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
@@ -1230,83 +1233,83 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					uint8_t ofs = ctr.readUint8(instPropCsr);
 					size_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
 					// Operator 1
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 0, (0x20 & tmp) ? true : false);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1, tmp & 0x1f);
+					instManLocked->setEnvelopeFMOperatorEnabled(idx, 0, (0x20 & tmp) ? true : false);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1, tmp >> 4);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1, tmp >> 4);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1, tmp & 0x0f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1, tmp);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1, tmp);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1, tmp & 0x0f);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1,
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1,
 														   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 					// Operator 2
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 1, (0x20 & tmp) ? true : false);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2, tmp & 0x1f);
+					instManLocked->setEnvelopeFMOperatorEnabled(idx, 1, (0x20 & tmp) ? true : false);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2, tmp >> 4);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2, tmp >> 4);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2, tmp & 0x0f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2, tmp);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2, tmp);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2, tmp & 0x0f);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2,
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2,
 														   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 					// Operator 3
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 2, (0x20 & tmp) ? true : false);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3, tmp & 0x1f);
+					instManLocked->setEnvelopeFMOperatorEnabled(idx, 2, (0x20 & tmp) ? true : false);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3, tmp >> 4);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3, tmp >> 4);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3, tmp & 0x0f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3, tmp);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3, tmp);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3, tmp & 0x0f);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3,
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3,
 														   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 					// Operator 4
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 3, (0x20 & tmp) ? true : false);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4, tmp & 0x1f);
+					instManLocked->setEnvelopeFMOperatorEnabled(idx, 3, (0x20 & tmp) ? true : false);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4, tmp >> 5);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4, tmp & 0x1f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4, tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4, tmp & 0x1f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4, tmp >> 4);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4, tmp >> 4);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4, tmp & 0x0f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4, tmp);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4, tmp);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
-					instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
 														   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 					instPropCsr += ofs;
 					break;
@@ -1320,282 +1323,282 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					uint8_t ofs = ctr.readUint8(instPropCsr);
 					size_t csr = instPropCsr + 1;
 					uint8_t tmp = ctr.readUint8(csr++);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AMS, tmp & 0x0f);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::AMS, tmp & 0x0f);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
 					tmp = ctr.readUint8(csr++);
-					instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::Count, tmp);
+					instManLocked->setLFOFMParameter(idx, FMLFOParameter::Count, tmp);
 					instPropCsr += ofs;
 					break;
 				}
 				case 0x02:	// FM AL
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::AL, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::AL, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x03:	// FM FB
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::FB, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::FB, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x04:	// FM AR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::AR1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::AR1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x05:	// FM DR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DR1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DR1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x06:	// FM SR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SR1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SR1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x07:	// FM RR1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::RR1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::RR1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x08:	// FM SL1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SL1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SL1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x09:	// FM TL1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::TL1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::TL1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0a:	// FM KS1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::KS1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::KS1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0b:	// FM ML1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::ML1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::ML1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0c:	// FM DT1
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DT1, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DT1, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0d:	// FM AR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::AR2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::AR2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0e:	// FM DR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DR2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x0f:	// FM SR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SR2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x10:	// FM RR2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::RR2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x11:	// FM SL2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SL2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x12:	// FM TL2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::TL2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x13:	// FM KS2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::KS2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x14:	// FM ML2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::ML2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x15:	// FM DT2
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DT2, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x16:	// FM AR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::AR3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x17:	// FM DR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DR3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x18:	// FM SR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SR3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x19:	// FM RR3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::RR3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1a:	// FM SL3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SL3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1b:	// FM TL3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::TL3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1c:	// FM KS3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::KS3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1d:	// FM ML3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::ML3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1e:	// FM DT3
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DT3, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x1f:	// FM AR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::AR4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x20:	// FM DR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DR4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x21:	// FM SR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SR4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x22:	// FM RR4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::RR4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x23:	// FM SL4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::SL4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x24:	// FM TL4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::TL4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x25:	// FM KS4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::KS4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x26:	// FM ML4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::ML4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
 				case 0x27:	// FM DT4
 				{
 					instPropCsr += loadInstrumentPropertyOperatorSequenceForInstrument(
-									   FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr,
+									   FMEnvelopeParameter::DT4, instPropCsr, instManLocked, ctr,
 									   dynamic_cast<InstrumentFM*>(inst), *numIt++, fileVersion);
 					break;
 				}
@@ -1628,9 +1631,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setArpeggioFMSequenceCommand(idx, 0, data, 0);
+							instManLocked->setArpeggioFMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addArpeggioFMSequenceCommand(idx, data, 0);
+							instManLocked->addArpeggioFMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1644,12 +1647,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setArpeggioFMLoops(idx, begins, ends, times);
+						instManLocked->setArpeggioFMLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -1657,8 +1660,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setArpeggioFMRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -1668,19 +1671,19 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x01:	// Fixed
-							instMan.lock()->setArpeggioFMType(idx, SequenceType::FIXED_SEQUENCE);
+							instManLocked->setArpeggioFMType(idx, SequenceType::FIXED_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
+							instManLocked->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							if (fileVersion < Version::toBCD(1, 2, 3)) {
 								// Recover deep clone bug
 								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instMan.lock()->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 								break;
 							}
 							else {
@@ -1721,9 +1724,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setPitchFMSequenceCommand(idx, 0, data, 0);
+							instManLocked->setPitchFMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addPitchFMSequenceCommand(idx, data, 0);
+							instManLocked->addPitchFMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1737,12 +1740,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setPitchFMLoops(idx, begins, ends, times);
+						instManLocked->setPitchFMLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -1750,8 +1753,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setPitchFMRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setPitchFMRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -1761,16 +1764,16 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
+							instManLocked->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							if (fileVersion < Version::toBCD(1, 2, 3)) {
 								// Recover deep clone bug
 								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instMan.lock()->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 								break;
 							}
 							else {
@@ -1812,9 +1815,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 								subdata = PitchConverter::getPitchSSGSquare(subdata);
 						}
 						if (l == 0)
-							instMan.lock()->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
+							instManLocked->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
 						else
-							instMan.lock()->addWaveformSSGSequenceCommand(idx, data, subdata);
+							instManLocked->addWaveformSSGSequenceCommand(idx, data, subdata);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1828,12 +1831,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setWaveformSSGLoops(idx, begins, ends, times);
+						instManLocked->setWaveformSSGLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -1841,8 +1844,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setWaveformSSGRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -1878,9 +1881,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						}
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
+							instManLocked->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addToneNoiseSSGSequenceCommand(idx, data, 0);
+							instManLocked->addToneNoiseSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1894,12 +1897,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setToneNoiseSSGLoops(idx, begins, ends, times);
+						instManLocked->setToneNoiseSSGLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -1907,8 +1910,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -1946,9 +1949,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 						}
 						if (l == 0)
-							instMan.lock()->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
+							instManLocked->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
 						else
-							instMan.lock()->addEnvelopeSSGSequenceCommand(idx, data, subdata);
+							instManLocked->addEnvelopeSSGSequenceCommand(idx, data, subdata);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -1962,12 +1965,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setEnvelopeSSGLoops(idx, begins, ends, times);
+						instManLocked->setEnvelopeSSGLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -1975,24 +1978,24 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					case 0x02:	// Absolute
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::AbsoluteRelease, pos);
-						else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::AbsoluteRelease, pos);
+						else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					case 0x03:	// Relative
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::RelativeRelease, pos);
-						else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::RelativeRelease, pos);
+						else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -2022,9 +2025,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
+							instManLocked->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, 0);
+							instManLocked->addArpeggioSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -2038,12 +2041,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setArpeggioSSGLoops(idx, begins, ends, times);
+						instManLocked->setArpeggioSSGLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -2051,8 +2054,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setArpeggioSSGRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -2062,19 +2065,19 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x01:	// Fixed
-							instMan.lock()->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
+							instManLocked->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
+							instManLocked->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							if (fileVersion < Version::toBCD(1, 2, 3)) {
 								// Recover deep clone bug
 								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instMan.lock()->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 								break;
 							}
 							else {
@@ -2102,9 +2105,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setPitchSSGSequenceCommand(idx, 0, data, 0);
+							instManLocked->setPitchSSGSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addPitchSSGSequenceCommand(idx, data, 0);
+							instManLocked->addPitchSSGSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -2118,12 +2121,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setPitchSSGLoops(idx, begins, ends, times);
+						instManLocked->setPitchSSGLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -2131,8 +2134,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setPitchSSGRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setPitchSSGRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -2142,16 +2145,16 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
 						switch (ctr.readUint8(csr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
+							instManLocked->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							if (fileVersion < Version::toBCD(1, 2, 3)) {
 								// Recover deep clone bug
 								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instMan.lock()->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 								break;
 							}
 							else {
@@ -2172,15 +2175,15 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					uint32_t ofs = ctr.readUint32(instPropCsr);
 					size_t csr = instPropCsr + 4;
 
-					instMan.lock()->setWaveformADPCMRootKeyNumber(idx, ctr.readUint8(csr++));
-					instMan.lock()->setWaveformADPCMRootDeltaN(idx, ctr.readUint16(csr));
+					instManLocked->setWaveformADPCMRootKeyNumber(idx, ctr.readUint8(csr++));
+					instManLocked->setWaveformADPCMRootDeltaN(idx, ctr.readUint16(csr));
 					csr += 2;
-					instMan.lock()->setWaveformADPCMRepeatEnabled(idx, (ctr.readUint8(csr++) & 0x01) != 0);
+					instManLocked->setWaveformADPCMRepeatEnabled(idx, (ctr.readUint8(csr++) & 0x01) != 0);
 					uint32_t len = ctr.readUint32(csr);
 					csr += 4;
 					std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
 					csr += len;
-					instMan.lock()->storeWaveformADPCMSample(idx, std::move(samples));
+					instManLocked->storeWaveformADPCMSample(idx, std::move(samples));
 
 					instPropCsr += ofs;
 					break;
@@ -2209,9 +2212,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 						}
 						if (l == 0)
-							instMan.lock()->setEnvelopeADPCMSequenceCommand(idx, 0, data, subdata);
+							instManLocked->setEnvelopeADPCMSequenceCommand(idx, 0, data, subdata);
 						else
-							instMan.lock()->addEnvelopeADPCMSequenceCommand(idx, data, subdata);
+							instManLocked->addEnvelopeADPCMSequenceCommand(idx, data, subdata);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -2225,12 +2228,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setEnvelopeADPCMLoops(idx, begins, ends, times);
+						instManLocked->setEnvelopeADPCMLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -2238,24 +2241,24 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					case 0x02:	// Absolute
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::AbsoluteRelease, pos);
-						else instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::AbsoluteRelease, pos);
+						else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					case 0x03:	// Relative
 					{
 						uint16_t pos = ctr.readUint16(csr);
 						csr += 2;
-						if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::RelativeRelease, pos);
-						else instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::RelativeRelease, pos);
+						else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -2283,9 +2286,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setArpeggioADPCMSequenceCommand(idx, 0, data, 0);
+							instManLocked->setArpeggioADPCMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addArpeggioADPCMSequenceCommand(idx, data, 0);
+							instManLocked->addArpeggioADPCMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -2299,12 +2302,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setArpeggioADPCMLoops(idx, begins, ends, times);
+						instManLocked->setArpeggioADPCMLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -2312,8 +2315,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setArpeggioADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -2322,13 +2325,13 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instMan.lock()->setArpeggioADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					case 0x01:	// Fixed
-						instMan.lock()->setArpeggioADPCMType(idx, SequenceType::FIXED_SEQUENCE);
+						instManLocked->setArpeggioADPCMType(idx, SequenceType::FIXED_SEQUENCE);
 						break;
 					case 0x02:	// Relative
-						instMan.lock()->setArpeggioADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setArpeggioADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
 						throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2353,9 +2356,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						if (fileVersion < Version::toBCD(1, 2, 0)) csr += 2;
 						if (l == 0)
-							instMan.lock()->setPitchADPCMSequenceCommand(idx, 0, data, 0);
+							instManLocked->setPitchADPCMSequenceCommand(idx, 0, data, 0);
 						else
-							instMan.lock()->addPitchADPCMSequenceCommand(idx, data, 0);
+							instManLocked->addPitchADPCMSequenceCommand(idx, data, 0);
 					}
 
 					uint16_t loopCnt = ctr.readUint16(csr);
@@ -2369,12 +2372,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 							csr += 2;
 							times.push_back(ctr.readUint8(csr++));
 						}
-						instMan.lock()->setPitchADPCMLoops(idx, begins, ends, times);
+						instManLocked->setPitchADPCMLoops(idx, begins, ends, times);
 					}
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// No release
-						instMan.lock()->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						instManLocked->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					case 0x01:	// Fixed
 					{
@@ -2382,8 +2385,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 						csr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instMan.lock()->setPitchADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-						else instMan.lock()->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setPitchADPCMRelease(idx, ReleaseType::FixedRelease, pos);
+						else instManLocked->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
 						break;
 					}
 					default:
@@ -2392,10 +2395,10 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instMan.lock()->setPitchADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					case 0x02:	// Relative
-						instMan.lock()->setPitchADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setPitchADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
 						throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2414,8 +2417,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 	}
 }
 
-size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
-		FMEnvelopeParameter param, size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan,
+size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(FMEnvelopeParameter param, size_t instMemCsr, std::shared_ptr<InstrumentsManager>& instManLocked,
 		BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version)
 {
 	inst->setOperatorSequenceEnabled(param, true);
@@ -2430,9 +2432,9 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 		csr += 2;
 		if (version < Version::toBCD(1, 2, 1)) csr += 2;
 		if (l == 0)
-			instMan.lock()->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
+			instManLocked->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
 		else
-			instMan.lock()->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
+			instManLocked->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
 	}
 
 	uint16_t loopCnt = ctr.readUint16(csr);
@@ -2446,12 +2448,12 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 			csr += 2;
 			times.push_back(ctr.readUint8(csr++));
 		}
-		instMan.lock()->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
+		instManLocked->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
 	}
 
 	switch (ctr.readUint8(csr++)) {
 	case 0x00:	// No release
-		instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
 		break;
 	case 0x01:	// Fixed
 	{
@@ -2459,8 +2461,8 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 		csr += 2;
 		// Release point check (prevents a bug)
 		// https://github.com/rerrahkr/BambooTracker/issues/11
-		if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
-		else instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
+		else instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
 		break;
 	}
 	default:
@@ -2474,7 +2476,10 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	return ofs;
 }
 
-AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string path,
+											  std::weak_ptr<InstrumentsManager> instMan, int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
@@ -2500,11 +2505,11 @@ AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string 
 	switch (insType) {
 	case 0x00:	// SSG
 	{
-		inst = new InstrumentSSG(instNum, name, instMan.lock().get());
+		inst = new InstrumentSSG(instNum, name, instManLocked.get());
 		auto ssg = dynamic_cast<InstrumentSSG*>(inst);
 		uint8_t envSize = ctr.readUint8(csr++);
 		if (envSize > 0) {
-			int idx = instMan.lock()->findFirstAssignableEnvelopeSSG();
+			int idx = instManLocked->findFirstAssignableEnvelopeSSG();
 			if (idx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 			ssg->setEnvelopeEnabled(true);
 			ssg->setEnvelopeNumber(idx);
@@ -2513,112 +2518,112 @@ AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string 
 				// compensate SN76489's envelope step of 2dB to SSG's 3dB
 				if (data > 0) data = 15 - (15 - data) * 2 / 3;
 				csr += 4;
-				if (l == 0) instMan.lock()->setEnvelopeSSGSequenceCommand(idx, 0, data, 0);
-				else instMan.lock()->addEnvelopeSSGSequenceCommand(idx, data, 0);
+				if (l == 0) instManLocked->setEnvelopeSSGSequenceCommand(idx, 0, data, 0);
+				else instManLocked->addEnvelopeSSGSequenceCommand(idx, data, 0);
 			}
 			int8_t loop = ctr.readInt8(csr++);
-			if (loop >= 0) instMan.lock()->setEnvelopeSSGLoops(idx, {loop}, {envSize - 1}, {1});
+			if (loop >= 0) instManLocked->setEnvelopeSSGLoops(idx, {loop}, {envSize - 1}, {1});
 		}
 		uint8_t arpSize = ctr.readUint8(csr++);
 		if (arpSize > 0) {
-			int idx = instMan.lock()->findFirstAssignableArpeggioSSG();
+			int idx = instManLocked->findFirstAssignableArpeggioSSG();
 			if (idx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 			ssg->setArpeggioEnabled(true);
 			ssg->setArpeggioNumber(idx);
 			uint8_t arpType = ctr.readUint8(csr + arpSize * 4 + 1);
-			if (arpType == 1) instMan.lock()->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
+			if (arpType == 1) instManLocked->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
 			for (uint8_t l = 0; l < arpSize; ++l) {
 				int data = ctr.readInt32(csr) + 36;
 				csr += 4;
 				if (arpType == 1) data -= 24;
-				if (l == 0) instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
-				else instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, 0);
+				if (l == 0) instManLocked->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
+				else instManLocked->addArpeggioSSGSequenceCommand(idx, data, 0);
 			}
 			int8_t loop = ctr.readInt8(csr++);
-			if (loop >= 0) instMan.lock()->setArpeggioSSGLoops(idx, {loop}, {arpSize - 1}, {1});
+			if (loop >= 0) instManLocked->setArpeggioSSGLoops(idx, {loop}, {arpSize - 1}, {1});
 		}
 		break;
 	}
 	case 0x01:	// FM
 	{
-		int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
+		int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
 		if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
-		inst = new InstrumentFM(instNum, name, instMan.lock().get());
+		inst = new InstrumentFM(instNum, name, instManLocked.get());
 		auto fm = dynamic_cast<InstrumentFM*>(inst);
 		fm->setEnvelopeNumber(envIdx);
 		if (fileVersion == 9) csr++; // skip version 9's total operators field
 		uint8_t pms = ctr.readUint8(csr++);
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
 		uint8_t ams = ctr.readUint8(csr++);
 
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
 		uint8_t am1 = ctr.readUint8(csr++);
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++) & 15)); // mask out OPM's DT2
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++) & 15)); // mask out OPM's DT2
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
 		int ssgeg1 = ctr.readUint8(csr++);
 		ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
 		uint8_t am3 = ctr.readUint8(csr++);
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++) & 15));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++) & 15));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
 		int ssgeg3 = ctr.readUint8(csr++);
 		ssgeg3 = ssgeg3 & 8 ? ssgeg3 & 7 : -1;
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
 		uint8_t am2 = ctr.readUint8(csr++);
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++) & 15));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++) & 15));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
 		int ssgeg2 = ctr.readUint8(csr++);
 		ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
 		uint8_t am4 = ctr.readUint8(csr++);
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++) & 15));
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++) & 15));
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
 		int ssgeg4 = ctr.readUint8(csr++);
 		ssgeg4 = ssgeg4 & 8 ? ssgeg4 & 7 : -1;
-		instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+		instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 
 		if (pms || ams) {
-			int lfoIdx = instMan.lock()->findFirstAssignableLFOFM();
+			int lfoIdx = instManLocked->findFirstAssignableLFOFM();
 			if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 			fm->setLFOEnabled(true);
 			fm->setLFONumber(lfoIdx);
-			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pms);
-			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, ams);
-			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am1);
-			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am2);
-			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am3);
-			instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
+			instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pms);
+			instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, ams);
+			instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am1);
+			instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am2);
+			instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am3);
+			instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
 		}
 		break;
 	}
@@ -2701,159 +2706,167 @@ int InstrumentIO::convertTFIVGMDT(int dt)
 	}
 }
 
-AbstractInstrument* InstrumentIO::loadTFIFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+AbstractInstrument* InstrumentIO::loadTFIFile(BinaryContainer& ctr, std::string path,
+											  std::weak_ptr<InstrumentsManager> instMan, int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	if (ctr.size() != 42) throw FileCorruptionError(FileIO::FileType::Inst);
-	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
+	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
 
-	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instManLocked.get());
 	inst->setEnvelopeNumber(envIdx);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
 	int ssgeg1 = ctr.readUint8(csr++);
 	ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
 	int ssgeg3 = ctr.readUint8(csr++);
 	ssgeg3 = ssgeg3 & 8 ? ssgeg1 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
 	int ssgeg2 = ctr.readUint8(csr++);
 	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
 	int ssgeg4 = ctr.readUint8(csr++);
 	ssgeg4 = ssgeg4 & 8 ? ssgeg4 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadVGIFile(BinaryContainer& ctr, std::string path, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+AbstractInstrument* InstrumentIO::loadVGIFile(BinaryContainer& ctr, std::string path,
+											  std::weak_ptr<InstrumentsManager> instMan, int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	if (ctr.size() != 43) throw FileCorruptionError(FileIO::FileType::Inst);
-	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
+	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
 
-	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instManLocked.get());
 	inst->setEnvelopeNumber(envIdx);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
 	uint8_t pams = ctr.readUint8(csr++);
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, ctr.readUint8(csr++));
 	uint8_t drams1 = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, drams1 & 31);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, drams1 & 31);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, ctr.readUint8(csr++));
 	int ssgeg1 = ctr.readUint8(csr++);
 	ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
 	uint8_t drams3 = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, drams3 & 31);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, drams3 & 31);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
 	int ssgeg3 = ctr.readUint8(csr++);
 	ssgeg3 = ssgeg3 & 8 ? ssgeg1 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
 	uint8_t drams2 = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, drams2 & 31);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, drams2 & 31);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
 	int ssgeg2 = ctr.readUint8(csr++);
 	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++)));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertTFIVGMDT(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, ctr.readUint8(csr++));
 	uint8_t drams4 = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, drams4 & 31);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, drams4 & 31);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, ctr.readUint8(csr++));
 	int ssgeg4 = ctr.readUint8(csr++);
 	ssgeg4 = ssgeg4 & 8 ? ssgeg4 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 
 	if (pams != 0) {
-		int lfoIdx = instMan.lock()->findFirstAssignableLFOFM();
+		int lfoIdx = instManLocked->findFirstAssignableLFOFM();
 		if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 		inst->setLFOEnabled(true);
 		inst->setLFONumber(lfoIdx);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pams & 7);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, pams >> 4);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, drams1 >> 7);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, drams2 >> 7);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, drams3 >> 7);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, drams4 >> 7);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, pams & 7);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, pams >> 4);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, drams1 >> 7);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, drams2 >> 7);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, drams3 >> 7);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, drams4 >> 7);
 	}
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadOPNIFile(BinaryContainer& ctr, std::weak_ptr<InstrumentsManager> instMan, int instNum) {
+AbstractInstrument* InstrumentIO::loadOPNIFile(BinaryContainer& ctr,
+											   std::weak_ptr<InstrumentsManager> instMan, int instNum)
+{
 	OPNIFile opni;
 	if (WOPN_LoadInstFromMem(&opni, const_cast<char*>(ctr.getPointer()), static_cast<size_t>(ctr.size())) != 0)
 		throw FileCorruptionError(FileIO::FileType::Inst);
@@ -2865,97 +2878,98 @@ AbstractInstrument* InstrumentIO::loadY12File(BinaryContainer& ctr, std::string 
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	if (ctr.size() != 128) throw FileCorruptionError(FileIO::FileType::Inst);
-	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
+	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
 	size_t csr = 0;
 
-	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instManLocked.get());
 	inst->setEnvelopeNumber(envIdx);
 	uint8_t tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, 0x07 & (tmp >> 4));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, 0x07 & (tmp >> 4));
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, 0x7f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, 0x7f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, 0x1f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, tmp >> 6);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
 	int ssgeg1 = ctr.readUint8(csr++);
 	ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 	csr += 9;
 
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, 0x07 & (tmp >> 4));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, 0x07 & (tmp >> 4));
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, 0x7f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, 0x7f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, 0x1f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, tmp >> 6);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
 	int ssgeg3 = ctr.readUint8(csr++);
 	ssgeg3 = ssgeg3 & 8 ? ssgeg3 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 	csr += 9;
 
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, 0x07 & (tmp >> 4));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, 0x07 & (tmp >> 4));
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, 0x7f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, 0x7f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, 0x1f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, tmp >> 6);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
 	int ssgeg2 = ctr.readUint8(csr++);
 	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 	csr += 9;
 
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, 0x07 & (tmp >> 4));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, 0x07 & (tmp >> 4));
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, 0x7f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, 0x7f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, 0x1f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, tmp >> 6);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, 0x1f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, 0x1f & tmp);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
 	int ssgeg4 = ctr.readUint8(csr++);
 	ssgeg4 = ssgeg4 & 8 ? ssgeg4 & 7 : -1;
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, ssgeg4);
 	csr += 9;
 
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, ctr.readUint8(csr++));
 	csr += 14;
 
 	return inst;
@@ -2965,6 +2979,7 @@ AbstractInstrument* InstrumentIO::loadINSFile(BinaryContainer& ctr,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	size_t csr = 0;
 	if (ctr.readString(csr, 4).compare("MVSI") != 0) throw FileInputError(FileIO::FileType::Inst);
 	csr += 4;
@@ -2977,78 +2992,80 @@ AbstractInstrument* InstrumentIO::loadINSFile(BinaryContainer& ctr,
 
 	if (ctr.size() - csr != 25) throw FileInputError(FileIO::FileType::Inst);
 
-	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
+	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Inst);
 
-	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instManLocked.get());
 	inst->setEnvelopeNumber(envIdx);
 	uint8_t tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, tmp >> 4);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, tmp >> 4);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, tmp >> 4);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, tmp >> 4);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, ctr.readUint8(csr++));
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, 0x3f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, 0x3f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, tmp >> 6);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, 0x3f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, 0x3f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, tmp >> 6);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, 0x3f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, 0x3f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, tmp >> 6);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, 0x3f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, tmp >> 6);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, 0x3f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, ctr.readUint8(csr++));
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, 0x0f & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, 0x0f & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
 
 	tmp = ctr.readUint8(csr++);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, 0x07 & tmp);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, tmp >> 3);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, 0x07 & tmp);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, tmp >> 3);
 
 	return inst;
 }
 
 AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 													 std::weak_ptr<InstrumentsManager> instMan,
-													 int instNum) {
-	int envIdx = instMan.lock()->findFirstAssignableEnvelopeFM();
+													 int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
 	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 	const char *name = srcInst.inst_name;
 
-	InstrumentFM* inst = new InstrumentFM(instNum, name, instMan.lock().get());
+	InstrumentFM* inst = new InstrumentFM(instNum, name, instManLocked.get());
 	inst->setEnvelopeNumber(envIdx);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, srcInst.fbalg & 7);
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, (srcInst.fbalg >> 3) & 7);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, srcInst.fbalg & 7);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, (srcInst.fbalg >> 3) & 7);
 
 	const WOPNOperator *op[4] = {
 		&srcInst.operators[0],
@@ -3058,18 +3075,18 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 	};
 
 #define LOAD_OPERATOR(n)						\
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML##n, op[n - 1]->dtfm_30 & 15); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT##n, (op[n - 1]->dtfm_30 >> 4) & 7); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL##n, op[n - 1]->level_40); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS##n, op[n - 1]->rsatk_50 >> 6); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR##n, op[n - 1]->rsatk_50 & 31); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR##n, op[n - 1]->amdecay1_60 & 31); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR##n, op[n - 1]->decay2_70 & 31); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR##n, op[n - 1]->susrel_80 & 15); \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL##n, op[n - 1]->susrel_80 >> 4); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML##n, op[n - 1]->dtfm_30 & 15); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT##n, (op[n - 1]->dtfm_30 >> 4) & 7); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL##n, op[n - 1]->level_40); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS##n, op[n - 1]->rsatk_50 >> 6); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR##n, op[n - 1]->rsatk_50 & 31); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR##n, op[n - 1]->amdecay1_60 & 31); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR##n, op[n - 1]->decay2_70 & 31); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR##n, op[n - 1]->susrel_80 & 15); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL##n, op[n - 1]->susrel_80 >> 4); \
 	int ssgeg##n = op[n - 1]->ssgeg_90; \
 	ssgeg##n = ssgeg##n & 8 ? ssgeg##n & 7 : -1; \
-	instMan.lock()->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG##n, ssgeg##n); \
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG##n, ssgeg##n); \
 	int am##n = op[n - 1]->amdecay1_60 >> 7;
 
 	LOAD_OPERATOR(1)
@@ -3080,25 +3097,25 @@ AbstractInstrument* InstrumentIO::loadWOPNInstrument(const WOPNInstrument &srcIn
 #undef LOAD_OPERATOR
 
 	if (srcInst.lfosens != 0) {
-		int lfoIdx = instMan.lock()->findFirstAssignableLFOFM();
+		int lfoIdx = instManLocked->findFirstAssignableLFOFM();
 		if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 		inst->setLFOEnabled(true);
 		inst->setLFONumber(lfoIdx);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, srcInst.lfosens & 7);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, (srcInst.lfosens >> 4) & 3);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am1);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am2);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am3);
-		instMan.lock()->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, srcInst.lfosens & 7);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, (srcInst.lfosens >> 4) & 3);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am1);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am2);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am3);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
 	}
 
 	if (srcInst.note_offset != 0) {
-		int arpIdx = instMan.lock()->findFirstAssignableArpeggioFM();
+		int arpIdx = instManLocked->findFirstAssignableArpeggioFM();
 		if (arpIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
-		instMan.lock()->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
-		instMan.lock()->setArpeggioFMType(arpIdx, SequenceType::ABSOLUTE_SEQUENCE);
+		instManLocked->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
+		instManLocked->setArpeggioFMType(arpIdx, SequenceType::ABSOLUTE_SEQUENCE);
 	}
 
 	return inst;
@@ -3109,6 +3126,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 													std::weak_ptr<InstrumentsManager> instMan,
 													int instNum, uint32_t bankVersion)
 {
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	size_t instCsr = 5;	// Skip instrument id and offset
 	size_t nameLen = instCtr.readUint32(instCsr);
 	instCsr += 4;
@@ -3121,93 +3139,93 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 	switch (instCtr.readUint8(instCsr++)) {
 	case 0x00:	// FM
 	{
-		auto fm = new InstrumentFM(instNum, name, instMan.lock().get());
+		auto fm = new InstrumentFM(instNum, name, instManLocked.get());
 
 		/* Envelope */
 		{
 			auto orgEnvNum = instCtr.readUint8(instCsr++);
-			int envNum = instMan.lock()->findFirstAssignableEnvelopeFM();
+			int envNum = instManLocked->findFirstAssignableEnvelopeFM();
 			if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 			fm->setEnvelopeNumber(envNum);
 			size_t envCsr = getPropertyPositionForBTB(propCtr, 0x00, orgEnvNum);
 			uint8_t tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL, tmp >> 4);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL, tmp >> 4);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB, tmp & 0x0f);
 			// Operator 1
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMOperatorEnabled(envNum, 0, (0x20 & tmp) ? true : false);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1, tmp & 0x1f);
+			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 0, (0x20 & tmp) ? true : false);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1, tmp >> 4);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1, tmp >> 4);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1, tmp & 0x0f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1, tmp);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1, tmp);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1, tmp & 0x0f);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1,
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1,
 												   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 			// Operator 2
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMOperatorEnabled(envNum, 1, (0x20 & tmp) ? true : false);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2, tmp & 0x1f);
+			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 1, (0x20 & tmp) ? true : false);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2, tmp >> 4);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2, tmp >> 4);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2, tmp & 0x0f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2, tmp);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2, tmp);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2, tmp & 0x0f);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2,
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2,
 												   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 			// Operator 3
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMOperatorEnabled(envNum, 2, (0x20 & tmp) ? true : false);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3, tmp & 0x1f);
+			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 2, (0x20 & tmp) ? true : false);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3, tmp >> 4);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3, tmp >> 4);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3, tmp & 0x0f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3, tmp);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3, tmp);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3, tmp & 0x0f);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3,
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3,
 												   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 			// Operator 4
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMOperatorEnabled(envNum, 3, (0x20 & tmp) ? true : false);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4, tmp & 0x1f);
+			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 3, (0x20 & tmp) ? true : false);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4, tmp >> 5);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4, tmp & 0x1f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4, tmp >> 5);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4, tmp & 0x1f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4, tmp >> 4);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4, tmp >> 4);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4, tmp & 0x0f);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4, tmp);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4, tmp);
 			tmp = propCtr.readUint8(envCsr++);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4, tmp & 0x0f);
-			instMan.lock()->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4,
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4, tmp & 0x0f);
+			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4,
 												   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 		}
 
@@ -3221,21 +3239,21 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				fm->setLFOEnabled(true);
 				uint8_t orgLFONum = 0x7f & tmp;
-				int lfoNum = instMan.lock()->findFirstAssignableLFOFM();
+				int lfoNum = instManLocked->findFirstAssignableLFOFM();
 				if (lfoNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				fm->setLFONumber(lfoNum);
 				size_t lfoCsr = getPropertyPositionForBTB(propCtr, 0x01, orgLFONum);
 				tmp = propCtr.readUint8(lfoCsr++);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::FREQ, tmp >> 4);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::PMS, tmp & 0x0f);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::FREQ, tmp >> 4);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::PMS, tmp & 0x0f);
 				tmp = propCtr.readUint8(lfoCsr++);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::AMS, tmp & 0x0f);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AMS, tmp & 0x0f);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
 				tmp = propCtr.readUint8(lfoCsr++);
-				instMan.lock()->setLFOFMParameter(lfoNum, FMLFOParameter::Count, tmp);
+				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::Count, tmp);
 			}
 		}
 
@@ -3251,7 +3269,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				fm->setOperatorSequenceEnabled(param, true);
 				uint8_t orgOpSeqNum = 0x7f & tmp;
-				int opSeqNum = instMan.lock()->findFirstAssignableOperatorSequenceFM(param);
+				int opSeqNum = instManLocked->findFirstAssignableOperatorSequenceFM(param);
 				if (opSeqNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				fm->setOperatorSequenceNumber(param, opSeqNum);
 				size_t opSeqCsr = getPropertyPositionForBTB(propCtr, 0x02 + tmpCnt, orgOpSeqNum);
@@ -3262,9 +3280,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					uint16_t data = propCtr.readUint16(opSeqCsr);
 					opSeqCsr += 2;
 					if (l == 0)
-						instMan.lock()->setOperatorSequenceFMSequenceCommand(param, opSeqNum, 0, data, 0);
+						instManLocked->setOperatorSequenceFMSequenceCommand(param, opSeqNum, 0, data, 0);
 					else
-						instMan.lock()->addOperatorSequenceFMSequenceCommand(param, opSeqNum, data, 0);
+						instManLocked->addOperatorSequenceFMSequenceCommand(param, opSeqNum, data, 0);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(opSeqCsr);
@@ -3278,12 +3296,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						opSeqCsr += 2;
 						times.push_back(propCtr.readUint8(opSeqCsr++));
 					}
-					instMan.lock()->setOperatorSequenceFMLoops(param, opSeqNum, begins, ends, times);
+					instManLocked->setOperatorSequenceFMLoops(param, opSeqNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(opSeqCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
+					instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -3291,8 +3309,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					opSeqCsr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -3323,7 +3341,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					auto it = orgNumMap.find(orgArpNum);
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgArpNum, pair.first);
-						int arpNum = instMan.lock()->findFirstAssignableArpeggioFM();
+						int arpNum = instManLocked->findFirstAssignableArpeggioFM();
 						if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 						fm->setArpeggioNumber(pair.first, arpNum);
 						size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x28, orgArpNum);
@@ -3334,9 +3352,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 							uint16_t data = propCtr.readUint16(arpCsr);
 							arpCsr += 2;
 							if (l == 0)
-								instMan.lock()->setArpeggioFMSequenceCommand(arpNum, 0, data, 0);
+								instManLocked->setArpeggioFMSequenceCommand(arpNum, 0, data, 0);
 							else
-								instMan.lock()->addArpeggioFMSequenceCommand(arpNum, data, 0);
+								instManLocked->addArpeggioFMSequenceCommand(arpNum, data, 0);
 						}
 
 						uint16_t loopCnt = propCtr.readUint16(arpCsr);
@@ -3350,12 +3368,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 								arpCsr += 2;
 								times.push_back(propCtr.readUint8(arpCsr++));
 							}
-							instMan.lock()->setArpeggioFMLoops(arpNum, begins, ends, times);
+							instManLocked->setArpeggioFMLoops(arpNum, begins, ends, times);
 						}
 
 						switch (propCtr.readUint8(arpCsr++)) {
 						case 0x00:	// No release
-							instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
+							instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
 							break;
 						case 0x01:	// Fixed
 						{
@@ -3363,8 +3381,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 							arpCsr += 2;
 							// Release point check (prevents a bug)
 							// https://github.com/rerrahkr/BambooTracker/issues/11
-							if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::FixedRelease, pos);
-							else instMan.lock()->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
+							if (pos < seqLen) instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::FixedRelease, pos);
+							else instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
 							break;
 						}
 						default:
@@ -3373,19 +3391,19 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 
 						switch (propCtr.readUint8(arpCsr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x01:	// Fixed
-							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::FIXED_SEQUENCE);
+							instManLocked->setArpeggioFMType(arpNum, SequenceType::FIXED_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setArpeggioFMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+							instManLocked->setArpeggioFMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							if (bankVersion < Version::toBCD(1, 0, 2)) {
 								// Recover deep clone bug
 								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instMan.lock()->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
 								break;
 							}
 							else {
@@ -3422,7 +3440,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					auto it = orgNumMap.find(orgPtNum);
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgPtNum, pair.first);
-						int ptNum = instMan.lock()->findFirstAssignablePitchFM();
+						int ptNum = instManLocked->findFirstAssignablePitchFM();
 						if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 						fm->setPitchNumber(pair.first, ptNum);
 						size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x29, orgPtNum);
@@ -3433,9 +3451,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 							uint16_t data = propCtr.readUint16(ptCsr);
 							ptCsr += 2;
 							if (l == 0)
-								instMan.lock()->setPitchFMSequenceCommand(ptNum, 0, data, 0);
+								instManLocked->setPitchFMSequenceCommand(ptNum, 0, data, 0);
 							else
-								instMan.lock()->addPitchFMSequenceCommand(ptNum, data, 0);
+								instManLocked->addPitchFMSequenceCommand(ptNum, data, 0);
 						}
 
 						uint16_t loopCnt = propCtr.readUint16(ptCsr);
@@ -3449,12 +3467,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 								ptCsr += 2;
 								times.push_back(propCtr.readUint8(ptCsr++));
 							}
-							instMan.lock()->setPitchFMLoops(ptNum, begins, ends, times);
+							instManLocked->setPitchFMLoops(ptNum, begins, ends, times);
 						}
 
 						switch (propCtr.readUint8(ptCsr++)) {
 						case 0x00:	// No release
-							instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
+							instManLocked->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
 							break;
 						case 0x01:	// Fixed
 						{
@@ -3462,8 +3480,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 							ptCsr += 2;
 							// Release point check (prevents a bug)
 							// https://github.com/rerrahkr/BambooTracker/issues/11
-							if (pos < seqLen) instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::FixedRelease, pos);
-							else instMan.lock()->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
+							if (pos < seqLen) instManLocked->setPitchFMRelease(ptNum, ReleaseType::FixedRelease, pos);
+							else instManLocked->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
 							break;
 						}
 						default:
@@ -3472,16 +3490,16 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 
 						switch (propCtr.readUint8(ptCsr++)) {
 						case 0x00:	// Absolute
-							instMan.lock()->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						case 0x02:	// Relative
-							instMan.lock()->setPitchFMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+							instManLocked->setPitchFMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 							break;
 						default:
 							if (bankVersion < Version::toBCD(1, 0, 2)) {
 								// Recover deep clone bug
 								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instMan.lock()->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
 								break;
 							}
 							else {
@@ -3510,7 +3528,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 	}
 	case 0x01:	// SSG
 	{
-		auto ssg = new InstrumentSSG(instNum, name, instMan.lock().get());
+		auto ssg = new InstrumentSSG(instNum, name, instManLocked.get());
 
 		/* Waveform */
 		{
@@ -3522,7 +3540,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setWaveformEnabled(true);
 				uint8_t orgWfNum = 0x7f & tmp;
-				int wfNum = instMan.lock()->findFirstAssignableWaveformSSG();
+				int wfNum = instManLocked->findFirstAssignableWaveformSSG();
 				if (wfNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setWaveformNumber(wfNum);
 				size_t wfCsr = getPropertyPositionForBTB(propCtr, 0x30, orgWfNum);
@@ -3536,9 +3554,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					subdata = propCtr.readInt32(wfCsr);
 					wfCsr += 4;
 					if (l == 0)
-						instMan.lock()->setWaveformSSGSequenceCommand(wfNum, 0, data, subdata);
+						instManLocked->setWaveformSSGSequenceCommand(wfNum, 0, data, subdata);
 					else
-						instMan.lock()->addWaveformSSGSequenceCommand(wfNum, data, subdata);
+						instManLocked->addWaveformSSGSequenceCommand(wfNum, data, subdata);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(wfCsr);
@@ -3552,12 +3570,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						wfCsr += 2;
 						times.push_back(propCtr.readUint8(wfCsr++));
 					}
-					instMan.lock()->setWaveformSSGLoops(wfNum, begins, ends, times);
+					instManLocked->setWaveformSSGLoops(wfNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(wfCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
+					instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -3565,8 +3583,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					wfCsr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setWaveformSSGRelease(wfNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -3585,7 +3603,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setToneNoiseEnabled(true);
 				uint8_t orgTnNum = 0x7f & tmp;
-				int tnNum = instMan.lock()->findFirstAssignableToneNoiseSSG();
+				int tnNum = instManLocked->findFirstAssignableToneNoiseSSG();
 				if (tnNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setToneNoiseNumber(tnNum);
 				size_t tnCsr = getPropertyPositionForBTB(propCtr, 0x31, orgTnNum);
@@ -3602,9 +3620,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						}
 					}
 					if (l == 0)
-						instMan.lock()->setToneNoiseSSGSequenceCommand(tnNum, 0, data, 0);
+						instManLocked->setToneNoiseSSGSequenceCommand(tnNum, 0, data, 0);
 					else
-						instMan.lock()->addToneNoiseSSGSequenceCommand(tnNum, data, 0);
+						instManLocked->addToneNoiseSSGSequenceCommand(tnNum, data, 0);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(tnCsr);
@@ -3618,12 +3636,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						tnCsr += 2;
 						times.push_back(propCtr.readUint8(tnCsr++));
 					}
-					instMan.lock()->setToneNoiseSSGLoops(tnNum, begins, ends, times);
+					instManLocked->setToneNoiseSSGLoops(tnNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(tnCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
+					instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -3631,8 +3649,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					tnCsr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -3651,7 +3669,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setEnvelopeEnabled(true);
 				uint8_t orgEnvNum = 0x7f & tmp;
-				int envNum = instMan.lock()->findFirstAssignableEnvelopeSSG();
+				int envNum = instManLocked->findFirstAssignableEnvelopeSSG();
 				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPositionForBTB(propCtr, 0x32, orgEnvNum);
@@ -3665,9 +3683,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					subdata = propCtr.readInt32(envCsr);
 					envCsr += 4;
 					if (l == 0)
-						instMan.lock()->setEnvelopeSSGSequenceCommand(envNum, 0, data, subdata);
+						instManLocked->setEnvelopeSSGSequenceCommand(envNum, 0, data, subdata);
 					else
-						instMan.lock()->addEnvelopeSSGSequenceCommand(envNum, data, subdata);
+						instManLocked->addEnvelopeSSGSequenceCommand(envNum, data, subdata);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(envCsr);
@@ -3681,12 +3699,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						envCsr += 2;
 						times.push_back(propCtr.readUint8(envCsr++));
 					}
-					instMan.lock()->setEnvelopeSSGLoops(envNum, begins, ends, times);
+					instManLocked->setEnvelopeSSGLoops(envNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(envCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+					instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -3694,24 +3712,24 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x02:	// Absolute
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::AbsoluteRelease, pos);
-					else instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::AbsoluteRelease, pos);
+					else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x03:	// Relative
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::RelativeRelease, pos);
-					else instMan.lock()->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::RelativeRelease, pos);
+					else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -3730,7 +3748,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setArpeggioEnabled(true);
 				uint8_t orgArpNum = 0x7f & tmp;
-				int arpNum = instMan.lock()->findFirstAssignableArpeggioSSG();
+				int arpNum = instManLocked->findFirstAssignableArpeggioSSG();
 				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x33, orgArpNum);
@@ -3741,9 +3759,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					uint16_t data = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
 					if (l == 0)
-						instMan.lock()->setArpeggioSSGSequenceCommand(arpNum, 0, data, 0);
+						instManLocked->setArpeggioSSGSequenceCommand(arpNum, 0, data, 0);
 					else
-						instMan.lock()->addArpeggioSSGSequenceCommand(arpNum, data, 0);
+						instManLocked->addArpeggioSSGSequenceCommand(arpNum, data, 0);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(arpCsr);
@@ -3757,12 +3775,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						arpCsr += 2;
 						times.push_back(propCtr.readUint8(arpCsr++));
 					}
-					instMan.lock()->setArpeggioSSGLoops(arpNum, begins, ends, times);
+					instManLocked->setArpeggioSSGLoops(arpNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(arpCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -3770,8 +3788,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					arpCsr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -3780,19 +3798,19 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 
 				switch (propCtr.readUint8(arpCsr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x01:	// Fixed
-					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::FIXED_SEQUENCE);
+					instManLocked->setArpeggioSSGType(arpNum, SequenceType::FIXED_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setArpeggioSSGType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					if (bankVersion < Version::toBCD(1, 0, 2)) {
 						// Recover deep clone bug
 						// https://github.com/rerrahkr/BambooTracker/issues/170
-						instMan.lock()->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					}
 					else {
@@ -3812,7 +3830,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				ssg->setPitchEnabled(true);
 				uint8_t orgPtNum = 0x7f & tmp;
-				int ptNum = instMan.lock()->findFirstAssignablePitchSSG();
+				int ptNum = instManLocked->findFirstAssignablePitchSSG();
 				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				ssg->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x34, orgPtNum);
@@ -3823,9 +3841,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					uint16_t data = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
 					if (l == 0)
-						instMan.lock()->setPitchSSGSequenceCommand(ptNum, 0, data, 0);
+						instManLocked->setPitchSSGSequenceCommand(ptNum, 0, data, 0);
 					else
-						instMan.lock()->addPitchSSGSequenceCommand(ptNum, data, 0);
+						instManLocked->addPitchSSGSequenceCommand(ptNum, data, 0);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(ptCsr);
@@ -3839,12 +3857,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						ptCsr += 2;
 						times.push_back(propCtr.readUint8(ptCsr++));
 					}
-					instMan.lock()->setPitchSSGLoops(ptNum, begins, ends, times);
+					instManLocked->setPitchSSGLoops(ptNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(ptCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -3852,8 +3870,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					ptCsr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchSSGRelease(ptNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -3862,16 +3880,16 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 
 				switch (propCtr.readUint8(ptCsr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setPitchSSGType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setPitchSSGType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					if (bankVersion < Version::toBCD(1, 0, 2)) {
 						// Recover deep clone bug
 						// https://github.com/rerrahkr/BambooTracker/issues/170
-						instMan.lock()->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					}
 					else {
@@ -3885,25 +3903,25 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 	}
 	case 0x02:	// ADPCM
 	{
-		auto adpcm = new InstrumentADPCM(instNum, name, instMan.lock().get());
+		auto adpcm = new InstrumentADPCM(instNum, name, instManLocked.get());
 
 		/* Waveform */
 		{
 			uint8_t orgWfNum = instCtr.readUint8(instCsr++);
-			int wfNum = instMan.lock()->findFirstAssignableWaveformADPCM();
+			int wfNum = instManLocked->findFirstAssignableWaveformADPCM();
 			if (wfNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 			adpcm->setWaveformNumber(wfNum);
 			size_t wfCsr = getPropertyPositionForBTB(propCtr, 0x40, orgWfNum);
 
-			instMan.lock()->setWaveformADPCMRootKeyNumber(wfNum, propCtr.readUint8(wfCsr++));
-			instMan.lock()->setWaveformADPCMRootDeltaN(wfNum, propCtr.readUint16(wfCsr));
+			instManLocked->setWaveformADPCMRootKeyNumber(wfNum, propCtr.readUint8(wfCsr++));
+			instManLocked->setWaveformADPCMRootDeltaN(wfNum, propCtr.readUint16(wfCsr));
 			wfCsr += 2;
-			instMan.lock()->setWaveformADPCMRepeatEnabled(wfNum, (propCtr.readUint8(wfCsr++) & 0x01) != 0);
+			instManLocked->setWaveformADPCMRepeatEnabled(wfNum, (propCtr.readUint8(wfCsr++) & 0x01) != 0);
 			uint32_t len = propCtr.readUint32(wfCsr);
 			wfCsr += 4;
 			std::vector<uint8_t> samples = propCtr.getSubcontainer(wfCsr, len).toVector();
 			wfCsr += len;
-			instMan.lock()->storeWaveformADPCMSample(wfNum, std::move(samples));
+			instManLocked->storeWaveformADPCMSample(wfNum, std::move(samples));
 		}
 
 		/* Envelope */
@@ -3916,7 +3934,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				adpcm->setEnvelopeEnabled(true);
 				uint8_t orgEnvNum = 0x7f & tmp;
-				int envNum = instMan.lock()->findFirstAssignableEnvelopeADPCM();
+				int envNum = instManLocked->findFirstAssignableEnvelopeADPCM();
 				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				adpcm->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPositionForBTB(propCtr, 0x41, orgEnvNum);
@@ -3930,9 +3948,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					subdata = propCtr.readInt32(envCsr);
 					envCsr += 4;
 					if (l == 0)
-						instMan.lock()->setEnvelopeADPCMSequenceCommand(envNum, 0, data, subdata);
+						instManLocked->setEnvelopeADPCMSequenceCommand(envNum, 0, data, subdata);
 					else
-						instMan.lock()->addEnvelopeADPCMSequenceCommand(envNum, data, subdata);
+						instManLocked->addEnvelopeADPCMSequenceCommand(envNum, data, subdata);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(envCsr);
@@ -3946,12 +3964,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						envCsr += 2;
 						times.push_back(propCtr.readUint8(envCsr++));
 					}
-					instMan.lock()->setEnvelopeADPCMLoops(envNum, begins, ends, times);
+					instManLocked->setEnvelopeADPCMLoops(envNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(envCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+					instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -3959,24 +3977,24 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(envNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x02:	// Absolute
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(envNum, ReleaseType::AbsoluteRelease, pos);
-					else instMan.lock()->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::AbsoluteRelease, pos);
+					else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x03:	// Relative
 				{
 					uint16_t pos = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(envNum, ReleaseType::RelativeRelease, pos);
-					else instMan.lock()->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::RelativeRelease, pos);
+					else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -3995,7 +4013,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				adpcm->setArpeggioEnabled(true);
 				uint8_t orgArpNum = 0x7f & tmp;
-				int arpNum = instMan.lock()->findFirstAssignableArpeggioADPCM();
+				int arpNum = instManLocked->findFirstAssignableArpeggioADPCM();
 				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				adpcm->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x42, orgArpNum);
@@ -4006,9 +4024,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					uint16_t data = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
 					if (l == 0)
-						instMan.lock()->setArpeggioADPCMSequenceCommand(arpNum, 0, data, 0);
+						instManLocked->setArpeggioADPCMSequenceCommand(arpNum, 0, data, 0);
 					else
-						instMan.lock()->addArpeggioADPCMSequenceCommand(arpNum, data, 0);
+						instManLocked->addArpeggioADPCMSequenceCommand(arpNum, data, 0);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(arpCsr);
@@ -4022,12 +4040,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						arpCsr += 2;
 						times.push_back(propCtr.readUint8(arpCsr++));
 					}
-					instMan.lock()->setArpeggioADPCMLoops(arpNum, begins, ends, times);
+					instManLocked->setArpeggioADPCMLoops(arpNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(arpCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -4035,8 +4053,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					arpCsr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setArpeggioADPCMRelease(arpNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -4045,13 +4063,13 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 
 				switch (propCtr.readUint8(arpCsr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setArpeggioADPCMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x01:	// Fixed
-					instMan.lock()->setArpeggioADPCMType(arpNum, SequenceType::FIXED_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(arpNum, SequenceType::FIXED_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setArpeggioADPCMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					throw FileCorruptionError(FileIO::FileType::Bank);
@@ -4069,7 +4087,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			else {
 				adpcm->setPitchEnabled(true);
 				uint8_t orgPtNum = 0x7f & tmp;
-				int ptNum = instMan.lock()->findFirstAssignablePitchADPCM();
+				int ptNum = instManLocked->findFirstAssignablePitchADPCM();
 				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				adpcm->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x43, orgPtNum);
@@ -4080,9 +4098,9 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					uint16_t data = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
 					if (l == 0)
-						instMan.lock()->setPitchADPCMSequenceCommand(ptNum, 0, data, 0);
+						instManLocked->setPitchADPCMSequenceCommand(ptNum, 0, data, 0);
 					else
-						instMan.lock()->addPitchADPCMSequenceCommand(ptNum, data, 0);
+						instManLocked->addPitchADPCMSequenceCommand(ptNum, data, 0);
 				}
 
 				uint16_t loopCnt = propCtr.readUint16(ptCsr);
@@ -4096,12 +4114,12 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						ptCsr += 2;
 						times.push_back(propCtr.readUint8(ptCsr++));
 					}
-					instMan.lock()->setPitchADPCMLoops(ptNum, begins, ends, times);
+					instManLocked->setPitchADPCMLoops(ptNum, begins, ends, times);
 				}
 
 				switch (propCtr.readUint8(ptCsr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -4109,8 +4127,8 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					ptCsr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setPitchADPCMRelease(ptNum, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::FixedRelease, pos);
+					else instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -4119,10 +4137,10 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 
 				switch (propCtr.readUint8(ptCsr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setPitchADPCMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setPitchADPCMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setPitchADPCMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setPitchADPCMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					throw FileCorruptionError(FileIO::FileType::Bank);
@@ -4141,15 +4159,16 @@ AbstractInstrument* InstrumentIO::loadPPCInstrument(const std::vector<uint8_t> s
 													std::weak_ptr<InstrumentsManager> instMan,
 													int instNum)
 {
-	int wfIdx = instMan.lock()->findFirstAssignableWaveformADPCM();
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int wfIdx = instManLocked->findFirstAssignableWaveformADPCM();
 	if (wfIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 
-	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instMan.lock().get());
+	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
 	adpcm->setWaveformNumber(wfIdx);
 
-	instMan.lock()->storeWaveformADPCMSample(wfIdx, sample);
-	instMan.lock()->setWaveformADPCMRootKeyNumber(wfIdx, 67);	// o5g
-	instMan.lock()->setWaveformADPCMRootDeltaN(wfIdx, calcADPCMDeltaN(16000));
+	instManLocked->storeWaveformADPCMSample(wfIdx, sample);
+	instManLocked->setWaveformADPCMRootKeyNumber(wfIdx, 67);	// o5g
+	instManLocked->setWaveformADPCMRootDeltaN(wfIdx, calcADPCMDeltaN(16000));
 
 	return adpcm;
 }
@@ -4158,15 +4177,16 @@ AbstractInstrument* InstrumentIO::loadPVIInstrument(const std::vector<uint8_t> s
 													std::weak_ptr<InstrumentsManager> instMan,
 													int instNum)
 {
-	int wfIdx = instMan.lock()->findFirstAssignableWaveformADPCM();
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int wfIdx = instManLocked->findFirstAssignableWaveformADPCM();
 	if (wfIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
 
-	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instMan.lock().get());
+	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
 	adpcm->setWaveformNumber(wfIdx);
 
-	instMan.lock()->storeWaveformADPCMSample(wfIdx, sample);
-	instMan.lock()->setWaveformADPCMRootKeyNumber(wfIdx, 60);	// o5c
-	instMan.lock()->setWaveformADPCMRootDeltaN(wfIdx, calcADPCMDeltaN(16000));
+	instManLocked->storeWaveformADPCMSample(wfIdx, sample);
+	instManLocked->setWaveformADPCMRootKeyNumber(wfIdx, 60);	// o5c
+	instManLocked->setWaveformADPCMRootDeltaN(wfIdx, calcADPCMDeltaN(16000));
 
 	return adpcm;
 }

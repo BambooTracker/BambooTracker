@@ -11,6 +11,8 @@ ModuleIO::ModuleIO() {}
 void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 						  std::weak_ptr<InstrumentsManager> instMan)
 {
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+
 	ctr.appendString("BambooTrackerMod");
 	size_t eofOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy EOF offset
@@ -50,10 +52,10 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	ctr.appendString("INSTRMNT");
 	size_t instOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy instrument section offset
-	std::vector<int> instIdcs = instMan.lock()->getEntriedInstrumentIndices();
+	std::vector<int> instIdcs = instManLocked->getEntriedInstrumentIndices();
 	ctr.appendUint8(static_cast<uint8_t>(instIdcs.size()));
 	for (auto& idx : instIdcs) {
-		if (std::shared_ptr<AbstractInstrument> inst = instMan.lock()->getInstrumentSharedPtr(idx)) {
+		if (std::shared_ptr<AbstractInstrument> inst = instManLocked->getInstrumentSharedPtr(idx)) {
 			ctr.appendUint8(static_cast<uint8_t>(inst->getNumber()));
 			size_t iOfs = ctr.size();
 			ctr.appendUint32(0);	// Dummy instrument block offset
@@ -136,7 +138,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	ctr.appendUint32(0);	// Dummy instrument property section offset
 
 	// FM envelope
-	std::vector<int> envFMIdcs = instMan.lock()->getEnvelopeFMEntriedIndices();
+	std::vector<int> envFMIdcs = instManLocked->getEnvelopeFMEntriedIndices();
 	if (!envFMIdcs.empty()) {
 		ctr.appendUint8(0x00);
 		ctr.appendUint8(static_cast<uint8_t>(envFMIdcs.size()));
@@ -144,91 +146,91 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint8(0);	// Dummy offset
-			uint8_t tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AL) << 4)
-						  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::FB));
+			uint8_t tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AL) << 4)
+						  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::FB));
 			ctr.appendUint8(tmp);
 			// Operator 1
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 0);
-			tmp = static_cast<uint8_t>((tmp << 5)) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(idx, 0);
+			tmp = static_cast<uint8_t>((tmp << 5)) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1));
 			ctr.appendUint8(tmp);
-			int tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1);
+			int tmp2 = instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1));
 			ctr.appendUint8(tmp);
 			// Operator 2
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 1);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(idx, 1);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2));
 			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2);
+			tmp2 = instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2));
 			ctr.appendUint8(tmp);
 			// Operator 3
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 2);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(idx, 2);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3));
 			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3);
+			tmp2 = instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3));
 			ctr.appendUint8(tmp);
 			// Operator 4
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 3);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4));
+			tmp = instManLocked->getEnvelopeFMOperatorEnabled(idx, 3);
+			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4) << 5)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4) << 4)
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4));
+			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4));
 			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4);
+			tmp2 = instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4);
 			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4));
+				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4));
 			ctr.appendUint8(tmp);
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
 	}
 
 	// FM LFO
-	std::vector<int> lfoFMIdcs = instMan.lock()->getLFOFMEntriedIndices();
+	std::vector<int> lfoFMIdcs = instManLocked->getLFOFMEntriedIndices();
 	if (!lfoFMIdcs.empty()) {
 		ctr.appendUint8(0x01);
 		ctr.appendUint8(static_cast<uint8_t>(lfoFMIdcs.size()));
@@ -236,16 +238,16 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint8(0);	// Dummy offset
-			uint8_t tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::FREQ) << 4)
-						  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::PMS));
+			uint8_t tmp = static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::FREQ) << 4)
+						  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::PMS));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::AM4) << 7)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::AM3) << 6)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::AM2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::AM1) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::AMS));
+			tmp = static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::AM4) << 7)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::AM3) << 6)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::AM2) << 5)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::AM1) << 4)
+				  | static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::AMS));
 			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getLFOFMparameter(idx, FMLFOParameter::Count));
+			tmp = static_cast<uint8_t>(instManLocked->getLFOFMparameter(idx, FMLFOParameter::Count));
 			ctr.appendUint8(tmp);
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
@@ -253,7 +255,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 
 	// FM envelope parameter
 	for (size_t i = 0; i < 38; ++i) {
-		std::vector<int> idcs = instMan.lock()->getOperatorSequenceFMEntriedIndices(FileIO::ENV_FM_PARAMS[i]);
+		std::vector<int> idcs = instManLocked->getOperatorSequenceFMEntriedIndices(FileIO::ENV_FM_PARAMS[i]);
 		if (!idcs.empty()) {
 			ctr.appendUint8(0x02 + static_cast<uint8_t>(i));
 			ctr.appendUint8(static_cast<uint8_t>(idcs.size()));
@@ -261,19 +263,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint8(static_cast<uint8_t>(idx));
 				size_t ofs = ctr.size();
 				ctr.appendUint16(0);	// Dummy offset
-				auto seq = instMan.lock()->getOperatorSequenceFMSequence(FileIO::ENV_FM_PARAMS[i], idx);
+				auto seq = instManLocked->getOperatorSequenceFMSequence(FileIO::ENV_FM_PARAMS[i], idx);
 				ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 				for (auto& com : seq) {
 					ctr.appendUint16(static_cast<uint16_t>(com.type));
 				}
-				auto loop = instMan.lock()->getOperatorSequenceFMLoops(FileIO::ENV_FM_PARAMS[i], idx);
+				auto loop = instManLocked->getOperatorSequenceFMLoops(FileIO::ENV_FM_PARAMS[i], idx);
 				ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 				for (auto& l : loop) {
 					ctr.appendUint16(static_cast<uint16_t>(l.begin));
 					ctr.appendUint16(static_cast<uint16_t>(l.end));
 					ctr.appendUint8(static_cast<uint8_t>(l.times));
 				}
-				auto release = instMan.lock()->getOperatorSequenceFMRelease(FileIO::ENV_FM_PARAMS[i], idx);
+				auto release = instManLocked->getOperatorSequenceFMRelease(FileIO::ENV_FM_PARAMS[i], idx);
 				switch (release.type) {
 				case ReleaseType::NoRelease:
 					ctr.appendUint8(0x00);
@@ -298,7 +300,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// FM arpeggio
-	std::vector<int> arpFMIdcs = instMan.lock()->getArpeggioFMEntriedIndices();
+	std::vector<int> arpFMIdcs = instManLocked->getArpeggioFMEntriedIndices();
 	if (!arpFMIdcs.empty()) {
 		ctr.appendUint8(0x28);
 		ctr.appendUint8(static_cast<uint8_t>(arpFMIdcs.size()));
@@ -306,19 +308,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getArpeggioFMSequence(idx);
+			auto seq = instManLocked->getArpeggioFMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getArpeggioFMLoops(idx);
+			auto loop = instManLocked->getArpeggioFMLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getArpeggioFMRelease(idx);
+			auto release = instManLocked->getArpeggioFMRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -337,7 +339,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getArpeggioFMType(idx)) {
+			switch (instManLocked->getArpeggioFMType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
@@ -348,7 +350,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// FM pitch
-	std::vector<int> ptFMIdcs = instMan.lock()->getPitchFMEntriedIndices();
+	std::vector<int> ptFMIdcs = instManLocked->getPitchFMEntriedIndices();
 	if (!ptFMIdcs.empty()) {
 		ctr.appendUint8(0x29);
 		ctr.appendUint8(static_cast<uint8_t>(ptFMIdcs.size()));
@@ -356,19 +358,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getPitchFMSequence(idx);
+			auto seq = instManLocked->getPitchFMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getPitchFMLoops(idx);
+			auto loop = instManLocked->getPitchFMLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getPitchFMRelease(idx);
+			auto release = instManLocked->getPitchFMRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -387,7 +389,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getPitchFMType(idx)) {
+			switch (instManLocked->getPitchFMType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
@@ -397,7 +399,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// SSG waveform
-	std::vector<int> wfSSGIdcs = instMan.lock()->getWaveformSSGEntriedIndices();
+	std::vector<int> wfSSGIdcs = instManLocked->getWaveformSSGEntriedIndices();
 	if (!wfSSGIdcs.empty()) {
 		ctr.appendUint8(0x30);
 		ctr.appendUint8(static_cast<uint8_t>(wfSSGIdcs.size()));
@@ -405,20 +407,20 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getWaveformSSGSequence(idx);
+			auto seq = instManLocked->getWaveformSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getWaveformSSGLoops(idx);
+			auto loop = instManLocked->getWaveformSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getWaveformSSGRelease(idx);
+			auto release = instManLocked->getWaveformSSGRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -443,7 +445,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// SSG tone/noise
-	std::vector<int> tnSSGIdcs = instMan.lock()->getToneNoiseSSGEntriedIndices();
+	std::vector<int> tnSSGIdcs = instManLocked->getToneNoiseSSGEntriedIndices();
 	if (!tnSSGIdcs.empty()) {
 		ctr.appendUint8(0x31);
 		ctr.appendUint8(static_cast<uint8_t>(tnSSGIdcs.size()));
@@ -451,19 +453,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getToneNoiseSSGSequence(idx);
+			auto seq = instManLocked->getToneNoiseSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getToneNoiseSSGLoops(idx);
+			auto loop = instManLocked->getToneNoiseSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getToneNoiseSSGRelease(idx);
+			auto release = instManLocked->getToneNoiseSSGRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -488,7 +490,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// SSG envelope
-	std::vector<int> envSSGIdcs = instMan.lock()->getEnvelopeSSGEntriedIndices();
+	std::vector<int> envSSGIdcs = instManLocked->getEnvelopeSSGEntriedIndices();
 	if (!envSSGIdcs.empty()) {
 		ctr.appendUint8(0x32);
 		ctr.appendUint8(static_cast<uint8_t>(envSSGIdcs.size()));
@@ -496,20 +498,20 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getEnvelopeSSGSequence(idx);
+			auto seq = instManLocked->getEnvelopeSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getEnvelopeSSGLoops(idx);
+			auto loop = instManLocked->getEnvelopeSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getEnvelopeSSGRelease(idx);
+			auto release = instManLocked->getEnvelopeSSGRelease(idx);
 
 			switch (release.type) {
 			case ReleaseType::NoRelease:
@@ -535,7 +537,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// SSG arpeggio
-	std::vector<int> arpSSGIdcs = instMan.lock()->getArpeggioSSGEntriedIndices();
+	std::vector<int> arpSSGIdcs = instManLocked->getArpeggioSSGEntriedIndices();
 	if (!arpSSGIdcs.empty()) {
 		ctr.appendUint8(0x33);
 		ctr.appendUint8(static_cast<uint8_t>(arpSSGIdcs.size()));
@@ -543,19 +545,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getArpeggioSSGSequence(idx);
+			auto seq = instManLocked->getArpeggioSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getArpeggioSSGLoops(idx);
+			auto loop = instManLocked->getArpeggioSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getArpeggioSSGRelease(idx);
+			auto release = instManLocked->getArpeggioSSGRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -574,7 +576,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getArpeggioSSGType(idx)) {
+			switch (instManLocked->getArpeggioSSGType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
@@ -585,7 +587,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// SSG pitch
-	std::vector<int> ptSSGIdcs = instMan.lock()->getPitchSSGEntriedIndices();
+	std::vector<int> ptSSGIdcs = instManLocked->getPitchSSGEntriedIndices();
 	if (!ptSSGIdcs.empty()) {
 		ctr.appendUint8(0x34);
 		ctr.appendUint8(static_cast<uint8_t>(ptSSGIdcs.size()));
@@ -593,19 +595,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getPitchSSGSequence(idx);
+			auto seq = instManLocked->getPitchSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getPitchSSGLoops(idx);
+			auto loop = instManLocked->getPitchSSGLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getPitchSSGRelease(idx);
+			auto release = instManLocked->getPitchSSGRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -624,7 +626,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getPitchSSGType(idx)) {
+			switch (instManLocked->getPitchSSGType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
@@ -634,7 +636,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// ADPCM waveform
-	std::vector<int> wfADPCMIdcs = instMan.lock()->getWaveformADPCMEntriedIndices();
+	std::vector<int> wfADPCMIdcs = instManLocked->getWaveformADPCMEntriedIndices();
 	if (!wfADPCMIdcs.empty()) {
 		ctr.appendUint8(0x40);
 		ctr.appendUint8(static_cast<uint8_t>(wfADPCMIdcs.size()));
@@ -642,10 +644,10 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint32(0);	// Dummy offset
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getWaveformADPCMRootKeyNumber(idx)));
-			ctr.appendUint16(static_cast<uint16_t>(instMan.lock()->getWaveformADPCMRootDeltaN(idx)));
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->isWaveformADPCMRepeatable(idx)));
-			std::vector<uint8_t> samples = instMan.lock()->getWaveformADPCMSamples(idx);
+			ctr.appendUint8(static_cast<uint8_t>(instManLocked->getWaveformADPCMRootKeyNumber(idx)));
+			ctr.appendUint16(static_cast<uint16_t>(instManLocked->getWaveformADPCMRootDeltaN(idx)));
+			ctr.appendUint8(static_cast<uint8_t>(instManLocked->isWaveformADPCMRepeatable(idx)));
+			std::vector<uint8_t> samples = instManLocked->getWaveformADPCMSamples(idx);
 			ctr.appendUint32(samples.size());
 			ctr.appendVector(std::move(samples));
 			ctr.writeUint32(ofs, ctr.size() - ofs);
@@ -653,7 +655,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// ADPCM envelope
-	std::vector<int> envADPCMIdcs = instMan.lock()->getEnvelopeADPCMEntriedIndices();
+	std::vector<int> envADPCMIdcs = instManLocked->getEnvelopeADPCMEntriedIndices();
 	if (!envADPCMIdcs.empty()) {
 		ctr.appendUint8(0x41);
 		ctr.appendUint8(static_cast<uint8_t>(envADPCMIdcs.size()));
@@ -661,20 +663,20 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getEnvelopeADPCMSequence(idx);
+			auto seq = instManLocked->getEnvelopeADPCMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 				ctr.appendInt32(static_cast<int32_t>(com.data));
 			}
-			auto loop = instMan.lock()->getEnvelopeADPCMLoops(idx);
+			auto loop = instManLocked->getEnvelopeADPCMLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getEnvelopeADPCMRelease(idx);
+			auto release = instManLocked->getEnvelopeADPCMRelease(idx);
 
 			switch (release.type) {
 			case ReleaseType::NoRelease:
@@ -700,7 +702,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// ADPCM arpeggio
-	std::vector<int> arpADPCMIdcs = instMan.lock()->getArpeggioADPCMEntriedIndices();
+	std::vector<int> arpADPCMIdcs = instManLocked->getArpeggioADPCMEntriedIndices();
 	if (!arpADPCMIdcs.empty()) {
 		ctr.appendUint8(0x42);
 		ctr.appendUint8(static_cast<uint8_t>(arpADPCMIdcs.size()));
@@ -708,19 +710,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getArpeggioADPCMSequence(idx);
+			auto seq = instManLocked->getArpeggioADPCMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getArpeggioADPCMLoops(idx);
+			auto loop = instManLocked->getArpeggioADPCMLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getArpeggioADPCMRelease(idx);
+			auto release = instManLocked->getArpeggioADPCMRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -739,7 +741,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getArpeggioADPCMType(idx)) {
+			switch (instManLocked->getArpeggioADPCMType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
@@ -750,7 +752,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 
 	// ADPCM pitch
-	std::vector<int> ptADPCMIdcs = instMan.lock()->getPitchADPCMEntriedIndices();
+	std::vector<int> ptADPCMIdcs = instManLocked->getPitchADPCMEntriedIndices();
 	if (!ptADPCMIdcs.empty()) {
 		ctr.appendUint8(0x43);
 		ctr.appendUint8(static_cast<uint8_t>(ptADPCMIdcs.size()));
@@ -758,19 +760,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint16(0);	// Dummy offset
-			auto seq = instMan.lock()->getPitchADPCMSequence(idx);
+			auto seq = instManLocked->getPitchADPCMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
 			for (auto& com : seq) {
 				ctr.appendUint16(static_cast<uint16_t>(com.type));
 			}
-			auto loop = instMan.lock()->getPitchADPCMLoops(idx);
+			auto loop = instManLocked->getPitchADPCMLoops(idx);
 			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
 			for (auto& l : loop) {
 				ctr.appendUint16(static_cast<uint16_t>(l.begin));
 				ctr.appendUint16(static_cast<uint16_t>(l.end));
 				ctr.appendUint8(static_cast<uint8_t>(l.times));
 			}
-			auto release = instMan.lock()->getPitchADPCMRelease(idx);
+			auto release = instManLocked->getPitchADPCMRelease(idx);
 			switch (release.type) {
 			case ReleaseType::NoRelease:
 				ctr.appendUint8(0x00);
@@ -789,7 +791,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint16(static_cast<uint16_t>(release.begin));
 				break;
 			}
-			switch (instMan.lock()->getPitchADPCMType(idx)) {
+			switch (instManLocked->getPitchADPCMType(idx)) {
 			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
 			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
 			default:												break;
@@ -963,53 +965,55 @@ void ModuleIO::loadModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
 										   size_t globCsr, uint32_t version)
 {
+	std::shared_ptr<Module> modLocked = mod.lock();
+
 	size_t modOfs = ctr.readUint32(globCsr);
 	size_t modCsr = globCsr + 4;
 	size_t modTitleLen = ctr.readUint32(modCsr);
 	modCsr += 4;
 	if (modTitleLen > 0) {
-		mod.lock()->setTitle(ctr.readString(modCsr, modTitleLen));
+		modLocked->setTitle(ctr.readString(modCsr, modTitleLen));
 		modCsr += modTitleLen;
 	}
 	size_t modAuthorLen = ctr.readUint32(modCsr);
 	modCsr += 4;
 	if (modAuthorLen > 0) {
-		mod.lock()->setAuthor(ctr.readString(modCsr, modAuthorLen));
+		modLocked->setAuthor(ctr.readString(modCsr, modAuthorLen));
 		modCsr += modAuthorLen;
 	}
 	size_t modCopyrightLen = ctr.readUint32(modCsr);
 	modCsr += 4;
 	if (modCopyrightLen > 0) {
-		mod.lock()->setCopyright(ctr.readString(modCsr, modCopyrightLen));
+		modLocked->setCopyright(ctr.readString(modCsr, modCopyrightLen));
 		modCsr += modCopyrightLen;
 	}
 	size_t modCommentLen = ctr.readUint32(modCsr);
 	modCsr += 4;
 	if (modCommentLen > 0) {
-		mod.lock()->setComment(ctr.readString(modCsr, modCommentLen));
+		modLocked->setComment(ctr.readString(modCsr, modCommentLen));
 		modCsr += modCommentLen;
 	}
-	mod.lock()->setTickFrequency(ctr.readUint32(modCsr));
+	modLocked->setTickFrequency(ctr.readUint32(modCsr));
 	modCsr += 4;
-	mod.lock()->setStepHighlight1Distance(ctr.readUint32(modCsr));
+	modLocked->setStepHighlight1Distance(ctr.readUint32(modCsr));
 	modCsr += 4;
 	if (version >= Version::toBCD(1, 0, 3)) {
-		mod.lock()->setStepHighlight2Distance(ctr.readUint32(modCsr));
+		modLocked->setStepHighlight2Distance(ctr.readUint32(modCsr));
 		modCsr += 4;
 	}
 	else {
-		mod.lock()->setStepHighlight2Distance(mod.lock()->getStepHighlight1Distance() * 4);
+		modLocked->setStepHighlight2Distance(modLocked->getStepHighlight1Distance() * 4);
 	}
 	if (version >= Version::toBCD(1, 3, 0)) {
 		auto mixType = static_cast<MixerType>(ctr.readUint8(modCsr++));
-		mod.lock()->setMixerType(mixType);
+		modLocked->setMixerType(mixType);
 		if (mixType == MixerType::CUSTOM) {
-			mod.lock()->setCustomMixerFMLevel(ctr.readInt8(modCsr++) / 10.0);
-			mod.lock()->setCustomMixerSSGLevel(ctr.readInt8(modCsr++) / 10.0);
+			modLocked->setCustomMixerFMLevel(ctr.readInt8(modCsr++) / 10.0);
+			modLocked->setCustomMixerSSGLevel(ctr.readInt8(modCsr++) / 10.0);
 		}
 	}
 	else {
-		mod.lock()->setMixerType(MixerType::UNSPECIFIED);
+		modLocked->setMixerType(MixerType::UNSPECIFIED);
 	}
 
 	return globCsr + modOfs;
@@ -1019,6 +1023,8 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 											   BinaryContainer& ctr, size_t globCsr, uint32_t version)
 {
 	(void)version;
+
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 
 	size_t instOfs = ctr.readUint32(globCsr);
 	size_t instCsr = globCsr + 4;
@@ -1039,7 +1045,7 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 		switch (ctr.readUint8(iCsr++)) {
 		case 0x00:	// FM
 		{
-			auto instFM = new InstrumentFM(idx, name, instMan.lock().get());
+			auto instFM = new InstrumentFM(idx, name, instManLocked.get());
 			instFM->setEnvelopeNumber(ctr.readUint8(iCsr));
 			iCsr += 1;
 			uint8_t tmp = ctr.readUint8(iCsr);
@@ -1082,12 +1088,12 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 					iCsr += 1;
 				}
 			}
-			instMan.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(instFM));
+			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instFM));
 			break;
 		}
 		case 0x01:	// SSG
 		{
-			auto instSSG = new InstrumentSSG(idx, name, instMan.lock().get());
+			auto instSSG = new InstrumentSSG(idx, name, instManLocked.get());
 			uint8_t tmp = ctr.readUint8(iCsr);
 			instSSG->setWaveformEnabled((0x80 & tmp) ? false : true);
 			instSSG->setWaveformNumber(0x7f & tmp);
@@ -1108,12 +1114,12 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 			instSSG->setPitchEnabled((0x80 & tmp) ? false : true);
 			instSSG->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
-			instMan.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(instSSG));
+			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instSSG));
 			break;
 		}
 		case 0x02:	// ADPCM
 		{
-			auto instADPCM = new InstrumentADPCM(idx, name, instMan.lock().get());
+			auto instADPCM = new InstrumentADPCM(idx, name, instManLocked.get());
 			instADPCM->setWaveformNumber(ctr.readUint8(iCsr++));
 			uint8_t tmp = ctr.readUint8(iCsr);
 			instADPCM->setEnvelopeEnabled((0x80 & tmp) ? false : true);
@@ -1127,7 +1133,7 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 			instADPCM->setPitchEnabled((0x80 & tmp) ? false : true);
 			instADPCM->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
-			instMan.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(instADPCM));
+			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instADPCM));
 			break;
 		}
 		default:
@@ -1143,6 +1149,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 													   BinaryContainer& ctr, size_t globCsr,
 													   uint32_t version)
 {
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+
 	size_t instPropOfs = ctr.readUint32(globCsr);
 	size_t instPropCsr = globCsr + 4;
 	globCsr += instPropOfs;
@@ -1156,83 +1164,83 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				uint8_t ofs = ctr.readUint8(instPropCsr);
 				size_t csr = instPropCsr + 1;
 				uint8_t tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
 				// Operator 1
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 0, (0x20 & tmp) ? true : false);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1, tmp & 0x1f);
+				instManLocked->setEnvelopeFMOperatorEnabled(idx, 0, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1, tmp >> 4);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1, tmp & 0x0f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1, tmp);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1, tmp);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1, tmp & 0x0f);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1,
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1,
 													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				// Operator 2
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 1, (0x20 & tmp) ? true : false);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2, tmp & 0x1f);
+				instManLocked->setEnvelopeFMOperatorEnabled(idx, 1, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2, tmp >> 4);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2, tmp & 0x0f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2, tmp);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2, tmp);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2, tmp & 0x0f);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2,
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2,
 													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				// Operator 3
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 2, (0x20 & tmp) ? true : false);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3, tmp & 0x1f);
+				instManLocked->setEnvelopeFMOperatorEnabled(idx, 2, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3, tmp >> 4);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3, tmp & 0x0f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3, tmp);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3, tmp);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3, tmp & 0x0f);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3,
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3,
 													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				// Operator 4
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMOperatorEnabled(idx, 3, (0x20 & tmp) ? true : false);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4, tmp & 0x1f);
+				instManLocked->setEnvelopeFMOperatorEnabled(idx, 3, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4, tmp >> 5);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4, tmp & 0x1f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4, tmp & 0x1f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4, tmp >> 4);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4, tmp & 0x0f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4, tmp);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4, tmp);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
-				instMan.lock()->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
 													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				instPropCsr += ofs;
 			}
@@ -1246,16 +1254,16 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				uint8_t ofs = ctr.readUint8(instPropCsr);
 				size_t csr = instPropCsr + 1;
 				uint8_t tmp = ctr.readUint8(csr++);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::FREQ, tmp >> 4);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::PMS, tmp & 0x0f);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AMS, tmp & 0x0f);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::AMS, tmp & 0x0f);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
 				tmp = ctr.readUint8(csr++);
-				instMan.lock()->setLFOFMParameter(idx, FMLFOParameter::Count, tmp);
+				instManLocked->setLFOFMParameter(idx, FMLFOParameter::Count, tmp);
 				instPropCsr += ofs;
 			}
 			break;
@@ -1265,7 +1273,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::AL, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::AL, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x03:	// FM FB
@@ -1273,7 +1281,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::FB, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::FB, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x04:	// FM AR1
@@ -1281,7 +1289,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::AR1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::AR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x05:	// FM DR1
@@ -1289,7 +1297,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DR1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x06:	// FM SR1
@@ -1297,7 +1305,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SR1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x07:	// FM RR1
@@ -1305,7 +1313,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::RR1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::RR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x08:	// FM SL1
@@ -1313,7 +1321,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SL1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SL1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x09:	// FM TL1
@@ -1321,7 +1329,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::TL1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::TL1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x0a:	// FM KS1
@@ -1329,7 +1337,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::KS1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::KS1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x0b:	// FM ML1
@@ -1337,7 +1345,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::ML1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::ML1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x0c:	// FM DT1
@@ -1345,7 +1353,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DT1, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DT1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x0d:	// FM AR2
@@ -1353,7 +1361,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::AR2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::AR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x0e:	// FM DR2
@@ -1361,7 +1369,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DR2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x0f:	// FM SR2
@@ -1369,7 +1377,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SR2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x10:	// FM RR2
@@ -1377,7 +1385,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::RR2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::RR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x11:	// FM SL2
@@ -1385,7 +1393,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SL2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SL2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x12:	// FM TL2
@@ -1393,7 +1401,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::TL2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::TL2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x13:	// FM KS2
@@ -1401,7 +1409,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::KS2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::KS2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x14:	// FM ML2
@@ -1409,7 +1417,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::ML2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::ML2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x15:	// FM DT2
@@ -1417,7 +1425,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DT2, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DT2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x16:	// FM AR3
@@ -1425,7 +1433,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::AR3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::AR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x17:	// FM DR3
@@ -1433,7 +1441,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DR3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x18:	// FM SR3
@@ -1441,7 +1449,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SR3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x19:	// FM RR3
@@ -1449,7 +1457,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::RR3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::RR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x1a:	// FM SL3
@@ -1457,7 +1465,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SL3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SL3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x1b:	// FM TL3
@@ -1465,7 +1473,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::TL3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::TL3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x1c:	// FM KS3
@@ -1473,7 +1481,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::KS3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::KS3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x1d:	// FM ML3
@@ -1481,7 +1489,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::ML3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::ML3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x1e:	// FM DT3
@@ -1489,7 +1497,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DT3, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DT3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x1f:	// FM AR4
@@ -1497,7 +1505,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::AR4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::AR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x20:	// FM DR4
@@ -1505,7 +1513,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DR4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x21:	// FM SR4
@@ -1513,7 +1521,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SR4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x22:	// FM RR4
@@ -1521,7 +1529,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::RR4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::RR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x23:	// FM SL4
@@ -1529,7 +1537,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::SL4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::SL4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x24:	// FM TL4
@@ -1537,7 +1545,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::TL4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::TL4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x25:	// FM KS4
@@ -1545,7 +1553,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::KS4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::KS4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x26:	// FM ML4
@@ -1553,7 +1561,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::ML4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::ML4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x27:	// FM DT4
@@ -1561,7 +1569,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
 				instPropCsr += loadInstrumentPropertyOperatorSequence(
-								   FMEnvelopeParameter::DT4, instPropCsr, instMan, ctr, version);
+								   FMEnvelopeParameter::DT4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
 		case 0x28:	// FM arpeggio
@@ -1579,9 +1587,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instMan.lock()->setArpeggioFMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setArpeggioFMSequenceCommand(idx, 0, data, 0);
 					else
-						instMan.lock()->addArpeggioFMSequenceCommand(idx, data, 0);
+						instManLocked->addArpeggioFMSequenceCommand(idx, data, 0);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1595,11 +1603,11 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setArpeggioFMLoops(idx, begins, ends, times);
+					instManLocked->setArpeggioFMLoops(idx, begins, ends, times);
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1607,8 +1615,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioFMRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setArpeggioFMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -1617,19 +1625,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instMan.lock()->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					case 0x01:	// Fixed
-						instMan.lock()->setArpeggioFMType(idx, SequenceType::FIXED_SEQUENCE);
+						instManLocked->setArpeggioFMType(idx, SequenceType::FIXED_SEQUENCE);
 						break;
 					case 0x02:	// Relative
-						instMan.lock()->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setArpeggioFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instMan.lock()->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						}
 						else {
@@ -1657,9 +1665,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instMan.lock()->setPitchFMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setPitchFMSequenceCommand(idx, 0, data, 0);
 					else
-						instMan.lock()->addPitchFMSequenceCommand(idx, data, 0);
+						instManLocked->addPitchFMSequenceCommand(idx, data, 0);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1673,12 +1681,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setPitchFMLoops(idx, begins, ends, times);
+					instManLocked->setPitchFMLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1686,8 +1694,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setPitchFMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchFMRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setPitchFMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -1696,16 +1704,16 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instMan.lock()->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					case 0x02:	// Relative
-						instMan.lock()->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setPitchFMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instMan.lock()->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchFMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						}
 						else {
@@ -1747,9 +1755,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 							subdata = PitchConverter::getPitchSSGSquare(subdata);
 					}
 					if (l == 0)
-						instMan.lock()->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
+						instManLocked->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
 					else
-						instMan.lock()->addWaveformSSGSequenceCommand(idx, data, subdata);
+						instManLocked->addWaveformSSGSequenceCommand(idx, data, subdata);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1763,12 +1771,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setWaveformSSGLoops(idx, begins, ends, times);
+					instManLocked->setWaveformSSGLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1776,8 +1784,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setWaveformSSGRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -1812,9 +1820,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					}
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instMan.lock()->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
+						instManLocked->setToneNoiseSSGSequenceCommand(idx, 0, data, 0);
 					else
-						instMan.lock()->addToneNoiseSSGSequenceCommand(idx, data, 0);
+						instManLocked->addToneNoiseSSGSequenceCommand(idx, data, 0);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1828,12 +1836,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setToneNoiseSSGLoops(idx, begins, ends, times);
+					instManLocked->setToneNoiseSSGLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1841,8 +1849,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setToneNoiseSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -1879,9 +1887,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 					}
 					if (l == 0)
-						instMan.lock()->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
+						instManLocked->setEnvelopeSSGSequenceCommand(idx, 0, data, subdata);
 					else
-						instMan.lock()->addEnvelopeSSGSequenceCommand(idx, data, subdata);
+						instManLocked->addEnvelopeSSGSequenceCommand(idx, data, subdata);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1895,12 +1903,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setEnvelopeSSGLoops(idx, begins, ends, times);
+					instManLocked->setEnvelopeSSGLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -1908,24 +1916,24 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x02:	// Absolute
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::AbsoluteRelease, pos);
-					else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::AbsoluteRelease, pos);
+					else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x03:	// Relative
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::RelativeRelease, pos);
-					else instMan.lock()->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::RelativeRelease, pos);
+					else instManLocked->setEnvelopeSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -1954,9 +1962,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instMan.lock()->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
+						instManLocked->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
 					else
-						instMan.lock()->addArpeggioSSGSequenceCommand(idx, data, 0);
+						instManLocked->addArpeggioSSGSequenceCommand(idx, data, 0);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -1970,12 +1978,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setArpeggioSSGLoops(idx, begins, ends, times);
+					instManLocked->setArpeggioSSGLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -1983,8 +1991,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioSSGRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setArpeggioSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -1993,19 +2001,19 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instMan.lock()->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					case 0x01:	// Fixed
-						instMan.lock()->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
+						instManLocked->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
 						break;
 					case 0x02:	// Relative
-						instMan.lock()->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setArpeggioSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instMan.lock()->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						}
 						else {
@@ -2033,9 +2041,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) csr += 2;
 					if (l == 0)
-						instMan.lock()->setPitchSSGSequenceCommand(idx, 0, data, 0);
+						instManLocked->setPitchSSGSequenceCommand(idx, 0, data, 0);
 					else
-						instMan.lock()->addPitchSSGSequenceCommand(idx, data, 0);
+						instManLocked->addPitchSSGSequenceCommand(idx, data, 0);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -2049,12 +2057,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setPitchSSGLoops(idx, begins, ends, times);
+					instManLocked->setPitchSSGLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -2062,8 +2070,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setPitchSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchSSGRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setPitchSSGRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -2072,16 +2080,16 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
 					case 0x00:	// Absolute
-						instMan.lock()->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 						break;
 					case 0x02:	// Relative
-						instMan.lock()->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setPitchSSGType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
 						if (version < Version::toBCD(1, 3, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instMan.lock()->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchSSGType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 							break;
 						}
 						else {
@@ -2102,15 +2110,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				uint32_t ofs = ctr.readUint32(instPropCsr);
 				size_t csr = instPropCsr + 4;
 
-				instMan.lock()->setWaveformADPCMRootKeyNumber(idx, ctr.readUint8(csr++));
-				instMan.lock()->setWaveformADPCMRootDeltaN(idx, ctr.readUint16(csr));
+				instManLocked->setWaveformADPCMRootKeyNumber(idx, ctr.readUint8(csr++));
+				instManLocked->setWaveformADPCMRootDeltaN(idx, ctr.readUint16(csr));
 				csr += 2;
-				instMan.lock()->setWaveformADPCMRepeatEnabled(idx, (ctr.readUint8(csr++) & 0x01) != 0);
+				instManLocked->setWaveformADPCMRepeatEnabled(idx, (ctr.readUint8(csr++) & 0x01) != 0);
 				uint32_t len = ctr.readUint32(csr);
 				csr += 4;
 				std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
 				csr += len;
-				instMan.lock()->storeWaveformADPCMSample(idx, std::move(samples));
+				instManLocked->storeWaveformADPCMSample(idx, std::move(samples));
 
 				instPropCsr += ofs;
 			}
@@ -2133,9 +2141,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					subdata = ctr.readInt32(csr);
 					csr += 4;
 					if (l == 0)
-						instMan.lock()->setEnvelopeADPCMSequenceCommand(idx, 0, data, subdata);
+						instManLocked->setEnvelopeADPCMSequenceCommand(idx, 0, data, subdata);
 					else
-						instMan.lock()->addEnvelopeADPCMSequenceCommand(idx, data, subdata);
+						instManLocked->addEnvelopeADPCMSequenceCommand(idx, data, subdata);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -2149,12 +2157,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setEnvelopeADPCMLoops(idx, begins, ends, times);
+					instManLocked->setEnvelopeADPCMLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -2162,24 +2170,24 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x02:	// Absolute
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::AbsoluteRelease, pos);
-					else instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::AbsoluteRelease, pos);
+					else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				case 0x03:	// Relative
 				{
 					uint16_t pos = ctr.readUint16(csr);
 					csr += 2;
-					if (pos < seqLen) instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::RelativeRelease, pos);
-					else instMan.lock()->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::RelativeRelease, pos);
+					else instManLocked->setEnvelopeADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -2205,9 +2213,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
 					if (l == 0)
-						instMan.lock()->setArpeggioADPCMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setArpeggioADPCMSequenceCommand(idx, 0, data, 0);
 					else
-						instMan.lock()->addArpeggioADPCMSequenceCommand(idx, data, 0);
+						instManLocked->addArpeggioADPCMSequenceCommand(idx, data, 0);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -2221,12 +2229,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setArpeggioADPCMLoops(idx, begins, ends, times);
+					instManLocked->setArpeggioADPCMLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -2234,8 +2242,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setArpeggioADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setArpeggioADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -2243,13 +2251,13 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setArpeggioADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x01:	// Fixed
-					instMan.lock()->setArpeggioADPCMType(idx, SequenceType::FIXED_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(idx, SequenceType::FIXED_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setArpeggioADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setArpeggioADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					throw FileCorruptionError(FileIO::FileType::Mod);
@@ -2273,9 +2281,9 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
 					if (l == 0)
-						instMan.lock()->setPitchADPCMSequenceCommand(idx, 0, data, 0);
+						instManLocked->setPitchADPCMSequenceCommand(idx, 0, data, 0);
 					else
-						instMan.lock()->addPitchADPCMSequenceCommand(idx, data, 0);
+						instManLocked->addPitchADPCMSequenceCommand(idx, data, 0);
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
@@ -2289,12 +2297,12 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 						csr += 2;
 						times.push_back(ctr.readUint8(csr++));
 					}
-					instMan.lock()->setPitchADPCMLoops(idx, begins, ends, times);
+					instManLocked->setPitchADPCMLoops(idx, begins, ends, times);
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instMan.lock()->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				case 0x01:	// Fixed
 				{
@@ -2302,8 +2310,8 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instMan.lock()->setPitchADPCMRelease(idx, ReleaseType::FixedRelease, pos);
-					else instMan.lock()->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setPitchADPCMRelease(idx, ReleaseType::FixedRelease, pos);
+					else instManLocked->setPitchADPCMRelease(idx, ReleaseType::NoRelease, -1);
 					break;
 				}
 				default:
@@ -2311,10 +2319,10 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// Absolute
-					instMan.lock()->setPitchADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
+					instManLocked->setPitchADPCMType(idx, SequenceType::ABSOLUTE_SEQUENCE);
 					break;
 				case 0x02:	// Relative
-					instMan.lock()->setPitchADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
+					instManLocked->setPitchADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
 					throw FileCorruptionError(FileIO::FileType::Mod);
@@ -2334,7 +2342,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 
 size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 														size_t instMemCsr,
-														std::weak_ptr<InstrumentsManager> instMan,
+														std::shared_ptr<InstrumentsManager>& instManLocked,
 														BinaryContainer& ctr, uint32_t version)
 {
 	uint8_t idx = ctr.readUint8(instMemCsr++);
@@ -2348,9 +2356,9 @@ size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter para
 		csr += 2;
 		if (version < Version::toBCD(1, 2, 2)) csr += 2;
 		if (l == 0)
-			instMan.lock()->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
+			instManLocked->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
 		else
-			instMan.lock()->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
+			instManLocked->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
 	}
 
 	uint16_t loopCnt = ctr.readUint16(csr);
@@ -2364,20 +2372,20 @@ size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter para
 			csr += 2;
 			times.push_back(ctr.readUint8(csr++));
 		}
-		instMan.lock()->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
+		instManLocked->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
 	}
 
 	switch (ctr.readUint8(csr++)) {
 	case 0x00:	// No release
-		instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
 		break;
 	case 0x01:	// Fixed
 	{
 		uint16_t pos = ctr.readUint16(csr);
 		csr += 2;
 		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-		if (pos < seqLen) instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
-		else instMan.lock()->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
+		else instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
 		break;
 	}
 	default:
@@ -2396,6 +2404,8 @@ size_t ModuleIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 {
 	(void)version;
 
+	std::shared_ptr<Module> modLocked = mod.lock();
+
 	size_t grvOfs = ctr.readUint32(globCsr);
 	size_t grvCsr = globCsr + 4;
 	uint8_t cnt = ctr.readUint8(grvCsr++) + 1;
@@ -2407,15 +2417,18 @@ size_t ModuleIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 			seq.push_back(ctr.readUint8(grvCsr++));
 		}
 
-		if (idx > 0) mod.lock()->addGroove();
-		mod.lock()->setGroove(idx, seq);
+		if (idx > 0) modLocked->addGroove();
+		modLocked->setGroove(idx, seq);
 	}
 
 	return globCsr + grvOfs;
 }
 
-size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr, size_t globCsr, uint32_t version)
+size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+										 size_t globCsr, uint32_t version)
 {
+	std::shared_ptr<Module> modLocked = mod.lock();
+
 	size_t songOfs = ctr.readUint32(globCsr);
 	size_t songCsr = globCsr + 4;
 	uint8_t cnt = ctr.readUint8(songCsr++);
@@ -2446,9 +2459,9 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 		default:
 			throw FileCorruptionError(FileIO::FileType::Mod);
 		}
-		mod.lock()->addSong(idx, songType, title, isTempo,
+		modLocked->addSong(idx, songType, title, isTempo,
 							static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
-		auto& song = mod.lock()->getSong(idx);
+		auto& song = modLocked->getSong(idx);
 
 		// Bookmark
 		if (Version::toBCD(1, 4, 1) <= version) {

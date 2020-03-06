@@ -56,7 +56,7 @@ public:
 
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
-			FMEnvelopeParameter param, size_t instMemCsr, std::weak_ptr<InstrumentsManager> instMan,
+			FMEnvelopeParameter param, size_t instMemCsr, std::shared_ptr<InstrumentsManager>& instManLocked,
 			BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
 	static size_t getPropertyPositionForBTB(const BinaryContainer& propCtr, uint8_t subsecType, uint8_t index);
 	static int convertTFIVGMDT(int dt);
