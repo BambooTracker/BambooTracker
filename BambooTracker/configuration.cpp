@@ -39,6 +39,7 @@ Configuration::Configuration()
 	autosetInstrument_ = true;
 	moveCursorHScroll_ = true;
 	overwriteUnusedUnedited_ = false;
+	writeOnlyUsedSamples_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -920,9 +921,19 @@ void Configuration::setOverwriteUnusedUneditedPropety(bool enabled)
 	overwriteUnusedUnedited_ = enabled;
 }
 
-bool Configuration::getOverwriteUnusedUneditedPropety()
+bool Configuration::getOverwriteUnusedUneditedPropety() const
 {
 	return overwriteUnusedUnedited_;
+}
+
+void Configuration::setWriteOnlyUsedSamples(bool enabled)
+{
+	writeOnlyUsedSamples_ = enabled;
+}
+
+bool Configuration::getWriteOnlyUsedSamples() const
+{
+	return writeOnlyUsedSamples_;
 }
 
 // Edit settings

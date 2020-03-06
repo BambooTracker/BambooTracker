@@ -10,13 +10,17 @@
 #include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 
 AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, SoundSource source,
-											   std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
+											   std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin,
+											   bool onlyUsed, bool preventFirstStore, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
 	  name_(name),
 	  source_(source),
-	  formMan_(formMan)
+	  formMan_(formMan),
+	  mainwin_(mainwin),
+	  onlyUsed_(onlyUsed),
+	  hasDone_(!preventFirstStore)
 {}
 
 void AddInstrumentQtCommand::undo()
@@ -30,6 +34,10 @@ void AddInstrumentQtCommand::undo()
 				QRegularExpression("^.+_INSTRUMENT:"+QString::number(num_),
 								   QRegularExpression::DotMatchesEverythingOption))) {
 		QApplication::clipboard()->clear();
+	}
+
+	if (source_ == SoundSource::ADPCM && onlyUsed_) {
+		mainwin_->assignADPCMSamples();
 	}
 }
 
@@ -62,6 +70,11 @@ void AddInstrumentQtCommand::redo()
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(num_, item);
 	//----------//
+
+	if (hasDone_ && source_ == SoundSource::ADPCM) {
+		mainwin_->assignADPCMSamples();
+	}
+	hasDone_ = true;
 }
 
 int AddInstrumentQtCommand::id() const

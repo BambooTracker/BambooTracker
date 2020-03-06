@@ -433,6 +433,7 @@ private:
 	std::unordered_map<SoundSource, std::vector<bool>> muteState_;
 
 	bool isFollowPlay_;
+	bool storeOnlyUsedSamples_;
 
 	static const uint32_t CHIP_CLOCK;
 

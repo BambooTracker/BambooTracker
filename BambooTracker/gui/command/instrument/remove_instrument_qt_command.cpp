@@ -10,12 +10,15 @@
 #include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
 
 RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row,
-													 std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
+													 std::weak_ptr<InstrumentFormManager> formMan,
+													 MainWindow* mainwin, bool updateRequested, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
 	  row_(row),
-	  formMan_(formMan)
+	  formMan_(formMan),
+	  mainwin_(mainwin),
+	  updateRequested_(updateRequested)
 {
 	source_ = formMan.lock()->getFormInstrumentSoundSource(num);
 }
@@ -49,6 +52,10 @@ void RemoveInstrumentQtCommand::undo()
 	item->setData(Qt::UserRole, num_);
 	list_->insertItem(row_, item);
 	//----------//
+
+	if (updateRequested_ && source_ == SoundSource::ADPCM) {
+		mainwin_->assignADPCMSamples();
+	}
 }
 
 void RemoveInstrumentQtCommand::redo()
@@ -63,6 +70,10 @@ void RemoveInstrumentQtCommand::redo()
 				QRegularExpression("^.+_INSTRUMENT:"+QString::number(num_),
 								   QRegularExpression::DotMatchesEverythingOption))) {
 		QApplication::clipboard()->clear();
+	}
+
+	if (updateRequested_ && source_ == SoundSource::ADPCM) {
+		mainwin_->assignADPCMSamples();
 	}
 }
 

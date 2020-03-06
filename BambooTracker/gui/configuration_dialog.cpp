@@ -76,6 +76,9 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	glfunc(15, configLocked->getOverwriteUnusedUneditedPropety(),
 		   tr("Overwrite unused and unedited instrument properties on creating new properties. "
 			  "When disabled, override unused properties regardless of editing."));
+	glfunc(16, configLocked->getWriteOnlyUsedSamples(),
+		   tr("Send only ADPCM samples used by instruments to the ADPCM memory. "
+			  "Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost."));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -276,6 +279,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setAutosetInstrument(fromCheckState(ui->generalSettingsListWidget->item(13)->checkState()));
 	configLocked->setMoveCursorByHorizontalScroll(fromCheckState(ui->generalSettingsListWidget->item(14)->checkState()));
 	configLocked->setOverwriteUnusedUneditedPropety(fromCheckState(ui->generalSettingsListWidget->item(15)->checkState()));
+	configLocked->setWriteOnlyUsedSamples(fromCheckState(ui->generalSettingsListWidget->item(16)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));

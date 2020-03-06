@@ -851,7 +851,8 @@ void MainWindow::addInstrument()
 		QString name = tr("Instrument %1").arg(num);
 		bt_->addInstrument(num, name.toUtf8().toStdString());
 
-		comStack_->push(new AddInstrumentQtCommand(list, num, name, src, instForms_));
+		comStack_->push(new AddInstrumentQtCommand(
+							list, num, name, src, instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
 		ui->instrumentListWidget->setCurrentRow(num);
 		break;
 	}
@@ -867,8 +868,18 @@ void MainWindow::removeInstrument(int row)
 	auto& list = ui->instrumentListWidget;
 	int num = list->item(row)->data(Qt::UserRole).toInt();
 
+	bool updateRequest = false;
+	if (config_.lock()->getWriteOnlyUsedSamples()){
+		auto inst = bt_->getInstrument(num);
+		if (inst->getSoundSource() == SoundSource::ADPCM) {
+			size_t size = bt_->getWaveformADPCMUsers(dynamic_cast<InstrumentADPCM*>(
+														 inst.get())->getWaveformNumber()).size();
+			if (size == 1) updateRequest = true;
+		}
+	}
+
 	bt_->removeInstrument(num);
-	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, instForms_));
+	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, instForms_, this, updateRequest));
 }
 
 void MainWindow::editInstrument()
@@ -934,11 +945,9 @@ void MainWindow::deepCloneInstrument()
 	// KEEP CODE ORDER //
 	bt_->deepCloneInstrument(num, refNum);
 	comStack_->push(new DeepCloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, refNum, instForms_));
+						ui->instrumentListWidget, num, refNum, instForms_,
+						this, config_.lock()->getWriteOnlyUsedSamples()));
 	//----------//
-
-	if (bt_->getInstrument(num)->getSoundSource() == SoundSource::ADPCM)
-		assignADPCMSamples();
 }
 
 void MainWindow::loadInstrument()
@@ -990,11 +999,10 @@ void MainWindow::funcLoadInstrument(QString file)
 		comStack_->push(new AddInstrumentQtCommand(
 							ui->instrumentListWidget, n,
 							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
-							inst->getSoundSource(), instForms_));
+							inst->getSoundSource(), instForms_,
+							this, config_.lock()->getWriteOnlyUsedSamples()));
 		ui->instrumentListWidget->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
-
-		if (inst->getSoundSource() == SoundSource::ADPCM) assignADPCMSamples();
 	}
 	catch (FileIOError& e) {
 		showFileIOErrorDialog(e);
@@ -1111,14 +1119,15 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			comStack_->push(new AddInstrumentQtCommand(
 								ui->instrumentListWidget, n,
 								QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
-								inst->getSoundSource(), instForms_));
+								inst->getSoundSource(), instForms_,
+								this, config_.lock()->getWriteOnlyUsedSamples(), true));
 			lastNum = n;
 
 			sampleRestoreRequested |= (inst->getSoundSource() == SoundSource::ADPCM);
 		}
 		ui->instrumentListWidget->setCurrentRow(lastNum);
 
-		if (sampleRestoreRequested) assignADPCMSamples();
+		if (sampleRestoreRequested) assignADPCMSamples();	// Store only once
 	}
 	catch (FileIOError& e) {
 		showFileIOErrorDialog(e);
@@ -1184,8 +1193,6 @@ void MainWindow::redo()
 /********** Load data **********/
 void MainWindow::loadModule()
 {
-	bt_->assignWaveformADPCMSamples();
-
 	instForms_->clearAll();
 	ui->instrumentListWidget->clear();
 	on_instrumentListWidget_itemSelectionChanged();
@@ -1212,14 +1219,18 @@ void MainWindow::loadModule()
 	highlight1_->setValue(static_cast<int>(bt_->getModuleStepHighlight1Distance()));
 	highlight2_->setValue(static_cast<int>(bt_->getModuleStepHighlight2Distance()));
 
+	bool sampleRestoreRequested = false;
 	for (auto& idx : bt_->getInstrumentIndices()) {
 		auto inst = bt_->getInstrument(idx);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(
 							ui->instrumentListWidget, idx,
 							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
-							inst->getSoundSource(), instForms_));
+							inst->getSoundSource(), instForms_,
+							this, config_.lock()->getWriteOnlyUsedSamples(), true));
+		sampleRestoreRequested |= (inst->getSoundSource() == SoundSource::ADPCM);
 	}
+	if (sampleRestoreRequested) bt_->assignWaveformADPCMSamples();	// Store only once
 
 	isSavedModBefore_ = false;
 

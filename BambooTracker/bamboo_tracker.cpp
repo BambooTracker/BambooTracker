@@ -36,6 +36,8 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 
 	playback_ = std::make_unique<PlaybackManager>(
 					opnaCtrl_, instMan_, tickCounter_, mod_, config.lock()->getRetrieveChannelState());
+
+	storeOnlyUsedSamples_ = config.lock()->getWriteOnlyUsedSamples();
 }
 
 /********** Change configuration **********/
@@ -50,6 +52,7 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 	}
 	playback_->setChannelRetrieving(config.lock()->getRetrieveChannelState());
 	instMan_->setPropertyFindMode(config.lock()->getOverwriteUnusedUneditedPropety());
+	storeOnlyUsedSamples_ = config.lock()->getWriteOnlyUsedSamples();
 }
 
 /********** Change octave **********/
@@ -637,7 +640,9 @@ void BambooTracker::clearWaveformADPCMSample(int wfNum)
 void BambooTracker::assignWaveformADPCMSamples()
 {
 	opnaCtrl_->clearSamplesADPCM();
-	for (auto wfNum : instMan_->getWaveformADPCMEntriedIndices()) {
+	std::vector<int> idcs = storeOnlyUsedSamples_ ? instMan_->getWaveformADPCMValidIndices()
+												  : instMan_->getWaveformADPCMEntriedIndices();
+	for (auto wfNum : idcs) {
 		std::vector<size_t> addresses = opnaCtrl_->storeSampleADPCM(instMan_->getWaveformADPCMSamples(wfNum));
 		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
 		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);

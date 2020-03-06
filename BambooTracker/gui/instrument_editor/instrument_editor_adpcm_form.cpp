@@ -609,6 +609,10 @@ void InstrumentEditorADPCMForm::on_waveNumSpinBox_valueChanged(int arg1)
 		setInstrumentWaveformParameters();
 		emit waveformNumberChanged();
 		emit modified();
+
+		if (config_.lock()->getWriteOnlyUsedSamples()) {
+			emit onWaveformSampleMemoryUpdated();
+		}
 	}
 
 	onWaveformNumberChanged();
@@ -657,6 +661,10 @@ void InstrumentEditorADPCMForm::on_waveClearPushButton_clicked()
 	ui->waveViewWidget->update();
 
 	emit modified();
+
+	if (config_.lock()->getWriteOnlyUsedSamples()) {
+		emit onWaveformSampleMemoryUpdated();
+	}
 }
 
 //--- Envelope

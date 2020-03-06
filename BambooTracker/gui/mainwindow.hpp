@@ -45,6 +45,8 @@ public:
 	MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent = nullptr);
 	~MainWindow() override;
 
+	void assignADPCMSamples();
+
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 	void showEvent(QShowEvent* event) override;
@@ -101,7 +103,6 @@ private:
 	void loadModule();
 	void openModule(QString file);
 	void loadSong();
-	void assignADPCMSamples();
 
 	// Play song
 	void startPlaySong();

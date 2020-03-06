@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QString>
+#include "gui/mainwindow.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "misc.hpp"
 
@@ -13,7 +14,8 @@ class RemoveInstrumentQtCommand : public QUndoCommand
 {
 public:
 	RemoveInstrumentQtCommand(QListWidget *list, int num, int row,
-							  std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent = nullptr);
+							  std::weak_ptr<InstrumentFormManager> formMan,
+							  MainWindow* mainwin, bool updateRequested, QUndoCommand *parent = nullptr);
 	void undo() Q_DECL_OVERRIDE;
 	void redo() Q_DECL_OVERRIDE;
 	int id() const Q_DECL_OVERRIDE;
@@ -25,6 +27,8 @@ private:
 	int row_;
 	SoundSource source_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
+	MainWindow* mainwin_;
+	bool updateRequested_;
 };
 
 #endif // REMOVE_INSTRUMENT_QT_COMMAND_HPP

@@ -101,7 +101,9 @@ public:
 	void setMoveCursorByHorizontalScroll(bool enabled);
 	bool getMoveCursorByHorizontalScroll() const;
 	void setOverwriteUnusedUneditedPropety(bool enabled);
-	bool getOverwriteUnusedUneditedPropety();
+	bool getOverwriteUnusedUneditedPropety() const;
+	void setWriteOnlyUsedSamples(bool enabled);
+	bool getWriteOnlyUsedSamples() const;
 private:
 	bool warpCursor_, warpAcrossOrders_;
 	bool showRowNumHex_, showPrevNextOrders_;
@@ -111,6 +113,7 @@ private:
 	bool showFMDetuneSigned_, showWaveVisual_;
 	bool fill00ToEffectValue_, autosetInstrument_;
 	bool moveCursorHScroll_, overwriteUnusedUnedited_;
+	bool writeOnlyUsedSamples_;
 
 	// Edit settings
 public:
