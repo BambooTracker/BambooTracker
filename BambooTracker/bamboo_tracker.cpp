@@ -1254,11 +1254,26 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
 	uint32_t loopPoint = 0;
 	uint32_t loopPointSamples = 0;
+
 	std::shared_ptr<chip::VgmExportContainer> exCntr
 			= std::make_shared<chip::VgmExportContainer>(target, mod_->getTickFrequency());
+
+	// Set ADPCM
+	opnaCtrl_->clearSamplesADPCM();
+	std::vector<uint8_t> rom;
+	for (auto wfNum : instMan_->getWaveformADPCMValidIndices()) {
+		std::vector<uint8_t> sample = instMan_->getWaveformADPCMSamples(wfNum);
+		std::vector<size_t> addresses = opnaCtrl_->storeSampleADPCM(sample);
+		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
+		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);
+
+		rom.resize((addresses[1] + 1) << 5);
+		std::copy(sample.begin(), sample.end(), rom.begin() + static_cast<int>(addresses[0] << 5));
+	}
+	exCntr->setDataBlock(std::move(rom));
+
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
-	assignWaveformADPCMSamples();
 	exCntr->forceMoveLoopPoint();
 
 	while (true) {

@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Added
-- [#6], [#184], [#185], [#186] - Support ADPCM (thanks [@ScoopJohn] and others)
+- [#6], [#184], [#185], [#186], [#187] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Add shortcuts instead of insert key
 - Add bookmark manager
 - 1 new sample module (thanks RigidatoMS)
@@ -23,6 +23,7 @@
 [#184]: https://github.com/rerrahkr/BambooTracker/issues/184
 [#185]: https://github.com/rerrahkr/BambooTracker/issues/185
 [#186]: https://github.com/rerrahkr/BambooTracker/issues/186
+[#187]: https://github.com/rerrahkr/BambooTracker/issues/187
 
 ## v0.3.5 (2020-02-15)
 ### Added

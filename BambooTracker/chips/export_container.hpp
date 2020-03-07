@@ -45,6 +45,7 @@ namespace chip
 		size_t getSampleLength() const;
 		size_t setLoopPoint();
 		size_t forceMoveLoopPoint();
+		void setDataBlock(std::vector<uint8_t> data);
 
 	private:
 		std::vector<uint8_t> buf_;

@@ -147,6 +147,24 @@ namespace chip
 		return loopPoint_;
 	}
 
+	void VgmExportContainer::setDataBlock(std::vector<uint8_t> data)
+	{
+		buf_.push_back(0x67);
+		buf_.push_back(0x66);
+		buf_.push_back(0x81);
+		size_t blockSize = data.size() + 8;
+		buf_.push_back(blockSize & 0xff);
+		buf_.push_back((blockSize >> 8) & 0xff);
+		buf_.push_back((blockSize >> 16) & 0xff);
+		buf_.push_back(blockSize >> 24);
+		buf_.push_back(data.size() & 0xff);
+		buf_.push_back((data.size() >> 8) & 0xff);
+		buf_.push_back((data.size() >> 16) & 0xff);
+		buf_.push_back(data.size() >> 24);
+		buf_.resize(buf_.size() + 4);	// Start address is 0
+		std::copy(data.begin(), data.end(), std::back_inserter(buf_));
+	}
+
 	void VgmExportContainer::setWait()
 	{
 		while (lastWait_) {
