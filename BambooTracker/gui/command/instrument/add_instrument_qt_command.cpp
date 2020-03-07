@@ -44,20 +44,20 @@ void AddInstrumentQtCommand::undo()
 void AddInstrumentQtCommand::redo()
 {
 	QListWidgetItem *item;
-	std::unique_ptr<QWidget> form;
+	std::shared_ptr<QWidget> form;
 	auto title = QString("%1: %2").arg(num_, 2, 16, QChar('0')).toUpper().arg(name_);
 	switch (source_) {
 	case SoundSource::FM:
 		item = new QListWidgetItem(QIcon(":/icon/inst_fm"), title);
-		form = std::make_unique<InstrumentEditorFMForm>(num_);
+		form = std::make_shared<InstrumentEditorFMForm>(num_);
 		break;
 	case SoundSource::SSG:
 		item = new QListWidgetItem(QIcon(":/icon/inst_ssg"), title);
-		form = std::make_unique<InstrumentEditorSSGForm>(num_);
+		form = std::make_shared<InstrumentEditorSSGForm>(num_);
 		break;
 	case SoundSource::ADPCM:
 		item = new QListWidgetItem(QIcon(":/icon/inst_adpcm"), title);
-		form = std::make_unique<InstrumentEditorADPCMForm>(num_);
+		form = std::make_shared<InstrumentEditorADPCMForm>(num_);
 		break;
 	default:
 		return;

@@ -17,9 +17,9 @@ public:
 	InstrumentFormManager();
 	void updateByConfiguration();
 
-	const std::unique_ptr<QWidget>& getForm(int n) const;
+	const std::shared_ptr<QWidget> getForm(int n) const;
 	void remove(int n);
-	void add(int n, std::unique_ptr<QWidget> form, QString instName, SoundSource instSrc);
+	void add(int n, std::shared_ptr<QWidget> form, QString instName, SoundSource instSrc);
 
 	void showForm(int n);
 	void closeAll();
@@ -65,7 +65,7 @@ public slots:
 	void onInstrumentADPCMPitchNumberChanged();
 
 private:
-	std::unordered_map<int, std::unique_ptr<QWidget>> map_;
+	std::unordered_map<int, std::shared_ptr<QWidget>> map_;
 };
 
 

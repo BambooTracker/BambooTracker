@@ -18,12 +18,13 @@ void InstrumentFormManager::updateByConfiguration()
 	}
 }
 
-const std::unique_ptr<QWidget>& InstrumentFormManager::getForm(int n) const
+const std::shared_ptr<QWidget> InstrumentFormManager::getForm(int n) const
 {
-	return map_.at(n);
+	if (map_.count(n)) return map_.at(n);
+	else return std::shared_ptr<QWidget>();	// nullptr
 }
 
-void InstrumentFormManager::add(int n, std::unique_ptr<QWidget> form, QString instName, SoundSource instSrc)
+void InstrumentFormManager::add(int n, std::shared_ptr<QWidget> form, QString instName, SoundSource instSrc)
 {
 	form->setProperty("Name", instName);
 	form->setProperty("Shown", false);
@@ -110,7 +111,7 @@ int InstrumentFormManager::checkActivatedFormNumber() const
 {
 	const QWidget* win = QApplication::activeWindow();
 	auto it = std::find_if(map_.begin(), map_.end(),
-						   [win](const std::pair<const int, std::unique_ptr<QWidget>>& p) {
+						   [win](const std::pair<const int, std::shared_ptr<QWidget>> p) {
 		return p.second.get() == win;
 	});
 

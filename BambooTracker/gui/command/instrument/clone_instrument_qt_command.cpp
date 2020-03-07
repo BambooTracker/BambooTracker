@@ -18,7 +18,7 @@ CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, i
 void CloneInstrumentQtCommand::redo()
 {
 	QListWidgetItem *item;
-	std::unique_ptr<QWidget> form;
+	std::shared_ptr<QWidget> form;
 	QString refName = formMan_.lock()->getFormInstrumentName(refNum_);
 	auto title = QString("%1: %2")
 				 .arg(cloneNum_, 2, 16, QChar('0')).toUpper()
@@ -26,15 +26,15 @@ void CloneInstrumentQtCommand::redo()
 	switch (source_) {
 	case SoundSource::FM:
 		item = new QListWidgetItem(QIcon(":/icon/inst_fm"), title);
-		form = std::make_unique<InstrumentEditorFMForm>(cloneNum_);
+		form = std::make_shared<InstrumentEditorFMForm>(cloneNum_);
 		break;
 	case SoundSource::SSG:
 		item = new QListWidgetItem(QIcon(":/icon/inst_ssg"), title);
-		form = std::make_unique<InstrumentEditorSSGForm>(cloneNum_);
+		form = std::make_shared<InstrumentEditorSSGForm>(cloneNum_);
 		break;
 	case SoundSource::ADPCM:
 		item = new QListWidgetItem(QIcon(":/icon/inst_adpcm"), title);
-		form = std::make_unique<InstrumentEditorADPCMForm>(cloneNum_);
+		form = std::make_shared<InstrumentEditorADPCMForm>(cloneNum_);
 		break;
 	default:
 		return;

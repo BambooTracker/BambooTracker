@@ -1734,7 +1734,7 @@ void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int 
 
 	// Set core data to editor when add insrument
 	int n = ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt();
-	auto& form = instForms_->getForm(n);
+	auto form = instForms_->getForm(n);
 	auto playFunc = [&](int stat) {
 		switch (stat) {
 		case -1:	stopPlaySong();				break;
