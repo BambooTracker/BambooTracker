@@ -1,52 +1,21 @@
 #include "clone_instrument_qt_command.hpp"
 #include "command_id.hpp"
-#include "gui/instrument_editor/instrument_editor_fm_form.hpp"
-#include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
-#include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"
+#include "gui/instrument_list_misc.hpp"
 
-CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
-												   std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
+CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, SoundSource src, QString name,
+												   std::weak_ptr<InstrumentFormManager> formMan,
+												   QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  cloneNum_(num),
-	  refNum_(refNum),
-	  formMan_(formMan)
-{
-	source_ = formMan.lock()->getFormInstrumentSoundSource(refNum);
-}
+	  formMan_(formMan),
+	  source_(src),
+	  name_(name)
+{}
 
 void CloneInstrumentQtCommand::redo()
 {
-	QListWidgetItem *item;
-	std::shared_ptr<QWidget> form;
-	QString refName = formMan_.lock()->getFormInstrumentName(refNum_);
-	auto title = QString("%1: %2")
-				 .arg(cloneNum_, 2, 16, QChar('0')).toUpper()
-				 .arg(refName);
-	switch (source_) {
-	case SoundSource::FM:
-		item = new QListWidgetItem(QIcon(":/icon/inst_fm"), title);
-		form = std::make_shared<InstrumentEditorFMForm>(cloneNum_);
-		break;
-	case SoundSource::SSG:
-		item = new QListWidgetItem(QIcon(":/icon/inst_ssg"), title);
-		form = std::make_shared<InstrumentEditorSSGForm>(cloneNum_);
-		break;
-	case SoundSource::ADPCM:
-		item = new QListWidgetItem(QIcon(":/icon/inst_adpcm"), title);
-		form = std::make_shared<InstrumentEditorADPCMForm>(cloneNum_);
-		break;
-	default:
-		return;
-	}
-
-	// KEEP CODE ORDER //
-	formMan_.lock()->add(cloneNum_, std::move(form), refName, source_);
-
-	item->setSizeHint(QSize(130, 17));
-	item->setData(Qt::UserRole, cloneNum_);
-	list_->insertItem(cloneNum_, item);
-	//----------//
+	list_->insertItem(cloneNum_, createInstrumentListItem(cloneNum_, source_, name_));
 }
 
 void CloneInstrumentQtCommand::undo()

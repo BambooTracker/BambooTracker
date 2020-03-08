@@ -289,9 +289,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	/* Instrument list */
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-	// Set core data to editor when add insrument
-	QObject::connect(ui->instrumentListWidget->model(), &QAbstractItemModel::rowsInserted,
-					 this, &MainWindow::onInstrumentListWidgetItemAdded);
 	auto instToolBar = new QToolBar();
 	instToolBar->setIconSize(QSize(16, 16));
 	instToolBar->addAction(ui->actionNew_Instrument);
@@ -868,9 +865,10 @@ void MainWindow::removeInstrument(int row)
 	auto& list = ui->instrumentListWidget;
 	int num = list->item(row)->data(Qt::UserRole).toInt();
 
+	auto inst = bt_->getInstrument(num);
+
 	bool updateRequest = false;
 	if (config_.lock()->getWriteOnlyUsedSamples()){
-		auto inst = bt_->getInstrument(num);
 		if (inst->getSoundSource() == SoundSource::ADPCM) {
 			size_t size = bt_->getWaveformADPCMUsers(dynamic_cast<InstrumentADPCM*>(
 														 inst.get())->getWaveformNumber()).size();
@@ -878,14 +876,197 @@ void MainWindow::removeInstrument(int row)
 		}
 	}
 
+	std::string name = inst->getName();
+	SoundSource src = inst->getSoundSource();
 	bt_->removeInstrument(num);
-	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, instForms_, this, updateRequest));
+	comStack_->push(new RemoveInstrumentQtCommand(list, num, row,
+												  QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
+												  src, instForms_, this, updateRequest));
 }
 
-void MainWindow::editInstrument()
+void MainWindow::openInstrumentEditor()
 {
 	auto item = ui->instrumentListWidget->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
+
+	if (!instForms_->getForm(num)) {	// Create form
+		std::shared_ptr<QWidget> form;
+		auto inst = bt_->getInstrument(num);
+		switch (inst->getSoundSource()) {
+		case SoundSource::FM:		form = std::make_shared<InstrumentEditorFMForm>(num);		break;
+		case SoundSource::SSG:		form = std::make_shared<InstrumentEditorSSGForm>(num);		break;
+		case SoundSource::ADPCM:	form = std::make_shared<InstrumentEditorADPCMForm>(num);	break;
+		default:	return;
+		}
+
+		auto playFunc = [&](int stat) {
+			switch (stat) {
+			case -1:	stopPlaySong();				break;
+			case 0:		startPlaySong();			break;
+			case 1:		startPlayFromStart();		break;
+			case 2:		startPlayPattern();			break;
+			case 3:		startPlayFromCurrentStep();	break;
+			default:	break;
+			}
+		};
+		switch (inst->getSoundSource()) {
+		case SoundSource::FM:
+		{
+			auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
+			fmForm->setCore(bt_);
+			fmForm->setConfiguration(config_.lock());
+			fmForm->setColorPalette(palette_);
+			fmForm->resize(config_.lock()->getInstrumentFMWindowWidth(),
+						   config_.lock()->getInstrumentFMWindowHeight());
+
+			QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeParameterChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::lfoNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFONumberChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::lfoParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFOParameterChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::operatorSequenceNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMOperatorSequenceNumberChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::operatorSequenceParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMOperatorSequenceParameterChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMArpeggioNumberChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMArpeggioParameterChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::pitchNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchNumberChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::pitchParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchParameterChanged);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
+							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::FM); },
+			Qt::DirectConnection);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
+							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::FM); },
+			Qt::DirectConnection);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::octaveChanged,
+							 this, &MainWindow::changeOctave, Qt::DirectConnection);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
+							 this, &MainWindow::setModifiedTrue);
+			QObject::connect(fmForm, &InstrumentEditorFMForm::playStatusChanged, this, playFunc);
+
+			fmForm->installEventFilter(this);
+
+			instForms_->onInstrumentFMEnvelopeNumberChanged();
+			instForms_->onInstrumentFMLFONumberChanged();
+			instForms_->onInstrumentFMOperatorSequenceNumberChanged();
+			instForms_->onInstrumentFMArpeggioNumberChanged();
+			instForms_->onInstrumentFMPitchNumberChanged();
+			break;
+		}
+		case SoundSource::SSG:
+		{
+			auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
+			ssgForm->setCore(bt_);
+			ssgForm->setConfiguration(config_.lock());
+			ssgForm->setColorPalette(palette_);
+			ssgForm->resize(config_.lock()->getInstrumentSSGWindowWidth(),
+							config_.lock()->getInstrumentSSGWindowHeight());
+
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveformNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveformNumberChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveformParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveformParameterChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGToneNoiseNumberChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGToneNoiseParameterChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::envelopeNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGEnvelopeNumberChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::envelopeParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGEnvelopeParameterChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::arpeggioNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGArpeggioNumberChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::arpeggioParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGArpeggioParameterChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchNumberChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchParameterChanged);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOnEvent,
+							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::SSG); },
+			Qt::DirectConnection);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,
+							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::SSG); }
+			, Qt::DirectConnection);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::octaveChanged,
+							 this, &MainWindow::changeOctave, Qt::DirectConnection);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,
+							 this, &MainWindow::setModifiedTrue);
+			QObject::connect(ssgForm, &InstrumentEditorSSGForm::playStatusChanged, this, playFunc);
+
+			ssgForm->installEventFilter(this);
+
+			instForms_->onInstrumentSSGWaveformNumberChanged();
+			instForms_->onInstrumentSSGToneNoiseNumberChanged();
+			instForms_->onInstrumentSSGEnvelopeNumberChanged();
+			instForms_->onInstrumentSSGArpeggioNumberChanged();
+			instForms_->onInstrumentSSGPitchNumberChanged();
+			break;
+		}
+		case SoundSource::ADPCM:
+		{
+			auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form.get());
+			adpcmForm->setCore(bt_);
+			adpcmForm->setConfiguration(config_.lock());
+			adpcmForm->setColorPalette(palette_);
+			adpcmForm->resize(config_.lock()->getInstrumentADPCMWindowWidth(),
+							config_.lock()->getInstrumentADPCMWindowHeight());
+
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformAssignRequested,
+							 this, &MainWindow::assignADPCMSamples);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeNumberChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeParameterChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::arpeggioNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMArpeggioNumberChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::arpeggioParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMArpeggioParameterChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::pitchNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMPitchNumberChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::pitchParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMPitchParameterChanged);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::jamKeyOnEvent,
+							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::ADPCM); },
+			Qt::DirectConnection);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::jamKeyOffEvent,
+							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); },
+			Qt::DirectConnection);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::octaveChanged,
+							 this, &MainWindow::changeOctave, Qt::DirectConnection);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::modified,
+							 this, &MainWindow::setModifiedTrue);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::playStatusChanged, this, playFunc);
+
+			adpcmForm->installEventFilter(this);
+
+			instForms_->onInstrumentADPCMWaveformNumberChanged();
+			instForms_->onInstrumentADPCMEnvelopeNumberChanged();
+			instForms_->onInstrumentADPCMArpeggioNumberChanged();
+			instForms_->onInstrumentADPCMPitchNumberChanged();
+			break;
+		}
+		default:
+			break;
+		}
+
+		std::string name = inst->getName();
+		instForms_->add(num, std::move(form),
+						QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
+						inst->getSoundSource());
+	}
+
 	instForms_->showForm(num);
 }
 
@@ -905,16 +1086,18 @@ void MainWindow::renameInstrument()
 	auto list = ui->instrumentListWidget;
 	auto item = list->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
-	QString oldName = instForms_->getFormInstrumentName(num);
+	auto inst = bt_->getInstrument(num);
+	auto oldName = QString::fromUtf8(inst->getName().c_str(), static_cast<int>(inst->getName().length()));
 	auto line = new QLineEdit(oldName);
+	SoundSource src = inst->getSoundSource();
 
 	QObject::connect(line, &QLineEdit::editingFinished,
-					 this, [&, item, list, num, oldName] {
+					 this, [&, item, list, num, oldName, src] {
 		QString newName = qobject_cast<QLineEdit*>(list->itemWidget(item))->text();
 		list->removeItemWidget(item);
 		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
 		int row = findRowFromInstrumentList(num);
-		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
+		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, src, instForms_, oldName, newName));
 	});
 
 	ui->instrumentListWidget->setItemWidget(item, line);
@@ -931,8 +1114,11 @@ void MainWindow::cloneInstrument()
 	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	// KEEP CODE ORDER //
 	bt_->cloneInstrument(num, refNum);
+	auto inst = bt_->getInstrument(num);
+	std::string name = inst->getName();
 	comStack_->push(new CloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, refNum, instForms_));
+						ui->instrumentListWidget, num, inst->getSoundSource(),
+						QString::fromUtf8(name.c_str(), static_cast<int>(name.length())), instForms_));
 	//----------//
 }
 
@@ -944,8 +1130,11 @@ void MainWindow::deepCloneInstrument()
 	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
 	// KEEP CODE ORDER //
 	bt_->deepCloneInstrument(num, refNum);
+	auto inst = bt_->getInstrument(num);
+	std::string name = inst->getName();
 	comStack_->push(new DeepCloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, refNum, instForms_,
+						ui->instrumentListWidget, num, inst->getSoundSource(),
+						QString::fromUtf8(name.c_str(), static_cast<int>(name.length())), instForms_,
 						this, config_.lock()->getWriteOnlyUsedSamples()));
 	//----------//
 }
@@ -1724,172 +1913,7 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 void MainWindow::on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item)
 {
 	Q_UNUSED(item)
-	editInstrument();
-}
-
-void MainWindow::onInstrumentListWidgetItemAdded(const QModelIndex &parent, int start, int end)
-{
-	Q_UNUSED(parent)
-	Q_UNUSED(end)
-
-	// Set core data to editor when add insrument
-	int n = ui->instrumentListWidget->item(start)->data(Qt::UserRole).toInt();
-	auto form = instForms_->getForm(n);
-	auto playFunc = [&](int stat) {
-		switch (stat) {
-		case -1:	stopPlaySong();				break;
-		case 0:		startPlaySong();			break;
-		case 1:		startPlayFromStart();		break;
-		case 2:		startPlayPattern();			break;
-		case 3:		startPlayFromCurrentStep();	break;
-		default:	break;
-		}
-	};
-	switch (instForms_->getFormInstrumentSoundSource(n)) {
-	case SoundSource::FM:
-	{
-		auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
-		fmForm->setCore(bt_);
-		fmForm->setConfiguration(config_.lock());
-		fmForm->setColorPalette(palette_);
-		fmForm->resize(config_.lock()->getInstrumentFMWindowWidth(),
-					   config_.lock()->getInstrumentFMWindowHeight());
-
-		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeNumberChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::envelopeParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMEnvelopeParameterChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::lfoNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFONumberChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::lfoParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMLFOParameterChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::operatorSequenceNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMOperatorSequenceNumberChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::operatorSequenceParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMOperatorSequenceParameterChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMArpeggioNumberChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::arpeggioParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMArpeggioParameterChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::pitchNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchNumberChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::pitchParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchParameterChanged);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOnEvent,
-						 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::FM); }, Qt::DirectConnection);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
-						 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::FM); }, Qt::DirectConnection);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::octaveChanged,
-						 this, &MainWindow::changeOctave, Qt::DirectConnection);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
-						 this, &MainWindow::setModifiedTrue);
-		QObject::connect(fmForm, &InstrumentEditorFMForm::playStatusChanged, this, playFunc);
-
-		fmForm->installEventFilter(this);
-
-		instForms_->onInstrumentFMEnvelopeNumberChanged();
-		instForms_->onInstrumentFMLFONumberChanged();
-		instForms_->onInstrumentFMOperatorSequenceNumberChanged();
-		instForms_->onInstrumentFMArpeggioNumberChanged();
-		instForms_->onInstrumentFMPitchNumberChanged();
-		break;
-	}
-	case SoundSource::SSG:
-	{
-		auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
-		ssgForm->setCore(bt_);
-		ssgForm->setConfiguration(config_.lock());
-		ssgForm->setColorPalette(palette_);
-		ssgForm->resize(config_.lock()->getInstrumentSSGWindowWidth(),
-						config_.lock()->getInstrumentSSGWindowHeight());
-
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveformNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveformNumberChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::waveformParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGWaveformParameterChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGToneNoiseNumberChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::toneNoiseParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGToneNoiseParameterChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::envelopeNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGEnvelopeNumberChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::envelopeParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGEnvelopeParameterChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::arpeggioNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGArpeggioNumberChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::arpeggioParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGArpeggioParameterChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchNumberChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::pitchParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchParameterChanged);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOnEvent,
-						 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::SSG); }, Qt::DirectConnection);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,
-						 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::SSG); }, Qt::DirectConnection);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::octaveChanged,
-						 this, &MainWindow::changeOctave, Qt::DirectConnection);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,
-						 this, &MainWindow::setModifiedTrue);
-		QObject::connect(ssgForm, &InstrumentEditorSSGForm::playStatusChanged, this, playFunc);
-
-		ssgForm->installEventFilter(this);
-
-		instForms_->onInstrumentSSGWaveformNumberChanged();
-		instForms_->onInstrumentSSGToneNoiseNumberChanged();
-		instForms_->onInstrumentSSGEnvelopeNumberChanged();
-		instForms_->onInstrumentSSGArpeggioNumberChanged();
-		instForms_->onInstrumentSSGPitchNumberChanged();
-		break;
-	}
-	case SoundSource::ADPCM:
-	{
-		auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form.get());
-		adpcmForm->setCore(bt_);
-		adpcmForm->setConfiguration(config_.lock());
-		adpcmForm->setColorPalette(palette_);
-		adpcmForm->resize(config_.lock()->getInstrumentADPCMWindowWidth(),
-						config_.lock()->getInstrumentADPCMWindowHeight());
-
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformAssignRequested,
-						 this, &MainWindow::assignADPCMSamples);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeNumberChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeParameterChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::arpeggioNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMArpeggioNumberChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::arpeggioParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMArpeggioParameterChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::pitchNumberChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMPitchNumberChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::pitchParameterChanged,
-						 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMPitchParameterChanged);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::jamKeyOnEvent,
-						 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::ADPCM); }, Qt::DirectConnection);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::jamKeyOffEvent,
-						 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); }, Qt::DirectConnection);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::octaveChanged,
-						 this, &MainWindow::changeOctave, Qt::DirectConnection);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::modified,
-						 this, &MainWindow::setModifiedTrue);
-		QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::playStatusChanged, this, playFunc);
-
-		adpcmForm->installEventFilter(this);
-
-		instForms_->onInstrumentADPCMWaveformNumberChanged();
-		instForms_->onInstrumentADPCMEnvelopeNumberChanged();
-		instForms_->onInstrumentADPCMArpeggioNumberChanged();
-		instForms_->onInstrumentADPCMPitchNumberChanged();
-		break;
-	}
-	default:
-		break;
-	}
+	openInstrumentEditor();
 }
 
 void MainWindow::on_instrumentListWidget_itemSelectionChanged()
@@ -2192,7 +2216,7 @@ void MainWindow::on_actionDeep_Clone_Instrument_triggered()
 
 void MainWindow::on_actionEdit_triggered()
 {
-	editInstrument();
+	openInstrumentEditor();
 }
 
 void MainWindow::on_actionPlay_triggered()

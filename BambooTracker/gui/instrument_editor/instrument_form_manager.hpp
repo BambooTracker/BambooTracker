@@ -25,8 +25,6 @@ public:
 	void closeAll();
 	void clearAll();
 
-	QString getFormInstrumentName(int n) const;
-	void setFormInstrumentName(int n, QString name);
 	SoundSource getFormInstrumentSoundSource(int n) const;
 
 	int checkActivatedFormNumber() const;

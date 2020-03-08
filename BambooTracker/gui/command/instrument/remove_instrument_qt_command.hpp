@@ -13,7 +13,7 @@
 class RemoveInstrumentQtCommand : public QUndoCommand
 {
 public:
-	RemoveInstrumentQtCommand(QListWidget *list, int num, int row,
+	RemoveInstrumentQtCommand(QListWidget *list, int num, int row, QString name, SoundSource src,
 							  std::weak_ptr<InstrumentFormManager> formMan,
 							  MainWindow* mainwin, bool updateRequested, QUndoCommand *parent = nullptr);
 	void undo() Q_DECL_OVERRIDE;

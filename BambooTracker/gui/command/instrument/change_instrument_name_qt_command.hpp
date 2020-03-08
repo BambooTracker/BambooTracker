@@ -11,7 +11,7 @@
 class ChangeInstrumentNameQtCommand : public QUndoCommand
 {
 public:
-	ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
+	ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row, SoundSource src,
 								  std::weak_ptr<InstrumentFormManager> formMan,
 								  QString oldName, QString newName, QUndoCommand* parent = nullptr);
 	void undo() Q_DECL_OVERRIDE;

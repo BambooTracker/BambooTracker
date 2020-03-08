@@ -11,9 +11,9 @@
 class DeepCloneInstrumentQtCommand : public QUndoCommand
 {
 public:
-	DeepCloneInstrumentQtCommand(QListWidget *list, int num, int refNum,
-							 std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin, bool onlyUsed,
-							 QUndoCommand* parent = nullptr);
+	DeepCloneInstrumentQtCommand(QListWidget *list, int num, SoundSource src, QString name,
+								 std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin, bool onlyUsed,
+								 QUndoCommand* parent = nullptr);
 
 	void undo() Q_DECL_OVERRIDE;
 	void redo() Q_DECL_OVERRIDE;
@@ -21,9 +21,10 @@ public:
 
 private:
 	QListWidget* list_;
-	int cloneNum_, refNum_;
+	int cloneNum_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
 	SoundSource source_;
+	QString name_;
 	MainWindow* mainwin_;
 	bool onlyUsed_;
 };

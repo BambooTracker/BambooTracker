@@ -31,11 +31,13 @@ void InstrumentFormManager::add(int n, std::shared_ptr<QWidget> form, QString in
 	form->setProperty("SoundSource", static_cast<int>(instSrc));
 	map_.emplace(n, std::move(form));
 
-	// Parameter numbers update in MainWindow slot
+	// Parameter numbers update in MainWindow
 }
 
 void InstrumentFormManager::remove(int n)
 {
+	if (!map_.count(n)) return;
+
 	SoundSource src = getFormInstrumentSoundSource(n);
 
 	map_.at(n)->close();
@@ -69,6 +71,7 @@ void InstrumentFormManager::remove(int n)
 
 void InstrumentFormManager::showForm(int n)
 {
+	if (!map_.count(n)) return;
 	auto& form = map_.at(n);
 	if (form->isVisible()) {
 		form->activateWindow();
@@ -90,16 +93,6 @@ void InstrumentFormManager::clearAll()
 {
 	closeAll();
 	map_.clear();
-}
-
-QString InstrumentFormManager::getFormInstrumentName(int n) const
-{
-	return map_.at(n)->property("Name").toString();
-}
-
-void InstrumentFormManager::setFormInstrumentName(int n, QString name)
-{
-	map_.at(n)->setProperty("Name", name);
 }
 
 SoundSource InstrumentFormManager::getFormInstrumentSoundSource(int n) const

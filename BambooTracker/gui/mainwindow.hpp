@@ -82,7 +82,7 @@ private:
 	std::shared_ptr<InstrumentFormManager> instForms_;
 	void addInstrument();
 	void removeInstrument(int row);
-	void editInstrument();
+	void openInstrumentEditor();
 	int findRowFromInstrumentList(int instNum);
 	void renameInstrument();
 	void cloneInstrument();
@@ -192,7 +192,6 @@ private:
 private slots:
 	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
 	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
-	void onInstrumentListWidgetItemAdded(const QModelIndex& parent, int start, int end);
 	void on_instrumentListWidget_itemSelectionChanged();
 	void on_grooveCheckBox_stateChanged(int arg1);
 	void on_actionExit_triggered();
