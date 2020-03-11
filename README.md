@@ -380,7 +380,7 @@ I would like to thank the following people for making it:
 - Some tracker creators, especially HertzDevil of 0CC-FamiTracker, Leonardo Demartino (delek) of Deflemask Tracker and Lasse Öörni (Cadaver) of GoatTracker for UI and routines of the tracker
 - Decidetto for the application icon
 - Vitaly Novichkov (Wohlstand) for WOPN instrument format files
-- maak, SuperJet Spade, Dippy and RigidatoMS for sample modules
+- maak, SuperJet Spade, Dippy, RigidatoMS and ImATrackMan for sample modules
 - papiezak for sample instruments
 - Ru^3 for S98 file format documentation
 - がし３ (gasshi) for SCCI libraries

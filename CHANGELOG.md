@@ -5,7 +5,7 @@
 - [#6], [#184], [#185], [#186], [#187] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Add shortcuts instead of insert key
 - Add bookmark manager
-- 1 new sample module (thanks RigidatoMS)
+- 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed
 - [#182] - Enable the first note-on when tone portamento is set before the playing start position (thanks [@freq-mod])
@@ -18,6 +18,7 @@
 - Fix paint glitches of order list and pattern editor
 
 [@freq-mod]: https://github.com/freq-mod
+[@RigidatoMS]: https://twitter.com/RigidatoMS
 
 [#182]: https://github.com/rerrahkr/BambooTracker/issues/182
 [#183]: https://github.com/rerrahkr/BambooTracker/pull/183

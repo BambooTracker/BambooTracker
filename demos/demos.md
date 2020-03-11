@@ -1,9 +1,10 @@
 ## Sample modules
-- [Dippy] - Neo Megalopolis
-- [maak] - breeze 2608, Rude Buster
-- Rerrah - Lotus
-- RigidatoMS - Is This What You Desired?
-- [SuperJet Spade] - Underwater Ruins
+- [Dippy] - Neo Megalopolis.btm
+- [ImATrackMan] - Battleship.btm
+- [maak] - breeze 2608.btm, Rude Buster.btm
+- Rerrah - Lotus.btm
+- [RigidatoMS] - Is This What You Desired.btm
+- [SuperJet Spade] - Underwater Ruins.btm
 
 ## Sample instruments
 - [papiezak] - 2 banks (32 instruments)
@@ -15,3 +16,5 @@ Thanks all for samples!
 [maak]: https://twitter.com/maakmusic
 [papiezak]: https://github.com/papiezak
 [SuperJet Spade]: https://twitter.com/SuperJetSpade
+[RigidatoMS]: https://twitter.com/RigidatoMS
+[ImATrackMan]: https://twitter.com/ImATrackMan
