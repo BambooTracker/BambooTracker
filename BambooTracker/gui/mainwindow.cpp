@@ -235,7 +235,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->editableStepSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 					 this, [&](int n) {
 		ui->patternEditor->setEditableStep(n);
-		config.lock()->setEditableStep(static_cast<size_t>(n));
+		config_.lock()->setEditableStep(static_cast<size_t>(n));
 	});
 	ui->editableStepSpinBox->setValue(static_cast<int>(config.lock()->getEditableStep()));
 	ui->patternEditor->setEditableStep(static_cast<int>(config.lock()->getEditableStep()));

@@ -16,6 +16,7 @@
 ### Fixed
 - Close all windows when the main window closed
 - Fix paint glitches of order list and pattern editor
+- Fix edit step crashing on change
 
 [@freq-mod]: https://github.com/freq-mod
 [@RigidatoMS]: https://twitter.com/RigidatoMS
