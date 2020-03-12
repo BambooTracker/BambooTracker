@@ -2118,9 +2118,7 @@ void OPNAController::keyOnSSG(int ch, Note note, int octave, int pitch, bool isJ
 		keyToneSSG_[ch] = baseToneSSG_[ch].front();
 		sumPitchSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
-	}
-	if (tmpVolSSG_[ch] != -1 && !volSldSSG_[ch]) {
-		setVolumeSSG(ch, baseVolSSG_[ch]);
+		tmpVolSSG_[ch] = -1;
 	}
 	if (!noteSldSSGSetFlag_) {
 		nsItSSG_[ch].reset();
@@ -3526,9 +3524,7 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 		keyToneADPCM_ = baseToneADPCM_.front();
 		sumPitchADPCM_ = 0;
 		sumVolSldADPCM_ = 0;
-	}
-	if (tmpVolADPCM_ != -1 && !volSldADPCM_) {
-		setVolumeADPCM(baseVolADPCM_);
+		tmpVolADPCM_ = -1;
 	}
 	if (!noteSldADPCMSetFlag_) {
 		nsItADPCM_.reset();
@@ -3549,16 +3545,18 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 		opna_->setRegister(0x101, panADPCM_ | 0x02);
 
 		size_t startAddress = refInstADPCM_->getWaveformStartAddress();
-		opna_->setRegister(0x102, startAddress & 0xff);
-		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+		if (startAddress != startAddrADPCM_) {
+			opna_->setRegister(0x102, startAddress & 0xff);
+			opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+			startAddrADPCM_ = startAddress;
+		}
 
 		size_t stopAddress = refInstADPCM_->getWaveformStopAddress();
-		opna_->setRegister(0x104, stopAddress & 0xff);
-		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
-
-		size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
-		opna_->setRegister(0x10c, dramLim & 0xff);
-		opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
+		if (stopAddress != stopAddrADPCM_) {
+			opna_->setRegister(0x104, stopAddress & 0xff);
+			opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
+			stopAddrADPCM_ = stopAddress;
+		}
 
 		opna_->setRegister(0x100, 0xa0 | repeatFlag);
 
@@ -3820,6 +3818,8 @@ void OPNAController::initADPCM()
 	baseVolADPCM_ = 0xff;	// Init volume
 	tmpVolADPCM_ = -1;
 	panADPCM_ = 0xc0;
+	startAddrADPCM_ = 0;
+	stopAddrADPCM_ = 0;
 
 	// Init sequence
 	hasPreSetTickEventADPCM_ = false;
@@ -3844,6 +3844,10 @@ void OPNAController::initADPCM()
 	transposeADPCM_ = 0;
 
 	opna_->setRegister(0x100, 0xa1);	// Stop synthesis
+	// Limit address
+	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+	opna_->setRegister(0x10c, dramLim & 0xff);
+	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 }
 
 void OPNAController::setMuteADPCMState(bool isMute)
