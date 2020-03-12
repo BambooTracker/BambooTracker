@@ -6,68 +6,68 @@
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="14"/>
         <source>Bookmark Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマークマネージャー</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="22"/>
         <source>Sort by</source>
-        <translation type="unfinished"></translation>
+        <translation>並び替え</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="40"/>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation>位置順</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="47"/>
         <location filename="../../gui/bookmark_manager_form.ui" line="164"/>
         <source>Name</source>
-        <translation type="unfinished">ゲーム名</translation>
+        <translation>名前</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="97"/>
         <source>Remove</source>
-        <translation type="unfinished">削除</translation>
+        <translation>削除</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="104"/>
         <source>Clear All</source>
-        <translation type="unfinished"></translation>
+        <translation>全削除</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="144"/>
         <source>Bookmark editor</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマークエディター</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="157"/>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダー</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="178"/>
         <source>Step</source>
-        <translation type="unfinished">ステップ</translation>
+        <translation>ステップ</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="208"/>
         <source>Create New</source>
-        <translation type="unfinished"></translation>
+        <translation>新規作成</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.ui" line="215"/>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>更新</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.cpp" line="59"/>
         <source>Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマーク</translation>
     </message>
     <message>
         <location filename="../../gui/bookmark_manager_form.cpp" line="147"/>
         <source>Bookmark %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマーク%1</translation>
     </message>
 </context>
 <context>
@@ -99,17 +99,17 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="180"/>
         <source>Overwrite unused&amp;unedited property</source>
-        <translation type="unfinished"></translation>
+        <translation>未使用&amp;未編集のプロパティを上書き</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="188"/>
         <source>Write only used samples</source>
-        <translation type="unfinished"></translation>
+        <translation>使用中のサンプルのみ書き込み</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="314"/>
         <source>Real chip interface</source>
-        <translation type="unfinished"></translation>
+        <translation>リアルチップインターフェース</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="330"/>
@@ -683,10 +683,6 @@
         <translation>削除</translation>
     </message>
     <message>
-        <source>Use SCCI</source>
-        <translation type="vanished">SCCI使用</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.ui" line="409"/>
         <source>Mixer</source>
         <translation>ミキサー</translation>
@@ -798,17 +794,17 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="77"/>
         <source>Overwrite unused and unedited instrument properties on creating new properties. When disabled, override unused properties regardless of editing.</source>
-        <translation type="unfinished"></translation>
+        <translation>新しいインストゥルメントプロパティを作成する際に未使用かつ未編集の既存のプロパティを上書きします。編集したかどうかに関わらず上書きする場合はチェックを外してください。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="80"/>
         <source>Send only ADPCM samples used by instruments to the ADPCM memory. Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost.</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメントで使用されているADPCMサンプルのみをADPCMメモリへ書き込みます。メモリの書きかえには高コストであるため、頻繁にサンプルを変更する場合には無効にすることをお勧めします。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="169"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>なし</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="408"/>
@@ -1204,7 +1200,7 @@
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="27"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="33"/>
         <source>Waveform</source>
-        <translation type="unfinished">波形</translation>
+        <translation>波形</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="54"/>
@@ -1212,143 +1208,143 @@
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="390"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="429"/>
         <source>Users:</source>
-        <translation type="unfinished">ユーザー:</translation>
+        <translation>ユーザー:</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="81"/>
         <source>Memory:</source>
-        <translation type="unfinished"></translation>
+        <translation>メモリ:</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="118"/>
         <source>Repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>繰り返し</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="138"/>
         <source>Import</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプル読み込み</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="145"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>クリア</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="154"/>
         <source>Root key</source>
-        <translation type="unfinished"></translation>
+        <translation>基準キー</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="160"/>
         <source>Key</source>
-        <translation type="unfinished"></translation>
+        <translation>キー</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="168"/>
         <source>C</source>
-        <translation type="unfinished">C</translation>
+        <translation>C</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="173"/>
         <source>C#</source>
-        <translation type="unfinished">C#</translation>
+        <translation>C#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="178"/>
         <source>D</source>
-        <translation type="unfinished">D</translation>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="183"/>
         <source>D#</source>
-        <translation type="unfinished">D#</translation>
+        <translation>D#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="188"/>
         <source>E</source>
-        <translation type="unfinished">E</translation>
+        <translation>E</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="193"/>
         <source>F</source>
-        <translation type="unfinished">F</translation>
+        <translation>F</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="198"/>
         <source>F#</source>
-        <translation type="unfinished">F#</translation>
+        <translation>F#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="203"/>
         <source>G</source>
-        <translation type="unfinished">G</translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="208"/>
         <source>G#</source>
-        <translation type="unfinished">G#</translation>
+        <translation>G#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="213"/>
         <source>A</source>
-        <translation type="unfinished">A</translation>
+        <translation>A</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="218"/>
         <source>A#</source>
-        <translation type="unfinished">A#</translation>
+        <translation>A#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="223"/>
         <source>B</source>
-        <translation type="unfinished">B</translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="241"/>
         <source>Rate</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプルレート</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="265"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="271"/>
         <source>Envelope</source>
-        <translation type="unfinished">エンベロープ</translation>
+        <translation>エンベロープ</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="333"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="339"/>
         <source>Arpeggio</source>
-        <translation type="unfinished">アルペジオ</translation>
+        <translation>アルペジオ</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="354"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="436"/>
         <source>Type:</source>
-        <translation type="unfinished">タイプ:</translation>
+        <translation>タイプ:</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="411"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="417"/>
         <source>Pitch</source>
-        <translation type="unfinished">ピッチ</translation>
+        <translation>ピッチ</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="109"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="172"/>
         <source>Absolute</source>
-        <translation type="unfinished">絶対</translation>
+        <translation>絶対</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="110"/>
         <source>Fixed</source>
-        <translation type="unfinished">固定</translation>
+        <translation>固定</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="111"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="173"/>
         <source>Relative</source>
-        <translation type="unfinished">相対</translation>
+        <translation>相対</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="476"/>
@@ -1356,38 +1352,39 @@
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="485"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="492"/>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="476"/>
         <source>Failed to import the wav.</source>
-        <translation type="unfinished"></translation>
+        <translation>wavの読み込みに失敗しました。</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="480"/>
         <source>Failed to import the wav.
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>wavの読み込みに失敗しました。
+%1</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="486"/>
         <source>Supported sample rate is 2kHz-16kHz, but the rate of selected sample is %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプルレートが%1Hzのため読み込めません。2kHzから16kHzの間で設定してください。</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="492"/>
         <source>The selected sample is not mono channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>選択したサンプルはモノラルではありません。</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="646"/>
         <source>Import sample</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプル読み込み</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="647"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -2434,7 +2431,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1425"/>
         <source>&amp;Bookmark Manager...</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマークマネージャー(&amp;B)...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1340"/>
@@ -2584,12 +2581,12 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1243"/>
         <source>PMD PPC (*.ppc)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1244"/>
         <source>FMP PVI (*.pvi)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1334"/>
@@ -2639,7 +2636,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1697"/>
         <source>The module has been changed. Do you want to save it?</source>
-        <translation type="unfinished"></translation>
+        <translation>モジュールが変更されています。保存しますか?</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1740"/>
@@ -2654,7 +2651,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2282"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2465"/>
@@ -2762,10 +2759,6 @@
         <location filename="../../gui/mainwindow.cpp" line="1879"/>
         <source>Could not load the %1. It may be corrupted.</source>
         <translation>%1を読み込めませんでした。ファイルが破損している可能性があります。</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
-        <translation type="vanished">&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2463"/>

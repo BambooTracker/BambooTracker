@@ -12,6 +12,7 @@
 - [#183] - Implement ADPCM part in Nuked OPN-Mod (thanks [@jpcima])
 - [#186] - Selectable to overwrite instrument properties depending on whether or not to be edited (thanks [@OPNA2608])
 - Make an instrument editor form on opening
+- Update translation: ja
 
 ### Fixed
 - Close all windows when the main window closed
