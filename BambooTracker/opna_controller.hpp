@@ -404,6 +404,9 @@ private:
 
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);
 
+	inline uint8_t SSGToneFlag(int ch) { return (1 << ch); }
+	inline uint8_t SSGNoiseFlag(int ch) { return (8 << ch); }
+
 	inline void checkRealToneSSGByArpeggio(int ch, int seqPos)
 	{
 		checkRealToneByArpeggio(seqPos, arpItSSG_[ch], baseToneSSG_[ch], keyToneSSG_[ch], needToneSetSSG_[ch]);

@@ -2313,11 +2313,11 @@ void OPNAController::setToneNoiseMixSSG(int ch, int value)
 	toneNoiseMixSSG_[ch] = value;
 
 	// Tone
-	if ((tnSSG_[ch].isTone_ = (0x01 & value))) mixerSSG_ &= ~(1 << ch);
-	else mixerSSG_ |= (1 << ch);
+	if ((tnSSG_[ch].isTone_ = (0x01 & value))) mixerSSG_ &= ~SSGToneFlag(ch);
+	else mixerSSG_ |= SSGToneFlag(ch);
 	// Noise
-	if ((tnSSG_[ch].isNoise_ = (0x02 & value))) mixerSSG_ &= ~(1 << (ch + 3));
-	else mixerSSG_ |= (1 << (ch + 3));
+	if ((tnSSG_[ch].isNoise_ = (0x02 & value))) mixerSSG_ &= ~SSGNoiseFlag(ch);
+	else mixerSSG_ |= SSGNoiseFlag(ch);
 	opna_->setRegister(0x07, mixerSSG_);
 
 	tnItSSG_[ch].reset();
@@ -3040,170 +3040,80 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 
 	int type = tnItSSG_[ch]->getCommandType();
 	if (type == -1) return;
-	else if (!type) {	// tone
-		if (tnSSG_[ch].isTone_) {
-			if (tnSSG_[ch].isNoise_) {
-				mixerSSG_ |= (1 << (ch + 3));
-				switch (wfSSG_[ch].type) {
-				case SSGWaveformType::TRIANGLE:
-				case SSGWaveformType::SAW:
-				case SSGWaveformType::INVSAW:
-					mixerSSG_ |= (1 << ch);
-					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
-					break;
-				default:
-					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { true, false, CommandSequenceUnit::NODATA };
-					break;
-				}
-			}
-			else {
-				switch (wfSSG_[ch].type) {
-				case SSGWaveformType::TRIANGLE:
-				case SSGWaveformType::SAW:
-				case SSGWaveformType::INVSAW:
-					mixerSSG_ |= (1 << ch);
-					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		else {
-			if (tnSSG_[ch].isNoise_) {
-				mixerSSG_ |= (1 << (ch + 3));
-				switch (wfSSG_[ch].type) {
-				case SSGWaveformType::TRIANGLE:
-				case SSGWaveformType::SAW:
-				case SSGWaveformType::INVSAW:
-					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
-					break;
-				default:
-					mixerSSG_ &= ~(1 << ch);
-					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { true, false, CommandSequenceUnit::NODATA };
-					break;
-				}
-			}
-			else {
-				switch (wfSSG_[ch].type) {
-				case SSGWaveformType::TRIANGLE:
-				case SSGWaveformType::SAW:
-				case SSGWaveformType::INVSAW:
-					break;
-				default:
-					mixerSSG_ &= ~(1 << ch);
-					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch] = { true, false, CommandSequenceUnit::NODATA };
-					break;
-				}
-			}
-		}
-	}
-	else {
-		if (type > 32) {	// Tone&Noise
-			if (tnSSG_[ch].isNoise_) {
-				if (tnSSG_[ch].isTone_) {
-					switch (wfSSG_[ch].type) {
-					case SSGWaveformType::TRIANGLE:
-					case SSGWaveformType::SAW:
-					case SSGWaveformType::INVSAW:
-						mixerSSG_ |= (1 << ch);
-						tnSSG_[ch].isTone_ = false;
-						opna_->setRegister(0x07, mixerSSG_);
-						break;
-					default:
-						break;
-					}
-				}
-				else {
-					switch (wfSSG_[ch].type) {
-					case SSGWaveformType::TRIANGLE:
-					case SSGWaveformType::SAW:
-					case SSGWaveformType::INVSAW:
-						break;
-					default:
-						mixerSSG_ &= ~(1 << ch);
-						tnSSG_[ch].isTone_ = true;
-						opna_->setRegister(0x07, mixerSSG_);
-						break;
-					}
-				}
-			}
-			else {
-				if (tnSSG_[ch].isTone_) {
-					switch (wfSSG_[ch].type) {
-					case SSGWaveformType::TRIANGLE:
-					case SSGWaveformType::SAW:
-					case SSGWaveformType::INVSAW:
-						mixerSSG_ |= (1 << ch);
-						tnSSG_[ch].isTone_ = false;
-						break;
-					default:
-						break;
-					}
-				}
-				else {
-					switch (wfSSG_[ch].type) {
-					case SSGWaveformType::TRIANGLE:
-					case SSGWaveformType::SAW:
-					case SSGWaveformType::INVSAW:
-						break;
-					default:
-						mixerSSG_ &= ~(1 << ch);
-						tnSSG_[ch].isTone_ = true;
-						break;
-					}
-				}
-				mixerSSG_ &= ~(1 << (ch + 3));
-				opna_->setRegister(0x07, mixerSSG_);
-				tnSSG_[ch].isNoise_ = true;
-			}
 
-			if (!tnSSG_[ch].isTone_ || !tnSSG_[ch].isNoise_) {
-				mixerSSG_ &= ~(0x1001 << ch);
-				opna_->setRegister(0x07, mixerSSG_);
+	uint8_t prevMixer = mixerSSG_;
+	if (!type) {	// tone
+		switch (wfSSG_[ch].type) {
+		case SSGWaveformType::TRIANGLE:
+		case SSGWaveformType::SAW:
+		case SSGWaveformType::INVSAW:
+			if (tnSSG_[ch].isTone_) {
+				mixerSSG_ |= SSGToneFlag(ch);
+				tnSSG_[ch].isTone_ = false;
+			}
+			break;
+		default:
+			if (!tnSSG_[ch].isTone_) {
+				mixerSSG_ &= ~SSGToneFlag(ch);
 				tnSSG_[ch].isTone_ = true;
-				tnSSG_[ch].isNoise_ = true;
 			}
-
-
-			int p = type - 33;
-			if (tnSSG_[ch].noisePeriod_ != p) {
-				opna_->setRegister(0x06, static_cast<uint8_t>(31 - p));	// Reverse order
-				tnSSG_->noisePeriod_ = p;
-			}
+			break;
 		}
-		else {	// Noise
-			if (tnSSG_[ch].isNoise_) {
-				if (tnSSG_[ch].isTone_) {
-					mixerSSG_ |= (1 << ch);
-					opna_->setRegister(0x07, mixerSSG_);
-					tnSSG_[ch].isTone_ = false;
-				}
-			}
-			else {
-				if (tnSSG_[ch].isTone_) {
-					mixerSSG_ |= (1 << ch);
-					tnSSG_[ch].isTone_ = false;
-				}
-				mixerSSG_ &= ~(1 << (ch + 3));
-				opna_->setRegister(0x07, mixerSSG_);
-				tnSSG_[ch].isNoise_ = true;
-			}
 
-			int p = type - 1;
-			if (tnSSG_[ch].noisePeriod_ != p) {
-				opna_->setRegister(0x06, static_cast<uint8_t>(31- p));	// Reverse order
-				tnSSG_->noisePeriod_ = p;
+		if (tnSSG_[ch].isNoise_) {
+			mixerSSG_ |= SSGNoiseFlag(ch);
+			tnSSG_[ch].isNoise_ = false;
+			tnSSG_[ch].noisePeriod_ = CommandSequenceUnit::NODATA;
+		}
+	}
+	else if (type > 32) {	// Tone&Noise
+		switch (wfSSG_[ch].type) {
+		case SSGWaveformType::TRIANGLE:
+		case SSGWaveformType::SAW:
+		case SSGWaveformType::INVSAW:
+			if (tnSSG_[ch].isTone_) {
+				mixerSSG_ |= SSGToneFlag(ch);
+				tnSSG_[ch].isTone_ = false;
 			}
+			break;
+		default:
+			if (!tnSSG_[ch].isTone_) {
+				mixerSSG_ &= ~SSGToneFlag(ch);
+				tnSSG_[ch].isTone_ = true;
+			}
+			break;
+		}
+
+		if (!tnSSG_[ch].isNoise_) {
+			mixerSSG_ &= ~SSGNoiseFlag(ch);
+			tnSSG_[ch].isNoise_ = true;
+		}
+
+		int p = type - 33;
+		if (tnSSG_[ch].noisePeriod_ != p) {
+			opna_->setRegister(0x06, static_cast<uint8_t>(31 - p));	// Reverse order
+			tnSSG_->noisePeriod_ = p;
+		}
+	}
+	else {	// Noise
+		if (tnSSG_[ch].isTone_) {
+			mixerSSG_ |= SSGToneFlag(ch);
+			tnSSG_[ch].isTone_ = false;
+		}
+
+		if (!tnSSG_[ch].isNoise_) {
+			mixerSSG_ &= ~SSGNoiseFlag(ch);
+			tnSSG_[ch].isNoise_ = true;
+		}
+
+		int p = type - 1;
+		if (tnSSG_[ch].noisePeriod_ != p) {
+			opna_->setRegister(0x06, static_cast<uint8_t>(31 - p));	// Reverse order
+			tnSSG_->noisePeriod_ = p;
 		}
 	}
 
+	if (mixerSSG_ != prevMixer) opna_->setRegister(0x07, mixerSSG_);
 	needMixSetSSG_[ch] = false;
 }
 
@@ -3214,17 +3124,17 @@ void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
 	case SSGWaveformType::SQM_TRIANGLE:
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
-		mixerSSG_ &= ~(1 << ch);
+		mixerSSG_ &= ~SSGToneFlag(ch);
 		tnSSG_[ch].isTone_ = true;
 		break;
 	case SSGWaveformType::TRIANGLE:
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
-		mixerSSG_ |= (1 << ch);
+		mixerSSG_ |= SSGToneFlag(ch);
 		tnSSG_[ch].isNoise_ = false;
 		break;
 	default:
-		break;
+		throw std::invalid_argument("invalid waveform type.");
 	}
 	opna_->setRegister(0x07, mixerSSG_);
 
