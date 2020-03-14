@@ -28,7 +28,7 @@ struct ToneDetail
 
 struct SSGToneNoise
 {
-	bool isTone_, isNoise_;
+	bool isTone, isNoise;
 	int noisePeriod_;
 };
 
@@ -386,6 +386,7 @@ private:
 	int toneNoiseMixSSG_[3];
 	int noisePitchSSG_;
 	int hardEnvPeriodHighSSG_, hardEnvPeriodLowSSG_;
+	const int AUTO_ENV_SHAPE_TYPE_[15] = { 17, 17, 17, 21, 21, 21, 21, 16, 17, 18, 19, 20, 21, 22, 23 };
 
 	void initSSG();
 
