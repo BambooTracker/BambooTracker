@@ -4,10 +4,10 @@
 #include <QUndoCommand>
 #include "gui/pattern_editor/pattern_editor_panel.hpp"
 
-class TransposeNoteKeyInPatternQtCommand : public QUndoCommand
+class TransposeNoteInPatternQtCommand : public QUndoCommand
 {
 public:
-	TransposeNoteKeyInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent = nullptr);
+	TransposeNoteInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent = nullptr);
 	void redo() Q_DECL_OVERRIDE;
 	void undo() Q_DECL_OVERRIDE;
 	int id() const Q_DECL_OVERRIDE;

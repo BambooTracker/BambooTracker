@@ -1,7 +1,7 @@
-#include "transpose_note_key_in_pattern_command.hpp"
+#include "transpose_note_in_pattern_command.hpp"
 #include "misc.hpp"
 
-TransposeNoteKeyInPatternCommand::TransposeNoteKeyInPatternCommand(std::weak_ptr<Module> mod,
+TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(std::weak_ptr<Module> mod,
 																 int songNum, int beginTrack,
 																 int beginOrder, int beginStep,
 																 int endTrack, int endStep, int seminote)
@@ -25,7 +25,7 @@ TransposeNoteKeyInPatternCommand::TransposeNoteKeyInPatternCommand(std::weak_ptr
 	}
 }
 
-void TransposeNoteKeyInPatternCommand::redo()
+void TransposeNoteInPatternCommand::redo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
@@ -40,7 +40,7 @@ void TransposeNoteKeyInPatternCommand::redo()
 	}
 }
 
-void TransposeNoteKeyInPatternCommand::undo()
+void TransposeNoteInPatternCommand::undo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
@@ -53,7 +53,7 @@ void TransposeNoteKeyInPatternCommand::undo()
 	}
 }
 
-CommandId TransposeNoteKeyInPatternCommand::getID() const
+CommandId TransposeNoteInPatternCommand::getID() const
 {
-	return CommandId::TransposeNoteKeyInPattern;
+	return CommandId::TransposeNoteInPattern;
 }

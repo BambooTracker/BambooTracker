@@ -91,7 +91,6 @@ public slots:
 	/// 4: Pattern
 	/// 5: Order
 	void onSelectPressed(int type);
-	void onOctaveTransposePressed(bool isIncreased);
 	void onNoteTransposePressed(int seminote);
 	void onToggleTrackPressed(int track);
 	void onSoloTrackPressed(int track);
@@ -258,9 +257,7 @@ private:
 	void pasteOverwriteCopiedCells(const PatternPosition& startPos);
 	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
 
-	void transposeNoteKey(const PatternPosition& startPos, const PatternPosition& endPos, int seminote);
-	void increaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos);
-	void decreaseNoteOctave(const PatternPosition& startPos, const PatternPosition& endPos);
+	void transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote);
 
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);

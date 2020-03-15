@@ -2109,25 +2109,11 @@ void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColm
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, endTrack, endColmn, endStep));
 }
 
-void BambooTracker::transposeNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+void BambooTracker::transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
 											 int endTrack, int endStep, int seminote)
 {
-	comMan_.invoke(std::make_unique<TransposeNoteKeyInPatternCommand>(
+	comMan_.invoke(std::make_unique<TransposeNoteInPatternCommand>(
 					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep, seminote));
-}
-
-void BambooTracker::increaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-												int endTrack, int endStep)
-{
-	comMan_.invoke(std::make_unique<IncreaseNoteOctaveInPatternCommand>(
-					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep));
-}
-
-void BambooTracker::decreaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-												int endTrack, int endStep)
-{
-	comMan_.invoke(std::make_unique<DecreaseNoteOctaveInPatternCommand>(
-					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep));
 }
 
 void BambooTracker::expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

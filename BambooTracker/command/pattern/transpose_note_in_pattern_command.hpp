@@ -5,10 +5,10 @@
 #include <vector>
 #include "module.hpp"
 
-class TransposeNoteKeyInPatternCommand : public AbstractCommand
+class TransposeNoteInPatternCommand : public AbstractCommand
 {
 public:
-	TransposeNoteKeyInPatternCommand(std::weak_ptr<Module> mod, int songNum,
+	TransposeNoteInPatternCommand(std::weak_ptr<Module> mod, int songNum,
 									int beginTrack, int beginOrder, int beginStep,
 									int endTrack, int endStep, int seminote);
 	void redo() override;
