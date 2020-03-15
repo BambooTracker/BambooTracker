@@ -1,16 +1,18 @@
-#include "increase_note_key_in_pattern_command.hpp"
+#include "transpose_note_key_in_pattern_command.hpp"
+#include "misc.hpp"
 
-IncreaseNoteKeyInPatternCommand::IncreaseNoteKeyInPatternCommand(std::weak_ptr<Module> mod,
+TransposeNoteKeyInPatternCommand::TransposeNoteKeyInPatternCommand(std::weak_ptr<Module> mod,
 																 int songNum, int beginTrack,
 																 int beginOrder, int beginStep,
-																 int endTrack, int endStep)
+																 int endTrack, int endStep, int seminote)
 	: mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
 	  order_(beginOrder),
 	  bStep_(beginStep),
 	  eTrack_(endTrack),
-	  eStep_(endStep)
+	  eStep_(endStep),
+	  seminote_(seminote)
 {
 	auto& sng = mod.lock()->getSong(songNum);
 
@@ -23,7 +25,7 @@ IncreaseNoteKeyInPatternCommand::IncreaseNoteKeyInPatternCommand(std::weak_ptr<M
 	}
 }
 
-void IncreaseNoteKeyInPatternCommand::redo()
+void TransposeNoteKeyInPatternCommand::redo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
@@ -32,14 +34,13 @@ void IncreaseNoteKeyInPatternCommand::redo()
 			auto& s = sng.getTrack(track).getPatternFromOrderNumber(order_).getStep(step);
 			int n = s.getNoteNumber();
 			if (n > -1) {
-				n = (n == 95)? 95 : (n + 1);
-				s.setNoteNumber(n);
+				s.setNoteNumber(clamp(n + seminote_, 0, 95));
 			}
 		}
 	}
 }
 
-void IncreaseNoteKeyInPatternCommand::undo()
+void TransposeNoteKeyInPatternCommand::undo()
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
@@ -52,7 +53,7 @@ void IncreaseNoteKeyInPatternCommand::undo()
 	}
 }
 
-CommandId IncreaseNoteKeyInPatternCommand::getID() const
+CommandId TransposeNoteKeyInPatternCommand::getID() const
 {
-	return CommandId::IncreaseNoteKeyInPattern;
+	return CommandId::TransposeNoteKeyInPattern;
 }

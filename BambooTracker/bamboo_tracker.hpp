@@ -389,10 +389,8 @@ public:
 																  std::vector<std::vector<std::string>> cells);
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
-	void increaseNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-								  int endTrack, int endStep);
-	void decreaseNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-								  int endTrack, int endStep);
+	void transposeNoteKeyInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
+								  int endTrack, int endStep, int seminote);
 	void increaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
 									 int endTrack, int endStep);
 	void decreaseNoteOctaveInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,

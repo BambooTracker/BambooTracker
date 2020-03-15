@@ -1796,25 +1796,14 @@ void PatternEditorPanel::cutSelectedCells()
 	QApplication::clipboard()->setText(str);
 }
 
-void PatternEditorPanel::increaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos)
+void PatternEditorPanel::transposeNoteKey(const PatternPosition& startPos, const PatternPosition& endPos, int seminote)
 {
 	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
 	if (beginTrack <= endPos.track) {
-		bt_->increaseNoteKeyInPattern(curSongNum_,
+		bt_->transposeNoteKeyInPattern(curSongNum_,
 									  beginTrack, startPos.order, startPos.step,
-									  endPos.track, endPos.step);
-		comStack_.lock()->push(new IncreaseNoteKeyInPatternQtCommand(this));
-	}
-}
-
-void PatternEditorPanel::decreaseNoteKey(const PatternPosition& startPos, const PatternPosition& endPos)
-{
-	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
-	if (beginTrack <= endPos.track) {
-		bt_->decreaseNoteKeyInPattern(curSongNum_,
-									  beginTrack, startPos.order, startPos.step,
-									  endPos.track, endPos.step);
-		comStack_.lock()->push(new DecreaseNoteKeyInPatternQtCommand(this));
+									  endPos.track, endPos.step, seminote);
+		comStack_.lock()->push(new TransposeNoteKeyInPatternQtCommand(this));
 	}
 }
 
@@ -1937,13 +1926,13 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	auto transpose = new QMenu(tr("&Transpose"));
 	pattern->addMenu(transpose);
 	QAction* deNote = transpose->addAction(tr("&Decrease Note"));
-	QObject::connect(deNote, &QAction::triggered, this, [&]() { onTransposePressed(false, false); });
+	QObject::connect(deNote, &QAction::triggered, this, [&]() { onNoteTransposePressed(-1); });
 	QAction* inNote = transpose->addAction(tr("&Increase Note"));
-	QObject::connect(inNote, &QAction::triggered, this, [&]() { onTransposePressed(false, true); });
+	QObject::connect(inNote, &QAction::triggered, this, [&]() { onNoteTransposePressed(1); });
 	QAction* deOct = transpose->addAction(tr("D&ecrease Octave"));
-	QObject::connect(deOct, &QAction::triggered, this, [&]() { onTransposePressed(true, false); });
+	QObject::connect(deOct, &QAction::triggered, this, [&]() { onOctaveTransposePressed(false); });
 	QAction* inOct = transpose->addAction(tr("I&ncrease Octave"));
-	QObject::connect(inOct, &QAction::triggered, this, [&]() { onTransposePressed(true, true); });
+	QObject::connect(inOct, &QAction::triggered, this, [&]() { onOctaveTransposePressed(true); });
 	menu.addSeparator();
 	QAction* toggle = menu.addAction(tr("To&ggle Track"));
 	QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(pos.track); });
@@ -2314,38 +2303,32 @@ void PatternEditorPanel::onSelectPressed(int type)
 	}
 }
 
-void PatternEditorPanel::onTransposePressed(bool isOctave, bool isIncreased)
+void PatternEditorPanel::onOctaveTransposePressed(bool isIncreased)
 {
 	if (bt_->isJamMode()) return;
 
-	if (isOctave) {
-		if (isIncreased) {
-			if (selLeftAbovePos_.order != -1)
-				increaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
-			else
-				increaseNoteOctave(curPos_, curPos_);
-		}
-		else {
-			if (selLeftAbovePos_.order != -1)
-				decreaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
-			else
-				decreaseNoteOctave(curPos_, curPos_);
-		}
+	if (isIncreased) {
+		if (selLeftAbovePos_.order != -1)
+			increaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
+		else
+			increaseNoteOctave(curPos_, curPos_);
 	}
 	else {
-		if (isIncreased) {
-			if (selLeftAbovePos_.order != -1)
-				increaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
-			else
-				increaseNoteKey(curPos_, curPos_);
-		}
-		else {
-			if (selLeftAbovePos_.order != -1)
-				decreaseNoteKey(selLeftAbovePos_, selRightBelowPos_);
-			else
-				decreaseNoteKey(curPos_, curPos_);
-		}
+		if (selLeftAbovePos_.order != -1)
+			decreaseNoteOctave(selLeftAbovePos_, selRightBelowPos_);
+		else
+			decreaseNoteOctave(curPos_, curPos_);
 	}
+}
+
+void PatternEditorPanel::onNoteTransposePressed(int seminote)
+{
+	if (bt_->isJamMode()) return;
+
+	if (selLeftAbovePos_.order != -1)
+		transposeNoteKey(selLeftAbovePos_, selRightBelowPos_, seminote);
+	else
+		transposeNoteKey(curPos_, curPos_, seminote);
 }
 
 void PatternEditorPanel::onToggleTrackPressed(int track)

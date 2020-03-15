@@ -297,7 +297,8 @@ void PatternEditor::onSelectPressed(int type)
 
 void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
 {
-	ui->panel->onTransposePressed(isOctave, isIncreased);
+	if (isOctave) ui->panel->onOctaveTransposePressed(isIncreased);
+	else ui->panel->onNoteTransposePressed(isIncreased ? 1 : -1);
 }
 
 void PatternEditor::onToggleTrackPressed()
