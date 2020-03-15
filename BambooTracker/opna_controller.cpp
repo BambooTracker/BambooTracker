@@ -209,6 +209,7 @@ bool OPNAController::isMute(SoundSource src, int chInSrc)
 	case SoundSource::SSG:		return isMuteSSG(chInSrc);
 	case SoundSource::DRUM:		return isMuteDrum(chInSrc);
 	case SoundSource::ADPCM:	return isMuteADPCM();
+	default:	throw std::invalid_argument("Invalid sound source");
 	}
 }
 
@@ -292,10 +293,10 @@ void OPNAController::checkPortamento(const std::unique_ptr<SequenceIteratorInter
 {
 	if ((!arpIt || arpIt->getPosition() == -1) && prtm && hasKeyOnBefore) {
 		if (isTonePrtm) {
-			int dif = ( octaveAndNoteToNoteNumber(baseTone.front().octave, baseTone.front().note) * 32
-						+ baseTone.front().pitch )
-					  - ( octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note) * 32
-						  + keyTone.pitch );
+			int dif = ( octaveAndNoteToNoteNumber(baseTone.front().octave, baseTone.front().note)
+						* PitchConverter::SEMINOTE_PITCH + baseTone.front().pitch )
+					  - ( octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
+						  * PitchConverter::SEMINOTE_PITCH + keyTone.pitch );
 			if (dif > 0) {
 				if (dif - prtm < 0) {
 					keyTone = baseTone.front();
@@ -810,7 +811,7 @@ void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectFM(int ch, int seminote)
 {
-	transposeFM_[ch] += (seminote * 32);
+	transposeFM_[ch] += (seminote * PitchConverter::SEMINOTE_PITCH);
 	needToneSetFM_[ch] = true;
 }
 
@@ -2190,7 +2191,7 @@ void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 {
-	transposeSSG_[ch] += (seminote * 32);
+	transposeSSG_[ch] += (seminote * PitchConverter::SEMINOTE_PITCH);
 	needToneSetSSG_[ch] = true;
 }
 
@@ -3518,7 +3519,7 @@ void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 
 void OPNAController::setTransposeEffectADPCM(int seminote)
 {
-	transposeADPCM_ += (seminote * 32);
+	transposeADPCM_ += (seminote * PitchConverter::SEMINOTE_PITCH);
 	needToneSetADPCM_ = true;
 }
 
@@ -3754,7 +3755,7 @@ void OPNAController::writePitchADPCM()
 			+ transposeADPCM_;
 	p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
 
-	int pitchDiff = p - 32 * refInstADPCM_->getWaveformRootKeyNumber();
+	int pitchDiff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getWaveformRootKeyNumber();
 	int deltan = static_cast<int>(
 					 std::round(refInstADPCM_->getWaveformRootDeltaN() * std::pow(2., pitchDiff / 384.)));
 	opna_->setRegister(0x109, deltan & 0xff);
