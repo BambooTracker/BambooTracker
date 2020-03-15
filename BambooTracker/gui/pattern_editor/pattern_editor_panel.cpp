@@ -3011,8 +3011,13 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 void PatternEditorPanel::wheelEvent(QWheelEvent *event)
 {
 	if (bt_->isPlaySong() && bt_->isFollowPlay()) return;
-	int degree = event->angleDelta().y() / 8;
-	moveCursorToDown(-degree / 15);
+	int cnt = event->angleDelta().y() / 120;
+	if (event->modifiers().testFlag(Qt::ControlModifier)) {
+		onNoteTransposePressed(cnt);
+	}
+	else {
+		moveCursorToDown(-cnt);
+	}
 }
 
 void PatternEditorPanel::leaveEvent(QEvent* event)

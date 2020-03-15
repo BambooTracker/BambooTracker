@@ -4,6 +4,7 @@
 ### Added
 - [#6], [#184], [#185], [#186], [#187] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Add shortcuts instead of insert key
+- Add note transpose shortcuts using mouse wheel
 - Add bookmark manager
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
