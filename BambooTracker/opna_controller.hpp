@@ -203,8 +203,6 @@ private:
 	void setMuteFMState(int ch, bool isMuteFM);
 	bool isMuteFM(int ch);
 
-	int toInternalFMChannel(int ch) const;
-	uint8_t getFMKeyOnOffChannelMask(int ch) const;
 	uint32_t getFMChannelOffset(int ch, bool forPitch = false) const;
 	FMOperatorType toChannelOperatorType(int ch) const;
 	std::vector<FMEnvelopeParameter> getFMEnvelopeParametersForOperator(FMOperatorType op) const;
@@ -245,63 +243,51 @@ private:
 
 	void setInstrumentFMProperties(int ch);
 
-	static bool isCarrier(int op, int al);
 	static std::vector<int> getOperatorsInLevel(int level, int al);
 
-	inline FMEnvelopeParameter getParameterTL(int op) const
+	const bool CARRIER_JUDGE_[4][8] /* [operator][algorithm] */ = {
+		{ false, false, false, false, false, false, false, true },
+		{ false, false, false, false, true, true, true, true },
+		{ false, false, false, false, false, true, true, true },
+		{ true, true, true, true, true, true, true, true },
+	};
+	const uint8_t FM_KEYOFF_MASK_[6] = { 0, 1, 2, 4, 5, 6 };
+	const std::unordered_map<int, uint8_t> FM3_KEY_OFF_MASK_ = { { 2, 0xe }, { 6, 0xd }, { 7, 0xb }, { 8, 0x7 }	};
+	const FMEnvelopeParameter PARAM_TL_[4] = {
+		FMEnvelopeParameter::TL1, FMEnvelopeParameter::TL2, FMEnvelopeParameter::TL3, FMEnvelopeParameter::TL4
+	};
+	const FMEnvelopeParameter PARAM_ML_[4] = {
+		FMEnvelopeParameter::ML1, FMEnvelopeParameter::ML2, FMEnvelopeParameter::ML3, FMEnvelopeParameter::ML4
+	};
+	const FMEnvelopeParameter PARAM_AR_[4] = {
+		FMEnvelopeParameter::AR1, FMEnvelopeParameter::AR2, FMEnvelopeParameter::AR3, FMEnvelopeParameter::AR4
+	};
+	const FMEnvelopeParameter PARAM_DR_[4] = {
+		FMEnvelopeParameter::DR1, FMEnvelopeParameter::DR2, FMEnvelopeParameter::DR3, FMEnvelopeParameter::DR4
+	};
+	const FMEnvelopeParameter PARAM_RR_[4] = {
+		FMEnvelopeParameter::RR1, FMEnvelopeParameter::RR2, FMEnvelopeParameter::RR3, FMEnvelopeParameter::RR4
+	};
+
+	inline int toInternalFMChannel(int ch) const
 	{
-		switch (op) {
-		case 0:	return FMEnvelopeParameter::TL1;
-		case 1:	return FMEnvelopeParameter::TL2;
-		case 2:	return FMEnvelopeParameter::TL3;
-		case 3:	return FMEnvelopeParameter::TL4;
-		default:	throw std::invalid_argument("Invalid operator value.");
-		}
+		if (0 <= ch && ch < 6) return ch;
+		else if (mode_ == SongType::FM3chExpanded && 6 <= ch && ch < 9) return 2;
+		else throw std::out_of_range("Out of channel range.");
 	}
 
-	inline FMEnvelopeParameter getParameterML(int op) const
+	inline uint8_t getFMKeyOnOffChannelMask(int ch) const
 	{
-		switch (op) {
-		case 0:	return FMEnvelopeParameter::ML1;
-		case 1:	return FMEnvelopeParameter::ML2;
-		case 2:	return FMEnvelopeParameter::ML3;
-		case 3:	return FMEnvelopeParameter::ML4;
-		default:	throw std::invalid_argument("Invalid operator value.");
-		}
+		return FM_KEYOFF_MASK_[toInternalFMChannel(ch)];
 	}
 
-	inline FMEnvelopeParameter getParameterAR(int op) const
+	inline uint8_t getFM3SlotValidStatus() const
 	{
-		switch (op) {
-		case 0:	return FMEnvelopeParameter::AR1;
-		case 1:	return FMEnvelopeParameter::AR2;
-		case 2:	return FMEnvelopeParameter::AR3;
-		case 3:	return FMEnvelopeParameter::AR4;
-		default:	throw std::invalid_argument("Invalid operator value.");
-		}
+		return fmOpEnables_[2] & (static_cast<uint8_t>(isKeyOnFM_[2]) | (static_cast<uint8_t>(isKeyOnFM_[6]) << 1)
+				| (static_cast<uint8_t>(isKeyOnFM_[7]) << 2) | (static_cast<uint8_t>(isKeyOnFM_[8]) << 3));
 	}
 
-	inline FMEnvelopeParameter getParameterDR(int op) const
-	{
-		switch (op) {
-		case 0:	return FMEnvelopeParameter::DR1;
-		case 1:	return FMEnvelopeParameter::DR2;
-		case 2:	return FMEnvelopeParameter::DR3;
-		case 3:	return FMEnvelopeParameter::DR4;
-		default:	throw std::invalid_argument("Invalid operator value.");
-		}
-	}
-
-	inline FMEnvelopeParameter getParameterRR(int op) const
-	{
-		switch (op) {
-		case 0:	return FMEnvelopeParameter::RR1;
-		case 1:	return FMEnvelopeParameter::RR2;
-		case 2:	return FMEnvelopeParameter::RR3;
-		case 3:	return FMEnvelopeParameter::RR4;
-		default:	throw std::invalid_argument("Invalid operator value.");
-		}
-	}
+	inline bool isCarrier(int op, int al) { return CARRIER_JUDGE_[op][al]; }
 
 	inline uint8_t calculateTL(int ch, uint8_t data) const
 	{
