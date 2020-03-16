@@ -57,7 +57,7 @@
    <item row="0" column="0">
     <widget class="OrderListPanel" name="panel" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
