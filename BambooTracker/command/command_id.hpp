@@ -27,6 +27,7 @@ enum CommandId : int
 	EraseCellsInPattern					= 0x2e,
 	PasteMixCopiedDataToPattern			= 0x2f,
 	TransposeNoteInPattern				= 0x30,
+	ChangeValuesInPattern				= 0x31,
 	ExpandPattern						= 0x34,
 	ShrinkPattern						= 0x35,
 	SetEchoBufferAccess					= 0x36,

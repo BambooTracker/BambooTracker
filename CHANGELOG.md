@@ -3,9 +3,10 @@
 ## Unreleased
 ### Added
 - [#6], [#184], [#185], [#186], [#187] - Support ADPCM (thanks [@ScoopJohn] and others)
-- Add shortcuts instead of insert key
-- Add note transpose shortcuts using mouse wheel
-- Add bookmark manager
+- Shortcuts instead of insert key
+- Note transpose shortcuts using mouse wheel
+- Bookmark manager
+- [#189] - Increase/Decrease selected values in a pattern by 1 or 16 (thanks [@nyanpasu64])
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed
@@ -22,6 +23,7 @@
 
 [@freq-mod]: https://github.com/freq-mod
 [@RigidatoMS]: https://twitter.com/RigidatoMS
+[@nyanpasu64]: https://github.com/nyanpasu64
 
 [#182]: https://github.com/rerrahkr/BambooTracker/issues/182
 [#183]: https://github.com/rerrahkr/BambooTracker/pull/183
@@ -29,6 +31,7 @@
 [#185]: https://github.com/rerrahkr/BambooTracker/issues/185
 [#186]: https://github.com/rerrahkr/BambooTracker/issues/186
 [#187]: https://github.com/rerrahkr/BambooTracker/issues/187
+[#189]: https://github.com/rerrahkr/BambooTracker/issues/189
 
 ## v0.3.5 (2020-02-15)
 ### Added

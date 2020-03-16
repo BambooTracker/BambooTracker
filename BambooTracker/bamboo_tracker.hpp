@@ -390,7 +390,9 @@ public:
 	void erasePatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 						   int endTrack, int endColmn, int endStep);
 	void transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-								  int endTrack, int endStep, int seminote);
+								int endTrack, int endStep, int seminote);
+	void changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder, int beginStep,
+							   int endTrack, int endColumn, int endStep, int value);
 	void expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 					   int endTrack, int endColmn, int endStep);
 	void shrinkPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

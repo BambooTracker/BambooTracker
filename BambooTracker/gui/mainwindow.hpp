@@ -274,6 +274,10 @@ private slots:
 	void on_actionRemove_Duplicate_Instruments_triggered();
 	void on_actionRename_Instrument_triggered();
 	void on_action_Bookmark_Manager_triggered();
+	void on_actionFine_Decrease_Values_triggered();
+	void on_actionFine_Increase_Values_triggered();
+	void on_actionCoarse_D_ecrease_Values_triggered();
+	void on_actionCoarse_I_ncrease_Values_triggered();
 };
 
 #endif // MAINWINDOW_HPP

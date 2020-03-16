@@ -2936,3 +2936,23 @@ void MainWindow::on_action_Bookmark_Manager_triggered()
 	if (bmManForm_->isVisible()) bmManForm_->activateWindow();
 	else bmManForm_->show();
 }
+
+void MainWindow::on_actionFine_Decrease_Values_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onChangeValuesPressed(false, false);
+}
+
+void MainWindow::on_actionFine_Increase_Values_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onChangeValuesPressed(false, true);
+}
+
+void MainWindow::on_actionCoarse_D_ecrease_Values_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onChangeValuesPressed(true, false);
+}
+
+void MainWindow::on_actionCoarse_I_ncrease_Values_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onChangeValuesPressed(true, true);
+}

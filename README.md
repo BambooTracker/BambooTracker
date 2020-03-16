@@ -169,43 +169,47 @@ Please replace some keys with the following in macOS:
 | Escape          | Deselect            |
 
 ### Pattern editor
-| Key                         | Command                                     |
-| --------------------------- | ------------------------------------------- |
-| Ctrl+C                      | Copy                                        |
-| Ctrl+X                      | Cut                                         |
-| Ctrl+V                      | Paste                                       |
-| Ctrl+M                      | Paste and mix                               |
-| Ctrl+A                      | Select track/all                            |
-| Ctrl+G                      | Interpolate                                 |
-| Ctrl+R                      | Reverse                                     |
-| Ctrl+F1 or Ctrl+scroll up   | Decrease note                               |
-| Ctrl+F2 or Ctrl+scroll down | Increase note                               |
-| Ctrl+F3                     | Decrease octave                             |
-| Ctrl+F4                     | Increase octave                             |
-| Alt+F9                      | Toggle track                                |
-| Alt+F10                     | Solo track                                  |
-| Alt+S                       | Replace instrument                          |
-| Alt+L                       | Expand effect column                        |
-| Alt+K                       | Shrink effect column                        |
-| Ctrl+K                      | Add/Remove bookmark on the current position |
-| Tab                         | Jump to right track                         |
-| BackTab                     | Jump to left track                          |
-| Home                        | Jump to first step                          |
-| End                         | Jump to last step                           |
-| PageUp                      | Jump to upper step                          |
-| PageDown                    | Jump to lower step                          |
-| Ctrl+Up                     | Jump to upper 1st highlighted step          |
-| Ctrl+Down                   | Jump to lower 1st highlighted step          |
-| Ctrl+PageUp                 | Jump to previous bookmark                   |
-| Ctrl+PageDown               | Jump to next bookmark                       |
-| Insert or Alt+Down          | Insert step                                 |
-| BackSpace or Alt+Up         | Delete the step above                       |
-| Delete                      | Delete commands                             |
-| Escape                      | Deselection                                 |
-| -                           | Key off                                     |
-| \* (numpad)                 | Increase octave/echo buffer number          |
-| / (numpad)                  | Decrease octave/echo buffer number          |
-| ^                           | Echo buffer access                          |
+| Key                           | Command                                     |
+| ----------------------------- | ------------------------------------------- |
+| Ctrl+C                        | Copy                                        |
+| Ctrl+X                        | Cut                                         |
+| Ctrl+V                        | Paste                                       |
+| Ctrl+M                        | Paste and mix                               |
+| Ctrl+A                        | Select track/all                            |
+| Ctrl+G                        | Interpolate                                 |
+| Ctrl+R                        | Reverse                                     |
+| Ctrl+F1 or Ctrl+scroll up     | Decrease note                               |
+| Ctrl+F2 or Ctrl+scroll down   | Increase note                               |
+| Ctrl+F3                       | Decrease octave                             |
+| Ctrl+F4                       | Increase octave                             |
+| Shift+F1 or Shift+scroll up   | Fine decrease values                        |
+| Shift+F2 or Shift+scroll down | Fine increase values                        |
+| Shift+F3                      | Coarse decrease values                      |
+| Shift+F4                      | Coarse increase values                      |
+| Alt+F9                        | Toggle track                                |
+| Alt+F10                       | Solo track                                  |
+| Alt+S                         | Replace instrument                          |
+| Alt+L                         | Expand effect column                        |
+| Alt+K                         | Shrink effect column                        |
+| Ctrl+K                        | Add/Remove bookmark on the current position |
+| Tab                           | Jump to right track                         |
+| BackTab                       | Jump to left track                          |
+| Home                          | Jump to first step                          |
+| End                           | Jump to last step                           |
+| PageUp                        | Jump to upper step                          |
+| PageDown                      | Jump to lower step                          |
+| Ctrl+Up                       | Jump to upper 1st highlighted step          |
+| Ctrl+Down                     | Jump to lower 1st highlighted step          |
+| Ctrl+PageUp                   | Jump to previous bookmark                   |
+| Ctrl+PageDown                 | Jump to next bookmark                       |
+| Insert or Alt+Down            | Insert step                                 |
+| BackSpace or Alt+Up           | Delete the step above                       |
+| Delete                        | Delete commands                             |
+| Escape                        | Deselection                                 |
+| -                             | Key off                                     |
+| \* (numpad)                   | Increase octave/echo buffer number          |
+| / (numpad)                    | Decrease octave/echo buffer number          |
+| ^                             | Echo buffer access                          |
 
 There are two rows of a piano keyboard:
 

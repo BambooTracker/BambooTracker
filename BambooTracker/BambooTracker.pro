@@ -42,9 +42,11 @@ CONFIG += c++14
 
 SOURCES += \
     chips/c86ctl/c86ctl_wrapper.cpp \
+    command/pattern/change_values_in_pattern_command.cpp \
     command/pattern/transpose_note_in_pattern_command.cpp \
     gui/bookmark_manager_form.cpp \
     gui/color_palette_handler.cpp \
+    gui/command/pattern/change_values_in_pattern_qt_command.cpp \
     gui/command/pattern/transpose_note_in_pattern_qt_command.cpp \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
@@ -207,10 +209,12 @@ HEADERS += \
     chips/c86ctl/c86ctl.h \
     chips/c86ctl/c86ctl_wrapper.hpp \
     command/command_id.hpp \
+    command/pattern/change_values_in_pattern_command.hpp \
     command/pattern/transpose_note_in_pattern_command.hpp \
     enum_hash.hpp \
     gui/bookmark_manager_form.hpp \
     gui/color_palette_handler.hpp \
+    gui/command/pattern/change_values_in_pattern_qt_command.hpp \
     gui/command/pattern/transpose_note_in_pattern_qt_command.hpp \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \

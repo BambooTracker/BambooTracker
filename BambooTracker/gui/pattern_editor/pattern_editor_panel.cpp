@@ -1800,10 +1800,18 @@ void PatternEditorPanel::transposeNote(const PatternPosition& startPos, const Pa
 {
 	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
 	if (beginTrack <= endPos.track) {
-		bt_->transposeNoteInPattern(curSongNum_,
-									  beginTrack, startPos.order, startPos.step,
+		bt_->transposeNoteInPattern(curSongNum_, beginTrack, startPos.order, startPos.step,
 									  endPos.track, endPos.step, seminote);
 		comStack_.lock()->push(new TransposeNoteInPatternQtCommand(this));
+	}
+}
+
+void PatternEditorPanel::changeValuesInPattern(const PatternPosition& startPos, const PatternPosition& endPos, int value)
+{
+	if (startPos.compareCols(endPos) <= 0) {
+		bt_->changeValuesInPattern(curSongNum_, startPos.track, startPos.colInTrack, startPos.order, startPos.step,
+							   endPos.track, endPos.colInTrack, endPos.step, value);
+		comStack_.lock()->push(new ChangeValuesInPatternQtCommand(this));
 	}
 }
 
@@ -1911,6 +1919,16 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QObject::connect(deOct, &QAction::triggered, this, [&]() { onNoteTransposePressed(-12); });
 	QAction* inOct = transpose->addAction(tr("I&ncrease Octave"));
 	QObject::connect(inOct, &QAction::triggered, this, [&]() { onNoteTransposePressed(12); });
+	auto changeVals = new QMenu(tr("&Change Values"));
+	pattern->addMenu(changeVals);
+	QAction* fdeVal = changeVals->addAction(tr("Fine &Decrease Values"));
+	QObject::connect(fdeVal, &QAction::triggered, this, [&]() { onChangeValuesPressed(-1); });
+	QAction* finVal = changeVals->addAction(tr("Fine &Increase Values"));
+	QObject::connect(finVal, &QAction::triggered, this, [&]() { onChangeValuesPressed(1); });
+	QAction* cdeVal = changeVals->addAction(tr("Coarse D&ecrease Values"));
+	QObject::connect(cdeVal, &QAction::triggered, this, [&]() { onChangeValuesPressed(-16); });
+	QAction* cinVal = changeVals->addAction(tr("Coarse I&ncrease Values"));
+	QObject::connect(cinVal, &QAction::triggered, this, [&]() { onChangeValuesPressed(16); });
 	menu.addSeparator();
 	QAction* toggle = menu.addAction(tr("To&ggle Track"));
 	QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(pos.track); });
@@ -1937,6 +1955,10 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	inNote->setShortcutVisibleInContextMenu(true);
 	deOct->setShortcutVisibleInContextMenu(true);
 	inOct->setShortcutVisibleInContextMenu(true);
+	fdeVal->setShortcutVisibleInContextMenu(true);
+	finVal->setShortcutVisibleInContextMenu(true);
+	cdeVal->setShortcutVisibleInContextMenu(true);
+	cinVal->setShortcutVisibleInContextMenu(true);
 	toggle->setShortcutVisibleInContextMenu(true);
 	solo->setShortcutVisibleInContextMenu(true);
 	exeff->setShortcutVisibleInContextMenu(true);
@@ -1958,6 +1980,10 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	inNote->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F2));
 	deOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F3));
 	inOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4));
+	fdeVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F1));
+	finVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F2));
+	cdeVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F3));
+	cinVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F4));
 	toggle->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
 	solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
 	exeff->setShortcut(QKeySequence(Qt::ALT + Qt::Key_L));
@@ -1979,6 +2005,10 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 		inNote->setEnabled(false);
 		deOct->setEnabled(false);
 		inOct->setEnabled(false);
+		fdeVal->setEnabled(false);
+		finVal->setEnabled(false);
+		cdeVal->setEnabled(false);
+		cinVal->setEnabled(false);
 	}
 	else {
 		QString clipText = QApplication::clipboard()->text();
@@ -2002,6 +2032,10 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 			inNote->setEnabled(false);
 			deOct->setEnabled(false);
 			inOct->setEnabled(false);
+			fdeVal->setEnabled(false);
+			finVal->setEnabled(false);
+			cdeVal->setEnabled(false);
+			cinVal->setEnabled(false);
 		}
 	}
 	if (!comStack_.lock()->canUndo()) {
@@ -2430,6 +2464,16 @@ void PatternEditorPanel::onFollowModeChanged()
 	// Force redraw all area
 	followModeChanged_ = true;
 	redrawPatterns();
+}
+
+void PatternEditorPanel::onChangeValuesPressed(int value)
+{
+	if (bt_->isJamMode()) return;
+
+	if (selLeftAbovePos_.order != -1)
+		changeValuesInPattern(selLeftAbovePos_, selRightBelowPos_, value);
+	else
+		changeValuesInPattern(curPos_, curPos_, value);
 }
 
 /********** Events **********/
@@ -3014,6 +3058,9 @@ void PatternEditorPanel::wheelEvent(QWheelEvent *event)
 	int cnt = event->angleDelta().y() / 120;
 	if (event->modifiers().testFlag(Qt::ControlModifier)) {
 		onNoteTransposePressed(cnt);
+	}
+	else if (event->modifiers().testFlag(Qt::ShiftModifier)) {
+		onChangeValuesPressed(cnt);
 	}
 	else {
 		moveCursorToDown(-cnt);

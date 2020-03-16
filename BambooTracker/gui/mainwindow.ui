@@ -548,7 +548,7 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -633,6 +633,15 @@
      <addaction name="actionDecrease_Octave"/>
      <addaction name="actionIncrease_Octave"/>
     </widget>
+    <widget class="QMenu" name="menu_Change_Values">
+     <property name="title">
+      <string>&amp;Change Values</string>
+     </property>
+     <addaction name="actionFine_Decrease_Values"/>
+     <addaction name="actionFine_Increase_Values"/>
+     <addaction name="actionCoarse_D_ecrease_Values"/>
+     <addaction name="actionCoarse_I_ncrease_Values"/>
+    </widget>
     <addaction name="actionInterpolate"/>
     <addaction name="actionReverse"/>
     <addaction name="actionReplace_Instrument"/>
@@ -641,6 +650,7 @@
     <addaction name="actionShrink"/>
     <addaction name="separator"/>
     <addaction name="menuTranspose"/>
+    <addaction name="menu_Change_Values"/>
    </widget>
    <widget class="QMenu" name="menuSong">
     <property name="title">
@@ -1423,6 +1433,38 @@
   <action name="action_Bookmark_Manager">
    <property name="text">
     <string>&amp;Bookmark Manager...</string>
+   </property>
+  </action>
+  <action name="actionFine_Decrease_Values">
+   <property name="text">
+    <string>Fine &amp;Decrease Values</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F1</string>
+   </property>
+  </action>
+  <action name="actionFine_Increase_Values">
+   <property name="text">
+    <string>Fine &amp;Increase Values</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F2</string>
+   </property>
+  </action>
+  <action name="actionCoarse_D_ecrease_Values">
+   <property name="text">
+    <string>Coarse D&amp;ecrease Values</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F3</string>
+   </property>
+  </action>
+  <action name="actionCoarse_I_ncrease_Values">
+   <property name="text">
+    <string>Coarse I&amp;ncrease Values</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F4</string>
    </property>
   </action>
  </widget>

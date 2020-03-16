@@ -297,8 +297,14 @@ void PatternEditor::onSelectPressed(int type)
 
 void PatternEditor::onTransposePressed(bool isOctave, bool isIncreased)
 {
-	if (isOctave) ui->panel->onNoteTransposePressed(isIncreased ? 12 : -12);
-	else ui->panel->onNoteTransposePressed(isIncreased ? 1 : -1);
+	int seminote = isOctave ? (isIncreased ? 12 : -12) : (isIncreased ? 1 : -1);
+	ui->panel->onNoteTransposePressed(seminote);
+}
+
+void PatternEditor::onChangeValuesPressed(bool isCoarse, bool isIncreased)
+{
+	int val = isCoarse ? (isIncreased ? 16 : -16) : (isIncreased ? 1 : -1);
+	ui->panel->onChangeValuesPressed(val);
 }
 
 void PatternEditor::onToggleTrackPressed()

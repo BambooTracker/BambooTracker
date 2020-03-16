@@ -103,6 +103,7 @@ public slots:
 	void onExpandEffectColumnPressed(int trackNum);
 	void onShrinkEffectColumnPressed(int trackNum);
 	void onFollowModeChanged();
+	void onChangeValuesPressed(int value);
 
 signals:
 	void hScrollBarChangeRequested(int num);
@@ -258,6 +259,7 @@ private:
 	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
 
 	void transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote);
+	void changeValuesInPattern(const PatternPosition& startPos, const PatternPosition& endPos, int value);
 
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
 	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);

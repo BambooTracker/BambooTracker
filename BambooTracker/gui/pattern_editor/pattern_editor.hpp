@@ -85,6 +85,7 @@ public slots:
 	/// 5: Order
 	void onSelectPressed(int type);
 	void onTransposePressed(bool isOctave, bool isIncreased);
+	void onChangeValuesPressed(bool isCoarse, bool isIncreased);
 	void onToggleTrackPressed();
 	void onSoloTrackPressed();
 	void onExpandEffectColumn();

@@ -2116,6 +2116,14 @@ void BambooTracker::transposeNoteInPattern(int songNum, int beginTrack, int begi
 					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep, seminote));
 }
 
+void BambooTracker::changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder,
+										  int beginStep, int endTrack, int endColumn, int endStep, int value)
+{
+	comMan_.invoke(std::make_unique<ChangeValuesInPatternCommand>(
+					   mod_, songNum, beginTrack, beginColumn, beginOrder, beginStep,
+					   endTrack, endColumn, endStep, value));
+}
+
 void BambooTracker::expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 								  int endTrack, int endColmn, int endStep)
 {
