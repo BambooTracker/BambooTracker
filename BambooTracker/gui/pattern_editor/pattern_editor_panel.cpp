@@ -1801,7 +1801,7 @@ void PatternEditorPanel::transposeNote(const PatternPosition& startPos, const Pa
 	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
 	if (beginTrack <= endPos.track) {
 		bt_->transposeNoteInPattern(curSongNum_, beginTrack, startPos.order, startPos.step,
-									  endPos.track, endPos.step, seminote);
+									endPos.track, endPos.step, seminote);
 		comStack_.lock()->push(new TransposeNoteInPatternQtCommand(this));
 	}
 }
@@ -1810,7 +1810,7 @@ void PatternEditorPanel::changeValuesInPattern(const PatternPosition& startPos, 
 {
 	if (startPos.compareCols(endPos) <= 0) {
 		bt_->changeValuesInPattern(curSongNum_, startPos.track, startPos.colInTrack, startPos.order, startPos.step,
-							   endPos.track, endPos.colInTrack, endPos.step, value);
+								   endPos.track, endPos.colInTrack, endPos.step, value, config_->getReverseFMVolumeOrder());
 		comStack_.lock()->push(new ChangeValuesInPatternQtCommand(this));
 	}
 }

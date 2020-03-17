@@ -1,8 +1,9 @@
 #include "change_values_in_pattern_command.hpp"
+#include "misc.hpp"
 
 ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack,
 														   int beginColumn, int beginOrder, int beginStep,
-														   int endTrack, int endColumn, int endStep, int value)
+														   int endTrack, int endColumn, int endStep, int value, bool isFMReversed)
 	: mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
@@ -12,7 +13,8 @@ ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(std::weak_ptr<Module>
 	  eTrack_(endTrack),
 	  eCol_(endColumn),
 	  eStep_(endStep),
-	  diff_(value)
+	  diff_(value),
+	  fmReverse_(isFMReversed)
 {
 	auto& sng = mod.lock()->getSong(songNum);
 
@@ -50,13 +52,17 @@ void ChangeValuesInPatternCommand::redo()
 		int col = bCol_;
 		auto valit = it->begin();
 		while (true) {
-			Step& st = sng.getTrack(track).getPatternFromOrderNumber(order_).getStep(step);
+			Track& tr = sng.getTrack(track);
+			Step& st = tr.getPatternFromOrderNumber(order_).getStep(step);
 			switch (col) {
 			case 1:
 				if (st.getInstrumentNumber() > -1) st.setInstrumentNumber(clamp(diff_ + *valit++, 0, 127));
 				break;
 			case 2:
-				if (st.getVolume() > -1) st.setVolume(clamp(diff_ + *valit++, 0, 255));
+				if (st.getVolume() > -1) {
+					int d = (tr.getAttribute().source == SoundSource::FM && fmReverse_) ? -diff_ : diff_;
+					st.setVolume(clamp(d + *valit++, 0, 255));
+				}
 				break;
 			case 4:
 				if (st.getEffectValue(0) > -1) st.setEffectValue(0, clamp(diff_ + *valit++, 0, 255));
