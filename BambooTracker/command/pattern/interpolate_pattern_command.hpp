@@ -21,4 +21,6 @@ private:
 	int song_, bTrack_, bCol_, order_, bStep_;
 	int eStep_;
 	std::vector<std::vector<std::string>> prevCells_;
+
+	inline int interp(int a, int b, size_t t, int div) { return a + (b - a) * static_cast<int>(t) / div; }
 };

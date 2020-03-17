@@ -19,6 +19,4 @@ private:
 	std::weak_ptr<Module> mod_;
 	int song_, track_, col_, order_, step_;
 	std::vector<std::vector<std::string>> cells_, prevCells_;
-
-	void setCells(std::vector<std::vector<std::string>>& cells);
 };
