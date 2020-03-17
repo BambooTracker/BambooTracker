@@ -2,21 +2,21 @@
 #include "pattern_command_utils.hpp"
 
 InterpolatePatternCommand::InterpolatePatternCommand(std::weak_ptr<Module> mod,
-													 int songNum, int beginTrack, int beginColmn,
+													 int songNum, int beginTrack, int beginColumn,
 													 int beginOrder, int beginStep,
 													 int endTrack, int endColumn, int endStep)
 	: mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
-	  bCol_(beginColmn),
+	  bCol_(beginColumn),
 	  order_(beginOrder),
 	  bStep_(beginStep),
 	  eStep_(endStep)
 {
 	auto& song = mod.lock()->getSong(songNum);
 	size_t h = static_cast<size_t>(endStep - beginStep + 1);
-	size_t w = calculateColumnSize(beginTrack, beginColmn, endTrack, endColumn);
-	prevCells_ = getPreviousCells(song, w, h, beginTrack, beginColmn, beginOrder, beginStep);
+	size_t w = calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
+	prevCells_ = getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void InterpolatePatternCommand::redo()

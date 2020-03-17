@@ -1,20 +1,21 @@
 #include "paste_mix_copied_data_to_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
-PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColmn,
+PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum,
+																	   int beginTrack, int beginColumn,
 																	   int beginOrder, int beginStep,
 																	   std::vector<std::vector<std::string>> cells)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(beginTrack),
-	  col_(beginColmn),
+	  col_(beginColumn),
 	  order_(beginOrder),
 	  step_(beginStep),
 	  cells_(cells)
 {
 	auto& song = mod.lock()->getSong(songNum);
 	prevCells_ = getPreviousCells(song, cells.front().size(), cells.size(),
-								  beginTrack, beginColmn, beginOrder, beginStep);
+								  beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void PasteMixCopiedDataToPatternCommand::redo()

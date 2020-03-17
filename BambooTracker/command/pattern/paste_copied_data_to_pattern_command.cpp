@@ -1,7 +1,8 @@
 #include "paste_copied_data_to_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
-PasteCopiedDataToPatternCommand::PasteCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColmn,
+PasteCopiedDataToPatternCommand::PasteCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum,
+																 int beginTrack, int beginColmn,
 																 int beginOrder, int beginStep,
 																 std::vector<std::vector<std::string>> cells)
 	: mod_(mod),
