@@ -70,6 +70,9 @@ private:
 	bool isDTNegative_;
 	bool isIgnoreEvent_;
 
+	static const int DT_SIGN_TBL_[8];
+	static const int DT_UNSIGN_TBL_[7];
+
 	// Envelope graph
 	std::unique_ptr<QPixmap> envmap_;
 	static constexpr int ENV_H_ = 127;

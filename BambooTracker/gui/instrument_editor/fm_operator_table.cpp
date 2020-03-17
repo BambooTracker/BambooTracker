@@ -6,6 +6,9 @@
 #include <QClipboard>
 #include "gui/event_guard.hpp"
 
+const int FMOperatorTable::DT_SIGN_TBL_[8] = { 0, 1, 2, 3, 0, -1, -2, -3 };
+const int FMOperatorTable::DT_UNSIGN_TBL_[7] = { 7, 6, 5, 0, 1, 2, 3 };
+
 FMOperatorTable::FMOperatorTable(QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::FMOperatorTable),
@@ -52,16 +55,11 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		if (pair.second == ui->dtSlider) {
 			QObject::connect(pair.second, &LabeledVerticalSlider::valueChanged,
 							 this, [&](int value) {
-				if (isDTNegative_) {
-					switch (value) {
-					case -1:	value = 5;	break;
-					case -2:	value = 6;	break;
-					case -3:	value = 7;	break;
-					default:				break;
-					}
-				}
 				repaintGraph();
-				if (!isIgnoreEvent_) emit operatorValueChanged(pair.first, value);
+				if (!isIgnoreEvent_) {
+					if (isDTNegative_) value = DT_UNSIGN_TBL_[value + 3];
+					emit operatorValueChanged(pair.first, value);
+				}
 			});
 		}
 		else {
@@ -125,17 +123,7 @@ void FMOperatorTable::setValue(Ui::FMOperatorParameter param, int value)
 		}
 	}
 	else {
-		if (param == Ui::FMOperatorParameter::DT) {
-			if (isDTNegative_) {
-				switch (value) {
-				case 4:	value = 0;	break;
-				case 5:	value = -1;	break;
-				case 6:	value = -2;	break;
-				case 7:	value = -3;	break;
-				default:		break;
-				}
-			}
-		}
+		if (param == Ui::FMOperatorParameter::DT && isDTNegative_) value = DT_SIGN_TBL_[value];
 		sliderMap_.at(param)->setValue(value);
 	}
 }
@@ -154,36 +142,26 @@ void FMOperatorTable::setDTDisplayType(bool useNegative)
 	Ui::EventGuard eg(isIgnoreEvent_);
 	isDTNegative_ = useNegative;
 	if (useNegative) {
-		int v = ui->dtSlider->value();
-		switch (v) {
-		case 4:	v = 0;	break;
-		case 5:	v = -1;	break;
-		case 6:	v = -2;	break;
-		case 7:	v = -3;	break;
-		default:		break;
-		}
+		int dt = DT_SIGN_TBL_[ui->dtSlider->value()];
 		ui->dtSlider->setMinimum(-3);
 		ui->dtSlider->setMaximum(3);
 		ui->dtSlider->setSign(true);
-		ui->dtSlider->setValue(v);
+		ui->dtSlider->setValue(dt);
 	}
 	else {
-		int v = ui->dtSlider->value();
-		switch (v) {
-		case -1:	v = 5;	break;
-		case -2:	v = 6;	break;
-		case -3:	v = 7;	break;
-		default:			break;
-		}
+		int dt = DT_UNSIGN_TBL_[ui->dtSlider->value() + 3];
 		ui->dtSlider->setMinimum(0);
 		ui->dtSlider->setMaximum(7);
 		ui->dtSlider->setSign(false);
-		ui->dtSlider->setValue(v);
+		ui->dtSlider->setValue(dt);
 	}
 }
 
 QString FMOperatorTable::toString() const
 {
+	int dt = ui->dtSlider->value();
+	if (isDTNegative_) dt = DT_UNSIGN_TBL_[dt + 3];
+
 	auto str = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,%10")
 			   .arg(QString::number(ui->arSlider->value()))
 			   .arg(QString::number(ui->drSlider->value()))
@@ -193,7 +171,7 @@ QString FMOperatorTable::toString() const
 			   .arg(QString::number(ui->tlSlider->value()))
 			   .arg(QString::number(ui->ksSlider->value()))
 			   .arg(QString::number(ui->mlSlider->value()))
-			   .arg(QString::number(ui->dtSlider->value()))
+			   .arg(QString::number(dt))
 			   .arg(ui->ssgegCheckBox->isChecked()
 					? QString::number(ui->ssgegSlider->value())
 					: "-1");
