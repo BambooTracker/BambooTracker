@@ -137,7 +137,7 @@ private:
 	void showFileIOErrorDialog(const FileIOError& e, const QString sub = "");
 
 	bool isEditedPattern_, isEditedOrder_, isEditedInstList_;
-	bool isSelectedPO_;
+	bool isSelectedPattern_, isSelectedOrder_;
 
 	bool hasShownOnce_;
 
@@ -205,6 +205,7 @@ private slots:
 	void updateMenuByOrder();
 	void updateMenuByInstrumentList();
 	void updateMenuByPatternAndOrderSelection(bool isSelected);
+	void updateMenuByOrderSelection(bool isSelected);
 	void on_actionAll_triggered();
 	void on_actionNone_triggered();
 	void on_actionDecrease_Note_triggered();

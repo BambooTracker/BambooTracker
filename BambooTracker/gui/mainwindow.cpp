@@ -68,7 +68,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	isEditedPattern_(true),
 	isEditedOrder_(false),
 	isEditedInstList_(false),
-	isSelectedPO_(false),
+	isSelectedPattern_(false),
+	isSelectedOrder_(false),
 	hasShownOnce_(false),
 	firstViewUpdateRequest_(false),
 	effListDiag_(std::make_unique<EffectListDialog>()),
@@ -347,7 +348,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->orderList, &OrderListEditor::focusIn,
 					 this, &MainWindow::updateMenuByOrder);
 	QObject::connect(ui->orderList, &OrderListEditor::selected,
-					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
+					 this, &MainWindow::updateMenuByOrderSelection);
 	QObject::connect(ui->orderList, &OrderListEditor::returnPressed,
 					 this, [&] {
 		if (bt_->isPlaySong()) stopPlaySong();
@@ -2033,17 +2034,19 @@ void MainWindow::updateMenuByPattern()
 		ui->actionOverwrite->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
 		// Pattern
-		ui->actionInterpolate->setEnabled(isSelectedPO_);
-		ui->actionReverse->setEnabled(isSelectedPO_);
+		ui->actionInterpolate->setEnabled(isSelectedPattern_);
+		ui->actionReverse->setEnabled(isSelectedPattern_);
 		ui->actionReplace_Instrument->setEnabled(
-					isSelectedPO_ && ui->instrumentListWidget->currentRow() != -1);
-		ui->actionExpand->setEnabled(isSelectedPO_);
-		ui->actionShrink->setEnabled(isSelectedPO_);
+					isSelectedPattern_ && ui->instrumentListWidget->currentRow() != -1);
+		ui->actionExpand->setEnabled(isSelectedPattern_);
+		ui->actionShrink->setEnabled(isSelectedPattern_);
 		ui->actionDecrease_Note->setEnabled(true);
 		ui->actionIncrease_Note->setEnabled(true);
 		ui->actionDecrease_Octave->setEnabled(true);
 		ui->actionIncrease_Octave->setEnabled(true);
 	}
+
+	updateMenuByPatternAndOrderSelection(isSelectedPattern_);
 }
 
 void MainWindow::updateMenuByOrder()
@@ -2054,6 +2057,7 @@ void MainWindow::updateMenuByOrder()
 
 	// Edit
 	bool enabled = QApplication::clipboard()->text().startsWith("ORDER_");
+	ui->actionCut->setEnabled(false);
 	ui->actionPaste->setEnabled(enabled);
 	ui->actionMix->setEnabled(false);
 	ui->actionOverwrite->setEnabled(false);
@@ -2077,6 +2081,8 @@ void MainWindow::updateMenuByOrder()
 	ui->actionIncrease_Note->setEnabled(false);
 	ui->actionDecrease_Octave->setEnabled(false);
 	ui->actionIncrease_Octave->setEnabled(false);
+
+	updateMenuByOrderSelection(isSelectedOrder_);
 }
 
 void MainWindow::updateMenuByInstrumentList()
@@ -2105,7 +2111,7 @@ void MainWindow::updateMenuByInstrumentList()
 
 void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 {
-	isSelectedPO_ = isSelected;
+	isSelectedPattern_ = isSelected;
 
 	if (bt_->isJamMode()) {
 		// Edit
@@ -2131,6 +2137,14 @@ void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
 		ui->actionExpand->setEnabled(enabled);
 		ui->actionShrink->setEnabled(enabled);
 	}
+}
+
+void MainWindow::updateMenuByOrderSelection(bool isSelected)
+{
+	isSelectedOrder_ = isSelected;
+
+	// Edit
+	ui->actionCopy->setEnabled(isSelected);
 }
 
 void MainWindow::on_actionAll_triggered()
@@ -2252,7 +2266,6 @@ void MainWindow::on_actionEdit_Mode_triggered()
 
 	if (isEditedOrder_) updateMenuByOrder();
 	else if (isEditedPattern_) updateMenuByPattern();
-	updateMenuByPatternAndOrderSelection(isSelectedPO_);
 
 	if (bt_->isJamMode()) statusDetail_->setText(tr("Change to jam mode"));
 	else statusDetail_->setText(tr("Change to edit mode"));
