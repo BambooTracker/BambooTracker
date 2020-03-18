@@ -203,8 +203,9 @@ private slots:
 	void on_actionDelete_triggered();
 	void updateMenuByPattern();
 	void updateMenuByOrder();
+	void onCurrentTrackChanged();
 	void updateMenuByInstrumentList();
-	void updateMenuByPatternAndOrderSelection(bool isSelected);
+	void updateMenuByPatternSelection(bool isSelected);
 	void updateMenuByOrderSelection(bool isSelected);
 	void on_actionAll_triggered();
 	void on_actionNone_triggered();

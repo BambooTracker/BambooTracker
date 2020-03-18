@@ -315,7 +315,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->patternEditor, &PatternEditor::focusIn,
 					 this, &MainWindow::updateMenuByPattern);
 	QObject::connect(ui->patternEditor, &PatternEditor::selected,
-					 this, &MainWindow::updateMenuByPatternAndOrderSelection);
+					 this, &MainWindow::updateMenuByPatternSelection);
 	QObject::connect(ui->patternEditor, &PatternEditor::returnPressed,
 					 this, [&] {
 		if (bt_->isPlaySong()) stopPlaySong();
@@ -335,6 +335,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 	QObject::connect(ui->patternEditor, &PatternEditor::effectEntered,
 					 this, [&](QString text) { statusDetail_->setText(text); });
+	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
+					 this, &MainWindow::onCurrentTrackChanged);
 
 	/* Order List */
 	ui->orderList->setCommandStack(comStack_);
@@ -354,6 +356,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		if (bt_->isPlaySong()) stopPlaySong();
 		else startPlaySong();
 	});
+	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
+					 this, &MainWindow::onCurrentTrackChanged);
 
 	/* Visuals */
 	visualTimer_.reset(new QTimer);
@@ -1556,6 +1560,7 @@ void MainWindow::loadSong()
 		ui->grooveCheckBox->setChecked(true);
 		ui->grooveSpinBox->setEnabled(true);
 	}
+	onCurrentTrackChanged();
 
 	setWindowTitle();
 	switch (bt_->getSongStyle(bt_->getCurrentSongNumber()).type) {
@@ -1928,22 +1933,18 @@ void MainWindow::on_instrumentListWidget_itemSelectionChanged()
 	else statusInst_->setText(
 				tr("Instrument: %1").arg(QString("%1").arg(num, 2, 16, QChar('0')).toUpper()));
 
-	if (bt_->findFirstFreeInstrumentNumber() == -1) {    // Max size
-		ui->actionNew_Instrument->setEnabled(false);
-		ui->actionLoad_From_File->setEnabled(false);
-		ui->actionImport_From_Bank_File->setEnabled(false);
-	}
-	else if (bt_->getCurrentTrackAttribute().source == SoundSource::DRUM) {
-		ui->actionNew_Instrument->setEnabled(false);
-	}
-	bool isEnabled = (num != -1);
-	ui->actionRemove_Instrument->setEnabled(isEnabled);
-	ui->actionClone_Instrument->setEnabled(isEnabled);
-	ui->actionDeep_Clone_Instrument->setEnabled(isEnabled);
-	ui->actionSave_To_File->setEnabled(isEnabled);
-	ui->actionExport_To_Bank_File->setEnabled(isEnabled);
-	ui->actionRename_Instrument->setEnabled(isEnabled);
-	ui->actionEdit->setEnabled(isEnabled);
+	bool canAdd = (bt_->findFirstFreeInstrumentNumber() != -1);
+	ui->actionLoad_From_File->setEnabled(canAdd);
+	ui->actionImport_From_Bank_File->setEnabled(canAdd);
+
+	bool isSelected = (num != -1);
+	ui->actionRemove_Instrument->setEnabled(isSelected);
+	ui->actionClone_Instrument->setEnabled(isSelected);
+	ui->actionDeep_Clone_Instrument->setEnabled(isSelected);
+	ui->actionSave_To_File->setEnabled(isSelected);
+	ui->actionExport_To_Bank_File->setEnabled(isSelected);
+	ui->actionRename_Instrument->setEnabled(isSelected);
+	ui->actionEdit->setEnabled(isSelected);
 }
 
 void MainWindow::on_grooveCheckBox_stateChanged(int arg1)
@@ -2046,7 +2047,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionIncrease_Octave->setEnabled(true);
 	}
 
-	updateMenuByPatternAndOrderSelection(isSelectedPattern_);
+	updateMenuByPatternSelection(isSelectedPattern_);
 }
 
 void MainWindow::updateMenuByOrder()
@@ -2085,6 +2086,13 @@ void MainWindow::updateMenuByOrder()
 	updateMenuByOrderSelection(isSelectedOrder_);
 }
 
+void MainWindow::onCurrentTrackChanged()
+{
+	bool canAdd = ((bt_->getCurrentTrackAttribute().source != SoundSource::DRUM)
+				   && (bt_->findFirstFreeInstrumentNumber() != -1));
+	ui->actionNew_Instrument->setEnabled(canAdd);
+}
+
 void MainWindow::updateMenuByInstrumentList()
 {
 	isEditedPattern_ = false;
@@ -2109,7 +2117,7 @@ void MainWindow::updateMenuByInstrumentList()
 	ui->actionIncrease_Octave->setEnabled(false);
 }
 
-void MainWindow::updateMenuByPatternAndOrderSelection(bool isSelected)
+void MainWindow::updateMenuByPatternSelection(bool isSelected)
 {
 	isSelectedPattern_ = isSelected;
 
