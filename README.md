@@ -126,24 +126,25 @@ Please replace some keys with the following in macOS:
 - Delete → fn+delete
 
 ### General
-| Key    | Command                        |
-| ------ | ------------------------------ |
-| Ctrl+N | Create new module              |
-| Ctrl+O | Open module                    |
-| Ctrl+S | Save module                    |
-| Ctrl+P | Open module property dialog    |
-| Ctrl+I | Open current instrument editor |
-| Return | Play/stop song                 |
-| Space  | Toggle jam/edit mode           |
-| F1     | Show effect list dialog        |
-| F2     | Focus on pattern editor        |
-| F3     | Focus on order list            |
-| F4     | Focus on instrument list       |
-| F5     | Play from start                |
-| F6     | Play pattern                   |
-| F7     | Play from current position     |
-| F8     | Stop song                      |
-| F12    | Kill sound                     |
+| Key     | Command                        |
+| ------- | ------------------------------ |
+| Ctrl+N  | Create new module              |
+| Ctrl+O  | Open module                    |
+| Ctrl+S  | Save module                    |
+| Ctrl+P  | Open module property dialog    |
+| Ctrl+I  | Open current instrument editor |
+| Return  | Play/stop song                 |
+| Space   | Toggle jam/edit mode           |
+| F1      | Show effect list dialog        |
+| F2      | Focus on pattern editor        |
+| F3      | Focus on order list            |
+| F4      | Focus on instrument list       |
+| F5      | Play from start                |
+| F6      | Play pattern                   |
+| F7      | Play from current position     |
+| Ctrl+F7 | Play from marker               |
+| F8      | Stop song                      |
+| F12     | Kill sound                     |
 
 ### Instrument list
 | Key    | Command                        |
@@ -192,6 +193,7 @@ Please replace some keys with the following in macOS:
 | Alt+L                         | Expand effect column                        |
 | Alt+K                         | Shrink effect column                        |
 | Ctrl+K                        | Add/Remove bookmark on the current position |
+| Ctrl+B                        | Set/Delete marker                           |
 | Tab                           | Jump to right track                         |
 | BackTab                       | Jump to left track                          |
 | Home                          | Jump to first step                          |

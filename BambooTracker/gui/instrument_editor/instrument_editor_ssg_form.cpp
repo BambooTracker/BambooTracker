@@ -436,7 +436,10 @@ void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
 	//case Qt::Key_Return:	emit playStatusChanged(0);	break;
 	case Qt::Key_F5:		emit playStatusChanged(1);	break;
 	case Qt::Key_F6:		emit playStatusChanged(2);	break;
-	case Qt::Key_F7:		emit playStatusChanged(3);	break;
+	case Qt::Key_F7:
+		if (event->modifiers().testFlag(Qt::ControlModifier)) emit playStatusChanged(4);
+		else emit playStatusChanged(3);
+		break;
 	case Qt::Key_F8:		emit playStatusChanged(-1);	break;
 	case Qt::Key_Escape:	close();					break;
 	default:

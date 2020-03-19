@@ -725,10 +725,12 @@
     <addaction name="actionPlay_Pattern"/>
     <addaction name="actionPlay_From_Start"/>
     <addaction name="actionPlay_From_Cursor"/>
+    <addaction name="actionPlay_From_Marker"/>
     <addaction name="actionStop"/>
     <addaction name="separator"/>
     <addaction name="actionFollow_Mode"/>
     <addaction name="actionEdit_Mode"/>
+    <addaction name="actionSet_Ro_w_Marker"/>
     <addaction name="separator"/>
     <addaction name="actionToggle_Track"/>
     <addaction name="actionSolo_Track"/>
@@ -1521,6 +1523,22 @@
    </property>
    <property name="text">
     <string>&amp;Volume Mask</string>
+   </property>
+  </action>
+  <action name="actionSet_Ro_w_Marker">
+   <property name="text">
+    <string>Set Ro&amp;w Marker</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionPlay_From_Marker">
+   <property name="text">
+    <string>Play From &amp;Marker</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F7</string>
    </property>
   </action>
  </widget>

@@ -109,6 +109,7 @@ private:
 	void startPlayFromStart();
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
+	void startPlayFromMarker();
 	void stopPlaySong();
 	bool hasLockedWigets_;
 	void lockWidgets(bool isLock);
@@ -285,6 +286,8 @@ private slots:
 	void on_action_Previous_Bookmark_triggered();
 	void on_action_Instrument_Mask_triggered();
 	void on_action_Volume_Mask_triggered();
+	void on_actionSet_Ro_w_Marker_triggered();
+	void on_actionPlay_From_Marker_triggered();
 };
 
 #endif // MAINWINDOW_HPP

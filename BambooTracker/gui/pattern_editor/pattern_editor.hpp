@@ -28,6 +28,7 @@ public:
 	void changeEditable();
 	void updatePositionByStepUpdate(bool isFirstUpdate);
 	void updatepositionByPositionJump();
+	void changeMarker();
 
 	void copySelectedCells();
 	void cutSelectedCells();

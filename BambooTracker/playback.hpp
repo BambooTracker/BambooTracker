@@ -10,11 +10,6 @@
 #include "tick_counter.hpp"
 #include "effect.hpp"
 
-enum class PlaybackState
-{
-	PlaySong, PlayFromStart, PlayPattern, PlayFromCurrentStep, Stop
-};
-
 /// Divede playback routine from main class BambooTracker
 class PlaybackManager
 {
@@ -30,10 +25,9 @@ public:
 	void startPlaySong(int order);
 	void startPlayFromStart();
 	void startPlayPattern(int order);
-	void startPlayFromCurrentStep(int order, int step);
+	void startPlayFromPosition(int order, int step);
 	void stopPlaySong();
 	bool isPlaySong() const;
-	PlaybackState getPlaybackState() const;
 	int getPlayingOrderNumber() const;
 	int getPlayingStepNumber() const;
 
@@ -65,7 +59,6 @@ private:
 	///		bit 0: playing
 	///		bit 1: have read first step data
 	unsigned int playState_;
-	PlaybackState managerState_;
 
 	// Play song
 	bool isFindNextStep_;

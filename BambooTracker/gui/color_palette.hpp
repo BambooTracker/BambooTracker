@@ -63,6 +63,7 @@ public:
 	QColor ptnBorderColor;
 	QColor ptnMuteColor, ptnUnmuteColor;
 	QColor ptnBackColor;
+	QColor ptnMarkerColor;
 
 	// Wave visual
 	QColor wavBackColor;

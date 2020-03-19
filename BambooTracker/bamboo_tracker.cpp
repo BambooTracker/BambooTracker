@@ -21,6 +21,8 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  curStepNum_(0),
 	  curInstNum_(-1),
 	  curVolume_(-1),
+	  mkOrder_(-1),
+	  mkStep_(-1),
 	  isFollowPlay_(true)
 {
 	opnaCtrl_ = std::make_shared<OPNAController>(
@@ -809,6 +811,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 	curTrackNum_ = 0;
 	curOrderNum_ = 0;
 	curStepNum_ = 0;
+	mkOrder_ = -1;
+	mkStep_ = -1;
 
 	auto& song = mod_->getSong(curSongNum_);
 	songStyle_ = song.getStyle();
@@ -1097,8 +1101,20 @@ void BambooTracker::startPlayPattern()
 
 void BambooTracker::startPlayFromCurrentStep()
 {
-	playback_->startPlayFromCurrentStep(curOrderNum_, curStepNum_);
+	playback_->startPlayFromPosition(curOrderNum_, curStepNum_);
 	startPlay();
+}
+
+bool BambooTracker::startPlayFromMarker()
+{
+	Song& song = mod_->getSong(curSongNum_);
+	if (mkOrder_ != -1 && mkOrder_ < static_cast<int>(song.getOrderSize())
+			&& mkStep_ != -1 && mkStep_ < static_cast<int>(song.getPatternSizeFromOrderNumber(mkOrder_))) {
+		playback_->startPlayFromPosition(mkOrder_, mkStep_);
+		startPlay();
+		return true;
+	}
+	return false;
 }
 
 void BambooTracker::startPlay()
@@ -1127,11 +1143,6 @@ void BambooTracker::stopPlaySong()
 bool BambooTracker::isPlaySong() const
 {
 	return playback_->isPlaySong();
-}
-
-PlaybackState BambooTracker::getPlaybackState() const
-{
-	return playback_->getPlaybackState();
 }
 
 void BambooTracker::setTrackMuteState(int trackNum, bool isMute)
@@ -1172,6 +1183,28 @@ int BambooTracker::getPlayingOrderNumber() const
 int BambooTracker::getPlayingStepNumber() const
 {
 	return playback_->getPlayingStepNumber();
+}
+
+void BambooTracker::setMarker(int order, int step)
+{
+	if (mkOrder_ == order && mkStep_ == step) {
+		mkOrder_ = -1;
+		mkStep_ = -1;
+	}
+	else {
+		mkOrder_ = order;
+		mkStep_ = step;
+	}
+}
+
+int BambooTracker::getMarkerOrder() const
+{
+	return mkOrder_;
+}
+
+int BambooTracker::getMarkerStep() const
+{
+	return mkStep_;
 }
 
 /********** Export **********/

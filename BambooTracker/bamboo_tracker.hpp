@@ -233,15 +233,18 @@ public:
 	void startPlayFromStart();
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
+	bool startPlayFromMarker();
 	void stopPlaySong();
 	bool isPlaySong() const;
-	PlaybackState getPlaybackState() const;
 	void setTrackMuteState(int trackNum, bool isMute);
 	bool isMute(int trackNum);
 	void setFollowPlay(bool isFollowed);
 	bool isFollowPlay() const;
 	int getPlayingOrderNumber() const;
 	int getPlayingStepNumber() const;
+	void setMarker(int order, int step);
+	int getMarkerOrder() const;
+	int getMarkerStep() const;
 
 	// Export
 	bool exportToWav(WavContainer& container, int loopCnt, std::function<bool()> bar);
@@ -428,6 +431,7 @@ private:
 	int curInstNum_;
 	int curVolume_;
 	std::unordered_map<SoundSource, std::vector<bool>> muteState_;
+	int mkOrder_, mkStep_;
 
 	bool isFollowPlay_;
 	bool storeOnlyUsedSamples_;

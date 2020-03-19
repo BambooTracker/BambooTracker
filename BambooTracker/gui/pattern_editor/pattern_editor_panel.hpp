@@ -42,6 +42,8 @@ public:
 	void updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump = false);
 	int getScrollableCountByTrack() const;
 
+	void changeMarker();
+
 	void copySelectedCells();
 	void cutSelectedCells();
 
@@ -172,6 +174,7 @@ private:
 	PatternPosition selLeftAbovePos_, selRightBelowPos_;
 	PatternPosition shiftPressedPos_;
 	PatternPosition doubleClickPos_;
+	PatternPosition markerPos_;
 
 	bool isIgnoreToSlider_, isIgnoreToOrder_;
 

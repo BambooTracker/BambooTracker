@@ -62,6 +62,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  selRightBelowPos_{ -1, -1, -1, -1 },
 	  shiftPressedPos_{ -1, -1, -1, -1 },
 	  doubleClickPos_{ -1, -1, -1, -1 },
+	  markerPos_{ -1, -1, -1, -1 },
 	  isIgnoreToSlider_(false),
 	  isIgnoreToOrder_(false),
 	  isPressedPlus_(false),
@@ -398,6 +399,8 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, stepFontHeight_,
 						 bt_->isJamMode() ? palette_->ptnCurStepColor : palette_->ptnCurEditStepColor);
 	// Step number
+	if (markerPos_.order == curPos_.order && markerPos_.step == curPos_.step)
+		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
 	if (hovPos_.track == -2 && hovPos_.order == curPos_.order && hovPos_.step == curPos_.step)
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 	if (textChanged_) {
@@ -455,6 +458,8 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 		// Fill row
 		backPainter.fillRect(0, rowY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
+		if (markerPos_.order == odrNum && markerPos_.step == stepNum)
+			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
 		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
 			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 		if (textChanged_) {
@@ -510,6 +515,8 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 		// Fill row
 		backPainter.fillRect(0, rowY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
+		if (markerPos_.order == odrNum && markerPos_.step == stepNum)
+			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
 		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
 			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 		if (textChanged_) {
@@ -579,6 +586,8 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 		// Fill row
 		backPainter.fillRect(0, prevY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
+		if (markerPos_.order == viewedCenterPos_.order && markerPos_.step == viewedCenterPos_.step)
+			backPainter.fillRect(0, prevY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
 		if (hovPos_.track == -2 && hovPos_.order == viewedCenterPos_.order && hovPos_.step == viewedCenterPos_.step)
 			backPainter.fillRect(0, prevY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 		textPainter.setPen(!(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
@@ -597,6 +606,8 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, stepFontHeight_,
 						 bt_->isJamMode() ? palette_->ptnCurStepColor : palette_->ptnCurEditStepColor);
 	// Step number
+	if (markerPos_.order == curPos_.order && markerPos_.step == curPos_.step)
+		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
 	if (hovPos_.track == -2 && hovPos_.order == curPos_.order && hovPos_.step == curPos_.step)
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 	if (curPos_.step % hl2Cnt_) {
@@ -646,6 +657,8 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 				// Fill row
 				backPainter.fillRect(0, lastY, maxWidth, stepFontHeight_, rowColor);
 				// Step number
+				if (markerPos_.order == bpos.order && markerPos_.step == bpos.step)
+					backPainter.fillRect(0, lastY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
 				if (hovPos_.track == -2 && hovPos_.order == bpos.order && hovPos_.step == bpos.step)
 					backPainter.fillRect(0, lastY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 				textPainter.setPen(!(bpos.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
@@ -1337,6 +1350,13 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool for
 	// If stepChanged is false, repaint all pattern
 	foreChanged_ = true;
 	textChanged_ = true;
+	backChanged_ = true;
+	repaint();
+}
+
+void PatternEditorPanel::changeMarker()
+{
+	markerPos_.setRows(bt_->getMarkerOrder(), bt_->getMarkerStep());
 	backChanged_ = true;
 	repaint();
 }
@@ -2167,6 +2187,7 @@ void PatternEditorPanel::onSongLoaded()
 	selLeftAbovePos_ = { -1, -1, -1, -1 };
 	selRightBelowPos_ = { -1, -1, -1, -1 };
 	shiftPressedPos_ = { -1, -1, -1, -1 };
+	markerPos_ = { -1, -1, -1, -1 };
 	entryCnt_ = 0;
 	selectAllState_ = -1;
 	emit selected(false);

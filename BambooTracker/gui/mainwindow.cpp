@@ -909,6 +909,7 @@ void MainWindow::openInstrumentEditor()
 			case 1:		startPlayFromStart();		break;
 			case 2:		startPlayPattern();			break;
 			case 3:		startPlayFromCurrentStep();	break;
+			case 4:		startPlayFromMarker();		break;
 			default:	break;
 			}
 		};
@@ -1609,6 +1610,14 @@ void MainWindow::startPlayFromCurrentStep()
 	bt_->startPlayFromCurrentStep();
 	lockWidgets(true);
 	firstViewUpdateRequest_ = true;
+}
+
+void MainWindow::startPlayFromMarker()
+{
+	if(bt_->startPlayFromMarker()) {
+		lockWidgets(true);
+		firstViewUpdateRequest_ = true;
+	}
 }
 
 void MainWindow::stopPlaySong()
@@ -3000,4 +3009,15 @@ void MainWindow::on_action_Instrument_Mask_triggered()
 void MainWindow::on_action_Volume_Mask_triggered()
 {
 	config_.lock()->setVolumeMask(ui->action_Volume_Mask->isChecked());
+}
+
+void MainWindow::on_actionSet_Ro_w_Marker_triggered()
+{
+	bt_->setMarker(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
+	ui->patternEditor->changeMarker();
+}
+
+void MainWindow::on_actionPlay_From_Marker_triggered()
+{
+	startPlayFromMarker();
 }

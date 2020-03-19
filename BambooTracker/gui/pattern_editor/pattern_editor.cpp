@@ -105,6 +105,11 @@ void PatternEditor::updatepositionByPositionJump()
 	ui->panel->updatePositionByStepUpdate(false, true);
 }
 
+void PatternEditor::changeMarker()
+{
+	ui->panel->changeMarker();
+}
+
 void PatternEditor::copySelectedCells()
 {
 	ui->panel->copySelectedCells();

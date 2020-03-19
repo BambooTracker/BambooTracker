@@ -91,6 +91,7 @@ ColorPalette::ColorPalette()
 	ptnMuteColor = QColor::fromRgb(255, 0, 0, 255);
 	ptnUnmuteColor = QColor::fromRgb(0, 255, 0, 255);
 	ptnBackColor = QColor::fromRgb(0, 0, 0, 255);
+	ptnMarkerColor = QColor::fromRgb(255, 255, 255, 128);
 
 	// Wave visual
 	wavBackColor = QColor::fromRgb(0, 0, 33, 255);

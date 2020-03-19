@@ -36,6 +36,7 @@ signals:
 	/// 1: play from start
 	/// 2: play pattern
 	/// 3: play from cursor
+	/// /// 4: play from marker
 	/// -1: stop
 	void playStatusChanged(int stat);
 
