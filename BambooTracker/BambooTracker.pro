@@ -437,46 +437,42 @@ TRANSLATIONS += \
 include("stream/RtAudio/RtAudio.pri")
 include("midi/RtMidi/RtMidi.pri")
 
-equals(QT_MAJOR_VERSION, 5) {
-    lessThan(QT_MINOR_VERSION, 12) {
-        message(using a workaround for missing 'lrelease' option in Qt <5.12...)
-        
-        for(tsfile, TRANSLATIONS) {
-          qmfile   = $$tsfile
-          qmfile  ~= s/.ts$/.qm/
-          qmfile  ~= s,^res/lang,.qm,
+equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 12) {
+    message(using a workaround for missing 'lrelease' option in Qt <5.12...)
 
-                  thisqmcom  = $${qmfile}.commands
-          win32:$$thisqmcom  = mkdir .qm;
-           else:$$thisqmcom  = test -d .qm || mkdir -p .qm;
-                $$thisqmcom += lrelease -qm $$qmfile $$PWD/$$tsfile
+    for(tsfile, TRANSLATIONS) {
+      qmfile   = $$tsfile
+      qmfile  ~= s/.ts$/.qm/
+      qmfile  ~= s,^res/lang,.qm,
+               thisqmcom  = $${qmfile}.commands
+      win32:$$thisqmcom  = mkdir .qm;
+       else:$$thisqmcom  = test -d .qm || mkdir -p .qm;
+            $$thisqmcom += lrelease -qm $$qmfile $$PWD/$$tsfile
+        thisqmdep  = $${qmfile}.depends
+      $$thisqmdep  = $$PWD/$${tsfile}
 
-            thisqmdep  = $${qmfile}.depends
-          $$thisqmdep  = $$PWD/$${tsfile}
-          
-          PRE_TARGETDEPS      += $${qmfile}
-          QMAKE_EXTRA_TARGETS += $${qmfile}
-          
-          
-            thisinst    = translations_$${qmfile}
-            thisinstdep = $${thisinst}.depends
-          $$thisinstdep = $$qmfile
-          
-            thisinstcfg = $${thisinst}.CONFIG
-          $$thisinstcfg = no_check_exist
-          
-            thisinstfil = $${thisinst}.files
-          $$thisinstfil = $$PWD/$$qmfile
+      PRE_TARGETDEPS      += $${qmfile}
+      QMAKE_EXTRA_TARGETS += $${qmfile}
 
-            thisinstpat = $${thisinst}.path
-          $$thisinstpat = $$QM_FILES_INSTALL_PATH
-          
-          INSTALLS += $$thisinst
-        }
+
+        thisinst    = translations_$${qmfile}
+        thisinstdep = $${thisinst}.depends
+      $$thisinstdep = $$qmfile
+
+        thisinstcfg = $${thisinst}.CONFIG
+      $$thisinstcfg = no_check_exist
+
+        thisinstfil = $${thisinst}.files
+      $$thisinstfil = $$PWD/$$qmfile
+
+        thisinstpat = $${thisinst}.path
+      $$thisinstpat = $$QM_FILES_INSTALL_PATH
+
+      INSTALLS += $$thisinst
     }
-    else {
-        CONFIG += lrelease
-    }
+}
+else {
+    CONFIG += lrelease
 }
 
 win32 {

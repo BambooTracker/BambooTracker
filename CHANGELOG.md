@@ -7,6 +7,7 @@
 - Note transpose shortcuts using mouse wheel
 - Bookmark manager
 - [#189] - Increase/Decrease selected values in a pattern by 1 or 16 (thanks [@nyanpasu64])
+- Add volume mask
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed
@@ -14,6 +15,7 @@
 - [#183] - Implement ADPCM part in Nuked OPN-Mod (thanks [@jpcima])
 - [#186] - Selectable to overwrite instrument properties depending on whether or not to be edited (thanks [@OPNA2608])
 - Make an instrument editor form on opening
+- Change "Autoset instrument" to instrument mask
 - Update translation: ja
 
 ### Fixed

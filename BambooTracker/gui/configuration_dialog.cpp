@@ -69,14 +69,12 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		   tr("Enable an oscilloscope which displays a waveform of the sound output."));
 	glfunc(12, configLocked->getFill00ToEffectValue(),
 		   tr("Fill 00 to effect value column upon entering effect id."));
-	glfunc(13, configLocked->getAutosetInstrument(),
-		   tr("Set current instrument upon entering note."));
-	glfunc(14, configLocked->getMoveCursorByHorizontalScroll(),
+	glfunc(13, configLocked->getMoveCursorByHorizontalScroll(),
 		   tr("Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor."));
-	glfunc(15, configLocked->getOverwriteUnusedUneditedPropety(),
+	glfunc(14, configLocked->getOverwriteUnusedUneditedPropety(),
 		   tr("Overwrite unused and unedited instrument properties on creating new properties. "
 			  "When disabled, override unused properties regardless of editing."));
-	glfunc(16, configLocked->getWriteOnlyUsedSamples(),
+	glfunc(15, configLocked->getWriteOnlyUsedSamples(),
 		   tr("Send only ADPCM samples used by instruments to the ADPCM memory. "
 			  "Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost."));
 
@@ -276,10 +274,9 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setShowFMDetuneAsSigned(fromCheckState(ui->generalSettingsListWidget->item(10)->checkState()));
 	configLocked->setShowWaveVisual(fromCheckState(ui->generalSettingsListWidget->item(11)->checkState()));
 	configLocked->setFill00ToEffectValue(fromCheckState(ui->generalSettingsListWidget->item(12)->checkState()));
-	configLocked->setAutosetInstrument(fromCheckState(ui->generalSettingsListWidget->item(13)->checkState()));
-	configLocked->setMoveCursorByHorizontalScroll(fromCheckState(ui->generalSettingsListWidget->item(14)->checkState()));
-	configLocked->setOverwriteUnusedUneditedPropety(fromCheckState(ui->generalSettingsListWidget->item(15)->checkState()));
-	configLocked->setWriteOnlyUsedSamples(fromCheckState(ui->generalSettingsListWidget->item(16)->checkState()));
+	configLocked->setMoveCursorByHorizontalScroll(fromCheckState(ui->generalSettingsListWidget->item(13)->checkState()));
+	configLocked->setOverwriteUnusedUneditedPropety(fromCheckState(ui->generalSettingsListWidget->item(14)->checkState()));
+	configLocked->setWriteOnlyUsedSamples(fromCheckState(ui->generalSettingsListWidget->item(15)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));

@@ -355,7 +355,7 @@ public:
 	bool canAddNewOrder(int songNum) const;
 	/*----- Pattern -----*/
 	int getStepNoteNumber(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool autosetInst);
+	void setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool instMask, bool volMask);
 	void setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum);
 	void setEchoBufferAccess(int songNum, int trackNum, int orderNum, int stepNum, int bufNum);
 	void eraseStepNote(int songNum, int trackNum, int orderNum, int stepNum);
@@ -426,6 +426,7 @@ private:
 	int curOrderNum_, curStepNum_;
 	///	-1: not set
 	int curInstNum_;
+	int curVolume_;
 	std::unordered_map<SoundSource, std::vector<bool>> muteState_;
 
 	bool isFollowPlay_;

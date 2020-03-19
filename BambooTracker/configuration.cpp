@@ -20,6 +20,8 @@ Configuration::Configuration()
 	workDir_ = "";
 	instOpenFormat_ = 0;
 	bankOpenFormat_ = 0;
+	instMask_ = false;
+	volMask_ = true;
 
 	// General //
 	// General settings
@@ -36,7 +38,6 @@ Configuration::Configuration()
 	showFMDetuneSigned_ = false;
 	showWaveVisual_ = true;
 	fill00ToEffectValue_ = true;
-	autosetInstrument_ = true;
 	moveCursorHScroll_ = true;
 	overwriteUnusedUnedited_ = false;
 	writeOnlyUsedSamples_ = false;
@@ -765,6 +766,26 @@ int Configuration::getBankOpenFormat() const
 	return bankOpenFormat_;
 }
 
+void Configuration::setInstrumentMask(bool enabled)
+{
+	instMask_ = enabled;
+}
+
+bool Configuration::getInstrumentMask() const
+{
+	return instMask_;
+}
+
+void Configuration::setVolumeMask(bool enabled)
+{
+	volMask_ = enabled;
+}
+
+bool Configuration::getVolumeMask() const
+{
+	return volMask_;
+}
+
 // General //
 // General settings
 void Configuration::setWarpCursor(bool enabled)
@@ -894,16 +915,6 @@ void Configuration::setFill00ToEffectValue(bool enabled)
 bool Configuration::getFill00ToEffectValue() const
 {
 	return fill00ToEffectValue_;
-}
-
-void Configuration::setAutosetInstrument(bool enabled)
-{
-	autosetInstrument_ = enabled;
-}
-
-bool Configuration::getAutosetInstrument() const
-{
-	return autosetInstrument_;
 }
 
 void Configuration::setMoveCursorByHorizontalScroll(bool enabled)

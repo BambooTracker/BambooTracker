@@ -35,6 +35,8 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("workingDirectory",          QString::fromStdString(configLocked->getWorkingDirectory()));
 		settings.setValue("instrumentOpenFormat",		configLocked->getInstrumentOpenFormat());
 		settings.setValue("bankOpenFormat",				configLocked->getBankOpenFormat());
+		settings.setValue("instrumentMask",				configLocked->getInstrumentMask());
+		settings.setValue("volumeMask",					configLocked->getVolumeMask());
 		settings.endGroup();
 
 		// General //
@@ -53,7 +55,6 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("showFMDetuneAsSigned",	configLocked->getShowFMDetuneAsSigned());
 		settings.setValue("showWaveVisual",			configLocked->getShowWaveVisual());
 		settings.setValue("fill00ToEffectValue",	configLocked->getFill00ToEffectValue());
-		settings.setValue("autosetInstrument",		configLocked->getAutosetInstrument());
 		settings.setValue("moveCursorByHScroll",	configLocked->getMoveCursorByHorizontalScroll());
 		settings.setValue("overwriteUnusedUnedited",	configLocked->getOverwriteUnusedUneditedPropety());
 		settings.setValue("writeOnlyUsedSamples",	configLocked->getWriteOnlyUsedSamples());
@@ -205,6 +206,8 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setWorkingDirectory(settings.value("workingDirectory", QString::fromStdString(configLocked->getWorkingDirectory())).toString().toStdString());
 		configLocked->setInstrumentOpenFormat(settings.value("instrumentOpenFormat", configLocked->getInstrumentOpenFormat()).toInt());
 		configLocked->setBankOpenFormat(settings.value("bankOpenFormat", configLocked->getBankOpenFormat()).toInt());
+		configLocked->setInstrumentMask(settings.value("instrumentMask", configLocked->getInstrumentMask()).toBool());
+		configLocked->setVolumeMask(settings.value("volumeMask", configLocked->getVolumeMask()).toBool());
 		settings.endGroup();
 
 		// General //
@@ -223,10 +226,13 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setShowFMDetuneAsSigned(settings.value("showFMDetuneAsSigned", configLocked->getShowFMDetuneAsSigned()).toBool());
 		configLocked->setShowWaveVisual(settings.value("showWaveVisual", configLocked->getShowWaveVisual()).toBool());
 		configLocked->setFill00ToEffectValue(settings.value("fill00ToEffectValue", configLocked->getFill00ToEffectValue()).toBool());
-		configLocked->setAutosetInstrument(settings.value("autosetInstrument", configLocked->getAutosetInstrument()).toBool());
 		configLocked->setMoveCursorByHorizontalScroll(settings.value("moveCursorByHScroll", configLocked->getMoveCursorByHorizontalScroll()).toBool());
 		configLocked->setOverwriteUnusedUneditedPropety(settings.value("overwriteUnusedUnedited", configLocked->getOverwriteUnusedUneditedPropety()).toBool());
 		configLocked->setOverwriteUnusedUneditedPropety(settings.value("writeOnlyUsedSamples", configLocked->getWriteOnlyUsedSamples()).toBool());
+		if (settings.contains("autosetInstrument")) {	// For compatibility before v0.4.0
+			configLocked->setInstrumentMask(!settings.value("autosetInstrument").toBool());
+			settings.remove("autosetInstrument");
+		}
 		settings.endGroup();
 
 		// Edit settings

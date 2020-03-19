@@ -20,6 +20,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  curOrderNum_(0),
 	  curStepNum_(0),
 	  curInstNum_(-1),
+	  curVolume_(-1),
 	  isFollowPlay_(true)
 {
 	opnaCtrl_ = std::make_shared<OPNAController>(
@@ -1949,17 +1950,17 @@ int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, in
 			.getStep(stepNum).getNoteNumber();
 }
 
-void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool autosetInst)
+void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool instMask, bool volMask)
 {
 	int nn = octaveAndNoteToNoteNumber(octave, note);
 
 	int in = -1;
-	if (autosetInst && curInstNum_ != -1
+	if (!instMask && curInstNum_ != -1
 			&& (songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source
 				== instMan_->getInstrumentSharedPtr(curInstNum_)->getSoundSource()))
 		in = curInstNum_;
 
-	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, autosetInst, in));
+	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, instMask, in, volMask, curVolume_));
 }
 
 void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum)
@@ -2002,6 +2003,7 @@ int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int st
 void BambooTracker::setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry)
 {	
 	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, isFMReversed, secondEntry));
+	curVolume_ = mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum).getStep(stepNum).getVolume();
 }
 
 void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum)

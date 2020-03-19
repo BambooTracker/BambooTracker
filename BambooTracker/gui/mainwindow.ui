@@ -629,6 +629,9 @@
     <addaction name="menuSelect"/>
     <addaction name="separator"/>
     <addaction name="menu_Bookmarks"/>
+    <addaction name="separator"/>
+    <addaction name="action_Instrument_Mask"/>
+    <addaction name="action_Volume_Mask"/>
    </widget>
    <widget class="QMenu" name="menuPattern">
     <property name="title">
@@ -1502,6 +1505,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+PgUp</string>
+   </property>
+  </action>
+  <action name="action_Instrument_Mask">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Instrument Mask</string>
+   </property>
+  </action>
+  <action name="action_Volume_Mask">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Volume Mask</string>
    </property>
   </action>
  </widget>

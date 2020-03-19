@@ -161,14 +161,6 @@
             </item>
             <item>
              <property name="text">
-              <string>Autoset instrument</string>
-             </property>
-             <property name="checkState">
-              <enum>Checked</enum>
-             </property>
-            </item>
-            <item>
-             <property name="text">
               <string>Move cursor by horizontal scroll</string>
              </property>
              <property name="checkState">

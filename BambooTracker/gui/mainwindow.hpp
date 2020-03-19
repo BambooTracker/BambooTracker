@@ -283,6 +283,8 @@ private slots:
 	void on_action_Toggle_Bookmark_triggered();
 	void on_action_Next_Bookmark_triggered();
 	void on_action_Previous_Bookmark_triggered();
+	void on_action_Instrument_Mask_triggered();
+	void on_action_Volume_Mask_triggered();
 };
 
 #endif // MAINWINDOW_HPP

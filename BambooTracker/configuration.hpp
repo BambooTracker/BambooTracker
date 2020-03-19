@@ -55,6 +55,10 @@ public:
 	int getInstrumentOpenFormat() const;
 	void setBankOpenFormat(int i);
 	int getBankOpenFormat() const;
+	void setInstrumentMask(bool enabled);
+	bool getInstrumentMask() const;
+	void setVolumeMask(bool enabled);
+	bool getVolumeMask() const;
 private:
 	int mainW_, mainH_;
 	bool mainMax_;
@@ -66,6 +70,7 @@ private:
 	bool followMode_;
 	std::string workDir_;
 	int instOpenFormat_, bankOpenFormat_;
+	bool instMask_, volMask_;
 
 	// General //
 	// General settings
@@ -96,8 +101,6 @@ public:
 	bool getShowWaveVisual() const;
 	void setFill00ToEffectValue(bool enabled);
 	bool getFill00ToEffectValue() const;
-	void setAutosetInstrument(bool enabled);
-	bool getAutosetInstrument() const;
 	void setMoveCursorByHorizontalScroll(bool enabled);
 	bool getMoveCursorByHorizontalScroll() const;
 	void setOverwriteUnusedUneditedPropety(bool enabled);
@@ -111,7 +114,7 @@ private:
 	bool reverseFMVolumeOrder_, moveCursorToRight_;
 	bool retrieveChannelState_, enableTranslation_;
 	bool showFMDetuneSigned_, showWaveVisual_;
-	bool fill00ToEffectValue_, autosetInstrument_;
+	bool fill00ToEffectValue_;
 	bool moveCursorHScroll_, overwriteUnusedUnedited_;
 	bool writeOnlyUsedSamples_;
 

@@ -1385,9 +1385,9 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 	int baseOct = bt_->getCurrentOctave();
 
 	if (event->modifiers().testFlag(Qt::NoModifier)) {
-		Qt::Key qtKey = static_cast<Qt::Key> (event->key());
+		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 		try {
-			JamKey possibleJamKey = getJamKeyFromLayoutMapping (qtKey);
+			JamKey possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
 			int octaveOffset = 0;
 			switch (possibleJamKey) {
 			case JamKey::HighD2:
@@ -1415,7 +1415,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 			default:
 				break;
 			}
-			setStepKeyOn (JamManager::jamKeyToNote (possibleJamKey), baseOct + octaveOffset);
+			setStepKeyOn(JamManager::jamKeyToNote(possibleJamKey), baseOct + octaveOffset);
 		} catch (std::invalid_argument &) {}
 	}
 
@@ -1425,7 +1425,8 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 {
 	if (octave < 8) {
-		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note, config_->getAutosetInstrument());
+		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note,
+						 config_->getInstrumentMask(), config_->getVolumeMask());
 		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 	}

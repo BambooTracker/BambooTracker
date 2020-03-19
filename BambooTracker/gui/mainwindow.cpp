@@ -90,6 +90,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	resize(config.lock()->getMainWindowWidth(), config.lock()->getMainWindowHeight());
 	if (config.lock()->getMainWindowMaximized()) showMaximized();
 	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
+	ui->action_Instrument_Mask->setChecked(config.lock()->getInstrumentMask());
+	ui->action_Volume_Mask->setChecked(config.lock()->getVolumeMask());
 	ui->waveVisual->setVisible(config_.lock()->getShowWaveVisual());
 	bt_->setFollowPlay(config.lock()->getFollowMode());
 	if (config.lock()->getPatternEditorHeaderFont().empty()) {
@@ -2988,4 +2990,14 @@ void MainWindow::on_action_Next_Bookmark_triggered()
 void MainWindow::on_action_Previous_Bookmark_triggered()
 {
 	bmManForm_->onBookmarkJumpRequested(false, bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
+}
+
+void MainWindow::on_action_Instrument_Mask_triggered()
+{
+	config_.lock()->setInstrumentMask(ui->action_Instrument_Mask->isChecked());
+}
+
+void MainWindow::on_action_Volume_Mask_triggered()
+{
+	config_.lock()->setVolumeMask(ui->action_Volume_Mask->isChecked());
 }
