@@ -2613,14 +2613,9 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			if (event->modifiers().testFlag(Qt::ControlModifier)) {
-				emit bookmarkJumpRequested(false, curPos_.order, curPos_.step);
-			}
-			else {
-				moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
-				if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-				else onSelectPressed(0);
-			}
+			moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_PageDown:
@@ -2628,14 +2623,9 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			return false;
 		}
 		else {
-			if (event->modifiers().testFlag(Qt::ControlModifier)) {
-				emit bookmarkJumpRequested(true, curPos_.order, curPos_.step);
-			}
-			else {
-				moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
-				if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-				else onSelectPressed(0);
-			}
+			moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
+			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
+			else onSelectPressed(0);
 			return true;
 		}
 	case Qt::Key_Insert:
@@ -2664,16 +2654,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	}
 	default:
 		if (!bt_->isJamMode()) {
-			if (event->modifiers().testFlag(Qt::ControlModifier)) {
-				switch (event->key()) {
-				case Qt::Key_K:
-					emit bookmarkToggleRequested(curPos_.order, curPos_.step);
-					return true;
-				default:
-					break;
-				}
-			}
-
 			// Pattern edit
 			if (!config_->getKeyRepetition() && event->isAutoRepeat()) return false;
 			switch (curPos_.colInTrack) {

@@ -46,8 +46,6 @@ public:
 signals:
 	void currentTrackChanged(int num);
 	void currentOrderChanged(int num, int max);
-	void bookmarkToggleRequested(int order, int step);
-	void bookmarkJumpRequested(bool toNext, int order, int step);
 
 	void focusIn();
 	void focusOut();

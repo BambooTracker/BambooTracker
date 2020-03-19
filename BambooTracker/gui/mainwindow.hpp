@@ -280,6 +280,9 @@ private slots:
 	void on_actionFine_Increase_Values_triggered();
 	void on_actionCoarse_D_ecrease_Values_triggered();
 	void on_actionCoarse_I_ncrease_Values_triggered();
+	void on_action_Toggle_Bookmark_triggered();
+	void on_action_Next_Bookmark_triggered();
+	void on_action_Previous_Bookmark_triggered();
 };
 
 #endif // MAINWINDOW_HPP

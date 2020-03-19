@@ -52,12 +52,6 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 this, [&](int num) { emit instrumentEntered(num); });
 	QObject::connect(ui->panel, &PatternEditorPanel::effectEntered,
 					 this, [&](QString text) { emit effectEntered(text); });
-	QObject::connect(ui->panel, &PatternEditorPanel::bookmarkToggleRequested,
-					 this, [&](int order, int step) { emit bookmarkToggleRequested(order, step); });
-	QObject::connect(ui->panel, &PatternEditorPanel::bookmarkJumpRequested,
-					 this, [&](bool toNext, int order, int step) {
-		emit bookmarkJumpRequested(toNext, order, step);
-	});
 
 	auto focusSlot = [&] { ui->panel->setFocus(); };
 

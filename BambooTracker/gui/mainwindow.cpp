@@ -408,10 +408,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		activateWindow();
 	});
 	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
-	QObject::connect(ui->patternEditor, &PatternEditor::bookmarkToggleRequested,
-					 bmManForm_.get(), &BookmarkManagerForm::onBookmarkToggleRequested);
-	QObject::connect(ui->patternEditor, &PatternEditor::bookmarkJumpRequested,
-					 bmManForm_.get(), &BookmarkManagerForm::onBookmarkJumpRequested);
 
 	/* Clipboard */
 	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,
@@ -2275,8 +2271,9 @@ void MainWindow::on_actionEdit_Mode_triggered()
 	if (isEditedOrder_) updateMenuByOrder();
 	else if (isEditedPattern_) updateMenuByPattern();
 
-	if (bt_->isJamMode()) statusDetail_->setText(tr("Change to jam mode"));
-	else statusDetail_->setText(tr("Change to edit mode"));
+	bool editable = !bt_->isJamMode();
+	statusDetail_->setText(editable ? tr("Change to edit mode") : tr("Change to jam mode"));
+	ui->action_Toggle_Bookmark->setEnabled(editable);
 }
 
 void MainWindow::on_actionToggle_Track_triggered()
@@ -2976,4 +2973,19 @@ void MainWindow::on_actionCoarse_D_ecrease_Values_triggered()
 void MainWindow::on_actionCoarse_I_ncrease_Values_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onChangeValuesPressed(true, true);
+}
+
+void MainWindow::on_action_Toggle_Bookmark_triggered()
+{
+	bmManForm_->onBookmarkToggleRequested(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
+}
+
+void MainWindow::on_action_Next_Bookmark_triggered()
+{
+	bmManForm_->onBookmarkJumpRequested(true, bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
+}
+
+void MainWindow::on_action_Previous_Bookmark_triggered()
+{
+	bmManForm_->onBookmarkJumpRequested(false, bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 }

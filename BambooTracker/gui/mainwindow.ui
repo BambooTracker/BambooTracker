@@ -609,6 +609,14 @@
      <addaction name="actionMix"/>
      <addaction name="actionOverwrite"/>
     </widget>
+    <widget class="QMenu" name="menu_Bookmarks">
+     <property name="title">
+      <string>&amp;Bookmarks</string>
+     </property>
+     <addaction name="action_Toggle_Bookmark"/>
+     <addaction name="action_Next_Bookmark"/>
+     <addaction name="action_Previous_Bookmark"/>
+    </widget>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
@@ -619,6 +627,8 @@
     <addaction name="actionDelete"/>
     <addaction name="separator"/>
     <addaction name="menuSelect"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Bookmarks"/>
    </widget>
    <widget class="QMenu" name="menuPattern">
     <property name="title">
@@ -1465,6 +1475,33 @@
    </property>
    <property name="shortcut">
     <string>Shift+F4</string>
+   </property>
+  </action>
+  <action name="action_Toggle_Bookmark">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Toggle Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
+  </action>
+  <action name="action_Next_Bookmark">
+   <property name="text">
+    <string>&amp;Next Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+PgDown</string>
+   </property>
+  </action>
+  <action name="action_Previous_Bookmark">
+   <property name="text">
+    <string>&amp;Previous Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+PgUp</string>
    </property>
   </action>
  </widget>
