@@ -240,6 +240,7 @@ HEADERS += \
     chips/opna.hpp \
     chips/resampler.hpp \
     bamboo_tracker.hpp \
+    gui/shortcut_util.hpp \
     instrument/waveform_adpcm.hpp \
     io/wav_container.hpp \
     module/effect.hpp \

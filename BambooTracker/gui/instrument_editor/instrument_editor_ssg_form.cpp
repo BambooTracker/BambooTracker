@@ -416,21 +416,6 @@ void InstrumentEditorSSGForm::keyPressEvent(QKeyEvent *event)
 {
 	// For jam key on
 
-	// Check keys
-	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | event->key()).toString();
-	if (seq == QKeySequence(
-				QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
-								  static_cast<int>(config_.lock()->getOctaveUpKey().length()))).toString()) {
-		emit octaveChanged(true);
-		return;
-	}
-	else if (seq == QKeySequence(
-				 QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
-								   static_cast<int>(config_.lock()->getOctaveDownKey().length()))).toString()) {
-		emit octaveChanged(false);
-		return;
-	}
-
 	// General keys
 	switch (event->key()) {
 	//case Qt::Key_Return:	emit playStatusChanged(0);	break;

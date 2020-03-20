@@ -30,7 +30,6 @@ public:
 signals:
 	void jamKeyOnEvent(JamKey key);
 	void jamKeyOffEvent(JamKey key);
-	void octaveChanged(bool upFlag);
 	void modified();
 	/// 0: play song
 	/// 1: play from start

@@ -19,6 +19,7 @@
 #include <QSpinBox>
 #include <QTimer>
 #include <QLibrary>
+#include <QShortcut>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -159,6 +160,10 @@ private:
 	QLabel* statusMixer_;
 	QLabel* statusBpm_;
 	QLabel* statusPlayPos_;
+
+	// Shortcuts
+	std::unique_ptr<QShortcut> octUp_, octDown_;
+	void setShortcuts();
 
 	// Dialogs
 	std::unique_ptr<EffectListDialog> effListDiag_;

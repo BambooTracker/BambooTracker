@@ -50,6 +50,7 @@
 #include "color_palette_handler.hpp"
 #include "binary_container.hpp"
 #include "wav_container.hpp"
+#include "gui/shortcut_util.hpp"
 #include "enum_hash.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -476,6 +477,15 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		timer_->start();
 	}
 
+	// Shortcuts
+	octUp_ = std::make_unique<QShortcut>(this);
+	octUp_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(octUp_.get(), &QShortcut::activated, this, [&] { changeOctave(true); });
+	octDown_ = std::make_unique<QShortcut>(this);
+	octDown_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(octDown_.get(), &QShortcut::activated, this, [&] { changeOctave(false); });
+	setShortcuts();
+
 	/* Load module */
 	if (filePath.isEmpty()) {
 		loadModule();
@@ -572,21 +582,6 @@ void MainWindow::showEvent(QShowEvent* event)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
 	int key = event->key();
-
-	/* Key check */
-	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | key).toString();
-	if (seq == QKeySequence(
-				QString::fromUtf8(config_.lock()->getOctaveUpKey().c_str(),
-								  static_cast<int>(config_.lock()->getOctaveUpKey().length()))).toString()) {
-		changeOctave(true);
-		return;
-	}
-	else if (seq == QKeySequence(
-				 QString::fromUtf8(config_.lock()->getOctaveDownKey().c_str(),
-								   static_cast<int>(config_.lock()->getOctaveDownKey().length()))).toString()) {
-		changeOctave(false);
-		return;
-	}
 
 	/* General keys */
 	switch (key) {
@@ -763,6 +758,14 @@ void MainWindow::freezeViews()
 {
 	ui->orderList->freeze();
 	ui->patternEditor->freeze();
+}
+
+void MainWindow::setShortcuts()
+{
+	octUp_->setKey(strToKeySeq(config_.lock()->getOctaveUpKey().c_str()));
+	octDown_->setKey(strToKeySeq(config_.lock()->getOctaveDownKey().c_str()));
+
+	ui->patternEditor->onShortcutUpdated();
 }
 
 void MainWindow::updateInstrumentListColors()
@@ -949,8 +952,6 @@ void MainWindow::openInstrumentEditor()
 			QObject::connect(fmForm, &InstrumentEditorFMForm::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::FM); },
 			Qt::DirectConnection);
-			QObject::connect(fmForm, &InstrumentEditorFMForm::octaveChanged,
-							 this, &MainWindow::changeOctave, Qt::DirectConnection);
 			QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
 							 this, &MainWindow::setModifiedTrue);
 			QObject::connect(fmForm, &InstrumentEditorFMForm::playStatusChanged, this, playFunc);
@@ -999,8 +1000,6 @@ void MainWindow::openInstrumentEditor()
 			QObject::connect(ssgForm, &InstrumentEditorSSGForm::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::SSG); }
 			, Qt::DirectConnection);
-			QObject::connect(ssgForm, &InstrumentEditorSSGForm::octaveChanged,
-							 this, &MainWindow::changeOctave, Qt::DirectConnection);
 			QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,
 							 this, &MainWindow::setModifiedTrue);
 			QObject::connect(ssgForm, &InstrumentEditorSSGForm::playStatusChanged, this, playFunc);
@@ -1047,8 +1046,6 @@ void MainWindow::openInstrumentEditor()
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); },
 			Qt::DirectConnection);
-			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::octaveChanged,
-							 this, &MainWindow::changeOctave, Qt::DirectConnection);
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::modified,
 							 this, &MainWindow::setModifiedTrue);
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::playStatusChanged, this, playFunc);
@@ -1692,10 +1689,9 @@ void MainWindow::changeConfiguration()
 
 	bt_->changeConfiguration(config_);
 
+	setShortcuts();
 	ui->waveVisual->setVisible(config_.lock()->getShowWaveVisual());
-
 	updateInstrumentListColors();
-
 	bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
 
 	update();

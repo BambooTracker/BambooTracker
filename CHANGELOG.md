@@ -25,6 +25,7 @@
 - [#190] - Fix the error of FM envelope/operator paste when "Show FM detune as signed" enabled (thanks [@nyanpasu64])
 - [#191] - Enable copy and paste in the order list without pattern edit mode (thanks [@nyanpasu64])
 - [#177] - Fix the bug that could not create a new instrument (thanks [@Pigu-A], [@nyanpasu64], [@pedipanol])
+- [#192] - Fix that any shortcuts set in the configuration is ignored (thanks [@SMB7])
 
 [@freq-mod]: https://github.com/freq-mod
 [@RigidatoMS]: https://twitter.com/RigidatoMS
@@ -40,6 +41,7 @@
 [#190]: https://github.com/rerrahkr/BambooTracker/issues/190
 [#191]: https://github.com/rerrahkr/BambooTracker/issues/191
 [#177]: https://github.com/rerrahkr/BambooTracker/issues/177
+[#192]: https://github.com/rerrahkr/BambooTracker/issues/192
 
 ## v0.3.5 (2020-02-15)
 ### Added

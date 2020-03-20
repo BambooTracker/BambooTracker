@@ -366,6 +366,11 @@ void PatternEditor::onDuplicateInstrumentsRemoved()
 	ui->panel->redrawByPatternChanged();
 }
 
+void PatternEditor::onShortcutUpdated()
+{
+	ui->panel->onShortcutUpdated();
+}
+
 void PatternEditor::updateHorizontalSliderMaximum()
 {
 	if (!ui->panel->isReadyCore() || !songLoaded_) return;

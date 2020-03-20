@@ -97,6 +97,7 @@ public slots:
 	void onFollowModeChanged();
 	void onStoppedPlaySong();
 	void onDuplicateInstrumentsRemoved();
+	void onShortcutUpdated();
 
 private:
 	Ui::PatternEditor *ui;

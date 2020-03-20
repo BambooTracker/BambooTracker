@@ -15,6 +15,7 @@
 #include <QUndoStack>
 #include <QString>
 #include <QPoint>
+#include <QShortcut>
 #include <memory>
 #include <vector>
 #include <atomic>
@@ -106,6 +107,7 @@ public slots:
 	void onShrinkEffectColumnPressed(int trackNum);
 	void onFollowModeChanged();
 	void onChangeValuesPressed(int value);
+	void onShortcutUpdated();
 
 signals:
 	void hScrollBarChangeRequested(int num);
@@ -200,6 +202,8 @@ private:
 	bool freezed_;
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard
 	std::atomic_int repaintingCnt_;
+
+	std::unique_ptr<QShortcut> keyOff_, echoBuf_;
 
 	// Meta methods
 	int midiKeyEventMethod_;

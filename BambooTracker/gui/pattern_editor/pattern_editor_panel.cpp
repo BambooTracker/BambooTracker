@@ -23,6 +23,7 @@
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
 #include "gui/effect_description.hpp"
+#include "gui/shortcut_util.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -103,6 +104,30 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 
 	setAttribute(Qt::WA_Hover);
 	setContextMenuPolicy(Qt::CustomContextMenu);
+
+	keyOff_ = std::make_unique<QShortcut>(this);
+	keyOff_->setContext(Qt::WidgetShortcut);
+	QObject::connect(keyOff_.get(), &QShortcut::activated,
+					 this, [&] {
+		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
+			bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
+		}
+	});
+	echoBuf_ = std::make_unique<QShortcut>(this);
+	echoBuf_->setContext(Qt::WidgetShortcut);
+	QObject::connect(echoBuf_.get(), &QShortcut::activated,
+					 this, [&] {
+		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
+			int n = bt_->getCurrentOctave();
+			if (n > 3) n = 3;
+			bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
+			comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
+			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
+		}
+	});
+	onShortcutUpdated();
 
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
@@ -1382,26 +1407,6 @@ JamKey PatternEditorPanel::getJamKeyFromLayoutMapping(Qt::Key key) {
 
 bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 {
-	QString seq = QKeySequence(static_cast<int>(event->modifiers()) | event->key()).toString();
-	if (seq == QKeySequence(
-				QString::fromUtf8(config_->getKeyOffKey().c_str(),
-								  static_cast<int>(config_->getKeyOffKey().length()))).toString()) {
-		bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
-		comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
-		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
-		return true;
-	}
-	else if (seq == QKeySequence(
-				 QString::fromUtf8(config_->getEchoBufferKey().c_str(),
-								   static_cast<int>(config_->getEchoBufferKey().length()))).toString()) {
-		int n = bt_->getCurrentOctave();
-		if (n > 3) n = 3;
-		bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
-		comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
-		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
-		return true;
-	}
-
 	int baseOct = bt_->getCurrentOctave();
 
 	if (event->modifiers().testFlag(Qt::NoModifier)) {
@@ -2496,6 +2501,12 @@ void PatternEditorPanel::onChangeValuesPressed(int value)
 		changeValuesInPattern(selLeftAbovePos_, selRightBelowPos_, value);
 	else
 		changeValuesInPattern(curPos_, curPos_, value);
+}
+
+void PatternEditorPanel::onShortcutUpdated()
+{
+	keyOff_->setKey(strToKeySeq(config_->getKeyOffKey()));
+	echoBuf_->setKey(strToKeySeq(config_->getEchoBufferKey()));
 }
 
 /********** Events **********/
