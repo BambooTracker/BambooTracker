@@ -24,6 +24,7 @@
 #include "jam_manager.hpp"
 #include "gui/effect_description.hpp"
 #include "gui/shortcut_util.hpp"
+#include "gui/jam_layout.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -1386,25 +1387,6 @@ void PatternEditorPanel::changeMarker()
 	repaint();
 }
 
-JamKey PatternEditorPanel::getJamKeyFromLayoutMapping(Qt::Key key) {
-	Configuration::KeyboardLayout selectedLayout = config_->getNoteEntryLayout();
-	if (config_->mappingLayouts.find (selectedLayout) != config_->mappingLayouts.end()) {
-		std::unordered_map<std::string, JamKey> selectedLayoutMapping = config_->mappingLayouts.at (selectedLayout);
-		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
-							   [key](const std::pair<std::string, JamKey>& t) -> bool {
-			return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
-		});
-		if (it != selectedLayoutMapping.end()) {
-			return (*it).second;
-		}
-		else {
-			throw std::invalid_argument("Unmapped key");
-		}
-		//something has gone wrong, current layout has no layout map
-		//TODO: handle cleanly?
-	} else throw std::out_of_range("Unmapped Layout");
-}
-
 bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 {
 	int baseOct = bt_->getCurrentOctave();
@@ -1412,7 +1394,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 	if (event->modifiers().testFlag(Qt::NoModifier)) {
 		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 		try {
-			JamKey possibleJamKey = getJamKeyFromLayoutMapping(qtKey);
+			JamKey possibleJamKey = getJamKeyFromLayoutMapping(qtKey, config_);
 			int octaveOffset = 0;
 			switch (possibleJamKey) {
 			case JamKey::HighD2:

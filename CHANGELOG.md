@@ -7,7 +7,8 @@
 - Note transpose shortcuts using mouse wheel
 - Bookmark manager
 - [#189] - Increase/Decrease selected values in a pattern by 1 or 16 (thanks [@nyanpasu64])
-- Add volume mask
+- Volume mask
+- Row marker and play from marker
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed

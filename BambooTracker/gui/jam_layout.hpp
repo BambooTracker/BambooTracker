@@ -12,14 +12,14 @@ inline JamKey getJamKeyFromLayoutMapping(Qt::Key key, std::weak_ptr<Configuratio
 {
 	std::shared_ptr<Configuration> configLocked = config.lock();
 	Configuration::KeyboardLayout selectedLayout = configLocked->getNoteEntryLayout();
-	if (configLocked->mappingLayouts.find (selectedLayout) != configLocked->mappingLayouts.end()) {
-		std::unordered_map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at (selectedLayout);
+	if (configLocked->mappingLayouts.find(selectedLayout) != configLocked->mappingLayouts.end()) {
+		std::unordered_map<std::string, JamKey> selectedLayoutMapping = configLocked->mappingLayouts.at(selectedLayout);
 		auto it = std::find_if(selectedLayoutMapping.begin(), selectedLayoutMapping.end(),
 							   [key](const std::pair<std::string, JamKey>& t) -> bool {
 			return (QKeySequence(key).matches(QKeySequence(QString::fromStdString(t.first))) == QKeySequence::ExactMatch);
 		});
 		if (it != selectedLayoutMapping.end()) {
-			return (*it).second;
+			return it->second;
 		}
 		else {
 			throw std::invalid_argument("Unmapped key");
