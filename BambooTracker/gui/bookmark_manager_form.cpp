@@ -20,7 +20,14 @@ BookmarkManagerForm::BookmarkManagerForm(std::weak_ptr<BambooTracker> core, bool
 	ui->orderSpinBox->setDisplayIntegerBase(numBase_);
 	ui->stepSpinBox->setDisplayIntegerBase(numBase_);
 
-	ui->listWidget->installEventFilter(this);
+	insSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->listWidget, nullptr, nullptr, Qt::WidgetShortcut);
+	QObject::connect(insSc_.get(), &QShortcut::activated, this, &BookmarkManagerForm::on_createPushButton_clicked);
+	delSc_ = std::make_unique<QShortcut>(Qt::Key_Delete, ui->listWidget, nullptr, nullptr, Qt::WidgetShortcut);
+	QObject::connect(delSc_.get(), &QShortcut::activated, this, &BookmarkManagerForm::on_removePushButton_clicked);
+	mvUpSc_ = std::make_unique<QShortcut>(Qt::CTRL + Qt::Key_Up, ui->listWidget, nullptr, nullptr, Qt::WidgetShortcut);
+	QObject::connect(mvUpSc_.get(), &QShortcut::activated, this, &BookmarkManagerForm::on_upToolButton_clicked);
+	mvDnSc_ = std::make_unique<QShortcut>(Qt::CTRL + Qt::Key_Down, ui->listWidget, nullptr, nullptr, Qt::WidgetShortcut);
+	QObject::connect(mvDnSc_.get(), &QShortcut::activated, this, &BookmarkManagerForm::on_downToolButton_clicked);
 }
 
 BookmarkManagerForm::~BookmarkManagerForm()
@@ -78,40 +85,6 @@ void BookmarkManagerForm::sortList(bool byPos)
 	}
 
 	emit modified();
-}
-
-bool BookmarkManagerForm::eventFilter(QObject* watched, QEvent* event)
-{
-	// Only listen list
-	Q_UNUSED(watched)
-
-	if (event->type() == QEvent::KeyPress) {
-		auto ke = reinterpret_cast<QKeyEvent*>(event);
-		switch (ke->key()) {
-		case Qt::Key_Insert:
-			on_createPushButton_clicked();
-			return true;
-		case Qt::Key_Delete:
-			on_removePushButton_clicked();
-			return true;
-		case Qt::Key_Up:
-			if (ke->modifiers().testFlag(Qt::ControlModifier)) {
-				on_upToolButton_clicked();
-				return true;
-			}
-			break;
-		case Qt::Key_Down:
-			if (ke->modifiers().testFlag(Qt::ControlModifier)) {
-				on_downToolButton_clicked();
-				return true;
-			}
-			break;
-		default:
-			break;
-		}
-	}
-
-	return false;
 }
 
 void BookmarkManagerForm::onCurrentSongNumberChanged()

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QString>
 #include <QListWidgetItem>
+#include <QShortcut>
 #include <memory>
 #include "bamboo_tracker.hpp"
 
@@ -30,9 +31,6 @@ public slots:
 	void onBookmarkToggleRequested(int order, int step);
 	void onBookmarkJumpRequested(bool toNext, int order, int step);
 
-protected:
-	bool eventFilter(QObject* watched, QEvent* event) override;
-
 private slots:
 	void on_createPushButton_clicked();
 	void on_removePushButton_clicked();
@@ -51,6 +49,8 @@ private:
 
 	int curSong_;
 	int numWidth_, numBase_;
+
+	std::unique_ptr<QShortcut> insSc_, delSc_, mvUpSc_, mvDnSc_;
 
 	void initList();
 
