@@ -494,6 +494,9 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->actionPlay_From_Cursor->setShortcutContext(Qt::ApplicationShortcut);
 	ui->actionPlay_From_Marker->setShortcutContext(Qt::ApplicationShortcut);
 	ui->actionStop->setShortcutContext(Qt::ApplicationShortcut);
+	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentListWidget,
+											 nullptr, nullptr, Qt::WidgetShortcut);
+	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
 	setShortcuts();
 
 	/* Load module */
@@ -559,9 +562,6 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 
 	if (watched == ui->instrumentListWidget) {
 		switch (event->type()) {
-		case QEvent::KeyPress:
-			if (dynamic_cast<QKeyEvent*>(event)->key() == Qt::Key_Insert) addInstrument();
-			break;
 		case QEvent::FocusIn:
 			updateMenuByInstrumentList();
 			break;
