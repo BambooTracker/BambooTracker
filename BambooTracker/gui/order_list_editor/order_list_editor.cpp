@@ -35,8 +35,6 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 					 this, [&] { emit orderEdited(); });
 	QObject::connect(ui->panel, &OrderListPanel::selected,
 					 this, [&](bool isSelected) { emit selected(isSelected); });
-	QObject::connect(ui->panel, &OrderListPanel::returnPressed,
-					 this, [&] { emit returnPressed(); });
 
 	auto focusSlot = [&] { ui->panel->setFocus(); };
 

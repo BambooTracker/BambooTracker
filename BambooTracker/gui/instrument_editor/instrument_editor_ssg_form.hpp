@@ -31,13 +31,6 @@ signals:
 	void jamKeyOnEvent(JamKey key);
 	void jamKeyOffEvent(JamKey key);
 	void modified();
-	/// 0: play song
-	/// 1: play from start
-	/// 2: play pattern
-	/// 3: play from cursor
-	/// /// 4: play from marker
-	/// -1: stop
-	void playStatusChanged(int stat);
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;

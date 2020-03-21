@@ -162,7 +162,9 @@ private:
 	QLabel* statusPlayPos_;
 
 	// Shortcuts
-	std::unique_ptr<QShortcut> octUp_, octDown_;
+	std::unique_ptr<QShortcut> octUpSc_, octDownSc_;
+	std::unique_ptr<QShortcut> focusPtnSc_, focusOdrSc_, focusInstSc_;
+	std::unique_ptr<QShortcut> playStopSc_;
 	void setShortcuts();
 
 	// Dialogs

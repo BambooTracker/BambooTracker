@@ -54,7 +54,6 @@ signals:
 	void focusIn();
 	void focusOut();
 	void selected(bool isSelected);
-	void returnPressed();
 
 public slots:
 	void setCurrentTrack(int num);

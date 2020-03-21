@@ -2510,9 +2510,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 {
 	/* General Keys */
 	switch (event->key()) {
-	case Qt::Key_Return:
-		emit returnPressed();
-		return true;
 	case Qt::Key_Shift:
 		shiftPressedPos_ = curPos_;
 		return true;

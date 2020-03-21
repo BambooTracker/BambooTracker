@@ -117,7 +117,6 @@ signals:
 	void effectColsCompanded(int num, int max);
 
 	void selected(bool isSelected);
-	void returnPressed();
 	void instrumentEntered(int num);
 	void effectEntered(QString text);
 

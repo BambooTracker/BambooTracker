@@ -319,11 +319,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, &MainWindow::updateMenuByPattern);
 	QObject::connect(ui->patternEditor, &PatternEditor::selected,
 					 this, &MainWindow::updateMenuByPatternSelection);
-	QObject::connect(ui->patternEditor, &PatternEditor::returnPressed,
-					 this, [&] {
-		if (bt_->isPlaySong()) stopPlaySong();
-		else startPlaySong();
-	});
 	QObject::connect(ui->patternEditor, &PatternEditor::instrumentEntered,
 					 this, [&](int num) {
 		auto list = ui->instrumentListWidget;
@@ -354,11 +349,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, &MainWindow::updateMenuByOrder);
 	QObject::connect(ui->orderList, &OrderListEditor::selected,
 					 this, &MainWindow::updateMenuByOrderSelection);
-	QObject::connect(ui->orderList, &OrderListEditor::returnPressed,
-					 this, [&] {
-		if (bt_->isPlaySong()) stopPlaySong();
-		else startPlaySong();
-	});
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 this, &MainWindow::onCurrentTrackChanged);
 
@@ -478,12 +468,32 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}
 
 	// Shortcuts
-	octUp_ = std::make_unique<QShortcut>(this);
-	octUp_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(octUp_.get(), &QShortcut::activated, this, [&] { changeOctave(true); });
-	octDown_ = std::make_unique<QShortcut>(this);
-	octDown_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(octDown_.get(), &QShortcut::activated, this, [&] { changeOctave(false); });
+	octUpSc_ = std::make_unique<QShortcut>(this);
+	octUpSc_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(octUpSc_.get(), &QShortcut::activated, this, [&] { changeOctave(true); });
+	octDownSc_ = std::make_unique<QShortcut>(this);
+	octDownSc_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(octDownSc_.get(), &QShortcut::activated, this, [&] { changeOctave(false); });
+	focusPtnSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(focusPtnSc_.get(), &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
+	focusOdrSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(focusOdrSc_.get(), &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
+	focusInstSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(focusInstSc_.get(), &QShortcut::activated, this, [&] {
+		ui->instrumentListWidget->setFocus();
+		updateMenuByInstrumentList();
+	});
+	playStopSc_ = std::make_unique<QShortcut>(this);
+	playStopSc_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(playStopSc_.get(), &QShortcut::activated, this, [&] {
+		if (bt_->isPlaySong()) stopPlaySong();
+		else startPlaySong();
+	});
+	ui->actionPlay_From_Start->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionPlay_Pattern->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionPlay_From_Cursor->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionPlay_From_Marker->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionStop->setShortcutContext(Qt::ApplicationShortcut);
 	setShortcuts();
 
 	/* Load module */
@@ -581,29 +591,12 @@ void MainWindow::showEvent(QShowEvent* event)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-	int key = event->key();
-
-	/* General keys */
-	switch (key) {
-	case Qt::Key_F2:
-		ui->patternEditor->setFocus();
-		return;
-	case Qt::Key_F3:
-		ui->orderList->setFocus();
-		return;
-	case Qt::Key_F4:
-		ui->instrumentListWidget->setFocus();
-		updateMenuByInstrumentList();
-		return;
-	default:
-		if (!event->isAutoRepeat()) {
-			// Musical keyboard
-			Qt::Key qtKey = static_cast<Qt::Key>(key);
-			try {
-				bt_->jamKeyOn(getJamKeyFromLayoutMapping(qtKey, config_));
-			} catch (std::invalid_argument&) {}
-		}
-		break;
+	if (!event->isAutoRepeat()) {
+		// Musical keyboard
+		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
+		try {
+			bt_->jamKeyOn(getJamKeyFromLayoutMapping(qtKey, config_));
+		} catch (std::invalid_argument&) {}
 	}
 }
 
@@ -762,8 +755,12 @@ void MainWindow::freezeViews()
 
 void MainWindow::setShortcuts()
 {
-	octUp_->setKey(strToKeySeq(config_.lock()->getOctaveUpKey().c_str()));
-	octDown_->setKey(strToKeySeq(config_.lock()->getOctaveDownKey().c_str()));
+	octUpSc_->setKey(strToKeySeq(config_.lock()->getOctaveUpKey().c_str()));
+	octDownSc_->setKey(strToKeySeq(config_.lock()->getOctaveDownKey().c_str()));
+	focusPtnSc_->setKey(Qt::Key_F2);
+	focusOdrSc_->setKey(Qt::Key_F3);
+	focusInstSc_->setKey(Qt::Key_F4);
+	playStopSc_->setKey(Qt::Key_Return);
 
 	ui->patternEditor->onShortcutUpdated();
 }
@@ -905,17 +902,6 @@ void MainWindow::openInstrumentEditor()
 		default:	return;
 		}
 
-		auto playFunc = [&](int stat) {
-			switch (stat) {
-			case -1:	stopPlaySong();				break;
-			case 0:		startPlaySong();			break;
-			case 1:		startPlayFromStart();		break;
-			case 2:		startPlayPattern();			break;
-			case 3:		startPlayFromCurrentStep();	break;
-			case 4:		startPlayFromMarker();		break;
-			default:	break;
-			}
-		};
 		switch (inst->getSoundSource()) {
 		case SoundSource::FM:
 		{
@@ -954,7 +940,6 @@ void MainWindow::openInstrumentEditor()
 			Qt::DirectConnection);
 			QObject::connect(fmForm, &InstrumentEditorFMForm::modified,
 							 this, &MainWindow::setModifiedTrue);
-			QObject::connect(fmForm, &InstrumentEditorFMForm::playStatusChanged, this, playFunc);
 
 			fmForm->installEventFilter(this);
 
@@ -1002,7 +987,6 @@ void MainWindow::openInstrumentEditor()
 			, Qt::DirectConnection);
 			QObject::connect(ssgForm, &InstrumentEditorSSGForm::modified,
 							 this, &MainWindow::setModifiedTrue);
-			QObject::connect(ssgForm, &InstrumentEditorSSGForm::playStatusChanged, this, playFunc);
 
 			ssgForm->installEventFilter(this);
 
@@ -1048,7 +1032,6 @@ void MainWindow::openInstrumentEditor()
 			Qt::DirectConnection);
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::modified,
 							 this, &MainWindow::setModifiedTrue);
-			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::playStatusChanged, this, playFunc);
 
 			adpcmForm->installEventFilter(this);
 

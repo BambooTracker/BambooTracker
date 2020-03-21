@@ -51,7 +51,6 @@ signals:
 	void focusIn();
 	void focusOut();
 	void selected(bool isSelected);
-	void returnPressed();
 	void instrumentEntered(int num);
 	void effectEntered(QString text);
 

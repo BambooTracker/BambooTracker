@@ -392,20 +392,13 @@ bool InstrumentEditorADPCMForm::eventFilter(QObject* obj, QEvent* ev)
 // MUST DIRECT CONNECTION
 void InstrumentEditorADPCMForm::keyPressEvent(QKeyEvent *event)
 {
-	// For jam key on
-
 	// General keys
 	switch (event->key()) {
-	//case Qt::Key_Return:	emit playStatusChanged(0);	break;
-	case Qt::Key_F5:		emit playStatusChanged(1);	break;
-	case Qt::Key_F6:		emit playStatusChanged(2);	break;
-	case Qt::Key_F7:
-		if (event->modifiers().testFlag(Qt::ControlModifier)) emit playStatusChanged(4);
-		else emit playStatusChanged(3);
+	case Qt::Key_Escape:
+		close();
 		break;
-	case Qt::Key_F8:		emit playStatusChanged(-1);	break;
-	case Qt::Key_Escape:	close();					break;
 	default:
+		// For jam key on
 		if (!event->isAutoRepeat()) {
 			// Musical keyboard
 			Qt::Key qtKey = static_cast<Qt::Key>(event->key());

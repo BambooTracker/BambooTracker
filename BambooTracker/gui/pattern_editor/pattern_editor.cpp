@@ -46,8 +46,6 @@ PatternEditor::PatternEditor(QWidget *parent) :
 	});
 	QObject::connect(ui->panel, &PatternEditorPanel::selected,
 					 this, [&](bool isSelected) { emit selected(isSelected); });
-	QObject::connect(ui->panel, &PatternEditorPanel::returnPressed,
-					 this, [&] { emit returnPressed(); });
 	QObject::connect(ui->panel, &PatternEditorPanel::instrumentEntered,
 					 this, [&](int num) { emit instrumentEntered(num); });
 	QObject::connect(ui->panel, &PatternEditorPanel::effectEntered,
