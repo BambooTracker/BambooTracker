@@ -240,6 +240,11 @@ void PatternEditor::onDefaultPatternSizeChanged()
 	ui->panel->onDefaultPatternSizeChanged();
 }
 
+void PatternEditor::onShortcutUpdated()
+{
+	ui->panel->onShortcutUpdated();
+}
+
 void PatternEditor::setPatternHighlight1Count(int count)
 {
 	ui->panel->setPatternHighlight1Count(count);
@@ -362,11 +367,6 @@ void PatternEditor::onStoppedPlaySong()
 void PatternEditor::onDuplicateInstrumentsRemoved()
 {
 	ui->panel->redrawByPatternChanged();
-}
-
-void PatternEditor::onShortcutUpdated()
-{
-	ui->panel->onShortcutUpdated();
 }
 
 void PatternEditor::updateHorizontalSliderMaximum()

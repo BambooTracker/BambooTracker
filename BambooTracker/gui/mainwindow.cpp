@@ -762,6 +762,7 @@ void MainWindow::setShortcuts()
 	focusInstSc_->setKey(Qt::Key_F4);
 	playStopSc_->setKey(Qt::Key_Return);
 
+	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
 }
 

@@ -76,6 +76,7 @@ public slots:
 
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
+	void onShortcutUpdated();
 
 	void setPatternHighlight1Count(int count);
 	void setPatternHighlight2Count(int count);
@@ -107,7 +108,6 @@ public slots:
 	void onShrinkEffectColumnPressed(int trackNum);
 	void onFollowModeChanged();
 	void onChangeValuesPressed(int value);
-	void onShortcutUpdated();
 
 signals:
 	void hScrollBarChangeRequested(int num);
@@ -202,7 +202,13 @@ private:
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard
 	std::atomic_int repaintingCnt_;
 
-	std::unique_ptr<QShortcut> keyOff_, echoBuf_;
+	// Shortcuts
+	// index 1 is shift pressed
+	std::unique_ptr<QShortcut> upSc_[2], dnSc_[2], pgUpSc_[2], pgDnSc_[2], homeSc_[2], endSc_[2];
+	std::unique_ptr<QShortcut> hlUpSc_[2], hlDnSc_[2], ltSc_[2], rtSc_[2];
+
+	std::unique_ptr<QShortcut> keyOffSc_, echoBufSc_;
+	std::unique_ptr<QShortcut> stepMvUpSc_, stepMvDnSc_;
 
 	// Meta methods
 	int midiKeyEventMethod_;
@@ -235,6 +241,11 @@ private:
 	void moveCursorToRight(int n);
 	void moveViewToRight(int n);
 	void moveCursorToDown(int n);
+
+	inline void checkSelectionByCursorMove(bool isShift) {
+		if (isShift) setSelectedRectangle(shiftPressedPos_, curPos_);
+		else onSelectPressed(0);
+	}
 
 	bool enterToneData(QKeyEvent* event);
 	void setStepKeyOn(Note note, int octave);

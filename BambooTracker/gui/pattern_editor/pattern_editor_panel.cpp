@@ -106,9 +106,91 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	setAttribute(Qt::WA_Hover);
 	setContextMenuPolicy(Qt::CustomContextMenu);
 
-	keyOff_ = std::make_unique<QShortcut>(this);
-	keyOff_->setContext(Qt::WidgetShortcut);
-	QObject::connect(keyOff_.get(), &QShortcut::activated,
+	// Shortcuts
+	auto getKeys = [](bool isShift, auto key) { return (isShift ? (Qt::SHIFT + key) : key); };
+	auto jumpLambda = [&] (bool isShift, auto getFunc) {	// For lazy evaluation
+		if (bt_->isPlaySong() && bt_->isFollowPlay()) return;
+		moveCursorToDown(getFunc());
+		checkSelectionByCursorMove(isShift);
+	};
+	for (size_t i = 0; i < 2; ++i) {
+		bool isShift = i ? true : false;
+
+		upSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Up), this);
+		upSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(upSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] { return (editableStepCnt_ ? -editableStepCnt_ : -1); });
+		});
+		dnSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Down), this);
+		dnSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(dnSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] { return (editableStepCnt_ ? editableStepCnt_ : 1); });
+		});
+		pgUpSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_PageUp), this);
+		pgUpSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(pgUpSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] { return -static_cast<int>(config_->getPageJumpLength()); });
+		});
+		pgDnSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_PageDown), this);
+		pgDnSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(pgDnSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] { return static_cast<int>(config_->getPageJumpLength()); });
+		});
+		homeSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Home), this);
+		homeSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(homeSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] { return -curPos_.step; });
+		});
+		endSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_End), this);
+		endSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(endSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] {
+				return (static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - curPos_.step - 1);
+			});
+		});
+		hlUpSc_[i] = std::make_unique<QShortcut>(this);
+		hlUpSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(hlUpSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] {
+				int base;
+				if (curPos_.step) {
+					base = curPos_.step;
+				}
+				else {
+					base = static_cast<int>(bt_->getPatternSizeFromOrderNumber(
+												curSongNum_,
+												(curPos_.order) ? (curPos_.order - 1)
+																: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
+				}
+				return ((base - 1) / hl1Cnt_ * hl1Cnt_ - base);
+			});
+		});
+		hlDnSc_[i] = std::make_unique<QShortcut>(this);
+		hlDnSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(hlDnSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
+			jumpLambda(isShift, [&] {
+				int next = std::min((curPos_.step / hl1Cnt_ + 1) * hl1Cnt_,
+									static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)));
+				return (next - curPos_.step);
+			});
+		});
+		ltSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Left), this);
+		ltSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(ltSc_[i].get(), &QShortcut::activated, this, [&, isShift] {
+			moveCursorToRight(-1);
+			checkSelectionByCursorMove(isShift);
+		});
+		rtSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Right), this);
+		rtSc_[i]->setContext(Qt::WidgetShortcut);
+		QObject::connect(rtSc_[i].get(), &QShortcut::activated, this, [&, isShift] {
+			moveCursorToRight(1);
+			checkSelectionByCursorMove(isShift);
+		});
+	}
+
+	keyOffSc_ = std::make_unique<QShortcut>(this);
+	keyOffSc_->setContext(Qt::WidgetShortcut);
+	QObject::connect(keyOffSc_.get(), &QShortcut::activated,
 					 this, [&] {
 		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
 			bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
@@ -116,9 +198,9 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		}
 	});
-	echoBuf_ = std::make_unique<QShortcut>(this);
-	echoBuf_->setContext(Qt::WidgetShortcut);
-	QObject::connect(echoBuf_.get(), &QShortcut::activated,
+	echoBufSc_ = std::make_unique<QShortcut>(this);
+	echoBufSc_->setContext(Qt::WidgetShortcut);
+	QObject::connect(echoBufSc_.get(), &QShortcut::activated,
 					 this, [&] {
 		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
 			int n = bt_->getCurrentOctave();
@@ -128,8 +210,23 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		}
 	});
+	stepMvUpSc_ = std::make_unique<QShortcut>(this);
+	stepMvUpSc_->setContext(Qt::WidgetShortcut);
+	QObject::connect(stepMvUpSc_.get(), &QShortcut::activated, this, [&] {
+		if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !bt_->isJamMode())
+			deletePreviousStep();
+	});
+	stepMvDnSc_ = std::make_unique<QShortcut>(this);
+	stepMvDnSc_->setContext(Qt::WidgetShortcut);
+	QObject::connect(stepMvDnSc_.get(), &QShortcut::activated, this, [&] {
+		if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !bt_->isJamMode()) {
+			insertStep();
+			moveCursorToDown(1);
+		}
+	});
 	onShortcutUpdated();
 
+	// MIDI
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
 	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
@@ -2127,6 +2224,20 @@ void PatternEditorPanel::onDefaultPatternSizeChanged()
 	redrawByPatternChanged(true);
 }
 
+void PatternEditorPanel::onShortcutUpdated()
+{
+	auto getKeys = [](size_t idx, auto key) { return (idx ? (Qt::SHIFT + key) : key); };
+	for (size_t i = 0; i < 2; ++i) {
+		hlUpSc_[i]->setKey(getKeys(i, Qt::CTRL + Qt::Key_Up));
+		hlDnSc_[i]->setKey(getKeys(i, Qt::CTRL + Qt::Key_Down));
+	}
+
+	keyOffSc_->setKey(strToKeySeq(config_->getKeyOffKey()));
+	echoBufSc_->setKey(strToKeySeq(config_->getEchoBufferKey()));
+	stepMvUpSc_->setKey(Qt::ALT + Qt::Key_Up);
+	stepMvDnSc_->setKey(Qt::ALT + Qt::Key_Down);
+}
+
 void PatternEditorPanel::setPatternHighlight1Count(int count)
 {
 	hl1Cnt_ = count;
@@ -2485,12 +2596,6 @@ void PatternEditorPanel::onChangeValuesPressed(int value)
 		changeValuesInPattern(curPos_, curPos_, value);
 }
 
-void PatternEditorPanel::onShortcutUpdated()
-{
-	keyOff_->setKey(strToKeySeq(config_->getKeyOffKey()));
-	echoBuf_->setKey(strToKeySeq(config_->getEchoBufferKey()));
-}
-
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {
@@ -2513,74 +2618,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 	case Qt::Key_Shift:
 		shiftPressedPos_ = curPos_;
 		return true;
-	case Qt::Key_Left:
-		moveCursorToRight(-1);
-		if (event->modifiers().testFlag(Qt::ShiftModifier))	setSelectedRectangle(shiftPressedPos_, curPos_);
-		else onSelectPressed(0);
-		return true;
-	case Qt::Key_Right:
-		moveCursorToRight(1);
-		if (event->modifiers().testFlag(Qt::ShiftModifier))	setSelectedRectangle(shiftPressedPos_, curPos_);
-		else onSelectPressed(0);
-		return true;
-	case Qt::Key_Up:
-		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
-			return false;
-		}
-		if (event->modifiers().testFlag(Qt::AltModifier)) {
-			if (bt_->isJamMode()) {
-				return false;
-			}
-			else {
-				deletePreviousStep();
-				return true;
-			}
-		}
-		if (event->modifiers().testFlag(Qt::ControlModifier)) {
-			int base;
-			if (curPos_.step) {
-				base = curPos_.step;
-			}
-			else {
-				base = static_cast<int>(bt_->getPatternSizeFromOrderNumber(
-											curSongNum_,
-											(curPos_.order) ? (curPos_.order - 1)
-															: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
-			}
-			moveCursorToDown((base - 1) / hl1Cnt_ * hl1Cnt_ - base);
-		}
-		else {
-			moveCursorToDown(editableStepCnt_ ? -editableStepCnt_ : -1);
-		}
-		if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-		else onSelectPressed(0);
-		return true;
-	case Qt::Key_Down:
-		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
-			return false;
-		}
-		if (event->modifiers().testFlag(Qt::AltModifier)) {
-			if (bt_->isJamMode()) {
-				return false;
-			}
-			else {
-				insertStep();
-				moveCursorToDown(1);
-				return true;
-			}
-		}
-		if (event->modifiers().testFlag(Qt::ControlModifier)) {
-			int next = (curPos_.step / hl1Cnt_ + 1) * hl1Cnt_;
-			int size = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order));
-			if (next < size) moveCursorToDown(next - curPos_.step);
-			else moveCursorToDown(size - curPos_.step);
-		}
-		else {
-			moveCursorToDown(editableStepCnt_ ? editableStepCnt_ : 1);
-		}
-		if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-		else onSelectPressed(0);
-		return true;
 	case Qt::Key_Tab:
 		if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
 			if (config_->getWarpCursor())
@@ -2599,47 +2636,6 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 			moveCursorToRight(-5 - 2 * rightEffn_[static_cast<size_t>(curPos_.track) - 1] - curPos_.colInTrack);
 		}
 		return true;
-	case Qt::Key_Home:
-		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
-			return false;
-		}
-		else {
-			moveCursorToDown(-curPos_.step);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
-			return true;
-		}
-	case Qt::Key_End:
-		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
-			return false;
-		}
-		else {
-			moveCursorToDown(
-						static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - curPos_.step - 1);
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
-			return true;
-		}
-	case Qt::Key_PageUp:
-		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
-			return false;
-		}
-		else {
-			moveCursorToDown(-static_cast<int>(config_->getPageJumpLength()));
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
-			return true;
-		}
-	case Qt::Key_PageDown:
-		if (bt_->isPlaySong() && bt_->isFollowPlay()) {
-			return false;
-		}
-		else {
-			moveCursorToDown(static_cast<int>(config_->getPageJumpLength()));
-			if (event->modifiers().testFlag(Qt::ShiftModifier)) setSelectedRectangle(shiftPressedPos_, curPos_);
-			else onSelectPressed(0);
-			return true;
-		}
 	case Qt::Key_Insert:
 		if (bt_->isJamMode()) {
 			return false;

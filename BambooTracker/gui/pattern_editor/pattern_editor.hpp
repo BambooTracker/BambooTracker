@@ -64,6 +64,7 @@ public slots:
 
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
+	void onShortcutUpdated();
 
 	void setPatternHighlight1Count(int count);
 	void setPatternHighlight2Count(int count);
@@ -96,7 +97,6 @@ public slots:
 	void onFollowModeChanged();
 	void onStoppedPlaySong();
 	void onDuplicateInstrumentsRemoved();
-	void onShortcutUpdated();
 
 private:
 	Ui::PatternEditor *ui;
