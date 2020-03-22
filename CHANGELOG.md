@@ -9,6 +9,7 @@
 - [#189] - Increase/Decrease selected values in a pattern by 1 or 16 (thanks [@nyanpasu64])
 - Volume mask
 - Row marker and play from marker
+- [#193] - Shortcuts moving to previous/next order (thanks [@Xyz39808])
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed
@@ -43,6 +44,7 @@
 [#191]: https://github.com/rerrahkr/BambooTracker/issues/191
 [#177]: https://github.com/rerrahkr/BambooTracker/issues/177
 [#192]: https://github.com/rerrahkr/BambooTracker/issues/192
+[#193]: https://github.com/rerrahkr/BambooTracker/issues/193
 
 ## v0.3.5 (2020-02-15)
 ### Added

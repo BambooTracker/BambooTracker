@@ -497,6 +497,14 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentListWidget,
 											 nullptr, nullptr, Qt::WidgetShortcut);
 	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
+	goPrevOdrSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(goPrevOdrSc_.get(), &QShortcut::activated, this, [&] {
+		ui->orderList->onGoOrderRequested(false);
+	});
+	goNextOdrSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(goNextOdrSc_.get(), &QShortcut::activated, this, [&] {
+		ui->orderList->onGoOrderRequested(true);
+	});
 	setShortcuts();
 
 	/* Load module */
@@ -761,6 +769,8 @@ void MainWindow::setShortcuts()
 	focusOdrSc_->setKey(Qt::Key_F3);
 	focusInstSc_->setKey(Qt::Key_F4);
 	playStopSc_->setKey(Qt::Key_Return);
+	goPrevOdrSc_->setKey(Qt::CTRL + Qt::Key_Left);
+	goNextOdrSc_->setKey(Qt::CTRL + Qt::Key_Right);
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();

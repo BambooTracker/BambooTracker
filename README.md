@@ -204,6 +204,8 @@ Please replace some keys with the following in macOS:
 | Ctrl+Down                     | Jump to lower 1st highlighted step          |
 | Ctrl+PageUp                   | Jump to previous bookmark                   |
 | Ctrl+PageDown                 | Jump to next bookmark                       |
+| Ctrl+Left                     | Go to previous order                        |
+| Ctrl+Right                    | Go to next order                            |
 | Insert or Alt+Down            | Insert step                                 |
 | BackSpace or Alt+Up           | Delete the step above                       |
 | Delete                        | Delete commands                             |

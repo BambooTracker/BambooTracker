@@ -83,6 +83,7 @@ public slots:
 	void onCloneOrderPressed();
 	void onFollowModeChanged();
 	void onStoppedPlaySong();
+	void onGoOrderRequested(bool toNext);
 
 signals:
 	void hScrollBarChangeRequested(int num);

@@ -1284,6 +1284,11 @@ void OrderListPanel::onStoppedPlaySong()
 	repaint();
 }
 
+void OrderListPanel::onGoOrderRequested(bool toNext)
+{
+	moveCursorToDown(toNext ? 1 : -1);
+}
+
 /********** Events **********/
 bool OrderListPanel::event(QEvent *event)
 {

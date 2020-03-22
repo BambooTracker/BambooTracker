@@ -274,6 +274,11 @@ void OrderListEditor::onStoppedPlaySong()
 	ui->panel->onStoppedPlaySong();
 }
 
+void OrderListEditor::onGoOrderRequested(bool toNext)
+{
+	ui->panel->onGoOrderRequested(toNext);
+}
+
 void OrderListEditor::updateHorizontalSliderMaximum()
 {
 	if (!bt_ || !songLoaded_) return;
