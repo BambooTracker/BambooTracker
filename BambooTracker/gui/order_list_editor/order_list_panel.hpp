@@ -16,6 +16,7 @@
 #include <QRect>
 #include <QColor>
 #include <QPoint>
+#include <QShortcut>
 #include <memory>
 #include <atomic>
 #include "bamboo_tracker.hpp"
@@ -66,6 +67,7 @@ public slots:
 
 	void onOrderEdited();
 	void onSongLoaded();
+	void onShortcutUpdated();
 
 	void onPastePressed();
 	/// 0: None
@@ -154,6 +156,8 @@ private:
 	std::atomic_int repaintingCnt_;
 
 	int playingRow_;
+
+	std::unique_ptr<QShortcut> insSc1_, insSc2_, menuSc_;
 
 	void updateSizes();
 	void initDisplay();

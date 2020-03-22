@@ -59,6 +59,7 @@ public slots:
 	void setCurrentTrack(int num);
 	void setCurrentOrder(int num, int max);
 	void onSongLoaded();
+	void onShortcutUpdated();
 
 	void onPastePressed();
 	/// 0: None

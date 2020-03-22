@@ -77,6 +77,21 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 
 	setAttribute(Qt::WA_Hover);
 	setContextMenuPolicy(Qt::CustomContextMenu);
+
+	insSc1_ = std::make_unique<QShortcut>(this);
+	insSc1_->setContext(Qt::WidgetShortcut);
+	QObject::connect(insSc1_.get(), &QShortcut::activated, this, &OrderListPanel::insertOrderBelow);
+	insSc2_ = std::make_unique<QShortcut>(this);
+	insSc2_->setContext(Qt::WidgetShortcut);
+	QObject::connect(insSc2_.get(), &QShortcut::activated, this, &OrderListPanel::insertOrderBelow);
+	menuSc_ = std::make_unique<QShortcut>(this);
+	menuSc_->setContext(Qt::WidgetShortcut);
+	QObject::connect(menuSc_.get(), &QShortcut::activated, this, [&] {
+		showContextMenu(
+					curPos_,
+					QPoint(calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track), curRowY_ - 8));
+	});
+	onShortcutUpdated();
 }
 
 void OrderListPanel::setCore(std::shared_ptr<BambooTracker> core)
@@ -1147,6 +1162,13 @@ void OrderListPanel::onSongLoaded()
 	redrawAll();
 }
 
+void OrderListPanel::onShortcutUpdated()
+{
+	insSc1_->setKey(Qt::Key_Insert);
+	insSc2_->setKey(Qt::ALT + Qt::Key_B);
+	menuSc_->setKey(Qt::Key_Menu);
+}
+
 void OrderListPanel::onPastePressed()
 {
 	pasteCopiedCells(curPos_);
@@ -1355,21 +1377,7 @@ bool OrderListPanel::keyPressed(QKeyEvent *event)
 			else onSelectPressed(0);
 			return true;
 		}
-	case Qt::Key_Insert:
-		insertOrderBelow();
-		return true;
-	case Qt::Key_Menu:
-		showContextMenu(
-					curPos_,
-					QPoint(calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track), curRowY_ - 8));
-		return true;
 	default:
-		if (event->modifiers().testFlag(Qt::AltModifier)) {
-			if (event->key() == Qt::Key_B) {
-				insertOrderBelow();
-				return true;
-			}
-		}
 		if (event->modifiers().testFlag(Qt::NoModifier)) {
 			return enterOrder(event->key());
 		}

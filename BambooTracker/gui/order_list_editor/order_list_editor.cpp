@@ -229,6 +229,11 @@ void OrderListEditor::onSongLoaded()
 	ui->verticalScrollBar->setMaximum(static_cast<int>(bt_->getOrderSize(song)) - 1);
 }
 
+void OrderListEditor::onShortcutUpdated()
+{
+	ui->panel->onShortcutUpdated();
+}
+
 void OrderListEditor::onPastePressed()
 {
 	ui->panel->onPastePressed();
