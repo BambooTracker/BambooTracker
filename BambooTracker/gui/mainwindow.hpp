@@ -295,6 +295,7 @@ private slots:
 	void on_action_Volume_Mask_triggered();
 	void on_actionSet_Ro_w_Marker_triggered();
 	void on_actionPlay_From_Marker_triggered();
+	void on_action_Go_To_triggered();
 };
 
 #endif // MAINWINDOW_HPP

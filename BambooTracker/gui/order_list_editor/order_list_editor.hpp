@@ -28,7 +28,7 @@ public:
 
 	void changeEditable();
 	void updatePositionByOrderUpdate(bool isFirstUpdate);
-	void updatePositionByPositionJump();
+	void updatePositionByPositionJump(bool trackChanged = false);
 
 	void copySelectedCells();
 	void deleteOrder();

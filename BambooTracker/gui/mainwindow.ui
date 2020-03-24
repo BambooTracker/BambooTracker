@@ -628,6 +628,7 @@
     <addaction name="separator"/>
     <addaction name="menuSelect"/>
     <addaction name="separator"/>
+    <addaction name="action_Go_To"/>
     <addaction name="menu_Bookmarks"/>
     <addaction name="separator"/>
     <addaction name="action_Instrument_Mask"/>
@@ -667,7 +668,7 @@
    </widget>
    <widget class="QMenu" name="menuSong">
     <property name="title">
-     <string>Son&amp;g</string>
+     <string>S&amp;ong</string>
     </property>
     <addaction name="actionInsert_Order"/>
     <addaction name="actionRemove_Order"/>
@@ -1539,6 +1540,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F7</string>
+   </property>
+  </action>
+  <action name="action_Go_To">
+   <property name="text">
+    <string>&amp;Go To...</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+G</string>
    </property>
   </action>
  </widget>

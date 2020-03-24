@@ -724,12 +724,8 @@ void OrderListPanel::moveCursorToRight(int n)
 	entryCnt_ = 0;
 
 	if (!isIgnoreToSlider_) {	// Send to slider
-		if (config_->getMoveCursorByHorizontalScroll()) {
-			emit hScrollBarChangeRequested(curPos_.track);
-		}
-		else {
-			emit hScrollBarChangeRequested(leftTrackNum_);
-		}
+		emit hScrollBarChangeRequested(config_->getMoveCursorByHorizontalScroll() ? curPos_.track
+																				  : leftTrackNum_);
 	}
 
 	if (!isIgnoreToPattern_) emit currentTrackChanged(curPos_.track);	// Send to pattern editor
@@ -802,7 +798,7 @@ void OrderListPanel::changeEditable()
 	repaint();
 }
 
-void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJump)
+void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJump, bool trackChanged)
 {	
 	int prev = std::exchange(playingRow_, bt_->getPlayingOrderNumber());
 	if (!forceJump && !config_->getFollowMode() && prev != playingRow_) {	// Repaint only background
@@ -811,15 +807,38 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJ
 		return;
 	}
 
+	if (trackChanged) {	// Update horizontal position
+		int prevTrack = std::exchange(curPos_.track, bt_->getCurrentTrackAttribute().number);
+		if (prevTrack < curPos_.track) {
+			while (calculateColumnsWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width()) {
+				++leftTrackNum_;
+				headerChanged_ = true;
+			}
+		}
+		else {
+			if (curPos_.track < leftTrackNum_) {
+				leftTrackNum_ = curPos_.track;
+				headerChanged_ = true;
+			}
+		}
+
+		updateTracksWidthFromLeftToEnd();
+
+		emit hScrollBarChangeRequested(config_->getMoveCursorByHorizontalScroll() ? curPos_.track
+																				  : leftTrackNum_);
+	}
+
 	int tmp = std::exchange(curPos_.row, bt_->getCurrentOrderNumber());
 	int d = curPos_.row - tmp;
-	if (!d) return;
+	if (d) {
+		emit vScrollBarChangeRequested(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
+		
+		// Redraw entire area in first update and jumping order
+		orderDownCount_ = (isFirstUpdate || d < 0 || (viewedRowCnt_ >> 1) < d) ? 0 : d;
+	}
+	else if (!trackChanged) return;
 
-	emit vScrollBarChangeRequested(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
-
-	// Redraw entire area in first update and jumping order
-	orderDownCount_ = (isFirstUpdate || d < 0 || (viewedRowCnt_ >> 1) < d) ? 0 : d;
-
+	entryCnt_ = 0;
 	textChanged_ = true;
 	backChanged_ = true;
 	repaint();

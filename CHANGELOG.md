@@ -10,6 +10,7 @@
 - Volume mask
 - Row marker and play from marker
 - [#193] - Shortcuts moving to previous/next order (thanks [@Xyz39808])
+- Cursor jump (Go To)
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed

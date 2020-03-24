@@ -25,6 +25,7 @@
 #include "gui/effect_description.hpp"
 #include "gui/shortcut_util.hpp"
 #include "gui/jam_layout.hpp"
+#include "gui/gui_util.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -1038,53 +1039,9 @@ void PatternEditorPanel::drawHeaders(int maxWidth, int trackSize)
 			painter.fillRect(x - lspace, 0, tw, headerHeight_, palette_->ptnHovCellColor);
 
 		painter.setPen(palette_->ptnHeaderTextColor);
-		QString srcName;
 		const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
-		switch (attrib.source) {
-		case SoundSource::FM:
-			switch (songStyle_.type) {
-			case SongType::Standard:
-				srcName = "FM" + QString::number(attrib.channelInSource + 1);
-				break;
-			case SongType::FM3chExpanded:
-				switch (attrib.channelInSource) {
-				case 2:
-					srcName = "FM3-OP1";
-					break;
-				case 6:
-					srcName = "FM3-OP2";
-					break;
-				case 7:
-					srcName = "FM3-OP3";
-					break;
-				case 8:
-					srcName = "FM3-OP4";
-					break;
-				default:
-					srcName = "FM" + QString::number(attrib.channelInSource + 1);
-					break;
-				}
-				break;
-			}
-			break;
-		case SoundSource::SSG:
-			srcName = "SSG" + QString::number(attrib.channelInSource + 1);
-			break;
-		case SoundSource::DRUM:
-			switch (attrib.channelInSource) {
-			case 0:	srcName = "Bass drum";	break;
-			case 1:	srcName = "Snare drum";	break;
-			case 2:	srcName = "Top cymbal";	break;
-			case 3:	srcName = "Hi-hat";		break;
-			case 4:	srcName = "Tom";		break;
-			case 5:	srcName = "Rim shot";	break;
-			}
-			break;
-		case SoundSource::ADPCM:
-			srcName = "ADPCM";
-			break;
-		}
-		painter.drawText(x, headerFontAscent_, srcName);
+		painter.drawText(x, headerFontAscent_,
+						 getTrackName(songStyle_.type, attrib.source, attrib.channelInSource));
 
 		painter.fillRect(x, headerHeight_ - 4, hdMuteToggleWidth_, 2,
 						 bt_->isMute(trackNum) ? palette_->ptnMuteColor : palette_->ptnUnmuteColor);
@@ -1447,7 +1404,7 @@ int PatternEditorPanel::getFullColmunSize() const
 	return calculateColNumInRow(static_cast<int>(songStyle_.trackAttribs.size()) - 1, 4 + 2 * rightEffn_.back());
 }
 
-void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump)
+void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump, bool trackChanged)
 {
 	if (!forceJump && !config_->getFollowMode()) {	// Repaint only background
 		backChanged_ = true;
@@ -1455,21 +1412,51 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool for
 		return;
 	}
 
+	if (trackChanged) {
+		int oldTrackNum = std::exchange(curPos_.track, bt_->getCurrentTrackAttribute().number);
+		curPos_.colInTrack = 0;
+		if (oldTrackNum < curPos_.track) {
+			while (calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width()) {
+				++leftTrackNum_;
+				headerChanged_ = true;
+			}
+		}
+		else {
+			if (curPos_.track < leftTrackNum_) {
+				leftTrackNum_ = curPos_.track;
+				headerChanged_ = true;
+			}
+		}
+
+		updateTracksWidthFromLeftToEnd();
+
+		if (!isIgnoreToSlider_) {
+			if (config_->getMoveCursorByHorizontalScroll())
+				emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.track, curPos_.colInTrack));
+			else
+				emit hScrollBarChangeRequested(leftTrackNum_);
+		}
+	}
+
 	PatternPosition tmp = curPos_;
 	curPos_.setRows(bt_->getCurrentOrderNumber(), bt_->getCurrentStepNumber());
 	int cmp = curPos_.compareRows(tmp);
-	if (!cmp && !isFirstUpdate) return;	// Delayed call, already updated.
+	if (cmp || isFirstUpdate) {
+		emit vScrollBarChangeRequested(
+					curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
 
-	emit vScrollBarChangeRequested(
-				curPos_.step, static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1);
+		if (isFirstUpdate || (cmp < 0) || (cmp && !config_->getShowPreviousNextOrders())) {
+			stepDownCount_ = 0;	// Redraw entire area in first update
+		}
+		else {
+			int d = calculateStepDistance(tmp.order, tmp.step, curPos_.order, curPos_.step);
+			stepDownCount_ = (d < (viewedRowCnt_ >> 1)) ? d : 0;
+		}
+	}
+	else if (!trackChanged) return;	// Delayed call, already updated.
 
-	if (isFirstUpdate || (cmp < 0) || (cmp && !config_->getShowPreviousNextOrders())) {
-		stepDownCount_ = 0;	// Redraw entire area in first update
-	}
-	else {
-		int d = calculateStepDistance(tmp.order, tmp.step, curPos_.order, curPos_.step);
-		stepDownCount_ = (d < (viewedRowCnt_ >> 1)) ? d : 0;
-	}
+	entryCnt_ = 0;
+
 	// If stepChanged is false, repaint all pattern
 	foreChanged_ = true;
 	textChanged_ = true;

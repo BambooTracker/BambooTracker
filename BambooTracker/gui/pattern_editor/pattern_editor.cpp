@@ -98,9 +98,9 @@ void PatternEditor::updatePositionByStepUpdate(bool isFirstUpdate)
 	ui->panel->updatePositionByStepUpdate(isFirstUpdate);
 }
 
-void PatternEditor::updatepositionByPositionJump()
+void PatternEditor::updatepositionByPositionJump(bool trackChanged)
 {
-	ui->panel->updatePositionByStepUpdate(false, true);
+	ui->panel->updatePositionByStepUpdate(false, true, trackChanged);
 }
 
 void PatternEditor::changeMarker()

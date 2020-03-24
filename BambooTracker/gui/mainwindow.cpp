@@ -52,6 +52,7 @@
 #include "wav_container.hpp"
 #include "gui/shortcut_util.hpp"
 #include "enum_hash.hpp"
+#include "gui/go_to_dialog.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -3010,4 +3011,18 @@ void MainWindow::on_actionSet_Ro_w_Marker_triggered()
 void MainWindow::on_actionPlay_From_Marker_triggered()
 {
 	startPlayFromMarker();
+}
+
+void MainWindow::on_action_Go_To_triggered()
+{
+	GoToDialog diag(bt_);
+	if (diag.exec() == QDialog::Accepted) {
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
+			bt_->setCurrentOrderNumber(diag.getOrder());
+			bt_->setCurrentStepNumber(diag.getStep());
+			bt_->setCurrentTrack(diag.getTrack());
+			ui->orderList->updatePositionByPositionJump(true);
+			ui->patternEditor->updatepositionByPositionJump(true);
+		}
+	}
 }

@@ -40,7 +40,7 @@ public:
 
 	void changeEditable();
 	int getFullColmunSize() const;
-	void updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump = false);
+	void updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump = false, bool trackChanged = false);
 	int getScrollableCountByTrack() const;
 
 	void changeMarker();

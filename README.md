@@ -194,6 +194,7 @@ Please replace some keys with the following in macOS:
 | Alt+K                         | Shrink effect column                        |
 | Ctrl+K                        | Add/Remove bookmark on the current position |
 | Ctrl+B                        | Set/Delete marker                           |
+| Alt+G                         | Show Go To dialog                           |
 | Tab                           | Jump to right track                         |
 | BackTab                       | Jump to left track                          |
 | Home                          | Jump to first step                          |
