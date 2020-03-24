@@ -3296,11 +3296,11 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 	hasPreSetTickEventADPCM_ = isJam;
 
 	if (!isTonePrtm) {
+		opna_->setRegister(0x101, 0x02);
 		opna_->setRegister(0x100, 0xa1);
 
 		uint8_t repeatFlag = refInstADPCM_->isWaveformRepeatable() ? 0x10 : 0;
-		opna_->setRegister(0x100, 0x20 | repeatFlag);
-		opna_->setRegister(0x101, panADPCM_ | 0x02);
+		opna_->setRegister(0x100, 0x21 | repeatFlag);
 
 		size_t startAddress = refInstADPCM_->getWaveformStartAddress();
 		if (startAddress != startAddrADPCM_) {
@@ -3317,6 +3317,7 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 		}
 
 		opna_->setRegister(0x100, 0xa0 | repeatFlag);
+		opna_->setRegister(0x101, panADPCM_ | 0x02);
 
 		isKeyOnADPCM_ = true;
 	}
