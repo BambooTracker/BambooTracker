@@ -1732,6 +1732,11 @@ void BambooTracker::replaceDuplicateInstrumentsInPatterns(std::vector<std::vecto
 	mod_->replaceDuplicateInstrumentsInPatterns(map);
 }
 
+void BambooTracker::clearUnusedADPCMSamples()
+{
+	instMan_->clearUnusedWaveformsADPCM();
+}
+
 /*----- Song -----*/
 void BambooTracker::setSongTitle(int songNum, std::string title)
 {

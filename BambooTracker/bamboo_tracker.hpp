@@ -311,6 +311,7 @@ public:
 	std::vector<int> getGroove(int num) const;
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(std::vector<std::vector<int>> list);
+	void clearUnusedADPCMSamples();
 	/*----- Song -----*/
 	void setSongTitle(int songNum, std::string title);
 	std::string getSongTitle(int songNum) const;

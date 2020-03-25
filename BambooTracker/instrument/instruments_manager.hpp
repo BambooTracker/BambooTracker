@@ -275,6 +275,7 @@ public:
 	std::vector<int> getWaveformADPCMUsers(int wfNum) const;
 	std::vector<int> getWaveformADPCMEntriedIndices() const;
 	std::vector<int> getWaveformADPCMValidIndices() const;
+	void clearUnusedWaveformsADPCM();
 	int findFirstAssignableWaveformADPCM() const;
 
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);

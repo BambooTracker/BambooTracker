@@ -690,6 +690,7 @@
      <addaction name="actionRemove_Unused_Instruments"/>
      <addaction name="actionRemove_Unused_Patterns"/>
      <addaction name="actionRemove_Duplicate_Instruments"/>
+     <addaction name="actionRemove_Unused_ADPCM_Samples"/>
     </widget>
     <addaction name="actionModule_Properties"/>
     <addaction name="actionComments"/>
@@ -1548,6 +1549,11 @@
    </property>
    <property name="shortcut">
     <string>Alt+G</string>
+   </property>
+  </action>
+  <action name="actionRemove_Unused_ADPCM_Samples">
+   <property name="text">
+    <string>Remove Unused &amp;ADPCM Samples</string>
    </property>
   </action>
  </widget>

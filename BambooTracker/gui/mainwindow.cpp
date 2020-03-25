@@ -3045,3 +3045,17 @@ void MainWindow::on_action_Go_To_triggered()
 		}
 	}
 }
+
+void MainWindow::on_actionRemove_Unused_ADPCM_Samples_triggered()
+{
+	if (showUndoResetWarningDialog(tr("Do you want to remove all unused ADPCM samples?"))) {
+		bt_->stopPlaySong();
+		lockWidgets(false);
+
+		bt_->clearUnusedADPCMSamples();
+		assignADPCMSamples();
+		bt_->clearCommandHistory();
+		comStack_->clear();
+		setModifiedTrue();
+	}
+}

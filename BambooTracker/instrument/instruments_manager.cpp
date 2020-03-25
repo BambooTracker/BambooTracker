@@ -2023,6 +2023,14 @@ std::vector<int> InstrumentsManager::getWaveformADPCMValidIndices() const
 	return idcs;
 }
 
+void InstrumentsManager::clearUnusedWaveformsADPCM()
+{
+	for (size_t i = 0; i < 128; ++i) {
+		if (!wfADPCM_[i]->isUserInstrument())
+			wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
+	}
+}
+
 int InstrumentsManager::findFirstAssignableWaveformADPCM() const
 {
 	auto cond = regardingUnedited_
