@@ -20,6 +20,7 @@
 - [#186] - Selectable to overwrite instrument properties depending on whether or not to be edited (thanks [@OPNA2608])
 - Make an instrument editor form on opening
 - Change "Autoset instrument" to instrument mask
+- [#194] - Allow to load an instrument set DT as 0x07 (thanks [@YoshiLightStar])
 - Update translation: ja
 
 ### Fixed
@@ -34,6 +35,7 @@
 [@freq-mod]: https://github.com/freq-mod
 [@RigidatoMS]: https://twitter.com/RigidatoMS
 [@nyanpasu64]: https://github.com/nyanpasu64
+[@YoshiLightStar]: https://github.com/YoshiLightStar
 
 [#182]: https://github.com/rerrahkr/BambooTracker/issues/182
 [#183]: https://github.com/rerrahkr/BambooTracker/pull/183
@@ -47,6 +49,7 @@
 [#177]: https://github.com/rerrahkr/BambooTracker/issues/177
 [#192]: https://github.com/rerrahkr/BambooTracker/issues/192
 [#193]: https://github.com/rerrahkr/BambooTracker/issues/193
+[#194]: https://github.com/rerrahkr/BambooTracker/issues/194
 
 ## v0.3.5 (2020-02-15)
 ### Added
