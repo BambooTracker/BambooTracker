@@ -403,6 +403,63 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
 
+	// Shortcuts
+	octUpSc_ = std::make_unique<QShortcut>(this);
+	octUpSc_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(octUpSc_.get(), &QShortcut::activated, this, [&] { changeOctave(true); });
+	octDownSc_ = std::make_unique<QShortcut>(this);
+	octDownSc_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(octDownSc_.get(), &QShortcut::activated, this, [&] { changeOctave(false); });
+	focusPtnSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(focusPtnSc_.get(), &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
+	focusOdrSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(focusOdrSc_.get(), &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
+	focusInstSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(focusInstSc_.get(), &QShortcut::activated, this, [&] {
+		ui->instrumentListWidget->setFocus();
+		updateMenuByInstrumentList();
+	});
+	playAndStopSc_ = std::make_unique<QShortcut>(this);
+	playAndStopSc_->setContext(Qt::ApplicationShortcut);
+	QObject::connect(playAndStopSc_.get(), &QShortcut::activated, this, [&] {
+		if (bt_->isPlaySong()) stopPlaySong();
+		else startPlaySong();
+	});
+	ui->actionPlay_From_Start->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionPlay_Pattern->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionPlay_From_Cursor->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionPlay_From_Marker->setShortcutContext(Qt::ApplicationShortcut);
+	ui->actionStop->setShortcutContext(Qt::ApplicationShortcut);
+	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentListWidget,
+											 nullptr, nullptr, Qt::WidgetShortcut);
+	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
+	goPrevOdrSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(goPrevOdrSc_.get(), &QShortcut::activated, this, [&] {
+		ui->orderList->onGoOrderRequested(false);
+	});
+	goNextOdrSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(goNextOdrSc_.get(), &QShortcut::activated, this, [&] {
+		ui->orderList->onGoOrderRequested(true);
+	});
+	prevInstSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(prevInstSc_.get(), &QShortcut::activated, this, [&] {
+		if (ui->instrumentListWidget->count()) {
+			int row = ui->instrumentListWidget->currentRow();
+			if (row == -1) ui->instrumentListWidget->setCurrentRow(0);
+			else if (row > 0) ui->instrumentListWidget->setCurrentRow(row - 1);
+		}
+	});
+	nextInstSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(nextInstSc_.get(), &QShortcut::activated, this, [&] {
+		int cnt = ui->instrumentListWidget->count();
+		if (cnt) {
+			int row = ui->instrumentListWidget->currentRow();
+			if (row == -1) ui->instrumentListWidget->setCurrentRow(cnt - 1);
+			else if (row < cnt - 1) ui->instrumentListWidget->setCurrentRow(row + 1);
+		}
+	});
+	setShortcuts();
+
 	/* Clipboard */
 	QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged,
 					 this, [&]() {
@@ -467,46 +524,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 		timer_->start();
 	}
-
-	// Shortcuts
-	octUpSc_ = std::make_unique<QShortcut>(this);
-	octUpSc_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(octUpSc_.get(), &QShortcut::activated, this, [&] { changeOctave(true); });
-	octDownSc_ = std::make_unique<QShortcut>(this);
-	octDownSc_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(octDownSc_.get(), &QShortcut::activated, this, [&] { changeOctave(false); });
-	focusPtnSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(focusPtnSc_.get(), &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
-	focusOdrSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(focusOdrSc_.get(), &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
-	focusInstSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(focusInstSc_.get(), &QShortcut::activated, this, [&] {
-		ui->instrumentListWidget->setFocus();
-		updateMenuByInstrumentList();
-	});
-	playStopSc_ = std::make_unique<QShortcut>(this);
-	playStopSc_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(playStopSc_.get(), &QShortcut::activated, this, [&] {
-		if (bt_->isPlaySong()) stopPlaySong();
-		else startPlaySong();
-	});
-	ui->actionPlay_From_Start->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionPlay_Pattern->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionPlay_From_Cursor->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionPlay_From_Marker->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionStop->setShortcutContext(Qt::ApplicationShortcut);
-	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentListWidget,
-											 nullptr, nullptr, Qt::WidgetShortcut);
-	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
-	goPrevOdrSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(goPrevOdrSc_.get(), &QShortcut::activated, this, [&] {
-		ui->orderList->onGoOrderRequested(false);
-	});
-	goNextOdrSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(goNextOdrSc_.get(), &QShortcut::activated, this, [&] {
-		ui->orderList->onGoOrderRequested(true);
-	});
-	setShortcuts();
 
 	/* Load module */
 	if (filePath.isEmpty()) {
@@ -769,9 +786,11 @@ void MainWindow::setShortcuts()
 	focusPtnSc_->setKey(Qt::Key_F2);
 	focusOdrSc_->setKey(Qt::Key_F3);
 	focusInstSc_->setKey(Qt::Key_F4);
-	playStopSc_->setKey(Qt::Key_Return);
+	playAndStopSc_->setKey(Qt::Key_Return);
 	goPrevOdrSc_->setKey(Qt::CTRL + Qt::Key_Left);
 	goNextOdrSc_->setKey(Qt::CTRL + Qt::Key_Right);
+	prevInstSc_->setKey(Qt::ALT + Qt::Key_Left);
+	nextInstSc_->setKey(Qt::ALT + Qt::Key_Right);
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();

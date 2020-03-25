@@ -189,6 +189,8 @@ Please replace some keys with the following in macOS:
 | Shift+F4                      | Coarse increase values                      |
 | Alt+F9                        | Toggle track                                |
 | Alt+F10                       | Solo track                                  |
+| Alt+Left                      | Select previous instrument                  |
+| Alt+Right                     | Select next instrument                      |
 | Alt+S                         | Replace instrument                          |
 | Alt+L                         | Expand effect column                        |
 | Alt+K                         | Shrink effect column                        |

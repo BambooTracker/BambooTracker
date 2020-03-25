@@ -11,6 +11,7 @@
 - Row marker and play from marker
 - [#193] - Shortcuts moving to previous/next order (thanks [@Xyz39808])
 - Cursor jump (Go To)
+- [#193] - Shortcut to select previous/next instrument (thanks [@Xyz39808])
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed
