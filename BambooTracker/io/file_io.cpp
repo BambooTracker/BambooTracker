@@ -57,8 +57,10 @@ std::string FileIO::getExtension(const std::string path)
 	return ext;
 }
 
-FileIO::FileType FileIO::judgeFileTypeFromExtension(const std::string ext)
+FileIO::FileType FileIO::judgeFileTypeFromExtension(std::string ext)
 {
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
 	if (ext == "btm") return FileType::Mod;
 
 	if (ext == "bti") return FileType::Inst;
@@ -71,6 +73,8 @@ FileIO::FileType FileIO::judgeFileTypeFromExtension(const std::string ext)
 
 	if (ext == "btb") return FileType::Bank;
 	if (ext == "wopn") return FileType::Bank;
+	if (ext == "ppc") return FileType::Bank;
+	if (ext == "pvi") return FileType::Bank;
 
 	if (ext == "vgm") return FileType::VGM;
 	if (ext == "s98") return FileType::S98;

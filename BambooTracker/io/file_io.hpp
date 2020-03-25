@@ -15,7 +15,7 @@ public:
 	};
 
 	static std::string getExtension(const std::string path);
-	static FileType judgeFileTypeFromExtension(const std::string ext);
+	static FileType judgeFileTypeFromExtension(std::string ext);
 
 private:
 	FileIO() {}
