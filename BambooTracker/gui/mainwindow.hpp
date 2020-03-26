@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <cstdint>
+#include <unordered_map>
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QListWidgetItem>
@@ -31,6 +32,7 @@
 #include "gui/keyboard_shortcut_list_dialog.hpp"
 #include "gui/bookmark_manager_form.hpp"
 #include "file_io_error.hpp"
+#include "enum_hash.hpp"
 
 class AbstractBank;
 
@@ -111,6 +113,7 @@ private:
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
 	void startPlayFromMarker();
+	void playStep();
 	void stopPlaySong();
 	bool hasLockedWigets_;
 	void lockWidgets(bool isLock);
@@ -170,7 +173,7 @@ private:
 
 	// Shortcuts
 	std::unique_ptr<QShortcut> octUpSc_, octDownSc_, focusPtnSc_, focusOdrSc_, focusInstSc_;
-	std::unique_ptr<QShortcut> playAndStopSc_, instAddSc_, goPrevOdrSc_, goNextOdrSc_;
+	std::unique_ptr<QShortcut> playAndStopSc_, playStepSc_, instAddSc_, goPrevOdrSc_, goNextOdrSc_;
 	std::unique_ptr<QShortcut> prevInstSc_, nextInstSc_;
 	void setShortcuts();
 

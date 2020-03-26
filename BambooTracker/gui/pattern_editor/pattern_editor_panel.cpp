@@ -2583,6 +2583,11 @@ void PatternEditorPanel::onChangeValuesPressed(int value)
 		changeValuesInPattern(curPos_, curPos_, value);
 }
 
+void PatternEditorPanel::onPlayStepPressed()
+{
+	moveCursorToDown(1);
+}
+
 /********** Events **********/
 bool PatternEditorPanel::event(QEvent *event)
 {

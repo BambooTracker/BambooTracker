@@ -108,6 +108,7 @@ public slots:
 	void onShrinkEffectColumnPressed(int trackNum);
 	void onFollowModeChanged();
 	void onChangeValuesPressed(int value);
+	void onPlayStepPressed();
 
 signals:
 	void hScrollBarChangeRequested(int num);

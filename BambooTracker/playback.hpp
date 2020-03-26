@@ -26,8 +26,10 @@ public:
 	void startPlayFromStart();
 	void startPlayPattern(int order);
 	void startPlayFromPosition(int order, int step);
+	void playStep(int order, int step);
 	void stopPlaySong();
 	bool isPlaySong() const;
+	bool isPlayingStep() const;
 	int getPlayingOrderNumber() const;
 	int getPlayingStepNumber() const;
 
@@ -55,6 +57,7 @@ private:
 	int nextReadOrder_, nextReadStep_;
 	/// High nibble - play type
 	///		bit 4: If high, loop pattern
+	///		bit 5: Play step
 	/// Low nibble - read state
 	///		bit 0: playing
 	///		bit 1: have read first step data

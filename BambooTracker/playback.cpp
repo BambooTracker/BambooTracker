@@ -119,6 +119,35 @@ void PlaybackManager::startPlayFromPosition(int order, int step)
 	if (isRetrieveChannel_) retrieveChannelStates();
 }
 
+void PlaybackManager::playStep(int order, int step)
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+
+	bool isPlaying = isPlayingStep();
+	if (!isPlaying) {
+		opnaCtrl_->reset();
+
+		Song& song = mod_.lock()->getSong(curSongNum_);
+		tickCounter_.lock()->setTempo(song.getTempo());
+		tickCounter_.lock()->setSpeed(song.getSpeed());
+		tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()).getSequence());
+		tickCounter_.lock()->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
+																 : GrooveTrigger::ValidByGlobal);
+	}
+	tickCounter_.lock()->resetCount();
+	tickCounter_.lock()->setPlayState(true);
+
+	clearEffectMaps();
+	clearNoteDelayCounts();
+	clearDelayBeyondStepCounts();
+
+	playState_ = 0x20;
+	playOrderNum_ = order;
+	playStepNum_ = step;
+
+	if (!isPlaying && isRetrieveChannel_) retrieveChannelStates();
+}
+
 void PlaybackManager::startPlay()
 {
 	opnaCtrl_->reset();
@@ -159,6 +188,11 @@ bool PlaybackManager::isPlaySong() const
 	return ((playState_ & 0x01) > 0);
 }
 
+bool PlaybackManager::isPlayingStep() const
+{
+	return ((playState_ & 0x20) > 0);
+}
+
 int PlaybackManager::getPlayingOrderNumber() const
 {
 	return playOrderNum_;
@@ -186,7 +220,7 @@ int PlaybackManager::streamCountUp()
 			stepProcess();
 			if (!isFindNextStep_) findNextStep();
 		}
-		else {
+		else if (!isPlayingStep()) {
 			stopPlay();
 		}
 	}
@@ -202,13 +236,18 @@ int PlaybackManager::streamCountUp()
 bool PlaybackManager::stepDown()
 {
 	if (playState_ & 0x02) {	// Foward current step
-		if (nextReadOrder_ == -1) {
-			isFindNextStep_ = false;
+		if (isPlayingStep()) {
 			return false;
 		}
 		else {
-			playOrderNum_ = nextReadOrder_;
-			playStepNum_ = nextReadStep_;
+			if (nextReadOrder_ == -1) {
+				isFindNextStep_ = false;
+				return false;
+			}
+			else {
+				playOrderNum_ = nextReadOrder_;
+				playStepNum_ = nextReadStep_;
+			}
 		}
 	}
 	else {	// First read
@@ -1249,7 +1288,7 @@ void PlaybackManager::tickProcess(int rest)
 		case SoundSource::ADPCM:	checkADPCMDelayEventsInTick(curStep);		break;
 		}
 
-		if (rest == 1 && nextReadOrder_ != -1 && attrib.source == SoundSource::FM) {
+		if (rest == 1 && nextReadOrder_ != -1 && attrib.source == SoundSource::FM && !isPlayingStep()) {
 			// Channel envelope reset before next key on
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadOrder_).getStep(nextReadStep_);

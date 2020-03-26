@@ -927,6 +927,8 @@ void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src)
 
 void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib)
 {
+	if (playback_->isPlayingStep()) playback_->stopPlaySong();	// Reset
+
 	if (attrib.source == SoundSource::DRUM) {
 		opnaCtrl_->setKeyOnFlagDrum(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
@@ -1115,6 +1117,16 @@ bool BambooTracker::startPlayFromMarker()
 		return true;
 	}
 	return false;
+}
+
+void BambooTracker::playStep()
+{
+	playback_->playStep(curOrderNum_, curStepNum_);
+	for (auto& pair : muteState_) {
+		for (size_t i = 0; i < pair.second.size(); ++i) {
+			opnaCtrl_->setMuteState(pair.first, static_cast<int>(i), pair.second[i]);
+		}
+	}
 }
 
 void BambooTracker::startPlay()
@@ -1468,7 +1480,7 @@ RealChipInterface BambooTracker::getRealChipinterface() const
 int BambooTracker::streamCountUp()
 {
 	int state = playback_->streamCountUp();
-	if (!state && isFollowPlay_) {	// Step
+	if (!state && isFollowPlay_ && !playback_->isPlayingStep()) {	// Step
 		int odr = playback_->getPlayingOrderNumber();
 		if (odr >= 0) {
 			curOrderNum_ = odr;

@@ -459,6 +459,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		if (bt_->isPlaySong()) stopPlaySong();
 		else startPlaySong();
 	});
+	playStepSc_ = std::make_unique<QShortcut>(this);
+	QObject::connect(playStepSc_.get(), &QShortcut::activated, this, &MainWindow::playStep);
 	ui->actionPlay_From_Start->setShortcutContext(Qt::ApplicationShortcut);
 	ui->actionPlay_Pattern->setShortcutContext(Qt::ApplicationShortcut);
 	ui->actionPlay_From_Cursor->setShortcutContext(Qt::ApplicationShortcut);
@@ -932,6 +934,7 @@ void MainWindow::setShortcuts()
 	focusOdrSc_->setKey(Qt::Key_F3);
 	focusInstSc_->setKey(Qt::Key_F4);
 	playAndStopSc_->setKey(Qt::Key_Return);
+	playStepSc_->setKey(Qt::CTRL + Qt::Key_Return);
 	goPrevOdrSc_->setKey(Qt::CTRL + Qt::Key_Left);
 	goNextOdrSc_->setKey(Qt::CTRL + Qt::Key_Right);
 	prevInstSc_->setKey(Qt::ALT + Qt::Key_Left);
@@ -1770,9 +1773,18 @@ void MainWindow::startPlayFromCurrentStep()
 
 void MainWindow::startPlayFromMarker()
 {
-	if(bt_->startPlayFromMarker()) {
+	if (bt_->startPlayFromMarker()) {
 		lockWidgets(true);
 		firstViewUpdateRequest_ = true;
+	}
+}
+
+void MainWindow::playStep()
+{
+	if (!bt_->isPlaySong()) {
+		bt_->playStep();
+		firstViewUpdateRequest_ = true;
+		ui->patternEditor->onPlayStepPressed();
 	}
 }
 

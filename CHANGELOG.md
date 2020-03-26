@@ -13,6 +13,7 @@
 - Cursor jump (Go To)
 - [#193] - Shortcut to select previous/next instrument (thanks [@Xyz39808])
 - Visible selection for toolbars and status bar
+- [#193] - Play only current step (thanks [@Xyz39808])
 - 2 new sample modules (thanks [@RigidatoMS] and [@ImATrackMan])
 
 ### Changed

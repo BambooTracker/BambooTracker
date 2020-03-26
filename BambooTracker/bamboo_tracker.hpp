@@ -234,6 +234,7 @@ public:
 	void startPlayPattern();
 	void startPlayFromCurrentStep();
 	bool startPlayFromMarker();
+	void playStep();
 	void stopPlaySong();
 	bool isPlaySong() const;
 	void setTrackMuteState(int trackNum, bool isMute);

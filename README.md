@@ -126,25 +126,26 @@ Please replace some keys with the following in macOS:
 - Delete → fn+delete
 
 ### General
-| Key     | Command                        |
-| ------- | ------------------------------ |
-| Ctrl+N  | Create new module              |
-| Ctrl+O  | Open module                    |
-| Ctrl+S  | Save module                    |
-| Ctrl+P  | Open module property dialog    |
-| Ctrl+I  | Open current instrument editor |
-| Return  | Play/stop song                 |
-| Space   | Toggle jam/edit mode           |
-| F1      | Show effect list dialog        |
-| F2      | Focus on pattern editor        |
-| F3      | Focus on order list            |
-| F4      | Focus on instrument list       |
-| F5      | Play from start                |
-| F6      | Play pattern                   |
-| F7      | Play from current position     |
-| Ctrl+F7 | Play from marker               |
-| F8      | Stop song                      |
-| F12     | Kill sound                     |
+| Key         | Command                        |
+| ----------- | ------------------------------ |
+| Ctrl+N      | Create new module              |
+| Ctrl+O      | Open module                    |
+| Ctrl+S      | Save module                    |
+| Ctrl+P      | Open module property dialog    |
+| Ctrl+I      | Open current instrument editor |
+| Return      | Play/stop song                 |
+| Space       | Toggle jam/edit mode           |
+| F1          | Show effect list dialog        |
+| F2          | Focus on pattern editor        |
+| F3          | Focus on order list            |
+| F4          | Focus on instrument list       |
+| F5          | Play from start                |
+| F6          | Play pattern                   |
+| F7          | Play from current position     |
+| Ctrl+F7     | Play from marker               |
+| Ctrl+Return | Play only current step         |
+| F8          | Stop song                      |
+| F12         | Kill sound                     |
 
 ### Instrument list
 | Key    | Command                        |
