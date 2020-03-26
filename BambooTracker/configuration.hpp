@@ -23,30 +23,6 @@ public:
 
 	// Internal //
 public:
-	void setMainWindowWidth(int w);
-	int getMainWindowWidth() const;
-	void setMainWindowHeight(int h);
-	int getMainWindowHeight() const;
-	void setMainWindowMaximized(bool isMax);
-	bool getMainWindowMaximized() const;
-	void setMainWindowX(int x);
-	int getMainWindowX() const;
-	void setMainWindowY(int y);
-	int getMainWindowY() const;
-	void setMainWindowVerticalSplit(int y);
-	int getMainWindowVerticalSplit() const;
-	void setInstrumentFMWindowWidth(int w);
-	int getInstrumentFMWindowWidth() const;
-	void setInstrumentFMWindowHeight(int h);
-	int getInstrumentFMWindowHeight() const;
-	void setInstrumentSSGWindowWidth(int w);
-	int getInstrumentSSGWindowWidth() const;
-	void setInstrumentSSGWindowHeight(int h);
-	int getInstrumentSSGWindowHeight() const;
-	void setInstrumentADPCMWindowWidth(int w);
-	int getInstrumentADPCMWindowWidth() const;
-	void setInstrumentADPCMWindowHeight(int h);
-	int getInstrumentADPCMWindowHeight() const;
 	void setFollowMode(bool enabled);
 	bool getFollowMode() const;
 	void setWorkingDirectory(std::string path);
@@ -59,18 +35,55 @@ public:
 	bool getInstrumentMask() const;
 	void setVolumeMask(bool enabled);
 	bool getVolumeMask() const;
+	void setVisibleToolbar(bool visible);
+	bool getVisibleToolbar() const;
+	void setVisibleStatusBar(bool visible);
+	bool getVisibleStatusBar() const;
+private:
+	bool followMode_;
+	std::string workDir_;
+	int instOpenFormat_, bankOpenFormat_;
+	bool instMask_, volMask_;
+	bool visibleToolbar_, visibleStatusBar_;
+
+	// Mainwindow state
+public:
+	void setMainWindowWidth(int w);
+	int getMainWindowWidth() const;
+	void setMainWindowHeight(int h);
+	int getMainWindowHeight() const;
+	void setMainWindowMaximized(bool isMax);
+	bool getMainWindowMaximized() const;
+	void setMainWindowX(int x);
+	int getMainWindowX() const;
+	void setMainWindowY(int y);
+	int getMainWindowY() const;
+	void setMainWindowVerticalSplit(int y);
+	int getMainWindowVerticalSplit() const;
 private:
 	int mainW_, mainH_;
 	bool mainMax_;
 	int mainX_, mainY_;
 	int mainVSplit_;
+
+	// Instrument editor state
+public:
+	void setInstrumentFMWindowWidth(int w);
+	int getInstrumentFMWindowWidth() const;
+	void setInstrumentFMWindowHeight(int h);
+	int getInstrumentFMWindowHeight() const;
+	void setInstrumentSSGWindowWidth(int w);
+	int getInstrumentSSGWindowWidth() const;
+	void setInstrumentSSGWindowHeight(int h);
+	int getInstrumentSSGWindowHeight() const;
+	void setInstrumentADPCMWindowWidth(int w);
+	int getInstrumentADPCMWindowWidth() const;
+	void setInstrumentADPCMWindowHeight(int h);
+	int getInstrumentADPCMWindowHeight() const;
+private:
 	int instFMW_, instFMH_;
 	int instSSGW_, instSSGH_;
 	int instADPCMW_, instADPCMH_;
-	bool followMode_;
-	std::string workDir_;
-	int instOpenFormat_, bankOpenFormat_;
-	bool instMask_, volMask_;
 
 	// General //
 	// General settings

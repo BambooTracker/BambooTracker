@@ -297,6 +297,8 @@ private slots:
 	void on_actionPlay_From_Marker_triggered();
 	void on_action_Go_To_triggered();
 	void on_actionRemove_Unused_ADPCM_Samples_triggered();
+	void on_action_Status_Bar_triggered();
+	void on_action_Toolbar_triggered();
 };
 
 #endif // MAINWINDOW_HPP

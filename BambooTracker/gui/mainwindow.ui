@@ -39,7 +39,7 @@
        <enum>Qt::Vertical</enum>
       </property>
       <property name="childrenCollapsible">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
@@ -730,7 +730,6 @@
     <addaction name="actionPlay_From_Marker"/>
     <addaction name="actionStop"/>
     <addaction name="separator"/>
-    <addaction name="actionFollow_Mode"/>
     <addaction name="actionEdit_Mode"/>
     <addaction name="actionSet_Ro_w_Marker"/>
     <addaction name="separator"/>
@@ -751,6 +750,15 @@
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuVie_w">
+    <property name="title">
+     <string>Vie&amp;w</string>
+    </property>
+    <addaction name="action_Toolbar"/>
+    <addaction name="action_Status_Bar"/>
+    <addaction name="separator"/>
+    <addaction name="actionFollow_Mode"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuPattern"/>
@@ -758,6 +766,7 @@
    <addaction name="menuModule"/>
    <addaction name="menuInstrument"/>
    <addaction name="menuTracker"/>
+   <addaction name="menuVie_w"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -1554,6 +1563,28 @@
   <action name="actionRemove_Unused_ADPCM_Samples">
    <property name="text">
     <string>Remove Unused &amp;ADPCM Samples</string>
+   </property>
+  </action>
+  <action name="action_Status_Bar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Status Bar</string>
+   </property>
+  </action>
+  <action name="action_Toolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Toolbar</string>
    </property>
   </action>
  </widget>

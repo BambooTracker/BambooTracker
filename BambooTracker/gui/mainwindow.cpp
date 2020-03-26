@@ -91,6 +91,11 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}
 	resize(config.lock()->getMainWindowWidth(), config.lock()->getMainWindowHeight());
 	if (config.lock()->getMainWindowMaximized()) showMaximized();
+	ui->action_Toolbar->setChecked(config.lock()->getVisibleToolbar());
+	ui->mainToolBar->setVisible(config.lock()->getVisibleToolbar());
+	ui->subToolBar->setVisible(config.lock()->getVisibleToolbar());
+	ui->action_Status_Bar->setChecked(config.lock()->getVisibleStatusBar());
+	ui->statusBar->setVisible(config.lock()->getVisibleStatusBar());
 	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
 	ui->action_Instrument_Mask->setChecked(config.lock()->getInstrumentMask());
 	ui->action_Volume_Mask->setChecked(config.lock()->getVolumeMask());
@@ -760,6 +765,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		config_.lock()->setMainWindowY(y());
 	}
 	config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().front());
+	config_.lock()->setVisibleToolbar(ui->mainToolBar->isVisible());
+	config_.lock()->setVisibleStatusBar(ui->statusBar->isVisible());
 	config_.lock()->setFollowMode(bt_->isFollowPlay());
 
 	instForms_->closeAll();
@@ -3058,4 +3065,16 @@ void MainWindow::on_actionRemove_Unused_ADPCM_Samples_triggered()
 		comStack_->clear();
 		setModifiedTrue();
 	}
+}
+
+void MainWindow::on_action_Status_Bar_triggered()
+{
+	ui->statusBar->setVisible(ui->action_Status_Bar->isChecked());
+}
+
+void MainWindow::on_action_Toolbar_triggered()
+{
+	bool visible = ui->action_Toolbar->isChecked();
+	ui->mainToolBar->setVisible(visible);
+	ui->subToolBar->setVisible(visible);
 }

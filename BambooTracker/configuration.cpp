@@ -4,24 +4,30 @@
 Configuration::Configuration()
 {
 	// Internal //
-	mainW_ = 930;
-	mainH_= 780;
-	mainMax_ = false;
-	mainX_ = -1;	// Dummy
-	mainY_ = -1;	// Dummy
-	mainVSplit_ = -1;	// Dummy
-	instFMW_ = 570;
-	instFMH_ = 750;
-	instSSGW_ = 510;
-	instSSGH_ = 390;
-	instADPCMW_ = 510;
-	instADPCMH_ = 390;
 	followMode_ = true;
 	workDir_ = "";
 	instOpenFormat_ = 0;
 	bankOpenFormat_ = 0;
 	instMask_ = false;
 	volMask_ = true;
+	visibleToolbar_ = true;
+	visibleStatusBar_ = true;
+
+	// Mainwindow state
+	mainW_ = 930;
+	mainH_= 780;
+	mainMax_ = false;
+	mainX_ = -1;	// Dummy
+	mainY_ = -1;	// Dummy
+	mainVSplit_ = -1;	// Dummy
+
+	// Instrument editor state
+	instFMW_ = 570;
+	instFMH_ = 750;
+	instSSGW_ = 510;
+	instSSGH_ = 390;
+	instADPCMW_ = 510;
+	instADPCMH_ = 390;
 
 	// General //
 	// General settings
@@ -606,428 +612,187 @@ Configuration::Configuration()
 }
 
 // Internal //
-void Configuration::setMainWindowWidth(int w)
-{
-	mainW_ = w;
-}
+void Configuration::setFollowMode(bool enabled) { followMode_ = enabled; }
 
-int Configuration::getMainWindowWidth() const
-{
-	return mainW_;
-}
+bool Configuration::getFollowMode() const { return followMode_; }
 
-void Configuration::setMainWindowHeight(int h)
-{
-	mainH_ = h;
-}
+void Configuration::setWorkingDirectory(std::string path) { workDir_ = path; }
 
-int Configuration::getMainWindowHeight() const
-{
-	return mainH_;
-}
+std::string Configuration::getWorkingDirectory() const { return workDir_; }
 
-void Configuration::setMainWindowMaximized(bool isMax)
-{
-	mainMax_ = isMax;
-}
+void Configuration::setInstrumentOpenFormat(int i) { instOpenFormat_ = i; }
 
-bool Configuration::getMainWindowMaximized() const
-{
-	return mainMax_;
-}
+int Configuration::getInstrumentOpenFormat() const { return instOpenFormat_; }
 
-void Configuration::setMainWindowX(int x)
-{
-	mainX_ = x;
-}
+void Configuration::setBankOpenFormat(int i) { bankOpenFormat_ = i; }
 
-int Configuration::getMainWindowX() const
-{
-	return mainX_;
-}
+int Configuration::getBankOpenFormat() const { return bankOpenFormat_; }
 
-void Configuration::setMainWindowY(int y)
-{
-	mainY_ = y;
-}
+void Configuration::setInstrumentMask(bool enabled) { instMask_ = enabled; }
 
-int Configuration::getMainWindowY() const
-{
-	return mainY_;
-}
+bool Configuration::getInstrumentMask() const { return instMask_; }
 
-void Configuration::setMainWindowVerticalSplit(int y)
-{
-	mainVSplit_ = y;
-}
+void Configuration::setVolumeMask(bool enabled) { volMask_ = enabled; }
 
-int Configuration::getMainWindowVerticalSplit() const
-{
-	return mainVSplit_;
-}
+bool Configuration::getVolumeMask() const { return volMask_; }
 
-void Configuration::setInstrumentFMWindowWidth(int w)
-{
-	instFMW_ = w;
-}
+void Configuration::setVisibleToolbar(bool visible) { visibleToolbar_ = visible; }
 
-int Configuration::getInstrumentFMWindowWidth() const
-{
-	return instFMW_;
-}
+bool Configuration::getVisibleToolbar() const { return visibleToolbar_; }
 
-void Configuration::setInstrumentFMWindowHeight(int h)
-{
-	instFMH_ = h;
-}
+void Configuration::setVisibleStatusBar(bool visible) { visibleStatusBar_ = visible; }
 
-int Configuration::getInstrumentFMWindowHeight() const
-{
-	return instFMH_;
-}
+bool Configuration::getVisibleStatusBar() const { return visibleStatusBar_; }
 
-void Configuration::setInstrumentSSGWindowWidth(int w)
-{
-	instSSGW_ = w;
-}
+// Mainwindow state
+void Configuration::setMainWindowWidth(int w) { mainW_ = w; }
 
-int Configuration::getInstrumentSSGWindowWidth() const
-{
-	return instSSGW_;
-}
+int Configuration::getMainWindowWidth() const { return mainW_; }
 
-void Configuration::setInstrumentSSGWindowHeight(int h)
-{
-	instSSGH_ = h;
-}
+void Configuration::setMainWindowHeight(int h) { mainH_ = h; }
 
-int Configuration::getInstrumentSSGWindowHeight() const
-{
-	return instSSGH_;
-}
+int Configuration::getMainWindowHeight() const { return mainH_; }
 
-void Configuration::setInstrumentADPCMWindowWidth(int w)
-{
-	instADPCMW_ = w;
-}
+void Configuration::setMainWindowMaximized(bool isMax) { mainMax_ = isMax; }
 
-int Configuration::getInstrumentADPCMWindowWidth() const
-{
-	return instADPCMW_;
-}
+bool Configuration::getMainWindowMaximized() const { return mainMax_; }
 
-void Configuration::setInstrumentADPCMWindowHeight(int h)
-{
-	instADPCMH_ = h;
-}
+void Configuration::setMainWindowX(int x) { mainX_ = x; }
 
-int Configuration::getInstrumentADPCMWindowHeight() const
-{
-	return instADPCMH_;
-}
+int Configuration::getMainWindowX() const { return mainX_; }
 
-void Configuration::setFollowMode(bool enabled)
-{
-	followMode_ = enabled;
-}
+void Configuration::setMainWindowY(int y) { mainY_ = y; }
 
-bool Configuration::getFollowMode() const
-{
-	return followMode_;
-}
+int Configuration::getMainWindowY() const { return mainY_; }
 
-void Configuration::setWorkingDirectory(std::string path)
-{
-	workDir_ = path;
-}
+void Configuration::setMainWindowVerticalSplit(int y) { mainVSplit_ = y; }
 
-std::string Configuration::getWorkingDirectory() const
-{
-	return workDir_;
-}
+int Configuration::getMainWindowVerticalSplit() const { return mainVSplit_; }
 
-void Configuration::setInstrumentOpenFormat(int i)
-{
-	instOpenFormat_ = i;
-}
+// Instrument editor state
+void Configuration::setInstrumentFMWindowWidth(int w) { instFMW_ = w; }
 
-int Configuration::getInstrumentOpenFormat() const
-{
-	return instOpenFormat_;
-}
+int Configuration::getInstrumentFMWindowWidth() const { return instFMW_; }
 
-void Configuration::setBankOpenFormat(int i)
-{
-	bankOpenFormat_ = i;
-}
+void Configuration::setInstrumentFMWindowHeight(int h) { instFMH_ = h; }
 
-int Configuration::getBankOpenFormat() const
-{
-	return bankOpenFormat_;
-}
+int Configuration::getInstrumentFMWindowHeight() const { return instFMH_; }
 
-void Configuration::setInstrumentMask(bool enabled)
-{
-	instMask_ = enabled;
-}
+void Configuration::setInstrumentSSGWindowWidth(int w) { instSSGW_ = w; }
 
-bool Configuration::getInstrumentMask() const
-{
-	return instMask_;
-}
+int Configuration::getInstrumentSSGWindowWidth() const { return instSSGW_; }
 
-void Configuration::setVolumeMask(bool enabled)
-{
-	volMask_ = enabled;
-}
+void Configuration::setInstrumentSSGWindowHeight(int h) { instSSGH_ = h; }
 
-bool Configuration::getVolumeMask() const
-{
-	return volMask_;
-}
+int Configuration::getInstrumentSSGWindowHeight() const { return instSSGH_; }
+
+void Configuration::setInstrumentADPCMWindowWidth(int w) { instADPCMW_ = w; }
+
+int Configuration::getInstrumentADPCMWindowWidth() const { return instADPCMW_; }
+
+void Configuration::setInstrumentADPCMWindowHeight(int h) { instADPCMH_ = h; }
+
+int Configuration::getInstrumentADPCMWindowHeight() const { return instADPCMH_; }
 
 // General //
 // General settings
-void Configuration::setWarpCursor(bool enabled)
-{
-	warpCursor_ = enabled;
-}
+void Configuration::setWarpCursor(bool enabled) { warpCursor_ = enabled; }
 
-bool Configuration::getWarpCursor() const
-{
-	return warpCursor_;
-}
+bool Configuration::getWarpCursor() const { return warpCursor_; }
 
-void Configuration::setWarpAcrossOrders(bool enabled)
-{
-	warpAcrossOrders_ = enabled;
-}
+void Configuration::setWarpAcrossOrders(bool enabled) { warpAcrossOrders_ = enabled; }
 
-bool Configuration::getWarpAcrossOrders() const
-{
-	return warpAcrossOrders_;
-}
+bool Configuration::getWarpAcrossOrders() const { return warpAcrossOrders_; }
 
-void Configuration::setShowRowNumberInHex(bool enabled)
-{
-	showRowNumHex_ = enabled;
-}
+void Configuration::setShowRowNumberInHex(bool enabled) { showRowNumHex_ = enabled; }
 
-bool Configuration::getShowRowNumberInHex() const
-{
-	return showRowNumHex_;
-}
+bool Configuration::getShowRowNumberInHex() const { return showRowNumHex_; }
 
-void Configuration::setShowPreviousNextOrders(bool enabled)
-{
-	showPrevNextOrders_ = enabled;
-}
+void Configuration::setShowPreviousNextOrders(bool enabled) { showPrevNextOrders_ = enabled; }
 
-bool Configuration::getShowPreviousNextOrders() const
-{
-	return showPrevNextOrders_;
-}
+bool Configuration::getShowPreviousNextOrders() const { return showPrevNextOrders_; }
 
-void Configuration::setBackupModules(bool enabled)
-{
-	backupModules_ = enabled;
-}
+void Configuration::setBackupModules(bool enabled) { backupModules_ = enabled; }
 
-bool Configuration::getBackupModules() const
-{
-	return backupModules_;
-}
+bool Configuration::getBackupModules() const { return backupModules_; }
 
-void Configuration::setDontSelectOnDoubleClick(bool enabled)
-{
-	dontSelectOnDoubleClick_ = enabled;
-}
+void Configuration::setDontSelectOnDoubleClick(bool enabled) { dontSelectOnDoubleClick_ = enabled; }
 
-bool Configuration::getDontSelectOnDoubleClick() const
-{
-	return dontSelectOnDoubleClick_;
-}
+bool Configuration::getDontSelectOnDoubleClick() const { return dontSelectOnDoubleClick_; }
 
-void Configuration::setReverseFMVolumeOrder(bool enabled)
-{
-	reverseFMVolumeOrder_= enabled;
-}
+void Configuration::setReverseFMVolumeOrder(bool enabled) { reverseFMVolumeOrder_= enabled; }
 
-bool Configuration::getReverseFMVolumeOrder() const
-{
-	return reverseFMVolumeOrder_;
-}
+bool Configuration::getReverseFMVolumeOrder() const { return reverseFMVolumeOrder_; }
 
-void Configuration::setMoveCursorToRight(bool enabled)
-{
-	moveCursorToRight_ = enabled;
-}
+void Configuration::setMoveCursorToRight(bool enabled) { moveCursorToRight_ = enabled; }
 
-bool Configuration::getMoveCursorToRight() const
-{
-	return moveCursorToRight_;
-}
+bool Configuration::getMoveCursorToRight() const { return moveCursorToRight_; }
 
-void Configuration::setRetrieveChannelState(bool enabled)
-{
-	retrieveChannelState_ = enabled;
-}
+void Configuration::setRetrieveChannelState(bool enabled) { retrieveChannelState_ = enabled; }
 
-bool Configuration::getRetrieveChannelState() const
-{
-	return retrieveChannelState_;
-}
+bool Configuration::getRetrieveChannelState() const { return retrieveChannelState_; }
 
-void Configuration::setEnableTranslation(bool enabled)
-{
-	enableTranslation_ = enabled;
-}
-bool Configuration::getEnableTranslation() const
-{
-	return enableTranslation_;
-}
+void Configuration::setEnableTranslation(bool enabled) { enableTranslation_ = enabled; }
 
-void Configuration::setShowFMDetuneAsSigned(bool enabled)
-{
-	showFMDetuneSigned_ = enabled;
-}
+bool Configuration::getEnableTranslation() const { return enableTranslation_; }
 
-bool Configuration::getShowFMDetuneAsSigned() const
-{
-	return showFMDetuneSigned_;
-}
+void Configuration::setShowFMDetuneAsSigned(bool enabled) { showFMDetuneSigned_ = enabled; }
 
-void Configuration::setShowWaveVisual(bool enabled)
-{
-	showWaveVisual_ = enabled;
-}
+bool Configuration::getShowFMDetuneAsSigned() const { return showFMDetuneSigned_; }
 
-bool Configuration::getShowWaveVisual() const
-{
-	return showWaveVisual_;
-}
+void Configuration::setShowWaveVisual(bool enabled) { showWaveVisual_ = enabled; }
 
-void Configuration::setFill00ToEffectValue(bool enabled)
-{
-	fill00ToEffectValue_ = enabled;
-}
+bool Configuration::getShowWaveVisual() const { return showWaveVisual_; }
 
-bool Configuration::getFill00ToEffectValue() const
-{
-	return fill00ToEffectValue_;
-}
+void Configuration::setFill00ToEffectValue(bool enabled) { fill00ToEffectValue_ = enabled; }
 
-void Configuration::setMoveCursorByHorizontalScroll(bool enabled)
-{
-	moveCursorHScroll_ = enabled;
-}
+bool Configuration::getFill00ToEffectValue() const { return fill00ToEffectValue_; }
 
-bool Configuration::getMoveCursorByHorizontalScroll() const
-{
-	return moveCursorHScroll_;
-}
+void Configuration::setMoveCursorByHorizontalScroll(bool enabled) { moveCursorHScroll_ = enabled; }
 
-void Configuration::setOverwriteUnusedUneditedPropety(bool enabled)
-{
-	overwriteUnusedUnedited_ = enabled;
-}
+bool Configuration::getMoveCursorByHorizontalScroll() const { return moveCursorHScroll_; }
 
-bool Configuration::getOverwriteUnusedUneditedPropety() const
-{
-	return overwriteUnusedUnedited_;
-}
+void Configuration::setOverwriteUnusedUneditedPropety(bool enabled) { overwriteUnusedUnedited_ = enabled; }
 
-void Configuration::setWriteOnlyUsedSamples(bool enabled)
-{
-	writeOnlyUsedSamples_ = enabled;
-}
+bool Configuration::getOverwriteUnusedUneditedPropety() const { return overwriteUnusedUnedited_; }
 
-bool Configuration::getWriteOnlyUsedSamples() const
-{
-	return writeOnlyUsedSamples_;
-}
+void Configuration::setWriteOnlyUsedSamples(bool enabled) { writeOnlyUsedSamples_ = enabled; }
+
+bool Configuration::getWriteOnlyUsedSamples() const { return writeOnlyUsedSamples_; }
 
 // Edit settings
-void Configuration::setPageJumpLength(size_t length)
-{
-	pageJumpLength_ = length;
-}
+void Configuration::setPageJumpLength(size_t length) { pageJumpLength_ = length; }
 
-size_t Configuration::getPageJumpLength() const
-{
-	return pageJumpLength_;
-}
+size_t Configuration::getPageJumpLength() const { return pageJumpLength_; }
 
-void Configuration::setEditableStep(size_t step)
-{
-	editableStep_ = step;
-}
+void Configuration::setEditableStep(size_t step) { editableStep_ = step; }
 
-size_t Configuration::getEditableStep() const
-{
-	return editableStep_;
-}
+size_t Configuration::getEditableStep() const { return editableStep_; }
 
-void Configuration::setKeyRepetition(bool enabled)
-{
-	keyRepetision_ = enabled;
-}
+void Configuration::setKeyRepetition(bool enabled) { keyRepetision_ = enabled; }
 
-bool Configuration::getKeyRepetition() const
-{
-	return keyRepetision_;
-}
+bool Configuration::getKeyRepetition() const { return keyRepetision_; }
 
 // Keys
-void Configuration::setKeyOffKey(std::string key)
-{
-	keyOffKey_ = key;
-}
+void Configuration::setKeyOffKey(std::string key) { keyOffKey_ = key; }
 
-std::string Configuration::getKeyOffKey() const
-{
-	return keyOffKey_;
-}
+std::string Configuration::getKeyOffKey() const { return keyOffKey_; }
 
-void Configuration::setOctaveUpKey(std::string key)
-{
-	octUpKey_ = key;
-}
+void Configuration::setOctaveUpKey(std::string key) { octUpKey_ = key; }
 
-std::string Configuration::getOctaveUpKey() const
-{
-	return octUpKey_;
-}
+std::string Configuration::getOctaveUpKey() const { return octUpKey_; }
 
-void Configuration::setOctaveDownKey(std::string key)
-{
-	octDownKey_ = key;
-}
+void Configuration::setOctaveDownKey(std::string key) { octDownKey_ = key; }
 
-std::string Configuration::getOctaveDownKey() const
-{
-	return octDownKey_;
-}
+std::string Configuration::getOctaveDownKey() const { return octDownKey_; }
 
-void Configuration::setEchoBufferKey(std::string key)
-{
-	echoKey_ = key;
-}
+void Configuration::setEchoBufferKey(std::string key) { echoKey_ = key; }
 
-std::string Configuration::getEchoBufferKey() const
-{
-	return echoKey_;
-}
+std::string Configuration::getEchoBufferKey() const { return echoKey_; }
 
-void Configuration::setNoteEntryLayout(KeyboardLayout layout)
-{
-	noteEntryLayout_ = layout;
-}
+void Configuration::setNoteEntryLayout(KeyboardLayout layout) { noteEntryLayout_ = layout; }
 
-Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const
-{
-	return noteEntryLayout_;
-}
+Configuration::KeyboardLayout Configuration::getNoteEntryLayout() const { return noteEntryLayout_; }
 
 void Configuration::setCustomLayoutKeys(std::unordered_map<std::string, JamKey> mapping)
 {
@@ -1040,196 +805,82 @@ std::unordered_map<std::string, JamKey> Configuration::getCustomLayoutKeys() con
 }
 
 // Sound //
-void Configuration::setSoundAPI(std::string api)
-{
-	sndAPI_ = api;
-}
+void Configuration::setSoundAPI(std::string api) { sndAPI_ = api; }
 
-std::string Configuration::getSoundAPI() const
-{
-	return sndAPI_;
-}
+std::string Configuration::getSoundAPI() const { return sndAPI_; }
 
-void Configuration::setSoundDevice(std::string device)
-{
-	sndDevice_ = device;
-}
+void Configuration::setSoundDevice(std::string device) { sndDevice_ = device; }
 
-std::string Configuration::getSoundDevice() const
-{
-	return sndDevice_;
-}
+std::string Configuration::getSoundDevice() const { return sndDevice_; }
 
-void Configuration::setRealChipInterface(RealChipInterface type)
-{
-	realChip_ = type;
-}
+void Configuration::setRealChipInterface(RealChipInterface type) { realChip_ = type; }
 
-RealChipInterface Configuration::getRealChipInterface() const
-{
-	return realChip_;
-}
+RealChipInterface Configuration::getRealChipInterface() const { return realChip_; }
 
-void Configuration::setEmulator(int emulator)
-{
-	emulator_ = emulator;
-}
+void Configuration::setEmulator(int emulator) { emulator_ = emulator; }
 
-int Configuration::getEmulator() const
-{
-	return emulator_;
-}
+int Configuration::getEmulator() const { return emulator_; }
 
-void Configuration::setSampleRate(uint32_t rate)
-{
-	sampleRate_ = rate;
-}
+void Configuration::setSampleRate(uint32_t rate) { sampleRate_ = rate; }
 
-uint32_t Configuration::getSampleRate() const
-{
-	return sampleRate_;
-}
+uint32_t Configuration::getSampleRate() const { return sampleRate_; }
 
-void Configuration::setBufferLength(size_t length)
-{
-	bufferLength_ = length;
-}
+void Configuration::setBufferLength(size_t length) { bufferLength_ = length; }
 
-size_t Configuration::getBufferLength() const
-{
-	return bufferLength_;
-}
+size_t Configuration::getBufferLength() const { return bufferLength_; }
 
 // Midi //
-void Configuration::setMidiInputPort(const std::string &port)
-{
-	midiInPort_ = port;
-}
+void Configuration::setMidiInputPort(const std::string &port) { midiInPort_ = port; }
 
-std::string Configuration::getMidiInputPort() const
-{
-	return midiInPort_;
-}
+std::string Configuration::getMidiInputPort() const { return midiInPort_; }
 
 // Mixer //
-void Configuration::setMixerVolumeMaster(int percentage)
-{
-	mixerVolumeMaster_ = percentage;
-}
+void Configuration::setMixerVolumeMaster(int percentage) { mixerVolumeMaster_ = percentage; }
 
-int Configuration::getMixerVolumeMaster() const
-{
-	return mixerVolumeMaster_;
-}
+int Configuration::getMixerVolumeMaster() const { return mixerVolumeMaster_; }
 
-void Configuration::setMixerVolumeFM(double dB)
-{
-	mixerVolumeFM_ = dB;
-}
+void Configuration::setMixerVolumeFM(double dB) { mixerVolumeFM_ = dB; }
 
-double Configuration::getMixerVolumeFM() const
-{
-	return mixerVolumeFM_;
-}
+double Configuration::getMixerVolumeFM() const { return mixerVolumeFM_; }
 
-void Configuration::setMixerVolumeSSG(double dB)
-{
-	mixerVolumeSSG_ = dB;
-}
+void Configuration::setMixerVolumeSSG(double dB) { mixerVolumeSSG_ = dB; }
 
-double Configuration::getMixerVolumeSSG() const
-{
-	return mixerVolumeSSG_;
-}
+double Configuration::getMixerVolumeSSG() const { return mixerVolumeSSG_; }
 
 // Input //
-void Configuration::setFMEnvelopeTexts(std::vector<FMEnvelopeText> texts)
-{
-	fmEnvelopeTexts_ = texts;
-}
+void Configuration::setFMEnvelopeTexts(std::vector<FMEnvelopeText> texts) { fmEnvelopeTexts_ = texts; }
 
-std::vector<FMEnvelopeText> Configuration::getFMEnvelopeTexts() const
-{
-	return fmEnvelopeTexts_;
-}
+std::vector<FMEnvelopeText> Configuration::getFMEnvelopeTexts() const { return fmEnvelopeTexts_; }
 
 // Appearrance
-void Configuration::setPatternEditorHeaderFont(std::string font)
-{
-	ptnHdFont_ = font;
-}
+void Configuration::setPatternEditorHeaderFont(std::string font) { ptnHdFont_ = font; }
 
-std::string Configuration::getPatternEditorHeaderFont() const
-{
-	return ptnHdFont_;
-}
+std::string Configuration::getPatternEditorHeaderFont() const { return ptnHdFont_; }
 
-void Configuration::setPatternEditorHeaderFontSize(int size)
-{
-	ptnHdFontSize_ = size;
-}
+void Configuration::setPatternEditorHeaderFontSize(int size) { ptnHdFontSize_ = size; }
 
-int Configuration::getPatternEditorHeaderFontSize() const
-{
-	return ptnHdFontSize_;
-}
+int Configuration::getPatternEditorHeaderFontSize() const { return ptnHdFontSize_; }
 
-void Configuration::setPatternEditorRowsFont(std::string font)
-{
-	ptnRowFont_ = font;
-}
+void Configuration::setPatternEditorRowsFont(std::string font) { ptnRowFont_ = font; }
 
-std::string Configuration::getPatternEditorRowsFont() const
-{
-	return ptnRowFont_;
-}
+std::string Configuration::getPatternEditorRowsFont() const { return ptnRowFont_; }
 
-void Configuration::setPatternEditorRowsFontSize(int size)
-{
-	ptnRowFontSize_ = size;
-}
+void Configuration::setPatternEditorRowsFontSize(int size) { ptnRowFontSize_ = size; }
 
-int Configuration::getPatternEditorRowsFontSize() const
-{
-	return ptnRowFontSize_;
-}
+int Configuration::getPatternEditorRowsFontSize() const { return ptnRowFontSize_; }
 
-void Configuration::setOrderListHeaderFont(std::string font)
-{
-	odrHdFont_ = font;
-}
+void Configuration::setOrderListHeaderFont(std::string font) { odrHdFont_ = font; }
 
-std::string Configuration::getOrderListHeaderFont() const
-{
-	return odrHdFont_;
-}
+std::string Configuration::getOrderListHeaderFont() const { return odrHdFont_; }
 
-void Configuration::setOrderListHeaderFontSize(int size)
-{
-	odrHdFontSize_ = size;
-}
+void Configuration::setOrderListHeaderFontSize(int size) { odrHdFontSize_ = size; }
 
-int Configuration::getOrderListHeaderFontSize() const
-{
-	return odrHdFontSize_;
-}
+int Configuration::getOrderListHeaderFontSize() const { return odrHdFontSize_; }
 
-void Configuration::setOrderListRowsFont(std::string font)
-{
-	odrRowFont_ = font;
-}
+void Configuration::setOrderListRowsFont(std::string font) { odrRowFont_ = font; }
 
-std::string Configuration::getOrderListRowsFont() const
-{
-	return odrRowFont_;
-}
+std::string Configuration::getOrderListRowsFont() const { return odrRowFont_; }
 
-void Configuration::setOrderListRowsFontSize(int size)
-{
-	odrRowFontSize_ = size;
-}
+void Configuration::setOrderListRowsFontSize(int size) { odrRowFontSize_ = size; }
 
-int Configuration::getOrderListRowsFontSize() const
-{
-	return odrRowFontSize_;
-}
+int Configuration::getOrderListRowsFontSize() const { return odrRowFontSize_; }

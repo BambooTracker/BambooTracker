@@ -37,6 +37,8 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("bankOpenFormat",				configLocked->getBankOpenFormat());
 		settings.setValue("instrumentMask",				configLocked->getInstrumentMask());
 		settings.setValue("volumeMask",					configLocked->getVolumeMask());
+		settings.setValue("visibleToolbar",				configLocked->getVisibleToolbar());
+		settings.setValue("visibleStatusBar",			configLocked->getVisibleStatusBar());
 		settings.endGroup();
 
 		// General //
@@ -208,6 +210,8 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setBankOpenFormat(settings.value("bankOpenFormat", configLocked->getBankOpenFormat()).toInt());
 		configLocked->setInstrumentMask(settings.value("instrumentMask", configLocked->getInstrumentMask()).toBool());
 		configLocked->setVolumeMask(settings.value("volumeMask", configLocked->getVolumeMask()).toBool());
+		configLocked->setVisibleToolbar(settings.value("visibleToolbar", configLocked->getVisibleToolbar()).toBool());
+		configLocked->setVisibleStatusBar(settings.value("visibleStatusBar", configLocked->getVisibleStatusBar()).toBool());
 		settings.endGroup();
 
 		// General //
