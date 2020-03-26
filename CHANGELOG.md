@@ -22,6 +22,7 @@
 - Make an instrument editor form on opening
 - Change "Autoset instrument" to instrument mask
 - [#194] - Allow to load vgi/tfi instrument set DT as 0x07 (thanks [@YoshiLightStar])
+- Restore toolbar position on launch
 - Update translation: ja
 
 ### Fixed

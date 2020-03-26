@@ -91,9 +91,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	}
 	resize(config.lock()->getMainWindowWidth(), config.lock()->getMainWindowHeight());
 	if (config.lock()->getMainWindowMaximized()) showMaximized();
-	ui->action_Toolbar->setChecked(config.lock()->getVisibleToolbar());
-	ui->mainToolBar->setVisible(config.lock()->getVisibleToolbar());
-	ui->subToolBar->setVisible(config.lock()->getVisibleToolbar());
 	ui->action_Status_Bar->setChecked(config.lock()->getVisibleStatusBar());
 	ui->statusBar->setVisible(config.lock()->getVisibleStatusBar());
 	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
@@ -168,7 +165,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		}
 	});
 
-	/* Sub tool bar */
+	/* Tool bar */
 	auto octLab = new QLabel(tr("Octave"));
 	octLab->setMargin(6);
 	ui->subToolBar->addWidget(octLab);
@@ -217,6 +214,38 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->patternEditor->setPatternHighlight2Count(count);
 	});
 	ui->subToolBar->addWidget(highlight2_);
+	auto& mainTbConfig = config.lock()->getMainToolbarConfiguration();
+	if (mainTbConfig.getPosition() == Configuration::ToolbarConfiguration::FLOAT_POS) {
+		ui->mainToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+		ui->mainToolBar->move(mainTbConfig.getX(), mainTbConfig.getY());
+	}
+	else {
+		addToolBar(TB_POS_.at(mainTbConfig.getPosition()), ui->mainToolBar);
+	}
+	auto& subTbConfig = config.lock()->getSubToolbarConfiguration();
+	if (subTbConfig.getPosition() == Configuration::ToolbarConfiguration::FLOAT_POS) {
+		ui->subToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+		ui->subToolBar->move(subTbConfig.getX(), subTbConfig.getY());
+	}
+	else {
+		auto pos = TB_POS_.at(subTbConfig.getPosition());
+		if (subTbConfig.getNumber()) {
+			if (subTbConfig.hasBreakBefore()) addToolBarBreak(pos);
+			addToolBar(pos, ui->subToolBar);
+		}
+		else {
+			if (mainTbConfig.getPosition() == subTbConfig.getPosition()) {
+				insertToolBar(ui->mainToolBar, ui->subToolBar);
+				if (mainTbConfig.hasBreakBefore()) insertToolBarBreak(ui->mainToolBar);
+			}
+			else {
+				addToolBar(pos, ui->subToolBar);
+			}
+		}
+	}
+	ui->action_Toolbar->setChecked(config.lock()->getVisibleToolbar());
+	ui->mainToolBar->setVisible(config.lock()->getVisibleToolbar());
+	ui->subToolBar->setVisible(config.lock()->getVisibleToolbar());
 
 	/* Splitter */
 	ui->splitter->setStretchFactor(0, 0);
@@ -765,6 +794,115 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		config_.lock()->setMainWindowY(y());
 	}
 	config_.lock()->setMainWindowVerticalSplit(ui->splitter->sizes().front());
+
+	auto& mainTbConfig = config_.lock()->getMainToolbarConfiguration();
+	auto& subTbConfig = config_.lock()->getSubToolbarConfiguration();
+	auto mainTbArea = toolBarArea(ui->mainToolBar);
+	auto subTbArea = toolBarArea(ui->subToolBar);
+	if (ui->mainToolBar->isFloating()) {
+		mainTbConfig.setPosition(ToolbarPos::FLOAT_POS);
+		mainTbConfig.setX(ui->mainToolBar->x());
+		mainTbConfig.setY(ui->mainToolBar->y());
+	}
+	else {
+		mainTbConfig.setPosition(std::find_if(TB_POS_.begin(), TB_POS_.end(), [mainTbArea](auto pair) {
+			return (pair.second == mainTbArea);
+		})->first);
+		mainTbConfig.setNumber(0);
+		mainTbConfig.setBreakBefore(false);
+	}
+	if (ui->subToolBar->isFloating()) {
+		subTbConfig.setPosition(ToolbarPos::FLOAT_POS);
+		subTbConfig.setX(ui->subToolBar->x());
+		subTbConfig.setY(ui->subToolBar->y());
+	}
+	else {
+		subTbConfig.setPosition(std::find_if(TB_POS_.begin(), TB_POS_.end(), [subTbArea](auto pair) {
+			return (pair.second == subTbArea);
+		})->first);
+		subTbConfig.setNumber(0);
+		subTbConfig.setBreakBefore(false);
+	}
+	if (mainTbArea == subTbArea) {
+		auto mainPos = ui->mainToolBar->pos();
+		auto subPos = ui->subToolBar->pos();
+		switch (mainTbArea) {
+		case Qt::TopToolBarArea:
+		{
+			if (mainPos.x() == subPos.x()) {
+				bool cond = (mainPos.y() < subPos.y());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(!cond);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(cond);
+			}
+			else {
+				bool cond = (mainPos.x() < subPos.x());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(false);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(false);
+			}
+			break;
+		}
+		case Qt::BottomToolBarArea:
+		{
+			if (mainPos.x() == subPos.x()) {
+				bool cond = (subPos.y() < mainPos.y());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(!cond);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(cond);
+			}
+			else {
+				bool cond = (mainPos.x() < subPos.x());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(false);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(false);
+			}
+			break;
+		}
+		case Qt::LeftToolBarArea:
+		{
+			if (mainPos.x() == subPos.x()) {
+				bool cond = (mainPos.y() < subPos.y());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(false);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(false);
+			}
+			else {
+				bool cond = (mainPos.x() < subPos.x());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(!cond);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(cond);
+			}
+			break;
+		}
+		case Qt::RightToolBarArea:
+		{
+			if (mainPos.x() == subPos.x()) {
+				bool cond = (mainPos.y() < subPos.y());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(false);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(false);
+			}
+			else {
+				bool cond = (subPos.x() < mainPos.x());
+				mainTbConfig.setNumber(cond ? 0 : 1);
+				mainTbConfig.setBreakBefore(!cond);
+				subTbConfig.setNumber(cond ? 1 : 0);
+				subTbConfig.setBreakBefore(cond);
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
 	config_.lock()->setVisibleToolbar(ui->mainToolBar->isVisible());
 	config_.lock()->setVisibleStatusBar(ui->statusBar->isVisible());
 	config_.lock()->setFollowMode(bt_->isFollowPlay());

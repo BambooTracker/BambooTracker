@@ -29,6 +29,18 @@ Configuration::Configuration()
 	instADPCMW_ = 510;
 	instADPCMH_ = 390;
 
+	// Toolbar state
+	mainTb_.setPosition(ToolbarConfiguration::TOP_POS);
+	mainTb_.setNumber(0);
+	mainTb_.setBreakBefore(false);
+	mainTb_.setX(-1);	// Dummy
+	mainTb_.setY(-1);	// Dummy
+	subTb_.setPosition(ToolbarConfiguration::TOP_POS);
+	subTb_.setNumber(1);
+	subTb_.setBreakBefore(false);
+	subTb_.setX(-1);	// Dummy
+	subTb_.setY(-1);	// Dummy
+
 	// General //
 	// General settings
 	warpCursor_ = true;
@@ -693,6 +705,32 @@ int Configuration::getInstrumentADPCMWindowWidth() const { return instADPCMW_; }
 void Configuration::setInstrumentADPCMWindowHeight(int h) { instADPCMH_ = h; }
 
 int Configuration::getInstrumentADPCMWindowHeight() const { return instADPCMH_; }
+
+// Toolbar state
+using TBConfig = Configuration::ToolbarConfiguration;
+void TBConfig::setPosition(ToolbarPosition pos) { pos_ = pos; }
+
+TBConfig::ToolbarPosition TBConfig::getPosition() const { return pos_; }
+
+void TBConfig::setNumber(int n) { num_ = n; }
+
+int TBConfig::getNumber() const { return num_; }
+
+void TBConfig::setBreakBefore(bool enabled) { hasBreakBefore_ = enabled; }
+
+bool TBConfig::hasBreakBefore() const { return hasBreakBefore_; }
+
+void TBConfig::setX(int x) { x_ = x; }
+
+int TBConfig::getX() const { return x_; }
+
+void TBConfig::setY(int y) { y_ = y; }
+
+int TBConfig::getY() const { return y_; }
+
+TBConfig& Configuration::getMainToolbarConfiguration() { return mainTb_; }
+
+TBConfig& Configuration::getSubToolbarConfiguration() { return subTb_; }
 
 // General //
 // General settings

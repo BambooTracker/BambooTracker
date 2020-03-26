@@ -147,9 +147,16 @@ private:
 
 	bool firstViewUpdateRequest_;
 
-	// Sub tool bar
+	// Toolbar
 	QSpinBox* octave_;
 	QSpinBox *highlight1_, *highlight2_;
+	using ToolbarPos = Configuration::ToolbarConfiguration::ToolbarPosition;
+	const std::unordered_map<ToolbarPos, Qt::ToolBarArea> TB_POS_ = {
+		{ToolbarPos::TOP_POS, Qt::TopToolBarArea },
+		{ ToolbarPos::BOTTOM_POS, Qt::BottomToolBarArea },
+		{ ToolbarPos::LEFT_POS, Qt::LeftToolBarArea },
+		{ ToolbarPos::RIGHT_POS, Qt::RightToolBarArea }
+	};
 
 	// Status bar
 	QLabel* statusDetail_;

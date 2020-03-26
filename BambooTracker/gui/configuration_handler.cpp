@@ -39,6 +39,18 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("volumeMask",					configLocked->getVolumeMask());
 		settings.setValue("visibleToolbar",				configLocked->getVisibleToolbar());
 		settings.setValue("visibleStatusBar",			configLocked->getVisibleStatusBar());
+		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
+		settings.setValue("mainToolbarPosition",		mainTbConfig.getPosition());
+		settings.setValue("mainToolbarNumber",			mainTbConfig.getNumber());
+		settings.setValue("hasBreakBeforeMainToolbar",	mainTbConfig.hasBreakBefore());
+		settings.setValue("mainToolbarX",				mainTbConfig.getX());
+		settings.setValue("mainToolbarY",				mainTbConfig.getY());
+		auto& subTbConfig = configLocked->getSubToolbarConfiguration();
+		settings.setValue("subToolbarPosition",			subTbConfig.getPosition());
+		settings.setValue("subToolbarNumber",			subTbConfig.getNumber());
+		settings.setValue("hasBreakBeforesubToolbar",	subTbConfig.hasBreakBefore());
+		settings.setValue("subToolbarX",				subTbConfig.getX());
+		settings.setValue("subToolbarY",				subTbConfig.getY());
 		settings.endGroup();
 
 		// General //
@@ -212,6 +224,18 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setVolumeMask(settings.value("volumeMask", configLocked->getVolumeMask()).toBool());
 		configLocked->setVisibleToolbar(settings.value("visibleToolbar", configLocked->getVisibleToolbar()).toBool());
 		configLocked->setVisibleStatusBar(settings.value("visibleStatusBar", configLocked->getVisibleStatusBar()).toBool());
+		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
+		mainTbConfig.setPosition(static_cast<Configuration::ToolbarConfiguration::ToolbarPosition>(settings.value("mainToolbarPosition", mainTbConfig.getPosition()).toInt()));
+		mainTbConfig.setNumber(settings.value("mainToolbarNumber", mainTbConfig.getNumber()).toInt());
+		mainTbConfig.setBreakBefore(settings.value("hasBreakBeforeMainToolbar", mainTbConfig.hasBreakBefore()).toBool());
+		mainTbConfig.setX(settings.value("mainToolbarX", mainTbConfig.getX()).toInt());
+		mainTbConfig.setY(settings.value("mainToolbarY", mainTbConfig.getY()).toInt());
+		auto& subTbConfig = configLocked->getSubToolbarConfiguration();
+		subTbConfig.setPosition(static_cast<Configuration::ToolbarConfiguration::ToolbarPosition>(settings.value("subToolbarPosition", subTbConfig.getPosition()).toInt()));
+		subTbConfig.setNumber(settings.value("subToolbarNumber", subTbConfig.getNumber()).toInt());
+		subTbConfig.setBreakBefore(settings.value("hasBreakBeforesubToolbar", subTbConfig.hasBreakBefore()).toBool());
+		subTbConfig.setX(settings.value("subToolbarX", subTbConfig.getX()).toInt());
+		subTbConfig.setY(settings.value("subToolbarY", subTbConfig.getY()).toInt());
 		settings.endGroup();
 
 		// General //

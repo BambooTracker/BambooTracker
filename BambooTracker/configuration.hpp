@@ -85,6 +85,33 @@ private:
 	int instSSGW_, instSSGH_;
 	int instADPCMW_, instADPCMH_;
 
+	// Toolbar state
+public:
+	class ToolbarConfiguration
+	{
+	public:
+		enum ToolbarPosition : int { TOP_POS = 0, BOTTOM_POS, LEFT_POS, RIGHT_POS, FLOAT_POS };
+		void setPosition(ToolbarPosition pos);
+		ToolbarPosition getPosition() const;
+		void setNumber(int n);
+		int getNumber() const;
+		void setBreakBefore(bool enabled);
+		bool hasBreakBefore() const;
+		void setX(int x);
+		int getX() const;
+		void setY(int y);
+		int getY() const;
+	private:
+		ToolbarPosition pos_;
+		int num_;
+		bool hasBreakBefore_;
+		int x_, y_;
+	};
+	ToolbarConfiguration& getMainToolbarConfiguration();
+	ToolbarConfiguration& getSubToolbarConfiguration();
+private:
+	ToolbarConfiguration mainTb_, subTb_;
+
 	// General //
 	// General settings
 public:
