@@ -626,10 +626,6 @@
         <translation>エフェクト値に00を自動で設定</translation>
     </message>
     <message>
-        <source>Autoset instrument</source>
-        <translation type="vanished">インストゥルメント自動入力</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.ui" line="197"/>
         <source>Description:</source>
         <translation>説明:</translation>
@@ -779,10 +775,6 @@
         <location filename="../../gui/configuration_dialog.cpp" line="71"/>
         <source>Fill 00 to effect value column upon entering effect id.</source>
         <translation>エフェクトIDを入力時にエフェクト値を自動で00に設定します。</translation>
-    </message>
-    <message>
-        <source>Set current instrument upon entering note.</source>
-        <translation type="vanished">音符入力時に現在のインストゥルメントを自動で入力します。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="73"/>
@@ -1144,22 +1136,22 @@
     <message>
         <location filename="../../gui/go_to_dialog.ui" line="14"/>
         <source>Go To</source>
-        <translation type="unfinished"></translation>
+        <translation>カーソル移動</translation>
     </message>
     <message>
         <location filename="../../gui/go_to_dialog.ui" line="22"/>
         <source>Order</source>
-        <translation type="unfinished">オーダー</translation>
+        <translation>オーダー</translation>
     </message>
     <message>
         <location filename="../../gui/go_to_dialog.ui" line="32"/>
         <source>Step</source>
-        <translation type="unfinished">ステップ</translation>
+        <translation>ステップ</translation>
     </message>
     <message>
         <location filename="../../gui/go_to_dialog.ui" line="42"/>
         <source>Track</source>
-        <translation type="unfinished">トラック</translation>
+        <translation>トラック</translation>
     </message>
 </context>
 <context>
@@ -1861,17 +1853,17 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="614"/>
         <source>&amp;Bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマーク(&amp;B)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="652"/>
         <source>&amp;Change Values</source>
-        <translation type="unfinished"></translation>
+        <translation>値一括変更(&amp;C)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="671"/>
         <source>S&amp;ong</source>
-        <translation type="unfinished"></translation>
+        <translation>ソング(&amp;O)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="684"/>
@@ -2029,10 +2021,6 @@
         <translation>パターン(&amp;N)</translation>
     </message>
     <message>
-        <source>Son&amp;g</source>
-        <translation type="vanished">ソング(&amp;G)</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="724"/>
         <source>&amp;Tracker</source>
         <translation>トラッカー(&amp;T)</translation>
@@ -2040,7 +2028,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="752"/>
         <source>Vie&amp;w</source>
-        <translation type="unfinished"></translation>
+        <translation>ビュー(&amp;W)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="771"/>
@@ -2439,14 +2427,6 @@
         <translation>バンクファイルへ書き出し(&amp;X)...</translation>
     </message>
     <message>
-        <source>E&amp;xpand Effect Column</source>
-        <translation type="vanished">エフェクト列の拡張(&amp;X)</translation>
-    </message>
-    <message>
-        <source>S&amp;hrink Effect Column</source>
-        <translation type="vanished">エフェクト列の縮小(&amp;H)</translation>
-    </message>
-    <message>
         <location filename="../../gui/mainwindow.ui" line="1425"/>
         <source>Remove &amp;Duplicate Instruments</source>
         <translation>重複したインストゥルメントの削除(&amp;D)</translation>
@@ -2464,127 +2444,127 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1447"/>
         <source>Fine &amp;Decrease Values</source>
-        <translation type="unfinished"></translation>
+        <translation>1だけ減少(&amp;D)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1450"/>
         <source>Shift+F1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1455"/>
         <source>Fine &amp;Increase Values</source>
-        <translation type="unfinished"></translation>
+        <translation>1だけ増加(&amp;I)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1458"/>
         <source>Shift+F2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1463"/>
         <source>Coarse D&amp;ecrease Values</source>
-        <translation type="unfinished"></translation>
+        <translation>16だけ減少(&amp;E)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1466"/>
         <source>Shift+F3</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1471"/>
         <source>Coarse I&amp;ncrease Values</source>
-        <translation type="unfinished"></translation>
+        <translation>16だけ増加(&amp;N)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1474"/>
         <source>Shift+F4</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1482"/>
         <source>&amp;Toggle Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマーク登録(&amp;T)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1485"/>
         <source>Ctrl+K</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1490"/>
         <source>&amp;Next Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>次のブックマーク(&amp;N)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1493"/>
         <source>Ctrl+PgDown</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1498"/>
         <source>&amp;Previous Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>前のブックマーク(&amp;P)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1501"/>
         <source>Ctrl+PgUp</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1509"/>
         <source>&amp;Instrument Mask</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメントマスク(&amp;I)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1517"/>
         <source>&amp;Volume Mask</source>
-        <translation type="unfinished"></translation>
+        <translation>音量マスク(&amp;V)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1522"/>
         <source>Set Ro&amp;w Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>マーカーを設定(&amp;W)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1525"/>
         <source>Ctrl+B</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1530"/>
         <source>Play From &amp;Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>マーカー位置から再生(&amp;M)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1533"/>
         <source>Ctrl+F7</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1538"/>
         <source>&amp;Go To...</source>
-        <translation type="unfinished"></translation>
+        <translation>カーソル移動(&amp;G)...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1541"/>
         <source>Alt+G</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1546"/>
         <source>Remove Unused &amp;ADPCM Samples</source>
-        <translation type="unfinished"></translation>
+        <translation>未使用のADPCMサンプルを削除(&amp;A)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1557"/>
         <source>&amp;Status Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>ステータスバー(&amp;S)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1568"/>
         <source>&amp;Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>ツールバー(&amp;T)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1373"/>
@@ -2835,7 +2815,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="3198"/>
         <source>Do you want to remove all unused ADPCM samples?</source>
-        <translation type="unfinished"></translation>
+        <translation>未使用のADPCMサンプルを削除しますか?</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2108"/>
@@ -3273,27 +3253,27 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2024"/>
         <source>&amp;Change Values</source>
-        <translation type="unfinished"></translation>
+        <translation>値一括変更(&amp;C)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2026"/>
         <source>Fine &amp;Decrease Values</source>
-        <translation type="unfinished"></translation>
+        <translation>1だけ減少(&amp;D)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2028"/>
         <source>Fine &amp;Increase Values</source>
-        <translation type="unfinished"></translation>
+        <translation>1だけ増加(&amp;I)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2030"/>
         <source>Coarse D&amp;ecrease Values</source>
-        <translation type="unfinished"></translation>
+        <translation>16だけ減少(&amp;E)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2032"/>
         <source>Coarse I&amp;ncrease Values</source>
-        <translation type="unfinished"></translation>
+        <translation>16だけ増加(&amp;N)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2035"/>
