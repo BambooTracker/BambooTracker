@@ -35,6 +35,9 @@
 - [#177] - Fix the bug that could not create a new instrument (thanks [@Pigu-A], [@nyanpasu64], [@pedipanol])
 - [#192] - Fix that any shortcuts set in the configuration is ignored (thanks [@SMB7])
 
+### Removed
+- Expand/Shrink pattern selection from menubar
+
 [@freq-mod]: https://github.com/freq-mod
 [@RigidatoMS]: https://twitter.com/RigidatoMS
 [@nyanpasu64]: https://github.com/nyanpasu64

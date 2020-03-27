@@ -289,8 +289,6 @@ private slots:
 	void on_action_Effect_List_triggered();
 	void on_actionShortcuts_triggered();
 	void on_actionExport_To_Bank_File_triggered();
-	void on_actionE_xpand_Effect_Column_triggered();
-	void on_actionS_hrink_Effect_Column_triggered();
 	void on_actionRemove_Duplicate_Instruments_triggered();
 	void on_actionRename_Instrument_triggered();
 	void on_action_Bookmark_Manager_triggered();

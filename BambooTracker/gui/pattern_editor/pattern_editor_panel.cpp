@@ -225,6 +225,16 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 			moveCursorToDown(1);
 		}
 	});
+	expandColSc_ = std::make_unique<QShortcut>(this);
+	expandColSc_->setContext(Qt::WidgetShortcut);
+	QObject::connect(expandColSc_.get(), &QShortcut::activated, this, [&] {
+		onExpandEffectColumnPressed(curPos_.track);
+	});
+	shrinkColSc_ = std::make_unique<QShortcut>(this);
+	shrinkColSc_->setContext(Qt::WidgetShortcut);
+	QObject::connect(shrinkColSc_.get(), &QShortcut::activated, this, [&] {
+		onShrinkEffectColumnPressed(curPos_.track);
+	});
 	onShortcutUpdated();
 
 	// MIDI
@@ -2223,6 +2233,8 @@ void PatternEditorPanel::onShortcutUpdated()
 	echoBufSc_->setKey(strToKeySeq(config_->getEchoBufferKey()));
 	stepMvUpSc_->setKey(Qt::ALT + Qt::Key_Up);
 	stepMvDnSc_->setKey(Qt::ALT + Qt::Key_Down);
+	expandColSc_->setKey(Qt::ALT + Qt::Key_L);
+	shrinkColSc_->setKey(Qt::ALT + Qt::Key_K);
 }
 
 void PatternEditorPanel::setPatternHighlight1Count(int count)

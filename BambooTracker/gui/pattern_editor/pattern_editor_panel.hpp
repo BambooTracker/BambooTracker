@@ -208,8 +208,8 @@ private:
 	std::unique_ptr<QShortcut> upSc_[2], dnSc_[2], pgUpSc_[2], pgDnSc_[2], homeSc_[2], endSc_[2];
 	std::unique_ptr<QShortcut> hlUpSc_[2], hlDnSc_[2], ltSc_[2], rtSc_[2];
 
-	std::unique_ptr<QShortcut> keyOffSc_, echoBufSc_;
-	std::unique_ptr<QShortcut> stepMvUpSc_, stepMvDnSc_;
+	std::unique_ptr<QShortcut> keyOffSc_, echoBufSc_, stepMvUpSc_, stepMvDnSc_;
+	std::unique_ptr<QShortcut> expandColSc_, shrinkColSc_;
 
 	// Meta methods
 	int midiKeyEventMethod_;

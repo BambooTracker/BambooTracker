@@ -319,16 +319,6 @@ void PatternEditor::onSoloTrackPressed()
 	ui->panel->onSoloTrackPressed(ui->panel->getCurrentTrack());
 }
 
-void PatternEditor::onExpandEffectColumn()
-{
-	ui->panel->onExpandEffectColumnPressed(ui->panel->getCurrentTrack());
-}
-
-void PatternEditor::onShrinkEffectColumn()
-{
-	ui->panel->onShrinkEffectColumnPressed(ui->panel->getCurrentTrack());
-}
-
 void PatternEditor::onExpandPressed()
 {
 	ui->panel->onExpandPressed();

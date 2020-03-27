@@ -87,8 +87,6 @@ public slots:
 	void onChangeValuesPressed(bool isCoarse, bool isIncreased);
 	void onToggleTrackPressed();
 	void onSoloTrackPressed();
-	void onExpandEffectColumn();
-	void onShrinkEffectColumn();
 	void onExpandPressed();
 	void onShrinkPressed();
 	void onInterpolatePressed();
