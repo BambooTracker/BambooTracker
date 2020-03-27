@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.4.0 (2020-03-27)
 ### Added
 - [#6], [#184], [#185], [#186], [#187] - Support ADPCM (thanks [@ScoopJohn] and others)
 - Shortcuts instead of insert key
