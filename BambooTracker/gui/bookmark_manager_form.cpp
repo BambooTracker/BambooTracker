@@ -212,7 +212,7 @@ void BookmarkManagerForm::on_updatePushButton_clicked()
 	int row = ui->listWidget->currentRow();
 	if (row == -1) return;
 
-	QString name = ui->nameLabel->text();
+	QString name = ui->nameLineEdit->text();
 	int order = ui->orderSpinBox->value();
 	int step = ui->stepSpinBox->value();
 	ui->listWidget->item(row)->setText(createText(name, order, step));
