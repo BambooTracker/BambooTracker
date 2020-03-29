@@ -1,6 +1,14 @@
 # Changelog
 
 ## Unreleased
+## Fixed
+- [#197] - Fix the bug that a book mark name cannot be changed (thanks [@Zeinok], [@OPNA2608])
+- [#199] - Fix ADPCM sample sometimes has wrong DC offset in synthesis (thanks [@galap-1])
+
+[@Zeinok]: https://github.com/Zeinok
+
+[#197]: https://github.com/rerrahkr/BambooTracker/pull/197
+[#199]: https://github.com/rerrahkr/BambooTracker/issues/199
 
 ## v0.4.0 (2020-03-27)
 ### Added

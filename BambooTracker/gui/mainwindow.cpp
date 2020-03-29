@@ -565,6 +565,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	if (filePath.isEmpty()) {
 		loadModule();
 		setInitialSelectedInstrument();
+		assignADPCMSamples();
 		if (!timer_) stream_->start();
 	}
 	else {
@@ -1571,7 +1572,6 @@ void MainWindow::loadModule()
 	highlight1_->setValue(static_cast<int>(bt_->getModuleStepHighlight1Distance()));
 	highlight2_->setValue(static_cast<int>(bt_->getModuleStepHighlight2Distance()));
 
-	bool sampleRestoreRequested = false;
 	for (auto& idx : bt_->getInstrumentIndices()) {
 		auto inst = bt_->getInstrument(idx);
 		auto name = inst->getName();
@@ -1580,9 +1580,7 @@ void MainWindow::loadModule()
 							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
 							inst->getSoundSource(), instForms_,
 							this, config_.lock()->getWriteOnlyUsedSamples(), true));
-		sampleRestoreRequested |= (inst->getSoundSource() == SoundSource::ADPCM);
 	}
-	if (sampleRestoreRequested) bt_->assignWaveformADPCMSamples();	// Store only once
 
 	isSavedModBefore_ = false;
 
@@ -1639,7 +1637,8 @@ void MainWindow::openModule(QString file)
 {
 	try {
 		freezeViews();
-		if (!timer_) stream_->stop();
+		if (timer_) timer_->stop();
+		else stream_->stop();
 
 		BinaryContainer container;
 		QFile fp(file);
@@ -1671,8 +1670,10 @@ void MainWindow::openModule(QString file)
 
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
-	if (!timer_) stream_->start();
+	if (timer_) timer_->start();
+	else stream_->start();
 	setInitialSelectedInstrument();
+	assignADPCMSamples();
 }
 
 void MainWindow::loadSong()
@@ -2387,6 +2388,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 		setWindowTitle();
 		ui->instrumentListWidget->setCurrentRow(instRow);
 		if (!timer_) stream_->start();
+		assignADPCMSamples();
 	}
 }
 
@@ -2605,6 +2607,7 @@ void MainWindow::on_actionNew_triggered()
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
 	if (!timer_) stream_->start();
+	assignADPCMSamples();
 }
 
 void MainWindow::on_actionComments_triggered()
