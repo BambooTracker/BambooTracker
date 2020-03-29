@@ -1,5 +1,6 @@
 #include "opna_controller.hpp"
 #include <stdexcept>
+#include <limits>
 #include "pitch_converter.hpp"
 
 OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
@@ -3384,6 +3385,8 @@ void OPNAController::updateInstrumentADPCM(int instNum)
 void OPNAController::clearSamplesADPCM()
 {
 	storePointADPCM_ = 0;
+	startAddrADPCM_ = std::numeric_limits<size_t>::max();
+	stopAddrADPCM_ = startAddrADPCM_;
 }
 
 std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample)
@@ -3577,8 +3580,8 @@ void OPNAController::initADPCM()
 	baseVolADPCM_ = 0xff;	// Init volume
 	tmpVolADPCM_ = -1;
 	panADPCM_ = 0xc0;
-	startAddrADPCM_ = 0;
-	stopAddrADPCM_ = 0;
+	startAddrADPCM_ = std::numeric_limits<size_t>::max();
+	stopAddrADPCM_ = startAddrADPCM_;
 
 	// Init sequence
 	hasPreSetTickEventADPCM_ = false;

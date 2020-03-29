@@ -4,6 +4,7 @@
 ## Fixed
 - [#197] - Fix the bug that a book mark name cannot be changed (thanks [@Zeinok], [@OPNA2608])
 - [#199] - Fix ADPCM sample sometimes has wrong DC offset in synthesis (thanks [@galap-1])
+- Reset internal start/stop address point of ADPCM sample after loading samples
 
 [@Zeinok]: https://github.com/Zeinok
 
