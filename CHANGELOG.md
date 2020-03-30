@@ -1,15 +1,20 @@
 # Changelog
 
 ## Unreleased
+## Changed
+- [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
+
 ## Fixed
 - [#197] - Fix the bug that a book mark name cannot be changed (thanks [@Zeinok], [@OPNA2608])
 - [#199] - Fix ADPCM sample sometimes has wrong DC offset in synthesis (thanks [@galap-1])
 - Reset internal start/stop address point of ADPCM sample after loading samples
 
 [@Zeinok]: https://github.com/Zeinok
+[@djmaximum17]: https://github.com/djmaximum17
 
 [#197]: https://github.com/rerrahkr/BambooTracker/pull/197
 [#199]: https://github.com/rerrahkr/BambooTracker/issues/199
+[#198]: https://github.com/rerrahkr/BambooTracker/issues/198
 
 ## v0.4.0 (2020-03-27)
 ### Added
