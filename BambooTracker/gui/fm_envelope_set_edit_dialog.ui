@@ -110,6 +110,9 @@
      <property name="styleSheet">
       <string notr="true"/>
      </property>
+     <property name="rootIsDecorated">
+      <bool>false</bool>
+     </property>
      <property name="uniformRowHeights">
       <bool>true</bool>
      </property>
