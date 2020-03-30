@@ -12,6 +12,7 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QListWidgetItem>
+#include <QTreeWidgetItem>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"

@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 #include <QKeySequenceEdit>
-#include <QTreeWidgetItem>
 #include "configuration.hpp"
 #include "color_palette.hpp"
 #include "enum_hash.hpp"

@@ -250,6 +250,24 @@
         <property name="rootIsDecorated">
          <bool>false</bool>
         </property>
+        <property name="columnCount">
+         <number>3</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>Number</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Title</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Song type</string>
+         </property>
+        </column>
        </widget>
       </item>
       <item row="6" column="0" colspan="2">

@@ -116,6 +116,19 @@
      <property name="uniformRowHeights">
       <bool>true</bool>
      </property>
+     <property name="columnCount">
+      <number>2</number>
+     </property>
+     <column>
+      <property name="text">
+       <string>Number</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
     </widget>
    </item>
   </layout>
