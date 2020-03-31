@@ -1,7 +1,6 @@
 #include "configuration_handler.hpp"
 #include <vector>
 #include <unordered_map>
-#include <QSettings>
 #include "jam_manager.hpp"
 #include"enum_hash.hpp"
 
@@ -83,19 +82,11 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 
 		// Keys
 		settings.beginGroup("Keys");
-		settings.setValue("keyOffKey",
-						  QString::fromUtf8(configLocked->getKeyOffKey().c_str(),
-											static_cast<int>(configLocked->getKeyOffKey().length())));
-		settings.setValue("octaveUpKey",
-						  QString::fromUtf8(configLocked->getOctaveUpKey().c_str(),
-											static_cast<int>(configLocked->getOctaveUpKey().length())));
-		settings.setValue("octaveDownKey",
-						  QString::fromUtf8(configLocked->getOctaveDownKey().c_str(),
-											static_cast<int>(configLocked->getOctaveDownKey().length())));
-		settings.setValue("echoBufferKey",
-						  QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
-											static_cast<int>(configLocked->getEchoBufferKey().length())));
-		settings.setValue("noteEntryLayout",	static_cast<int>(configLocked->getNoteEntryLayout()));
+		saveShortcut(settings, "keyOffKey", configLocked->getKeyOffKeys());
+		saveShortcut(settings, "octaveUpKey", configLocked->getOctaveUpKeys());
+		saveShortcut(settings, "octaveDownKey", configLocked->getOctaveDownKeys());
+		saveShortcut(settings, "echoBufferKey", configLocked->getEchoBufferKeys());
+		settings.setValue("noteEntryLayout", static_cast<int>(configLocked->getNoteEntryLayout()));
 		std::unordered_map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
 		const std::unordered_map<JamKey, std::string> keyToNameMapping = {
 			{JamKey::LowC,     "lowC"},
@@ -276,10 +267,10 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 
 		// Keys
 		settings.beginGroup("Keys");
-		configLocked->setKeyOffKey(settings.value("keyOffKey", QString::fromStdString(configLocked->getKeyOffKey())).toString().toUtf8().toStdString());
-		configLocked->setOctaveUpKey(settings.value("octaveUpKey", QString::fromStdString(configLocked->getOctaveUpKey())).toString().toUtf8().toStdString());
-		configLocked->setOctaveDownKey(settings.value("octaveDownKey", QString::fromStdString(configLocked->getOctaveDownKey())).toString().toUtf8().toStdString());
-		configLocked->setEchoBufferKey(settings.value("echoBufferKey", QString::fromStdString(configLocked->getEchoBufferKey())).toString().toUtf8().toStdString());
+		configLocked->setKeyOffKey(loadShortcut(settings, "keyOffKey", configLocked->getKeyOffKeys()));
+		configLocked->setOctaveUpKey(loadShortcut(settings, "octaveUpKey", configLocked->getOctaveUpKeys()));
+		configLocked->setOctaveDownKey(loadShortcut(settings, "octaveDownKey", configLocked->getOctaveDownKeys()));
+		configLocked->setEchoBufferKey(loadShortcut(settings, "echoBufferKey", configLocked->getEchoBufferKeys()));
 		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(
 											 settings.value("noteEntryLayout",
 															static_cast<int>(configLocked->getNoteEntryLayout())).toInt()));

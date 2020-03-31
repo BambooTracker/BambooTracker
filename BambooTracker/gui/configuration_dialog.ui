@@ -1097,6 +1097,38 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
+        <widget class="QGroupBox" name="shortcutsGroupBox">
+         <property name="title">
+          <string>Shortcuts</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QTreeWidget" name="shortcutsTreeWidget">
+            <property name="rootIsDecorated">
+             <bool>false</bool>
+            </property>
+            <property name="uniformRowHeights">
+             <bool>true</bool>
+            </property>
+            <property name="columnCount">
+             <number>2</number>
+            </property>
+            <column>
+             <property name="text">
+              <string>Action</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Keys</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="noteEntryLayoutGroupBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2511,61 +2543,6 @@ color: rgb(255, 255, 255);</string>
          </layout>
         </widget>
        </item>
-       <item>
-        <widget class="QGroupBox" name="specialKeysGroupBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="title">
-          <string>Special keys</string>
-         </property>
-         <layout class="QFormLayout" name="formLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="keyOffLabel">
-            <property name="text">
-             <string>Key off</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QKeySequenceEdit" name="keyOffKeySequenceEdit"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="octaveUpLabel">
-            <property name="text">
-             <string>Octave up</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QKeySequenceEdit" name="octaveUpKeySequenceEdit"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="octaveDownLabel">
-            <property name="text">
-             <string>Octave down</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QKeySequenceEdit" name="octaveDownKeySequenceEdit"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="echoBufferLabel">
-            <property name="text">
-             <string>Echo buffer</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QKeySequenceEdit" name="echoBufferKeySequenceEdit"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -2620,6 +2597,7 @@ color: rgb(255, 255, 255);</string>
   <tabstop>removeEnvelopeSetpushButton</tabstop>
   <tabstop>envelopeSetNameLineEdit</tabstop>
   <tabstop>editEnvelopeSetPushButton</tabstop>
+  <tabstop>shortcutsTreeWidget</tabstop>
   <tabstop>keyboardTypeComboBox</tabstop>
   <tabstop>customLayoutResetButton</tabstop>
   <tabstop>lowHighKeysTabWidget</tabstop>
@@ -2653,10 +2631,6 @@ color: rgb(255, 255, 255);</string>
   <tabstop>highHighCEdit</tabstop>
   <tabstop>highHighCSEdit</tabstop>
   <tabstop>highHighDEdit</tabstop>
-  <tabstop>keyOffKeySequenceEdit</tabstop>
-  <tabstop>octaveUpKeySequenceEdit</tabstop>
-  <tabstop>octaveDownKeySequenceEdit</tabstop>
-  <tabstop>echoBufferKeySequenceEdit</tabstop>
  </tabstops>
  <resources/>
  <connections>

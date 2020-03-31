@@ -814,19 +814,19 @@ bool Configuration::getKeyRepetition() const { return keyRepetision_; }
 // Keys
 void Configuration::setKeyOffKey(std::string key) { keyOffKey_ = key; }
 
-std::string Configuration::getKeyOffKey() const { return keyOffKey_; }
+std::string Configuration::getKeyOffKeys() const { return keyOffKey_; }
 
 void Configuration::setOctaveUpKey(std::string key) { octUpKey_ = key; }
 
-std::string Configuration::getOctaveUpKey() const { return octUpKey_; }
+std::string Configuration::getOctaveUpKeys() const { return octUpKey_; }
 
 void Configuration::setOctaveDownKey(std::string key) { octDownKey_ = key; }
 
-std::string Configuration::getOctaveDownKey() const { return octDownKey_; }
+std::string Configuration::getOctaveDownKeys() const { return octDownKey_; }
 
 void Configuration::setEchoBufferKey(std::string key) { echoKey_ = key; }
 
-std::string Configuration::getEchoBufferKey() const { return echoKey_; }
+std::string Configuration::getEchoBufferKeys() const { return echoKey_; }
 
 void Configuration::setNoteEntryLayout(KeyboardLayout layout) { noteEntryLayout_ = layout; }
 

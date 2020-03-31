@@ -1,10 +1,12 @@
 #ifndef CONFIGURATION_DIALOG_HPP
 #define CONFIGURATION_DIALOG_HPP
 
-#include <QDialog>
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <string>
+#include <QDialog>
+#include <QString>
 #include <QKeySequenceEdit>
 #include "configuration.hpp"
 #include "color_palette.hpp"
@@ -55,7 +57,7 @@ private slots:
 private slots:
 	void on_mixerResetPushButton_clicked();
 
-	/***** MIDI *****/
+	/***** Sound *****/
 private slots:
 	void on_midiInputChoiceButton_clicked();
 
@@ -75,6 +77,10 @@ private slots:
 private slots:
 	void on_keyboardTypeComboBox_currentIndexChanged(int index);
 	void on_customLayoutResetButton_clicked();
+
+private:
+	void addShortcutItem(QString action, std::string shortcut);
+	std::string getShortcutString(int row) const;
 
 	/***** Appearance *****/
 private slots:

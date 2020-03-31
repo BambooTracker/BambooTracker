@@ -173,13 +173,13 @@ private:
 	// Keys
 public:
 	void setKeyOffKey(std::string key);
-	std::string getKeyOffKey() const;
+	std::string getKeyOffKeys() const;
 	void setOctaveUpKey(std::string key);
-	std::string getOctaveUpKey() const;
+	std::string getOctaveUpKeys() const;
 	void setOctaveDownKey(std::string key);
-	std::string getOctaveDownKey() const;
+	std::string getOctaveDownKeys() const;
 	void setEchoBufferKey(std::string key);
-	std::string getEchoBufferKey() const;
+	std::string getEchoBufferKeys() const;
 	enum KeyboardLayout : int
 	{
 		// at the top, so new layouts can easily be added in after it

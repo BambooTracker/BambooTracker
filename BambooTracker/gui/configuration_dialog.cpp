@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QListWidgetItem>
 #include <QTreeWidgetItem>
+#include <QKeySequenceEdit>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
@@ -83,20 +84,14 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
 
 	// Keys
-	ui->keyOffKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(configLocked->getKeyOffKey().c_str(),
-								  static_cast<int>(configLocked->getKeyOffKey().length())));
-	ui->octaveUpKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(configLocked->getOctaveUpKey().c_str(),
-								  static_cast<int>(configLocked->getOctaveUpKey().length())));
-	ui->octaveDownKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(configLocked->getOctaveDownKey().c_str(),
-								  static_cast<int>(configLocked->getOctaveDownKey().length())));
-	ui->echoBufferKeySequenceEdit->setKeySequence(
-				QString::fromUtf8(configLocked->getEchoBufferKey().c_str(),
-								  static_cast<int>(configLocked->getEchoBufferKey().length())));
-	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(configLocked->getNoteEntryLayout()));
+	ui->shortcutsTreeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+	ui->shortcutsTreeWidget->header()->setSectionResizeMode(1, QHeaderView::Fixed);
+	addShortcutItem(tr("Key off"), configLocked->getKeyOffKeys());
+	addShortcutItem(tr("Octave up"), configLocked->getOctaveUpKeys());
+	addShortcutItem(tr("Octave down"), configLocked->getOctaveDownKeys());
+	addShortcutItem(tr("Echo buffer"), configLocked->getEchoBufferKeys());
 
+	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(configLocked->getNoteEntryLayout()));
 	customLayoutKeysMap = {
 		{ JamKey::LowC,     ui->lowCEdit },
 		{ JamKey::LowCS,    ui->lowCSEdit },
@@ -175,6 +170,11 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	case RealChipInterface::C86CTL:	ui->realChipComboBox->setCurrentIndex(2);	break;
 	}
 
+	MidiInterface &midiIntf = MidiInterface::instance();
+	if (midiIntf.supportsVirtualPort())
+		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
+	ui->midiInputNameLine->setText(QString::fromStdString(configLocked->getMidiInputPort()));
+
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
 	ui->sampleRateComboBox->addItem("55466Hz", 55466);
@@ -191,11 +191,6 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	});
 	ui->bufferLengthHorizontalSlider->setValue(static_cast<int>(configLocked->getBufferLength()));
 
-	// Midi //
-	MidiInterface &midiIntf = MidiInterface::instance();
-	if (midiIntf.supportsVirtualPort())
-		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
-	ui->midiInputNameLine->setText(QString::fromStdString(configLocked->getMidiInputPort()));
 
 	// Mixer //
 	ui->masterMixerSlider->setText(tr("Master"));
@@ -283,10 +278,11 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
 
 	// Keys
-	configLocked->setKeyOffKey(ui->keyOffKeySequenceEdit->keySequence().toString().toStdString());
-	configLocked->setOctaveUpKey(ui->octaveUpKeySequenceEdit->keySequence().toString().toStdString());
-	configLocked->setOctaveDownKey(ui->octaveDownKeySequenceEdit->keySequence().toString().toStdString());
-	configLocked->setEchoBufferKey(ui->echoBufferKeySequenceEdit->keySequence().toString().toStdString());
+	configLocked->setKeyOffKey(getShortcutString(0));
+	configLocked->setOctaveUpKey(getShortcutString(1));
+	configLocked->setOctaveDownKey(getShortcutString(2));
+	configLocked->setEchoBufferKey(getShortcutString(3));
+
 	configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
 	std::unordered_map<std::string, JamKey> customLayoutNewKeys;
 	std::unordered_map<JamKey, QKeySequenceEdit *>::const_iterator customLayoutKeysMapIterator = customLayoutKeysMap.begin();
@@ -309,11 +305,9 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setSoundAPI(ui->soundAPIComboBox->currentText().toUtf8().toStdString());
 	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
 										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
+	configLocked->setMidiInputPort(ui->midiInputNameLine->text().toStdString());
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
 	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
-
-	// Midi //
-	configLocked->setMidiInputPort(ui->midiInputNameLine->text().toStdString());
 
 	// Mixer //
 	configLocked->setMixerVolumeMaster(ui->masterMixerSlider->value());
@@ -413,7 +407,7 @@ void ConfigurationDialog::on_mixerResetPushButton_clicked()
 	ui->ssgMixerSlider->setValue(0);
 }
 
-/***** MIDI *****/
+/***** Sound *****/
 void ConfigurationDialog::on_midiInputChoiceButton_clicked()
 {
 	QToolButton *button = ui->midiInputChoiceButton;
@@ -524,6 +518,22 @@ void ConfigurationDialog::on_customLayoutResetButton_clicked()
 		customLayoutKeysMap.at(QWERTYLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(QWERTYLayoutMappingIterator->first)));
 		QWERTYLayoutMappingIterator++;
 	}
+}
+
+void ConfigurationDialog::addShortcutItem(QString action, std::string shortcut)
+{
+	int row = ui->shortcutsTreeWidget->topLevelItemCount();
+	auto titem = new QTreeWidgetItem();
+	titem->setText(0, action);
+	ui->shortcutsTreeWidget->insertTopLevelItem(row, titem);
+	ui->shortcutsTreeWidget->setItemWidget(titem, 1, new QKeySequenceEdit(QString::fromUtf8(shortcut.c_str(), static_cast<int>(shortcut.length()))));
+}
+
+std::string ConfigurationDialog::getShortcutString(int row) const
+{
+	return qobject_cast<QKeySequenceEdit*>(
+				ui->shortcutsTreeWidget->itemWidget(ui->shortcutsTreeWidget->topLevelItem(row), 1)
+				)->keySequence().toString().toStdString();
 }
 
 /***** Appearance *****/
