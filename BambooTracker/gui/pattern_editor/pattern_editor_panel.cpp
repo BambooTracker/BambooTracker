@@ -2229,8 +2229,9 @@ void PatternEditorPanel::onShortcutUpdated()
 		hlDnSc_[i]->setKey(getKeys(i, Qt::CTRL + Qt::Key_Down));
 	}
 
-	keyOffSc_->setKey(strToKeySeq(config_->getKeyOffKeys()));
-	echoBufSc_->setKey(strToKeySeq(config_->getEchoBufferKeys()));
+	auto shortcuts = config_->getShortcuts();
+	keyOffSc_->setKey(strToKeySeq(shortcuts.at(Configuration::KeyOff)));
+	echoBufSc_->setKey(strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
 	stepMvUpSc_->setKey(Qt::ALT + Qt::Key_Up);
 	stepMvDnSc_->setKey(Qt::ALT + Qt::Key_Down);
 	expandColSc_->setKey(Qt::ALT + Qt::Key_L);

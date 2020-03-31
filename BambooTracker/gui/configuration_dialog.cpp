@@ -2,6 +2,7 @@
 #include "ui_configuration_dialog.h"
 #include <algorithm>
 #include <functional>
+#include <map>
 #include <QPushButton>
 #include <QMenu>
 #include <QMessageBox>
@@ -13,7 +14,6 @@
 #include <QApplication>
 #include <QListWidgetItem>
 #include <QTreeWidgetItem>
-#include <QKeySequenceEdit>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
@@ -86,13 +86,26 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Keys
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(1, QHeaderView::Fixed);
-	addShortcutItem(tr("Key off"), configLocked->getKeyOffKeys());
-	addShortcutItem(tr("Octave up"), configLocked->getOctaveUpKeys());
-	addShortcutItem(tr("Octave down"), configLocked->getOctaveDownKeys());
-	addShortcutItem(tr("Echo buffer"), configLocked->getEchoBufferKeys());
+	std::map<Configuration::ShortcutAction, QString> shortcutsActions = {
+		{ Configuration::KeyOff, QT_TR_NOOP("Key off") },
+		{ Configuration::OctaveUp, QT_TR_NOOP("Octave up") },
+		{ Configuration::OctaveDown, QT_TR_NOOP("Octave down") },
+		{ Configuration::EchoBuffer, QT_TR_NOOP("Echo buffer") }
+	};
+	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts = configLocked->getShortcuts();
+	for (const auto& pair : shortcutsActions) {
+		int row = ui->shortcutsTreeWidget->topLevelItemCount();
+		auto item = new QTreeWidgetItem();
+		item->setText(0, pair.second);
+		ui->shortcutsTreeWidget->insertTopLevelItem(row, item);
+		std::string shortcut = shortcuts.at(pair.first);
+		auto seq = new QKeySequenceEdit(QString::fromUtf8(shortcut.c_str(), static_cast<int>(shortcut.length())));
+		ui->shortcutsTreeWidget->setItemWidget(item, 1, seq);
+		shortcutsMap_[pair.first] = seq;
+	}
 
 	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(configLocked->getNoteEntryLayout()));
-	customLayoutKeysMap = {
+	customLayoutKeysMap_ = {
 		{ JamKey::LowC,     ui->lowCEdit },
 		{ JamKey::LowCS,    ui->lowCSEdit },
 		{ JamKey::LowD,     ui->lowDEdit },
@@ -125,11 +138,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ JamKey::HighCS2, ui->highHighCSEdit },
 		{ JamKey::HighD2,  ui->highHighDEdit }
 	};
-	std::unordered_map<std::string, JamKey> customLayoutMapping = configLocked->getCustomLayoutKeys();
-	std::unordered_map<std::string, JamKey>::const_iterator customLayoutMappingIterator = customLayoutMapping.begin();
-	while (customLayoutMappingIterator != customLayoutMapping.end()) {
-		customLayoutKeysMap.at(customLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(customLayoutMappingIterator->first)));
-		customLayoutMappingIterator++;
+	for (const auto& pair : configLocked->getCustomLayoutKeys()) {
+		customLayoutKeysMap_.at(pair.second)->setKeySequence(QKeySequence(QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length()))));
 	}
 
 	// Emulation //
@@ -278,17 +288,16 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
 
 	// Keys
-	configLocked->setKeyOffKey(getShortcutString(0));
-	configLocked->setOctaveUpKey(getShortcutString(1));
-	configLocked->setOctaveDownKey(getShortcutString(2));
-	configLocked->setEchoBufferKey(getShortcutString(3));
+	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts;
+	for (const auto& pair: shortcutsMap_) {
+		shortcuts[pair.first] = pair.second->keySequence().toString().toStdString();
+	}
+	configLocked->setShortcuts(shortcuts);
 
 	configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(ui->keyboardTypeComboBox->currentIndex()));
 	std::unordered_map<std::string, JamKey> customLayoutNewKeys;
-	std::unordered_map<JamKey, QKeySequenceEdit *>::const_iterator customLayoutKeysMapIterator = customLayoutKeysMap.begin();
-	while (customLayoutKeysMapIterator != customLayoutKeysMap.end()) {
-		customLayoutNewKeys[customLayoutKeysMapIterator->second->keySequence().toString().toStdString()] = customLayoutKeysMapIterator->first;
-		customLayoutKeysMapIterator++;
+	for (const auto& pair : customLayoutKeysMap_) {
+		customLayoutNewKeys[pair.second->keySequence().toString().toStdString()] = pair.first;
 	}
 	configLocked->setCustomLayoutKeys(customLayoutNewKeys);
 
@@ -515,7 +524,7 @@ void ConfigurationDialog::on_customLayoutResetButton_clicked()
 	std::unordered_map<std::string, JamKey> QWERTYLayoutMapping = config_.lock()->mappingLayouts.at (Configuration::KeyboardLayout::QWERTY);
 	std::unordered_map<std::string, JamKey>::const_iterator QWERTYLayoutMappingIterator = QWERTYLayoutMapping.begin();
 	while (QWERTYLayoutMappingIterator != QWERTYLayoutMapping.end()) {
-		customLayoutKeysMap.at(QWERTYLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(QWERTYLayoutMappingIterator->first)));
+		customLayoutKeysMap_.at(QWERTYLayoutMappingIterator->second)->setKeySequence(QKeySequence(QString::fromStdString(QWERTYLayoutMappingIterator->first)));
 		QWERTYLayoutMappingIterator++;
 	}
 }

@@ -929,8 +929,9 @@ void MainWindow::freezeViews()
 
 void MainWindow::setShortcuts()
 {
-	octUpSc_->setKey(strToKeySeq(config_.lock()->getOctaveUpKeys().c_str()));
-	octDownSc_->setKey(strToKeySeq(config_.lock()->getOctaveDownKeys().c_str()));
+	auto shortcuts = config_.lock()->getShortcuts();
+	octUpSc_->setKey(strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
+	octDownSc_->setKey(strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
 	focusPtnSc_->setKey(Qt::Key_F2);
 	focusOdrSc_->setKey(Qt::Key_F3);
 	focusInstSc_->setKey(Qt::Key_F4);

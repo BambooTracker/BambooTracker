@@ -172,14 +172,12 @@ private:
 
 	// Keys
 public:
-	void setKeyOffKey(std::string key);
-	std::string getKeyOffKeys() const;
-	void setOctaveUpKey(std::string key);
-	std::string getOctaveUpKeys() const;
-	void setOctaveDownKey(std::string key);
-	std::string getOctaveDownKeys() const;
-	void setEchoBufferKey(std::string key);
-	std::string getEchoBufferKeys() const;
+	enum ShortcutAction : int
+	{
+		KeyOff, OctaveUp, OctaveDown, EchoBuffer
+	};
+	void setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts);
+	std::unordered_map<ShortcutAction, std::string> getShortcuts() const;
 	enum KeyboardLayout : int
 	{
 		// at the top, so new layouts can easily be added in after it
@@ -198,7 +196,7 @@ public:
 	std::unordered_map<std::string, JamKey> getCustomLayoutKeys() const;
 
 private:
-	std::string keyOffKey_, octUpKey_, octDownKey_, echoKey_;
+	std::unordered_map<ShortcutAction, std::string> shortcuts_;
 	KeyboardLayout noteEntryLayout_;
 
 	// Sound //

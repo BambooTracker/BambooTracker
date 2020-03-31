@@ -66,10 +66,12 @@ Configuration::Configuration()
 	keyRepetision_ = true;
 
 	// Keys
-	keyOffKey_ = u8"-";
-	octUpKey_ = u8"Num+*";
-	octDownKey_ = u8"Num+/";
-	echoKey_ = u8"^";
+	shortcuts_ = {
+		{ KeyOff, u8"-" },
+		{ OctaveUp, u8"Num+*" },
+		{ OctaveDown, u8"Num+/" },
+		{ EchoBuffer, u8"^" }
+	};
 	noteEntryLayout_ = QWERTY;
 
 	// Sound //
@@ -812,21 +814,9 @@ void Configuration::setKeyRepetition(bool enabled) { keyRepetision_ = enabled; }
 bool Configuration::getKeyRepetition() const { return keyRepetision_; }
 
 // Keys
-void Configuration::setKeyOffKey(std::string key) { keyOffKey_ = key; }
+void Configuration::setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts) { shortcuts_ = shortcuts; }
 
-std::string Configuration::getKeyOffKeys() const { return keyOffKey_; }
-
-void Configuration::setOctaveUpKey(std::string key) { octUpKey_ = key; }
-
-std::string Configuration::getOctaveUpKeys() const { return octUpKey_; }
-
-void Configuration::setOctaveDownKey(std::string key) { octDownKey_ = key; }
-
-std::string Configuration::getOctaveDownKeys() const { return octDownKey_; }
-
-void Configuration::setEchoBufferKey(std::string key) { echoKey_ = key; }
-
-std::string Configuration::getEchoBufferKeys() const { return echoKey_; }
+std::unordered_map<Configuration::ShortcutAction, std::string> Configuration::getShortcuts() const { return shortcuts_; }
 
 void Configuration::setNoteEntryLayout(KeyboardLayout layout) { noteEntryLayout_ = layout; }
 

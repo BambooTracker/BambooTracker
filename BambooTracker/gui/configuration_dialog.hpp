@@ -47,7 +47,7 @@ private:
 		return (state == Qt::Checked) ? true : false;
 	}
 
-	std::unordered_map<JamKey, QKeySequenceEdit *> customLayoutKeysMap;
+	std::unordered_map<JamKey, QKeySequenceEdit*> customLayoutKeysMap_;
 
 	/***** General *****/
 private slots:
@@ -79,6 +79,8 @@ private slots:
 	void on_customLayoutResetButton_clicked();
 
 private:
+	std::unordered_map<Configuration::ShortcutAction, QKeySequenceEdit*> shortcutsMap_;
+
 	void addShortcutItem(QString action, std::string shortcut);
 	std::string getShortcutString(int row) const;
 
