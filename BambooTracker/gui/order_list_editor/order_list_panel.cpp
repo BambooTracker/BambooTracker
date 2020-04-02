@@ -19,6 +19,7 @@
 #include "gui/command/order/order_commands.hpp"
 #include "playback.hpp"
 #include "track.hpp"
+#include "gui/shortcut_util.hpp"
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
@@ -1069,8 +1070,10 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	copy->setShortcutVisibleInContextMenu(true);
 	paste->setShortcutVisibleInContextMenu(true);
 #endif
-	duplicate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-	clonep->setShortcut(QKeySequence(Qt::ALT + Qt::Key_D));
+	auto shortcuts = config_->getShortcuts();
+	duplicate->setShortcut(strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
+	clonep->setShortcut(strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
+	cloneo->setShortcut(strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
 

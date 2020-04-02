@@ -2066,30 +2066,34 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	exeff->setShortcutVisibleInContextMenu(true);
 	sheff->setShortcutVisibleInContextMenu(true);
 #endif
+	auto shortcuts = config_->getShortcuts();
 	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
 	redo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
 	undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	cut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
-	pasteMix->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+	pasteMix->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteMix)));
+	pasteOver->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
 	erase->setShortcut(QKeySequence(Qt::Key_Delete));
-	select->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
-	interpolate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
-	reverse->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-	replace->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
-	deNote->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F1));
-	inNote->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F2));
-	deOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F3));
-	inOct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4));
-	fdeVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F1));
-	finVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F2));
-	cdeVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F3));
-	cinVal->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F4));
-	toggle->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
-	solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
-	exeff->setShortcut(QKeySequence(Qt::ALT + Qt::Key_L));
-	sheff->setShortcut(QKeySequence(Qt::ALT + Qt::Key_K));
+	select->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectAll)));
+	interpolate->setShortcut(strToKeySeq(shortcuts.at(Configuration::Interpolate)));
+	reverse->setShortcut(strToKeySeq(shortcuts.at(Configuration::Reverse)));
+	replace->setShortcut(strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
+	expand->setShortcut(strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
+	shrink->setShortcut(strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
+	deNote->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
+	inNote->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
+	deOct->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
+	inOct->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
+	fdeVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
+	finVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
+	cdeVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
+	cinVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
+	toggle->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
+	solo->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
+	exeff->setShortcut(strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
+	sheff->setShortcut(strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
 
 	if (bt_->isJamMode() || pos.order < 0 || pos.track < 0) {
 		copy->setEnabled(false);
@@ -2223,19 +2227,22 @@ void PatternEditorPanel::onDefaultPatternSizeChanged()
 
 void PatternEditorPanel::onShortcutUpdated()
 {
-	auto getKeys = [](size_t idx, auto key) { return (idx ? (Qt::SHIFT + key) : key); };
+	auto shortcuts = config_->getShortcuts();
+
+	auto getKeys = [](size_t idx, QKeySequence key) {
+		return (idx ? QKeySequence("Shift+" + key.toString()) : key);
+	};
 	for (size_t i = 0; i < 2; ++i) {
-		hlUpSc_[i]->setKey(getKeys(i, Qt::CTRL + Qt::Key_Up));
-		hlDnSc_[i]->setKey(getKeys(i, Qt::CTRL + Qt::Key_Down));
+		hlUpSc_[i]->setKey(getKeys(i, strToKeySeq(shortcuts.at(Configuration::PrevHighlighted))));
+		hlDnSc_[i]->setKey(getKeys(i, strToKeySeq(shortcuts.at(Configuration::NextHighlighted))));
 	}
 
-	auto shortcuts = config_->getShortcuts();
 	keyOffSc_->setKey(strToKeySeq(shortcuts.at(Configuration::KeyOff)));
 	echoBufSc_->setKey(strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
 	stepMvUpSc_->setKey(Qt::ALT + Qt::Key_Up);
 	stepMvDnSc_->setKey(Qt::ALT + Qt::Key_Down);
-	expandColSc_->setKey(Qt::ALT + Qt::Key_L);
-	shrinkColSc_->setKey(Qt::ALT + Qt::Key_K);
+	expandColSc_->setKey(strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
+	shrinkColSc_->setKey(strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
 }
 
 void PatternEditorPanel::setPatternHighlight1Count(int count)
@@ -2854,8 +2861,9 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			toggle->setShortcutVisibleInContextMenu(true);
 			solo->setShortcutVisibleInContextMenu(true);
 #endif
-			toggle->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F9));
-			solo->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
+			auto shortcuts = config_->getShortcuts();
+			toggle->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
+			solo->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
 			if (mousePressPos_.track < 0) {
 				toggle->setEnabled(false);
 				solo->setEnabled(false);

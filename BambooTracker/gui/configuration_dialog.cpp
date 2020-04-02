@@ -14,6 +14,8 @@
 #include <QApplication>
 #include <QListWidgetItem>
 #include <QTreeWidgetItem>
+#include <QToolButton>
+#include <QHBoxLayout>
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
@@ -90,7 +92,62 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ Configuration::KeyOff, QT_TR_NOOP("Key off") },
 		{ Configuration::OctaveUp, QT_TR_NOOP("Octave up") },
 		{ Configuration::OctaveDown, QT_TR_NOOP("Octave down") },
-		{ Configuration::EchoBuffer, QT_TR_NOOP("Echo buffer") }
+		{ Configuration::EchoBuffer, QT_TR_NOOP("Echo buffer") },
+		{ Configuration::PlayAndStop, QT_TR_NOOP("Play and stop") },
+		{ Configuration::Play, QT_TR_NOOP("Play") },
+		{ Configuration::PlayFromStart, QT_TR_NOOP("Play from start") },
+		{ Configuration::PlayPattern, QT_TR_NOOP("Play pattern") },
+		{ Configuration::PlayFromCursor, QT_TR_NOOP("Play from cursor") },
+		{ Configuration::PlayFromMarker, QT_TR_NOOP("Play from marker") },
+		{ Configuration::PlayStep, QT_TR_NOOP("Play step") },
+		{ Configuration::Stop, QT_TR_NOOP("Stop") },
+		{ Configuration::FocusOnPattern, QT_TR_NOOP("Focus on pattern editor") },
+		{ Configuration::FocusOnOrder, QT_TR_NOOP("Focus on order list") },
+		{ Configuration::FocusOnInstrument, QT_TR_NOOP("Focus on instrument list") },
+		{ Configuration::ToggleEditJam, QT_TR_NOOP("Toggle edit/jam mode") },
+		{ Configuration::SetMarker, QT_TR_NOOP("Set marker") },
+		{ Configuration::PasteMix, QT_TR_NOOP("Paste and mix") },
+		{ Configuration::PasteOverwrite, QT_TR_NOOP("Paste and overwrite") },
+		{ Configuration::SelectAll, QT_TR_NOOP("Select all") },
+		{ Configuration::Deselect, QT_TR_NOOP("Deselect") },
+		{ Configuration::SelectRow, QT_TR_NOOP("Select row") },
+		{ Configuration::SelectColumn, QT_TR_NOOP("Select column") },
+		{ Configuration::SelectPattern, QT_TR_NOOP("Select pattern") },
+		{ Configuration::SelectOrder, QT_TR_NOOP("Select order") },
+		{ Configuration::GoToStep, QT_TR_NOOP("Go to step") },
+		{ Configuration::ToggleTrack, QT_TR_NOOP("Toggle track") },
+		{ Configuration::SoloTrack, QT_TR_NOOP("Solo track") },
+		{ Configuration::Interpolate, QT_TR_NOOP("Interpolate") },
+		{ Configuration::Reverse, QT_TR_NOOP("Reverse") },
+		{ Configuration::GoToPrevOrder, QT_TR_NOOP("Go to previous order") },
+		{ Configuration::GoToNextOrder, QT_TR_NOOP("Go to next order") },
+		{ Configuration::ToggleBookmark, QT_TR_NOOP("Toggle bookmark") },
+		{ Configuration::PrevBookmark, QT_TR_NOOP("Previous bookmark") },
+		{ Configuration::NextBookmark, QT_TR_NOOP("Next bookmark") },
+		{ Configuration::DecreaseNote, QT_TR_NOOP("Transpose, decrease note") },
+		{ Configuration::IncreaseNote, QT_TR_NOOP("Transpose, increase note") },
+		{ Configuration::DecreaseOctave, QT_TR_NOOP("Transpose, decrease octave") },
+		{ Configuration::IncreaseOctave, QT_TR_NOOP("Transpose, increase octave") },
+		{ Configuration::PrevInstrument, QT_TR_NOOP("Previous instrument") },
+		{ Configuration::NextInstrument, QT_TR_NOOP("Next instrument") },
+		{ Configuration::MaskInstrument, QT_TR_NOOP("Mask instrument") },
+		{ Configuration::MaskVolume, QT_TR_NOOP("Mask volume") },
+		{ Configuration::EditInstrument, QT_TR_NOOP("Edit instrument") },
+		{ Configuration::FollowMode, QT_TR_NOOP("Follow mode") },
+		{ Configuration::DuplicateOrder, QT_TR_NOOP("Duplicate order") },
+		{ Configuration::ClonePatterns, QT_TR_NOOP("Clone patterns") },
+		{ Configuration::CloneOrder, QT_TR_NOOP("Clone order") },
+		{ Configuration::ReplaceInstrument, QT_TR_NOOP("Replace instrument") },
+		{ Configuration::ExpandPattern, QT_TR_NOOP("Expand pattern") },
+		{ Configuration::ShrinkPattern, QT_TR_NOOP("Shrink pattern") },
+		{ Configuration::FineDecreaseValues, QT_TR_NOOP("Fine decrease values") },
+		{ Configuration::FineIncreaseValues, QT_TR_NOOP("Fine increase values") },
+		{ Configuration::CoarseDecreaseValues, QT_TR_NOOP("Coarse decrease values") },
+		{ Configuration::CoarseIncreaseValuse, QT_TR_NOOP("Coarse increase valuse") },
+		{ Configuration::ExpandEffect, QT_TR_NOOP("Expand effect column") },
+		{ Configuration::ShrinkEffect, QT_TR_NOOP("Shrink effect column") },
+		{ Configuration::PrevHighlighted, QT_TR_NOOP("Previous highlighted step") },
+		{ Configuration::NextHighlighted, QT_TR_NOOP("Next highlighted step") },
 	};
 	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts = configLocked->getShortcuts();
 	for (const auto& pair : shortcutsActions) {
@@ -98,10 +155,20 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		auto item = new QTreeWidgetItem();
 		item->setText(0, pair.second);
 		ui->shortcutsTreeWidget->insertTopLevelItem(row, item);
+		auto widget = new QWidget();
+		widget->setLayout(new QHBoxLayout());
 		std::string shortcut = shortcuts.at(pair.first);
 		auto seq = new QKeySequenceEdit(QString::fromUtf8(shortcut.c_str(), static_cast<int>(shortcut.length())));
-		ui->shortcutsTreeWidget->setItemWidget(item, 1, seq);
 		shortcutsMap_[pair.first] = seq;
+		auto button = new QToolButton();
+		button->setIcon(QIcon(":/icon/remove_inst"));
+		QObject::connect(button, &QToolButton::clicked, seq, &QKeySequenceEdit::clear);
+		auto layout = widget->layout();
+		layout->setSpacing(0);
+		layout->setMargin(0);
+		layout->addWidget(seq);
+		layout->addWidget(button);
+		ui->shortcutsTreeWidget->setItemWidget(item, 1, widget);
 	}
 
 	ui->keyboardTypeComboBox->setCurrentIndex(static_cast<int>(configLocked->getNoteEntryLayout()));

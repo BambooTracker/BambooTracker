@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+## Added
+- Shortcut settings
+
 ## Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
 

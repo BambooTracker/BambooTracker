@@ -174,7 +174,15 @@ private:
 public:
 	enum ShortcutAction : int
 	{
-		KeyOff, OctaveUp, OctaveDown, EchoBuffer
+		KeyOff, OctaveUp, OctaveDown, EchoBuffer, PlayAndStop, Play, PlayFromStart, PlayPattern,
+		PlayFromCursor, PlayFromMarker, PlayStep, Stop, FocusOnPattern, FocusOnOrder, FocusOnInstrument,
+		ToggleEditJam, SetMarker, PasteMix, PasteOverwrite, SelectAll, Deselect, SelectRow, SelectColumn,
+		SelectPattern, SelectOrder, GoToStep, ToggleTrack, SoloTrack, Interpolate, Reverse, GoToPrevOrder,
+		GoToNextOrder, ToggleBookmark, PrevBookmark, NextBookmark, DecreaseNote, IncreaseNote,
+		DecreaseOctave, IncreaseOctave, PrevInstrument, NextInstrument, MaskInstrument, MaskVolume,
+		EditInstrument, FollowMode, DuplicateOrder, ClonePatterns, CloneOrder, ReplaceInstrument,
+		ExpandPattern, ShrinkPattern, FineDecreaseValues, FineIncreaseValues, CoarseDecreaseValues,
+		CoarseIncreaseValuse, ExpandEffect, ShrinkEffect, PrevHighlighted, NextHighlighted
 	};
 	void setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts);
 	std::unordered_map<ShortcutAction, std::string> getShortcuts() const;
