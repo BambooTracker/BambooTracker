@@ -833,7 +833,7 @@ void OrderListPanel::updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJ
 	int d = curPos_.row - tmp;
 	if (d) {
 		emit vScrollBarChangeRequested(curPos_.row, static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1);
-		
+
 		// Redraw entire area in first update and jumping order
 		orderDownCount_ = (isFirstUpdate || d < 0 || (viewedRowCnt_ >> 1) < d) ? 0 : d;
 	}
@@ -893,6 +893,7 @@ void OrderListPanel::redrawAll()
 	backChanged_ = true;
 	textChanged_ = true;
 	headerChanged_ = true;
+	orderDownCount_ = 0;	// Prevent quick draw
 	repaint();
 }
 
