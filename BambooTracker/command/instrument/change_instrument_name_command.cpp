@@ -11,7 +11,6 @@ void ChangeInstrumentNameCommand::redo()
 	manager_.lock()->setInstrumentName(instNum_, newName_);
 }
 
-
 void ChangeInstrumentNameCommand::undo()
 {
 	manager_.lock()->setInstrumentName(instNum_, oldName_);

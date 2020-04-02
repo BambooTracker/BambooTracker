@@ -49,7 +49,7 @@ public:
 	int getCurrentInstrumentNumber() const;
 
 	// Instrument edit
-	void addInstrument(int num, std::string name);
+	void addInstrument(int num, InstrumentType type, std::string name);
 	void removeInstrument(int num);
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);

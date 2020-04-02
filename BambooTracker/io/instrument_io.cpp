@@ -35,8 +35,8 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		std::string name = inst->getName();
 		ctr.appendUint32(name.length());
 		if (!name.empty()) ctr.appendString(name);
-		switch (inst->getSoundSource()) {
-		case SoundSource::FM:
+		switch (inst->getType()) {
+		case InstrumentType::FM:
 		{
 			ctr.appendUint8(0x00);
 			auto instFM = std::dynamic_pointer_cast<InstrumentFM>(inst);
@@ -118,14 +118,12 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			}
 			break;
 		}
-		case SoundSource::SSG:
+		case InstrumentType::SSG:
 		{
 			ctr.appendUint8(0x01);
 			break;
 		}
-		case SoundSource::DRUM:
-			break;
-		case SoundSource::ADPCM:
+		case InstrumentType::ADPCM:
 		{
 			ctr.appendUint8(0x02);
 			break;
@@ -140,8 +138,8 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 	size_t instPropOfs = ctr.size();
 	ctr.appendUint32(0);	// Dummy instrument property section offset
 
-	switch (inst->getSoundSource()) {
-	case SoundSource::FM:
+	switch (inst->getType()) {
+	case InstrumentType::FM:
 	{
 		auto instFM = std::dynamic_pointer_cast<InstrumentFM>(inst);
 
@@ -383,7 +381,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		}
 		break;
 	}
-	case SoundSource::SSG:
+	case InstrumentType::SSG:
 	{
 		auto instSSG = std::dynamic_pointer_cast<InstrumentSSG>(inst);
 
@@ -599,9 +597,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		}
 		break;
 	}
-	case SoundSource::DRUM:
-		break;
-	case SoundSource::ADPCM:
+	case InstrumentType::ADPCM:
 	{
 		auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);
 

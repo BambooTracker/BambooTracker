@@ -1,11 +1,10 @@
 #include "instrument.hpp"
 #include <utility>
 
-AbstractInstrument::AbstractInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner)
+AbstractInstrument::AbstractInstrument(int number, std::string name, InstrumentsManager* owner)
 	: owner_(owner),
 	  number_(number),
-	  name_(name),
-	  source_(source)
+	  name_(name)
 {}
 
 int AbstractInstrument::getNumber() const
@@ -16,11 +15,6 @@ int AbstractInstrument::getNumber() const
 void AbstractInstrument::setNumber(int n)
 {
 	number_ = n;
-}
-
-SoundSource AbstractInstrument::getSoundSource() const
-{
-	return source_;
 }
 
 std::string AbstractInstrument::getName() const
@@ -41,7 +35,7 @@ bool AbstractInstrument::isRegisteredWithManager() const
 /****************************************/
 
 InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* owner) :
-	AbstractInstrument(number, SoundSource::FM, name, owner),
+	AbstractInstrument(number, name, owner),
 	envNum_(0),
 	lfoEnabled_(false),
 	lfoNum_(0)
@@ -161,6 +155,16 @@ InstrumentFM::InstrumentFM(int number, std::string name, InstrumentsManager* own
 		{ FMOperatorType::Op3, false },
 		{ FMOperatorType::Op4, false }
 	};
+}
+
+SoundSource InstrumentFM::getSoundSource() const
+{
+	return SoundSource::FM;
+}
+
+InstrumentType InstrumentFM::getType() const
+{
+	return InstrumentType::FM;
 }
 
 std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
@@ -371,7 +375,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterato
 /****************************************/
 
 InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, SoundSource::SSG, name, owner),
+	: AbstractInstrument(number, name, owner),
 	  wfEnabled_(false),
 	  wfNum_(0),
 	  tnEnabled_(false),
@@ -383,6 +387,16 @@ InstrumentSSG::InstrumentSSG(int number, std::string name, InstrumentsManager* o
 	  ptEnabled_(false),
 	  ptNum_(0)
 {
+}
+
+SoundSource InstrumentSSG::getSoundSource() const
+{
+	return SoundSource::SSG;
+}
+
+InstrumentType InstrumentSSG::getType() const
+{
+	return InstrumentType::SSG;
 }
 
 std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
@@ -614,7 +628,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getPitchSequenceIterat
 /****************************************/
 
 InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManager* owner)
-	: AbstractInstrument(number, SoundSource::ADPCM, name, owner),
+	: AbstractInstrument(number, name, owner),
 	  wfNum_(0),
 	  envEnabled_(false),
 	  envNum_(0),
@@ -623,6 +637,16 @@ InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManage
 	  ptEnabled_(false),
 	  ptNum_(0)
 {
+}
+
+SoundSource InstrumentADPCM::getSoundSource() const
+{
+	return SoundSource::ADPCM;
+}
+
+InstrumentType InstrumentADPCM::getType() const
+{
+	return InstrumentType::ADPCM;
 }
 
 std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()

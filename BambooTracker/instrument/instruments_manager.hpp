@@ -13,6 +13,7 @@
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
+enum class InstrumentType;
 class AbstractInstrument;
 class InstrumentFM;
 enum class FMEnvelopeParameter;
@@ -25,7 +26,7 @@ class InstrumentsManager
 public:
 	explicit InstrumentsManager(bool unedited);
 
-	void addInstrument(int instNum, SoundSource source, std::string name);
+	void addInstrument(int instNum, InstrumentType type, std::string name);
 	void addInstrument(std::unique_ptr<AbstractInstrument> inst);
 	std::unique_ptr<AbstractInstrument> removeInstrument(int instNum);
 	void cloneInstrument(int cloneInstNum, int resInstNum);

@@ -58,12 +58,12 @@ InstrumentsManager::InstrumentsManager(bool unedited)
 	clearAll();
 }
 
-void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::string name)
+void InstrumentsManager::addInstrument(int instNum, InstrumentType type, std::string name)
 {
 	if (instNum < 0 || static_cast<int>(insts_.size()) <= instNum) return;
 
-	switch (source) {
-	case SoundSource::FM:
+	switch (type) {
+	case InstrumentType::FM:
 	{
 		auto fm = std::make_shared<InstrumentFM>(instNum, name, this);
 		int envNum = findFirstAssignableEnvelopeFM();
@@ -93,7 +93,7 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 		insts_.at(static_cast<size_t>(instNum)) = std::move(fm);
 		break;
 	}
-	case SoundSource::SSG:
+	case InstrumentType::SSG:
 	{
 		auto ssg = std::make_shared<InstrumentSSG>(instNum, name, this);
 		int wfNum = findFirstAssignableWaveformSSG();
@@ -119,7 +119,7 @@ void InstrumentsManager::addInstrument(int instNum, SoundSource source, std::str
 		insts_.at(static_cast<size_t>(instNum)) = std::move(ssg);
 		break;
 	}
-	case SoundSource::ADPCM:
+	case InstrumentType::ADPCM:
 	{
 		auto adpcm = std::make_shared<InstrumentADPCM>(instNum, name, this);
 		int wfNum = findFirstAssignableWaveformADPCM();
@@ -151,8 +151,8 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	int num = inst->getNumber();
 	insts_.at(static_cast<size_t>(num)) = std::move(inst);
 
-	switch (insts_[static_cast<size_t>(num)]->getSoundSource()) {
-	case SoundSource::FM:
+	switch (insts_[static_cast<size_t>(num)]->getType()) {
+	case InstrumentType::FM:
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[static_cast<size_t>(num)]);
 		envFM_.at(static_cast<size_t>(fm->getEnvelopeNumber()))->registerUserInstrument(num);
@@ -170,7 +170,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 		}
 		break;
 	}
-	case SoundSource::SSG:
+	case InstrumentType::SSG:
 	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(num)]);
 		if (ssg->getWaveformEnabled())
@@ -185,7 +185,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 			ptSSG_.at(static_cast<size_t>(ssg->getPitchNumber()))->registerUserInstrument(num);
 		break;
 	}
-	case SoundSource::ADPCM:
+	case InstrumentType::ADPCM:
 	{
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(num)]);
 		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->registerUserInstrument(num);
@@ -205,10 +205,10 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 {
 	std::shared_ptr<AbstractInstrument> refInst = insts_.at(static_cast<size_t>(refInstNum));
-	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
+	addInstrument(cloneInstNum, refInst->getType(), refInst->getName());
 
-	switch (refInst->getSoundSource()) {
-	case SoundSource::FM:
+	switch (refInst->getType()) {
+	case InstrumentType::FM:
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(cloneInstNum)));
@@ -228,7 +228,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		}
 		break;
 	}
-	case SoundSource::SSG:
+	case InstrumentType::SSG:
 	{
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(cloneInstNum)));
@@ -244,7 +244,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		if (refSsg->getPitchEnabled()) setInstrumentSSGPitchEnabled(cloneInstNum, true);
 		break;
 	}
-	case SoundSource::ADPCM:
+	case InstrumentType::ADPCM:
 	{
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
@@ -265,10 +265,10 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 {
 	std::shared_ptr<AbstractInstrument> refInst = insts_.at(static_cast<size_t>(refInstNum));
-	addInstrument(cloneInstNum, refInst->getSoundSource(), refInst->getName());
+	addInstrument(cloneInstNum, refInst->getType(), refInst->getName());
 
-	switch (refInst->getSoundSource()) {
-	case SoundSource::FM:
+	switch (refInst->getType()) {
+	case InstrumentType::FM:
 	{
 		auto refFm = std::dynamic_pointer_cast<InstrumentFM>(refInst);
 		auto cloneFm = std::dynamic_pointer_cast<InstrumentFM>(insts_.at(static_cast<size_t>(cloneInstNum)));
@@ -329,7 +329,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			setInstrumentFMEnvelopeResetEnabled(cloneInstNum, t, refFm->getEnvelopeResetEnabled(t));
 		break;
 	}
-	case SoundSource::SSG:
+	case InstrumentType::SSG:
 	{
 		auto refSsg = std::dynamic_pointer_cast<InstrumentSSG>(refInst);
 		auto cloneSsg = std::dynamic_pointer_cast<InstrumentSSG>(insts_.at(static_cast<size_t>(cloneInstNum)));
@@ -366,7 +366,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		}
 		break;
 	}
-	case SoundSource::ADPCM:
+	case InstrumentType::ADPCM:
 	{
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
@@ -598,8 +598,8 @@ int InstrumentsManager::cloneADPCMPitch(int srcNum)
 
 std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
-	switch (insts_.at(static_cast<size_t>(instNum))->getSoundSource()) {
-	case SoundSource::FM:
+	switch (insts_.at(static_cast<size_t>(instNum))->getType()) {
+	case InstrumentType::FM:
 	{
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[static_cast<size_t>(instNum)]);
 		envFM_.at(static_cast<size_t>(fm->getEnvelopeNumber()))->deregisterUserInstrument(instNum);
@@ -618,7 +618,7 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 		}
 		break;
 	}
-	case SoundSource::SSG:
+	case InstrumentType::SSG:
 	{
 		auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)]);
 		if (ssg->getWaveformEnabled())
@@ -633,7 +633,7 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 			ptSSG_.at(static_cast<size_t>(ssg->getPitchNumber()))->deregisterUserInstrument(instNum);
 		break;
 	}
-	case SoundSource::ADPCM:
+	case InstrumentType::ADPCM:
 	{
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)]);
 		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->deregisterUserInstrument(instNum);
@@ -795,9 +795,9 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 			int tgtIdx = idcs[j];
 			std::shared_ptr<AbstractInstrument> tgt = insts_[tgtIdx];
 
-			if (base->getSoundSource() == tgt->getSoundSource()) {
-				switch (base->getSoundSource()) {
-				case SoundSource::FM:
+			if (base->getType() == tgt->getType()) {
+				switch (base->getType()) {
+				case InstrumentType::FM:
 				{
 					if (equalPropertiesFM(std::dynamic_pointer_cast<InstrumentFM>(base),
 										  std::dynamic_pointer_cast<InstrumentFM>(tgt))) {
@@ -807,22 +807,20 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 					}
 					break;
 				}
-				case SoundSource::SSG:
+				case InstrumentType::SSG:
 				{
 					if (equalPropertiesSSG(std::dynamic_pointer_cast<InstrumentSSG>(base),
-										  std::dynamic_pointer_cast<InstrumentSSG>(tgt))) {
+										   std::dynamic_pointer_cast<InstrumentSSG>(tgt))) {
 						group.push_back(tgtIdx);
 						idcs.erase(idcs.begin() + j);
 						continue;
 					}
 					break;
 				}
-				case SoundSource::DRUM:
-					break;
-				case SoundSource::ADPCM:
+				case InstrumentType::ADPCM:
 				{
 					if (equalPropertiesADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(base),
-										  std::dynamic_pointer_cast<InstrumentADPCM>(tgt))) {
+											 std::dynamic_pointer_cast<InstrumentADPCM>(tgt))) {
 						group.push_back(tgtIdx);
 						idcs.erase(idcs.begin() + j);
 						continue;

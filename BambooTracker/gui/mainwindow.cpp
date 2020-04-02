@@ -1065,13 +1065,18 @@ void MainWindow::addInstrument()
 	case SoundSource::SSG:
 	case SoundSource::ADPCM:
 	{
+		std::unordered_map<SoundSource, InstrumentType> map = {
+			{ SoundSource::FM, InstrumentType::FM },
+			{ SoundSource::SSG, InstrumentType::SSG },
+			{ SoundSource::ADPCM, InstrumentType::ADPCM },
+		};
 		auto& list = ui->instrumentListWidget;
 
 		int num = bt_->findFirstFreeInstrumentNumber();
 		if (num == -1) return;	// Maximum count check
 
 		QString name = tr("Instrument %1").arg(num);
-		bt_->addInstrument(num, name.toUtf8().toStdString());
+		bt_->addInstrument(num, map.at(src), name.toUtf8().toStdString());
 
 		comStack_->push(new AddInstrumentQtCommand(
 							list, num, name, src, instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
@@ -1117,16 +1122,11 @@ void MainWindow::openInstrumentEditor()
 	if (!instForms_->getForm(num)) {	// Create form
 		std::shared_ptr<QWidget> form;
 		auto inst = bt_->getInstrument(num);
-		switch (inst->getSoundSource()) {
-		case SoundSource::FM:		form = std::make_shared<InstrumentEditorFMForm>(num);		break;
-		case SoundSource::SSG:		form = std::make_shared<InstrumentEditorSSGForm>(num);		break;
-		case SoundSource::ADPCM:	form = std::make_shared<InstrumentEditorADPCMForm>(num);	break;
-		default:	return;
-		}
 
-		switch (inst->getSoundSource()) {
-		case SoundSource::FM:
+		switch (inst->getType()) {
+		case InstrumentType::FM:
 		{
+			form = std::make_shared<InstrumentEditorFMForm>(num);
 			auto fmForm = qobject_cast<InstrumentEditorFMForm*>(form.get());
 			fmForm->setCore(bt_);
 			fmForm->setConfiguration(config_.lock());
@@ -1172,8 +1172,9 @@ void MainWindow::openInstrumentEditor()
 			instForms_->onInstrumentFMPitchNumberChanged();
 			break;
 		}
-		case SoundSource::SSG:
+		case InstrumentType::SSG:
 		{
+			form = std::make_shared<InstrumentEditorSSGForm>(num);
 			auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(form.get());
 			ssgForm->setCore(bt_);
 			ssgForm->setConfiguration(config_.lock());
@@ -1219,8 +1220,9 @@ void MainWindow::openInstrumentEditor()
 			instForms_->onInstrumentSSGPitchNumberChanged();
 			break;
 		}
-		case SoundSource::ADPCM:
+		case InstrumentType::ADPCM:
 		{
+			form = std::make_shared<InstrumentEditorADPCMForm>(num);
 			auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(form.get());
 			adpcmForm->setCore(bt_);
 			adpcmForm->setConfiguration(config_.lock());

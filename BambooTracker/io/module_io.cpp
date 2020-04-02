@@ -62,8 +62,8 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			std::string name = inst->getName();
 			ctr.appendUint32(name.length());
 			if (!name.empty()) ctr.appendString(name);
-			switch (inst->getSoundSource()) {
-			case SoundSource::FM:
+			switch (inst->getType()) {
+			case InstrumentType::FM:
 			{
 				ctr.appendUint8(0x00);
 				auto instFM = std::dynamic_pointer_cast<InstrumentFM>(inst);
@@ -94,7 +94,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				}
 				break;
 			}
-			case SoundSource::SSG:
+			case InstrumentType::SSG:
 			{
 				ctr.appendUint8(0x01);
 				auto instSSG = std::dynamic_pointer_cast<InstrumentSSG>(inst);
@@ -110,9 +110,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint8(instSSG->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
-			case SoundSource::DRUM:
-				break;
-			case SoundSource::ADPCM:
+			case InstrumentType::ADPCM:
 			{
 				ctr.appendUint8(0x02);
 				auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);

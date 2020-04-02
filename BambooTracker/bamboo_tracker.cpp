@@ -93,10 +93,9 @@ int BambooTracker::getCurrentInstrumentNumber() const
 }
 
 /********** Instrument edit **********/
-void BambooTracker::addInstrument(int num, std::string name)
+void BambooTracker::addInstrument(int num, InstrumentType type, std::string name)
 {
-	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
-					   instMan_, num, songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)].source, name));
+	comMan_.invoke(std::make_unique<AddInstrumentCommand>(instMan_, num, type, name));
 }
 
 void BambooTracker::removeInstrument(int num)

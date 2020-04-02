@@ -13,6 +13,8 @@
 
 class InstrumentsManager;
 
+enum class InstrumentType { FM, SSG, ADPCM };
+
 class AbstractInstrument
 {
 public:
@@ -20,7 +22,8 @@ public:
 
 	int getNumber() const;
 	void setNumber(int n);
-	SoundSource getSoundSource() const;
+	virtual SoundSource getSoundSource() const = 0;
+	virtual InstrumentType getType() const = 0;
 	std::string getName() const;
 	void setName(std::string name);
 	bool isRegisteredWithManager() const;
@@ -30,10 +33,7 @@ protected:
 	InstrumentsManager* owner_;
 	int number_;
 	std::string name_;	// UTF-8
-	AbstractInstrument(int number, SoundSource source, std::string name, InstrumentsManager* owner);
-
-private:
-	SoundSource source_;
+	AbstractInstrument(int number, std::string name, InstrumentsManager* owner);
 };
 
 
@@ -41,6 +41,8 @@ class InstrumentFM : public AbstractInstrument
 {
 public:
 	InstrumentFM(int number, std::string name, InstrumentsManager* owner);
+	SoundSource getSoundSource() const override;
+	InstrumentType getType() const override;
 	std::unique_ptr<AbstractInstrument> clone() override;
 
 	void setEnvelopeNumber(int n);
@@ -105,6 +107,8 @@ class InstrumentSSG : public AbstractInstrument
 {
 public:
 	InstrumentSSG(int number, std::string name, InstrumentsManager* owner);
+	SoundSource getSoundSource() const override;
+	InstrumentType getType() const override;
 	std::unique_ptr<AbstractInstrument> clone() override;
 
 	void setWaveformEnabled(bool enabled);
@@ -172,6 +176,8 @@ class InstrumentADPCM : public AbstractInstrument
 {
 public:
 	InstrumentADPCM(int number, std::string name, InstrumentsManager* owner);
+	SoundSource getSoundSource() const override;
+	InstrumentType getType() const override;
 	std::unique_ptr<AbstractInstrument> clone() override;
 
 	void setWaveformNumber(int n);
