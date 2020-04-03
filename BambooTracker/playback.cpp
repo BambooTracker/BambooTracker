@@ -326,7 +326,7 @@ void PlaybackManager::stepProcess()
 		bool (PlaybackManager::*storeEffectToMap)(int, Effect);
 		switch (attrib.source) {
 		case SoundSource::FM:		storeEffectToMap = &PlaybackManager::storeEffectToMapFM;	break;
-		case SoundSource::SSG:		storeEffectToMap = &PlaybackManager::storeEffectToMapSSG ;	break;
+		case SoundSource::SSG:		storeEffectToMap = &PlaybackManager::storeEffectToMapSSG;	break;
 		case SoundSource::DRUM:		storeEffectToMap = &PlaybackManager::storeEffectToMapDrum;	break;
 		case SoundSource::ADPCM:	storeEffectToMap = &PlaybackManager::storeEffectToMapADPCM;	break;
 		}

@@ -12,6 +12,7 @@
 - [#199] - Fix ADPCM sample sometimes has wrong DC offset in synthesis (thanks [@galap-1])
 - Reset internal start/stop address point of ADPCM sample after loading samples
 - [#201] - Redraw order list after resizing (thanks [@OPNA2608])
+- Fix `Dxyy` crash when starting playing from the cursor (thanks [@maakmusic])
 
 [@Zeinok]: https://github.com/Zeinok
 [@djmaximum17]: https://github.com/djmaximum17

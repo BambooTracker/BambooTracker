@@ -1408,8 +1408,12 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 		opna_->setRegister(0x50 + bch, data);
 		break;
 	case FMEnvelopeParameter::DR1:
-		data = refInstFM_[inch]->getLFOEnabled() ? static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM1)) : 0;
-		data <<= 7;
+		if (refInstFM_[inch] && refInstFM_[inch]->getLFOEnabled()) {
+			data = static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM1) << 7);
+		}
+		else {
+			data = 0;
+		}
 		data |= envFM_[inch]->getParameterValue(FMEnvelopeParameter::DR1);
 		opna_->setRegister(0x60 + bch, data);
 		break;
@@ -1454,8 +1458,12 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 		opna_->setRegister(0x50 + bch + 8, data);
 		break;
 	case FMEnvelopeParameter::DR2:
-		data = refInstFM_[inch]->getLFOEnabled() ? static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM2)) : 0;
-		data <<= 7;
+		if (refInstFM_[inch] && refInstFM_[inch]->getLFOEnabled()) {
+			data = static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM2) << 7);
+		}
+		else {
+			data = 0;
+		}
 		data |= envFM_[inch]->getParameterValue(FMEnvelopeParameter::DR2);
 		opna_->setRegister(0x60 + bch + 8, data);
 		break;
@@ -1500,8 +1508,12 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 		opna_->setRegister(0x50 + bch + 4, data);
 		break;
 	case FMEnvelopeParameter::DR3:
-		data = refInstFM_[inch]->getLFOEnabled() ? static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM3)) : 0;
-		data <<= 7;
+		if (refInstFM_[inch] && refInstFM_[inch]->getLFOEnabled()) {
+			data = static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM3) << 7);
+		}
+		else {
+			data = 0;
+		}
 		data |= envFM_[inch]->getParameterValue(FMEnvelopeParameter::DR3);
 		opna_->setRegister(0x60 + bch + 4, data);
 		break;
@@ -1546,8 +1558,12 @@ void OPNAController::writeFMEnveropeParameterToRegister(int inch, FMEnvelopePara
 		opna_->setRegister(0x50 + bch + 12, data);
 		break;
 	case FMEnvelopeParameter::DR4:
-		data = refInstFM_[inch]->getLFOEnabled() ? static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM4)) : 0;
-		data <<= 7;
+		if (refInstFM_[inch] && refInstFM_[inch]->getLFOEnabled()) {
+			data = static_cast<uint8_t>(refInstFM_[inch]->getLFOParameter(FMLFOParameter::AM4) << 7);
+		}
+		else {
+			data = 0;
+		}
 		data |= envFM_[inch]->getParameterValue(FMEnvelopeParameter::DR4);
 		opna_->setRegister(0x60 + bch + 12, data);
 		break;
