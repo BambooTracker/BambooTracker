@@ -438,12 +438,16 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
 
 	// Shortcuts
-	octUpSc_ = std::make_unique<QShortcut>(this);
-	octUpSc_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(octUpSc_.get(), &QShortcut::activated, this, [&] { changeOctave(true); });
-	octDownSc_ = std::make_unique<QShortcut>(this);
-	octDownSc_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(octDownSc_.get(), &QShortcut::activated, this, [&] { changeOctave(false); });
+	octUpSc_ = std::make_unique<QAction>();
+	octUpSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(octUpSc_.get());
+	ui->patternEditor->addAction(octUpSc_.get());
+	QObject::connect(octUpSc_.get(), &QAction::triggered, this, [&] { changeOctave(true); });
+	octDownSc_ = std::make_unique<QAction>();
+	octDownSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(octDownSc_.get());
+	ui->patternEditor->addAction(octDownSc_.get());
+	QObject::connect(octDownSc_.get(), &QAction::triggered, this, [&] { changeOctave(false); });
 	focusPtnSc_ = std::make_unique<QShortcut>(this);
 	QObject::connect(focusPtnSc_.get(), &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
 	focusOdrSc_ = std::make_unique<QShortcut>(this);
@@ -453,40 +457,67 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->instrumentListWidget->setFocus();
 		updateMenuByInstrumentList();
 	});
-	playAndStopSc_ = std::make_unique<QShortcut>(this);
-	playAndStopSc_->setContext(Qt::ApplicationShortcut);
-	QObject::connect(playAndStopSc_.get(), &QShortcut::activated, this, [&] {
+	playAndStopSc_ = std::make_unique<QAction>();
+	playAndStopSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(playAndStopSc_.get());
+	ui->patternEditor->addAction(playAndStopSc_.get());
+	QObject::connect(playAndStopSc_.get(), &QAction::triggered, this, [&] {
 		if (bt_->isPlaySong()) stopPlaySong();
 		else startPlaySong();
 	});
-	playStepSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(playStepSc_.get(), &QShortcut::activated, this, &MainWindow::playStep);
-	ui->actionPlay_From_Start->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionPlay_Pattern->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionPlay_From_Cursor->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionPlay_From_Marker->setShortcutContext(Qt::ApplicationShortcut);
-	ui->actionStop->setShortcutContext(Qt::ApplicationShortcut);
+	playStepSc_ = std::make_unique<QAction>();
+	playStepSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(playStepSc_.get());
+	ui->patternEditor->addAction(playStepSc_.get());
+	QObject::connect(playStepSc_.get(), &QAction::triggered, this, &MainWindow::playStep);
+	ui->actionPlay_From_Start->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(ui->actionPlay_From_Start);
+	ui->patternEditor->addAction(ui->actionPlay_From_Start);
+	ui->actionPlay_Pattern->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(ui->actionPlay_Pattern);
+	ui->patternEditor->addAction(ui->actionPlay_Pattern);
+	ui->actionPlay_From_Cursor->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(ui->actionPlay_From_Cursor);
+	ui->patternEditor->addAction(ui->actionPlay_From_Cursor);
+	ui->actionPlay_From_Marker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(ui->actionPlay_From_Marker);
+	ui->patternEditor->addAction(ui->actionPlay_From_Marker);
+	ui->actionStop->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(ui->actionStop);
+	ui->patternEditor->addAction(ui->actionStop);
 	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentListWidget,
 											 nullptr, nullptr, Qt::WidgetShortcut);
 	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
-	goPrevOdrSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(goPrevOdrSc_.get(), &QShortcut::activated, this, [&] {
+	goPrevOdrSc_ = std::make_unique<QAction>();
+	goPrevOdrSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(goPrevOdrSc_.get());
+	ui->patternEditor->addAction(goPrevOdrSc_.get());
+	QObject::connect(goPrevOdrSc_.get(), &QAction::triggered, this, [&] {
 		ui->orderList->onGoOrderRequested(false);
 	});
-	goNextOdrSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(goNextOdrSc_.get(), &QShortcut::activated, this, [&] {
+	goNextOdrSc_ = std::make_unique<QAction>();
+	goNextOdrSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(goNextOdrSc_.get());
+	ui->patternEditor->addAction(goNextOdrSc_.get());
+	QObject::connect(goNextOdrSc_.get(), &QAction::triggered, this, [&] {
 		ui->orderList->onGoOrderRequested(true);
 	});
-	prevInstSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(prevInstSc_.get(), &QShortcut::activated, this, [&] {
+	prevInstSc_ = std::make_unique<QAction>();
+	prevInstSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(prevInstSc_.get());
+	ui->patternEditor->addAction(prevInstSc_.get());
+	QObject::connect(prevInstSc_.get(), &QAction::triggered, this, [&] {
 		if (ui->instrumentListWidget->count()) {
 			int row = ui->instrumentListWidget->currentRow();
 			if (row == -1) ui->instrumentListWidget->setCurrentRow(0);
 			else if (row > 0) ui->instrumentListWidget->setCurrentRow(row - 1);
 		}
 	});
-	nextInstSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(nextInstSc_.get(), &QShortcut::activated, this, [&] {
+	nextInstSc_ = std::make_unique<QAction>();
+	nextInstSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	ui->orderList->addAction(nextInstSc_.get());
+	ui->patternEditor->addAction(nextInstSc_.get());
+	QObject::connect(nextInstSc_.get(), &QAction::triggered, this, [&] {
 		int cnt = ui->instrumentListWidget->count();
 		if (cnt) {
 			int row = ui->instrumentListWidget->currentRow();
@@ -586,13 +617,12 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(fmForm->getInstrumentNumber());
 			ui->instrumentListWidget->setCurrentRow(row);
-			return false;
 		}
 		else if (event->type() == QEvent::Resize) {
 			config_.lock()->setInstrumentFMWindowWidth(fmForm->width());
 			config_.lock()->setInstrumentFMWindowHeight(fmForm->height());
-			return false;
 		}
+		return false;
 	}
 
 	if (auto ssgForm = qobject_cast<InstrumentEditorSSGForm*>(watched)) {
@@ -600,13 +630,12 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(ssgForm->getInstrumentNumber());
 			ui->instrumentListWidget->setCurrentRow(row);
-			return false;
 		}
 		else if (event->type() == QEvent::Resize) {
 			config_.lock()->setInstrumentSSGWindowWidth(ssgForm->width());
 			config_.lock()->setInstrumentSSGWindowHeight(ssgForm->height());
-			return false;
 		}
+		return false;
 	}
 
 	if (auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(watched)) {
@@ -614,13 +643,12 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(adpcmForm->getInstrumentNumber());
 			ui->instrumentListWidget->setCurrentRow(row);
-			return false;
 		}
 		else if (event->type() == QEvent::Resize) {
 			config_.lock()->setInstrumentADPCMWindowWidth(adpcmForm->width());
 			config_.lock()->setInstrumentADPCMWindowHeight(adpcmForm->height());
-			return false;
 		}
+		return false;
 	}
 
 	if (watched == ui->instrumentListWidget) {
@@ -631,6 +659,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		default:
 			break;
 		}
+		return false;
 	}
 
 	return false;
@@ -930,18 +959,18 @@ void MainWindow::freezeViews()
 void MainWindow::setShortcuts()
 {
 	auto shortcuts = config_.lock()->getShortcuts();
-	octUpSc_->setKey(strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
-	octDownSc_->setKey(strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
+	octUpSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
+	octDownSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
 	focusPtnSc_->setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnPattern)));
 	focusOdrSc_->setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnOrder)));
 	focusInstSc_->setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnInstrument)));
-	playAndStopSc_->setKey(strToKeySeq(shortcuts.at(Configuration::PlayAndStop)));
+	playAndStopSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayAndStop)));
 	ui->actionPlay->setShortcut(strToKeySeq(shortcuts.at(Configuration::Play)));
 	ui->actionPlay_From_Start->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromStart)));
 	ui->actionPlay_Pattern->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayPattern)));
 	ui->actionPlay_From_Cursor->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromCursor)));
 	ui->actionPlay_From_Marker->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromMarker)));
-	playStepSc_->setKey(strToKeySeq(shortcuts.at(Configuration::PlayStep)));
+	playStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayStep)));
 	ui->actionStop->setShortcut(strToKeySeq(shortcuts.at(Configuration::Stop)));
 	ui->actionEdit_Mode->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleEditJam)));
 	ui->actionSet_Ro_w_Marker->setShortcut(strToKeySeq(shortcuts.at(Configuration::SetMarker)));
@@ -957,8 +986,8 @@ void MainWindow::setShortcuts()
 	ui->actionToggle_Track->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
 	ui->actionSolo_Track->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
 	ui->actionInterpolate->setShortcut(strToKeySeq(shortcuts.at(Configuration::Interpolate)));
-	goPrevOdrSc_->setKey(strToKeySeq(shortcuts.at(Configuration::GoToPrevOrder)));
-	goNextOdrSc_->setKey(strToKeySeq(shortcuts.at(Configuration::GoToNextOrder)));
+	goPrevOdrSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToPrevOrder)));
+	goNextOdrSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToNextOrder)));
 	ui->action_Toggle_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleBookmark)));
 	ui->action_Previous_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::PrevBookmark)));
 	ui->action_Next_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextBookmark)));
@@ -966,8 +995,8 @@ void MainWindow::setShortcuts()
 	ui->actionIncrease_Note->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
 	ui->actionDecrease_Octave->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
 	ui->actionIncrease_Octave->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
-	prevInstSc_->setKey(strToKeySeq(shortcuts.at(Configuration::PrevInstrument)));
-	nextInstSc_->setKey(strToKeySeq(shortcuts.at(Configuration::NextInstrument)));
+	prevInstSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PrevInstrument)));
+	nextInstSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextInstrument)));
 	ui->action_Instrument_Mask->setShortcut(strToKeySeq(shortcuts.at(Configuration::MaskInstrument)));
 	ui->action_Volume_Mask->setShortcut(strToKeySeq(shortcuts.at(Configuration::MaskVolume)));
 	ui->actionEdit->setShortcut(strToKeySeq(shortcuts.at(Configuration::EditInstrument)));

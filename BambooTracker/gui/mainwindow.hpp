@@ -21,6 +21,7 @@
 #include <QTimer>
 #include <QLibrary>
 #include <QShortcut>
+#include <QAction>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -172,9 +173,10 @@ private:
 	QLabel* statusPlayPos_;
 
 	// Shortcuts
-	std::unique_ptr<QShortcut> octUpSc_, octDownSc_, focusPtnSc_, focusOdrSc_, focusInstSc_;
-	std::unique_ptr<QShortcut> playAndStopSc_, playStepSc_, instAddSc_, goPrevOdrSc_, goNextOdrSc_;
-	std::unique_ptr<QShortcut> prevInstSc_, nextInstSc_;
+	std::unique_ptr<QAction> octUpSc_, octDownSc_;
+	std::unique_ptr<QShortcut> focusPtnSc_, focusOdrSc_, focusInstSc_, instAddSc_;
+	std::unique_ptr<QAction> playAndStopSc_, playStepSc_, goPrevOdrSc_, goNextOdrSc_;
+	std::unique_ptr<QAction> prevInstSc_, nextInstSc_;
 	void setShortcuts();
 
 	// Dialogs
