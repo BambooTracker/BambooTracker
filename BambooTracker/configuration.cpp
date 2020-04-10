@@ -128,6 +128,8 @@ Configuration::Configuration()
 		{ NextHighlighted, u8"Ctrl+Down" },
 		{ IncreasePatternSize, u8"" },
 		{ DecreasePatternSize, u8"" },
+		{ IncreaseEditStep, u8"" },
+		{ DecreaseEditStep, u8"" }
 	};
 	noteEntryLayout_ = QWERTY;
 

@@ -513,6 +513,14 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 			ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() - 1);
 		}
 	});
+	initShortcut(incEditStepSc_);
+	QObject::connect(incEditStepSc_.get(), &QAction::triggered, this, [&] {
+		ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() + 1);
+	});
+	initShortcut(decEditStepSc_);
+	QObject::connect(decEditStepSc_.get(), &QAction::triggered, this, [&] {
+		ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() - 1);
+	});
 
 	setShortcuts();
 
@@ -1002,6 +1010,8 @@ void MainWindow::setShortcuts()
 	ui->actionCoarse_I_ncrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
 	incPtnSizeSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreasePatternSize)));
 	decPtnSizeSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
+	incEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
+	decEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
