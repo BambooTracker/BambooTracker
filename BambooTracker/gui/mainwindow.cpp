@@ -1012,6 +1012,7 @@ void MainWindow::setShortcuts()
 	decPtnSizeSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
 	incEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
 	decEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
+	ui->action_Effect_List->setShortcut(strToKeySeq(shortcuts.at(Configuration::DisplayEffectList)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();

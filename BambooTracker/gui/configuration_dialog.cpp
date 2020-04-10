@@ -151,7 +151,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ Configuration::IncreasePatternSize, QT_TR_NOOP("Increase pattern size") },
 		{ Configuration::DecreasePatternSize, QT_TR_NOOP("Decrease pattern size") },
 		{ Configuration::IncreaseEditStep, QT_TR_NOOP("Increase edit step") },
-		{ Configuration::DecreaseEditStep, QT_TR_NOOP("Decrease edit step") }
+		{ Configuration::DecreaseEditStep, QT_TR_NOOP("Decrease edit step") },
+		{ Configuration::DisplayEffectList, QT_TR_NOOP("Display effect list") }
 	};
 	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts = configLocked->getShortcuts();
 	for (const auto& pair : shortcutsActions) {

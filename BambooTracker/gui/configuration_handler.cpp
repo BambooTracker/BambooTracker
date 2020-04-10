@@ -71,7 +71,8 @@ const std::unordered_map<Configuration::ShortcutAction, QString> ConfigurationHa
 	{ Configuration::IncreasePatternSize, "incPtnSize" },
 	{ Configuration::DecreasePatternSize, "decPtnSize" },
 	{ Configuration::IncreaseEditStep, "incEditStep" },
-	{ Configuration::DecreaseEditStep, "decEditStep" }
+	{ Configuration::DecreaseEditStep, "decEditStep" },
+	{ Configuration::DisplayEffectList, "dispEffectList" }
 };
 
 const std::unordered_map<JamKey, QString> ConfigurationHandler::JAM_KEY_NAME_MAP_ = {
