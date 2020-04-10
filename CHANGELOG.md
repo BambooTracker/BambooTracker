@@ -3,9 +3,10 @@
 ## Unreleased
 ## Added
 - Shortcut settings
-- 4 new shortcuts
+- 6 new shortcuts
   - Increase/Decrease pattern size
   - Increase/Decrease edit step
+  - Previous/Next song
 
 ## Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])

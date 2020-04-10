@@ -130,7 +130,9 @@ Configuration::Configuration()
 		{ DecreasePatternSize, u8"" },
 		{ IncreaseEditStep, u8"" },
 		{ DecreaseEditStep, u8"" },
-		{ DisplayEffectList, u8"F1" }
+		{ DisplayEffectList, u8"F1" },
+		{ PreviousSong, u8"" },
+		{ NextSong, u8"" }
 	};
 	noteEntryLayout_ = QWERTY;
 

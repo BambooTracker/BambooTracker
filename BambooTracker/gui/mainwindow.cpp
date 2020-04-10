@@ -503,15 +503,11 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 	initShortcut(incPtnSizeSc_);
 	QObject::connect(incPtnSizeSc_.get(), &QAction::triggered, this, [&] {
-		if (ui->patternSizeSpinBox->isEnabled()) {
-			ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() + 1);
-		}
+		ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() + 1);
 	});
 	initShortcut(decPtnSizeSc_);
 	QObject::connect(decPtnSizeSc_.get(), &QAction::triggered, this, [&] {
-		if (ui->patternSizeSpinBox->isEnabled()) {
-			ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() - 1);
-		}
+		ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() - 1);
 	});
 	initShortcut(incEditStepSc_);
 	QObject::connect(incEditStepSc_.get(), &QAction::triggered, this, [&] {
@@ -520,6 +516,19 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	initShortcut(decEditStepSc_);
 	QObject::connect(decEditStepSc_.get(), &QAction::triggered, this, [&] {
 		ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() - 1);
+	});
+	initShortcut(prevSongSc_);
+	QObject::connect(prevSongSc_.get(), &QAction::triggered, this, [&] {
+		if (ui->songComboBox->isEnabled()) {
+			ui->songComboBox->setCurrentIndex(std::max(ui->songComboBox->currentIndex() - 1, 0));
+		}
+	});
+	initShortcut(nextSongSc_);
+	QObject::connect(nextSongSc_.get(), &QAction::triggered, this, [&] {
+		if (ui->songComboBox->isEnabled()) {
+			ui->songComboBox->setCurrentIndex(std::min(ui->songComboBox->currentIndex() + 1,
+													   ui->songComboBox->count() - 1));
+		}
 	});
 
 	setShortcuts();
@@ -1013,6 +1022,8 @@ void MainWindow::setShortcuts()
 	incEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
 	decEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
 	ui->action_Effect_List->setShortcut(strToKeySeq(shortcuts.at(Configuration::DisplayEffectList)));
+	prevSongSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PreviousSong)));
+	nextSongSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextSong)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();

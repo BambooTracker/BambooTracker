@@ -163,21 +163,15 @@ private:
 	};
 
 	// Status bar
-	QLabel* statusDetail_;
-	QLabel* statusStyle_;
-	QLabel* statusInst_;
-	QLabel* statusOctave_;
-	QLabel* statusIntr_;
-	QLabel* statusMixer_;
-	QLabel* statusBpm_;
-	QLabel* statusPlayPos_;
+	QLabel *statusDetail_, *statusStyle_, *statusInst_, *statusOctave_;
+	QLabel *statusIntr_, *statusMixer_, *statusBpm_, *statusPlayPos_;
 
 	// Shortcuts
 	std::unique_ptr<QAction> octUpSc_, octDownSc_;
 	std::unique_ptr<QShortcut> focusPtnSc_, focusOdrSc_, focusInstSc_, instAddSc_;
 	std::unique_ptr<QAction> playAndStopSc_, playStepSc_, goPrevOdrSc_, goNextOdrSc_;
 	std::unique_ptr<QAction> prevInstSc_, nextInstSc_, incPtnSizeSc_, decPtnSizeSc_;
-	std::unique_ptr<QAction> incEditStepSc_, decEditStepSc_;
+	std::unique_ptr<QAction> incEditStepSc_, decEditStepSc_, prevSongSc_, nextSongSc_;
 	void setShortcuts();
 
 	// Dialogs
