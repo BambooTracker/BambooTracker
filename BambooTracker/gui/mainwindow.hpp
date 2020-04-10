@@ -176,7 +176,7 @@ private:
 	std::unique_ptr<QAction> octUpSc_, octDownSc_;
 	std::unique_ptr<QShortcut> focusPtnSc_, focusOdrSc_, focusInstSc_, instAddSc_;
 	std::unique_ptr<QAction> playAndStopSc_, playStepSc_, goPrevOdrSc_, goNextOdrSc_;
-	std::unique_ptr<QAction> prevInstSc_, nextInstSc_;
+	std::unique_ptr<QAction> prevInstSc_, nextInstSc_, incPtnSizeSc_, decPtnSizeSc_;
 	void setShortcuts();
 
 	// Dialogs

@@ -182,7 +182,8 @@ public:
 		DecreaseOctave, IncreaseOctave, PrevInstrument, NextInstrument, MaskInstrument, MaskVolume,
 		EditInstrument, FollowMode, DuplicateOrder, ClonePatterns, CloneOrder, ReplaceInstrument,
 		ExpandPattern, ShrinkPattern, FineDecreaseValues, FineIncreaseValues, CoarseDecreaseValues,
-		CoarseIncreaseValuse, ExpandEffect, ShrinkEffect, PrevHighlighted, NextHighlighted
+		CoarseIncreaseValuse, ExpandEffect, ShrinkEffect, PrevHighlighted, NextHighlighted,
+		IncreasePatternSize, DecreasePatternSize
 	};
 	void setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts);
 	std::unordered_map<ShortcutAction, std::string> getShortcuts() const;

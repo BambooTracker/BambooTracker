@@ -126,6 +126,8 @@ Configuration::Configuration()
 		{ ShrinkEffect, u8"Alt+K" },
 		{ PrevHighlighted, u8"Ctrl+Up" },
 		{ NextHighlighted, u8"Ctrl+Down" },
+		{ IncreasePatternSize, u8"" },
+		{ DecreasePatternSize, u8"" },
 	};
 	noteEntryLayout_ = QWERTY;
 

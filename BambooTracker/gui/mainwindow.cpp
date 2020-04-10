@@ -438,15 +438,19 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(bmManForm_.get(), &BookmarkManagerForm::modified, this, &MainWindow::setModifiedTrue);
 
 	// Shortcuts
-	octUpSc_ = std::make_unique<QAction>(nullptr);
-	octUpSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(octUpSc_.get());
-	ui->patternEditor->addAction(octUpSc_.get());
+	auto linkShortcut = [&](QAction* ptr) {
+		ptr->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		ui->orderList->addAction(ptr);
+		ui->patternEditor->addAction(ptr);
+	};
+	auto initShortcut = [linkShortcut](std::unique_ptr<QAction>& action) {
+		action = std::make_unique<QAction>(nullptr);
+		linkShortcut(action.get());
+	};
+
+	initShortcut(octUpSc_);
 	QObject::connect(octUpSc_.get(), &QAction::triggered, this, [&] { changeOctave(true); });
-	octDownSc_ = std::make_unique<QAction>(nullptr);
-	octDownSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(octDownSc_.get());
-	ui->patternEditor->addAction(octDownSc_.get());
+	initShortcut(octDownSc_);
 	QObject::connect(octDownSc_.get(), &QAction::triggered, this, [&] { changeOctave(false); });
 	focusPtnSc_ = std::make_unique<QShortcut>(this);
 	QObject::connect(focusPtnSc_.get(), &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
@@ -457,55 +461,30 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->instrumentListWidget->setFocus();
 		updateMenuByInstrumentList();
 	});
-	playAndStopSc_ = std::make_unique<QAction>(nullptr);
-	playAndStopSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(playAndStopSc_.get());
-	ui->patternEditor->addAction(playAndStopSc_.get());
+	initShortcut(playAndStopSc_);
 	QObject::connect(playAndStopSc_.get(), &QAction::triggered, this, [&] {
 		if (bt_->isPlaySong()) stopPlaySong();
 		else startPlaySong();
 	});
-	playStepSc_ = std::make_unique<QAction>(nullptr);
-	playStepSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(playStepSc_.get());
-	ui->patternEditor->addAction(playStepSc_.get());
+	initShortcut(playStepSc_);
 	QObject::connect(playStepSc_.get(), &QAction::triggered, this, &MainWindow::playStep);
-	ui->actionPlay_From_Start->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(ui->actionPlay_From_Start);
-	ui->patternEditor->addAction(ui->actionPlay_From_Start);
-	ui->actionPlay_Pattern->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(ui->actionPlay_Pattern);
-	ui->patternEditor->addAction(ui->actionPlay_Pattern);
-	ui->actionPlay_From_Cursor->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(ui->actionPlay_From_Cursor);
-	ui->patternEditor->addAction(ui->actionPlay_From_Cursor);
-	ui->actionPlay_From_Marker->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(ui->actionPlay_From_Marker);
-	ui->patternEditor->addAction(ui->actionPlay_From_Marker);
-	ui->actionStop->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(ui->actionStop);
-	ui->patternEditor->addAction(ui->actionStop);
+	linkShortcut(ui->actionPlay_From_Start);
+	linkShortcut(ui->actionPlay_Pattern);
+	linkShortcut(ui->actionPlay_From_Cursor);
+	linkShortcut(ui->actionPlay_From_Marker);
+	linkShortcut(ui->actionStop);
 	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentListWidget,
 											 nullptr, nullptr, Qt::WidgetShortcut);
 	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
-	goPrevOdrSc_ = std::make_unique<QAction>(nullptr);
-	goPrevOdrSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(goPrevOdrSc_.get());
-	ui->patternEditor->addAction(goPrevOdrSc_.get());
+	initShortcut(goPrevOdrSc_);
 	QObject::connect(goPrevOdrSc_.get(), &QAction::triggered, this, [&] {
 		ui->orderList->onGoOrderRequested(false);
 	});
-	goNextOdrSc_ = std::make_unique<QAction>(nullptr);
-	goNextOdrSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(goNextOdrSc_.get());
-	ui->patternEditor->addAction(goNextOdrSc_.get());
+	initShortcut(goNextOdrSc_);
 	QObject::connect(goNextOdrSc_.get(), &QAction::triggered, this, [&] {
 		ui->orderList->onGoOrderRequested(true);
 	});
-	prevInstSc_ = std::make_unique<QAction>(nullptr);
-	prevInstSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(prevInstSc_.get());
-	ui->patternEditor->addAction(prevInstSc_.get());
+	initShortcut(prevInstSc_);
 	QObject::connect(prevInstSc_.get(), &QAction::triggered, this, [&] {
 		if (ui->instrumentListWidget->count()) {
 			int row = ui->instrumentListWidget->currentRow();
@@ -513,10 +492,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 			else if (row > 0) ui->instrumentListWidget->setCurrentRow(row - 1);
 		}
 	});
-	nextInstSc_ = std::make_unique<QAction>(nullptr);
-	nextInstSc_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	ui->orderList->addAction(nextInstSc_.get());
-	ui->patternEditor->addAction(nextInstSc_.get());
+	initShortcut(nextInstSc_);
 	QObject::connect(nextInstSc_.get(), &QAction::triggered, this, [&] {
 		int cnt = ui->instrumentListWidget->count();
 		if (cnt) {
@@ -525,6 +501,19 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 			else if (row < cnt - 1) ui->instrumentListWidget->setCurrentRow(row + 1);
 		}
 	});
+	initShortcut(incPtnSizeSc_);
+	QObject::connect(incPtnSizeSc_.get(), &QAction::triggered, this, [&] {
+		if (ui->patternSizeSpinBox->isEnabled()) {
+			ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() + 1);
+		}
+	});
+	initShortcut(decPtnSizeSc_);
+	QObject::connect(decPtnSizeSc_.get(), &QAction::triggered, this, [&] {
+		if (ui->patternSizeSpinBox->isEnabled()) {
+			ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() - 1);
+		}
+	});
+
 	setShortcuts();
 
 	/* Clipboard */
@@ -1011,6 +1000,8 @@ void MainWindow::setShortcuts()
 	ui->actionFine_Increase_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
 	ui->actionCoarse_D_ecrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
 	ui->actionCoarse_I_ncrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
+	incPtnSizeSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreasePatternSize)));
+	decPtnSizeSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();

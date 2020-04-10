@@ -148,6 +148,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ Configuration::ShrinkEffect, QT_TR_NOOP("Shrink effect column") },
 		{ Configuration::PrevHighlighted, QT_TR_NOOP("Previous highlighted step") },
 		{ Configuration::NextHighlighted, QT_TR_NOOP("Next highlighted step") },
+		{ Configuration::IncreasePatternSize, QT_TR_NOOP("Increase pattern size") },
+		{ Configuration::DecreasePatternSize, QT_TR_NOOP("Decrease pattern size") },
 	};
 	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts = configLocked->getShortcuts();
 	for (const auto& pair : shortcutsActions) {
