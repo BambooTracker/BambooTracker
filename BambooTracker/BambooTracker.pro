@@ -443,13 +443,14 @@ include("stream/RtAudio/RtAudio.pri")
 include("midi/RtMidi/RtMidi.pri")
 
 equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 12) {
-    message(using a workaround for missing 'lrelease' option in Qt <5.12...)
+    message(Using a workaround for missing 'lrelease' option in Qt <5.12...)
 
     for(tsfile, TRANSLATIONS) {
       qmfile   = $$tsfile
       qmfile  ~= s/.ts$/.qm/
       qmfile  ~= s,^res/lang,.qm,
-               thisqmcom  = $${qmfile}.commands
+
+              thisqmcom  = $${qmfile}.commands
       win32:$$thisqmcom  = mkdir .qm;
        else:$$thisqmcom  = test -d .qm || mkdir -p .qm;
             $$thisqmcom += lrelease -qm $$qmfile $$PWD/$$tsfile
@@ -477,6 +478,10 @@ equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 12) {
     }
 }
 else {
+    !versionAtLeast(QT_VERSION, 5.14.2) {
+      message(Using a workaround for 'qm_files' target missing its install phase due to checking for the translations too early...)
+      qm_files.CONFIG = no_check_exist
+    }
     CONFIG += lrelease
 }
 
