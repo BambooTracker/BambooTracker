@@ -325,53 +325,62 @@ BambooTracker supports following languages:
 - French
 - Japanese
 
-## Build on Linux
-On Ubuntu 18.04:
+## Build on Linux / BSD
 
-### Dependencies
-> make  
-> Qt5 (including qmake)  
-> Qt5 Multimedia  
-> Qt5 Multimedia plugins  
-> libasound2
+### Debian / Ubuntu
+`apt install bambootracker`
 
+### FreeBSD
+`pkg install bambootracker`
+
+### Manual
+#### Dependencies
+To build BambooTracker, you'll need the following required dependencies:
+- A C++ compiler (GCC/Clang/...)
+- make 
+- Qt5 Base
+- Qt5 Multimedia
+- Qt5 Multimedia plugins
+- Qt5 Tools (qmake, lrelease etc)
+- ALSA libraries
+
+There are some optional dependencies:
+- PulseAudio libraries
+  for PulseAudio support
+- JACK libraries
+  for JACK support
+
+The way of acquiring all these will depend on your distribution.
+
+##### Debian / Ubuntu:
 ```bash
-sudo apt-get install \
+apt install \
   build-essential \
-  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins \
-  libasound2-dev
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins qttools5-dev-tools \
+  libasound2-dev \
+  libpulse-dev libjack-dev
 ```
 
-You also need to install `libpulse-dev` if you use PulseAudio, or `libjack-dev`  if you use Jack.
-
-### Compilation
+#### Compilation
 ```bash
+git clone https://github.com/rerrahkr/BambooTracker
 cd BambooTracker
-qmake
+qmake CONFIG+=release
 make
+# For optionally installing into the system:
+make install
 ```
 
-If you use PulseAudio or JACK, add the option to `qmake`:
+If you want to build with PulseAudio or JACK support, append the following options to `qmake`:
 
-- PulseAudio: `qmake DEFINES+=__LINUX_PULSE__`
-- JACK: `qmake DEFINES+=__UNIX_JACK__`
+- PulseAudio: `DEFINES+=__LINUX_PULSE__`
+- JACK: `DEFINES+=__UNIX_JACK__`
 
-## Install package or build on FreeBSD
-### Build
-To build the BambooTracker via FreeBSD ports
+##### FreeBSD
 ```bash
 cd /usr/ports/audio/bambootracker
 make install clean
 ```
-
-### Package
-To install the package
-```bash
-pkg install bambootracker
-```
-
-## Install package on Debian or Ubuntu
-`apt-get install bambootracker`
 
 ## Changelog
 *See [CHANGELOG.md](./CHANGELOG.md).*
