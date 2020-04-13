@@ -12,18 +12,24 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 [日本語](./README_ja.md)
 
 ## Downloads
-**On Windows**:
+### Windows
 
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
-**On macOS**:
+### macOS
 
 - <https://github.com/rerrahkr/BambooTracker/releases>
 
-**On Linux**:
+### Linux / BSD
+#### Debian / Ubuntu
+`apt install bambootracker`
 
-- See below chapters "Build on Linux" - "Install package on Debian or Ubuntu".
+#### FreeBSD
+`pkg install bambootracker`
+
+#### Other
+- See chapter "Building"
 
 ## Wiki
 - [BambooTracker Wiki (GitHub Wiki)](https://github.com/rerrahkr/BambooTracker/wiki)
@@ -325,32 +331,35 @@ BambooTracker supports following languages:
 - French
 - Japanese
 
-## Build on Linux / BSD
-
-### Debian / Ubuntu
-`apt install bambootracker`
-
-### FreeBSD
-`pkg install bambootracker`
-
-### Manual
-#### Dependencies
+## Building
+### Dependencies
 To build BambooTracker, you'll need the following required dependencies:
 - A C++ compiler (GCC/Clang/...)
 - make 
 - Qt5 Base
 - Qt5 Multimedia
 - Qt5 Multimedia plugins
-- Qt5 Tools (qmake, lrelease etc)
+- Qt5 Tools (qmake, lrelease, ...)
+
+The way of acquiring all these will depend on your OS & distribution.
+
+#### macOS
+You'll most likely need to install the Xcode Command Line Tools - how to acquire these might depend on your macOS version.
+
+For Qt5, [check out Homebrew](https://formulae.brew.sh/formula/qt).
+
+The following optional dependency exists:
+- **JACK Support**: JACK headers & libraries (for example [through Homebrew](https://formulae.brew.sh/formula/jack))
+
+#### Linux / BSD
+You should usually be able to install all required dependencies through your distribution's package manager.
+
+To build BambooTracker, you'll additionally need:
 - ALSA libraries
 
-There are some optional dependencies:
-- PulseAudio libraries
-  for PulseAudio support
-- JACK libraries
-  for JACK support
-
-The way of acquiring all these will depend on your distribution.
+The following optional dependencies exist:
+- **PulseAudio Support**: PulseAudio headers & libraries
+- **JACK Support**: JACK headers & libraries
 
 ##### Debian / Ubuntu:
 ```bash
@@ -361,7 +370,11 @@ apt install \
   libpulse-dev libjack-dev
 ```
 
-#### Compilation
+##### FreeBSD
+You may skip to "Compilation" - "Linux / BSD" - "FreeBSD" if you want to build via FreeBSD ports.
+
+### Compilation
+Generally, this is how you build BambooTracker:
 ```bash
 git clone https://github.com/rerrahkr/BambooTracker
 cd BambooTracker
@@ -371,12 +384,20 @@ make
 make install
 ```
 
-If you want to build with PulseAudio or JACK support, append the following options to `qmake`:
+#### macOS
+If you installed JACK via Homebrew, You might have to manually tell `qmake` where to find the JACK libraries & includes by appending the following:
+`LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include`
 
+If you want to build with JACK support, append the following option to `qmake`:
+`DEFINES+=__UNIX_JACK__`
+
+#### Linux / BSD
+If you want to build with any of the optional dependencies, append the following options to `qmake`:
 - PulseAudio: `DEFINES+=__LINUX_PULSE__`
-- JACK: `DEFINES+=__UNIX_JACK__`
+- JACK: `DEFINES+=__LINUX_PULSE__`
 
 ##### FreeBSD
+BambooTracker can be built via FreeBSD ports instead:
 ```bash
 cd /usr/ports/audio/bambootracker
 make install clean
