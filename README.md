@@ -12,18 +12,24 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 [日本語](./README_ja.md)
 
 ## Downloads
-**On Windows**:
+### Windows
 
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
-**On macOS**:
+### macOS
 
 - <https://github.com/rerrahkr/BambooTracker/releases>
 
-**On Linux**:
+### Linux / BSD
+#### Debian / Ubuntu
+`apt install bambootracker`
 
-- See below chapters "Build on Linux" - "Install package on Debian or Ubuntu".
+#### FreeBSD
+`pkg install bambootracker`
+
+#### Other
+- See chapter "Building"
 
 ## Wiki
 - [BambooTracker Wiki (GitHub Wiki)](https://github.com/rerrahkr/BambooTracker/wiki)
@@ -325,53 +331,94 @@ BambooTracker supports following languages:
 - French
 - Japanese
 
-## Build on Linux
-On Ubuntu 18.04:
-
+## Building
 ### Dependencies
-> make  
-> Qt5 (including qmake)  
-> Qt5 Multimedia  
-> Qt5 Multimedia plugins  
-> libasound2
+To build BambooTracker, you'll need the following required dependencies:
+- A C++ compiler (GCC/Clang/...)
+- make 
+- Qt5 Base
+- Qt5 Multimedia
+- Qt5 Multimedia plugins
+- Qt5 Tools (qmake, lrelease, ...)
 
+The way of acquiring all these will depend on your OS & distribution.
+
+#### Windows
+**TODO**
+- MinGW / MSVC
+- Qt5
+
+#### macOS
+You'll most likely need to install the Xcode Command Line Tools - how to acquire these might depend on your macOS version.
+
+For Qt5, [check out Homebrew](https://formulae.brew.sh/formula/qt).
+
+The following optional dependency exists:
+- **JACK Support**: JACK headers & libraries (for example [through Homebrew](https://formulae.brew.sh/formula/jack))
+
+#### Linux / BSD
+You should usually be able to install all required dependencies through your distribution's package manager.
+
+To build BambooTracker, you'll additionally need:
+- ALSA headers & libraries
+
+The following optional dependencies exist:
+- **PulseAudio Support**: PulseAudio headers & libraries
+- **JACK Support**: JACK headers & libraries
+
+##### Debian / Ubuntu:
 ```bash
-sudo apt-get install \
+apt install \
   build-essential \
-  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins \
-  libasound2-dev
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins qttools5-dev-tools \
+  libasound2-dev \
+  libpulse-dev libjack-dev
 ```
 
-You also need to install `libpulse-dev` if you use PulseAudio, or `libjack-dev`  if you use Jack.
+##### FreeBSD
+You may skip to "Compilation" - "Linux / BSD" - "FreeBSD" if you want to build via FreeBSD ports.
 
 ### Compilation
+Generally, BambooTracker releases are built like this:
 ```bash
+git clone https://github.com/rerrahkr/BambooTracker
 cd BambooTracker
-qmake
+qmake CONFIG-=debug CONFIG+=release
 make
 ```
 
-If you use PulseAudio or JACK, add the option to `qmake`:
+#### Windows
+**TODO**
+- if using MinGW, `mingw32-make` / `mingw64-make` instead of make
+- if using MSVC *?*
+- prolly buildable more comfortably/windows-y via Qt Creator?
 
-- PulseAudio: `qmake DEFINES+=__LINUX_PULSE__`
-- JACK: `qmake DEFINES+=__UNIX_JACK__`
+#### macOS
+If you installed JACK via Homebrew, You might have to manually tell `qmake` where to find the JACK libraries & includes by appending the following:
+`LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include`
 
-## Install package or build on FreeBSD
-### Build
-To build the BambooTracker via FreeBSD ports
+If you want to build with **JACK Support**, append the following option to `qmake`:
+`DEFINES+=__UNIX_JACK__`
+
+#### Linux / BSD
+If you want to build with any of the optional dependencies, append the following options to `qmake`:
+- **PulseAudio Support**: `DEFINES+=__LINUX_PULSE__`
+- **JACK Support**: `DEFINES+=__UNIX_JACK__`
+
+##### FreeBSD
+BambooTracker can be built via FreeBSD ports instead:
 ```bash
 cd /usr/ports/audio/bambootracker
 make install clean
 ```
 
-### Package
-To install the package
+### Installing
+The base files (executable + i18n) can be installed into your system like this:
 ```bash
-pkg install bambootracker
+make install
 ```
 
-## Install package on Debian or Ubuntu
-`apt-get install bambootracker`
+For miscellaneous files like the example demos, skins, license informations etc, you'll have to copy them to the appropriate directories yourself.
 
 ## Changelog
 *See [CHANGELOG.md](./CHANGELOG.md).*
