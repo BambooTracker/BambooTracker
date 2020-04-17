@@ -12,110 +12,26 @@
 [English](./README.md)
 
 ## ダウンロード
-**Windows**:
-
+### Windows
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
 
-**macOS**:
-
+### macOS
 - <https://github.com/rerrahkr/BambooTracker/releases>
 
-**Linux**:
+### Linux / BSD
+#### Debian / Ubuntu
+`apt install bambootracker`
 
-- "Linuxでのビルド方法" - "DebianまたはUbuntuでのパッケージのインストール"の章を参照してください。
+#### FreeBSD
+`pkg install bambootracker`
+
+#### その他
+- "ビルド方法"の章を参照してください。
 
 ## Wiki
+WikiでBambooTrackerのインターフェースなどを説明しています。
 日本語版Wikiは[こちら](https://github.com/rerrahkr/BambooTracker/wiki/%E3%83%9B%E3%83%BC%E3%83%A0)です。
-
-## 用語解説
-トラッカーで作成される1データ(ファイル)をモジュールと呼びます。モジュールは複数のソング(曲データ)とインストゥルメント(音色)、各ソング共通の設定を持ちます。  
-ソング中では各音源のチャンネルがトラックに割り当てられ、トラックはパターン(演奏パターン)を複数保持します。  
-パターンはソングのオーダーに登録することで演奏されます。オーダーはリストになっており、先頭から順に演奏されていきます。  
-パターンはステップが時系列順に並ぶ構造をしています。ノートオン/オフやほとんどのエフェクトはステップ単位で記述されます。  
-ティックは最小の演奏単位で、1ステップ=nティックといった関係になります。カウント単位で変化する効果(ビブラートなど)はティックを基準にしています。
-
-## インターフェース概要
-### インストゥルメントリスト
-インストゥルメントリストではモジュールで使用されるインストゥルメント(音色データ)を管理します。モジュール内の全てのソングはここに登録されているインストゥルメントを共有します。インストゥルメントは最大で128個登録できます($00-7F)。
-
-### インストゥルメントエディタ
-インストゥルメントをダブルクリックするとインストゥルメントエディタが開き、そのインストゥルメントを編集することができます。  
-インストゥルメントはその設定(プロパティ)を他のインストゥルメントと共有することができます。プロパティを共有しているインストゥルメントは各プロパティ内のUsersに番号が表示されます。
-
-インストゥルメントエディタには演奏シーケンスを設定できるものがあります。シーケンスエディタは1列が1ティックに対応しています。  
-またシーケンスのループ/リリースポイントの指定にも対応しています。左クリックでポイント作成またはカウント増加/タイプ変更、右クリックでポイント削除またはカウント減少します。ポイントのエッジをドラッグすることで位置を移動できます。  
-リリースのタイプはSSGのエンベロープ設定のみ以下の3種類から選択できます。
-
-- Fixed: キーオフ時にリリースポイントから指定通りの音量で実行
-- Absolute: キーオフ時の音量に到達するリリースポイント後の最初の地点から実行
-- Relative: キーオフ時に音量を最大音量としてリリースポイントから実行
-
-#### FMエディタ
-FMエディタでは、
-
-1. エンベロープ
-2. LFO
-3. オペレーターシーケンス
-4. アルペジオ
-5. ピッチ
-
-のプロパティを設定できます。
-
-エンベロープはMMLなどのテキストデータを貼り付けして読み込むことができます。テキストフォーマットは設定で追加・変更を行うことができます。デフォルトではFMP、FMP7、MMLDRV、MUCOM88、MXDRV、NRTDRV(`VOICE_MODE=0`)、PMD、VOPMが登録されています。  
-この機能ではテキスト中の数字を出現順に読み込んでいきます。デフォルトのフォーマットを使用する際には予め音色名、コメントに含まれる数字を削除する必要があります。
-
-#### SSGエディタ
-SSGエディタでは、
-
-1. 波形
-2. トーン/ノイズ
-3. エンベロープ
-4. アルペジオ
-5. ピッチ
-
-のプロパティを設定できます。  
-矩形波以外の波形を使用している間はソフトウェアエンベロープは無効になります。
-
-### オーダーリスト
-オーダーリストではパターン番号を演奏する順番に登録していきます。行がオーダー、列がトラックに対応しています。
-リストの最大長は256($FF)です。
-
-### パターンエディタ
-パターンエディタではノートオンなどのイベントを時系列順に登録していきます。行はステップを表します。列はトラック毎に左から
-
-1. 音符
-2. インストゥルメント番号
-3. 音量
-4. エフェクト1の前2文字
-5. エフェクト1の後2文字
-6. エフェクト2の前2文字
-7. エフェクト2の後2文字
-8. エフェクト3の前2文字
-9. エフェクト3の後2文字
-10. エフェクト4の前2文字
-11. エフェクト4の後2文字
-
-を表しています。エフェクト2-3はヘッダーの+, -ボタンで表示/非表示を選択できます。  
-パターンはトラックごとに最大で256個($00-FF)まで作成できます。
-
-### 設定フィールド
-設定フィールドでは、モジュールのメタデータやソングの演奏についての設定が行えます。
-
-#### Tempo
-ソングのテンポを指定します。なお、ここでのテンポはbpmとは異なり、単に早さの指標です。  
-0Fxxエフェクトで指定することもできます。
-
-#### Speed
-1ステップにおける目安のティック数を設定します。Tempoによってこの値は実行時に変化することがあります。  
-0Fxxエフェクトで指定することもできます。
-
-#### Pattern size
-デフォルトのパターン中のステップの個数を設定します。最小値は1、最大値は256です。
-
-#### Groove
-グルーヴエディタで設定したグルーヴ番号を指定します。グルーヴを利用する場合、他の演奏速度の設定はすべて固定されます。  
-0Oxxエフェクトで指定することもできます。
 
 ## ショートカット
 macOSでは一部のキーを以下のものに置き換えてください。
@@ -231,15 +147,6 @@ Q W ER T Y UI O
 Z X CV B N M, .
 ```
 
-## 音量値
-|      | 最大 | 最小 |
-| ---- | ---- | ---- |
-| FM   | 7F   | 00   |
-| SSG  | 00   | 0F   |
-| Drum | 00   | 1F   |
-
-FMの順番は逆転することができます。 (Configuration -> General -> Reverse FM volume order).
-
 ## パターンエフェクト
 | エフェクト | FM                                                                                                                        | SSG                                                                           | ドラム                               | ADPCM                      |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------ | -------------------------- |
@@ -325,58 +232,107 @@ BambooTrackerでは以下の言語に対応しています。
 - フランス語
 - 日本語
 
-## Linuxでのビルド方法
-Ubuntu 18.04:
+## ビルド方法
+### 依存関係
+BambooTrackerをビルドする際には以下の依存関係を用意してください。
 
-### 必要なパッケージ
-> make  
-> Qt5 (qmake)  
-> Qt5 Multimedia  
-> Qt5 Multimedia plugins  
-> libasound2
+- C++コンパイラ (GCC/Clang/...)
+- make
+- Qt5 Base
+- Qt5 Multimedia
+- Qt5 Multimedia plugins
+- Qt5 Tools (qmake, lrelease, ...)
 
+これらの取得方法はOSやディストーションによって異なります。
+
+#### Windows
+**TODO**
+- MinGW / MSVC
+- Qt5
+
+#### macOS
+ほとんどの場合、Xcode Command Line Toolsをインストールする必要があります。これらを取得する方法は、macOSのバージョンに依存する可能性があります。
+
+Qt5については、[Homebrewを参照ください](https://formulae.brew.sh/formula/qt).
+
+また、オプションとして以下の依存関係が存在します。
+
+- **JACKのサポート**: JACK headers & libraries ([Homebrew](https://formulae.brew.sh/formula/jack))
+
+#### Linux / BSD
+通常は必要な依存関係はすべてディストリビューションのパッケージマネージャからインストールできます。
+
+BambooTrackerをビルドするには以下の依存関係を用意してください。
+
+- ALSA headers & libraries
+
+また、オプションとして以下の依存関係が存在します。
+
+- **PulseAudioのサポート**: PulseAudio headers & libraries
+- **JACKのサポート**: JACK headers & libraries
+
+##### Debian / Ubuntu:
 ```bash
-sudo apt-get install \
+apt install \
   build-essential \
-  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins \
-  libasound2-dev
+  qt5-default qtmultimedia5-dev libqt5multimedia5-plugins qttools5-dev-tools \
+  libasound2-dev \
+  libpulse-dev libjack-dev
 ```
 
-PulseAudioを使用する場合は`libpulse-dev`を、JACKを使用する場合は`libjack-dev`もインストールして下さい。
+##### FreeBSD
+FreeBSD Portsを通してビルドする場合は、"コンパイル" - "Linux / BSD" - "FreeBSD"を参照してください。
 
 ### コンパイル
+通常、BambooTrackerのリリースは以下の手順で構築されます。
+
 ```bash
+git clone https://github.com/rerrahkr/BambooTracker
 cd BambooTracker
-qmake
+qmake CONFIG-=debug CONFIG+=release
 make
 ```
 
-PulseAudioやJACKを使用する場合は、`qmake`に以下のオプションを付けて下さい。
+#### Windows
+**TODO**
 
-- PulseAudio: `qmake DEFINES+=__LINUX_PULSE__`
-- JACK: `qmake DEFINES+=__UNIX_JACK__`
+- MinGWを使用する場合は、`make`の代わりに`mingw32-make` / `mingw64-make`を使用してください。
+- MSVC *?*
+- Qt Creatorによってより簡単にコンパイルすることが可能です。
 
-## FreeBSDでのパッケージのインストールまたはビルド
-### ビルド
-To build the BambooTracker via FreeBSD ports
+#### macOS
+HomebrewでJACKをインストールした場合、`qmake`に以下のJACKの指定を追加する必要になる可能性があります。  
+`LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include`
+
+**JACKのサポート**を使用する際は、`qmake`に`DEFINES+=__UNIX_JACK__`のオプションを追加してください。
+
+#### Linux / BSD
+オプションの依存関係によって、`qmake`に以下のオプションを追加する必要があります。
+
+- **PulseAudioのサポート**: `DEFINES+=__LINUX_PULSE__`
+- **JACKのサポート**: `DEFINES+=__UNIX_JACK__`
+
+##### FreeBSD
+BambooTrackerはFreeBSD Portsを通してビルドすることが出来ます。
+
 ```bash
 cd /usr/ports/audio/bambootracker
 make install clean
 ```
 
-### パッケージ
-To install the package
+### インストール
+基本のファイル(実行ファイル+言語ファイル)は以下の手順でインストールされます。
+
 ```bash
-pkg install bambootracker
+make install
 ```
 
-## DebianまたはUbuntuでのパッケージのインストール
-`apt-get install bambootracker`
+demos, skins, licensesなどその他のファイル、フォルダは適宜任意の場所へコピーしてください。
 
-## Changelog
+## 変更履歴
 *[CHANGELOG.md](./CHANGELOG.md)を参照してください。*
 
-## License
+## ライセンス
 このプログラム及びソースコードのライセンスははGNU General License Version 2です。
 
 *[LICENSE](./LICENSE)とライブラリに関して[list.md](./licenses/list.md)も参照してください。*

@@ -10,6 +10,7 @@
 
 ## Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
+- [#205] - Modify README ([#203]; thanks [@OPNA2608], [@Mikejmoffitt])
 
 ## Fixed
 - [#197] - Fix the bug that a book mark name cannot be changed (thanks [@Zeinok], [@OPNA2608])
@@ -17,14 +18,19 @@
 - Reset internal start/stop address point of ADPCM sample after loading samples
 - [#201] - Redraw order list after resizing (thanks [@OPNA2608])
 - Fix `Dxyy` crash when starting playing from the cursor (thanks [@maakmusic])
+- [#204] - Fix missing install target for translations (thanks [@OPNA2608])
 
 [@Zeinok]: https://github.com/Zeinok
 [@djmaximum17]: https://github.com/djmaximum17
+[@Mikejmoffitt]: https://github.com/Mikejmoffitt
 
 [#197]: https://github.com/rerrahkr/BambooTracker/pull/197
 [#199]: https://github.com/rerrahkr/BambooTracker/issues/199
 [#198]: https://github.com/rerrahkr/BambooTracker/issues/198
 [#201]: https://github.com/rerrahkr/BambooTracker/issues/201
+[#204]: https://github.com/rerrahkr/BambooTracker/pull/204
+[#205]: https://github.com/rerrahkr/BambooTracker/pull/205
+[#203]: https://github.com/rerrahkr/BambooTracker/issues/203
 
 ## v0.4.0 (2020-03-27)
 ### Added
