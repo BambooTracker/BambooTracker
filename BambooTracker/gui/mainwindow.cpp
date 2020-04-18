@@ -1311,6 +1311,8 @@ void MainWindow::openInstrumentEditor()
 			break;
 		}
 
+		form->addActions({ octUpSc_.get(), octDownSc_.get() });
+
 		std::string name = inst->getName();
 		instForms_->add(num, std::move(form),
 						QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
