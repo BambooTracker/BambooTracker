@@ -7,6 +7,7 @@
   - Increase/Decrease pattern size
   - Increase/Decrease edit step
   - Previous/Next song
+- 255 new sample instruments (thanks [Takeshi Abo])
 
 ## Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
@@ -23,6 +24,7 @@
 [@Zeinok]: https://github.com/Zeinok
 [@djmaximum17]: https://github.com/djmaximum17
 [@Mikejmoffitt]: https://github.com/Mikejmoffitt
+[Takeshi Abo]: https://twitter.com/valsound
 
 [#197]: https://github.com/rerrahkr/BambooTracker/pull/197
 [#199]: https://github.com/rerrahkr/BambooTracker/issues/199

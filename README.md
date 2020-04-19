@@ -351,7 +351,7 @@ I would like to thank the following people for making it:
 - Decidetto for the application icon
 - Vitaly Novichkov (Wohlstand) for WOPN instrument format files
 - maak, SuperJet Spade, Dippy, RigidatoMS and ImATrackMan for sample modules
-- papiezak for sample instruments
+- papiezak and Takeshi Abo for sample instruments
 - Ru^3 for S98 file format documentation
 - がし３ (gasshi) for SCCI libraries
 - honet for C86CTL libraries

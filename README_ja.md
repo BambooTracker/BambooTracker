@@ -347,7 +347,7 @@ demos, skins, licensesなどその他のファイル、フォルダは適宜任�
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
 - トラッカーのアイコンに関してDecidettoさん
 - サンプル曲を提供してくださったmaakさん、SuperJet Spadeさん、Dippyさん、RigidatoMSさん、ImATrackManさん
-- サンプルインストゥルメントを提供してくださったpapiezakさん
+- サンプルインストゥルメントを提供してくださったpapiezakさん、阿保　剛さん
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
 - S98ファイルのフォーマットのドキュメントに関してRu^3さん
 - SCCIライブラリに関してがし３さん

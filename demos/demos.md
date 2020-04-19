@@ -9,6 +9,7 @@
 ## Sample instruments
 - [papiezak] - 2 banks (32 instruments)
 - Rerrah - 3 banks (54 instruments)
+- [Takeshi Abo] - 12 banks (255 instruments from [VAL-SOUND](http://valsound.fc2web.com))
 
 Thanks all for samples!
 
@@ -18,3 +19,4 @@ Thanks all for samples!
 [SuperJet Spade]: https://twitter.com/SuperJetSpade
 [RigidatoMS]: https://twitter.com/RigidatoMS
 [ImATrackMan]: https://twitter.com/ImATrackMan
+[Takeshi Abo]: https://twitter.com/valsound
