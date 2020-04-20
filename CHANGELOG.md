@@ -12,6 +12,7 @@
 ## Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
 - [#205] - Modify README ([#203]; thanks [@OPNA2608], [@Mikejmoffitt])
+- [#206] - Enable sound preview in bank import (thanks [@Mikejmoffitt])
 
 ## Fixed
 - [#197] - Fix the bug that a book mark name cannot be changed (thanks [@Zeinok], [@OPNA2608])
@@ -33,6 +34,7 @@
 [#204]: https://github.com/rerrahkr/BambooTracker/pull/204
 [#205]: https://github.com/rerrahkr/BambooTracker/pull/205
 [#203]: https://github.com/rerrahkr/BambooTracker/issues/203
+[#206]: https://github.com/rerrahkr/BambooTracker/issues/206
 
 ## v0.4.0 (2020-03-27)
 ### Added

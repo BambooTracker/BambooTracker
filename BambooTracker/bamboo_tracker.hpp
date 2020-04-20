@@ -223,10 +223,11 @@ public:
 	void jamKeyOn(int keyNum);
 	void jamKeyOff(JamKey key);
 	void jamKeyOff(int keyNum);
-	void jamKeyOnForced(JamKey key, SoundSource src);
-	void jamKeyOnForced(int keyNum, SoundSource src);
+	void jamKeyOnForced(JamKey key, SoundSource src, std::shared_ptr<AbstractInstrument> inst = nullptr);
+	void jamKeyOnForced(int keyNum, SoundSource src, std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void jamKeyOffForced(JamKey key, SoundSource src);
 	void jamKeyOffForced(int keyNum, SoundSource src);
+	std::vector<size_t> assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst);
 
 	// Play song
 	void startPlaySong();
@@ -441,7 +442,8 @@ private:
 	static const uint32_t CHIP_CLOCK;
 
 	// Jam mode
-	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib);
+	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib,
+					  std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& attrib);
 
 	// Play song

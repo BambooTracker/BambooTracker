@@ -909,22 +909,23 @@ void BambooTracker::jamKeyOn(int keyNum)
 	funcJamKeyOn(JamKey::MidiKey, keyNum, attrib);
 }
 
-void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src)
+void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, std::shared_ptr<AbstractInstrument> inst)
 {
 	int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
 	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
 						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOn(key, keyNum, *it);
+	funcJamKeyOn(key, keyNum, *it, inst);
 }
 
-void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src)
+void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src, std::shared_ptr<AbstractInstrument> inst)
 {
 	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
 						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOn(JamKey::MidiKey, keyNum, *it);
+	funcJamKeyOn(JamKey::MidiKey, keyNum, *it, inst);
 }
 
-void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib)
+void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib,
+								 std::shared_ptr<AbstractInstrument> inst)
 {
 	if (playback_->isPlayingStep()) playback_->stopPlaySong();	// Reset
 
@@ -959,7 +960,9 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			}
 		}
 
-		std::shared_ptr<AbstractInstrument> tmpInst = instMan_->getInstrumentSharedPtr(curInstNum_);
+		if (!inst) {	// Use current instrument if not specified
+			inst = instMan_->getInstrumentSharedPtr(curInstNum_);
+		}
 		JamKeyData& onData = list.front();
 
 		Note note;
@@ -981,7 +984,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 		switch (onData.source) {
 		case SoundSource::FM:
-			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(tmpInst))
+			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(inst))
 				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
 			if (songStyle_.type == SongType::FM3chExpanded && onData.channelInSource == 2) {
 				opnaCtrl_->keyOnFM(2, note, octave, pitch, true);
@@ -994,12 +997,12 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 			}
 			break;
 		case SoundSource::SSG:
-			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(tmpInst))
+			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(inst))
 				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
 			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
 			break;
 		case SoundSource::ADPCM:
-			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(tmpInst))
+			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(inst))
 				opnaCtrl_->setInstrumentADPCM(adpcm);
 			opnaCtrl_->keyOnADPCM(note, octave, pitch, true);
 			break;
@@ -1070,6 +1073,15 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 			}
 		}
 	}
+}
+
+std::vector<size_t> BambooTracker::assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst)
+{
+	if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(inst)) {
+		opnaCtrl_->clearSamplesADPCM();
+		return opnaCtrl_->storeSampleADPCM(adpcm->getWaveformSamples());
+	}
+	return {};
 }
 
 /********** Play song **********/

@@ -75,7 +75,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	hasShownOnce_(false),
 	firstViewUpdateRequest_(false),
 	effListDiag_(std::make_unique<EffectListDialog>()),
-	shortcutsDiag_(std::make_unique<KeyboardShortcutListDialog>())
+	shortcutsDiag_(std::make_unique<KeyboardShortcutListDialog>()),
+	bankJamMidiCtrl_(false)
 {
 	ui->setupUi(this);
 
@@ -1079,6 +1080,13 @@ void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 
 	octave_->setValue(k / 12);
 
+	if (importBankDiag_) {
+		if (bankJamMidiCtrl_.load()) return;
+		importBankDiag_->onJamKeyOffByMidi(k);
+		if (!release) importBankDiag_->onJamKeyOnByMidi(k);
+		return;
+	}
+
 	int n = instForms_->checkActivatedFormNumber();
 	if (n == -1) {
 		bt_->jamKeyOff(k); // possibility to recover on stuck note
@@ -1488,6 +1496,8 @@ void MainWindow::saveInstrument()
 
 void MainWindow::importInstrumentsFromBank()
 {
+	stopPlaySong();
+
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QStringList filters {
 		tr("BambooTracker bank (*.btb)"),
@@ -1512,7 +1522,10 @@ void MainWindow::importInstrumentsFromBank()
 
 void MainWindow::funcImportInstrumentsFromBank(QString file)
 {
+	stopPlaySong();
+
 	std::unique_ptr<AbstractBank> bank;
+	std::shared_ptr<InstrumentsManager> bankMan = std::make_shared<InstrumentsManager>(true);
 	try {
 		QFile fp(file);
 		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::Bank);
@@ -1534,11 +1547,52 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		return;
 	}
 
-	InstrumentSelectionDialog dlg(*bank, tr("Select instruments to load:"), this);
-	if (dlg.exec() != QDialog::Accepted)
-		return;
+	size_t jamId = 128;	// Dummy
+	std::shared_ptr<AbstractInstrument> jamInst;
+	importBankDiag_ = std::make_unique<InstrumentSelectionDialog>(*bank, tr("Select instruments to load:"), config_, this);
+	auto updateInst = [&] (size_t id) {
+		if (id != jamId) {
+			bankJamMidiCtrl_.store(true);
+			jamId = id;
+			bankMan->clearAll();
+			jamInst.reset(bank->loadInstrument(id, bankMan, 0));
+			jamInst->setNumber(128);	// Special number
+			std::vector<size_t> addrs = bt_->assignADPCMBeforeForcedJamKeyOn(jamInst);
+			if (!addrs.empty()) {
+				bankMan->setWaveformADPCMStartAddress(0, addrs[0]);
+				bankMan->setWaveformADPCMStopAddress(0, addrs[1]);
+			}
+			bankJamMidiCtrl_.store(false);
+		}
+	};
+	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnEvent,
+					 this, [&](size_t id, JamKey key) {
+		updateInst(id);
+		bt_->jamKeyOnForced(key, jamInst->getSoundSource(), jamInst);
+	},
+	Qt::DirectConnection);
+	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnMidiEvent,
+					 this, [&](size_t id, int key) {
+		updateInst(id);
+		bt_->jamKeyOnForced(key, jamInst->getSoundSource(), jamInst);
+	},
+	Qt::DirectConnection);
+	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOffEvent,
+					 this, [&](JamKey key) { bt_->jamKeyOffForced(key, jamInst->getSoundSource()); },
+	Qt::DirectConnection);
+	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOffMidiEvent,
+					 this, [&](int key) { if (jamInst) bt_->jamKeyOffForced(key, jamInst->getSoundSource()); },
+	Qt::DirectConnection);
+	importBankDiag_->addActions({ octUpSc_.get(), octDownSc_.get() });
 
-	QVector<size_t> selection = dlg.currentInstrumentSelection();
+	if (importBankDiag_->exec() != QDialog::Accepted) {
+		assignADPCMSamples();	// Restore
+		importBankDiag_.reset();
+		return;
+	}
+
+	QVector<size_t> selection = importBankDiag_->currentInstrumentSelection();
+	importBankDiag_.reset();
 	if (selection.empty()) return;
 
 	try {
@@ -1583,7 +1637,8 @@ void MainWindow::exportInstrumentsToBank()
 	std::vector<int> ids = bt_->getInstrumentIndices();
 	std::shared_ptr<BtBank> bank(std::make_shared<BtBank>(ids, bt_->getInstrumentNames()));
 
-	InstrumentSelectionDialog dlg(*bank, tr("Select instruments to save:"), this);
+	InstrumentSelectionDialog dlg(*bank, tr("Select instruments to save:"), config_, this);
+
 	if (dlg.exec() != QDialog::Accepted)
 		return;
 

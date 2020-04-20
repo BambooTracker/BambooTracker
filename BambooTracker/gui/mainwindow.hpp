@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include <atomic>
 #include <memory>
 #include <cstdint>
 #include <unordered_map>
@@ -32,6 +33,7 @@
 #include "gui/effect_list_dialog.hpp"
 #include "gui/keyboard_shortcut_list_dialog.hpp"
 #include "gui/bookmark_manager_form.hpp"
+#include "gui/instrument_selection_dialog.hpp"
 #include "file_io_error.hpp"
 #include "enum_hash.hpp"
 
@@ -180,6 +182,10 @@ private:
 
 	// Bookmark
 	std::unique_ptr<BookmarkManagerForm> bmManForm_;
+
+	// Bank import
+	std::atomic_bool bankJamMidiCtrl_;
+	std::unique_ptr<InstrumentSelectionDialog> importBankDiag_;
 
 	// Meta methods
 	int tickEventMethod_;
