@@ -122,10 +122,6 @@
         <translation></translation>
     </message>
     <message>
-        <source>MIDI</source>
-        <translation type="vanished">MIDI</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.ui" line="314"/>
         <source>MIDI input</source>
         <translation>MIDI In</translation>
@@ -423,12 +419,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1102"/>
         <source>Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>ショートカット</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1118"/>
         <source>Action</source>
-        <translation type="unfinished"></translation>
+        <translation>動作</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="1146"/>
@@ -528,10 +524,6 @@
         <location filename="../../gui/configuration_dialog.ui" line="1888"/>
         <source>High</source>
         <translation>高音</translation>
-    </message>
-    <message>
-        <source>Special keys</source>
-        <translation type="vanished">特殊キー</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="92"/>
@@ -802,312 +794,312 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="96"/>
         <source>Play and stop</source>
-        <translation type="unfinished"></translation>
+        <translation>再生/停止</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="97"/>
         <source>Play</source>
-        <translation type="unfinished"></translation>
+        <translation>再生</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="98"/>
         <source>Play from start</source>
-        <translation type="unfinished"></translation>
+        <translation>最初から再生</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="99"/>
         <source>Play pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>パターンを再生</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="100"/>
         <source>Play from cursor</source>
-        <translation type="unfinished"></translation>
+        <translation>カーソル位置から再生</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="101"/>
         <source>Play from marker</source>
-        <translation type="unfinished"></translation>
+        <translation>マーカー位置から再生</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="102"/>
         <source>Play step</source>
-        <translation type="unfinished"></translation>
+        <translation>ステップ再生</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="103"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>停止</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="104"/>
         <source>Focus on pattern editor</source>
-        <translation type="unfinished"></translation>
+        <translation>パターンエディターへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="105"/>
         <source>Focus on order list</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーリストへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="106"/>
         <source>Focus on instrument list</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメントリストへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="107"/>
         <source>Toggle edit/jam mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Edit/Jamモード切替え</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="108"/>
         <source>Set marker</source>
-        <translation type="unfinished"></translation>
+        <translation>マーカーを設定</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="109"/>
         <source>Paste and mix</source>
-        <translation type="unfinished"></translation>
+        <translation>ミックス貼り付け</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="110"/>
         <source>Paste and overwrite</source>
-        <translation type="unfinished"></translation>
+        <translation>上書き貼り付け</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="111"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>全選択</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="112"/>
         <source>Deselect</source>
-        <translation type="unfinished"></translation>
+        <translation>選択解除</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="113"/>
         <source>Select row</source>
-        <translation type="unfinished"></translation>
+        <translation>行を選択</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="114"/>
         <source>Select column</source>
-        <translation type="unfinished"></translation>
+        <translation>列を選択</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="115"/>
         <source>Select pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>パターンを選択</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="116"/>
         <source>Select order</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーを選択</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="117"/>
         <source>Go to step</source>
-        <translation type="unfinished"></translation>
+        <translation>ステップ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="118"/>
         <source>Toggle track</source>
-        <translation type="unfinished"></translation>
+        <translation>トラックをミュート</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="119"/>
         <source>Solo track</source>
-        <translation type="unfinished"></translation>
+        <translation>トラックをソロ状態に変更</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="120"/>
         <source>Interpolate</source>
-        <translation type="unfinished"></translation>
+        <translation>補間</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="121"/>
         <source>Reverse</source>
-        <translation type="unfinished"></translation>
+        <translation>反転</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="122"/>
         <source>Go to previous order</source>
-        <translation type="unfinished"></translation>
+        <translation>前のオーダーへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="123"/>
         <source>Go to next order</source>
-        <translation type="unfinished"></translation>
+        <translation>次のオーダーへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="124"/>
         <source>Toggle bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>ブックマーク設定</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="125"/>
         <source>Previous bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>前のブックマークへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="126"/>
         <source>Next bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>次のブックマークへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="127"/>
         <source>Transpose, decrease note</source>
-        <translation type="unfinished"></translation>
+        <translation>トランスポーズ (半音下げる)</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="128"/>
         <source>Transpose, increase note</source>
-        <translation type="unfinished"></translation>
+        <translation>トランスポーズ (半音上げる)</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="129"/>
         <source>Transpose, decrease octave</source>
-        <translation type="unfinished"></translation>
+        <translation>トランスポーズ (1オクターブ下げる)</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="130"/>
         <source>Transpose, increase octave</source>
-        <translation type="unfinished"></translation>
+        <translation>トランスポーズ (1オクターブ上げる)</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="131"/>
         <source>Previous instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>前のインストゥルメントを選択</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="132"/>
         <source>Next instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>次のインストゥルメントを選択</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="133"/>
         <source>Mask instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメント入力をマスク</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="134"/>
         <source>Mask volume</source>
-        <translation type="unfinished"></translation>
+        <translation>音量入力をマスク</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="135"/>
         <source>Edit instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメントを編集</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="136"/>
         <source>Follow mode</source>
-        <translation type="unfinished"></translation>
+        <translation>フォローモード</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="137"/>
         <source>Duplicate order</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーを複製</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="138"/>
         <source>Clone patterns</source>
-        <translation type="unfinished"></translation>
+        <translation>パターンをクローン</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="139"/>
         <source>Clone order</source>
-        <translation type="unfinished"></translation>
+        <translation>オーダーをクローン</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="140"/>
         <source>Replace instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメント置換</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="141"/>
         <source>Expand pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>パターン拡大</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="142"/>
         <source>Shrink pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>パターン縮小</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="143"/>
         <source>Fine decrease values</source>
-        <translation type="unfinished"></translation>
+        <translation>値を1だけ減少</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="144"/>
         <source>Fine increase values</source>
-        <translation type="unfinished"></translation>
+        <translation>値を1だけ増加</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="145"/>
         <source>Coarse decrease values</source>
-        <translation type="unfinished"></translation>
+        <translation>値を16だけ減少</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="146"/>
         <source>Coarse increase valuse</source>
-        <translation type="unfinished"></translation>
+        <translation>値を16だけ増加</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="147"/>
         <source>Expand effect column</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクト列の拡張</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="148"/>
         <source>Shrink effect column</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクト列の縮小</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="149"/>
         <source>Previous highlighted step</source>
-        <translation type="unfinished"></translation>
+        <translation>前のハイライトステップへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="150"/>
         <source>Next highlighted step</source>
-        <translation type="unfinished"></translation>
+        <translation>次のハイライトステップへ移動</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="151"/>
         <source>Increase pattern size</source>
-        <translation type="unfinished"></translation>
+        <translation>パターン長を増加</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="152"/>
         <source>Decrease pattern size</source>
-        <translation type="unfinished"></translation>
+        <translation>パターン長を縮小</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="153"/>
         <source>Increase edit step</source>
-        <translation type="unfinished"></translation>
+        <translation>エディットステップを増加</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="154"/>
         <source>Decrease edit step</source>
-        <translation type="unfinished"></translation>
+        <translation>エディットステップを減少</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="155"/>
         <source>Display effect list</source>
-        <translation type="unfinished"></translation>
+        <translation>エフェクト一覧を表示</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="156"/>
         <source>Previous song</source>
-        <translation type="unfinished"></translation>
+        <translation>前のソングに切り替え</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="157"/>
         <source>Next song</source>
-        <translation type="unfinished"></translation>
+        <translation>次のソングに切り替え</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="247"/>
@@ -2054,7 +2046,7 @@
     <message>
         <location filename="../../gui/keyboard_shortcut_list_dialog.ui" line="21"/>
         <source>qrc:/doc/shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
