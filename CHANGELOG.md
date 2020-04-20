@@ -1,7 +1,9 @@
 # Changelog
 
 ## Unreleased
-## Added
+
+## v0.4.1 (2020-04-20)
+### Added
 - Shortcut settings
 - 6 new shortcuts
   - Increase/Decrease pattern size
@@ -9,12 +11,13 @@
   - Previous/Next song
 - 255 new sample instruments (thanks [Takeshi Abo])
 
-## Changed
+### Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
 - [#205] - Modify README ([#203]; thanks [@OPNA2608], [@Mikejmoffitt])
 - [#206] - Enable sound preview in bank import (thanks [@Mikejmoffitt])
+- Update translation: ja
 
-## Fixed
+### Fixed
 - [#197] - Fix the bug that a book mark name cannot be changed (thanks [@Zeinok], [@OPNA2608])
 - [#199] - Fix ADPCM sample sometimes has wrong DC offset in synthesis (thanks [@galap-1])
 - Reset internal start/stop address point of ADPCM sample after loading samples
