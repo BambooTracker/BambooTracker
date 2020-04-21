@@ -705,6 +705,7 @@
      <string>&amp;Instrument</string>
     </property>
     <addaction name="actionNew_Instrument"/>
+    <addaction name="actionNew_Drumki_t"/>
     <addaction name="actionRemove_Instrument"/>
     <addaction name="actionClone_Instrument"/>
     <addaction name="actionDeep_Clone_Instrument"/>
@@ -1566,6 +1567,11 @@
    </property>
    <property name="text">
     <string>&amp;Toolbar</string>
+   </property>
+  </action>
+  <action name="actionNew_Drumki_t">
+   <property name="text">
+    <string>New Drumki&amp;t</string>
    </property>
   </action>
  </widget>

@@ -87,6 +87,7 @@ private:
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
 	void addInstrument();
+	void addDrumkit();
 	void removeInstrument(int row);
 	void openInstrumentEditor();
 	int findRowFromInstrumentList(int instNum);
@@ -310,6 +311,7 @@ private slots:
 	void on_actionRemove_Unused_ADPCM_Samples_triggered();
 	void on_action_Status_Bar_triggered();
 	void on_action_Toolbar_triggered();
+	void on_actionNew_Drumki_t_triggered();
 };
 
 #endif // MAINWINDOW_HPP

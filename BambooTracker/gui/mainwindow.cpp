@@ -20,6 +20,7 @@
 #include <QMetaMethod>
 #include <QScreen>
 #include <QComboBox>
+#include <QToolButton>
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -331,12 +332,16 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	auto instToolBar = new QToolBar();
 	instToolBar->setIconSize(QSize(16, 16));
-	instToolBar->addAction(ui->actionNew_Instrument);
-	instToolBar->addAction(ui->actionRemove_Instrument);
-	instToolBar->addAction(ui->actionClone_Instrument);
+	auto addMenu = new QMenu();
+	addMenu->addActions({ ui->actionNew_Instrument, ui->actionNew_Drumki_t });
+	auto addTB = new QToolButton();
+	addTB->setPopupMode(QToolButton::MenuButtonPopup);
+	addTB->setMenu(addMenu);
+	addTB->setDefaultAction(ui->actionNew_Instrument);
+	instToolBar->addWidget(addTB);
+	instToolBar->addActions({ ui->actionRemove_Instrument, ui->actionClone_Instrument });
 	instToolBar->addSeparator();
-	instToolBar->addAction(ui->actionLoad_From_File);
-	instToolBar->addAction(ui->actionSave_To_File);
+	instToolBar->addActions({ ui->actionLoad_From_File, ui->actionSave_To_File });
 	instToolBar->addSeparator();
 	instToolBar->addAction(ui->actionEdit);
 	instToolBar->addSeparator();
@@ -1136,6 +1141,11 @@ void MainWindow::addInstrument()
 	case SoundSource::DRUM:
 		break;
 	}
+}
+
+void MainWindow::addDrumkit()
+{
+	// TODO
 }
 
 void MainWindow::removeInstrument(int row)
@@ -2215,19 +2225,15 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	QMenu menu;
 
 	// Leave Before Qt5.7.0 style due to windows xp
-	menu.addAction(ui->actionNew_Instrument);
-	menu.addAction(ui->actionRemove_Instrument);
+	menu.addActions({ ui->actionNew_Instrument, ui->actionNew_Drumki_t, ui->actionRemove_Instrument });
 	menu.addSeparator();
 	menu.addAction(ui->actionRename_Instrument);
 	menu.addSeparator();
-	menu.addAction(ui->actionClone_Instrument);
-	menu.addAction(ui->actionDeep_Clone_Instrument);
+	menu.addActions({ ui->actionClone_Instrument, ui->actionDeep_Clone_Instrument });
 	menu.addSeparator();
-	menu.addAction(ui->actionLoad_From_File);
-	menu.addAction(ui->actionSave_To_File);
+	menu.addActions({ ui->actionLoad_From_File, ui->actionSave_To_File });
 	menu.addSeparator();
-	menu.addAction(ui->actionImport_From_Bank_File);
-	menu.addAction(ui->actionExport_To_Bank_File);
+	menu.addActions({ ui->actionImport_From_Bank_File, ui->actionExport_To_Bank_File });
 	menu.addSeparator();
 	menu.addAction(ui->actionEdit);
 
@@ -3363,4 +3369,9 @@ void MainWindow::on_action_Toolbar_triggered()
 	bool visible = ui->action_Toolbar->isChecked();
 	ui->mainToolBar->setVisible(visible);
 	ui->subToolBar->setVisible(visible);
+}
+
+void MainWindow::on_actionNew_Drumki_t_triggered()
+{
+	addDrumkit();
 }
