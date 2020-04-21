@@ -17,6 +17,7 @@
 #include "instrument.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
+#include "gui/instrument_editor/instrument_editor_util.hpp"
 
 InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -248,70 +249,6 @@ void InstrumentEditorADPCMForm::setColorPalette(std::shared_ptr<ColorPalette> pa
 	ui->envEditor->setColorPalette(palette);
 	ui->arpEditor->setColorPalette(palette);
 	ui->ptEditor->setColorPalette(palette);
-}
-
-SequenceType InstrumentEditorADPCMForm::convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type)
-{
-	switch (type) {
-	case VisualizedInstrumentMacroEditor::SequenceType::NoType:
-		return SequenceType::NO_SEQUENCE_TYPE;
-	case VisualizedInstrumentMacroEditor::SequenceType::FixedSequence:
-		return SequenceType::FIXED_SEQUENCE;
-	case VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence:
-		return SequenceType::ABSOLUTE_SEQUENCE;
-	case VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence:
-		return SequenceType::RELATIVE_SEQUENCE;
-	default:
-		throw std::invalid_argument("Unexpected SequenceType.");
-	}
-}
-
-VisualizedInstrumentMacroEditor::SequenceType InstrumentEditorADPCMForm::convertSequenceTypeForUI(SequenceType type)
-{
-	switch (type) {
-	case SequenceType::NO_SEQUENCE_TYPE:
-		return VisualizedInstrumentMacroEditor::SequenceType::NoType;
-	case SequenceType::FIXED_SEQUENCE:
-		return VisualizedInstrumentMacroEditor::SequenceType::FixedSequence;
-	case SequenceType::ABSOLUTE_SEQUENCE:
-		return VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence;
-	case SequenceType::RELATIVE_SEQUENCE:
-		return VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence;
-	default:
-		throw std::invalid_argument("Unexpected SequenceType.");
-	}
-}
-
-ReleaseType InstrumentEditorADPCMForm::convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type)
-{
-	switch (type) {
-	case VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE:
-		return ReleaseType::NoRelease;
-	case VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE:
-		return ReleaseType::FixedRelease;
-	case VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE:
-		return ReleaseType::AbsoluteRelease;
-	case VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE:
-		return ReleaseType::RelativeRelease;
-	default:
-		throw std::invalid_argument("Unexpected ReleaseType.");
-	}
-}
-
-VisualizedInstrumentMacroEditor::ReleaseType InstrumentEditorADPCMForm::convertReleaseTypeForUI(ReleaseType type)
-{
-	switch (type) {
-	case ReleaseType::NoRelease:
-		return VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE;
-	case ReleaseType::FixedRelease:
-		return VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE;
-	case ReleaseType::AbsoluteRelease:
-		return VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE;
-	case ReleaseType::RelativeRelease:
-		return VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE;
-	default:
-		throw std::invalid_argument("Unexpected ReleaseType.");
-	}
 }
 
 void InstrumentEditorADPCMForm::updateInstrumentParameters()

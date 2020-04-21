@@ -225,6 +225,7 @@ HEADERS += \
     gui/gui_util.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
     gui/instrument_editor/instrument_editor_adpcm_form.hpp \
+    gui/instrument_editor/instrument_editor_util.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/instrument_list_misc.hpp \
     gui/jam_layout.hpp \
