@@ -5,6 +5,44 @@
 
 OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	: mode_(SongType::Standard),
+	  FM_ENV_PARAMS_OP_({
+{ FMOperatorType::All, {
+						FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
+						FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
+						FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
+						FMEnvelopeParameter::DT1,
+						FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
+						FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
+						FMEnvelopeParameter::DT2,
+						FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
+						FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
+						FMEnvelopeParameter::DT3,
+						FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
+						FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
+						FMEnvelopeParameter::DT4
+						}},
+{ FMOperatorType::Op1, {
+						FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
+						FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
+						FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
+						FMEnvelopeParameter::DT1
+						}},
+{ FMOperatorType::Op2, {
+						FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
+						FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
+						FMEnvelopeParameter::DT2
+						}},
+{ FMOperatorType::Op3, {
+						FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
+						FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
+						FMEnvelopeParameter::DT3
+						}},
+{ FMOperatorType::Op4, {
+						FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
+						FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
+						FMEnvelopeParameter::DT4
+						}}
+						}),
 	  dramSize_(262144),	// 256KiB
 	  storePointADPCM_(0)
 {
@@ -15,7 +53,7 @@ OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	for (int ch = 0; ch < 6; ++ch) {
 		fmOpEnables_[ch] = 0xf;
 		isMuteFM_[ch] = false;
-		for (auto ep : getFMEnvelopeParametersForOperator(FMOperatorType::All))
+		for (auto ep : FM_ENV_PARAMS_OP_.at(FMOperatorType::All))
 			opSeqItFM_[ch].emplace(ep, nullptr);
 	}
 
@@ -549,7 +587,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 	}
 
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
-	for (auto& p : getFMEnvelopeParametersForOperator(opType)) {
+	for (auto& p : FM_ENV_PARAMS_OP_.at(opType)) {
 		if (refInstFM_[inch]->getOperatorSequenceEnabled(p)) {
 			opSeqItFM_[inch].at(p) = refInstFM_[inch]->getOperatorSequenceSequenceIterator(p);
 			switch (p) {
@@ -619,7 +657,7 @@ void OPNAController::updateInstrumentFM(int instNum)
 			writeFMEnvelopeToRegistersFromInstrument(inch);
 			if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
 			FMOperatorType opType = toChannelOperatorType(ch);
-			for (auto& p : getFMEnvelopeParametersForOperator(opType)) {
+			for (auto& p : FM_ENV_PARAMS_OP_.at(opType)) {
 				if (!refInstFM_[inch]->getOperatorSequenceEnabled(p))
 					opSeqItFM_[inch].at(p).reset();
 			}
@@ -886,7 +924,7 @@ void OPNAController::setBrightnessFM(int ch, int value)
 void OPNAController::haltSequencesFM(int ch)
 {
 	int inch = toInternalFMChannel(ch);
-	for (auto& p : getFMEnvelopeParametersForOperator(toChannelOperatorType(ch))) {
+	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) it->end();
 	}
 	if (treItFM_[ch]) treItFM_[ch]->end();
@@ -1100,60 +1138,6 @@ FMOperatorType OPNAController::toChannelOperatorType(int ch) const
 		opType = FMOperatorType::All;
 	}
 	return opType;
-}
-
-std::vector<FMEnvelopeParameter> OPNAController::getFMEnvelopeParametersForOperator(FMOperatorType op) const
-{
-	std::vector<FMEnvelopeParameter> params;
-	switch (op) {
-	case FMOperatorType::All:
-		params = {
-			FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
-			FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
-			FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
-			FMEnvelopeParameter::DT1,
-			FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
-			FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
-			FMEnvelopeParameter::DT2,
-			FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
-			FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
-			FMEnvelopeParameter::DT3,
-			FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
-			FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
-			FMEnvelopeParameter::DT4
-		};
-		break;
-	case FMOperatorType::Op1:
-		params = {
-			FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
-			FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
-			FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
-			FMEnvelopeParameter::DT1
-		};
-		break;
-	case FMOperatorType::Op2:
-		params = {
-			FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
-			FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
-			FMEnvelopeParameter::DT2
-		};
-		break;
-	case FMOperatorType::Op3:
-		params = {
-			FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
-			FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
-			FMEnvelopeParameter::DT3
-		};
-		break;
-	case FMOperatorType::Op4:
-		params = {
-			FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
-			FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
-			FMEnvelopeParameter::DT4
-		};
-		break;
-	}
-	return params;
 }
 
 void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
@@ -1822,7 +1806,7 @@ void OPNAController::tickEventFM(int ch)
 void OPNAController::checkOperatorSequenceFM(int ch, int type)
 {
 	int inch = toInternalFMChannel(ch);
-	for (auto& p : getFMEnvelopeParametersForOperator(toChannelOperatorType(ch))) {
+	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) {
 			int t;
 			switch (type) {

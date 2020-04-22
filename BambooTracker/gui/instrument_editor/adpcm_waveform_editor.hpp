@@ -2,6 +2,7 @@
 #define ADPCM_WAVEFORM_EDITOR_HPP
 
 #include <memory>
+#include <cstdint>
 #include <QWidget>
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -23,21 +24,25 @@ class ADPCMWaveformEditor : public QWidget
 public:
 	explicit ADPCMWaveformEditor(QWidget *parent = nullptr);
 	~ADPCMWaveformEditor() override;
-	void setNumber(int n);
 	void setCore(std::weak_ptr<BambooTracker> core);
 	void setConfiguration(std::weak_ptr<Configuration> config);
 	void setColorPalette(std::shared_ptr<ColorPalette> palette);
 
+	int getWaveformNumber() const;
+
+	void setInstrumentWaveformParameters(int wfNum, bool repeatable, int rKeyNum, int rDeltaN,
+										 size_t start, size_t stop, std::vector<uint8_t> sample);
+
 signals:
 	void modified();
-	void waveformNumberChanged();
-	void waveformParameterChanged(int wfNum, int fromInstNum);
+	void waveformNumberChanged(int n);	// NEED Direct connection
+	void waveformParameterChanged(int wfNum);
 	void waveformAssignRequested();
+	void waveformMemoryChanged();
 
 public slots:
 	void onWaveformNumberChanged();
-	void onWaveformParameterChanged(int wfNum);
-	void onWaveformSampleMemoryUpdated();
+	void onWaveformSampleMemoryUpdated(size_t start, size_t stop);
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* ev) override;
@@ -46,7 +51,6 @@ protected:
 
 private:
 	Ui::ADPCMWaveformEditor *ui;
-	int instNum_;
 	bool isIgnoreEvent_;
 
 	std::weak_ptr<BambooTracker> bt_;
@@ -56,7 +60,9 @@ private:
 	std::unique_ptr<QPixmap> wavMemPixmap_;
 	std::unique_ptr<QPixmap> wavViewPixmap_;
 
-	void setInstrumentWaveformParameters();
+	size_t addrStart_, addrStop_;
+	std::vector<uint8_t> sample_;
+
 	void importSampleFrom(const QString file);
 	void updateSampleMemoryBar();
 	void updateSampleView();

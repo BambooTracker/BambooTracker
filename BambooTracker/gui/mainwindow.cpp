@@ -1134,7 +1134,8 @@ void MainWindow::addInstrument()
 		bt_->addInstrument(num, map.at(src), name.toUtf8().toStdString());
 
 		comStack_->push(new AddInstrumentQtCommand(
-							list, num, name, src, instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
+							list, num, name, src, instForms_, this,
+							config_.lock()->getWriteOnlyUsedSamples()));
 		ui->instrumentListWidget->setCurrentRow(num);
 		break;
 	}
@@ -1296,6 +1297,8 @@ void MainWindow::openInstrumentEditor()
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformAssignRequested,
 							 this, &MainWindow::assignADPCMSamples);
+			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformMemoryChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleMemoryUpdated);
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeNumberChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeNumberChanged);
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::envelopeParameterChanged,

@@ -14,16 +14,26 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	ui->setupUi(this);
 
 	//========== Waveform ==========//
-	ui->waveEditor->setNumber(instNum_);
 	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::modified, this, [&] { emit modified(); });
 	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformNumberChanged,
-					 this, [&] { emit waveformNumberChanged(); });
+					 this, [&](int n) {
+		bt_.lock()->setInstrumentADPCMWaveform(instNum_, n);
+		setInstrumentWaveformParameters();
+		emit waveformNumberChanged();
+		emit modified();
+
+		if (config_.lock()->getWriteOnlyUsedSamples()) {
+			emit waveformAssignRequested();
+		}
+	}, Qt::DirectConnection);
 	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformParameterChanged,
-					 this, [&](int wfNum, int fromInstNum) {
-		emit waveformParameterChanged(wfNum, fromInstNum);
+					 this, [&](int wfNum) {
+		emit waveformParameterChanged(wfNum, instNum_);
 	});
 	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformAssignRequested,
 					 this, [&] { emit waveformAssignRequested(); });
+	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformMemoryChanged,
+					 this, [&] { emit waveformMemoryChanged(); });
 
 	//========== Envelope ==========//
 	ui->envEditor->setMaximumDisplayedRowCount(64);
@@ -242,6 +252,7 @@ void InstrumentEditorADPCMForm::updateInstrumentParameters()
 	auto name = QString::fromUtf8(instADPCM->getName().c_str(), static_cast<int>(instADPCM->getName().length()));
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
+	setInstrumentWaveformParameters();
 	setInstrumentEnvelopeParameters();
 	setInstrumentArpeggioParameters();
 	setInstrumentPitchParameters();
@@ -284,6 +295,18 @@ void InstrumentEditorADPCMForm::keyReleaseEvent(QKeyEvent *event)
 }
 
 //--- Waveform
+void InstrumentEditorADPCMForm::setInstrumentWaveformParameters()
+{
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
+
+	ui->waveEditor->setInstrumentWaveformParameters(
+				instADPCM->getWaveformNumber(), instADPCM->isWaveformRepeatable(),
+				instADPCM->getWaveformRootKeyNumber(), instADPCM->getWaveformRootDeltaN(),
+				instADPCM->getWaveformStartAddress(), instADPCM->getWaveformStopAddress(),
+				instADPCM->getWaveformSamples());
+}
+
 /********** Slots **********/
 void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 {
@@ -292,12 +315,17 @@ void InstrumentEditorADPCMForm::onWaveformNumberChanged()
 
 void InstrumentEditorADPCMForm::onWaveformParameterChanged(int wfNum)
 {
-	ui->waveEditor->onWaveformParameterChanged(wfNum);
+	if (ui->waveEditor->getWaveformNumber() == wfNum) {
+		setInstrumentWaveformParameters();
+	}
 }
 
 void InstrumentEditorADPCMForm::onWaveformSampleMemoryUpdated()
 {
-	ui->waveEditor->onWaveformSampleMemoryUpdated();
+	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
+	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
+
+	ui->waveEditor->onWaveformSampleMemoryUpdated(instADPCM->getWaveformStartAddress(), instADPCM->getWaveformStopAddress());
 }
 
 //--- Envelope

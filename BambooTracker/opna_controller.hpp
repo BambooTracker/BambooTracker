@@ -205,7 +205,7 @@ private:
 
 	uint32_t getFMChannelOffset(int ch, bool forPitch = false) const;
 	FMOperatorType toChannelOperatorType(int ch) const;
-	std::vector<FMEnvelopeParameter> getFMEnvelopeParametersForOperator(FMOperatorType op) const;
+	const std::unordered_map<FMOperatorType, std::vector<FMEnvelopeParameter>> FM_ENV_PARAMS_OP_;
 
 	void updateFMVolume(int ch);
 

@@ -304,9 +304,9 @@ void InstrumentFormManager::onInstrumentSSGPitchNumberChanged()
 
 void InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged(int wfNum, int fromInstNum)
 {
+	Q_UNUSED(fromInstNum)	// Update all adpcm editor to change waveform memory viewer and sample viewer
 	for (auto& pair : map_) {
-		if (pair.first != fromInstNum &&
-				static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::ADPCM) {
+		if (static_cast<SoundSource>(pair.second->property("SoundSource").toInt()) == SoundSource::ADPCM) {
 			qobject_cast<InstrumentEditorADPCMForm*>(pair.second.get())->onWaveformParameterChanged(wfNum);
 		}
 	}

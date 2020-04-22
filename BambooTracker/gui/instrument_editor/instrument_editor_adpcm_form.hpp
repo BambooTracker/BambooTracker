@@ -51,11 +51,15 @@ signals:
 	void waveformNumberChanged();
 	void waveformParameterChanged(int wfNum, int fromInstNum);
 	void waveformAssignRequested();
+	void waveformMemoryChanged();
 
 public slots:
 	void onWaveformNumberChanged();
 	void onWaveformParameterChanged(int wfNum);
 	void onWaveformSampleMemoryUpdated();
+
+private:
+	void setInstrumentWaveformParameters();
 
 	//========== Envelope ==========//
 signals:
