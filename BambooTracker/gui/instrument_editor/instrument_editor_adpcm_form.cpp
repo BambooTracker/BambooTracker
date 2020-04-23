@@ -18,6 +18,7 @@
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_util.hpp"
+#include "gui/gui_util.hpp"
 
 InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -255,9 +256,7 @@ void InstrumentEditorADPCMForm::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
-	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
-	auto name = QString::fromUtf8(instADPCM->getName().c_str(), static_cast<int>(instADPCM->getName().length()));
+	auto name = utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentWaveformParameters();

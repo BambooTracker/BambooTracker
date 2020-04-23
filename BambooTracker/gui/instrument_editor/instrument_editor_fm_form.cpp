@@ -16,6 +16,7 @@
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_util.hpp"
 #include "misc.hpp"
+#include "gui/gui_util.hpp"
 
 InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -590,7 +591,7 @@ void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> confi
 
 	std::vector<QString> names;
 	for (auto texts : config.lock()->getFMEnvelopeTexts()) {
-		names.push_back(QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
+		names.push_back(utf8ToQString(texts.name));
 	}
 	ui->op1Table->setEnvelopeSetNames(names);
 	ui->op2Table->setEnvelopeSetNames(names);
@@ -626,9 +627,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
-	auto instFM = dynamic_cast<InstrumentFM*>(inst.get());
-	auto name = QString::fromUtf8(instFM->getName().c_str(), static_cast<int>(instFM->getName().length()));
+	auto name = utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentEnvelopeParameters();
@@ -824,7 +823,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QSt
 		auto name = config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).name;
 		QMessageBox::critical(this, tr("Error"),
 							  tr("Did not match the clipboard text format with %1.")
-							  .arg(QString::fromUtf8(name.c_str(), static_cast<int>(name.length()))));
+							  .arg(utf8ToQString(name)));
 		return;
 	}
 
@@ -891,7 +890,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QSt
 		auto name = config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).name;
 		QMessageBox::critical(this, tr("Error"),
 							  tr("Did not match the clipboard text format with %1.")
-							  .arg(QString::fromUtf8(name.c_str(), static_cast<int>(name.length()))));
+							  .arg(utf8ToQString(name)));
 		return;
 	}
 }
@@ -1213,8 +1212,7 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
 	std::vector<FMEnvelopeText> textsSet = config_.lock()->getFMEnvelopeTexts();
 	for (size_t i = 0; i < textsSet.size(); ++i) {
-		QAction* act = pasteFrom->addAction(
-						   QString::fromUtf8(textsSet[i].name.c_str(), static_cast<int>(textsSet[i].name.length())));
+		QAction* act = pasteFrom->addAction(utf8ToQString(textsSet[i].name));
 		act->setData(static_cast<int>(i));
 	}
 	QObject::connect(pasteFrom, &QMenu::triggered,

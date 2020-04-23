@@ -19,7 +19,7 @@
 #include "gui/command/order/order_commands.hpp"
 #include "playback.hpp"
 #include "track.hpp"
-#include "gui/shortcut_util.hpp"
+#include "gui/gui_util.hpp"
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),

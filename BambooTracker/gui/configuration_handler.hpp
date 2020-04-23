@@ -6,6 +6,7 @@
 #include <QString>
 #include <QSettings>
 #include "configuration.hpp"
+#include "gui/gui_util.hpp"
 
 enum class JamKey : int;
 
@@ -25,8 +26,7 @@ private:
 
 	static inline std::string loadShortcut(const QSettings& settings, const QString key, const std::string shortcut)
 	{
-		return settings.value(key, QString::fromUtf8(shortcut.c_str(), static_cast<int>(shortcut.length()))
-							  ).toString().toUtf8().toStdString();
+		return settings.value(key, utf8ToQString(shortcut)).toString().toUtf8().toStdString();
 	}
 };
 

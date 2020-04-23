@@ -3,6 +3,7 @@
 #include <QKeyEvent>
 #include <vector>
 #include "song.hpp"
+#include "gui/gui_util.hpp"
 
 BookmarkManagerForm::BookmarkManagerForm(std::weak_ptr<BambooTracker> core, bool showHex,
 										 QWidget *parent) :
@@ -40,7 +41,7 @@ void BookmarkManagerForm::initList()
 	int size = static_cast<int>(bt_.lock()->getBookmarkSize(curSong_));
 	for (int i = 0; i < size; ++i) {
 		Bookmark bm = bt_.lock()->getBookmark(curSong_, i);
-		addBookmark(QString::fromUtf8(bm.name.c_str(), static_cast<int>(bm.name.length())), bm.order, bm.step, true);
+		addBookmark(utf8ToQString(bm.name), bm.order, bm.step, true);
 	}
 }
 
@@ -103,8 +104,7 @@ void BookmarkManagerForm::onConfigurationChanged(bool showHex)
 
 	for (int i = 0; i < ui->listWidget->count(); ++i) {
 		Bookmark bm = bt_.lock()->getBookmark(curSong_, i);
-		auto name = QString::fromUtf8(bm.name.c_str(), static_cast<int>(bm.name.length()));
-		ui->listWidget->item(i)->setText(createText(name, bm.order, bm.step));
+		ui->listWidget->item(i)->setText(createText(utf8ToQString(bm.name), bm.order, bm.step));
 	}
 
 	ui->orderSpinBox->setDisplayIntegerBase(numBase_);
@@ -202,7 +202,7 @@ void BookmarkManagerForm::on_listWidget_currentRowChanged(int currentRow)
 	if (currentRow == -1) return;
 
 	Bookmark bm = bt_.lock()->getBookmark(curSong_, currentRow);
-	ui->nameLineEdit->setText(QString::fromUtf8(bm.name.c_str(), static_cast<int>(bm.name.length())));
+	ui->nameLineEdit->setText(utf8ToQString(bm.name));
 	ui->orderSpinBox->setValue(bm.order);
 	ui->stepSpinBox->setValue(bm.step);
 }
