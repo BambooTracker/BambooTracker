@@ -22,6 +22,7 @@
 #include "jam_manager.hpp"
 #include "chips/chip_misc.h"
 #include "color_palette_handler.hpp"
+#include "gui/gui_util.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
 										 std::string curApi, std::vector<std::string> apis, QWidget *parent)
@@ -164,8 +165,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		ui->shortcutsTreeWidget->insertTopLevelItem(row, item);
 		auto widget = new QWidget();
 		widget->setLayout(new QHBoxLayout());
-		std::string shortcut = shortcuts.at(pair.first);
-		auto seq = new QKeySequenceEdit(QString::fromUtf8(shortcut.c_str(), static_cast<int>(shortcut.length())));
+		auto seq = new QKeySequenceEdit(utf8ToQString(shortcuts.at(pair.first)));
 		shortcutsMap_[pair.first] = seq;
 		auto button = new QToolButton();
 		button->setIcon(QIcon(":/icon/remove_inst"));
@@ -213,7 +213,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ JamKey::HighD2,  ui->highHighDEdit }
 	};
 	for (const auto& pair : configLocked->getCustomLayoutKeys()) {
-		customLayoutKeysMap_.at(pair.second)->setKeySequence(QKeySequence(QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length()))));
+		customLayoutKeysMap_.at(pair.second)->setKeySequence(QKeySequence(utf8ToQString(pair.first)));
 	}
 
 	// Emulation //
@@ -225,7 +225,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	int apiRow = -1;
 	int defApiRow = 0;
 	for (auto& name : apis) {
-		ui->soundAPIComboBox->addItem(QString::fromUtf8(name.c_str(), static_cast<int>(name.length())));
+		ui->soundAPIComboBox->addItem(utf8ToQString(name));
 		if (name == configLocked->getSoundAPI()) apiRow = ui->soundAPIComboBox->count() - 1;
 		if (name == curApi) defApiRow = apiRow = ui->soundAPIComboBox->count() - 1;
 	}
@@ -235,8 +235,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	int defDevRow = 0;
 	for (auto& info : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
 		ui->soundDeviceComboBox->addItem(info.deviceName());
-		if (info.deviceName() == QString::fromUtf8(configLocked->getSoundDevice().c_str(),
-												   static_cast<int>(configLocked->getSoundDevice().length())))
+		if (info.deviceName() == utf8ToQString(configLocked->getSoundDevice()))
 			devRow = ui->soundDeviceComboBox->count() - 1;
 		if (info.deviceName() == QAudioDeviceInfo::defaultOutputDevice().deviceName()) {
 			defDevRow = ui->soundDeviceComboBox->count() - 1;
@@ -313,21 +312,13 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	ui->colorsTreeWidget->setColumnWidth(0, 250);
 	updateColorTree();
 
-	ui->ptnHdFontComboBox->setCurrentFont(
-				QFont(QString::fromUtf8(configLocked->getPatternEditorHeaderFont().c_str(),
-										static_cast<int>(configLocked->getPatternEditorHeaderFont().size()))));
+	ui->ptnHdFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getPatternEditorHeaderFont())));
 	ui->ptnHdFontSizeComboBox->setCurrentText(QString::number(configLocked->getPatternEditorHeaderFontSize()));
-	ui->ptnRowFontComboBox->setCurrentFont(
-				QFont(QString::fromUtf8(configLocked->getPatternEditorRowsFont().c_str(),
-										static_cast<int>(configLocked->getPatternEditorRowsFont().size()))));
+	ui->ptnRowFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getPatternEditorRowsFont())));
 	ui->ptnRowFontSizeComboBox->setCurrentText(QString::number(configLocked->getPatternEditorRowsFontSize()));
-	ui->odrHdFontComboBox->setCurrentFont(
-				QFont(QString::fromUtf8(configLocked->getOrderListHeaderFont().c_str(),
-										static_cast<int>(configLocked->getOrderListHeaderFont().size()))));
+	ui->odrHdFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getOrderListHeaderFont())));
 	ui->odrHdFontSizeComboBox->setCurrentText(QString::number(configLocked->getOrderListHeaderFontSize()));
-	ui->odrRowFontComboBox->setCurrentFont(
-				QFont(QString::fromUtf8(configLocked->getOrderListRowsFont().c_str(),
-										static_cast<int>(configLocked->getOrderListRowsFont().size()))));
+	ui->odrRowFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getOrderListRowsFont())));
 	ui->odrRowFontSizeComboBox->setCurrentText(QString::number(configLocked->getOrderListRowsFontSize()));
 }
 
@@ -580,8 +571,7 @@ void ConfigurationDialog::updateEnvelopeSetUi()
 
 	ui->envelopeTypeListWidget->clear();
 	for (auto& texts : fmEnvelopeTexts_)
-		ui->envelopeTypeListWidget->addItem(
-					QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
+		ui->envelopeTypeListWidget->addItem(utf8ToQString(texts.name));
 }
 
 /***** Keys *****/
@@ -609,7 +599,7 @@ void ConfigurationDialog::addShortcutItem(QString action, std::string shortcut)
 	auto titem = new QTreeWidgetItem();
 	titem->setText(0, action);
 	ui->shortcutsTreeWidget->insertTopLevelItem(row, titem);
-	ui->shortcutsTreeWidget->setItemWidget(titem, 1, new QKeySequenceEdit(QString::fromUtf8(shortcut.c_str(), static_cast<int>(shortcut.length()))));
+	ui->shortcutsTreeWidget->setItemWidget(titem, 1, new QKeySequenceEdit(utf8ToQString(shortcut)));
 }
 
 std::string ConfigurationDialog::getShortcutString(int row) const

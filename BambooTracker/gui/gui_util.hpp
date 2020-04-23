@@ -1,7 +1,9 @@
 #ifndef GUI_UTIL_HPP
 #define GUI_UTIL_HPP
 
+#include <string>
 #include <QString>
+#include <QKeySequence>
 #include "song.hpp"
 #include "misc.hpp"
 
@@ -53,6 +55,16 @@ inline QString getTrackName(SongType songType, SoundSource src, int chInSrc)
 		break;
 	}
 	return name;
+}
+
+inline QString utf8ToQString(const std::string& str)
+{
+	return QString::fromUtf8(str.c_str(), static_cast<int>(str.length()));
+}
+
+inline QKeySequence strToKeySeq(std::string str)
+{
+	return QKeySequence(utf8ToQString(str));
 }
 
 #endif // GUI_UTIL_HPP

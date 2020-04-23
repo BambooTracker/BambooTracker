@@ -51,9 +51,9 @@
 #include "color_palette_handler.hpp"
 #include "binary_container.hpp"
 #include "wav_container.hpp"
-#include "gui/shortcut_util.hpp"
 #include "enum_hash.hpp"
 #include "gui/go_to_dialog.hpp"
+#include "gui/gui_util.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -144,8 +144,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->menu_Recent_Files, &QMenu::triggered, this, [&](QAction* action) {
 		if (action != ui->actionClear) {
 			if (isWindowModified()) {
-				auto modTitleStd = bt_->getModuleTitle();
-				QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
+				QString modTitle = utf8ToQString(bt_->getModuleTitle());
 				if (modTitle.isEmpty()) modTitle = tr("Untitled");
 				QMessageBox dialog(QMessageBox::Warning,
 								   "BambooTracker",
@@ -579,10 +578,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 						   static_cast<uint32_t>(bt_->getStreamRate()),
 						   static_cast<uint32_t>(bt_->getStreamDuration()),
 						   bt_->getModuleTickFrequency(),
-						   QString::fromUtf8(config.lock()->getSoundAPI().c_str(),
-											 static_cast<int>(config.lock()->getSoundAPI().length())),
-						   QString::fromUtf8(config.lock()->getSoundDevice().c_str(),
-											 static_cast<int>(config.lock()->getSoundDevice().length())));
+						   utf8ToQString(config.lock()->getSoundAPI()),
+						   utf8ToQString(config.lock()->getSoundDevice()));
 	if (!streamState) showStreamFailedDialog();
 	RealChipInterface intf = config.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
@@ -742,8 +739,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 	case FileIO::FileType::Mod:
 	{
 		if (isWindowModified()) {
-			auto modTitleStd = bt_->getModuleTitle();
-			QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
+			QString modTitle = utf8ToQString(bt_->getModuleTitle());
 			if (modTitle.isEmpty()) modTitle = tr("Untitled");
 			QMessageBox dialog(QMessageBox::Warning,
 							   "BambooTracker",
@@ -806,8 +802,7 @@ void MainWindow::moveEvent(QMoveEvent* event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (isWindowModified()) {
-		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
+		QString modTitle = utf8ToQString(bt_->getModuleTitle());
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -1170,8 +1165,7 @@ void MainWindow::removeInstrument(int row)
 	std::string name = inst->getName();
 	SoundSource src = inst->getSoundSource();
 	bt_->removeInstrument(num);
-	comStack_->push(new RemoveInstrumentQtCommand(list, num, row,
-												  QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
+	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, utf8ToQString(name),
 												  src, instForms_, this, updateRequest));
 }
 
@@ -1335,9 +1329,7 @@ void MainWindow::openInstrumentEditor()
 		form->addActions({ octUpSc_.get(), octDownSc_.get() });
 
 		std::string name = inst->getName();
-		instForms_->add(num, std::move(form),
-						QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
-						inst->getSoundSource());
+		instForms_->add(num, std::move(form), utf8ToQString(name), inst->getSoundSource());
 	}
 
 	instForms_->showForm(num);
@@ -1360,7 +1352,7 @@ void MainWindow::renameInstrument()
 	auto item = list->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
 	auto inst = bt_->getInstrument(num);
-	auto oldName = QString::fromUtf8(inst->getName().c_str(), static_cast<int>(inst->getName().length()));
+	auto oldName = utf8ToQString(inst->getName());
 	auto line = new QLineEdit(oldName);
 	SoundSource src = inst->getSoundSource();
 
@@ -1389,9 +1381,8 @@ void MainWindow::cloneInstrument()
 	bt_->cloneInstrument(num, refNum);
 	auto inst = bt_->getInstrument(num);
 	std::string name = inst->getName();
-	comStack_->push(new CloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, inst->getSoundSource(),
-						QString::fromUtf8(name.c_str(), static_cast<int>(name.length())), instForms_));
+	comStack_->push(new CloneInstrumentQtCommand(ui->instrumentListWidget, num, inst->getSoundSource(),
+												 utf8ToQString(name), instForms_));
 	//----------//
 }
 
@@ -1406,9 +1397,8 @@ void MainWindow::deepCloneInstrument()
 	auto inst = bt_->getInstrument(num);
 	std::string name = inst->getName();
 	comStack_->push(new DeepCloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, inst->getSoundSource(),
-						QString::fromUtf8(name.c_str(), static_cast<int>(name.length())), instForms_,
-						this, config_.lock()->getWriteOnlyUsedSamples()));
+						ui->instrumentListWidget, num, inst->getSoundSource(), utf8ToQString(name),
+						instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
 	//----------//
 }
 
@@ -1459,10 +1449,8 @@ void MainWindow::funcLoadInstrument(QString file)
 		auto inst = bt_->getInstrument(n);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(
-							ui->instrumentListWidget, n,
-							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
-							inst->getSoundSource(), instForms_,
-							this, config_.lock()->getWriteOnlyUsedSamples()));
+							ui->instrumentListWidget, n, utf8ToQString(name), inst->getSoundSource(),
+							instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
 		ui->instrumentListWidget->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
@@ -1477,8 +1465,7 @@ void MainWindow::funcLoadInstrument(QString file)
 void MainWindow::saveInstrument()
 {
 	int n = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
-	auto nameStd = bt_->getInstrument(n)->getName();
-	QString name = QString::fromUtf8(nameStd.c_str(), static_cast<int>(nameStd.length()));
+	QString name = utf8ToQString(bt_->getInstrument(n)->getName());
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getSaveFileName(
@@ -1625,10 +1612,8 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			auto inst = bt_->getInstrument(n);
 			auto name = inst->getName();
 			comStack_->push(new AddInstrumentQtCommand(
-								ui->instrumentListWidget, n,
-								QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
-								inst->getSoundSource(), instForms_,
-								this, config_.lock()->getWriteOnlyUsedSamples(), true));
+								ui->instrumentListWidget, n, utf8ToQString(name), inst->getSoundSource(),
+								instForms_, this, config_.lock()->getWriteOnlyUsedSamples(), true));
 			lastNum = n;
 
 			sampleRestoreRequested |= (inst->getSoundSource() == SoundSource::ADPCM);
@@ -1706,22 +1691,15 @@ void MainWindow::loadModule()
 	ui->instrumentListWidget->clear();
 	on_instrumentListWidget_itemSelectionChanged();
 
-	auto modTitle = bt_->getModuleTitle();
-	ui->modTitleLineEdit->setText(
-				QString::fromUtf8(modTitle.c_str(), static_cast<int>(modTitle.length())));
+	ui->modTitleLineEdit->setText(utf8ToQString(bt_->getModuleTitle()));
 	ui->modTitleLineEdit->setCursorPosition(0);
-	auto modAuthor = bt_->getModuleAuthor();
-	ui->authorLineEdit->setText(
-				QString::fromUtf8(modAuthor.c_str(), static_cast<int>(modAuthor.length())));
+	ui->authorLineEdit->setText(utf8ToQString(bt_->getModuleAuthor()));
 	ui->authorLineEdit->setCursorPosition(0);
-	auto modCopyright = bt_->getModuleCopyright();
-	ui->copyrightLineEdit->setText(
-				QString::fromUtf8(modCopyright.c_str(), static_cast<int>(modCopyright.length())));
+	ui->copyrightLineEdit->setText(utf8ToQString(bt_->getModuleCopyright()));
 	ui->copyrightLineEdit->setCursorPosition(0);
 	ui->songComboBox->clear();
 	for (size_t i = 0; i < bt_->getSongCount(); ++i) {
-		std::string srcTitle = bt_->getSongTitle(static_cast<int>(i));
-		QString title = QString::fromUtf8(srcTitle.c_str(), static_cast<int>(srcTitle.length()));
+		QString title = utf8ToQString(bt_->getSongTitle(static_cast<int>(i)));
 		if (title.isEmpty()) title = tr("Untitled");
 		ui->songComboBox->addItem(QString("#%1 %2").arg(i).arg(title));
 	}
@@ -1732,10 +1710,8 @@ void MainWindow::loadModule()
 		auto inst = bt_->getInstrument(idx);
 		auto name = inst->getName();
 		comStack_->push(new AddInstrumentQtCommand(
-							ui->instrumentListWidget, idx,
-							QString::fromUtf8(name.c_str(), static_cast<int>(name.length())),
-							inst->getSoundSource(), instForms_,
-							this, config_.lock()->getWriteOnlyUsedSamples(), true));
+							ui->instrumentListWidget, idx, utf8ToQString(name), inst->getSoundSource(),
+							instForms_, this, config_.lock()->getWriteOnlyUsedSamples(), true));
 	}
 
 	isSavedModBefore_ = false;
@@ -1981,10 +1957,8 @@ void MainWindow::changeConfiguration()
 							   config_.lock()->getSampleRate(),
 							   config_.lock()->getBufferLength(),
 							   bt_->getModuleTickFrequency(),
-							   QString::fromUtf8(config_.lock()->getSoundAPI().c_str(),
-												 static_cast<int>(config_.lock()->getSoundAPI().length())),
-							   QString::fromUtf8(config_.lock()->getSoundDevice().c_str(),
-												 static_cast<int>(config_.lock()->getSoundDevice().length())));
+							   utf8ToQString(config_.lock()->getSoundAPI()),
+							   utf8ToQString(config_.lock()->getSoundDevice()));
 		if (!streamState) showStreamFailedDialog();
 		stream_->start();
 	}
@@ -2087,18 +2061,14 @@ void MainWindow::setMidiConfiguration()
 void MainWindow::updateFonts()
 {
 	ui->patternEditor->setFonts(
-				QString::fromUtf8(config_.lock()->getPatternEditorHeaderFont().c_str(),
-								  static_cast<int>(config_.lock()->getPatternEditorHeaderFont().length())),
+				utf8ToQString(config_.lock()->getPatternEditorHeaderFont()),
 				config_.lock()->getPatternEditorHeaderFontSize(),
-				QString::fromUtf8(config_.lock()->getPatternEditorRowsFont().c_str(),
-								  static_cast<int>(config_.lock()->getPatternEditorRowsFont().length())),
+				utf8ToQString(config_.lock()->getPatternEditorRowsFont()),
 				config_.lock()->getPatternEditorRowsFontSize());
 	ui->orderList->setFonts(
-				QString::fromUtf8(config_.lock()->getOrderListHeaderFont().c_str(),
-								  static_cast<int>(config_.lock()->getOrderListHeaderFont().length())),
+				utf8ToQString(config_.lock()->getOrderListHeaderFont()),
 				config_.lock()->getOrderListHeaderFontSize(),
-				QString::fromUtf8(config_.lock()->getOrderListRowsFont().c_str(),
-								  static_cast<int>(config_.lock()->getOrderListRowsFont().length())),
+				utf8ToQString(config_.lock()->getOrderListRowsFont()),
 				config_.lock()->getOrderListRowsFontSize());
 }
 
@@ -2134,11 +2104,9 @@ bool MainWindow::backupModule(QString srcFile)
 void MainWindow::setWindowTitle()
 {
 	int n = bt_->getCurrentSongNumber();
-	auto filePathStd = bt_->getModulePath();
-	auto songTitleStd = bt_->getSongTitle(n);
-	QString filePath = QString::fromStdString(filePathStd);
+	QString filePath = QString::fromStdString(bt_->getModulePath());
 	QString fileName = filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).fileName();
-	QString songTitle = QString::fromUtf8(songTitleStd.c_str(), static_cast<int>(songTitleStd.length()));
+	QString songTitle = utf8ToQString(bt_->getSongTitle(n));
 	if (songTitle.isEmpty()) songTitle = tr("Untitled");
 	QMainWindow::setWindowTitle(QString("%1[*] [#%2 %3] - BambooTracker")
 								.arg(fileName).arg(QString::number(n)).arg(songTitle));
@@ -2729,8 +2697,7 @@ void MainWindow::on_actionClone_Order_triggered()
 void MainWindow::on_actionNew_triggered()
 {
 	if (isWindowModified()) {
-		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
+		QString modTitle = utf8ToQString(bt_->getModuleTitle());
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -2764,8 +2731,7 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionComments_triggered()
 {
-	auto comment = bt_->getModuleComment();
-	CommentEditDialog diag(QString::fromUtf8(comment.c_str(), static_cast<int>(comment.length())));
+	CommentEditDialog diag(utf8ToQString(bt_->getModuleComment()));
 	if (diag.exec() == QDialog::Accepted) {
 		bt_->setModuleComment(diag.getComment().toUtf8().toStdString());
 		setModifiedTrue();
@@ -2852,8 +2818,7 @@ bool MainWindow::on_actionSave_As_triggered()
 void MainWindow::on_actionOpen_triggered()
 {
 	if (isWindowModified()) {
-		auto modTitleStd = bt_->getModuleTitle();
-		QString modTitle = QString::fromUtf8(modTitleStd.c_str(), static_cast<int>(modTitleStd.length()));
+		QString modTitle = utf8ToQString(bt_->getModuleTitle());
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",

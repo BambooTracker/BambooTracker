@@ -186,25 +186,19 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		// Keys
 		settings.beginGroup("Keys");
 		for (const auto& pair : configLocked->getShortcuts()) {
-			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP_.at(pair.first),
-							  QString::fromUtf8(pair.second.c_str(), static_cast<int>(pair.second.length())));
+			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP_.at(pair.first), utf8ToQString(pair.second));
 		}
 		settings.setValue("noteEntryLayout", static_cast<int>(configLocked->getNoteEntryLayout()));
 		for (const auto& pair : configLocked->getCustomLayoutKeys()) {
-			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP_.at(pair.second),
-							  QString::fromUtf8(pair.first.c_str(), static_cast<int>(pair.first.length())));
+			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP_.at(pair.second), utf8ToQString(pair.first));
 		}
 		settings.endGroup();
 
 		// Sound //
 		settings.beginGroup("Sound");
-		settings.setValue("soundAPI",
-						  QString::fromUtf8(configLocked->getSoundAPI().c_str(),
-											static_cast<int>(configLocked->getSoundAPI().length())));
-		settings.setValue("soundDevice",
-						  QString::fromUtf8(configLocked->getSoundDevice().c_str(),
-											static_cast<int>(configLocked->getSoundDevice().length())));
-                settings.setValue("realChipInterface",	static_cast<int>(configLocked->getRealChipInterface()));
+		settings.setValue("soundAPI", utf8ToQString(configLocked->getSoundAPI()));
+		settings.setValue("soundDevice", utf8ToQString(configLocked->getSoundDevice()));
+		settings.setValue("realChipInterface",	static_cast<int>(configLocked->getRealChipInterface()));
 		settings.setValue("emulator",		configLocked->getEmulator());
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
 		settings.setValue("bufferLength", static_cast<int>(configLocked->getBufferLength()));
@@ -228,7 +222,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		int n = 0;
 		for (auto texts : config.lock()->getFMEnvelopeTexts()) {
 			settings.setArrayIndex(n++);
-			settings.setValue("type", QString::fromUtf8(texts.name.c_str(), static_cast<int>(texts.name.length())));
+			settings.setValue("type", utf8ToQString(texts.name));
 			QStringList typeList;
 			std::transform(texts.texts.begin(), texts.texts.end(), std::back_inserter(typeList),
 						   [](FMEnvelopeTextType type) { return QString::number(static_cast<int>(type)); });
@@ -337,7 +331,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts;
 		for (const auto& pair : SHORTCUTS_NAME_MAP_) {
 			std::string def = configLocked->getShortcuts().at(pair.first);
-			shortcuts[pair.first] = settings.value("shortcut_" + pair.second, QString::fromUtf8(def.c_str(), static_cast<int>(def.length()))).toString().toUtf8().toStdString();
+			shortcuts[pair.first] = settings.value("shortcut_" + pair.second, utf8ToQString(def)).toString().toUtf8().toStdString();
 		}
 		configLocked->setShortcuts(shortcuts);
 		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(
@@ -347,11 +341,12 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		for (const auto& pair : JAM_KEY_NAME_MAP_) {
 			JamKey currentlyWantedJamKey = pair.first;
 			customLayoutNewKeys[
-						settings.value("customLayout_" + pair.second,
-									   QString::fromStdString((*std::find_if (configLocked->mappingLayouts.at(Configuration::QWERTY).begin(), configLocked->mappingLayouts.at(Configuration::QWERTY).end(),
-																		[currentlyWantedJamKey](const std::pair<std::string, JamKey>& t) -> bool {
-																		return (t.second) == currentlyWantedJamKey;})
-														 ).first)).toString().toUtf8().toStdString()]
+					settings.value("customLayout_" + pair.second,
+								   QString::fromStdString((*std::find_if (configLocked->mappingLayouts.at(Configuration::QWERTY).begin(),
+																		  configLocked->mappingLayouts.at(Configuration::QWERTY).end(),
+																		  [currentlyWantedJamKey](const std::pair<std::string, JamKey>& t) -> bool {
+				return (t.second) == currentlyWantedJamKey;})
+														   ).first)).toString().toUtf8().toStdString()]
 					= currentlyWantedJamKey;
 		}
 		configLocked->setCustomLayoutKeys(customLayoutNewKeys);
@@ -361,8 +356,8 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		settings.beginGroup("Sound");
 		configLocked->setSoundAPI(settings.value("soundAPI", QString::fromStdString(configLocked->getSoundAPI())).toString().toUtf8().toStdString());
 		configLocked->setSoundDevice(settings.value("soundDevice", QString::fromStdString(configLocked->getSoundDevice())).toString().toUtf8().toStdString());
-                configLocked->setRealChipInterface(static_cast<RealChipInterface>(
-                                                       settings.value("realChipInterface", static_cast<int>(configLocked->getRealChipInterface())).toInt()));
+		configLocked->setRealChipInterface(static_cast<RealChipInterface>(
+											   settings.value("realChipInterface", static_cast<int>(configLocked->getRealChipInterface())).toInt()));
 		configLocked->setEmulator(settings.value("emulator", configLocked->getEmulator()).toInt());
 		QVariant sampleRateWorkaround;
 		sampleRateWorkaround.setValue(configLocked->getSampleRate());

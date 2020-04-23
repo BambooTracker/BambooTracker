@@ -2,6 +2,7 @@
 #include "ui_module_properties_dialog.h"
 #include <vector>
 #include <utility>
+#include "gui/gui_util.hpp"
 
 ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, double configFmMixer,
 											   double configSsgMixer, QWidget *parent)
@@ -37,8 +38,7 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 	int songCnt = static_cast<int>(core.lock()->getSongCount());
 	for (int i = 0; i < songCnt; ++i) {
 		auto title = core.lock()->getSongTitle(i);
-		insertSong(i, QString::fromUtf8(title.c_str(), static_cast<int>(title.length())),
-				   core.lock()->getSongStyle(i).type, i);
+		insertSong(i, utf8ToQString(title), core.lock()->getSongStyle(i).type, i);
 	}
 
 	ui->insertTypeComboBox->addItem(tr("Standard"), static_cast<int>(SongType::Standard));

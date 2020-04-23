@@ -23,7 +23,6 @@
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
 #include "gui/effect_description.hpp"
-#include "gui/shortcut_util.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_util.hpp"
 
