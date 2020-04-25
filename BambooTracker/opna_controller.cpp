@@ -3271,7 +3271,7 @@ void OPNAController::updateKeyOnOffStatusDrum()
 /********** Key on-off **********/
 void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 {
-	if (isMuteADPCM_ || !refInstADPCM_) return;
+	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	updateEchoBufferADPCM(octave, note, pitch);
 
@@ -3300,25 +3300,18 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 		opna_->setRegister(0x101, 0x02);
 		opna_->setRegister(0x100, 0xa1);
 
-		uint8_t repeatFlag = refInstADPCM_->isWaveformRepeatable() ? 0x10 : 0;
-		opna_->setRegister(0x100, 0x21 | repeatFlag);
-
-		size_t startAddress = refInstADPCM_->getWaveformStartAddress();
-		if (startAddress != startAddrADPCM_) {
-			opna_->setRegister(0x102, startAddress & 0xff);
-			opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
-			startAddrADPCM_ = startAddress;
+		if (refInstADPCM_) {
+			triggerSamplePlayADPCM(refInstADPCM_->getWaveformStartAddress(),
+								   refInstADPCM_->getWaveformStopAddress(),
+								   refInstADPCM_->isWaveformRepeatable());
 		}
-
-		size_t stopAddress = refInstADPCM_->getWaveformStopAddress();
-		if (stopAddress != stopAddrADPCM_) {
-			opna_->setRegister(0x104, stopAddress & 0xff);
-			opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
-			stopAddrADPCM_ = stopAddress;
+		else if (hasStartRequestedKit_) {	// valid key in refInstKit_
+			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			triggerSamplePlayADPCM(refInstKit_->getWaveformStartAddress(key),
+								   refInstKit_->getWaveformStopAddress(key),
+								   refInstKit_->isWaveformRepeatable(key));
+			hasStartRequestedKit_ = false;
 		}
-
-		opna_->setRegister(0x100, 0xa0 | repeatFlag);
-		opna_->setRegister(0x101, panADPCM_ | 0x02);
 
 		isKeyOnADPCM_ = true;
 	}
@@ -3355,6 +3348,7 @@ void OPNAController::updateEchoBufferADPCM(int octave, Note note, int pitch)
 void OPNAController::setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst)
 {
 	refInstADPCM_ = inst;
+	refInstKit_.reset();
 
 	if (inst->getEnvelopeEnabled())
 		envItADPCM_ = inst->getEnvelopeSequenceIterator();
@@ -3385,12 +3379,18 @@ void OPNAController::updateInstrumentADPCM(int instNum)
 /// NOTE: inst != nullptr
 void OPNAController::setInstrumentDrumkit(std::shared_ptr<InstrumentDrumkit> inst)
 {
-	// TODO
+	refInstKit_ = inst;
+	refInstADPCM_.reset();
+
+	envItADPCM_.reset();
+	arpItADPCM_.reset();
+	ptItADPCM_.reset();
 }
 
 void OPNAController::updateInstrumentDrumkit(int instNum, int key)
 {
-	// TODO
+	(void)instNum;
+	(void)key;
 }
 
 void OPNAController::clearSamplesADPCM()
@@ -3483,6 +3483,8 @@ void OPNAController::setPanADPCM(int value)
 
 void OPNAController::setArpeggioEffectADPCM(int second, int third)
 {
+	if (refInstKit_) return;
+
 	if (second || third) {
 		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator>(second, third);
 		isArpEffADPCM_ = true;
@@ -3496,12 +3498,16 @@ void OPNAController::setArpeggioEffectADPCM(int second, int third)
 
 void OPNAController::setPortamentoEffectADPCM(int depth, bool isTonePortamento)
 {
+	if (refInstKit_) return;
+
 	prtmADPCM_ = depth;
 	isTonePrtmADPCM_ =  depth ? isTonePortamento : false;
 }
 
 void OPNAController::setVibratoEffectADPCM(int period, int depth)
 {
+	if (refInstKit_) return;
+
 	if (period && depth) vibItADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
 	else vibItADPCM_.reset();
 }
@@ -3519,12 +3525,16 @@ void OPNAController::setVolumeSlideADPCM(int depth, bool isUp)
 
 void OPNAController::setDetuneADPCM(int pitch)
 {
+	if (refInstKit_) return;
+
 	detuneADPCM_ = pitch;
 	needToneSetADPCM_ = true;
 }
 
 void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 {
+	if (refInstKit_) return;
+
 	if (seminote) {
 		nsItADPCM_ = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
 		noteSldADPCMSetFlag_ = true;
@@ -3577,6 +3587,7 @@ void OPNAController::initADPCM()
 	hasKeyOnBeforeADPCM_ = false;
 
 	refInstADPCM_.reset();	// Init envelope
+	refInstKit_.reset();
 
 	// Init echo buffer
 	baseToneADPCM_ = std::deque<ToneDetail>(4);
@@ -3593,6 +3604,7 @@ void OPNAController::initADPCM()
 	panADPCM_ = 0xc0;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();
 	stopAddrADPCM_ = startAddrADPCM_;
+	hasStartRequestedKit_ = false;
 
 	// Init sequence
 	hasPreSetTickEventADPCM_ = false;
@@ -3640,7 +3652,7 @@ bool OPNAController::isMuteADPCM()
 
 void OPNAController::setFrontADPCMSequences()
 {
-	if (isMuteADPCM_ || !refInstADPCM_) return;
+	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->front();
@@ -3671,7 +3683,7 @@ void OPNAController::setFrontADPCMSequences()
 
 void OPNAController::releaseStartADPCMSequences()
 {
-	if (isMuteADPCM_ || !refInstADPCM_) return;
+	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->next(true);
@@ -3708,6 +3720,8 @@ void OPNAController::releaseStartADPCMSequences()
 	}
 
 	if (needToneSetADPCM_) writePitchADPCM();
+
+	hasStartRequestedKit_ = false;	// Always silent at relase in drumkit
 }
 
 void OPNAController::tickEventADPCM()
@@ -3716,7 +3730,7 @@ void OPNAController::tickEventADPCM()
 		hasPreSetTickEventADPCM_ = false;
 	}
 	else {
-		if (isMuteADPCM_ || !refInstADPCM_) return;
+		if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 		if (treItADPCM_) {
 			treItADPCM_->next();
@@ -3747,6 +3761,17 @@ void OPNAController::tickEventADPCM()
 		}
 
 		if (needToneSetADPCM_) writePitchADPCM();
+
+		if (hasStartRequestedKit_) {
+			opna_->setRegister(0x101, 0x02);
+			opna_->setRegister(0x100, 0xa1);
+
+			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			triggerSamplePlayADPCM(refInstKit_->getWaveformStartAddress(key),
+								   refInstKit_->getWaveformStopAddress(key),
+								   refInstKit_->isWaveformRepeatable(key));
+			hasStartRequestedKit_ = false;
+		}
 	}
 }
 
@@ -3762,20 +3787,56 @@ void OPNAController::writePitchADPCM()
 {
 	if (keyToneADPCM_.octave == -1) return;	// Not set note yet
 
-	int p = keyToneADPCM_.pitch
-			+ sumPitchADPCM_
-			+ (vibItADPCM_ ? vibItADPCM_->getCommandType() : 0)
-			+ detuneADPCM_
-			+ sumNoteSldADPCM_
-			+ transposeADPCM_;
-	p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
+	if (refInstADPCM_) {
+		int p = keyToneADPCM_.pitch
+				+ sumPitchADPCM_
+				+ (vibItADPCM_ ? vibItADPCM_->getCommandType() : 0)
+				+ detuneADPCM_
+				+ sumNoteSldADPCM_
+				+ transposeADPCM_;
+		p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
 
-	int pitchDiff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getWaveformRootKeyNumber();
-	int deltan = static_cast<int>(
-					 std::round(refInstADPCM_->getWaveformRootDeltaN() * std::pow(2., pitchDiff / 384.)));
-	opna_->setRegister(0x109, deltan & 0xff);
-	opna_->setRegister(0x10a, (deltan >> 8) & 0xff);
+		int diff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getWaveformRootKeyNumber();
+		writePitchADPCMToRegister(diff, refInstADPCM_->getWaveformRootDeltaN());
+	}
+	else if (refInstKit_) {
+		int key = clamp(octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
+						+ transposeADPCM_ / PitchConverter::SEMINOTE_PITCH, 0, 95);
+		if (refInstKit_->getWaveformEnabled(key)) {
+			int diff = PitchConverter::SEMINOTE_PITCH * refInstKit_->getPitch(key);
+			writePitchADPCMToRegister(diff, refInstKit_->getWaveformRootDeltaN(key));
+			hasStartRequestedKit_ = true;
+		}
+	}
 
 	needToneSetADPCM_ = false;
 	needEnvSetADPCM_ = false;
+}
+
+void OPNAController::writePitchADPCMToRegister(int pitchDiff, int rtDeltaN)
+{
+	int deltan = static_cast<int>(std::round(rtDeltaN * std::pow(2., pitchDiff / 384.)));
+	opna_->setRegister(0x109, deltan & 0xff);
+	opna_->setRegister(0x10a, (deltan >> 8) & 0xff);
+}
+
+void OPNAController::triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool repeatable)
+{
+	uint8_t repeatFlag = repeatable ? 0x10 : 0;
+	opna_->setRegister(0x100, 0x21 | repeatFlag);
+
+	if (startAddress != startAddrADPCM_) {
+		opna_->setRegister(0x102, startAddress & 0xff);
+		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+		startAddrADPCM_ = startAddress;
+	}
+
+	if (stopAddress != stopAddrADPCM_) {
+		opna_->setRegister(0x104, stopAddress & 0xff);
+		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
+		stopAddrADPCM_ = stopAddress;
+	}
+
+	opna_->setRegister(0x100, 0xa0 | repeatFlag);
+	opna_->setRegister(0x101, panADPCM_ | 0x02);
 }

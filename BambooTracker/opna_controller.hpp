@@ -493,6 +493,7 @@ public:
 
 private:
 	std::shared_ptr<InstrumentADPCM> refInstADPCM_;
+	std::shared_ptr<InstrumentDrumkit> refInstKit_;
 	bool isKeyOnADPCM_, hasKeyOnBeforeADPCM_;
 	std::deque<ToneDetail> baseToneADPCM_;
 	ToneDetail keyToneADPCM_;
@@ -521,6 +522,7 @@ private:
 	int sumNoteSldADPCM_;
 	bool noteSldADPCMSetFlag_;
 	int transposeADPCM_;
+	bool hasStartRequestedKit_;
 
 	void initADPCM();
 
@@ -550,6 +552,9 @@ private:
 	}
 
 	void writePitchADPCM();
+	void writePitchADPCMToRegister(int pitchDiff, int rtDeltaN);
 
 	void setRealVolumeADPCM();
+
+	void triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool repeatable);
 };

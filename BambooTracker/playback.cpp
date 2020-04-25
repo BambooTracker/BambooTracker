@@ -545,9 +545,11 @@ void PlaybackManager::executeADPCMStepEvents(Step& step, bool calledByNoteDelay)
 
 	// Set instrument
 	if (step.getInstrumentNumber() != -1) {
-		if (auto inst = std::dynamic_pointer_cast<InstrumentADPCM>(
-					instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber())))
-			opnaCtrl_->setInstrumentADPCM(inst);
+		auto inst = instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber());
+		if (inst->getType() == InstrumentType::ADPCM)
+			opnaCtrl_->setInstrumentADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(inst));
+		else if (inst->getType() == InstrumentType::Drumkit)
+			opnaCtrl_->setInstrumentDrumkit(std::dynamic_pointer_cast<InstrumentDrumkit>(inst));
 	}
 
 	// Set effect
