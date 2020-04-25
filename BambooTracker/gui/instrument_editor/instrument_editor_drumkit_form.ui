@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>590</width>
+    <height>390</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,12 +22,36 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTreeWidget" name="keyTreeWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>130</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>130</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
         <property name="rootIsDecorated">
          <bool>false</bool>
         </property>
         <property name="uniformRowHeights">
          <bool>true</bool>
         </property>
+        <attribute name="headerStretchLastSection">
+         <bool>false</bool>
+        </attribute>
         <column>
          <property name="text">
           <string>Key</string>
@@ -55,7 +79,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="pitshSpinBox"/>
+         <widget class="QSpinBox" name="pitshSpinBox">
+          <property name="minimum">
+           <number>-95</number>
+          </property>
+          <property name="maximum">
+           <number>95</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -75,7 +106,14 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="ADPCMWaveformEditor" name="waveEditor" native="true"/>
+       <widget class="ADPCMWaveformEditor" name="waveEditor" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

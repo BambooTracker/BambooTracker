@@ -66,6 +66,7 @@ private:
 	void importSampleFrom(const QString file);
 	void updateSampleMemoryBar();
 	void updateSampleView();
+	void updateUsersView();
 
 private slots:
 	void on_waveNumSpinBox_valueChanged(int arg1);

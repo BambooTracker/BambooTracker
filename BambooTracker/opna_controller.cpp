@@ -3382,6 +3382,17 @@ void OPNAController::updateInstrumentADPCM(int instNum)
 	}
 }
 
+/// NOTE: inst != nullptr
+void OPNAController::setInstrumentDrumkit(std::shared_ptr<InstrumentDrumkit> inst)
+{
+	// TODO
+}
+
+void OPNAController::updateInstrumentDrumkit(int instNum, int key)
+{
+	// TODO
+}
+
 void OPNAController::clearSamplesADPCM()
 {
 	storePointADPCM_ = 0;

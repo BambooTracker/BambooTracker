@@ -450,7 +450,7 @@ private:
 
 	void updateKeyOnOffStatusDrum();
 
-	/*----- ADPCM -----*/
+	/*----- ADPCM/Drumkit -----*/
 public:
 	// Key on-off
 	void keyOnADPCM(Note note, int octave, int pitch, bool isJam = false);
@@ -461,6 +461,8 @@ public:
 	// Set instrument
 	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);
 	void updateInstrumentADPCM(int instNum);
+	void setInstrumentDrumkit(std::shared_ptr<InstrumentDrumkit> inst);
+	void updateInstrumentDrumkit(int instNum, int key);
 	void clearSamplesADPCM();
 	/// return: [0]: start address, [1]: stop address
 	std::vector<size_t> storeSampleADPCM(std::vector<uint8_t> sample);

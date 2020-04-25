@@ -123,6 +123,11 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint8(instADPCM->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
+			case InstrumentType::Drumkit:
+			{
+				// TODO drumkit
+				break;
+			}
 			}
 			ctr.writeUint32(iOfs, ctr.size() - iOfs);
 		}

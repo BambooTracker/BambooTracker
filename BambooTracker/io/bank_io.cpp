@@ -91,6 +91,11 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 				ctr.appendUint8(instADPCM->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
+			case InstrumentType::Drumkit:
+			{
+				// TODO drumkit
+				break;
+			}
 			}
 			ctr.writeUint32(iOfs, ctr.size() - iOfs);
 		}

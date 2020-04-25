@@ -162,11 +162,17 @@ public:
 	size_t getADPCMStoredSize() const;
 
 	void setWaveformADPCMRootKeyNumber(int wfNum, int n);
+	int getWaveformADPCMRootKeyNumber(int wfNum) const;
 	void setWaveformADPCMRootDeltaN(int wfNum, int dn);
+	int getWaveformADPCMRootDeltaN(int wfNum) const;
 	void setWaveformADPCMRepeatEnabled(int wfNum, bool enabled);
+	bool getWaveformADPCMRepeatEnabled(int wfNum) const;
 	void storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample);
+	std::vector<uint8_t> getWaveformADPCMSample(int wfNum) const;
 	void clearWaveformADPCMSample(int wfNum);
 	void assignWaveformADPCMSamples();
+	size_t getWaveformADPCMStartAddress(int wfNum) const;
+	size_t getWaveformADPCMStopAddress(int wfNum) const;
 	void setInstrumentADPCMWaveform(int instNum, int wfNum);
 	std::vector<int> getWaveformADPCMUsers(int wfNum) const;
 
@@ -198,6 +204,11 @@ public:
 	void setInstrumentADPCMPitch(int instNum, int ptNum);
 	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
 	std::vector<int> getPitchADPCMUsers(int ptNum) const;
+
+	//--- Drumkit
+	void setInstrumentDrumkitWaveform(int instNum, int key, int wfNum);
+	void setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled);
+	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
 
 	// Song edit
 	void setCurrentSongNumber(int num);

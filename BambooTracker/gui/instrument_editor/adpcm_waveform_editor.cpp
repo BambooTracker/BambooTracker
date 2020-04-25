@@ -21,7 +21,10 @@ ADPCMWaveformEditor::ADPCMWaveformEditor(QWidget *parent) :
 	ui(new Ui::ADPCMWaveformEditor),
 	isIgnoreEvent_(false),
 	wavMemPixmap_(std::make_unique<QPixmap>()),
-	wavViewPixmap_(std::make_unique<QPixmap>())
+	wavViewPixmap_(std::make_unique<QPixmap>()),
+	addrStart_(0),
+	addrStop_(0),
+	sample_(1)
 {
 	ui->setupUi(this);
 
@@ -129,6 +132,8 @@ void ADPCMWaveformEditor::setInstrumentWaveformParameters(int wfNum, bool repeat
 	Ui::EventGuard ev(isIgnoreEvent_);
 
 	ui->waveNumSpinBox->setValue(wfNum);
+
+	updateUsersView();
 
 	ui->waveRepeatCheckBox->setChecked(repeatable);
 	ui->rootKeyComboBox->setCurrentIndex(rKeyNum % 12);
@@ -251,15 +256,19 @@ void ADPCMWaveformEditor::updateSampleView()
 	}
 }
 
-void ADPCMWaveformEditor::onWaveformNumberChanged()
+void ADPCMWaveformEditor::updateUsersView()
 {
-	// Change users view
 	std::vector<int> users = bt_.lock()->getWaveformADPCMUsers(ui->waveNumSpinBox->value());
 	QStringList l;
 	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
 		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
 	});
 	ui->waveUsersLineEdit->setText(l.join(","));
+}
+
+void ADPCMWaveformEditor::onWaveformNumberChanged()
+{
+	updateUsersView();
 }
 
 void ADPCMWaveformEditor::onWaveformSampleMemoryUpdated(size_t start, size_t stop)

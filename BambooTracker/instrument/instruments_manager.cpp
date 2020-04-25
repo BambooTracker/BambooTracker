@@ -142,7 +142,14 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, std::st
 		insts_.at(static_cast<size_t>(instNum)) = std::move(adpcm);
 		break;
 	}
+	case InstrumentType::Drumkit:
+	{
+		auto kit = std::make_shared<InstrumentDrumkit>(instNum, name, this);
+		insts_.at(static_cast<size_t>(instNum)) = std::move(kit);
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -197,8 +204,16 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->registerUserInstrument(num);
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(num)]);
+		for (const auto& key : kit->getAssignedKeys()) {
+			wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->registerUserInstrument(num);
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -257,8 +272,18 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		if (refAdpcm->getPitchEnabled()) setInstrumentADPCMPitchEnabled(cloneInstNum, true);
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto refKit = std::dynamic_pointer_cast<InstrumentDrumkit>(refInst);
+		auto cloneKit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(cloneInstNum)));
+		for (const int& key : refKit->getAssignedKeys()) {
+			setInstrumentDrumkitWaveform(cloneInstNum, key, refKit->getWaveformNumber(key));
+			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -395,8 +420,23 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		}
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto refKit = std::dynamic_pointer_cast<InstrumentDrumkit>(refInst);
+		auto cloneKit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(cloneInstNum)));
+		std::unordered_map<int, int> wfMap;
+		for (const int& key : refKit->getAssignedKeys()) {
+			int n = refKit->getWaveformNumber(key);
+			if (!wfMap.count(n)) wfMap[n] = cloneADPCMWaveform(n);
+			cloneKit->setWaveformNumber(key, wfMap[n]);
+			wfADPCM_[static_cast<size_t>(wfMap[n])]->registerUserInstrument(cloneInstNum);
+
+			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -645,8 +685,16 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->deregisterUserInstrument(instNum);
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(instNum)]);
+		for (const int& key : kit->getAssignedKeys()) {
+			wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 
 	std::unique_ptr<AbstractInstrument> clone = insts_[static_cast<size_t>(instNum)]->clone();
@@ -792,6 +840,7 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 	{ InstrumentType::FM, &InstrumentsManager::equalPropertiesFM },
 	{ InstrumentType::SSG, &InstrumentsManager::equalPropertiesSSG },
 	{ InstrumentType::ADPCM, &InstrumentsManager::equalPropertiesADPCM },
+	{ InstrumentType::Drumkit, &InstrumentsManager::equalPropertiesDrumkit }
 };
 
 	for (size_t i = 0; i < idcs.size(); ++i) {
@@ -2380,5 +2429,65 @@ bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<AbstractInstrument
 	if (aAdpcm->getPitchEnabled()
 			&& *ptADPCM_[aAdpcm->getPitchNumber()].get() != *ptADPCM_[bAdpcm->getPitchNumber()].get())
 		return false;
+	return true;
+}
+
+//----- Drumkit methods -----
+void InstrumentsManager::setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled)
+{
+	auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)));
+	if (enabled) {
+		kit->setWaveformEnabled(key, true);
+		wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->registerUserInstrument(instNum);
+	}
+	else {
+		wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
+		kit->setWaveformEnabled(key, false);
+	}
+}
+
+bool InstrumentsManager::getInstrumentDrumkitWaveformEnabled(int instNum, int key) const
+{
+	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->getWaveformEnabled(key);
+}
+
+void InstrumentsManager::setInstrumentDrumkitWaveform(int instNum, int key, int wfNum)
+{
+	auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)));
+	wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
+	wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
+
+	kit->setWaveformNumber(key, wfNum);
+}
+
+int InstrumentsManager::getInstrumentDrumkitWaveform(int instNum, int key)
+{
+	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(instNum)])->getWaveformNumber(key);
+}
+
+void InstrumentsManager::setInstrumentDrumkitPitch(int instNum, int key, int pitch)
+{
+	std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->setPitch(key, pitch);
+}
+
+bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
+{
+	auto aKit = std::dynamic_pointer_cast<InstrumentDrumkit>(a);
+	auto bKit = std::dynamic_pointer_cast<InstrumentDrumkit>(b);
+
+	std::vector<int> aKeys = aKit->getAssignedKeys();
+	std::vector<int> bKeys = bKit->getAssignedKeys();
+	if (aKeys.size() != bKeys.size()) return false;
+	std::sort(aKeys.begin(), aKeys.end());
+	std::sort(bKeys.begin(), bKeys.end());
+	if (!std::includes(aKeys.begin(), aKeys.end(), bKeys.begin(), bKeys.end())) return false;
+
+	for (const int& key : aKeys) {
+		if (*wfADPCM_[aKit->getWaveformNumber(key)].get() != *wfADPCM_[bKit->getWaveformNumber(key)].get())
+			return false;
+		if (aKit->getPitch(key) != bKit->getPitch(key))
+			return false;
+	}
+
 	return true;
 }

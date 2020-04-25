@@ -20,6 +20,7 @@ enum class FMEnvelopeParameter;
 class EnvelopeFM;
 class InstrumentSSG;
 class InstrumentADPCM;
+class InstrumentDrumkit;
 
 class InstrumentsManager
 {
@@ -346,4 +347,16 @@ private:
 	int cloneADPCMPitch(int srcNum);
 
 	bool equalPropertiesADPCM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
+
+	//----- Drumkit methods -----
+public:
+	void setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled);
+	bool getInstrumentDrumkitWaveformEnabled(int instNum, int key) const;
+	void setInstrumentDrumkitWaveform(int instNum, int key, int wfNum);
+	int getInstrumentDrumkitWaveform(int instNum, int key);
+
+	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
+
+private:
+	bool equalPropertiesDrumkit(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const;
 };

@@ -5,13 +5,14 @@
 #include <QString>
 #include <QListWidgetItem>
 #include <QIcon>
+#include "instrument.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
 
-static const std::unordered_map<SoundSource, const char*> ICON_SRC = {
-	{ SoundSource::FM, ":/icon/inst_fm" },
-	{ SoundSource::SSG, ":/icon/inst_ssg" },
-	{ SoundSource::ADPCM, ":/icon/inst_adpcm" }
+static const std::unordered_map<InstrumentType, const char*> ICON_SRC = {
+	{ InstrumentType::FM, ":/icon/inst_fm" },
+	{ InstrumentType::SSG, ":/icon/inst_ssg" },
+	{ InstrumentType::ADPCM, ":/icon/inst_adpcm" },
+	{ InstrumentType::Drumkit, ":/icon/inst_kit" }
 };
 
 inline QString makeInstrumentListText(int num, QString name)
@@ -19,9 +20,9 @@ inline QString makeInstrumentListText(int num, QString name)
 	return QString("%1: %2").arg(num, 2, 16, QChar('0')).toUpper().arg(name);
 }
 
-inline QListWidgetItem* createInstrumentListItem(int num, SoundSource src, QString name)
+inline QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, QString name)
 {
-	QListWidgetItem *item = new QListWidgetItem(QIcon(ICON_SRC.at(src)), makeInstrumentListText(num, name));
+	QListWidgetItem *item = new QListWidgetItem(QIcon(ICON_SRC.at(type)), makeInstrumentListText(num, name));
 	item->setSizeHint(QSize(130, 17));
 	item->setData(Qt::UserRole, num);
 	return item;

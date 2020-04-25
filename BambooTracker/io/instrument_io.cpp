@@ -128,6 +128,11 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			ctr.appendUint8(0x02);
 			break;
 		}
+		case InstrumentType::Drumkit:
+		{
+			// TODO drumkit
+			break;
+		}
 		}
 	}
 	ctr.writeUint32(instOfs, ctr.size() - instOfs);
@@ -745,6 +750,11 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
 		}
+		break;
+	}
+	case InstrumentType::Drumkit:
+	{
+		// TODO drumkit
 		break;
 	}
 	}

@@ -3,10 +3,11 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QRegularExpression>
+#include "instrument.hpp"
 #include "command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
-RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row, QString name, SoundSource src,
+RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row, QString name, InstrumentType type,
 													 std::weak_ptr<InstrumentFormManager> formMan,
 													 MainWindow* mainwin, bool updateRequested, QUndoCommand *parent)
 	: QUndoCommand(parent),
@@ -14,7 +15,7 @@ RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num,
 	  num_(num),
 	  name_(name),
 	  row_(row),
-	  source_(src),
+	  type_(type),
 	  formMan_(formMan),
 	  mainwin_(mainwin),
 	  updateRequested_(updateRequested)
@@ -22,9 +23,9 @@ RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num,
 
 void RemoveInstrumentQtCommand::undo()
 {
-	list_->insertItem(row_, createInstrumentListItem(num_, source_, name_));
+	list_->insertItem(row_, createInstrumentListItem(num_, type_, name_));
 
-	if (updateRequested_ && source_ == SoundSource::ADPCM) {
+	if (updateRequested_ && (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)) {
 		mainwin_->assignADPCMSamples();
 	}
 }
@@ -42,7 +43,7 @@ void RemoveInstrumentQtCommand::redo()
 		QApplication::clipboard()->clear();
 	}
 
-	if (updateRequested_ && source_ == SoundSource::ADPCM) {
+	if (updateRequested_ && (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)) {
 		mainwin_->assignADPCMSamples();
 	}
 }

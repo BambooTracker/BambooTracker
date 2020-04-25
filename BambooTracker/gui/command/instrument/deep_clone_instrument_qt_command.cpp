@@ -1,15 +1,16 @@
 #include "deep_clone_instrument_qt_command.hpp"
+#include "instrument.hpp"
 #include "command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
-DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, int num, SoundSource src, QString name,
+DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,
 														   std::weak_ptr<InstrumentFormManager> formMan,
 														   MainWindow* mainwin, bool onlyUsed, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  cloneNum_(num),
 	  formMan_(formMan),
-	  source_(src),
+	  type_(type),
 	  name_(name),
 	  mainwin_(mainwin),
 	  onlyUsed_(onlyUsed)
@@ -17,9 +18,10 @@ DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, in
 
 void DeepCloneInstrumentQtCommand::redo()
 {
-	list_->insertItem(cloneNum_, createInstrumentListItem(cloneNum_, source_, name_));
+	list_->insertItem(cloneNum_, createInstrumentListItem(cloneNum_, type_, name_));
 
-	if (source_ == SoundSource::ADPCM) mainwin_->assignADPCMSamples();
+	if (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)
+		mainwin_->assignADPCMSamples();
 }
 
 void DeepCloneInstrumentQtCommand::undo()
@@ -29,7 +31,7 @@ void DeepCloneInstrumentQtCommand::undo()
 
 	formMan_.lock()->remove(cloneNum_);
 
-	if (source_ == SoundSource::ADPCM && onlyUsed_) {
+	if ((type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit) && onlyUsed_) {
 		mainwin_->assignADPCMSamples();
 	}
 }

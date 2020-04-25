@@ -6,14 +6,14 @@
 #include "command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
-AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, SoundSource source,
+AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, InstrumentType type,
 											   std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin,
 											   bool onlyUsed, bool preventFirstStore, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
 	  name_(name),
-	  source_(source),
+	  type_(type),
 	  formMan_(formMan),
 	  mainwin_(mainwin),
 	  onlyUsed_(onlyUsed),
@@ -33,16 +33,16 @@ void AddInstrumentQtCommand::undo()
 		QApplication::clipboard()->clear();
 	}
 
-	if (source_ == SoundSource::ADPCM && onlyUsed_) {
+	if ((type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit) && onlyUsed_) {
 		mainwin_->assignADPCMSamples();
 	}
 }
 
 void AddInstrumentQtCommand::redo()
 {
-	list_->insertItem(num_, createInstrumentListItem(num_, source_, name_));
+	list_->insertItem(num_, createInstrumentListItem(num_, type_, name_));
 
-	if (hasDone_ && source_ == SoundSource::ADPCM) {
+	if (hasDone_ && (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)) {
 		mainwin_->assignADPCMSamples();
 	}
 	hasDone_ = true;
