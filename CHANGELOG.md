@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Added
+- Color settings of pattern marker
 
 ## v0.4.1 (2020-04-20)
 ### Added

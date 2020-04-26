@@ -870,6 +870,11 @@
                <string>Background</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>Marker</string>
+              </property>
+             </item>
             </item>
             <item>
              <property name="text">

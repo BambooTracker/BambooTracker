@@ -33,6 +33,8 @@ ColorPalette::ColorPalette()
 	instSeqBorderColor = QColor::fromRgb(50, 50, 50, 255);
 	instSeqMaskColor = QColor::fromRgb(0, 0, 0, 128);
 	instSeqOddColColor = QColor::fromRgb(255, 255, 255, 31);
+
+	// ADPCM waveform editor
 	instADPCMMemAllColor = QColor::fromRgb(210, 40, 180, 150);
 	instADPCMMemCurColor = QColor::fromRgb(210, 40, 180, 255);
 	instADPCMMemBackColor = QColor::fromRgb(0, 0, 0, 255);

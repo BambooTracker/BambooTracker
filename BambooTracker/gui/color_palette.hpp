@@ -28,6 +28,8 @@ public:
 	QColor instSeqBorderColor;
 	QColor instSeqMaskColor;
 	QColor instSeqOddColColor;
+
+	// ADPCM waveform editor
 	QColor instADPCMMemAllColor, instADPCMMemCurColor, instADPCMMemBackColor;
 	QColor instADPCMWaveViewForeColor, instADPCMWaveViewBackColor, instADPCMWaveViewCenterColor;
 

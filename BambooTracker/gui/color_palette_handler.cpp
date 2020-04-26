@@ -61,6 +61,7 @@ void ColorPaletteHandler::save(QSettings& settings, std::weak_ptr<ColorPalette> 
 	settings.setValue("mute", paletteLocked->ptnMuteColor.name(QColor::HexArgb));
 	settings.setValue("unmute", paletteLocked->ptnUnmuteColor.name(QColor::HexArgb));
 	settings.setValue("background", paletteLocked->ptnBackColor.name(QColor::HexArgb));
+	settings.setValue("marker", paletteLocked->ptnMarkerColor.name(QColor::HexArgb));
 	settings.endGroup();
 
 	settings.beginGroup("OrderList");
@@ -147,6 +148,7 @@ void ColorPaletteHandler::load(QSettings& settings, std::weak_ptr<ColorPalette> 
 	paletteLocked->ptnMuteColor = settings.value("mute", paletteLocked->ptnMuteColor).value<QColor>();
 	paletteLocked->ptnUnmuteColor = settings.value("unmute", paletteLocked->ptnUnmuteColor).value<QColor>();
 	paletteLocked->ptnBackColor = settings.value("background", paletteLocked->ptnBackColor).value<QColor>();
+	paletteLocked->ptnMarkerColor = settings.value("marker", paletteLocked->ptnMarkerColor).value<QColor>();
 	settings.endGroup();
 
 	settings.beginGroup("OrderList");

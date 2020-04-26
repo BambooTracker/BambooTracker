@@ -422,6 +422,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	pl->ptnMuteColor = ptnColors->child(23)->data(1, Qt::BackgroundRole).value<QColor>();
 	pl->ptnUnmuteColor = ptnColors->child(24)->data(1, Qt::BackgroundRole).value<QColor>();
 	pl->ptnBackColor = ptnColors->child(25)->data(1, Qt::BackgroundRole).value<QColor>();
+	pl->ptnMarkerColor = ptnColors->child(26)->data(1, Qt::BackgroundRole).value<QColor>();
 
 	QTreeWidgetItem* odrColors = ui->colorsTreeWidget->topLevelItem(1);
 	pl->odrDefTextColor = odrColors->child(0)->data(1, Qt::BackgroundRole).value<QColor>();
@@ -677,6 +678,7 @@ void ConfigurationDialog::updateColorTree()
 	ptnColors->child(23)->setData(1, Qt::BackgroundRole, pl->ptnMuteColor);
 	ptnColors->child(24)->setData(1, Qt::BackgroundRole, pl->ptnUnmuteColor);
 	ptnColors->child(25)->setData(1, Qt::BackgroundRole, pl->ptnBackColor);
+	ptnColors->child(26)->setData(1, Qt::BackgroundRole, pl->ptnMarkerColor);
 
 	QTreeWidgetItem* odrColors = ui->colorsTreeWidget->topLevelItem(1);
 	odrColors->child(0)->setData(1, Qt::BackgroundRole, pl->odrDefTextColor);
