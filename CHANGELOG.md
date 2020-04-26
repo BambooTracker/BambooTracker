@@ -5,6 +5,9 @@
 - Color settings of pattern marker
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
+### Changed
+- Change comment dialog to modeless
+
 ## v0.4.1 (2020-04-20)
 ### Added
 - Shortcut settings

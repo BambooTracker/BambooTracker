@@ -15,7 +15,12 @@ CommentEditDialog::~CommentEditDialog()
 	delete ui;
 }
 
-QString CommentEditDialog::getComment() const
+void CommentEditDialog::setComment(QString text)
 {
-	return ui->plainTextEdit->toPlainText();
+	ui->plainTextEdit->setPlainText(text);
+}
+
+void CommentEditDialog::on_plainTextEdit_textChanged()
+{
+	emit commentChanged(ui->plainTextEdit->toPlainText());
 }

@@ -34,6 +34,7 @@
 #include "gui/keyboard_shortcut_list_dialog.hpp"
 #include "gui/bookmark_manager_form.hpp"
 #include "gui/instrument_selection_dialog.hpp"
+#include "gui/comment_edit_dialog.hpp"
 #include "file_io_error.hpp"
 #include "enum_hash.hpp"
 
@@ -179,9 +180,8 @@ private:
 	// Dialogs
 	std::unique_ptr<EffectListDialog> effListDiag_;
 	std::unique_ptr<KeyboardShortcutListDialog> shortcutsDiag_;
-
-	// Bookmark
 	std::unique_ptr<BookmarkManagerForm> bmManForm_;
+	std::unique_ptr<CommentEditDialog> commentDiag_;
 
 	// Bank import
 	std::atomic_bool bankJamMidiCtrl_;

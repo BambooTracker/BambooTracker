@@ -35,7 +35,6 @@
 #include "gui/module_properties_dialog.hpp"
 #include "gui/groove_settings_dialog.hpp"
 #include "gui/configuration_dialog.hpp"
-#include "gui/comment_edit_dialog.hpp"
 #include "gui/wave_export_settings_dialog.hpp"
 #include "gui/vgm_export_settings_dialog.hpp"
 #include "gui/instrument_selection_dialog.hpp"
@@ -74,8 +73,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	isSelectedOrder_(false),
 	hasShownOnce_(false),
 	firstViewUpdateRequest_(false),
-	effListDiag_(std::make_unique<EffectListDialog>()),
-	shortcutsDiag_(std::make_unique<KeyboardShortcutListDialog>()),
 	bankJamMidiCtrl_(false)
 {
 	ui->setupUi(this);
@@ -945,9 +942,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
 
-	effListDiag_->close();
-	shortcutsDiag_->close();
+	if (effListDiag_) effListDiag_->close();
+	if (shortcutsDiag_) shortcutsDiag_->close();
 	bmManForm_->close();
+	if (commentDiag_) commentDiag_->close();
 
 	event->accept();
 }
@@ -1745,6 +1743,9 @@ void MainWindow::loadModule()
 		break;
 	}
 	statusMixer_->setText(text);
+
+	// Set comment
+	if (commentDiag_) commentDiag_->setComment(utf8ToQString(bt_->getModuleComment()));
 
 	// Clear records
 	QApplication::clipboard()->clear();
@@ -2722,10 +2723,18 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionComments_triggered()
 {
-	CommentEditDialog diag(utf8ToQString(bt_->getModuleComment()));
-	if (diag.exec() == QDialog::Accepted) {
-		bt_->setModuleComment(diag.getComment().toUtf8().toStdString());
-		setModifiedTrue();
+	if (commentDiag_) {
+		if (commentDiag_->isVisible()) commentDiag_->activateWindow();
+		else commentDiag_->show();
+	}
+	else {
+		commentDiag_ = std::make_unique<CommentEditDialog>(utf8ToQString(bt_->getModuleComment()));
+		commentDiag_->show();
+		QObject::connect(commentDiag_.get(), &CommentEditDialog::commentChanged,
+						 this, [&](const QString text) {
+			bt_->setModuleComment(text.toUtf8().toStdString());
+			setModifiedTrue();
+		});
 	}
 }
 
@@ -3189,8 +3198,14 @@ void MainWindow::on_action_Effect_List_triggered()
 
 void MainWindow::on_actionShortcuts_triggered()
 {
-	if (shortcutsDiag_->isVisible()) shortcutsDiag_->activateWindow();
-	else shortcutsDiag_->show();
+	if (shortcutsDiag_) {
+		if (shortcutsDiag_->isVisible()) shortcutsDiag_->activateWindow();
+		else shortcutsDiag_->show();
+	}
+	else {
+		shortcutsDiag_ = std::make_unique<KeyboardShortcutListDialog>();
+		shortcutsDiag_->show();
+	}
 }
 
 void MainWindow::on_actionExport_To_Bank_File_triggered()
