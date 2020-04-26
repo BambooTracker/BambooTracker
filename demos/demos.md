@@ -1,10 +1,12 @@
 ## Sample modules
 - [Dippy] - Neo Megalopolis.btm
+- [HeavyViper] - sword with no scabbard
 - [ImATrackMan] - Battleship.btm
 - [maak] - breeze 2608.btm, Rude Buster.btm
 - Rerrah - Lotus.btm
 - [RigidatoMS] - Is This What You Desired.btm
 - [SuperJet Spade] - Underwater Ruins.btm
+- [TastySnax12] - Wild Battle (RSE).btm
 
 ## Sample instruments
 - [papiezak] - 2 banks (32 instruments)
@@ -20,3 +22,5 @@ Thanks all for samples!
 [RigidatoMS]: https://twitter.com/RigidatoMS
 [ImATrackMan]: https://twitter.com/ImATrackMan
 [Takeshi Abo]: https://twitter.com/valsound
+[TastySnax12]: https://twitter.com/TastySnax12
+[HeavyViper]: https://twitter.com/HeavyViper

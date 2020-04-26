@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - Color settings of pattern marker
+- 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
 ## v0.4.1 (2020-04-20)
 ### Added
@@ -12,6 +13,9 @@
   - Increase/Decrease edit step
   - Previous/Next song
 - 255 new sample instruments (thanks [Takeshi Abo])
+
+[@TastySnax12]: https://twitter.com/TastySnax12
+[@HeavyViper]: https://twitter.com/HeavyViper
 
 ### Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
