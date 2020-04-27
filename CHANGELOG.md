@@ -8,6 +8,11 @@
 ### Changed
 - Change comment dialog to modeless
 
+### Fixed
+- [#209] - Fix crashing effect list dialog on opening (thanks [@Ikalou])
+
+[#209]: https://github.com/rerrahkr/BambooTracker/issues/209
+
 ## v0.4.1 (2020-04-20)
 ### Added
 - Shortcut settings

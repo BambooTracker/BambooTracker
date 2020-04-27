@@ -1270,7 +1270,7 @@ void MainWindow::openInstrumentEditor()
 			adpcmForm->setConfiguration(config_.lock());
 			adpcmForm->setColorPalette(palette_);
 			adpcmForm->resize(config_.lock()->getInstrumentADPCMWindowWidth(),
-							config_.lock()->getInstrumentADPCMWindowHeight());
+							  config_.lock()->getInstrumentADPCMWindowHeight());
 
 			QObject::connect(adpcmForm, &InstrumentEditorADPCMForm::waveformNumberChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);
@@ -1392,12 +1392,12 @@ void MainWindow::loadInstrument()
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QStringList filters {
 		tr("BambooTracker instrument (*.bti)"),
-		tr("DefleMask preset (*.dmp)"),
-		tr("TFM Music Maker instrument (*.tfi)"),
-		tr("VGM Music Maker instrument (*.vgi)"),
-		tr("WOPN instrument (*.opni)"),
-		tr("Gens KMod dump (*.y12)"),
-		tr("MVSTracker instrument (*.ins)")
+				tr("DefleMask preset (*.dmp)"),
+				tr("TFM Music Maker instrument (*.tfi)"),
+				tr("VGM Music Maker instrument (*.vgi)"),
+				tr("WOPN instrument (*.opni)"),
+				tr("Gens KMod dump (*.y12)"),
+				tr("MVSTracker instrument (*.ins)")
 	};
 	QString defaultFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
 
@@ -3192,8 +3192,14 @@ void MainWindow::updateVisuals()
 
 void MainWindow::on_action_Effect_List_triggered()
 {
-	if (effListDiag_->isVisible()) effListDiag_->activateWindow();
-	else effListDiag_->show();
+	if (effListDiag_) {
+		if (effListDiag_->isVisible()) effListDiag_->activateWindow();
+		else effListDiag_->show();
+	}
+	else {
+		effListDiag_ = std::make_unique<EffectListDialog>();
+		effListDiag_->show();
+	}
 }
 
 void MainWindow::on_actionShortcuts_triggered()
