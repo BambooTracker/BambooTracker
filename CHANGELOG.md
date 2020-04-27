@@ -10,8 +10,10 @@
 
 ### Fixed
 - [#209] - Fix crashing effect list dialog on opening (thanks [@Ikalou])
+- [#208] - Fix speed/tempo states retrieving on starting playback (thanks [@freq-mod])
 
 [#209]: https://github.com/rerrahkr/BambooTracker/issues/209
+[#208]: https://github.com/rerrahkr/BambooTracker/issues/208
 
 ## v0.4.1 (2020-04-20)
 ### Added
