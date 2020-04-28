@@ -1126,13 +1126,30 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 	}
 }
 
-std::vector<size_t> BambooTracker::assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst)
+std::vector<std::vector<size_t>> BambooTracker::assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst)
 {
-	if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(inst)) {
+	switch (inst->getType()) {
+	case InstrumentType::ADPCM:
+	{
 		opnaCtrl_->clearSamplesADPCM();
-		return opnaCtrl_->storeSampleADPCM(adpcm->getWaveformSamples());
+		return { opnaCtrl_->storeSampleADPCM(
+						std::dynamic_pointer_cast<InstrumentADPCM>(inst)->getWaveformSamples()) };
 	}
-	return {};
+	case InstrumentType::Drumkit:
+	{
+		opnaCtrl_->clearSamplesADPCM();
+		std::vector<std::vector<size_t>> addrs;
+		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
+		for (const int& key : kit->getAssignedKeys()) {
+			int wf = kit->getWaveformNumber(key);
+			if (addrs.size() <= static_cast<size_t>(wf)) addrs.resize(wf + 1);
+			if (addrs[wf].empty()) addrs[wf] = opnaCtrl_->storeSampleADPCM(kit->getWaveformSamples(key));
+		}
+		return addrs;
+	}
+	default:
+		return {};
+	}
 }
 
 /********** Play song **********/
