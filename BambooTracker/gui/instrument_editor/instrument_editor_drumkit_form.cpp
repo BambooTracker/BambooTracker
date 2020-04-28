@@ -160,6 +160,7 @@ void InstrumentEditorDrumkitForm::on_pitshSpinBox_valueChanged(int arg1)
 	if (instKit->getWaveformEnabled(key)) {
 		bt_.lock()->setInstrumentDrumkitPitch(instNum_, key, arg1);
 		ui->keyTreeWidget->currentItem()->setText(2, QString::number(arg1));
+		emit modified();
 	}
 }
 
@@ -168,6 +169,7 @@ void InstrumentEditorDrumkitForm::setInstrumentWaveformParameters(int key)
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
+	QTreeWidgetItem* item = ui->keyTreeWidget->topLevelItem(key);
 
 	if (instKit->getWaveformEnabled(key)) {
 		int wfNum = instKit->getWaveformNumber(key);
@@ -176,8 +178,8 @@ void InstrumentEditorDrumkitForm::setInstrumentWaveformParameters(int key)
 					instKit->getWaveformRootKeyNumber(key), instKit->getWaveformRootDeltaN(key),
 					instKit->getWaveformStartAddress(key), instKit->getWaveformStopAddress(key),
 					instKit->getWaveformSamples(key));
-		ui->keyTreeWidget->currentItem()->setText(1, QString::number(wfNum));
-		ui->keyTreeWidget->currentItem()->setText(2, QString::number(instKit->getPitch(key)));
+		item->setText(1, QString::number(wfNum));
+		item->setText(2, QString::number(instKit->getPitch(key)));
 	}
 	else {
 		ui->waveEditor->setInstrumentWaveformParameters(
@@ -187,8 +189,8 @@ void InstrumentEditorDrumkitForm::setInstrumentWaveformParameters(int key)
 					bt_.lock()->getWaveformADPCMStartAddress(0),
 					bt_.lock()->getWaveformADPCMStopAddress(0),
 					bt_.lock()->getWaveformADPCMSample(0));
-		ui->keyTreeWidget->currentItem()->setText(1, "-");
-		ui->keyTreeWidget->currentItem()->setText(2, "-");
+		item->setText(1, "-");
+		item->setText(2, "-");
 	}
 }
 
@@ -246,4 +248,5 @@ void InstrumentEditorDrumkitForm::on_waveGroupBox_clicked(bool checked)
 	}
 
 	emit waveformNumberChanged();
+	emit modified();
 }

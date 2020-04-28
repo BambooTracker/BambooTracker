@@ -128,6 +128,11 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>keyTreeWidget</tabstop>
+  <tabstop>pitshSpinBox</tabstop>
+  <tabstop>waveGroupBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

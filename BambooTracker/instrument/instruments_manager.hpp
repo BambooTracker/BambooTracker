@@ -278,7 +278,7 @@ public:
 	std::vector<int> getWaveformADPCMEntriedIndices() const;
 	std::vector<int> getWaveformADPCMValidIndices() const;
 	void clearUnusedWaveformsADPCM();
-	int findFirstAssignableWaveformADPCM() const;
+	int findFirstAssignableWaveformADPCM(int startIndex = 0) const;
 
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
 	bool getInstrumentADPCMEnvelopeEnabled(int instNum) const;

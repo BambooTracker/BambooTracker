@@ -130,7 +130,19 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 		}
 		case InstrumentType::Drumkit:
 		{
-			// TODO drumkit
+			ctr.appendUint8(0x03);
+			auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
+			std::vector<int> keys = kit->getAssignedKeys();
+			ctr.appendUint8(keys.size());
+			int wfCnt = 0;
+			std::unordered_map<int, int> wfMap;
+			for (const int& key : keys) {
+				ctr.appendUint8(static_cast<uint8_t>(key));
+				int wf = kit->getWaveformNumber(key);
+				if (!wfMap.count(wf)) wfMap[wf] = wfCnt++;
+				ctr.appendUint8(static_cast<uint8_t>(wfMap[wf]));
+				ctr.appendUint8(static_cast<uint8_t>(kit->getPitch(key)));
+			}
 			break;
 		}
 		}
@@ -754,7 +766,29 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 	}
 	case InstrumentType::Drumkit:
 	{
-		// TODO drumkit
+		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
+
+		// ADPCM waveform
+		{
+		std::vector<int> wfList;
+		for (const int& key : kit->getAssignedKeys()) {
+			int wf = kit->getWaveformNumber(key);
+			if (std::none_of(wfList.begin(), wfList.end(), [wf](const int& v) { return v == wf; })) {
+				wfList.push_back(wf);
+
+				ctr.appendUint8(0x40);
+				size_t ofs = ctr.size();
+				ctr.appendUint32(0);	// Dummy offset
+				ctr.appendUint8(static_cast<uint8_t>(instManLocked->getWaveformADPCMRootKeyNumber(wf)));
+				ctr.appendUint16(static_cast<uint16_t>(instManLocked->getWaveformADPCMRootDeltaN(wf)));
+				ctr.appendUint8(static_cast<uint8_t>(instManLocked->isWaveformADPCMRepeatable(wf)));
+				std::vector<uint8_t> samples = instManLocked->getWaveformADPCMSamples(wf);
+				ctr.appendUint32(samples.size());
+				ctr.appendVector(std::move(samples));
+				ctr.writeUint32(ofs, ctr.size() - ofs);
+			}
+		}
+		}
 		break;
 	}
 	}
@@ -811,6 +845,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 			instCsr += nameLen;
 		}
 		std::unordered_map<FMOperatorType, int> fmArpMap, fmPtMap;
+		std::unordered_map<int, std::vector<int>> kitWfFileMap, kitWfMap;
 		AbstractInstrument* inst = nullptr;
 		switch (ctr.readUint8(instCsr++)) {
 		case 0x00:	// FM
@@ -847,6 +882,21 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 			inst = new InstrumentADPCM(instNum, name, instManLocked.get());
 			break;
 		}
+		case 0x03:	// Drumkit
+		{
+			inst = new InstrumentDrumkit(instNum, name, instManLocked.get());
+			auto kit = dynamic_cast<InstrumentDrumkit*>(inst);
+			uint8_t cnt = ctr.readUint8(instCsr++);
+			for (uint8_t i = 0; i < cnt; ++i) {
+				int key = ctr.readUint8(instCsr++);
+				int wf = ctr.readUint8(instCsr++);
+				if (kitWfFileMap.count(wf)) kitWfFileMap[wf].push_back(key);
+				else kitWfFileMap[wf] = { key };
+				kit->setWaveformEnabled(key, true);
+				kit->setPitch(key, ctr.readUint8(instCsr++));
+			}
+			break;
+		}
 		default:
 			throw FileCorruptionError(FileIO::FileType::Inst);
 		}
@@ -862,6 +912,8 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 			size_t instPropCsr = globCsr + 4;
 			size_t instPropCsrTmp = instPropCsr;
 			globCsr += instPropOfs;
+			int kitWfCnt = 0;
+			int adpcmWfIndex = 0;
 			std::vector<int> nums;
 			// Check memory range
 			while (instPropCsr < globCsr) {
@@ -1197,9 +1249,12 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 				}
 				case 0x40:	// ADPCM waveform
 				{
-					nums.push_back(instManLocked->findFirstAssignableWaveformADPCM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+					adpcmWfIndex = instManLocked->findFirstAssignableWaveformADPCM(adpcmWfIndex);
+					if (adpcmWfIndex == -1) throw FileCorruptionError(FileIO::FileType::Inst);
+					nums.push_back(adpcmWfIndex);
+					kitWfMap[adpcmWfIndex] = kitWfFileMap.at(kitWfCnt++);
 					instPropCsr += ctr.readUint16(instPropCsr);
+					++adpcmWfIndex; // Increment for search appropriate kit waveform
 					break;
 				}
 				case 0x41:	// ADPCM envelope
@@ -2172,12 +2227,18 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					instPropCsr += ofs;
 					break;
 				}
-				default:
 				case 0x40:	// ADPCM waveform
 				{
 					int idx = *numIt++;
-					auto adpcm = dynamic_cast<InstrumentADPCM*>(inst);
-					adpcm->setWaveformNumber(idx);
+					if (inst->getType() == InstrumentType::ADPCM) {
+						auto adpcm = dynamic_cast<InstrumentADPCM*>(inst);
+						adpcm->setWaveformNumber(idx);
+					}
+					else if (inst->getType() == InstrumentType::Drumkit) {
+						auto kit = dynamic_cast<InstrumentDrumkit*>(inst);
+						for (const int& key : kitWfMap.at(idx))
+							kit->setWaveformNumber(key, idx);
+					}
 					uint32_t ofs = ctr.readUint32(instPropCsr);
 					size_t csr = instPropCsr + 4;
 
@@ -2413,6 +2474,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					instPropCsr += ofs;
 					break;
 				}
+				default:
 					throw FileCorruptionError(FileIO::FileType::Inst);
 				}
 			}
@@ -4156,6 +4218,49 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 		}
 
 		return adpcm;
+	}
+	case 0x03:	// Drumkit
+	{
+		auto kit = new InstrumentDrumkit(instNum, name, instManLocked.get());
+
+		uint8_t keyCnt = instCtr.readUint8(instCsr++);
+		std::unordered_map<int, int> wfMap;
+		int newWf = 0;
+		for (uint8_t i = 0; i < keyCnt; ++i) {
+			int key = instCtr.readUint8(instCsr++);
+			kit->setWaveformEnabled(key, true);
+
+			/* Waveform */
+			{
+				uint8_t orgWf = instCtr.readUint8(instCsr++);
+				if (wfMap.count(orgWf)) {	// Use registered property
+					kit->setWaveformNumber(key, wfMap.at(orgWf));
+				}
+				else {
+					newWf = instManLocked->findFirstAssignableWaveformADPCM(newWf);
+					if (newWf == -1) throw FileCorruptionError(FileIO::FileType::Bank);
+					kit->setWaveformNumber(key, newWf);
+					wfMap[orgWf] = newWf;
+					size_t wfCsr = getPropertyPositionForBTB(propCtr, 0x40, orgWf);
+
+					instManLocked->setWaveformADPCMRootKeyNumber(newWf, propCtr.readUint8(wfCsr++));
+					instManLocked->setWaveformADPCMRootDeltaN(newWf, propCtr.readUint16(wfCsr));
+					wfCsr += 2;
+					instManLocked->setWaveformADPCMRepeatEnabled(newWf, (propCtr.readUint8(wfCsr++) & 0x01) != 0);
+					uint32_t len = propCtr.readUint32(wfCsr);
+					wfCsr += 4;
+					std::vector<uint8_t> samples = propCtr.getSubcontainer(wfCsr, len).toVector();
+					wfCsr += len;
+					instManLocked->storeWaveformADPCMSample(newWf, std::move(samples));
+					++newWf;	// Increment for search
+				}
+			}
+
+			/* Pitch */
+			kit->setPitch(key, instCtr.readUint8(instCsr++));
+		}
+
+		return kit;
 	}
 	default:
 		throw FileCorruptionError(FileIO::FileType::Bank);

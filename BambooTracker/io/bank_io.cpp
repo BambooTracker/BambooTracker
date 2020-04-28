@@ -93,7 +93,15 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 			}
 			case InstrumentType::Drumkit:
 			{
-				// TODO drumkit
+				ctr.appendUint8(0x03);
+				auto instKit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
+				std::vector<int> keys = instKit->getAssignedKeys();
+				ctr.appendUint8(keys.size());
+				for (const int& key : keys) {
+					ctr.appendUint8(static_cast<uint8_t>(key));
+					ctr.appendUint8(static_cast<uint8_t>(instKit->getWaveformNumber(key)));
+					ctr.appendInt8(instKit->getPitch(key));
+				}
 				break;
 			}
 			}

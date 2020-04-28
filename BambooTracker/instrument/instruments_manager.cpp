@@ -2062,12 +2062,12 @@ void InstrumentsManager::clearUnusedWaveformsADPCM()
 	}
 }
 
-int InstrumentsManager::findFirstAssignableWaveformADPCM() const
+int InstrumentsManager::findFirstAssignableWaveformADPCM(int startIndex) const
 {
 	auto cond = regardingUnedited_
 				? [](const std::shared_ptr<WaveformADPCM>& wf) { return (wf->isUserInstrument() || wf->isEdited()); }
 	: [](const std::shared_ptr<WaveformADPCM>& wf) { return wf->isUserInstrument(); };
-	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(), cond);
+	auto&& it = std::find_if_not(wfADPCM_.begin() + startIndex, wfADPCM_.end(), cond);
 
 	if (it == wfADPCM_.end()) return -1;
 
