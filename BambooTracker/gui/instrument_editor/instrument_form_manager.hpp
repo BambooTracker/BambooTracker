@@ -3,11 +3,12 @@
 
 #include <QObject>
 #include <QWidget>
-#include <QString>
 #include <memory>
 #include <unordered_map>
 #include "instrument/envelope_fm.hpp"
-#include "misc.hpp"
+
+enum class InstrumentType;
+enum class SoundSource;
 
 class InstrumentFormManager : public QObject
 {
@@ -19,13 +20,14 @@ public:
 
 	const std::shared_ptr<QWidget> getForm(int n) const;
 	void remove(int n);
-	void add(int n, std::shared_ptr<QWidget> form, QString instName, SoundSource instSrc);
+	void add(int n, std::shared_ptr<QWidget> form, SoundSource src, InstrumentType type);
 
 	void showForm(int n);
 	void closeAll();
 	void clearAll();
 
 	SoundSource getFormInstrumentSoundSource(int n) const;
+	InstrumentType getFormInstrumentType(int n) const;
 
 	int checkActivatedFormNumber() const;
 

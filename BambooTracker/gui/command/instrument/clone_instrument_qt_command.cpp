@@ -1,21 +1,22 @@
 #include "clone_instrument_qt_command.hpp"
+#include "instrument.hpp"
 #include "command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
-CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, SoundSource src, QString name,
+CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,
 												   std::weak_ptr<InstrumentFormManager> formMan,
 												   QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  cloneNum_(num),
 	  formMan_(formMan),
-	  source_(src),
+	  type_(type),
 	  name_(name)
 {}
 
 void CloneInstrumentQtCommand::redo()
 {
-	list_->insertItem(cloneNum_, createInstrumentListItem(cloneNum_, source_, name_));
+	list_->insertItem(cloneNum_, createInstrumentListItem(cloneNum_, type_, name_));
 }
 
 void CloneInstrumentQtCommand::undo()

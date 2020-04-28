@@ -28,6 +28,8 @@ Configuration::Configuration()
 	instSSGH_ = 390;
 	instADPCMW_ = 510;
 	instADPCMH_ = 390;
+	instKitW_ = 590;
+	instKitH_ = 390;
 
 	// Toolbar state
 	mainTb_.setPosition(ToolbarConfiguration::TOP_POS);
@@ -769,6 +771,14 @@ int Configuration::getInstrumentADPCMWindowWidth() const { return instADPCMW_; }
 void Configuration::setInstrumentADPCMWindowHeight(int h) { instADPCMH_ = h; }
 
 int Configuration::getInstrumentADPCMWindowHeight() const { return instADPCMH_; }
+
+void Configuration::setInstrumentDrumkitWindowWidth(int w) { instKitW_ = w; }
+
+int Configuration::getInstrumentDrumkitWindowWidth() const { return instKitW_; }
+
+void Configuration::setInstrumentDrumkitWindowHeight(int h) { instKitH_ = h; }
+
+int Configuration::getInstrumentDrumkitWindowHeight() const { return instKitH_; }
 
 // Toolbar state
 using TBConfig = Configuration::ToolbarConfiguration;

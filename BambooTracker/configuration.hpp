@@ -80,10 +80,15 @@ public:
 	int getInstrumentADPCMWindowWidth() const;
 	void setInstrumentADPCMWindowHeight(int h);
 	int getInstrumentADPCMWindowHeight() const;
+	void setInstrumentDrumkitWindowWidth(int w);
+	int getInstrumentDrumkitWindowWidth() const;
+	void setInstrumentDrumkitWindowHeight(int h);
+	int getInstrumentDrumkitWindowHeight() const;
 private:
 	int instFMW_, instFMH_;
 	int instSSGW_, instSSGH_;
 	int instADPCMW_, instADPCMH_;
+	int instKitW_, instKitH_;
 
 	// Toolbar state
 public:

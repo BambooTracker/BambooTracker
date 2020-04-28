@@ -52,8 +52,10 @@ SOURCES += \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
     gui/go_to_dialog.cpp \
+    gui/instrument_editor/adpcm_waveform_editor.cpp \
     gui/instrument_editor/arpeggio_macro_editor.cpp \
     gui/instrument_editor/instrument_editor_adpcm_form.cpp \
+    gui/instrument_editor/instrument_editor_drumkit_form.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
     instrument/waveform_adpcm.cpp \
@@ -223,8 +225,10 @@ HEADERS += \
     gui/effect_list_dialog.hpp \
     gui/go_to_dialog.hpp \
     gui/gui_util.hpp \
+    gui/instrument_editor/adpcm_waveform_editor.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
     gui/instrument_editor/instrument_editor_adpcm_form.hpp \
+    gui/instrument_editor/instrument_editor_drumkit_form.hpp \
     gui/instrument_editor/instrument_editor_util.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
     gui/instrument_list_misc.hpp \
@@ -403,7 +407,9 @@ FORMS += \
     gui/bookmark_manager_form.ui \
     gui/effect_list_dialog.ui \
     gui/go_to_dialog.ui \
+    gui/instrument_editor/adpcm_waveform_editor.ui \
     gui/instrument_editor/instrument_editor_adpcm_form.ui \
+    gui/instrument_editor/instrument_editor_drumkit_form.ui \
     gui/keyboard_shortcut_list_dialog.ui \
     gui/mainwindow.ui \
     gui/instrument_editor/instrument_editor_fm_form.ui \

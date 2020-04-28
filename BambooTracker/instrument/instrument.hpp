@@ -13,7 +13,7 @@
 
 class InstrumentsManager;
 
-enum class InstrumentType { FM, SSG, ADPCM };
+enum class InstrumentType : int { FM, SSG, ADPCM, Drumkit };
 
 class AbstractInstrument
 {
@@ -226,4 +226,34 @@ private:
 	int arpNum_;
 	bool ptEnabled_;
 	int ptNum_;
+};
+
+
+class InstrumentDrumkit : public AbstractInstrument
+{
+public:
+	InstrumentDrumkit(int number, std::string name, InstrumentsManager* owner);
+	SoundSource getSoundSource() const override;
+	InstrumentType getType() const override;
+	std::unique_ptr<AbstractInstrument> clone() override;
+
+	std::vector<int> getAssignedKeys() const;
+
+	void setWaveformEnabled(int key, bool enabled);
+	bool getWaveformEnabled(int key) const;
+	void setWaveformNumber(int key, int n);
+	int getWaveformNumber(int key) const;
+	int getWaveformRootKeyNumber(int key) const;
+	int getWaveformRootDeltaN(int key) const;
+	bool isWaveformRepeatable(int key) const;
+	std::vector<uint8_t> getWaveformSamples(int key) const;
+	size_t getWaveformStartAddress(int key) const;
+	size_t getWaveformStopAddress(int key) const;
+
+	void setPitch(int key, int pitch);
+	int getPitch(int key) const;
+
+private:
+	struct KitProperty { int wfNum, pitch; };
+	std::unordered_map<int, KitProperty> kit_;
 };

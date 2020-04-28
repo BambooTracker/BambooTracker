@@ -5,12 +5,13 @@
 #include <QListWidget>
 #include <memory>
 #include "gui/instrument_editor/instrument_form_manager.hpp"
-#include "misc.hpp"
+
+enum class InstrumentType;
 
 class CloneInstrumentQtCommand : public QUndoCommand
 {
 public:
-	CloneInstrumentQtCommand(QListWidget *list, int num, SoundSource src, QString name,
+	CloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,
 							 std::weak_ptr<InstrumentFormManager> formMan,
 							 QUndoCommand* parent = nullptr);
 	void undo() Q_DECL_OVERRIDE;
@@ -21,7 +22,7 @@ private:
 	QListWidget* list_;
 	int cloneNum_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
-	SoundSource source_;
+	InstrumentType type_;
 	QString name_;
 };
 

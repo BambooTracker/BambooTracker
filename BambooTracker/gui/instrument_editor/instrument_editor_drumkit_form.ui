@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InstrumentEditorDrumkitForm</class>
+ <widget class="QWidget" name="InstrumentEditorDrumkitForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>590</width>
+    <height>390</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true"/>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QGroupBox" name="keyGroupBox">
+     <property name="title">
+      <string>Key assignment</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTreeWidget" name="keyTreeWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>130</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>130</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="rootIsDecorated">
+         <bool>false</bool>
+        </property>
+        <property name="uniformRowHeights">
+         <bool>true</bool>
+        </property>
+        <attribute name="headerStretchLastSection">
+         <bool>false</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>Key</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>#</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Pitch</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="pitchLabel">
+          <property name="text">
+           <string>Pitch</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="pitshSpinBox">
+          <property name="minimum">
+           <number>-95</number>
+          </property>
+          <property name="maximum">
+           <number>95</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="waveGroupBox">
+     <property name="title">
+      <string>Waveform</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="ADPCMWaveformEditor" name="waveEditor" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ADPCMWaveformEditor</class>
+   <extends>QWidget</extends>
+   <header>gui/instrument_editor/adpcm_waveform_editor.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>keyTreeWidget</tabstop>
+  <tabstop>pitshSpinBox</tabstop>
+  <tabstop>waveGroupBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

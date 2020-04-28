@@ -123,6 +123,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint8(instADPCM->getPitchEnabled() ? tmp : (0x80 | tmp));
 				break;
 			}
+			case InstrumentType::Drumkit:
+			{
+				ctr.appendUint8(0x03);
+				auto instKit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
+				std::vector<int> keys = instKit->getAssignedKeys();
+				ctr.appendUint8(keys.size());
+				for (const int& key : keys) {
+					ctr.appendUint8(static_cast<uint8_t>(key));
+					ctr.appendUint8(static_cast<uint8_t>(instKit->getWaveformNumber(key)));
+					ctr.appendInt8(instKit->getPitch(key));
+				}
+				break;
+			}
 			}
 			ctr.writeUint32(iOfs, ctr.size() - iOfs);
 		}
@@ -1020,8 +1033,6 @@ size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
 											   BinaryContainer& ctr, size_t globCsr, uint32_t version)
 {
-	(void)version;
-
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 
 	size_t instOfs = ctr.readUint32(globCsr);
@@ -1132,6 +1143,19 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 			instADPCM->setPitchNumber(0x7f & tmp);
 			iCsr += 1;
 			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instADPCM));
+			break;
+		}
+		case 0x03:	// Drumkit
+		{
+			auto instKit = new InstrumentDrumkit(idx, name, instManLocked.get());
+			int cnt = ctr.readUint8(iCsr++);
+			for (int i = 0; i < cnt; ++i) {
+				int key = ctr.readUint8(iCsr++);
+				instKit->setWaveformEnabled(key, true);
+				instKit->setWaveformNumber(key, ctr.readUint8(iCsr++));
+				instKit->setPitch(key, ctr.readInt8(iCsr++));
+			}
+			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instKit));
 			break;
 		}
 		default:

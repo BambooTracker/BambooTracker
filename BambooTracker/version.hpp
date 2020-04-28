@@ -30,17 +30,17 @@ private:
 
 	// Module file version
 	static constexpr unsigned int modFileMajor		= 1;
-	static constexpr unsigned int modFileMinor		= 4;
-	static constexpr unsigned int modFileRevision	= 1;
+	static constexpr unsigned int modFileMinor		= 5;
+	static constexpr unsigned int modFileRevision	= 0;
 
 	// Instrument file version
 	static constexpr unsigned int instFileMajor		= 1;
-	static constexpr unsigned int instFileMinor		= 3;
+	static constexpr unsigned int instFileMinor		= 4;
 	static constexpr unsigned int instFileRevision	= 0;
 
 	// Bank file version
 	static constexpr unsigned int bankFileMajor		= 1;
-	static constexpr unsigned int bankFileMinor		= 1;
+	static constexpr unsigned int bankFileMinor		= 2;
 	static constexpr unsigned int bankFileRevision	= 0;
 
 	Version() {}

@@ -8,12 +8,13 @@
 #include <QString>
 #include "gui/mainwindow.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
-#include "misc.hpp"
+
+enum class InstrumentType;
 
 class AddInstrumentQtCommand : public QUndoCommand
 {
 public:
-	AddInstrumentQtCommand(QListWidget *list, int num, QString name, SoundSource source,
+	AddInstrumentQtCommand(QListWidget *list, int num, QString name, InstrumentType type,
 						   std::weak_ptr<InstrumentFormManager> formMan,
 						   MainWindow* mainwin, bool onlyUsed, bool preventFirstStore = false,
 						   QUndoCommand *parent = nullptr);
@@ -25,7 +26,7 @@ private:
 	QListWidget *list_;
 	int num_;
 	QString name_;
-	SoundSource source_;
+	InstrumentType type_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
 	MainWindow* mainwin_;
 	bool onlyUsed_, hasDone_;

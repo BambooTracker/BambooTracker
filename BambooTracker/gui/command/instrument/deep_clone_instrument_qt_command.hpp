@@ -6,12 +6,13 @@
 #include <memory>
 #include "gui/mainwindow.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
-#include "misc.hpp"
+
+enum class InstrumentType;
 
 class DeepCloneInstrumentQtCommand : public QUndoCommand
 {
 public:
-	DeepCloneInstrumentQtCommand(QListWidget *list, int num, SoundSource src, QString name,
+	DeepCloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,
 								 std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin, bool onlyUsed,
 								 QUndoCommand* parent = nullptr);
 
@@ -23,7 +24,7 @@ private:
 	QListWidget* list_;
 	int cloneNum_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
-	SoundSource source_;
+	InstrumentType type_;
 	QString name_;
 	MainWindow* mainwin_;
 	bool onlyUsed_;

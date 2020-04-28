@@ -617,10 +617,20 @@ void BambooTracker::setWaveformADPCMRootKeyNumber(int wfNum, int n)
 	// opnaCtrl is changed through refInstADPCM (shared_ptr)
 }
 
+int BambooTracker::getWaveformADPCMRootKeyNumber(int wfNum) const
+{
+	return instMan_->getWaveformADPCMRootKeyNumber(wfNum);
+}
+
 void BambooTracker::setWaveformADPCMRootDeltaN(int wfNum, int dn)
 {
 	instMan_->setWaveformADPCMRootDeltaN(wfNum, dn);
 	// opnaCtrl is changed through refInstADPCM (shared_ptr)
+}
+
+int BambooTracker::getWaveformADPCMRootDeltaN(int wfNum) const
+{
+	return instMan_->getWaveformADPCMRootDeltaN(wfNum);
 }
 
 void BambooTracker::setWaveformADPCMRepeatEnabled(int wfNum, bool enabled)
@@ -629,9 +639,19 @@ void BambooTracker::setWaveformADPCMRepeatEnabled(int wfNum, bool enabled)
 	// opnaCtrl is changed through refInstADPCM (shared_ptr)
 }
 
+bool BambooTracker::getWaveformADPCMRepeatEnabled(int wfNum) const
+{
+	return instMan_->isWaveformADPCMRepeatable(wfNum);
+}
+
 void BambooTracker::storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample)
 {
 	instMan_->storeWaveformADPCMSample(wfNum, sample);
+}
+
+std::vector<uint8_t> BambooTracker::getWaveformADPCMSample(int wfNum) const
+{
+	return instMan_->getWaveformADPCMSamples(wfNum);
 }
 
 void BambooTracker::clearWaveformADPCMSample(int wfNum)
@@ -649,6 +669,16 @@ void BambooTracker::assignWaveformADPCMSamples()
 		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
 		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);
 	}
+}
+
+size_t BambooTracker::getWaveformADPCMStartAddress(int wfNum) const
+{
+	return instMan_->getWaveformADPCMStartAddress(wfNum);
+}
+
+size_t BambooTracker::getWaveformADPCMStopAddress(int wfNum) const
+{
+	return instMan_->getWaveformADPCMStopAddress(wfNum);
 }
 
 void BambooTracker::setInstrumentADPCMWaveform(int instNum, int wfNum)
@@ -796,6 +826,25 @@ void BambooTracker::setInstrumentADPCMPitchEnabled(int instNum, bool enabled)
 std::vector<int> BambooTracker::getPitchADPCMUsers(int ptNum) const
 {
 	return instMan_->getPitchADPCMUsers(ptNum);
+}
+
+//--- Drumkit
+void BambooTracker::setInstrumentDrumkitWaveform(int instNum, int key, int wfNum)
+{
+	instMan_->setInstrumentDrumkitWaveform(instNum, key, wfNum);
+	opnaCtrl_->updateInstrumentDrumkit(instNum, key);
+}
+
+void BambooTracker::setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled)
+{
+	instMan_->setInstrumentDrumkitWaveformEnabled(instNum, key, enabled);
+	opnaCtrl_->updateInstrumentADPCM(instNum);
+}
+
+void BambooTracker::setInstrumentDrumkitPitch(int instNum, int key, int pitch)
+{
+	instMan_->setInstrumentDrumkitPitch(instNum, key, pitch);
+	opnaCtrl_->updateInstrumentDrumkit(instNum, key);
 }
 
 /********** Song edit **********/
@@ -1004,6 +1053,8 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		case SoundSource::ADPCM:
 			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(inst))
 				opnaCtrl_->setInstrumentADPCM(adpcm);
+			else if (auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst))
+				opnaCtrl_->setInstrumentDrumkit(kit);
 			opnaCtrl_->keyOnADPCM(note, octave, pitch, true);
 			break;
 		default:

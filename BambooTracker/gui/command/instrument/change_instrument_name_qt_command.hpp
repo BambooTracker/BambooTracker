@@ -6,12 +6,11 @@
 #include <QString>
 #include <QListWidget>
 #include "gui/instrument_editor/instrument_form_manager.hpp"
-#include "misc.hpp"
 
 class ChangeInstrumentNameQtCommand : public QUndoCommand
 {
 public:
-	ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row, SoundSource src,
+	ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
 								  std::weak_ptr<InstrumentFormManager> formMan,
 								  QString oldName, QString newName, QUndoCommand* parent = nullptr);
 	void undo() Q_DECL_OVERRIDE;
@@ -24,7 +23,6 @@ private:
 	int row_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
 	QString oldName_, newName_;
-	SoundSource source_;
 };
 
 #endif // CHANGE_INSTRUMENT_NAME_QT_COMMAND_HPP

@@ -5,6 +5,44 @@
 
 OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	: mode_(SongType::Standard),
+	  FM_ENV_PARAMS_OP_({
+{ FMOperatorType::All, {
+						FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
+						FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
+						FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
+						FMEnvelopeParameter::DT1,
+						FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
+						FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
+						FMEnvelopeParameter::DT2,
+						FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
+						FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
+						FMEnvelopeParameter::DT3,
+						FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
+						FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
+						FMEnvelopeParameter::DT4
+						}},
+{ FMOperatorType::Op1, {
+						FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
+						FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
+						FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
+						FMEnvelopeParameter::DT1
+						}},
+{ FMOperatorType::Op2, {
+						FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
+						FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
+						FMEnvelopeParameter::DT2
+						}},
+{ FMOperatorType::Op3, {
+						FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
+						FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
+						FMEnvelopeParameter::DT3
+						}},
+{ FMOperatorType::Op4, {
+						FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
+						FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
+						FMEnvelopeParameter::DT4
+						}}
+						}),
 	  dramSize_(262144),	// 256KiB
 	  storePointADPCM_(0)
 {
@@ -15,7 +53,7 @@ OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	for (int ch = 0; ch < 6; ++ch) {
 		fmOpEnables_[ch] = 0xf;
 		isMuteFM_[ch] = false;
-		for (auto ep : getFMEnvelopeParametersForOperator(FMOperatorType::All))
+		for (auto ep : FM_ENV_PARAMS_OP_.at(FMOperatorType::All))
 			opSeqItFM_[ch].emplace(ep, nullptr);
 	}
 
@@ -549,7 +587,7 @@ void OPNAController::setInstrumentFM(int ch, std::shared_ptr<InstrumentFM> inst)
 	}
 
 	if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
-	for (auto& p : getFMEnvelopeParametersForOperator(opType)) {
+	for (auto& p : FM_ENV_PARAMS_OP_.at(opType)) {
 		if (refInstFM_[inch]->getOperatorSequenceEnabled(p)) {
 			opSeqItFM_[inch].at(p) = refInstFM_[inch]->getOperatorSequenceSequenceIterator(p);
 			switch (p) {
@@ -619,7 +657,7 @@ void OPNAController::updateInstrumentFM(int instNum)
 			writeFMEnvelopeToRegistersFromInstrument(inch);
 			if (isKeyOnFM_[ch] && lfoStartCntFM_[inch] == -1) writeFMLFOAllRegisters(inch);
 			FMOperatorType opType = toChannelOperatorType(ch);
-			for (auto& p : getFMEnvelopeParametersForOperator(opType)) {
+			for (auto& p : FM_ENV_PARAMS_OP_.at(opType)) {
 				if (!refInstFM_[inch]->getOperatorSequenceEnabled(p))
 					opSeqItFM_[inch].at(p).reset();
 			}
@@ -886,7 +924,7 @@ void OPNAController::setBrightnessFM(int ch, int value)
 void OPNAController::haltSequencesFM(int ch)
 {
 	int inch = toInternalFMChannel(ch);
-	for (auto& p : getFMEnvelopeParametersForOperator(toChannelOperatorType(ch))) {
+	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) it->end();
 	}
 	if (treItFM_[ch]) treItFM_[ch]->end();
@@ -1100,60 +1138,6 @@ FMOperatorType OPNAController::toChannelOperatorType(int ch) const
 		opType = FMOperatorType::All;
 	}
 	return opType;
-}
-
-std::vector<FMEnvelopeParameter> OPNAController::getFMEnvelopeParametersForOperator(FMOperatorType op) const
-{
-	std::vector<FMEnvelopeParameter> params;
-	switch (op) {
-	case FMOperatorType::All:
-		params = {
-			FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
-			FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
-			FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
-			FMEnvelopeParameter::DT1,
-			FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
-			FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
-			FMEnvelopeParameter::DT2,
-			FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
-			FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
-			FMEnvelopeParameter::DT3,
-			FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
-			FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
-			FMEnvelopeParameter::DT4
-		};
-		break;
-	case FMOperatorType::Op1:
-		params = {
-			FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
-			FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1, FMEnvelopeParameter::RR1,
-			FMEnvelopeParameter::SL1, FMEnvelopeParameter::TL1, FMEnvelopeParameter::KS1, FMEnvelopeParameter::ML1,
-			FMEnvelopeParameter::DT1
-		};
-		break;
-	case FMOperatorType::Op2:
-		params = {
-			FMEnvelopeParameter::AR2, FMEnvelopeParameter::DR2, FMEnvelopeParameter::SR2, FMEnvelopeParameter::RR2,
-			FMEnvelopeParameter::SL2, FMEnvelopeParameter::TL2, FMEnvelopeParameter::KS2, FMEnvelopeParameter::ML2,
-			FMEnvelopeParameter::DT2
-		};
-		break;
-	case FMOperatorType::Op3:
-		params = {
-			FMEnvelopeParameter::AR3, FMEnvelopeParameter::DR3, FMEnvelopeParameter::SR3, FMEnvelopeParameter::RR3,
-			FMEnvelopeParameter::SL3, FMEnvelopeParameter::TL3, FMEnvelopeParameter::KS3, FMEnvelopeParameter::ML3,
-			FMEnvelopeParameter::DT3
-		};
-		break;
-	case FMOperatorType::Op4:
-		params = {
-			FMEnvelopeParameter::AR4, FMEnvelopeParameter::DR4, FMEnvelopeParameter::SR4, FMEnvelopeParameter::RR4,
-			FMEnvelopeParameter::SL4, FMEnvelopeParameter::TL4, FMEnvelopeParameter::KS4, FMEnvelopeParameter::ML4,
-			FMEnvelopeParameter::DT4
-		};
-		break;
-	}
-	return params;
 }
 
 void OPNAController::writeFMEnvelopeToRegistersFromInstrument(int inch)
@@ -1822,7 +1806,7 @@ void OPNAController::tickEventFM(int ch)
 void OPNAController::checkOperatorSequenceFM(int ch, int type)
 {
 	int inch = toInternalFMChannel(ch);
-	for (auto& p : getFMEnvelopeParametersForOperator(toChannelOperatorType(ch))) {
+	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) {
 			int t;
 			switch (type) {
@@ -3287,7 +3271,7 @@ void OPNAController::updateKeyOnOffStatusDrum()
 /********** Key on-off **********/
 void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 {
-	if (isMuteADPCM_ || !refInstADPCM_) return;
+	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	updateEchoBufferADPCM(octave, note, pitch);
 
@@ -3316,25 +3300,18 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 		opna_->setRegister(0x101, 0x02);
 		opna_->setRegister(0x100, 0xa1);
 
-		uint8_t repeatFlag = refInstADPCM_->isWaveformRepeatable() ? 0x10 : 0;
-		opna_->setRegister(0x100, 0x21 | repeatFlag);
-
-		size_t startAddress = refInstADPCM_->getWaveformStartAddress();
-		if (startAddress != startAddrADPCM_) {
-			opna_->setRegister(0x102, startAddress & 0xff);
-			opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
-			startAddrADPCM_ = startAddress;
+		if (refInstADPCM_) {
+			triggerSamplePlayADPCM(refInstADPCM_->getWaveformStartAddress(),
+								   refInstADPCM_->getWaveformStopAddress(),
+								   refInstADPCM_->isWaveformRepeatable());
 		}
-
-		size_t stopAddress = refInstADPCM_->getWaveformStopAddress();
-		if (stopAddress != stopAddrADPCM_) {
-			opna_->setRegister(0x104, stopAddress & 0xff);
-			opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
-			stopAddrADPCM_ = stopAddress;
+		else if (hasStartRequestedKit_) {	// valid key in refInstKit_
+			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			triggerSamplePlayADPCM(refInstKit_->getWaveformStartAddress(key),
+								   refInstKit_->getWaveformStopAddress(key),
+								   refInstKit_->isWaveformRepeatable(key));
+			hasStartRequestedKit_ = false;
 		}
-
-		opna_->setRegister(0x100, 0xa0 | repeatFlag);
-		opna_->setRegister(0x101, panADPCM_ | 0x02);
 
 		isKeyOnADPCM_ = true;
 	}
@@ -3371,6 +3348,7 @@ void OPNAController::updateEchoBufferADPCM(int octave, Note note, int pitch)
 void OPNAController::setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst)
 {
 	refInstADPCM_ = inst;
+	refInstKit_.reset();
 
 	if (inst->getEnvelopeEnabled())
 		envItADPCM_ = inst->getEnvelopeSequenceIterator();
@@ -3396,6 +3374,23 @@ void OPNAController::updateInstrumentADPCM(int instNum)
 		if (!refInstADPCM_->getArpeggioEnabled()) arpItADPCM_.reset();
 		if (!refInstADPCM_->getPitchEnabled()) ptItADPCM_.reset();
 	}
+}
+
+/// NOTE: inst != nullptr
+void OPNAController::setInstrumentDrumkit(std::shared_ptr<InstrumentDrumkit> inst)
+{
+	refInstKit_ = inst;
+	refInstADPCM_.reset();
+
+	envItADPCM_.reset();
+	arpItADPCM_.reset();
+	ptItADPCM_.reset();
+}
+
+void OPNAController::updateInstrumentDrumkit(int instNum, int key)
+{
+	(void)instNum;
+	(void)key;
 }
 
 void OPNAController::clearSamplesADPCM()
@@ -3488,6 +3483,8 @@ void OPNAController::setPanADPCM(int value)
 
 void OPNAController::setArpeggioEffectADPCM(int second, int third)
 {
+	if (refInstKit_) return;
+
 	if (second || third) {
 		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator>(second, third);
 		isArpEffADPCM_ = true;
@@ -3501,12 +3498,16 @@ void OPNAController::setArpeggioEffectADPCM(int second, int third)
 
 void OPNAController::setPortamentoEffectADPCM(int depth, bool isTonePortamento)
 {
+	if (refInstKit_) return;
+
 	prtmADPCM_ = depth;
 	isTonePrtmADPCM_ =  depth ? isTonePortamento : false;
 }
 
 void OPNAController::setVibratoEffectADPCM(int period, int depth)
 {
+	if (refInstKit_) return;
+
 	if (period && depth) vibItADPCM_ = std::make_unique<WavingEffectIterator>(period, depth);
 	else vibItADPCM_.reset();
 }
@@ -3524,12 +3525,16 @@ void OPNAController::setVolumeSlideADPCM(int depth, bool isUp)
 
 void OPNAController::setDetuneADPCM(int pitch)
 {
+	if (refInstKit_) return;
+
 	detuneADPCM_ = pitch;
 	needToneSetADPCM_ = true;
 }
 
 void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 {
+	if (refInstKit_) return;
+
 	if (seminote) {
 		nsItADPCM_ = std::make_unique<NoteSlideEffectIterator>(speed, seminote);
 		noteSldADPCMSetFlag_ = true;
@@ -3582,6 +3587,7 @@ void OPNAController::initADPCM()
 	hasKeyOnBeforeADPCM_ = false;
 
 	refInstADPCM_.reset();	// Init envelope
+	refInstKit_.reset();
 
 	// Init echo buffer
 	baseToneADPCM_ = std::deque<ToneDetail>(4);
@@ -3598,6 +3604,7 @@ void OPNAController::initADPCM()
 	panADPCM_ = 0xc0;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();
 	stopAddrADPCM_ = startAddrADPCM_;
+	hasStartRequestedKit_ = false;
 
 	// Init sequence
 	hasPreSetTickEventADPCM_ = false;
@@ -3645,7 +3652,7 @@ bool OPNAController::isMuteADPCM()
 
 void OPNAController::setFrontADPCMSequences()
 {
-	if (isMuteADPCM_ || !refInstADPCM_) return;
+	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->front();
@@ -3676,7 +3683,7 @@ void OPNAController::setFrontADPCMSequences()
 
 void OPNAController::releaseStartADPCMSequences()
 {
-	if (isMuteADPCM_ || !refInstADPCM_) return;
+	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	if (treItADPCM_) {
 		treItADPCM_->next(true);
@@ -3713,6 +3720,8 @@ void OPNAController::releaseStartADPCMSequences()
 	}
 
 	if (needToneSetADPCM_) writePitchADPCM();
+
+	hasStartRequestedKit_ = false;	// Always silent at relase in drumkit
 }
 
 void OPNAController::tickEventADPCM()
@@ -3721,7 +3730,7 @@ void OPNAController::tickEventADPCM()
 		hasPreSetTickEventADPCM_ = false;
 	}
 	else {
-		if (isMuteADPCM_ || !refInstADPCM_) return;
+		if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 		if (treItADPCM_) {
 			treItADPCM_->next();
@@ -3752,6 +3761,17 @@ void OPNAController::tickEventADPCM()
 		}
 
 		if (needToneSetADPCM_) writePitchADPCM();
+
+		if (hasStartRequestedKit_) {
+			opna_->setRegister(0x101, 0x02);
+			opna_->setRegister(0x100, 0xa1);
+
+			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
+			triggerSamplePlayADPCM(refInstKit_->getWaveformStartAddress(key),
+								   refInstKit_->getWaveformStopAddress(key),
+								   refInstKit_->isWaveformRepeatable(key));
+			hasStartRequestedKit_ = false;
+		}
 	}
 }
 
@@ -3767,20 +3787,56 @@ void OPNAController::writePitchADPCM()
 {
 	if (keyToneADPCM_.octave == -1) return;	// Not set note yet
 
-	int p = keyToneADPCM_.pitch
-			+ sumPitchADPCM_
-			+ (vibItADPCM_ ? vibItADPCM_->getCommandType() : 0)
-			+ detuneADPCM_
-			+ sumNoteSldADPCM_
-			+ transposeADPCM_;
-	p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
+	if (refInstADPCM_) {
+		int p = keyToneADPCM_.pitch
+				+ sumPitchADPCM_
+				+ (vibItADPCM_ ? vibItADPCM_->getCommandType() : 0)
+				+ detuneADPCM_
+				+ sumNoteSldADPCM_
+				+ transposeADPCM_;
+		p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
 
-	int pitchDiff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getWaveformRootKeyNumber();
-	int deltan = static_cast<int>(
-					 std::round(refInstADPCM_->getWaveformRootDeltaN() * std::pow(2., pitchDiff / 384.)));
-	opna_->setRegister(0x109, deltan & 0xff);
-	opna_->setRegister(0x10a, (deltan >> 8) & 0xff);
+		int diff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getWaveformRootKeyNumber();
+		writePitchADPCMToRegister(diff, refInstADPCM_->getWaveformRootDeltaN());
+	}
+	else if (refInstKit_) {
+		int key = clamp(octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
+						+ transposeADPCM_ / PitchConverter::SEMINOTE_PITCH, 0, 95);
+		if (refInstKit_->getWaveformEnabled(key)) {
+			int diff = PitchConverter::SEMINOTE_PITCH * refInstKit_->getPitch(key);
+			writePitchADPCMToRegister(diff, refInstKit_->getWaveformRootDeltaN(key));
+			hasStartRequestedKit_ = true;
+		}
+	}
 
 	needToneSetADPCM_ = false;
 	needEnvSetADPCM_ = false;
+}
+
+void OPNAController::writePitchADPCMToRegister(int pitchDiff, int rtDeltaN)
+{
+	int deltan = static_cast<int>(std::round(rtDeltaN * std::pow(2., pitchDiff / 384.)));
+	opna_->setRegister(0x109, deltan & 0xff);
+	opna_->setRegister(0x10a, (deltan >> 8) & 0xff);
+}
+
+void OPNAController::triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool repeatable)
+{
+	uint8_t repeatFlag = repeatable ? 0x10 : 0;
+	opna_->setRegister(0x100, 0x21 | repeatFlag);
+
+	if (startAddress != startAddrADPCM_) {
+		opna_->setRegister(0x102, startAddress & 0xff);
+		opna_->setRegister(0x103, (startAddress >> 8) & 0xff);
+		startAddrADPCM_ = startAddress;
+	}
+
+	if (stopAddress != stopAddrADPCM_) {
+		opna_->setRegister(0x104, stopAddress & 0xff);
+		opna_->setRegister(0x105, (stopAddress >> 8) & 0xff);
+		stopAddrADPCM_ = stopAddress;
+	}
+
+	opna_->setRegister(0x100, 0xa0 | repeatFlag);
+	opna_->setRegister(0x101, panADPCM_ | 0x02);
 }

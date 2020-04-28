@@ -205,7 +205,7 @@ private:
 
 	uint32_t getFMChannelOffset(int ch, bool forPitch = false) const;
 	FMOperatorType toChannelOperatorType(int ch) const;
-	std::vector<FMEnvelopeParameter> getFMEnvelopeParametersForOperator(FMOperatorType op) const;
+	const std::unordered_map<FMOperatorType, std::vector<FMEnvelopeParameter>> FM_ENV_PARAMS_OP_;
 
 	void updateFMVolume(int ch);
 
@@ -450,7 +450,7 @@ private:
 
 	void updateKeyOnOffStatusDrum();
 
-	/*----- ADPCM -----*/
+	/*----- ADPCM/Drumkit -----*/
 public:
 	// Key on-off
 	void keyOnADPCM(Note note, int octave, int pitch, bool isJam = false);
@@ -461,6 +461,8 @@ public:
 	// Set instrument
 	void setInstrumentADPCM(std::shared_ptr<InstrumentADPCM> inst);
 	void updateInstrumentADPCM(int instNum);
+	void setInstrumentDrumkit(std::shared_ptr<InstrumentDrumkit> inst);
+	void updateInstrumentDrumkit(int instNum, int key);
 	void clearSamplesADPCM();
 	/// return: [0]: start address, [1]: stop address
 	std::vector<size_t> storeSampleADPCM(std::vector<uint8_t> sample);
@@ -491,6 +493,7 @@ public:
 
 private:
 	std::shared_ptr<InstrumentADPCM> refInstADPCM_;
+	std::shared_ptr<InstrumentDrumkit> refInstKit_;
 	bool isKeyOnADPCM_, hasKeyOnBeforeADPCM_;
 	std::deque<ToneDetail> baseToneADPCM_;
 	ToneDetail keyToneADPCM_;
@@ -519,6 +522,7 @@ private:
 	int sumNoteSldADPCM_;
 	bool noteSldADPCMSetFlag_;
 	int transposeADPCM_;
+	bool hasStartRequestedKit_;
 
 	void initADPCM();
 
@@ -548,6 +552,9 @@ private:
 	}
 
 	void writePitchADPCM();
+	void writePitchADPCMToRegister(int pitchDiff, int rtDeltaN);
 
 	void setRealVolumeADPCM();
+
+	void triggerSamplePlayADPCM(size_t startAddress, size_t stopAddress, bool repeatable);
 };

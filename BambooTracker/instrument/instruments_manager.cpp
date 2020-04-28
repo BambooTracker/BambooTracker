@@ -4,57 +4,58 @@
 #include <algorithm>
 #include "instrument.hpp"
 
+const FMEnvelopeParameter InstrumentsManager::ENV_FM_PARAMS_[38] = {
+	FMEnvelopeParameter::AL,
+	FMEnvelopeParameter::FB,
+	FMEnvelopeParameter::AR1,
+	FMEnvelopeParameter::DR1,
+	FMEnvelopeParameter::SR1,
+	FMEnvelopeParameter::RR1,
+	FMEnvelopeParameter::SL1,
+	FMEnvelopeParameter::TL1,
+	FMEnvelopeParameter::KS1,
+	FMEnvelopeParameter::ML1,
+	FMEnvelopeParameter::DT1,
+	FMEnvelopeParameter::AR2,
+	FMEnvelopeParameter::DR2,
+	FMEnvelopeParameter::SR2,
+	FMEnvelopeParameter::RR2,
+	FMEnvelopeParameter::SL2,
+	FMEnvelopeParameter::TL2,
+	FMEnvelopeParameter::KS2,
+	FMEnvelopeParameter::ML2,
+	FMEnvelopeParameter::DT2,
+	FMEnvelopeParameter::AR3,
+	FMEnvelopeParameter::DR3,
+	FMEnvelopeParameter::SR3,
+	FMEnvelopeParameter::RR3,
+	FMEnvelopeParameter::SL3,
+	FMEnvelopeParameter::TL3,
+	FMEnvelopeParameter::KS3,
+	FMEnvelopeParameter::ML3,
+	FMEnvelopeParameter::DT3,
+	FMEnvelopeParameter::AR4,
+	FMEnvelopeParameter::DR4,
+	FMEnvelopeParameter::SR4,
+	FMEnvelopeParameter::RR4,
+	FMEnvelopeParameter::SL4,
+	FMEnvelopeParameter::TL4,
+	FMEnvelopeParameter::KS4,
+	FMEnvelopeParameter::ML4,
+	FMEnvelopeParameter::DT4
+};
+
+const FMOperatorType InstrumentsManager::FM_OP_TYPES_[5] = {
+	FMOperatorType::All,
+	FMOperatorType::Op1,
+	FMOperatorType::Op2,
+	FMOperatorType::Op3,
+	FMOperatorType::Op4
+};
+
 InstrumentsManager::InstrumentsManager(bool unedited)
 	: regardingUnedited_(unedited)
 {
-	envFMParams_ = {
-		FMEnvelopeParameter::AL,
-		FMEnvelopeParameter::FB,
-		FMEnvelopeParameter::AR1,
-		FMEnvelopeParameter::DR1,
-		FMEnvelopeParameter::SR1,
-		FMEnvelopeParameter::RR1,
-		FMEnvelopeParameter::SL1,
-		FMEnvelopeParameter::TL1,
-		FMEnvelopeParameter::KS1,
-		FMEnvelopeParameter::ML1,
-		FMEnvelopeParameter::DT1,
-		FMEnvelopeParameter::AR2,
-		FMEnvelopeParameter::DR2,
-		FMEnvelopeParameter::SR2,
-		FMEnvelopeParameter::RR2,
-		FMEnvelopeParameter::SL2,
-		FMEnvelopeParameter::TL2,
-		FMEnvelopeParameter::KS2,
-		FMEnvelopeParameter::ML2,
-		FMEnvelopeParameter::DT2,
-		FMEnvelopeParameter::AR3,
-		FMEnvelopeParameter::DR3,
-		FMEnvelopeParameter::SR3,
-		FMEnvelopeParameter::RR3,
-		FMEnvelopeParameter::SL3,
-		FMEnvelopeParameter::TL3,
-		FMEnvelopeParameter::KS3,
-		FMEnvelopeParameter::ML3,
-		FMEnvelopeParameter::DT3,
-		FMEnvelopeParameter::AR4,
-		FMEnvelopeParameter::DR4,
-		FMEnvelopeParameter::SR4,
-		FMEnvelopeParameter::RR4,
-		FMEnvelopeParameter::SL4,
-		FMEnvelopeParameter::TL4,
-		FMEnvelopeParameter::KS4,
-		FMEnvelopeParameter::ML4,
-		FMEnvelopeParameter::DT4
-	};
-	fmOpTypes_ = {
-		FMOperatorType::All,
-		FMOperatorType::Op1,
-		FMOperatorType::Op2,
-		FMOperatorType::Op3,
-		FMOperatorType::Op4
-	};
-
 	clearAll();
 }
 
@@ -74,7 +75,7 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, std::st
 		if (lfoNum == -1) lfoNum = static_cast<int>(lfoFM_.size()) - 1;
 		fm->setLFONumber(lfoNum);
 		fm->setLFOEnabled(false);
-		for (auto param : envFMParams_) {
+		for (auto param : ENV_FM_PARAMS_) {
 			int opSeqNum = findFirstAssignableOperatorSequenceFM(param);
 			if (opSeqNum == -1) opSeqNum = static_cast<int>(opSeqFM_.at(param).size()) - 1;
 			fm->setOperatorSequenceNumber(param, opSeqNum);
@@ -84,7 +85,7 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, std::st
 		if (arpNum == -1) arpNum = static_cast<int>(arpFM_.size()) - 1;
 		int ptNum = findFirstAssignablePitchFM();
 		if (ptNum == -1) ptNum = static_cast<int>(ptFM_.size()) - 1;
-		for (auto type : fmOpTypes_) {
+		for (auto type : FM_OP_TYPES_) {
 			fm->setArpeggioNumber(type, arpNum);
 			fm->setArpeggioEnabled(type, false);
 			fm->setPitchNumber(type, ptNum);
@@ -141,8 +142,14 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, std::st
 		insts_.at(static_cast<size_t>(instNum)) = std::move(adpcm);
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto kit = std::make_shared<InstrumentDrumkit>(instNum, name, this);
+		insts_.at(static_cast<size_t>(instNum)) = std::move(kit);
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -157,12 +164,12 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 		auto fm = std::dynamic_pointer_cast<InstrumentFM>(insts_[static_cast<size_t>(num)]);
 		envFM_.at(static_cast<size_t>(fm->getEnvelopeNumber()))->registerUserInstrument(num);
 		if (fm->getLFOEnabled()) lfoFM_.at(static_cast<size_t>(fm->getLFONumber()))->registerUserInstrument(num);
-		for (auto p : envFMParams_) {
+		for (auto p : ENV_FM_PARAMS_) {
 			if (fm->getOperatorSequenceEnabled(p))
 				opSeqFM_.at(p).at(static_cast<size_t>(fm->getOperatorSequenceNumber(p)))
 						->registerUserInstrument(num);
 		}
-		for (auto t : fmOpTypes_) {
+		for (auto t : FM_OP_TYPES_) {
 			if (fm->getArpeggioEnabled(t))
 				arpFM_.at(static_cast<size_t>(fm->getArpeggioNumber(t)))->registerUserInstrument(num);
 			if (fm->getPitchEnabled(t))
@@ -197,8 +204,16 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->registerUserInstrument(num);
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(num)]);
+		for (const auto& key : kit->getAssignedKeys()) {
+			wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->registerUserInstrument(num);
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -215,11 +230,11 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		setInstrumentFMEnvelope(cloneInstNum, refFm->getEnvelopeNumber());
 		setInstrumentFMLFO(cloneInstNum, refFm->getLFONumber());
 		if (refFm->getLFOEnabled()) setInstrumentFMLFOEnabled(cloneInstNum, true);
-		for (auto p : envFMParams_) {
+		for (auto p : ENV_FM_PARAMS_) {
 			setInstrumentFMOperatorSequence(cloneInstNum, p, refFm->getOperatorSequenceNumber(p));
 			if (refFm->getOperatorSequenceEnabled(p)) setInstrumentFMOperatorSequenceEnabled(cloneInstNum, p, true);
 		}
-		for (auto t : fmOpTypes_) {
+		for (auto t : FM_OP_TYPES_) {
 			setInstrumentFMArpeggio(cloneInstNum, t, refFm->getArpeggioNumber(t));
 			if (refFm->getArpeggioEnabled(t)) setInstrumentFMArpeggioEnabled(cloneInstNum, t, true);
 			setInstrumentFMPitch(cloneInstNum, t, refFm->getPitchNumber(t));
@@ -257,8 +272,18 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		if (refAdpcm->getPitchEnabled()) setInstrumentADPCMPitchEnabled(cloneInstNum, true);
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto refKit = std::dynamic_pointer_cast<InstrumentDrumkit>(refInst);
+		auto cloneKit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(cloneInstNum)));
+		for (const int& key : refKit->getAssignedKeys()) {
+			setInstrumentDrumkitWaveform(cloneInstNum, key, refKit->getWaveformNumber(key));
+			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -284,7 +309,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			lfoFM_[static_cast<size_t>(lfoNum)]->registerUserInstrument(cloneInstNum);
 		}
 
-		for (auto p : envFMParams_) {
+		for (auto p : ENV_FM_PARAMS_) {
 			if (refFm->getOperatorSequenceEnabled(p)) {
 				cloneFm->setOperatorSequenceEnabled(p, true);
 				int opSeqNum = cloneFMOperatorSequence(p, refFm->getOperatorSequenceNumber(p));
@@ -294,14 +319,14 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		}
 
 		std::unordered_map<int, int> arpNums;
-		for (auto t : fmOpTypes_) {
+		for (auto t : FM_OP_TYPES_) {
 			if (refFm->getArpeggioEnabled(t)) {
 				cloneFm->setArpeggioEnabled(t, true);
 				arpNums.emplace(refFm->getArpeggioNumber(t), -1);
 			}
 		}
 		for (auto& pair : arpNums) pair.second = cloneFMArpeggio(pair.first);
-		for (auto t : fmOpTypes_) {
+		for (auto t : FM_OP_TYPES_) {
 			if (refFm->getArpeggioEnabled(t)) {
 				int arpNum = arpNums.at(refFm->getArpeggioNumber(t));
 				cloneFm->setArpeggioNumber(t, arpNum);
@@ -310,14 +335,14 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		}
 
 		std::unordered_map<int, int> ptNums;
-		for (auto t : fmOpTypes_) {
+		for (auto t : FM_OP_TYPES_) {
 			if (refFm->getPitchEnabled(t)) {
 				cloneFm->setPitchEnabled(t, true);
 				ptNums.emplace(refFm->getPitchNumber(t), -1);
 			}
 		}
 		for (auto& pair : ptNums) pair.second = cloneFMPitch(pair.first);
-		for (auto t : fmOpTypes_) {
+		for (auto t : FM_OP_TYPES_) {
 			if (refFm->getPitchEnabled(t)) {
 				int ptNum = ptNums.at(refFm->getPitchNumber(t));
 				cloneFm->setPitchNumber(t, ptNum);
@@ -325,7 +350,7 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 			}
 		}
 
-		for (auto t : fmOpTypes_)
+		for (auto t : FM_OP_TYPES_)
 			setInstrumentFMEnvelopeResetEnabled(cloneInstNum, t, refFm->getEnvelopeResetEnabled(t));
 		break;
 	}
@@ -395,8 +420,23 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		}
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto refKit = std::dynamic_pointer_cast<InstrumentDrumkit>(refInst);
+		auto cloneKit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(cloneInstNum)));
+		std::unordered_map<int, int> wfMap;
+		for (const int& key : refKit->getAssignedKeys()) {
+			int n = refKit->getWaveformNumber(key);
+			if (!wfMap.count(n)) wfMap[n] = cloneADPCMWaveform(n);
+			cloneKit->setWaveformNumber(key, wfMap[n]);
+			wfADPCM_[static_cast<size_t>(wfMap[n])]->registerUserInstrument(cloneInstNum);
+
+			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 }
 
@@ -605,12 +645,12 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 		envFM_.at(static_cast<size_t>(fm->getEnvelopeNumber()))->deregisterUserInstrument(instNum);
 		if (fm->getLFOEnabled())
 			lfoFM_.at(static_cast<size_t>(fm->getLFONumber()))->deregisterUserInstrument(instNum);
-		for (auto p : envFMParams_) {
+		for (auto p : ENV_FM_PARAMS_) {
 			if (fm->getOperatorSequenceEnabled(p))
 				opSeqFM_.at(p).at(static_cast<size_t>(fm->getOperatorSequenceNumber(p)))
 						->deregisterUserInstrument(instNum);
 		}
-		for (auto t : fmOpTypes_) {
+		for (auto t : FM_OP_TYPES_) {
 			if (fm->getArpeggioEnabled(t))
 				arpFM_.at(static_cast<size_t>(fm->getArpeggioNumber(t)))->deregisterUserInstrument(instNum);
 			if (fm->getPitchEnabled(t))
@@ -645,8 +685,16 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 			ptADPCM_.at(static_cast<size_t>(adpcm->getPitchNumber()))->deregisterUserInstrument(instNum);
 		break;
 	}
-	default:
+	case InstrumentType::Drumkit:
+	{
+		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(instNum)]);
+		for (const int& key : kit->getAssignedKeys()) {
+			wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
+		}
 		break;
+	}
+	default:
+		throw std::invalid_argument("invalid instrument type");
 	}
 
 	std::unique_ptr<AbstractInstrument> clone = insts_[static_cast<size_t>(instNum)]->clone();
@@ -667,7 +715,7 @@ std::shared_ptr<AbstractInstrument> InstrumentsManager::getInstrumentSharedPtr(i
 
 void InstrumentsManager::clearAll()
 {
-	for (auto p : envFMParams_) {
+	for (auto p : ENV_FM_PARAMS_) {
 		opSeqFM_.emplace(p, std::array<std::shared_ptr<CommandSequence>, 128>());
 	}
 
@@ -786,6 +834,15 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 {
 	std::vector<std::vector<int>> dupList;
 	std::vector<int> idcs = getEntriedInstrumentIndices();
+	std::unordered_map<InstrumentType,
+			bool (InstrumentsManager::*)(std::shared_ptr<AbstractInstrument>,
+										std::shared_ptr<AbstractInstrument>) const> eqCheck = {
+	{ InstrumentType::FM, &InstrumentsManager::equalPropertiesFM },
+	{ InstrumentType::SSG, &InstrumentsManager::equalPropertiesSSG },
+	{ InstrumentType::ADPCM, &InstrumentsManager::equalPropertiesADPCM },
+	{ InstrumentType::Drumkit, &InstrumentsManager::equalPropertiesDrumkit }
+};
+
 	for (size_t i = 0; i < idcs.size(); ++i) {
 		int baseIdx = idcs[i];
 		std::vector<int> group { baseIdx };
@@ -794,40 +851,10 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 		for (size_t j = i + 1; j < idcs.size();) {
 			int tgtIdx = idcs[j];
 			std::shared_ptr<AbstractInstrument> tgt = insts_[tgtIdx];
-
-			if (base->getType() == tgt->getType()) {
-				switch (base->getType()) {
-				case InstrumentType::FM:
-				{
-					if (equalPropertiesFM(std::dynamic_pointer_cast<InstrumentFM>(base),
-										  std::dynamic_pointer_cast<InstrumentFM>(tgt))) {
-						group.push_back(tgtIdx);
-						idcs.erase(idcs.begin() + j);
-						continue;
-					}
-					break;
-				}
-				case InstrumentType::SSG:
-				{
-					if (equalPropertiesSSG(std::dynamic_pointer_cast<InstrumentSSG>(base),
-										   std::dynamic_pointer_cast<InstrumentSSG>(tgt))) {
-						group.push_back(tgtIdx);
-						idcs.erase(idcs.begin() + j);
-						continue;
-					}
-					break;
-				}
-				case InstrumentType::ADPCM:
-				{
-					if (equalPropertiesADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(base),
-											 std::dynamic_pointer_cast<InstrumentADPCM>(tgt))) {
-						group.push_back(tgtIdx);
-						idcs.erase(idcs.begin() + j);
-						continue;
-					}
-					break;
-				}
-				}
+			if (base->getType() == tgt->getType() && (this->*eqCheck.at(base->getType()))(base, tgt)) {
+				group.push_back(tgtIdx);
+				idcs.erase(idcs.begin() + j);
+				continue;
 			}
 			++j;
 		}
@@ -1311,33 +1338,36 @@ int InstrumentsManager::findFirstAssignablePitchFM() const
 	return std::distance(ptFM_.begin(), it);
 }
 
-bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<InstrumentFM> a, std::shared_ptr<InstrumentFM> b) const
+bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
 {
-	if (*envFM_[a->getEnvelopeNumber()].get() != *envFM_[b->getEnvelopeNumber()].get())
+	auto aFm = std::dynamic_pointer_cast<InstrumentFM>(a);
+	auto bFm = std::dynamic_pointer_cast<InstrumentFM>(b);
+
+	if (*envFM_[aFm->getEnvelopeNumber()].get() != *envFM_[bFm->getEnvelopeNumber()].get())
 		return false;
-	if (a->getLFOEnabled() != b->getLFOEnabled())
+	if (aFm->getLFOEnabled() != bFm->getLFOEnabled())
 		return false;
-	if (a->getLFOEnabled() && *lfoFM_[a->getLFONumber()].get() != *lfoFM_[b->getLFONumber()].get())
+	if (aFm->getLFOEnabled() && *lfoFM_[aFm->getLFONumber()].get() != *lfoFM_[bFm->getLFONumber()].get())
 		return false;
 	for (auto& pair : opSeqFM_) {
-		if (a->getOperatorSequenceEnabled(pair.first) != b->getOperatorSequenceEnabled(pair.first))
+		if (aFm->getOperatorSequenceEnabled(pair.first) != bFm->getOperatorSequenceEnabled(pair.first))
 			return false;
-		if (a->getOperatorSequenceEnabled(pair.first)
-				&& *pair.second[a->getOperatorSequenceNumber(pair.first)].get() != *pair.second[b->getOperatorSequenceNumber(pair.first)].get())
+		if (aFm->getOperatorSequenceEnabled(pair.first)
+				&& *pair.second[aFm->getOperatorSequenceNumber(pair.first)].get() != *pair.second[bFm->getOperatorSequenceNumber(pair.first)].get())
 			return false;
 	}
-	for (auto& type : fmOpTypes_) {
-		if (a->getArpeggioEnabled(type) != b->getArpeggioEnabled(type))
+	for (auto& type : FM_OP_TYPES_) {
+		if (aFm->getArpeggioEnabled(type) != bFm->getArpeggioEnabled(type))
 			return false;
-		if (a->getArpeggioEnabled(type)
-				&& *arpFM_[a->getArpeggioNumber(type)].get() != *arpFM_[b->getArpeggioNumber(type)].get())
+		if (aFm->getArpeggioEnabled(type)
+				&& *arpFM_[aFm->getArpeggioNumber(type)].get() != *arpFM_[bFm->getArpeggioNumber(type)].get())
 			return false;
-		if (a->getPitchEnabled(type) != b->getPitchEnabled(type))
+		if (aFm->getPitchEnabled(type) != bFm->getPitchEnabled(type))
 			return false;
-		if (a->getPitchEnabled(type)
-				&& *ptFM_[a->getPitchNumber(type)].get() != *ptFM_[b->getPitchNumber(type)].get())
+		if (aFm->getPitchEnabled(type)
+				&& *ptFM_[aFm->getPitchNumber(type)].get() != *ptFM_[bFm->getPitchNumber(type)].get())
 			return false;
-		if (a->getEnvelopeResetEnabled(type) != b->getEnvelopeResetEnabled(type))
+		if (aFm->getEnvelopeResetEnabled(type) != bFm->getEnvelopeResetEnabled(type))
 			return false;
 	}
 	return true;
@@ -1884,32 +1914,35 @@ int InstrumentsManager::findFirstAssignablePitchSSG() const
 	return std::distance(ptSSG_.begin(), it);
 }
 
-bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<InstrumentSSG> a, std::shared_ptr<InstrumentSSG> b) const
+bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
 {
-	if (a->getWaveformEnabled() != b->getWaveformEnabled())
+	auto aSsg = std::dynamic_pointer_cast<InstrumentSSG>(a);
+	auto bSsg = std::dynamic_pointer_cast<InstrumentSSG>(b);
+
+	if (aSsg->getWaveformEnabled() != bSsg->getWaveformEnabled())
 		return false;
-	if (a->getWaveformEnabled()
-			&& *wfSSG_[a->getWaveformNumber()].get() != *wfSSG_[b->getWaveformNumber()].get())
+	if (aSsg->getWaveformEnabled()
+			&& *wfSSG_[aSsg->getWaveformNumber()].get() != *wfSSG_[bSsg->getWaveformNumber()].get())
 		return false;
-	if (a->getToneNoiseEnabled() != b->getToneNoiseEnabled())
+	if (aSsg->getToneNoiseEnabled() != bSsg->getToneNoiseEnabled())
 		return false;
-	if (a->getToneNoiseEnabled()
-			&& *tnSSG_[a->getToneNoiseNumber()].get() != *tnSSG_[b->getToneNoiseNumber()].get())
+	if (aSsg->getToneNoiseEnabled()
+			&& *tnSSG_[aSsg->getToneNoiseNumber()].get() != *tnSSG_[bSsg->getToneNoiseNumber()].get())
 		return false;
-	if (a->getEnvelopeEnabled() != b->getEnvelopeEnabled())
+	if (aSsg->getEnvelopeEnabled() != bSsg->getEnvelopeEnabled())
 		return false;
-	if (a->getEnvelopeEnabled()
-			&& *envSSG_[a->getEnvelopeNumber()].get() != *envSSG_[b->getEnvelopeNumber()].get())
+	if (aSsg->getEnvelopeEnabled()
+			&& *envSSG_[aSsg->getEnvelopeNumber()].get() != *envSSG_[bSsg->getEnvelopeNumber()].get())
 		return false;
-	if (a->getArpeggioEnabled() != b->getArpeggioEnabled())
+	if (aSsg->getArpeggioEnabled() != bSsg->getArpeggioEnabled())
 		return false;
-	if (a->getArpeggioEnabled()
-			&& *arpSSG_[a->getArpeggioNumber()].get() != *arpSSG_[b->getArpeggioNumber()].get())
+	if (aSsg->getArpeggioEnabled()
+			&& *arpSSG_[aSsg->getArpeggioNumber()].get() != *arpSSG_[bSsg->getArpeggioNumber()].get())
 		return false;
-	if (a->getPitchEnabled() != b->getPitchEnabled())
+	if (aSsg->getPitchEnabled() != bSsg->getPitchEnabled())
 		return false;
-	if (a->getPitchEnabled()
-			&& *ptSSG_[a->getPitchNumber()].get() != *ptSSG_[b->getPitchNumber()].get())
+	if (aSsg->getPitchEnabled()
+			&& *ptSSG_[aSsg->getPitchNumber()].get() != *ptSSG_[bSsg->getPitchNumber()].get())
 		return false;
 	return true;
 }
@@ -2029,12 +2062,12 @@ void InstrumentsManager::clearUnusedWaveformsADPCM()
 	}
 }
 
-int InstrumentsManager::findFirstAssignableWaveformADPCM() const
+int InstrumentsManager::findFirstAssignableWaveformADPCM(int startIndex) const
 {
 	auto cond = regardingUnedited_
 				? [](const std::shared_ptr<WaveformADPCM>& wf) { return (wf->isUserInstrument() || wf->isEdited()); }
 	: [](const std::shared_ptr<WaveformADPCM>& wf) { return wf->isUserInstrument(); };
-	auto&& it = std::find_if_not(wfADPCM_.begin(), wfADPCM_.end(), cond);
+	auto&& it = std::find_if_not(wfADPCM_.begin() + startIndex, wfADPCM_.end(), cond);
 
 	if (it == wfADPCM_.end()) return -1;
 
@@ -2374,24 +2407,87 @@ int InstrumentsManager::findFirstAssignablePitchADPCM() const
 	return std::distance(ptADPCM_.begin(), it);
 }
 
-bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<InstrumentADPCM> a, std::shared_ptr<InstrumentADPCM> b) const
+bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
 {
-	if (*wfADPCM_[a->getWaveformNumber()].get() != *wfADPCM_[b->getWaveformNumber()].get())
+	auto aAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(a);
+	auto bAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(b);
+
+	if (*wfADPCM_[aAdpcm->getWaveformNumber()].get() != *wfADPCM_[bAdpcm->getWaveformNumber()].get())
 		return false;
-	if (a->getEnvelopeEnabled() != b->getEnvelopeEnabled())
+	if (aAdpcm->getEnvelopeEnabled() != bAdpcm->getEnvelopeEnabled())
 		return false;
-	if (a->getEnvelopeEnabled()
-			&& *envADPCM_[a->getEnvelopeNumber()].get() != *envADPCM_[b->getEnvelopeNumber()].get())
+	if (aAdpcm->getEnvelopeEnabled()
+			&& *envADPCM_[aAdpcm->getEnvelopeNumber()].get() != *envADPCM_[bAdpcm->getEnvelopeNumber()].get())
 		return false;
-	if (a->getArpeggioEnabled() != b->getArpeggioEnabled())
+	if (aAdpcm->getArpeggioEnabled() != bAdpcm->getArpeggioEnabled())
 		return false;
-	if (a->getArpeggioEnabled()
-			&& *arpADPCM_[a->getArpeggioNumber()].get() != *arpADPCM_[b->getArpeggioNumber()].get())
+	if (aAdpcm->getArpeggioEnabled()
+			&& *arpADPCM_[aAdpcm->getArpeggioNumber()].get() != *arpADPCM_[bAdpcm->getArpeggioNumber()].get())
 		return false;
-	if (a->getPitchEnabled() != b->getPitchEnabled())
+	if (aAdpcm->getPitchEnabled() != bAdpcm->getPitchEnabled())
 		return false;
-	if (a->getPitchEnabled()
-			&& *ptADPCM_[a->getPitchNumber()].get() != *ptADPCM_[b->getPitchNumber()].get())
+	if (aAdpcm->getPitchEnabled()
+			&& *ptADPCM_[aAdpcm->getPitchNumber()].get() != *ptADPCM_[bAdpcm->getPitchNumber()].get())
 		return false;
+	return true;
+}
+
+//----- Drumkit methods -----
+void InstrumentsManager::setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled)
+{
+	auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)));
+	if (enabled) {
+		kit->setWaveformEnabled(key, true);
+		wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->registerUserInstrument(instNum);
+	}
+	else {
+		wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
+		kit->setWaveformEnabled(key, false);
+	}
+}
+
+bool InstrumentsManager::getInstrumentDrumkitWaveformEnabled(int instNum, int key) const
+{
+	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->getWaveformEnabled(key);
+}
+
+void InstrumentsManager::setInstrumentDrumkitWaveform(int instNum, int key, int wfNum)
+{
+	auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)));
+	wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
+	wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
+
+	kit->setWaveformNumber(key, wfNum);
+}
+
+int InstrumentsManager::getInstrumentDrumkitWaveform(int instNum, int key)
+{
+	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(instNum)])->getWaveformNumber(key);
+}
+
+void InstrumentsManager::setInstrumentDrumkitPitch(int instNum, int key, int pitch)
+{
+	std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->setPitch(key, pitch);
+}
+
+bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrument> a, std::shared_ptr<AbstractInstrument> b) const
+{
+	auto aKit = std::dynamic_pointer_cast<InstrumentDrumkit>(a);
+	auto bKit = std::dynamic_pointer_cast<InstrumentDrumkit>(b);
+
+	std::vector<int> aKeys = aKit->getAssignedKeys();
+	std::vector<int> bKeys = bKit->getAssignedKeys();
+	if (aKeys.size() != bKeys.size()) return false;
+	std::sort(aKeys.begin(), aKeys.end());
+	std::sort(bKeys.begin(), bKeys.end());
+	if (!std::includes(aKeys.begin(), aKeys.end(), bKeys.begin(), bKeys.end())) return false;
+
+	for (const int& key : aKeys) {
+		if (*wfADPCM_[aKit->getWaveformNumber(key)].get() != *wfADPCM_[bKit->getWaveformNumber(key)].get())
+			return false;
+		if (aKit->getPitch(key) != bKit->getPitch(key))
+			return false;
+	}
+
 	return true;
 }

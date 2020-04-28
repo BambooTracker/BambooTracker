@@ -3,9 +3,7 @@
 
 #include <memory>
 #include <QWidget>
-#include <QEvent>
 #include <QKeyEvent>
-#include <QPixmap>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
 #include "jam_manager.hpp"
@@ -34,7 +32,6 @@ signals:
 	void modified();
 
 protected:
-	bool eventFilter(QObject* obj, QEvent* ev) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
 
@@ -54,6 +51,7 @@ signals:
 	void waveformNumberChanged();
 	void waveformParameterChanged(int wfNum, int fromInstNum);
 	void waveformAssignRequested();
+	void waveformMemoryChanged();
 
 public slots:
 	void onWaveformNumberChanged();
@@ -61,20 +59,7 @@ public slots:
 	void onWaveformSampleMemoryUpdated();
 
 private:
-	std::unique_ptr<QPixmap> wavMemPixmap_;
-	std::unique_ptr<QPixmap> wavViewPixmap_;
-
 	void setInstrumentWaveformParameters();
-	void importSampleFrom(const QString file);
-	void updateSampleMemoryBar();
-	void updateSampleView();
-
-private slots:
-	void on_waveNumSpinBox_valueChanged(int arg1);
-	void on_rootRateSpinBox_valueChanged(int arg1);
-	void on_waveRepeatCheckBox_toggled(bool checked);
-	void on_waveImportPushButton_clicked();
-	void on_waveClearPushButton_clicked();
 
 	//========== Envelope ==========//
 signals:
