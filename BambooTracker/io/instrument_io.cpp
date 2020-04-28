@@ -141,7 +141,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 				int wf = kit->getWaveformNumber(key);
 				if (!wfMap.count(wf)) wfMap[wf] = wfCnt++;
 				ctr.appendUint8(static_cast<uint8_t>(wfMap[wf]));
-				ctr.appendUint8(static_cast<uint8_t>(kit->getPitch(key)));
+				ctr.appendInt8(kit->getPitch(key));
 			}
 			break;
 		}
@@ -893,7 +893,7 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 				if (kitWfFileMap.count(wf)) kitWfFileMap[wf].push_back(key);
 				else kitWfFileMap[wf] = { key };
 				kit->setWaveformEnabled(key, true);
-				kit->setPitch(key, ctr.readUint8(instCsr++));
+				kit->setPitch(key, ctr.readInt8(instCsr++));
 			}
 			break;
 		}
@@ -4257,7 +4257,7 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			}
 
 			/* Pitch */
-			kit->setPitch(key, instCtr.readUint8(instCsr++));
+			kit->setPitch(key, instCtr.readInt8(instCsr++));
 		}
 
 		return kit;
