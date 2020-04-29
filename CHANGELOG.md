@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- [#6] - ADPCM drumkit (thanks [@ImATrackMan], [@pedipanol] and others)
 - Color settings of pattern marker
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
@@ -11,9 +12,11 @@
 ### Fixed
 - [#209] - Fix crashing effect list dialog on opening (thanks [@Ikalou])
 - [#208] - Fix speed/tempo states retrieving on starting playback (thanks [@freq-mod])
+- [#207] - Fix pattern editor resolution after module open error on launch (thanks [@freq-mod])
 
 [#209]: https://github.com/rerrahkr/BambooTracker/issues/209
 [#208]: https://github.com/rerrahkr/BambooTracker/issues/208
+[#207]: https://github.com/rerrahkr/BambooTracker/issues/207
 
 ## v0.4.1 (2020-04-20)
 ### Added

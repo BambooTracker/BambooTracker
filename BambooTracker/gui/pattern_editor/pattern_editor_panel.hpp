@@ -214,6 +214,7 @@ private:
 	// Meta methods
 	int midiKeyEventMethod_;
 
+	void funcResize();
 	void updateSizes();
 	void initDisplay();
 	void drawPattern(const QRect& rect);

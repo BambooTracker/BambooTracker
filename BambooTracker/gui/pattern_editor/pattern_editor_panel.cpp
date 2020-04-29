@@ -247,6 +247,15 @@ PatternEditorPanel::~PatternEditorPanel()
 	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
 }
 
+void PatternEditorPanel::funcResize()
+{
+	// Recalculate center row position
+	curRowY_ = (geometry().height() + headerHeight_ - stepFontHeight_) >> 1;
+	curRowBaselineY_ = curRowY_ + stepFontAscent_ - (stepFontLeading_ >> 1);
+
+	initDisplay();
+}
+
 void PatternEditorPanel::updateSizes()
 {
 	QFontMetrics metrics(stepFont_);
@@ -464,6 +473,14 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 	if (!freezed_ && repaintable_.load()) {
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
+
+		if (rect.size() != completePixmap_->size()) {	// Prevent resize event was failed
+			funcResize();
+			headerChanged_ = true;
+			backChanged_ = true;
+			textChanged_ = true;
+			foreChanged_ = true;
+		}
 
 		if (backChanged_ || textChanged_ || foreChanged_ || headerChanged_ || focusChanged_ || stepDownCount_ || followModeChanged_) {
 
@@ -2733,13 +2750,7 @@ void PatternEditorPanel::paintEvent(QPaintEvent *event)
 void PatternEditorPanel::resizeEvent(QResizeEvent *event)
 {
 	QWidget::resizeEvent(event);
-
-	// Recalculate center row position
-	curRowY_ = (geometry().height() + headerHeight_ - stepFontHeight_) >> 1;
-	curRowBaselineY_ = curRowY_ + stepFontAscent_ - (stepFontLeading_ >> 1);
-
-	initDisplay();
-
+	funcResize();
 	redrawAll();
 }
 
