@@ -1605,10 +1605,10 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			bankMan->clearAll();
 			jamInst.reset(bank->loadInstrument(id, bankMan, 0));
 			jamInst->setNumber(128);	// Special number
-			std::vector<size_t> addrs = bt_->assignADPCMBeforeForcedJamKeyOn(jamInst);
-			if (!addrs.empty()) {
-				bankMan->setWaveformADPCMStartAddress(0, addrs[0]);
-				bankMan->setWaveformADPCMStopAddress(0, addrs[1]);
+			std::vector<std::vector<size_t>> addrs = bt_->assignADPCMBeforeForcedJamKeyOn(jamInst);
+			for (size_t i = 0; i < addrs.size(); ++i) {
+				bankMan->setWaveformADPCMStartAddress(i, addrs[i][0]);
+				bankMan->setWaveformADPCMStopAddress(i, addrs[i][1]);
 			}
 			bankJamMidiCtrl_.store(false);
 		}

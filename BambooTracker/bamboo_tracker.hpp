@@ -238,7 +238,7 @@ public:
 	void jamKeyOnForced(int keyNum, SoundSource src, std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void jamKeyOffForced(JamKey key, SoundSource src);
 	void jamKeyOffForced(int keyNum, SoundSource src);
-	std::vector<size_t> assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst);
+	std::vector<std::vector<size_t>> assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst);
 
 	// Play song
 	void startPlaySong();
