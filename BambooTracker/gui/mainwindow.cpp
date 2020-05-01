@@ -2432,9 +2432,10 @@ void MainWindow::updateMenuByOrder()
 
 void MainWindow::onCurrentTrackChanged()
 {
-	bool canAdd = ((bt_->getCurrentTrackAttribute().source != SoundSource::DRUM)
-				   && (bt_->findFirstFreeInstrumentNumber() != -1));
-	ui->actionNew_Instrument->setEnabled(canAdd);
+	SoundSource src = bt_->getCurrentTrackAttribute().source;
+	bool space = (bt_->findFirstFreeInstrumentNumber() != -1);
+	ui->actionNew_Instrument->setEnabled((src != SoundSource::DRUM) && space);
+	ui->actionNew_Drumki_t->setEnabled((src == SoundSource::ADPCM) && space);
 }
 
 void MainWindow::updateMenuByInstrumentList()
