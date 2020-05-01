@@ -14,27 +14,27 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	//========== Waveform ==========//
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::modified, this, [&] { emit modified(); });
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformNumberChanged,
+	//========== Sample ==========//
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::modified, this, [&] { emit modified(); });
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleNumberChanged,
 					 this, [&](int n) {
-		bt_.lock()->setInstrumentADPCMWaveform(instNum_, n);
-		setInstrumentWaveformParameters();
-		emit waveformNumberChanged();
+		bt_.lock()->setInstrumentADPCMSample(instNum_, n);
+		setInstrumentSampleParameters();
+		emit sampleNumberChanged();
 		emit modified();
 
 		if (config_.lock()->getWriteOnlyUsedSamples()) {
-			emit waveformAssignRequested();
+			emit sampleAssignRequested();
 		}
 	}, Qt::DirectConnection);
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformParameterChanged,
-					 this, [&](int wfNum) {
-		emit waveformParameterChanged(wfNum, instNum_);
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleParameterChanged,
+					 this, [&](int sampNum) {
+		emit sampleParameterChanged(sampNum, instNum_);
 	});
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformAssignRequested,
-					 this, [&] { emit waveformAssignRequested(); });
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformMemoryChanged,
-					 this, [&] { emit waveformMemoryChanged(); });
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleAssignRequested,
+					 this, [&] { emit sampleAssignRequested(); });
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleMemoryChanged,
+					 this, [&] { emit sampleMemoryChanged(); });
 
 	//========== Envelope ==========//
 	ui->envEditor->setMaximumDisplayedRowCount(64);
@@ -225,20 +225,20 @@ int InstrumentEditorADPCMForm::getInstrumentNumber() const
 void InstrumentEditorADPCMForm::setCore(std::weak_ptr<BambooTracker> core)
 {
 	bt_ = core;
-	ui->waveEditor->setCore(core);
+	ui->sampleEditor->setCore(core);
 	updateInstrumentParameters();
 }
 
 void InstrumentEditorADPCMForm::setConfiguration(std::weak_ptr<Configuration> config)
 {
 	config_ = config;
-	ui->waveEditor->setConfiguration(config);
+	ui->sampleEditor->setConfiguration(config);
 }
 
 void InstrumentEditorADPCMForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
-	ui->waveEditor->setColorPalette(palette);
+	ui->sampleEditor->setColorPalette(palette);
 	ui->envEditor->setColorPalette(palette);
 	ui->arpEditor->setColorPalette(palette);
 	ui->ptEditor->setColorPalette(palette);
@@ -251,7 +251,7 @@ void InstrumentEditorADPCMForm::updateInstrumentParameters()
 	auto name = utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
-	setInstrumentWaveformParameters();
+	setInstrumentSampleParameters();
 	setInstrumentEnvelopeParameters();
 	setInstrumentArpeggioParameters();
 	setInstrumentPitchParameters();
@@ -293,38 +293,38 @@ void InstrumentEditorADPCMForm::keyReleaseEvent(QKeyEvent *event)
 	}
 }
 
-//--- Waveform
-void InstrumentEditorADPCMForm::setInstrumentWaveformParameters()
+//--- Sample
+void InstrumentEditorADPCMForm::setInstrumentSampleParameters()
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
 
-	ui->waveEditor->setInstrumentWaveformParameters(
-				instADPCM->getWaveformNumber(), instADPCM->isWaveformRepeatable(),
-				instADPCM->getWaveformRootKeyNumber(), instADPCM->getWaveformRootDeltaN(),
-				instADPCM->getWaveformStartAddress(), instADPCM->getWaveformStopAddress(),
-				instADPCM->getWaveformSamples());
+	ui->sampleEditor->setInstrumentSampleParameters(
+				instADPCM->getSampleNumber(), instADPCM->isSampleRepeatable(),
+				instADPCM->getSampleRootKeyNumber(), instADPCM->getSampleRootDeltaN(),
+				instADPCM->getSampleStartAddress(), instADPCM->getSampleStopAddress(),
+				instADPCM->getRawSample());
 }
 
 /********** Slots **********/
-void InstrumentEditorADPCMForm::onWaveformNumberChanged()
+void InstrumentEditorADPCMForm::onSampleNumberChanged()
 {
-	ui->waveEditor->onWaveformNumberChanged();
+	ui->sampleEditor->onSampleNumberChanged();
 }
 
-void InstrumentEditorADPCMForm::onWaveformParameterChanged(int wfNum)
+void InstrumentEditorADPCMForm::onSampleParameterChanged(int sampNum)
 {
-	if (ui->waveEditor->getWaveformNumber() == wfNum) {
-		setInstrumentWaveformParameters();
+	if (ui->sampleEditor->getSampleNumber() == sampNum) {
+		setInstrumentSampleParameters();
 	}
 }
 
-void InstrumentEditorADPCMForm::onWaveformSampleMemoryUpdated()
+void InstrumentEditorADPCMForm::onSampleMemoryUpdated()
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instADPCM = dynamic_cast<InstrumentADPCM*>(inst.get());
 
-	ui->waveEditor->onWaveformSampleMemoryUpdated(instADPCM->getWaveformStartAddress(), instADPCM->getWaveformStopAddress());
+	ui->sampleEditor->onSampleMemoryUpdated(instADPCM->getSampleStartAddress(), instADPCM->getSampleStopAddress());
 }
 
 //--- Envelope

@@ -24,17 +24,17 @@
        <bool>false</bool>
       </property>
       <attribute name="title">
-       <string>Waveform</string>
+       <string>Sample</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QGroupBox" name="waveformGroupBox">
+        <widget class="QGroupBox" name="sampleGroupBox">
          <property name="title">
-          <string>Waveform</string>
+          <string>Sample</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="ADPCMWaveformEditor" name="waveEditor" native="true"/>
+           <widget class="ADPCMSampleEditor" name="sampleEditor" native="true"/>
           </item>
          </layout>
         </widget>
@@ -280,9 +280,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ADPCMWaveformEditor</class>
+   <class>ADPCMSampleEditor</class>
    <extends>QWidget</extends>
-   <header>gui/instrument_editor/adpcm_waveform_editor.hpp</header>
+   <header>gui/instrument_editor/adpcm_sample_editor.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

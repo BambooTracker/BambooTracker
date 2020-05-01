@@ -161,20 +161,20 @@ public:
 	size_t getADPCMLimit() const;
 	size_t getADPCMStoredSize() const;
 
-	void setWaveformADPCMRootKeyNumber(int wfNum, int n);
-	int getWaveformADPCMRootKeyNumber(int wfNum) const;
-	void setWaveformADPCMRootDeltaN(int wfNum, int dn);
-	int getWaveformADPCMRootDeltaN(int wfNum) const;
-	void setWaveformADPCMRepeatEnabled(int wfNum, bool enabled);
-	bool getWaveformADPCMRepeatEnabled(int wfNum) const;
-	void storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample);
-	std::vector<uint8_t> getWaveformADPCMSample(int wfNum) const;
-	void clearWaveformADPCMSample(int wfNum);
-	void assignWaveformADPCMSamples();
-	size_t getWaveformADPCMStartAddress(int wfNum) const;
-	size_t getWaveformADPCMStopAddress(int wfNum) const;
-	void setInstrumentADPCMWaveform(int instNum, int wfNum);
-	std::vector<int> getWaveformADPCMUsers(int wfNum) const;
+	void setSampleADPCMRootKeyNumber(int sampNum, int n);
+	int getSampleADPCMRootKeyNumber(int sampNum) const;
+	void setSampleADPCMRootDeltaN(int sampNum, int dn);
+	int getSampleADPCMRootDeltaN(int sampNum) const;
+	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
+	bool getSampleADPCMRepeatEnabled(int sampNum) const;
+	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample);
+	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;
+	void clearSampleADPCMRawSample(int sampNum);
+	void assignSampleADPCMRawSamples();
+	size_t getSampleADPCMStartAddress(int sampNum) const;
+	size_t getSampleADPCMStopAddress(int sampNum) const;
+	void setInstrumentADPCMSample(int instNum, int sampNum);
+	std::vector<int> getSampleADPCMUsers(int sampNum) const;
 
 	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
 	void removeEnvelopeADPCMSequenceCommand(int envNum);
@@ -206,8 +206,8 @@ public:
 	std::vector<int> getPitchADPCMUsers(int ptNum) const;
 
 	//--- Drumkit
-	void setInstrumentDrumkitWaveform(int instNum, int key, int wfNum);
-	void setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled);
+	void setInstrumentDrumkitSample(int instNum, int key, int sampNum);
+	void setInstrumentDrumkitSampleEnabled(int instNum, int key, bool enabled);
 	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
 
 	// Song edit
@@ -363,7 +363,7 @@ public:
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
 	void pasteOrderCells(int songNum, int beginTrack, int beginOrder,
-						   std::vector<std::vector<std::string>> cells);
+						 std::vector<std::vector<std::string>> cells);
 	void duplicateOrder(int songNum, int orderNum);
 	void MoveOrder(int songNum, int orderNum, bool isUp);
 	void clonePatterns(int songNum, int beginOrder, int beginTrack, int endOrder, int endTrack);

@@ -1,12 +1,12 @@
 #include "waveform_adpcm.hpp"
 
-WaveformADPCM::WaveformADPCM(int num)
+SampleADPCM::SampleADPCM(int num)
 	: AbstractInstrumentProperty (num)
 {
 	clearParameters();
 }
 
-WaveformADPCM::WaveformADPCM(const WaveformADPCM& other)
+SampleADPCM::SampleADPCM(const SampleADPCM& other)
 	: AbstractInstrumentProperty(other)
 {
 	rootKeyNum_ = other.rootKeyNum_;
@@ -15,86 +15,86 @@ WaveformADPCM::WaveformADPCM(const WaveformADPCM& other)
 	sample_ = other.sample_;
 }
 
-bool operator==(const WaveformADPCM& a, const WaveformADPCM& b) {
+bool operator==(const SampleADPCM& a, const SampleADPCM& b) {
 	return (a.rootKeyNum_ == b.rootKeyNum_ && a.rootDeltaN_ == b.rootDeltaN_
 			&& a.isRepeated_ == b.isRepeated_ && a.sample_ == b.sample_);
 }
 
-std::unique_ptr<WaveformADPCM> WaveformADPCM::clone()
+std::unique_ptr<SampleADPCM> SampleADPCM::clone()
 {
-	std::unique_ptr<WaveformADPCM> clone = std::make_unique<WaveformADPCM>(*this);
+	std::unique_ptr<SampleADPCM> clone = std::make_unique<SampleADPCM>(*this);
 	clone->clearUserInstruments();
 	return clone;
 }
 
-void WaveformADPCM::setRootKeyNumber(int n)
+void SampleADPCM::setRootKeyNumber(int n)
 {
 	rootKeyNum_ = n;
 }
 
-int WaveformADPCM::getRootKeyNumber() const
+int SampleADPCM::getRootKeyNumber() const
 {
 	return rootKeyNum_;
 }
 
-void WaveformADPCM::setRootDeltaN(int dn)
+void SampleADPCM::setRootDeltaN(int dn)
 {
 	rootDeltaN_ = dn;
 }
 
-int WaveformADPCM::getRootDeltaN() const
+int SampleADPCM::getRootDeltaN() const
 {
 	return rootDeltaN_;
 }
 
-void WaveformADPCM::setRepeatEnabled(bool enabled)
+void SampleADPCM::setRepeatEnabled(bool enabled)
 {
 	isRepeated_ = enabled;
 }
 
-bool WaveformADPCM::isRepeatable() const
+bool SampleADPCM::isRepeatable() const
 {
 	return isRepeated_;
 }
 
-void WaveformADPCM::storeSample(std::vector<uint8_t> sample)
+void SampleADPCM::storeSample(std::vector<uint8_t> sample)
 {
 	sample_ = sample;
 }
 
-std::vector<uint8_t> WaveformADPCM::getSamples() const
+std::vector<uint8_t> SampleADPCM::getSamples() const
 {
 	return sample_;
 }
 
-void WaveformADPCM::clearSample()
+void SampleADPCM::clearSample()
 {
 	startAddress_ = 0;
 	stopAddress_ = 0;
 	sample_ = std::vector<uint8_t>(1);
 }
 
-void WaveformADPCM::setStartAddress(size_t addr)
+void SampleADPCM::setStartAddress(size_t addr)
 {
 	startAddress_ = addr;
 }
 
-size_t WaveformADPCM::getStartAddress() const
+size_t SampleADPCM::getStartAddress() const
 {
 	return startAddress_;
 }
 
-void WaveformADPCM::setStopAddress(size_t addr)
+void SampleADPCM::setStopAddress(size_t addr)
 {
 	stopAddress_ = addr;
 }
 
-size_t WaveformADPCM::getStopAddress() const
+size_t SampleADPCM::getStopAddress() const
 {
 	return stopAddress_;
 }
 
-bool WaveformADPCM::isEdited() const
+bool SampleADPCM::isEdited() const
 {
 	if (rootKeyNum_ != DEF_RT_KEY_
 			|| rootDeltaN_ != DEF_RT_DELTAN_
@@ -105,7 +105,7 @@ bool WaveformADPCM::isEdited() const
 	return false;
 }
 
-void WaveformADPCM::clearParameters()
+void SampleADPCM::clearParameters()
 {
 	rootKeyNum_ = DEF_RT_KEY_;
 	rootDeltaN_ = DEF_RT_DELTAN_;

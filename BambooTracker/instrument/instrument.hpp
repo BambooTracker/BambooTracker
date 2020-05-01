@@ -180,14 +180,14 @@ public:
 	InstrumentType getType() const override;
 	std::unique_ptr<AbstractInstrument> clone() override;
 
-	void setWaveformNumber(int n);
-	int getWaveformNumber() const;
-	int getWaveformRootKeyNumber() const;
-	int getWaveformRootDeltaN() const;
-	bool isWaveformRepeatable() const;
-	std::vector<uint8_t> getWaveformSamples() const;
-	size_t getWaveformStartAddress() const;
-	size_t getWaveformStopAddress() const;
+	void setSampleNumber(int n);
+	int getSampleNumber() const;
+	int getSampleRootKeyNumber() const;
+	int getSampleRootDeltaN() const;
+	bool isSampleRepeatable() const;
+	std::vector<uint8_t> getRawSample() const;
+	size_t getSampleStartAddress() const;
+	size_t getSampleStopAddress() const;
 
 	void setEnvelopeEnabled(bool enabled);
 	bool getEnvelopeEnabled() const;
@@ -219,7 +219,7 @@ public:
 	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;
 
 private:
-	int wfNum_;
+	int sampNum_;
 	bool envEnabled_;
 	int envNum_;
 	bool arpEnabled_;
@@ -239,21 +239,21 @@ public:
 
 	std::vector<int> getAssignedKeys() const;
 
-	void setWaveformEnabled(int key, bool enabled);
-	bool getWaveformEnabled(int key) const;
-	void setWaveformNumber(int key, int n);
-	int getWaveformNumber(int key) const;
-	int getWaveformRootKeyNumber(int key) const;
-	int getWaveformRootDeltaN(int key) const;
-	bool isWaveformRepeatable(int key) const;
-	std::vector<uint8_t> getWaveformSamples(int key) const;
-	size_t getWaveformStartAddress(int key) const;
-	size_t getWaveformStopAddress(int key) const;
+	void setSampleEnabled(int key, bool enabled);
+	bool getSampleEnabled(int key) const;
+	void setSampleNumber(int key, int n);
+	int getSampleNumber(int key) const;
+	int getSampleRootKeyNumber(int key) const;
+	int getSampleRootDeltaN(int key) const;
+	bool isSampleRepeatable(int key) const;
+	std::vector<uint8_t> getRawSample(int key) const;
+	size_t getSampleStartAddress(int key) const;
+	size_t getSampleStopAddress(int key) const;
 
 	void setPitch(int key, int pitch);
 	int getPitch(int key) const;
 
 private:
-	struct KitProperty { int wfNum, pitch; };
+	struct KitProperty { int sampNum, pitch; };
 	std::unordered_map<int, KitProperty> kit_;
 };

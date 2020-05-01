@@ -123,10 +123,10 @@ void InstrumentsManager::addInstrument(int instNum, InstrumentType type, std::st
 	case InstrumentType::ADPCM:
 	{
 		auto adpcm = std::make_shared<InstrumentADPCM>(instNum, name, this);
-		int wfNum = findFirstAssignableWaveformADPCM();
-		if (wfNum == -1) wfNum = static_cast<int>(wfADPCM_.size()) - 1;
-		adpcm->setWaveformNumber(wfNum);
-		wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
+		int sampNum = findFirstAssignableSampleADPCM();
+		if (sampNum == -1) sampNum = static_cast<int>(sampADPCM_.size()) - 1;
+		adpcm->setSampleNumber(sampNum);
+		sampADPCM_.at(static_cast<size_t>(sampNum))->registerUserInstrument(instNum);
 		int envNum = findFirstAssignableEnvelopeADPCM();
 		if (envNum == -1) envNum = static_cast<int>(envADPCM_.size()) - 1;
 		adpcm->setEnvelopeNumber(envNum);
@@ -195,7 +195,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	case InstrumentType::ADPCM:
 	{
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(num)]);
-		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->registerUserInstrument(num);
+		sampADPCM_.at(static_cast<size_t>(adpcm->getSampleNumber()))->registerUserInstrument(num);
 		if (adpcm->getEnvelopeEnabled())
 			envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->registerUserInstrument(num);
 		if (adpcm->getArpeggioEnabled())
@@ -208,7 +208,7 @@ void InstrumentsManager::addInstrument(std::unique_ptr<AbstractInstrument> inst)
 	{
 		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(num)]);
 		for (const auto& key : kit->getAssignedKeys()) {
-			wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->registerUserInstrument(num);
+			sampADPCM_.at(static_cast<size_t>(kit->getSampleNumber(key)))->registerUserInstrument(num);
 		}
 		break;
 	}
@@ -263,7 +263,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 	{
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
-		setInstrumentADPCMWaveform(cloneInstNum, refAdpcm->getWaveformNumber());
+		setInstrumentADPCMSample(cloneInstNum, refAdpcm->getSampleNumber());
 		setInstrumentADPCMEnvelope(cloneInstNum, refAdpcm->getEnvelopeNumber());
 		if (refAdpcm->getEnvelopeEnabled()) setInstrumentADPCMEnvelopeEnabled(cloneInstNum, true);
 		setInstrumentADPCMArpeggio(cloneInstNum, refAdpcm->getArpeggioNumber());
@@ -277,7 +277,7 @@ void InstrumentsManager::cloneInstrument(int cloneInstNum, int refInstNum)
 		auto refKit = std::dynamic_pointer_cast<InstrumentDrumkit>(refInst);
 		auto cloneKit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(cloneInstNum)));
 		for (const int& key : refKit->getAssignedKeys()) {
-			setInstrumentDrumkitWaveform(cloneInstNum, key, refKit->getWaveformNumber(key));
+			setInstrumentDrumkitSamples(cloneInstNum, key, refKit->getSampleNumber(key));
 			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
 		}
 		break;
@@ -396,10 +396,10 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 		auto refAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(refInst);
 		auto cloneAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(cloneInstNum)));
 
-		wfADPCM_[static_cast<size_t>(cloneAdpcm->getWaveformNumber())]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
-		int wfNum = cloneADPCMWaveform(refAdpcm->getWaveformNumber());
-		cloneAdpcm->setWaveformNumber(wfNum);
-		wfADPCM_[static_cast<size_t>(wfNum)]->registerUserInstrument(cloneInstNum);
+		sampADPCM_[static_cast<size_t>(cloneAdpcm->getSampleNumber())]->deregisterUserInstrument(cloneInstNum);	// Remove temporary number
+		int sampNum = cloneADPCMSample(refAdpcm->getSampleNumber());
+		cloneAdpcm->setSampleNumber(sampNum);
+		sampADPCM_[static_cast<size_t>(sampNum)]->registerUserInstrument(cloneInstNum);
 		if (refAdpcm->getEnvelopeEnabled()) {
 			cloneAdpcm->setEnvelopeEnabled(true);
 			int envNum = cloneADPCMEnvelope(refAdpcm->getEnvelopeNumber());
@@ -424,12 +424,12 @@ void InstrumentsManager::deepCloneInstrument(int cloneInstNum, int refInstNum)
 	{
 		auto refKit = std::dynamic_pointer_cast<InstrumentDrumkit>(refInst);
 		auto cloneKit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(cloneInstNum)));
-		std::unordered_map<int, int> wfMap;
+		std::unordered_map<int, int> sampMap;
 		for (const int& key : refKit->getAssignedKeys()) {
-			int n = refKit->getWaveformNumber(key);
-			if (!wfMap.count(n)) wfMap[n] = cloneADPCMWaveform(n);
-			cloneKit->setWaveformNumber(key, wfMap[n]);
-			wfADPCM_[static_cast<size_t>(wfMap[n])]->registerUserInstrument(cloneInstNum);
+			int n = refKit->getSampleNumber(key);
+			if (!sampMap.count(n)) sampMap[n] = cloneADPCMSample(n);
+			cloneKit->setSampleNumber(key, sampMap[n]);
+			sampADPCM_[static_cast<size_t>(sampMap[n])]->registerUserInstrument(cloneInstNum);
 
 			setInstrumentDrumkitPitch(cloneInstNum, key, refKit->getPitch(key));
 		}
@@ -580,13 +580,13 @@ int InstrumentsManager::cloneSSGPitch(int srcNum)
 	return cloneNum;
 }
 
-int InstrumentsManager::cloneADPCMWaveform(int srcNum)
+int InstrumentsManager::cloneADPCMSample(int srcNum)
 {
 	int cloneNum = 0;
-	for (auto& wf : wfADPCM_) {
-		if (!wf->isUserInstrument()) {
-			wf = wfADPCM_.at(static_cast<size_t>(srcNum))->clone();
-			wf->setNumber(cloneNum);
+	for (auto& samp : sampADPCM_) {
+		if (!samp->isUserInstrument()) {
+			samp = sampADPCM_.at(static_cast<size_t>(srcNum))->clone();
+			samp->setNumber(cloneNum);
 			break;
 		}
 		++cloneNum;
@@ -676,7 +676,7 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	case InstrumentType::ADPCM:
 	{
 		auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)]);
-		wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->deregisterUserInstrument(instNum);
+		sampADPCM_.at(static_cast<size_t>(adpcm->getSampleNumber()))->deregisterUserInstrument(instNum);
 		if (adpcm->getEnvelopeEnabled())
 			envADPCM_.at(static_cast<size_t>(adpcm->getEnvelopeNumber()))->deregisterUserInstrument(instNum);
 		if (adpcm->getArpeggioEnabled())
@@ -689,7 +689,7 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 	{
 		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(instNum)]);
 		for (const int& key : kit->getAssignedKeys()) {
-			wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
+			sampADPCM_.at(static_cast<size_t>(kit->getSampleNumber(key)))->deregisterUserInstrument(instNum);
 		}
 		break;
 	}
@@ -736,7 +736,7 @@ void InstrumentsManager::clearAll()
 		arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
 		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
-		wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
+		sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
 		envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
 		arpADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
 		ptADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
@@ -809,8 +809,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 		if (!ptSSG_[i]->isUserInstrument())
 			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
-		if (!wfADPCM_[i]->isUserInstrument())
-			wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
+		if (!sampADPCM_[i]->isUserInstrument())
+			sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
 		if (!envADPCM_[i]->isUserInstrument())
 			envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
 		if (!arpADPCM_[i]->isUserInstrument())
@@ -836,7 +836,7 @@ std::vector<std::vector<int>> InstrumentsManager::checkDuplicateInstruments() co
 	std::vector<int> idcs = getEntriedInstrumentIndices();
 	std::unordered_map<InstrumentType,
 			bool (InstrumentsManager::*)(std::shared_ptr<AbstractInstrument>,
-										std::shared_ptr<AbstractInstrument>) const> eqCheck = {
+										 std::shared_ptr<AbstractInstrument>) const> eqCheck = {
 	{ InstrumentType::FM, &InstrumentsManager::equalPropertiesFM },
 	{ InstrumentType::SSG, &InstrumentsManager::equalPropertiesSSG },
 	{ InstrumentType::ADPCM, &InstrumentsManager::equalPropertiesADPCM },
@@ -1948,131 +1948,131 @@ bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<AbstractInstrument> 
 }
 
 //----- ADPCM methods -----
-void InstrumentsManager::setInstrumentADPCMWaveform(int instNum, int wfNum)
+void InstrumentsManager::setInstrumentADPCMSample(int instNum, int sampNum)
 {
 	auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(insts_.at(static_cast<size_t>(instNum)));
-	wfADPCM_.at(static_cast<size_t>(adpcm->getWaveformNumber()))->deregisterUserInstrument(instNum);
-	wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
+	sampADPCM_.at(static_cast<size_t>(adpcm->getSampleNumber()))->deregisterUserInstrument(instNum);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->registerUserInstrument(instNum);
 
-	adpcm->setWaveformNumber(wfNum);
+	adpcm->setSampleNumber(sampNum);
 }
 
-int InstrumentsManager::getInstrumentADPCMWaveform(int instNum)
+int InstrumentsManager::getInstrumentADPCMSample(int instNum)
 {
-	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getWaveformNumber();
+	return std::dynamic_pointer_cast<InstrumentADPCM>(insts_[static_cast<size_t>(instNum)])->getSampleNumber();
 }
 
-void InstrumentsManager::setWaveformADPCMRootKeyNumber(int wfNum, int n)
+void InstrumentsManager::setSampleADPCMRootKeyNumber(int sampNum, int n)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->setRootKeyNumber(n);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->setRootKeyNumber(n);
 }
 
-int InstrumentsManager::getWaveformADPCMRootKeyNumber(int wfNum) const
+int InstrumentsManager::getSampleADPCMRootKeyNumber(int sampNum) const
 {
-	return wfADPCM_.at(static_cast<size_t>(wfNum))->getRootKeyNumber();
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getRootKeyNumber();
 }
 
-void InstrumentsManager::setWaveformADPCMRootDeltaN(int wfNum, int dn)
+void InstrumentsManager::setSampleADPCMRootDeltaN(int sampNum, int dn)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->setRootDeltaN(dn);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->setRootDeltaN(dn);
 }
 
-int InstrumentsManager::getWaveformADPCMRootDeltaN(int wfNum) const
+int InstrumentsManager::getSampleADPCMRootDeltaN(int sampNum) const
 {
-	return wfADPCM_.at(static_cast<size_t>(wfNum))->getRootDeltaN();
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getRootDeltaN();
 }
 
-void InstrumentsManager::setWaveformADPCMRepeatEnabled(int wfNum, bool enabled)
+void InstrumentsManager::setSampleADPCMRepeatEnabled(int sampNum, bool enabled)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->setRepeatEnabled(enabled);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->setRepeatEnabled(enabled);
 }
 
-bool InstrumentsManager::isWaveformADPCMRepeatable(int wfNum) const
+bool InstrumentsManager::isSampleADPCMRepeatable(int sampNum) const
 {
-	return wfADPCM_.at(static_cast<size_t>(wfNum))->isRepeatable();
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->isRepeatable();
 }
 
-void InstrumentsManager::storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample)
+void InstrumentsManager::storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->storeSample(sample);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->storeSample(sample);
 }
 
-void InstrumentsManager::clearWaveformADPCMSample(int wfNum)
+void InstrumentsManager::clearSampleADPCMRawSample(int sampNum)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->clearSample();
+	sampADPCM_.at(static_cast<size_t>(sampNum))->clearSample();
 }
 
-std::vector<uint8_t> InstrumentsManager::getWaveformADPCMSamples(int wfNum) const
+std::vector<uint8_t> InstrumentsManager::getSampleADPCMRawSample(int sampNum) const
 {
-	return wfADPCM_.at(static_cast<size_t>(wfNum))->getSamples();
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getSamples();
 }
 
-void InstrumentsManager::setWaveformADPCMStartAddress(int wfNum, size_t addr)
+void InstrumentsManager::setSampleADPCMStartAddress(int sampNum, size_t addr)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->setStartAddress(addr);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->setStartAddress(addr);
 }
 
-size_t InstrumentsManager::getWaveformADPCMStartAddress(int wfNum) const
+size_t InstrumentsManager::getSampleADPCMStartAddress(int sampNum) const
 {
-	return wfADPCM_.at(static_cast<size_t>(wfNum))->getStartAddress();
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getStartAddress();
 }
 
-void InstrumentsManager::setWaveformADPCMStopAddress(int wfNum, size_t addr)
+void InstrumentsManager::setSampleADPCMStopAddress(int sampNum, size_t addr)
 {
-	wfADPCM_.at(static_cast<size_t>(wfNum))->setStopAddress(addr);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->setStopAddress(addr);
 }
 
-size_t InstrumentsManager::getWaveformADPCMStopAddress(int wfNum) const
+size_t InstrumentsManager::getSampleADPCMStopAddress(int sampNum) const
 {
-	return wfADPCM_.at(static_cast<size_t>(wfNum))->getStopAddress();
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getStopAddress();
 }
 
-std::vector<int> InstrumentsManager::getWaveformADPCMUsers(int wfNum) const
+std::vector<int> InstrumentsManager::getSampleADPCMUsers(int sampNum) const
 {
-	return wfADPCM_.at(static_cast<size_t>(wfNum))->getUserInstruments();
+	return sampADPCM_.at(static_cast<size_t>(sampNum))->getUserInstruments();
 }
 
-std::vector<int> InstrumentsManager::getWaveformADPCMEntriedIndices() const
+std::vector<int> InstrumentsManager::getSampleADPCMEntriedIndices() const
 {
 	std::vector<int> idcs;
 	int n = 0;
-	for (auto& wf : wfADPCM_) {
-		if (wf->isEdited()) idcs.push_back(n);
+	for (auto& samp : sampADPCM_) {
+		if (samp->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
 }
 
-std::vector<int> InstrumentsManager::getWaveformADPCMValidIndices() const
+std::vector<int> InstrumentsManager::getSampleADPCMValidIndices() const
 {
 	std::vector<int> idcs;
 	int n = 0;
-	for (auto& wf : wfADPCM_) {
-		if (wf->isUserInstrument() && wf->isEdited()) idcs.push_back(n);
+	for (auto& samp : sampADPCM_) {
+		if (samp->isUserInstrument() && samp->isEdited()) idcs.push_back(n);
 		++n;
 	}
 	return idcs;
 }
 
-void InstrumentsManager::clearUnusedWaveformsADPCM()
+void InstrumentsManager::clearUnusedSamplesADPCM()
 {
 	for (size_t i = 0; i < 128; ++i) {
-		if (!wfADPCM_[i]->isUserInstrument())
-			wfADPCM_[i] = std::make_shared<WaveformADPCM>(i);
+		if (!sampADPCM_[i]->isUserInstrument())
+			sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
 	}
 }
 
-int InstrumentsManager::findFirstAssignableWaveformADPCM(int startIndex) const
+int InstrumentsManager::findFirstAssignableSampleADPCM(int startIndex) const
 {
 	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<WaveformADPCM>& wf) { return (wf->isUserInstrument() || wf->isEdited()); }
-	: [](const std::shared_ptr<WaveformADPCM>& wf) { return wf->isUserInstrument(); };
-	auto&& it = std::find_if_not(wfADPCM_.begin() + startIndex, wfADPCM_.end(), cond);
+				? [](const std::shared_ptr<SampleADPCM>& samp) { return (samp->isUserInstrument() || samp->isEdited()); }
+	: [](const std::shared_ptr<SampleADPCM>& samp) { return samp->isUserInstrument(); };
+	auto&& it = std::find_if_not(sampADPCM_.begin() + startIndex, sampADPCM_.end(), cond);
 
-	if (it == wfADPCM_.end()) return -1;
+	if (it == sampADPCM_.end()) return -1;
 
 	if (!regardingUnedited_) (*it)->clearParameters();
-	return std::distance(wfADPCM_.begin(), it);
+	return std::distance(sampADPCM_.begin(), it);
 }
 
 void InstrumentsManager::setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled)
@@ -2412,7 +2412,7 @@ bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<AbstractInstrument
 	auto aAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(a);
 	auto bAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(b);
 
-	if (*wfADPCM_[aAdpcm->getWaveformNumber()].get() != *wfADPCM_[bAdpcm->getWaveformNumber()].get())
+	if (*sampADPCM_[aAdpcm->getSampleNumber()].get() != *sampADPCM_[bAdpcm->getSampleNumber()].get())
 		return false;
 	if (aAdpcm->getEnvelopeEnabled() != bAdpcm->getEnvelopeEnabled())
 		return false;
@@ -2433,36 +2433,36 @@ bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<AbstractInstrument
 }
 
 //----- Drumkit methods -----
-void InstrumentsManager::setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled)
+void InstrumentsManager::setInstrumentDrumkitSamplesEnabled(int instNum, int key, bool enabled)
 {
 	auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)));
 	if (enabled) {
-		kit->setWaveformEnabled(key, true);
-		wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->registerUserInstrument(instNum);
+		kit->setSampleEnabled(key, true);
+		sampADPCM_.at(static_cast<size_t>(kit->getSampleNumber(key)))->registerUserInstrument(instNum);
 	}
 	else {
-		wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
-		kit->setWaveformEnabled(key, false);
+		sampADPCM_.at(static_cast<size_t>(kit->getSampleNumber(key)))->deregisterUserInstrument(instNum);
+		kit->setSampleEnabled(key, false);
 	}
 }
 
-bool InstrumentsManager::getInstrumentDrumkitWaveformEnabled(int instNum, int key) const
+bool InstrumentsManager::getInstrumentDrumkitSamplesEnabled(int instNum, int key) const
 {
-	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->getWaveformEnabled(key);
+	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)))->getSampleEnabled(key);
 }
 
-void InstrumentsManager::setInstrumentDrumkitWaveform(int instNum, int key, int wfNum)
+void InstrumentsManager::setInstrumentDrumkitSamples(int instNum, int key, int sampNum)
 {
 	auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(insts_.at(static_cast<size_t>(instNum)));
-	wfADPCM_.at(static_cast<size_t>(kit->getWaveformNumber(key)))->deregisterUserInstrument(instNum);
-	wfADPCM_.at(static_cast<size_t>(wfNum))->registerUserInstrument(instNum);
+	sampADPCM_.at(static_cast<size_t>(kit->getSampleNumber(key)))->deregisterUserInstrument(instNum);
+	sampADPCM_.at(static_cast<size_t>(sampNum))->registerUserInstrument(instNum);
 
-	kit->setWaveformNumber(key, wfNum);
+	kit->setSampleNumber(key, sampNum);
 }
 
-int InstrumentsManager::getInstrumentDrumkitWaveform(int instNum, int key)
+int InstrumentsManager::getInstrumentDrumkitSamples(int instNum, int key)
 {
-	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(instNum)])->getWaveformNumber(key);
+	return std::dynamic_pointer_cast<InstrumentDrumkit>(insts_[static_cast<size_t>(instNum)])->getSampleNumber(key);
 }
 
 void InstrumentsManager::setInstrumentDrumkitPitch(int instNum, int key, int pitch)
@@ -2483,7 +2483,7 @@ bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrume
 	if (!std::includes(aKeys.begin(), aKeys.end(), bKeys.begin(), bKeys.end())) return false;
 
 	for (const int& key : aKeys) {
-		if (*wfADPCM_[aKit->getWaveformNumber(key)].get() != *wfADPCM_[bKit->getWaveformNumber(key)].get())
+		if (*sampADPCM_[aKit->getSampleNumber(key)].get() != *sampADPCM_[bKit->getSampleNumber(key)].get())
 			return false;
 		if (aKit->getPitch(key) != bKit->getPitch(key))
 			return false;

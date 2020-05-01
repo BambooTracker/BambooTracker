@@ -34,13 +34,13 @@ ColorPalette::ColorPalette()
 	instSeqMaskColor = QColor::fromRgb(0, 0, 0, 128);
 	instSeqOddColColor = QColor::fromRgb(255, 255, 255, 31);
 
-	// ADPCM waveform editor
+	// ADPCM sample editor
 	instADPCMMemAllColor = QColor::fromRgb(210, 40, 180, 150);
 	instADPCMMemCurColor = QColor::fromRgb(210, 40, 180, 255);
 	instADPCMMemBackColor = QColor::fromRgb(0, 0, 0, 255);
-	instADPCMWaveViewForeColor = QColor::fromRgb(38, 183, 173, 255);
-	instADPCMWaveViewBackColor = QColor::fromRgb(0, 0, 0, 255);
-	instADPCMWaveViewCenterColor = QColor::fromRgb(63, 63, 63, 255);
+	instADPCMSampViewForeColor = QColor::fromRgb(38, 183, 173, 255);
+	instADPCMSampViewBackColor = QColor::fromRgb(0, 0, 0, 255);
+	instADPCMSampViewCenterColor = QColor::fromRgb(63, 63, 63, 255);
 
 	// Tone/Noise editor
 	tnToneCellColor = QColor::fromRgb(225, 209, 47, 255);

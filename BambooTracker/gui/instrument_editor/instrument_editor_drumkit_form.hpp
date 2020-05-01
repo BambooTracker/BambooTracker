@@ -51,23 +51,23 @@ private slots:
 	void on_keyTreeWidget_currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*);
 	void on_pitshSpinBox_valueChanged(int arg1);
 
-	//========== Waveform ==========//
+	//========== Sample ==========//
 signals:
-	void waveformNumberChanged();
-	void waveformParameterChanged(int wfNum, int fromInstNum);
-	void waveformAssignRequested();
-	void waveformMemoryChanged();
+	void sampleNumberChanged();
+	void sampleParameterChanged(int sampNum, int fromInstNum);
+	void sampleAssignRequested();
+	void sampleMemoryChanged();
 
 public slots:
-	void onWaveformNumberChanged();
-	void onWaveformParameterChanged(int wfNum);
-	void onWaveformSampleMemoryUpdated();
+	void onSampleNumberChanged();
+	void onSampleParameterChanged(int sampNum);
+	void onSampleMemoryUpdated();
 
 private slots:
-	void on_waveGroupBox_clicked(bool checked);
+	void on_sampleGroupBox_clicked(bool checked);
 
 private:
-	void setInstrumentWaveformParameters(int key);
+	void setInstrumentSampleParameters(int key);
 };
 
 #endif // INSTRUMENT_EDITOR_DRUMKIT_FORM_HPP

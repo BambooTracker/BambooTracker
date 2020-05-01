@@ -54,8 +54,8 @@ public slots:
 	void onInstrumentSSGPitchParameterChanged(int ptNum, int fromInstNum);
 	void onInstrumentSSGPitchNumberChanged();
 
-	void onInstrumentADPCMWaveformParameterChanged(int wfNum, int fromInstNum);
-	void onInstrumentADPCMWaveformNumberChanged();
+	void onInstrumentADPCMSampleParameterChanged(int sampNum, int fromInstNum);
+	void onInstrumentADPCMSampleNumberChanged();
 	void onInstrumentADPCMSampleMemoryUpdated();
 	void onInstrumentADPCMEnvelopeParameterChanged(int envNum, int fromInstNum);
 	void onInstrumentADPCMEnvelopeNumberChanged();

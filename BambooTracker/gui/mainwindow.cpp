@@ -1179,8 +1179,8 @@ void MainWindow::removeInstrument(int row)
 	bool updateRequest = false;
 	if (config_.lock()->getWriteOnlyUsedSamples()){
 		if (inst->getSoundSource() == SoundSource::ADPCM) {
-			size_t size = bt_->getWaveformADPCMUsers(dynamic_cast<InstrumentADPCM*>(
-														 inst.get())->getWaveformNumber()).size();
+			size_t size = bt_->getSampleADPCMUsers(dynamic_cast<InstrumentADPCM*>(
+													   inst.get())->getSampleNumber()).size();
 			if (size == 1) updateRequest = true;
 		}
 	}
@@ -1306,13 +1306,13 @@ void MainWindow::openInstrumentEditor()
 			adpcmForm->resize(config_.lock()->getInstrumentADPCMWindowWidth(),
 							  config_.lock()->getInstrumentADPCMWindowHeight());
 
-			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::waveformNumberChanged,
-							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);
-			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::waveformParameterChanged,
-							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
-			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::waveformAssignRequested,
+			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::sampleNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleNumberChanged);
+			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::sampleParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleParameterChanged);
+			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::sampleAssignRequested,
 							 this, &MainWindow::assignADPCMSamples);
-			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::waveformMemoryChanged,
+			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::sampleMemoryChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleMemoryUpdated);
 			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::envelopeNumberChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMEnvelopeNumberChanged);
@@ -1337,7 +1337,7 @@ void MainWindow::openInstrumentEditor()
 
 			adpcmForm->installEventFilter(this);
 
-			instForms_->onInstrumentADPCMWaveformNumberChanged();
+			instForms_->onInstrumentADPCMSampleNumberChanged();
 			instForms_->onInstrumentADPCMEnvelopeNumberChanged();
 			instForms_->onInstrumentADPCMArpeggioNumberChanged();
 			instForms_->onInstrumentADPCMPitchNumberChanged();
@@ -1353,13 +1353,13 @@ void MainWindow::openInstrumentEditor()
 			kitForm->resize(config_.lock()->getInstrumentDrumkitWindowWidth(),
 							config_.lock()->getInstrumentDrumkitWindowHeight());
 
-			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::waveformNumberChanged,
-							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged);
-			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::waveformParameterChanged,
-							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged);
-			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::waveformAssignRequested,
+			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::sampleNumberChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleNumberChanged);
+			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::sampleParameterChanged,
+							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleParameterChanged);
+			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::sampleAssignRequested,
 							 this, &MainWindow::assignADPCMSamples);
-			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::waveformMemoryChanged,
+			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::sampleMemoryChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleMemoryUpdated);
 			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::jamKeyOnEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::ADPCM); },
@@ -1372,7 +1372,7 @@ void MainWindow::openInstrumentEditor()
 
 			kitForm->installEventFilter(this);
 
-			instForms_->onInstrumentADPCMWaveformNumberChanged();
+			instForms_->onInstrumentADPCMSampleNumberChanged();
 			break;
 		}
 		default:
@@ -1607,8 +1607,8 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			jamInst->setNumber(128);	// Special number
 			std::vector<std::vector<size_t>> addrs = bt_->assignADPCMBeforeForcedJamKeyOn(jamInst);
 			for (size_t i = 0; i < addrs.size(); ++i) {
-				bankMan->setWaveformADPCMStartAddress(i, addrs[i][0]);
-				bankMan->setWaveformADPCMStopAddress(i, addrs[i][1]);
+				bankMan->setSampleADPCMStartAddress(i, addrs[i][0]);
+				bankMan->setSampleADPCMStopAddress(i, addrs[i][1]);
 			}
 			bankJamMidiCtrl_.store(false);
 		}
@@ -1918,7 +1918,7 @@ void MainWindow::assignADPCMSamples()
 	lockWidgets(false);
 	if (timer_) timer_->stop();
 	else stream_->stop();
-	bt_->assignWaveformADPCMSamples();	// Mutex register
+	bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instForms_->onInstrumentADPCMSampleMemoryUpdated();
 	if (timer_) timer_->start();
 	else stream_->start();
@@ -2086,7 +2086,7 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 		break;
 	}
 
-	bt_->assignWaveformADPCMSamples();	// Mutex register
+	bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instForms_->onInstrumentADPCMSampleMemoryUpdated();
 }
 

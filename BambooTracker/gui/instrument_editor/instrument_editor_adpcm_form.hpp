@@ -46,25 +46,25 @@ private:
 
 	void updateInstrumentParameters();
 
-	//========== Waveform ==========//
+	//========== Sample ==========//
 signals:
-	void waveformNumberChanged();
-	void waveformParameterChanged(int wfNum, int fromInstNum);
-	void waveformAssignRequested();
-	void waveformMemoryChanged();
+	void sampleNumberChanged();
+	void sampleParameterChanged(int sampNum, int fromInstNum);
+	void sampleAssignRequested();
+	void sampleMemoryChanged();
 
 public slots:
-	void onWaveformNumberChanged();
-	void onWaveformParameterChanged(int wfNum);
-	void onWaveformSampleMemoryUpdated();
+	void onSampleNumberChanged();
+	void onSampleParameterChanged(int sampNum);
+	void onSampleMemoryUpdated();
 
 private:
-	void setInstrumentWaveformParameters();
+	void setInstrumentSampleParameters();
 
 	//========== Envelope ==========//
 signals:
 	void envelopeNumberChanged();
-	void envelopeParameterChanged(int wfNum, int fromInstNum);
+	void envelopeParameterChanged(int envNum, int fromInstNum);
 
 public slots:
 	void onEnvelopeNumberChanged();

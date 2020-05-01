@@ -630,7 +630,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getPitchSequenceIterat
 
 InstrumentADPCM::InstrumentADPCM(int number, std::string name, InstrumentsManager* owner)
 	: AbstractInstrument(number, name, owner),
-	  wfNum_(0),
+	  sampNum_(0),
 	  envEnabled_(false),
 	  envNum_(0),
 	  arpEnabled_(false),
@@ -653,7 +653,7 @@ InstrumentType InstrumentADPCM::getType() const
 std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
 {
 	std::unique_ptr<InstrumentADPCM> c = std::make_unique<InstrumentADPCM>(number_, name_, owner_);
-	c->setWaveformNumber(wfNum_);
+	c->setSampleNumber(sampNum_);
 	c->setEnvelopeEnabled(envEnabled_);
 	c->setEnvelopeNumber(envNum_);
 	c->setArpeggioEnabled(arpEnabled_);
@@ -663,44 +663,44 @@ std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
 	return std::move(c);
 }
 
-void InstrumentADPCM::setWaveformNumber(int n)
+void InstrumentADPCM::setSampleNumber(int n)
 {
-	wfNum_ = n;
+	sampNum_ = n;
 }
 
-int InstrumentADPCM::getWaveformNumber() const
+int InstrumentADPCM::getSampleNumber() const
 {
-	return wfNum_;
+	return sampNum_;
 }
 
-int InstrumentADPCM::getWaveformRootKeyNumber() const
+int InstrumentADPCM::getSampleRootKeyNumber() const
 {
-	return owner_->getWaveformADPCMRootKeyNumber(wfNum_);
+	return owner_->getSampleADPCMRootKeyNumber(sampNum_);
 }
 
-int InstrumentADPCM::getWaveformRootDeltaN() const
+int InstrumentADPCM::getSampleRootDeltaN() const
 {
-	return owner_->getWaveformADPCMRootDeltaN(wfNum_);
+	return owner_->getSampleADPCMRootDeltaN(sampNum_);
 }
 
-bool InstrumentADPCM::isWaveformRepeatable() const
+bool InstrumentADPCM::isSampleRepeatable() const
 {
-	return owner_->isWaveformADPCMRepeatable(wfNum_);
+	return owner_->isSampleADPCMRepeatable(sampNum_);
 }
 
-std::vector<uint8_t> InstrumentADPCM::getWaveformSamples() const
+std::vector<uint8_t> InstrumentADPCM::getRawSample() const
 {
-	return owner_->getWaveformADPCMSamples(wfNum_);
+	return owner_->getSampleADPCMRawSample(sampNum_);
 }
 
-size_t InstrumentADPCM::getWaveformStartAddress() const
+size_t InstrumentADPCM::getSampleStartAddress() const
 {
-	return owner_->getWaveformADPCMStartAddress(wfNum_);
+	return owner_->getSampleADPCMStartAddress(sampNum_);
 }
 
-size_t InstrumentADPCM::getWaveformStopAddress() const
+size_t InstrumentADPCM::getSampleStopAddress() const
 {
-	return owner_->getWaveformADPCMStopAddress(wfNum_);
+	return owner_->getSampleADPCMStopAddress(sampNum_);
 }
 
 void InstrumentADPCM::setEnvelopeEnabled(bool enabled)
@@ -855,8 +855,8 @@ std::unique_ptr<AbstractInstrument> InstrumentDrumkit::clone()
 	std::unique_ptr<InstrumentDrumkit> c = std::make_unique<InstrumentDrumkit>(number_, name_, owner_);
 
 	for (const auto& pair : kit_) {
-		c->setWaveformEnabled(pair.first, true);
-		c->setWaveformNumber(pair.first, pair.second.wfNum);
+		c->setSampleEnabled(pair.first, true);
+		c->setSampleNumber(pair.first, pair.second.sampNum);
 		c->setPitch(pair.first, pair.second.pitch);
 	}
 	return std::move(c);
@@ -869,55 +869,55 @@ std::vector<int> InstrumentDrumkit::getAssignedKeys() const
 	return keys;
 }
 
-void InstrumentDrumkit::setWaveformEnabled(int key, bool enabled)
+void InstrumentDrumkit::setSampleEnabled(int key, bool enabled)
 {
 	if (enabled) kit_[key] = { 0, 0 };
 	else kit_.erase(key);
 }
 
-bool InstrumentDrumkit::getWaveformEnabled(int key) const
+bool InstrumentDrumkit::getSampleEnabled(int key) const
 {
 	return kit_.count(key);
 }
 
-void InstrumentDrumkit::setWaveformNumber(int key, int n)
+void InstrumentDrumkit::setSampleNumber(int key, int n)
 {
-	if (kit_.count(key)) kit_.at(key).wfNum = n;
+	if (kit_.count(key)) kit_.at(key).sampNum = n;
 }
 
-int InstrumentDrumkit::getWaveformNumber(int key) const
+int InstrumentDrumkit::getSampleNumber(int key) const
 {
-	return kit_.at(key).wfNum;
+	return kit_.at(key).sampNum;
 }
 
-int InstrumentDrumkit::getWaveformRootKeyNumber(int key) const
+int InstrumentDrumkit::getSampleRootKeyNumber(int key) const
 {
-	return owner_->getWaveformADPCMRootKeyNumber(kit_.at(key).wfNum);
+	return owner_->getSampleADPCMRootKeyNumber(kit_.at(key).sampNum);
 }
 
-int InstrumentDrumkit::getWaveformRootDeltaN(int key) const
+int InstrumentDrumkit::getSampleRootDeltaN(int key) const
 {
-	return owner_->getWaveformADPCMRootDeltaN(kit_.at(key).wfNum);
+	return owner_->getSampleADPCMRootDeltaN(kit_.at(key).sampNum);
 }
 
-bool InstrumentDrumkit::isWaveformRepeatable(int key) const
+bool InstrumentDrumkit::isSampleRepeatable(int key) const
 {
-	return owner_->isWaveformADPCMRepeatable(kit_.at(key).wfNum);
+	return owner_->isSampleADPCMRepeatable(kit_.at(key).sampNum);
 }
 
-std::vector<uint8_t> InstrumentDrumkit::getWaveformSamples(int key) const
+std::vector<uint8_t> InstrumentDrumkit::getRawSample(int key) const
 {
-	return owner_->getWaveformADPCMSamples(kit_.at(key).wfNum);
+	return owner_->getSampleADPCMRawSample(kit_.at(key).sampNum);
 }
 
-size_t InstrumentDrumkit::getWaveformStartAddress(int key) const
+size_t InstrumentDrumkit::getSampleStartAddress(int key) const
 {
-	return owner_->getWaveformADPCMStartAddress(kit_.at(key).wfNum);
+	return owner_->getSampleADPCMStartAddress(kit_.at(key).sampNum);
 }
 
-size_t InstrumentDrumkit::getWaveformStopAddress(int key) const
+size_t InstrumentDrumkit::getSampleStopAddress(int key) const
 {
-	return owner_->getWaveformADPCMStopAddress(kit_.at(key).wfNum);
+	return owner_->getSampleADPCMStopAddress(kit_.at(key).sampNum);
 }
 
 void InstrumentDrumkit::setPitch(int key, int pitch)

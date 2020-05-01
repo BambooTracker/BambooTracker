@@ -116,7 +116,7 @@ After FB sequence number, it repeats 9 operator's parameters for each operator (
 ### ADPCM
 | Type  | Field                    | Description                                                                                           |
 | ----- | ------------------------ | ----------------------------------------------------------------------------------------------------- |
-| uint8 | Waveform number          | Waveform number.                                                                                      |
+| uint8 | Sample number            | Sample number.                                                                                        |
 | uint8 | Envelope sequence number | Bit 0-6 is envelope sequence number, and bit 7 is flag. If bit 7 is clear, it uses envelope sequence. |
 | uint8 | Arpeggio sequence number | Bit 0-6 is arpeggio sequence number, and bit 7 is flag. If bit 7 is clear, it uses arpeggio sequence. |
 | uint8 | Pitch sequence number    | Bit 0-6 is pitch sequence number, and bit 7 is flag. If bit 7 is clear, it uses pitch sequence.       |
@@ -129,11 +129,11 @@ After FB sequence number, it repeats 9 operator's parameters for each operator (
 
 After key count, it repeats data of assigned key.
 
-| Type  | Field           | Description          |
-| ----- | --------------- | -------------------- |
-| uint8 | Key number      | Assigned key number. |
-| uint8 | Waveform number | Waveform number.     |
-| int8  | Key pitch       | Assigned key pitch.  |
+| Type  | Field         | Description          |
+| ----- | ------------- | -------------------- |
+| uint8 | Key number    | Assigned key number. |
+| uint8 | Sample number | Sample number.       |
+| int8  | Key pitch     | Assigned key pitch.  |
 
 
 ## Instrument Property Section
@@ -168,7 +168,7 @@ Subsection identifier is defined as:
 | `0x32`        | SSG envelope sequence                                                |
 | `0x33`        | SSG arpeggio sequence                                                |
 | `0x34`        | SSG pitch sequence                                                   |
-| `0x40`        | ADPCM waveform                                                       |
+| `0x40`        | ADPCM sample                                                         |
 | `0x41`        | ADPCM envelope sequence                                              |
 | `0x42`        | ADPCM arpeggio sequence                                              |
 | `0x43`        | ADPCM pitch sequence                                                 |
@@ -205,11 +205,11 @@ After this, repeat parameters in the table below for each operator.
 | uint8 | Start count   | Tick wait count before beginning LFO.                                                                                                                            |
 
 
-### ADPCM waveform
+### ADPCM sample
 | Type      | Field         | Description                                              |
 | --------- | ------------- | -------------------------------------------------------- |
-| uint8     | Index         | Waveform index number.                                   |
-| uint32    | Offset        | Relative offset to end of the waveform block.            |
+| uint8     | Index         | Sample index number.                                     |
+| uint32    | Offset        | Relative offset to end of the sample block.              |
 | uint8     | Root key      | Root key number.                                         |
 | uint16    | Root delta-N  | Delta-N (sample rate) in root key.                       |
 | uint8     | Repeat flag   | If bit 0 is set, this ADPCM sample is played repeatedly. |

@@ -22,27 +22,27 @@ InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *paren
 					new QTreeWidgetItem({ tone[i % 12] + QString::number(i / 12), "-", "-" }));
 	}
 
-	//========== Waveform ==========//
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::modified, this, [&] { emit modified(); });
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformNumberChanged,
+	//========== Sample ==========//
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::modified, this, [&] { emit modified(); });
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleNumberChanged,
 					 this, [&](int n) {
-		bt_.lock()->setInstrumentDrumkitWaveform(instNum_, ui->keyTreeWidget->currentIndex().row(), n);
-		setInstrumentWaveformParameters(ui->keyTreeWidget->currentIndex().row());
-		emit waveformNumberChanged();
+		bt_.lock()->setInstrumentDrumkitSample(instNum_, ui->keyTreeWidget->currentIndex().row(), n);
+		setInstrumentSampleParameters(ui->keyTreeWidget->currentIndex().row());
+		emit sampleNumberChanged();
 		emit modified();
 
 		if (config_.lock()->getWriteOnlyUsedSamples()) {
-			emit waveformAssignRequested();
+			emit sampleAssignRequested();
 		}
 	}, Qt::DirectConnection);
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformParameterChanged,
-					 this, [&](int wfNum) {
-		emit waveformParameterChanged(wfNum, instNum_);
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleParameterChanged,
+					 this, [&](int sampNum) {
+		emit sampleParameterChanged(sampNum, instNum_);
 	});
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformAssignRequested,
-					 this, [&] { emit waveformAssignRequested(); });
-	QObject::connect(ui->waveEditor, &ADPCMWaveformEditor::waveformMemoryChanged,
-					 this, [&] { emit waveformMemoryChanged(); });
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleAssignRequested,
+					 this, [&] { emit sampleAssignRequested(); });
+	QObject::connect(ui->sampleEditor, &ADPCMSampleEditor::sampleMemoryChanged,
+					 this, [&] { emit sampleMemoryChanged(); });
 }
 
 InstrumentEditorDrumkitForm::~InstrumentEditorDrumkitForm()
@@ -58,20 +58,20 @@ int InstrumentEditorDrumkitForm::getInstrumentNumber() const
 void InstrumentEditorDrumkitForm::setCore(std::weak_ptr<BambooTracker> core)
 {
 	bt_ = core;
-	ui->waveEditor->setCore(core);
+	ui->sampleEditor->setCore(core);
 	updateInstrumentParameters();
 }
 
 void InstrumentEditorDrumkitForm::setConfiguration(std::weak_ptr<Configuration> config)
 {
 	config_ = config;
-	ui->waveEditor->setConfiguration(config);
+	ui->sampleEditor->setConfiguration(config);
 }
 
 void InstrumentEditorDrumkitForm::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
-	ui->waveEditor->setColorPalette(palette);
+	ui->sampleEditor->setColorPalette(palette);
 }
 
 void InstrumentEditorDrumkitForm::updateInstrumentParameters()
@@ -84,7 +84,7 @@ void InstrumentEditorDrumkitForm::updateInstrumentParameters()
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	for (const auto& key : instKit->getAssignedKeys()) {
-		setInstrumentWaveformParameters(key);
+		setInstrumentSampleParameters(key);
 	}
 }
 
@@ -143,10 +143,10 @@ void InstrumentEditorDrumkitForm::on_keyTreeWidget_currentItemChanged(QTreeWidge
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
 
-	bool enabled = instKit->getWaveformEnabled(key);
-	ui->waveGroupBox->setChecked(enabled);
+	bool enabled = instKit->getSampleEnabled(key);
+	ui->sampleGroupBox->setChecked(enabled);
 	if (enabled) {
-		setInstrumentWaveformParameters(key);
+		setInstrumentSampleParameters(key);
 		ui->pitshSpinBox->setValue(instKit->getPitch(key));
 	}
 }
@@ -157,96 +157,96 @@ void InstrumentEditorDrumkitForm::on_pitshSpinBox_valueChanged(int arg1)
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
 
-	if (instKit->getWaveformEnabled(key)) {
+	if (instKit->getSampleEnabled(key)) {
 		bt_.lock()->setInstrumentDrumkitPitch(instNum_, key, arg1);
 		ui->keyTreeWidget->currentItem()->setText(2, QString::number(arg1));
 		emit modified();
 	}
 }
 
-//--- Waveform
-void InstrumentEditorDrumkitForm::setInstrumentWaveformParameters(int key)
+//--- Sample
+void InstrumentEditorDrumkitForm::setInstrumentSampleParameters(int key)
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
 	QTreeWidgetItem* item = ui->keyTreeWidget->topLevelItem(key);
 
-	if (instKit->getWaveformEnabled(key)) {
-		int wfNum = instKit->getWaveformNumber(key);
-		ui->waveEditor->setInstrumentWaveformParameters(
-					wfNum, instKit->isWaveformRepeatable(key),
-					instKit->getWaveformRootKeyNumber(key), instKit->getWaveformRootDeltaN(key),
-					instKit->getWaveformStartAddress(key), instKit->getWaveformStopAddress(key),
-					instKit->getWaveformSamples(key));
-		item->setText(1, QString::number(wfNum));
+	if (instKit->getSampleEnabled(key)) {
+		int sampNum = instKit->getSampleNumber(key);
+		ui->sampleEditor->setInstrumentSampleParameters(
+					sampNum, instKit->isSampleRepeatable(key),
+					instKit->getSampleRootKeyNumber(key), instKit->getSampleRootDeltaN(key),
+					instKit->getSampleStartAddress(key), instKit->getSampleStopAddress(key),
+					instKit->getRawSample(key));
+		item->setText(1, QString::number(sampNum));
 		item->setText(2, QString::number(instKit->getPitch(key)));
 	}
 	else {
-		ui->waveEditor->setInstrumentWaveformParameters(
-					0, bt_.lock()->getWaveformADPCMRepeatEnabled(0),
-					bt_.lock()->getWaveformADPCMRootKeyNumber(0),
-					bt_.lock()->getWaveformADPCMRootDeltaN(0),
-					bt_.lock()->getWaveformADPCMStartAddress(0),
-					bt_.lock()->getWaveformADPCMStopAddress(0),
-					bt_.lock()->getWaveformADPCMSample(0));
+		ui->sampleEditor->setInstrumentSampleParameters(
+					0, bt_.lock()->getSampleADPCMRepeatEnabled(0),
+					bt_.lock()->getSampleADPCMRootKeyNumber(0),
+					bt_.lock()->getSampleADPCMRootDeltaN(0),
+					bt_.lock()->getSampleADPCMStartAddress(0),
+					bt_.lock()->getSampleADPCMStopAddress(0),
+					bt_.lock()->getSampleADPCMRawSample(0));
 		item->setText(1, "-");
 		item->setText(2, "-");
 	}
 }
 
 /********** Slots **********/
-void InstrumentEditorDrumkitForm::onWaveformNumberChanged()
+void InstrumentEditorDrumkitForm::onSampleNumberChanged()
 {
-	ui->waveEditor->onWaveformNumberChanged();
+	ui->sampleEditor->onSampleNumberChanged();
 }
 
-void InstrumentEditorDrumkitForm::onWaveformParameterChanged(int wfNum)
+void InstrumentEditorDrumkitForm::onSampleParameterChanged(int sampNum)
 {
-	if (ui->waveEditor->getWaveformNumber() == wfNum) {
-		setInstrumentWaveformParameters(ui->keyTreeWidget->currentIndex().row());
+	if (ui->sampleEditor->getSampleNumber() == sampNum) {
+		setInstrumentSampleParameters(ui->keyTreeWidget->currentIndex().row());
 	}
 }
 
-void InstrumentEditorDrumkitForm::onWaveformSampleMemoryUpdated()
+void InstrumentEditorDrumkitForm::onSampleMemoryUpdated()
 {
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
 	int key = ui->keyTreeWidget->currentIndex().row();
 
-	if (instKit->getWaveformEnabled(key)) {
-			ui->waveEditor->onWaveformSampleMemoryUpdated(instKit->getWaveformStartAddress(key),
-														  instKit->getWaveformStopAddress(key));
+	if (instKit->getSampleEnabled(key)) {
+		ui->sampleEditor->onSampleMemoryUpdated(instKit->getSampleStartAddress(key),
+												instKit->getSampleStopAddress(key));
 	}
 	else {
 		// Clear addresses
-		ui->waveEditor->onWaveformSampleMemoryUpdated(0, 0);
+		ui->sampleEditor->onSampleMemoryUpdated(0, 0);
 	}
 }
 
-void InstrumentEditorDrumkitForm::on_waveGroupBox_clicked(bool checked)
+void InstrumentEditorDrumkitForm::on_sampleGroupBox_clicked(bool checked)
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
 	int key = ui->keyTreeWidget->currentIndex().row();
-	bt_.lock()->setInstrumentDrumkitWaveformEnabled(instNum_, key, checked);
+	bt_.lock()->setInstrumentDrumkitSampleEnabled(instNum_, key, checked);
 	if (checked) {
 		ui->pitshSpinBox->setValue(0);
-		setInstrumentWaveformParameters(key);
+		setInstrumentSampleParameters(key);
 	}
 	else {
 		// Clear parameters
-		ui->waveEditor->setInstrumentWaveformParameters(
-					0, bt_.lock()->getWaveformADPCMRepeatEnabled(0),
-					bt_.lock()->getWaveformADPCMRootKeyNumber(0),
-					bt_.lock()->getWaveformADPCMRootDeltaN(0),
-					bt_.lock()->getWaveformADPCMStartAddress(0),
-					bt_.lock()->getWaveformADPCMStopAddress(0),
-					bt_.lock()->getWaveformADPCMSample(0));
+		ui->sampleEditor->setInstrumentSampleParameters(
+					0, bt_.lock()->getSampleADPCMRepeatEnabled(0),
+					bt_.lock()->getSampleADPCMRootKeyNumber(0),
+					bt_.lock()->getSampleADPCMRootDeltaN(0),
+					bt_.lock()->getSampleADPCMStartAddress(0),
+					bt_.lock()->getSampleADPCMStopAddress(0),
+					bt_.lock()->getSampleADPCMRawSample(0));
 
 		ui->keyTreeWidget->currentItem()->setText(1, "-");
 		ui->keyTreeWidget->currentItem()->setText(2, "-");
 	}
 
-	emit waveformNumberChanged();
+	emit sampleNumberChanged();
 	emit modified();
 }

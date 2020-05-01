@@ -29,9 +29,9 @@ public:
 	QColor instSeqMaskColor;
 	QColor instSeqOddColColor;
 
-	// ADPCM waveform editor
+	// ADPCM sample editor
 	QColor instADPCMMemAllColor, instADPCMMemCurColor, instADPCMMemBackColor;
-	QColor instADPCMWaveViewForeColor, instADPCMWaveViewBackColor, instADPCMWaveViewCenterColor;
+	QColor instADPCMSampViewForeColor, instADPCMSampViewBackColor, instADPCMSampViewCenterColor;
 
 	// Tone/Noise editor
 	QColor tnToneCellColor, tnToneTextColor;

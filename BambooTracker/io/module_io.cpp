@@ -114,7 +114,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 			{
 				ctr.appendUint8(0x02);
 				auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);
-				ctr.appendUint8(static_cast<uint8_t>(instADPCM->getWaveformNumber()));
+				ctr.appendUint8(static_cast<uint8_t>(instADPCM->getSampleNumber()));
 				uint8_t tmp = static_cast<uint8_t>(instADPCM->getEnvelopeNumber());
 				ctr.appendUint8(instADPCM->getEnvelopeEnabled() ? tmp : (0x80 | tmp));
 				tmp = static_cast<uint8_t>(instADPCM->getArpeggioNumber());
@@ -131,7 +131,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 				ctr.appendUint8(keys.size());
 				for (const int& key : keys) {
 					ctr.appendUint8(static_cast<uint8_t>(key));
-					ctr.appendUint8(static_cast<uint8_t>(instKit->getWaveformNumber(key)));
+					ctr.appendUint8(static_cast<uint8_t>(instKit->getSampleNumber(key)));
 					ctr.appendInt8(instKit->getPitch(key));
 				}
 				break;
@@ -646,19 +646,19 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 		}
 	}
 
-	// ADPCM waveform
-	std::vector<int> wfADPCMIdcs = instManLocked->getWaveformADPCMEntriedIndices();
-	if (!wfADPCMIdcs.empty()) {
+	// ADPCM sample
+	std::vector<int> sampADPCMIdcs = instManLocked->getSampleADPCMEntriedIndices();
+	if (!sampADPCMIdcs.empty()) {
 		ctr.appendUint8(0x40);
-		ctr.appendUint8(static_cast<uint8_t>(wfADPCMIdcs.size()));
-		for (auto& idx : wfADPCMIdcs) {
+		ctr.appendUint8(static_cast<uint8_t>(sampADPCMIdcs.size()));
+		for (auto& idx : sampADPCMIdcs) {
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint32(0);	// Dummy offset
-			ctr.appendUint8(static_cast<uint8_t>(instManLocked->getWaveformADPCMRootKeyNumber(idx)));
-			ctr.appendUint16(static_cast<uint16_t>(instManLocked->getWaveformADPCMRootDeltaN(idx)));
-			ctr.appendUint8(static_cast<uint8_t>(instManLocked->isWaveformADPCMRepeatable(idx)));
-			std::vector<uint8_t> samples = instManLocked->getWaveformADPCMSamples(idx);
+			ctr.appendUint8(static_cast<uint8_t>(instManLocked->getSampleADPCMRootKeyNumber(idx)));
+			ctr.appendUint16(static_cast<uint16_t>(instManLocked->getSampleADPCMRootDeltaN(idx)));
+			ctr.appendUint8(static_cast<uint8_t>(instManLocked->isSampleADPCMRepeatable(idx)));
+			std::vector<uint8_t> samples = instManLocked->getSampleADPCMRawSample(idx);
 			ctr.appendUint32(samples.size());
 			ctr.appendVector(std::move(samples));
 			ctr.writeUint32(ofs, ctr.size() - ofs);
@@ -1129,7 +1129,7 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 		case 0x02:	// ADPCM
 		{
 			auto instADPCM = new InstrumentADPCM(idx, name, instManLocked.get());
-			instADPCM->setWaveformNumber(ctr.readUint8(iCsr++));
+			instADPCM->setSampleNumber(ctr.readUint8(iCsr++));
 			uint8_t tmp = ctr.readUint8(iCsr);
 			instADPCM->setEnvelopeEnabled((0x80 & tmp) ? false : true);
 			instADPCM->setEnvelopeNumber(0x7f & tmp);
@@ -1151,8 +1151,8 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 			int cnt = ctr.readUint8(iCsr++);
 			for (int i = 0; i < cnt; ++i) {
 				int key = ctr.readUint8(iCsr++);
-				instKit->setWaveformEnabled(key, true);
-				instKit->setWaveformNumber(key, ctr.readUint8(iCsr++));
+				instKit->setSampleEnabled(key, true);
+				instKit->setSampleNumber(key, ctr.readUint8(iCsr++));
 				instKit->setPitch(key, ctr.readInt8(iCsr++));
 			}
 			instManLocked->addInstrument(std::unique_ptr<AbstractInstrument>(instKit));
@@ -1206,7 +1206,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				tmp = ctr.readUint8(csr++);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1, tmp & 0x0f);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1,
-													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				// Operator 2
 				tmp = ctr.readUint8(csr++);
 				instManLocked->setEnvelopeFMOperatorEnabled(idx, 1, (0x20 & tmp) ? true : false);
@@ -1225,7 +1225,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				tmp = ctr.readUint8(csr++);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2, tmp & 0x0f);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2,
-													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				// Operator 3
 				tmp = ctr.readUint8(csr++);
 				instManLocked->setEnvelopeFMOperatorEnabled(idx, 2, (0x20 & tmp) ? true : false);
@@ -1244,7 +1244,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				tmp = ctr.readUint8(csr++);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3, tmp & 0x0f);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3,
-													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				// Operator 4
 				tmp = ctr.readUint8(csr++);
 				instManLocked->setEnvelopeFMOperatorEnabled(idx, 3, (0x20 & tmp) ? true : false);
@@ -1263,7 +1263,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				tmp = ctr.readUint8(csr++);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
 				instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
-													   (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
 				instPropCsr += ofs;
 			}
 			break;
@@ -2124,7 +2124,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			}
 			break;
 		}
-		case 0x40:	// ADPCM waveform
+		case 0x40:	// ADPCM sample
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i) {
@@ -2132,15 +2132,15 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 				uint32_t ofs = ctr.readUint32(instPropCsr);
 				size_t csr = instPropCsr + 4;
 
-				instManLocked->setWaveformADPCMRootKeyNumber(idx, ctr.readUint8(csr++));
-				instManLocked->setWaveformADPCMRootDeltaN(idx, ctr.readUint16(csr));
+				instManLocked->setSampleADPCMRootKeyNumber(idx, ctr.readUint8(csr++));
+				instManLocked->setSampleADPCMRootDeltaN(idx, ctr.readUint16(csr));
 				csr += 2;
-				instManLocked->setWaveformADPCMRepeatEnabled(idx, (ctr.readUint8(csr++) & 0x01) != 0);
+				instManLocked->setSampleADPCMRepeatEnabled(idx, (ctr.readUint8(csr++) & 0x01) != 0);
 				uint32_t len = ctr.readUint32(csr);
 				csr += 4;
 				std::vector<uint8_t> samples = ctr.getSubcontainer(csr, len).toVector();
 				csr += len;
-				instManLocked->storeWaveformADPCMSample(idx, std::move(samples));
+				instManLocked->storeSampleADPCMRawSample(idx, std::move(samples));
 
 				instPropCsr += ofs;
 			}
@@ -2482,7 +2482,7 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContai
 			throw FileCorruptionError(FileIO::FileType::Mod);
 		}
 		modLocked->addSong(idx, songType, title, isTempo,
-							static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
+						   static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);
 		auto& song = modLocked->getSong(idx);
 
 		// Bookmark

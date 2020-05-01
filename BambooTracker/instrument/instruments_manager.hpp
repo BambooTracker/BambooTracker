@@ -57,7 +57,7 @@ private:
 	//----- FM methods -----
 public:
 	void setInstrumentFMEnvelope(int instNum, int envNum);
-    int getInstrumentFMEnvelope(int instNum) const;
+	int getInstrumentFMEnvelope(int instNum) const;
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
 	int getEnvelopeFMParameter(int envNum, FMEnvelopeParameter param) const;
 	void setEnvelopeFMOperatorEnabled(int envNum, int opNum, bool enabled);
@@ -259,26 +259,26 @@ private:
 
 	//----- ADPCM methods -----
 public:
-	void setInstrumentADPCMWaveform(int instNum, int wfNum);
-	int getInstrumentADPCMWaveform(int instNum);
-	void setWaveformADPCMRootKeyNumber(int wfNum, int n);
-	int getWaveformADPCMRootKeyNumber(int wfNum) const;
-	void setWaveformADPCMRootDeltaN(int wfNum, int dn);
-	int getWaveformADPCMRootDeltaN(int wfNum) const;
-	void setWaveformADPCMRepeatEnabled(int wfNum, bool enabled);
-	bool isWaveformADPCMRepeatable(int wfNum) const;
-	void storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample);
-	void clearWaveformADPCMSample(int wfNum);
-	std::vector<uint8_t> getWaveformADPCMSamples(int wfNum) const;
-	void setWaveformADPCMStartAddress(int wfNum, size_t addr);
-	size_t getWaveformADPCMStartAddress(int wfNum) const;
-	void setWaveformADPCMStopAddress(int wfNum, size_t addr);
-	size_t getWaveformADPCMStopAddress(int wfNum) const;
-	std::vector<int> getWaveformADPCMUsers(int wfNum) const;
-	std::vector<int> getWaveformADPCMEntriedIndices() const;
-	std::vector<int> getWaveformADPCMValidIndices() const;
-	void clearUnusedWaveformsADPCM();
-	int findFirstAssignableWaveformADPCM(int startIndex = 0) const;
+	void setInstrumentADPCMSample(int instNum, int sampNum);
+	int getInstrumentADPCMSample(int instNum);
+	void setSampleADPCMRootKeyNumber(int sampNum, int n);
+	int getSampleADPCMRootKeyNumber(int sampNum) const;
+	void setSampleADPCMRootDeltaN(int sampNum, int dn);
+	int getSampleADPCMRootDeltaN(int sampNum) const;
+	void setSampleADPCMRepeatEnabled(int sampNum, bool enabled);
+	bool isSampleADPCMRepeatable(int sampNum) const;
+	void storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample);
+	void clearSampleADPCMRawSample(int sampNum);
+	std::vector<uint8_t> getSampleADPCMRawSample(int sampNum) const;
+	void setSampleADPCMStartAddress(int sampNum, size_t addr);
+	size_t getSampleADPCMStartAddress(int sampNum) const;
+	void setSampleADPCMStopAddress(int sampNum, size_t addr);
+	size_t getSampleADPCMStopAddress(int sampNum) const;
+	std::vector<int> getSampleADPCMUsers(int sampNum) const;
+	std::vector<int> getSampleADPCMEntriedIndices() const;
+	std::vector<int> getSampleADPCMValidIndices() const;
+	void clearUnusedSamplesADPCM();
+	int findFirstAssignableSampleADPCM(int startIndex = 0) const;
 
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
 	bool getInstrumentADPCMEnvelopeEnabled(int instNum) const;
@@ -336,12 +336,12 @@ public:
 	int findFirstAssignablePitchADPCM() const;
 
 private:
-	std::array<std::shared_ptr<WaveformADPCM>, 128> wfADPCM_;
+	std::array<std::shared_ptr<SampleADPCM>, 128> sampADPCM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> envADPCM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> arpADPCM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> ptADPCM_;
 
-	int cloneADPCMWaveform(int srcNum);
+	int cloneADPCMSample(int srcNum);
 	int cloneADPCMEnvelope(int srcNum);
 	int cloneADPCMArpeggio(int srcNum);
 	int cloneADPCMPitch(int srcNum);
@@ -350,10 +350,10 @@ private:
 
 	//----- Drumkit methods -----
 public:
-	void setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled);
-	bool getInstrumentDrumkitWaveformEnabled(int instNum, int key) const;
-	void setInstrumentDrumkitWaveform(int instNum, int key, int wfNum);
-	int getInstrumentDrumkitWaveform(int instNum, int key);
+	void setInstrumentDrumkitSamplesEnabled(int instNum, int key, bool enabled);
+	bool getInstrumentDrumkitSamplesEnabled(int instNum, int key) const;
+	void setInstrumentDrumkitSamples(int instNum, int key, int sampNum);
+	int getInstrumentDrumkitSamples(int instNum, int key);
 
 	void setInstrumentDrumkitPitch(int instNum, int key, int pitch);
 

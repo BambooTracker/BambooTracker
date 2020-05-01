@@ -5,16 +5,16 @@
 #include <cstdint>
 #include "abstract_instrument_property.hpp"
 
-class WaveformADPCM : public AbstractInstrumentProperty
+class SampleADPCM : public AbstractInstrumentProperty
 {
 public:
-	explicit WaveformADPCM(int num);
-	WaveformADPCM(const WaveformADPCM& other);
+	explicit SampleADPCM(int num);
+	SampleADPCM(const SampleADPCM& other);
 
-	friend bool operator==(const WaveformADPCM& a, const WaveformADPCM& b);
-	friend bool operator!=(const WaveformADPCM& a, const WaveformADPCM& b) { return !(a == b); }
+	friend bool operator==(const SampleADPCM& a, const SampleADPCM& b);
+	friend bool operator!=(const SampleADPCM& a, const SampleADPCM& b) { return !(a == b); }
 
-	std::unique_ptr<WaveformADPCM> clone();
+	std::unique_ptr<SampleADPCM> clone();
 
 	void setRootKeyNumber(int n);
 	int getRootKeyNumber() const;

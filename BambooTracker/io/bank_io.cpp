@@ -82,7 +82,7 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 			{
 				ctr.appendUint8(0x02);
 				auto instADPCM = std::dynamic_pointer_cast<InstrumentADPCM>(inst);
-				ctr.appendUint8(static_cast<uint8_t>(instADPCM->getWaveformNumber()));
+				ctr.appendUint8(static_cast<uint8_t>(instADPCM->getSampleNumber()));
 				uint8_t tmp = static_cast<uint8_t>(instADPCM->getEnvelopeNumber());
 				ctr.appendUint8(instADPCM->getEnvelopeEnabled() ? tmp : (0x80 | tmp));
 				tmp = static_cast<uint8_t>(instADPCM->getArpeggioNumber());
@@ -99,7 +99,7 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 				ctr.appendUint8(keys.size());
 				for (const int& key : keys) {
 					ctr.appendUint8(static_cast<uint8_t>(key));
-					ctr.appendUint8(static_cast<uint8_t>(instKit->getWaveformNumber(key)));
+					ctr.appendUint8(static_cast<uint8_t>(instKit->getSampleNumber(key)));
 					ctr.appendInt8(instKit->getPitch(key));
 				}
 				break;
@@ -674,25 +674,25 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 		}
 	}
 
-	// ADPCM waveform
-	std::vector<int> wfADPCMIdcs;
-	for (auto& idx : instMan.lock()->getWaveformADPCMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getWaveformADPCMUsers(idx);
+	// ADPCM sample
+	std::vector<int> sampADPCMIdcs;
+	for (auto& idx : instMan.lock()->getSampleADPCMEntriedIndices()) {
+		std::vector<int> users = instMan.lock()->getSampleADPCMUsers(idx);
 		std::vector<int> intersection;
 		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) wfADPCMIdcs.push_back(idx);
+		if (!intersection.empty()) sampADPCMIdcs.push_back(idx);
 	}
-	if (!wfADPCMIdcs.empty()) {
+	if (!sampADPCMIdcs.empty()) {
 		ctr.appendUint8(0x40);
-		ctr.appendUint8(static_cast<uint8_t>(wfADPCMIdcs.size()));
-		for (auto& idx : wfADPCMIdcs) {
+		ctr.appendUint8(static_cast<uint8_t>(sampADPCMIdcs.size()));
+		for (auto& idx : sampADPCMIdcs) {
 			ctr.appendUint8(static_cast<uint8_t>(idx));
 			size_t ofs = ctr.size();
 			ctr.appendUint32(0);	// Dummy offset
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getWaveformADPCMRootKeyNumber(idx)));
-			ctr.appendUint16(static_cast<uint16_t>(instMan.lock()->getWaveformADPCMRootDeltaN(idx)));
-			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->isWaveformADPCMRepeatable(idx)));
-			std::vector<uint8_t> samples = instMan.lock()->getWaveformADPCMSamples(idx);
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->getSampleADPCMRootKeyNumber(idx)));
+			ctr.appendUint16(static_cast<uint16_t>(instMan.lock()->getSampleADPCMRootDeltaN(idx)));
+			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->isSampleADPCMRepeatable(idx)));
+			std::vector<uint8_t> samples = instMan.lock()->getSampleADPCMRawSample(idx);
 			ctr.appendUint32(samples.size());
 			ctr.appendVector(std::move(samples));
 			ctr.writeUint32(ofs, ctr.size() - ofs);

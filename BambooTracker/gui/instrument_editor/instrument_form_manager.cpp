@@ -61,13 +61,13 @@ void InstrumentFormManager::remove(int n)
 		onInstrumentSSGPitchNumberChanged();
 		break;
 	case InstrumentType::ADPCM:
-		onInstrumentADPCMWaveformNumberChanged();
+		onInstrumentADPCMSampleNumberChanged();
 		onInstrumentADPCMEnvelopeNumberChanged();
 		onInstrumentADPCMArpeggioNumberChanged();
 		onInstrumentADPCMPitchNumberChanged();
 		break;
 	case InstrumentType::Drumkit:
-		onInstrumentADPCMWaveformNumberChanged();
+		onInstrumentADPCMSampleNumberChanged();
 		break;
 	default:
 		throw std::invalid_argument("invalid instrument type");
@@ -312,27 +312,27 @@ void InstrumentFormManager::onInstrumentSSGPitchNumberChanged()
 	}
 }
 
-void InstrumentFormManager::onInstrumentADPCMWaveformParameterChanged(int wfNum, int fromInstNum)
+void InstrumentFormManager::onInstrumentADPCMSampleParameterChanged(int sampNum, int fromInstNum)
 {
-	Q_UNUSED(fromInstNum)	// Update all adpcm editor to change waveform memory viewer and sample viewer
+	Q_UNUSED(fromInstNum)	// Update all adpcm editor to change sample memory viewer and sample viewer
 	for (auto& pair : map_) {
 		if (static_cast<SoundSource>(pair.second->property("Source").toInt()) == SoundSource::ADPCM) {
 			if (auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(pair.second.get()))
-				adpcmForm->onWaveformParameterChanged(wfNum);
+				adpcmForm->onSampleParameterChanged(sampNum);
 			else if (auto kitForm = qobject_cast<InstrumentEditorDrumkitForm*>(pair.second.get()))
-				kitForm->onWaveformParameterChanged(wfNum);
+				kitForm->onSampleParameterChanged(sampNum);
 		}
 	}
 }
 
-void InstrumentFormManager::onInstrumentADPCMWaveformNumberChanged()
+void InstrumentFormManager::onInstrumentADPCMSampleNumberChanged()
 {
 	for (auto& pair : map_) {
 		if (static_cast<SoundSource>(pair.second->property("Source").toInt()) == SoundSource::ADPCM) {
 			if (auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(pair.second.get()))
-				adpcmForm->onWaveformNumberChanged();
+				adpcmForm->onSampleNumberChanged();
 			else if (auto kitForm = qobject_cast<InstrumentEditorDrumkitForm*>(pair.second.get()))
-				kitForm->onWaveformNumberChanged();
+				kitForm->onSampleNumberChanged();
 		}
 	}
 }
@@ -342,9 +342,9 @@ void InstrumentFormManager::onInstrumentADPCMSampleMemoryUpdated()
 	for (auto& pair : map_) {
 		if (static_cast<SoundSource>(pair.second->property("Source").toInt()) == SoundSource::ADPCM) {
 			if (auto adpcmForm = qobject_cast<InstrumentEditorADPCMForm*>(pair.second.get()))
-				adpcmForm->onWaveformSampleMemoryUpdated();
+				adpcmForm->onSampleMemoryUpdated();
 			else if (auto kitForm = qobject_cast<InstrumentEditorDrumkitForm*>(pair.second.get()))
-				kitForm->onWaveformSampleMemoryUpdated();
+				kitForm->onSampleMemoryUpdated();
 		}
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ADPCMWaveformEditor</class>
- <widget class="QWidget" name="ADPCMWaveformEditor">
+ <class>ADPCMSampleEditor</class>
+ <widget class="QWidget" name="ADPCMSampleEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -32,7 +32,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QSpinBox" name="waveNumSpinBox">
+      <widget class="QSpinBox" name="sampleNumSpinBox">
        <property name="keyboardTracking">
         <bool>false</bool>
        </property>
@@ -45,14 +45,14 @@
       </widget>
      </item>
      <item alignment="Qt::AlignRight">
-      <widget class="QLabel" name="waveUsersLabel">
+      <widget class="QLabel" name="usersLabel">
        <property name="text">
         <string>Users:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="waveUsersLineEdit">
+      <widget class="QLineEdit" name="usersLineEdit">
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -72,14 +72,14 @@
       </spacer>
      </item>
      <item alignment="Qt::AlignRight">
-      <widget class="QLabel" name="waveMemoryLabel">
+      <widget class="QLabel" name="memoryLabel">
        <property name="text">
         <string>Memory:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QWidget" name="waveMemoryWidget" native="true">
+      <widget class="QWidget" name="memoryWidget" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -97,7 +97,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QWidget" name="waveViewWidget" native="true">
+    <widget class="QWidget" name="sampleViewWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -109,7 +109,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
-      <widget class="QCheckBox" name="waveRepeatCheckBox">
+      <widget class="QCheckBox" name="repeatCheckBox">
        <property name="text">
         <string>Repeat</string>
        </property>
@@ -129,14 +129,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="waveImportPushButton">
+      <widget class="QPushButton" name="importPushButton">
        <property name="text">
         <string>Import</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="waveClearPushButton">
+      <widget class="QPushButton" name="clearPushButton">
        <property name="text">
         <string>Clear</string>
        </property>
@@ -254,11 +254,11 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>waveNumSpinBox</tabstop>
-  <tabstop>waveUsersLineEdit</tabstop>
-  <tabstop>waveRepeatCheckBox</tabstop>
-  <tabstop>waveImportPushButton</tabstop>
-  <tabstop>waveClearPushButton</tabstop>
+  <tabstop>sampleNumSpinBox</tabstop>
+  <tabstop>usersLineEdit</tabstop>
+  <tabstop>repeatCheckBox</tabstop>
+  <tabstop>importPushButton</tabstop>
+  <tabstop>clearPushButton</tabstop>
   <tabstop>rootKeyComboBox</tabstop>
   <tabstop>rootKeySpinBox</tabstop>
   <tabstop>rootRateSpinBox</tabstop>

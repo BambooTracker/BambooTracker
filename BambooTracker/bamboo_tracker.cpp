@@ -611,85 +611,86 @@ size_t BambooTracker::getADPCMStoredSize() const
 	return opnaCtrl_->getADPCMStoredSize();
 }
 
-void BambooTracker::setWaveformADPCMRootKeyNumber(int wfNum, int n)
+void BambooTracker::setSampleADPCMRootKeyNumber(int sampNum, int n)
 {
-	instMan_->setWaveformADPCMRootKeyNumber(wfNum, n);
+	instMan_->setSampleADPCMRootKeyNumber(sampNum, n);
 	// opnaCtrl is changed through refInstADPCM (shared_ptr)
 }
 
-int BambooTracker::getWaveformADPCMRootKeyNumber(int wfNum) const
+int BambooTracker::getSampleADPCMRootKeyNumber(int sampNum) const
 {
-	return instMan_->getWaveformADPCMRootKeyNumber(wfNum);
+	return instMan_->getSampleADPCMRootKeyNumber(sampNum);
 }
 
-void BambooTracker::setWaveformADPCMRootDeltaN(int wfNum, int dn)
+void BambooTracker::setSampleADPCMRootDeltaN(int sampNum, int dn)
 {
-	instMan_->setWaveformADPCMRootDeltaN(wfNum, dn);
+	instMan_->setSampleADPCMRootDeltaN(sampNum, dn);
 	// opnaCtrl is changed through refInstADPCM (shared_ptr)
 }
 
-int BambooTracker::getWaveformADPCMRootDeltaN(int wfNum) const
+int BambooTracker::getSampleADPCMRootDeltaN(int sampNum) const
 {
-	return instMan_->getWaveformADPCMRootDeltaN(wfNum);
+	return instMan_->getSampleADPCMRootDeltaN(sampNum);
 }
 
-void BambooTracker::setWaveformADPCMRepeatEnabled(int wfNum, bool enabled)
+void BambooTracker::setSampleADPCMRepeatEnabled(int sampNum, bool enabled)
 {
-	instMan_->setWaveformADPCMRepeatEnabled(wfNum, enabled);
+	instMan_->setSampleADPCMRepeatEnabled(sampNum, enabled);
 	// opnaCtrl is changed through refInstADPCM (shared_ptr)
 }
 
-bool BambooTracker::getWaveformADPCMRepeatEnabled(int wfNum) const
+bool BambooTracker::getSampleADPCMRepeatEnabled(int sampNum) const
 {
-	return instMan_->isWaveformADPCMRepeatable(wfNum);
+	return instMan_->isSampleADPCMRepeatable(sampNum);
 }
 
-void BambooTracker::storeWaveformADPCMSample(int wfNum, std::vector<uint8_t> sample)
+void BambooTracker::storeSampleADPCMRawSample(int sampNum, std::vector<uint8_t> sample)
 {
-	instMan_->storeWaveformADPCMSample(wfNum, sample);
+	instMan_->storeSampleADPCMRawSample(sampNum, sample);
 }
 
-std::vector<uint8_t> BambooTracker::getWaveformADPCMSample(int wfNum) const
+std::vector<uint8_t> BambooTracker::getSampleADPCMRawSample(int sampNum) const
 {
-	return instMan_->getWaveformADPCMSamples(wfNum);
+	return instMan_->getSampleADPCMRawSample(sampNum);
 }
 
-void BambooTracker::clearWaveformADPCMSample(int wfNum)
+void BambooTracker::clearSampleADPCMRawSample(int sampNum)
 {
-	instMan_->clearWaveformADPCMSample(wfNum);
+	instMan_->clearSampleADPCMRawSample(sampNum);
 }
 
-void BambooTracker::assignWaveformADPCMSamples()
+void BambooTracker::assignSampleADPCMRawSamples()
 {
 	opnaCtrl_->clearSamplesADPCM();
-	std::vector<int> idcs = storeOnlyUsedSamples_ ? instMan_->getWaveformADPCMValidIndices()
-												  : instMan_->getWaveformADPCMEntriedIndices();
-	for (auto wfNum : idcs) {
-		std::vector<size_t> addresses = opnaCtrl_->storeSampleADPCM(instMan_->getWaveformADPCMSamples(wfNum));
-		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
-		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);
+	std::vector<int> idcs = storeOnlyUsedSamples_ ? instMan_->getSampleADPCMValidIndices()
+												  : instMan_->getSampleADPCMEntriedIndices();
+	for (auto sampNum : idcs) {
+		std::vector<size_t> addresses
+				= opnaCtrl_->storeSampleADPCM(instMan_->getSampleADPCMRawSample(sampNum));
+		instMan_->setSampleADPCMStartAddress(sampNum, addresses[0]);
+		instMan_->setSampleADPCMStopAddress(sampNum, addresses[1]);
 	}
 }
 
-size_t BambooTracker::getWaveformADPCMStartAddress(int wfNum) const
+size_t BambooTracker::getSampleADPCMStartAddress(int sampNum) const
 {
-	return instMan_->getWaveformADPCMStartAddress(wfNum);
+	return instMan_->getSampleADPCMStartAddress(sampNum);
 }
 
-size_t BambooTracker::getWaveformADPCMStopAddress(int wfNum) const
+size_t BambooTracker::getSampleADPCMStopAddress(int sampNum) const
 {
-	return instMan_->getWaveformADPCMStopAddress(wfNum);
+	return instMan_->getSampleADPCMStopAddress(sampNum);
 }
 
-void BambooTracker::setInstrumentADPCMWaveform(int instNum, int wfNum)
+void BambooTracker::setInstrumentADPCMSample(int instNum, int sampNum)
 {
-	instMan_->setInstrumentADPCMWaveform(instNum, wfNum);
+	instMan_->setInstrumentADPCMSample(instNum, sampNum);
 	opnaCtrl_->updateInstrumentADPCM(instNum);
 }
 
-std::vector<int> BambooTracker::getWaveformADPCMUsers(int wfNum) const
+std::vector<int> BambooTracker::getSampleADPCMUsers(int sampNum) const
 {
-	return instMan_->getWaveformADPCMUsers(wfNum);
+	return instMan_->getSampleADPCMUsers(sampNum);
 }
 
 void BambooTracker::addEnvelopeADPCMSequenceCommand(int envNum, int type, int data)
@@ -829,15 +830,15 @@ std::vector<int> BambooTracker::getPitchADPCMUsers(int ptNum) const
 }
 
 //--- Drumkit
-void BambooTracker::setInstrumentDrumkitWaveform(int instNum, int key, int wfNum)
+void BambooTracker::setInstrumentDrumkitSample(int instNum, int key, int sampNum)
 {
-	instMan_->setInstrumentDrumkitWaveform(instNum, key, wfNum);
+	instMan_->setInstrumentDrumkitSamples(instNum, key, sampNum);
 	opnaCtrl_->updateInstrumentDrumkit(instNum, key);
 }
 
-void BambooTracker::setInstrumentDrumkitWaveformEnabled(int instNum, int key, bool enabled)
+void BambooTracker::setInstrumentDrumkitSampleEnabled(int instNum, int key, bool enabled)
 {
-	instMan_->setInstrumentDrumkitWaveformEnabled(instNum, key, enabled);
+	instMan_->setInstrumentDrumkitSamplesEnabled(instNum, key, enabled);
 	opnaCtrl_->updateInstrumentADPCM(instNum);
 }
 
@@ -1133,7 +1134,7 @@ std::vector<std::vector<size_t>> BambooTracker::assignADPCMBeforeForcedJamKeyOn(
 	{
 		opnaCtrl_->clearSamplesADPCM();
 		return { opnaCtrl_->storeSampleADPCM(
-						std::dynamic_pointer_cast<InstrumentADPCM>(inst)->getWaveformSamples()) };
+						std::dynamic_pointer_cast<InstrumentADPCM>(inst)->getRawSample()) };
 	}
 	case InstrumentType::Drumkit:
 	{
@@ -1141,9 +1142,9 @@ std::vector<std::vector<size_t>> BambooTracker::assignADPCMBeforeForcedJamKeyOn(
 		std::vector<std::vector<size_t>> addrs;
 		auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst);
 		for (const int& key : kit->getAssignedKeys()) {
-			int wf = kit->getWaveformNumber(key);
-			if (addrs.size() <= static_cast<size_t>(wf)) addrs.resize(wf + 1);
-			if (addrs[wf].empty()) addrs[wf] = opnaCtrl_->storeSampleADPCM(kit->getWaveformSamples(key));
+			int samp = kit->getSampleNumber(key);
+			if (addrs.size() <= static_cast<size_t>(samp)) addrs.resize(samp + 1);
+			if (addrs[samp].empty()) addrs[samp] = opnaCtrl_->storeSampleADPCM(kit->getRawSample(key));
 		}
 		return addrs;
 	}
@@ -1386,11 +1387,11 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 	// Set ADPCM
 	opnaCtrl_->clearSamplesADPCM();
 	std::vector<uint8_t> rom;
-	for (auto wfNum : instMan_->getWaveformADPCMValidIndices()) {
-		std::vector<uint8_t> sample = instMan_->getWaveformADPCMSamples(wfNum);
+	for (auto sampNum : instMan_->getSampleADPCMValidIndices()) {
+		std::vector<uint8_t> sample = instMan_->getSampleADPCMRawSample(sampNum);
 		std::vector<size_t> addresses = opnaCtrl_->storeSampleADPCM(sample);
-		instMan_->setWaveformADPCMStartAddress(wfNum, addresses[0]);
-		instMan_->setWaveformADPCMStopAddress(wfNum, addresses[1]);
+		instMan_->setSampleADPCMStartAddress(sampNum, addresses[0]);
+		instMan_->setSampleADPCMStopAddress(sampNum, addresses[1]);
 
 		rom.resize((addresses[1] + 1) << 5);
 		std::copy(sample.begin(), sample.end(), rom.begin() + static_cast<int>(addresses[0] << 5));
@@ -1461,7 +1462,7 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>(target);
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
-	assignWaveformADPCMSamples();
+	assignSampleADPCMRawSamples();
 	exCntr->forceMoveLoopPoint();
 
 	while (true) {
@@ -1825,7 +1826,7 @@ void BambooTracker::replaceDuplicateInstrumentsInPatterns(std::vector<std::vecto
 
 void BambooTracker::clearUnusedADPCMSamples()
 {
-	instMan_->clearUnusedWaveformsADPCM();
+	instMan_->clearUnusedSamplesADPCM();
 }
 
 /*----- Song -----*/
@@ -2241,7 +2242,7 @@ void BambooTracker::erasePatternCells(int songNum, int beginTrack, int beginColm
 }
 
 void BambooTracker::transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
-											 int endTrack, int endStep, int seminote)
+										   int endTrack, int endStep, int seminote)
 {
 	comMan_.invoke(std::make_unique<TransposeNoteInPatternCommand>(
 					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep, seminote));

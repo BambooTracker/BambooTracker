@@ -3301,15 +3301,15 @@ void OPNAController::keyOnADPCM(Note note, int octave, int pitch, bool isJam)
 		opna_->setRegister(0x100, 0xa1);
 
 		if (refInstADPCM_) {
-			triggerSamplePlayADPCM(refInstADPCM_->getWaveformStartAddress(),
-								   refInstADPCM_->getWaveformStopAddress(),
-								   refInstADPCM_->isWaveformRepeatable());
+			triggerSamplePlayADPCM(refInstADPCM_->getSampleStartAddress(),
+								   refInstADPCM_->getSampleStopAddress(),
+								   refInstADPCM_->isSampleRepeatable());
 		}
 		else if (hasStartRequestedKit_) {	// valid key in refInstKit_
 			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
-			triggerSamplePlayADPCM(refInstKit_->getWaveformStartAddress(key),
-								   refInstKit_->getWaveformStopAddress(key),
-								   refInstKit_->isWaveformRepeatable(key));
+			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
+								   refInstKit_->getSampleStopAddress(key),
+								   refInstKit_->isSampleRepeatable(key));
 			hasStartRequestedKit_ = false;
 		}
 
@@ -3767,9 +3767,9 @@ void OPNAController::tickEventADPCM()
 			opna_->setRegister(0x100, 0xa1);
 
 			int key = octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note);
-			triggerSamplePlayADPCM(refInstKit_->getWaveformStartAddress(key),
-								   refInstKit_->getWaveformStopAddress(key),
-								   refInstKit_->isWaveformRepeatable(key));
+			triggerSamplePlayADPCM(refInstKit_->getSampleStartAddress(key),
+								   refInstKit_->getSampleStopAddress(key),
+								   refInstKit_->isSampleRepeatable(key));
 			hasStartRequestedKit_ = false;
 		}
 	}
@@ -3796,15 +3796,15 @@ void OPNAController::writePitchADPCM()
 				+ transposeADPCM_;
 		p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
 
-		int diff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getWaveformRootKeyNumber();
-		writePitchADPCMToRegister(diff, refInstADPCM_->getWaveformRootDeltaN());
+		int diff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
+		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
 	}
 	else if (refInstKit_) {
 		int key = clamp(octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
 						+ transposeADPCM_ / PitchConverter::SEMINOTE_PITCH, 0, 95);
-		if (refInstKit_->getWaveformEnabled(key)) {
+		if (refInstKit_->getSampleEnabled(key)) {
 			int diff = PitchConverter::SEMINOTE_PITCH * refInstKit_->getPitch(key);
-			writePitchADPCMToRegister(diff, refInstKit_->getWaveformRootDeltaN(key));
+			writePitchADPCMToRegister(diff, refInstKit_->getSampleRootDeltaN(key));
 			hasStartRequestedKit_ = true;
 		}
 	}

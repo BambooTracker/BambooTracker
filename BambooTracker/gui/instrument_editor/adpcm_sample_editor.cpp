@@ -1,5 +1,5 @@
-#include "adpcm_waveform_editor.hpp"
-#include "ui_adpcm_waveform_editor.h"
+#include "adpcm_sample_editor.hpp"
+#include "ui_adpcm_sample_editor.h"
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -16,12 +16,12 @@
 #include "chips/codec/ymb_codec.hpp"
 #include "gui/event_guard.hpp"
 
-ADPCMWaveformEditor::ADPCMWaveformEditor(QWidget *parent) :
+ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::ADPCMWaveformEditor),
+	ui(new Ui::ADPCMSampleEditor),
 	isIgnoreEvent_(false),
-	wavMemPixmap_(std::make_unique<QPixmap>()),
-	wavViewPixmap_(std::make_unique<QPixmap>()),
+	memPixmap_(std::make_unique<QPixmap>()),
+	sampViewPixmap_(std::make_unique<QPixmap>()),
 	addrStart_(0),
 	addrStop_(0),
 	sample_(1)
@@ -32,8 +32,8 @@ ADPCMWaveformEditor::ADPCMWaveformEditor(QWidget *parent) :
 		Q_UNUSED(dummy)
 		if (!isIgnoreEvent_) {
 			int rk = ui->rootKeySpinBox->value() * 12 + ui->rootKeyComboBox->currentIndex();
-			bt_.lock()->setWaveformADPCMRootKeyNumber(ui->waveNumSpinBox->value(), rk);
-			emit waveformParameterChanged(ui->waveNumSpinBox->value());
+			bt_.lock()->setSampleADPCMRootKeyNumber(ui->sampleNumSpinBox->value(), rk);
+			emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 			emit modified();
 		}
 	};
@@ -41,36 +41,36 @@ ADPCMWaveformEditor::ADPCMWaveformEditor(QWidget *parent) :
 	QObject::connect(ui->rootKeyComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, rkfunc);
 	QObject::connect(ui->rootKeySpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, rkfunc);
 
-	ui->waveMemoryWidget->installEventFilter(this);
-	ui->waveViewWidget->installEventFilter(this);
+	ui->memoryWidget->installEventFilter(this);
+	ui->sampleViewWidget->installEventFilter(this);
 }
 
-ADPCMWaveformEditor::~ADPCMWaveformEditor()
+ADPCMSampleEditor::~ADPCMSampleEditor()
 {
 	delete ui;
 }
 
-void ADPCMWaveformEditor::setCore(std::weak_ptr<BambooTracker> core)
+void ADPCMSampleEditor::setCore(std::weak_ptr<BambooTracker> core)
 {
 	bt_ = core;
 }
 
-void ADPCMWaveformEditor::setConfiguration(std::weak_ptr<Configuration> config)
+void ADPCMSampleEditor::setConfiguration(std::weak_ptr<Configuration> config)
 {
 	config_ = config;
 }
 
-void ADPCMWaveformEditor::setColorPalette(std::shared_ptr<ColorPalette> palette)
+void ADPCMSampleEditor::setColorPalette(std::shared_ptr<ColorPalette> palette)
 {
 	palette_ = palette;
 }
 
-int ADPCMWaveformEditor::getWaveformNumber() const
+int ADPCMSampleEditor::getSampleNumber() const
 {
-	return ui->waveNumSpinBox->value();
+	return ui->sampleNumSpinBox->value();
 }
 
-void ADPCMWaveformEditor::dragEnterEvent(QDragEnterEvent* event)
+void ADPCMSampleEditor::dragEnterEvent(QDragEnterEvent* event)
 {
 	const QMimeData* mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1
@@ -79,18 +79,18 @@ void ADPCMWaveformEditor::dragEnterEvent(QDragEnterEvent* event)
 	}
 }
 
-bool ADPCMWaveformEditor::eventFilter(QObject* obj, QEvent* ev)
+bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 {
-	if (obj == ui->waveMemoryWidget) {
+	if (obj == ui->memoryWidget) {
 		switch (ev->type()) {
 		case QEvent::Paint:
 		{
-			QPainter painter(ui->waveMemoryWidget);
-			painter.drawPixmap(ui->waveMemoryWidget->rect(), *wavMemPixmap_.get());
+			QPainter painter(ui->memoryWidget);
+			painter.drawPixmap(ui->memoryWidget->rect(), *memPixmap_.get());
 			break;
 		}
 		case QEvent::Resize:
-			wavMemPixmap_ = std::make_unique<QPixmap>(ui->waveMemoryWidget->size());
+			memPixmap_ = std::make_unique<QPixmap>(ui->memoryWidget->size());
 			updateSampleMemoryBar();
 			break;
 		default:
@@ -99,16 +99,16 @@ bool ADPCMWaveformEditor::eventFilter(QObject* obj, QEvent* ev)
 		return false;
 	}
 
-	if (obj == ui->waveViewWidget) {
+	if (obj == ui->sampleViewWidget) {
 		switch (ev->type()) {
 		case QEvent::Paint:
 		{
-			QPainter painter(ui->waveViewWidget);
-			painter.drawPixmap(ui->waveViewWidget->rect(), *wavViewPixmap_.get());
+			QPainter painter(ui->sampleViewWidget);
+			painter.drawPixmap(ui->sampleViewWidget->rect(), *sampViewPixmap_.get());
 			break;
 		}
 		case QEvent::Resize:
-			wavViewPixmap_ = std::make_unique<QPixmap>(ui->waveViewWidget->size());
+			sampViewPixmap_ = std::make_unique<QPixmap>(ui->sampleViewWidget->size());
 			updateSampleView();
 			break;
 		default:
@@ -120,22 +120,22 @@ bool ADPCMWaveformEditor::eventFilter(QObject* obj, QEvent* ev)
 	return false;
 }
 
-void ADPCMWaveformEditor::dropEvent(QDropEvent* event)
+void ADPCMSampleEditor::dropEvent(QDropEvent* event)
 {
 	importSampleFrom(reinterpret_cast<QDropEvent*>(event)->mimeData()->urls().first().toLocalFile());
 }
 
-void ADPCMWaveformEditor::setInstrumentWaveformParameters(int wfNum, bool repeatable, int rKeyNum,
-														  int rDeltaN, size_t start, size_t stop,
-														  std::vector<uint8_t> sample)
+void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatable, int rKeyNum,
+													  int rDeltaN, size_t start, size_t stop,
+													  std::vector<uint8_t> sample)
 {
 	Ui::EventGuard ev(isIgnoreEvent_);
 
-	ui->waveNumSpinBox->setValue(wfNum);
+	ui->sampleNumSpinBox->setValue(sampNum);
 
 	updateUsersView();
 
-	ui->waveRepeatCheckBox->setChecked(repeatable);
+	ui->repeatCheckBox->setChecked(repeatable);
 	ui->rootKeyComboBox->setCurrentIndex(rKeyNum % 12);
 	ui->rootKeySpinBox->setValue(rKeyNum / 12);
 	ui->rootRateSpinBox->setValue(rDeltaN);
@@ -143,14 +143,14 @@ void ADPCMWaveformEditor::setInstrumentWaveformParameters(int wfNum, bool repeat
 	addrStart_ = start;
 	addrStop_ = stop;
 	updateSampleMemoryBar();
-	ui->waveMemoryWidget->update();
+	ui->memoryWidget->update();
 
 	sample_ = sample;
 	updateSampleView();
-	ui->waveViewWidget->update();
+	ui->sampleViewWidget->update();
 }
 
-void ADPCMWaveformEditor::importSampleFrom(const QString file)
+void ADPCMSampleEditor::importSampleFrom(const QString file)
 {
 	std::unique_ptr<WavContainer> wav;
 	try {
@@ -194,25 +194,25 @@ void ADPCMWaveformEditor::importSampleFrom(const QString file)
 
 	const int ROOT_KEY = 60;	//C5
 
-	bt_.lock()->storeWaveformADPCMSample(ui->waveNumSpinBox->value(), adpcm);
+	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), adpcm);
 	ui->rootKeyComboBox->setCurrentIndex(ROOT_KEY % 12);
 	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
 	ui->rootRateSpinBox->setValue(calcADPCMDeltaN(wav->getSampleRate()));
 
 	updateSampleView();
-	ui->waveViewWidget->update();
+	ui->sampleViewWidget->update();
 
 	emit modified();
-	emit waveformAssignRequested();
-	emit waveformParameterChanged(ui->waveNumSpinBox->value());
+	emit sampleAssignRequested();
+	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 }
 
-void ADPCMWaveformEditor::updateSampleMemoryBar()
+void ADPCMSampleEditor::updateSampleMemoryBar()
 {
-	QRect bar = wavMemPixmap_->rect();
+	QRect bar = memPixmap_->rect();
 	if (!bar.isValid()) return;
 
-	QPainter painter(wavMemPixmap_.get());
+	QPainter painter(memPixmap_.get());
 	painter.fillRect(bar, palette_->instADPCMMemBackColor);
 
 	double maxSize = bt_.lock()->getADPCMStoredSize() >> 5;
@@ -227,23 +227,23 @@ void ADPCMWaveformEditor::updateSampleMemoryBar()
 	}
 }
 
-void ADPCMWaveformEditor::updateSampleView()
+void ADPCMSampleEditor::updateSampleView()
 {
-	QRect rect = wavViewPixmap_->rect();
+	QRect rect = sampViewPixmap_->rect();
 	if (!rect.isValid()) return;
 
-	QPainter painter(wavViewPixmap_.get());
-	painter.fillRect(rect, palette_->instADPCMWaveViewBackColor);
+	QPainter painter(sampViewPixmap_.get());
+	painter.fillRect(rect, palette_->instADPCMSampViewBackColor);
 
 	std::vector<int16_t> wave(sample_.size() * 2);
 	codec::ymb_decode(&sample_[0], &wave[0], static_cast<long>(wave.size()));
 
-	painter.setPen(palette_->instADPCMWaveViewCenterColor);
+	painter.setPen(palette_->instADPCMSampViewCenterColor);
 	const int maxX = rect.width();
 	const int centerY = rect.height() / 2;
 	painter.drawLine(0, centerY, maxX, centerY);
 
-	painter.setPen(palette_->instADPCMWaveViewForeColor);
+	painter.setPen(palette_->instADPCMSampViewForeColor);
 	const int16_t maxY = std::numeric_limits<int16_t>::max();
 	const double size = wave.size();
 	int prevY = centerY;
@@ -256,65 +256,52 @@ void ADPCMWaveformEditor::updateSampleView()
 	}
 }
 
-void ADPCMWaveformEditor::updateUsersView()
+void ADPCMSampleEditor::updateUsersView()
 {
-	std::vector<int> users = bt_.lock()->getWaveformADPCMUsers(ui->waveNumSpinBox->value());
+	std::vector<int> users = bt_.lock()->getSampleADPCMUsers(ui->sampleNumSpinBox->value());
 	QStringList l;
 	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
 		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
 	});
-	ui->waveUsersLineEdit->setText(l.join(","));
+	ui->usersLineEdit->setText(l.join(","));
 }
 
-void ADPCMWaveformEditor::onWaveformNumberChanged()
+void ADPCMSampleEditor::onSampleNumberChanged()
 {
 	updateUsersView();
 }
 
-void ADPCMWaveformEditor::onWaveformSampleMemoryUpdated(size_t start, size_t stop)
+void ADPCMSampleEditor::onSampleMemoryUpdated(size_t start, size_t stop)
 {
 	addrStart_ = start;
 	addrStop_ = stop;
 	updateSampleMemoryBar();
-	ui->waveMemoryWidget->update();
+	ui->memoryWidget->update();
 }
 
-void ADPCMWaveformEditor::on_waveNumSpinBox_valueChanged(int arg1)
+void ADPCMSampleEditor::on_sampleNumSpinBox_valueChanged(int arg1)
 {
-	if (!isIgnoreEvent_) emit waveformNumberChanged(arg1);	// Direct connection
+	if (!isIgnoreEvent_) emit sampleNumberChanged(arg1);	// Direct connection
 
-	onWaveformNumberChanged();
+	onSampleNumberChanged();
 
 	updateSampleMemoryBar();
-	ui->waveMemoryWidget->update();
+	ui->memoryWidget->update();
 
 	updateSampleView();
-	ui->waveViewWidget->update();
+	ui->sampleViewWidget->update();
 }
 
-void ADPCMWaveformEditor::on_rootRateSpinBox_valueChanged(int arg1)
+void ADPCMSampleEditor::on_repeatCheckBox_toggled(bool checked)
 {
-	ui->rootRateSpinBox->setSuffix(
-				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
-				+ QString("%1Hz)").arg(QString::number(arg1 * 55500. * std::pow(2., -16.), 'f', 3)));
-
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setWaveformADPCMRootDeltaN(ui->waveNumSpinBox->value(), arg1);
-		emit waveformParameterChanged(ui->waveNumSpinBox->value());
+		bt_.lock()->setSampleADPCMRepeatEnabled(ui->sampleNumSpinBox->value(), checked);
+		emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 		emit modified();
 	}
 }
 
-void ADPCMWaveformEditor::on_waveRepeatCheckBox_toggled(bool checked)
-{
-	if (!isIgnoreEvent_) {
-		bt_.lock()->setWaveformADPCMRepeatEnabled(ui->waveNumSpinBox->value(), checked);
-		emit waveformParameterChanged(ui->waveNumSpinBox->value());
-		emit modified();
-	}
-}
-
-void ADPCMWaveformEditor::on_waveImportPushButton_clicked()
+void ADPCMSampleEditor::on_importPushButton_clicked()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString file = QFileDialog::getOpenFileName(this, tr("Import sample"),
@@ -324,24 +311,37 @@ void ADPCMWaveformEditor::on_waveImportPushButton_clicked()
 	importSampleFrom(file);
 }
 
-void ADPCMWaveformEditor::on_waveClearPushButton_clicked()
+void ADPCMSampleEditor::on_clearPushButton_clicked()
 {
-	bt_.lock()->clearWaveformADPCMSample(ui->waveNumSpinBox->value());
+	bt_.lock()->clearSampleADPCMRawSample(ui->sampleNumSpinBox->value());
 
 	updateSampleMemoryBar();
-	ui->waveMemoryWidget->update();
+	ui->memoryWidget->update();
 
 	updateSampleView();
-	ui->waveViewWidget->update();
+	ui->sampleViewWidget->update();
 
 	emit modified();
 
 	if (config_.lock()->getWriteOnlyUsedSamples()) {
-		emit waveformAssignRequested();
+		emit sampleAssignRequested();
 	}
 	else {
-		emit waveformMemoryChanged();
+		emit sampleMemoryChanged();
 	}
 
-	emit waveformParameterChanged(ui->waveNumSpinBox->value());
+	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+}
+
+void ADPCMSampleEditor::on_rootRateSpinBox_valueChanged(int arg1)
+{
+	ui->rootRateSpinBox->setSuffix(
+				QString(" (0x") + QString("%1 | ").arg(arg1, 3, 16, QChar('0')).toUpper()
+				+ QString("%1Hz)").arg(QString::number(arg1 * 55500. * std::pow(2., -16.), 'f', 3)));
+
+	if (!isIgnoreEvent_) {
+		bt_.lock()->setSampleADPCMRootDeltaN(ui->sampleNumSpinBox->value(), arg1);
+		emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+		emit modified();
+	}
 }

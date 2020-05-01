@@ -8,6 +8,7 @@
 
 ### Changed
 - Change comment dialog to modeless
+- Rename ADPCM Waveform to Sample
 
 ### Fixed
 - [#209] - Fix crashing effect list dialog on opening (thanks [@Ikalou])
