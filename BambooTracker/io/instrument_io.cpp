@@ -1252,7 +1252,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 					adpcmSampIdx = instManLocked->findFirstAssignableSampleADPCM(adpcmSampIdx);
 					if (adpcmSampIdx == -1) throw FileCorruptionError(FileIO::FileType::Inst);
 					nums.push_back(adpcmSampIdx);
-					kitSampMap[adpcmSampIdx] = kitSampFileMap.at(kitSampCnt++);
+					if (inst->getType() == InstrumentType::Drumkit) {
+						kitSampMap[adpcmSampIdx] = kitSampFileMap.at(kitSampCnt++);
+					}
 					instPropCsr += ctr.readUint16(instPropCsr);
 					++adpcmSampIdx; // Increment for search appropriate kit sample
 					break;

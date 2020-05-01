@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Added
-- [#6] - ADPCM drumkit (thanks [@ImATrackMan], [@pedipanol] and others)
+- [#6], [#211] - ADPCM drumkit (thanks [@ImATrackMan], [@pedipanol] and others)
 - Color settings of pattern marker
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
@@ -18,6 +18,7 @@
 [#209]: https://github.com/rerrahkr/BambooTracker/issues/209
 [#208]: https://github.com/rerrahkr/BambooTracker/issues/208
 [#207]: https://github.com/rerrahkr/BambooTracker/issues/207
+[#211]: https://github.com/rerrahkr/BambooTracker/issues/211
 
 ## v0.4.1 (2020-04-20)
 ### Added
