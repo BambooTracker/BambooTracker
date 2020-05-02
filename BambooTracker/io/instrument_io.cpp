@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+#include <limits>
 #include "version.hpp"
 #include "file_io.hpp"
 #include "file_io_error.hpp"
@@ -2760,7 +2761,7 @@ size_t InstrumentIO::getPropertyPositionForBTB(const BinaryContainer& propCtr, u
 		}
 	}
 
-	throw FileCorruptionError(FileIO::FileType::Inst);
+	return std::numeric_limits<size_t>::max();
 }
 
 int InstrumentIO::convertDTInTFIVGIDMP(int dt)
@@ -3220,85 +3221,87 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 			fm->setEnvelopeNumber(envNum);
 			size_t envCsr = getPropertyPositionForBTB(propCtr, 0x00, orgEnvNum);
-			uint8_t tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL, tmp >> 4);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB, tmp & 0x0f);
-			// Operator 1
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 0, (0x20 & tmp) ? true : false);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1, tmp >> 4);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1, tmp & 0x0f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1, tmp);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1, tmp & 0x0f);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1,
-												  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-			// Operator 2
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 1, (0x20 & tmp) ? true : false);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2, tmp >> 4);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2, tmp & 0x0f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2, tmp);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2, tmp & 0x0f);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2,
-												  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-			// Operator 3
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 2, (0x20 & tmp) ? true : false);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3, tmp >> 4);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3, tmp & 0x0f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3, tmp);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3, tmp & 0x0f);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3,
-												  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-			// Operator 4
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMOperatorEnabled(envNum, 3, (0x20 & tmp) ? true : false);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4, tmp >> 5);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4, tmp & 0x1f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4, tmp >> 4);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4, tmp & 0x0f);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4, tmp);
-			tmp = propCtr.readUint8(envCsr++);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4, tmp & 0x0f);
-			instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4,
-												  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+			if (envCsr != std::numeric_limits<size_t>::max()) {
+				uint8_t tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB, tmp & 0x0f);
+				// Operator 1
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 0, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1, tmp & 0x0f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1, tmp);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1,
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+				// Operator 2
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 1, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2, tmp & 0x0f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2, tmp);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2,
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+				// Operator 3
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 2, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3, tmp & 0x0f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3, tmp);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3,
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+				// Operator 4
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 3, (0x20 & tmp) ? true : false);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4, tmp >> 5);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4, tmp & 0x1f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4, tmp >> 4);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4, tmp & 0x0f);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4, tmp);
+				tmp = propCtr.readUint8(envCsr++);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4, tmp & 0x0f);
+				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4,
+													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+			}
 		}
 
 		/* LFO */
@@ -3315,17 +3318,19 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				if (lfoNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 				fm->setLFONumber(lfoNum);
 				size_t lfoCsr = getPropertyPositionForBTB(propCtr, 0x01, orgLFONum);
-				tmp = propCtr.readUint8(lfoCsr++);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::FREQ, tmp >> 4);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::PMS, tmp & 0x0f);
-				tmp = propCtr.readUint8(lfoCsr++);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AMS, tmp & 0x0f);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
-				tmp = propCtr.readUint8(lfoCsr++);
-				instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::Count, tmp);
+				if (lfoCsr != std::numeric_limits<size_t>::max()) {
+					tmp = propCtr.readUint8(lfoCsr++);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::FREQ, tmp >> 4);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::PMS, tmp & 0x0f);
+					tmp = propCtr.readUint8(lfoCsr++);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AMS, tmp & 0x0f);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM1, (tmp & 0x10) ? true : false);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM2, (tmp & 0x20) ? true : false);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM3, (tmp & 0x40) ? true : false);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::AM4, (tmp & 0x80) ? true : false);
+					tmp = propCtr.readUint8(lfoCsr++);
+					instManLocked->setLFOFMParameter(lfoNum, FMLFOParameter::Count, tmp);
+				}
 			}
 		}
 
@@ -3346,47 +3351,49 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				fm->setOperatorSequenceNumber(param, opSeqNum);
 				size_t opSeqCsr = getPropertyPositionForBTB(propCtr, 0x02 + tmpCnt, orgOpSeqNum);
 
-				uint16_t seqLen = propCtr.readUint16(opSeqCsr);
-				opSeqCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(opSeqCsr);
+				if (opSeqCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(opSeqCsr);
 					opSeqCsr += 2;
-					if (l == 0)
-						instManLocked->setOperatorSequenceFMSequenceCommand(param, opSeqNum, 0, data, 0);
-					else
-						instManLocked->addOperatorSequenceFMSequenceCommand(param, opSeqNum, data, 0);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(opSeqCsr);
-				opSeqCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(opSeqCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(opSeqCsr);
 						opSeqCsr += 2;
-						ends.push_back(propCtr.readUint16(opSeqCsr));
-						opSeqCsr += 2;
-						times.push_back(propCtr.readUint8(opSeqCsr++));
+						if (l == 0)
+							instManLocked->setOperatorSequenceFMSequenceCommand(param, opSeqNum, 0, data, 0);
+						else
+							instManLocked->addOperatorSequenceFMSequenceCommand(param, opSeqNum, data, 0);
 					}
-					instManLocked->setOperatorSequenceFMLoops(param, opSeqNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(opSeqCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
-					break;
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(opSeqCsr);
+					uint16_t loopCnt = propCtr.readUint16(opSeqCsr);
 					opSeqCsr += 2;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(opSeqCsr));
+							opSeqCsr += 2;
+							ends.push_back(propCtr.readUint16(opSeqCsr));
+							opSeqCsr += 2;
+							times.push_back(propCtr.readUint8(opSeqCsr++));
+						}
+						instManLocked->setOperatorSequenceFMLoops(param, opSeqNum, begins, ends, times);
+					}
+
+					switch (propCtr.readUint8(opSeqCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(opSeqCsr);
+						opSeqCsr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setOperatorSequenceFMRelease(param, opSeqNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -3418,68 +3425,70 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						fm->setArpeggioNumber(pair.first, arpNum);
 						size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x28, orgArpNum);
 
-						uint16_t seqLen = propCtr.readUint16(arpCsr);
-						arpCsr += 2;
-						for (uint16_t l = 0; l < seqLen; ++l) {
-							uint16_t data = propCtr.readUint16(arpCsr);
+						if (arpCsr != std::numeric_limits<size_t>::max()) {
+							uint16_t seqLen = propCtr.readUint16(arpCsr);
 							arpCsr += 2;
-							if (l == 0)
-								instManLocked->setArpeggioFMSequenceCommand(arpNum, 0, data, 0);
-							else
-								instManLocked->addArpeggioFMSequenceCommand(arpNum, data, 0);
-						}
-
-						uint16_t loopCnt = propCtr.readUint16(arpCsr);
-						arpCsr += 2;
-						if (loopCnt > 0) {
-							std::vector<int> begins, ends, times;
-							for (uint16_t l = 0; l < loopCnt; ++l) {
-								begins.push_back(propCtr.readUint16(arpCsr));
+							for (uint16_t l = 0; l < seqLen; ++l) {
+								uint16_t data = propCtr.readUint16(arpCsr);
 								arpCsr += 2;
-								ends.push_back(propCtr.readUint16(arpCsr));
-								arpCsr += 2;
-								times.push_back(propCtr.readUint8(arpCsr++));
+								if (l == 0)
+									instManLocked->setArpeggioFMSequenceCommand(arpNum, 0, data, 0);
+								else
+									instManLocked->addArpeggioFMSequenceCommand(arpNum, data, 0);
 							}
-							instManLocked->setArpeggioFMLoops(arpNum, begins, ends, times);
-						}
 
-						switch (propCtr.readUint8(arpCsr++)) {
-						case 0x00:	// No release
-							instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
-							break;
-						case 0x01:	// Fixed
-						{
-							uint16_t pos = propCtr.readUint16(arpCsr);
+							uint16_t loopCnt = propCtr.readUint16(arpCsr);
 							arpCsr += 2;
-							// Release point check (prevents a bug)
-							// https://github.com/rerrahkr/BambooTracker/issues/11
-							if (pos < seqLen) instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::FixedRelease, pos);
-							else instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
-							break;
-						}
-						default:
-							throw FileCorruptionError(FileIO::FileType::Bank);
-						}
+							if (loopCnt > 0) {
+								std::vector<int> begins, ends, times;
+								for (uint16_t l = 0; l < loopCnt; ++l) {
+									begins.push_back(propCtr.readUint16(arpCsr));
+									arpCsr += 2;
+									ends.push_back(propCtr.readUint16(arpCsr));
+									arpCsr += 2;
+									times.push_back(propCtr.readUint8(arpCsr++));
+								}
+								instManLocked->setArpeggioFMLoops(arpNum, begins, ends, times);
+							}
 
-						switch (propCtr.readUint8(arpCsr++)) {
-						case 0x00:	// Absolute
-							instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
-							break;
-						case 0x01:	// Fixed
-							instManLocked->setArpeggioFMType(arpNum, SequenceType::FIXED_SEQUENCE);
-							break;
-						case 0x02:	// Relative
-							instManLocked->setArpeggioFMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
-							break;
-						default:
-							if (bankVersion < Version::toBCD(1, 0, 2)) {
-								// Recover deep clone bug
-								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+							switch (propCtr.readUint8(arpCsr++)) {
+							case 0x00:	// No release
+								instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
+								break;
+							case 0x01:	// Fixed
+							{
+								uint16_t pos = propCtr.readUint16(arpCsr);
+								arpCsr += 2;
+								// Release point check (prevents a bug)
+								// https://github.com/rerrahkr/BambooTracker/issues/11
+								if (pos < seqLen) instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::FixedRelease, pos);
+								else instManLocked->setArpeggioFMRelease(arpNum, ReleaseType::NoRelease, -1);
 								break;
 							}
-							else {
+							default:
 								throw FileCorruptionError(FileIO::FileType::Bank);
+							}
+
+							switch (propCtr.readUint8(arpCsr++)) {
+							case 0x00:	// Absolute
+								instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							case 0x01:	// Fixed
+								instManLocked->setArpeggioFMType(arpNum, SequenceType::FIXED_SEQUENCE);
+								break;
+							case 0x02:	// Relative
+								instManLocked->setArpeggioFMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+								break;
+							default:
+								if (bankVersion < Version::toBCD(1, 0, 2)) {
+									// Recover deep clone bug
+									// https://github.com/rerrahkr/BambooTracker/issues/170
+									instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+									break;
+								}
+								else {
+									throw FileCorruptionError(FileIO::FileType::Bank);
+								}
 							}
 						}
 					}
@@ -3517,65 +3526,67 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 						fm->setPitchNumber(pair.first, ptNum);
 						size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x29, orgPtNum);
 
-						uint16_t seqLen = propCtr.readUint16(ptCsr);
-						ptCsr += 2;
-						for (uint16_t l = 0; l < seqLen; ++l) {
-							uint16_t data = propCtr.readUint16(ptCsr);
+						if (ptCsr != std::numeric_limits<size_t>::max()) {
+							uint16_t seqLen = propCtr.readUint16(ptCsr);
 							ptCsr += 2;
-							if (l == 0)
-								instManLocked->setPitchFMSequenceCommand(ptNum, 0, data, 0);
-							else
-								instManLocked->addPitchFMSequenceCommand(ptNum, data, 0);
-						}
-
-						uint16_t loopCnt = propCtr.readUint16(ptCsr);
-						ptCsr += 2;
-						if (loopCnt > 0) {
-							std::vector<int> begins, ends, times;
-							for (uint16_t l = 0; l < loopCnt; ++l) {
-								begins.push_back(propCtr.readUint16(ptCsr));
+							for (uint16_t l = 0; l < seqLen; ++l) {
+								uint16_t data = propCtr.readUint16(ptCsr);
 								ptCsr += 2;
-								ends.push_back(propCtr.readUint16(ptCsr));
-								ptCsr += 2;
-								times.push_back(propCtr.readUint8(ptCsr++));
+								if (l == 0)
+									instManLocked->setPitchFMSequenceCommand(ptNum, 0, data, 0);
+								else
+									instManLocked->addPitchFMSequenceCommand(ptNum, data, 0);
 							}
-							instManLocked->setPitchFMLoops(ptNum, begins, ends, times);
-						}
 
-						switch (propCtr.readUint8(ptCsr++)) {
-						case 0x00:	// No release
-							instManLocked->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
-							break;
-						case 0x01:	// Fixed
-						{
-							uint16_t pos = propCtr.readUint16(ptCsr);
+							uint16_t loopCnt = propCtr.readUint16(ptCsr);
 							ptCsr += 2;
-							// Release point check (prevents a bug)
-							// https://github.com/rerrahkr/BambooTracker/issues/11
-							if (pos < seqLen) instManLocked->setPitchFMRelease(ptNum, ReleaseType::FixedRelease, pos);
-							else instManLocked->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
-							break;
-						}
-						default:
-							throw FileCorruptionError(FileIO::FileType::Bank);
-						}
+							if (loopCnt > 0) {
+								std::vector<int> begins, ends, times;
+								for (uint16_t l = 0; l < loopCnt; ++l) {
+									begins.push_back(propCtr.readUint16(ptCsr));
+									ptCsr += 2;
+									ends.push_back(propCtr.readUint16(ptCsr));
+									ptCsr += 2;
+									times.push_back(propCtr.readUint8(ptCsr++));
+								}
+								instManLocked->setPitchFMLoops(ptNum, begins, ends, times);
+							}
 
-						switch (propCtr.readUint8(ptCsr++)) {
-						case 0x00:	// Absolute
-							instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
-							break;
-						case 0x02:	// Relative
-							instManLocked->setPitchFMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
-							break;
-						default:
-							if (bankVersion < Version::toBCD(1, 0, 2)) {
-								// Recover deep clone bug
-								// https://github.com/rerrahkr/BambooTracker/issues/170
-								instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+							switch (propCtr.readUint8(ptCsr++)) {
+							case 0x00:	// No release
+								instManLocked->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
+								break;
+							case 0x01:	// Fixed
+							{
+								uint16_t pos = propCtr.readUint16(ptCsr);
+								ptCsr += 2;
+								// Release point check (prevents a bug)
+								// https://github.com/rerrahkr/BambooTracker/issues/11
+								if (pos < seqLen) instManLocked->setPitchFMRelease(ptNum, ReleaseType::FixedRelease, pos);
+								else instManLocked->setPitchFMRelease(ptNum, ReleaseType::NoRelease, -1);
 								break;
 							}
-							else {
+							default:
 								throw FileCorruptionError(FileIO::FileType::Bank);
+							}
+
+							switch (propCtr.readUint8(ptCsr++)) {
+							case 0x00:	// Absolute
+								instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+								break;
+							case 0x02:	// Relative
+								instManLocked->setPitchFMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+								break;
+							default:
+								if (bankVersion < Version::toBCD(1, 0, 2)) {
+									// Recover deep clone bug
+									// https://github.com/rerrahkr/BambooTracker/issues/170
+									instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+									break;
+								}
+								else {
+									throw FileCorruptionError(FileIO::FileType::Bank);
+								}
 							}
 						}
 					}
@@ -3617,50 +3628,52 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				ssg->setWaveformNumber(wfNum);
 				size_t wfCsr = getPropertyPositionForBTB(propCtr, 0x30, orgWfNum);
 
-				uint16_t seqLen = propCtr.readUint16(wfCsr);
-				wfCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(wfCsr);
+				if (wfCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(wfCsr);
 					wfCsr += 2;
-					int32_t subdata;
-					subdata = propCtr.readInt32(wfCsr);
-					wfCsr += 4;
-					if (l == 0)
-						instManLocked->setWaveformSSGSequenceCommand(wfNum, 0, data, subdata);
-					else
-						instManLocked->addWaveformSSGSequenceCommand(wfNum, data, subdata);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(wfCsr);
-				wfCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(wfCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(wfCsr);
 						wfCsr += 2;
-						ends.push_back(propCtr.readUint16(wfCsr));
-						wfCsr += 2;
-						times.push_back(propCtr.readUint8(wfCsr++));
+						int32_t subdata;
+						subdata = propCtr.readInt32(wfCsr);
+						wfCsr += 4;
+						if (l == 0)
+							instManLocked->setWaveformSSGSequenceCommand(wfNum, 0, data, subdata);
+						else
+							instManLocked->addWaveformSSGSequenceCommand(wfNum, data, subdata);
 					}
-					instManLocked->setWaveformSSGLoops(wfNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(wfCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
-					break;
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(wfCsr);
+					uint16_t loopCnt = propCtr.readUint16(wfCsr);
 					wfCsr += 2;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(wfCsr));
+							wfCsr += 2;
+							ends.push_back(propCtr.readUint16(wfCsr));
+							wfCsr += 2;
+							times.push_back(propCtr.readUint8(wfCsr++));
+						}
+						instManLocked->setWaveformSSGLoops(wfNum, begins, ends, times);
+					}
+
+					switch (propCtr.readUint8(wfCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(wfCsr);
+						wfCsr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -3680,53 +3693,55 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				ssg->setToneNoiseNumber(tnNum);
 				size_t tnCsr = getPropertyPositionForBTB(propCtr, 0x31, orgTnNum);
 
-				uint16_t seqLen = propCtr.readUint16(tnCsr);
-				tnCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(tnCsr);
+				if (tnCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(tnCsr);
 					tnCsr += 2;
-					if (bankVersion < Version::toBCD(1, 0, 1)) {
-						if (data > 0) {
-							uint16_t tmp = data - 1;
-							data = tmp / 32 * 32 + (31 - tmp % 32) + 1;
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(tnCsr);
+						tnCsr += 2;
+						if (bankVersion < Version::toBCD(1, 0, 1)) {
+							if (data > 0) {
+								uint16_t tmp = data - 1;
+								data = tmp / 32 * 32 + (31 - tmp % 32) + 1;
+							}
 						}
+						if (l == 0)
+							instManLocked->setToneNoiseSSGSequenceCommand(tnNum, 0, data, 0);
+						else
+							instManLocked->addToneNoiseSSGSequenceCommand(tnNum, data, 0);
 					}
-					if (l == 0)
-						instManLocked->setToneNoiseSSGSequenceCommand(tnNum, 0, data, 0);
-					else
-						instManLocked->addToneNoiseSSGSequenceCommand(tnNum, data, 0);
-				}
 
-				uint16_t loopCnt = propCtr.readUint16(tnCsr);
-				tnCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(tnCsr));
-						tnCsr += 2;
-						ends.push_back(propCtr.readUint16(tnCsr));
-						tnCsr += 2;
-						times.push_back(propCtr.readUint8(tnCsr++));
-					}
-					instManLocked->setToneNoiseSSGLoops(tnNum, begins, ends, times);
-				}
-
-				switch (propCtr.readUint8(tnCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
-					break;
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(tnCsr);
+					uint16_t loopCnt = propCtr.readUint16(tnCsr);
 					tnCsr += 2;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(tnCsr));
+							tnCsr += 2;
+							ends.push_back(propCtr.readUint16(tnCsr));
+							tnCsr += 2;
+							times.push_back(propCtr.readUint8(tnCsr++));
+						}
+						instManLocked->setToneNoiseSSGLoops(tnNum, begins, ends, times);
+					}
+
+					switch (propCtr.readUint8(tnCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(tnCsr);
+						tnCsr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -3746,66 +3761,68 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				ssg->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPositionForBTB(propCtr, 0x32, orgEnvNum);
 
-				uint16_t seqLen = propCtr.readUint16(envCsr);
-				envCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(envCsr);
+				if (envCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					int32_t subdata;
-					subdata = propCtr.readInt32(envCsr);
-					envCsr += 4;
-					if (l == 0)
-						instManLocked->setEnvelopeSSGSequenceCommand(envNum, 0, data, subdata);
-					else
-						instManLocked->addEnvelopeSSGSequenceCommand(envNum, data, subdata);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(envCsr);
-				envCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(envCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						ends.push_back(propCtr.readUint16(envCsr));
-						envCsr += 2;
-						times.push_back(propCtr.readUint8(envCsr++));
+						int32_t subdata;
+						subdata = propCtr.readInt32(envCsr);
+						envCsr += 4;
+						if (l == 0)
+							instManLocked->setEnvelopeSSGSequenceCommand(envNum, 0, data, subdata);
+						else
+							instManLocked->addEnvelopeSSGSequenceCommand(envNum, data, subdata);
 					}
-					instManLocked->setEnvelopeSSGLoops(envNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(envCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(envCsr);
+					uint16_t loopCnt = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				case 0x02:	// Absolute
-				{
-					uint16_t pos = propCtr.readUint16(envCsr);
-					envCsr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::AbsoluteRelease, pos);
-					else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				case 0x03:	// Relative
-				{
-					uint16_t pos = propCtr.readUint16(envCsr);
-					envCsr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::RelativeRelease, pos);
-					else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(envCsr));
+							envCsr += 2;
+							ends.push_back(propCtr.readUint16(envCsr));
+							envCsr += 2;
+							times.push_back(propCtr.readUint8(envCsr++));
+						}
+						instManLocked->setEnvelopeSSGLoops(envNum, begins, ends, times);
+					}
+
+					switch (propCtr.readUint8(envCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					case 0x02:	// Absolute
+					{
+						uint16_t pos = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::AbsoluteRelease, pos);
+						else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					case 0x03:	// Relative
+					{
+						uint16_t pos = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::RelativeRelease, pos);
+						else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -3825,68 +3842,70 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				ssg->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x33, orgArpNum);
 
-				uint16_t seqLen = propCtr.readUint16(arpCsr);
-				arpCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(arpCsr);
+				if (arpCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
-					if (l == 0)
-						instManLocked->setArpeggioSSGSequenceCommand(arpNum, 0, data, 0);
-					else
-						instManLocked->addArpeggioSSGSequenceCommand(arpNum, data, 0);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(arpCsr);
-				arpCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(arpCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(arpCsr);
 						arpCsr += 2;
-						ends.push_back(propCtr.readUint16(arpCsr));
-						arpCsr += 2;
-						times.push_back(propCtr.readUint8(arpCsr++));
+						if (l == 0)
+							instManLocked->setArpeggioSSGSequenceCommand(arpNum, 0, data, 0);
+						else
+							instManLocked->addArpeggioSSGSequenceCommand(arpNum, data, 0);
 					}
-					instManLocked->setArpeggioSSGLoops(arpNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(arpCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
-					break;
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(arpCsr);
+					uint16_t loopCnt = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
-				}
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(arpCsr));
+							arpCsr += 2;
+							ends.push_back(propCtr.readUint16(arpCsr));
+							arpCsr += 2;
+							times.push_back(propCtr.readUint8(arpCsr++));
+						}
+						instManLocked->setArpeggioSSGLoops(arpNum, begins, ends, times);
+					}
 
-				switch (propCtr.readUint8(arpCsr++)) {
-				case 0x00:	// Absolute
-					instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
-					break;
-				case 0x01:	// Fixed
-					instManLocked->setArpeggioSSGType(arpNum, SequenceType::FIXED_SEQUENCE);
-					break;
-				case 0x02:	// Relative
-					instManLocked->setArpeggioSSGType(arpNum, SequenceType::RELATIVE_SEQUENCE);
-					break;
-				default:
-					if (bankVersion < Version::toBCD(1, 0, 2)) {
-						// Recover deep clone bug
-						// https://github.com/rerrahkr/BambooTracker/issues/170
-						instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+					switch (propCtr.readUint8(arpCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(arpCsr);
+						arpCsr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setArpeggioSSGRelease(arpNum, ReleaseType::NoRelease, -1);
 						break;
 					}
-					else {
+					default:
 						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
+
+					switch (propCtr.readUint8(arpCsr++)) {
+					case 0x00:	// Absolute
+						instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+						break;
+					case 0x01:	// Fixed
+						instManLocked->setArpeggioSSGType(arpNum, SequenceType::FIXED_SEQUENCE);
+						break;
+					case 0x02:	// Relative
+						instManLocked->setArpeggioSSGType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+						break;
+					default:
+						if (bankVersion < Version::toBCD(1, 0, 2)) {
+							// Recover deep clone bug
+							// https://github.com/rerrahkr/BambooTracker/issues/170
+							instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+							break;
+						}
+						else {
+							throw FileCorruptionError(FileIO::FileType::Bank);
+						}
 					}
 				}
 			}
@@ -3907,65 +3926,67 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				ssg->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x34, orgPtNum);
 
-				uint16_t seqLen = propCtr.readUint16(ptCsr);
-				ptCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(ptCsr);
+				if (ptCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
-					if (l == 0)
-						instManLocked->setPitchSSGSequenceCommand(ptNum, 0, data, 0);
-					else
-						instManLocked->addPitchSSGSequenceCommand(ptNum, data, 0);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(ptCsr);
-				ptCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(ptCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(ptCsr);
 						ptCsr += 2;
-						ends.push_back(propCtr.readUint16(ptCsr));
-						ptCsr += 2;
-						times.push_back(propCtr.readUint8(ptCsr++));
+						if (l == 0)
+							instManLocked->setPitchSSGSequenceCommand(ptNum, 0, data, 0);
+						else
+							instManLocked->addPitchSSGSequenceCommand(ptNum, data, 0);
 					}
-					instManLocked->setPitchSSGLoops(ptNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(ptCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
-					break;
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(ptCsr);
+					uint16_t loopCnt = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setPitchSSGRelease(ptNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
-				}
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(ptCsr));
+							ptCsr += 2;
+							ends.push_back(propCtr.readUint16(ptCsr));
+							ptCsr += 2;
+							times.push_back(propCtr.readUint8(ptCsr++));
+						}
+						instManLocked->setPitchSSGLoops(ptNum, begins, ends, times);
+					}
 
-				switch (propCtr.readUint8(ptCsr++)) {
-				case 0x00:	// Absolute
-					instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
-					break;
-				case 0x02:	// Relative
-					instManLocked->setPitchSSGType(ptNum, SequenceType::RELATIVE_SEQUENCE);
-					break;
-				default:
-					if (bankVersion < Version::toBCD(1, 0, 2)) {
-						// Recover deep clone bug
-						// https://github.com/rerrahkr/BambooTracker/issues/170
-						instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+					switch (propCtr.readUint8(ptCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(ptCsr);
+						ptCsr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setPitchSSGRelease(ptNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setPitchSSGRelease(ptNum, ReleaseType::NoRelease, -1);
 						break;
 					}
-					else {
+					default:
 						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
+
+					switch (propCtr.readUint8(ptCsr++)) {
+					case 0x00:	// Absolute
+						instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+						break;
+					case 0x02:	// Relative
+						instManLocked->setPitchSSGType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+						break;
+					default:
+						if (bankVersion < Version::toBCD(1, 0, 2)) {
+							// Recover deep clone bug
+							// https://github.com/rerrahkr/BambooTracker/issues/170
+							instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+							break;
+						}
+						else {
+							throw FileCorruptionError(FileIO::FileType::Bank);
+						}
 					}
 				}
 			}
@@ -3984,16 +4005,17 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 			if (sampNum == -1) throw FileCorruptionError(FileIO::FileType::Bank);
 			adpcm->setSampleNumber(sampNum);
 			size_t sampCsr = getPropertyPositionForBTB(propCtr, 0x40, orgSampNum);
-
-			instManLocked->setSampleADPCMRootKeyNumber(sampNum, propCtr.readUint8(sampCsr++));
-			instManLocked->setSampleADPCMRootDeltaN(sampNum, propCtr.readUint16(sampCsr));
-			sampCsr += 2;
-			instManLocked->setSampleADPCMRepeatEnabled(sampNum, (propCtr.readUint8(sampCsr++) & 0x01) != 0);
-			uint32_t len = propCtr.readUint32(sampCsr);
-			sampCsr += 4;
-			std::vector<uint8_t> samples = propCtr.getSubcontainer(sampCsr, len).toVector();
-			sampCsr += len;
-			instManLocked->storeSampleADPCMRawSample(sampNum, std::move(samples));
+			if (sampCsr != std::numeric_limits<size_t>::max()) {
+				instManLocked->setSampleADPCMRootKeyNumber(sampNum, propCtr.readUint8(sampCsr++));
+				instManLocked->setSampleADPCMRootDeltaN(sampNum, propCtr.readUint16(sampCsr));
+				sampCsr += 2;
+				instManLocked->setSampleADPCMRepeatEnabled(sampNum, (propCtr.readUint8(sampCsr++) & 0x01) != 0);
+				uint32_t len = propCtr.readUint32(sampCsr);
+				sampCsr += 4;
+				std::vector<uint8_t> samples = propCtr.getSubcontainer(sampCsr, len).toVector();
+				sampCsr += len;
+				instManLocked->storeSampleADPCMRawSample(sampNum, std::move(samples));
+			}
 		}
 
 		/* Envelope */
@@ -4011,66 +4033,68 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				adpcm->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPositionForBTB(propCtr, 0x41, orgEnvNum);
 
-				uint16_t seqLen = propCtr.readUint16(envCsr);
-				envCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(envCsr);
+				if (envCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					int32_t subdata;
-					subdata = propCtr.readInt32(envCsr);
-					envCsr += 4;
-					if (l == 0)
-						instManLocked->setEnvelopeADPCMSequenceCommand(envNum, 0, data, subdata);
-					else
-						instManLocked->addEnvelopeADPCMSequenceCommand(envNum, data, subdata);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(envCsr);
-				envCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(envCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						ends.push_back(propCtr.readUint16(envCsr));
-						envCsr += 2;
-						times.push_back(propCtr.readUint8(envCsr++));
+						int32_t subdata;
+						subdata = propCtr.readInt32(envCsr);
+						envCsr += 4;
+						if (l == 0)
+							instManLocked->setEnvelopeADPCMSequenceCommand(envNum, 0, data, subdata);
+						else
+							instManLocked->addEnvelopeADPCMSequenceCommand(envNum, data, subdata);
 					}
-					instManLocked->setEnvelopeADPCMLoops(envNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(envCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(envCsr);
+					uint16_t loopCnt = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				case 0x02:	// Absolute
-				{
-					uint16_t pos = propCtr.readUint16(envCsr);
-					envCsr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::AbsoluteRelease, pos);
-					else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				case 0x03:	// Relative
-				{
-					uint16_t pos = propCtr.readUint16(envCsr);
-					envCsr += 2;
-					if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::RelativeRelease, pos);
-					else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(envCsr));
+							envCsr += 2;
+							ends.push_back(propCtr.readUint16(envCsr));
+							envCsr += 2;
+							times.push_back(propCtr.readUint8(envCsr++));
+						}
+						instManLocked->setEnvelopeADPCMLoops(envNum, begins, ends, times);
+					}
+
+					switch (propCtr.readUint8(envCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					case 0x02:	// Absolute
+					{
+						uint16_t pos = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::AbsoluteRelease, pos);
+						else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					case 0x03:	// Relative
+					{
+						uint16_t pos = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::RelativeRelease, pos);
+						else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -4090,61 +4114,63 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				adpcm->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPositionForBTB(propCtr, 0x42, orgArpNum);
 
-				uint16_t seqLen = propCtr.readUint16(arpCsr);
-				arpCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(arpCsr);
+				if (arpCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
-					if (l == 0)
-						instManLocked->setArpeggioADPCMSequenceCommand(arpNum, 0, data, 0);
-					else
-						instManLocked->addArpeggioADPCMSequenceCommand(arpNum, data, 0);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(arpCsr);
-				arpCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(arpCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(arpCsr);
 						arpCsr += 2;
-						ends.push_back(propCtr.readUint16(arpCsr));
-						arpCsr += 2;
-						times.push_back(propCtr.readUint8(arpCsr++));
+						if (l == 0)
+							instManLocked->setArpeggioADPCMSequenceCommand(arpNum, 0, data, 0);
+						else
+							instManLocked->addArpeggioADPCMSequenceCommand(arpNum, data, 0);
 					}
-					instManLocked->setArpeggioADPCMLoops(arpNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(arpCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
-					break;
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(arpCsr);
+					uint16_t loopCnt = propCtr.readUint16(arpCsr);
 					arpCsr += 2;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
-				}
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(arpCsr));
+							arpCsr += 2;
+							ends.push_back(propCtr.readUint16(arpCsr));
+							arpCsr += 2;
+							times.push_back(propCtr.readUint8(arpCsr++));
+						}
+						instManLocked->setArpeggioADPCMLoops(arpNum, begins, ends, times);
+					}
 
-				switch (propCtr.readUint8(arpCsr++)) {
-				case 0x00:	// Absolute
-					instManLocked->setArpeggioADPCMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
-					break;
-				case 0x01:	// Fixed
-					instManLocked->setArpeggioADPCMType(arpNum, SequenceType::FIXED_SEQUENCE);
-					break;
-				case 0x02:	// Relative
-					instManLocked->setArpeggioADPCMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
-					break;
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
+					switch (propCtr.readUint8(arpCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(arpCsr);
+						arpCsr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setArpeggioADPCMRelease(arpNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
+
+					switch (propCtr.readUint8(arpCsr++)) {
+					case 0x00:	// Absolute
+						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+						break;
+					case 0x01:	// Fixed
+						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::FIXED_SEQUENCE);
+						break;
+					case 0x02:	// Relative
+						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+						break;
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -4164,58 +4190,60 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 				adpcm->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPositionForBTB(propCtr, 0x43, orgPtNum);
 
-				uint16_t seqLen = propCtr.readUint16(ptCsr);
-				ptCsr += 2;
-				for (uint16_t l = 0; l < seqLen; ++l) {
-					uint16_t data = propCtr.readUint16(ptCsr);
+				if (ptCsr != std::numeric_limits<size_t>::max()) {
+					uint16_t seqLen = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
-					if (l == 0)
-						instManLocked->setPitchADPCMSequenceCommand(ptNum, 0, data, 0);
-					else
-						instManLocked->addPitchADPCMSequenceCommand(ptNum, data, 0);
-				}
-
-				uint16_t loopCnt = propCtr.readUint16(ptCsr);
-				ptCsr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(propCtr.readUint16(ptCsr));
+					for (uint16_t l = 0; l < seqLen; ++l) {
+						uint16_t data = propCtr.readUint16(ptCsr);
 						ptCsr += 2;
-						ends.push_back(propCtr.readUint16(ptCsr));
-						ptCsr += 2;
-						times.push_back(propCtr.readUint8(ptCsr++));
+						if (l == 0)
+							instManLocked->setPitchADPCMSequenceCommand(ptNum, 0, data, 0);
+						else
+							instManLocked->addPitchADPCMSequenceCommand(ptNum, data, 0);
 					}
-					instManLocked->setPitchADPCMLoops(ptNum, begins, ends, times);
-				}
 
-				switch (propCtr.readUint8(ptCsr++)) {
-				case 0x00:	// No release
-					instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
-					break;
-				case 0x01:	// Fixed
-				{
-					uint16_t pos = propCtr.readUint16(ptCsr);
+					uint16_t loopCnt = propCtr.readUint16(ptCsr);
 					ptCsr += 2;
-					// Release point check (prevents a bug)
-					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::FixedRelease, pos);
-					else instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
-					break;
-				}
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
-				}
+					if (loopCnt > 0) {
+						std::vector<int> begins, ends, times;
+						for (uint16_t l = 0; l < loopCnt; ++l) {
+							begins.push_back(propCtr.readUint16(ptCsr));
+							ptCsr += 2;
+							ends.push_back(propCtr.readUint16(ptCsr));
+							ptCsr += 2;
+							times.push_back(propCtr.readUint8(ptCsr++));
+						}
+						instManLocked->setPitchADPCMLoops(ptNum, begins, ends, times);
+					}
 
-				switch (propCtr.readUint8(ptCsr++)) {
-				case 0x00:	// Absolute
-					instManLocked->setPitchADPCMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
-					break;
-				case 0x02:	// Relative
-					instManLocked->setPitchADPCMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
-					break;
-				default:
-					throw FileCorruptionError(FileIO::FileType::Bank);
+					switch (propCtr.readUint8(ptCsr++)) {
+					case 0x00:	// No release
+						instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
+						break;
+					case 0x01:	// Fixed
+					{
+						uint16_t pos = propCtr.readUint16(ptCsr);
+						ptCsr += 2;
+						// Release point check (prevents a bug)
+						// https://github.com/rerrahkr/BambooTracker/issues/11
+						if (pos < seqLen) instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::FixedRelease, pos);
+						else instManLocked->setPitchADPCMRelease(ptNum, ReleaseType::NoRelease, -1);
+						break;
+					}
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
+
+					switch (propCtr.readUint8(ptCsr++)) {
+					case 0x00:	// Absolute
+						instManLocked->setPitchADPCMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+						break;
+					case 0x02:	// Relative
+						instManLocked->setPitchADPCMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+						break;
+					default:
+						throw FileCorruptionError(FileIO::FileType::Bank);
+					}
 				}
 			}
 		}
@@ -4245,17 +4273,18 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 					kit->setSampleNumber(key, newSamp);
 					sampMap[orgSamp] = newSamp;
 					size_t sampCsr = getPropertyPositionForBTB(propCtr, 0x40, orgSamp);
-
-					instManLocked->setSampleADPCMRootKeyNumber(newSamp, propCtr.readUint8(sampCsr++));
-					instManLocked->setSampleADPCMRootDeltaN(newSamp, propCtr.readUint16(sampCsr));
-					sampCsr += 2;
-					instManLocked->setSampleADPCMRepeatEnabled(newSamp, (propCtr.readUint8(sampCsr++) & 0x01) != 0);
-					uint32_t len = propCtr.readUint32(sampCsr);
-					sampCsr += 4;
-					std::vector<uint8_t> samples = propCtr.getSubcontainer(sampCsr, len).toVector();
-					sampCsr += len;
-					instManLocked->storeSampleADPCMRawSample(newSamp, std::move(samples));
-					++newSamp;	// Increment for search
+					if (sampCsr != std::numeric_limits<size_t>::max()) {
+						instManLocked->setSampleADPCMRootKeyNumber(newSamp, propCtr.readUint8(sampCsr++));
+						instManLocked->setSampleADPCMRootDeltaN(newSamp, propCtr.readUint16(sampCsr));
+						sampCsr += 2;
+						instManLocked->setSampleADPCMRepeatEnabled(newSamp, (propCtr.readUint8(sampCsr++) & 0x01) != 0);
+						uint32_t len = propCtr.readUint32(sampCsr);
+						sampCsr += 4;
+						std::vector<uint8_t> samples = propCtr.getSubcontainer(sampCsr, len).toVector();
+						sampCsr += len;
+						instManLocked->storeSampleADPCMRawSample(newSamp, std::move(samples));
+						++newSamp;	// Increment for search
+					}
 				}
 			}
 

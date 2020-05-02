@@ -14,6 +14,7 @@
 - [#209] - Fix crashing effect list dialog on opening (thanks [@Ikalou])
 - [#208] - Fix speed/tempo states retrieving on starting playback (thanks [@freq-mod])
 - [#207] - Fix pattern editor resolution after module open error on launch (thanks [@freq-mod])
+- Fix bank loading crash if properties are not changed
 
 [#209]: https://github.com/rerrahkr/BambooTracker/issues/209
 [#208]: https://github.com/rerrahkr/BambooTracker/issues/208
