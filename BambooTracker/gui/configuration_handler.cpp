@@ -143,6 +143,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("volumeMask",					configLocked->getVolumeMask());
 		settings.setValue("visibleToolbar",				configLocked->getVisibleToolbar());
 		settings.setValue("visibleStatusBar",			configLocked->getVisibleStatusBar());
+		settings.setValue("visibleWaveView",			configLocked->getVisibleWaveView());
 		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
 		settings.setValue("mainToolbarPosition",		mainTbConfig.getPosition());
 		settings.setValue("mainToolbarNumber",			mainTbConfig.getNumber());
@@ -171,7 +172,6 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("retrieveChannelState",	configLocked->getRetrieveChannelState());
 		settings.setValue("enableTranslation",		configLocked->getEnableTranslation());
 		settings.setValue("showFMDetuneAsSigned",	configLocked->getShowFMDetuneAsSigned());
-		settings.setValue("showWaveVisual",			configLocked->getShowWaveVisual());
 		settings.setValue("fill00ToEffectValue",	configLocked->getFill00ToEffectValue());
 		settings.setValue("moveCursorByHScroll",	configLocked->getMoveCursorByHorizontalScroll());
 		settings.setValue("overwriteUnusedUnedited",	configLocked->getOverwriteUnusedUneditedPropety());
@@ -280,6 +280,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setVolumeMask(settings.value("volumeMask", configLocked->getVolumeMask()).toBool());
 		configLocked->setVisibleToolbar(settings.value("visibleToolbar", configLocked->getVisibleToolbar()).toBool());
 		configLocked->setVisibleStatusBar(settings.value("visibleStatusBar", configLocked->getVisibleStatusBar()).toBool());
+		configLocked->setVisibleWaveView(settings.value("visibleWaveView", configLocked->getVisibleWaveView()).toBool());
 		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
 		mainTbConfig.setPosition(static_cast<Configuration::ToolbarConfiguration::ToolbarPosition>(settings.value("mainToolbarPosition", mainTbConfig.getPosition()).toInt()));
 		mainTbConfig.setNumber(settings.value("mainToolbarNumber", mainTbConfig.getNumber()).toInt());
@@ -308,7 +309,6 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setRetrieveChannelState(settings.value("retrieveChannelState", configLocked->getRetrieveChannelState()).toBool());
 		configLocked->setEnableTranslation(settings.value("enableTranslation", configLocked->getEnableTranslation()).toBool());
 		configLocked->setShowFMDetuneAsSigned(settings.value("showFMDetuneAsSigned", configLocked->getShowFMDetuneAsSigned()).toBool());
-		configLocked->setShowWaveVisual(settings.value("showWaveVisual", configLocked->getShowWaveVisual()).toBool());
 		configLocked->setFill00ToEffectValue(settings.value("fill00ToEffectValue", configLocked->getFill00ToEffectValue()).toBool());
 		configLocked->setMoveCursorByHorizontalScroll(settings.value("moveCursorByHScroll", configLocked->getMoveCursorByHorizontalScroll()).toBool());
 		configLocked->setOverwriteUnusedUneditedPropety(settings.value("overwriteUnusedUnedited", configLocked->getOverwriteUnusedUneditedPropety()).toBool());
@@ -316,6 +316,10 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		if (settings.contains("autosetInstrument")) {	// For compatibility before v0.4.0
 			configLocked->setInstrumentMask(!settings.value("autosetInstrument").toBool());
 			settings.remove("autosetInstrument");
+		}
+		if (settings.contains("showWaveVisual")) {	// For compatibility before v0.4.2
+			configLocked->setVisibleWaveView(settings.value("showWaveVisual").toBool());
+			settings.remove("showWaveVisual");
 		}
 		settings.endGroup();
 

@@ -312,6 +312,7 @@ private slots:
 	void on_action_Status_Bar_triggered();
 	void on_action_Toolbar_triggered();
 	void on_actionNew_Drumki_t_triggered();
+	void on_action_Wave_View_triggered(bool checked);
 };
 
 #endif // MAINWINDOW_HPP

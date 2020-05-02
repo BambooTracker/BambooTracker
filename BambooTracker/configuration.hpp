@@ -39,12 +39,14 @@ public:
 	bool getVisibleToolbar() const;
 	void setVisibleStatusBar(bool visible);
 	bool getVisibleStatusBar() const;
+	void setVisibleWaveView(bool visible);
+	bool getVisibleWaveView() const;
 private:
 	bool followMode_;
 	std::string workDir_;
 	int instOpenFormat_, bankOpenFormat_;
 	bool instMask_, volMask_;
-	bool visibleToolbar_, visibleStatusBar_;
+	bool visibleToolbar_, visibleStatusBar_, visibleWaveView_;
 
 	// Mainwindow state
 public:
@@ -142,8 +144,6 @@ public:
 	bool getEnableTranslation() const;
 	void setShowFMDetuneAsSigned(bool enabled);
 	bool getShowFMDetuneAsSigned() const;
-	void setShowWaveVisual(bool enabled);
-	bool getShowWaveVisual() const;
 	void setFill00ToEffectValue(bool enabled);
 	bool getFill00ToEffectValue() const;
 	void setMoveCursorByHorizontalScroll(bool enabled);
@@ -153,15 +153,10 @@ public:
 	void setWriteOnlyUsedSamples(bool enabled);
 	bool getWriteOnlyUsedSamples() const;
 private:
-	bool warpCursor_, warpAcrossOrders_;
-	bool showRowNumHex_, showPrevNextOrders_;
-	bool backupModules_, dontSelectOnDoubleClick_;
-	bool reverseFMVolumeOrder_, moveCursorToRight_;
-	bool retrieveChannelState_, enableTranslation_;
-	bool showFMDetuneSigned_, showWaveVisual_;
-	bool fill00ToEffectValue_;
-	bool moveCursorHScroll_, overwriteUnusedUnedited_;
-	bool writeOnlyUsedSamples_;
+	bool warpCursor_, warpAcrossOrders_, showRowNumHex_, showPrevNextOrders_, backupModules_;
+	bool dontSelectOnDoubleClick_, reverseFMVolumeOrder_, moveCursorToRight_, retrieveChannelState_;
+	bool enableTranslation_, showFMDetuneSigned_, fill00ToEffectValue_, moveCursorHScroll_;
+	bool overwriteUnusedUnedited_, writeOnlyUsedSamples_;
 
 	// Edit settings
 public:

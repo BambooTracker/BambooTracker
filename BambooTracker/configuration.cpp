@@ -12,6 +12,7 @@ Configuration::Configuration()
 	volMask_ = true;
 	visibleToolbar_ = true;
 	visibleStatusBar_ = true;
+	visibleWaveView_ = true;
 
 	// Mainwindow state
 	mainW_ = 930;
@@ -56,7 +57,6 @@ Configuration::Configuration()
 	retrieveChannelState_ = false;
 	enableTranslation_ = true;
 	showFMDetuneSigned_ = false;
-	showWaveVisual_ = true;
 	fill00ToEffectValue_ = true;
 	moveCursorHScroll_ = true;
 	overwriteUnusedUnedited_ = false;
@@ -722,6 +722,10 @@ void Configuration::setVisibleStatusBar(bool visible) { visibleStatusBar_ = visi
 
 bool Configuration::getVisibleStatusBar() const { return visibleStatusBar_; }
 
+void Configuration::setVisibleWaveView(bool visible) { visibleWaveView_ = visible; }
+
+bool Configuration::getVisibleWaveView() const { return visibleWaveView_; }
+
 // Mainwindow state
 void Configuration::setMainWindowWidth(int w) { mainW_ = w; }
 
@@ -851,10 +855,6 @@ bool Configuration::getEnableTranslation() const { return enableTranslation_; }
 void Configuration::setShowFMDetuneAsSigned(bool enabled) { showFMDetuneSigned_ = enabled; }
 
 bool Configuration::getShowFMDetuneAsSigned() const { return showFMDetuneSigned_; }
-
-void Configuration::setShowWaveVisual(bool enabled) { showWaveVisual_ = enabled; }
-
-bool Configuration::getShowWaveVisual() const { return showWaveVisual_; }
 
 void Configuration::setFill00ToEffectValue(bool enabled) { fill00ToEffectValue_ = enabled; }
 

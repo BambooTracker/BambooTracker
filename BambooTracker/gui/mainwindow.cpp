@@ -96,7 +96,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->actionFollow_Mode->setChecked(config.lock()->getFollowMode());
 	ui->action_Instrument_Mask->setChecked(config.lock()->getInstrumentMask());
 	ui->action_Volume_Mask->setChecked(config.lock()->getVolumeMask());
-	ui->waveVisual->setVisible(config_.lock()->getShowWaveVisual());
+	ui->action_Wave_View->setChecked(config.lock()->getVisibleWaveView());
+	ui->waveVisual->setVisible(config.lock()->getVisibleWaveView());
 	bt_->setFollowPlay(config.lock()->getFollowMode());
 	if (config.lock()->getPatternEditorHeaderFont().empty()) {
 		config.lock()->setPatternEditorHeaderFont(ui->patternEditor->getHeaderFont().toStdString());
@@ -2041,7 +2042,6 @@ void MainWindow::changeConfiguration()
 	bt_->changeConfiguration(config_);
 
 	setShortcuts();
-	ui->waveVisual->setVisible(config_.lock()->getShowWaveVisual());
 	updateInstrumentListColors();
 	bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
 
@@ -3412,4 +3412,10 @@ void MainWindow::on_action_Toolbar_triggered()
 void MainWindow::on_actionNew_Drumki_t_triggered()
 {
 	addDrumkit();
+}
+
+void MainWindow::on_action_Wave_View_triggered(bool checked)
+{
+	config_.lock()->setVisibleWaveView(checked);
+	ui->waveVisual->setVisible(checked);
 }

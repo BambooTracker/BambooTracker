@@ -754,6 +754,7 @@
     </property>
     <addaction name="action_Toolbar"/>
     <addaction name="action_Status_Bar"/>
+    <addaction name="action_Wave_View"/>
     <addaction name="separator"/>
     <addaction name="actionFollow_Mode"/>
    </widget>
@@ -1575,6 +1576,17 @@
    </property>
    <property name="text">
     <string>New Drumki&amp;t</string>
+   </property>
+  </action>
+  <action name="action_Wave_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Wave View</string>
    </property>
   </action>
  </widget>

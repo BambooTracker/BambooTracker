@@ -135,14 +135,6 @@
             </item>
             <item>
              <property name="text">
-              <string>Show wave visual</string>
-             </property>
-             <property name="checkState">
-              <enum>Checked</enum>
-             </property>
-            </item>
-            <item>
-             <property name="text">
               <string>Fill 00 to effect value</string>
              </property>
              <property name="checkState">
