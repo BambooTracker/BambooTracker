@@ -312,7 +312,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setFill00ToEffectValue(settings.value("fill00ToEffectValue", configLocked->getFill00ToEffectValue()).toBool());
 		configLocked->setMoveCursorByHorizontalScroll(settings.value("moveCursorByHScroll", configLocked->getMoveCursorByHorizontalScroll()).toBool());
 		configLocked->setOverwriteUnusedUneditedPropety(settings.value("overwriteUnusedUnedited", configLocked->getOverwriteUnusedUneditedPropety()).toBool());
-		configLocked->setOverwriteUnusedUneditedPropety(settings.value("writeOnlyUsedSamples", configLocked->getWriteOnlyUsedSamples()).toBool());
+		configLocked->setWriteOnlyUsedSamples(settings.value("writeOnlyUsedSamples", configLocked->getWriteOnlyUsedSamples()).toBool());
 		if (settings.contains("autosetInstrument")) {	// For compatibility before v0.4.0
 			configLocked->setInstrumentMask(!settings.value("autosetInstrument").toBool());
 			settings.remove("autosetInstrument");
