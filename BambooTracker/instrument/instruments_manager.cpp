@@ -636,6 +636,16 @@ int InstrumentsManager::cloneADPCMPitch(int srcNum)
 	return cloneNum;
 }
 
+void InstrumentsManager::swapInstruments(int inst1Num, int inst2Num)
+{
+	std::unique_ptr<AbstractInstrument> inst1 = removeInstrument(inst1Num);
+	std::unique_ptr<AbstractInstrument> inst2 = removeInstrument(inst2Num);
+	inst1->setNumber(inst2Num);
+	inst2->setNumber(inst1Num);
+	addInstrument(std::move(inst1));
+	addInstrument(std::move(inst2));
+}
+
 std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int instNum)
 {	
 	switch (insts_.at(static_cast<size_t>(instNum))->getType()) {

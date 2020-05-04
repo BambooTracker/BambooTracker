@@ -7,5 +7,6 @@
 #include "./instrument/change_instrument_name_qt_command.hpp"
 #include "./instrument/clone_instrument_qt_command.hpp"
 #include "./instrument/deep_clone_instrument_qt_command.hpp"
+#include "./instrument/swap_instruments_qt_command.hpp"
 
 #endif // COMMANDS_QT_HPP

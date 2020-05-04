@@ -101,6 +101,7 @@ private:
 	void importInstrumentsFromBank();
 	void funcImportInstrumentsFromBank(QString file);
 	void exportInstrumentsToBank();
+	void swapInstruments(int row1, int row2);
 
 	// Undo-Redo
 	void undo();
@@ -212,9 +213,9 @@ private:
 	}
 
 private slots:
-	void on_instrumentListWidget_customContextMenuRequested(const QPoint &pos);
-	void on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item);
-	void on_instrumentListWidget_itemSelectionChanged();
+	void on_instrumentList_customContextMenuRequested(const QPoint& pos);
+	void on_instrumentList_itemDoubleClicked(QListWidgetItem* item);
+	void on_instrumentList_itemSelectionChanged();
 	void on_grooveCheckBox_stateChanged(int arg1);
 	void on_actionExit_triggered();
 	void on_actionUndo_triggered();

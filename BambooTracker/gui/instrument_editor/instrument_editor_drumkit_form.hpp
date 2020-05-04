@@ -21,6 +21,7 @@ class InstrumentEditorDrumkitForm : public QWidget
 public:
 	explicit InstrumentEditorDrumkitForm(int num, QWidget *parent = nullptr);
 	~InstrumentEditorDrumkitForm() override;
+	void setInstrumentNumber(int num);
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
 	void setConfiguration(std::weak_ptr<Configuration> config);

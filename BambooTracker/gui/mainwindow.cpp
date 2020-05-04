@@ -327,7 +327,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 
 	/* Instrument list */
-	ui->instrumentListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	auto instToolBar = new QToolBar();
 	instToolBar->setIconSize(QSize(16, 16));
 	auto addMenu = new QMenu();
@@ -345,7 +344,9 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	instToolBar->addSeparator();
 	instToolBar->addAction(ui->actionRename_Instrument);
 	ui->instrumentListGroupBox->layout()->addWidget(instToolBar);
-	ui->instrumentListWidget->installEventFilter(this);
+	ui->instrumentList->installEventFilter(this);
+	QObject::connect(ui->instrumentList, &DropDetectListWidget::itemDroppedAtItemIndex,
+					 this, &MainWindow::swapInstruments);
 
 	/* Pattern editor */
 	ui->patternEditor->setCommandStack(comStack_);
@@ -360,7 +361,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, &MainWindow::updateMenuByPatternSelection);
 	QObject::connect(ui->patternEditor, &PatternEditor::instrumentEntered,
 					 this, [&](int num) {
-		auto list = ui->instrumentListWidget;
+		auto list = ui->instrumentList;
 		if (num != -1) {
 			for (int i = 0; i < list->count(); ++i) {
 				if (list->item(i)->data(Qt::UserRole).toInt() == num) {
@@ -462,7 +463,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(focusOdrSc_.get(), &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
 	focusInstSc_ = std::make_unique<QShortcut>(this);
 	QObject::connect(focusInstSc_.get(), &QShortcut::activated, this, [&] {
-		ui->instrumentListWidget->setFocus();
+		ui->instrumentList->setFocus();
 		updateMenuByInstrumentList();
 	});
 	initShortcut(playAndStopSc_);
@@ -477,7 +478,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	linkShortcut(ui->actionPlay_From_Cursor);
 	linkShortcut(ui->actionPlay_From_Marker);
 	linkShortcut(ui->actionStop);
-	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentListWidget,
+	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentList,
 											 nullptr, nullptr, Qt::WidgetShortcut);
 	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
 	initShortcut(goPrevOdrSc_);
@@ -490,19 +491,19 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 	initShortcut(prevInstSc_);
 	QObject::connect(prevInstSc_.get(), &QAction::triggered, this, [&] {
-		if (ui->instrumentListWidget->count()) {
-			int row = ui->instrumentListWidget->currentRow();
-			if (row == -1) ui->instrumentListWidget->setCurrentRow(0);
-			else if (row > 0) ui->instrumentListWidget->setCurrentRow(row - 1);
+		if (ui->instrumentList->count()) {
+			int row = ui->instrumentList->currentRow();
+			if (row == -1) ui->instrumentList->setCurrentRow(0);
+			else if (row > 0) ui->instrumentList->setCurrentRow(row - 1);
 		}
 	});
 	initShortcut(nextInstSc_);
 	QObject::connect(nextInstSc_.get(), &QAction::triggered, this, [&] {
-		int cnt = ui->instrumentListWidget->count();
+		int cnt = ui->instrumentList->count();
 		if (cnt) {
-			int row = ui->instrumentListWidget->currentRow();
-			if (row == -1) ui->instrumentListWidget->setCurrentRow(cnt - 1);
-			else if (row < cnt - 1) ui->instrumentListWidget->setCurrentRow(row + 1);
+			int row = ui->instrumentList->currentRow();
+			if (row == -1) ui->instrumentList->setCurrentRow(cnt - 1);
+			else if (row < cnt - 1) ui->instrumentList->setCurrentRow(row + 1);
 		}
 	});
 	initShortcut(incPtnSizeSc_);
@@ -624,7 +625,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		// Change current instrument by activating FM editor
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(fmForm->getInstrumentNumber());
-			ui->instrumentListWidget->setCurrentRow(row);
+			ui->instrumentList->setCurrentRow(row);
 		}
 		else if (event->type() == QEvent::Resize) {
 			config_.lock()->setInstrumentFMWindowWidth(fmForm->width());
@@ -637,7 +638,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		// Change current instrument by activating SSG editor
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(ssgForm->getInstrumentNumber());
-			ui->instrumentListWidget->setCurrentRow(row);
+			ui->instrumentList->setCurrentRow(row);
 		}
 		else if (event->type() == QEvent::Resize) {
 			config_.lock()->setInstrumentSSGWindowWidth(ssgForm->width());
@@ -650,7 +651,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		// Change current instrument by activating ADPCM editor
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(adpcmForm->getInstrumentNumber());
-			ui->instrumentListWidget->setCurrentRow(row);
+			ui->instrumentList->setCurrentRow(row);
 		}
 		else if (event->type() == QEvent::Resize) {
 			config_.lock()->setInstrumentADPCMWindowWidth(adpcmForm->width());
@@ -663,7 +664,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		// Change current instrument by activating drumkit editor
 		if (event->type() == QEvent::WindowActivate) {
 			int row = findRowFromInstrumentList(kitForm->getInstrumentNumber());
-			ui->instrumentListWidget->setCurrentRow(row);
+			ui->instrumentList->setCurrentRow(row);
 		}
 		else if (event->type() == QEvent::Resize) {
 			config_.lock()->setInstrumentDrumkitWindowWidth(kitForm->width());
@@ -672,7 +673,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 		return false;
 	}
 
-	if (watched == ui->instrumentListWidget) {
+	if (watched == ui->instrumentList) {
 		switch (event->type()) {
 		case QEvent::FocusIn:
 			updateMenuByInstrumentList();
@@ -1045,7 +1046,7 @@ void MainWindow::setShortcuts()
 
 void MainWindow::updateInstrumentListColors()
 {
-	ui->instrumentListWidget->setStyleSheet(
+	ui->instrumentList->setStyleSheet(
 				QString("QListWidget { color: %1; background: %2; }")
 				.arg(palette_->ilistTextColor.name(QColor::HexArgb),
 					 palette_->ilistBackColor.name(QColor::HexArgb))
@@ -1116,7 +1117,7 @@ void MainWindow::midiProgramEvent(uchar status, uchar program)
 {
 	Q_UNUSED(status)
 	int row = findRowFromInstrumentList(program);
-	ui->instrumentListWidget->setCurrentRow(row);
+	ui->instrumentList->setCurrentRow(row);
 }
 
 /********** Instrument list **********/
@@ -1133,7 +1134,7 @@ void MainWindow::addInstrument()
 			{ SoundSource::SSG, InstrumentType::SSG },
 			{ SoundSource::ADPCM, InstrumentType::ADPCM },
 		};
-		auto& list = ui->instrumentListWidget;
+		auto& list = ui->instrumentList;
 
 		int num = bt_->findFirstFreeInstrumentNumber();
 		if (num == -1) return;	// Maximum count check
@@ -1144,7 +1145,7 @@ void MainWindow::addInstrument()
 		comStack_->push(new AddInstrumentQtCommand(
 							list, num, name, map.at(src), instForms_, this,
 							config_.lock()->getWriteOnlyUsedSamples()));
-		ui->instrumentListWidget->setCurrentRow(num);
+		ui->instrumentList->setCurrentRow(num);
 		break;
 	}
 	case SoundSource::DRUM:
@@ -1154,7 +1155,7 @@ void MainWindow::addInstrument()
 
 void MainWindow::addDrumkit()
 {
-	auto& list = ui->instrumentListWidget;
+	auto& list = ui->instrumentList;
 
 	int num = bt_->findFirstFreeInstrumentNumber();
 	if (num == -1) return;	// Maximum count check
@@ -1165,14 +1166,14 @@ void MainWindow::addDrumkit()
 	comStack_->push(new AddInstrumentQtCommand(
 						list, num, name, InstrumentType::Drumkit, instForms_, this,
 						config_.lock()->getWriteOnlyUsedSamples()));
-	ui->instrumentListWidget->setCurrentRow(num);
+	ui->instrumentList->setCurrentRow(num);
 }
 
 void MainWindow::removeInstrument(int row)
 {
 	if (row < 0) return;
 
-	auto& list = ui->instrumentListWidget;
+	auto& list = ui->instrumentList;
 	int num = list->item(row)->data(Qt::UserRole).toInt();
 
 	auto inst = bt_->getInstrument(num);
@@ -1193,7 +1194,7 @@ void MainWindow::removeInstrument(int row)
 
 void MainWindow::openInstrumentEditor()
 {
-	auto item = ui->instrumentListWidget->currentItem();
+	auto item = ui->instrumentList->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
 
 	if (!instForms_->getForm(num)) {	// Create form
@@ -1390,7 +1391,7 @@ void MainWindow::openInstrumentEditor()
 
 int MainWindow::findRowFromInstrumentList(int instNum)
 {
-	auto& list = ui->instrumentListWidget;
+	auto& list = ui->instrumentList;
 	int row = 0;
 	for (; row < list->count(); ++row) {
 		auto item = list->item(row);
@@ -1401,7 +1402,7 @@ int MainWindow::findRowFromInstrumentList(int instNum)
 
 void MainWindow::renameInstrument()
 {
-	auto list = ui->instrumentListWidget;
+	auto list = ui->instrumentList;
 	auto item = list->currentItem();
 	int num = item->data(Qt::UserRole).toInt();
 	auto inst = bt_->getInstrument(num);
@@ -1417,7 +1418,7 @@ void MainWindow::renameInstrument()
 		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
 	});
 
-	ui->instrumentListWidget->setItemWidget(item, line);
+	ui->instrumentList->setItemWidget(item, line);
 
 	line->selectAll();
 	line->setFocus();
@@ -1428,11 +1429,11 @@ void MainWindow::cloneInstrument()
 	int num = bt_->findFirstFreeInstrumentNumber();
 	if (num == -1) return;
 
-	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	int refNum = ui->instrumentList->currentItem()->data(Qt::UserRole).toInt();
 	// KEEP CODE ORDER //
 	bt_->cloneInstrument(num, refNum);
 	auto inst = bt_->getInstrument(num);
-	comStack_->push(new CloneInstrumentQtCommand(ui->instrumentListWidget, num, inst->getType(),
+	comStack_->push(new CloneInstrumentQtCommand(ui->instrumentList, num, inst->getType(),
 												 utf8ToQString(inst->getName()), instForms_));
 	//----------//
 }
@@ -1442,12 +1443,12 @@ void MainWindow::deepCloneInstrument()
 	int num = bt_->findFirstFreeInstrumentNumber();
 	if (num == -1) return;
 
-	int refNum = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	int refNum = ui->instrumentList->currentItem()->data(Qt::UserRole).toInt();
 	// KEEP CODE ORDER //
 	bt_->deepCloneInstrument(num, refNum);
 	auto inst = bt_->getInstrument(num);
 	comStack_->push(new DeepCloneInstrumentQtCommand(
-						ui->instrumentListWidget, num, inst->getType(), utf8ToQString(inst->getName()),
+						ui->instrumentList, num, inst->getType(), utf8ToQString(inst->getName()),
 						instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
 	//----------//
 }
@@ -1498,9 +1499,9 @@ void MainWindow::funcLoadInstrument(QString file)
 
 		auto inst = bt_->getInstrument(n);
 		comStack_->push(new AddInstrumentQtCommand(
-							ui->instrumentListWidget, n, utf8ToQString(inst->getName()), inst->getType(),
+							ui->instrumentList, n, utf8ToQString(inst->getName()), inst->getType(),
 							instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
-		ui->instrumentListWidget->setCurrentRow(n);
+		ui->instrumentList->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (FileIOError& e) {
@@ -1513,7 +1514,7 @@ void MainWindow::funcLoadInstrument(QString file)
 
 void MainWindow::saveInstrument()
 {
-	int n = ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+	int n = ui->instrumentList->currentItem()->data(Qt::UserRole).toInt();
 	QString name = utf8ToQString(bt_->getInstrument(n)->getName());
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
@@ -1646,13 +1647,13 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 
 	try {
 		bool sampleRestoreRequested = false;
-		int lastNum = ui->instrumentListWidget->currentRow();
+		int lastNum = ui->instrumentList->currentRow();
 		for (size_t index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
 				showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst),
 									  tr( "The number of instruments has reached the upper limit."));
-				ui->instrumentListWidget->setCurrentRow(lastNum);
+				ui->instrumentList->setCurrentRow(lastNum);
 				return;
 			}
 
@@ -1660,13 +1661,13 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 
 			auto inst = bt_->getInstrument(n);
 			comStack_->push(new AddInstrumentQtCommand(
-								ui->instrumentListWidget, n, utf8ToQString(inst->getName()),
+								ui->instrumentList, n, utf8ToQString(inst->getName()),
 								inst->getType(), instForms_, this, config_.lock()->getWriteOnlyUsedSamples(), true));
 			lastNum = n;
 
 			sampleRestoreRequested |= (inst->getSoundSource() == SoundSource::ADPCM);
 		}
-		ui->instrumentListWidget->setCurrentRow(lastNum);
+		ui->instrumentList->setCurrentRow(lastNum);
 
 		if (sampleRestoreRequested) assignADPCMSamples();	// Store only once
 	}
@@ -1719,6 +1720,22 @@ void MainWindow::exportInstrumentsToBank()
 	}
 }
 
+void MainWindow::swapInstruments(int row1, int row2)
+{
+	if (row1 == row2) return;
+
+	// KEEP CODE ORDER //
+	int num1 = ui->instrumentList->item(row1)->data(Qt::UserRole).toInt();
+	int num2 = ui->instrumentList->item(row2)->data(Qt::UserRole).toInt();
+	QString name1 = utf8ToQString(bt_->getInstrument(num1)->getName());
+	QString name2 = utf8ToQString(bt_->getInstrument(num2)->getName());
+
+	bt_->swapInstruments(num1, num2, config_.lock()->getReflectInstrumentNumberChange());
+	comStack_->push(new SwapInstrumentsQtCommand(
+						ui->instrumentList, num1, num2, name1, name2, instForms_, ui->patternEditor));
+	//----------//
+}
+
 /********** Undo-Redo **********/
 void MainWindow::undo()
 {
@@ -1736,8 +1753,8 @@ void MainWindow::redo()
 void MainWindow::loadModule()
 {
 	instForms_->clearAll();
-	ui->instrumentListWidget->clear();
-	on_instrumentListWidget_itemSelectionChanged();
+	ui->instrumentList->clear();
+	on_instrumentList_itemSelectionChanged();
 
 	ui->modTitleLineEdit->setText(utf8ToQString(bt_->getModuleTitle()));
 	ui->modTitleLineEdit->setCursorPosition(0);
@@ -1757,7 +1774,7 @@ void MainWindow::loadModule()
 	for (auto& idx : bt_->getInstrumentIndices()) {
 		auto inst = bt_->getInstrument(idx);
 		comStack_->push(new AddInstrumentQtCommand(
-							ui->instrumentListWidget, idx, utf8ToQString(inst->getName()), inst->getType(),
+							ui->instrumentList, idx, utf8ToQString(inst->getName()), inst->getType(),
 							instForms_, this, config_.lock()->getWriteOnlyUsedSamples(), true));
 	}
 
@@ -2174,7 +2191,7 @@ void MainWindow::setInitialSelectedInstrument()
 		statusInst_->setText(tr("No instrument"));
 	}
 	else {
-		ui->instrumentListWidget->setCurrentRow(0);
+		ui->instrumentList->setCurrentRow(0);
 	}
 }
 
@@ -2238,9 +2255,9 @@ void MainWindow::showFileIOErrorDialog(const FileIOError& e, const QString sub)
 
 /******************************/
 /********** Instrument list events **********/
-void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint &pos)
+void MainWindow::on_instrumentList_customContextMenuRequested(const QPoint &pos)
 {
-	auto& list = ui->instrumentListWidget;
+	auto& list = ui->instrumentList;
 	QPoint globalPos = list->mapToGlobal(pos);
 	QMenu menu;
 
@@ -2260,17 +2277,17 @@ void MainWindow::on_instrumentListWidget_customContextMenuRequested(const QPoint
 	menu.exec(globalPos);
 }
 
-void MainWindow::on_instrumentListWidget_itemDoubleClicked(QListWidgetItem *item)
+void MainWindow::on_instrumentList_itemDoubleClicked(QListWidgetItem *item)
 {
 	Q_UNUSED(item)
 	openInstrumentEditor();
 }
 
-void MainWindow::on_instrumentListWidget_itemSelectionChanged()
+void MainWindow::on_instrumentList_itemSelectionChanged()
 {
-	int num = (ui->instrumentListWidget->currentRow() == -1)
+	int num = (ui->instrumentList->currentRow() == -1)
 			  ? -1
-			  : ui->instrumentListWidget->currentItem()->data(Qt::UserRole).toInt();
+			  : ui->instrumentList->currentItem()->data(Qt::UserRole).toInt();
 	bt_->setCurrentInstrument(num);
 
 	if (num == -1) statusInst_->setText(tr("No instrument"));
@@ -2382,7 +2399,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionInterpolate->setEnabled(isSelectedPattern_);
 		ui->actionReverse->setEnabled(isSelectedPattern_);
 		ui->actionReplace_Instrument->setEnabled(
-					isSelectedPattern_ && ui->instrumentListWidget->currentRow() != -1);
+					isSelectedPattern_ && ui->instrumentList->currentRow() != -1);
 		ui->actionExpand->setEnabled(isSelectedPattern_);
 		ui->actionShrink->setEnabled(isSelectedPattern_);
 		ui->actionDecrease_Note->setEnabled(true);
@@ -2486,7 +2503,7 @@ void MainWindow::updateMenuByPatternSelection(bool isSelected)
 		ui->actionInterpolate->setEnabled(enabled);
 		ui->actionReverse->setEnabled(enabled);
 		ui->actionReplace_Instrument->setEnabled(
-					enabled && ui->instrumentListWidget->currentRow() != -1);
+					enabled && ui->instrumentList->currentRow() != -1);
 		ui->actionExpand->setEnabled(enabled);
 		ui->actionShrink->setEnabled(enabled);
 	}
@@ -2547,7 +2564,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 	ModulePropertiesDialog dialog(bt_, config_.lock()->getMixerVolumeFM(), config_.lock()->getMixerVolumeSSG());
 	if (dialog.exec() == QDialog::Accepted
 			&& showUndoResetWarningDialog(tr("Do you want to change song properties?"))) {
-		int instRow = ui->instrumentListWidget->currentRow();
+		int instRow = ui->instrumentList->currentRow();
 		bt_->stopPlaySong();
 		lockWidgets(false);
 		dialog.onAccepted();
@@ -2556,7 +2573,7 @@ void MainWindow::on_actionModule_Properties_triggered()
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
-		ui->instrumentListWidget->setCurrentRow(instRow);
+		ui->instrumentList->setCurrentRow(instRow);
 		if (!timer_) stream_->start();
 		assignADPCMSamples();
 	}
@@ -2569,7 +2586,7 @@ void MainWindow::on_actionNew_Instrument_triggered()
 
 void MainWindow::on_actionRemove_Instrument_triggered()
 {
-	removeInstrument(ui->instrumentListWidget->currentRow());
+	removeInstrument(ui->instrumentList->currentRow());
 }
 
 void MainWindow::on_actionClone_Instrument_triggered()
@@ -2966,7 +2983,7 @@ void MainWindow::on_actionRemove_Unused_Instruments_triggered()
 		bt_->stopPlaySong();
 		lockWidgets(false);
 
-		auto list = ui->instrumentListWidget;
+		auto list = ui->instrumentList;
 		for (auto& n : bt_->getUnusedInstrumentIndices()) {
 			for (int i = 0; i < list->count(); ++i) {
 				if (list->item(i)->data(Qt::UserRole).toInt() == n) {
@@ -3284,7 +3301,7 @@ void MainWindow::on_actionRemove_Duplicate_Instruments_triggered()
 		lockWidgets(false);
 
 		std::vector<std::vector<int>> duplicates = bt_->checkDuplicateInstruments();
-		auto list = ui->instrumentListWidget;
+		auto list = ui->instrumentList;
 		for (auto& group : duplicates) {
 			for (size_t i = 1; i < group.size(); ++i) {
 				for (int j = 0; j < list->count(); ++j) {

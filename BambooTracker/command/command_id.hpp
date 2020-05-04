@@ -8,6 +8,7 @@ enum CommandId : int
 	ChangeInstrumentName	= 0x12,
 	CloneInstrument			= 0x13,
 	DeepCloneInstrument		= 0x14,
+	SwapInstruments			= 0x15,
 
 	// 0x2*, 0x3*: Pattern editor
 	SetKeyOnToStep						= 0x20,

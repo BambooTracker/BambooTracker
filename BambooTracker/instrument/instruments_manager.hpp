@@ -32,6 +32,7 @@ public:
 	std::unique_ptr<AbstractInstrument> removeInstrument(int instNum);
 	void cloneInstrument(int cloneInstNum, int resInstNum);
 	void deepCloneInstrument(int cloneInstNum, int resInstNum);
+	void swapInstruments(int inst1Num, int inst2Num);
 	std::shared_ptr<AbstractInstrument> getInstrumentSharedPtr(int instNum);
 	void clearAll();
 	std::vector<int> getInstrumentIndices() const;

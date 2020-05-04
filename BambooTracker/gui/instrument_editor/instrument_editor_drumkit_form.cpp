@@ -50,6 +50,11 @@ InstrumentEditorDrumkitForm::~InstrumentEditorDrumkitForm()
 	delete ui;
 }
 
+void InstrumentEditorDrumkitForm::setInstrumentNumber(int num)
+{
+	instNum_ = num;
+}
+
 int InstrumentEditorDrumkitForm::getInstrumentNumber() const
 {
 	return instNum_;

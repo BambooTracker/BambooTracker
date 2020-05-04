@@ -574,6 +574,11 @@ InstrumentEditorFMForm::~InstrumentEditorFMForm()
 	delete ui;
 }
 
+void InstrumentEditorFMForm::setInstrumentNumber(int num)
+{
+	instNum_ = num;
+}
+
 int InstrumentEditorFMForm::getInstrumentNumber() const
 {
 	return instNum_;

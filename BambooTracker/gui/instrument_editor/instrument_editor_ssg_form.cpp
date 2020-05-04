@@ -307,6 +307,11 @@ InstrumentEditorSSGForm::~InstrumentEditorSSGForm()
 	delete ui;
 }
 
+void InstrumentEditorSSGForm::setInstrumentNumber(int num)
+{
+	instNum_ = num;
+}
+
 int InstrumentEditorSSGForm::getInstrumentNumber() const
 {
 	return instNum_;

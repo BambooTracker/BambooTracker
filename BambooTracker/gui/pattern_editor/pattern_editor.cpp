@@ -245,6 +245,11 @@ void PatternEditor::onShortcutUpdated()
 	ui->panel->onShortcutUpdated();
 }
 
+void PatternEditor::onPatternDataGlobalChanged()
+{
+	ui->panel->redrawByPatternChanged();
+}
+
 void PatternEditor::setPatternHighlight1Count(int count)
 {
 	ui->panel->setPatternHighlight1Count(count);

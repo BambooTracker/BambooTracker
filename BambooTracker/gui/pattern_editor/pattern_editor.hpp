@@ -66,6 +66,8 @@ public slots:
 	void onDefaultPatternSizeChanged();
 	void onShortcutUpdated();
 
+	void onPatternDataGlobalChanged();
+
 	void setPatternHighlight1Count(int count);
 	void setPatternHighlight2Count(int count);
 	void setEditableStep(int n);

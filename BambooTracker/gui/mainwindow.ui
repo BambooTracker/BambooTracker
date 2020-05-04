@@ -498,18 +498,33 @@
             <number>3</number>
            </property>
            <item>
-            <widget class="QListWidget" name="instrumentListWidget">
+            <widget class="DropDetectListWidget" name="instrumentList">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::Panel</enum>
+             </property>
+             <property name="showDropIndicator" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="dragEnabled">
+              <bool>true</bool>
+             </property>
+             <property name="dragDropMode">
+              <enum>QAbstractItemView::DragDrop</enum>
+             </property>
+             <property name="defaultDropAction">
+              <enum>Qt::ActionMask</enum>
              </property>
              <property name="iconSize">
               <size>
@@ -1610,6 +1625,11 @@
    <header>gui/wave_visual.hpp</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>DropDetectListWidget</class>
+   <extends>QListWidget</extends>
+   <header>gui/drop_detect_list_widget.hpp</header>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>tempoSpinBox</tabstop>
@@ -1623,7 +1643,7 @@
   <tabstop>authorLineEdit</tabstop>
   <tabstop>copyrightLineEdit</tabstop>
   <tabstop>songComboBox</tabstop>
-  <tabstop>instrumentListWidget</tabstop>
+  <tabstop>instrumentList</tabstop>
  </tabstops>
  <resources>
   <include location="../bamboo_tracker.qrc"/>

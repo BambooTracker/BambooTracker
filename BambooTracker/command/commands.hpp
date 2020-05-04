@@ -6,6 +6,7 @@
 #include "./instrument/change_instrument_name_command.hpp"
 #include "./instrument/clone_instrument_command.hpp"
 #include "./instrument/deep_clone_instrument_command.hpp"
+#include "./instrument/swap_instruments_command.hpp"
 
 /********** Pattern edit **********/
 #include "./pattern/set_key_on_to_step_command.hpp"

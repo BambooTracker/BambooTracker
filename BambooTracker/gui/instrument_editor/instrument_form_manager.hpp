@@ -21,6 +21,7 @@ public:
 	const std::shared_ptr<QWidget> getForm(int n) const;
 	void remove(int n);
 	void add(int n, std::shared_ptr<QWidget> form, SoundSource src, InstrumentType type);
+	void swap(int a, int b);
 
 	void showForm(int n);
 	void closeAll();

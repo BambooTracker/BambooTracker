@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include "configuration.hpp"
 #include "opna_controller.hpp"
 #include "jam_manager.hpp"
@@ -54,6 +54,7 @@ public:
 	std::unique_ptr<AbstractInstrument> getInstrument(int num);
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
+	void swapInstruments(int a, int b, bool patternChange);
 	void loadInstrument(BinaryContainer& container, std::string path, int instNum);
 	void saveInstrument(BinaryContainer& container, int instNum);
 	void importInstrument(const AbstractBank &bank, size_t index, int instNum);

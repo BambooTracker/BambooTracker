@@ -1,5 +1,4 @@
 #include "instrument_form_manager.hpp"
-#include <map>
 #include <utility>
 #include <QApplication>
 #include "instrument.hpp"
@@ -36,42 +35,91 @@ void InstrumentFormManager::add(int n, std::shared_ptr<QWidget> form, SoundSourc
 	// Parameter numbers update in MainWindow
 }
 
+void InstrumentFormManager::swap(int a, int b)
+{
+	auto changeNumber = [&](int id, InstrumentType type) {
+		QWidget* form = map_.at(id).get();
+		switch (type) {
+		case InstrumentType::FM:
+			qobject_cast<InstrumentEditorFMForm*>(form)->setInstrumentNumber(id);
+			break;
+		case InstrumentType::SSG:
+			qobject_cast<InstrumentEditorSSGForm*>(form)->setInstrumentNumber(id);
+			break;
+		case InstrumentType::ADPCM:
+			qobject_cast<InstrumentEditorADPCMForm*>(form)->setInstrumentNumber(id);
+			break;
+		case InstrumentType::Drumkit:
+			qobject_cast<InstrumentEditorDrumkitForm*>(form)->setInstrumentNumber(id);
+			break;
+		}
+	};
+
+	if (map_.count(a)) {
+		if (map_.count(b)) {
+			std::swap(map_.at(a), map_.at(b));
+			changeNumber(a, getFormInstrumentType(a));
+			changeNumber(b, getFormInstrumentType(b));
+		}
+		else {
+			map_[b] = map_.at(a);
+			map_.erase(a);
+			changeNumber(b, getFormInstrumentType(b));
+		}
+	}
+	else {
+		if (map_.count(b)) {
+			map_[a] = map_.at(b);
+			map_.erase(b);
+			changeNumber(a, getFormInstrumentType(a));
+		}
+	}
+
+	onInstrumentFMEnvelopeNumberChanged();
+	onInstrumentFMLFONumberChanged();
+	onInstrumentFMOperatorSequenceNumberChanged();
+	onInstrumentFMArpeggioNumberChanged();
+	onInstrumentFMPitchNumberChanged();
+
+	onInstrumentSSGWaveformNumberChanged();
+	onInstrumentSSGEnvelopeNumberChanged();
+	onInstrumentSSGToneNoiseNumberChanged();
+	onInstrumentSSGArpeggioNumberChanged();
+	onInstrumentSSGPitchNumberChanged();
+
+	onInstrumentADPCMSampleNumberChanged();
+	onInstrumentADPCMEnvelopeNumberChanged();
+	onInstrumentADPCMArpeggioNumberChanged();
+	onInstrumentADPCMPitchNumberChanged();
+
+	onInstrumentADPCMSampleNumberChanged();
+}
+
 void InstrumentFormManager::remove(int n)
 {
-	if (!map_.count(n)) return;
-
-	InstrumentType type = getFormInstrumentType(n);
-
-	map_.at(n)->close();
-	map_.erase(n);
-
-	switch (type) {
-	case InstrumentType::FM:
-		onInstrumentFMEnvelopeNumberChanged();
-		onInstrumentFMLFONumberChanged();
-		onInstrumentFMOperatorSequenceNumberChanged();
-		onInstrumentFMArpeggioNumberChanged();
-		onInstrumentFMPitchNumberChanged();
-		break;
-	case InstrumentType::SSG:
-		onInstrumentSSGWaveformNumberChanged();
-		onInstrumentSSGEnvelopeNumberChanged();
-		onInstrumentSSGToneNoiseNumberChanged();
-		onInstrumentSSGArpeggioNumberChanged();
-		onInstrumentSSGPitchNumberChanged();
-		break;
-	case InstrumentType::ADPCM:
-		onInstrumentADPCMSampleNumberChanged();
-		onInstrumentADPCMEnvelopeNumberChanged();
-		onInstrumentADPCMArpeggioNumberChanged();
-		onInstrumentADPCMPitchNumberChanged();
-		break;
-	case InstrumentType::Drumkit:
-		onInstrumentADPCMSampleNumberChanged();
-		break;
-	default:
-		throw std::invalid_argument("invalid instrument type");
+	if (map_.count(n)) {
+		map_.at(n)->close();
+		map_.erase(n);
 	}
+
+	onInstrumentFMEnvelopeNumberChanged();
+	onInstrumentFMLFONumberChanged();
+	onInstrumentFMOperatorSequenceNumberChanged();
+	onInstrumentFMArpeggioNumberChanged();
+	onInstrumentFMPitchNumberChanged();
+
+	onInstrumentSSGWaveformNumberChanged();
+	onInstrumentSSGEnvelopeNumberChanged();
+	onInstrumentSSGToneNoiseNumberChanged();
+	onInstrumentSSGArpeggioNumberChanged();
+	onInstrumentSSGPitchNumberChanged();
+
+	onInstrumentADPCMSampleNumberChanged();
+	onInstrumentADPCMEnvelopeNumberChanged();
+	onInstrumentADPCMArpeggioNumberChanged();
+	onInstrumentADPCMPitchNumberChanged();
+
+	onInstrumentADPCMSampleNumberChanged();
 }
 
 void InstrumentFormManager::showForm(int n)

@@ -22,6 +22,7 @@ class InstrumentEditorSSGForm : public QWidget
 public:
 	InstrumentEditorSSGForm(int num, QWidget *parent = nullptr);
 	~InstrumentEditorSSGForm() override;
+	void setInstrumentNumber(int num);
 	int getInstrumentNumber() const;
 	void setCore(std::weak_ptr<BambooTracker> core);
 	void setConfiguration(std::weak_ptr<Configuration> config);

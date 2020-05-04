@@ -120,6 +120,11 @@ void BambooTracker::deepCloneInstrument(int num, int refNum)
 	comMan_.invoke(std::make_unique<DeepCloneInstrumentCommand>(instMan_, num, refNum));
 }
 
+void BambooTracker::swapInstruments(int a, int b, bool patternChange)
+{
+	comMan_.invoke(std::make_unique<SwapInstrumentsCommand>(instMan_, mod_, a, b, curSongNum_, patternChange));
+}
+
 void BambooTracker::loadInstrument(BinaryContainer& container, std::string path, int instNum)
 {
 	auto inst = InstrumentIO::loadInstrument(container, path, instMan_, instNum);

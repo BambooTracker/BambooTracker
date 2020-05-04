@@ -217,6 +217,11 @@ InstrumentEditorADPCMForm::~InstrumentEditorADPCMForm()
 	delete ui;
 }
 
+void InstrumentEditorADPCMForm::setInstrumentNumber(int num)
+{
+	instNum_ = num;
+}
+
 int InstrumentEditorADPCMForm::getInstrumentNumber() const
 {
 	return instNum_;

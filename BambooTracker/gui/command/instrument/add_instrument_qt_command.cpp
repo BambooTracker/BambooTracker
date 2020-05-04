@@ -1,8 +1,5 @@
 #include "add_instrument_qt_command.hpp"
 #include <utility>
-#include <QApplication>
-#include <QClipboard>
-#include <QRegularExpression>
 #include "command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
@@ -26,12 +23,6 @@ void AddInstrumentQtCommand::undo()
 	delete item;
 
 	formMan_.lock()->remove(num_);
-
-	if (QApplication::clipboard()->text().contains(
-				QRegularExpression("^.+_INSTRUMENT:"+QString::number(num_),
-								   QRegularExpression::DotMatchesEverythingOption))) {
-		QApplication::clipboard()->clear();
-	}
 
 	if ((type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit) && onlyUsed_) {
 		mainwin_->assignADPCMSamples();

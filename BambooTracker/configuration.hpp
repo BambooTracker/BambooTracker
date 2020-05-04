@@ -152,11 +152,13 @@ public:
 	bool getOverwriteUnusedUneditedPropety() const;
 	void setWriteOnlyUsedSamples(bool enabled);
 	bool getWriteOnlyUsedSamples() const;
+	void setReflectInstrumentNumberChange(bool enabled);
+	bool getReflectInstrumentNumberChange() const;
 private:
 	bool warpCursor_, warpAcrossOrders_, showRowNumHex_, showPrevNextOrders_, backupModules_;
 	bool dontSelectOnDoubleClick_, reverseFMVolumeOrder_, moveCursorToRight_, retrieveChannelState_;
 	bool enableTranslation_, showFMDetuneSigned_, fill00ToEffectValue_, moveCursorHScroll_;
-	bool overwriteUnusedUnedited_, writeOnlyUsedSamples_;
+	bool overwriteUnusedUnedited_, writeOnlyUsedSamples_, reflectInstNumChange_;
 
 	// Edit settings
 public:

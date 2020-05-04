@@ -4,6 +4,7 @@
 ### Added
 - [#6], [#211] - ADPCM drumkit (thanks [@ImATrackMan], [@pedipanol] and others)
 - Color settings of pattern marker
+- [#206] - Enable to swap instruments (thanks [@Mikejmoffitt])
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
 ### Changed
