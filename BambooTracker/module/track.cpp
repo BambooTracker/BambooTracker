@@ -166,3 +166,8 @@ void Track::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> m
 
 	}
 }
+
+void Track::transpose(int seminotes, std::vector<int> excludeInsts)
+{
+	for (auto& pattern : patterns_) pattern.transpose(seminotes, excludeInsts);
+}

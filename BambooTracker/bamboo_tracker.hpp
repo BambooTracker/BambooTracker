@@ -342,6 +342,7 @@ public:
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
 	size_t getAllStepCount(int songNum, int loopCnt) const;
+	void transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts);
 	/*----- Bookmark -----*/
 	void addBookmark(int songNum, std::string name, int order, int step);
 	void changeBookmark(int songNum, int i, std::string name, int order, int step);

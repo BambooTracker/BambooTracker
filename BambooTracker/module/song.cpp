@@ -311,6 +311,11 @@ size_t Song::getBookmarkSize() const
 	return bms_.size();
 }
 
+void Song::transpose(int seminotes, std::vector<int> excludeInsts)
+{
+	for (auto& track : tracks_) track.transpose(seminotes, excludeInsts);
+}
+
 Bookmark::Bookmark(std::string argname, int argorder, int argstep)
 	: name(argname), order(argorder), step(argstep)
 {

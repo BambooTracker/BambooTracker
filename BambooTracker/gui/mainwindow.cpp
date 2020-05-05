@@ -53,6 +53,7 @@
 #include "wav_container.hpp"
 #include "enum_hash.hpp"
 #include "gui/go_to_dialog.hpp"
+#include "gui/transpose_song_dialog.hpp"
 #include "gui/gui_util.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -3435,4 +3436,23 @@ void MainWindow::on_action_Wave_View_triggered(bool checked)
 {
 	config_.lock()->setVisibleWaveView(checked);
 	ui->waveVisual->setVisible(checked);
+}
+
+void MainWindow::on_action_Transpose_Song_triggered()
+{
+	TransposeSongDialog diag;
+	if (diag.exec() == QDialog::Accepted) {
+		if (showUndoResetWarningDialog(tr("Do you want to transpose a song?"))) {
+			bt_->stopPlaySong();
+			lockWidgets(false);
+
+			bt_->transposeSong(bt_->getCurrentSongNumber(),
+							   diag.getTransposeSeminotes(), diag.getExcludeInstruments());
+			ui->patternEditor->onPatternDataGlobalChanged();
+
+			bt_->clearCommandHistory();
+			comStack_->clear();
+			setModifiedTrue();
+		}
+	}
 }

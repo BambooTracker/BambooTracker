@@ -1935,6 +1935,11 @@ size_t BambooTracker::getAllStepCount(int songNum, int loopCnt) const
 	}
 }
 
+void BambooTracker::transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts)
+{
+	mod_->getSong(songNum).transpose(seminotes, excludeInsts);
+}
+
 /*----- Bookmark -----*/
 void BambooTracker::addBookmark(int songNum, std::string name, int order, int step)
 {

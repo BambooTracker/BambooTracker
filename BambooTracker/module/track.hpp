@@ -38,6 +38,8 @@ public:
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
 
+	void transpose(int seminotes, std::vector<int> excludeInsts);
+
 private:
 	std::unique_ptr<TrackAttribute> attrib_;
 

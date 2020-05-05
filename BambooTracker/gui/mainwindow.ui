@@ -693,6 +693,8 @@
     <addaction name="separator"/>
     <addaction name="actionMove_Order_Up"/>
     <addaction name="actionMove_Order_Down"/>
+    <addaction name="separator"/>
+    <addaction name="action_Transpose_Song"/>
    </widget>
    <widget class="QMenu" name="menuModule">
     <property name="title">
@@ -1602,6 +1604,11 @@
    </property>
    <property name="text">
     <string>&amp;Wave View</string>
+   </property>
+  </action>
+  <action name="action_Transpose_Song">
+   <property name="text">
+    <string>&amp;Transpose Song...</string>
    </property>
   </action>
  </widget>

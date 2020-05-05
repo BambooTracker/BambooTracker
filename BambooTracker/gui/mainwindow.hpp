@@ -314,6 +314,7 @@ private slots:
 	void on_action_Toolbar_triggered();
 	void on_actionNew_Drumki_t_triggered();
 	void on_action_Wave_View_triggered(bool checked);
+	void on_action_Transpose_Song_triggered();
 };
 
 #endif // MAINWINDOW_HPP

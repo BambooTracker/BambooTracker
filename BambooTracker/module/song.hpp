@@ -61,6 +61,8 @@ public:
 	Bookmark getNextBookmark(int order, int step);
 	size_t getBookmarkSize() const;
 
+	void transpose(int seminotes, std::vector<int> excludeInsts);
+
 private:
 	int num_;
 	SongType type_;

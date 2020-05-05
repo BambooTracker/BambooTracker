@@ -117,6 +117,18 @@ Pattern Pattern::clone(int asNumber)
 	return Pattern(asNumber, size_, steps_);
 }
 
+void Pattern::transpose(int seminotes, std::vector<int> excludeInsts)
+{
+	for (size_t i = 0; i < size_; ++i) {
+		Step& step = steps_.at(i);
+		int note = step.getNoteNumber();
+		if (note > -1 && std::none_of(excludeInsts.begin(), excludeInsts.end(),
+									  [a = step.getInstrumentNumber()](int b) { return a == b; })) {
+			step.setNoteNumber(clamp(note + seminotes, 0, 95));
+		}
+	}
+}
+
 void Pattern::clear()
 {
 	steps_ = std::vector<Step>(size_);

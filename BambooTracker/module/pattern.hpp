@@ -31,6 +31,8 @@ public:
 
 	Pattern clone(int asNumber);
 
+	void transpose(int seminotes, std::vector<int> excludeInsts);
+
 	void clear();
 
 private:

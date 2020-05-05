@@ -61,6 +61,7 @@ SOURCES += \
     gui/instrument_editor/instrument_editor_drumkit_form.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
+    gui/transpose_song_dialog.cpp \
     instrument/waveform_adpcm.cpp \
     io/wav_container.cpp \
     main.cpp \
@@ -254,6 +255,7 @@ HEADERS += \
     chips/opna.hpp \
     chips/resampler.hpp \
     bamboo_tracker.hpp \
+    gui/transpose_song_dialog.hpp \
     instrument/waveform_adpcm.hpp \
     io/wav_container.hpp \
     module/effect.hpp \
@@ -430,6 +432,7 @@ FORMS += \
     gui/groove_settings_dialog.ui \
     gui/configuration_dialog.ui \
     gui/comment_edit_dialog.ui \
+    gui/transpose_song_dialog.ui \
     gui/vgm_export_settings_dialog.ui \
     gui/wave_export_settings_dialog.ui \
     gui/instrument_selection_dialog.ui \
