@@ -54,6 +54,7 @@
 #include "enum_hash.hpp"
 #include "gui/go_to_dialog.hpp"
 #include "gui/transpose_song_dialog.hpp"
+#include "gui/swap_tracks_dialog.hpp"
 #include "gui/gui_util.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -3448,6 +3449,27 @@ void MainWindow::on_action_Transpose_Song_triggered()
 
 			bt_->transposeSong(bt_->getCurrentSongNumber(),
 							   diag.getTransposeSeminotes(), diag.getExcludeInstruments());
+			ui->patternEditor->onPatternDataGlobalChanged();
+
+			bt_->clearCommandHistory();
+			comStack_->clear();
+			setModifiedTrue();
+		}
+	}
+}
+
+void MainWindow::on_action_Swap_Tracks_triggered()
+{
+	SwapTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()));
+	if (diag.exec() == QDialog::Accepted) {
+		int track1 = diag.getTrack1();
+		int track2 = diag.getTrack2();
+		if ((track1 != track2) && showUndoResetWarningDialog(tr("Do you want to swap tracks?"))) {
+			bt_->stopPlaySong();
+			lockWidgets(false);
+
+			bt_->swapTracks(bt_->getCurrentSongNumber(), track1, track2);
+			ui->orderList->onOrderDataGlobalChanged();
 			ui->patternEditor->onPatternDataGlobalChanged();
 
 			bt_->clearCommandHistory();

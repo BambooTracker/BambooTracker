@@ -5,7 +5,8 @@
 - [#6], [#211] - ADPCM drumkit (thanks [@ImATrackMan], [@pedipanol] and others)
 - Color settings of pattern marker
 - [#206] - Enable to swap instruments (thanks [@Mikejmoffitt])
-- Song transpose
+- Song transposition (thanks [@Mijinkono02])
+- Track swapping
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
 ### Changed
@@ -19,6 +20,8 @@
 - [#207] - Fix pattern editor resolution after module open error on launch (thanks [@freq-mod])
 - Fix bank loading crash if properties are not changed
 - Fix to load "Write only used samples" settings on launch
+
+[@Mijinkono02]: https://twitter.com/Mijinkono02
 
 [#209]: https://github.com/rerrahkr/BambooTracker/issues/209
 [#208]: https://github.com/rerrahkr/BambooTracker/issues/208

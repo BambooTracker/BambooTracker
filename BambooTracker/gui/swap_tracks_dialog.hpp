@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class SongStyle;
+
 namespace Ui {
 	class SwapTracksDialog;
 }
@@ -12,8 +14,11 @@ class SwapTracksDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit SwapTracksDialog(QWidget *parent = nullptr);
-	~SwapTracksDialog();
+	explicit SwapTracksDialog(const SongStyle& style, QWidget *parent = nullptr);
+	~SwapTracksDialog() override;
+
+	int getTrack1() const;
+	int getTrack2() const;
 
 private:
 	Ui::SwapTracksDialog *ui;

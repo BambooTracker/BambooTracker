@@ -15,6 +15,11 @@ class Track
 public:
 	Track(int number, SoundSource source, int channelInSource, int defPattenSize);
 	Track(const Track& other);
+	Track& operator=(const Track& other);
+	Track(Track&& other) noexcept;
+	Track& operator=(Track&& other) noexcept;
+
+	void setAttribute(int number, SoundSource source, int channelInSource);
 	TrackAttribute getAttribute() const;
 	OrderData getOrderData(int order);
 	size_t getOrderSize() const;

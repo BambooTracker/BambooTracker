@@ -62,6 +62,7 @@ public:
 	size_t getBookmarkSize() const;
 
 	void transpose(int seminotes, std::vector<int> excludeInsts);
+	void swapTracks(int track1, int track2);
 
 private:
 	int num_;

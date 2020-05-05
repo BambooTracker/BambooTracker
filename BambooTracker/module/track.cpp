@@ -6,9 +6,7 @@ Track::Track(int number, SoundSource source, int channelInSource, int defPattenS
 	  effetDisplayWidth_(0)
 
 {	
-	attrib_->number = number;
-	attrib_->source = source;
-	attrib_->channelInSource = channelInSource;
+	setAttribute(number, source, channelInSource);
 
 	for (int i = 0; i < 256; ++i) {
 		patterns_.emplace_back(i, defPattenSize);
@@ -21,14 +19,43 @@ Track::Track(int number, SoundSource source, int channelInSource, int defPattenS
 Track::Track(const Track& other)
 	: attrib_(std::make_unique<TrackAttribute>())
 {
-	attrib_->number = other.attrib_->number;
-	attrib_->source = other.attrib_->source;
-	attrib_->channelInSource = other.attrib_->channelInSource;
-
+	setAttribute(other.attrib_->number, other.attrib_->source, other.attrib_->channelInSource);
 	order_ = other.order_;
 	patterns_ = other.patterns_;
-
 	effetDisplayWidth_ = other.effetDisplayWidth_;
+}
+
+Track& Track::operator=(const Track& other)
+{
+	setAttribute(other.attrib_->number, other.attrib_->source, other.attrib_->channelInSource);
+	order_ = other.order_;
+	patterns_ = other.patterns_;
+	effetDisplayWidth_ = other.effetDisplayWidth_;
+	return *this;
+}
+
+Track::Track(Track&& other) noexcept
+{
+	attrib_ = std::move(other.attrib_);
+	order_ = std::move(other.order_);
+	patterns_ = std::move(other.patterns_);
+	effetDisplayWidth_ = std::move(other.effetDisplayWidth_);
+}
+
+Track& Track::operator=(Track&& other) noexcept
+{
+	attrib_ = std::move(other.attrib_);
+	order_ = std::move(other.order_);
+	patterns_ = std::move(other.patterns_);
+	effetDisplayWidth_ = std::move(other.effetDisplayWidth_);
+	return *this;
+}
+
+void Track::setAttribute(int number, SoundSource source, int channelInSource)
+{
+	attrib_->number = number;
+	attrib_->source = source;
+	attrib_->channelInSource = channelInSource;
 }
 
 TrackAttribute Track::getAttribute() const

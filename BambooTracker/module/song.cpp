@@ -1,5 +1,7 @@
 #include "song.hpp"
 #include <algorithm>
+#include <utility>
+#include <stdexcept>
 
 Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 		   int tempo, int groove, int speed, size_t defaultPatternSize)
@@ -314,6 +316,25 @@ size_t Song::getBookmarkSize() const
 void Song::transpose(int seminotes, std::vector<int> excludeInsts)
 {
 	for (auto& track : tracks_) track.transpose(seminotes, excludeInsts);
+}
+
+void Song::swapTracks(int track1, int track2)
+{
+	auto it1 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+		return t.getAttribute().number == track1;
+	});
+	if (it1 == tracks_.end()) throw std::invalid_argument("Invalid track number");
+	auto it2 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+		return t.getAttribute().number == track2;
+	});
+	if (it2 == tracks_.end()) throw std::invalid_argument("Invalid track number");
+
+	TrackAttribute attrib1 = it1->getAttribute();
+	TrackAttribute attrib2 = it2->getAttribute();
+	it1->setAttribute(attrib2.number, attrib2.source, attrib2.channelInSource);
+	it2->setAttribute(attrib1.number, attrib1.source, attrib1.channelInSource);
+
+	std::iter_swap(it1, it2);
 }
 
 Bookmark::Bookmark(std::string argname, int argorder, int argstep)

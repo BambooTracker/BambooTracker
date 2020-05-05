@@ -77,6 +77,8 @@ public slots:
 	void onStoppedPlaySong();
 	void onGoOrderRequested(bool toNext);
 
+	void onOrderDataGlobalChanged();
+
 protected:
 	bool eventFilter(QObject *watched, QEvent *event) override;
 	void resizeEvent(QResizeEvent* event) override;

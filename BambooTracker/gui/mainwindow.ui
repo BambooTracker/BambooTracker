@@ -695,6 +695,7 @@
     <addaction name="actionMove_Order_Down"/>
     <addaction name="separator"/>
     <addaction name="action_Transpose_Song"/>
+    <addaction name="action_Swap_Tracks"/>
    </widget>
    <widget class="QMenu" name="menuModule">
     <property name="title">
@@ -1609,6 +1610,11 @@
   <action name="action_Transpose_Song">
    <property name="text">
     <string>&amp;Transpose Song...</string>
+   </property>
+  </action>
+  <action name="action_Swap_Tracks">
+   <property name="text">
+    <string>&amp;Swap Tracks...</string>
    </property>
   </action>
  </widget>

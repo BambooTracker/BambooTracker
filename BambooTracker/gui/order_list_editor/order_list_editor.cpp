@@ -279,6 +279,11 @@ void OrderListEditor::onGoOrderRequested(bool toNext)
 	ui->panel->onGoOrderRequested(toNext);
 }
 
+void OrderListEditor::onOrderDataGlobalChanged()
+{
+	ui->panel->redrawByPatternChanged();	// Redraw only text
+}
+
 void OrderListEditor::updateHorizontalSliderMaximum()
 {
 	if (!bt_ || !songLoaded_) return;

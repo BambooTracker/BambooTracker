@@ -1940,6 +1940,11 @@ void BambooTracker::transposeSong(int songNum, int seminotes, std::vector<int> e
 	mod_->getSong(songNum).transpose(seminotes, excludeInsts);
 }
 
+void BambooTracker::swapTracks(int songNum, int track1, int track2)
+{
+	mod_->getSong(songNum).swapTracks(track1, track2);
+}
+
 /*----- Bookmark -----*/
 void BambooTracker::addBookmark(int songNum, std::string name, int order, int step)
 {

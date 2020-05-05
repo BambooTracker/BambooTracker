@@ -2,7 +2,6 @@
 #include "ui_go_to_dialog.h"
 #include <QString>
 #include "gui/gui_util.hpp"
-#include "misc.hpp"
 
 GoToDialog::GoToDialog(std::weak_ptr<BambooTracker> bt, QWidget *parent) :
 	QDialog(parent),
