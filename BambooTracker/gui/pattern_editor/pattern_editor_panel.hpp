@@ -88,6 +88,7 @@ public slots:
 	void onPastePressed();
 	void onPasteMixPressed();
 	void onPasteOverwritePressed();
+	void onPasteInsertPressed();
 	/// 0: None
 	/// 1: All
 	/// 2: Row
@@ -237,7 +238,7 @@ private:
 	inline void updateTracksWidthFromLeftToEnd()
 	{
 		tracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
-					leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+										leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 	}
 
 	void moveCursorToRight(int n);
@@ -273,7 +274,8 @@ private:
 	void pasteCopiedCells(const PatternPosition& startPos);
 	void pasteMixCopiedCells(const PatternPosition& startPos);
 	void pasteOverwriteCopiedCells(const PatternPosition& startPos);
-	std::vector<std::vector<std::string> > instantiateCellsFromString(QString str, int& startCol);
+	void pasteInsertCopiedCells(const PatternPosition& startPos);
+	std::vector<std::vector<std::string> > decodeCells(QString str, int& startCol);
 
 	void transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote);
 	void changeValuesInPattern(const PatternPosition& startPos, const PatternPosition& endPos, int value);

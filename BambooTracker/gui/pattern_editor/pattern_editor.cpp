@@ -297,6 +297,11 @@ void PatternEditor::onPasteOverwritePressed()
 	ui->panel->onPasteOverwritePressed();
 }
 
+void PatternEditor::onPasteInsertPressed()
+{
+	ui->panel->onPasteInsertPressed();
+}
+
 void PatternEditor::onSelectPressed(int type)
 {
 	ui->panel->onSelectPressed(type);

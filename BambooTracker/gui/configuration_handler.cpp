@@ -28,6 +28,7 @@ const std::unordered_map<Configuration::ShortcutAction, QString> ConfigurationHa
 	{ Configuration::SetMarker, "setMarker" },
 	{ Configuration::PasteMix, "pasteMix" },
 	{ Configuration::PasteOverwrite, "pasteOverwrite" },
+	{ Configuration::PasteInsert, "pasteInsert" },
 	{ Configuration::SelectAll, "selectAll" },
 	{ Configuration::Deselect, "deselect" },
 	{ Configuration::SelectRow, "selectRow" },

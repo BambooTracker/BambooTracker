@@ -109,6 +109,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ Configuration::SetMarker, tr("Set marker") },
 		{ Configuration::PasteMix, tr("Paste and mix") },
 		{ Configuration::PasteOverwrite, tr("Paste and overwrite") },
+		{ Configuration::PasteInsert, tr("Paste and insert") },
 		{ Configuration::SelectAll, tr("Select all") },
 		{ Configuration::Deselect, tr("Deselect") },
 		{ Configuration::SelectRow, tr("Select row") },

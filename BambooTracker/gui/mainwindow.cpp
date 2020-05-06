@@ -999,6 +999,7 @@ void MainWindow::setShortcuts()
 	ui->actionSet_Ro_w_Marker->setShortcut(strToKeySeq(shortcuts.at(Configuration::SetMarker)));
 	ui->actionMix->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteMix)));
 	ui->actionOverwrite->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
+	ui->action_Insert->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
 	ui->actionAll->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectAll)));
 	ui->actionNone->setShortcut(strToKeySeq(shortcuts.at(Configuration::Deselect)));
 	ui->actionRow->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectRow)));
@@ -2378,6 +2379,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionPaste->setEnabled(false);
 		ui->actionMix->setEnabled(false);
 		ui->actionOverwrite->setEnabled(false);
+		ui->action_Insert->setEnabled(false);
 		ui->actionDelete->setEnabled(false);
 		// Pattern
 		ui->actionInterpolate->setEnabled(false);
@@ -2396,6 +2398,7 @@ void MainWindow::updateMenuByPattern()
 		ui->actionPaste->setEnabled(enabled);
 		ui->actionMix->setEnabled(enabled);
 		ui->actionOverwrite->setEnabled(enabled);
+		ui->action_Insert->setEnabled(enabled);
 		ui->actionDelete->setEnabled(true);
 		// Pattern
 		ui->actionInterpolate->setEnabled(isSelectedPattern_);
@@ -2425,6 +2428,7 @@ void MainWindow::updateMenuByOrder()
 	ui->actionPaste->setEnabled(enabled);
 	ui->actionMix->setEnabled(false);
 	ui->actionOverwrite->setEnabled(false);
+	ui->action_Insert->setEnabled(false);
 	ui->actionDelete->setEnabled(true);
 	// Song
 	bool canAdd = bt_->canAddNewOrder(bt_->getCurrentSongNumber());
@@ -2467,6 +2471,7 @@ void MainWindow::updateMenuByInstrumentList()
 	ui->actionPaste->setEnabled(false);
 	ui->actionMix->setEnabled(false);
 	ui->actionOverwrite->setEnabled(false);
+	ui->action_Insert->setEnabled(false);
 	ui->actionDelete->setEnabled(true);
 
 	// Pattern
@@ -3477,4 +3482,9 @@ void MainWindow::on_action_Swap_Tracks_triggered()
 			setModifiedTrue();
 		}
 	}
+}
+
+void MainWindow::on_action_Insert_triggered()
+{
+	if (isEditedPattern_) ui->patternEditor->onPasteInsertPressed();
 }

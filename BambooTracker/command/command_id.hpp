@@ -36,6 +36,7 @@ enum CommandId : int
 	ReversePattern						= 0x38,
 	ReplaceInstrumentInPattern			= 0x39,
 	PasteOverwriteCopiedDataToPattern	= 0x3a,
+	PasteInsertCopiedDataToPattern		= 0x3b,
 
 	// 0x4*: Order list
 	SetPatternToOrder		= 0x40,

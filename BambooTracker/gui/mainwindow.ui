@@ -623,6 +623,7 @@
      <addaction name="separator"/>
      <addaction name="actionMix"/>
      <addaction name="actionOverwrite"/>
+     <addaction name="action_Insert"/>
     </widget>
     <widget class="QMenu" name="menu_Bookmarks">
      <property name="title">
@@ -1615,6 +1616,11 @@
   <action name="action_Swap_Tracks">
    <property name="text">
     <string>&amp;Swap Tracks...</string>
+   </property>
+  </action>
+  <action name="action_Insert">
+   <property name="text">
+    <string>&amp;Insert</string>
    </property>
   </action>
  </widget>

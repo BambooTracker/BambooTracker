@@ -178,7 +178,7 @@ public:
 	{
 		KeyOff, OctaveUp, OctaveDown, EchoBuffer, PlayAndStop, Play, PlayFromStart, PlayPattern,
 		PlayFromCursor, PlayFromMarker, PlayStep, Stop, FocusOnPattern, FocusOnOrder, FocusOnInstrument,
-		ToggleEditJam, SetMarker, PasteMix, PasteOverwrite, SelectAll, Deselect, SelectRow, SelectColumn,
+		ToggleEditJam, SetMarker, PasteMix, PasteOverwrite, PasteInsert, SelectAll, Deselect, SelectRow, SelectColumn,
 		SelectPattern, SelectOrder, GoToStep, ToggleTrack, SoloTrack, Interpolate, Reverse, GoToPrevOrder,
 		GoToNextOrder, ToggleBookmark, PrevBookmark, NextBookmark, DecreaseNote, IncreaseNote,
 		DecreaseOctave, IncreaseOctave, PrevInstrument, NextInstrument, MaskInstrument, MaskVolume,

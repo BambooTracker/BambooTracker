@@ -44,12 +44,14 @@ SOURCES += \
     chips/c86ctl/c86ctl_wrapper.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
+    command/pattern/paste_insert_copied_data_to_pattern_command.cpp \
     command/pattern/pattern_command_utils.cpp \
     command/pattern/transpose_note_in_pattern_command.cpp \
     gui/bookmark_manager_form.cpp \
     gui/color_palette_handler.cpp \
     gui/command/instrument/swap_instruments_qt_command.cpp \
     gui/command/pattern/change_values_in_pattern_qt_command.cpp \
+    gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.cpp \
     gui/command/pattern/transpose_note_in_pattern_qt_command.cpp \
     gui/drop_detect_list_widget.cpp \
     gui/effect_description.cpp \
@@ -220,6 +222,7 @@ HEADERS += \
     command/command_id.hpp \
     command/instrument/swap_instruments_command.hpp \
     command/pattern/change_values_in_pattern_command.hpp \
+    command/pattern/paste_insert_copied_data_to_pattern_command.hpp \
     command/pattern/pattern_command_utils.hpp \
     command/pattern/transpose_note_in_pattern_command.hpp \
     enum_hash.hpp \
@@ -227,6 +230,7 @@ HEADERS += \
     gui/color_palette_handler.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
     gui/command/pattern/change_values_in_pattern_qt_command.hpp \
+    gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.hpp \
     gui/command/pattern/transpose_note_in_pattern_qt_command.hpp \
     gui/drop_detect_list_widget.hpp \
     gui/effect_description.hpp \

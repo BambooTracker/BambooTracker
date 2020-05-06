@@ -1830,8 +1830,7 @@ void PatternEditorPanel::eraseSelectedCells()
 void PatternEditorPanel::pasteCopiedCells(const PatternPosition& startPos)
 {
 	int sCol = 0;
-	std::vector<std::vector<std::string>> cells
-			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
+	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
 
 	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
 			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
@@ -1845,8 +1844,7 @@ void PatternEditorPanel::pasteCopiedCells(const PatternPosition& startPos)
 void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& startPos)
 {
 	int sCol = 0;
-	std::vector<std::vector<std::string>> cells
-			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
+	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
 
 	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
 			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
@@ -1860,8 +1858,7 @@ void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& startPos)
 void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& startPos)
 {
 	int sCol = 0;
-	std::vector<std::vector<std::string>> cells
-			= instantiateCellsFromString(QApplication::clipboard()->text(), sCol);
+	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
 
 	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
 			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
@@ -1872,7 +1869,21 @@ void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& startP
 	comStack_.lock()->push(new PasteOverwriteCopiedDataToPatternQtCommand(this));
 }
 
-std::vector<std::vector<std::string>> PatternEditorPanel::instantiateCellsFromString(QString str, int& startCol)
+void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& startPos)
+{
+	int sCol = 0;
+	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
+
+	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
+			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
+		sCol = curPos_.colInTrack;
+
+	bt_->pasteInsertPatternCells(curSongNum_, startPos.track, sCol,
+								 startPos.order, startPos.step, std::move(cells));
+	comStack_.lock()->push(new PasteInsertCopiedDataToPatternQtCommand(this));
+}
+
+std::vector<std::vector<std::string>> PatternEditorPanel::decodeCells(QString str, int& startCol)
 {
 	str.remove(QRegularExpression("PATTERN_(COPY|CUT):"));
 	QString hdRe = "^([0-9]+),([0-9]+),([0-9]+),";
@@ -2008,6 +2019,8 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QObject::connect(pasteMix, &QAction::triggered, this, [&]() { pasteMixCopiedCells(pos); });
 	QAction* pasteOver = pasteSp->addAction(tr("&Overwrite"));
 	QObject::connect(pasteOver, &QAction::triggered, this, [&]() { pasteOverwriteCopiedCells(pos); });
+	QAction* pasteIns = pasteSp->addAction(tr("&Insert"));
+	QObject::connect(pasteIns, &QAction::triggered, this, [&]() { pasteInsertCopiedCells(pos); });
 	QAction* erase = menu.addAction(tr("&Erase"));
 	QObject::connect(erase, &QAction::triggered, this, &PatternEditorPanel::eraseSelectedCells);
 	QAction* select = menu.addAction(tr("Select &All"));
@@ -2091,6 +2104,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
 	pasteMix->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteMix)));
 	pasteOver->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
+	pasteIns->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
 	erase->setShortcut(QKeySequence(Qt::Key_Delete));
 	select->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectAll)));
 	interpolate->setShortcut(strToKeySeq(shortcuts.at(Configuration::Interpolate)));
@@ -2117,6 +2131,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 		paste->setEnabled(false);
 		pasteMix->setEnabled(false);
 		pasteOver->setEnabled(false);
+		pasteIns->setEnabled(false);
 		erase->setEnabled(false);
 		interpolate->setEnabled(false);
 		reverse->setEnabled(false);
@@ -2138,6 +2153,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 			paste->setEnabled(false);
 			pasteMix->setEnabled(false);
 			pasteOver->setEnabled(false);
+			pasteIns->setEnabled(false);
 		}
 		if (selRightBelowPos_.order < 0
 				|| !isSelectedCell(pos.track, pos.colInTrack,
@@ -2375,6 +2391,11 @@ void PatternEditorPanel::onPasteMixPressed()
 void PatternEditorPanel::onPasteOverwritePressed()
 {
 	if (!bt_->isJamMode()) pasteOverwriteCopiedCells(curPos_);
+}
+
+void PatternEditorPanel::onPasteInsertPressed()
+{
+	if (!bt_->isJamMode()) pasteInsertCopiedCells(curPos_);
 }
 
 void PatternEditorPanel::onSelectPressed(int type)

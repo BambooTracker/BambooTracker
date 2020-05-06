@@ -89,6 +89,7 @@ Configuration::Configuration()
 		{ SetMarker, u8"Ctrl+B" },
 		{ PasteMix, u8"Ctrl+M" },
 		{ PasteOverwrite, u8"" },
+		{ PasteInsert, u8"" },
 		{ SelectAll, u8"Ctrl+A" },
 		{ Deselect, u8"Esc" },
 		{ SelectRow, u8"" },

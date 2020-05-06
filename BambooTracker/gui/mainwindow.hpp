@@ -316,6 +316,7 @@ private slots:
 	void on_action_Wave_View_triggered(bool checked);
 	void on_action_Transpose_Song_triggered();
 	void on_action_Swap_Tracks_triggered();
+	void on_action_Insert_triggered();
 };
 
 #endif // MAINWINDOW_HPP

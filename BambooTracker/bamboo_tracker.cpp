@@ -2228,6 +2228,16 @@ void BambooTracker::pasteOverwritePatternCells(int songNum, int beginTrack, int 
 					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
 }
 
+void BambooTracker::pasteInsertPatternCells(int songNum, int beginTrack, int beginColmn, int beginOrder,
+											int beginStep, std::vector<std::vector<std::string>> cells)
+{
+	std::vector<std::vector<std::string>> d
+			= arrangePatternDataCells(songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(cells));
+
+	comMan_.invoke(std::make_unique<PasteInsertCopiedDataToPatternCommand>(
+					   mod_, songNum, beginTrack, beginColmn, beginOrder, beginStep, std::move(d)));
+}
+
 std::vector<std::vector<std::string>> BambooTracker::arrangePatternDataCells(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 																			 std::vector<std::vector<std::string>> cells)
 {
