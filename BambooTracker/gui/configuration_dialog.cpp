@@ -158,7 +158,9 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ Configuration::DecreaseEditStep, tr("Decrease edit step") },
 		{ Configuration::DisplayEffectList, tr("Display effect list") },
 		{ Configuration::PreviousSong, tr("Previous song") },
-		{ Configuration::NextSong, tr("Next song") }
+		{ Configuration::NextSong, tr("Next song") },
+		{ Configuration::JamVolumeUp, tr("Jam volume up") },
+		{ Configuration::JamVolumeDown, tr("Jam volume down") }
 	};
 	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts = configLocked->getShortcuts();
 	for (const auto& pair : shortcutsActions) {

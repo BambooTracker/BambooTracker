@@ -176,6 +176,7 @@ private:
 	std::unique_ptr<QAction> playAndStopSc_, playStepSc_, goPrevOdrSc_, goNextOdrSc_;
 	std::unique_ptr<QAction> prevInstSc_, nextInstSc_, incPtnSizeSc_, decPtnSizeSc_;
 	std::unique_ptr<QAction> incEditStepSc_, decEditStepSc_, prevSongSc_, nextSongSc_;
+	std::unique_ptr<QAction> jamVolUpSc_, jamVolDownSc_;
 	void setShortcuts();
 
 	// Dialogs

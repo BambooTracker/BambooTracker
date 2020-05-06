@@ -137,7 +137,9 @@ Configuration::Configuration()
 		{ DecreaseEditStep, u8"" },
 		{ DisplayEffectList, u8"F1" },
 		{ PreviousSong, u8"" },
-		{ NextSong, u8"" }
+		{ NextSong, u8"" },
+		{ JamVolumeUp, u8"" },
+		{ JamVolumeDown, u8"" }
 	};
 	noteEntryLayout_ = QWERTY;
 

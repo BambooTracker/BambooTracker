@@ -75,7 +75,9 @@ const std::unordered_map<Configuration::ShortcutAction, QString> ConfigurationHa
 	{ Configuration::DecreaseEditStep, "decEditStep" },
 	{ Configuration::DisplayEffectList, "dispEffectList" },
 	{ Configuration::PreviousSong, "prevSong" },
-	{ Configuration::NextSong, "nextSong" }
+	{ Configuration::NextSong, "nextSong" },
+	{ Configuration::JamVolumeUp, "jamVolumeUp" },
+	{ Configuration::JamVolumeDown, "jamVolumeDown" }
 };
 
 const std::unordered_map<JamKey, QString> ConfigurationHandler::JAM_KEY_NAME_MAP_ = {

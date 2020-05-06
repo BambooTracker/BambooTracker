@@ -554,7 +554,14 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 													   ui->songComboBox->count() - 1));
 		}
 	});
-
+	initShortcut(jamVolUpSc_);
+	QObject::connect(jamVolUpSc_.get(), &QAction::triggered, this, [&] {
+		volume_->setValue(volume_->value() + 1);
+	});
+	initShortcut(jamVolDownSc_);
+	QObject::connect(jamVolDownSc_.get(), &QAction::triggered, this, [&] {
+		volume_->setValue(volume_->value() - 1);
+	});
 	setShortcuts();
 
 	/* Clipboard */
@@ -1060,6 +1067,8 @@ void MainWindow::setShortcuts()
 	ui->action_Effect_List->setShortcut(strToKeySeq(shortcuts.at(Configuration::DisplayEffectList)));
 	prevSongSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PreviousSong)));
 	nextSongSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextSong)));
+	jamVolUpSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeUp)));
+	jamVolDownSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeDown)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
@@ -1406,7 +1415,7 @@ void MainWindow::openInstrumentEditor()
 			throw std::invalid_argument("Invalid instrument type");
 		}
 
-		form->addActions({ octUpSc_.get(), octDownSc_.get() });
+		form->addActions({ octUpSc_.get(), octDownSc_.get(), jamVolUpSc_.get(), jamVolDownSc_.get() });
 
 		instForms_->add(num, std::move(form), inst->getSoundSource(), inst->getType());
 	}

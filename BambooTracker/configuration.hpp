@@ -188,7 +188,7 @@ public:
 		ExpandPattern, ShrinkPattern, FineDecreaseValues, FineIncreaseValues, CoarseDecreaseValues,
 		CoarseIncreaseValuse, ExpandEffect, ShrinkEffect, PrevHighlighted, NextHighlighted,
 		IncreasePatternSize, DecreasePatternSize, IncreaseEditStep, DecreaseEditStep, DisplayEffectList,
-		PreviousSong, NextSong
+		PreviousSong, NextSong, JamVolumeUp, JamVolumeDown
 	};
 	void setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts);
 	std::unordered_map<ShortcutAction, std::string> getShortcuts() const;
