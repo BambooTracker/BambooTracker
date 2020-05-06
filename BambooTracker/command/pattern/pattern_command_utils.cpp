@@ -60,23 +60,23 @@ void restorePattern(Song& song, const std::vector<std::vector<std::string>>& cel
 					int beginColumn, int beginOrder, int beginStep)
 {
 	int s = beginStep;
-	for (size_t i = 0; i < cells.size(); ++i) {
+	for (const auto& row : cells) {
 		int t = beginTrack;
 		int c = beginColumn;
-		for (size_t j = 0; j < cells[i].size(); ++j) {
+		for (const std::string& cell : row) {
 			Step& st = song.getTrack(t).getPatternFromOrderNumber(beginOrder).getStep(s);
 			switch (c) {
-			case 0:		st.setNoteNumber(std::stoi(cells[i][j]));		break;
-			case 1:		st.setInstrumentNumber(std::stoi(cells[i][j]));	break;
-			case 2:		st.setVolume(std::stoi(cells[i][j]));			break;
-			case 3:		st.setEffectID(0, cells[i][j]);					break;
-			case 4:		st.setEffectValue(0, std::stoi(cells[i][j]));	break;
-			case 5:		st.setEffectID(1, cells[i][j]);					break;
-			case 6:		st.setEffectValue(1, std::stoi(cells[i][j]));	break;
-			case 7:		st.setEffectID(2, cells[i][j]);					break;
-			case 8:		st.setEffectValue(2, std::stoi(cells[i][j]));	break;
-			case 9:		st.setEffectID(3, cells[i][j]);					break;
-			case 10:	st.setEffectValue(3, std::stoi(cells[i][j]));	break;
+			case 0:		st.setNoteNumber(std::stoi(cell));			break;
+			case 1:		st.setInstrumentNumber(std::stoi(cell));	break;
+			case 2:		st.setVolume(std::stoi(cell));				break;
+			case 3:		st.setEffectID(0, cell);					break;
+			case 4:		st.setEffectValue(0, std::stoi(cell));		break;
+			case 5:		st.setEffectID(1, cell);					break;
+			case 6:		st.setEffectValue(1, std::stoi(cell));		break;
+			case 7:		st.setEffectID(2, cell);					break;
+			case 8:		st.setEffectValue(2, std::stoi(cell));		break;
+			case 9:		st.setEffectID(3, cell);					break;
+			case 10:	st.setEffectValue(3, std::stoi(cell));		break;
 			}
 
 			t += (++c / 11);

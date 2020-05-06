@@ -22,75 +22,71 @@ void PasteOverwriteCopiedDataToPatternCommand::redo()
 	auto& sng = mod_.lock()->getSong(song_);
 
 	int s = step_;
-	for (size_t i = 0; i < cells_.size(); ++i) {
+	for (const auto& row : cells_) {
 		int t = track_;
 		int c = col_;
-		for (size_t j = 0; j < cells_.at(i).size(); ++j) {
+		for (const std::string& cell : row) {
 			Step& st = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
 			switch (c) {
 			case 0:
 			{
-				int n = std::stoi(cells_.at(i).at(j));
+				int n = std::stoi(cell);
 				if (n != -1) st.setNoteNumber(n);
 				break;
 			}
 			case 1:
 			{
-				int n = std::stoi(cells_.at(i).at(j));
+				int n = std::stoi(cell);
 				if (n != -1) st.setInstrumentNumber(n);
 				break;
 			}
 			case 2:
 			{
-				int vol = std::stoi(cells_.at(i).at(j));
+				int vol = std::stoi(cell);
 				if (vol != -1) st.setVolume(vol);
 				break;
 			}
 			case 3:
 			{
-				std::string id = cells_.at(i).at(j);
-				if (id != "--") st.setEffectID(0, id);
+				if (cell != "--") st.setEffectID(0, cell);
 				break;
 			}
 			case 4:
 			{
-				int val = std::stoi(cells_.at(i).at(j));
+				int val = std::stoi(cell);
 				if (val != -1) st.setEffectValue(0, val);
 				break;
 			}
 			case 5:
 			{
-				std::string id = cells_.at(i).at(j);
-				if (id != "--") st.setEffectID(1, id);
+				if (cell != "--") st.setEffectID(1, cell);
 				break;
 			}
 			case 6:
 			{
-				int val = std::stoi(cells_.at(i).at(j));
+				int val = std::stoi(cell);
 				if (val != -1) st.setEffectValue(1, val);
 				break;
 			}
 			case 7:
 			{
-				std::string id = cells_.at(i).at(j);
-				if (id != "--") st.setEffectID(2, id);
+				if (cell != "--") st.setEffectID(2, cell);
 				break;
 			}
 			case 8:
 			{
-				int val = std::stoi(cells_.at(i).at(j));
+				int val = std::stoi(cell);
 				if (val != -1) st.setEffectValue(2, val);
 				break;
 			}
 			case 9:
 			{
-				std::string id = cells_.at(i).at(j);
-				if (id != "--") st.setEffectID(3, id);
+				if (cell != "--") st.setEffectID(3, cell);
 				break;
 			}
 			case 10:
 			{
-				int val = std::stoi(cells_.at(i).at(j));
+				int val = std::stoi(cell);
 				if (val != -1) st.setEffectValue(3, val);
 				break;
 			}
