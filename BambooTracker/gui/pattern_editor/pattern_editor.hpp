@@ -52,6 +52,7 @@ signals:
 	void focusOut();
 	void selected(bool isSelected);
 	void instrumentEntered(int num);
+	void volumeEntered(int volume);
 	void effectEntered(QString text);
 
 protected:

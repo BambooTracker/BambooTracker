@@ -82,6 +82,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 			  "Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost."));
 	glfunc(15, configLocked->getReflectInstrumentNumberChange(),
 		   tr("Correspond the instrument number in patterns when the instrument changes its number."));
+	glfunc(16, configLocked->getFixJammingVolume(),
+		   tr("Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox."));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -349,6 +351,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setOverwriteUnusedUneditedPropety(fromCheckState(ui->generalSettingsListWidget->item(13)->checkState()));
 	configLocked->setWriteOnlyUsedSamples(fromCheckState(ui->generalSettingsListWidget->item(14)->checkState()));
 	configLocked->setReflectInstrumentNumberChange(fromCheckState(ui->generalSettingsListWidget->item(15)->checkState()));
+	configLocked->setFixJammingVolume(fromCheckState(ui->generalSettingsListWidget->item(16)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));

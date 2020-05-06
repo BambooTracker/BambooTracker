@@ -167,7 +167,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		}
 	});
 
-	/* Tool bar */
+	/* Tool bars */
 	auto octLab = new QLabel(tr("Octave"));
 	octLab->setMargin(6);
 	ui->subToolBar->addWidget(octLab);
@@ -177,10 +177,24 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	octave_->setMinimum(0);
 	octave_->setMaximum(7);
 	octave_->setValue(bt_->getCurrentOctave());
-	auto octFunc = [&](int octave) { bt_->setCurrentOctave(octave); };
 	// Leave Before Qt5.7.0 style due to windows xp
-	QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, octFunc);
+	QObject::connect(octave_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int octave) { bt_->setCurrentOctave(octave); });
 	ui->subToolBar->addWidget(octave_);
+	auto volLab = new QLabel(tr("Volume"));
+	volLab->setMargin(6);
+	ui->subToolBar->addWidget(volLab);
+	volume_ = new QSpinBox();
+	volume_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	volume_->setMaximumWidth(100);
+	volume_->setMinimum(0);
+	volume_->setMaximum(255);
+	volume_->setDisplayIntegerBase(16);
+	volume_->setValue(bt_->getCurrentVolume());
+	// Leave Before Qt5.7.0 style due to windows xp
+	QObject::connect(volume_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+					 this, [&](int volume) { bt_->setCurrentVolume(volume); });
+	ui->subToolBar->addWidget(volume_);
 	ui->subToolBar->addSeparator();
 	ui->subToolBar->addAction(ui->actionFollow_Mode);
 	ui->subToolBar->addSeparator();
@@ -216,6 +230,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->patternEditor->setPatternHighlight2Count(count);
 	});
 	ui->subToolBar->addWidget(highlight2_);
+	ui->subToolBar->addSeparator();
 	auto& mainTbConfig = config.lock()->getMainToolbarConfiguration();
 	if (mainTbConfig.getPosition() == Configuration::ToolbarConfiguration::FLOAT_POS) {
 		ui->mainToolBar->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
@@ -373,6 +388,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 			}
 		}
 	});
+	QObject::connect(ui->patternEditor, &PatternEditor::volumeEntered,
+					 this, [&](int volume) { volume_->setValue(volume); });
 	QObject::connect(ui->patternEditor, &PatternEditor::effectEntered,
 					 this, [&](QString text) { statusDetail_->setText(text); });
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
@@ -711,7 +728,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 		// Musical keyboard
 		Qt::Key qtKey = static_cast<Qt::Key>(event->key());
 		try {
-			bt_->jamKeyOn(getJamKeyFromLayoutMapping(qtKey, config_));
+			bt_->jamKeyOn(getJamKeyFromLayoutMapping(qtKey, config_),
+						  !config_.lock()->getFixJammingVolume());
 		} catch (std::invalid_argument&) {}
 	}
 }
@@ -1107,12 +1125,12 @@ void MainWindow::midiKeyEvent(uchar status, uchar key, uchar velocity)
 	int n = instForms_->checkActivatedFormNumber();
 	if (n == -1) {
 		bt_->jamKeyOff(k); // possibility to recover on stuck note
-		if (!release) bt_->jamKeyOn(k);
+		if (!release) bt_->jamKeyOn(k, !config_.lock()->getFixJammingVolume());
 	}
 	else {
 		SoundSource src = instForms_->getFormInstrumentSoundSource(n);
 		bt_->jamKeyOffForced(k, src); // possibility to recover on stuck note
-		if (!release) bt_->jamKeyOnForced(k, src);
+		if (!release) bt_->jamKeyOnForced(k, src, !config_.lock()->getFixJammingVolume());
 	}
 }
 
@@ -1236,8 +1254,9 @@ void MainWindow::openInstrumentEditor()
 			QObject::connect(fmForm.get(), &InstrumentEditorFMForm::pitchParameterChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentFMPitchParameterChanged);
 			QObject::connect(fmForm.get(), &InstrumentEditorFMForm::jamKeyOnEvent,
-							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::FM); },
-			Qt::DirectConnection);
+							 this, [&](JamKey key) {
+				bt_->jamKeyOnForced(key, SoundSource::FM, !config_.lock()->getFixJammingVolume());
+			}, Qt::DirectConnection);
 			QObject::connect(fmForm.get(), &InstrumentEditorFMForm::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::FM); },
 			Qt::DirectConnection);
@@ -1284,8 +1303,9 @@ void MainWindow::openInstrumentEditor()
 			QObject::connect(ssgForm.get(), &InstrumentEditorSSGForm::pitchParameterChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentSSGPitchParameterChanged);
 			QObject::connect(ssgForm.get(), &InstrumentEditorSSGForm::jamKeyOnEvent,
-							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::SSG); },
-			Qt::DirectConnection);
+							 this, [&](JamKey key) {
+				bt_->jamKeyOnForced(key, SoundSource::SSG, !config_.lock()->getFixJammingVolume());
+			}, Qt::DirectConnection);
 			QObject::connect(ssgForm.get(), &InstrumentEditorSSGForm::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::SSG); }
 			, Qt::DirectConnection);
@@ -1332,8 +1352,9 @@ void MainWindow::openInstrumentEditor()
 			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::pitchParameterChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMPitchParameterChanged);
 			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::jamKeyOnEvent,
-							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::ADPCM); },
-			Qt::DirectConnection);
+							 this, [&](JamKey key) {
+				bt_->jamKeyOnForced(key, SoundSource::ADPCM, !config_.lock()->getFixJammingVolume());
+			}, Qt::DirectConnection);
 			QObject::connect(adpcmForm.get(), &InstrumentEditorADPCMForm::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); },
 			Qt::DirectConnection);
@@ -1367,8 +1388,9 @@ void MainWindow::openInstrumentEditor()
 			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::sampleMemoryChanged,
 							 instForms_.get(), &InstrumentFormManager::onInstrumentADPCMSampleMemoryUpdated);
 			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::jamKeyOnEvent,
-							 this, [&](JamKey key) { bt_->jamKeyOnForced(key, SoundSource::ADPCM); },
-			Qt::DirectConnection);
+							 this, [&](JamKey key) {
+				bt_->jamKeyOnForced(key, SoundSource::ADPCM, !config_.lock()->getFixJammingVolume());
+			}, Qt::DirectConnection);
 			QObject::connect(kitForm.get(), &InstrumentEditorDrumkitForm::jamKeyOffEvent,
 							 this, [&](JamKey key) { bt_->jamKeyOffForced(key, SoundSource::ADPCM); },
 			Qt::DirectConnection);
@@ -1621,13 +1643,15 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnEvent,
 					 this, [&](size_t id, JamKey key) {
 		updateInst(id);
-		bt_->jamKeyOnForced(key, jamInst->getSoundSource(), jamInst);
+		bt_->jamKeyOnForced(key, jamInst->getSoundSource(),
+							!config_.lock()->getFixJammingVolume(), jamInst);
 	},
 	Qt::DirectConnection);
 	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOnMidiEvent,
 					 this, [&](size_t id, int key) {
 		updateInst(id);
-		bt_->jamKeyOnForced(key, jamInst->getSoundSource(), jamInst);
+		bt_->jamKeyOnForced(key, jamInst->getSoundSource(),
+							!config_.lock()->getFixJammingVolume(), jamInst);
 	},
 	Qt::DirectConnection);
 	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOffEvent,

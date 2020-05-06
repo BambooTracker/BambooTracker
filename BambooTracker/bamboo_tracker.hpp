@@ -36,9 +36,13 @@ public:
 	// Change confuguration
 	void changeConfiguration(std::weak_ptr<Configuration> config);
 
-	// Change octave
+	// Current octave
 	void setCurrentOctave(int octave);
 	int getCurrentOctave() const;
+
+	// Current volume
+	void setCurrentVolume(int volume);
+	int getCurrentVolume() const;
 
 	// Current track
 	void setCurrentTrack(int num);
@@ -231,12 +235,12 @@ public:
 	// Jam mode
 	void toggleJamMode();
 	bool isJamMode() const;
-	void jamKeyOn(JamKey key);
-	void jamKeyOn(int keyNum);
+	void jamKeyOn(JamKey key, bool volumeSet);
+	void jamKeyOn(int keyNum, bool volumeSet);
 	void jamKeyOff(JamKey key);
 	void jamKeyOff(int keyNum);
-	void jamKeyOnForced(JamKey key, SoundSource src, std::shared_ptr<AbstractInstrument> inst = nullptr);
-	void jamKeyOnForced(int keyNum, SoundSource src, std::shared_ptr<AbstractInstrument> inst = nullptr);
+	void jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet,  std::shared_ptr<AbstractInstrument> inst = nullptr);
+	void jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void jamKeyOffForced(JamKey key, SoundSource src);
 	void jamKeyOffForced(int keyNum, SoundSource src);
 	std::vector<std::vector<size_t>> assignADPCMBeforeForcedJamKeyOn(std::shared_ptr<AbstractInstrument> inst);
@@ -383,7 +387,7 @@ public:
 	void setStepInstrumentDigit(int songNum, int trackNum, int orderNum, int stepNum, int instNum, bool secondEntry);
 	void eraseStepInstrument(int songNum, int trackNum, int orderNum, int stepNum);
 	int getStepVolume(int songNum, int trackNum, int orderNum, int stepNum) const;
-	void setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry);
+	int setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool secondEntry);
 	void eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum);
 	std::string getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const;
 	void setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry);
@@ -413,8 +417,8 @@ public:
 						   int endTrack, int endColmn, int endStep);
 	void transposeNoteInPattern(int songNum, int beginTrack, int beginOrder, int beginStep,
 								int endTrack, int endStep, int seminote);
-	void changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder, int beginStep,
-							   int endTrack, int endColumn, int endStep, int value, bool isFMReversed);
+	void changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder,
+							   int beginStep, int endTrack, int endColumn, int endStep, int value);
 	void expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
 					   int endTrack, int endColmn, int endStep);
 	void shrinkPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,
@@ -441,7 +445,7 @@ private:
 	std::shared_ptr<Module> mod_;
 
 	// Current status
-	int octave_;	// 0-7
+	int curOctave_;	// 0-7
 	int curSongNum_;
 	SongStyle songStyle_;
 	int curTrackNum_;
@@ -449,6 +453,7 @@ private:
 	///	-1: not set
 	int curInstNum_;
 	int curVolume_;
+	bool volFMReversed_;
 	std::unordered_map<SoundSource, std::vector<bool>> muteState_;
 	int mkOrder_, mkStep_;
 
@@ -458,7 +463,7 @@ private:
 	static const uint32_t CHIP_CLOCK;
 
 	// Jam mode
-	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib,
+	void funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib, bool volumeSet,
 					  std::shared_ptr<AbstractInstrument> inst = nullptr);
 	void funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& attrib);
 

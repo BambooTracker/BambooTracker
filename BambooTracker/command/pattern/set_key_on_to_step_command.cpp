@@ -1,7 +1,7 @@
 #include "set_key_on_to_step_command.hpp"
 
 SetKeyOnToStepCommand::SetKeyOnToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum,
-											 int stepNum, int noteNum, bool instMask, int instNum, bool volMask, int vol)
+											 int stepNum, int noteNum, bool instMask, int instNum, bool volMask, int vol, bool isFMReversed)
 	: mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
@@ -11,7 +11,8 @@ SetKeyOnToStepCommand::SetKeyOnToStepCommand(std::weak_ptr<Module> mod, int song
 	  inst_(instNum),
 	  vol_(vol),
 	  instMask_(instMask),
-	  volMask_(volMask)
+	  volMask_(volMask),
+	  isFMReserved_(isFMReversed)
 {
 	auto& st = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum).getStep(stepNum);
 	prevNote_ = st.getNoteNumber();
@@ -24,7 +25,7 @@ void SetKeyOnToStepCommand::redo()
 	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
 	st.setNoteNumber(note_);
 	if (!instMask_) st.setInstrumentNumber(inst_);
-	if (!volMask_) st.setVolume(vol_);
+	if (!volMask_) st.setVolume((isFMReserved_ && vol_ < 0x80) ? (0x7f - vol_) : vol_);
 }
 
 void SetKeyOnToStepCommand::undo()

@@ -154,11 +154,13 @@ public:
 	bool getWriteOnlyUsedSamples() const;
 	void setReflectInstrumentNumberChange(bool enabled);
 	bool getReflectInstrumentNumberChange() const;
+	void setFixJammingVolume(bool enabled);
+	bool getFixJammingVolume() const;
 private:
 	bool warpCursor_, warpAcrossOrders_, showRowNumHex_, showPrevNextOrders_, backupModules_;
 	bool dontSelectOnDoubleClick_, reverseFMVolumeOrder_, moveCursorToRight_, retrieveChannelState_;
 	bool enableTranslation_, showFMDetuneSigned_, fill00ToEffectValue_, moveCursorHScroll_;
-	bool overwriteUnusedUnedited_, writeOnlyUsedSamples_, reflectInstNumChange_;
+	bool overwriteUnusedUnedited_, writeOnlyUsedSamples_, reflectInstNumChange_, fixJamVol_;
 
 	// Edit settings
 public:

@@ -157,8 +157,7 @@ private:
 	bool firstViewUpdateRequest_;
 
 	// Toolbar
-	QSpinBox* octave_;
-	QSpinBox *highlight1_, *highlight2_;
+	QSpinBox *octave_, *highlight1_, *highlight2_, *volume_;
 	using ToolbarPos = Configuration::ToolbarConfiguration::ToolbarPosition;
 	const std::unordered_map<ToolbarPos, Qt::ToolBarArea> TB_POS_ = {
 		{ToolbarPos::TOP_POS, Qt::TopToolBarArea },
@@ -167,7 +166,7 @@ private:
 		{ ToolbarPos::RIGHT_POS, Qt::RightToolBarArea }
 	};
 
-	// Status bar
+	// Status bars
 	QLabel *statusDetail_, *statusStyle_, *statusInst_, *statusOctave_;
 	QLabel *statusIntr_, *statusMixer_, *statusBpm_, *statusPlayPos_;
 

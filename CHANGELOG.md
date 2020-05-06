@@ -7,6 +7,8 @@
 - [#206] - Enable to swap instruments (thanks [@Mikejmoffitt])
 - Song transposition (thanks [@Mijinkono02])
 - Track swapping
+- Paste and insert in pattern
+- [#144] - Jamming volume settings (thanks [@marysiamzawka])
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
 ### Changed
@@ -27,6 +29,7 @@
 [#208]: https://github.com/rerrahkr/BambooTracker/issues/208
 [#207]: https://github.com/rerrahkr/BambooTracker/issues/207
 [#211]: https://github.com/rerrahkr/BambooTracker/issues/211
+[#144]: https://github.com/rerrahkr/BambooTracker/issues/144
 
 ## v0.4.1 (2020-04-20)
 ### Added

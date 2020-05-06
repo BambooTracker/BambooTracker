@@ -178,6 +178,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("overwriteUnusedUnedited",	configLocked->getOverwriteUnusedUneditedPropety());
 		settings.setValue("writeOnlyUsedSamples",	configLocked->getWriteOnlyUsedSamples());
 		settings.setValue("reflectInstNumChange",	configLocked->getReflectInstrumentNumberChange());
+		settings.setValue("fixJammingVolume",		configLocked->getFixJammingVolume());
 		settings.endGroup();
 
 		// Edit settings
@@ -316,6 +317,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setOverwriteUnusedUneditedPropety(settings.value("overwriteUnusedUnedited", configLocked->getOverwriteUnusedUneditedPropety()).toBool());
 		configLocked->setWriteOnlyUsedSamples(settings.value("writeOnlyUsedSamples", configLocked->getWriteOnlyUsedSamples()).toBool());
 		configLocked->setReflectInstrumentNumberChange(settings.value("reflectInstNumChange", configLocked->getReflectInstrumentNumberChange()).toBool());
+		configLocked->setFixJammingVolume(settings.value("fixJammingVolume", configLocked->getFixJammingVolume()).toBool());
 		if (settings.contains("autosetInstrument")) {	// For compatibility before v0.4.0
 			configLocked->setInstrumentMask(!settings.value("autosetInstrument").toBool());
 			settings.remove("autosetInstrument");

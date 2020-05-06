@@ -14,13 +14,13 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	: instMan_(std::make_shared<InstrumentsManager>(config.lock()->getOverwriteUnusedUneditedPropety())),
 	  tickCounter_(std::make_shared<TickCounter>()),
 	  mod_(std::make_shared<Module>()),
-	  octave_(4),
+	  curOctave_(4),
 	  curSongNum_(0),
 	  curTrackNum_(0),
 	  curOrderNum_(0),
 	  curStepNum_(0),
 	  curInstNum_(-1),
-	  curVolume_(-1),
+	  curVolume_(127),
 	  mkOrder_(-1),
 	  mkStep_(-1),
 	  isFollowPlay_(true)
@@ -56,17 +56,29 @@ void BambooTracker::changeConfiguration(std::weak_ptr<Configuration> config)
 	playback_->setChannelRetrieving(config.lock()->getRetrieveChannelState());
 	instMan_->setPropertyFindMode(config.lock()->getOverwriteUnusedUneditedPropety());
 	storeOnlyUsedSamples_ = config.lock()->getWriteOnlyUsedSamples();
+	volFMReversed_ = config.lock()->getReverseFMVolumeOrder();
 }
 
-/********** Change octave **********/
+/********** Current octave **********/
 void BambooTracker::setCurrentOctave(int octave)
 {
-	octave_ = octave;
+	curOctave_ = octave;
 }
 
 int BambooTracker::getCurrentOctave() const
 {
-	return octave_;
+	return curOctave_;
+}
+
+/********** Current volume **********/
+void BambooTracker::setCurrentVolume(int volume)
+{
+	curVolume_ = volume;
+}
+
+int BambooTracker::getCurrentVolume() const
+{
+	return curVolume_;
 }
 
 /********** Current track **********/
@@ -951,40 +963,42 @@ bool BambooTracker::isJamMode() const
 	return jamMan_->isJamMode();
 }
 
-void BambooTracker::jamKeyOn(JamKey key)
+void BambooTracker::jamKeyOn(JamKey key, bool volumeSet)
 {
-	int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	funcJamKeyOn(key, keyNum, attrib);
+	funcJamKeyOn(key, keyNum, attrib, volumeSet);
 }
 
-void BambooTracker::jamKeyOn(int keyNum)
+void BambooTracker::jamKeyOn(int keyNum, bool volumeSet)
 {
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
-	funcJamKeyOn(JamKey::MidiKey, keyNum, attrib);
+	funcJamKeyOn(JamKey::MidiKey, keyNum, attrib, volumeSet);
 }
 
-void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, std::shared_ptr<AbstractInstrument> inst)
+void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst)
 {
-	int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
 	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
 						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOn(key, keyNum, *it, inst);
+	funcJamKeyOn(key, keyNum, *it, volumeSet, inst);
 }
 
-void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src, std::shared_ptr<AbstractInstrument> inst)
+void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst)
 {
 	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
 						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOn(JamKey::MidiKey, keyNum, *it, inst);
+	funcJamKeyOn(JamKey::MidiKey, keyNum, *it, volumeSet, inst);
 }
 
-void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib,
+void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib, bool volumeSet,
 								 std::shared_ptr<AbstractInstrument> inst)
 {
 	if (playback_->isPlayingStep()) playback_->stopPlaySong();	// Reset
 
 	if (attrib.source == SoundSource::DRUM) {
+		if (volumeSet)
+			opnaCtrl_->setVolumeDrum(attrib.channelInSource, std::min(curVolume_, 0x1f));
 		opnaCtrl_->setKeyOnFlagDrum(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
@@ -1029,7 +1043,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		}
 		else {
 			note = JamManager::jamKeyToNote(onData.key);
-			octave = JamManager::calcOctave(octave_, onData.key);
+			octave = JamManager::calcOctave(curOctave_, onData.key);
 			if (octave > 7) {	// Tone range check
 				octave = 7;
 				note = Note::B;
@@ -1041,6 +1055,12 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		case SoundSource::FM:
 			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(inst))
 				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
+			if (volumeSet) {
+				int vol;
+				if (volFMReversed_) vol = (curVolume_ < 0x80) ? (0x7f - curVolume_) : 0;
+				else vol = std::min(curVolume_, 0x7f);
+				opnaCtrl_->setVolumeFM(onData.channelInSource, vol);
+			}
 			if (songStyle_.type == SongType::FM3chExpanded && onData.channelInSource == 2) {
 				opnaCtrl_->keyOnFM(2, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(6, note, octave, pitch, true);
@@ -1054,6 +1074,8 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		case SoundSource::SSG:
 			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(inst))
 				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
+			if (volumeSet)
+				opnaCtrl_->setVolumeSSG(onData.channelInSource, std::min(curVolume_, 0xf));
 			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
 			break;
 		case SoundSource::ADPCM:
@@ -1061,6 +1083,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 				opnaCtrl_->setInstrumentADPCM(adpcm);
 			else if (auto kit = std::dynamic_pointer_cast<InstrumentDrumkit>(inst))
 				opnaCtrl_->setInstrumentDrumkit(kit);
+			if (volumeSet) opnaCtrl_->setVolumeADPCM(curVolume_);
 			opnaCtrl_->keyOnADPCM(note, octave, pitch, true);
 			break;
 		default:
@@ -1071,7 +1094,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 void BambooTracker::jamKeyOff(JamKey key)
 {
-	int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	funcJamKeyOff(key, keyNum, attrib);
 }
@@ -1084,7 +1107,7 @@ void BambooTracker::jamKeyOff(int keyNum)
 
 void BambooTracker::jamKeyOffForced(JamKey key, SoundSource src)
 {
-	int keyNum = octaveAndNoteToNoteNumber(octave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
 	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
 						   [src](TrackAttribute& attrib) { return attrib.source == src; });
 	funcJamKeyOff(key, keyNum, *it);
@@ -2098,14 +2121,16 @@ int BambooTracker::getStepNoteNumber(int songNum, int trackNum, int orderNum, in
 void BambooTracker::setStepNote(int songNum, int trackNum, int orderNum, int stepNum, int octave, Note note, bool instMask, bool volMask)
 {
 	int nn = octaveAndNoteToNoteNumber(octave, note);
+	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source;
 
 	int in = -1;
 	if (!instMask && curInstNum_ != -1
-			&& (songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source
-				== instMan_->getInstrumentSharedPtr(curInstNum_)->getSoundSource()))
+			&& (src == instMan_->getInstrumentSharedPtr(curInstNum_)->getSoundSource())) {
 		in = curInstNum_;
+	}
+	bool fmReversed = (volFMReversed_ && src == SoundSource::FM);
 
-	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, instMask, in, volMask, curVolume_));
+	comMan_.invoke(std::make_unique<SetKeyOnToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, nn, instMask, in, volMask, curVolume_, fmReversed));
 }
 
 void BambooTracker::setStepKeyOff(int songNum, int trackNum, int orderNum, int stepNum)
@@ -2145,10 +2170,14 @@ int BambooTracker::getStepVolume(int songNum, int trackNum, int orderNum, int st
 			.getStep(stepNum).getVolume();
 }
 
-void BambooTracker::setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry)
+int BambooTracker::setStepVolumeDigit(int songNum, int trackNum, int orderNum, int stepNum, int volume, bool secondEntry)
 {	
-	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, isFMReversed, secondEntry));
+	bool fmReversed = (volFMReversed_
+					   && songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source == SoundSource::FM);
+	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, fmReversed, secondEntry));
 	curVolume_ = mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum).getStep(stepNum).getVolume();
+	if (fmReversed && curVolume_ < 0x80) curVolume_ = 0x7f - curVolume_;
+	return curVolume_;
 }
 
 void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int stepNum)
@@ -2273,12 +2302,12 @@ void BambooTracker::transposeNoteInPattern(int songNum, int beginTrack, int begi
 					   mod_, songNum, beginTrack, beginOrder, beginStep, endTrack, endStep, seminote));
 }
 
-void BambooTracker::changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder, int beginStep,
-										  int endTrack, int endColumn, int endStep, int value, bool isFMReversed)
+void BambooTracker::changeValuesInPattern(int songNum, int beginTrack, int beginColumn, int beginOrder,
+										  int beginStep, int endTrack, int endColumn, int endStep, int value)
 {
 	comMan_.invoke(std::make_unique<ChangeValuesInPatternCommand>(
 					   mod_, songNum, beginTrack, beginColumn, beginOrder, beginStep,
-					   endTrack, endColumn, endStep, value, isFMReversed));
+					   endTrack, endColumn, endStep, value, volFMReversed_));
 }
 
 void BambooTracker::expandPattern(int songNum, int beginTrack, int beginColmn, int beginOrder, int beginStep,

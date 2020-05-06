@@ -62,6 +62,7 @@ Configuration::Configuration()
 	overwriteUnusedUnedited_ = false;
 	writeOnlyUsedSamples_ = false;
 	reflectInstNumChange_ = false;
+	fixJamVol_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -877,6 +878,10 @@ bool Configuration::getWriteOnlyUsedSamples() const { return writeOnlyUsedSample
 void Configuration::setReflectInstrumentNumberChange(bool enabled) { reflectInstNumChange_ = enabled; }
 
 bool Configuration::getReflectInstrumentNumberChange() const { return reflectInstNumChange_; }
+
+void Configuration::setFixJammingVolume(bool enabled) { fixJamVol_ = enabled; }
+
+bool Configuration::getFixJammingVolume() const { return fixJamVol_; }
 
 // Edit settings
 void Configuration::setPageJumpLength(size_t length) { pageJumpLength_ = length; }

@@ -48,6 +48,8 @@ PatternEditor::PatternEditor(QWidget *parent) :
 					 this, [&](bool isSelected) { emit selected(isSelected); });
 	QObject::connect(ui->panel, &PatternEditorPanel::instrumentEntered,
 					 this, [&](int num) { emit instrumentEntered(num); });
+	QObject::connect(ui->panel, &PatternEditorPanel::volumeEntered,
+					 this, [&](int volume) { emit volumeEntered(volume); });
 	QObject::connect(ui->panel, &PatternEditorPanel::effectEntered,
 					 this, [&](QString text) { emit effectEntered(text); });
 

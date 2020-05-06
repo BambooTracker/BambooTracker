@@ -969,7 +969,6 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
 			if (src == SoundSource::FM && vol < volLim && config_->getReverseFMVolumeOrder()) {
-
 				vol = volLim - vol - 1;
 			}
 			textPainter.drawText(offset, baseY, QString("%1").arg(vol, 2, 16, QChar('0')).toUpper());
@@ -1032,11 +1031,6 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 					break;
 				default:
 					break;
-				}
-				if (src == SoundSource::FM && config_->getReverseFMVolumeOrder()
-						&& Effect::toEffectType(SoundSource::FM, effId) == EffectType::VolumeDelay) {
-
-
 				}
 				textPainter.drawText(offset, baseY, QString("%1").arg(effVal, 2, 16, QChar('0')).toUpper());
 			}
@@ -1609,13 +1603,13 @@ bool PatternEditorPanel::enterVolumeData(int key)
 
 void PatternEditorPanel::setStepVolume(int volume)
 {
-	bool isReversed = (songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source == SoundSource::FM
-					  && config_->getReverseFMVolumeOrder());
-	bt_->setStepVolumeDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, volume, isReversed, (entryCnt_ == 1));
+	int vol = bt_->setStepVolumeDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, volume, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount())
 		moveCursorToDown(editableStepCnt_);
+
+	emit volumeEntered(vol);
 }
 
 bool PatternEditorPanel::enterEffectID(int key)
@@ -1939,7 +1933,7 @@ void PatternEditorPanel::changeValuesInPattern(const PatternPosition& startPos, 
 {
 	if (startPos.compareCols(endPos) <= 0) {
 		bt_->changeValuesInPattern(curSongNum_, startPos.track, startPos.colInTrack, startPos.order, startPos.step,
-								   endPos.track, endPos.colInTrack, endPos.step, value, config_->getReverseFMVolumeOrder());
+								   endPos.track, endPos.colInTrack, endPos.step, value);
 		comStack_.lock()->push(new ChangeValuesInPatternQtCommand(this));
 	}
 }
