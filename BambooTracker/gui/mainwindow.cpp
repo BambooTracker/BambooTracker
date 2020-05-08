@@ -167,6 +167,26 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		}
 	});
 
+	/* Menus */
+	pasteModeGroup_ = std::make_unique<QActionGroup>(this);
+	pasteModeGroup_->addAction(ui->action_Cursor);
+	QObject::connect(ui->action_Cursor, &QAction::triggered, this, [&](bool checked) {
+		if (checked) config_.lock()->setPasteMode(Configuration::CURSOR);
+	});
+	pasteModeGroup_->addAction(ui->action_Selection);
+	QObject::connect(ui->action_Selection, &QAction::triggered, this, [&](bool checked) {
+		if (checked) config_.lock()->setPasteMode(Configuration::SELECTION);
+	});
+	pasteModeGroup_->addAction(ui->action_Fill);
+	QObject::connect(ui->action_Fill, &QAction::triggered, this, [&](bool checked) {
+		if (checked) config_.lock()->setPasteMode(Configuration::FILL);
+	});
+	switch (config.lock()->getPasteMode()) {
+	case Configuration::CURSOR:		ui->action_Cursor->setChecked(true);	break;
+	case Configuration::SELECTION:	ui->action_Selection->setChecked(true);	break;
+	case Configuration::FILL:		ui->action_Fill->setChecked(true);		break;
+	}
+
 	/* Tool bars */
 	auto octLab = new QLabel(tr("Octave"));
 	octLab->setMargin(6);

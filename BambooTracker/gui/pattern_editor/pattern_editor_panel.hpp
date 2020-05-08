@@ -272,11 +272,15 @@ private:
 	void deletePreviousStep();
 
 	void eraseSelectedCells();
-	void pasteCopiedCells(const PatternPosition& startPos);
-	void pasteMixCopiedCells(const PatternPosition& startPos);
-	void pasteOverwriteCopiedCells(const PatternPosition& startPos);
-	void pasteInsertCopiedCells(const PatternPosition& startPos);
-	std::vector<std::vector<std::string> > decodeCells(QString str, int& startCol);
+	void pasteCopiedCells(const PatternPosition& cursorPos);
+	void pasteMixCopiedCells(const PatternPosition& cursorPos);
+	void pasteOverwriteCopiedCells(const PatternPosition& cursorPos);
+	void pasteInsertCopiedCells(const PatternPosition& cursorPos);
+	using PatternCells = std::vector<std::vector<std::string>>;
+	PatternCells decodeCells(QString str, int& startCol);
+	PatternPosition getPasteLeftAbovePosition(
+			int pasteCol, const PatternPosition& cursorPos, size_t cellW) const;
+	PatternCells compandPasteCells(const PatternPosition& laPos, const PatternCells& cells);
 
 	void transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote);
 	void changeValuesInPattern(const PatternPosition& startPos, const PatternPosition& endPos, int value);

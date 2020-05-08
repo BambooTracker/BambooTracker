@@ -1821,63 +1821,63 @@ void PatternEditorPanel::eraseSelectedCells()
 	comStack_.lock()->push(new EraseCellsInPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteCopiedCells(const PatternPosition& startPos)
+void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
 {
 	int sCol = 0;
-	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
+	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+		cells = compandPasteCells(pos, cells);
+	}
 
-	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
-			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
-		sCol = curPos_.colInTrack;
-
-	bt_->pastePatternCells(curSongNum_, startPos.track, sCol,
-						   startPos.order, startPos.step, std::move(cells));
+	bt_->pastePatternCells(
+				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& startPos)
+void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& cursorPos)
 {
 	int sCol = 0;
-	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
+	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+		cells = compandPasteCells(pos, cells);
+	}
 
-	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
-			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
-		sCol = curPos_.colInTrack;
-
-	bt_->pasteMixPatternCells(curSongNum_, startPos.track, sCol,
-							  startPos.order, startPos.step, std::move(cells));
+	bt_->pasteMixPatternCells(
+				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& startPos)
+void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& cursorPos)
 {
 	int sCol = 0;
-	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
+	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+		cells = compandPasteCells(pos, cells);
+	}
 
-	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
-			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
-		sCol = curPos_.colInTrack;
-
-	bt_->pasteOverwritePatternCells(curSongNum_, startPos.track, sCol,
-									startPos.order, startPos.step, std::move(cells));
+	bt_->pasteOverwritePatternCells(
+				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteOverwriteCopiedDataToPatternQtCommand(this));
 }
 
-void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& startPos)
+void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos)
 {
 	int sCol = 0;
-	std::vector<std::vector<std::string>> cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternCells cells = decodeCells(QApplication::clipboard()->text(), sCol);
+	PatternPosition pos = getPasteLeftAbovePosition(sCol, cursorPos, cells.front().size());
+	if (config_->getPasteMode() == Configuration::FILL && selLeftAbovePos_.order != -1) {
+		cells = compandPasteCells(pos, cells);
+	}
 
-	if (sCol > 2 && !((curPos_.colInTrack - sCol) % 2)
-			&& static_cast<int>(cells.front().size()) <= 11 - curPos_.colInTrack)
-		sCol = curPos_.colInTrack;
-
-	bt_->pasteInsertPatternCells(curSongNum_, startPos.track, sCol,
-								 startPos.order, startPos.step, std::move(cells));
+	bt_->pasteInsertPatternCells(
+				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteInsertCopiedDataToPatternQtCommand(this));
 }
 
-std::vector<std::vector<std::string>> PatternEditorPanel::decodeCells(QString str, int& startCol)
+PatternEditorPanel::PatternCells PatternEditorPanel::decodeCells(QString str, int& startCol)
 {
 	str.remove(QRegularExpression("PATTERN_(COPY|CUT):"));
 	QString hdRe = "^([0-9]+),([0-9]+),([0-9]+),";
@@ -1908,6 +1908,27 @@ std::vector<std::vector<std::string>> PatternEditorPanel::decodeCells(QString st
 	return cells;
 }
 
+PatternPosition PatternEditorPanel::getPasteLeftAbovePosition(
+		int pasteCol, const PatternPosition& cursorPos, size_t cellW) const
+{
+	PatternPosition pos;
+	Configuration::PasteMode mode = config_->getPasteMode();
+	if ((mode == Configuration::SELECTION || mode == Configuration::FILL)
+			&& selLeftAbovePos_.colInTrack != -1) {
+		pos = selLeftAbovePos_;
+		pos.colInTrack = pasteCol;
+	}
+	else {
+		pos = cursorPos;
+		if (pasteCol < 3 || (pos.colInTrack - pasteCol) % 2
+				|| (11 - pos.colInTrack) < static_cast<int>(cellW)) {
+			pos.colInTrack = pasteCol;
+		}
+	}
+
+	return pos;
+}
+
 void PatternEditorPanel::cutSelectedCells()
 {
 	if (selLeftAbovePos_.order == -1) return;
@@ -1917,6 +1938,46 @@ void PatternEditorPanel::cutSelectedCells()
 	QString str = QApplication::clipboard()->text();
 	str.replace("COPY", "CUT");
 	QApplication::clipboard()->setText(str);
+}
+
+PatternEditorPanel::PatternCells PatternEditorPanel::compandPasteCells(const PatternPosition& laPos, const PatternCells& cells)
+{
+	PatternCells newCells;
+	int ow = cells.front().size();
+	int oh = cells.size();
+	int w = calculateColumnDistance(laPos.track, laPos.colInTrack,
+									selRightBelowPos_.track, selRightBelowPos_.colInTrack, true) + 1;
+	size_t h = static_cast<size_t>(calculateStepDistance(laPos.order, laPos.step,
+														 selRightBelowPos_.order, selRightBelowPos_.step) + 1);
+	int bw = ((ow - 1) / 11 + 1) * 11;
+	size_t padSize = bw - ow;
+	std::vector<std::string> pad(padSize);
+	int lc = (laPos.colInTrack + ow) % 11;
+	for (size_t i = 0; i < padSize; ++i) {
+		switch (lc) {
+		case 3:
+		case 5:
+		case 7:
+		case 9:
+			pad[i] = "--";
+			break;
+		default:
+			pad[i] = "-1";
+			break;
+		}
+		lc = (lc + 1) % 11;
+	}
+	for (size_t i = 0; i < h; ++i) {
+		newCells.emplace_back(w);
+		auto&& rowBeginIt = newCells.back().begin();
+		for (int dw = w, p = 0; dw > 0; dw -= bw, p += bw) {
+			int ws = std::min(ow, dw);
+			std::copy_n(cells.at(i % oh).begin(), ws, rowBeginIt + p);
+			std::copy_n(pad.begin(), std::min(dw - ws, static_cast<int>(padSize)), rowBeginIt + p + ws);
+		}
+	}
+
+	return newCells;
 }
 
 void PatternEditorPanel::transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote)

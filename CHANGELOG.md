@@ -9,6 +9,7 @@
 - Track swapping
 - Paste and insert in pattern
 - [#144] - Jamming volume settings (thanks [@marysiamzawka])
+- Paste mode selection: Cursor/Selection/Fill
 - 2 new sample modules (thanks [@TastySnax12], [@HeavyViper])
 
 ### Changed

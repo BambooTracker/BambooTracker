@@ -23,6 +23,7 @@
 #include <QLibrary>
 #include <QShortcut>
 #include <QAction>
+#include <QActionGroup>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -155,6 +156,9 @@ private:
 	bool isSavedModBefore_;
 
 	bool firstViewUpdateRequest_;
+
+	// Menus
+	std::unique_ptr<QActionGroup> pasteModeGroup_;
 
 	// Toolbar
 	QSpinBox *octave_, *highlight1_, *highlight2_, *volume_;

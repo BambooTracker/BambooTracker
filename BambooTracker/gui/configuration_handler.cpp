@@ -147,6 +147,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("visibleToolbar",				configLocked->getVisibleToolbar());
 		settings.setValue("visibleStatusBar",			configLocked->getVisibleStatusBar());
 		settings.setValue("visibleWaveView",			configLocked->getVisibleWaveView());
+		settings.setValue("pasteMode",					configLocked->getPasteMode());
 		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
 		settings.setValue("mainToolbarPosition",		mainTbConfig.getPosition());
 		settings.setValue("mainToolbarNumber",			mainTbConfig.getNumber());
@@ -286,6 +287,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		configLocked->setVisibleToolbar(settings.value("visibleToolbar", configLocked->getVisibleToolbar()).toBool());
 		configLocked->setVisibleStatusBar(settings.value("visibleStatusBar", configLocked->getVisibleStatusBar()).toBool());
 		configLocked->setVisibleWaveView(settings.value("visibleWaveView", configLocked->getVisibleWaveView()).toBool());
+		configLocked->setPasteMode(static_cast<Configuration::PasteMode>(settings.value("pasteMode", configLocked->getPasteMode()).toInt()));
 		auto& mainTbConfig = configLocked->getMainToolbarConfiguration();
 		mainTbConfig.setPosition(static_cast<Configuration::ToolbarConfiguration::ToolbarPosition>(settings.value("mainToolbarPosition", mainTbConfig.getPosition()).toInt()));
 		mainTbConfig.setNumber(settings.value("mainToolbarNumber", mainTbConfig.getNumber()).toInt());

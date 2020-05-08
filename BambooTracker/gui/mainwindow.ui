@@ -624,6 +624,10 @@
      <addaction name="actionMix"/>
      <addaction name="actionOverwrite"/>
      <addaction name="action_Insert"/>
+     <addaction name="separator"/>
+     <addaction name="action_Cursor"/>
+     <addaction name="action_Selection"/>
+     <addaction name="action_Fill"/>
     </widget>
     <widget class="QMenu" name="menu_Bookmarks">
      <property name="title">
@@ -1621,6 +1625,30 @@
   <action name="action_Insert">
    <property name="text">
     <string>&amp;Insert</string>
+   </property>
+  </action>
+  <action name="action_Cursor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Cursor</string>
+   </property>
+  </action>
+  <action name="action_Selection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Selection</string>
+   </property>
+  </action>
+  <action name="action_Fill">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Fill</string>
    </property>
   </action>
  </widget>

@@ -13,6 +13,7 @@ Configuration::Configuration()
 	visibleToolbar_ = true;
 	visibleStatusBar_ = true;
 	visibleWaveView_ = true;
+	pasteMode_ = PasteMode::CURSOR;
 
 	// Mainwindow state
 	mainW_ = 930;
@@ -62,7 +63,7 @@ Configuration::Configuration()
 	overwriteUnusedUnedited_ = false;
 	writeOnlyUsedSamples_ = false;
 	reflectInstNumChange_ = false;
-	fixJamVol_ = false;
+	fixJamVol_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -730,6 +731,10 @@ bool Configuration::getVisibleStatusBar() const { return visibleStatusBar_; }
 void Configuration::setVisibleWaveView(bool visible) { visibleWaveView_ = visible; }
 
 bool Configuration::getVisibleWaveView() const { return visibleWaveView_; }
+
+void Configuration::setPasteMode(PasteMode mode) { pasteMode_ = mode; }
+
+Configuration::PasteMode Configuration::getPasteMode() const { return pasteMode_; }
 
 // Mainwindow state
 void Configuration::setMainWindowWidth(int w) { mainW_ = w; }

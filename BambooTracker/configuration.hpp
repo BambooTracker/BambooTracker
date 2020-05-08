@@ -41,12 +41,16 @@ public:
 	bool getVisibleStatusBar() const;
 	void setVisibleWaveView(bool visible);
 	bool getVisibleWaveView() const;
+	enum PasteMode { CURSOR = 0, SELECTION, FILL };
+	void setPasteMode(PasteMode mode);
+	PasteMode getPasteMode() const;
 private:
 	bool followMode_;
 	std::string workDir_;
 	int instOpenFormat_, bankOpenFormat_;
 	bool instMask_, volMask_;
 	bool visibleToolbar_, visibleStatusBar_, visibleWaveView_;
+	PasteMode pasteMode_;
 
 	// Mainwindow state
 public:
