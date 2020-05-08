@@ -2444,6 +2444,10 @@ void MainWindow::updateMenuByPattern()
 		ui->actionIncrease_Note->setEnabled(false);
 		ui->actionDecrease_Octave->setEnabled(false);
 		ui->actionIncrease_Octave->setEnabled(false);
+		ui->actionFine_Decrease_Values->setEnabled(false);
+		ui->actionFine_Increase_Values->setEnabled(false);
+		ui->actionCoarse_D_ecrease_Values->setEnabled(false);
+		ui->actionCoarse_I_ncrease_Values->setEnabled(false);
 	}
 	else {
 		// Edit
@@ -2464,6 +2468,10 @@ void MainWindow::updateMenuByPattern()
 		ui->actionIncrease_Note->setEnabled(true);
 		ui->actionDecrease_Octave->setEnabled(true);
 		ui->actionIncrease_Octave->setEnabled(true);
+		ui->actionFine_Decrease_Values->setEnabled(true);
+		ui->actionFine_Increase_Values->setEnabled(true);
+		ui->actionCoarse_D_ecrease_Values->setEnabled(true);
+		ui->actionCoarse_I_ncrease_Values->setEnabled(true);
 	}
 
 	updateMenuByPatternSelection(isSelectedPattern_);
@@ -2502,6 +2510,10 @@ void MainWindow::updateMenuByOrder()
 	ui->actionIncrease_Note->setEnabled(false);
 	ui->actionDecrease_Octave->setEnabled(false);
 	ui->actionIncrease_Octave->setEnabled(false);
+	ui->actionFine_Decrease_Values->setEnabled(false);
+	ui->actionFine_Increase_Values->setEnabled(false);
+	ui->actionCoarse_D_ecrease_Values->setEnabled(false);
+	ui->actionCoarse_I_ncrease_Values->setEnabled(false);
 
 	updateMenuByOrderSelection(isSelectedOrder_);
 }
@@ -2537,6 +2549,10 @@ void MainWindow::updateMenuByInstrumentList()
 	ui->actionIncrease_Note->setEnabled(false);
 	ui->actionDecrease_Octave->setEnabled(false);
 	ui->actionIncrease_Octave->setEnabled(false);
+	ui->actionFine_Decrease_Values->setEnabled(false);
+	ui->actionFine_Increase_Values->setEnabled(false);
+	ui->actionCoarse_D_ecrease_Values->setEnabled(false);
+	ui->actionCoarse_I_ncrease_Values->setEnabled(false);
 }
 
 void MainWindow::updateMenuByPatternSelection(bool isSelected)
