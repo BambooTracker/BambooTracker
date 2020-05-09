@@ -6,102 +6,102 @@
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="50"/>
         <source>Users:</source>
-        <translation type="unfinished">ユーザー:</translation>
+        <translation>ユーザー:</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="77"/>
         <source>Memory:</source>
-        <translation type="unfinished">メモリ:</translation>
+        <translation>メモリ:</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="114"/>
         <source>Repeat</source>
-        <translation type="unfinished">繰り返し</translation>
+        <translation>繰り返し</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="134"/>
         <source>Import</source>
-        <translation type="unfinished">サンプル読み込み</translation>
+        <translation>サンプル読み込み</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="141"/>
         <source>Clear</source>
-        <translation type="unfinished">クリア</translation>
+        <translation>クリア</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="150"/>
         <source>Root key</source>
-        <translation type="unfinished">基準キー</translation>
+        <translation>基準キー</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="156"/>
         <source>Key</source>
-        <translation type="unfinished">キー</translation>
+        <translation>キー</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="164"/>
         <source>C</source>
-        <translation type="unfinished">C</translation>
+        <translation>C</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="169"/>
         <source>C#</source>
-        <translation type="unfinished">C#</translation>
+        <translation>C#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="174"/>
         <source>D</source>
-        <translation type="unfinished">D</translation>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="179"/>
         <source>D#</source>
-        <translation type="unfinished">D#</translation>
+        <translation>D#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="184"/>
         <source>E</source>
-        <translation type="unfinished">E</translation>
+        <translation>E</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="189"/>
         <source>F</source>
-        <translation type="unfinished">F</translation>
+        <translation>F</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="194"/>
         <source>F#</source>
-        <translation type="unfinished">F#</translation>
+        <translation>F#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="199"/>
         <source>G</source>
-        <translation type="unfinished">G</translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="204"/>
         <source>G#</source>
-        <translation type="unfinished">G#</translation>
+        <translation>G#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="209"/>
         <source>A</source>
-        <translation type="unfinished">A</translation>
+        <translation>A</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="214"/>
         <source>A#</source>
-        <translation type="unfinished">A#</translation>
+        <translation>A#</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="219"/>
         <source>B</source>
-        <translation type="unfinished">B</translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="237"/>
         <source>Rate</source>
-        <translation type="unfinished">サンプルレート</translation>
+        <translation>サンプルレート</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="166"/>
@@ -109,39 +109,39 @@
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="175"/>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="182"/>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="166"/>
         <source>Failed to import the wav.</source>
-        <translation type="unfinished">wavの読み込みに失敗しました。</translation>
+        <translation>wavの読み込みに失敗しました。</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="170"/>
         <source>Failed to import the wav.
 %1</source>
-        <translation type="unfinished">wavの読み込みに失敗しました。
+        <translation>wavの読み込みに失敗しました。
 %1</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="176"/>
         <source>Supported sample rate is 2kHz-16kHz, but the rate of selected sample is %1.</source>
-        <translation type="unfinished">サンプルレートが%1Hzのため読み込めません。2kHzから16kHzの間で設定してください。</translation>
+        <translation>サンプルレートが%1Hzのため読み込めません。2kHzから16kHzの間で設定してください。</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="182"/>
         <source>The selected sample is not mono channel.</source>
-        <translation type="unfinished">選択したサンプルはモノラルではありません。</translation>
+        <translation>選択したサンプルはモノラルではありません。</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="307"/>
         <source>Import sample</source>
-        <translation type="unfinished">サンプル読み込み</translation>
+        <translation>サンプル読み込み</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="308"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -262,12 +262,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="170"/>
         <source>Reflect instrument number change</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメント番号の変更を反映</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="178"/>
         <source>Fix jamming volume</source>
-        <translation type="unfinished"></translation>
+        <translation>ジャミング時の音量を固定</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="253"/>
@@ -476,7 +476,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="883"/>
         <source>Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>マーカー</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="889"/>
@@ -775,10 +775,6 @@
         <translation>FMデチューンを符号付きで表記</translation>
     </message>
     <message>
-        <source>Show wave visual</source>
-        <translation type="vanished">オシロスコープ表示</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.ui" line="138"/>
         <source>Fill 00 to effect value</source>
         <translation>エフェクト値に00を自動で設定</translation>
@@ -924,10 +920,6 @@
         <translation>FMエンベロープエディタでFMのデチューン値を符号付きの値として表示します。</translation>
     </message>
     <message>
-        <source>Enable an oscilloscope which displays a waveform of the sound output.</source>
-        <translation type="vanished">出力波形を表示するオシロスコープを有効にします。</translation>
-    </message>
-    <message>
         <location filename="../../gui/configuration_dialog.cpp" line="74"/>
         <source>Fill 00 to effect value column upon entering effect id.</source>
         <translation>エフェクトIDを入力時にエフェクト値を自動で00に設定します。</translation>
@@ -950,12 +942,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="84"/>
         <source>Correspond the instrument number in patterns when the instrument changes its number.</source>
-        <translation type="unfinished"></translation>
+        <translation>インストゥルメントの番号が変更されたとき、パターン中の対応するインストゥルメント番号を同期させます。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="86"/>
         <source>Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox.</source>
-        <translation type="unfinished"></translation>
+        <translation>ジャムモード中のインストゥルメントの音量を最大に固定します。無効時にはツールバーの音量設定によって音量が変更されます。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="99"/>
@@ -1035,7 +1027,7 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="114"/>
         <source>Paste and insert</source>
-        <translation type="unfinished"></translation>
+        <translation>挿入貼り付け</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="115"/>
@@ -1275,12 +1267,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="162"/>
         <source>Jam volume up</source>
-        <translation type="unfinished"></translation>
+        <translation>ジャム音量を上げる</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="163"/>
         <source>Jam volume down</source>
-        <translation type="unfinished"></translation>
+        <translation>ジャム音量を下げる</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="251"/>
@@ -1701,10 +1693,6 @@
 <context>
     <name>InstrumentEditorADPCMForm</name>
     <message>
-        <source>Waveform</source>
-        <translation type="vanished">波形</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="80"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="171"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="210"/>
@@ -1712,86 +1700,10 @@
         <translation>ユーザー:</translation>
     </message>
     <message>
-        <source>Memory:</source>
-        <translation type="vanished">メモリ:</translation>
-    </message>
-    <message>
-        <source>Repeat</source>
-        <translation type="vanished">繰り返し</translation>
-    </message>
-    <message>
-        <source>Import</source>
-        <translation type="vanished">サンプル読み込み</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="vanished">クリア</translation>
-    </message>
-    <message>
-        <source>Root key</source>
-        <translation type="vanished">基準キー</translation>
-    </message>
-    <message>
-        <source>Key</source>
-        <translation type="vanished">キー</translation>
-    </message>
-    <message>
-        <source>C</source>
-        <translation type="vanished">C</translation>
-    </message>
-    <message>
-        <source>C#</source>
-        <translation type="vanished">C#</translation>
-    </message>
-    <message>
-        <source>D</source>
-        <translation type="vanished">D</translation>
-    </message>
-    <message>
-        <source>D#</source>
-        <translation type="vanished">D#</translation>
-    </message>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <source>F</source>
-        <translation type="vanished">F</translation>
-    </message>
-    <message>
-        <source>F#</source>
-        <translation type="vanished">F#</translation>
-    </message>
-    <message>
-        <source>G</source>
-        <translation type="vanished">G</translation>
-    </message>
-    <message>
-        <source>G#</source>
-        <translation type="vanished">G#</translation>
-    </message>
-    <message>
-        <source>A</source>
-        <translation type="vanished">A</translation>
-    </message>
-    <message>
-        <source>A#</source>
-        <translation type="vanished">A#</translation>
-    </message>
-    <message>
-        <source>B</source>
-        <translation type="vanished">B</translation>
-    </message>
-    <message>
-        <source>Rate</source>
-        <translation type="vanished">サンプルレート</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="27"/>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="33"/>
         <source>Sample</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプル</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_adpcm_form.ui" line="46"/>
@@ -1834,60 +1746,34 @@
         <source>Relative</source>
         <translation>相対</translation>
     </message>
-    <message>
-        <source>Error</source>
-        <translation type="vanished">エラー</translation>
-    </message>
-    <message>
-        <source>Failed to import the wav.</source>
-        <translation type="vanished">wavの読み込みに失敗しました。</translation>
-    </message>
-    <message>
-        <source>Failed to import the wav.
-%1</source>
-        <translation type="vanished">wavの読み込みに失敗しました。
-%1</translation>
-    </message>
-    <message>
-        <source>Supported sample rate is 2kHz-16kHz, but the rate of selected sample is %1.</source>
-        <translation type="vanished">サンプルレートが%1Hzのため読み込めません。2kHzから16kHzの間で設定してください。</translation>
-    </message>
-    <message>
-        <source>The selected sample is not mono channel.</source>
-        <translation type="vanished">選択したサンプルはモノラルではありません。</translation>
-    </message>
-    <message>
-        <source>Import sample</source>
-        <translation type="vanished">サンプル読み込み</translation>
-    </message>
 </context>
 <context>
     <name>InstrumentEditorDrumkitForm</name>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="20"/>
         <source>Sample assignment</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプル割り当て</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="57"/>
         <source>Key</source>
-        <translation type="unfinished">キー</translation>
+        <translation>キー</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="62"/>
         <source>#</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="67"/>
         <location filename="../../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="77"/>
         <source>Pitch</source>
-        <translation type="unfinished">ピッチ</translation>
+        <translation>ピッチ</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/instrument_editor_drumkit_form.ui" line="99"/>
         <source>Sample</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプル</translation>
     </message>
 </context>
 <context>
@@ -3059,42 +2945,42 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1601"/>
         <source>New Drumki&amp;t</source>
-        <translation type="unfinished"></translation>
+        <translation>新規ドラムキット(&amp;T)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1612"/>
         <source>&amp;Wave View</source>
-        <translation type="unfinished"></translation>
+        <translation>オシロスコープ(&amp;W)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1617"/>
         <source>&amp;Transpose Song...</source>
-        <translation type="unfinished"></translation>
+        <translation>ソングをトランスポーズ(&amp;T)...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1622"/>
         <source>&amp;Swap Tracks...</source>
-        <translation type="unfinished"></translation>
+        <translation>トラック入れ替え(&amp;S)...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1627"/>
         <source>&amp;Insert</source>
-        <translation type="unfinished"></translation>
+        <translation>挿入(&amp;I)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1635"/>
         <source>&amp;Cursor</source>
-        <translation type="unfinished"></translation>
+        <translation>カーソル(&amp;C)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1643"/>
         <source>&amp;Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>選択(&amp;S)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1651"/>
         <source>&amp;Fill</source>
-        <translation type="unfinished"></translation>
+        <translation>敷き詰め(&amp;F)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1398"/>
@@ -3182,7 +3068,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="204"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>音量</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="221"/>
@@ -3356,12 +3242,12 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="3520"/>
         <source>Do you want to transpose a song?</source>
-        <translation type="unfinished"></translation>
+        <translation>ソングをトランスポーズしますか?</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="3541"/>
         <source>Do you want to swap tracks?</source>
-        <translation type="unfinished"></translation>
+        <translation>トラックを入れ替えますか?</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="2351"/>
@@ -3734,7 +3620,7 @@
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2077"/>
         <source>&amp;Insert</source>
-        <translation type="unfinished"></translation>
+        <translation>挿入(&amp;I)</translation>
     </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2079"/>
@@ -4047,17 +3933,17 @@
     <message>
         <location filename="../../gui/swap_tracks_dialog.ui" line="14"/>
         <source>Swap Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>トラック入れ替え</translation>
     </message>
     <message>
         <location filename="../../gui/swap_tracks_dialog.ui" line="22"/>
         <source>Track 1</source>
-        <translation type="unfinished"></translation>
+        <translation>トラック1</translation>
     </message>
     <message>
         <location filename="../../gui/swap_tracks_dialog.ui" line="32"/>
         <source>Track 2</source>
-        <translation type="unfinished"></translation>
+        <translation>トラック2</translation>
     </message>
 </context>
 <context>
@@ -4078,27 +3964,27 @@
     <message>
         <location filename="../../gui/transpose_song_dialog.ui" line="14"/>
         <source>Transpose Song</source>
-        <translation type="unfinished"></translation>
+        <translation>ソングをトランスポーズ</translation>
     </message>
     <message>
         <location filename="../../gui/transpose_song_dialog.ui" line="22"/>
         <source>Seminotes</source>
-        <translation type="unfinished"></translation>
+        <translation>半音単位の移動量</translation>
     </message>
     <message>
         <location filename="../../gui/transpose_song_dialog.ui" line="54"/>
         <source>Exclude these instruments</source>
-        <translation type="unfinished"></translation>
+        <translation>指定したインストゥルメントを除外</translation>
     </message>
     <message>
         <location filename="../../gui/transpose_song_dialog.ui" line="99"/>
         <source>Reverse</source>
-        <translation type="unfinished">反転</translation>
+        <translation>反転</translation>
     </message>
     <message>
         <location filename="../../gui/transpose_song_dialog.ui" line="106"/>
         <source>Clear All</source>
-        <translation type="unfinished">全削除</translation>
+        <translation>全解除</translation>
     </message>
 </context>
 <context>
