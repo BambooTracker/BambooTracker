@@ -254,7 +254,7 @@
                 <bool>false</bool>
                </property>
                <property name="prefix">
-                <string>#</string>
+                <string notr="true">#</string>
                </property>
                <property name="maximum">
                 <number>127</number>

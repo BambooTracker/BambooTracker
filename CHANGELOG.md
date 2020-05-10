@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.4.2 (2020-05-10)
 ### Added
 - [#6], [#211] - ADPCM drumkit (thanks [@ImATrackMan], [@pedipanol] and others)
 - Color settings of pattern marker
@@ -16,6 +18,7 @@
 - Change comment dialog to modeless
 - Rename ADPCM Waveform to Sample
 - Move wave view settings to View menu
+- Update translation: ja
 
 ### Fixed
 - [#209] - Fix crashing effect list dialog on opening (thanks [@Ikalou])
