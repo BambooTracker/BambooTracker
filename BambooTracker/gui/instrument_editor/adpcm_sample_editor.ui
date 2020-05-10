@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>340</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -97,14 +97,31 @@
     </layout>
    </item>
    <item>
-    <widget class="QWidget" name="sampleViewWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>0</number>
      </property>
-    </widget>
+     <item>
+      <widget class="QWidget" name="sampleViewWidget" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QScrollBar" name="horizontalScrollBar">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -274,6 +291,15 @@
     </widget>
    </item>
   </layout>
+  <action name="action_Resize">
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/settings</normaloff>:/icon/settings</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Resize</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>sampleNumSpinBox</tabstop>
@@ -285,6 +311,8 @@
   <tabstop>rootKeySpinBox</tabstop>
   <tabstop>rootRateSpinBox</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../../bamboo_tracker.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -74,6 +74,7 @@ private slots:
 	void on_importPushButton_clicked();
 	void on_clearPushButton_clicked();
 	void on_rootRateSpinBox_valueChanged(int arg1);
+	void on_action_Resize_triggered();
 };
 
 #endif // ADPCM_SAMPLE_EDITOR_HPP

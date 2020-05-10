@@ -31,6 +31,7 @@
         <file alias="rename_inst">res/icon/iconfinder_textfield_rename_5877.png</file>
         <file alias="inst_adpcm">res/icon/inst_adpcm.png</file>
         <file alias="inst_kit">res/icon/inst_kit.png</file>
+        <file alias="settings">res/icon/iconfinder_wrench_orange_5931.png</file>
     </qresource>
     <qresource prefix="/doc">
         <file alias="shortcuts">res/doc/keyboard_shortcuts.html</file>

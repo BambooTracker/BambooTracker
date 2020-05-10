@@ -13,8 +13,10 @@
 #include <QPainter>
 #include <QRect>
 #include <QRectF>
+#include <QToolBar>
 #include "chips/codec/ymb_codec.hpp"
 #include "gui/event_guard.hpp"
+#include "gui/instrument_editor/sample_length_dialog.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
@@ -43,6 +45,11 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 
 	ui->memoryWidget->installEventFilter(this);
 	ui->sampleViewWidget->installEventFilter(this);
+
+	auto tb = new QToolBar();
+	tb->setIconSize(QSize(16, 16));
+	tb->addAction(ui->action_Resize);
+	ui->verticalLayout_2->insertWidget(0, tb);
 }
 
 ADPCMSampleEditor::~ADPCMSampleEditor()
@@ -149,7 +156,7 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	updateSampleView();
 	ui->sampleViewWidget->update();
 
-	ui->lengthLabel->setText(tr("Length: %1").arg(sample.size()));
+	ui->lengthLabel->setText(tr("Length: %1").arg(sample.size() * 2));
 }
 
 void ADPCMSampleEditor::importSampleFrom(const QString file)
@@ -345,5 +352,23 @@ void ADPCMSampleEditor::on_rootRateSpinBox_valueChanged(int arg1)
 		bt_.lock()->setSampleADPCMRootDeltaN(ui->sampleNumSpinBox->value(), arg1);
 		emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 		emit modified();
+	}
+}
+
+void ADPCMSampleEditor::on_action_Resize_triggered()
+{
+	SampleLengthDialog diag(sample_.size() * 2);
+	if (diag.exec() == QDialog::Accepted) {
+		int len = diag.getLength() / 2;
+		sample_.resize(len);
+
+		bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), sample_);
+
+		updateSampleView();
+		ui->sampleViewWidget->update();
+
+		emit modified();
+		emit sampleAssignRequested();
+		emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 	}
 }
