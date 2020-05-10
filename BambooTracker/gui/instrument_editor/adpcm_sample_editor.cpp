@@ -148,6 +148,8 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	sample_ = sample;
 	updateSampleView();
 	ui->sampleViewWidget->update();
+
+	ui->lengthLabel->setText(tr("Length: %1").arg(sample.size()));
 }
 
 void ADPCMSampleEditor::importSampleFrom(const QString file)

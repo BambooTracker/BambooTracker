@@ -109,6 +109,28 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
+      <widget class="QLabel" name="lengthLabel">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::WinPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="text">
+        <string notr="true">Length: </string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="repeatCheckBox">
        <property name="text">
         <string>Repeat</string>
