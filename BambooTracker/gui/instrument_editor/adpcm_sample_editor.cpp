@@ -15,6 +15,7 @@
 #include <QRect>
 #include <QRectF>
 #include <QToolBar>
+#include <QWheelEvent>
 #include "chips/codec/ymb_codec.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
@@ -126,6 +127,25 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 			sampViewPixmap_ = std::make_unique<QPixmap>(ui->sampleViewWidget->size());
 			updateSampleView();
 			break;
+		case QEvent::Wheel:
+		{
+			auto we = reinterpret_cast<QWheelEvent*>(ev);
+			int cnt = we->angleDelta().y() / 120;
+			bool ctrl = we->modifiers().testFlag(Qt::ControlModifier);
+			if (cnt > 0) {
+				for (int i = 0; i < cnt; ++i) {
+					if (ctrl) on_actionZoom_In_triggered();
+					else ui->horizontalScrollBar->setValue(ui->horizontalScrollBar->value() - 1);
+				}
+			}
+			else {
+				for (int i = 0; cnt < i; --i) {
+					if (ctrl) on_actionZoom_Out_triggered();
+					else ui->horizontalScrollBar->setValue(ui->horizontalScrollBar->value() + 1);
+				}
+			}
+			break;
+		}
 		default:
 			break;
 		}
@@ -400,6 +420,7 @@ void ADPCMSampleEditor::on_actionZoom_Out_triggered()
 
 void ADPCMSampleEditor::on_horizontalScrollBar_valueChanged(int value)
 {
+	Q_UNUSED(value)
 	updateSampleView();
 	ui->sampleViewWidget->update();
 }
