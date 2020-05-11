@@ -300,6 +300,15 @@
     <string>&amp;Resize</string>
    </property>
   </action>
+  <action name="actionRe_verse">
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/reverse</normaloff>:/icon/reverse</iconset>
+   </property>
+   <property name="text">
+    <string>Re&amp;verse</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>sampleNumSpinBox</tabstop>

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <algorithm>
 #include <QMimeData>
 #include <QFile>
 #include <QIODevice>
@@ -49,6 +50,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	auto tb = new QToolBar();
 	tb->setIconSize(QSize(16, 16));
 	tb->addAction(ui->action_Resize);
+	tb->addAction(ui->actionRe_verse);
 	ui->verticalLayout_2->insertWidget(0, tb);
 }
 
@@ -371,4 +373,20 @@ void ADPCMSampleEditor::on_action_Resize_triggered()
 		emit sampleAssignRequested();
 		emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 	}
+}
+
+void ADPCMSampleEditor::on_actionRe_verse_triggered()
+{
+	std::vector<int16_t> raw(sample_.size() * 2);
+	codec::ymb_decode(sample_.data(), raw.data(), static_cast<long>(raw.size()));
+	std::reverse(raw.begin(), raw.end());
+	codec::ymb_encode(raw.data(), sample_.data(), static_cast<long>(raw.size()));
+	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), sample_);
+
+	updateSampleView();
+	ui->sampleViewWidget->update();
+
+	emit modified();
+	emit sampleAssignRequested();
+	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 }
