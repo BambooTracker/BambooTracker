@@ -33,6 +33,8 @@
         <file alias="inst_kit">res/icon/inst_kit.png</file>
         <file alias="settings">res/icon/iconfinder_wrench_orange_5931.png</file>
         <file alias="reverse">res/icon/iconfinder_shape_flip_horizontal_5740.png</file>
+        <file alias="zoom_out">res/icon/iconfinder_magifier_zoom_out_5483.png</file>
+        <file alias="zoom_in">res/icon/iconfinder_magnifier_zoom_in_5485.png</file>
     </qresource>
     <qresource prefix="/doc">
         <file alias="shortcuts">res/doc/keyboard_shortcuts.html</file>

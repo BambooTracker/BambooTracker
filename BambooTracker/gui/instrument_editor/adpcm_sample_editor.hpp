@@ -59,9 +59,10 @@ private:
 
 	std::unique_ptr<QPixmap> memPixmap_;
 	std::unique_ptr<QPixmap> sampViewPixmap_;
+	int zoom_;
 
 	size_t addrStart_, addrStop_;
-	std::vector<uint8_t> sample_;
+	std::vector<int16_t> sample_;
 
 	void importSampleFrom(const QString file);
 	void updateSampleMemoryBar();
@@ -76,6 +77,9 @@ private slots:
 	void on_rootRateSpinBox_valueChanged(int arg1);
 	void on_action_Resize_triggered();
 	void on_actionRe_verse_triggered();
+	void on_actionZoom_In_triggered();
+	void on_actionZoom_Out_triggered();
+	void on_horizontalScrollBar_valueChanged(int value);
 };
 
 #endif // ADPCM_SAMPLE_EDITOR_HPP

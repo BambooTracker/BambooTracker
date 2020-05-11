@@ -114,7 +114,10 @@
      <item>
       <widget class="QScrollBar" name="horizontalScrollBar">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <number>0</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -307,6 +310,24 @@
    </property>
    <property name="text">
     <string>Re&amp;verse</string>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/zoom_in</normaloff>:/icon/zoom_in</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom &amp;In</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/zoom_out</normaloff>:/icon/zoom_out</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom &amp;Out</string>
    </property>
   </action>
  </widget>

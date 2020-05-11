@@ -25,9 +25,10 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	isIgnoreEvent_(false),
 	memPixmap_(std::make_unique<QPixmap>()),
 	sampViewPixmap_(std::make_unique<QPixmap>()),
+	zoom_(0),
 	addrStart_(0),
 	addrStop_(0),
-	sample_(1)
+	sample_(2)
 {
 	ui->setupUi(this);
 
@@ -50,6 +51,8 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	auto tb = new QToolBar();
 	tb->setIconSize(QSize(16, 16));
 	tb->addAction(ui->action_Resize);
+	tb->addAction(ui->actionZoom_In);
+	tb->addAction(ui->actionZoom_Out);
 	tb->addAction(ui->actionRe_verse);
 	ui->verticalLayout_2->insertWidget(0, tb);
 }
@@ -154,7 +157,8 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	updateSampleMemoryBar();
 	ui->memoryWidget->update();
 
-	sample_ = sample;
+	sample_.resize(sample.size() * 2);
+	codec::ymb_decode(sample.data(), sample_.data(), static_cast<long>(sample_.size()));
 	updateSampleView();
 	ui->sampleViewWidget->update();
 
@@ -243,11 +247,19 @@ void ADPCMSampleEditor::updateSampleView()
 	QRect rect = sampViewPixmap_->rect();
 	if (!rect.isValid()) return;
 
+	// Slider
+	size_t tmplen = sample_.size() - 1;
+	for (int z = zoom_; z >= 0; --z) {
+		size_t len = tmplen >> z;
+		if (len) {
+			zoom_ = z;
+			ui->horizontalScrollBar->setMaximum(tmplen - len);
+			break;
+		}
+	}
+
 	QPainter painter(sampViewPixmap_.get());
 	painter.fillRect(rect, palette_->instADPCMSampViewBackColor);
-
-	std::vector<int16_t> wave(sample_.size() * 2);
-	codec::ymb_decode(&sample_[0], &wave[0], static_cast<long>(wave.size()));
 
 	painter.setPen(palette_->instADPCMSampViewCenterColor);
 	const int maxX = rect.width();
@@ -256,11 +268,11 @@ void ADPCMSampleEditor::updateSampleView()
 
 	painter.setPen(palette_->instADPCMSampViewForeColor);
 	const int16_t maxY = std::numeric_limits<int16_t>::max();
-	const double size = wave.size();
+	const double size = sample_.size() >> zoom_;
 	int prevY = centerY;
 	for (int x = 0; x < maxX; ++x) {
 		size_t i = static_cast<size_t>(size * x / maxX);
-		int16_t sample = wave[i];
+		int16_t sample = sample_[i + ui->horizontalScrollBar->value()];
 		int y = centerY - (centerY * sample / maxY);
 		if (x) painter.drawLine(x - 1, prevY, x, y);
 		prevY = y;
@@ -359,12 +371,13 @@ void ADPCMSampleEditor::on_rootRateSpinBox_valueChanged(int arg1)
 
 void ADPCMSampleEditor::on_action_Resize_triggered()
 {
-	SampleLengthDialog diag(sample_.size() * 2);
+	SampleLengthDialog diag(sample_.size());
 	if (diag.exec() == QDialog::Accepted) {
-		int len = diag.getLength() / 2;
-		sample_.resize(len);
+		sample_.resize(diag.getLength());
 
-		bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), sample_);
+		std::vector<uint8_t> adpcm(sample_.size() / 2);
+		codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
+		bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
 
 		updateSampleView();
 		ui->sampleViewWidget->update();
@@ -377,11 +390,10 @@ void ADPCMSampleEditor::on_action_Resize_triggered()
 
 void ADPCMSampleEditor::on_actionRe_verse_triggered()
 {
-	std::vector<int16_t> raw(sample_.size() * 2);
-	codec::ymb_decode(sample_.data(), raw.data(), static_cast<long>(raw.size()));
-	std::reverse(raw.begin(), raw.end());
-	codec::ymb_encode(raw.data(), sample_.data(), static_cast<long>(raw.size()));
-	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), sample_);
+	std::vector<uint8_t> adpcm(sample_.size() / 2);
+	std::reverse(sample_.begin(), sample_.end());
+	codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
+	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
 
 	updateSampleView();
 	ui->sampleViewWidget->update();
@@ -389,4 +401,30 @@ void ADPCMSampleEditor::on_actionRe_verse_triggered()
 	emit modified();
 	emit sampleAssignRequested();
 	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+}
+
+void ADPCMSampleEditor::on_actionZoom_In_triggered()
+{
+	int z = zoom_ + 1;
+	size_t len = sample_.size() >> z;
+	if (len) {
+		zoom_ = z;
+		updateSampleView();
+		ui->sampleViewWidget->update();
+	}
+}
+
+void ADPCMSampleEditor::on_actionZoom_Out_triggered()
+{
+	if (zoom_) {
+		--zoom_;
+		updateSampleView();
+		ui->sampleViewWidget->update();
+	}
+}
+
+void ADPCMSampleEditor::on_horizontalScrollBar_valueChanged(int value)
+{
+	updateSampleView();
+	ui->sampleViewWidget->update();
 }
