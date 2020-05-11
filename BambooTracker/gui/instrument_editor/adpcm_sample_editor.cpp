@@ -50,10 +50,13 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 
 	auto tb = new QToolBar();
 	tb->setIconSize(QSize(16, 16));
-	tb->addAction(ui->action_Resize);
-	tb->addAction(ui->actionZoom_In);
-	tb->addAction(ui->actionZoom_Out);
-	tb->addAction(ui->actionRe_verse);
+	tb->setMinimumHeight(28);
+	tb->setMaximumHeight(28);
+	tb->addActions({ ui->action_Clear, ui->action_Import, ui->action_Resize });
+	tb->addSeparator();
+	tb->addActions({ ui->actionZoom_In, ui->actionZoom_Out });
+	tb->addSeparator();
+	tb->addActions({ ui->actionRe_verse });
 	ui->verticalLayout_2->insertWidget(0, tb);
 }
 
@@ -162,7 +165,7 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	updateSampleView();
 	ui->sampleViewWidget->update();
 
-	ui->lengthLabel->setText(tr("Length: %1").arg(sample.size() * 2));
+	ui->lengthLabel->setText(tr("x%1, %2").arg(zoom_ + 1).arg(sample_.size()));
 }
 
 void ADPCMSampleEditor::importSampleFrom(const QString file)
@@ -324,38 +327,6 @@ void ADPCMSampleEditor::on_repeatCheckBox_toggled(bool checked)
 	}
 }
 
-void ADPCMSampleEditor::on_importPushButton_clicked()
-{
-	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QString file = QFileDialog::getOpenFileName(this, tr("Import sample"),
-												(dir.isEmpty() ? "./" : dir), tr("WAV signed 16-bit PCM (*.wav)"));
-	if (file.isNull()) return;
-
-	importSampleFrom(file);
-}
-
-void ADPCMSampleEditor::on_clearPushButton_clicked()
-{
-	bt_.lock()->clearSampleADPCMRawSample(ui->sampleNumSpinBox->value());
-
-	updateSampleMemoryBar();
-	ui->memoryWidget->update();
-
-	updateSampleView();
-	ui->sampleViewWidget->update();
-
-	emit modified();
-
-	if (config_.lock()->getWriteOnlyUsedSamples()) {
-		emit sampleAssignRequested();
-	}
-	else {
-		emit sampleMemoryChanged();
-	}
-
-	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
-}
-
 void ADPCMSampleEditor::on_rootRateSpinBox_valueChanged(int arg1)
 {
 	ui->rootRateSpinBox->setSuffix(
@@ -411,6 +382,8 @@ void ADPCMSampleEditor::on_actionZoom_In_triggered()
 		zoom_ = z;
 		updateSampleView();
 		ui->sampleViewWidget->update();
+
+		ui->lengthLabel->setText(tr("x%1, %2").arg(zoom_ + 1).arg(sample_.size()));
 	}
 }
 
@@ -420,6 +393,8 @@ void ADPCMSampleEditor::on_actionZoom_Out_triggered()
 		--zoom_;
 		updateSampleView();
 		ui->sampleViewWidget->update();
+
+		ui->lengthLabel->setText(tr("x%1, %2").arg(zoom_ + 1).arg(sample_.size()));
 	}
 }
 
@@ -427,4 +402,36 @@ void ADPCMSampleEditor::on_horizontalScrollBar_valueChanged(int value)
 {
 	updateSampleView();
 	ui->sampleViewWidget->update();
+}
+
+void ADPCMSampleEditor::on_action_Import_triggered()
+{
+	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
+	QString file = QFileDialog::getOpenFileName(this, tr("Import sample"),
+												(dir.isEmpty() ? "./" : dir), tr("WAV signed 16-bit PCM (*.wav)"));
+	if (file.isNull()) return;
+
+	importSampleFrom(file);
+}
+
+void ADPCMSampleEditor::on_action_Clear_triggered()
+{
+	bt_.lock()->clearSampleADPCMRawSample(ui->sampleNumSpinBox->value());
+
+	updateSampleMemoryBar();
+	ui->memoryWidget->update();
+
+	updateSampleView();
+	ui->sampleViewWidget->update();
+
+	emit modified();
+
+	if (config_.lock()->getWriteOnlyUsedSamples()) {
+		emit sampleAssignRequested();
+	}
+	else {
+		emit sampleMemoryChanged();
+	}
+
+	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 }

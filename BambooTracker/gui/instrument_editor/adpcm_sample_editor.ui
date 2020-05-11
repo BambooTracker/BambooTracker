@@ -129,28 +129,6 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
-      <widget class="QLabel" name="lengthLabel">
-       <property name="minimumSize">
-        <size>
-         <width>90</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::WinPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <property name="text">
-        <string notr="true">Length: </string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QCheckBox" name="repeatCheckBox">
        <property name="text">
         <string>Repeat</string>
@@ -171,16 +149,24 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="importPushButton">
-       <property name="text">
-        <string>Import</string>
+      <widget class="QLabel" name="lengthLabel">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="clearPushButton">
+       <property name="frameShape">
+        <enum>QFrame::WinPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
        <property name="text">
-        <string>Clear</string>
+        <string notr="true">, x,</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -330,13 +316,29 @@
     <string>Zoom &amp;Out</string>
    </property>
   </action>
+  <action name="action_Import">
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/load_inst</normaloff>:/icon/load_inst</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Import</string>
+   </property>
+  </action>
+  <action name="action_Clear">
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/duplicate_order</normaloff>:/icon/duplicate_order</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Clear</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>sampleNumSpinBox</tabstop>
   <tabstop>usersLineEdit</tabstop>
   <tabstop>repeatCheckBox</tabstop>
-  <tabstop>importPushButton</tabstop>
-  <tabstop>clearPushButton</tabstop>
   <tabstop>rootKeyComboBox</tabstop>
   <tabstop>rootKeySpinBox</tabstop>
   <tabstop>rootRateSpinBox</tabstop>

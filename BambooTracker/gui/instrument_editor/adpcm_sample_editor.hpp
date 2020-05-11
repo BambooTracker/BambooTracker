@@ -72,14 +72,14 @@ private:
 private slots:
 	void on_sampleNumSpinBox_valueChanged(int arg1);
 	void on_repeatCheckBox_toggled(bool checked);
-	void on_importPushButton_clicked();
-	void on_clearPushButton_clicked();
 	void on_rootRateSpinBox_valueChanged(int arg1);
 	void on_action_Resize_triggered();
 	void on_actionRe_verse_triggered();
 	void on_actionZoom_In_triggered();
 	void on_actionZoom_Out_triggered();
 	void on_horizontalScrollBar_valueChanged(int value);
+	void on_action_Import_triggered();
+	void on_action_Clear_triggered();
 };
 
 #endif // ADPCM_SAMPLE_EDITOR_HPP
