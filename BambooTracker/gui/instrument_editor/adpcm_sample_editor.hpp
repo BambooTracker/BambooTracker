@@ -59,7 +59,7 @@ private:
 
 	std::unique_ptr<QPixmap> memPixmap_;
 	std::unique_ptr<QPixmap> sampViewPixmap_;
-	int zoom_;
+	int zoom_, gridIntr_;
 
 	size_t addrStart_, addrStop_;
 	std::vector<int16_t> sample_;
@@ -80,6 +80,8 @@ private slots:
 	void on_horizontalScrollBar_valueChanged(int value);
 	void on_action_Import_triggered();
 	void on_action_Clear_triggered();
+	void on_action_Grid_View_triggered();
+	void on_actionG_rid_Settings_triggered();
 };
 
 #endif // ADPCM_SAMPLE_EDITOR_HPP

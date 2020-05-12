@@ -15,10 +15,13 @@
 #include <QRect>
 #include <QRectF>
 #include <QToolBar>
+#include <QMenu>
+#include <QToolButton>
 #include <QWheelEvent>
 #include "chips/codec/ymb_codec.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
+#include "gui/instrument_editor/grid_settings_dialog.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
@@ -27,6 +30,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	memPixmap_(std::make_unique<QPixmap>()),
 	sampViewPixmap_(std::make_unique<QPixmap>()),
 	zoom_(0),
+	gridIntr_(1),
 	addrStart_(0),
 	addrStop_(0),
 	sample_(2)
@@ -56,6 +60,13 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	tb->addActions({ ui->action_Clear, ui->action_Import, ui->action_Resize });
 	tb->addSeparator();
 	tb->addActions({ ui->actionZoom_In, ui->actionZoom_Out });
+	auto gridMenu = new QMenu();
+	gridMenu->addActions({ ui->action_Grid_View, ui->actionG_rid_Settings });
+	auto gridbutton = new QToolButton();
+	gridbutton->setPopupMode(QToolButton::MenuButtonPopup);
+	gridbutton->setMenu(gridMenu);
+	gridbutton->setDefaultAction(ui->action_Grid_View);
+	tb->addWidget(gridbutton);
 	tb->addSeparator();
 	tb->addActions({ ui->actionRe_verse });
 	ui->verticalLayout_2->insertWidget(0, tb);
@@ -292,12 +303,21 @@ void ADPCMSampleEditor::updateSampleView()
 	painter.setPen(palette_->instADPCMSampViewForeColor);
 	const int16_t maxY = std::numeric_limits<int16_t>::max();
 	const size_t seglen = sample_.size() >> zoom_;
-	int prevY = centerY;
+	const size_t first = ui->horizontalScrollBar->value();
+	const bool showGrid = ui->action_Grid_View->isChecked();
 	if (maxX < static_cast<int>(seglen)) {
+		int prevY = centerY;
+		size_t g = first;
 		for (int x = 0; x <= maxX; ++x) {
 			size_t i = seglen * x / maxX;
-			int16_t sample = sample_[i + ui->horizontalScrollBar->value()];
+			int16_t sample = sample_[i + first];
 			int y = centerY - (centerY * sample / maxY);
+			if (showGrid && g <= i) {
+				painter.setPen(palette_->instADPCMSampViewGridColor);
+				painter.drawLine(x, 0, x, rect.height());
+				g = (g / gridIntr_ + 1) * gridIntr_;
+				painter.setPen(palette_->instADPCMSampViewForeColor);
+			}
 			if (x) painter.drawLine(x - 1, prevY, x, y);
 			prevY = y;
 		}
@@ -306,8 +326,13 @@ void ADPCMSampleEditor::updateSampleView()
 		QPoint prev, p;
 		for (size_t i = 0; i < seglen; ++i) {
 			p.setX(maxX * i / (seglen - 1));
-			int16_t sample = sample_[i + ui->horizontalScrollBar->value()];
+			int16_t sample = sample_[i + first];
 			p.setY(centerY - (centerY * sample / maxY));
+			if (showGrid && !(i % gridIntr_)) {
+				painter.setPen(palette_->instADPCMSampViewGridColor);
+				painter.drawLine(p.x(), 0, p.x(), rect.height());
+				painter.setPen(palette_->instADPCMSampViewForeColor);
+			}
 			if (p.x()) painter.drawLine(prev, p);
 			prev = p;
 		}
@@ -410,7 +435,7 @@ void ADPCMSampleEditor::on_actionZoom_In_triggered()
 {
 	int z = zoom_ + 1;
 	size_t len = sample_.size() >> z;
-	if (len) {
+	if (len > 1) {
 		zoom_ = z;
 		updateSampleView();
 		ui->sampleViewWidget->update();
@@ -467,4 +492,20 @@ void ADPCMSampleEditor::on_action_Clear_triggered()
 	}
 
 	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+}
+
+void ADPCMSampleEditor::on_action_Grid_View_triggered()
+{
+	updateSampleView();
+	ui->sampleViewWidget->update();
+}
+
+void ADPCMSampleEditor::on_actionG_rid_Settings_triggered()
+{
+	GridSettingsDialog diag(gridIntr_);
+	if (diag.exec() == QDialog::Accepted) {
+		gridIntr_ = diag.getInterval();
+		updateSampleView();
+		ui->sampleViewWidget->update();
+	}
 }

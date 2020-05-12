@@ -334,6 +334,23 @@
     <string>&amp;Clear</string>
    </property>
   </action>
+  <action name="action_Grid_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/eye</normaloff>:/icon/eye</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Grid View</string>
+   </property>
+  </action>
+  <action name="actionG_rid_Settings">
+   <property name="text">
+    <string>G&amp;rid Settings...</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>sampleNumSpinBox</tabstop>

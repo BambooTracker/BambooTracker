@@ -41,6 +41,7 @@ ColorPalette::ColorPalette()
 	instADPCMSampViewForeColor = QColor::fromRgb(38, 183, 173, 255);
 	instADPCMSampViewBackColor = QColor::fromRgb(0, 0, 0, 255);
 	instADPCMSampViewCenterColor = QColor::fromRgb(63, 63, 63, 255);
+	instADPCMSampViewGridColor = QColor::fromRgb(63, 63, 63, 150);
 
 	// Tone/Noise editor
 	tnToneCellColor = QColor::fromRgb(225, 209, 47, 255);
