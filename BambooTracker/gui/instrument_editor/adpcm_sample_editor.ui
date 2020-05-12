@@ -149,10 +149,10 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="lengthLabel">
+      <widget class="QLabel" name="detailLabel">
        <property name="minimumSize">
         <size>
-         <width>90</width>
+         <width>150</width>
          <height>0</height>
         </size>
        </property>

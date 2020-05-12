@@ -18,6 +18,7 @@
 #include <QMenu>
 #include <QToolButton>
 #include <QWheelEvent>
+#include <QHoverEvent>
 #include "chips/codec/ymb_codec.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
@@ -31,6 +32,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	sampViewPixmap_(std::make_unique<QPixmap>()),
 	zoom_(0),
 	gridIntr_(1),
+	cursorSamp_(0, 0),
 	addrStart_(0),
 	addrStop_(0),
 	sample_(2)
@@ -51,6 +53,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QObject::connect(ui->rootKeySpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, rkfunc);
 
 	ui->memoryWidget->installEventFilter(this);
+	ui->sampleViewWidget->setAttribute(Qt::WA_Hover);
 	ui->sampleViewWidget->installEventFilter(this);
 
 	auto tb = new QToolBar();
@@ -140,7 +143,7 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 			break;
 		case QEvent::Wheel:
 		{
-			auto we = reinterpret_cast<QWheelEvent*>(ev);
+			auto we = dynamic_cast<QWheelEvent*>(ev);
 			int cnt = we->angleDelta().y() / 120;
 			bool ctrl = we->modifiers().testFlag(Qt::ControlModifier);
 			if (cnt > 0) {
@@ -155,6 +158,12 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 					else ui->horizontalScrollBar->setValue(ui->horizontalScrollBar->value() + 1);
 				}
 			}
+			break;
+		}
+		case QEvent::HoverMove:
+		{
+			auto pos = dynamic_cast<QHoverEvent*>(ev)->pos();
+			detectCursorSamplePosition(pos.x(), pos.y());
 			break;
 		}
 		default:
@@ -196,7 +205,7 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	updateSampleView();
 	ui->sampleViewWidget->update();
 
-	ui->lengthLabel->setText(tr("x%1, %2").arg(zoom_ + 1).arg(sample_.size()));
+	ui->detailLabel->setText(updateDetailView());
 }
 
 void ADPCMSampleEditor::importSampleFrom(const QString file)
@@ -297,7 +306,7 @@ void ADPCMSampleEditor::updateSampleView()
 
 	painter.setPen(palette_->instADPCMSampViewCenterColor);
 	const int maxX = rect.width();
-	const int centerY = rect.height() / 2;
+	const int centerY = rect.height() >> 1;
 	painter.drawLine(0, centerY, maxX, centerY);
 
 	painter.setPen(palette_->instADPCMSampViewForeColor);
@@ -347,6 +356,35 @@ void ADPCMSampleEditor::updateUsersView()
 		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
 	});
 	ui->usersLineEdit->setText(l.join(","));
+}
+
+void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
+{
+	const QRect& rect = ui->sampleViewWidget->rect();
+
+	// Detect x
+	const size_t len = sample_.size() >> zoom_;
+	const size_t w = rect.width();
+	if (len < w) {
+		const int segW = rect.width() / (len - 1);
+		int th = segW >> 1;
+		for (size_t i = 0; i < len; ++i, th += segW) {
+			if (cx < th) {
+				cursorSamp_.setX(ui->horizontalScrollBar->value() + i);
+				break;
+			}
+		}
+	}
+	else {
+		cursorSamp_.setX(len * cx / w);
+	}
+
+	// Detect y
+	const double centerY = rect.height() >> 1;
+	cursorSamp_.setY(std::numeric_limits<int16_t>::max() * (centerY - cy) / centerY);
+
+	// Update position view
+	ui->detailLabel->setText(updateDetailView());
 }
 
 void ADPCMSampleEditor::onSampleNumberChanged()
@@ -440,7 +478,7 @@ void ADPCMSampleEditor::on_actionZoom_In_triggered()
 		updateSampleView();
 		ui->sampleViewWidget->update();
 
-		ui->lengthLabel->setText(tr("x%1, %2").arg(zoom_ + 1).arg(sample_.size()));
+		ui->detailLabel->setText(updateDetailView());
 	}
 }
 
@@ -451,7 +489,7 @@ void ADPCMSampleEditor::on_actionZoom_Out_triggered()
 		updateSampleView();
 		ui->sampleViewWidget->update();
 
-		ui->lengthLabel->setText(tr("x%1, %2").arg(zoom_ + 1).arg(sample_.size()));
+		ui->detailLabel->setText(updateDetailView());
 	}
 }
 

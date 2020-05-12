@@ -9,6 +9,7 @@
 #include <QDropEvent>
 #include <QPixmap>
 #include <QString>
+#include <QPoint>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
 #include "gui/color_palette.hpp"
@@ -60,6 +61,7 @@ private:
 	std::unique_ptr<QPixmap> memPixmap_;
 	std::unique_ptr<QPixmap> sampViewPixmap_;
 	int zoom_, gridIntr_;
+	QPoint cursorSamp_;
 
 	size_t addrStart_, addrStop_;
 	std::vector<int16_t> sample_;
@@ -68,6 +70,14 @@ private:
 	void updateSampleMemoryBar();
 	void updateSampleView();
 	void updateUsersView();
+
+	void detectCursorSamplePosition(int cx, int cy);
+
+	inline QString updateDetailView() const
+	{
+		return tr("(%1, %2), %3, x%4")
+				.arg(cursorSamp_.x()).arg(cursorSamp_.y()).arg(sample_.size()).arg(zoom_ + 1);
+	}
 
 private slots:
 	void on_sampleNumSpinBox_valueChanged(int arg1);
