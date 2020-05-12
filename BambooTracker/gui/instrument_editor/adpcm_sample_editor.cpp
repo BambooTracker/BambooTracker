@@ -291,14 +291,26 @@ void ADPCMSampleEditor::updateSampleView()
 
 	painter.setPen(palette_->instADPCMSampViewForeColor);
 	const int16_t maxY = std::numeric_limits<int16_t>::max();
-	const double size = sample_.size() >> zoom_;
+	const size_t seglen = sample_.size() >> zoom_;
 	int prevY = centerY;
-	for (int x = 0; x < maxX; ++x) {
-		size_t i = static_cast<size_t>(size * x / maxX);
-		int16_t sample = sample_[i + ui->horizontalScrollBar->value()];
-		int y = centerY - (centerY * sample / maxY);
-		if (x) painter.drawLine(x - 1, prevY, x, y);
-		prevY = y;
+	if (maxX < static_cast<int>(seglen)) {
+		for (int x = 0; x <= maxX; ++x) {
+			size_t i = seglen * x / maxX;
+			int16_t sample = sample_[i + ui->horizontalScrollBar->value()];
+			int y = centerY - (centerY * sample / maxY);
+			if (x) painter.drawLine(x - 1, prevY, x, y);
+			prevY = y;
+		}
+	}
+	else {
+		QPoint prev, p;
+		for (size_t i = 0; i < seglen; ++i) {
+			p.setX(maxX * i / (seglen - 1));
+			int16_t sample = sample_[i + ui->horizontalScrollBar->value()];
+			p.setY(centerY - (centerY * sample / maxY));
+			if (p.x()) painter.drawLine(prev, p);
+			prev = p;
+		}
 	}
 }
 
