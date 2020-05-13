@@ -408,8 +408,8 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 
 	// Detect x
 	const size_t len = sample_.size() >> zoom_;
-	const size_t w = rect.width();
-	if (len < w) {
+	const int w = rect.width();
+	if (len < static_cast<size_t>(w)) {
 		const int segW = rect.width() / (len - 1);
 		int th = segW >> 1;
 		for (size_t i = 0; i < len; ++i, th += segW) {
@@ -420,7 +420,8 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 		}
 	}
 	else {
-		cursorSamp_.setX(len * cx / w);
+		cursorSamp_.setX(
+					ui->horizontalScrollBar->value() + (len - 1) * clamp(cx, 0, w - 1) / (w - 1));
 	}
 
 	// Detect y
