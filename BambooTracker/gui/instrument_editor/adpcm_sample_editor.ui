@@ -351,6 +351,18 @@
     <string>G&amp;rid Settings...</string>
    </property>
   </action>
+  <action name="action_Draw_Sample">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/edit_inst</normaloff>:/icon/edit_inst</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Draw Sample</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>sampleNumSpinBox</tabstop>

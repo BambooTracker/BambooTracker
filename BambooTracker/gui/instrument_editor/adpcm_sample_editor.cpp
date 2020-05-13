@@ -33,6 +33,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	zoom_(0),
 	gridIntr_(1),
 	cursorSamp_(0, 0),
+	prevPressedSamp_(-1, -1),
 	addrStart_(0),
 	addrStop_(0),
 	sample_(2)
@@ -71,7 +72,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	gridbutton->setDefaultAction(ui->action_Grid_View);
 	tb->addWidget(gridbutton);
 	tb->addSeparator();
-	tb->addActions({ ui->actionRe_verse });
+	tb->addActions({ ui->action_Draw_Sample, ui->actionRe_verse });
 	ui->verticalLayout_2->insertWidget(0, tb);
 }
 
@@ -164,6 +165,49 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 		{
 			auto pos = dynamic_cast<QHoverEvent*>(ev)->pos();
 			detectCursorSamplePosition(pos.x(), pos.y());
+
+			if (prevPressedSamp_.x() != -1) {	// Change sample
+				int px = prevPressedSamp_.x();
+				int py = prevPressedSamp_.y();
+				int cx = cursorSamp_.x();
+				int cy = cursorSamp_.y();
+				if (px < cx) {
+					for (int x = px + 1; x <= cx; ++x)
+						sample_.at(x) = (cy - py) * (x - px) + py;
+				}
+				else if (px == cx) {
+					sample_.at(cx) = cy;
+				}
+				else {
+					for (int x = cx; x < px; ++x)
+						sample_.at(x) = (py - cy) * (x - cx) + cy;
+				}
+				std::vector<uint8_t> adpcm(sample_.size() >> 1);
+				codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
+				bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+				prevPressedSamp_ = cursorSamp_;
+				emit modified();
+				emit sampleAssignRequested();
+				emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+			}
+			break;
+		}
+		case QEvent::MouseButtonPress:
+		{
+			if (!ui->action_Draw_Sample->isChecked()) break;
+			sample_.at(cursorSamp_.x()) = cursorSamp_.y();
+			std::vector<uint8_t> adpcm(sample_.size() >> 1);
+			codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
+			bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+			prevPressedSamp_ = cursorSamp_;
+			emit modified();
+			emit sampleAssignRequested();
+			emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+			break;
+		}
+		case QEvent::MouseButtonRelease:
+		{
+			prevPressedSamp_.setX(-1);	// Clear
 			break;
 		}
 		default:
@@ -381,7 +425,9 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 
 	// Detect y
 	const double centerY = rect.height() >> 1;
-	cursorSamp_.setY(std::numeric_limits<int16_t>::max() * (centerY - cy) / centerY);
+	int y = std::numeric_limits<int16_t>::max() * (centerY - cy) / centerY;
+	cursorSamp_.setY(clamp(y, static_cast<int>(std::numeric_limits<int16_t>::min()),
+						   static_cast<int>(std::numeric_limits<int16_t>::max())));
 
 	// Update position view
 	ui->detailLabel->setText(updateDetailView());
