@@ -32,7 +32,7 @@ public:
 	// ADPCM sample editor
 	QColor instADPCMMemAllColor, instADPCMMemCurColor, instADPCMMemBackColor;
 	QColor instADPCMSampViewForeColor, instADPCMSampViewBackColor, instADPCMSampViewCenterColor;
-	QColor instADPCMSampViewGridColor;
+	QColor instADPCMSampViewGridColor, instADPCMSampViewDrawColor, instADPCMSampViewDirectDrawColor;
 
 	// Tone/Noise editor
 	QColor tnToneCellColor, tnToneTextColor;
