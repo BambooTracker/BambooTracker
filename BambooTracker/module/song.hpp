@@ -83,7 +83,7 @@ private:
 struct SongStyle
 {
 	SongType type;
-	std::vector<TrackAttribute> trackAttribs;
+	std::vector<TrackAttribute> trackAttribs;	// Always sorted by number
 };
 
 struct Bookmark

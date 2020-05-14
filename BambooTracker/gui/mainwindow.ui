@@ -780,6 +780,8 @@
     <addaction name="action_Wave_View"/>
     <addaction name="separator"/>
     <addaction name="actionFollow_Mode"/>
+    <addaction name="separator"/>
+    <addaction name="action_Hide_Tracks"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1649,6 +1651,11 @@
    </property>
    <property name="text">
     <string>&amp;Fill</string>
+   </property>
+  </action>
+  <action name="action_Hide_Tracks">
+   <property name="text">
+    <string>&amp;Hide Tracks...</string>
    </property>
   </action>
  </widget>

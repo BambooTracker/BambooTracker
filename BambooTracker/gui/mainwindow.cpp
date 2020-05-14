@@ -55,6 +55,7 @@
 #include "gui/go_to_dialog.hpp"
 #include "gui/transpose_song_dialog.hpp"
 #include "gui/swap_tracks_dialog.hpp"
+#include "gui/hide_tracks_dialog.hpp"
 #include "gui/gui_util.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -3556,4 +3557,12 @@ void MainWindow::on_action_Swap_Tracks_triggered()
 void MainWindow::on_action_Insert_triggered()
 {
 	if (isEditedPattern_) ui->patternEditor->onPasteInsertPressed();
+}
+
+void MainWindow::on_action_Hide_Tracks_triggered()
+{
+	HideTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()));
+	if (diag.exec() == QDialog::Accepted) {
+		std::vector<int> tracks = diag.getVisibleTracks();
+	}
 }
