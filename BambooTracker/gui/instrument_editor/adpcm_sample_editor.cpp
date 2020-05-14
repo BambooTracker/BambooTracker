@@ -176,20 +176,24 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 			detectCursorSamplePosition(pos.x(), pos.y());
 
 			if (prevPressedSamp_.x() != -1) {	// Change sample
-				int px = prevPressedSamp_.x();
-				int py = prevPressedSamp_.y();
-				int cx = cursorSamp_.x();
-				int cy = cursorSamp_.y();
+				const int px = prevPressedSamp_.x();
+				const int py = prevPressedSamp_.y();
+				const int cx = cursorSamp_.x();
+				const int cy = cursorSamp_.y();
 				if (px < cx) {
+					const int dx = cx - px;
+					const int dy = cy - py;
 					for (int x = px + 1; x <= cx; ++x)
-						sample_.at(x) = (cy - py) * (x - px) + py;
+						sample_.at(x) = (x - px) * dy / dx + py;
 				}
 				else if (px == cx) {
 					sample_.at(cx) = cy;
 				}
 				else {
+					const int dx = px - cx;
+					const int dy = py - cy;
 					for (int x = cx; x < px; ++x)
-						sample_.at(x) = (py - cy) * (x - cx) + cy;
+						sample_.at(x) = (x - cx) * dy / dx + cy;
 				}
 				prevPressedSamp_ = cursorSamp_;
 
@@ -431,8 +435,8 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 	const size_t len = sample_.size() >> zoom_;
 	const int w = rect.width();
 	if (len < static_cast<size_t>(w)) {
-		const int segW = rect.width() / (len - 1);
-		int th = segW >> 1;
+		const double segW = rect.width() / (len - 1.);
+		double th = segW / 2.;
 		for (size_t i = 0; i < len; ++i, th += segW) {
 			if (cx < th) {
 				cursorSamp_.setX(ui->horizontalScrollBar->value() + i);
