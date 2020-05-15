@@ -43,6 +43,7 @@ public:
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
 	void setHorizontalScrollMode(bool cellBased, bool refresh = true);
+	void setVisibleTracks(std::vector<int> tracks);
 
 signals:
 	void currentTrackChanged(int num);
@@ -60,8 +61,8 @@ protected:
 	void resizeEvent(QResizeEvent* event) override;
 
 public slots:
-	void setCurrentTrack(int num);
-	void setCurrentOrder(int num);
+	void onOrderListCurrentTrackChanged(int num);
+	void onOrderListCrrentOrderChanged(int num);
 
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();

@@ -2,6 +2,8 @@
 #define GUI_UTIL_HPP
 
 #include <string>
+#include <vector>
+#include <algorithm>
 #include <QString>
 #include <QKeySequence>
 #include "song.hpp"
@@ -65,6 +67,57 @@ inline QString utf8ToQString(const std::string& str)
 inline QKeySequence strToKeySeq(std::string str)
 {
 	return QKeySequence(utf8ToQString(str));
+}
+
+inline std::vector<int> adaptVisibleTrackList(const std::vector<int> list,
+											  const SongType prevType, const SongType curType)
+{
+	if (prevType == curType) return list;
+
+	std::vector<int> tracks;
+	if (prevType == SongType::Standard) {
+		for (const int& track : list) {
+			switch (track) {
+			case 0:
+			case 1:
+				tracks.push_back(track);
+				break;
+			case 2:
+			{
+				std::vector<int> tmp { 2, 3, 4, 5 };
+				std::copy(tmp.begin(), tmp.end(), std::back_inserter(tracks));
+				break;
+			}
+			default:
+				tracks.push_back(track + 3);
+				break;
+			}
+		}
+	}
+	else {	// FM3chExpanded
+		bool hasPushed3 = false;
+		for (const int& track : list) {
+			switch (track) {
+			case 0:
+			case 1:
+				tracks.push_back(track);
+				break;
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				if (!hasPushed3) {
+					tracks.push_back(2);
+					hasPushed3 = true;
+				}
+				break;
+			default:
+				tracks.push_back(track - 3);
+				break;
+			}
+		}
+	}
+	return tracks;
 }
 
 #endif // GUI_UTIL_HPP

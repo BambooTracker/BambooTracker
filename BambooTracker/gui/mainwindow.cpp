@@ -420,9 +420,9 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->orderList->setCommandStack(comStack_);
 	ui->orderList->installEventFilter(this);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
-					 ui->patternEditor, &PatternEditor::setCurrentTrack);
+					 ui->patternEditor, &PatternEditor::onOrderListCurrentTrackChanged);
 	QObject::connect(ui->orderList, &OrderListEditor::currentOrderChanged,
-					 ui->patternEditor, &PatternEditor::setCurrentOrder);
+					 ui->patternEditor, &PatternEditor::onOrderListCrrentOrderChanged);
 	QObject::connect(ui->orderList, &OrderListEditor::orderEdited,
 					 ui->patternEditor, &PatternEditor::onOrderListEdited);
 	QObject::connect(ui->orderList, &OrderListEditor::focusIn,
@@ -3564,5 +3564,7 @@ void MainWindow::on_action_Hide_Tracks_triggered()
 	HideTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()));
 	if (diag.exec() == QDialog::Accepted) {
 		std::vector<int> tracks = diag.getVisibleTracks();
+		ui->patternEditor->setVisibleTracks(tracks);
+		// TODO
 	}
 }

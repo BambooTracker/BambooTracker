@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <thread>
 #include <unordered_map>
-#include <algorithm>
+#include <numeric>
 #include <QPainter>
 #include <QFontMetrics>
 #include <QFontInfo>
@@ -54,7 +54,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  hdMinusY_(0),
 	  curRowBaselineY_(0),
 	  curRowY_(0),
-	  leftTrackNum_(0),
+	  leftTrackVisIdx_(0),
 	  curSongNum_(0),
 	  curPos_{ 0, 0, 0, 0, },
 	  hovPos_{ -1, -1, -1, -1 },
@@ -101,6 +101,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 
 	updateSizes();
 
+	visTracks_ = std::vector<int>(15);
+	std::iota(visTracks_.begin(), visTracks_.end(), 0);
 	rightEffn_ = std::vector<int>(15);
 
 	setAttribute(Qt::WA_Hover);
@@ -193,7 +195,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	QObject::connect(keyOffSc_.get(), &QShortcut::activated,
 					 this, [&] {
 		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
-			bt_->setStepKeyOff(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			bt_->setStepKeyOff(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 			comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		}
@@ -205,7 +207,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
 			int n = bt_->getCurrentOctave();
 			if (n > 3) n = 3;
-			bt_->setEchoBufferAccess(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n);
+			bt_->setEchoBufferAccess(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step, n);
 			comStack_.lock()->push(new SetEchoBufferAccessQtCommand(this));
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		}
@@ -227,12 +229,12 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	expandColSc_ = std::make_unique<QShortcut>(this);
 	expandColSc_->setContext(Qt::WidgetShortcut);
 	QObject::connect(expandColSc_.get(), &QShortcut::activated, this, [&] {
-		onExpandEffectColumnPressed(curPos_.track);
+		onExpandEffectColumnPressed(curPos_.trackVisIdx);
 	});
 	shrinkColSc_ = std::make_unique<QShortcut>(this);
 	shrinkColSc_->setContext(Qt::WidgetShortcut);
 	QObject::connect(shrinkColSc_.get(), &QShortcut::activated, this, [&] {
-		onShrinkEffectColumnPressed(curPos_.track);
+		onShrinkEffectColumnPressed(curPos_.trackVisIdx);
 	});
 	onShortcutUpdated();
 
@@ -405,9 +407,11 @@ void PatternEditorPanel::setFonts(QString headerFont, int headerSize, QString ro
 	redrawAll();
 }
 
-int PatternEditorPanel::getCurrentTrack() const
+void PatternEditorPanel::setVisibleTracks(std::vector<int> tracks)
 {
-	return curPos_.track;
+	visTracks_ = tracks;
+	updateTracksWidthFromLeftToEnd();
+	redrawAll();
 }
 
 void PatternEditorPanel::redrawByPatternChanged(bool patternSizeChanged)
@@ -485,23 +489,22 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 		if (backChanged_ || textChanged_ || foreChanged_ || headerChanged_ || focusChanged_ || stepDownCount_ || followModeChanged_) {
 
 			int maxWidth = std::min(rect.width(), tracksWidthFromLeftToEnd_);
-			int trackSize = static_cast<int>(songStyle_.trackAttribs.size());
 			completePixmap_->fill(palette_->ptnBackColor);
 
 			if (!focusChanged_) {
 				if (stepDownCount_ && !followModeChanged_) {
-					quickDrawRows(maxWidth, trackSize);
+					quickDrawRows(maxWidth);
 				}
 				else {
 					backPixmap_->fill(Qt::transparent);
 					if (textChanged_) textPixmap_->fill(Qt::transparent);
 					if (foreChanged_) forePixmap_->fill(Qt::transparent);
-					drawRows(maxWidth, trackSize);
+					drawRows(maxWidth);
 				}
 
 				if (headerChanged_) {
 					// headerPixmap_->fill(Qt::transparent);
-					drawHeaders(maxWidth, trackSize);
+					drawHeaders(maxWidth);
 				}
 			}
 
@@ -515,7 +518,7 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 				mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
 			}
 
-			drawBorders(maxWidth, trackSize);
+			drawBorders(maxWidth);
 			if (!hasFocus()) drawShadow();
 
 			backChanged_ = false;
@@ -535,23 +538,21 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 	completePainter.drawPixmap(rect, *completePixmap_.get());
 }
 
-void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
+void PatternEditorPanel::drawRows(int maxWidth)
 {
 	QPainter forePainter(forePixmap_.get());
 	QPainter textPainter(textPixmap_.get());
 	QPainter backPainter(backPixmap_.get());
 	textPainter.setFont(stepFont_);
 
-	int x, trackNum;
-
 	/* Current row */
 	// Fill row
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, stepFontHeight_,
 						 bt_->isJamMode() ? palette_->ptnCurStepColor : palette_->ptnCurEditStepColor);
 	// Step number
-	if (markerPos_.order == curPos_.order && markerPos_.step == curPos_.step)
+	if (markerPos_.isEqualRows(curPos_))
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
-	if (hovPos_.track == -2 && hovPos_.order == curPos_.order && hovPos_.step == curPos_.step)
+	if (hovPos_.trackVisIdx == -2 && hovPos_.isEqualRows(curPos_))
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 	if (textChanged_) {
 		if (curPos_.step % hl2Cnt_) {
@@ -565,9 +566,8 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 		textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(curPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 	}
 	// Step data
-	for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
-		x += drawStep(forePainter, textPainter, backPainter, trackNum, curPos_.order, curPos_.step, x, viewedCenterBaseY_, viewedCenterY_);
-		++trackNum;
+	for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+		x += drawStep(forePainter, textPainter, backPainter, trackVisIdx, curPos_.order, curPos_.step, x, viewedCenterBaseY_, viewedCenterY_);
 	}
 	viewedCenterPos_ = curPos_;
 
@@ -608,9 +608,9 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 		// Fill row
 		backPainter.fillRect(0, rowY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
-		if (markerPos_.order == odrNum && markerPos_.step == stepNum)
+		if (markerPos_.isEqualRows(odrNum, stepNum))
 			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
-		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
+		if (hovPos_.trackVisIdx == -2 && hovPos_.isEqualRows(odrNum, stepNum))
 			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 		if (textChanged_) {
 			textPainter.setPen(!(stepNum % hl2Cnt_) ? palette_->ptnHl2StepNumColor
@@ -619,9 +619,8 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 			textPainter.drawText(1, baseY, QString("%1").arg(stepNum, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		}
 		// Step data
-		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
-			x += drawStep(forePainter, textPainter, backPainter, trackNum, odrNum, stepNum, x, baseY, rowY);
-			++trackNum;
+		for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+			x += drawStep(forePainter, textPainter, backPainter, trackVisIdx, odrNum, stepNum, x, baseY, rowY);
 		}
 		if (foreChanged_) {
 			if (odrNum != curPos_.order)	// Mask
@@ -665,9 +664,9 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 		// Fill row
 		backPainter.fillRect(0, rowY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
-		if (markerPos_.order == odrNum && markerPos_.step == stepNum)
+		if (markerPos_.isEqualRows(odrNum, stepNum))
 			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
-		if (hovPos_.track == -2 && hovPos_.order == odrNum && hovPos_.step == stepNum)
+		if (hovPos_.trackVisIdx == -2 && hovPos_.isEqualRows(odrNum, stepNum))
 			backPainter.fillRect(0, rowY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 		if (textChanged_) {
 			textPainter.setPen(!(stepNum % hl2Cnt_) ? palette_->ptnHl2StepNumColor
@@ -676,9 +675,8 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 			textPainter.drawText(1, baseY, QString("%1").arg(stepNum, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		}
 		// Step data
-		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
-			x += drawStep(forePainter, textPainter, backPainter, trackNum, odrNum, stepNum, x, baseY, rowY);
-			++trackNum;
+		for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+			x += drawStep(forePainter, textPainter, backPainter, trackVisIdx, odrNum, stepNum, x, baseY, rowY);
 		}
 		if (foreChanged_) {
 			if (odrNum != curPos_.order)	// Mask
@@ -688,7 +686,7 @@ void PatternEditorPanel::drawRows(int maxWidth, int trackSize)
 	}
 }
 
-void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
+void PatternEditorPanel::quickDrawRows(int maxWidth)
 {
 	int halfRowsCnt = viewedRowCnt_ >> 1;
 	bool repaintForeAll = (curPos_.step - stepDownCount_ < 0);
@@ -708,8 +706,6 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 	QPainter textPainter(textPixmap_.get());
 	QPainter backPainter(backPixmap_.get());
 	textPainter.setFont(stepFont_);
-
-	int x, trackNum;
 
 	/* Clear previous cursor row, current cursor row and last rows text and foreground */
 	int prevY = viewedCenterY_ - shift;
@@ -736,18 +732,17 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 		// Fill row
 		backPainter.fillRect(0, prevY, maxWidth, stepFontHeight_, rowColor);
 		// Step number
-		if (markerPos_.order == viewedCenterPos_.order && markerPos_.step == viewedCenterPos_.step)
+		if (markerPos_.isEqualRows(viewedCenterPos_))
 			backPainter.fillRect(0, prevY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
-		if (hovPos_.track == -2 && hovPos_.order == viewedCenterPos_.order && hovPos_.step == viewedCenterPos_.step)
+		if (hovPos_.trackVisIdx == -2 && hovPos_.isEqualRows(viewedCenterPos_))
 			backPainter.fillRect(0, prevY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 		textPainter.setPen(!(viewedCenterPos_.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
 															  : !(viewedCenterPos_.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
 																								   : palette_->ptnDefStepNumColor);
 		textPainter.drawText(1, baseY, QString("%1").arg(viewedCenterPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 		// Step data
-		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
-			x += drawStep(forePainter, textPainter, backPainter, trackNum, viewedCenterPos_.order, viewedCenterPos_.step, x, baseY, prevY);
-			++trackNum;
+		for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+			x += drawStep(forePainter, textPainter, backPainter, trackVisIdx, viewedCenterPos_.order, viewedCenterPos_.step, x, baseY, prevY);
 		}
 	}
 
@@ -756,9 +751,9 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 	backPainter.fillRect(0, viewedCenterY_, maxWidth, stepFontHeight_,
 						 bt_->isJamMode() ? palette_->ptnCurStepColor : palette_->ptnCurEditStepColor);
 	// Step number
-	if (markerPos_.order == curPos_.order && markerPos_.step == curPos_.step)
+	if (markerPos_.isEqualRows(curPos_))
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
-	if (hovPos_.track == -2 && hovPos_.order == curPos_.order && hovPos_.step == curPos_.step)
+	if (hovPos_.trackVisIdx == -2 && hovPos_.isEqualRows(curPos_))
 		backPainter.fillRect(0, viewedCenterY_, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 	if (curPos_.step % hl2Cnt_) {
 		textPainter.setPen(!(curPos_.step % hl2Cnt_) ? palette_->ptnHl1StepNumColor
@@ -770,9 +765,8 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 	}
 	textPainter.drawText(1, viewedCenterBaseY_, QString("%1").arg(curPos_.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 	// Step data
-	for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth; ) {
-		x += drawStep(forePainter, textPainter, backPainter, trackNum, curPos_.order, curPos_.step, x, viewedCenterBaseY_, viewedCenterY_);
-		++trackNum;
+	for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+		x += drawStep(forePainter, textPainter, backPainter, trackVisIdx, curPos_.order, curPos_.step, x, viewedCenterBaseY_, viewedCenterY_);
 	}
 	viewedCenterPos_ = curPos_;
 
@@ -807,18 +801,17 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 				// Fill row
 				backPainter.fillRect(0, lastY, maxWidth, stepFontHeight_, rowColor);
 				// Step number
-				if (markerPos_.order == bpos.order && markerPos_.step == bpos.step)
+				if (markerPos_.isEqualRows(bpos))
 					backPainter.fillRect(0, lastY, stepNumWidth_, stepFontHeight_, palette_->ptnMarkerColor);	// Paint marker
-				if (hovPos_.track == -2 && hovPos_.order == bpos.order && hovPos_.step == bpos.step)
+				if (hovPos_.trackVisIdx == -2 && hovPos_.isEqualRows(bpos))
 					backPainter.fillRect(0, lastY, stepNumWidth_, stepFontHeight_, palette_->ptnHovCellColor);	// Paint hover
 				textPainter.setPen(!(bpos.step % hl2Cnt_) ? palette_->ptnHl2StepNumColor
 														  : !(bpos.step % hl1Cnt_) ? palette_->ptnHl1StepNumColor
 																				   : palette_->ptnDefStepNumColor);
 				textPainter.drawText(1, baseY, QString("%1").arg(bpos.step, stepNumWidthCnt_, stepNumBase_, QChar('0')).toUpper());
 				// Step data
-				for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
-					x += drawStep(forePainter, textPainter, backPainter, trackNum, bpos.order, bpos.step, x, baseY, lastY);
-					++trackNum;
+				for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+					x += drawStep(forePainter, textPainter, backPainter, trackVisIdx, bpos.order, bpos.step, x, baseY, lastY);
 				}
 				if (bpos.order != curPos_.order)	// Mask
 					forePainter.fillRect(0, lastY, maxWidth, stepFontHeight_, palette_->ptnMaskColor);
@@ -838,24 +831,23 @@ void PatternEditorPanel::quickDrawRows(int maxWidth, int trackSize)
 			y += static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, viewedCenterPos_.order)) * stepFontHeight_;
 			forePainter.fillRect(0, y, maxWidth, viewedRowsHeight_ - y, palette_->ptnMaskColor);
 		}
-		for (x = stepNumWidth_, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
-			int w = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackNum));
-			if (foreChanged_ && bt_->isMute(trackNum))	// Paint mute mask
+		for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+			int w = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackVisIdx));
+			if (foreChanged_ && bt_->isMute(visTracks_.at(trackVisIdx)))	// Paint mute mask
 				forePainter.fillRect(x, 0, w, viewedRowsHeight_, palette_->ptnMaskColor);
 			x += w;
-			++trackNum;
 		}
 	}
 }
 
-int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, QPainter& backPainter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY)
+int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, QPainter& backPainter, int trackVisIdx, int orderNum, int stepNum, int x, int baseY, int rowY)
 {
+	int trackNum = visTracks_.at(trackVisIdx);
 	int offset = x + widthSpace_;
-	PatternPosition pos{ trackNum, 0, orderNum, stepNum };
-	QColor textColor = (orderNum == curPos_.order && stepNum == curPos_.step) ? palette_->ptnCurTextColor : palette_->ptnDefTextColor;
-	bool isHovTrack = (hovPos_.order == -2 && hovPos_.track == trackNum);
-	bool isHovStep = (hovPos_.track == -2 && hovPos_.order == orderNum && hovPos_.step == stepNum);
-	bool isMuteTrack = bt_->isMute(trackNum);
+	PatternPosition pos{ trackVisIdx, 0, orderNum, stepNum };
+	QColor textColor = curPos_.isEqualRows(orderNum, stepNum) ? palette_->ptnCurTextColor : palette_->ptnDefTextColor;
+	bool isHovTrack = (hovPos_.order == -2 && hovPos_.trackVisIdx == trackVisIdx);
+	bool isHovStep = (hovPos_.trackVisIdx == -2 && hovPos_.isEqualRows(orderNum, stepNum));
 	SoundSource src = songStyle_.trackAttribs[static_cast<size_t>(trackNum)].source;
 
 
@@ -864,8 +856,8 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		backPainter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnCurCellColor);
 	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
 		backPainter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnHovCellColor);
-	if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
-			&& isSelectedCell(trackNum, 0, orderNum, stepNum))	// Paint selected
+	if ((selLeftAbovePos_.trackVisIdx >= 0 && selLeftAbovePos_.order >= 0)
+			&& isSelectedCell(trackVisIdx, 0, orderNum, stepNum))	// Paint selected
 		backPainter.fillRect(offset - widthSpace_, rowY, toneNameWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnSelCellColor);
 	if (textChanged_) {
 		int noteNum = bt_->getStepNoteNumber(curSongNum_, trackNum, orderNum, stepNum);
@@ -925,8 +917,8 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		backPainter.fillRect(offset - widthSpace_, rowY, instWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnCurCellColor);
 	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
 		backPainter.fillRect(offset - widthSpace_, rowY, instWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnHovCellColor);
-	if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
-			&& isSelectedCell(trackNum, 1, orderNum, stepNum))	// Paint selected
+	if ((selLeftAbovePos_.trackVisIdx >= 0 && selLeftAbovePos_.order >= 0)
+			&& isSelectedCell(trackVisIdx, 1, orderNum, stepNum))	// Paint selected
 		backPainter.fillRect(offset - widthSpace_, rowY, instWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnSelCellColor);
 	if (textChanged_) {
 		int instNum = bt_->getStepInstrument(curSongNum_, trackNum, orderNum, stepNum);
@@ -950,8 +942,8 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		backPainter.fillRect(offset - widthSpace_, rowY, volWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnCurCellColor);
 	if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
 		backPainter.fillRect(offset - widthSpace_, rowY, volWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnHovCellColor);
-	if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
-			&& isSelectedCell(trackNum, 2, orderNum, stepNum))	// Paint selected
+	if ((selLeftAbovePos_.trackVisIdx >= 0 && selLeftAbovePos_.order >= 0)
+			&& isSelectedCell(trackVisIdx, 2, orderNum, stepNum))	// Paint selected
 		backPainter.fillRect(offset - widthSpace_, rowY, volWidth_ + widthSpaceDbl_, stepFontHeight_, palette_->ptnSelCellColor);
 	if (textChanged_) {
 		int vol = bt_->getStepVolume(curSongNum_, trackNum, orderNum, stepNum);
@@ -978,14 +970,14 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 	pos.colInTrack = 3;
 
 	/* Effect */
-	for (int i = 0; i <= rightEffn_.at(static_cast<size_t>(trackNum)); ++i) {
+	for (int i = 0; i <= rightEffn_.at(static_cast<size_t>(trackVisIdx)); ++i) {
 		/* Effect ID */
 		if (pos == curPos_)	// Paint current cell
 			backPainter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, palette_->ptnCurCellColor);
 		if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
 			backPainter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, palette_->ptnHovCellColor);
-		if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
-				&& isSelectedCell(trackNum, pos.colInTrack, orderNum, stepNum))	// Paint selected
+		if ((selLeftAbovePos_.trackVisIdx >= 0 && selLeftAbovePos_.order >= 0)
+				&& isSelectedCell(trackVisIdx, pos.colInTrack, orderNum, stepNum))	// Paint selected
 			backPainter.fillRect(offset - widthSpace_, rowY, effIDWidth_ + widthSpace_, stepFontHeight_, palette_->ptnSelCellColor);
 		std::string effId;
 		QString effStr;
@@ -1009,8 +1001,8 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			backPainter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, palette_->ptnCurCellColor);
 		if (pos == hovPos_ || isHovTrack || isHovStep)	// Paint hover
 			backPainter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, palette_->ptnHovCellColor);
-		if ((selLeftAbovePos_.track >= 0 && selLeftAbovePos_.order >= 0)
-				&& isSelectedCell(trackNum, pos.colInTrack, orderNum, stepNum))	// Paint selected
+		if ((selLeftAbovePos_.trackVisIdx >= 0 && selLeftAbovePos_.order >= 0)
+				&& isSelectedCell(trackVisIdx, pos.colInTrack, orderNum, stepNum))	// Paint selected
 			backPainter.fillRect(offset, rowY, effValWidth_ + widthSpace_, stepFontHeight_, palette_->ptnSelCellColor);
 		if (textChanged_) {
 			int effVal = bt_->getStepEffectValue(curSongNum_, trackNum, orderNum, stepNum, i);
@@ -1039,23 +1031,23 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		++pos.colInTrack;
 	}
 
-	if (foreChanged_ && isMuteTrack)	// Paint mute mask
+	if (foreChanged_ && bt_->isMute(trackNum))	// Paint mute mask
 		forePainter.fillRect(x, rowY, offset - x, stepFontHeight_, palette_->ptnMaskColor);
 
-	return baseTrackWidth_ + effWidth_ * rightEffn_[static_cast<size_t>(trackNum)];
+	return baseTrackWidth_ + effWidth_ * rightEffn_[static_cast<size_t>(trackVisIdx)];
 }
 
-void PatternEditorPanel::drawHeaders(int maxWidth, int trackSize)
+void PatternEditorPanel::drawHeaders(int maxWidth)
 {
 	QPainter painter(headerPixmap_.get());
 	painter.setFont(headerFont_);
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->ptnHeaderRowColor);
-	int x, trackNum;
 	int lspace = stepFontWidth_ / 2;
-	for (x = stepNumWidth_ + lspace, trackNum = leftTrackNum_; x < maxWidth && trackNum < trackSize; ) {
-		int tw = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackNum));
-		if (hovPos_.order == -2 && hovPos_.track == trackNum)
+	for (int x = stepNumWidth_ + lspace, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+		int trackNum = visTracks_.at(trackVisIdx);
+		int tw = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackVisIdx));
+		if (hovPos_.order == -2 && hovPos_.trackVisIdx == trackVisIdx)
 			painter.fillRect(x - lspace, 0, tw, headerHeight_, palette_->ptnHovCellColor);
 
 		painter.setPen(palette_->ptnHeaderTextColor);
@@ -1070,24 +1062,21 @@ void PatternEditorPanel::drawHeaders(int maxWidth, int trackSize)
 		painter.drawText(x + hdMuteToggleWidth_ + lspace, hdMinusY_, "-");
 
 		x += tw;
-		++trackNum;
 	}
 }
 
-void PatternEditorPanel::drawBorders(int maxWidth, int trackSize)
+void PatternEditorPanel::drawBorders(int maxWidth)
 {
-	Q_UNUSED(trackSize)
-
 	QPainter painter(completePixmap_.get());
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, geometry().height());
-	size_t trackNum = static_cast<size_t>(leftTrackNum_);
-	for (int x = stepNumWidth_; trackNum < rightEffn_.size(); ) {
-		x += (baseTrackWidth_ + effWidth_ * rightEffn_.at(trackNum));
+	size_t trackVisIdx = static_cast<size_t>(leftTrackVisIdx_);
+	for (int x = stepNumWidth_; trackVisIdx < rightEffn_.size(); ) {
+		x += (baseTrackWidth_ + effWidth_ * rightEffn_.at(trackVisIdx));
 		if (x > maxWidth) break;
 		painter.drawLine(x, 0, x, geometry().height());
-		++trackNum;
+		++trackVisIdx;
 	}
 }
 
@@ -1098,43 +1087,43 @@ void PatternEditorPanel::drawShadow()
 }
 
 // NOTE: end >= -1
-int PatternEditorPanel::calculateTracksWidthWithRowNum(int begin, int end) const
+int PatternEditorPanel::calculateTracksWidthWithRowNum(int beginIdx, int endIdx) const
 {
 	int width = stepNumWidth_;
-	for (int i = begin; i <= end; ++i) {
+	for (int i = beginIdx; i <= endIdx; ++i) {
 		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(i)));
 	}
 	return width;
 }
 
-int PatternEditorPanel::calculateColNumInRow(int trackNum, int colNumInTrack, bool isExpanded) const
+int PatternEditorPanel::calculateColNumInRow(int trackVisIdx, int colNumInTrack, bool isExpanded) const
 {
 	if (isExpanded) {
-		return trackNum * 11 + colNumInTrack;
+		return trackVisIdx * 11 + colNumInTrack;
 	}
 	else {
-		trackNum = std::min(trackNum, static_cast<int>(rightEffn_.size()));
-		return std::accumulate(rightEffn_.begin(), rightEffn_.begin() + trackNum, colNumInTrack,
+		trackVisIdx = std::min(trackVisIdx, static_cast<int>(rightEffn_.size()));
+		return std::accumulate(rightEffn_.begin(), rightEffn_.begin() + trackVisIdx, colNumInTrack,
 							   [](int acc, int v) { return acc + 5 + 2 * v; });
 	}
 }
 
 void PatternEditorPanel::moveCursorToRight(int n)
 {
-	int oldTrackNum = curPos_.track;
-	bool oldLeftTrack = leftTrackNum_;
+	int oldTrackIdx = curPos_.trackVisIdx;
+	bool oldLeftTrackIdx = leftTrackVisIdx_;
 
 	curPos_.colInTrack += n;
 	if (n > 0) {
 		while (true) {
-			int lim = 5 + 2 * rightEffn_.at(static_cast<size_t>(curPos_.track));
+			int lim = 5 + 2 * rightEffn_.at(static_cast<size_t>(curPos_.trackVisIdx));
 			if (curPos_.colInTrack < lim) {
 				break;
 			}
 			else {
-				if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
+				if (curPos_.trackVisIdx == static_cast<int>(visTracks_.size()) - 1) {
 					if (config_->getWarpCursor()) {
-						curPos_.track = 0;
+						curPos_.trackVisIdx = 0;
 					}
 					else {
 						curPos_.colInTrack = lim - 1;
@@ -1142,7 +1131,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 					}
 				}
 				else {
-					++curPos_.track;
+					++curPos_.trackVisIdx;
 				}
 				curPos_.colInTrack -= lim;
 			}
@@ -1154,9 +1143,9 @@ void PatternEditorPanel::moveCursorToRight(int n)
 				break;
 			}
 			else {
-				if (!curPos_.track) {
+				if (!curPos_.trackVisIdx) {
 					if (config_->getWarpCursor()) {
-						curPos_.track = static_cast<int>(songStyle_.trackAttribs.size()) - 1;
+						curPos_.trackVisIdx = static_cast<int>(visTracks_.size()) - 1;
 					}
 					else {
 						curPos_.colInTrack = 0;
@@ -1164,40 +1153,40 @@ void PatternEditorPanel::moveCursorToRight(int n)
 					}
 				}
 				else {
-					--curPos_.track;
+					--curPos_.trackVisIdx;
 				}
-				curPos_.colInTrack += (5 + 2 * rightEffn_.at(static_cast<size_t>(curPos_.track)));
+				curPos_.colInTrack += (5 + 2 * rightEffn_.at(static_cast<size_t>(curPos_.trackVisIdx)));
 			}
 		}
 	}
-	if (oldTrackNum < curPos_.track) {
-		while (calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width())
-			++leftTrackNum_;
+	if (oldTrackIdx < curPos_.trackVisIdx) {
+		while (calculateTracksWidthWithRowNum(leftTrackVisIdx_, curPos_.trackVisIdx) > geometry().width())
+			++leftTrackVisIdx_;
 	}
 	else {
-		if (curPos_.track < leftTrackNum_) leftTrackNum_ = curPos_.track;
+		if (curPos_.trackVisIdx < leftTrackVisIdx_) leftTrackVisIdx_ = curPos_.trackVisIdx;
 	}
 
 	updateTracksWidthFromLeftToEnd();
 	entryCnt_ = 0;
 
-	if (curPos_.track != oldTrackNum)
-		bt_->setCurrentTrack(curPos_.track);
+	if (curPos_.trackVisIdx != oldTrackIdx)
+		bt_->setCurrentTrack(visTracks_.at(curPos_.trackVisIdx));
 
 	if (!isIgnoreToSlider_) {
 		if (config_->getMoveCursorByHorizontalScroll()) {
-			emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.track, curPos_.colInTrack));
+			emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack));
 		}
-		else if (curPos_.track != oldTrackNum) {
-			emit hScrollBarChangeRequested(leftTrackNum_);
+		else if (curPos_.trackVisIdx != oldTrackIdx) {
+			emit hScrollBarChangeRequested(leftTrackVisIdx_);
 		}
 	}
 
-	if (!isIgnoreToOrder_ && curPos_.track != oldTrackNum)	// Send to order list
-		emit currentTrackChanged(curPos_.track);
+	if (!isIgnoreToOrder_ && curPos_.trackVisIdx != oldTrackIdx)	// Send to order list
+		emit currentTrackChanged(visTracks_.at(curPos_.trackVisIdx));	// TODO idx
 
 	// Request fore-background repaint if leftmost track is changed else request only background repaint
-	if (leftTrackNum_ != oldLeftTrack) {
+	if (leftTrackVisIdx_ != oldLeftTrackIdx) {
 		headerChanged_ = true;
 		foreChanged_ = true;
 		textChanged_ = true;
@@ -1208,21 +1197,21 @@ void PatternEditorPanel::moveCursorToRight(int n)
 
 void PatternEditorPanel::moveViewToRight(int n)
 {
-	leftTrackNum_ += n;
+	leftTrackVisIdx_ += n;
 	updateTracksWidthFromLeftToEnd();
 
 	// Calculate cursor position
-	int track = curPos_.track + n;
+	int trackIdx = curPos_.trackVisIdx + n;
 	int col = std::min(curPos_.colInTrack,
-					   4 + 2 * rightEffn_.at(static_cast<size_t>(track)));
+					   4 + 2 * rightEffn_.at(static_cast<size_t>(trackIdx)));
 
 	// Check visible
 	int width = stepNumWidth_;
-	for (int i = leftTrackNum_; i <= track; ++i) {
+	for (int i = leftTrackVisIdx_; i <= trackIdx; ++i) {
 		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(i)));
 		if (geometry().width() < width) {
-			track = i - 1;
-			col = 4 + 2 * rightEffn_.at(static_cast<size_t>(track));
+			trackIdx = i - 1;
+			col = 4 + 2 * rightEffn_.at(static_cast<size_t>(trackIdx));
 			break;
 		}
 	}
@@ -1231,7 +1220,7 @@ void PatternEditorPanel::moveViewToRight(int n)
 	headerChanged_ = true;
 	foreChanged_ = true;
 	textChanged_ = true;
-	moveCursorToRight(calculateColumnDistance(curPos_.track, curPos_.colInTrack, track, col));
+	moveCursorToRight(calculateColumnDistance(curPos_.trackVisIdx, curPos_.colInTrack, trackIdx, col));
 }
 
 void PatternEditorPanel::moveCursorToDown(int n)
@@ -1299,10 +1288,10 @@ void PatternEditorPanel::moveCursorToDown(int n)
 	repaint();
 }
 
-int PatternEditorPanel::calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn, bool isExpanded) const
+int PatternEditorPanel::calculateColumnDistance(int beginTrackIdx, int beginColumn, int endTrackIdx, int endColumn, bool isExpanded) const
 {
-	return (calculateColNumInRow(endTrack, endColumn, isExpanded)
-			- calculateColNumInRow(beginTrack, beginColumn, isExpanded));
+	return (calculateColNumInRow(endTrackIdx, endColumn, isExpanded)
+			- calculateColNumInRow(beginTrackIdx, beginColumn, isExpanded));
 }
 
 int PatternEditorPanel::calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const
@@ -1382,7 +1371,7 @@ PatternPosition PatternEditorPanel::calculatePositionFrom(int order, int step, i
 
 QPoint PatternEditorPanel::calculateCurrentCursorPosition() const
 {
-	int w = calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track - 1);
+	int w = calculateTracksWidthWithRowNum(leftTrackVisIdx_, curPos_.trackVisIdx - 1);
 	if (curPos_.colInTrack > 0) {
 		w = w + toneNameWidth_ + widthSpaceDbl_;
 		if (curPos_.colInTrack > 1) {
@@ -1402,7 +1391,7 @@ QPoint PatternEditorPanel::calculateCurrentCursorPosition() const
 int PatternEditorPanel::getScrollableCountByTrack() const
 {
 	int width = stepNumWidth_;
-	size_t i = songStyle_.trackAttribs.size();
+	size_t i = visTracks_.size();
 	do {
 		--i;
 		width += (baseTrackWidth_ + effWidth_ * rightEffn_.at(i));
@@ -1421,7 +1410,7 @@ void PatternEditorPanel::changeEditable()
 
 int PatternEditorPanel::getFullColmunSize() const
 {
-	return calculateColNumInRow(static_cast<int>(songStyle_.trackAttribs.size()) - 1, 4 + 2 * rightEffn_.back());
+	return calculateColNumInRow(static_cast<int>(visTracks_.size()) - 1, 4 + 2 * rightEffn_.back());
 }
 
 void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool forceJump, bool trackChanged)
@@ -1433,17 +1422,18 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool for
 	}
 
 	if (trackChanged) {
-		int oldTrackNum = std::exchange(curPos_.track, bt_->getCurrentTrackAttribute().number);
+		int trackVisIdx = std::distance(visTracks_.begin(), std::find(visTracks_.begin(), visTracks_.end(), bt_->getCurrentTrackAttribute().number));
+		int oldTrackVisIdx = std::exchange(curPos_.trackVisIdx, trackVisIdx);
 		curPos_.colInTrack = 0;
-		if (oldTrackNum < curPos_.track) {
-			while (calculateTracksWidthWithRowNum(leftTrackNum_, curPos_.track) > geometry().width()) {
-				++leftTrackNum_;
+		if (oldTrackVisIdx < curPos_.trackVisIdx) {
+			while (calculateTracksWidthWithRowNum(leftTrackVisIdx_, curPos_.trackVisIdx) > geometry().width()) {
+				++leftTrackVisIdx_;
 				headerChanged_ = true;
 			}
 		}
 		else {
-			if (curPos_.track < leftTrackNum_) {
-				leftTrackNum_ = curPos_.track;
+			if (curPos_.trackVisIdx < leftTrackVisIdx_) {
+				leftTrackVisIdx_ = curPos_.trackVisIdx;
 				headerChanged_ = true;
 			}
 		}
@@ -1452,9 +1442,9 @@ void PatternEditorPanel::updatePositionByStepUpdate(bool isFirstUpdate, bool for
 
 		if (!isIgnoreToSlider_) {
 			if (config_->getMoveCursorByHorizontalScroll())
-				emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.track, curPos_.colInTrack));
+				emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack));
 			else
-				emit hScrollBarChangeRequested(leftTrackNum_);
+				emit hScrollBarChangeRequested(leftTrackVisIdx_);
 		}
 	}
 
@@ -1536,7 +1526,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 void PatternEditorPanel::setStepKeyOn(Note note, int octave)
 {
 	if (octave < 8) {
-		bt_->setStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step, octave, note,
+		bt_->setStepNote(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step, octave, note,
 						 config_->getInstrumentMask(), config_->getVolumeMask());
 		comStack_.lock()->push(new SetKeyOnToStepQtCommand(this));
 		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
@@ -1568,11 +1558,12 @@ bool PatternEditorPanel::enterInstrumentData(int key)
 
 void PatternEditorPanel::setStepInstrument(int num)
 {
-	bt_->setStepInstrumentDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, num, (entryCnt_ == 1));
+	int trackNum = visTracks_.at(curPos_.trackVisIdx);
+	bt_->setStepInstrumentDigit(curSongNum_, trackNum, curPos_.order, curPos_.step, num, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetInstrumentToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	emit instrumentEntered(
-				bt_->getStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step));
+				bt_->getStepInstrument(curSongNum_, trackNum, curPos_.order, curPos_.step));
 
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount())
 		moveCursorToDown(editableStepCnt_);
@@ -1603,7 +1594,7 @@ bool PatternEditorPanel::enterVolumeData(int key)
 
 void PatternEditorPanel::setStepVolume(int volume)
 {
-	int vol = bt_->setStepVolumeDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, volume, (entryCnt_ == 1));
+	int vol = bt_->setStepVolumeDigit(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step, volume, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetVolumeToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount())
@@ -1657,7 +1648,8 @@ bool PatternEditorPanel::enterEffectID(int key)
 
 void PatternEditorPanel::setStepEffectID(QString str)
 {
-	bt_->setStepEffectIDCharacter(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
+	int curTrackNum = visTracks_.at(curPos_.trackVisIdx);
+	bt_->setStepEffectIDCharacter(curSongNum_, curTrackNum, curPos_.order, curPos_.step,
 								  (curPos_.colInTrack - 3) / 2, str.toStdString(),
 								  config_->getFill00ToEffectValue(), (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectIDToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
@@ -1671,9 +1663,9 @@ void PatternEditorPanel::setStepEffectID(QString str)
 
 	// Send effect description
 	QString effDetail = tr("Invalid effect");
-	std::string id = bt_->getStepEffectID(curSongNum_, editPos.track, editPos.order,
+	std::string id = bt_->getStepEffectID(curSongNum_, visTracks_.at(editPos.trackVisIdx), editPos.order,
 										  editPos.step, (editPos.colInTrack - 3) / 2);
-	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curPos_.track)).source;
+	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curTrackNum)).source;
 	emit effectEntered(EffectDescription::getEffectFormatAndDetailString(Effect::toEffectType(src, id)));
 }
 
@@ -1702,12 +1694,13 @@ bool PatternEditorPanel::enterEffectValue(int key)
 
 void PatternEditorPanel::setStepEffectValue(int value)
 {
+	int trackNum = visTracks_.at(curPos_.trackVisIdx);
 	int n = (curPos_.colInTrack - 4) / 2;
 	EffectDisplayControl ctrl = EffectDisplayControl::Unset;
-	SoundSource src = songStyle_.trackAttribs[static_cast<size_t>(curPos_.track)].source;
+	SoundSource src = songStyle_.trackAttribs[static_cast<size_t>(trackNum)].source;
 	switch (Effect::toEffectType(
 				src,
-				bt_->getStepEffectID(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n))) {
+				bt_->getStepEffectID(curSongNum_, trackNum, curPos_.order, curPos_.step, n))) {
 	case EffectType::VolumeDelay:
 		if (src == SoundSource::FM && config_->getReverseFMVolumeOrder())
 			ctrl = EffectDisplayControl::ReverseFMVolumeDelay;
@@ -1718,7 +1711,7 @@ void PatternEditorPanel::setStepEffectValue(int value)
 	default:
 		break;
 	}
-	bt_->setStepEffectValueDigit(curSongNum_, curPos_.track, curPos_.order, curPos_.step, n, value, ctrl, (entryCnt_ == 1));
+	bt_->setStepEffectValueDigit(curSongNum_, trackNum, curPos_.order, curPos_.step, n, value, ctrl, (entryCnt_ == 1));
 	comStack_.lock()->push(new SetEffectValueToStepQtCommand(this, curPos_, (entryCnt_ == 1)));
 
 	if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !updateEntryCount()) {
@@ -1729,14 +1722,14 @@ void PatternEditorPanel::setStepEffectValue(int value)
 
 void PatternEditorPanel::insertStep()
 {
-	bt_->insertStep(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+	bt_->insertStep(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 	comStack_.lock()->push(new InsertStepQtCommand(this));
 }
 
 void PatternEditorPanel::deletePreviousStep()
 {
 	if (curPos_.step) {
-		bt_->deletePreviousStep(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+		bt_->deletePreviousStep(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 		comStack_.lock()->push(new DeletePreviousStepQtCommand(this));
 		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(-1);
 	}
@@ -1746,64 +1739,69 @@ void PatternEditorPanel::copySelectedCells()
 {
 	if (selLeftAbovePos_.order == -1) return;
 
-	int w = 1 + calculateColumnDistance(selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
-										selRightBelowPos_.track, selRightBelowPos_.colInTrack, true);
+	int r = visTracks_.at(selRightBelowPos_.trackVisIdx) * 11 + selRightBelowPos_.colInTrack;
+	int l = visTracks_.at(selLeftAbovePos_.trackVisIdx) * 11 + selLeftAbovePos_.colInTrack;
+	int w = 1 + r - l;	// Real selected region width
 	int h = 1 + calculateStepDistance(selLeftAbovePos_.order, selLeftAbovePos_.step,
 									  selRightBelowPos_.order, selRightBelowPos_.step);
 	QString str = QString("PATTERN_COPY:%1,%2,%3,")
 				  .arg(QString::number(selLeftAbovePos_.colInTrack),
 					   QString::number(w),
 					   QString::number(h));
-	PatternPosition pos = selLeftAbovePos_;
+	// NOTE: After this line, PatternPosition.trackVisIdx indecates a real track number.
+	PatternPosition pos = {
+		visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
+		selLeftAbovePos_.order, selLeftAbovePos_.step
+	};
 	while (true) {
 		switch (pos.colInTrack) {
 		case 0:
-			str += QString::number(bt_->getStepNoteNumber(curSongNum_, pos.track, pos.order, pos.step));
+			str += QString::number(bt_->getStepNoteNumber(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
 			break;
 		case 1:
-			str += QString::number(bt_->getStepInstrument(curSongNum_, pos.track, pos.order, pos.step));
+			str += QString::number(bt_->getStepInstrument(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
 			break;
 		case 2:
-			str += QString::number(bt_->getStepVolume(curSongNum_, pos.track, pos.order, pos.step));
+			str += QString::number(bt_->getStepVolume(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
 			break;
 		case 3:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.track, pos.order, pos.step, 0));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 0));
 			break;
 		case 4:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.track, pos.order, pos.step, 0));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 0));
 			break;
 		case 5:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.track, pos.order, pos.step, 1));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 1));
 			break;
 		case 6:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.track, pos.order, pos.step, 1));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 1));
 			break;
 		case 7:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.track, pos.order, pos.step, 2));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 2));
 			break;
 		case 8:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.track, pos.order, pos.step, 2));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 2));
 			break;
 		case 9:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.track, pos.order, pos.step, 3));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 3));
 			break;
 		case 10:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.track, pos.order, pos.step, 3));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 3));
 			break;
 		}
 
-		if (pos.track == selRightBelowPos_.track && pos.colInTrack == selRightBelowPos_.colInTrack) {
-			if (pos.order == selRightBelowPos_.order && pos.step == selRightBelowPos_.step) {
+		if (pos.isEqualCols(selRightBelowPos_)) {
+			if (pos.isEqualRows(selRightBelowPos_)) {
 				break;
 			}
 			else {
-				pos.setCols(selLeftAbovePos_.track, selLeftAbovePos_.colInTrack);
+				pos.setCols(selLeftAbovePos_.trackVisIdx, selLeftAbovePos_.colInTrack);
 				++pos.step;
 			}
 		}
 		else {
 			++pos.colInTrack;
-			pos.track += (pos.colInTrack / 11);
+			pos.trackVisIdx += (pos.colInTrack / 11);
 			pos.colInTrack %= 11;
 		}
 
@@ -1815,9 +1813,9 @@ void PatternEditorPanel::copySelectedCells()
 
 void PatternEditorPanel::eraseSelectedCells()
 {
-	bt_->erasePatternCells(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+	bt_->erasePatternCells(curSongNum_, visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
 						   selLeftAbovePos_.order, selLeftAbovePos_.step,
-						   selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+						   visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack, selRightBelowPos_.step);
 	comStack_.lock()->push(new EraseCellsInPatternQtCommand(this));
 }
 
@@ -1831,7 +1829,7 @@ void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
 	}
 
 	bt_->pastePatternCells(
-				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, pos.trackVisIdx, pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
 }
 
@@ -1845,7 +1843,7 @@ void PatternEditorPanel::pasteMixCopiedCells(const PatternPosition& cursorPos)
 	}
 
 	bt_->pasteMixPatternCells(
-				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteMixCopiedDataToPatternQtCommand(this));
 }
 
@@ -1859,7 +1857,7 @@ void PatternEditorPanel::pasteOverwriteCopiedCells(const PatternPosition& cursor
 	}
 
 	bt_->pasteOverwritePatternCells(
-				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteOverwriteCopiedDataToPatternQtCommand(this));
 }
 
@@ -1873,7 +1871,7 @@ void PatternEditorPanel::pasteInsertCopiedCells(const PatternPosition& cursorPos
 	}
 
 	bt_->pasteInsertPatternCells(
-				curSongNum_, pos.track, pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteInsertCopiedDataToPatternQtCommand(this));
 }
 
@@ -1945,8 +1943,9 @@ PatternEditorPanel::PatternCells PatternEditorPanel::compandPasteCells(const Pat
 	PatternCells newCells;
 	int ow = cells.front().size();
 	int oh = cells.size();
-	int w = calculateColumnDistance(laPos.track, laPos.colInTrack,
-									selRightBelowPos_.track, selRightBelowPos_.colInTrack, true) + 1;
+	int l = laPos.trackVisIdx * 11 + laPos.colInTrack;
+	int r = selRightBelowPos_.trackVisIdx * 11 + selRightBelowPos_.colInTrack;
+	int w = r - l + 1;	// Real selected region width
 	size_t h = static_cast<size_t>(calculateStepDistance(laPos.order, laPos.step,
 														 selRightBelowPos_.order, selRightBelowPos_.step) + 1);
 	int bw = ((ow - 1) / 11 + 1) * 11;
@@ -1982,10 +1981,10 @@ PatternEditorPanel::PatternCells PatternEditorPanel::compandPasteCells(const Pat
 
 void PatternEditorPanel::transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote)
 {
-	int beginTrack = (startPos.colInTrack == 0) ? startPos.track : startPos.track + 1;
-	if (beginTrack <= endPos.track) {
-		bt_->transposeNoteInPattern(curSongNum_, beginTrack, startPos.order, startPos.step,
-									endPos.track, endPos.step, seminote);
+	int beginTrackIdx = (startPos.colInTrack == 0) ? startPos.trackVisIdx : startPos.trackVisIdx + 1;
+	if (beginTrackIdx <= endPos.trackVisIdx) {
+		bt_->transposeNoteInPattern(curSongNum_, visTracks_.at(beginTrackIdx), startPos.order, startPos.step,
+									visTracks_.at(endPos.trackVisIdx), endPos.step, seminote);
 		comStack_.lock()->push(new TransposeNoteInPatternQtCommand(this));
 	}
 }
@@ -1993,10 +1992,41 @@ void PatternEditorPanel::transposeNote(const PatternPosition& startPos, const Pa
 void PatternEditorPanel::changeValuesInPattern(const PatternPosition& startPos, const PatternPosition& endPos, int value)
 {
 	if (startPos.compareCols(endPos) <= 0) {
-		bt_->changeValuesInPattern(curSongNum_, startPos.track, startPos.colInTrack, startPos.order, startPos.step,
-								   endPos.track, endPos.colInTrack, endPos.step, value);
+		bt_->changeValuesInPattern(curSongNum_, visTracks_.at(startPos.trackVisIdx), startPos.colInTrack, startPos.order, startPos.step,
+								   visTracks_.at(endPos.trackVisIdx), endPos.colInTrack, endPos.step, value);
 		comStack_.lock()->push(new ChangeValuesInPatternQtCommand(this));
 	}
+}
+
+void PatternEditorPanel::toggleTrack(int trackIdx)
+{
+	int trackNum = visTracks_.at(trackIdx);
+	bt_->setTrackMuteState(trackNum, !bt_->isMute(trackNum));
+	isMuteElse_ = false;
+	redrawByMaskChanged();
+}
+
+void PatternEditorPanel::soloTrack(int trackIdx)
+{
+	int soloTrackNum = visTracks_.at(trackIdx);
+	int trackCnt = static_cast<int>(songStyle_.trackAttribs.size());
+	if (isMuteElse_) {
+		if (bt_->isMute(soloTrackNum)) {
+			for (int t = 0; t < trackCnt; ++t)
+				bt_->setTrackMuteState(t, t != soloTrackNum);
+		}
+		else {
+			isMuteElse_ = false;
+			for (int t = 0; t < trackCnt; ++t)
+				bt_->setTrackMuteState(t, false);
+		}
+	}
+	else {
+		isMuteElse_ = true;
+		for (int t = 0; t < trackCnt; ++t)
+			bt_->setTrackMuteState(t, (t == soloTrackNum) ? false : isMuteElse_);
+	}
+	redrawByMaskChanged();
 }
 
 void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, const PatternPosition& end)
@@ -2006,25 +2036,25 @@ void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, cons
 		if (start.step > end.step) {
 			selLeftAbovePos_ = end;
 			selRightBelowPos_ = {
-				start.track, start.colInTrack,
+				start.trackVisIdx, start.colInTrack,
 				end.order, (start.step > patMax) ? patMax : start.step
 			};
 		}
 		else {
-			selLeftAbovePos_ = { end.track, end.colInTrack, end.order, start.step };
-			selRightBelowPos_ = { start.track, start.colInTrack, end.order, end.step };
+			selLeftAbovePos_ = { end.trackVisIdx, end.colInTrack, end.order, start.step };
+			selRightBelowPos_ = { start.trackVisIdx, start.colInTrack, end.order, end.step };
 		}
 	}
 	else {
 		if (start.step > end.step) {
-			selLeftAbovePos_ = { start.track, start.colInTrack, end.order, end.step };
+			selLeftAbovePos_ = { start.trackVisIdx, start.colInTrack, end.order, end.step };
 			selRightBelowPos_ = {
-				end.track, end.colInTrack,
+				end.trackVisIdx, end.colInTrack,
 				end.order, (start.step > patMax) ? patMax : start.step
 			};
 		}
 		else {
-			selLeftAbovePos_ = { start.track, start.colInTrack, end.order, start.step };
+			selLeftAbovePos_ = { start.trackVisIdx, start.colInTrack, end.order, start.step };
 			selRightBelowPos_ = end;
 		}
 	}
@@ -2035,9 +2065,9 @@ void PatternEditorPanel::setSelectedRectangle(const PatternPosition& start, cons
 	repaint();
 }
 
-bool PatternEditorPanel::isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum)
+bool PatternEditorPanel::isSelectedCell(int trackVisIdx, int colNum, int orderNum, int stepNum)
 {
-	PatternPosition pos{ trackNum, colNum, orderNum, stepNum };
+	PatternPosition pos{ trackVisIdx, colNum, orderNum, stepNum };
 	return (selLeftAbovePos_.compareCols(pos) <= 0 && selRightBelowPos_.compareCols(pos) >= 0
 			&& selLeftAbovePos_.compareRows(pos) <= 0 && selRightBelowPos_.compareRows(pos) >= 0);
 }
@@ -2117,14 +2147,14 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	QObject::connect(cinVal, &QAction::triggered, this, [&]() { onChangeValuesPressed(16); });
 	menu.addSeparator();
 	QAction* toggle = menu.addAction(tr("To&ggle Track"));
-	QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(pos.track); });
+	QObject::connect(toggle, &QAction::triggered, this, [&] { toggleTrack(pos.trackVisIdx); });
 	QAction* solo = menu.addAction(tr("&Solo Track"));
-	QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(pos.track); });
+	QObject::connect(solo, &QAction::triggered, this, [&] { soloTrack(pos.trackVisIdx); });
 	menu.addSeparator();
 	QAction* exeff = menu.addAction(tr("Expand E&ffect Column"));
-	QObject::connect(exeff, &QAction::triggered, this, [&] { onExpandEffectColumnPressed(pos.track); });
+	QObject::connect(exeff, &QAction::triggered, this, [&] { onExpandEffectColumnPressed(pos.trackVisIdx); });
 	QAction* sheff = menu.addAction(tr("Shrin&k Effect Column"));
-	QObject::connect(sheff, &QAction::triggered, this, [&] { onShrinkEffectColumnPressed(pos.track); });
+	QObject::connect(sheff, &QAction::triggered, this, [&] { onShrinkEffectColumnPressed(pos.trackVisIdx); });
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	undo->setShortcutVisibleInContextMenu(true);
 	redo->setShortcutVisibleInContextMenu(true);
@@ -2180,7 +2210,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	exeff->setShortcut(strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
 	sheff->setShortcut(strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
 
-	if (bt_->isJamMode() || pos.order < 0 || pos.track < 0) {
+	if (bt_->isJamMode() || pos.order < 0 || pos.trackVisIdx < 0) {
 		copy->setEnabled(false);
 		cut->setEnabled(false);
 		paste->setEnabled(false);
@@ -2211,8 +2241,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 			pasteIns->setEnabled(false);
 		}
 		if (selRightBelowPos_.order < 0
-				|| !isSelectedCell(pos.track, pos.colInTrack,
-								   pos.order, pos.step)) {
+				|| !isSelectedCell(pos.trackVisIdx, pos.colInTrack, pos.order, pos.step)) {
 			copy->setEnabled(false);
 			cut->setEnabled(false);
 			erase->setEnabled(false);
@@ -2237,7 +2266,7 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	if (!comStack_.lock()->canRedo()) {
 		redo->setEnabled(false);
 	}
-	if (pos.track < 0) {
+	if (pos.trackVisIdx < 0) {
 		toggle->setEnabled(false);
 		solo->setEnabled(false);
 		exeff->setEnabled(false);
@@ -2254,11 +2283,11 @@ void PatternEditorPanel::onHScrollBarChanged(int num)
 
 	// Skip if position has already changed in panel
 	if (config_->getMoveCursorByHorizontalScroll()) {
-		if (int dif = num - calculateColNumInRow(curPos_.track, curPos_.colInTrack))
+		if (int dif = num - calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack))
 			moveCursorToRight(dif);
 	}
 	else {
-		if (int dif = num - leftTrackNum_)
+		if (int dif = num - leftTrackVisIdx_)
 			moveViewToRight(dif);
 	}
 }
@@ -2271,15 +2300,16 @@ void PatternEditorPanel::onVScrollBarChanged(int num)
 	if (int dif = num - curPos_.step) moveCursorToDown(dif);
 }
 
-void PatternEditorPanel::setCurrentTrack(int num)
+void PatternEditorPanel::onOrderListCurrentTrackChanged(int num)	// TODO idx
 {
 	Ui::EventGuard eg(isIgnoreToOrder_);
 
-	int dif = calculateColumnDistance(curPos_.track, curPos_.colInTrack, num, 0);
+	int idx = std::distance(visTracks_.begin(), std::find(visTracks_.begin(), visTracks_.end(), num));
+	int dif = calculateColumnDistance(curPos_.trackVisIdx, curPos_.colInTrack, idx, 0);
 	moveCursorToRight(dif);
 }
 
-void PatternEditorPanel::setCurrentOrder(int num)
+void PatternEditorPanel::onOrderListCurrentOrderChanged(int num)
 {
 	Ui::EventGuard eg(isIgnoreToOrder_);
 
@@ -2359,18 +2389,23 @@ void PatternEditorPanel::onSongLoaded()
 {
 	// Initialize cursor position
 	curSongNum_ = bt_->getCurrentSongNumber();
+	SongType prevType = songStyle_.type;
+	songStyle_ = bt_->getSongStyle(curSongNum_);
+	visTracks_ = adaptVisibleTrackList(visTracks_, prevType, songStyle_.type);
+	rightEffn_ = std::vector<int>(visTracks_.size());
+	std::generate(rightEffn_.begin(), rightEffn_.end(), [&, i = 0]() mutable {
+		return static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, i++)); });
 	curPos_ = {
-		bt_->getCurrentTrackAttribute().number,
+		visTracks_.front(),
 		0,
 		bt_->getCurrentOrderNumber(),
 		bt_->getCurrentStepNumber()
 	};
-	songStyle_ = bt_->getSongStyle(curSongNum_);
-	size_t trackCnt = songStyle_.trackAttribs.size();
-	rightEffn_ = std::vector<int>(trackCnt);
-	std::generate(rightEffn_.begin(), rightEffn_.end(), [&, i = 0]() mutable {
-		return static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, i++)); });
-	leftTrackNum_ = 0;
+	// Set cursor to the most lest-placed visible track
+	if (visTracks_.front() != bt_->getCurrentTrackAttribute().number) {
+		bt_->setCurrentTrack(visTracks_.front());
+	}
+	leftTrackVisIdx_ = 0;
 	updateTracksWidthFromLeftToEnd();
 
 	hovPos_ = { -1, -1, -1, -1 };
@@ -2397,39 +2432,35 @@ void PatternEditorPanel::onDeletePressed()
 	else {
 		switch (curPos_.colInTrack) {
 		case 0:
-			bt_->eraseStepNote(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			bt_->eraseStepNote(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseStepQtCommand(this));
-			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 1:
-			bt_->eraseStepInstrument(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			bt_->eraseStepInstrument(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseInstrumentInStepQtCommand(this));
-			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 2:
-			bt_->eraseStepVolume(curSongNum_, curPos_.track, curPos_.order, curPos_.step);
+			bt_->eraseStepVolume(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 			comStack_.lock()->push(new EraseVolumeInStepQtCommand(this));
-			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 3:
 		case 5:
 		case 7:
 		case 9:
-			bt_->eraseStepEffect(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
+			bt_->eraseStepEffect(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step,
 								 (curPos_.colInTrack - 3) / 2);
 			comStack_.lock()->push(new EraseEffectInStepQtCommand(this));
-			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		case 4:
 		case 6:
 		case 8:
 		case 10:
-			bt_->eraseStepEffectValue(curSongNum_, curPos_.track, curPos_.order, curPos_.step,
+			bt_->eraseStepEffectValue(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step,
 									  (curPos_.colInTrack - 4) / 2);
 			comStack_.lock()->push(new EraseEffectValueInStepQtCommand(this));
-			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 			break;
 		}
+		if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 	}
 }
 
@@ -2470,34 +2501,32 @@ void PatternEditorPanel::onSelectPressed(int type)
 	{
 		selectAllState_ = (selectAllState_ + 1) % 2;
 		int max = static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - 1;
-		if (!selectAllState_) {
-			PatternPosition start = { curPos_.track, 0, curPos_.order, 0 };
-			PatternPosition end = { curPos_.track, 10, curPos_.order, max };
-			setSelectedRectangle(start, end);
+		PatternPosition start, end;
+		if (selectAllState_) {
+			start = { 0, 0, curPos_.order, 0 };
+			end = { static_cast<int>(visTracks_.size() - 1), 10, curPos_.order, max };
 		}
 		else {
-			PatternPosition start = { 0, 0, curPos_.order, 0 };
-			PatternPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), 10,
-									curPos_.order, max };
-			setSelectedRectangle(start, end);
+			start = { curPos_.trackVisIdx, 0, curPos_.order, 0 };
+			end = { curPos_.trackVisIdx, 10, curPos_.order, max };
 		}
+		setSelectedRectangle(start, end);
 		break;
 	}
 	case 2:	// Row
 	{
 		selectAllState_ = -1;
 		PatternPosition start = { 0, 0, curPos_.order, curPos_.step };
-		PatternPosition end = { static_cast<int>(songStyle_.trackAttribs.size() - 1), 10,
-								curPos_.order, curPos_.step };
+		PatternPosition end = { static_cast<int>(visTracks_.size() - 1), 10, curPos_.order, curPos_.step };
 		setSelectedRectangle(start, end);
 		break;
 	}
 	case 3:	// Column
 	{
 		selectAllState_ = -1;
-		PatternPosition start = { curPos_.track, curPos_.colInTrack, curPos_.order, 0 };
+		PatternPosition start = { curPos_.trackVisIdx, curPos_.colInTrack, curPos_.order, 0 };
 		PatternPosition end = {
-			curPos_.track,
+			curPos_.trackVisIdx,
 			curPos_.colInTrack,
 			curPos_.order,
 			static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1)
@@ -2508,9 +2537,9 @@ void PatternEditorPanel::onSelectPressed(int type)
 	case 4:	// Pattern
 	{
 		selectAllState_ = -1;
-		PatternPosition start = { curPos_.track, 0, curPos_.order, 0 };
+		PatternPosition start = { curPos_.trackVisIdx, 0, curPos_.order, 0 };
 		PatternPosition end = {
-			curPos_.track,
+			curPos_.trackVisIdx,
 			10,
 			curPos_.order,
 			static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1)
@@ -2523,7 +2552,7 @@ void PatternEditorPanel::onSelectPressed(int type)
 		selectAllState_ = -1;
 		PatternPosition start = { 0, 0, curPos_.order, 0 };
 		PatternPosition end = {
-			static_cast<int>(songStyle_.trackAttribs.size() - 1),
+			static_cast<int>(visTracks_.size() - 1),
 			10,
 			curPos_.order,
 			static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order) - 1)
@@ -2544,33 +2573,14 @@ void PatternEditorPanel::onNoteTransposePressed(int seminote)
 		transposeNote(curPos_, curPos_, seminote);
 }
 
-void PatternEditorPanel::onToggleTrackPressed(int track)
+void PatternEditorPanel::onToggleTrackPressed()
 {
-	bt_->setTrackMuteState(track, !bt_->isMute(track));
-	isMuteElse_ = false;
-	redrawByMaskChanged();
+	toggleTrack(curPos_.trackVisIdx);
 }
 
-void PatternEditorPanel::onSoloTrackPressed(int track)
+void PatternEditorPanel::onSoloTrackPressed()
 {
-	int trackCnt = static_cast<int>(songStyle_.trackAttribs.size());
-	if (isMuteElse_) {
-		if (bt_->isMute(track)) {
-			for (int t = 0; t < trackCnt; ++t)
-				bt_->setTrackMuteState(t, (t == track) ? false : true);
-		}
-		else {
-			isMuteElse_ = false;
-			for (int t = 0; t < trackCnt; ++t)
-				bt_->setTrackMuteState(t, false);
-		}
-	}
-	else {
-		isMuteElse_ = true;
-		for (int t = 0; t < trackCnt; ++t)
-			bt_->setTrackMuteState(t, (t == track) ? false : isMuteElse_);
-	}
-	redrawByMaskChanged();
+	soloTrack(curPos_.trackVisIdx);
 }
 
 void PatternEditorPanel::onUnmuteAllPressed()
@@ -2586,9 +2596,9 @@ void PatternEditorPanel::onExpandPressed()
 {
 	if (selLeftAbovePos_.order == -1) return;
 
-	bt_->expandPattern(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+	bt_->expandPattern(curSongNum_, visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
 					   selLeftAbovePos_.order, selLeftAbovePos_.step,
-					   selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+					   visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack, selRightBelowPos_.step);
 	comStack_.lock()->push(new ExpandPatternQtCommand(this));
 }
 
@@ -2596,9 +2606,9 @@ void PatternEditorPanel::onShrinkPressed()
 {
 	if (selLeftAbovePos_.order == -1) return;
 
-	bt_->shrinkPattern(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+	bt_->shrinkPattern(curSongNum_, visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
 					   selLeftAbovePos_.order, selLeftAbovePos_.step,
-					   selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+					   visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack, selRightBelowPos_.step);
 	comStack_.lock()->push(new ShrinkPatternQtCommand(this));
 }
 
@@ -2606,9 +2616,9 @@ void PatternEditorPanel::onInterpolatePressed()
 {
 	if (selLeftAbovePos_.order == -1) return;
 
-	bt_->interpolatePattern(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+	bt_->interpolatePattern(curSongNum_, visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
 							selLeftAbovePos_.order, selLeftAbovePos_.step,
-							selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+							visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack, selRightBelowPos_.step);
 	comStack_.lock()->push(new InterpolatePatternQtCommand(this));
 }
 
@@ -2616,9 +2626,9 @@ void PatternEditorPanel::onReversePressed()
 {
 	if (selLeftAbovePos_.order == -1) return;
 
-	bt_->reversePattern(curSongNum_, selLeftAbovePos_.track, selLeftAbovePos_.colInTrack,
+	bt_->reversePattern(curSongNum_, visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
 						selLeftAbovePos_.order, selLeftAbovePos_.step,
-						selRightBelowPos_.track, selRightBelowPos_.colInTrack, selRightBelowPos_.step);
+						visTracks_.at(selRightBelowPos_.trackVisIdx), selRightBelowPos_.colInTrack, selRightBelowPos_.step);
 	comStack_.lock()->push(new ReversePatternQtCommand(this));
 }
 
@@ -2629,45 +2639,45 @@ void PatternEditorPanel::onReplaceInstrumentPressed()
 	int curInst = bt_->getCurrentInstrumentNumber();
 	if (curInst == -1) return;
 
-	int beginTrack = (selLeftAbovePos_.colInTrack < 2) ? selLeftAbovePos_.track : (selLeftAbovePos_.track + 1);
-	int endTrack = (selRightBelowPos_.colInTrack == 0) ? (selRightBelowPos_.track - 1) : selRightBelowPos_.track;
-	if (beginTrack <= endTrack) {
+	int beginTrackIdx = (selLeftAbovePos_.colInTrack < 2) ? selLeftAbovePos_.trackVisIdx : (selLeftAbovePos_.trackVisIdx + 1);
+	int endTrackIdx = (selRightBelowPos_.colInTrack == 0) ? (selRightBelowPos_.trackVisIdx - 1) : selRightBelowPos_.trackVisIdx;
+	if (beginTrackIdx <= endTrackIdx) {
 		bt_->replaceInstrumentInPattern(curSongNum_,
-										beginTrack, selLeftAbovePos_.order, selLeftAbovePos_.step,
-										endTrack, selRightBelowPos_.step, curInst);
+										visTracks_.at(beginTrackIdx), selLeftAbovePos_.order, selLeftAbovePos_.step,
+										visTracks_.at(endTrackIdx), selRightBelowPos_.step, curInst);
 		comStack_.lock()->push(new ReplaceInstrumentInPatternQtCommand(this));
 	}
 }
 
-void PatternEditorPanel::onExpandEffectColumnPressed(int trackNum)
+void PatternEditorPanel::onExpandEffectColumnPressed(int trackVisIdx)
 {
-	size_t tn = static_cast<size_t>(trackNum);
-	if (rightEffn_.at(tn) == 3) return;
-	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(++rightEffn_[tn]));
+	size_t ti = static_cast<size_t>(trackVisIdx);
+	if (rightEffn_.at(ti) == 3) return;
+	bt_->setEffectDisplayWidth(curSongNum_, visTracks_.at(trackVisIdx), static_cast<size_t>(++rightEffn_[ti]));
 	updateTracksWidthFromLeftToEnd();
 
 	if (config_->getMoveCursorByHorizontalScroll()) {
-		emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+		emit effectColsCompanded(calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack), getFullColmunSize());
 	}
 	else {
-		emit effectColsCompanded(leftTrackNum_, getScrollableCountByTrack());
+		emit effectColsCompanded(leftTrackVisIdx_, getScrollableCountByTrack());
 	}
 
 	redrawAll();
 }
 
-void PatternEditorPanel::onShrinkEffectColumnPressed(int trackNum)
+void PatternEditorPanel::onShrinkEffectColumnPressed(int trackVisIdx)
 {
-	size_t tn = static_cast<size_t>(trackNum);
-	if (rightEffn_.at(tn) == 0) return;
-	bt_->setEffectDisplayWidth(curSongNum_, trackNum, static_cast<size_t>(--rightEffn_[tn]));
+	size_t ti = static_cast<size_t>(trackVisIdx);
+	if (rightEffn_.at(ti) == 0) return;
+	bt_->setEffectDisplayWidth(curSongNum_, visTracks_.at(trackVisIdx), static_cast<size_t>(--rightEffn_[ti]));
 	updateTracksWidthFromLeftToEnd();
 
 	if (config_->getMoveCursorByHorizontalScroll()) {
-		emit effectColsCompanded(calculateColNumInRow(curPos_.track, curPos_.colInTrack), getFullColmunSize());
+		emit effectColsCompanded(calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack), getFullColmunSize());
 	}
 	else {
-		emit effectColsCompanded(leftTrackNum_, getScrollableCountByTrack());
+		emit effectColsCompanded(leftTrackVisIdx_, getScrollableCountByTrack());
 	}
 
 	redrawAll();
@@ -2723,21 +2733,21 @@ bool PatternEditorPanel::keyPressed(QKeyEvent *event)
 		shiftPressedPos_ = curPos_;
 		return true;
 	case Qt::Key_Tab:
-		if (curPos_.track == static_cast<int>(songStyle_.trackAttribs.size()) - 1) {
+		if (curPos_.trackVisIdx == static_cast<int>(visTracks_.size()) - 1) {
 			if (config_->getWarpCursor())
-				moveCursorToRight(-calculateColNumInRow(curPos_.track, curPos_.colInTrack));
+				moveCursorToRight(-calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack));
 		}
 		else {
-			moveCursorToRight(5 + 2 * rightEffn_[static_cast<size_t>(curPos_.track)] - curPos_.colInTrack);
+			moveCursorToRight(5 + 2 * rightEffn_[static_cast<size_t>(curPos_.trackVisIdx)] - curPos_.colInTrack);
 		}
 		return true;
 	case Qt::Key_Backtab:
-		if (curPos_.track == 0) {
+		if (curPos_.trackVisIdx == 0) {
 			if (config_->getWarpCursor())
 				moveCursorToRight(getFullColmunSize() - 1);
 		}
 		else {
-			moveCursorToRight(-5 - 2 * rightEffn_[static_cast<size_t>(curPos_.track) - 1] - curPos_.colInTrack);
+			moveCursorToRight(-5 - 2 * rightEffn_[static_cast<size_t>(curPos_.trackVisIdx) - 1] - curPos_.colInTrack);
 		}
 		return true;
 	case Qt::Key_Insert:
@@ -2843,8 +2853,8 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 	isPressedMinus_ = false;
 
 	if (event->button() == Qt::LeftButton) {
-		if (mousePressPos_.order == -2 && mousePressPos_.track >= 0) {
-			int w = calculateTracksWidthWithRowNum(leftTrackNum_, mousePressPos_.track - 1)
+		if (mousePressPos_.order == -2 && mousePressPos_.trackVisIdx >= 0) {
+			int w = calculateTracksWidthWithRowNum(leftTrackVisIdx_, mousePressPos_.trackVisIdx - 1)
 					+ hdMuteToggleWidth_ + stepFontWidth_ / 2;
 			if (w < event->pos().x() && event->pos().x() < w + hdEffCompandButtonWidth_ + stepFontWidth_) {
 				if (event->pos().y() < headerHeight_ / 2) isPressedPlus_ = true;
@@ -2861,23 +2871,23 @@ void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 void PatternEditorPanel::mouseMoveEvent(QMouseEvent* event)
 {
 	if (event->buttons() & Qt::LeftButton) {
-		if (mousePressPos_.track < 0 || mousePressPos_.order < 0) return;	// Start point is out of range
+		if (mousePressPos_.trackVisIdx < 0 || mousePressPos_.order < 0) return;	// Start point is out of range
 
-		if (hovPos_.track >= 0 && hovPos_.order >= 0) {
+		if (hovPos_.trackVisIdx >= 0 && hovPos_.order >= 0) {
 			setSelectedRectangle(mousePressPos_, hovPos_);
 		}
 
-		if (event->x() < stepNumWidth_ && leftTrackNum_ > 0) {
+		if (event->x() < stepNumWidth_ && leftTrackVisIdx_ > 0) {
 			if (config_->getMoveCursorByHorizontalScroll()) {
-				moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_) - 1)));
+				moveCursorToRight(-(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackVisIdx_) - 1)));
 			}
 			else {
 				moveViewToRight(-1);
 			}
 		}
-		else if (event->x() > geometry().width() - stepNumWidth_ && hovPos_.track != -1) {
+		else if (event->x() > geometry().width() - stepNumWidth_ && hovPos_.trackVisIdx != -1) {
 			if (config_->getMoveCursorByHorizontalScroll()) {
-				moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackNum_)));
+				moveCursorToRight(5 + 2 * rightEffn_.at(static_cast<size_t>(leftTrackVisIdx_)));
 			}
 			else {
 				moveViewToRight(1);
@@ -2900,29 +2910,29 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::LeftButton:
 		if (mousePressPos_ == mouseReleasePos_) {	// Jump cell
 			if (hovPos_.order >= 0 && hovPos_.step >= 0
-					&& hovPos_.track >= 0 && hovPos_.colInTrack >= 0) {
-				int horDif = calculateColumnDistance(curPos_.track, curPos_.colInTrack,
-													 hovPos_.track, hovPos_.colInTrack);
+					&& hovPos_.trackVisIdx >= 0 && hovPos_.colInTrack >= 0) {
+				int horDif = calculateColumnDistance(curPos_.trackVisIdx, curPos_.colInTrack,
+													 hovPos_.trackVisIdx, hovPos_.colInTrack);
 				int verDif = calculateStepDistance(curPos_.order, curPos_.step,
 												   hovPos_.order, hovPos_.step);
 				moveCursorToRight(horDif);
 				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(verDif);
 			}
-			else if (hovPos_.order == -2 && hovPos_.track >= 0) {	// Header
+			else if (hovPos_.order == -2 && hovPos_.trackVisIdx >= 0) {	// Header
 				if (isPressedPlus_) {
-					onExpandEffectColumnPressed(hovPos_.track);
+					onExpandEffectColumnPressed(hovPos_.trackVisIdx);
 				}
 				else if (isPressedMinus_) {
-					onShrinkEffectColumnPressed(hovPos_.track);
+					onShrinkEffectColumnPressed(hovPos_.trackVisIdx);
 				}
 				else {
-					onToggleTrackPressed(hovPos_.track);
-					int horDif = calculateColumnDistance(curPos_.track, curPos_.colInTrack,
-														 hovPos_.track, 0);
+					toggleTrack(hovPos_.trackVisIdx);
+					int horDif = calculateColumnDistance(curPos_.trackVisIdx, curPos_.colInTrack,
+														 hovPos_.trackVisIdx, 0);
 					moveCursorToRight(horDif);
 				}
 			}
-			else if (hovPos_.track == -2 && hovPos_.order >= 0 && hovPos_.step >= 0) {	// Step number
+			else if (hovPos_.trackVisIdx == -2 && hovPos_.order >= 0 && hovPos_.step >= 0) {	// Step number
 				if (!bt_->isPlaySong() || !bt_->isFollowPlay()) {
 					int verDif = calculateStepDistance(curPos_.order, curPos_.step,
 													   hovPos_.order, hovPos_.step);
@@ -2938,9 +2948,9 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			QMenu menu;
 			// Leave Before Qt5.7.0 style due to windows xp
 			QAction* toggle = menu.addAction(tr("To&ggle Track"));
-			QObject::connect(toggle, &QAction::triggered, this, [&] { onToggleTrackPressed(mousePressPos_.track); });
+			QObject::connect(toggle, &QAction::triggered, this, [&] { toggleTrack(mousePressPos_.trackVisIdx); });
 			QAction* solo = menu.addAction(tr("&Solo Track"));
-			QObject::connect(solo, &QAction::triggered, this, [&] { onSoloTrackPressed(mousePressPos_.track); });
+			QObject::connect(solo, &QAction::triggered, this, [&] { soloTrack(mousePressPos_.trackVisIdx); });
 			QAction* unmute = menu.addAction(tr("&Unmute All Tracks"));
 			QObject::connect(unmute, &QAction::triggered, this, &PatternEditorPanel::onUnmuteAllPressed);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
@@ -2950,7 +2960,7 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			auto shortcuts = config_->getShortcuts();
 			toggle->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
 			solo->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
-			if (mousePressPos_.track < 0) {
+			if (mousePressPos_.trackVisIdx < 0) {
 				toggle->setEnabled(false);
 				solo->setEnabled(false);
 				unmute->setEnabled(false);
@@ -3005,25 +3015,26 @@ void PatternEditorPanel::mouseDoubleClickEvent(QMouseEvent* event)
 	if (event->button() == Qt::LeftButton) {
 		if (doubleClickPos_.order >= 0) {
 			if (!config_->getDontSelectOnDoubleClick()) {
-				if (doubleClickPos_.track >= 0) {
+				if (doubleClickPos_.trackVisIdx >= 0) {
 					onSelectPressed(4);
 					return;
 				}
-				else if (doubleClickPos_.track == -2) {
+				else if (doubleClickPos_.trackVisIdx == -2) {
 					onSelectPressed(5);
 					return;
 				}
 			}
 		}
 		else if (doubleClickPos_.order == -2) {
-			if (doubleClickPos_.track >= 0 && !isPressedPlus_ && !isPressedMinus_) {
+			if (doubleClickPos_.trackVisIdx >= 0 && !isPressedPlus_ && !isPressedMinus_) {
 				bool flag = true;
 				int trackCnt = static_cast<int>(songStyle_.trackAttribs.size());
+				int clickedNum = visTracks_.at(doubleClickPos_.trackVisIdx);
 				for (int t = 0; t < trackCnt; ++t) {
-					if (t != doubleClickPos_.track) flag &= bt_->isMute(t);
+					if (t != clickedNum) flag &= bt_->isMute(t);
 				}
 				if (flag) onUnmuteAllPressed();
-				else onSoloTrackPressed(doubleClickPos_.track);
+				else soloTrack(doubleClickPos_.trackVisIdx);
 				return;
 			}
 		}
@@ -3093,7 +3104,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 	}
 	else {
 		int tmpWidth = stepNumWidth_;
-		for (int i = leftTrackNum_; ; ) {
+		for (int i = leftTrackVisIdx_; ; ) {
 			tmpWidth += (toneNameWidth_ + widthSpaceDbl_);
 			if (pos.x() <= tmpWidth) {
 				hovPos_.setCols(i, 0);
@@ -3127,7 +3138,7 @@ bool PatternEditorPanel::mouseHoverd(QHoverEvent *event)
 			if (flag) break;
 			++i;
 
-			if (i == static_cast<int>(songStyle_.trackAttribs.size())) {
+			if (i == static_cast<int>(visTracks_.size())) {
 				hovPos_.setCols(-1, -1);
 				break;
 			}

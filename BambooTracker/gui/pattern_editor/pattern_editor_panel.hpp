@@ -48,8 +48,6 @@ public:
 	void copySelectedCells();
 	void cutSelectedCells();
 
-	int getCurrentTrack() const;
-
 	void redrawByPatternChanged(bool patternSizeChanged = false);
 	void redrawByFocusChanged();
 	void redrawByHoverChanged();
@@ -68,11 +66,13 @@ public:
 	int getRowsFontSize() const;
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
+	void setVisibleTracks(std::vector<int> tracks);
+
 public slots:
 	void onHScrollBarChanged(int num);
 	void onVScrollBarChanged(int num);
-	void setCurrentTrack(int num);
-	void setCurrentOrder(int num);
+	void onOrderListCurrentTrackChanged(int num);
+	void onOrderListCurrentOrderChanged(int num);
 
 	void onOrderListEdited();
 	void onDefaultPatternSizeChanged();
@@ -97,16 +97,16 @@ public slots:
 	/// 5: Order
 	void onSelectPressed(int type);
 	void onNoteTransposePressed(int seminote);
-	void onToggleTrackPressed(int track);
-	void onSoloTrackPressed(int track);
+	void onToggleTrackPressed();
+	void onSoloTrackPressed();
 	void onUnmuteAllPressed();
 	void onExpandPressed();
 	void onShrinkPressed();
 	void onInterpolatePressed();
 	void onReversePressed();
 	void onReplaceInstrumentPressed();
-	void onExpandEffectColumnPressed(int trackNum);
-	void onShrinkEffectColumnPressed(int trackNum);
+	void onExpandEffectColumnPressed(int trackVisIdx);
+	void onShrinkEffectColumnPressed(int trackVisIdx);
 	void onFollowModeChanged();
 	void onChangeValuesPressed(int value);
 	void onPlayStepPressed();
@@ -167,9 +167,9 @@ private:
 	int curRowBaselineY_;
 	int curRowY_;
 
-	std::vector<int> rightEffn_;
+	std::vector<int> visTracks_, rightEffn_;
 
-	int leftTrackNum_;
+	int leftTrackVisIdx_;
 	SongStyle songStyle_;
 
 	int curSongNum_;
@@ -220,18 +220,19 @@ private:
 	void updateSizes();
 	void initDisplay();
 	void drawPattern(const QRect& rect);
-	void drawRows(int maxWidth, int trackSize);
-	void quickDrawRows(int maxWidth, int trackSize);
+	void drawRows(int maxWidth);
+	void quickDrawRows(int maxWidth);
 	/// Return:
 	///		track width
-	int drawStep(QPainter& forePainter, QPainter& textPainter, QPainter& backPainter, int trackNum, int orderNum, int stepNum, int x, int baseY, int rowY);
-	void drawHeaders(int maxWidth, int trackSize);
-	void drawBorders(int maxWidth, int trackSize);
+	int drawStep(QPainter& forePainter, QPainter& textPainter, QPainter& backPainter, int trackVisIdx, int orderNum, int stepNum, int x, int baseY, int rowY);
+	void drawHeaders(int maxWidth);
+	void drawBorders(int maxWidth);
 	void drawShadow();
 
-	int calculateTracksWidthWithRowNum(int begin, int end) const;
-	int calculateColNumInRow(int trackNum, int colNumInTrack, bool isExpanded = false) const;
-	int calculateColumnDistance(int beginTrack, int beginColumn, int endTrack, int endColumn, bool isExpanded = false) const;
+	// NOTE: Calculated by visible tracks
+	int calculateTracksWidthWithRowNum(int beginIdx, int endIdx) const;
+	int calculateColNumInRow(int trackVisIdx, int colNumInTrack, bool isExpanded = false) const;
+	int calculateColumnDistance(int beginTrackIdx, int beginColumn, int endTrackIdx, int endColumn, bool isExpanded = false) const;
 	int calculateStepDistance(int beginOrder, int beginStep, int endOrder, int endStep) const;
 	PatternPosition calculatePositionFrom(int order, int step, int by) const;
 	QPoint calculateCurrentCursorPosition() const;
@@ -239,7 +240,7 @@ private:
 	inline void updateTracksWidthFromLeftToEnd()
 	{
 		tracksWidthFromLeftToEnd_ = calculateTracksWidthWithRowNum(
-										leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+										leftTrackVisIdx_, static_cast<int>(visTracks_.size()) - 1);
 	}
 
 	void moveCursorToRight(int n);
@@ -285,8 +286,11 @@ private:
 	void transposeNote(const PatternPosition& startPos, const PatternPosition& endPos, int seminote);
 	void changeValuesInPattern(const PatternPosition& startPos, const PatternPosition& endPos, int value);
 
+	void toggleTrack(int trackIdx);
+	void soloTrack(int trackIdx);
+
 	void setSelectedRectangle(const PatternPosition& start, const PatternPosition& end);
-	bool isSelectedCell(int trackNum, int colNum, int orderNum, int stepNum);
+	bool isSelectedCell(int trackVisIdx, int colNum, int orderNum, int stepNum);
 
 	void showPatternContextMenu(const PatternPosition& pos, const QPoint& point);
 };

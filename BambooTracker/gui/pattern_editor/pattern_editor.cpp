@@ -163,6 +163,12 @@ void PatternEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
 	if (refresh) updateHorizontalSliderMaximum();
 }
 
+void PatternEditor::setVisibleTracks(std::vector<int> tracks)
+{
+	ui->panel->setVisibleTracks(tracks);
+	// TODO
+}
+
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched)
@@ -222,14 +228,14 @@ void PatternEditor::resizeEvent(QResizeEvent* event)
 }
 
 /********** Slots **********/
-void PatternEditor::setCurrentTrack(int num)
+void PatternEditor::onOrderListCurrentTrackChanged(int num)
 {
-	ui->panel->setCurrentTrack(num);
+	ui->panel->onOrderListCurrentTrackChanged(num);
 }
 
-void PatternEditor::setCurrentOrder(int num)
+void PatternEditor::onOrderListCrrentOrderChanged(int num)
 {
-	ui->panel->setCurrentOrder(num);
+	ui->panel->onOrderListCurrentOrderChanged(num);
 }
 
 void PatternEditor::onOrderListEdited()
@@ -323,12 +329,12 @@ void PatternEditor::onChangeValuesPressed(bool isCoarse, bool isIncreased)
 
 void PatternEditor::onToggleTrackPressed()
 {
-	ui->panel->onToggleTrackPressed(ui->panel->getCurrentTrack());
+	ui->panel->onToggleTrackPressed();
 }
 
 void PatternEditor::onSoloTrackPressed()
 {
-	ui->panel->onSoloTrackPressed(ui->panel->getCurrentTrack());
+	ui->panel->onSoloTrackPressed();
 }
 
 void PatternEditor::onExpandPressed()
