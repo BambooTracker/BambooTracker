@@ -164,7 +164,8 @@ void OrderListPanel::setFonts(QString headerFont, int headerSize, QString rowsFo
 
 	updateSizes();
 	updateTracksWidthFromLeftToEnd();
-	setMaximumWidth(columnsWidthFromLeftToEnd_);
+	setMaximumWidth(calculateColumnsWidthWithRowNum(
+						0, static_cast<int>(songStyle_.trackAttribs.size()) - 1));
 
 	redrawAll();
 }
