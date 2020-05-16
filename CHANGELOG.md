@@ -2,9 +2,10 @@
 
 ## Unreleased
 ### Added
-- [#2], [#213] - ADPCM sample editor (thanks [@freq-mod])
+- [#2], [#213], [#214] - ADPCM sample editor (thanks [@freq-mod])
 
 [#213]: https://github.com/rerrahkr/BambooTracker/issues/213
+[#214]: https://github.com/rerrahkr/BambooTracker/issues/214
 
 ## v0.4.2 (2020-05-10)
 ### Added

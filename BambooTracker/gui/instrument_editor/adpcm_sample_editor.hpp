@@ -60,7 +60,7 @@ private:
 
 	std::unique_ptr<QPixmap> memPixmap_;
 	std::unique_ptr<QPixmap> sampViewPixmap_;
-	int zoom_, gridIntr_;
+	int zoom_, viewedSampLen_, gridIntr_;
 	QPoint cursorSamp_, prevPressedSamp_;
 
 	size_t addrStart_, addrStop_;

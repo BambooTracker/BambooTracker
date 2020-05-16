@@ -31,6 +31,7 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	memPixmap_(std::make_unique<QPixmap>()),
 	sampViewPixmap_(std::make_unique<QPixmap>()),
 	zoom_(0),
+	viewedSampLen_(2),
 	gridIntr_(1),
 	cursorSamp_(0, 0),
 	prevPressedSamp_(-1, -1),
@@ -264,6 +265,25 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	if (!ui->action_Draw_Sample->isChecked()) {
 		sample_.resize(sample.size() * 2);
 		codec::ymb_decode(sample.data(), sample_.data(), static_cast<long>(sample_.size()));
+
+		// Slider settings
+		for (int z = 0, len = sample_.size(); ; ++z) {
+			int tmp = (len + 1) >> 1;
+			if (tmp < 2) {
+				zoom_ = z;
+				viewedSampLen_ = len;
+				ui->horizontalScrollBar->setMaximum(sample_.size() - len);
+				break;
+			}
+			else if (z == zoom_) {
+				viewedSampLen_ = len;
+				ui->horizontalScrollBar->setMaximum(sample_.size() - len);
+				break;
+			}
+			else {
+				len = tmp;
+			}
+		}
 		updateSampleView();
 		ui->sampleViewWidget->update();
 	}
@@ -320,9 +340,6 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
 	ui->rootRateSpinBox->setValue(calcADPCMDeltaN(wav->getSampleRate()));
 
-	updateSampleView();
-	ui->sampleViewWidget->update();
-
 	emit modified();
 	emit sampleAssignRequested();
 	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
@@ -353,17 +370,6 @@ void ADPCMSampleEditor::updateSampleView()
 	QRect rect = sampViewPixmap_->rect();
 	if (!rect.isValid()) return;
 
-	// Slider
-	size_t tmplen = sample_.size() - 1;
-	for (int z = zoom_; z >= 0; --z) {
-		size_t len = tmplen >> z;
-		if (len) {
-			zoom_ = z;
-			ui->horizontalScrollBar->setMaximum(tmplen - len);
-			break;
-		}
-	}
-
 	QPainter painter(sampViewPixmap_.get());
 	painter.fillRect(rect, palette_->instADPCMSampViewBackColor);
 
@@ -380,17 +386,17 @@ void ADPCMSampleEditor::updateSampleView()
 	}
 	painter.setPen(foreColor);
 	const int16_t maxY = std::numeric_limits<int16_t>::max();
-	const size_t seglen = sample_.size() >> zoom_;
 	const size_t first = ui->horizontalScrollBar->value();
 	const bool showGrid = ui->action_Grid_View->isChecked();
-	if (maxX < static_cast<int>(seglen)) {
+	if (maxX < viewedSampLen_) {
 		int prevY = centerY;
 		size_t g = first;
-		for (int x = 0; x <= maxX; ++x) {
-			size_t i = seglen * x / maxX;
-			int16_t sample = sample_[i + first];
+		for (int x = 0; x < maxX; ++x) {
+			size_t i = (viewedSampLen_ - 1) * x / (maxX - 1);
+			size_t p = i + first;
+			int16_t sample = sample_.at(p);
 			int y = centerY - (centerY * sample / maxY);
-			if (showGrid && g <= i) {
+			if (showGrid && g <= p) {
 				painter.setPen(palette_->instADPCMSampViewGridColor);
 				painter.drawLine(x, 0, x, rect.height());
 				g = (g / gridIntr_ + 1) * gridIntr_;
@@ -402,8 +408,8 @@ void ADPCMSampleEditor::updateSampleView()
 	}
 	else {
 		QPoint prev, p;
-		for (size_t i = 0; i < seglen; ++i) {
-			p.setX(maxX * i / (seglen - 1));
+		for (int i = 0; i < viewedSampLen_; ++i) {
+			p.setX((maxX - 1) * i / (viewedSampLen_ - 1));
 			int16_t sample = sample_[i + first];
 			p.setY(centerY - (centerY * sample / maxY));
 			if (showGrid && !(i % gridIntr_)) {
@@ -432,12 +438,11 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 	const QRect& rect = ui->sampleViewWidget->rect();
 
 	// Detect x
-	const size_t len = sample_.size() >> zoom_;
 	const int w = rect.width();
-	if (len < static_cast<size_t>(w)) {
-		const double segW = rect.width() / (len - 1.);
+	if (viewedSampLen_ < w) {
+		const double segW = rect.width() / (viewedSampLen_ - 1.);
 		double th = segW / 2.;
-		for (size_t i = 0; i < len; ++i, th += segW) {
+		for (int i = 0; i < viewedSampLen_; ++i, th += segW) {
 			if (cx < th) {
 				cursorSamp_.setX(ui->horizontalScrollBar->value() + i);
 				break;
@@ -446,7 +451,7 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 	}
 	else {
 		cursorSamp_.setX(
-					ui->horizontalScrollBar->value() + (len - 1) * clamp(cx, 0, w - 1) / (w - 1));
+					ui->horizontalScrollBar->value() + (viewedSampLen_ - 1) * clamp(cx, 0, w - 1) / (w - 1));
 	}
 
 	// Detect y
@@ -540,10 +545,11 @@ void ADPCMSampleEditor::on_actionRe_verse_triggered()
 
 void ADPCMSampleEditor::on_actionZoom_In_triggered()
 {
-	int z = zoom_ + 1;
-	size_t len = sample_.size() >> z;
+	int len = (viewedSampLen_ + 1) >> 1;
 	if (len > 1) {
-		zoom_ = z;
+		++zoom_;
+		viewedSampLen_ = len;
+		ui->horizontalScrollBar->setMaximum(sample_.size() - len);
 		updateSampleView();
 		ui->sampleViewWidget->update();
 
@@ -555,6 +561,8 @@ void ADPCMSampleEditor::on_actionZoom_Out_triggered()
 {
 	if (zoom_) {
 		--zoom_;
+		viewedSampLen_ = sample_.size() >> zoom_;
+		ui->horizontalScrollBar->setMaximum(sample_.size() - viewedSampLen_);
 		updateSampleView();
 		ui->sampleViewWidget->update();
 
@@ -585,9 +593,6 @@ void ADPCMSampleEditor::on_action_Clear_triggered()
 
 	updateSampleMemoryBar();
 	ui->memoryWidget->update();
-
-	updateSampleView();
-	ui->sampleViewWidget->update();
 
 	emit modified();
 
