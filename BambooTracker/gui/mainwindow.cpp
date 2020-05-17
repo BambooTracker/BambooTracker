@@ -21,6 +21,7 @@
 #include <QScreen>
 #include <QComboBox>
 #include <QToolButton>
+#include <QSignalBlocker>
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -1024,6 +1025,12 @@ void MainWindow::freezeViews()
 	ui->patternEditor->freeze();
 }
 
+void MainWindow::unfreezeViews()
+{
+	ui->orderList->unfreeze();
+	ui->patternEditor->unfreeze();
+}
+
 void MainWindow::setShortcuts()
 {
 	auto shortcuts = config_.lock()->getShortcuts();
@@ -1818,11 +1825,14 @@ void MainWindow::loadModule()
 	ui->authorLineEdit->setCursorPosition(0);
 	ui->copyrightLineEdit->setText(utf8ToQString(bt_->getModuleCopyright()));
 	ui->copyrightLineEdit->setCursorPosition(0);
-	ui->songComboBox->clear();
-	for (size_t i = 0; i < bt_->getSongCount(); ++i) {
-		QString title = utf8ToQString(bt_->getSongTitle(static_cast<int>(i)));
-		if (title.isEmpty()) title = tr("Untitled");
-		ui->songComboBox->addItem(QString("#%1 %2").arg(i).arg(title));
+	{
+		QSignalBlocker blocker(ui->songComboBox);	// Prevent duplicated call "loadSong"
+		ui->songComboBox->clear();
+		for (size_t i = 0; i < bt_->getSongCount(); ++i) {
+			QString title = utf8ToQString(bt_->getSongTitle(static_cast<int>(i)));
+			if (title.isEmpty()) title = tr("Untitled");
+			ui->songComboBox->addItem(QString("#%1 %2").arg(i).arg(title));
+		}
 	}
 	highlight1_->setValue(static_cast<int>(bt_->getModuleStepHighlight1Distance()));
 	highlight2_->setValue(static_cast<int>(bt_->getModuleStepHighlight2Distance()));
@@ -1944,8 +1954,6 @@ void MainWindow::loadSong()
 	bt_->setCurrentStepNumber(0);
 
 	// Init ui
-	ui->orderList->unfreeze();
-	ui->patternEditor->unfreeze();
 	ui->orderList->onSongLoaded();
 	ui->orderListGroupBox->setMaximumWidth(
 				ui->orderListGroupBox->contentsMargins().left()
@@ -1954,6 +1962,7 @@ void MainWindow::loadSong()
 				+ ui->orderListGroupBox->layout()->contentsMargins().right()
 				+ ui->orderListGroupBox->contentsMargins().right());
 	ui->patternEditor->onSongLoaded();
+	unfreezeViews();
 
 	int curSong = bt_->getCurrentSongNumber();
 	ui->songComboBox->setCurrentIndex(curSong);

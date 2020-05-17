@@ -122,14 +122,15 @@ void PatternEditor::cutSelectedCells()
 
 void PatternEditor::freeze()
 {
+	setUpdatesEnabled(false);
 	freezed_ = true;
-	ui->panel->freeze();
+	ui->panel->waitPaintFinish();
 }
 
 void PatternEditor::unfreeze()
 {
 	freezed_ = false;
-	ui->panel->unfreeze();
+	setUpdatesEnabled(true);
 }
 
 QString PatternEditor::getHeaderFont() const

@@ -105,14 +105,15 @@ void OrderListEditor::insertOrderBelow()
 
 void OrderListEditor::freeze()
 {
+	setUpdatesEnabled(false);
 	freezed_ = true;
-	ui->panel->freeze();
+	ui->panel->waitPaintFinish();
 }
 
 void OrderListEditor::unfreeze()
 {
 	freezed_ = false;
-	ui->panel->unfreeze();
+	setUpdatesEnabled(true);
 }
 
 QString OrderListEditor::getHeaderFont() const

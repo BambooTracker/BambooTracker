@@ -59,8 +59,7 @@ public:
 
 	void resetEntryCount();
 
-	void freeze();
-	void unfreeze();
+	void waitPaintFinish();
 
 	QString getHeaderFont() const;
 	int getHeaderFontSize() const;
@@ -201,7 +200,6 @@ private:
 	bool hasFocussedBefore_;
 	int stepDownCount_;
 
-	bool freezed_;
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard
 	std::atomic_int repaintingCnt_;
 
