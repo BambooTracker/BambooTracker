@@ -304,7 +304,7 @@
      <normaloff>:/icon/zoom_in</normaloff>:/icon/zoom_in</iconset>
    </property>
    <property name="text">
-    <string>Zoom &amp;In</string>
+    <string>Zoom I&amp;n</string>
    </property>
   </action>
   <action name="actionZoom_Out">
@@ -348,7 +348,7 @@
   </action>
   <action name="actionG_rid_Settings">
    <property name="text">
-    <string>G&amp;rid Settings...</string>
+    <string>Grid &amp;Settings...</string>
    </property>
   </action>
   <action name="action_Draw_Sample">
@@ -361,6 +361,18 @@
    </property>
    <property name="text">
     <string>&amp;Draw Sample</string>
+   </property>
+  </action>
+  <action name="actionDirec_t_Draw">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../bamboo_tracker.qrc">
+     <normaloff>:/icon/chart_edit</normaloff>:/icon/chart_edit</iconset>
+   </property>
+   <property name="text">
+    <string>Direc&amp;t Draw</string>
    </property>
   </action>
  </widget>

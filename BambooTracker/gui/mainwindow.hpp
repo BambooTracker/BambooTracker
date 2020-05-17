@@ -200,6 +200,7 @@ private:
 
 	void updateInstrumentListColors();
 	void freezeViews();
+	void unfreezeViews();
 
 	inline bool showUndoResetWarningDialog(QString text)
 	{

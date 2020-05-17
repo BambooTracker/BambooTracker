@@ -60,7 +60,7 @@ private:
 
 	std::unique_ptr<QPixmap> memPixmap_;
 	std::unique_ptr<QPixmap> sampViewPixmap_;
-	int zoom_, gridIntr_;
+	int zoom_, viewedSampLen_, gridIntr_;
 	QPoint cursorSamp_, prevPressedSamp_;
 
 	size_t addrStart_, addrStop_;
@@ -73,11 +73,16 @@ private:
 
 	void detectCursorSamplePosition(int cx, int cy);
 
+	void sendEditedSample();
+
 	inline QString updateDetailView() const
 	{
 		return tr("(%1, %2), %3, x%4")
 				.arg(cursorSamp_.x()).arg(cursorSamp_.y()).arg(sample_.size()).arg(zoom_ + 1);
 	}
+
+	enum class DrawMode { Disabled, Normal, Direct };
+	DrawMode drawMode_;
 
 private slots:
 	void on_sampleNumSpinBox_valueChanged(int arg1);
@@ -92,6 +97,8 @@ private slots:
 	void on_action_Clear_triggered();
 	void on_action_Grid_View_triggered();
 	void on_actionG_rid_Settings_triggered();
+	void on_action_Draw_Sample_triggered(bool checked);
+	void on_actionDirec_t_Draw_triggered(bool checked);
 };
 
 #endif // ADPCM_SAMPLE_EDITOR_HPP

@@ -88,7 +88,6 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  followModeChanged_(false),
 	  hasFocussedBefore_(false),
 	  stepDownCount_(0),
-	  freezed_(false),
 	  repaintable_(true),
 	  repaintingCnt_(0)
 {	
@@ -358,9 +357,8 @@ void PatternEditorPanel::setColorPallete(std::shared_ptr<ColorPalette> palette)
 	palette_ = palette;
 }
 
-void PatternEditorPanel::freeze()
+void PatternEditorPanel::waitPaintFinish()
 {
-	freezed_ = true;
 	while (true) {
 		if (repaintingCnt_.load())
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -369,11 +367,6 @@ void PatternEditorPanel::freeze()
 			return;
 		}
 	}
-}
-
-void PatternEditorPanel::unfreeze()
-{
-	freezed_ = false;
 }
 
 QString PatternEditorPanel::getHeaderFont() const
@@ -474,7 +467,7 @@ void PatternEditorPanel::resetEntryCount()
 
 void PatternEditorPanel::drawPattern(const QRect &rect)
 {
-	if (!freezed_ && repaintable_.load()) {
+	if (repaintable_.load()) {
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
 

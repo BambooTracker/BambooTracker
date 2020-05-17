@@ -62,7 +62,6 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  followModeChanged_(false),
 	  hasFocussedBefore_(false),
 	  orderDownCount_(0),
-	  freezed_(false),
 	  repaintable_(true),
 	  repaintingCnt_(0),
 	  playingRow_(-1)
@@ -120,9 +119,8 @@ void OrderListPanel::resetEntryCount()
 	entryCnt_ = 0;
 }
 
-void OrderListPanel::freeze()
+void OrderListPanel::waitPaintFinish()
 {
-	freezed_ = true;
 	while (true) {
 		if (repaintingCnt_.load())
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -131,11 +129,6 @@ void OrderListPanel::freeze()
 			return;
 		}
 	}
-}
-
-void OrderListPanel::unfreeze()
-{
-	freezed_ = false;
 }
 
 QString OrderListPanel::getHeaderFont() const
@@ -164,7 +157,8 @@ void OrderListPanel::setFonts(QString headerFont, int headerSize, QString rowsFo
 
 	updateSizes();
 	updateTracksWidthFromLeftToEnd();
-	setMaximumWidth(columnsWidthFromLeftToEnd_);
+	setMaximumWidth(calculateColumnsWidthWithRowNum(
+						0, static_cast<int>(songStyle_.trackAttribs.size()) - 1));
 
 	redrawAll();
 }
@@ -228,7 +222,7 @@ void OrderListPanel::initDisplay()
 
 void OrderListPanel::drawList(const QRect &rect)
 {
-	if (!freezed_ && repaintable_.load()) {
+	if (repaintable_.load()) {
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
 
@@ -1171,6 +1165,7 @@ void OrderListPanel::onSongLoaded()
 	leftTrackNum_ = 0;
 	updateTracksWidthFromLeftToEnd();
 	setMaximumWidth(columnsWidthFromLeftToEnd_);
+	initDisplay();	// Call because resize event is not called during loading song
 
 	hovPos_ = { -1, -1 };
 	mousePressPos_ = { -1, -1 };

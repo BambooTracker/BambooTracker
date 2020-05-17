@@ -50,8 +50,7 @@ public:
 
 	void resetEntryCount();
 
-	void freeze();
-	void unfreeze();
+	void waitPaintFinish();
 
 	QString getHeaderFont() const;
 	int getHeaderFontSize() const;
@@ -152,7 +151,6 @@ private:
 	bool hasFocussedBefore_;
 	int orderDownCount_;
 
-	bool freezed_;
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard
 	std::atomic_int repaintingCnt_;
 
@@ -178,7 +176,7 @@ private:
 	inline void updateTracksWidthFromLeftToEnd()
 	{
 		columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(
-					leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+										 leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
 	}
 
 	void moveCursorToRight(int n);

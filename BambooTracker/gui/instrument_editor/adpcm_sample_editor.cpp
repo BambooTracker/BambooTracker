@@ -31,12 +31,14 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	memPixmap_(std::make_unique<QPixmap>()),
 	sampViewPixmap_(std::make_unique<QPixmap>()),
 	zoom_(0),
+	viewedSampLen_(2),
 	gridIntr_(1),
 	cursorSamp_(0, 0),
 	prevPressedSamp_(-1, -1),
 	addrStart_(0),
 	addrStop_(0),
-	sample_(2)
+	sample_(2),
+	drawMode_(DrawMode::Disabled)
 {
 	ui->setupUi(this);
 
@@ -66,13 +68,21 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	tb->addActions({ ui->actionZoom_In, ui->actionZoom_Out });
 	auto gridMenu = new QMenu();
 	gridMenu->addActions({ ui->action_Grid_View, ui->actionG_rid_Settings });
-	auto gridbutton = new QToolButton();
-	gridbutton->setPopupMode(QToolButton::MenuButtonPopup);
-	gridbutton->setMenu(gridMenu);
-	gridbutton->setDefaultAction(ui->action_Grid_View);
-	tb->addWidget(gridbutton);
+	auto gridButton = new QToolButton();
+	gridButton->setPopupMode(QToolButton::MenuButtonPopup);
+	gridButton->setMenu(gridMenu);
+	gridButton->setDefaultAction(ui->action_Grid_View);
+	tb->addWidget(gridButton);
 	tb->addSeparator();
-	tb->addActions({ ui->action_Draw_Sample, ui->actionRe_verse });
+	auto editMenu = new QMenu();
+	editMenu->addActions({ ui->action_Draw_Sample, ui->actionDirec_t_Draw });
+	auto editButton = new QToolButton();
+	editButton->setPopupMode(QToolButton::MenuButtonPopup);
+	editButton->setMenu(editMenu);
+	editButton->setDefaultAction(ui->action_Draw_Sample);
+	QObject::connect(editButton, &QToolButton::triggered, editButton, &QToolButton::setDefaultAction);
+	tb->addWidget(editButton);
+	tb->addAction(ui->actionRe_verse);
 	ui->verticalLayout_2->insertWidget(0, tb);
 }
 
@@ -167,42 +177,50 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 			detectCursorSamplePosition(pos.x(), pos.y());
 
 			if (prevPressedSamp_.x() != -1) {	// Change sample
-				int px = prevPressedSamp_.x();
-				int py = prevPressedSamp_.y();
-				int cx = cursorSamp_.x();
-				int cy = cursorSamp_.y();
+				const int px = prevPressedSamp_.x();
+				const int py = prevPressedSamp_.y();
+				const int cx = cursorSamp_.x();
+				const int cy = cursorSamp_.y();
 				if (px < cx) {
+					const int dx = cx - px;
+					const int dy = cy - py;
 					for (int x = px + 1; x <= cx; ++x)
-						sample_.at(x) = (cy - py) * (x - px) + py;
+						sample_.at(x) = (x - px) * dy / dx + py;
 				}
 				else if (px == cx) {
 					sample_.at(cx) = cy;
 				}
 				else {
+					const int dx = px - cx;
+					const int dy = py - cy;
 					for (int x = cx; x < px; ++x)
-						sample_.at(x) = (py - cy) * (x - cx) + cy;
+						sample_.at(x) = (x - cx) * dy / dx + cy;
 				}
-				std::vector<uint8_t> adpcm(sample_.size() >> 1);
-				codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
-				bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
 				prevPressedSamp_ = cursorSamp_;
-				emit modified();
-				emit sampleAssignRequested();
-				emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+
+				if (drawMode_ == DrawMode::Direct) {
+					sendEditedSample();
+				}
+				else {
+					updateSampleView();
+					ui->sampleViewWidget->update();
+				}
 			}
 			break;
 		}
 		case QEvent::MouseButtonPress:
 		{
-			if (!ui->action_Draw_Sample->isChecked()) break;
+			if (drawMode_ == DrawMode::Disabled) break;
 			sample_.at(cursorSamp_.x()) = cursorSamp_.y();
-			std::vector<uint8_t> adpcm(sample_.size() >> 1);
-			codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
-			bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
 			prevPressedSamp_ = cursorSamp_;
-			emit modified();
-			emit sampleAssignRequested();
-			emit sampleParameterChanged(ui->sampleNumSpinBox->value());
+
+			if (drawMode_ == DrawMode::Direct) {
+				sendEditedSample();
+			}
+			else {
+				updateSampleView();
+				ui->sampleViewWidget->update();
+			}
 			break;
 		}
 		case QEvent::MouseButtonRelease:
@@ -244,10 +262,31 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 	updateSampleMemoryBar();
 	ui->memoryWidget->update();
 
-	sample_.resize(sample.size() * 2);
-	codec::ymb_decode(sample.data(), sample_.data(), static_cast<long>(sample_.size()));
-	updateSampleView();
-	ui->sampleViewWidget->update();
+	if (!ui->action_Draw_Sample->isChecked()) {
+		sample_.resize(sample.size() * 2);
+		codec::ymb_decode(sample.data(), sample_.data(), static_cast<long>(sample_.size()));
+
+		// Slider settings
+		for (int z = 0, len = sample_.size(); ; ++z) {
+			int tmp = (len + 1) >> 1;
+			if (tmp < 2) {
+				zoom_ = z;
+				viewedSampLen_ = len;
+				ui->horizontalScrollBar->setMaximum(sample_.size() - len);
+				break;
+			}
+			else if (z == zoom_) {
+				viewedSampLen_ = len;
+				ui->horizontalScrollBar->setMaximum(sample_.size() - len);
+				break;
+			}
+			else {
+				len = tmp;
+			}
+		}
+		updateSampleView();
+		ui->sampleViewWidget->update();
+	}
 
 	ui->detailLabel->setText(updateDetailView());
 }
@@ -301,9 +340,6 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	ui->rootKeySpinBox->setValue(ROOT_KEY / 12);
 	ui->rootRateSpinBox->setValue(calcADPCMDeltaN(wav->getSampleRate()));
 
-	updateSampleView();
-	ui->sampleViewWidget->update();
-
 	emit modified();
 	emit sampleAssignRequested();
 	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
@@ -334,17 +370,6 @@ void ADPCMSampleEditor::updateSampleView()
 	QRect rect = sampViewPixmap_->rect();
 	if (!rect.isValid()) return;
 
-	// Slider
-	size_t tmplen = sample_.size() - 1;
-	for (int z = zoom_; z >= 0; --z) {
-		size_t len = tmplen >> z;
-		if (len) {
-			zoom_ = z;
-			ui->horizontalScrollBar->setMaximum(tmplen - len);
-			break;
-		}
-	}
-
 	QPainter painter(sampViewPixmap_.get());
 	painter.fillRect(rect, palette_->instADPCMSampViewBackColor);
 
@@ -353,23 +378,29 @@ void ADPCMSampleEditor::updateSampleView()
 	const int centerY = rect.height() >> 1;
 	painter.drawLine(0, centerY, maxX, centerY);
 
-	painter.setPen(palette_->instADPCMSampViewForeColor);
+	QColor foreColor;
+	switch (drawMode_) {
+	case DrawMode::Disabled:	foreColor = palette_->instADPCMSampViewForeColor;		break;
+	case DrawMode::Normal:		foreColor = palette_->instADPCMSampViewDrawColor;		break;
+	case DrawMode::Direct:		foreColor = palette_->instADPCMSampViewDirectDrawColor;	break;
+	}
+	painter.setPen(foreColor);
 	const int16_t maxY = std::numeric_limits<int16_t>::max();
-	const size_t seglen = sample_.size() >> zoom_;
 	const size_t first = ui->horizontalScrollBar->value();
 	const bool showGrid = ui->action_Grid_View->isChecked();
-	if (maxX < static_cast<int>(seglen)) {
+	if (maxX < viewedSampLen_) {
 		int prevY = centerY;
 		size_t g = first;
-		for (int x = 0; x <= maxX; ++x) {
-			size_t i = seglen * x / maxX;
-			int16_t sample = sample_[i + first];
+		for (int x = 0; x < maxX; ++x) {
+			size_t i = (viewedSampLen_ - 1) * x / (maxX - 1);
+			size_t p = i + first;
+			int16_t sample = sample_.at(p);
 			int y = centerY - (centerY * sample / maxY);
-			if (showGrid && g <= i) {
+			if (showGrid && g <= p) {
 				painter.setPen(palette_->instADPCMSampViewGridColor);
 				painter.drawLine(x, 0, x, rect.height());
 				g = (g / gridIntr_ + 1) * gridIntr_;
-				painter.setPen(palette_->instADPCMSampViewForeColor);
+				painter.setPen(foreColor);
 			}
 			if (x) painter.drawLine(x - 1, prevY, x, y);
 			prevY = y;
@@ -377,14 +408,14 @@ void ADPCMSampleEditor::updateSampleView()
 	}
 	else {
 		QPoint prev, p;
-		for (size_t i = 0; i < seglen; ++i) {
-			p.setX(maxX * i / (seglen - 1));
+		for (int i = 0; i < viewedSampLen_; ++i) {
+			p.setX((maxX - 1) * i / (viewedSampLen_ - 1));
 			int16_t sample = sample_[i + first];
 			p.setY(centerY - (centerY * sample / maxY));
 			if (showGrid && !(i % gridIntr_)) {
 				painter.setPen(palette_->instADPCMSampViewGridColor);
 				painter.drawLine(p.x(), 0, p.x(), rect.height());
-				painter.setPen(palette_->instADPCMSampViewForeColor);
+				painter.setPen(foreColor);
 			}
 			if (p.x()) painter.drawLine(prev, p);
 			prev = p;
@@ -407,12 +438,11 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 	const QRect& rect = ui->sampleViewWidget->rect();
 
 	// Detect x
-	const size_t len = sample_.size() >> zoom_;
-	const size_t w = rect.width();
-	if (len < w) {
-		const int segW = rect.width() / (len - 1);
-		int th = segW >> 1;
-		for (size_t i = 0; i < len; ++i, th += segW) {
+	const int w = rect.width();
+	if (viewedSampLen_ < w) {
+		const double segW = rect.width() / (viewedSampLen_ - 1.);
+		double th = segW / 2.;
+		for (int i = 0; i < viewedSampLen_; ++i, th += segW) {
 			if (cx < th) {
 				cursorSamp_.setX(ui->horizontalScrollBar->value() + i);
 				break;
@@ -420,7 +450,8 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 		}
 	}
 	else {
-		cursorSamp_.setX(len * cx / w);
+		cursorSamp_.setX(
+					ui->horizontalScrollBar->value() + (viewedSampLen_ - 1) * clamp(cx, 0, w - 1) / (w - 1));
 	}
 
 	// Detect y
@@ -431,6 +462,16 @@ void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)
 
 	// Update position view
 	ui->detailLabel->setText(updateDetailView());
+}
+
+void ADPCMSampleEditor::sendEditedSample()
+{
+	std::vector<uint8_t> adpcm(sample_.size() >> 1);
+	codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
+	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+	emit modified();
+	emit sampleAssignRequested();
+	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 }
 
 void ADPCMSampleEditor::onSampleNumberChanged()
@@ -486,41 +527,29 @@ void ADPCMSampleEditor::on_action_Resize_triggered()
 	SampleLengthDialog diag(sample_.size());
 	if (diag.exec() == QDialog::Accepted) {
 		sample_.resize(diag.getLength());
-
-		std::vector<uint8_t> adpcm(sample_.size() / 2);
-		codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
-		bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+		sendEditedSample();
 
 		updateSampleView();
 		ui->sampleViewWidget->update();
-
-		emit modified();
-		emit sampleAssignRequested();
-		emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 	}
 }
 
 void ADPCMSampleEditor::on_actionRe_verse_triggered()
 {
-	std::vector<uint8_t> adpcm(sample_.size() / 2);
 	std::reverse(sample_.begin(), sample_.end());
-	codec::ymb_encode(sample_.data(), adpcm.data(), static_cast<long>(sample_.size()));
-	bt_.lock()->storeSampleADPCMRawSample(ui->sampleNumSpinBox->value(), std::move(adpcm));
+	sendEditedSample();
 
 	updateSampleView();
 	ui->sampleViewWidget->update();
-
-	emit modified();
-	emit sampleAssignRequested();
-	emit sampleParameterChanged(ui->sampleNumSpinBox->value());
 }
 
 void ADPCMSampleEditor::on_actionZoom_In_triggered()
 {
-	int z = zoom_ + 1;
-	size_t len = sample_.size() >> z;
+	int len = (viewedSampLen_ + 1) >> 1;
 	if (len > 1) {
-		zoom_ = z;
+		++zoom_;
+		viewedSampLen_ = len;
+		ui->horizontalScrollBar->setMaximum(sample_.size() - len);
 		updateSampleView();
 		ui->sampleViewWidget->update();
 
@@ -532,6 +561,8 @@ void ADPCMSampleEditor::on_actionZoom_Out_triggered()
 {
 	if (zoom_) {
 		--zoom_;
+		viewedSampLen_ = sample_.size() >> zoom_;
+		ui->horizontalScrollBar->setMaximum(sample_.size() - viewedSampLen_);
 		updateSampleView();
 		ui->sampleViewWidget->update();
 
@@ -563,9 +594,6 @@ void ADPCMSampleEditor::on_action_Clear_triggered()
 	updateSampleMemoryBar();
 	ui->memoryWidget->update();
 
-	updateSampleView();
-	ui->sampleViewWidget->update();
-
 	emit modified();
 
 	if (config_.lock()->getWriteOnlyUsedSamples()) {
@@ -592,4 +620,30 @@ void ADPCMSampleEditor::on_actionG_rid_Settings_triggered()
 		updateSampleView();
 		ui->sampleViewWidget->update();
 	}
+}
+
+void ADPCMSampleEditor::on_action_Draw_Sample_triggered(bool checked)
+{
+	if (checked) {
+		ui->actionDirec_t_Draw->setChecked(false);
+		drawMode_ = DrawMode::Normal;
+	}
+	else {
+		if (drawMode_ == DrawMode::Normal) drawMode_ = DrawMode::Disabled;
+		sendEditedSample();	// Convert sample
+	}
+	updateSampleView();
+}
+
+void ADPCMSampleEditor::on_actionDirec_t_Draw_triggered(bool checked)
+{
+	if (checked) {
+		ui->action_Draw_Sample->setChecked(false);
+		if (drawMode_ == DrawMode::Normal) sendEditedSample();	// Convert sample
+		drawMode_ = DrawMode::Direct;
+	}
+	else {
+		if (drawMode_ == DrawMode::Direct) drawMode_ = DrawMode::Disabled;
+	}
+	updateSampleView();
 }

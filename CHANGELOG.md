@@ -1,6 +1,15 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#2], [#213], [#214] - ADPCM sample editor (thanks [@freq-mod])
+
+### Fixed
+- Resize width of the order list after closing configuration dialog
+- Fix corruption while loading module
+
+[#213]: https://github.com/rerrahkr/BambooTracker/issues/213
+[#214]: https://github.com/rerrahkr/BambooTracker/issues/214
 
 ## v0.4.2 (2020-05-10)
 ### Added
@@ -27,6 +36,8 @@
 - Fix bank loading crash if properties are not changed
 - Fix to load "Write only used samples" settings on launch
 
+[@TastySnax12]: https://twitter.com/TastySnax12
+[@HeavyViper]: https://twitter.com/HeavyViper
 [@Mijinkono02]: https://twitter.com/Mijinkono02
 
 [#209]: https://github.com/rerrahkr/BambooTracker/issues/209
@@ -43,9 +54,6 @@
   - Increase/Decrease edit step
   - Previous/Next song
 - 255 new sample instruments (thanks [Takeshi Abo])
-
-[@TastySnax12]: https://twitter.com/TastySnax12
-[@HeavyViper]: https://twitter.com/HeavyViper
 
 ### Changed
 - [#198] - Raise the maximum of tick rate to 511Hz (thanks [@djmaximum17])
