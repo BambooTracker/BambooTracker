@@ -3,7 +3,7 @@
 
 struct OrderPosition
 {
-	int track, row;
+	int trackVisIdx, row;
 
 	friend bool operator==(const OrderPosition& a, const OrderPosition& b);
 	friend bool operator!=(const OrderPosition& a, const OrderPosition& b);
@@ -11,7 +11,7 @@ struct OrderPosition
 
 inline bool operator==(const OrderPosition& a, const OrderPosition& b)
 {
-	return (a.track == b.track && a.row == b.row);
+	return (a.trackVisIdx == b.trackVisIdx && a.row == b.row);
 }
 
 inline bool operator!=(const OrderPosition& a, const OrderPosition& b)

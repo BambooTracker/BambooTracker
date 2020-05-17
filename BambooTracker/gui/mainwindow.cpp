@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <algorithm>
 #include <unordered_map>
+#include <numeric>
 #include <QString>
 #include <QLineEdit>
 #include <QClipboard>
@@ -391,9 +392,9 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->patternEditor->setCommandStack(comStack_);
 	ui->patternEditor->installEventFilter(this);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentTrackChanged,
-					 ui->orderList, &OrderListEditor::setCurrentTrack);
+					 ui->orderList, &OrderListEditor::onPatternEditorCurrentTrackChanged);
 	QObject::connect(ui->patternEditor, &PatternEditor::currentOrderChanged,
-					 ui->orderList, &OrderListEditor::setCurrentOrder);
+					 ui->orderList, &OrderListEditor::onPatternEditorCurrentOrderChanged);
 	QObject::connect(ui->patternEditor, &PatternEditor::focusIn,
 					 this, &MainWindow::updateMenuByPattern);
 	QObject::connect(ui->patternEditor, &PatternEditor::selected,
@@ -432,6 +433,12 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, &MainWindow::updateMenuByOrderSelection);
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 this, &MainWindow::onCurrentTrackChanged);
+
+	/* Track visibility */
+	std::vector<int> visTracks(getTrackCount(SongType::Standard));
+	std::iota(visTracks.begin(), visTracks.end(), 0);
+	ui->orderList->setVisibleTracks(visTracks);
+	ui->patternEditor->setVisibleTracks(visTracks);
 
 	/* Visuals */
 	visualTimer_.reset(new QTimer);
@@ -1117,6 +1124,16 @@ void MainWindow::updateInstrumentListColors()
 				+ QString("QListWidget::item:selected:hover { color: %1; background: %2; }")
 				.arg(palette_->ilistTextColor.name(QColor::HexArgb),
 					 palette_->ilistHovSelBackColor.name(QColor::HexArgb)));
+}
+
+void MainWindow::setOrderListGroupMaximumWidth()
+{
+	ui->orderListGroupBox->setMaximumWidth(
+				ui->orderListGroupBox->contentsMargins().left()
+				+ ui->orderListGroupBox->layout()->contentsMargins().left()
+				+ ui->orderList->maximumWidth()
+				+ ui->orderListGroupBox->layout()->contentsMargins().right()
+				+ ui->orderListGroupBox->contentsMargins().right());
 }
 
 /********** MIDI **********/
@@ -1956,12 +1973,7 @@ void MainWindow::loadSong()
 
 	// Init ui
 	ui->orderList->onSongLoaded();
-	ui->orderListGroupBox->setMaximumWidth(
-				ui->orderListGroupBox->contentsMargins().left()
-				+ ui->orderListGroupBox->layout()->contentsMargins().left()
-				+ ui->orderList->maximumWidth()
-				+ ui->orderListGroupBox->layout()->contentsMargins().right()
-				+ ui->orderListGroupBox->contentsMargins().right());
+	setOrderListGroupMaximumWidth();
 	ui->patternEditor->onSongLoaded();
 	unfreezeViews();
 
@@ -3570,10 +3582,12 @@ void MainWindow::on_action_Insert_triggered()
 
 void MainWindow::on_action_Hide_Tracks_triggered()
 {
-	HideTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()));
+	HideTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()),
+						  ui->patternEditor->getVisibleTracks());
 	if (diag.exec() == QDialog::Accepted) {
 		std::vector<int> tracks = diag.getVisibleTracks();
+		ui->orderList->setVisibleTracks(tracks);
+		setOrderListGroupMaximumWidth();
 		ui->patternEditor->setVisibleTracks(tracks);
-		// TODO
 	}
 }

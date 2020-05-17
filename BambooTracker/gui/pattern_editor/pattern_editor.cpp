@@ -29,7 +29,7 @@ PatternEditor::PatternEditor(QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->panel, &PatternEditorPanel::currentTrackChanged,
-					 this, [&](int num) { emit currentTrackChanged(num); });
+					 this, [&](int idx) { emit currentTrackChanged(idx); });
 	QObject::connect(ui->panel, &PatternEditorPanel::currentOrderChanged,
 					 this, [&](int num, int max) { emit currentOrderChanged(num, max); });
 
@@ -166,8 +166,14 @@ void PatternEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
 
 void PatternEditor::setVisibleTracks(std::vector<int> tracks)
 {
+	ui->horizontalScrollBar->setMaximum(200);	// Dummy
 	ui->panel->setVisibleTracks(tracks);
-	// TODO
+	updateHorizontalSliderMaximum();
+}
+
+std::vector<int> PatternEditor::getVisibleTracks() const
+{
+	return ui->panel->getVisibleTracks();
 }
 
 bool PatternEditor::eventFilter(QObject *watched, QEvent *event)
@@ -229,9 +235,9 @@ void PatternEditor::resizeEvent(QResizeEvent* event)
 }
 
 /********** Slots **********/
-void PatternEditor::onOrderListCurrentTrackChanged(int num)
+void PatternEditor::onOrderListCurrentTrackChanged(int idx)
 {
-	ui->panel->onOrderListCurrentTrackChanged(num);
+	ui->panel->onOrderListCurrentTrackChanged(idx);
 }
 
 void PatternEditor::onOrderListCrrentOrderChanged(int num)

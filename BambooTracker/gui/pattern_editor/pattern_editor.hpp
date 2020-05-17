@@ -44,9 +44,10 @@ public:
 
 	void setHorizontalScrollMode(bool cellBased, bool refresh = true);
 	void setVisibleTracks(std::vector<int> tracks);
+	std::vector<int> getVisibleTracks() const;
 
 signals:
-	void currentTrackChanged(int num);
+	void currentTrackChanged(int idx);
 	void currentOrderChanged(int num, int max);
 
 	void focusIn();
@@ -61,7 +62,7 @@ protected:
 	void resizeEvent(QResizeEvent* event) override;
 
 public slots:
-	void onOrderListCurrentTrackChanged(int num);
+	void onOrderListCurrentTrackChanged(int idx);
 	void onOrderListCrrentOrderChanged(int num);
 
 	void onOrderListEdited();

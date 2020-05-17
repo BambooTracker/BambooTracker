@@ -28,7 +28,7 @@ OrderListEditor::OrderListEditor(QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->panel, &OrderListPanel::currentTrackChanged,
-					 this, [&](int num) { emit currentTrackChanged(num); });
+					 this, [&](int idx) { emit currentTrackChanged(idx); });
 	QObject::connect(ui->panel, &OrderListPanel::currentOrderChanged,
 					 this, [&](int num) { emit currentOrderChanged(num); });
 	QObject::connect(ui->panel, &OrderListPanel::orderEdited,
@@ -147,7 +147,15 @@ void OrderListEditor::setHorizontalScrollMode(bool cellBased, bool refresh)
 	if (refresh) updateHorizontalSliderMaximum();
 }
 
-bool OrderListEditor::eventFilter(QObject *watched, QEvent *event)
+void OrderListEditor::setVisibleTracks(std::vector<int> tracks)
+{
+	ui->horizontalScrollBar->setMaximum(20);	// Dummy
+	ui->panel->setVisibleTracks(tracks);
+	updateMaximumWidth();
+	updateHorizontalSliderMaximum();
+}
+
+bool OrderListEditor::eventFilter(QObject* watched, QEvent* event)
 {
 	Q_UNUSED(watched)
 
@@ -204,14 +212,14 @@ void OrderListEditor::resizeEvent(QResizeEvent* event)
 }
 
 /********** Slots **********/
-void OrderListEditor::setCurrentTrack(int num)
+void OrderListEditor::onPatternEditorCurrentTrackChanged(int idx)
 {
-	ui->panel->setCurrentTrack(num);
+	ui->panel->onPatternEditorCurrentTrackChanged(idx);
 }
 
-void OrderListEditor::setCurrentOrder(int num, int max)
+void OrderListEditor::onPatternEditorCurrentOrderChanged(int num, int max)
 {
-	ui->panel->setCurrentOrder(num);
+	ui->panel->onPatternEditorCurrentOrderChanged(num);
 	ui->verticalScrollBar->setMaximum(max);
 	ui->verticalScrollBar->setValue(num);
 }
@@ -222,7 +230,7 @@ void OrderListEditor::onSongLoaded()
 
 	ui->panel->onSongLoaded();
 
-	setMaximumWidth(ui->panel->maximumWidth() + ui->verticalScrollBar->width() + 2);
+	updateMaximumWidth();
 	int song = bt_->getCurrentSongNumber();
 	songLoaded_ = true;
 	updateHorizontalSliderMaximum();
@@ -288,8 +296,20 @@ void OrderListEditor::onOrderDataGlobalChanged()
 void OrderListEditor::updateHorizontalSliderMaximum()
 {
 	if (!bt_ || !songLoaded_) return;
-	int song = bt_->getCurrentSongNumber();
-	int max = hScrollCellMove_ ? static_cast<int>(bt_->getSongStyle(song).trackAttribs.size()) - 1
+	int max = hScrollCellMove_ ? ui->panel->getFullColumnSize()
 							   : ui->panel->getScrollableCountByTrack();
 	ui->horizontalScrollBar->setMaximum(max);
+}
+
+void OrderListEditor::updateMaximumWidth()
+{
+	int w;
+	if (ui->horizontalScrollBar->sizeHint().width() < ui->panel->maximumWidth()) {
+		w = ui->panel->maximumWidth();
+	}
+	else {
+		w = ui->horizontalScrollBar->sizeHint().width();
+		ui->panel->setMaximumWidth(w);
+	}
+	setMaximumWidth(w + ui->verticalScrollBar->width() + 2);
 }

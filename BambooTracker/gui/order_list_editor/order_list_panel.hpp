@@ -36,6 +36,7 @@ public:
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
 
 	void changeEditable();
+	int getFullColumnSize() const;
 	void updatePositionByOrderUpdate(bool isFirstUpdate, bool forceJump = false, bool trackChanged = false);
 	int getScrollableCountByTrack() const;
 
@@ -58,11 +59,13 @@ public:
 	int getRowsFontSize() const;
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
+	void setVisibleTracks(std::vector<int> tracks);
+
 public slots:
 	void onHScrollBarChanged(int num);
 	void onVScrollBarChanged(int num);
-	void setCurrentTrack(int num);
-	void setCurrentOrder(int num);
+	void onPatternEditorCurrentTrackChanged(int idx);
+	void onPatternEditorCurrentOrderChanged(int num);
 
 	void onOrderEdited();
 	void onSongLoaded();
@@ -87,7 +90,7 @@ public slots:
 signals:
 	void hScrollBarChangeRequested(int num);
 	void vScrollBarChangeRequested(int num, int max);
-	void currentTrackChanged(int num);
+	void currentTrackChanged(int idx);
 	void currentOrderChanged(int num);
 
 	void orderEdited();
@@ -127,7 +130,9 @@ private:
 	int curRowBaselineY_;
 	int curRowY_;
 
-	int leftTrackNum_;
+	std::vector<int> visTracks_;
+
+	int leftTrackVisIdx_;
 	SongStyle songStyle_;
 
 	int curSongNum_;
@@ -162,21 +167,22 @@ private:
 	void initDisplay();
 
 	void drawList(const QRect& rect);
-	void drawRows(int maxWidth, int trackSize);
-	void quickDrawRows(int maxWidth, int trackSize);
-	void drawHeaders(int maxWidth, int trackSize);
-	void drawBorders(int maxWidth, int trackSize);
+	void drawRows(int maxWidth);
+	void quickDrawRows(int maxWidth);
+	void drawHeaders(int maxWidth);
+	void drawBorders(int maxWidth);
 	void drawShadow();
 
-	inline int calculateColumnsWidthWithRowNum(int begin, int end) const
+	// NOTE: Calculated by visible tracks
+	inline int calculateColumnsWidthWithRowNum(int beginIdx, int endIdx) const
 	{
-		return rowNumWidth_ + trackWidth_ * (end - begin + 1);
+		return rowNumWidth_ + trackWidth_ * (endIdx - beginIdx + 1);
 	}
 
 	inline void updateTracksWidthFromLeftToEnd()
 	{
 		columnsWidthFromLeftToEnd_ = calculateColumnsWidthWithRowNum(
-										 leftTrackNum_, static_cast<int>(songStyle_.trackAttribs.size()) - 1);
+										 leftTrackVisIdx_, static_cast<int>(visTracks_.size()) - 1);
 	}
 
 	void moveCursorToRight(int n);
@@ -189,7 +195,7 @@ private:
 	void pasteCopiedCells(const OrderPosition& startPos);
 
 	void setSelectedRectangle(const OrderPosition& start, const OrderPosition& end);
-	bool isSelectedCell(int track, int row);
+	bool isSelectedCell(int trackIdx, int row);
 
 	void showContextMenu(const OrderPosition& pos, const QPoint& point);
 };

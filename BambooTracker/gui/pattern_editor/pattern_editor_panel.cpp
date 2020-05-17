@@ -54,6 +54,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  hdMinusY_(0),
 	  curRowBaselineY_(0),
 	  curRowY_(0),
+	  visTracks_(16),	// Dummy
+	  rightEffn_(16),	// Dummy
 	  leftTrackVisIdx_(0),
 	  curSongNum_(0),
 	  curPos_{ 0, 0, 0, 0, },
@@ -100,9 +102,9 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 
 	updateSizes();
 
-	visTracks_ = std::vector<int>(15);
+	// Track visibility
+	songStyle_.type = SongType::Standard;	// Dummy
 	std::iota(visTracks_.begin(), visTracks_.end(), 0);
-	rightEffn_ = std::vector<int>(15);
 
 	setAttribute(Qt::WA_Hover);
 	setContextMenuPolicy(Qt::CustomContextMenu);
@@ -403,8 +405,29 @@ void PatternEditorPanel::setFonts(QString headerFont, int headerSize, QString ro
 void PatternEditorPanel::setVisibleTracks(std::vector<int> tracks)
 {
 	visTracks_ = tracks;
+	rightEffn_.resize(visTracks_.size());
+	std::transform(visTracks_.begin(), visTracks_.end(), rightEffn_.begin(), [&](int t) {
+		return static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, t));
+	});
+	int max = static_cast<int>(tracks.size());
+	bool cond = (max <= curPos_.trackVisIdx);
+	if (cond) curPos_.trackVisIdx = max;
+	leftTrackVisIdx_ = std::min(leftTrackVisIdx_, curPos_.trackVisIdx);
 	updateTracksWidthFromLeftToEnd();
+
+	if (cond) {
+		if (config_->getMoveCursorByHorizontalScroll())
+			emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack));
+		else
+			emit hScrollBarChangeRequested(leftTrackVisIdx_);
+	}
+
 	redrawAll();
+}
+
+std::vector<int> PatternEditorPanel::getVisibleTracks() const
+{
+	return visTracks_;
 }
 
 void PatternEditorPanel::redrawByPatternChanged(bool patternSizeChanged)
@@ -1176,7 +1199,7 @@ void PatternEditorPanel::moveCursorToRight(int n)
 	}
 
 	if (!isIgnoreToOrder_ && curPos_.trackVisIdx != oldTrackIdx)	// Send to order list
-		emit currentTrackChanged(visTracks_.at(curPos_.trackVisIdx));	// TODO idx
+		emit currentTrackChanged(curPos_.trackVisIdx);
 
 	// Request fore-background repaint if leftmost track is changed else request only background repaint
 	if (leftTrackVisIdx_ != oldLeftTrackIdx) {
@@ -2293,11 +2316,10 @@ void PatternEditorPanel::onVScrollBarChanged(int num)
 	if (int dif = num - curPos_.step) moveCursorToDown(dif);
 }
 
-void PatternEditorPanel::onOrderListCurrentTrackChanged(int num)	// TODO idx
+void PatternEditorPanel::onOrderListCurrentTrackChanged(int idx)
 {
 	Ui::EventGuard eg(isIgnoreToOrder_);
 
-	int idx = std::distance(visTracks_.begin(), std::find(visTracks_.begin(), visTracks_.end(), num));
 	int dif = calculateColumnDistance(curPos_.trackVisIdx, curPos_.colInTrack, idx, 0);
 	moveCursorToRight(dif);
 }
@@ -2385,9 +2407,10 @@ void PatternEditorPanel::onSongLoaded()
 	SongType prevType = songStyle_.type;
 	songStyle_ = bt_->getSongStyle(curSongNum_);
 	visTracks_ = adaptVisibleTrackList(visTracks_, prevType, songStyle_.type);
-	rightEffn_ = std::vector<int>(visTracks_.size());
-	std::generate(rightEffn_.begin(), rightEffn_.end(), [&, i = 0]() mutable {
-		return static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, i++)); });
+	rightEffn_.resize(visTracks_.size());
+	std::transform(visTracks_.begin(), visTracks_.end(), rightEffn_.begin(), [&](int t) {
+		return static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, t));
+	});
 	curPos_ = {
 		visTracks_.front(),
 		0,

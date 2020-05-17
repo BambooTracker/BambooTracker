@@ -15,7 +15,8 @@ class HideTracksDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit HideTracksDialog(const SongStyle& style, QWidget *parent = nullptr);
+	explicit HideTracksDialog(const SongStyle& style, const std::vector<int>& tracks,
+							  QWidget *parent = nullptr);
 	~HideTracksDialog() override;
 
 	std::vector<int> getVisibleTracks() const;

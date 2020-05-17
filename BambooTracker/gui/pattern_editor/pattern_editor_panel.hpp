@@ -66,11 +66,12 @@ public:
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
 	void setVisibleTracks(std::vector<int> tracks);
+	std::vector<int> getVisibleTracks() const;
 
 public slots:
 	void onHScrollBarChanged(int num);
 	void onVScrollBarChanged(int num);
-	void onOrderListCurrentTrackChanged(int num);
+	void onOrderListCurrentTrackChanged(int idx);
 	void onOrderListCurrentOrderChanged(int num);
 
 	void onOrderListEdited();

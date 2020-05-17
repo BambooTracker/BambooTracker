@@ -199,6 +199,7 @@ private:
 	int midiProgramEventMethod_;
 
 	void updateInstrumentListColors();
+	void setOrderListGroupMaximumWidth();
 	void freezeViews();
 	void unfreezeViews();
 

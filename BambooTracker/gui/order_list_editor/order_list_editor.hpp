@@ -44,9 +44,10 @@ public:
 	void setFonts(QString headerFont, int headerSize, QString rowsFont, int rowsSize);
 
 	void setHorizontalScrollMode(bool cellBased, bool refresh = true);
+	void setVisibleTracks(std::vector<int> tracks);
 
 signals:
-	void currentTrackChanged(int num);
+	void currentTrackChanged(int idx);
 	void currentOrderChanged(int num);
 
 	void orderEdited();
@@ -56,8 +57,8 @@ signals:
 	void selected(bool isSelected);
 
 public slots:
-	void setCurrentTrack(int num);
-	void setCurrentOrder(int num, int max);
+	void onPatternEditorCurrentTrackChanged(int idx);
+	void onPatternEditorCurrentOrderChanged(int num, int max);
 	void onSongLoaded();
 	void onShortcutUpdated();
 
@@ -80,7 +81,7 @@ public slots:
 	void onOrderDataGlobalChanged();
 
 protected:
-	bool eventFilter(QObject *watched, QEvent *event) override;
+	bool eventFilter(QObject* watched, QEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 
 private:
@@ -92,6 +93,7 @@ private:
 
 	bool hScrollCellMove_;
 	void updateHorizontalSliderMaximum();
+	void updateMaximumWidth();
 };
 
 #endif // ORDER_LIST_EDITOR_HPP
