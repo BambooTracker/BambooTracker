@@ -21,10 +21,14 @@ public:
 
 	std::vector<int> getVisibleTracks() const;
 
+private slots:
+	void on_reversePushButton_clicked();
+
+	void on_checkAllPushButton_clicked();
+
 private:
 	Ui::HideTracksDialog *ui;
-	int checkCounter_;
-	bool loopCheck_;
+	size_t checkCounter_;
 };
 
 #endif // HIDE_TRACKS_DIALOG_HPP

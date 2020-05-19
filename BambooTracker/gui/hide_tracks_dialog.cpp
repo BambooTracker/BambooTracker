@@ -5,11 +5,9 @@
 #include "song.hpp"
 #include "gui/gui_util.hpp"
 
-HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int>& tracks,
-								   QWidget *parent) :
+HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int>& tracks, QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::HideTracksDialog),
-	loopCheck_(false)
+	ui(new Ui::HideTracksDialog)
 {
 	ui->setupUi(this);
 
@@ -25,20 +23,12 @@ HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int
 	QObject::connect(ui->listWidget, &QListWidget::itemChanged,
 					 this, [&](QListWidgetItem* item) {
 		if (item->checkState() == Qt::Unchecked) {
-			if (checkCounter_ == 1) {
-				loopCheck_ = true;
-				item->setCheckState(Qt::Checked);
-			}
-			else {
-				--checkCounter_;
-			}
+			--checkCounter_;
+			if (!checkCounter_) ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 		}
 		else {
-			if (loopCheck_) {
-				loopCheck_ = false;
-				return;
-			}
 			++checkCounter_;
+			ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 		}
 	});
 	checkCounter_ = style.trackAttribs.size();
@@ -58,4 +48,20 @@ std::vector<int> HideTracksDialog::getVisibleTracks() const
 			tracks.push_back(item->data(Qt::UserRole).toInt());
 	}
 	return tracks;
+}
+
+void HideTracksDialog::on_reversePushButton_clicked()
+{
+	for (int i = 0; i < ui->listWidget->count(); ++i) {
+		auto item = ui->listWidget->item(i);
+		item->setCheckState((item->checkState() == Qt::Checked) ? Qt::Unchecked : Qt::Checked);
+	}
+}
+
+void HideTracksDialog::on_checkAllPushButton_clicked()
+{
+	for (int i = 0; i < ui->listWidget->count(); ++i) {
+		auto item = ui->listWidget->item(i);
+		item->setCheckState(Qt::Checked);
+	}
 }

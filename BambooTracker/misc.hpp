@@ -170,16 +170,6 @@ static uint8_t bcdtoui(const uint8_t v)
 }
 
 DECL_MAYBE_UNUSED
-inline static size_t getTrackCount(SongType type)
-{
-	switch (type) {
-	case SongType::Standard:		return 16;
-	case SongType::FM3chExpanded:	return 19;
-	default:	throw std::invalid_argument("Invalid SongType.");
-	}
-}
-
-DECL_MAYBE_UNUSED
 inline static size_t getFMChannelCount(SongType type)
 {
 	switch (type) {
