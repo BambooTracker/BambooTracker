@@ -415,6 +415,9 @@ void PatternEditorPanel::setVisibleTracks(std::vector<int> tracks)
 	leftTrackVisIdx_ = std::min(leftTrackVisIdx_, curPos_.trackVisIdx);
 	updateTracksWidthFromLeftToEnd();
 
+	bt_->setCurrentTrack(visTracks_.at(curPos_.trackVisIdx));
+	emit currentTrackChanged(curPos_.trackVisIdx);
+
 	if (cond) {
 		if (config_->getMoveCursorByHorizontalScroll())
 			emit hScrollBarChangeRequested(calculateColNumInRow(curPos_.trackVisIdx, curPos_.colInTrack));

@@ -181,6 +181,8 @@ void OrderListPanel::setVisibleTracks(std::vector<int> tracks)
 						0, static_cast<int>(visTracks_.size()) - 1));
 	initDisplay();
 
+	// Current track in core is changed in the pattern editor
+
 	if (cond) {
 		emit hScrollBarChangeRequested(config_->getMoveCursorByHorizontalScroll() ? curPos_.trackVisIdx
 																				  : leftTrackVisIdx_);
