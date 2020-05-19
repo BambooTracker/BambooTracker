@@ -84,6 +84,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		   tr("Correspond the instrument number in patterns when the instrument changes its number."));
 	glfunc(16, configLocked->getFixJammingVolume(),
 		   tr("Set maximum volume during jam mode. When unchecked, the volume is changed by the volume spinbox."));
+	glfunc(17, configLocked->getMuteHiddenTracks(),
+		   tr("Mute hidden tracks when visibility of tracks is changed."));
 
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
@@ -354,6 +356,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setWriteOnlyUsedSamples(fromCheckState(ui->generalSettingsListWidget->item(14)->checkState()));
 	configLocked->setReflectInstrumentNumberChange(fromCheckState(ui->generalSettingsListWidget->item(15)->checkState()));
 	configLocked->setFixJammingVolume(fromCheckState(ui->generalSettingsListWidget->item(16)->checkState()));
+	configLocked->setMuteHiddenTracks(fromCheckState(ui->generalSettingsListWidget->item(17)->checkState()));
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));

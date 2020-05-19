@@ -64,6 +64,7 @@ Configuration::Configuration()
 	writeOnlyUsedSamples_ = false;
 	reflectInstNumChange_ = false;
 	fixJamVol_ = true;
+	muteHiddenTracks_ = true;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -889,6 +890,10 @@ bool Configuration::getReflectInstrumentNumberChange() const { return reflectIns
 void Configuration::setFixJammingVolume(bool enabled) { fixJamVol_ = enabled; }
 
 bool Configuration::getFixJammingVolume() const { return fixJamVol_; }
+
+void Configuration::setMuteHiddenTracks(bool enabled) { muteHiddenTracks_ = enabled; }
+
+bool Configuration::getMuteHiddenTracks() const { return muteHiddenTracks_; }
 
 // Edit settings
 void Configuration::setPageJumpLength(size_t length) { pageJumpLength_ = length; }

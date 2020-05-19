@@ -435,16 +435,15 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, &MainWindow::onCurrentTrackChanged);
 
 	/* Track visibility */
-	std::vector<int> visTracks(getTrackCount(SongType::Standard));
+	std::vector<int> visTracks(bt_->getSongStyle(0).trackAttribs.size());
 	std::iota(visTracks.begin(), visTracks.end(), 0);
 	ui->orderList->setVisibleTracks(visTracks);
 	ui->patternEditor->setVisibleTracks(visTracks);
 
-	/* Visuals */
+	/* Wave view */
 	visualTimer_.reset(new QTimer);
 	visualTimer_->start(40);
-	QObject::connect(visualTimer_.get(), &QTimer::timeout,
-					 this, &MainWindow::updateVisuals);
+	QObject::connect(visualTimer_.get(), &QTimer::timeout, this, &MainWindow::updateVisuals);
 
 	/* Status bar */
 	statusDetail_ = new QLabel();
@@ -1107,6 +1106,20 @@ void MainWindow::setShortcuts()
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
+}
+
+void MainWindow::setTrackVisibility(const std::vector<int>& visTracks)
+{
+	ui->orderList->setVisibleTracks(visTracks);
+	setOrderListGroupMaximumWidth();
+	ui->patternEditor->setVisibleTracks(visTracks);
+	if (config_.lock()->getMuteHiddenTracks()) {
+		int all = static_cast<int>(bt_->getSongStyle(bt_->getCurrentSongNumber()).trackAttribs.size());
+		for (int i = 0; i < all; ++i) {
+			if (std::none_of(visTracks.begin(), visTracks.end(), [i](const int& n) { return i == n; }))
+				bt_->setTrackMuteState(i, true);
+		}
+	}
 }
 
 void MainWindow::updateInstrumentListColors()
@@ -3585,9 +3598,6 @@ void MainWindow::on_action_Hide_Tracks_triggered()
 	HideTracksDialog diag(bt_->getSongStyle(bt_->getCurrentSongNumber()),
 						  ui->patternEditor->getVisibleTracks());
 	if (diag.exec() == QDialog::Accepted) {
-		std::vector<int> tracks = diag.getVisibleTracks();
-		ui->orderList->setVisibleTracks(tracks);
-		setOrderListGroupMaximumWidth();
-		ui->patternEditor->setVisibleTracks(tracks);
+		setTrackVisibility(diag.getVisibleTracks());
 	}
 }

@@ -178,7 +178,15 @@
               <string>Fix jamming volume</string>
              </property>
              <property name="checkState">
-              <enum>Unchecked</enum>
+              <enum>Checked</enum>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Mute hidden tracks</string>
+             </property>
+             <property name="checkState">
+              <enum>Checked</enum>
              </property>
             </item>
            </widget>
