@@ -11,8 +11,8 @@ S98ExportSettingsDialog::S98ExportSettingsDialog(QWidget *parent) :
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
 	for (QRadioButton *button : {
-			ui->ym2608RadioButton, ui->ym2612RadioButton, ui->ym2203RadioButton,
-			ui->internalSsgRadioButton, ui->ay8910PsgRadioButton })
+		 ui->ym2608RadioButton, ui->ym2612RadioButton, ui->ym2203RadioButton, ui->noneFmRadioButton,
+		 ui->internalSsgRadioButton, ui->ay8910PsgRadioButton })
 		connect(button, &QAbstractButton::toggled,
 				this, &S98ExportSettingsDialog::updateSupportInformation);
 
@@ -53,7 +53,9 @@ int S98ExportSettingsDialog::getExportTarget() const
 {
 	int target = 0;
 
-	if (ui->ym2612RadioButton->isChecked())
+	if (ui->ym2608RadioButton->isChecked())
+		target |= Export_YM2608;
+	else if (ui->ym2612RadioButton->isChecked())
 		target |= Export_YM2612;
 	else if (ui->ym2203RadioButton->isChecked())
 		target |= Export_YM2203;
@@ -80,6 +82,9 @@ void S98ExportSettingsDialog::updateSupportInformation()
 		break;
 	case Export_YM2203:
 		channels = 3;
+		break;
+	case Export_NoneFm:
+		channels = 0;
 		break;
 	}
 

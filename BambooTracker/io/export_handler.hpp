@@ -20,14 +20,15 @@ private:
 
 enum ExportTargetFlag
 {
-	/* target bits 0-2 : FM type */
-	Export_YM2608 = 0,
-	Export_YM2612 = 1,
-	Export_YM2203 = 2,
-	Export_FmMask = Export_YM2608|Export_YM2612|Export_YM2203,
-	/* target bit 3 : SSG type */
+	/* target bits 0-3 : FM type */
+	Export_NoneFm = 0,
+	Export_YM2608 = 1,
+	Export_YM2612 = 2,
+	Export_YM2203 = 4,
+	Export_FmMask = Export_NoneFm|Export_YM2608|Export_YM2612|Export_YM2203,
+	/* target bit 4-5 : SSG type */
 	Export_InternalSsg = 0,
-	Export_AY8910Psg = 4,
-	Export_YM2149Psg = 8,
+	Export_AY8910Psg = 16,
+	Export_YM2149Psg = 32,
 	Export_SsgMask = Export_InternalSsg|Export_AY8910Psg|Export_YM2149Psg,
 };

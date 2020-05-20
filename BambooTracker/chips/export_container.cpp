@@ -56,14 +56,19 @@ namespace chip
 		const int ssg = target_ & Export_SsgMask;
 
 		const uint8_t cmdSsg =
-			(ssg != Export_InternalSsg) ? 0xa0 : (fm == Export_YM2608) ? 0x56 :
-			(fm == Export_YM2203) ? 0x55 : 0x00;
+				(ssg != Export_InternalSsg) ? 0xa0
+											: (fm == Export_YM2608) ? 0x56
+																	: (fm == Export_YM2203) ? 0x55
+																							: 0x00;
 		const uint8_t cmdFmPortA =
-			(fm == Export_YM2608) ? 0x56 : (fm == Export_YM2612) ? 0x52 :
-			(fm == Export_YM2203) ? 0x55 : 0x00;
+				(fm == Export_YM2608) ? 0x56
+									  : (fm == Export_YM2612) ? 0x52
+															  : (fm == Export_YM2203) ? 0x55
+																					  : 0x00;
 		const uint8_t cmdFmPortB =
-			(fm == Export_YM2608) ? 0x57 : (fm == Export_YM2612) ? 0x53 :
-			0x00;
+				(fm == Export_YM2608) ? 0x57
+									  : (fm == Export_YM2612) ? 0x53
+															  : 0x00;
 
 		if (cmdSsg && offset < 0x10) {
 			buf_.push_back(cmdSsg);
@@ -319,11 +324,14 @@ namespace chip
 		const int ssg = target_ & Export_SsgMask;
 
 		const uint8_t cmdSsg =
-			(ssg != Export_InternalSsg) ? 0x02 : (fm == Export_YM2608) ? 0x00 :
-			(fm == Export_YM2203) ? 0x00 : 0xff;
-		const uint8_t cmdFmPortA = 0x00;
+				(ssg != Export_InternalSsg) ? (fm == Export_NoneFm) ? 0x01 : 0x02
+											: (fm == Export_YM2608) ? 0x00
+																	: (fm == Export_YM2203) ? 0x00
+																							: 0xff;
+		const uint8_t cmdFmPortA =
+				(fm != Export_NoneFm) ? 0x00 : 0xff;
 		const uint8_t cmdFmPortB =
-			(fm == Export_YM2608 || fm == Export_YM2612) ? 0x01 : 0xff;
+				(fm == Export_YM2608 || fm == Export_YM2612) ? 0x01 : 0xff;
 
 		if (cmdSsg != 0xff && offset < 0x10) {
 			buf_.push_back(cmdSsg);

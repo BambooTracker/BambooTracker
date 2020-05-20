@@ -60,6 +60,8 @@ void ExportHandler::writeVgm(BinaryContainer& container, int target, std::vector
 			// 0x44: YM2203 clock
 			*reinterpret_cast<uint32_t *>(header + 0x44) = clock / 2;
 			break;
+		case Export_NoneFm:
+			break;
 		}
 
 		switch (target & Export_SsgMask) {
@@ -147,37 +149,41 @@ void ExportHandler::writeS98(BinaryContainer& container, int target, std::vector
 		uint32_t loopOffset = loopFlag ? (0x80 + loopPoint) : 0;
 		container.appendUint32(loopOffset);
 		// 0x1c: Device count
-		uint32_t deviceCnt = 1;
+		uint32_t deviceCnt = 0;
+		if ((target & Export_FmMask) != Export_NoneFm)
+			++deviceCnt;
 		if ((target & Export_SsgMask) != Export_InternalSsg)
-			deviceCnt = 2;
+			++deviceCnt;
 		container.appendUint32(deviceCnt);
 
-		// 0x20-0x2f: Device info
-		// 0x20: Device type
-		uint32_t deviceType;
-		uint32_t deviceClock;
-		switch (target & Export_FmMask) {
-		default:
-		case Export_YM2608:
-			deviceType = 4;	// OPNA
-			deviceClock = clock;
-			break;
-		case Export_YM2612:
-			deviceType = 3;	// OPN2
-			deviceClock = clock;
-			break;
-		case Export_YM2203:
-			deviceType = 2;	// OPN
-			deviceClock = clock / 2;
-			break;
+		if ((target & Export_FmMask) != Export_NoneFm) {
+			// 0x20-0x2f: Device info (if NoneFM, skipped)
+			// 0x20: Device type
+			uint32_t deviceType;
+			uint32_t deviceClock;
+			switch (target & Export_FmMask) {
+			default:
+			case Export_YM2608:
+				deviceType = 4;	// OPNA
+				deviceClock = clock;
+				break;
+			case Export_YM2612:
+				deviceType = 3;	// OPN2
+				deviceClock = clock;
+				break;
+			case Export_YM2203:
+				deviceType = 2;	// OPN
+				deviceClock = clock / 2;
+				break;
+			}
+			container.appendUint32(deviceType);
+			// 0x24: Clock
+			container.appendUint32(deviceClock);
+			// 0x28: Pan (Unused)
+			container.appendUint32(zero);
+			// 0x2c: Reserved
+			container.appendUint32(zero);
 		}
-		container.appendUint32(deviceType);
-		// 0x24: Clock
-		container.appendUint32(deviceClock);
-		// 0x28: Pan (Unused)
-		container.appendUint32(zero);
-		// 0x2c: Reserved
-		container.appendUint32(zero);
 
 		if ((target & Export_SsgMask) != Export_InternalSsg) {
 			// 0x30-0x3f: Device info
