@@ -144,6 +144,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>spinBox</tabstop>
+  <tabstop>listWidget</tabstop>
+  <tabstop>reversePushButton</tabstop>
+  <tabstop>clearPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -57,6 +57,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>listWidget</tabstop>
+  <tabstop>reversePushButton</tabstop>
+  <tabstop>checkAllPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -380,6 +380,7 @@
   <tabstop>ym2608RadioButton</tabstop>
   <tabstop>ym2612RadioButton</tabstop>
   <tabstop>ym2203RadioButton</tabstop>
+  <tabstop>noneFmRadioButton</tabstop>
   <tabstop>internalSsgRadioButton</tabstop>
   <tabstop>ay8910PsgRadioButton</tabstop>
   <tabstop>ym2149PsgRadioButton</tabstop>
