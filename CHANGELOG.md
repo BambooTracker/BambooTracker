@@ -4,6 +4,7 @@
 ### Added
 - [#2], [#213], [#214] - ADPCM sample editor (thanks [@freq-mod])
 - [#98] - Track visibility control (thanks [@pedipanol], [@freq-mod])
+- Add slope notation in text edit of instrument sequence
 
 ### Fixed
 - Resize width of the order list after closing configuration dialog

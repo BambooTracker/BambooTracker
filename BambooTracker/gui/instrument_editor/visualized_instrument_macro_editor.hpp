@@ -156,6 +156,7 @@ protected:
 	virtual QString convertSequenceDataUnitToMML(Column col);
 	virtual int maxInMML() const;
 	void interpretMML();
+	bool interpretSlopeInMML(QString& text, int& cnt, std::vector<Column>& column);
 	virtual bool interpretDataInMML(QString& text, int& cnt, std::vector<Column>& column);
 
 	int panelWidth() const;

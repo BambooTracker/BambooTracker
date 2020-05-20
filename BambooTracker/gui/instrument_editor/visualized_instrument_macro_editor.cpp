@@ -577,6 +577,8 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 			}
 		}
 
+		if (interpretSlopeInMML(text, cnt, column)) continue;	// Slope
+
 		if (interpretDataInMML(text, cnt, column)) continue;	// Data
 
 		m = QRegularExpression("^ +").match(text);
@@ -605,6 +607,59 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 	emit releaseChanged(release.type, release.point);
 
 	ui->panel->update();
+}
+
+bool VisualizedInstrumentMacroEditor::interpretSlopeInMML(QString& text, int& cnt, std::vector<Column>& column)
+{
+	QRegularExpressionMatch m = QRegularExpression("^(?<start>-?\\d+) *_ *(?<end>-?\\d+)( *_ *(?<diff>-?\\d+))?").match(text);
+	if (m.hasMatch()) {
+		int start = m.captured("start").toInt();
+		int end = m.captured("end").toInt();
+		QString diffStr = m.captured("diff");
+		if (start < 0 || maxInMML() <= start || end < 0 || maxInMML() <= end || start == end)
+			return false;
+		int diff;
+		int d = start;
+		if (start < end) {
+			if (diffStr.isEmpty()) {
+				diff = 1;
+			}
+			else {
+				diff = diffStr.toInt();
+				if (diff <= 0) return false;
+			}
+			for (bool flag = true; flag ; ) {
+				if (end <= d) {
+					flag = false;
+					d = end;
+				}
+				column.push_back({ d, -1, "" });
+				d += diff;
+				++cnt;
+			}
+		}
+		else {
+			if (diffStr.isEmpty()) {
+				diff = -1;
+			}
+			else {
+				diff = diffStr.toInt();
+				if (0 <= diff) return false;
+			}
+			for (bool flag = true; flag ; ) {
+				if (d <= end) {
+					flag = false;
+					d = end;
+				}
+				column.push_back({ d, -1, "" });
+				d += diff;
+				++cnt;
+			}
+		}
+		text.remove(QRegularExpression("^-?\\d+ *_ *-?\\d+( *_ *-?\\d+)?"));
+		return true;
+	}
+	return false;
 }
 
 bool VisualizedInstrumentMacroEditor::interpretDataInMML(QString& text, int& cnt, std::vector<Column>& column)
