@@ -29,9 +29,9 @@ Configuration::Configuration()
 	instSSGW_ = 510;
 	instSSGH_ = 390;
 	instADPCMW_ = 510;
-	instADPCMH_ = 390;
+	instADPCMH_ = 430;
 	instKitW_ = 590;
-	instKitH_ = 390;
+	instKitH_ = 430;
 
 	// Toolbar state
 	mainTb_.setPosition(ToolbarConfiguration::TOP_POS);
