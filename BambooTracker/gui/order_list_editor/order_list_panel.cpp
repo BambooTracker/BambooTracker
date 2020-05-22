@@ -636,7 +636,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 		case SoundSource::SSG:
 			str = "SG" + QString::number(attrib.channelInSource + 1);
 			break;
-		case SoundSource::DRUM:
+		case SoundSource::RHYTHM:
 			switch (attrib.channelInSource) {
 			case 0:	str = "BD";		break;
 			case 1:	str = "SD";		break;

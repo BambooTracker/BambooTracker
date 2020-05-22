@@ -421,34 +421,34 @@ private:
 		return (v == -1) ? 0 : (0x08 + static_cast<uint8_t>(v));
 	}
 
-	/*----- Drum -----*/
+	/*----- Rhythm -----*/
 public:
-	// Key on-off
-	void setKeyOnFlagDrum(int ch);
-	void setKeyOffFlagDrum(int ch);
+	// Key on/off
+	void setKeyOnFlagRhythm(int ch);
+	void setKeyOffFlagRhythm(int ch);
 
 	// Set volume
-	void setVolumeDrum(int ch, int volume);
-	void setMasterVolumeDrum(int volume);
-	void setTemporaryVolumeDrum(int ch, int volume);
+	void setVolumeRhythm(int ch, int volume);
+	void setMasterVolumeRhythm(int volume);
+	void setTemporaryVolumeRhythm(int ch, int volume);
 
 	// Set effect
-	void setPanDrum(int ch, int value);
+	void setPanRhythm(int ch, int value);
 
 private:
-	uint8_t keyOnFlagDrum_, keyOffFlagDrum_;
-	int volDrum_[6], mVolDrum_, tmpVolDrum_[6];
+	uint8_t keyOnFlagRhythm_, keyOffFlagRhythm_;
+	int volRhythm_[6], mVolRhythm_, tmpVolRhythm_[6];
 	/// bit0: right on/off
 	/// bit1: left on/off
-	uint8_t panDrum_[6];
-	bool isMuteDrum_[6];
+	uint8_t panRhythm_[6];
+	bool isMuteRhythm_[6];
 
-	void initDrum();
+	void initRhythm();
 
-	void setMuteDrumState(int ch, bool isMute);
-	bool isMuteDrum(int ch);
+	void setMuteRhythmState(int ch, bool isMute);
+	bool isMuteRhythm(int ch);
 
-	void updateKeyOnOffStatusDrum();
+	void updateKeyOnOffStatusRhythm();
 
 	/*----- ADPCM/Drumkit -----*/
 public:

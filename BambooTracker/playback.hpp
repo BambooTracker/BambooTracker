@@ -76,7 +76,7 @@ private:
 
 	void executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 	void executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
-	void executeDrumStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
+	void executeRhythmStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
 	void executeADPCMStepEvents(Step& step, bool calledByNoteDelay = false);
 
 	using EffectMemory = std::unordered_map<EffectType, int>;
@@ -88,8 +88,8 @@ private:
 	void executeStoredEffectsFM(int ch);
 	bool storeEffectToMapSSG(int ch, Effect eff);
 	void executeStoredEffectsSSG(int ch);
-	bool storeEffectToMapDrum(int ch, Effect eff);
-	void executeStoredEffectsDrum(int ch);
+	bool storeEffectToMapRhythm(int ch, Effect eff);
+	void executeStoredEffectsRhythm(int ch);
 	bool storeEffectToMapADPCM(int ch, Effect eff);
 	void executeStoredEffectsADPCM();
 
@@ -106,15 +106,15 @@ private:
 	void checkFMNoteDelayAndEnvelopeReset(Step& step, int ch);
 	void envelopeResetEffectFM(Step& step, int ch);
 	void checkSSGDelayEventsInTick(Step& step, int ch);
-	void checkDrumDelayEventsInTick(Step& step, int ch);
+	void checkRhythmDelayEventsInTick(Step& step, int ch);
 	void checkADPCMDelayEventsInTick(Step& step);
 
 
 	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;
 	std::vector<int> ntDlyCntSSG_, ntCutDlyCntSSG_, volDlyCntSSG_;
-	std::vector<int> ntDlyCntDrum_, ntCutDlyCntDrum_, volDlyCntDrum_;
+	std::vector<int> ntDlyCntRhythm_, ntCutDlyCntRhythm_, volDlyCntRhythm_;
 	int ntDlyCntADPCM_, ntCutDlyCntADPCM_, volDlyCntADPCM_;
-	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueDrum_;
+	std::vector<int> volDlyValueFM_, volDlyValueSSG_, volDlyValueRhythm_;
 	int volDlyValueADPCM_;
 	std::vector<int> tposeDlyCntFM_, tposeDlyCntSSG_;
 	int tposeDlyCntADPCM_;
@@ -126,7 +126,7 @@ private:
 	void clearDelayBeyondStepCounts();
 	void clearFMDelayBeyondStepCounts(int ch);
 	void clearSSGDelayBeyondStepCounts(int ch);
-	void clearDrumDelayBeyondStepCounts(int ch);
+	void clearRhythmDelayBeyondStepCounts(int ch);
 	void clearADPCMDelayBeyondStepCounts();
 	void updateDelayEventCounts();
 

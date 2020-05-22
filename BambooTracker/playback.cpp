@@ -54,13 +54,13 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	tposeDlyCntSSG_ = std::vector<int>(3);
 	tposeDlyValueSSG_ = std::vector<int>(3);
 
-	isNoteDelay_[SoundSource::DRUM] = std::vector<bool>(6);
-	keyOnBasedEffs_[SoundSource::DRUM] = EffectMemorySource(6);
-	stepBeginBasedEffs_[SoundSource::DRUM] = EffectMemorySource(6);
-	ntDlyCntDrum_ = std::vector<int>(6);
-	ntCutDlyCntDrum_ = std::vector<int>(6);
-	volDlyCntDrum_ = std::vector<int>(6);
-	volDlyValueDrum_ = std::vector<int>(6, -1);
+	isNoteDelay_[SoundSource::RHYTHM] = std::vector<bool>(6);
+	keyOnBasedEffs_[SoundSource::RHYTHM] = EffectMemorySource(6);
+	stepBeginBasedEffs_[SoundSource::RHYTHM] = EffectMemorySource(6);
+	ntDlyCntRhythm_ = std::vector<int>(6);
+	ntCutDlyCntRhythm_ = std::vector<int>(6);
+	volDlyCntRhythm_ = std::vector<int>(6);
+	volDlyValueRhythm_ = std::vector<int>(6, -1);
 
 	isNoteDelay_[SoundSource::ADPCM] = std::vector<bool>(1);
 	keyOnBasedEffs_[SoundSource::ADPCM] = EffectMemorySource(1);
@@ -327,7 +327,7 @@ void PlaybackManager::stepProcess()
 		switch (attrib.source) {
 		case SoundSource::FM:		storeEffectToMap = &PlaybackManager::storeEffectToMapFM;	break;
 		case SoundSource::SSG:		storeEffectToMap = &PlaybackManager::storeEffectToMapSSG;	break;
-		case SoundSource::DRUM:		storeEffectToMap = &PlaybackManager::storeEffectToMapDrum;	break;
+		case SoundSource::RHYTHM:	storeEffectToMap = &PlaybackManager::storeEffectToMapRhythm;	break;
 		case SoundSource::ADPCM:	storeEffectToMap = &PlaybackManager::storeEffectToMapADPCM;	break;
 		}
 		bool isDelay = false;
@@ -365,14 +365,14 @@ void PlaybackManager::stepProcess()
 				executeSSGStepEvents(step, attrib.channelInSource);
 			}
 			break;
-		case SoundSource::DRUM:
-			if (isNoteDelay_[SoundSource::DRUM].at(attrib.channelInSource)) {
+		case SoundSource::RHYTHM:
+			if (isNoteDelay_[SoundSource::RHYTHM].at(attrib.channelInSource)) {
 				// Set effect
-				executeStoredEffectsDrum(attrib.channelInSource);
-				opnaCtrl_->tickEvent(SoundSource::DRUM, attrib.channelInSource);
+				executeStoredEffectsRhythm(attrib.channelInSource);
+				opnaCtrl_->tickEvent(SoundSource::RHYTHM, attrib.channelInSource);
 			}
 			else {
-				executeDrumStepEvents(step, attrib.channelInSource);
+				executeRhythmStepEvents(step, attrib.channelInSource);
 			}
 			break;
 		case SoundSource::ADPCM:
@@ -501,33 +501,33 @@ void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNote
 	}
 }
 
-void PlaybackManager::executeDrumStepEvents(Step& step, int ch, bool calledByNoteDelay)
+void PlaybackManager::executeRhythmStepEvents(Step& step, int ch, bool calledByNoteDelay)
 {
 	int noteNum = step.getNoteNumber();
-	if (!calledByNoteDelay && noteNum != -1) clearDrumDelayBeyondStepCounts(ch);	// Except no key event
+	if (!calledByNoteDelay && noteNum != -1) clearRhythmDelayBeyondStepCounts(ch);	// Except no key event
 
 	// Set volume
 	int vol = step.getVolume();
 	if (0 <= vol && vol < 0x20) {
-		opnaCtrl_->setVolumeDrum(ch, vol);
+		opnaCtrl_->setVolumeRhythm(ch, vol);
 	}
 
 	// Set effect
-	executeStoredEffectsDrum(ch);
+	executeStoredEffectsRhythm(ch);
 
 	// Set key
 	switch (noteNum) {
 	case -1:	// None
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
-			checkDrumDelayEventsInTick(step, ch);
-			opnaCtrl_->tickEvent(SoundSource::DRUM, ch);
+			checkRhythmDelayEventsInTick(step, ch);
+			opnaCtrl_->tickEvent(SoundSource::RHYTHM, ch);
 		}
 		break;
 	case -2:	// Key off
-		opnaCtrl_->setKeyOffFlagDrum(ch);
+		opnaCtrl_->setKeyOffFlagRhythm(ch);
 		break;
 	default:	// Key on & Echo
-		opnaCtrl_->setKeyOnFlagDrum(ch);
+		opnaCtrl_->setKeyOnFlagRhythm(ch);
 		break;
 	}
 }
@@ -983,7 +983,7 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 	}
 }
 
-bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapRhythm(int ch, Effect eff)
 {
 	switch (eff.type) {
 	case EffectType::Pan:
@@ -993,7 +993,7 @@ bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
 	case EffectType::RegisterAddress0:
 	case EffectType::RegisterAddress1:
 	case EffectType::RegisterValue:
-		keyOnBasedEffs_[SoundSource::DRUM].at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		keyOnBasedEffs_[SoundSource::RHYTHM].at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
@@ -1001,7 +1001,7 @@ bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
 		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffs_[SoundSource::DRUM].at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
+			stepBeginBasedEffs_[SoundSource::RHYTHM].at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
@@ -1015,17 +1015,17 @@ bool PlaybackManager::storeEffectToMapDrum(int ch, Effect eff)
 	}
 }
 
-void PlaybackManager::executeStoredEffectsDrum(int ch)
+void PlaybackManager::executeStoredEffectsRhythm(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	bool isNoteDelay = false;
 
 	// Read step beginning based effects
-	auto& stepBeginBasedEffs = stepBeginBasedEffs_[SoundSource::DRUM].at(uch);
+	auto& stepBeginBasedEffs = stepBeginBasedEffs_[SoundSource::RHYTHM].at(uch);
 	for (const auto& eff : stepBeginBasedEffs) {
 		switch (eff.first) {
 		case EffectType::NoteDelay:
-			ntDlyCntDrum_.at(uch) = eff.second;
+			ntDlyCntRhythm_.at(uch) = eff.second;
 			isNoteDelay = true;
 			break;
 		default:
@@ -1036,24 +1036,24 @@ void PlaybackManager::executeStoredEffectsDrum(int ch)
 
 	// Read key on and step beginning based effects
 	if (!isNoteDelay) {
-		auto& keyOnBasedEffs = keyOnBasedEffs_[SoundSource::DRUM].at(uch);
+		auto& keyOnBasedEffs = keyOnBasedEffs_[SoundSource::RHYTHM].at(uch);
 		for (const auto& eff : keyOnBasedEffs) {
 			switch (eff.first) {
 			case EffectType::Pan:
-				if (-1 < eff.second && eff.second < 4) opnaCtrl_->setPanDrum(ch, eff.second);
+				if (-1 < eff.second && eff.second < 4) opnaCtrl_->setPanRhythm(ch, eff.second);
 				break;
 			case EffectType::NoteCut:
-				ntCutDlyCntDrum_.at(uch) = eff.second;
+				ntCutDlyCntRhythm_.at(uch) = eff.second;
 				break;
 			case EffectType::MasterVolume:
-				if (-1 < eff.second && eff.second < 64) opnaCtrl_->setMasterVolumeDrum(eff.second);
+				if (-1 < eff.second && eff.second < 64) opnaCtrl_->setMasterVolumeRhythm(eff.second);
 				break;
 			case EffectType::VolumeDelay:
 			{
 				int count = eff.second >> 8;
 				if (count > 0) {
-					volDlyCntDrum_.at(uch) = count;
-					volDlyValueDrum_.at(uch) = eff.second & 0x00ff;
+					volDlyCntRhythm_.at(uch) = count;
+					volDlyValueRhythm_.at(uch) = eff.second & 0x00ff;
 				}
 				break;
 			}
@@ -1286,7 +1286,7 @@ void PlaybackManager::tickProcess(int rest)
 		switch (attrib.source) {
 		case SoundSource::FM:		checkFMDelayEventsInTick(curStep, ch);		break;
 		case SoundSource::SSG:		checkSSGDelayEventsInTick(curStep, ch);		break;
-		case SoundSource::DRUM:		checkDrumDelayEventsInTick(curStep, ch);	break;
+		case SoundSource::RHYTHM:	checkRhythmDelayEventsInTick(curStep, ch);	break;
 		case SoundSource::ADPCM:	checkADPCMDelayEventsInTick(curStep);		break;
 		}
 
@@ -1345,7 +1345,7 @@ void PlaybackManager::envelopeResetEffectFM(Step& step, int ch)
 			&& opnaCtrl_->enableFMEnvelopeReset(ch)) {	// Key on or echo buffer access
 		for (int i = 0; i < 4; ++i) {
 			auto&& eff = Effect::makeEffectData(	// "SoundSource::FM" is dummy
-							 SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
+													SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
 			if (eff.type == EffectType::TonePortamento) {
 				if (eff.value) opnaCtrl_->tickEvent(SoundSource::FM, ch);
 				else opnaCtrl_->resetFMChannelEnvelope(ch);
@@ -1377,18 +1377,18 @@ void PlaybackManager::checkSSGDelayEventsInTick(Step& step, int ch)
 		executeSSGStepEvents(step, ch, true);
 }
 
-void PlaybackManager::checkDrumDelayEventsInTick(Step& step, int ch)
+void PlaybackManager::checkRhythmDelayEventsInTick(Step& step, int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
-	if (!volDlyCntDrum_.at(uch))
-		opnaCtrl_->setTemporaryVolumeDrum(ch, volDlyValueDrum_.at(uch));
+	if (!volDlyCntRhythm_.at(uch))
+		opnaCtrl_->setTemporaryVolumeRhythm(ch, volDlyValueRhythm_.at(uch));
 	// Check note cut
-	if (!ntCutDlyCntDrum_.at(uch))
-		opnaCtrl_->setKeyOnFlagDrum(ch);
+	if (!ntCutDlyCntRhythm_.at(uch))
+		opnaCtrl_->setKeyOnFlagRhythm(ch);
 	// Check note delay
-	if (!ntDlyCntDrum_.at(uch))
-		executeDrumStepEvents(step, ch, true);
+	if (!ntDlyCntRhythm_.at(uch))
+		executeRhythmStepEvents(step, ch, true);
 }
 
 void PlaybackManager::checkADPCMDelayEventsInTick(Step& step)
@@ -1424,7 +1424,7 @@ void PlaybackManager::clearNoteDelayCounts()
 {
 	std::fill(ntDlyCntFM_.begin(), ntDlyCntFM_.end(), -1);
 	std::fill(ntDlyCntSSG_.begin(), ntDlyCntSSG_.end(), -1);
-	std::fill(ntDlyCntDrum_.begin(), ntDlyCntDrum_.end(), -1);
+	std::fill(ntDlyCntRhythm_.begin(), ntDlyCntRhythm_.end(), -1);
 	ntDlyCntADPCM_ = -1;
 }
 
@@ -1442,9 +1442,9 @@ void PlaybackManager::clearDelayBeyondStepCounts()
 	std::fill(tposeDlyCntSSG_.begin(), tposeDlyCntSSG_.end(), -1);
 	std::fill(tposeDlyValueSSG_.begin(), tposeDlyValueSSG_.end(), 0);
 
-	std::fill(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), -1);
-	std::fill(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), -1);
-	std::fill(volDlyValueDrum_.begin(), volDlyValueDrum_.end(), -1);
+	std::fill(ntCutDlyCntRhythm_.begin(), ntCutDlyCntRhythm_.end(), -1);
+	std::fill(volDlyCntRhythm_.begin(), volDlyCntRhythm_.end(), -1);
+	std::fill(volDlyValueRhythm_.begin(), volDlyValueRhythm_.end(), -1);
 
 	ntCutDlyCntADPCM_ = -1;
 	volDlyCntADPCM_ = -1;
@@ -1473,12 +1473,12 @@ void PlaybackManager::clearSSGDelayBeyondStepCounts(int ch)
 	tposeDlyValueSSG_.at(uch) = 0;
 }
 
-void PlaybackManager::clearDrumDelayBeyondStepCounts(int ch)
+void PlaybackManager::clearRhythmDelayBeyondStepCounts(int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
-	ntCutDlyCntDrum_.at(uch) = -1;
-	volDlyCntDrum_.at(uch) = -1;
-	volDlyValueDrum_.at(uch) = -1;
+	ntCutDlyCntRhythm_.at(uch) = -1;
+	volDlyCntRhythm_.at(uch) = -1;
+	volDlyValueRhythm_.at(uch) = -1;
 }
 
 void PlaybackManager::clearADPCMDelayBeyondStepCounts()
@@ -1495,15 +1495,15 @@ void PlaybackManager::updateDelayEventCounts()
 	auto f = [](int x) { return (x == -1) ? x : --x; };
 	std::transform(ntDlyCntFM_.begin(), ntDlyCntFM_.end(), ntDlyCntFM_.begin(), f);
 	std::transform(ntDlyCntSSG_.begin(), ntDlyCntSSG_.end(), ntDlyCntSSG_.begin(), f);
-	std::transform(ntDlyCntDrum_.begin(), ntDlyCntDrum_.end(), ntDlyCntDrum_.begin(), f);
+	std::transform(ntDlyCntRhythm_.begin(), ntDlyCntRhythm_.end(), ntDlyCntRhythm_.begin(), f);
 	--ntDlyCntADPCM_;
 	std::transform(ntCutDlyCntFM_.begin(), ntCutDlyCntFM_.end(), ntCutDlyCntFM_.begin(), f);
 	std::transform(ntCutDlyCntSSG_.begin(), ntCutDlyCntSSG_.end(), ntCutDlyCntSSG_.begin(), f);
-	std::transform(ntCutDlyCntDrum_.begin(), ntCutDlyCntDrum_.end(), ntCutDlyCntDrum_.begin(), f);
+	std::transform(ntCutDlyCntRhythm_.begin(), ntCutDlyCntRhythm_.end(), ntCutDlyCntRhythm_.begin(), f);
 	--ntCutDlyCntADPCM_;
 	std::transform(volDlyCntFM_.begin(), volDlyCntFM_.end(), volDlyCntFM_.begin(), f);
 	std::transform(volDlyCntSSG_.begin(), volDlyCntSSG_.end(), volDlyCntSSG_.begin(), f);
-	std::transform(volDlyCntDrum_.begin(), volDlyCntDrum_.end(), volDlyCntDrum_.begin(), f);
+	std::transform(volDlyCntRhythm_.begin(), volDlyCntRhythm_.end(), volDlyCntRhythm_.begin(), f);
 	--volDlyCntADPCM_;
 	std::transform(tposeDlyCntFM_.begin(), tposeDlyCntFM_.end(), tposeDlyCntFM_.begin(), f);
 	std::transform(tposeDlyCntSSG_.begin(), tposeDlyCntSSG_.end(), tposeDlyCntSSG_.begin(), f);
@@ -1546,11 +1546,11 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
 	std::vector<bool> isSetTNMixSSG(3, false);
-	std::vector<bool> isSetVolDrum(6, false), isSetPanDrum(6, false);
+	std::vector<bool> isSetVolRhythm(6, false), isSetPanRhythm(6, false);
 	bool isSetInstADPCM(false), isSetVolADPCM(false), isSetArpADPCM(false), isSetPrtADPCM(false);
 	bool isSetVibADPCM(false), isSetTreADPCM(false), isSetPanADPCM(false), isSetVolSldADPCM(false);
 	bool isSetDtnADPCM = false;
-	bool isSetMVolDrum = false;
+	bool isSetMVolRhythm = false;
 	bool isSetNoisePitchSSG = false;
 	bool isSetHardEnvPeriodHighSSG = false;
 	bool isSetHardEnvPeriodLowSSG = false;
@@ -1915,23 +1915,23 @@ void PlaybackManager::retrieveChannelStates()
 				}
 				break;
 			}
-			case SoundSource::DRUM:
+			case SoundSource::RHYTHM:
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolDrum[uch] && 0 <= vol && vol < 0x20) {
-					isSetVolDrum[uch] = true;
+				if (!isSetVolRhythm[uch] && 0 <= vol && vol < 0x20) {
+					isSetVolRhythm[uch] = true;
 					if (isPrevPos)
-						opnaCtrl_->setVolumeDrum(ch, vol);
+						opnaCtrl_->setVolumeRhythm(ch, vol);
 				}
 				// Effects
 				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(SoundSource::DRUM, step.getEffectID(i), step.getEffectValue(i));
+					Effect eff = Effect::makeEffectData(SoundSource::RHYTHM, step.getEffectID(i), step.getEffectValue(i));
 					switch (eff.type) {
 					case EffectType::Pan:
-						if (-1 < eff.value && eff.value < 4 && !isSetPanDrum[uch]) {
-							isSetPanDrum[uch] = true;
-							if (isPrevPos) opnaCtrl_->setPanDrum(ch, eff.value);
+						if (-1 < eff.value && eff.value < 4 && !isSetPanRhythm[uch]) {
+							isSetPanRhythm[uch] = true;
+							if (isPrevPos) opnaCtrl_->setPanRhythm(ch, eff.value);
 						}
 						break;
 					case EffectType::SpeedTempoChange:
@@ -1955,9 +1955,9 @@ void PlaybackManager::retrieveChannelStates()
 						}
 						break;
 					case EffectType::MasterVolume:
-						if (-1 < eff.value && eff.value < 64 && !isSetMVolDrum) {
-							isSetMVolDrum = true;
-							if (isPrevPos) opnaCtrl_->setMasterVolumeDrum(eff.value);
+						if (-1 < eff.value && eff.value < 64 && !isSetMVolRhythm) {
+							isSetMVolRhythm = true;
+							if (isPrevPos) opnaCtrl_->setMasterVolumeRhythm(eff.value);
 						}
 						break;
 					default:

@@ -10,6 +10,7 @@
 ### Fixed
 - Resize width of the order list after closing configuration dialog
 - Fix corruption while loading module
+- Modify appearance slightly
 
 [#213]: https://github.com/rerrahkr/BambooTracker/issues/213
 [#214]: https://github.com/rerrahkr/BambooTracker/issues/214

@@ -42,7 +42,7 @@ inline QString getTrackName(SongType songType, SoundSource src, int chInSrc)
 	case SoundSource::SSG:
 		name = "SSG" + QString::number(chInSrc + 1);
 		break;
-	case SoundSource::DRUM:
+	case SoundSource::RHYTHM:
 		switch (chInSrc) {
 		case 0:	name = "Bass drum";		break;
 		case 1:	name = "Snare drum";	break;

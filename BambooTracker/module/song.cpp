@@ -24,7 +24,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 			tracks_.emplace_back(i + 6, SoundSource::SSG, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i + 9, SoundSource::DRUM, i, defaultPatternSize);
+			tracks_.emplace_back(i + 9, SoundSource::RHYTHM, i, defaultPatternSize);
 		}
 		tracks_.emplace_back(15, SoundSource::ADPCM, 0, defaultPatternSize);
 		break;
@@ -39,7 +39,7 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 			tracks_.emplace_back(i + 9, SoundSource::SSG, i, defaultPatternSize);
 		}
 		for (int i = 0; i < 6; ++i) {
-			tracks_.emplace_back(i + 12, SoundSource::DRUM, i, defaultPatternSize);
+			tracks_.emplace_back(i + 12, SoundSource::RHYTHM, i, defaultPatternSize);
 		}
 		tracks_.emplace_back(18, SoundSource::ADPCM, 0, defaultPatternSize);
 		break;

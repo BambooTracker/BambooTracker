@@ -975,7 +975,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			switch (src) {
 			case SoundSource::FM:		volLim = 0x80;	break;
 			case SoundSource::SSG:		volLim = 0x10;	break;
-			case SoundSource::DRUM:		volLim = 0x20;	break;
+			case SoundSource::RHYTHM:		volLim = 0x20;	break;
 			case SoundSource::ADPCM:	volLim = 0x100;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);

@@ -900,7 +900,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 	std::unordered_map<SoundSource, int> pairs = {
 		{ SoundSource::FM, getFMChannelCount(songStyle_.type) },
 		{ SoundSource::SSG, 3 },
-		{ SoundSource::DRUM, 6 },
+		{ SoundSource::RHYTHM, 6 },
 		{ SoundSource::ADPCM, 1 },
 	};
 	for (auto& pair : pairs) {
@@ -996,10 +996,10 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 {
 	if (playback_->isPlayingStep()) playback_->stopPlaySong();	// Reset
 
-	if (attrib.source == SoundSource::DRUM) {
+	if (attrib.source == SoundSource::RHYTHM) {
 		if (volumeSet)
-			opnaCtrl_->setVolumeDrum(attrib.channelInSource, std::min(curVolume_, 0x1f));
-		opnaCtrl_->setKeyOnFlagDrum(attrib.channelInSource);
+			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, 0x1f));
+		opnaCtrl_->setKeyOnFlagRhythm(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {
@@ -1122,8 +1122,8 @@ void BambooTracker::jamKeyOffForced(int keyNum, SoundSource src)
 
 void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& attrib)
 {
-	if (attrib.source == SoundSource::DRUM) {
-		opnaCtrl_->setKeyOffFlagDrum(attrib.channelInSource);
+	if (attrib.source == SoundSource::RHYTHM) {
+		opnaCtrl_->setKeyOffFlagRhythm(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {

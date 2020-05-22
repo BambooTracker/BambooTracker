@@ -15,7 +15,7 @@ enum class SoundSource : int
 {
 	FM = 1,
 	SSG = 2,
-	DRUM = 4,
+	RHYTHM = 4,
 	ADPCM = 8
 };
 

@@ -150,7 +150,7 @@ Z X CV B N M, .
 The keyboard shortcuts and layout can be changed in the configuration.
 
 ## Effect list
-| Effect | FM                                                                                      | SSG                                                                | Drums                             | ADPCM                   | ADPCM Drumkit                                                                            |
+| Effect | FM                                                                                      | SSG                                                                | Rhythm                            | ADPCM                   | ADPCM Drumkit                                                                            |
 | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
 | 00xy   | Arpeggio (x[0-F]: 2nd note, y[0-F]: 3rd note)                                           | Arpeggio                                                           | -                                 | Arpeggio                | -                                                                                        |
 | 01xx   | Portamento up (xx[00-FF]: depth)                                                        | Portamento up                                                      | -                                 | Portamento up           | -                                                                                        |

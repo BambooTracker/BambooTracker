@@ -48,8 +48,8 @@ size_t Pattern::getSize() const
 	for (size_t i = 0; i < size_; ++i) {
 		for (int j = 0; j < 4; ++j) {
 			switch (Effect::makeEffectData(	// "SoundSource::FM" is dummy
-						SoundSource::FM, steps_[i].getEffectID(j), steps_[i].getEffectValue(j)
-						).type) {
+											SoundSource::FM, steps_[i].getEffectID(j), steps_[i].getEffectValue(j)
+											).type) {
 			case EffectType::PositionJump:
 			case EffectType::SongEnd:
 			case EffectType::PatternBreak:

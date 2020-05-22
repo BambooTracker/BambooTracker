@@ -62,7 +62,7 @@ OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 	}
 
 	for (int ch = 0; ch < 6; ++ch) {
-		isMuteDrum_[ch] = false;
+		isMuteRhythm_[ch] = false;
 	}
 
 	isMuteADPCM_ = false;
@@ -91,7 +91,7 @@ void OPNAController::initChip()
 
 	initFM();
 	initSSG();
-	initDrum();
+	initRhythm();
 	initADPCM();
 }
 
@@ -101,7 +101,7 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 	switch (src) {
 	case SoundSource::FM:		tickEventFM(ch);	break;
 	case SoundSource::SSG:		tickEventSSG(ch);	break;
-	case SoundSource::DRUM:		break;
+	case SoundSource::RHYTHM:	break;
 	case SoundSource::ADPCM:	tickEventADPCM();	break;
 	}
 }
@@ -135,7 +135,7 @@ size_t OPNAController::getDRAMSize() const
 /********** Update register states after tick process **********/
 void OPNAController::updateRegisterStates()
 {
-	updateKeyOnOffStatusDrum();
+	updateKeyOnOffStatusRhythm();
 
 	// Check direct register set
 	if (!registerSetBuf_.empty()) {
@@ -236,7 +236,7 @@ void OPNAController::setMuteState(SoundSource src, int chInSrc, bool isMute)
 	switch (src) {
 	case SoundSource::FM:		setMuteFMState(chInSrc, isMute);	break;
 	case SoundSource::SSG:		setMuteSSGState(chInSrc, isMute);	break;
-	case SoundSource::DRUM:		setMuteDrumState(chInSrc, isMute);	break;
+	case SoundSource::RHYTHM:	setMuteRhythmState(chInSrc, isMute);	break;
 	case SoundSource::ADPCM:	setMuteADPCMState(isMute);			break;
 	}
 }
@@ -246,7 +246,7 @@ bool OPNAController::isMute(SoundSource src, int chInSrc)
 	switch (src) {
 	case SoundSource::FM:		return isMuteFM(chInSrc);
 	case SoundSource::SSG:		return isMuteSSG(chInSrc);
-	case SoundSource::DRUM:		return isMuteDrum(chInSrc);
+	case SoundSource::RHYTHM:	return isMuteRhythm(chInSrc);
 	case SoundSource::ADPCM:	return isMuteADPCM();
 	default:	throw std::invalid_argument("Invalid sound source");
 	}
@@ -3174,96 +3174,96 @@ void OPNAController::writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTr
 	opna_->setRegister(0x01 + offset, period >> 8);
 }
 
-//---------- Drum ----------//
-/********** Key on-off **********/
-void OPNAController::setKeyOnFlagDrum(int ch)
+//---------- Rhythm ----------//
+/********** Key on/off **********/
+void OPNAController::setKeyOnFlagRhythm(int ch)
 {
-	if (isMuteDrum_[ch]) return;
+	if (isMuteRhythm_[ch]) return;
 
-	if (tmpVolDrum_[ch] != -1)
-		setVolumeDrum(ch, volDrum_[ch]);
+	if (tmpVolRhythm_[ch] != -1)
+		setVolumeRhythm(ch, volRhythm_[ch]);
 
-	keyOnFlagDrum_ |= static_cast<uint8_t>(1 << ch);
+	keyOnFlagRhythm_ |= static_cast<uint8_t>(1 << ch);
 }
 
-void OPNAController::setKeyOffFlagDrum(int ch)
+void OPNAController::setKeyOffFlagRhythm(int ch)
 {
-	keyOffFlagDrum_ |= static_cast<uint8_t>(1 << ch);
+	keyOffFlagRhythm_ |= static_cast<uint8_t>(1 << ch);
 }
 
 /********** Set volume **********/
-void OPNAController::setVolumeDrum(int ch, int volume)
+void OPNAController::setVolumeRhythm(int ch, int volume)
 {
 	if (volume > 0x1f) return;	// Out of range
 
-	volDrum_[ch] = volume;
-	tmpVolDrum_[ch] = -1;
-	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panDrum_[ch] << 6) | volume));
+	volRhythm_[ch] = volume;
+	tmpVolRhythm_[ch] = -1;
+	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
 }
 
-void OPNAController::setMasterVolumeDrum(int volume)
+void OPNAController::setMasterVolumeRhythm(int volume)
 {
-	mVolDrum_ = volume;
+	mVolRhythm_ = volume;
 	opna_->setRegister(0x11, static_cast<uint8_t>(volume));
 }
 
-void OPNAController::setTemporaryVolumeDrum(int ch, int volume)
+void OPNAController::setTemporaryVolumeRhythm(int ch, int volume)
 {
 	if (volume > 0x1f) return;	// Out of range
 
-	tmpVolDrum_[ch] = volume;
-	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panDrum_[ch] << 6) | volume));
+	tmpVolRhythm_[ch] = volume;
+	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
 }
 
 /********** Set effect **********/
-void OPNAController::setPanDrum(int ch, int value)
+void OPNAController::setPanRhythm(int ch, int value)
 {
-	panDrum_[ch] = static_cast<uint8_t>(value);
-	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((value << 6) | volDrum_[ch]));
+	panRhythm_[ch] = static_cast<uint8_t>(value);
+	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((value << 6) | volRhythm_[ch]));
 }
 
 /***********************************/
-void OPNAController::initDrum()
+void OPNAController::initRhythm()
 {
-	keyOnFlagDrum_ = 0;
-	keyOffFlagDrum_ = 0;
-	mVolDrum_ = 0x3f;
-	opna_->setRegister(0x11, 0x3f);	// Drum total volume
+	keyOnFlagRhythm_ = 0;
+	keyOffFlagRhythm_ = 0;
+	mVolRhythm_ = 0x3f;
+	opna_->setRegister(0x11, 0x3f);	// Rhythm total volume
 
 	for (int ch = 0; ch < 6; ++ch) {
-		volDrum_[ch] = 0x1f;	// Init volume
-		tmpVolDrum_[ch] = -1;
+		volRhythm_[ch] = 0x1f;	// Init volume
+		tmpVolRhythm_[ch] = -1;
 
 		// Init pan
-		panDrum_[ch] = 3;
+		panRhythm_[ch] = 3;
 		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), 0xdf);
 	}
 }
 
-void OPNAController::setMuteDrumState(int ch, bool isMute)
+void OPNAController::setMuteRhythmState(int ch, bool isMute)
 {
-	isMuteDrum_[ch] = isMute;
+	isMuteRhythm_[ch] = isMute;
 
 	if (isMute) {
-		setKeyOffFlagDrum(ch);
-		updateKeyOnOffStatusDrum();
+		setKeyOffFlagRhythm(ch);
+		updateKeyOnOffStatusRhythm();
 	}
 }
 
-bool OPNAController::isMuteDrum(int ch)
+bool OPNAController::isMuteRhythm(int ch)
 {
-	return isMuteDrum_[ch];
+	return isMuteRhythm_[ch];
 }
 
-void OPNAController::updateKeyOnOffStatusDrum()
+void OPNAController::updateKeyOnOffStatusRhythm()
 {
-	if (keyOnFlagDrum_) {
-		opna_->setRegister(0x10, keyOnFlagDrum_);
-		keyOnFlagDrum_ = 0;
+	if (keyOnFlagRhythm_) {
+		opna_->setRegister(0x10, keyOnFlagRhythm_);
+		keyOnFlagRhythm_ = 0;
 	}
-	if (keyOffFlagDrum_) {
-		opna_->setRegister(0x10, 0x80 | keyOffFlagDrum_);
-		keyOffFlagDrum_ = 0;
+	if (keyOffFlagRhythm_) {
+		opna_->setRegister(0x10, 0x80 | keyOffFlagRhythm_);
+		keyOffFlagRhythm_ = 0;
 	}
 }
 

@@ -1236,7 +1236,7 @@ void MainWindow::addInstrument()
 		ui->instrumentList->setCurrentRow(num);
 		break;
 	}
-	case SoundSource::DRUM:
+	case SoundSource::RHYTHM:
 		break;
 	}
 }
@@ -2557,7 +2557,7 @@ void MainWindow::onCurrentTrackChanged()
 {
 	SoundSource src = bt_->getCurrentTrackAttribute().source;
 	bool space = (bt_->findFirstFreeInstrumentNumber() != -1);
-	ui->actionNew_Instrument->setEnabled((src != SoundSource::DRUM) && space);
+	ui->actionNew_Instrument->setEnabled((src != SoundSource::RHYTHM) && space);
 	ui->actionNew_Drumki_t->setEnabled((src == SoundSource::ADPCM) && space);
 }
 
