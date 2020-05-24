@@ -147,7 +147,7 @@ void CommandSequence::setRelease(ReleaseType type, int begin)
 
 std::unique_ptr<CommandSequence::Iterator> CommandSequence::getIterator()
 {
-	return std::unique_ptr<Iterator>(std::make_unique<Iterator>(this));
+	return std::make_unique<Iterator>(this);
 }
 
 bool CommandSequence::isEdited() const
