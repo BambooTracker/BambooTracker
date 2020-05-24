@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include "instrument.hpp"
+#include <functional>
 
 const FMEnvelopeParameter InstrumentsManager::ENV_FM_PARAMS_[38] = {
 	FMEnvelopeParameter::AL,
@@ -933,9 +934,11 @@ std::vector<int> InstrumentsManager::getEnvelopeFMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableEnvelopeFM() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<EnvelopeFM>& env) { return (env->isUserInstrument() || env->isEdited()); }
-	: [](const std::shared_ptr<EnvelopeFM>& env) { return env->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<EnvelopeFM>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<EnvelopeFM>& env) { return (env->isUserInstrument() || env->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<EnvelopeFM>& env) { return env->isUserInstrument(); };
 	auto&& it = std::find_if_not(envFM_.begin(), envFM_.end(), cond);
 
 	if (it == envFM_.end()) return -1;
@@ -999,9 +1002,11 @@ std::vector<int> InstrumentsManager::getLFOFMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableLFOFM() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<LFOFM>& lfo) { return (lfo->isUserInstrument() || lfo->isEdited()); }
-	: [](const std::shared_ptr<LFOFM>& lfo) { return lfo->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<LFOFM>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<LFOFM>& lfo) { return (lfo->isUserInstrument() || lfo->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<LFOFM>& lfo) { return lfo->isUserInstrument(); };
 	auto&& it = std::find_if_not(lfoFM_.begin(), lfoFM_.end(), cond);
 
 	if (it == lfoFM_.end()) return -1;
@@ -1103,9 +1108,11 @@ std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvel
 
 int InstrumentsManager::findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter param) const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& seq) { return (seq->isUserInstrument() || seq->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& seq) { return seq->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& seq) { return (seq->isUserInstrument() || seq->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& seq) { return seq->isUserInstrument(); };
 	auto& opSeq = opSeqFM_.at(param);
 	auto&& it = std::find_if_not(opSeq.begin(), opSeq.end(), cond);
 
@@ -1218,9 +1225,11 @@ std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableArpeggioFM() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
 	auto&& it = std::find_if_not(arpFM_.begin(), arpFM_.end(), cond);
 
 	if (it == arpFM_.end()) return -1;
@@ -1337,9 +1346,11 @@ std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignablePitchFM() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
 	auto&& it = std::find_if_not(ptFM_.begin(), ptFM_.end(), cond);
 
 	if (it == ptFM_.end()) return -1;
@@ -1477,9 +1488,11 @@ std::vector<int> InstrumentsManager::getWaveformSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableWaveformSSG() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& wf) { return (wf->isUserInstrument() || wf->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& wf) { return wf->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& wf) { return (wf->isUserInstrument() || wf->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& wf) { return wf->isUserInstrument(); };
 	auto&& it = std::find_if_not(wfSSG_.begin(), wfSSG_.end(), cond);
 
 	if (it == wfSSG_.end()) return -1;
@@ -1581,9 +1594,11 @@ std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableToneNoiseSSG() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& tn) { return (tn->isUserInstrument() || tn->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& tn) { return tn->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& tn) { return (tn->isUserInstrument() || tn->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& tn) { return tn->isUserInstrument(); };
 	auto&& it = std::find_if_not(tnSSG_.begin(), tnSSG_.end(), cond);
 
 	if (it == tnSSG_.end()) return -1;
@@ -1685,9 +1700,11 @@ std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableEnvelopeSSG() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); };
 	auto&& it = std::find_if_not(envSSG_.begin(), envSSG_.end(), cond);
 
 	if (it == envSSG_.end()) return -1;
@@ -1799,9 +1816,11 @@ std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableArpeggioSSG() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
 	auto&& it = std::find_if_not(arpSSG_.begin(), arpSSG_.end(), cond);
 
 	if (it == arpSSG_.end()) return -1;
@@ -1913,9 +1932,11 @@ std::vector<int> InstrumentsManager::getPitchSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignablePitchSSG() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
 	auto&& it = std::find_if_not(ptSSG_.begin(), ptSSG_.end(), cond);
 
 	if (it == ptSSG_.end()) return -1;
@@ -2074,9 +2095,11 @@ void InstrumentsManager::clearUnusedSamplesADPCM()
 
 int InstrumentsManager::findFirstAssignableSampleADPCM(int startIndex) const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<SampleADPCM>& samp) { return (samp->isUserInstrument() || samp->isEdited()); }
-	: [](const std::shared_ptr<SampleADPCM>& samp) { return samp->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<SampleADPCM>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<SampleADPCM>& samp) { return (samp->isUserInstrument() || samp->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<SampleADPCM>& samp) { return samp->isUserInstrument(); };
 	auto&& it = std::find_if_not(sampADPCM_.begin() + startIndex, sampADPCM_.end(), cond);
 
 	if (it == sampADPCM_.end()) return -1;
@@ -2178,9 +2201,11 @@ std::vector<int> InstrumentsManager::getEnvelopeADPCMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableEnvelopeADPCM() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); };
 	auto&& it = std::find_if_not(envADPCM_.begin(), envADPCM_.end(), cond);
 
 	if (it == envADPCM_.end()) return -1;
@@ -2292,9 +2317,11 @@ std::vector<int> InstrumentsManager::getArpeggioADPCMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableArpeggioADPCM() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
 	auto&& it = std::find_if_not(arpADPCM_.begin(), arpADPCM_.end(), cond);
 
 	if (it == arpADPCM_.end()) return -1;
@@ -2406,9 +2433,11 @@ std::vector<int> InstrumentsManager::getPitchADPCMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignablePitchADPCM() const
 {
-	auto cond = regardingUnedited_
-				? [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); }
-	: [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	if (regardingUnedited_)
+		cond = [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); };
+	else
+		cond = [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
 	auto&& it = std::find_if_not(ptADPCM_.begin(), ptADPCM_.end(), cond);
 
 	if (it == ptADPCM_.end()) return -1;

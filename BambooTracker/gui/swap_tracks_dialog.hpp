@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-class SongStyle;
+struct SongStyle;
 
 namespace Ui {
 	class SwapTracksDialog;

@@ -40,6 +40,8 @@ else {
 
 CONFIG += c++14
 
+msvc:QMAKE_CXXFLAGS += /source-charset:utf-8
+
 SOURCES += \
     chips/c86ctl/c86ctl_wrapper.cpp \
     command/instrument/swap_instruments_command.cpp \
