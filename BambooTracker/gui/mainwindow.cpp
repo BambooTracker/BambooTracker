@@ -608,7 +608,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	/* Audio stream */
 	bool savedDeviceExists = false;
-	for (QAudioDeviceInfo audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+	for (const QAudioDeviceInfo& audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
 		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
 			savedDeviceExists = true;
 			break;
@@ -1742,7 +1742,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	try {
 		bool sampleRestoreRequested = false;
 		int lastNum = ui->instrumentList->currentRow();
-		for (size_t index : selection) {
+		for (const size_t& index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
 				showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst),
@@ -2266,7 +2266,7 @@ void MainWindow::setWindowTitle()
 	QString songTitle = utf8ToQString(bt_->getSongTitle(n));
 	if (songTitle.isEmpty()) songTitle = tr("Untitled");
 	QMainWindow::setWindowTitle(QString("%1[*] [#%2 %3] - BambooTracker")
-								.arg(fileName).arg(QString::number(n)).arg(songTitle));
+								.arg(fileName, QString::number(n), songTitle));
 }
 
 void MainWindow::setModifiedTrue()

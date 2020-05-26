@@ -163,18 +163,16 @@ QString FMOperatorTable::toString() const
 	if (isDTNegative_) dt = DT_UNSIGN_TBL_[dt + 3];
 
 	auto str = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,%10")
-			   .arg(QString::number(ui->arSlider->value()))
-			   .arg(QString::number(ui->drSlider->value()))
-			   .arg(QString::number(ui->srSlider->value()))
-			   .arg(QString::number(ui->rrSlider->value()))
-			   .arg(QString::number(ui->slSlider->value()))
-			   .arg(QString::number(ui->tlSlider->value()))
-			   .arg(QString::number(ui->ksSlider->value()))
-			   .arg(QString::number(ui->mlSlider->value()))
-			   .arg(QString::number(dt))
-			   .arg(ui->ssgegCheckBox->isChecked()
-					? QString::number(ui->ssgegSlider->value())
-					: "-1");
+			   .arg(ui->arSlider->value())
+			   .arg(ui->drSlider->value())
+			   .arg(ui->srSlider->value())
+			   .arg(ui->rrSlider->value())
+			   .arg(ui->slSlider->value())
+			   .arg(ui->tlSlider->value())
+			   .arg(ui->ksSlider->value())
+			   .arg(ui->mlSlider->value())
+			   .arg(dt)
+			   .arg(ui->ssgegCheckBox->isChecked() ? ui->ssgegSlider->value() : -1);
 	return str;
 }
 

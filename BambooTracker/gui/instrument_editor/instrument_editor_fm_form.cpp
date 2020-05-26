@@ -26,8 +26,6 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	installEventFilter(this);
-
 	/******************** Envelope editor ********************/
 	ui->envGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -595,7 +593,7 @@ void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> confi
 	config_ = config;
 
 	std::vector<QString> names;
-	for (auto texts : config.lock()->getFMEnvelopeTexts()) {
+	for (const auto& texts : config.lock()->getFMEnvelopeTexts()) {
 		names.push_back(utf8ToQString(texts.name));
 	}
 	ui->op1Table->setEnvelopeSetNames(names);
@@ -1154,8 +1152,8 @@ void InstrumentEditorFMForm::resizeAlgorithmDiagram()
 void InstrumentEditorFMForm::copyEnvelope()
 {
 	QApplication::clipboard()->setText(QString("FM_ENVELOPE:%1,%2,\n%3,\n%4,\n%5,\n%6,")
-									   .arg(QString::number(ui->fbSlider->value()))
-									   .arg(QString::number(ui->alSlider->value()))
+									   .arg(ui->fbSlider->value())
+									   .arg(ui->alSlider->value())
 									   .arg(ui->op1Table->toString())
 									   .arg(ui->op2Table->toString())
 									   .arg(ui->op3Table->toString())
@@ -1292,14 +1290,14 @@ void InstrumentEditorFMForm::setInstrumentLFOParameters(QString data)
 QString InstrumentEditorFMForm::toLFOString() const
 {
 	auto str = QString("%1,%2,%3,%4,%5,%6,%7,%8")
-			   .arg(QString::number(ui->lfoFreqSlider->value()))
-			   .arg(QString::number(ui->pmsSlider->value()))
-			   .arg(QString::number(ui->amsSlider->value()))
-			   .arg(QString::number(ui->lfoStartSpinBox->value()))
-			   .arg(QString::number(ui->amOp1CheckBox->isChecked() ? 1 : 0))
-			   .arg(QString::number(ui->amOp2CheckBox->isChecked() ? 1 : 0))
-			   .arg(QString::number(ui->amOp3CheckBox->isChecked() ? 1 : 0))
-			   .arg(QString::number(ui->amOp4CheckBox->isChecked() ? 1 : 0));
+			   .arg(ui->lfoFreqSlider->value())
+			   .arg(ui->pmsSlider->value())
+			   .arg(ui->amsSlider->value())
+			   .arg(ui->lfoStartSpinBox->value())
+			   .arg(ui->amOp1CheckBox->isChecked() ? 1 : 0)
+			   .arg(ui->amOp2CheckBox->isChecked() ? 1 : 0)
+			   .arg(ui->amOp3CheckBox->isChecked() ? 1 : 0)
+			   .arg(ui->amOp4CheckBox->isChecked() ? 1 : 0);
 	return str;
 }
 

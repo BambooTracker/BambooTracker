@@ -94,73 +94,73 @@ GD3Tag VgmExportSettingsDialog::getGD3Tag() const
 	endNull += '\0';
 
 	tag.trackNameEn = "";
-	for (auto c : getTrackNameEnglish().toLatin1()) {
+	for (const auto& c : getTrackNameEnglish().toLatin1()) {
 		tag.trackNameEn += c;
 		tag.trackNameEn += '\0';
 	}
 	tag.trackNameEn += endNull;
 
 	tag.trackNameJp = "";
-	for (auto c : sjis->fromUnicode(getTrackNameJapanese())) {
+	for (const auto& c : sjis->fromUnicode(getTrackNameJapanese())) {
 		tag.trackNameJp += c;
 	}
 	tag.trackNameJp += endNull;
 
 	tag.gameNameEn = "";
-	for (auto c : getGameNameEnglish().toLatin1()) {
+	for (const auto& c : getGameNameEnglish().toLatin1()) {
 		tag.gameNameEn += c;
 		tag.gameNameEn += '\0';
 	}
 	tag.gameNameEn += endNull;
 
 	tag.gameNameJp = "";
-	for (auto c : sjis->fromUnicode(getGameNameJapanese())) {
+	for (const auto& c : sjis->fromUnicode(getGameNameJapanese())) {
 		tag.gameNameJp += c;
 	}
 	tag.gameNameJp += endNull;
 
 	tag.systemNameEn = "";
-	for (auto c : getSystemNameEnglish().toLatin1()) {
+	for (const auto& c : getSystemNameEnglish().toLatin1()) {
 		tag.systemNameEn += c;
 		tag.systemNameEn += '\0';
 	}
 	tag.systemNameEn += endNull;
 
 	tag.systemNameJp = "";
-	for (auto c : sjis->fromUnicode(getSystemNameJapanese())) {
+	for (const auto& c : sjis->fromUnicode(getSystemNameJapanese())) {
 		tag.systemNameJp += c;
 	}
 	tag.systemNameJp += endNull;
 
 	tag.authorEn = "";
-	for (auto c : getTrackAuthorEnglish().toLatin1()) {
+	for (const auto& c : getTrackAuthorEnglish().toLatin1()) {
 		tag.authorEn += c;
 		tag.authorEn += '\0';
 	}
 	tag.authorEn += endNull;
 
 	tag.authorJp = "";
-	for (auto c : sjis->fromUnicode(getTrackAuthorJapanese())) {
+	for (const auto& c : sjis->fromUnicode(getTrackAuthorJapanese())) {
 		tag.authorJp += c;
 	}
 	tag.authorJp += endNull;
 
 	tag.releaseDate = "";
-	for (auto c : getReleaseDate().toLatin1()) {
+	for (const auto& c : getReleaseDate().toLatin1()) {
 		tag.releaseDate += c;
 		tag.releaseDate += '\0';
 	}
 	tag.releaseDate += endNull;
 
 	tag.vgmCreator = "";
-	for (auto c : getVgmCreator().toLatin1()) {
+	for (const auto& c : getVgmCreator().toLatin1()) {
 		tag.vgmCreator += c;
 		tag.vgmCreator += '\0';
 	}
 	tag.vgmCreator += endNull;
 
 	tag.notes = "";
-	for (auto c : getNotes().toLatin1()) {
+	for (const auto& c : getNotes().toLatin1()) {
 		tag.notes += c;
 		tag.notes += '\0';
 	}

@@ -1683,7 +1683,6 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	}
 
 	// Send effect description
-	QString effDetail = tr("Invalid effect");
 	std::string id = bt_->getStepEffectID(curSongNum_, visTracks_.at(editPos.trackVisIdx), editPos.order,
 										  editPos.step, (editPos.colInTrack - 3) / 2);
 	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curTrackNum)).source;

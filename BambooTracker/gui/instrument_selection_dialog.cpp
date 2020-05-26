@@ -23,7 +23,7 @@ InstrumentSelectionDialog::~InstrumentSelectionDialog()
 
 void InstrumentSelectionDialog::setupContents()
 {
-	QListWidget *lw = ui_->listWidget;
+	QListWidget* lw = ui_->listWidget;
 	lw->setSelectionMode(QListWidget::MultiSelection);
 
 	size_t instCount = bank_.getNumInstruments();
@@ -31,7 +31,7 @@ void InstrumentSelectionDialog::setupContents()
 		QString id = QString::fromStdString(bank_.getInstrumentIdentifier(i));
 		QString name = QString::fromStdString(bank_.getInstrumentName(i));
 
-		QListWidgetItem *item = new QListWidgetItem(QString("%1 %2").arg(id).arg(name));
+		QListWidgetItem* item = new QListWidgetItem(QString("%1 %2").arg(id, name));
 		item->setData(Qt::UserRole, static_cast<qulonglong>(i));
 		lw->addItem(item);
 	}
@@ -45,7 +45,7 @@ QVector<size_t> InstrumentSelectionDialog::currentInstrumentSelection() const
 	QVector<size_t> selection;
 	selection.reserve(items.size());
 
-	for (QListWidgetItem *item : items) {
+	for (const QListWidgetItem* item : items) {
 		size_t index = static_cast<size_t>(item->data(Qt::UserRole).toULongLong());
 		selection.push_back(index);
 	}
