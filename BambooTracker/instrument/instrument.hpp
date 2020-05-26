@@ -27,7 +27,7 @@ public:
 	std::string getName() const;
 	void setName(std::string name);
 	bool isRegisteredWithManager() const;
-	virtual std::unique_ptr<AbstractInstrument> clone() = 0;
+	virtual AbstractInstrument* clone() = 0;
 
 protected:
 	InstrumentsManager* owner_;
@@ -43,7 +43,7 @@ public:
 	InstrumentFM(int number, std::string name, InstrumentsManager* owner);
 	SoundSource getSoundSource() const override;
 	InstrumentType getType() const override;
-	std::unique_ptr<AbstractInstrument> clone() override;
+	AbstractInstrument* clone() override;
 
 	void setEnvelopeNumber(int n);
 	int getEnvelopeNumber() const;
@@ -109,7 +109,7 @@ public:
 	InstrumentSSG(int number, std::string name, InstrumentsManager* owner);
 	SoundSource getSoundSource() const override;
 	InstrumentType getType() const override;
-	std::unique_ptr<AbstractInstrument> clone() override;
+	AbstractInstrument* clone() override;
 
 	void setWaveformEnabled(bool enabled);
 	bool getWaveformEnabled() const;
@@ -178,7 +178,7 @@ public:
 	InstrumentADPCM(int number, std::string name, InstrumentsManager* owner);
 	SoundSource getSoundSource() const override;
 	InstrumentType getType() const override;
-	std::unique_ptr<AbstractInstrument> clone() override;
+	AbstractInstrument* clone() override;
 
 	void setSampleNumber(int n);
 	int getSampleNumber() const;
@@ -235,7 +235,7 @@ public:
 	InstrumentDrumkit(int number, std::string name, InstrumentsManager* owner);
 	SoundSource getSoundSource() const override;
 	InstrumentType getType() const override;
-	std::unique_ptr<AbstractInstrument> clone() override;
+	AbstractInstrument* clone() override;
 
 	std::vector<int> getAssignedKeys() const;
 

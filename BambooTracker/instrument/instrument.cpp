@@ -167,9 +167,9 @@ InstrumentType InstrumentFM::getType() const
 	return InstrumentType::FM;
 }
 
-std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
+AbstractInstrument* InstrumentFM::clone()
 {
-	auto c = std::make_unique<InstrumentFM>(number_, name_, owner_);
+	auto c = new InstrumentFM(number_, name_, owner_);
 	c->setEnvelopeNumber(envNum_);
 	c->setLFOEnabled(lfoEnabled_);
 	c->setLFONumber(lfoNum_);
@@ -399,9 +399,9 @@ InstrumentType InstrumentSSG::getType() const
 	return InstrumentType::SSG;
 }
 
-std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
+AbstractInstrument* InstrumentSSG::clone()
 {
-	auto c = std::make_unique<InstrumentSSG>(number_, name_, owner_);
+	auto c = new InstrumentSSG(number_, name_, owner_);
 	c->setWaveformEnabled(wfEnabled_);
 	c->setWaveformNumber(wfNum_);
 	c->setToneNoiseEnabled(tnEnabled_);
@@ -649,9 +649,9 @@ InstrumentType InstrumentADPCM::getType() const
 	return InstrumentType::ADPCM;
 }
 
-std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
+AbstractInstrument* InstrumentADPCM::clone()
 {
-	auto c = std::make_unique<InstrumentADPCM>(number_, name_, owner_);
+	auto c = new InstrumentADPCM(number_, name_, owner_);
 	c->setSampleNumber(sampNum_);
 	c->setEnvelopeEnabled(envEnabled_);
 	c->setEnvelopeNumber(envNum_);
@@ -849,9 +849,9 @@ InstrumentType InstrumentDrumkit::getType() const
 	return InstrumentType::Drumkit;
 }
 
-std::unique_ptr<AbstractInstrument> InstrumentDrumkit::clone()
+AbstractInstrument* InstrumentDrumkit::clone()
 {
-	auto c = std::make_unique<InstrumentDrumkit>(number_, name_, owner_);
+	auto c = new InstrumentDrumkit(number_, name_, owner_);
 
 	for (const auto& pair : kit_) {
 		c->setSampleEnabled(pair.first, true);

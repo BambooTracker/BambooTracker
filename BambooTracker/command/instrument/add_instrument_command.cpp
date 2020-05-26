@@ -17,7 +17,7 @@ AddInstrumentCommand::AddInstrumentCommand(std::weak_ptr<InstrumentsManager> man
 
 void AddInstrumentCommand::redo()
 {
-	if (inst_) manager_.lock()->addInstrument(inst_->clone());
+	if (inst_) manager_.lock()->addInstrument(std::unique_ptr<AbstractInstrument>(inst_->clone()));
 	else manager_.lock()->addInstrument(num_, type_, name_);
 }
 

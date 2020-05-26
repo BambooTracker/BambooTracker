@@ -708,7 +708,7 @@ std::unique_ptr<AbstractInstrument> InstrumentsManager::removeInstrument(int ins
 		throw std::invalid_argument("invalid instrument type");
 	}
 
-	std::unique_ptr<AbstractInstrument> clone = insts_[static_cast<size_t>(instNum)]->clone();
+	std::unique_ptr<AbstractInstrument> clone(insts_[static_cast<size_t>(instNum)]->clone());
 	insts_[static_cast<size_t>(instNum)].reset();
 	return clone;
 }

@@ -119,7 +119,7 @@ std::unique_ptr<AbstractInstrument> BambooTracker::getInstrument(int num)
 {
 	std::shared_ptr<AbstractInstrument> inst = instMan_->getInstrumentSharedPtr(num);
 	if (inst == nullptr) return std::unique_ptr<AbstractInstrument>();
-	else return inst->clone();
+	else return std::unique_ptr<AbstractInstrument>(inst->clone());
 }
 
 void BambooTracker::cloneInstrument(int num, int refNum)
