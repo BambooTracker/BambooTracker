@@ -1,5 +1,4 @@
 #include "instrument.hpp"
-#include <utility>
 #include <algorithm>
 
 AbstractInstrument::AbstractInstrument(int number, std::string name, InstrumentsManager* owner)
@@ -170,7 +169,7 @@ InstrumentType InstrumentFM::getType() const
 
 std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
 {
-	std::unique_ptr<InstrumentFM> c = std::make_unique<InstrumentFM>(number_, name_, owner_);
+	auto c = std::make_unique<InstrumentFM>(number_, name_, owner_);
 	c->setEnvelopeNumber(envNum_);
 	c->setLFOEnabled(lfoEnabled_);
 	c->setLFONumber(lfoNum_);
@@ -185,7 +184,7 @@ std::unique_ptr<AbstractInstrument> InstrumentFM::clone()
 		c->setPitchNumber(pair.first, ptNum_.at(pair.first));
 		c->setEnvelopeResetEnabled(pair.first, envResetEnabled_.at(pair.first));
 	}
-	return std::move(c);
+	return c;
 }
 
 void InstrumentFM::setEnvelopeNumber(int n)
@@ -402,7 +401,7 @@ InstrumentType InstrumentSSG::getType() const
 
 std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
 {
-	std::unique_ptr<InstrumentSSG> c = std::make_unique<InstrumentSSG>(number_, name_, owner_);
+	auto c = std::make_unique<InstrumentSSG>(number_, name_, owner_);
 	c->setWaveformEnabled(wfEnabled_);
 	c->setWaveformNumber(wfNum_);
 	c->setToneNoiseEnabled(tnEnabled_);
@@ -413,7 +412,7 @@ std::unique_ptr<AbstractInstrument> InstrumentSSG::clone()
 	c->setArpeggioNumber(arpNum_);
 	c->setPitchEnabled(ptEnabled_);
 	c->setPitchNumber(ptNum_);
-	return std::move(c);
+	return c;
 }
 
 void InstrumentSSG::setWaveformEnabled(bool enabled)
@@ -652,7 +651,7 @@ InstrumentType InstrumentADPCM::getType() const
 
 std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
 {
-	std::unique_ptr<InstrumentADPCM> c = std::make_unique<InstrumentADPCM>(number_, name_, owner_);
+	auto c = std::make_unique<InstrumentADPCM>(number_, name_, owner_);
 	c->setSampleNumber(sampNum_);
 	c->setEnvelopeEnabled(envEnabled_);
 	c->setEnvelopeNumber(envNum_);
@@ -660,7 +659,7 @@ std::unique_ptr<AbstractInstrument> InstrumentADPCM::clone()
 	c->setArpeggioNumber(arpNum_);
 	c->setPitchEnabled(ptEnabled_);
 	c->setPitchNumber(ptNum_);
-	return std::move(c);
+	return c;
 }
 
 void InstrumentADPCM::setSampleNumber(int n)
@@ -852,14 +851,14 @@ InstrumentType InstrumentDrumkit::getType() const
 
 std::unique_ptr<AbstractInstrument> InstrumentDrumkit::clone()
 {
-	std::unique_ptr<InstrumentDrumkit> c = std::make_unique<InstrumentDrumkit>(number_, name_, owner_);
+	auto c = std::make_unique<InstrumentDrumkit>(number_, name_, owner_);
 
 	for (const auto& pair : kit_) {
 		c->setSampleEnabled(pair.first, true);
 		c->setSampleNumber(pair.first, pair.second.sampNum);
 		c->setPitch(pair.first, pair.second.pitch);
 	}
-	return std::move(c);
+	return c;
 }
 
 std::vector<int> InstrumentDrumkit::getAssignedKeys() const

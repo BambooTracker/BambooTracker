@@ -323,12 +323,12 @@ void PlaybackManager::stepProcess()
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		size_t uch = static_cast<size_t>(attrib.channelInSource);
 		keyOnBasedEffs_[attrib.source].at(uch).clear();
-		bool (PlaybackManager::*storeEffectToMap)(int, Effect);
+		bool (PlaybackManager::*storeEffectToMap)(int, Effect) = nullptr;
 		switch (attrib.source) {
-		case SoundSource::FM:		storeEffectToMap = &PlaybackManager::storeEffectToMapFM;	break;
-		case SoundSource::SSG:		storeEffectToMap = &PlaybackManager::storeEffectToMapSSG;	break;
+		case SoundSource::FM:		storeEffectToMap = &PlaybackManager::storeEffectToMapFM;		break;
+		case SoundSource::SSG:		storeEffectToMap = &PlaybackManager::storeEffectToMapSSG;		break;
 		case SoundSource::RHYTHM:	storeEffectToMap = &PlaybackManager::storeEffectToMapRhythm;	break;
-		case SoundSource::ADPCM:	storeEffectToMap = &PlaybackManager::storeEffectToMapADPCM;	break;
+		case SoundSource::ADPCM:	storeEffectToMap = &PlaybackManager::storeEffectToMapADPCM;		break;
 		}
 		bool isDelay = false;
 		for (int i = 0; i < 4; ++i) {

@@ -127,8 +127,8 @@ UCHAR WINAPI c86ctl_in( UINT addr );				// DEPRECATED
 
 
 #ifdef __cplusplus
-};
-};
+}
+}
 #endif
 
 #endif

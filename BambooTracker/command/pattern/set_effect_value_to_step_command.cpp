@@ -21,6 +21,7 @@ void SetEffectValueToStepCommand::redo()
 {
 	int value;
 	switch (ctrl_) {
+	default:
 	case EffectDisplayControl::Unset:
 		value = val_;
 		break;

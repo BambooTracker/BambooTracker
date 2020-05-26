@@ -110,7 +110,9 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Shortcuts
-	auto getKeys = [](bool isShift, auto key) { return (isShift ? (Qt::SHIFT + key) : key); };
+	auto getKeys = [](bool isShift, auto key) {
+		return (isShift ? static_cast<Qt::Key>(Qt::SHIFT + key) : key);
+	};
 	auto jumpLambda = [&] (bool isShift, auto getFunc) {	// For lazy evaluation
 		if (bt_->isPlaySong() && bt_->isFollowPlay()) return;
 		moveCursorToDown(getFunc());

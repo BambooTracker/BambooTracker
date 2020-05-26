@@ -12,6 +12,7 @@
 #include <math.h>
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define CLAMP_ZERO(x, high)  (((x) > (high)) ? (high) : (x))
 
 namespace codec
 {
@@ -49,7 +50,7 @@ namespace codec
 			// we remove a few bits of accuracy to reduce some noise.
 			int step = ((*buffer++) & -8) - history;
 			adpcm_sample = (abs(step)<<16) / (step_size<<14);
-			adpcm_sample = CLAMP(adpcm_sample, 0, 7);
+			adpcm_sample = CLAMP_ZERO(adpcm_sample, 7);
 			if(step < 0)
 				adpcm_sample |= 8;
 			if(nibble)

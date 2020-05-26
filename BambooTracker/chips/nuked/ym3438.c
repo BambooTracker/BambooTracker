@@ -1258,7 +1258,7 @@ void OPNmod_RhythmGenerate(ym3438_t *chip)
 
         /*from MAME*/
         chip->rhythm_now_step[channel] += chip->rhythm_step[channel];
-        if (chip->rhythm_now_step[channel] >= (1 << adpcm_shift))
+        if (chip->rhythm_now_step[channel] >= (1u << adpcm_shift))
         {
             step = chip->rhythm_now_step[channel] >> adpcm_shift;
             chip->rhythm_now_step[channel] &= (1 << adpcm_shift) - 1;

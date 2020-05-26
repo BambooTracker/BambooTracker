@@ -153,7 +153,7 @@ std::unique_ptr<CommandSequence::Iterator> CommandSequence::getIterator()
 bool CommandSequence::isEdited() const
 {
 	return  (seq_.size() != 1 || seq_.front().type != DEF_COM_TYPE_ || seq_.front().data != DEF_COM_DATA_
-			|| loops_.size() || release_.begin > -1);
+																							|| loops_.size() || release_.begin > -1);
 }
 
 void CommandSequence::clearParameters()
@@ -186,7 +186,7 @@ int CommandSequence::Iterator::getSequenceType() const
 
 int CommandSequence::Iterator::getCommandType() const
 {
-	return (pos_ == -1 || pos_ >= seq_->getSequenceSize())
+	return (pos_ == -1 || pos_ >= static_cast<long int>(seq_->getSequenceSize()))
 			? -1
 			: isRelease_
 			  ? static_cast<int>(seq_->getSequenceTypeAt(pos_) * relReleaseRatio_)
@@ -195,7 +195,9 @@ int CommandSequence::Iterator::getCommandType() const
 
 int CommandSequence::Iterator::getCommandData() const
 {
-	return (pos_ == -1 || pos_ >= seq_->getSequenceSize()) ? -1 : seq_->getSequenceDataAt(pos_);
+	return (pos_ == -1
+			|| pos_ >= static_cast<long int>(seq_->getSequenceSize())) ? -1
+																	   : seq_->getSequenceDataAt(pos_);
 }
 
 int CommandSequence::Iterator::next(bool isReleaseBegin)

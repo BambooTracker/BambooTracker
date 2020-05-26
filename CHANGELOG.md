@@ -11,11 +11,14 @@
 - Resize width of the order list after closing configuration dialog
 - Fix corruption while loading module
 - [#217] - Remove redundant call (thanks [@nyanpasu64])
+- [#216], [#218] - Fix some compilation warings (thanks [@nyanpasu64], [@OPNA2608])
 - Modify appearance slightly
 
 [#213]: https://github.com/rerrahkr/BambooTracker/issues/213
 [#214]: https://github.com/rerrahkr/BambooTracker/issues/214
 [#217]: https://github.com/rerrahkr/BambooTracker/pull/217
+[#216]: https://github.com/rerrahkr/BambooTracker/issues/216
+[#218]: https://github.com/rerrahkr/BambooTracker/issues/218
 
 ## v0.4.2 (2020-05-10)
 ### Added

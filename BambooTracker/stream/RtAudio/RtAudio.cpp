@@ -64,6 +64,15 @@ const unsigned int RtApi::SAMPLE_RATES[] = {
 
   #include "tchar.h"
 
+/********************/
+#if !defined(DECL_MAYBE_UNUSED) && defined(__GNUC__)
+#define DECL_MAYBE_UNUSED __attribute__((unused))
+#elif !defined(DECL_MAYBE_UNUSED)
+#define DECL_MAYBE_UNUSED
+#endif
+/********************/
+
+DECL_MAYBE_UNUSED
   static std::string convertCharPointerToStdString(const char *text)
   {
     return std::string(text);

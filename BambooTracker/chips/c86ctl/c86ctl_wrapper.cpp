@@ -7,6 +7,8 @@ C86ctlBase::C86ctlBase(void (*func)())
 #ifdef _C86CTL_H
 	if (auto createInstance = reinterpret_cast<HRESULT(WINAPI*)(REFIID, void**)>(func))
 		createInstance(c86ctl::IID_IRealChipBase, reinterpret_cast<void**>(&base_));
+#else
+	(void)func;
 #endif
 }
 
@@ -42,6 +44,8 @@ C86ctlRealChip* C86ctlBase::getChipInterface(int id)
 	c86ctl::IRealChip2* rc = nullptr;
 #ifdef _C86CTL_H
 	if (base_) base_->getChipInterface(id, c86ctl::IID_IRealChip2, reinterpret_cast<void**>(&rc));
+#else
+	(void)id;
 #endif
 	return (rc ? new C86ctlRealChip(rc) : nullptr);
 }
@@ -66,6 +70,9 @@ void C86ctlRealChip::out(uint32_t addr, uint8_t data)
 {
 #ifdef _C86CTL_H
 	rc_->out(addr, data);
+#else
+	(void)addr;
+	(void)data;
 #endif
 }
 
@@ -98,5 +105,7 @@ void C86ctlGimic::setSSGVolume(uint8_t vol)
 {
 #ifdef _C86CTL_H
 	gm_->setSSGVolume(vol);
+#else
+	(void)vol;
 #endif
 }

@@ -9,7 +9,7 @@ class AbstractBank;
 
 namespace Ui {
 	class InstrumentSelectionDialog;
-};
+}
 
 class InstrumentSelectionDialog : public QDialog
 {

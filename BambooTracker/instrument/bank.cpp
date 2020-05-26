@@ -53,12 +53,13 @@ void WopnBank::WOPNDeleter::operator()(WOPNFile *x)
 struct WopnBank::InstEntry
 {
 	WOPNInstrument *inst;
-	struct {
+	struct ValuesType
+	{
 		bool percussive : 1;
 		unsigned msb : 7;
 		unsigned lsb : 7;
 		unsigned nth : 7;
-	};
+	} vals;
 };
 
 WopnBank::WopnBank(WOPNFile *wopn)
@@ -72,14 +73,14 @@ WopnBank::WopnBank(WOPNFile *wopn)
 
 	for (size_t i = 0; i < instMax; ++i) {
 		InstEntry ent;
-		ent.percussive = (i / 128) >= numM;
-		WOPNBank &bank = ent.percussive ?
-			wopn->banks_percussive[(i / 128) - numM] :
-			wopn->banks_melodic[i / 128];
-		ent.msb = bank.bank_midi_msb;
-		ent.lsb = bank.bank_midi_lsb;
-		ent.nth = i % 128;
-		ent.inst = &bank.ins[ent.nth];
+		ent.vals.percussive = (i / 128) >= numM;
+		WOPNBank& bank = ent.vals.percussive
+						 ? wopn->banks_percussive[(i / 128) - numM]
+						 : wopn->banks_melodic[i / 128];
+		ent.vals.msb = bank.bank_midi_msb;
+		ent.vals.lsb = bank.bank_midi_lsb;
+		ent.vals.nth = i % 128;
+		ent.inst = &bank.ins[ent.vals.nth];
 		if ((ent.inst->inst_flags & WOPN_Ins_IsBlank) == 0)
 			entries_.push_back(ent);
 	}
@@ -100,7 +101,8 @@ std::string WopnBank::getInstrumentIdentifier(size_t index) const
 {
 	const InstEntry &ent = entries_.at(index);
 	char identifier[64];
-	sprintf(identifier, "%c%03d:%03d:%03d", "MP"[ent.percussive], ent.msb, ent.lsb, ent.nth);
+	sprintf(identifier, "%c%03d:%03d:%03d", "MP"[ent.vals.percussive],
+			ent.vals.msb, ent.vals.lsb, ent.vals.nth);
 	return identifier;
 }
 
