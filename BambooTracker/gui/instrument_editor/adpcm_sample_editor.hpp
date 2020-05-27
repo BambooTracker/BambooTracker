@@ -1,5 +1,5 @@
 #ifndef ADPCM_SAMPLE_EDITOR_HPP
-#define ADPCM_SAMPLEEDITOR_HPP
+#define ADPCM_SAMPLE_EDITOR_HPP
 
 #include <memory>
 #include <cstdint>

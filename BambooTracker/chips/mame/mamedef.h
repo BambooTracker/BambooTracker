@@ -60,7 +60,10 @@ typedef sample stream_sample_t;
 #else
 #define INLINE	static inline
 #endif
+
+#ifndef M_PI
 #define M_PI	3.14159265358979323846
+#endif
 
 #ifdef _DEBUG
 #define logerror	printf
