@@ -213,6 +213,7 @@ Z X CV B N M, .
 
 - .btb (BambooTracker bank file)
 - .wopn (WOPN bank file)
+- .ff (PMD FF file)
 - .ppc (PMD PPC file)
 - .pvi (FMP PVI file)
 

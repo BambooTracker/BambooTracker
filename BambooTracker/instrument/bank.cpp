@@ -119,9 +119,39 @@ AbstractInstrument* WopnBank::loadInstrument(size_t index, std::weak_ptr<Instrum
 }
 
 /******************************/
+FfBank::FfBank(std::vector<int> ids, std::vector<std::string> names, std::vector<BinaryContainer> ctrs)
+	: ids_(ids), names_(names), instCtrs_(ctrs)
+{
+}
+
+size_t FfBank::getNumInstruments() const
+{
+	return ids_.size();
+}
+
+std::string FfBank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string FfBank::getInstrumentName(size_t index) const
+{
+	return names_.at(index);
+}
+
+AbstractInstrument* FfBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return InstrumentIO::loadFfInstrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
+}
+
+void FfBank::setInstrumentName(size_t index, const std::string& name)
+{
+	names_.at(index) = name;
+}
+
+/******************************/
 PpcBank::PpcBank(std::vector<int> ids, std::vector<std::vector<uint8_t> > samples)
-	: ids_(ids),
-	  samples_(samples)
+	: ids_(ids), samples_(samples)
 {
 }
 
@@ -148,8 +178,7 @@ AbstractInstrument* PpcBank::loadInstrument(size_t index, std::weak_ptr<Instrume
 
 /******************************/
 PviBank::PviBank(std::vector<int> ids, std::vector<std::vector<uint8_t> > samples)
-	: ids_(ids),
-	  samples_(samples)
+	: ids_(ids), samples_(samples)
 {
 }
 

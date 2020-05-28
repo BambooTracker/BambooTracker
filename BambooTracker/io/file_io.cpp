@@ -73,6 +73,7 @@ FileIO::FileType FileIO::judgeFileTypeFromExtension(std::string ext)
 
 	if (ext == "btb") return FileType::Bank;
 	if (ext == "wopn") return FileType::Bank;
+	if (ext == "ff") return FileType::Bank;
 	if (ext == "ppc") return FileType::Bank;
 	if (ext == "pvi") return FileType::Bank;
 

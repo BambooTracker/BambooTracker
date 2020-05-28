@@ -4,8 +4,9 @@
 ### Added
 - [#2], [#213], [#214] - ADPCM sample editor (thanks [@freq-mod])
 - [#98] - Track visibility control (thanks [@pedipanol], [@freq-mod])
-- Add slope notation in text edit of instrument sequence
-- [#98] - Add the selection of FM "None" target in vgm/s98 export (thanks [@freq-mod])
+- Slope notation in text edit of instrument sequence
+- [#98] - Selection of FM "None" target in vgm/s98 export (thanks [@freq-mod])
+- [#136] - Support PMD .FF file import (thanks [@OPNA2608])
 
 ### Fixed
 - Resize width of the order list after closing configuration dialog

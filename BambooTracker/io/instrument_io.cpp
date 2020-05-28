@@ -14,7 +14,8 @@
 
 InstrumentIO::InstrumentIO() {}
 
-void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<InstrumentsManager> instMan, int instNum)
+void InstrumentIO::saveInstrument(BinaryContainer& ctr,
+								  const std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
 	const std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 
@@ -799,7 +800,7 @@ void InstrumentIO::saveInstrument(BinaryContainer& ctr, std::weak_ptr<Instrument
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
 }
 
-AbstractInstrument* InstrumentIO::loadInstrument(BinaryContainer& ctr, std::string path,
+AbstractInstrument* InstrumentIO::loadInstrument(const BinaryContainer& ctr, const std::string& path,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum)
 {
@@ -814,7 +815,7 @@ AbstractInstrument* InstrumentIO::loadInstrument(BinaryContainer& ctr, std::stri
 	throw FileInputError(FileIO::FileType::Inst);
 }
 
-AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
+AbstractInstrument* InstrumentIO::loadBTIFile(const BinaryContainer& ctr,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
@@ -2489,8 +2490,9 @@ AbstractInstrument* InstrumentIO::loadBTIFile(BinaryContainer& ctr,
 }
 
 size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
-		FMEnvelopeParameter param, size_t instMemCsr, std::shared_ptr<InstrumentsManager>& instManLocked,
-		BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version)
+		FMEnvelopeParameter param, size_t instMemCsr,
+		std::shared_ptr<InstrumentsManager>& instManLocked,
+		const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version)
 {
 	inst->setOperatorSequenceEnabled(param, true);
 	inst->setOperatorSequenceNumber(param, idx);
@@ -2548,7 +2550,7 @@ size_t InstrumentIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 	return ofs;
 }
 
-AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string path,
+AbstractInstrument* InstrumentIO::loadDMPFile(const BinaryContainer& ctr, std::string path,
 											  std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
@@ -2703,7 +2705,8 @@ AbstractInstrument* InstrumentIO::loadDMPFile(BinaryContainer& ctr, std::string 
 	return inst;
 }
 
-size_t InstrumentIO::getPropertyPositionForBTB(const BinaryContainer& propCtr, uint8_t subsecType, uint8_t index)
+size_t InstrumentIO::getPropertyPositionForBTB(const BinaryContainer& propCtr,
+											   uint8_t subsecType, uint8_t index)
 {
 	size_t csr = 0;
 
@@ -2779,7 +2782,7 @@ int InstrumentIO::convertDTInTFIVGIDMP(int dt)
 	}
 }
 
-AbstractInstrument* InstrumentIO::loadTFIFile(BinaryContainer& ctr, std::string path,
+AbstractInstrument* InstrumentIO::loadTFIFile(const BinaryContainer& ctr, std::string path,
 											  std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
@@ -2849,7 +2852,7 @@ AbstractInstrument* InstrumentIO::loadTFIFile(BinaryContainer& ctr, std::string 
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadVGIFile(BinaryContainer& ctr, std::string path,
+AbstractInstrument* InstrumentIO::loadVGIFile(const BinaryContainer& ctr, std::string path,
 											  std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
@@ -2937,7 +2940,7 @@ AbstractInstrument* InstrumentIO::loadVGIFile(BinaryContainer& ctr, std::string 
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadOPNIFile(BinaryContainer& ctr,
+AbstractInstrument* InstrumentIO::loadOPNIFile(const BinaryContainer& ctr,
 											   std::weak_ptr<InstrumentsManager> instMan, int instNum)
 {
 	OPNIFile opni;
@@ -2947,7 +2950,7 @@ AbstractInstrument* InstrumentIO::loadOPNIFile(BinaryContainer& ctr,
 	return loadWOPNInstrument(opni.inst, instMan, instNum);
 }
 
-AbstractInstrument* InstrumentIO::loadY12File(BinaryContainer& ctr, std::string path,
+AbstractInstrument* InstrumentIO::loadY12File(const BinaryContainer& ctr, std::string path,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
@@ -3048,7 +3051,7 @@ AbstractInstrument* InstrumentIO::loadY12File(BinaryContainer& ctr, std::string 
 	return inst;
 }
 
-AbstractInstrument* InstrumentIO::loadINSFile(BinaryContainer& ctr,
+AbstractInstrument* InstrumentIO::loadINSFile(const BinaryContainer& ctr,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum)
 {
@@ -4297,6 +4300,86 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 	default:
 		throw FileCorruptionError(FileIO::FileType::Bank);
 	}
+}
+
+AbstractInstrument* InstrumentIO::loadFfInstrument(const BinaryContainer& instCtr,
+												   const std::string& name,
+												   std::weak_ptr<InstrumentsManager> instMan,
+												   int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
+	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	InstrumentFM* fm = new InstrumentFM(instNum, name, instManLocked.get());
+	fm->setEnvelopeNumber(envIdx);
+
+	size_t csr = 0;
+	uint8_t tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, tmp >> 3);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, tmp & 0x07);
+
+	return fm;
 }
 
 AbstractInstrument* InstrumentIO::loadPPCInstrument(const std::vector<uint8_t> sample,

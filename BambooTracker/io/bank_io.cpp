@@ -7,8 +7,8 @@
 
 BankIO::BankIO() {}
 
-void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
-					  std::weak_ptr<InstrumentsManager> instMan)
+void BankIO::saveBank(BinaryContainer& ctr, const std::vector<int>& instNums,
+					  const std::weak_ptr<InstrumentsManager> instMan)
 {
 	ctr.appendString("BambooTrackerBnk");
 	size_t eofOfs = ctr.size();
@@ -868,17 +868,18 @@ void BankIO::saveBank(BinaryContainer& ctr, std::vector<int> instNums,
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
 }
 
-AbstractBank* BankIO::loadBank(BinaryContainer& ctr, std::string path)
+AbstractBank* BankIO::loadBank(const BinaryContainer& ctr, const std::string& path)
 {
 	std::string ext = FileIO::getExtension(path);
 	if (ext.compare("wopn") == 0) return BankIO::loadWOPNFile(ctr);
 	if (ext.compare("btb") == 0) return BankIO::loadBTBFile(ctr);
+	if (ext.compare("ff") == 0) return BankIO::loadFFFile(ctr);
 	if (ext.compare("ppc") == 0) return BankIO::loadPPCFile(ctr);
 	if (ext.compare("pvi") == 0) return BankIO::loadPVIFile(ctr);
 	throw FileInputError(FileIO::FileType::Bank);
 }
 
-AbstractBank* BankIO::loadBTBFile(BinaryContainer& ctr)
+AbstractBank* BankIO::loadBTBFile(const BinaryContainer& ctr)
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerBnk")
@@ -932,7 +933,7 @@ AbstractBank* BankIO::loadBTBFile(BinaryContainer& ctr)
 	return new BtBank(std::move(ids), std::move(names), std::move(instCtrs), std::move(propCtr), fileVersion);
 }
 
-AbstractBank* BankIO::loadWOPNFile(BinaryContainer& ctr)
+AbstractBank* BankIO::loadWOPNFile(const BinaryContainer& ctr)
 {
 	struct WOPNDeleter {
 		void operator()(WOPNFile *x) { WOPN_Free(x); }
@@ -948,7 +949,39 @@ AbstractBank* BankIO::loadWOPNFile(BinaryContainer& ctr)
 	return bank;
 }
 
-AbstractBank* BankIO::loadPPCFile(BinaryContainer& ctr)
+AbstractBank* BankIO::loadFFFile(const BinaryContainer& ctr)
+{
+	size_t csr = 0;
+	// File size check
+	if (ctr.size() != 0x2000) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	std::vector<int> ids;
+	std::vector<std::string> names;
+	std::vector<BinaryContainer> ctrs;
+	for (int i = 0; i < 256; ++i) {
+		BinaryContainer block = ctr.getSubcontainer(csr, 25);
+		csr += 25;
+		std::string name = "";
+		for (size_t j = 0; j < 7; ++j) {
+			if (char c = ctr.readChar(csr + j)) name += c;
+			else break;
+		}
+		csr += 7;
+
+		// Empty
+		if (std::all_of(block.getPointer(), block.getPointer() + 25,
+						[](const char c) { return c == 0; }) && name.empty())
+			continue;
+
+		ids.push_back(i);
+		names.push_back(name);
+		ctrs.push_back(block);
+	}
+
+	return new FfBank(std::move(ids), std::move(names), std::move(ctrs));
+}
+
+AbstractBank* BankIO::loadPPCFile(const BinaryContainer& ctr)
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 30) != "ADPCM DATA for  PMD ver.4.4-  ")
@@ -969,7 +1002,7 @@ AbstractBank* BankIO::loadPPCFile(BinaryContainer& ctr)
 	return new PpcBank(std::move(ids), std::move(samples));
 }
 
-AbstractBank* BankIO::loadPVIFile(BinaryContainer& ctr)
+AbstractBank* BankIO::loadPVIFile(const BinaryContainer& ctr)
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 4) != "PVI2")

@@ -11,13 +11,14 @@
 class BankIO
 {
 public:
-	static void saveBank(BinaryContainer& ctr, std::vector<int> instNums,
-						 std::weak_ptr<InstrumentsManager> instMan);
-	static AbstractBank* loadBank(BinaryContainer& ctr, std::string path);
-	static AbstractBank* loadBTBFile(BinaryContainer& ctr);
-	static AbstractBank* loadWOPNFile(BinaryContainer& ctr);
-	static AbstractBank* loadPPCFile(BinaryContainer& ctr);
-	static AbstractBank* loadPVIFile(BinaryContainer& ctr);
+	static void saveBank(BinaryContainer& ctr, const std::vector<int>& instNums,
+						 const std::weak_ptr<InstrumentsManager> instMan);
+	static AbstractBank* loadBank(const BinaryContainer& ctr, const std::string& path);
+	static AbstractBank* loadBTBFile(const BinaryContainer& ctr);
+	static AbstractBank* loadWOPNFile(const BinaryContainer& ctr);
+	static AbstractBank* loadFFFile(const BinaryContainer& ctr);
+	static AbstractBank* loadPPCFile(const BinaryContainer& ctr);
+	static AbstractBank* loadPVIFile(const BinaryContainer& ctr);
 
 private:
 	BankIO();

@@ -9,32 +9,33 @@
 class InstrumentIO
 {
 public:
-	static void saveInstrument(BinaryContainer& ctr, std::weak_ptr<InstrumentsManager> instMan, int instNum);
-	static AbstractInstrument* loadInstrument(BinaryContainer& ctr,
-											  std::string path,
+	static void saveInstrument(BinaryContainer& ctr,
+							   const std::weak_ptr<InstrumentsManager> instMan, int instNum);
+	static AbstractInstrument* loadInstrument(const BinaryContainer& ctr,
+											  const std::string& path,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum);
 
 private:
-	static AbstractInstrument* loadBTIFile(BinaryContainer& ctr,
+	static AbstractInstrument* loadBTIFile(const BinaryContainer& ctr,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadDMPFile(BinaryContainer& ctr,std::string path,
+	static AbstractInstrument* loadDMPFile(const BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadTFIFile(BinaryContainer& ctr,std::string path,
+	static AbstractInstrument* loadTFIFile(const BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadVGIFile(BinaryContainer& ctr,std::string path,
+	static AbstractInstrument* loadVGIFile(const BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadOPNIFile(BinaryContainer& ctr,
+	static AbstractInstrument* loadOPNIFile(const BinaryContainer& ctr,
 											std::weak_ptr<InstrumentsManager> instMan,
 											int instNum);
-	static AbstractInstrument* loadY12File(BinaryContainer& ctr,std::string path,
+	static AbstractInstrument* loadY12File(const BinaryContainer& ctr,std::string path,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
-	static AbstractInstrument* loadINSFile(BinaryContainer& ctr,
+	static AbstractInstrument* loadINSFile(const BinaryContainer& ctr,
 										   std::weak_ptr<InstrumentsManager> instMan,
 										   int instNum);
 
@@ -47,6 +48,10 @@ public:
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum,
 												 uint32_t bankVersion);
+	static AbstractInstrument* loadFfInstrument(const BinaryContainer& instCtr,
+												const std::string& name,
+												std::weak_ptr<InstrumentsManager> instMan,
+												int instNum);
 	static AbstractInstrument* loadPPCInstrument(const std::vector<uint8_t> sample,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum);
@@ -56,9 +61,11 @@ public:
 
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
-			FMEnvelopeParameter param, size_t instMemCsr, std::shared_ptr<InstrumentsManager>& instManLocked,
-			BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
-	static size_t getPropertyPositionForBTB(const BinaryContainer& propCtr, uint8_t subsecType, uint8_t index);
+			FMEnvelopeParameter param, size_t instMemCsr,
+			std::shared_ptr<InstrumentsManager>& instManLocked,
+			const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
+	static size_t getPropertyPositionForBTB(const BinaryContainer& propCtr,
+											uint8_t subsecType, uint8_t index);
 	static int convertDTInTFIVGIDMP(int dt);
 
 

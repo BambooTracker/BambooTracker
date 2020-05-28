@@ -23,6 +23,7 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QSignalBlocker>
+#include <QTextCodec>
 #include "jam_manager.hpp"
 #include "song.hpp"
 #include "track.hpp"
@@ -1644,6 +1645,7 @@ void MainWindow::importInstrumentsFromBank()
 	QStringList filters {
 		tr("BambooTracker bank (*.btb)"),
 				tr("WOPN bank (*.wopn)"),
+				tr("PMD FF (*.ff)"),
 				tr("PMD PPC (*.ppc)"),
 				tr("FMP PVI (*.pvi)")
 	};
@@ -1687,6 +1689,16 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	catch (std::exception& e) {
 		showFileIOErrorDialog(FileInputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
 		return;
+	}
+
+	// Change text codec
+	if (auto ff = dynamic_cast<FfBank*>(bank.get())) {
+		QTextCodec* codec = QTextCodec::codecForName("Shift-JIS");
+		for (size_t i = 0; i < ff->getNumInstruments(); ++i) {
+			std::string sjis = ff->getInstrumentName(i);
+			std::string utf8 = codec->toUnicode(sjis.c_str(), sjis.length()).toStdString();
+			ff->setInstrumentName(i, utf8);
+		}
 	}
 
 	size_t jamId = 128;	// Dummy

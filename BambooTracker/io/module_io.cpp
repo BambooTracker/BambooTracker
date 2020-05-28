@@ -8,8 +8,8 @@
 
 ModuleIO::ModuleIO() {}
 
-void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
-						  std::weak_ptr<InstrumentsManager> instMan)
+void ModuleIO::saveModule(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
+						  const std::weak_ptr<InstrumentsManager> instMan)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 
@@ -942,7 +942,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
 }
 
-void ModuleIO::loadModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
+void ModuleIO::loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
 						  std::weak_ptr<InstrumentsManager> instMan)
 {
 	size_t globCsr = 0;
@@ -973,7 +973,7 @@ void ModuleIO::loadModule(BinaryContainer& ctr, std::weak_ptr<Module> mod,
 	}
 }
 
-size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
 										   size_t globCsr, uint32_t version)
 {
 	std::shared_ptr<Module> modLocked = mod.lock();
@@ -1031,7 +1031,8 @@ size_t ModuleIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 }
 
 size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-											   BinaryContainer& ctr, size_t globCsr, uint32_t version)
+											   const BinaryContainer& ctr, size_t globCsr,
+											   uint32_t version)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 
@@ -1168,7 +1169,7 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 }
 
 size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-													   BinaryContainer& ctr, size_t globCsr,
+													   const BinaryContainer& ctr, size_t globCsr,
 													   uint32_t version)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
@@ -2365,7 +2366,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
 														size_t instMemCsr,
 														std::shared_ptr<InstrumentsManager>& instManLocked,
-														BinaryContainer& ctr, uint32_t version)
+														const BinaryContainer& ctr, uint32_t version)
 {
 	uint8_t idx = ctr.readUint8(instMemCsr++);
 	uint16_t ofs = ctr.readUint16(instMemCsr);
@@ -2421,7 +2422,7 @@ size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter para
 	return ofs + 1;
 }
 
-size_t ModuleIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+size_t ModuleIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
 										   size_t globCsr, uint32_t version)
 {
 	(void)version;
@@ -2446,7 +2447,7 @@ size_t ModuleIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, BinaryCont
 	return globCsr + grvOfs;
 }
 
-size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, BinaryContainer& ctr,
+size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
 										 size_t globCsr, uint32_t version)
 {
 	std::shared_ptr<Module> modLocked = mod.lock();
