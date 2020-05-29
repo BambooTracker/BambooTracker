@@ -953,12 +953,15 @@ AbstractBank* BankIO::loadFFFile(const BinaryContainer& ctr)
 {
 	size_t csr = 0;
 	// File size check
-	if (ctr.size() != 0x2000) throw FileCorruptionError(FileIO::FileType::Bank);
+	size_t ctrSize = ctr.size();
+	if (!ctrSize || ctrSize & 0x1f || ctrSize > 0x2000)
+		throw FileCorruptionError(FileIO::FileType::Bank);
 
 	std::vector<int> ids;
 	std::vector<std::string> names;
 	std::vector<BinaryContainer> ctrs;
-	for (int i = 0; i < 256; ++i) {
+	int max = static_cast<int>(ctrSize / 0x20);
+	for (int i = 0; i < max; ++i) {
 		BinaryContainer block = ctr.getSubcontainer(csr, 25);
 		csr += 25;
 		std::string name = "";
