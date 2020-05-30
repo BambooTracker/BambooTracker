@@ -1524,9 +1524,11 @@ void MainWindow::finishRenamingInstrument()
 	auto oldName = utf8ToQString(bt_->getInstrument(num)->getName());
 	QString newName = renamingInstEdit_->text();
 	list->removeItemWidget(renamingInstItem_);
-	bt_->setInstrumentName(num, newName.toUtf8().toStdString());
-	int row = findRowFromInstrumentList(num);
-	comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
+	if (newName != oldName) {
+		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
+		int row = findRowFromInstrumentList(num);
+		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
+	}
 	renamingInstItem_ = nullptr;
 	renamingInstEdit_ = nullptr;
 }
