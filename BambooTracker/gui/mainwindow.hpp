@@ -24,6 +24,7 @@
 #include <QShortcut>
 #include <QAction>
 #include <QActionGroup>
+#include <QLineEdit>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
 #include "audio_stream.hpp"
@@ -88,12 +89,15 @@ private:
 
 	// Instrument list
 	std::shared_ptr<InstrumentFormManager> instForms_;
+	QListWidgetItem* renamingInstItem_;
+	QLineEdit* renamingInstEdit_;
 	void addInstrument();
 	void addDrumkit();
 	void removeInstrument(int row);
 	void openInstrumentEditor();
 	int findRowFromInstrumentList(int instNum);
 	void renameInstrument();
+	void finishRenamingInstrument();
 	void cloneInstrument();
 	void deepCloneInstrument();
 	void loadInstrument();

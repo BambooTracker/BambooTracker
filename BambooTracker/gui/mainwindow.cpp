@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <numeric>
 #include <QString>
-#include <QLineEdit>
 #include <QClipboard>
 #include <QMenu>
 #include <QAction>
@@ -72,6 +71,8 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	scciDll_(std::make_unique<QLibrary>("scci")),
 	c86ctlDll_(std::make_unique<QLibrary>("c86ctl")),
 	instForms_(std::make_shared<InstrumentFormManager>()),
+	renamingInstItem_(nullptr),
+	renamingInstEdit_(nullptr),
 	isModifiedForNotCommand_(false),
 	hasLockedWigets_(false),
 	isEditedPattern_(true),
@@ -729,13 +730,12 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 	}
 
 	if (watched == ui->instrumentList) {
-		switch (event->type()) {
-		case QEvent::FocusIn:
-			updateMenuByInstrumentList();
-			break;
-		default:
-			break;
-		}
+		if (event->type() == QEvent::FocusIn) updateMenuByInstrumentList();
+		return false;
+	}
+
+	if (watched == renamingInstEdit_) {
+		if (event->type() == QEvent::FocusOut) finishRenamingInstrument();
 		return false;
 	}
 
@@ -1497,24 +1497,38 @@ void MainWindow::renameInstrument()
 {
 	auto list = ui->instrumentList;
 	auto item = list->currentItem();
+	// Finish current edit
+	if (item == renamingInstItem_) {
+		finishRenamingInstrument();
+		return;
+	}
+	else if (renamingInstItem_) {
+		finishRenamingInstrument();
+	}
+	renamingInstItem_ = item;
+
 	int num = item->data(Qt::UserRole).toInt();
-	auto inst = bt_->getInstrument(num);
-	auto oldName = utf8ToQString(inst->getName());
-	auto line = new QLineEdit(oldName);
+	renamingInstEdit_ = new QLineEdit(utf8ToQString(bt_->getInstrument(num)->getName()));
+	QObject::connect(renamingInstEdit_, &QLineEdit::editingFinished, this, &MainWindow::finishRenamingInstrument);
+	renamingInstEdit_->installEventFilter(this);
+	ui->instrumentList->setItemWidget(item, renamingInstEdit_);
+	renamingInstEdit_->selectAll();
+	renamingInstEdit_->setFocus();
+}
 
-	QObject::connect(line, &QLineEdit::editingFinished,
-					 this, [&, item, list, num, oldName] {
-		QString newName = qobject_cast<QLineEdit*>(list->itemWidget(item))->text();
-		list->removeItemWidget(item);
-		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
-		int row = findRowFromInstrumentList(num);
-		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
-	});
-
-	ui->instrumentList->setItemWidget(item, line);
-
-	line->selectAll();
-	line->setFocus();
+void MainWindow::finishRenamingInstrument()
+{
+	if (!renamingInstItem_ || !renamingInstEdit_) return;
+	auto list = ui->instrumentList;
+	int num = renamingInstItem_->data(Qt::UserRole).toInt();
+	auto oldName = utf8ToQString(bt_->getInstrument(num)->getName());
+	QString newName = renamingInstEdit_->text();
+	list->removeItemWidget(renamingInstItem_);
+	bt_->setInstrumentName(num, newName.toUtf8().toStdString());
+	int row = findRowFromInstrumentList(num);
+	comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
+	renamingInstItem_ = nullptr;
+	renamingInstEdit_ = nullptr;
 }
 
 void MainWindow::cloneInstrument()
