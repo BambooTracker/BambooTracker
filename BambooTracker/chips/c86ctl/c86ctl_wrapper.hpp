@@ -37,8 +37,10 @@ public:
 
 	C86ctlGimic* queryInterface();
 
+#ifdef _WIN32
 private:
 	c86ctl::IRealChip2* rc_;
+#endif
 };
 
 class C86ctlGimic
@@ -49,6 +51,8 @@ public:
 
 	void setSSGVolume(uint8_t vol);
 
+#ifdef _WIN32
 private:
 	c86ctl::IGimic2* gm_;
+#endif
 };
