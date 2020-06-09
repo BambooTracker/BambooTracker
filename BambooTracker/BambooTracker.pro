@@ -40,7 +40,21 @@ else {
 
 CONFIG += c++14
 
-msvc:QMAKE_CXXFLAGS += /source-charset:utf-8
+# C/C++ compiler flags
+msvc {
+  CPPFLAGS += /Wall /Wp64
+  CPPFLAGS += /source-charset:utf-8
+}
+else:if(gcc|clang) {
+  CPPFLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
+  # Temporary known-error downgrades
+  CPPFLAGS += -Wno-error=vla -Wno-error=deprecated-declarations
+}
+else {
+  message("Unknown compiler, won't attempt to add warning & pedantic compiler switches.")
+}
+QMAKE_CFLAGS += $$CPPFLAGS
+QMAKE_CXXFLAGS += $$CPPFLAGS
 
 SOURCES += \
     chips/c86ctl/c86ctl_wrapper.cpp \

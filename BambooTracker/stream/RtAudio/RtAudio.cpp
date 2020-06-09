@@ -2018,7 +2018,7 @@ struct JackHandle {
 };
 
 #if !defined(__RTAUDIO_DEBUG__)
-static void jackSilentError( const char * ) {};
+static void jackSilentError( const char * ) {}
 #endif
 
 RtApiJack :: RtApiJack()

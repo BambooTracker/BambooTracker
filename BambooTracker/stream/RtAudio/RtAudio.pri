@@ -22,7 +22,7 @@ win32 {
         LIBS += -lole32 -lwinmm -lksuser -lmfplat -lmfuuid -lwmcodecdspuuid
     }
     DEFINES += __WINDOWS_DS__
-    LIBS += -lole32 -lwinmm -ldsound
+    LIBS += -lole32 -lwinmm -ldsound -luser32
 }
 macx {
     contains(DEFINES, __UNIX_JACK__) {
