@@ -19,61 +19,48 @@ bool C86ctlBase::isEmpty() const
 
 void C86ctlBase::initialize()
 {
-#ifdef _C86CTL_H
 	if (base_) base_->initialize();
-#endif
 }
 
 void C86ctlBase::deinitialize()
 {
-#ifdef _C86CTL_H
 	if (base_) base_->deinitialize();
-#endif
 }
 
 int C86ctlBase::getNumberOfChip()
 {
-#ifdef _C86CTL_H
 	if (base_) return base_->getNumberOfChip();
-#endif
-	return 0;
+	else return 0;
 }
 
 C86ctlRealChip* C86ctlBase::getChipInterface(int id)
 {
 	c86ctl::IRealChip2* rc = nullptr;
-#ifdef _C86CTL_H
 	if (base_) base_->getChipInterface(id, c86ctl::IID_IRealChip2, reinterpret_cast<void**>(&rc));
-#else
-	(void)id;
-#endif
 	return (rc ? new C86ctlRealChip(rc) : nullptr);
 }
 
-C86ctlRealChip::C86ctlRealChip(c86ctl::IRealChip2* rc) : rc_(rc) {}
+C86ctlRealChip::C86ctlRealChip(c86ctl::IRealChip2* rc)
+	: rc_(rc)
+{
+#ifndef _C86CTL_H
+	rc_ = nullptr;
+#endif
+}
 
 C86ctlRealChip::~C86ctlRealChip()
 {
-#ifdef _C86CTL_H
-	rc_->Release();
-#endif
+	if (rc_) rc_->Release();
 }
 
 void C86ctlRealChip::resetChip()
 {
-#ifdef _C86CTL_H
-	rc_->reset();
-#endif
+	if (rc_) rc_->reset();
 }
 
 void C86ctlRealChip::out(uint32_t addr, uint8_t data)
 {
-#ifdef _C86CTL_H
-	rc_->out(addr, data);
-#else
-	(void)addr;
-	(void)data;
-#endif
+	if (rc_) rc_->out(addr, data);
 }
 
 C86ctlGimic* C86ctlRealChip::queryInterface()
@@ -92,20 +79,20 @@ C86ctlGimic* C86ctlRealChip::queryInterface()
 	return nullptr;
 }
 
-C86ctlGimic::C86ctlGimic(c86ctl::IGimic2* gm) : gm_(gm) {}
+C86ctlGimic::C86ctlGimic(c86ctl::IGimic2* gm)
+	: gm_(gm)
+{
+#ifndef _C86CTL_H
+	gm_ = nullptr;
+#endif
+}
 
 C86ctlGimic::~C86ctlGimic()
 {
-#ifdef _C86CTL_H
-	gm_->Release();
-#endif
+	if (gm_) gm_->Release();
 }
 
 void C86ctlGimic::setSSGVolume(uint8_t vol)
 {
-#ifdef _C86CTL_H
-	gm_->setSSGVolume(vol);
-#else
-	(void)vol;
-#endif
+	if (gm_) gm_->setSSGVolume(vol);
 }
