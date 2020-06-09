@@ -16,13 +16,13 @@ SetInstrumentToStepCommand::SetInstrumentToStepCommand(std::weak_ptr<Module> mod
 void SetInstrumentToStepCommand::redo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-					.getStep(step_).setInstrumentNumber(inst_);
+			.getStep(step_).setInstrumentNumber(inst_);
 }
 
 void SetInstrumentToStepCommand::undo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-					.getStep(step_).setInstrumentNumber(prevInst_);
+			.getStep(step_).setInstrumentNumber(prevInst_);
 	isSecond_ = true;	// Forced complete
 }
 

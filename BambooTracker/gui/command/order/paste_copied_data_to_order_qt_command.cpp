@@ -21,5 +21,5 @@ void PasteCopiedDataToOrderQtCommand::undo()
 
 int PasteCopiedDataToOrderQtCommand::id() const
 {
-   return CommandId::PasteCopiedDataToOrder;
+	return CommandId::PasteCopiedDataToOrder;
 }

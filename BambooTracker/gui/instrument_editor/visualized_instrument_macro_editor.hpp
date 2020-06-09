@@ -53,19 +53,19 @@ public:
 	enum SequenceType
 	{
 		NoType,
-                FixedSequence,
-                AbsoluteSequence,
-                RelativeSequence
+		FixedSequence,
+		AbsoluteSequence,
+		RelativeSequence
 	};
 
 	void setSequenceType(SequenceType type);
 
 	enum ReleaseType : int
 	{
-                NO_RELEASE = 0,
-                FIXED_RELEASE = 1,
-                ABSOLUTE_RELEASE = 2,
-                RELATIVE_RELEASE = 4
+		NO_RELEASE = 0,
+		FIXED_RELEASE = 1,
+		ABSOLUTE_RELEASE = 2,
+		RELATIVE_RELEASE = 4
 	};
 
 	void setPermittedReleaseTypes(int types);

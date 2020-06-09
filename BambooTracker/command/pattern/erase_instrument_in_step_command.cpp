@@ -14,13 +14,13 @@ EraseInstrumentInStepCommand::EraseInstrumentInStepCommand(std::weak_ptr<Module>
 void EraseInstrumentInStepCommand::redo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-					.getStep(step_).setInstrumentNumber(-1);
+			.getStep(step_).setInstrumentNumber(-1);
 }
 
 void EraseInstrumentInStepCommand::undo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-					.getStep(step_).setInstrumentNumber(prevInst_);
+			.getStep(step_).setInstrumentNumber(prevInst_);
 }
 
 CommandId EraseInstrumentInStepCommand::getID() const

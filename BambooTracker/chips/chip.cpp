@@ -7,11 +7,11 @@ extern "C"
 {
 #endif //  __cplusplus
 
-	#include "mame/mamedef.h"
+#include "mame/mamedef.h"
 
-	UINT8 CHIP_SAMPLING_MODE = 0x00;
-	INT32 CHIP_SAMPLE_RATE;
-	stream_sample_t* DUMMYBUF[] = { nullptr, nullptr };
+UINT8 CHIP_SAMPLING_MODE = 0x00;
+INT32 CHIP_SAMPLE_RATE;
+stream_sample_t* DUMMYBUF[] = { nullptr, nullptr };
 
 #ifdef __cplusplus
 }

@@ -21,5 +21,5 @@ void DeleteOrderQtCommand::undo()
 
 int DeleteOrderQtCommand::id() const
 {
-   return CommandId::DeleteOrder;
+	return CommandId::DeleteOrder;
 }

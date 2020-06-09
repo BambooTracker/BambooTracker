@@ -80,8 +80,8 @@ JamKeyData JamManager::keyOff(JamKey key, int keyNum)
 	JamKeyData keyData;
 
 	auto cond = (key == JamKey::MidiKey)
-			  ? std::function<bool(JamKeyData)>([&](JamKeyData x) -> bool { return (x.key == JamKey::MidiKey && x.keyNum == keyNum); })
-			  : std::function<bool(JamKeyData)>([&](JamKeyData x) -> bool { return (x.key == key); });
+				? std::function<bool(JamKeyData)>([&](JamKeyData x) -> bool { return (x.key == JamKey::MidiKey && x.keyNum == keyNum); })
+			: std::function<bool(JamKeyData)>([&](JamKeyData x) -> bool { return (x.key == key); });
 	auto&& it = std::find_if(keyOnTable_.begin(), keyOnTable_.end(), cond);
 	if (it == keyOnTable_.end()) {
 		keyData.channelInSource = -1;	// Already released

@@ -45,7 +45,7 @@ void ReplaceInstrumentInPatternCommand::undo()
 	for (int step = bStep_; step <= eStep_; ++step) {
 		for (int track = bTrack_; track <= eTrack_; ++track) {
 			auto& s = sng.getTrack(track).getPatternFromOrderNumber(order_).getStep(step);
-			 if (s.getInstrumentNumber() > -1) s.setInstrumentNumber(prevInsts_.at(i));
+			if (s.getInstrumentNumber() > -1) s.setInstrumentNumber(prevInsts_.at(i));
 		}
 	}
 }

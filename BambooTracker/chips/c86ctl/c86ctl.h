@@ -49,7 +49,7 @@ struct Devinfo{
 /*  Interface定義                                                             */
 /*----------------------------------------------------------------------------*/
 // IRealChipBase {5C457918-E66D-4AC1-8CB5-B91C4704DF79}
-static const GUID IID_IRealChipBase = 
+static const GUID IID_IRealChipBase =
 { 0x5c457918, 0xe66d, 0x4ac1, { 0x8c, 0xb5, 0xb9, 0x1c, 0x47, 0x4, 0xdf, 0x79 } };
 
 interface IRealChipBase : public IUnknown

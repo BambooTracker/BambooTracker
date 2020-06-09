@@ -266,7 +266,7 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 	rate = clock / 144;	// FM synthesis rate is clock / 2 / 72
 	/*rate = clock/72;*/
 	if ((CHIP_SAMPLING_MODE == 0x01 && rate < CHIP_SAMPLE_RATE) ||
-		CHIP_SAMPLING_MODE == 0x02)
+			CHIP_SAMPLING_MODE == 0x02)
 		rate = CHIP_SAMPLE_RATE;
 	info->intf = generic_2608;
 	intf = &info->intf;
@@ -504,15 +504,15 @@ void ym2608_set_mute_mask(UINT8 ChipID, UINT32 MuteMaskFM, UINT32 MuteMaskAY)
 
 struct intf2608 mame_intf2608 =
 {
-    .set_ay_emu_core = &ym2608_set_ay_emu_core,
-    .device_start = &device_start_ym2608,
-    .device_stop = &device_stop_ym2608,
-    .device_reset = &device_reset_ym2608,
-    .control_port_a_w = &ym2608_control_port_a_w,
-    .control_port_b_w = &ym2608_control_port_b_w,
-    .data_port_a_w = &ym2608_data_port_a_w,
-    .data_port_b_w = &ym2608_data_port_b_w,
-    .read_port_r = &ym2608_read_port_r,
-    .stream_update = &ym2608_stream_update,
-    .stream_update_ay = &ym2608_stream_update_ay,
+	.set_ay_emu_core = &ym2608_set_ay_emu_core,
+	.device_start = &device_start_ym2608,
+	.device_stop = &device_stop_ym2608,
+	.device_reset = &device_reset_ym2608,
+	.control_port_a_w = &ym2608_control_port_a_w,
+	.control_port_b_w = &ym2608_control_port_b_w,
+	.data_port_a_w = &ym2608_data_port_a_w,
+	.data_port_b_w = &ym2608_data_port_b_w,
+	.read_port_r = &ym2608_read_port_r,
+	.stream_update = &ym2608_stream_update,
+	.stream_update_ay = &ym2608_stream_update_ay,
 };

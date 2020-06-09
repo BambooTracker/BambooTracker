@@ -220,7 +220,7 @@ void MidiInterface::uninstallInputHandler(InputHandler *handler, void *user_data
 	std::lock_guard<std::mutex> lock(inputHandlersMutex_);
 	for (size_t i = 0, n = inputHandlers_.size(); i < n; ++i) {
 		bool match = inputHandlers_[i].first == handler &&
-			inputHandlers_[i].second == user_data;
+					 inputHandlers_[i].second == user_data;
 		if (match) {
 			inputHandlers_.erase(inputHandlers_.begin() + i);
 			return;

@@ -14,7 +14,7 @@ SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> m
 	  isSecond_(secondEntry)
 {
 	prevVal_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-				 .getStep(stepNum).getEffectValue(n);
+			   .getStep(stepNum).getEffectValue(n);
 }
 
 void SetEffectValueToStepCommand::redo()

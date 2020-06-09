@@ -2,9 +2,9 @@
 #include "misc.hpp"
 
 TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(std::weak_ptr<Module> mod,
-																 int songNum, int beginTrack,
-																 int beginOrder, int beginStep,
-																 int endTrack, int endStep, int seminote)
+															 int songNum, int beginTrack,
+															 int beginOrder, int beginStep,
+															 int endTrack, int endStep, int seminote)
 	: mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
@@ -48,7 +48,7 @@ void TransposeNoteInPatternCommand::undo()
 	for (int step = bStep_; step <= eStep_; ++step) {
 		for (int track = bTrack_; track <= eTrack_; ++track) {
 			auto& s = sng.getTrack(track).getPatternFromOrderNumber(order_).getStep(step);
-			 if (s.getNoteNumber() > -1) s.setNoteNumber(prevKeys_.at(i++));
+			if (s.getNoteNumber() > -1) s.setNoteNumber(prevKeys_.at(i++));
 		}
 	}
 }

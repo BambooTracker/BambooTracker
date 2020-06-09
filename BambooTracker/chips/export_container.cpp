@@ -325,9 +325,9 @@ namespace chip
 
 		const uint8_t cmdSsg =
 				(ssg != Export_InternalSsg) ? (fm == Export_NoneFm) ? 0x01 : 0x02
-											: (fm == Export_YM2608) ? 0x00
-																	: (fm == Export_YM2203) ? 0x00
-																							: 0xff;
+																	: (fm == Export_YM2608) ? 0x00
+																							: (fm == Export_YM2203) ? 0x00
+																													: 0xff;
 		const uint8_t cmdFmPortA =
 				(fm != Export_NoneFm) ? 0x00 : 0xff;
 		const uint8_t cmdFmPortB =
