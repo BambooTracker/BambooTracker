@@ -24,7 +24,7 @@
 #define ENABLE_ALL_CORES*/
 
 #ifdef ENABLE_ALL_CORES
-#define EC_MAME		0x01	// AY8910 core from MAME
+#define EC_MAME		0x01	/* AY8910 core from MAME */
 #endif
 #define EC_EMU2149	0x00
 
@@ -291,7 +291,7 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 			info->psg = PSG_new(ay_clock, *AYrate);
 			if (info->psg == NULL)
 				return 0;
-			PSG_setVolumeMode((PSG*)info->psg, 1);	// YM2149 volume mode
+			PSG_setVolumeMode((PSG*)info->psg, 1);	/* YM2149 volume mode */
 			break;
 		}
 	}
@@ -324,7 +324,7 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 	return rate;
 }
 
-//static DEVICE_STOP( ym2608 )
+/*static DEVICE_STOP( ym2608 )*/
 void device_stop_ym2608(UINT8 ChipID)
 {
 	/*ym2608_state *info = get_safe_token(device);*/

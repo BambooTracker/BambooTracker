@@ -2,7 +2,7 @@ SOURCES += \
     $$PWD/RtAudio.cpp
 
 HEADERS += \
-    $$PWD/RtAudio.h
+    $$PWD/RtAudio.hpp
 
 linux {
     contains(DEFINES, __LINUX_PULSE__) {

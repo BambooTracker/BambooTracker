@@ -2,7 +2,7 @@ SOURCES += \
     $$PWD/RtMidi.cpp
 
 HEADERS += \
-    $$PWD/RtMidi.h
+    $$PWD/RtMidi.hpp
 
 linux {
     DEFINES += __LINUX_ALSA__

@@ -36,7 +36,7 @@
 */
 /**********************************************************************/
 
-#include "RtMidi.h"
+#include "RtMidi.hpp"
 #include <sstream>
 
 #if defined(__MACOSX_CORE__)

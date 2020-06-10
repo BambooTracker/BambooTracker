@@ -2197,7 +2197,7 @@ void ym2203_update_one(void *chip, FMSAMPLE **buffer, int length)
 
 			lt >>= FINAL_SH;
 
-			//Limit( lt , MAXOUT, MINOUT );
+			/*Limit( lt , MAXOUT, MINOUT );*/
 
 			#ifdef SAVE_SAMPLE
 				SAVE_ALL_CHANNELS
@@ -2291,8 +2291,8 @@ static void YM2203_save_state(YM2203 *F2203, const device_config *device)
    'clock' is the chip clock in Hz
    'rate' is sampling rate
 */
-//void * ym2203_init(void *param, const device_config *device, int clock, int rate,
-//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
+/*//void * ym2203_init(void *param, const device_config *device, int clock, int rate,
+//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)*/
 void * ym2203_init(void *param, int clock, int rate,
                FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
 {
@@ -2313,7 +2313,7 @@ void * ym2203_init(void *param, int clock, int rate,
 	F2203->OPN.ST.param = param;
 	F2203->OPN.type = TYPE_YM2203;
 	F2203->OPN.P_CH = F2203->CH;
-	//F2203->OPN.ST.device = device;
+	/*F2203->OPN.ST.device = device;*/
 	F2203->OPN.ST.clock = clock;
 	F2203->OPN.ST.rate = rate;
 
@@ -4091,8 +4091,8 @@ void ym2610_update_one(void *chip, FMSAMPLE **buffer, int length)
 			lt >>= FINAL_SH;
 			rt >>= FINAL_SH;
 
-			//Limit( lt, MAXOUT, MINOUT );
-			//Limit( rt, MAXOUT, MINOUT );
+			/*//Limit( lt, MAXOUT, MINOUT );
+			//Limit( rt, MAXOUT, MINOUT );*/
 
 			#ifdef SAVE_SAMPLE
 				SAVE_ALL_CHANNELS
@@ -4247,8 +4247,8 @@ void ym2610b_update_one(void *chip, FMSAMPLE **buffer, int length)
 			lt >>= FINAL_SH;
 			rt >>= FINAL_SH;
 
-			//Limit( lt, MAXOUT, MINOUT );
-			//Limit( rt, MAXOUT, MINOUT );
+			/*//Limit( lt, MAXOUT, MINOUT );
+			//Limit( rt, MAXOUT, MINOUT );*/
 
 			#ifdef SAVE_SAMPLE
 				SAVE_ALL_CHANNELS
@@ -4347,9 +4347,9 @@ static void YM2610_deltat_status_reset(void *chip, UINT8 changebits)
 	F2610->adpcm_arrivedEndAddress &= (~changebits);
 }
 
-//void *ym2610_init(void *param, const device_config *device, int clock, int rate,
+/*//void *ym2610_init(void *param, const device_config *device, int clock, int rate,
 //               void *pcmroma,int pcmsizea,void *pcmromb,int pcmsizeb,
-//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
+//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)*/
 void *ym2610_init(void *param, int clock, int rate,
                FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
 {
@@ -4371,7 +4371,7 @@ void *ym2610_init(void *param, int clock, int rate,
 	F2610->OPN.ST.param = param;
 	F2610->OPN.type = TYPE_YM2610;
 	F2610->OPN.P_CH = F2610->CH;
-	//F2610->OPN.ST.device = device;
+	/*F2610->OPN.ST.device = device;*/
 	F2610->OPN.ST.clock = clock;
 	F2610->OPN.ST.rate = rate;
 	/* Extend handler */
@@ -4379,13 +4379,13 @@ void *ym2610_init(void *param, int clock, int rate,
 	F2610->OPN.ST.IRQ_Handler   = IRQHandler;
 	F2610->OPN.ST.SSG           = ssg;
 	/* ADPCM */
-	//F2610->pcmbuf   = (const UINT8 *)pcmroma;
-	//F2610->pcm_size = pcmsizea;
+	/*//F2610->pcmbuf   = (const UINT8 *)pcmroma;
+	//F2610->pcm_size = pcmsizea;*/
 	F2610->pcmbuf   = NULL;
 	F2610->pcm_size = 0x00;
 	/* DELTA-T */
-	//F2610->deltaT.memory = (UINT8 *)pcmromb;
-	//F2610->deltaT.memory_size = pcmsizeb;
+	/*//F2610->deltaT.memory = (UINT8 *)pcmromb;
+	//F2610->deltaT.memory_size = pcmsizeb;*/
 	F2610->deltaT.memory = NULL;
 	F2610->deltaT.memory_size = 0x00;
 	F2610->deltaT.memory_mask = 0x00;
@@ -4662,7 +4662,7 @@ void ym2610_write_pcmrom(void *chip, UINT8 rom_id, offs_t ROMSize, offs_t DataSt
 	
 	switch(rom_id)
 	{
-	case 0x01:	// ADPCM
+	case 0x01:	/* ADPCM */
 		if (F2610->pcm_size != ROMSize)
 		{
 			F2610->pcmbuf = (UINT8*)realloc(F2610->pcmbuf, ROMSize);
@@ -4676,7 +4676,7 @@ void ym2610_write_pcmrom(void *chip, UINT8 rom_id, offs_t ROMSize, offs_t DataSt
 		
 		memcpy(F2610->pcmbuf + DataStart, ROMData, DataLength);
 		break;
-	case 0x02:	// DELTA-T
+	case 0x02:	/* DELTA-T */
 		if (F2610->deltaT.memory_size != ROMSize)
 		{
 			F2610->deltaT.memory = (UINT8*)realloc(F2610->deltaT.memory, ROMSize);
