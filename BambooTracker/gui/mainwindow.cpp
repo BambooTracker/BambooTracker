@@ -879,7 +879,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 						   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 		switch (dialog.exec()) {
 		case QMessageBox::Yes:
-			if (!on_actionSave_triggered()) return;
+			if (!on_actionSave_triggered()) {
+				event->ignore();
+				return;
+			}
 			break;
 		case QMessageBox::No:
 			break;

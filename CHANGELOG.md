@@ -15,6 +15,7 @@
 - [#216], [#218] - Fix some compilation warings (thanks [@nyanpasu64], [@OPNA2608])
 - [#210] - Finish editing an instrument name when leaving focus (thanks [@OPNA2608])
 - [#220] - Restore setting of FM volume reverse on launch (thanks [@nyanpasu64], [@OPNA2608])
+- Keep the main window open when canceling save dialog in closing
 - Modify appearance slightly
 
 [#213]: https://github.com/rerrahkr/BambooTracker/issues/213
