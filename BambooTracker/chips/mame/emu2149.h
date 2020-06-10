@@ -9,7 +9,7 @@
 #define EMU2149_API __declspec(dllimport)
 #else*/
 #define EMU2149_API
-//#endif
+/*#endif*/
 
 #define EMU2149_VOL_DEFAULT 1
 #define EMU2149_VOL_YM2149 0

@@ -45,7 +45,7 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
-#include "chips/scci/SCCIDefines.h"
+#include "chips/scci/SCCIDefines.hpp"
 #include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"

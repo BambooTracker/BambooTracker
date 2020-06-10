@@ -20,7 +20,7 @@ struct intf2608
 };
 
 #ifndef INCLUDE_AY8910_H
-// Copied from VGMPlay/chips/ay8910.h
+/* Copied from VGMPlay/chips/ay8910.h */
 /*
 * Default values for resistor loads.
 * The macro should be used in AY8910interface if
@@ -47,10 +47,10 @@ struct _ay8910_interface
 {
 	int					flags;			/* Flags */
 	int					res_load[3]; 	/* Load on channel in ohms */
-										//devcb_read8		portAread;
-										//devcb_read8		portBread;
-										//devcb_write8		portAwrite;
-										//devcb_write8		portBwrite;
+										/*devcb_read8		portAread;*/
+										/*devcb_read8		portBread;*/
+										/*devcb_write8		portAwrite;*/
+										/*devcb_write8		portBwrite;*/
 };
 #endif
 
@@ -58,6 +58,6 @@ typedef struct _ym2608_interface ym2608_interface;
 struct _ym2608_interface
 {
 	ay8910_interface ay8910_intf;
-	//void ( *handler )( const device_config *device, int irq );	/* IRQ handler for the YM2608 */
+	/*void ( *handler )( const device_config *device, int irq );*/	/* IRQ handler for the YM2608 */
 	void ( *handler )( int irq );	/* IRQ handler for the YM2608 */
 };

@@ -1,6 +1,6 @@
 #include "chip.hpp"
 #include <utility>
-#include "chip_misc.h"
+#include "chip_misc.hpp"
 
 #ifdef  __cplusplus
 extern "C"

@@ -11,17 +11,17 @@
 
 ***************************************************************************/
 
-#include <stdlib.h>	// for free
-#include <string.h>	// for memset
-#include <stddef.h>	// for NULL
-//#include "mamedef.h"
-//#include "sndintrf.h"
-//#include "streams.h"
+#include <stdlib.h>	/* for free */
+#include <string.h>	/* for memset */
+#include <stddef.h>	/* for NULL */
+/*#include "mamedef.h"
+#include "sndintrf.h"
+#include "streams.h"*/
 #include "2608intf.h"
-//#include "fm.h"
+/*#include "fm.h"*/
 
-// Only use EC_EMU2149
-//#define ENABLE_ALL_CORES
+/*// Only use EC_EMU2149
+#define ENABLE_ALL_CORES*/
 
 #ifdef ENABLE_ALL_CORES
 #define EC_MAME		0x01	// AY8910 core from MAME
@@ -31,12 +31,12 @@
 typedef struct _ym2608_state ym2608_state;
 struct _ym2608_state
 {
-	//sound_stream *	stream;
-	//emu_timer *	timer[2];
+	/*sound_stream *	stream;
+	emu_timer *	timer[2];*/
 	void *			chip;
 	void *			psg;
 	ym2608_interface intf;
-	//const device_config *device;
+	/*const device_config *device;*/
 };
 
 #define CHTYPE_YM2608	0x21
@@ -45,7 +45,7 @@ struct _ym2608_state
 extern UINT8 CHIP_SAMPLING_MODE;
 extern INT32 CHIP_SAMPLE_RATE;
 static UINT8 AY_EMU_CORE = 0x00;
-//extern UINT32 SampleRate;
+/*extern UINT32 SampleRate;*/
 
 #define MAX_CHIPS	0x02
 static ym2608_state YM2608Data[MAX_CHIPS];
@@ -185,25 +185,25 @@ static TIMER_CALLBACK( timer_callback_2608_1 )
 void ym2608_update_request(void *param)
 {
 	ym2608_state *info = (ym2608_state *)param;
-	//stream_update(info->stream);
+	/*stream_update(info->stream);*/
 	
 	ym2608_update_one(info->chip, DUMMYBUF, 0);
-	// Not necessary.
+	/*// Not necessary.
 	//if (info->psg != NULL)
-	//	ay8910_update_one(info->psg, DUMMYBUF, 0);
+	//	ay8910_update_one(info->psg, DUMMYBUF, 0);*/
 }
 
-//static STREAM_UPDATE( ym2608_stream_update )
+/*static STREAM_UPDATE( ym2608_stream_update )*/
 void ym2608_stream_update(UINT8 ChipID, stream_sample_t **outputs, int samples)
 {
-	//ym2608_state *info = (ym2608_state *)param;
+	/*ym2608_state *info = (ym2608_state *)param;*/
 	ym2608_state *info = &YM2608Data[ChipID];
 	ym2608_update_one(info->chip, outputs, samples);
 }
 
 void ym2608_stream_update_ay(UINT8 ChipID, stream_sample_t **outputs, int samples)
 {
-	//ym2608_state *info = (ym2608_state *)param;
+	/*ym2608_state *info = (ym2608_state *)param;*/
 	ym2608_state *info = &YM2608Data[ChipID];
 	
 	if (info->psg != NULL)
@@ -228,7 +228,7 @@ void ym2608_stream_update_ay(UINT8 ChipID, stream_sample_t **outputs, int sample
 }
 
 
-//static STATE_POSTLOAD( ym2608_intf_postload )
+/*static STATE_POSTLOAD( ym2608_intf_postload )*/
 /*static void ym2608_intf_postload(UINT8 ChipID)
 {
 	//ym2608_state *info = (ym2608_state *)param;
@@ -237,7 +237,7 @@ void ym2608_stream_update_ay(UINT8 ChipID, stream_sample_t **outputs, int sample
 }*/
 
 
-//static DEVICE_START( ym2608 )
+/*static DEVICE_START( ym2608 )*/
 int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags, int* AYrate, offs_t dramSize)
 {
 	static const ym2608_interface generic_2608 =
@@ -245,25 +245,25 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 		{
 			AY8910_LEGACY_OUTPUT | AY8910_SINGLE_OUTPUT,
 			AY8910_DEFAULT_LOADS
-			//DEVCB_NULL, DEVCB_NULL, DEVCB_NULL, DEVCB_NULL
+			/*DEVCB_NULL, DEVCB_NULL, DEVCB_NULL, DEVCB_NULL*/
 		},
 		NULL
 	};
-	//const ym2608_interface *intf = device->static_config ? (const ym2608_interface *)device->static_config : &generic_2608;
+	/*const ym2608_interface *intf = device->static_config ? (const ym2608_interface *)device->static_config : &generic_2608;*/
 	ym2608_interface *intf;
 	int rate;
 	int ay_clock;
-	//void *pcmbufa;
-	//int  pcmsizea;
+	/*void *pcmbufa;
+	int  pcmsizea;*/
 
-	//ym2608_state *info = get_safe_token(device);
+	/*ym2608_state *info = get_safe_token(device);*/
 	ym2608_state *info;
 
 	if (ChipID >= MAX_CHIPS)
 		return 0;
 	
 	info = &YM2608Data[ChipID];
-	rate = clock / 144;	// FM synthesis rate is clock / 2 / 72
+	rate = clock / 144;	/* FM synthesis rate is clock / 2 / 72 */
 	/*rate = clock/72;*/
 	if ((CHIP_SAMPLING_MODE == 0x01 && rate < CHIP_SAMPLE_RATE) ||
 			CHIP_SAMPLING_MODE == 0x02)
@@ -272,10 +272,10 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 	intf = &info->intf;
 	if (AYFlags)
 		intf->ay8910_intf.flags = AYFlags;
-	//info->device = device;
+	/*info->device = device;*/
 
 	/* FIXME: Force to use single output */
-	//info->psg = ay8910_start_ym(NULL, SOUND_YM2608, clock, &intf->ay8910_intf);
+	/*info->psg = ay8910_start_ym(NULL, SOUND_YM2608, clock, &intf->ay8910_intf);*/
 	if (! AYDisable)
 	{
 		ay_clock = clock / 4;
@@ -300,26 +300,26 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 		info->psg = NULL;
 		*AYrate = 0;
 	}
-	//assert_always(info->psg != NULL, "Error creating YM2608/AY8910 chip");
+	/*assert_always(info->psg != NULL, "Error creating YM2608/AY8910 chip");*/
 
 	/* Timer Handler set */
-	//info->timer[0] = timer_alloc(device->machine, timer_callback_2608_0, info);
-	//info->timer[1] = timer_alloc(device->machine, timer_callback_2608_1, info);
+	/*info->timer[0] = timer_alloc(device->machine, timer_callback_2608_0, info);
+	info->timer[1] = timer_alloc(device->machine, timer_callback_2608_1, info);*/
 
 	/* stream system initialize */
-	//info->stream = stream_create(device,0,2,rate,info,ym2608_stream_update);
+	/*info->stream = stream_create(device,0,2,rate,info,ym2608_stream_update);*/
 	/* setup adpcm buffers */
-	//pcmbufa  = device->region;
-	//pcmsizea = device->regionbytes;
+	/*pcmbufa  = device->region;
+	pcmsizea = device->regionbytes;*/
 
 	/* initialize YM2608 */
-	//info->chip = ym2608_init(info,device,device->clock,rate,
+	/*//info->chip = ym2608_init(info,device,device->clock,rate,
 	//	           pcmbufa,pcmsizea,
-	//	           timer_handler,IRQHandler,&psgintf);
-	//info->chip = ym2608_init(info, clock, rate, NULL, NULL, &psgintf);
-	//assert_always(info->chip != NULL, "Error creating YM2608 chip");
+	//	           timer_handler,IRQHandler,&psgintf);*/
+	/*info->chip = ym2608_init(info, clock, rate, NULL, NULL, &psgintf);
+	assert_always(info->chip != NULL, "Error creating YM2608 chip");*/
 	info->chip = ym2608_init(info, clock, rate, dramSize, NULL, NULL, &psgintf);
-	//state_save_register_postload(device->machine, ym2608_intf_postload, info);
+	/*state_save_register_postload(device->machine, ym2608_intf_postload, info);*/
 	
 	return rate;
 }
@@ -327,7 +327,7 @@ int device_start_ym2608(UINT8 ChipID, int clock, UINT8 AYDisable, UINT8 AYFlags,
 //static DEVICE_STOP( ym2608 )
 void device_stop_ym2608(UINT8 ChipID)
 {
-	//ym2608_state *info = get_safe_token(device);
+	/*ym2608_state *info = get_safe_token(device);*/
 	ym2608_state *info = &YM2608Data[ChipID];
 	ym2608_shutdown(info->chip);
 	if (info->psg != NULL)
@@ -347,39 +347,39 @@ void device_stop_ym2608(UINT8 ChipID)
 	}
 }
 
-//static DEVICE_RESET( ym2608 )
+/*static DEVICE_RESET( ym2608 )*/
 void device_reset_ym2608(UINT8 ChipID)
 {
-	//ym2608_state *info = get_safe_token(device);
+	/*ym2608_state *info = get_safe_token(device);*/
 	ym2608_state *info = &YM2608Data[ChipID];
-	ym2608_reset_chip(info->chip);	// also resets the AY clock
-	//psg_reset(info);	// already done as a callback in ym2608_reset_chip
+	ym2608_reset_chip(info->chip);	/* also resets the AY clock */
+	/*//psg_reset(info);	// already done as a callback in ym2608_reset_chip*/
 }
 
 
-//READ8_DEVICE_HANDLER( ym2608_r )
+/*READ8_DEVICE_HANDLER( ym2608_r )*/
 UINT8 ym2608_r(UINT8 ChipID, offs_t offset)
 {
-	//ym2608_state *info = get_safe_token(device);
+	/*ym2608_state *info = get_safe_token(device);*/
 	ym2608_state *info = &YM2608Data[ChipID];
 	return ym2608_read(info->chip, offset & 3);
 }
 
-//WRITE8_DEVICE_HANDLER( ym2608_w )
+/*WRITE8_DEVICE_HANDLER( ym2608_w )*/
 void ym2608_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
-	//ym2608_state *info = get_safe_token(device);
+	/*ym2608_state *info = get_safe_token(device);*/
 	ym2608_state *info = &YM2608Data[ChipID];
 	ym2608_write(info->chip, offset & 3, data);
 }
 
-//READ8_DEVICE_HANDLER( ym2608_read_port_r )
+/*READ8_DEVICE_HANDLER( ym2608_read_port_r )*/
 UINT8 ym2608_read_port_r(UINT8 ChipID, offs_t offset)
 {
 	(void)offset;
 	return ym2608_r(ChipID, 1);
 }
-//READ8_DEVICE_HANDLER( ym2608_status_port_a_r )
+/*//READ8_DEVICE_HANDLER( ym2608_status_port_a_r )
 //UINT8 ym2608_status_port_a_r(UINT8 ChipID, offs_t offset)
 //{
 //	return ym2608_r(ChipID, 0);
@@ -388,27 +388,27 @@ UINT8 ym2608_read_port_r(UINT8 ChipID, offs_t offset)
 //UINT8 ym2608_status_port_b_r(UINT8 ChipID, offs_t offset)
 //{
 //	return ym2608_r(ChipID, 2);
-//}
+//}*/
 
-//WRITE8_DEVICE_HANDLER( ym2608_control_port_a_w )
+/*WRITE8_DEVICE_HANDLER( ym2608_control_port_a_w )*/
 void ym2608_control_port_a_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
 	(void)offset;
 	ym2608_w(ChipID, 0, data);
 }
-//WRITE8_DEVICE_HANDLER( ym2608_control_port_b_w )
+/*WRITE8_DEVICE_HANDLER( ym2608_control_port_b_w )*/
 void ym2608_control_port_b_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
 	(void)offset;
 	ym2608_w(ChipID, 2, data);
 }
-//WRITE8_DEVICE_HANDLER( ym2608_data_port_a_w )
+/*WRITE8_DEVICE_HANDLER( ym2608_data_port_a_w )*/
 void ym2608_data_port_a_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
 	(void)offset;
 	ym2608_w(ChipID, 1, data);
 }
-//WRITE8_DEVICE_HANDLER( ym2608_data_port_b_w )
+/*WRITE8_DEVICE_HANDLER( ym2608_data_port_b_w )*/
 void ym2608_data_port_b_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
 	(void)offset;
@@ -428,12 +428,12 @@ void ym2608_set_ay_emu_core(UINT8 Emulator)
 	return;
 }
 
-//void ym2608_write_data_pcmrom(UINT8 ChipID, UINT8 rom_id, offs_t ROMSize, offs_t DataStart,
-//							  offs_t DataLength, const UINT8* ROMData)
-//{
-//	ym2608_state* info = &YM2608Data[ChipID];
-//	ym2608_write_pcmrom(info->chip, rom_id, ROMSize, DataStart, DataLength, ROMData);
-//}
+/*void ym2608_write_data_pcmrom(UINT8 ChipID, UINT8 rom_id, offs_t ROMSize, offs_t DataStart,
+							  offs_t DataLength, const UINT8* ROMData)
+{
+	ym2608_state* info = &YM2608Data[ChipID];
+	ym2608_write_pcmrom(info->chip, rom_id, ROMSize, DataStart, DataLength, ROMData);
+}*/
 
 void ym2608_set_mute_mask(UINT8 ChipID, UINT32 MuteMaskFM, UINT32 MuteMaskAY)
 {
@@ -455,26 +455,26 @@ void ym2608_set_mute_mask(UINT8 ChipID, UINT32 MuteMaskFM, UINT32 MuteMaskAY)
 	}
 }
 
-//void ym2608_set_srchg_cb(UINT8 ChipID, SRATE_CALLBACK CallbackFunc, void* DataPtr, void* AYDataPtr)
-//{
-//	ym2608_state* info = &YM2608Data[ChipID];
-//	
-//	if (info->psg != NULL)
-//	{
-//		switch(AY_EMU_CORE)
-//		{
-//#ifdef ENABLE_ALL_CORES
-//		case EC_MAME:
-//			ay8910_set_srchg_cb_ym(info->psg, CallbackFunc, AYDataPtr);
-//			break;
-//#endif
-//		case EC_EMU2149:
-//			break;
-//		}
-//	}
-//	
-//	return;
-//}
+/*void ym2608_set_srchg_cb(UINT8 ChipID, SRATE_CALLBACK CallbackFunc, void* DataPtr, void* AYDataPtr)
+{
+	ym2608_state* info = &YM2608Data[ChipID];
+
+	if (info->psg != NULL)
+	{
+		switch(AY_EMU_CORE)
+		{
+#ifdef ENABLE_ALL_CORES
+		case EC_MAME:
+			ay8910_set_srchg_cb_ym(info->psg, CallbackFunc, AYDataPtr);
+			break;
+#endif
+		case EC_EMU2149:
+			break;
+		}
+	}
+
+	return;
+}*/
 
 
 /**************************************************************************
@@ -504,15 +504,15 @@ void ym2608_set_mute_mask(UINT8 ChipID, UINT32 MuteMaskFM, UINT32 MuteMaskAY)
 
 struct intf2608 mame_intf2608 =
 {
-	.set_ay_emu_core = &ym2608_set_ay_emu_core,
-	.device_start = &device_start_ym2608,
-	.device_stop = &device_stop_ym2608,
-	.device_reset = &device_reset_ym2608,
-	.control_port_a_w = &ym2608_control_port_a_w,
-	.control_port_b_w = &ym2608_control_port_b_w,
-	.data_port_a_w = &ym2608_data_port_a_w,
-	.data_port_b_w = &ym2608_data_port_b_w,
-	.read_port_r = &ym2608_read_port_r,
-	.stream_update = &ym2608_stream_update,
-	.stream_update_ay = &ym2608_stream_update_ay,
+	/*.set_ay_emu_core =*/ &ym2608_set_ay_emu_core,
+	/*.device_start =*/ &device_start_ym2608,
+	/*.device_stop =*/ &device_stop_ym2608,
+	/*.device_reset =*/ &device_reset_ym2608,
+	/*.control_port_a_w =*/ &ym2608_control_port_a_w,
+	/*.control_port_b_w =*/ &ym2608_control_port_b_w,
+	/*.data_port_a_w =*/ &ym2608_data_port_a_w,
+	/*.data_port_b_w =*/ &ym2608_data_port_b_w,
+	/*.read_port_r =*/ &ym2608_read_port_r,
+	/*.stream_update =*/ &ym2608_stream_update,
+	/*.stream_update_ay =*/ &ym2608_stream_update_ay,
 };

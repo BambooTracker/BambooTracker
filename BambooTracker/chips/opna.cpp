@@ -1,7 +1,7 @@
 #include "opna.hpp"
 #include <cstdint>
 #include <cmath>
-#include "chip_misc.h"
+#include "chip_misc.hpp"
 
 #ifdef  __cplusplus
 extern "C"

@@ -2,9 +2,9 @@
 
 #include "chip.hpp"
 #include <memory>
-#include "chip_misc.h"
-#include "scci/scci.h"
-#include "scci/SCCIDefines.h"
+#include "chip_misc.hpp"
+#include "scci/scci.hpp"
+#include "scci/SCCIDefines.hpp"
 #include "c86ctl/c86ctl_wrapper.hpp"
 
 namespace chip

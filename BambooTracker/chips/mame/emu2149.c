@@ -101,7 +101,7 @@ PSG_setFlags (PSG * psg, e_uint8 flags)
 {
 	if (flags & EMU2149_ZX_STEREO)
 	{
-		// ABC Stereo
+		/* ABC Stereo */
 		psg->stereo_mask[0] = 0x01;
 		psg->stereo_mask[1] = 0x03;
 		psg->stereo_mask[2] = 0x02;
@@ -148,7 +148,7 @@ PSG_setMask (PSG *psg, e_uint32 mask)
 EMU2149_API void
 PSG_setStereoMask (PSG *psg, e_uint32 mask)
 {
-//  e_uint32 ret = 0;
+/*  e_uint32 ret = 0; */
   if(psg)
   {
     psg->stereo_mask[0] = (mask >>0) &3;
@@ -302,7 +302,7 @@ calc (PSG * psg)
       }
     }
 
-    psg->cout[i] = 0; // BS maintaining cout for stereo mix
+	psg->cout[i] = 0; /* BS maintaining cout for stereo mix */
 
     if (psg->mask&PSG_MASK_CH(i))
       continue;
@@ -409,7 +409,7 @@ calc_stereo (PSG * psg, e_int32 out[2])
       }
     }
 
-    psg->cout[i] = 0; // BS maintaining cout for stereo mix
+	psg->cout[i] = 0; /* BS maintaining cout for stereo mix */
 
     if (psg->mask&PSG_MASK_CH(i))
       continue;

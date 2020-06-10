@@ -1,5 +1,5 @@
 #include "resampler.hpp"
-#include "chip_misc.h"
+#include "chip_misc.hpp"
 
 namespace chip
 {

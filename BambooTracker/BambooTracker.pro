@@ -50,7 +50,7 @@ else:if(gcc|clang) {
   # Temporary known-error downgrades
   CPPFLAGS += -Wno-error=vla -Wno-error=deprecated-declarations #-Wno-error=stringop-truncation
   clang {
-    CPPFLAGS += -Wno-error=vla-extension
+    CPPFLAGS += -Wno-vla-extension
   }
 }
 else {
@@ -238,9 +238,12 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
+    chips/chip_misc.hpp \
     chips/codec/ymb_codec.hpp \
     chips/c86ctl/c86ctl.h \
     chips/c86ctl/c86ctl_wrapper.hpp \
+    chips/scci/SCCIDefines.hpp \
+    chips/scci/scci.hpp \
     command/command_id.hpp \
     command/instrument/swap_instruments_command.hpp \
     command/pattern/change_values_in_pattern_command.hpp \
@@ -281,7 +284,6 @@ HEADERS += \
     chips/nuked/nuke2608intf.h \
     chips/nuked/ym3438.h \
     chips/chip.hpp \
-    chips/chip_misc.h \
     chips/opna.hpp \
     chips/resampler.hpp \
     bamboo_tracker.hpp \
@@ -426,8 +428,6 @@ HEADERS += \
     gui/instrument_selection_dialog.hpp \
     io/s98_tag.hpp \
     gui/s98_export_settings_dialog.hpp \
-    chips/scci/scci.h \
-    chips/scci/SCCIDefines.h \
     stream/timer.hpp \
     io/module_io.hpp \
     io/io_handlers.hpp \

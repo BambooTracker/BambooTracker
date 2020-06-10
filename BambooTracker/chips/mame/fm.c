@@ -118,12 +118,12 @@
 #include <math.h>
 
 #include "mamedef.h"
-//#ifndef __RAINE__
-//#include "sndintrf.h"		/* use M.A.M.E. */
-//#else
-//#include "deftypes.h"		/* use RAINE */
-//#include "support.h"		/* use RAINE */
-//#endif
+/*#ifndef __RAINE__*/
+/*#include "sndintrf.h"*/		/* use M.A.M.E. */
+/*#else*/
+/*#include "deftypes.h"*/		/* use RAINE */
+/*#include "support.h"*/		/* use RAINE */
+/*#endif*/
 #include "fm.h"
 
 
@@ -600,7 +600,7 @@ typedef struct
 
 typedef struct
 {
-	//const device_config *device;
+	/*const device_config *device;*/
 	void *		param;				/* this chip parameter  */
 	int			clock;				/* master clock  (Hz)   */
 	int			rate;				/* sampling rate (Hz)   */
@@ -1534,14 +1534,14 @@ static void reset_channels( FM_ST *ST , FM_CH *CH , int num )
 
 	for( c = 0 ; c < num ; c++ )
 	{
-		//memset(&CH[c], 0x00, sizeof(FM_CH));
+		/*memset(&CH[c], 0x00, sizeof(FM_CH));*/
 		CH[c].mem_value = 0;
 		CH[c].op1_out[0] = 0;
 		CH[c].op1_out[1] = 0;
 		CH[c].fc = 0;
 		for(s = 0 ; s < 4 ; s++ )
 		{
-			//memset(&CH[c].SLOT[s], 0x00, sizeof(FM_SLOT));
+			/*memset(&CH[c].SLOT[s], 0x00, sizeof(FM_SLOT));*/
 			CH[c].SLOT[s].Incr = -1;
 			CH[c].SLOT[s].key = 0;
 			CH[c].SLOT[s].phase = 0;
@@ -1766,7 +1766,7 @@ static void OPNSetPres(FM_OPN *OPN, int pres, int timer_prescaler, int SSGpres)
 	OPN->ST.freqbase = 1.0;
 #endif
 
-	//OPN->eg_timer_add  = (1<<EG_SH)  *  OPN->ST.freqbase;
+	/*OPN->eg_timer_add  = (1<<EG_SH)  *  OPN->ST.freqbase;*/
 	OPN->eg_timer_add = (UINT32)((1 << EG_SH)  *  OPN->ST.freqbase);
 	OPN->eg_timer_overflow = ( 3 ) * (1<<EG_SH);
 
@@ -1802,7 +1802,7 @@ static void OPNSetPres(FM_OPN *OPN, int pres, int timer_prescaler, int SSGpres)
 	{
 		/* Amplitude modulation: 64 output levels (triangle waveform); 1 level lasts for one of "lfo_samples_per_step" samples */
 		/* Phase modulation: one entry from lfo_pm_output lasts for one of 4 * "lfo_samples_per_step" samples  */
-		//OPN->lfo_freq[i] = (1.0 / lfo_samples_per_step[i]) * (1<<LFO_SH) * OPN->ST.freqbase;
+		/*OPN->lfo_freq[i] = (1.0 / lfo_samples_per_step[i]) * (1<<LFO_SH) * OPN->ST.freqbase;*/
 		OPN->lfo_freq[i] = (UINT32)((1.0 / lfo_samples_per_step[i]) * (1 << LFO_SH) * OPN->ST.freqbase);
 #if 0
 		logerror("FM.C: lfo_freq[%i] = %08x (dec=%8i)\n",
@@ -2463,7 +2463,7 @@ typedef struct
 	UINT8		addr_A1;			/* address line A1      */
 
 	/* ADPCM-A unit */
-	//const UINT8	*pcmbuf;			/* pcm rom buffer       */
+	/*const UINT8	*pcmbuf;*/			/* pcm rom buffer       */
 	UINT8		*pcmbuf;			/* pcm rom buffer       */
 	UINT32		pcm_size;			/* size of pcm rom      */
 	UINT8		adpcmTL;			/* adpcmA total level   */
@@ -2607,8 +2607,8 @@ static void FM_ADPCMAWrite(YM2610 *F2610,int r,int v)
 				if( (v>>c)&1 )
 				{
 					/**** start adpcm ****/
-					// The .step variable is already set and for the YM2608 it is different on channels 4 and 5.
-					//adpcm[c].step      = (UINT32)((float)(1<<ADPCM_SHIFT)*((float)F2610->OPN.ST.freqbase)/3.0);
+					/* The .step variable is already set and for the YM2608 it is different on channels 4 and 5. */
+					/*adpcm[c].step      = (UINT32)((float)(1<<ADPCM_SHIFT)*((float)F2610->OPN.ST.freqbase)/3.0);*/
 					adpcm[c].now_addr  = adpcm[c].start<<1;
 					adpcm[c].now_step  = 0;
 					adpcm[c].adpcm_acc = 0;
@@ -3444,7 +3444,7 @@ void ym2608_update_one(void *chip, FMSAMPLE **buffer, int length)
 			rt += ((out_fm[4]>>1) & OPN->pan[9]);
 			lt += ((out_fm[5]>>1) & OPN->pan[10]);
 			rt += ((out_fm[5]>>1) & OPN->pan[11]);*/
-			// this way it's louder (and more accurate)
+			/* this way it's louder (and more accurate) */
 			lt =  (OPN->out_adpcm[OUTD_LEFT]  + OPN->out_adpcm[OUTD_CENTER]) << 1;
 			rt =  (OPN->out_adpcm[OUTD_RIGHT] + OPN->out_adpcm[OUTD_CENTER]) << 1;
 			lt += (OPN->out_delta[OUTD_LEFT]  + OPN->out_delta[OUTD_CENTER])>>8;
@@ -3465,8 +3465,8 @@ void ym2608_update_one(void *chip, FMSAMPLE **buffer, int length)
 			lt >>= FINAL_SH;
 			rt >>= FINAL_SH;
 
-			//Limit( lt, MAXOUT, MINOUT );
-			//Limit( rt, MAXOUT, MINOUT );
+			/*Limit( lt, MAXOUT, MINOUT );*/
+			/*Limit( rt, MAXOUT, MINOUT );*/
 			/* buffering */
 			bufL[i] = lt;
 			bufR[i] = rt;
@@ -3563,11 +3563,11 @@ static void YM2608_deltat_status_reset(void *chip, UINT8 changebits)
 	FM_STATUS_RESET(&(F2608->OPN.ST), changebits);
 }
 /* YM2608(OPNA) */
-//void * ym2608_init(void *param, const device_config *device, int clock, int rate,
+/*//void * ym2608_init(void *param, const device_config *device, int clock, int rate,
 //               void *pcmrom,int pcmsize,
-//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
-//void * ym2608_init(void *param, int clock, int rate,
-//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
+//               FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)*/
+/*void * ym2608_init(void *param, int clock, int rate,
+			   FM_TIMERHANDLER timer_handler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)*/
 void * ym2608_init(void *param, int clock, int rate, offs_t dram_size,
 			   FM_TIMERHANDLER timer_handler, FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg)
 {
@@ -3588,7 +3588,7 @@ void * ym2608_init(void *param, int clock, int rate, offs_t dram_size,
 	F2608->OPN.ST.param = param;
 	F2608->OPN.type = TYPE_YM2608;
 	F2608->OPN.P_CH = F2608->CH;
-	//F2608->OPN.ST.device = device;
+	/*F2608->OPN.ST.device = device;*/
 	F2608->OPN.ST.clock = clock;
 	F2608->OPN.ST.rate = rate;
 
@@ -3598,11 +3598,11 @@ void * ym2608_init(void *param, int clock, int rate, offs_t dram_size,
 	F2608->OPN.ST.SSG           = ssg;
 
 	/* DELTA-T */
-	//F2608->deltaT.memory = (UINT8 *)pcmrom;
+	/*//F2608->deltaT.memory = (UINT8 *)pcmrom;
 	//F2608->deltaT.memory_size = pcmsize;
 	//F2608->deltaT.memory = NULL;
 	//F2608->deltaT.memory_size = 0x00;
-	//F2608->deltaT.memory_mask = 0x00;
+	//F2608->deltaT.memory_mask = 0x00;*/
 	F2608->deltaT.memory = (UINT8*)realloc(F2608->deltaT.memory, dram_size);
 	F2608->deltaT.memory_size = dram_size;
 	YM_DELTAT_calc_mem_mask(&F2608->deltaT);
@@ -3744,7 +3744,7 @@ int ym2608_write(void *chip, int a,UINT8 v)
 		if( v >= 0x2d && v <= 0x2f )
 		{
 			OPNPrescaler_w(OPN , v , 2);
-			//TODO: set ADPCM[c].step
+			/*TODO: set ADPCM[c].step*/
 			F2608->deltaT.freqbase = OPN->ST.freqbase;
 		}
 		break;
@@ -3909,10 +3909,10 @@ void ym2608_write_pcmrom(void *chip, UINT8 rom_id, offs_t ROMSize, offs_t DataSt
 	
 	switch(rom_id)
 	{
-	case 0x01:	// ADPCM
-		// unused, it's constant
+	case 0x01:	/* ADPCM */
+		/* unused, it's constant */
 		break;
-	case 0x02:	// DELTA-T
+	case 0x02:	/* DELTA-T */
 		if (F2608->deltaT.memory_size != ROMSize)
 		{
 			F2608->deltaT.memory = (UINT8*)realloc(F2608->deltaT.memory, ROMSize);

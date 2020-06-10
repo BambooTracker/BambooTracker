@@ -16,12 +16,12 @@
 #define BUILD_YM2612  (HAS_YM2612)		// build YM2612(OPN2)  emulator
 #define BUILD_YM3438  (HAS_YM3438)		// build YM3438(OPN) emulator
 */
-//#define BUILD_YM2203  1
+/*#define BUILD_YM2203  1*/
 #define BUILD_YM2608  1
-//#define BUILD_YM2610  1
-//#define BUILD_YM2610B 1
-//#define BUILD_YM2612  1
-//#define BUILD_YM3438  1
+/*#define BUILD_YM2610  1
+#define BUILD_YM2610B 1
+#define BUILD_YM2612  1
+#define BUILD_YM3438  1*/
 
 /* select bit size of output : 8 or 16 */
 #define FM_SAMPLE_BITS 16
@@ -31,7 +31,7 @@
 
 /* --- speedup optimize --- */
 /* busy flag enulation , The definition of FM_GET_TIME_NOW() is necessary. */
-//#define FM_BUSY_FLAG_SUPPORT 1
+/*#define FM_BUSY_FLAG_SUPPORT 1*/
 
 /* --- external SSG(YM2149/AY-3-8910)emulator interface port */
 /* used by YM2203,YM2608,and YM2610 */
@@ -176,11 +176,11 @@ void ym2203_set_mutemask(void *chip, UINT32 MuteMask);
 
 #if BUILD_YM2608
 /* -------------------- YM2608(OPNA) Interface -------------------- */
-//void * ym2608_init(void *param, const device_config *device, int baseclock, int rate,
+/*//void * ym2608_init(void *param, const device_config *device, int baseclock, int rate,
 //               void *pcmroma,int pcmsizea,
 //               FM_TIMERHANDLER TimerHandler,FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);
-//void * ym2608_init(void *param, int baseclock, int rate,
-//               FM_TIMERHANDLER TimerHandler, FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);
+void * ym2608_init(void *param, int baseclock, int rate,
+			   FM_TIMERHANDLER TimerHandler, FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);*/
 void * ym2608_init(void *param, int baseclock, int rate, offs_t dram_size,
 			   FM_TIMERHANDLER TimerHandler, FM_IRQHANDLER IRQHandler, const ssg_callbacks *ssg);
 void ym2608_shutdown(void *chip);

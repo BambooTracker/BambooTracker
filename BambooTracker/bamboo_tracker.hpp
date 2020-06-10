@@ -17,7 +17,7 @@
 #include "song.hpp"
 #include "gd3_tag.hpp"
 #include "s98_tag.hpp"
-#include "chips/scci/scci.h"
+#include "chips/scci/scci.hpp"
 #include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "effect.hpp"
 #include "playback.hpp"

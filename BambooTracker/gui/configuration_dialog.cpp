@@ -20,7 +20,7 @@
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
-#include "chips/chip_misc.h"
+#include "chips/chip_misc.hpp"
 #include "color_palette_handler.hpp"
 #include "gui/gui_util.hpp"
 

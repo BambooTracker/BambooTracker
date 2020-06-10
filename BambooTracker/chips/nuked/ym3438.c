@@ -599,7 +599,7 @@ void OPN2_DoRegWrite(ym3438_t *chip)
             case 0x00:
                 if (chip->write_fm_mode_a == 0x0e)
                 {
-                    // write to DAC data (unimplemented)
+					/* write to DAC data (unimplemented) */
                 }
                 else if (chip->write_fm_mode_a != 0x0f)
                 {
@@ -607,7 +607,7 @@ void OPN2_DoRegWrite(ym3438_t *chip)
                 }
                 break;
             case 0x10:
-                // IRQ flag control (unimplemented)
+				/* IRQ flag control (unimplemented) */
                 break;
             }
         }
@@ -1510,11 +1510,11 @@ void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks
     }
 
     /*OPN-MOD: initialize ADPCM*/
-    //chip->deltaT.memory = (UINT8 *)pcmrom;
+	/*//chip->deltaT.memory = (UINT8 *)pcmrom;
     //chip->deltaT.memory_size = pcmsize;
     //chip->deltaT.memory = NULL;
     //chip->deltaT.memory_size = 0x00;
-    //chip->deltaT.memory_mask = 0x00;
+	//chip->deltaT.memory_mask = 0x00;*/
     chip->deltaT.memory = pcmmem = (Bit8u *)realloc(pcmmem, dramsize);
     chip->deltaT.memory_size = dramsize;
     if (!pcmmem)
@@ -1530,8 +1530,8 @@ void OPN2_Reset(ym3438_t *chip, Bit32u clock, const struct OPN2mod_psg_callbacks
     chip->deltaT.status_change_EOS_bit = 0x04;    /* status flag: set bit2 on End Of Sample */
     chip->deltaT.status_change_BRDY_bit = 0x08;    /* status flag: set bit3 on BRDY */
     chip->deltaT.status_change_ZERO_bit = 0x10;    /* status flag: set bit4 if silence continues for more than 290 miliseconds while recording the ADPCM */
-    //
-    chip->deltaT.freqbase = 1.0; // TODO(jpc) set the freqbase value to fixed
+
+	chip->deltaT.freqbase = 1.0; /* TODO(jpc) set the freqbase value to fixed */
     chip->deltaT.output_pointer = chip->out_deltaT;
     chip->deltaT.portshift = 5;        /* always 5bits shift */ /* ASG */
     chip->deltaT.output_range = 1<<23;

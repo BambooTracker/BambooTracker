@@ -1,14 +1,14 @@
-#include <stdlib.h>	// for free
-#include <string.h>	// for memset
-#include <stddef.h>	// for NULL
+#include <stdlib.h>	/* for free */
+#include <string.h>	/* for memset */
+#include <stddef.h>	/* for NULL */
 #include "nuke2608intf.h"
 #include "ym3438.h"
 
-// Only use EC_EMU2149
-//#define ENABLE_ALL_CORES
+/*// Only use EC_EMU2149
+//#define ENABLE_ALL_CORES*/
 
 #ifdef ENABLE_ALL_CORES
-#define EC_MAME		0x01	// AY8910 core from MAME
+#define EC_MAME		0x01	/* AY8910 core from MAME */
 #endif
 #define EC_EMU2149	0x00
 
@@ -129,7 +129,7 @@ int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t 
 		{
 			AY8910_LEGACY_OUTPUT | AY8910_SINGLE_OUTPUT,
 			AY8910_DEFAULT_LOADS
-			//DEVCB_NULL, DEVCB_NULL, DEVCB_NULL, DEVCB_NULL
+			/*DEVCB_NULL, DEVCB_NULL, DEVCB_NULL, DEVCB_NULL*/
 		},
 		NULL
 	};
@@ -143,7 +143,7 @@ int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t 
 
 	info = &YM2608Data[ChipID];
 	info->clock = clock;
-	rate = clock / 144;	// FM synthesis rate is clock / 2 / 72
+	rate = clock / 144;	/* FM synthesis rate is clock / 2 / 72 */
 
 	info->intf = generic_2608;
 	intf = &info->intf;
@@ -155,7 +155,7 @@ int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t 
 		return 0;
 
 	/* FIXME: Force to use single output */
-	//info->psg = ay8910_start_ym(NULL, SOUND_YM2608, clock, &intf->ay8910_intf);
+	/*info->psg = ay8910_start_ym(NULL, SOUND_YM2608, clock, &intf->ay8910_intf);*/
 	if (! AYDisable)
 	{
 		ay_clock = clock / 4;
@@ -171,7 +171,7 @@ int device_start_nuke2608(uint8_t ChipID, int clock, uint8_t AYDisable, uint8_t 
 			info->psg = PSG_new(ay_clock, *AYrate);
 			if (info->psg == NULL)
 				return 0;
-			PSG_setVolumeMode((PSG*)info->psg, 1);	// YM2149 volume mode
+			PSG_setVolumeMode((PSG*)info->psg, 1);	/* YM2149 volume mode */
 			break;
 		}
 	}
@@ -294,15 +294,15 @@ void nuke2608_stream_update_ay(uint8_t ChipID, sample **outputs, int samples)
 
 struct intf2608 nuked_intf2608 =
 {
-    .set_ay_emu_core = &nuke2608_set_ay_emu_core,
-    .device_start = &device_start_nuke2608,
-    .device_stop = &device_stop_nuke2608,
-    .device_reset = &device_reset_nuke2608,
-    .control_port_a_w = &nuke2608_control_port_a_w,
-    .control_port_b_w = &nuke2608_control_port_b_w,
-    .data_port_a_w = &nuke2608_data_port_a_w,
-    .data_port_b_w = &nuke2608_data_port_b_w,
-    .read_port_r = &nuke2608_read_port_r,
-    .stream_update = &nuke2608_stream_update,
-    .stream_update_ay = &nuke2608_stream_update_ay,
+	/*.set_ay_emu_core =*/ &nuke2608_set_ay_emu_core,
+	/*.device_start =*/ &device_start_nuke2608,
+	/*.device_stop =*/ &device_stop_nuke2608,
+	/*.device_reset =*/ &device_reset_nuke2608,
+	/*.control_port_a_w =*/ &nuke2608_control_port_a_w,
+	/*.control_port_b_w =*/ &nuke2608_control_port_b_w,
+	/*.data_port_a_w =*/ &nuke2608_data_port_a_w,
+	/*.data_port_b_w =*/ &nuke2608_data_port_b_w,
+	/*.read_port_r =*/ &nuke2608_read_port_r,
+	/*.stream_update =*/ &nuke2608_stream_update,
+	/*.stream_update_ay =*/ &nuke2608_stream_update_ay,
 };

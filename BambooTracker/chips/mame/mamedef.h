@@ -4,24 +4,24 @@
 #include <stdint.h>
 #include "../chip_def.h"
 
-// typedefs to use MAME's (U)INTxx types (copied from MAME\src\ods\odscomm.h)
+/* typedefs to use MAME's (U)INTxx types (copied from MAME\src\ods\odscomm.h) */
 /* 8-bit values */
-//typedef unsigned char						UINT8;
-//typedef signed char 						INT8;
+/*typedef unsigned char						UINT8;
+typedef signed char 						INT8;*/
 typedef uint8_t						UINT8;
 typedef int8_t 						INT8;
 
 
 /* 16-bit values */
-//typedef unsigned short						UINT16;
-//typedef signed short						INT16;
+/*typedef unsigned short						UINT16;
+typedef signed short						INT16;*/
 typedef uint16_t					UINT16;
 typedef int16_t						INT16;
 
 /* 32-bit values */
 #ifndef _WINDOWS_H
-//typedef unsigned int						UINT32;
-//typedef signed int							INT32;
+/*typedef unsigned int						UINT32;
+typedef signed int							INT32;*/
 typedef uint32_t					UINT32;
 typedef int32_t						INT32;
 #endif
@@ -41,7 +41,7 @@ __extension__ typedef signed long long		INT64;
 typedef UINT32	offs_t;
 
 /* stream_sample_t is used to represent a single sample in a sound stream */
-//typedef INT32 stream_sample_t;
+/*typedef INT32 stream_sample_t;*/
 typedef sample stream_sample_t;
 
 #if defined(VGM_BIG_ENDIAN)
@@ -49,11 +49,11 @@ typedef sample stream_sample_t;
 #elif defined(VGM_LITTLE_ENDIAN)
 #define BYTE_XOR_BE(x)	((x) ^ 0x01)
 #else
-// don't define BYTE_XOR_BE so that it throws an error when compiling
+/* don't define BYTE_XOR_BE so that it throws an error when compiling */
 #endif
 
 #if defined(_MSC_VER)
-//#define INLINE	static __forceinline
+/*#define INLINE	static __forceinline*/
 #define INLINE	static __inline
 #elif defined(__GNUC__)
 #define INLINE	static __inline__
@@ -75,4 +75,4 @@ extern stream_sample_t* DUMMYBUF[];
 
 typedef void (*SRATE_CALLBACK)(void*, UINT32);
 
-#endif	// __MAMEDEF_H__
+#endif	/* __MAMEDEF_H__ */

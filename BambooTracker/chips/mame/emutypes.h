@@ -4,7 +4,7 @@
 #ifndef INLINE
 
 #if defined(_MSC_VER)
-//#define INLINE __forceinline
+/*#define INLINE __forceinline*/
 #define INLINE __inline
 #elif defined(__GNUC__)
 #define INLINE __inline__

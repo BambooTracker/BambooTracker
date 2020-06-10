@@ -64,7 +64,7 @@
 
 #include "mamedef.h"
 #include <stdio.h>
-//#include "sndintrf.h"
+/*#include "sndintrf.h"*/
 #include "ymdeltat.h"
 
 #define YM_DELTAT_DELTA_MAX (24576)
@@ -535,7 +535,7 @@ INLINE void YM_DELTAT_synthesis_from_external_memory(YM_DELTAT *DELTAT)
 			/* The "+1" is there because we use 1 bit more for nibble calculations.*/
 			/* WARNING: */
 			/* Side effect: we should take the size of the mapped ROM into account */
-			//DELTAT->now_addr &= ( (1<<(24+1))-1);
+			/*DELTAT->now_addr &= ( (1<<(24+1))-1);*/
 			DELTAT->now_addr &= DELTAT->memory_mask;
 			
 
@@ -656,9 +656,9 @@ value:   START, REC, MEMDAT, REPEAT, SPOFF, x,x,RESET   meaning:
 		return;
 	}
 
-//todo: ADPCM analysis
+/*//todo: ADPCM analysis
 //  if ( (DELTAT->portstate & 0xe0)==0xc0 )
-//  if ( (DELTAT->portstate & 0xe0)==0xe0 )
+//  if ( (DELTAT->portstate & 0xe0)==0xe0 )*/
 
 	return;
 }
@@ -671,7 +671,7 @@ void YM_DELTAT_calc_mem_mask(YM_DELTAT* DELTAT)
 	while(MaskSize < DELTAT->memory_size)
 		MaskSize <<= 1;
 	
-	DELTAT->memory_mask = (MaskSize << 1) - 1;	// it's Mask<<1 because of the nibbles
+	DELTAT->memory_mask = (MaskSize << 1) - 1;	/* it's Mask<<1 because of the nibbles */
 	
 	return;
 }
