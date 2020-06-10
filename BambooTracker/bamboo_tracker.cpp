@@ -41,6 +41,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 					opnaCtrl_, instMan_, tickCounter_, mod_, config.lock()->getRetrieveChannelState());
 
 	storeOnlyUsedSamples_ = config.lock()->getWriteOnlyUsedSamples();
+	volFMReversed_ = config.lock()->getReverseFMVolumeOrder();
 }
 
 /********** Change configuration **********/

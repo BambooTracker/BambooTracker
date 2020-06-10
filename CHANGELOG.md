@@ -14,6 +14,7 @@
 - [#217] - Remove redundant call (thanks [@nyanpasu64])
 - [#216], [#218] - Fix some compilation warings (thanks [@nyanpasu64], [@OPNA2608])
 - [#210] - Finish editing an instrument name when leaving focus (thanks [@OPNA2608])
+- [#220] - Restore setting of FM volume reverse on launch (thanks [@nyanpasu64], [@OPNA2608])
 - Modify appearance slightly
 
 [#213]: https://github.com/rerrahkr/BambooTracker/issues/213
@@ -22,6 +23,7 @@
 [#216]: https://github.com/rerrahkr/BambooTracker/issues/216
 [#218]: https://github.com/rerrahkr/BambooTracker/issues/218
 [#210]: https://github.com/rerrahkr/BambooTracker/issues/210
+[#220]: https://github.com/rerrahkr/BambooTracker/issues/220
 
 ## v0.4.2 (2020-05-10)
 ### Added
