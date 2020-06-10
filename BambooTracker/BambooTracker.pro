@@ -48,7 +48,10 @@ msvc {
 else:if(gcc|clang) {
   CPPFLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
   # Temporary known-error downgrades
-  CPPFLAGS += -Wno-error=vla -Wno-error=deprecated-declarations
+  CPPFLAGS += -Wno-error=vla -Wno-error=deprecated-declarations #-Wno-error=stringop-truncation
+  clang {
+    CPPFLAGS += -Wno-error=vla-extension
+  }
 }
 else {
   message("Unknown compiler, won't attempt to add warning & pedantic compiler switches.")
