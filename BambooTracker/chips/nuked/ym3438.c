@@ -1090,6 +1090,10 @@ void OPN2_ChGenerate(ym3438_t *chip)
     Bit16s acc = chip->ch_acc[channel];
     Bit16s add = test_dac;
     Bit16s sum = 0;
+
+	Bit16s channel_maxsample = (1 << (channel_clipbits - 1)) - 1;
+	Bit16s channel_minsample = -(1 << (channel_clipbits - 1));
+
     if (op == 0 && !test_dac)
     {
         acc = 0;
@@ -1100,8 +1104,8 @@ void OPN2_ChGenerate(ym3438_t *chip)
     }
     sum = acc + add;
     /* Clamp */
-    Bit16s channel_maxsample = (1 << (channel_clipbits - 1)) - 1;
-    Bit16s channel_minsample = -(1 << (channel_clipbits - 1));
+	/*Bit16s channel_maxsample = (1 << (channel_clipbits - 1)) - 1;
+	Bit16s channel_minsample = -(1 << (channel_clipbits - 1));*/
     if (sum > channel_maxsample)
     {
         sum = channel_maxsample;
@@ -1247,11 +1251,15 @@ void OPNmod_RhythmGenerate(ym3438_t *chip)
     Bit8u panl = 0;
     Bit8u panr = 0;
 
+	Bit32u step;
+	Bit8u data;
+	Bit16u end = YM2608_ADPCM_ROM_addr[2 * channel + 1] << 1;
+
     if (chip->cycles < 6 && chip->rhythm_key[channel])
     {
-        Bit32u step;
+		/*Bit32u step;
         Bit8u data;
-        Bit16u end = YM2608_ADPCM_ROM_addr[2 * channel + 1] << 1;
+		Bit16u end = YM2608_ADPCM_ROM_addr[2 * channel + 1] << 1;*/
 
         panl = chip->rhythm_pan[channel] & 2;
         panr = chip->rhythm_pan[channel] & 1;
@@ -1739,14 +1747,20 @@ Bit32u OPN2_ReadIRQPin(ym3438_t *chip)
 
 Bit8u OPN2_Read(ym3438_t *chip, Bit32u port)
 {
+	Bit32u slot;
+	Bit16u testdata;
+
     if ((port & 3) == 0 || (chip_type & ym3438_mode_readmode))
     {
         if (chip->mode_test_21[6])
         {
             /* Read test data */
-            Bit32u slot = (chip->cycles + 18) % 24;
+			/*Bit32u slot = (chip->cycles + 18) % 24;
             Bit16u testdata = ((chip->pg_read & 0x01) << 15)
-                            | ((chip->eg_read[chip->mode_test_21[0]] & 0x01) << 14);
+							| ((chip->eg_read[chip->mode_test_21[0]] & 0x01) << 14);*/
+			slot = (chip->cycles + 18) % 24;
+			testdata = ((chip->pg_read & 0x01) << 15)
+							| ((chip->eg_read[chip->mode_test_21[0]] & 0x01) << 14);
             if (chip->mode_test_2c[4])
             {
                 testdata |= chip->ch_read & 0x1ff;

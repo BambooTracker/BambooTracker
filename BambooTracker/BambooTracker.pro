@@ -48,9 +48,15 @@ msvc {
 else:if(gcc|clang) {
   CPPFLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
   # Temporary known-error downgrades
-  CPPFLAGS += -Wno-error=vla -Wno-error=deprecated-declarations #-Wno-error=stringop-truncation
+  CPPFLAGS += -Wno-error=vla -Wno-error=deprecated-declarations
   clang {
     CPPFLAGS += -Wno-vla-extension
+  }
+  COMPILER_VERSION = $$system($$QMAKE_CXX -dumpversion)
+  COMPILER_MAJOR_VERSION_SPLIT = $$split(COMPILER_VERSION, ".")
+  COMPILER_MAJOR_VERSION = $$first(COMPILER_MAJOR_VERSION_SPLIT)
+  greaterThan(COMPILER_MAJOR_VERSION, 7) {
+    CPPFLAGS += -Wno-error=stringop-truncation
   }
 }
 else {
