@@ -218,36 +218,36 @@ void device_reset_nuke2608(uint8_t ChipID)
 
 void nuke2608_control_port_a_w(uint8_t ChipID, uint32_t offset, uint8_t data)
 {
-	(void)offset;
 	ym2608_state *info = &YM2608Data[ChipID];
+	(void)offset;
 	OPN2_WriteBuffered(info->chip, 0, data);
 }
 
 void nuke2608_control_port_b_w(uint8_t ChipID, uint32_t offset, uint8_t data)
 {
-	(void)offset;
 	ym2608_state *info = &YM2608Data[ChipID];
+	(void)offset;
 	OPN2_WriteBuffered(info->chip, 2, data);
 }
 
 void nuke2608_data_port_a_w(uint8_t ChipID, uint32_t offset, uint8_t data)
 {
-	(void)offset;
 	ym2608_state *info = &YM2608Data[ChipID];
+	(void)offset;
 	OPN2_WriteBuffered(info->chip, 1, data);
 }
 
 void nuke2608_data_port_b_w(uint8_t ChipID, uint32_t offset, uint8_t data)
 {
-	(void)offset;
 	ym2608_state *info = &YM2608Data[ChipID];
+	(void)offset;
 	OPN2_WriteBuffered(info->chip, 3, data);
 }
 
 uint8_t nuke2608_read_port_r(uint8_t ChipID, uint32_t offset)
 {
-	(void)offset;
 	ym2608_state *info = &YM2608Data[ChipID];
+	(void)offset;
 	return OPN2_Read(info->chip, 1);
 }
 

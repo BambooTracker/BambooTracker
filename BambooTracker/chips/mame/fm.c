@@ -875,8 +875,8 @@ INLINE void FM_BUSY_SET(FM_ST *ST,int busyclock )
 
 INLINE void FM_KEYON(UINT8 type, FM_CH *CH , int s )
 {
-	(void)type;
 	FM_SLOT *SLOT = &CH->SLOT[s];
+	(void)type;
 	if( !SLOT->key )
 	{
 		SLOT->key = 1;
@@ -1003,8 +1003,8 @@ INLINE void set_tl(FM_CH *CH,FM_SLOT *SLOT , int v)
 /* set attack rate & key scale  */
 INLINE void set_ar_ksr(UINT8 type, FM_CH *CH,FM_SLOT *SLOT,int v)
 {
-	(void)type;
 	UINT8 old_KSR = SLOT->KSR;
+	(void)type;
 
 	SLOT->ar = (v&0x1f) ? 32 + ((v&0x1f)<<1) : 0;
 
