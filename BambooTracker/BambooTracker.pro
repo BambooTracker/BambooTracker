@@ -42,7 +42,7 @@ CONFIG += c++14
 
 # C/C++ compiler flags
 msvc {
-  CPPFLAGS += /Wall /Wp64
+  CPPFLAGS += /Wall /Wp64 /WX
   CPPFLAGS += /source-charset:utf-8
 }
 else:if(gcc|clang) {

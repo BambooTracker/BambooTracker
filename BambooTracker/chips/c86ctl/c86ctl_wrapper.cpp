@@ -5,7 +5,8 @@ C86ctlBase::C86ctlBase(void (*func)())
 	: base_(nullptr)
 {
 #ifdef _C86CTL_H
-	if (auto createInstance = reinterpret_cast<HRESULT(WINAPI*)(REFIID, void**)>(func))
+	auto tmpFunc = reinterpret_cast<void*>(func);	// Avoid MSVC C4191
+	if (auto createInstance = reinterpret_cast<HRESULT(WINAPI*)(REFIID, void**)>(tmpFunc))
 		createInstance(c86ctl::IID_IRealChipBase, reinterpret_cast<void**>(&base_));
 #else
 	(void)func;
