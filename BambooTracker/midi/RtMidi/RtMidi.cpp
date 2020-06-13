@@ -1360,7 +1360,7 @@ void MidiOutCore :: sendMessage( const unsigned char *message, size_t size )
     return;
   }
 
-  Byte buffer[nBytes+(sizeof(MIDIPacketList))];
+  Byte* buffer = new Byte[nBytes+(sizeof(MIDIPacketList))];
   ByteCount listSize = sizeof(buffer);
   MIDIPacketList *packetList = (MIDIPacketList*)buffer;
   MIDIPacket *packet = MIDIPacketListInit( packetList );
