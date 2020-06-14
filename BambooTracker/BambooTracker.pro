@@ -46,17 +46,44 @@ msvc {
   CPPFLAGS += /source-charset:utf-8
 }
 else:if(gcc|clang) {
+  # Pedantic settings, warning -> error escalation and C standard specification
   CPPFLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
-  # Temporary known-error downgrades
-  CPPFLAGS += -Wno-error=vla -Wno-error=deprecated-declarations
+  QMAKE_CFLAGS += -std=gnu11
+
+  # Attempt to get the compiler version for version-specific handling
+  # Clang returns an ancient pinned GCC version, attempt hacky & ugly output grepping instead
   clang {
-    CPPFLAGS += -Wno-vla-extension
+    message("Qt configured with Clang")
+    COMPILER_VERSION = $$system($$QMAKE_CXX " --version | grep -Eo '[[:space:]][[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+([[:space:]]+|$)'")
   }
-  COMPILER_VERSION = $$system($$QMAKE_CXX -dumpversion)
-  COMPILER_MAJOR_VERSION_SPLIT = $$split(COMPILER_VERSION, ".")
-  COMPILER_MAJOR_VERSION = $$first(COMPILER_MAJOR_VERSION_SPLIT)
-  greaterThan(COMPILER_MAJOR_VERSION, 7) {
-    CPPFLAGS += -Wno-error=stringop-truncation
+  else {
+    message("Qt configured with GCC")
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+  }
+  COMPILER_SPLIT_VERSION = $$split(COMPILER_VERSION, ".")
+  COMPILER_MAJOR_VERSION = $$first(COMPILER_SPLIT_VERSION)
+  message("Compiler is version " $$COMPILER_VERSION)
+
+  # Temporary known-error downgrades
+
+  # Deprecated JACK methods in use by
+  # midi/RtMidi/RtMidi.cpp:(3117,3342)
+  CPPFLAGS += -Wno-error=deprecated-declarations
+
+  clang {
+    # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
+    # using system-installed JACK headers in RtAudio & RtMidi
+    # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)
+    greaterThan(COMPILER_MAJOR_VERSION, 7) {
+      CPPFLAGS += -Wno-error=deprecated-register
+    }
+  }
+  else {
+    # Fortify hardening settings on Linux (NixOS 19.09) detect string truncation in
+    # format/wopn_file.c:186
+    greaterThan(COMPILER_MAJOR_VERSION, 7) {
+      CPPFLAGS += -Wno-error=stringop-truncation
+    }
   }
 }
 else {
