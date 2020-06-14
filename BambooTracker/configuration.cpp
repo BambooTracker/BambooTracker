@@ -65,6 +65,7 @@ Configuration::Configuration()
 	reflectInstNumChange_ = false;
 	fixJamVol_ = true;
 	muteHiddenTracks_ = true;
+	restoreTrackVis_ = false;
 
 	// Edit settings
 	pageJumpLength_ = 4;
@@ -894,6 +895,10 @@ bool Configuration::getFixJammingVolume() const { return fixJamVol_; }
 void Configuration::setMuteHiddenTracks(bool enabled) { muteHiddenTracks_ = enabled; }
 
 bool Configuration::getMuteHiddenTracks() const { return muteHiddenTracks_; }
+
+void Configuration::setRestoreTrackVisibility(bool enabled) { restoreTrackVis_ = enabled; }
+
+bool Configuration::getRestoreTrackVisibility() const { return restoreTrackVis_; }
 
 // Edit settings
 void Configuration::setPageJumpLength(size_t length) { pageJumpLength_ = length; }

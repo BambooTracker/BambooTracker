@@ -12,7 +12,7 @@
 - Resize width of the order list after closing configuration dialog
 - Fix corruption while loading module
 - [#217] - Remove redundant call (thanks [@nyanpasu64])
-- [#216], [#218] - Fix some compilation warings (thanks [@nyanpasu64], [@OPNA2608])
+- [#216], [#218], [#221] - Fix some compilation warings (thanks [@nyanpasu64], [@OPNA2608])
 - [#210] - Finish editing an instrument name when leaving focus (thanks [@OPNA2608])
 - [#220] - Restore setting of FM volume reverse on launch (thanks [@nyanpasu64], [@OPNA2608])
 - Keep the main window open when canceling save dialog in closing
@@ -25,6 +25,7 @@
 [#218]: https://github.com/rerrahkr/BambooTracker/issues/218
 [#210]: https://github.com/rerrahkr/BambooTracker/issues/210
 [#220]: https://github.com/rerrahkr/BambooTracker/issues/220
+[#221]: https://github.com/rerrahkr/BambooTracker/pull/221
 
 ## v0.4.2 (2020-05-10)
 ### Added

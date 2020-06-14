@@ -58,6 +58,7 @@
 #include "gui/transpose_song_dialog.hpp"
 #include "gui/swap_tracks_dialog.hpp"
 #include "gui/hide_tracks_dialog.hpp"
+#include "gui/track_visibility_memory_handler.hpp"
 #include "gui/gui_util.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -436,12 +437,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->orderList, &OrderListEditor::currentTrackChanged,
 					 this, &MainWindow::onCurrentTrackChanged);
 
-	/* Track visibility */
-	std::vector<int> visTracks(bt_->getSongStyle(0).trackAttribs.size());
-	std::iota(visTracks.begin(), visTracks.end(), 0);
-	ui->orderList->setVisibleTracks(visTracks);
-	ui->patternEditor->setVisibleTracks(visTracks);
-
 	/* Wave view */
 	visualTimer_.reset(new QTimer);
 	visualTimer_->start(40);
@@ -667,6 +662,20 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	else {
 		openModule(filePath);	// If use emulation, stream stars
 	}
+
+	/* Track visibility */
+	SongType memSongType;
+	std::vector<int> visTracks;
+	if (config.lock()->getRestoreTrackVisibility()
+			&& TrackVisibilityMemoryHandler::loadTrackVisibilityMemory(memSongType, visTracks)) {
+		SongType songType = bt_->getSongStyle(bt_->getCurrentSongNumber()).type;
+		visTracks = adaptVisibleTrackList(visTracks, songType, songType);
+	}
+	else {
+		visTracks.resize(bt_->getSongStyle(0).trackAttribs.size());
+		std::iota(visTracks.begin(), visTracks.end(), 0);
+	}
+	setTrackVisibility(visTracks);
 }
 
 MainWindow::~MainWindow()
@@ -1021,6 +1030,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	instForms_->closeAll();
 
 	FileHistoryHandler::saveFileHistory(fileHistory_);
+	TrackVisibilityMemoryHandler::saveTrackVisibilityMemory(
+				bt_->getSongStyle(bt_->getCurrentSongNumber()).type,
+				ui->patternEditor->getVisibleTracks());
 
 	if (effListDiag_) effListDiag_->close();
 	if (shortcutsDiag_) shortcutsDiag_->close();
