@@ -2920,6 +2920,18 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
 			tnSSG_[ch].noisePeriod_ = CommandSequenceUnit::NODATA;
 		}
 	}
+	else if (type == 65) {	// None
+		if (tnSSG_[ch].isTone) {
+			mixerSSG_ |= SSGToneFlag(ch);
+			tnSSG_[ch].isTone = false;
+		}
+
+		if (tnSSG_[ch].isNoise) {
+			mixerSSG_ |= SSGNoiseFlag(ch);
+			tnSSG_[ch].isNoise = false;
+			tnSSG_[ch].noisePeriod_ = CommandSequenceUnit::NODATA;
+		}
+	}
 	else if (type > 32) {	// Tone&Noise
 		switch (wfSSG_[ch].type) {
 		case SSGWaveformType::TRIANGLE:

@@ -8,6 +8,9 @@
 - [#98] - Selection of FM "None" target in vgm/s98 export (thanks [@freq-mod])
 - [#136] - Support PMD .FF file import (thanks [@OPNA2608])
 
+### Changed
+- [#219] - Enable SSG Tone/Noise editor to turn off tone and noise (thanks [@ImATrackMan])
+
 ### Fixed
 - Resize width of the order list after closing configuration dialog
 - Fix corruption while loading module
@@ -26,6 +29,7 @@
 [#210]: https://github.com/rerrahkr/BambooTracker/issues/210
 [#220]: https://github.com/rerrahkr/BambooTracker/issues/220
 [#221]: https://github.com/rerrahkr/BambooTracker/pull/221
+[#219]: https://github.com/rerrahkr/BambooTracker/issues/219
 
 ## v0.4.2 (2020-05-10)
 ### Added

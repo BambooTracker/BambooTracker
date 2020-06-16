@@ -85,13 +85,13 @@ void ToneNoiseMacroEditor::drawField()
 	for (size_t i = 0; i < cols_.size(); ++i) {
 		int v = cols_[i].row;
 		int x = labWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + static_cast<int>(i), 0);
-		if (!v || 32 < v) {	// Tone
+		if (!v || (32 < v && v < 65)) {	// Tone
 			painter.fillRect(x, ty, colWidths_[i], rowHeights_[static_cast<size_t>(thi)], palette_->tnToneCellColor);
 			painter.drawText(x + 2,
 							 ty + rowHeights_[static_cast<size_t>(thi)] + textOffset,
 					cols_[i].text);
 		}
-		if (0 < v) {
+		if (0 < v && v < 65) {
 			// Noise
 			painter.fillRect(x, ny, colWidths_[i], rowHeights_[static_cast<size_t>(nhi)], palette_->tnNoiseCellColor);
 			painter.drawText(x + 2,
@@ -126,13 +126,15 @@ int ToneNoiseMacroEditor::detectRowNumberForMouseEvent(int col, int internalRow)
 	int v = cols_.at(static_cast<size_t>(col)).row;
 
 	if (r == b) {	// Tone
-		if (!v) return 0;				// Tone to Tone
+		if (!v) return 65;				// Tone to None
+		else if (v == 65) return 0;		// None to Tone
 		else if (v < 33) return v + 32;	// Noise to Tone+Noise
 		else return v - 32;				// Tone+Noise to Noise
 	}
 	else if (r == b + 1) {	// Noise
 		if (!v) return 33;			// Tone to Tone+Noise(0)
-		else if (v < 33) return v;	// Noise to Noise
+		else if (v == 65) return 1;	// None to Noise(0)
+		else if (v < 33) return 65;	// Noise to None
 		else return 0;				// Tone+Noise to Tone
 	}
 	else {	// Noise period
@@ -144,7 +146,7 @@ int ToneNoiseMacroEditor::detectRowNumberForMouseEvent(int col, int internalRow)
 
 int ToneNoiseMacroEditor::maxInMML() const
 {
-	return 65;
+	return 66;
 }
 
 QString ToneNoiseMacroEditor::convertSequenceDataUnitToMML(Column col)
@@ -152,7 +154,8 @@ QString ToneNoiseMacroEditor::convertSequenceDataUnitToMML(Column col)
 	if (col.row == 0) return "t";
 	else {
 		int p = (col.row - 1) % 32;
-		if (col.row < 33) return QString("%1n").arg(p);
+		if (col.row == 65) return "u";
+		else if (col.row < 33) return QString("%1n").arg(p);
 		else return QString("%1tn").arg(p);
 	}
 }
@@ -187,6 +190,14 @@ bool ToneNoiseMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vect
 		column.push_back({ 0, -1, "" });
 		++cnt;
 		text.remove(QRegularExpression("^(\\d+)?t"));
+		return true;
+	}
+
+	// None
+	if (text.front() == "u") {
+		column.push_back({ 65, -1, "" });
+		++cnt;
+		text.remove(0, 1);
 		return true;
 	}
 
