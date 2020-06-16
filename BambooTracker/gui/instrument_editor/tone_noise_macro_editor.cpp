@@ -194,7 +194,7 @@ bool ToneNoiseMacroEditor::interpretDataInMML(QString &text, int &cnt, std::vect
 	}
 
 	// None
-	if (text.front() == "u") {
+	if (text.at(0) == "u") {
 		column.push_back({ 65, -1, "" });
 		++cnt;
 		text.remove(0, 1);
