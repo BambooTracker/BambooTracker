@@ -19,9 +19,7 @@ namespace chip
 
 		inline size_t calculateInternalSampleSize(size_t nSamples)
 		{
-			float f = nSamples * rateRatio_;
-			size_t i = static_cast<size_t>(f);
-			return ((f - i) ? (i + 1) : i);
+			return static_cast<size_t>(std::ceil(nSamples * rateRatio_));
 		}
 
 	protected:
@@ -41,28 +39,5 @@ namespace chip
 	{
 	public:
 		sample** interpolate(sample** src, size_t nSamples, size_t intrSize) override;
-	};
-
-
-	class SincResampler : public AbstractResampler
-	{
-	public:
-		void init(int srcRate, int destRate, size_t maxDuration) override;
-		void setDestributionRate(int destRate) override;
-		void setMaxDuration(size_t maxDuration) override;
-		sample** interpolate(sample** src, size_t nSamples, size_t intrSize) override;
-
-	private:
-		std::vector<float> sincTable_;
-
-		static const float F_PI_;
-		static const int SINC_OFFSET_;
-
-		void initSincTables();
-
-		static inline float sinc(float x)
-		{
-			return ((!x) ? 1.0f : (std::sin(x) / x));
-		}
 	};
 }
