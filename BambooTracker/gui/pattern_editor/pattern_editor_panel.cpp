@@ -93,6 +93,8 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  repaintable_(true),
 	  repaintingCnt_(0)
 {	
+	setAttribute(Qt::WA_OpaquePaintEvent);
+
 	// Initialize font
 	headerFont_ = QApplication::font();
 	headerFont_.setPointSize(10);
@@ -316,8 +318,6 @@ void PatternEditorPanel::updateSizes()
 
 void PatternEditorPanel::initDisplay()
 {
-	completePixmap_ = std::make_unique<QPixmap>(geometry().size());
-
 	int width = geometry().width();
 
 	// Recalculate pixmap sizes
@@ -499,7 +499,7 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 		repaintable_.store(false);
 		++repaintingCnt_;	// Use module data after this line
 
-		if (rect.size() != completePixmap_->size()) {	// Prevent resize event was failed
+		if (rect.size() != size()) {	// Prevent resize event was failed
 			funcResize();
 			headerChanged_ = true;
 			backChanged_ = true;
@@ -510,7 +510,6 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 		if (backChanged_ || textChanged_ || foreChanged_ || headerChanged_ || focusChanged_ || stepDownCount_ || followModeChanged_) {
 
 			int maxWidth = std::min(rect.width(), tracksWidthFromLeftToEnd_);
-			completePixmap_->fill(palette_->ptnBackColor);
 
 			if (!focusChanged_) {
 				if (stepDownCount_ && !followModeChanged_) {
@@ -530,7 +529,8 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 			}
 
 			{
-				QPainter mergePainter(completePixmap_.get());
+				QPainter mergePainter(this);
+				mergePainter.fillRect(rect, palette_->ptnBackColor);
 				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
 				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
 				mergePainter.drawPixmap(inViewRect, *backPixmap_.get(), rowsRect);
@@ -554,9 +554,6 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 		--repaintingCnt_;	// Used module data until this line
 		repaintable_.store(true);
 	}
-
-	QPainter completePainter(this);
-	completePainter.drawPixmap(rect, *completePixmap_.get());
 }
 
 void PatternEditorPanel::drawRows(int maxWidth)
@@ -1088,7 +1085,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 
 void PatternEditorPanel::drawBorders(int maxWidth)
 {
-	QPainter painter(completePixmap_.get());
+	QPainter painter(this);
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, geometry().height());
@@ -1103,7 +1100,7 @@ void PatternEditorPanel::drawBorders(int maxWidth)
 
 void PatternEditorPanel::drawShadow()
 {
-	QPainter painter(completePixmap_.get());
+	QPainter painter(this);
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 

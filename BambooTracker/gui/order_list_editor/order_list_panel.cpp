@@ -68,6 +68,8 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  repaintingCnt_(0),
 	  playingRow_(-1)
 {
+	setAttribute(Qt::WA_OpaquePaintEvent);
+
 	// Initialize font
 	headerFont_ = QApplication::font();
 	headerFont_.setPointSize(10);
@@ -229,8 +231,6 @@ void OrderListPanel::updateSizes()
 
 void OrderListPanel::initDisplay()
 {
-	completePixmap_ = std::make_unique<QPixmap>(geometry().size());
-
 	int width = geometry().width();
 
 	// Recalculate pixmap sizes
@@ -258,8 +258,6 @@ void OrderListPanel::drawList(const QRect &rect)
 
 			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
 
-			completePixmap_->fill(palette_->odrBackColor);
-
 			if (orderDownCount_ && !followModeChanged_) {
 				quickDrawRows(maxWidth);
 			}
@@ -275,7 +273,8 @@ void OrderListPanel::drawList(const QRect &rect)
 			}
 
 			{
-				QPainter mergePainter(completePixmap_.get());
+				QPainter mergePainter(this);
+				mergePainter.fillRect(rect, palette_->odrBackColor);
 				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
 				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
 				mergePainter.drawPixmap(inViewRect, *backPixmap_.get(), rowsRect);
@@ -297,9 +296,6 @@ void OrderListPanel::drawList(const QRect &rect)
 		--repaintingCnt_;	// Used module data until this line
 		repaintable_.store(true);
 	}
-
-	QPainter completePainter(this);
-	completePainter.drawPixmap(rect, *completePixmap_.get());
 }
 
 void OrderListPanel::drawRows(int maxWidth)
@@ -665,7 +661,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 
 void OrderListPanel::drawBorders(int maxWidth)
 {
-	QPainter painter(completePixmap_.get());
+	QPainter painter(this);
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, geometry().height());
@@ -677,7 +673,7 @@ void OrderListPanel::drawBorders(int maxWidth)
 
 void OrderListPanel::drawShadow()
 {
-	QPainter painter(completePixmap_.get());
+	QPainter painter(this);
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 

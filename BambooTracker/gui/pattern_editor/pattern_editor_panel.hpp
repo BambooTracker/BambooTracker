@@ -144,7 +144,7 @@ private slots:
 	void midiKeyEvent(uchar status, uchar key, uchar velocity);
 
 private:
-	std::unique_ptr<QPixmap> completePixmap_, backPixmap_, textPixmap_, forePixmap_, headerPixmap_;
+	std::unique_ptr<QPixmap> backPixmap_, textPixmap_, forePixmap_, headerPixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::shared_ptr<Configuration> config_;
