@@ -330,10 +330,10 @@ void PatternEditorPanel::initDisplay()
 	viewedCenterY_ = (viewedRowsHeight_ - stepFontHeight_) >> 1;
 	viewedCenterBaseY_ = viewedCenterY_ + stepFontAscent_ + (stepFontLeading_ >> 1);
 
-	backPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
-	textPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
-	forePixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
-	headerPixmap_ = std::make_unique<QPixmap>(width, headerHeight_);
+	backPixmap_ = QPixmap(width, viewedRowsHeight_);
+	textPixmap_ = QPixmap(width, viewedRowsHeight_);
+	forePixmap_ = QPixmap(width, viewedRowsHeight_);
+	headerPixmap_ = QPixmap(width, headerHeight_);
 }
 
 void PatternEditorPanel::setCore(std::shared_ptr<BambooTracker> core)
@@ -516,9 +516,9 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 					quickDrawRows(maxWidth);
 				}
 				else {
-					backPixmap_->fill(Qt::transparent);
-					if (textChanged_) textPixmap_->fill(Qt::transparent);
-					if (foreChanged_) forePixmap_->fill(Qt::transparent);
+					backPixmap_.fill(Qt::transparent);
+					if (textChanged_) textPixmap_.fill(Qt::transparent);
+					if (foreChanged_) forePixmap_.fill(Qt::transparent);
 					drawRows(maxWidth);
 				}
 
@@ -533,10 +533,10 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 				mergePainter.fillRect(rect, palette_->ptnBackColor);
 				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
 				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
-				mergePainter.drawPixmap(inViewRect, *backPixmap_.get(), rowsRect);
-				mergePainter.drawPixmap(inViewRect, *textPixmap_.get(), rowsRect);
-				mergePainter.drawPixmap(inViewRect, *forePixmap_.get(), rowsRect);
-				mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
+				mergePainter.drawPixmap(inViewRect, backPixmap_, rowsRect);
+				mergePainter.drawPixmap(inViewRect, textPixmap_, rowsRect);
+				mergePainter.drawPixmap(inViewRect, forePixmap_, rowsRect);
+				mergePainter.drawPixmap(headerPixmap_.rect(), headerPixmap_);
 			}
 
 			drawBorders(maxWidth);
@@ -558,9 +558,9 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 
 void PatternEditorPanel::drawRows(int maxWidth)
 {
-	QPainter forePainter(forePixmap_.get());
-	QPainter textPainter(textPixmap_.get());
-	QPainter backPainter(backPixmap_.get());
+	QPainter forePainter(&forePixmap_);
+	QPainter textPainter(&textPixmap_);
+	QPainter backPainter(&backPixmap_);
 	textPainter.setFont(stepFont_);
 
 	/* Current row */
@@ -712,17 +712,17 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 
 	/* Move up */
 	QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
-	if (!repaintForeAll) forePixmap_->scroll(0, -shift, srcRect);
-	textPixmap_->scroll(0, -shift, srcRect);
-	backPixmap_->scroll(0, -shift, srcRect);
+	if (!repaintForeAll) forePixmap_.scroll(0, -shift, srcRect);
+	textPixmap_.scroll(0, -shift, srcRect);
+	backPixmap_.scroll(0, -shift, srcRect);
 	{
 		PatternPosition fpos = calculatePositionFrom(viewedCenterPos_.order, viewedCenterPos_.step, stepDownCount_ - halfRowsCnt);
 		if (fpos.order != -1) viewedFirstPos_ = std::move(fpos);
 	}
 
-	QPainter forePainter(forePixmap_.get());
-	QPainter textPainter(textPixmap_.get());
-	QPainter backPainter(backPixmap_.get());
+	QPainter forePainter(&forePixmap_);
+	QPainter textPainter(&textPixmap_);
+	QPainter backPainter(&backPixmap_);
 	textPainter.setFont(stepFont_);
 
 	/* Clear previous cursor row, current cursor row and last rows text and foreground */
@@ -842,7 +842,7 @@ void PatternEditorPanel::quickDrawRows(int maxWidth)
 
 	/* Redraw foreground all area if new order */
 	if (repaintForeAll) {
-		forePixmap_->fill(Qt::transparent);
+		forePixmap_.fill(Qt::transparent);
 		int y = viewedCenterY_ - viewedCenterPos_.step * stepFontHeight_;
 		if (y > 0) forePainter.fillRect(0, 0, maxWidth, y, palette_->ptnMaskColor);
 		if (viewedLastPos_.order != viewedCenterPos_.order) {
@@ -1057,7 +1057,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 
 void PatternEditorPanel::drawHeaders(int maxWidth)
 {
-	QPainter painter(headerPixmap_.get());
+	QPainter painter(&headerPixmap_);
 	painter.setFont(headerFont_);
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->ptnHeaderRowColor);

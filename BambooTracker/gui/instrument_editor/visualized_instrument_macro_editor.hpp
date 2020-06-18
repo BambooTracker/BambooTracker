@@ -101,7 +101,7 @@ protected:
 	void leaveEventInView();
 	void wheelEventInView(QWheelEvent* event);
 
-	std::unique_ptr<QPixmap> pixmap_;
+	QPixmap pixmap_;
 	std::shared_ptr<ColorPalette> palette_;
 
 	QFont font_;

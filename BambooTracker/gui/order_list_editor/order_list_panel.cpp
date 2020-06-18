@@ -243,9 +243,9 @@ void OrderListPanel::initDisplay()
 	viewedCenterY_ = (viewedRowsHeight_ - rowFontHeight_) >> 1;
 	viewedCenterBaseY_ = viewedCenterY_ + rowFontAscent_ + (rowFontLeading_ >> 1);
 
-	backPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
-	textPixmap_ = std::make_unique<QPixmap>(width, viewedRowsHeight_);
-	headerPixmap_ = std::make_unique<QPixmap>(width, headerHeight_);
+	backPixmap_ = QPixmap(width, viewedRowsHeight_);
+	textPixmap_ = QPixmap(width, viewedRowsHeight_);
+	headerPixmap_ = QPixmap(width, headerHeight_);
 }
 
 void OrderListPanel::drawList(const QRect &rect)
@@ -262,8 +262,8 @@ void OrderListPanel::drawList(const QRect &rect)
 				quickDrawRows(maxWidth);
 			}
 			else {
-				backPixmap_->fill(Qt::transparent);
-				if (textChanged_) textPixmap_->fill(Qt::transparent);
+				backPixmap_.fill(Qt::transparent);
+				if (textChanged_) textPixmap_.fill(Qt::transparent);
 				drawRows(maxWidth);
 			}
 
@@ -277,9 +277,9 @@ void OrderListPanel::drawList(const QRect &rect)
 				mergePainter.fillRect(rect, palette_->odrBackColor);
 				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
 				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
-				mergePainter.drawPixmap(inViewRect, *backPixmap_.get(), rowsRect);
-				mergePainter.drawPixmap(inViewRect, *textPixmap_.get(), rowsRect);
-				mergePainter.drawPixmap(headerPixmap_->rect(), *headerPixmap_.get());
+				mergePainter.drawPixmap(inViewRect, backPixmap_, rowsRect);
+				mergePainter.drawPixmap(inViewRect, textPixmap_, rowsRect);
+				mergePainter.drawPixmap(headerPixmap_.rect(), headerPixmap_);
 			}
 
 			drawBorders(maxWidth);
@@ -300,8 +300,8 @@ void OrderListPanel::drawList(const QRect &rect)
 
 void OrderListPanel::drawRows(int maxWidth)
 {
-	QPainter textPainter(textPixmap_.get());
-	QPainter backPainter(backPixmap_.get());
+	QPainter textPainter(&textPixmap_);
+	QPainter backPainter(&backPixmap_);
 	textPainter.setFont(rowFont_);
 
 	std::vector<OrderData> orderRowData_;
@@ -448,15 +448,15 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 
 	/* Move up by */
 	QRect srcRect(0, 0, maxWidth, viewedRowsHeight_);
-	textPixmap_->scroll(0, -shift, srcRect);
-	backPixmap_->scroll(0, -shift, srcRect);
+	textPixmap_.scroll(0, -shift, srcRect);
+	backPixmap_.scroll(0, -shift, srcRect);
 	{
 		int fpos = viewedCenterPos_.row + orderDownCount_ - halfRowsCnt;
 		if (fpos >= 0) viewedFirstPos_.row = fpos;
 	}
 
-	QPainter textPainter(textPixmap_.get());
-	QPainter backPainter(backPixmap_.get());
+	QPainter textPainter(&textPixmap_);
+	QPainter backPainter(&backPixmap_);
 	textPainter.setFont(rowFont_);
 
 	std::vector<OrderData> orderRowData_;
@@ -594,7 +594,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 
 void OrderListPanel::drawHeaders(int maxWidth)
 {
-	QPainter painter(headerPixmap_.get());
+	QPainter painter(&headerPixmap_);
 	painter.setFont(headerFont_);
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->odrHeaderRowColor);

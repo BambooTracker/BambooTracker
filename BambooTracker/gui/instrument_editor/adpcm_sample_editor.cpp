@@ -28,8 +28,6 @@ ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::ADPCMSampleEditor),
 	isIgnoreEvent_(false),
-	memPixmap_(std::make_unique<QPixmap>()),
-	sampViewPixmap_(std::make_unique<QPixmap>()),
 	zoom_(0),
 	viewedSampLen_(2),
 	gridIntr_(1),
@@ -127,11 +125,11 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 		case QEvent::Paint:
 		{
 			QPainter painter(ui->memoryWidget);
-			painter.drawPixmap(ui->memoryWidget->rect(), *memPixmap_.get());
+			painter.drawPixmap(ui->memoryWidget->rect(), memPixmap_);
 			break;
 		}
 		case QEvent::Resize:
-			memPixmap_ = std::make_unique<QPixmap>(ui->memoryWidget->size());
+			memPixmap_ = QPixmap(ui->memoryWidget->size());
 			updateSampleMemoryBar();
 			break;
 		default:
@@ -145,11 +143,11 @@ bool ADPCMSampleEditor::eventFilter(QObject* obj, QEvent* ev)
 		case QEvent::Paint:
 		{
 			QPainter painter(ui->sampleViewWidget);
-			painter.drawPixmap(ui->sampleViewWidget->rect(), *sampViewPixmap_.get());
+			painter.drawPixmap(ui->sampleViewWidget->rect(), sampViewPixmap_);
 			break;
 		}
 		case QEvent::Resize:
-			sampViewPixmap_ = std::make_unique<QPixmap>(ui->sampleViewWidget->size());
+			sampViewPixmap_ = QPixmap(ui->sampleViewWidget->size());
 			updateSampleView();
 			break;
 		case QEvent::Wheel:
@@ -347,10 +345,10 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 
 void ADPCMSampleEditor::updateSampleMemoryBar()
 {
-	QRect bar = memPixmap_->rect();
+	QRect bar = memPixmap_.rect();
 	if (!bar.isValid()) return;
 
-	QPainter painter(memPixmap_.get());
+	QPainter painter(&memPixmap_);
 	painter.fillRect(bar, palette_->instADPCMMemBackColor);
 
 	double maxSize = bt_.lock()->getADPCMStoredSize() >> 5;
@@ -367,10 +365,10 @@ void ADPCMSampleEditor::updateSampleMemoryBar()
 
 void ADPCMSampleEditor::updateSampleView()
 {
-	QRect rect = sampViewPixmap_->rect();
+	QRect rect = sampViewPixmap_.rect();
 	if (!rect.isValid()) return;
 
-	QPainter painter(sampViewPixmap_.get());
+	QPainter painter(&sampViewPixmap_);
 	painter.fillRect(rect, palette_->instADPCMSampViewBackColor);
 
 	painter.setPen(palette_->instADPCMSampViewCenterColor);

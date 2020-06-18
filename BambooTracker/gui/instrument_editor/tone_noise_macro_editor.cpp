@@ -19,7 +19,7 @@ ToneNoiseMacroEditor::~ToneNoiseMacroEditor() {}
 
 void ToneNoiseMacroEditor::drawField()
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(&pixmap_);
 	painter.setFont(font_);
 
 	int dispCnt = getDisplayedRowCount();

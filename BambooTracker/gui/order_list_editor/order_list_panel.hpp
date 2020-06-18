@@ -111,7 +111,7 @@ protected:
 	virtual void leaveEvent(QEvent* event) override;
 
 private:
-	std::unique_ptr<QPixmap> textPixmap_, backPixmap_, headerPixmap_;
+	QPixmap textPixmap_, backPixmap_, headerPixmap_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::weak_ptr<QUndoStack> comStack_;
 	std::shared_ptr<Configuration> config_;

@@ -74,7 +74,7 @@ private:
 	static const int DT_UNSIGN_TBL_[7];
 
 	// Envelope graph
-	std::unique_ptr<QPixmap> envmap_;
+	QPixmap envmap_;
 	static constexpr int ENV_H_ = 127;
 	static constexpr int ENV_W_ = 200;
 	static constexpr int SSGEG_H_ = 35;

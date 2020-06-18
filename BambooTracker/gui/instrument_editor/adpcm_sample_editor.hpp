@@ -58,8 +58,7 @@ private:
 	std::weak_ptr<Configuration> config_;
 	std::shared_ptr<ColorPalette> palette_;
 
-	std::unique_ptr<QPixmap> memPixmap_;
-	std::unique_ptr<QPixmap> sampViewPixmap_;
+	QPixmap memPixmap_, sampViewPixmap_;
 	int zoom_, viewedSampLen_, gridIntr_;
 	QPoint cursorSamp_, prevPressedSamp_;
 

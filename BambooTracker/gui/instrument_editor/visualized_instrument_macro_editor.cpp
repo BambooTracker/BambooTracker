@@ -294,12 +294,12 @@ void VisualizedInstrumentMacroEditor::autoFitLabelWidth()
 /******************************/
 void VisualizedInstrumentMacroEditor::initDisplay()
 {
-	pixmap_ = std::make_unique<QPixmap>(ui->panel->geometry().size());
+	pixmap_ = QPixmap(ui->panel->geometry().size());
 }
 
 void VisualizedInstrumentMacroEditor::drawField()
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(&pixmap_);
 	painter.setFont(font_);
 
 	int textOffset = fontAscend_ - fontHeight_ + fontLeading_ / 2;
@@ -361,7 +361,7 @@ void VisualizedInstrumentMacroEditor::drawField()
 
 void VisualizedInstrumentMacroEditor::drawLoop()
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(&pixmap_);
 	painter.setFont(font_);
 
 	painter.fillRect(0, loopY_, panelWidth(), fontHeight_, palette_->instSeqLoopBackColor);
@@ -397,7 +397,7 @@ void VisualizedInstrumentMacroEditor::drawLoop()
 
 void VisualizedInstrumentMacroEditor::drawRelease()
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(&pixmap_);
 	painter.setFont(font_);
 
 	painter.fillRect(0, releaseY_, panelWidth(), fontHeight_, palette_->instSeqReleaseBackColor);
@@ -439,7 +439,7 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 
 void VisualizedInstrumentMacroEditor::drawBorder()
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(&pixmap_);
 	painter.setPen(palette_->instSeqBorderColor);
 	painter.drawLine(labWidth_, 0, labWidth_, ui->panel->geometry().height());
 	for (int i = 1; i < maxDispRowCnt_; ++i) {
@@ -450,7 +450,7 @@ void VisualizedInstrumentMacroEditor::drawBorder()
 
 void VisualizedInstrumentMacroEditor::drawShadow()
 {
-	QPainter painter(pixmap_.get());
+	QPainter painter(&pixmap_);
 	painter.fillRect(0, 0, panelWidth(), ui->panel->geometry().height(), palette_->instSeqMaskColor);
 }
 
@@ -797,7 +797,7 @@ void VisualizedInstrumentMacroEditor::paintEventInView(QPaintEvent* event)
 {
 	if (!palette_) return;
 
-	pixmap_->fill(Qt::black);
+	pixmap_.fill(Qt::black);
 
 	drawField();
 
@@ -807,7 +807,7 @@ void VisualizedInstrumentMacroEditor::paintEventInView(QPaintEvent* event)
 	if (!isEnabled()) drawShadow();
 
 	QPainter painter(ui->panel);
-	painter.drawPixmap(event->rect(), *pixmap_.get());
+	painter.drawPixmap(event->rect(), pixmap_);
 }
 
 void VisualizedInstrumentMacroEditor::resizeEventInView(QResizeEvent* event)

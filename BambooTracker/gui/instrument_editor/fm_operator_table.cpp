@@ -80,8 +80,6 @@ FMOperatorTable::FMOperatorTable(QWidget *parent) :
 		if (!isIgnoreEvent_) emit operatorValueChanged(Ui::FMOperatorParameter::SSGEG, value);
 	});
 
-	envmap_ = std::make_unique<QPixmap>();
-
 	ui->envFrame->installEventFilter(this);
 }
 
@@ -182,7 +180,7 @@ bool FMOperatorTable::eventFilter(QObject* obj, QEvent* event)
 		if (event->type() == QEvent::Paint) {
 			QPainter painter(ui->envFrame);
 			painter.eraseRect(ui->envFrame->rect());
-			painter.drawPixmap(ui->envFrame->rect(), *envmap_.get(), envmap_->rect());
+			painter.drawPixmap(ui->envFrame->rect(), envmap_, envmap_.rect());
 		}
 	}
 
@@ -205,9 +203,9 @@ void FMOperatorTable::resizeEvent(QResizeEvent* event)
 
 void FMOperatorTable::resizeGraph()
 {
-	envmap_ = std::make_unique<QPixmap>(ui->envFrame->size());
-	xr_ = (envmap_->width() - (ENV_LINE_W_ + 1) * 2.) / ENV_W_;
-	yr_ = (envmap_->height() - (ENV_LINE_W_ + 1) * 2.) / ENV_H_;
+	envmap_ = QPixmap(ui->envFrame->size());
+	xr_ = (envmap_.width() - (ENV_LINE_W_ + 1) * 2.) / ENV_W_;
+	yr_ = (envmap_.height() - (ENV_LINE_W_ + 1) * 2.) / ENV_H_;
 }
 
 void FMOperatorTable::repaintGraph()
@@ -311,8 +309,8 @@ void FMOperatorTable::repaintGraph()
 	p3.setY((127. - p3.y()) * envHrate);
 	p4.setY((127. - p4.y()) * envHrate);
 
-	envmap_->fill(palette_->instFMEnvBackColor);
-	QPainter painter(envmap_.get());
+	envmap_.fill(palette_->instFMEnvBackColor);
+	QPainter painter(&envmap_);
 
 	painter.setPen(QPen(palette_->instFMEnvGridColor, ENV_LINE_T_));
 	drawLine(painter, p1.x(), 0, p1.x(), envHeight);
