@@ -93,7 +93,10 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  repaintable_(true),
 	  repaintingCnt_(0)
 {	
+	setAttribute(Qt::WA_Hover);
 	setAttribute(Qt::WA_OpaquePaintEvent);
+	setFocusPolicy(Qt::ClickFocus);
+	setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Initialize font
 	headerFont_ = QApplication::font();
@@ -107,9 +110,6 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	// Track visibility
 	songStyle_.type = SongType::Standard;	// Dummy
 	std::iota(visTracks_.begin(), visTracks_.end(), 0);
-
-	setAttribute(Qt::WA_Hover);
-	setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Shortcuts
 	auto getKeys = [](bool isShift, auto key) {
@@ -2860,8 +2860,6 @@ void PatternEditorPanel::resizeEvent(QResizeEvent *event)
 void PatternEditorPanel::mousePressEvent(QMouseEvent *event)
 {
 	Q_UNUSED(event)
-
-	setFocus();
 
 	mousePressPos_ = hovPos_;
 	doubleClickPos_ = mousePressPos_;

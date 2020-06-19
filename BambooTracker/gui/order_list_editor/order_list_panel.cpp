@@ -68,7 +68,10 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  repaintingCnt_(0),
 	  playingRow_(-1)
 {
+	setAttribute(Qt::WA_Hover);
 	setAttribute(Qt::WA_OpaquePaintEvent);
+	setFocusPolicy(Qt::ClickFocus);
+	setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Initialize font
 	headerFont_ = QApplication::font();
@@ -78,9 +81,6 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	rowFont_.setStyleStrategy(QFont::ForceIntegerMetrics);
 
 	updateSizes();
-
-	setAttribute(Qt::WA_Hover);
-	setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Track visibility
 	songStyle_.type = SongType::Standard;	// Dummy
@@ -1471,8 +1471,6 @@ void OrderListPanel::resizeEvent(QResizeEvent* event)
 void OrderListPanel::mousePressEvent(QMouseEvent* event)
 {
 	Q_UNUSED(event)
-
-	setFocus();
 
 	mousePressPos_ = hovPos_;
 	mouseReleasePos_ = { -1, -1 };
