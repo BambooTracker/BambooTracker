@@ -179,12 +179,12 @@ private:
 	QLabel *statusIntr_, *statusMixer_, *statusBpm_, *statusPlayPos_;
 
 	// Shortcuts
-	std::unique_ptr<QAction> octUpSc_, octDownSc_;
-	std::unique_ptr<QShortcut> focusPtnSc_, focusOdrSc_, focusInstSc_, instAddSc_;
-	std::unique_ptr<QAction> playAndStopSc_, playStepSc_, goPrevOdrSc_, goNextOdrSc_;
-	std::unique_ptr<QAction> prevInstSc_, nextInstSc_, incPtnSizeSc_, decPtnSizeSc_;
-	std::unique_ptr<QAction> incEditStepSc_, decEditStepSc_, prevSongSc_, nextSongSc_;
-	std::unique_ptr<QAction> jamVolUpSc_, jamVolDownSc_;
+	QAction octUpSc_, octDownSc_;
+	QShortcut focusPtnSc_, focusOdrSc_, focusInstSc_;
+	std::unique_ptr<QShortcut> instAddSc_;
+	QAction playAndStopSc_, playStepSc_, goPrevOdrSc_, goNextOdrSc_, prevInstSc_, nextInstSc_;
+	QAction incPtnSizeSc_, decPtnSizeSc_, incEditStepSc_, decEditStepSc_, prevSongSc_, nextSongSc_;
+	QAction jamVolUpSc_, jamVolDownSc_;
 	void setShortcuts();
 
 	// Dialogs

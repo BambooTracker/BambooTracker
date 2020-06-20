@@ -91,7 +91,33 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  hasFocussedBefore_(false),
 	  stepDownCount_(0),
 	  repaintable_(true),
-	  repaintingCnt_(0)
+	  repaintingCnt_(0),
+	  upSc_(Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  upWSSc_(Qt::SHIFT + Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  dnSc_(Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  dnWSSc_(Qt::SHIFT + Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  pgUpSc_(Qt::Key_PageUp, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  pgUpWSSc_(Qt::SHIFT + Qt::Key_PageUp, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  pgDnSc_(Qt::Key_PageDown, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  pgDnWSSc_(Qt::SHIFT + Qt::Key_PageDown, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  homeSc_(Qt::Key_Home, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  homeWSSc_(Qt::SHIFT + Qt::Key_Home, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  endSc_(Qt::Key_End, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  endWSSc_(Qt::SHIFT + Qt::Key_End, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  hlUpSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  hlUpWSSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  hlDnSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  hlDnWSSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  ltSc_(Qt::Key_Left, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  ltWSSc_(Qt::SHIFT + Qt::Key_Left, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  rtSc_(Qt::Key_Right, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  rtWSSc_(Qt::SHIFT + Qt::Key_Right, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  keyOffSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  echoBufSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  stepMvUpSc_(Qt::ALT + Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  stepMvDnSc_(Qt::ALT + Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  expandColSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut),
+	  shrinkColSc_(QKeySequence(), this, nullptr, nullptr, Qt::WidgetShortcut)
 {	
 	setAttribute(Qt::WA_Hover);
 	setAttribute(Qt::WA_OpaquePaintEvent);
@@ -112,103 +138,69 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	std::iota(visTracks_.begin(), visTracks_.end(), 0);
 
 	// Shortcuts
-	auto getKeys = [](bool isShift, auto key) {
-		return (isShift ? static_cast<Qt::Key>(Qt::SHIFT + key) : key);
-	};
-	auto jumpLambda = [&] (bool isShift, auto getFunc) {	// For lazy evaluation
+	auto vMoveLam = [&] (bool isShift, auto getFunc) {	// For lazy evaluation
 		if (bt_->isPlaySong() && bt_->isFollowPlay()) return;
 		moveCursorToDown(getFunc());
 		checkSelectionByCursorMove(isShift);
 	};
-	for (size_t i = 0; i < 2; ++i) {
-		bool isShift = i ? true : false;
-
-		upSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Up), this);
-		upSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(upSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] { return (editableStepCnt_ ? -editableStepCnt_ : -1); });
-		});
-		dnSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Down), this);
-		dnSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(dnSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] { return (editableStepCnt_ ? editableStepCnt_ : 1); });
-		});
-		pgUpSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_PageUp), this);
-		pgUpSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(pgUpSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] { return -static_cast<int>(config_->getPageJumpLength()); });
-		});
-		pgDnSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_PageDown), this);
-		pgDnSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(pgDnSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] { return static_cast<int>(config_->getPageJumpLength()); });
-		});
-		homeSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Home), this);
-		homeSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(homeSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] { return -curPos_.step; });
-		});
-		endSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_End), this);
-		endSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(endSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] {
-				return (static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - curPos_.step - 1);
-			});
-		});
-		hlUpSc_[i] = std::make_unique<QShortcut>(this);
-		hlUpSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(hlUpSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] {
-				int base;
-				if (curPos_.step) {
-					base = curPos_.step;
-				}
-				else {
-					base = static_cast<int>(bt_->getPatternSizeFromOrderNumber(
-												curSongNum_,
-												(curPos_.order) ? (curPos_.order - 1)
-																: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
-				}
-				return ((base - 1) / hl1Cnt_ * hl1Cnt_ - base);
-			});
-		});
-		hlDnSc_[i] = std::make_unique<QShortcut>(this);
-		hlDnSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(hlDnSc_[i].get(), &QShortcut::activated, this, [&, isShift, jumpLambda] {
-			jumpLambda(isShift, [&] {
-				int next = std::min((curPos_.step / hl1Cnt_ + 1) * hl1Cnt_,
-									static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)));
-				return (next - curPos_.step);
-			});
-		});
-		ltSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Left), this);
-		ltSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(ltSc_[i].get(), &QShortcut::activated, this, [&, isShift] {
-			moveCursorToRight(-1);
-			checkSelectionByCursorMove(isShift);
-		});
-		rtSc_[i] = std::make_unique<QShortcut>(getKeys(isShift, Qt::Key_Right), this);
-		rtSc_[i]->setContext(Qt::WidgetShortcut);
-		QObject::connect(rtSc_[i].get(), &QShortcut::activated, this, [&, isShift] {
-			moveCursorToRight(1);
-			checkSelectionByCursorMove(isShift);
-		});
-	}
-
-	keyOffSc_ = std::make_unique<QShortcut>(this);
-	keyOffSc_->setContext(Qt::WidgetShortcut);
-	QObject::connect(keyOffSc_.get(), &QShortcut::activated,
-					 this, [&] {
+	auto upLam = [&] { return (editableStepCnt_ ? -editableStepCnt_ : -1); };
+	QObject::connect(&upSc_, &QShortcut::activated, this, [vMoveLam, upLam] { vMoveLam(false, upLam); });
+	QObject::connect(&upWSSc_, &QShortcut::activated, this, [vMoveLam, upLam] { vMoveLam(true, upLam); });
+	auto dnLam = [&] { return (editableStepCnt_ ? editableStepCnt_ : 1); };
+	QObject::connect(&dnSc_, &QShortcut::activated, this, [vMoveLam, dnLam] { vMoveLam(false, dnLam); });
+	QObject::connect(&dnWSSc_, &QShortcut::activated, this, [vMoveLam, dnLam] { vMoveLam(true, dnLam); });
+	auto pgUpLam = [&] { return -static_cast<int>(config_->getPageJumpLength()); };
+	QObject::connect(&pgUpSc_, &QShortcut::activated, this, [vMoveLam, pgUpLam] { vMoveLam(false, pgUpLam); });
+	QObject::connect(&pgUpWSSc_, &QShortcut::activated, this, [vMoveLam, pgUpLam] { vMoveLam(true, pgUpLam); });
+	auto pgDnLam = [&] { return static_cast<int>(config_->getPageJumpLength()); };
+	QObject::connect(&pgDnSc_, &QShortcut::activated, this, [vMoveLam, pgDnLam] { vMoveLam(false, pgDnLam); });
+	QObject::connect(&pgDnWSSc_, &QShortcut::activated, this, [vMoveLam, pgDnLam] { vMoveLam(true, pgDnLam); });
+	auto homeLam = [&] { return -curPos_.step; };
+	QObject::connect(&homeSc_, &QShortcut::activated, this, [vMoveLam, homeLam] { vMoveLam(false, homeLam); });
+	QObject::connect(&homeWSSc_, &QShortcut::activated, this, [vMoveLam, homeLam] { vMoveLam(true, homeLam); });
+	auto endLam = [&] {
+		return (static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)) - curPos_.step - 1);
+	};
+	QObject::connect(&endSc_, &QShortcut::activated, this, [vMoveLam, endLam] { vMoveLam(false, endLam); });
+	QObject::connect(&endWSSc_, &QShortcut::activated, this, [vMoveLam, endLam] { vMoveLam(true, endLam); });
+	auto hlUpLam = [&] {
+		int base;
+		if (curPos_.step) {
+			base = curPos_.step;
+		}
+		else {
+			base = static_cast<int>(bt_->getPatternSizeFromOrderNumber(
+										curSongNum_,
+										(curPos_.order) ? (curPos_.order - 1)
+														: (static_cast<int>(bt_->getOrderSize(curSongNum_)) - 1)));
+		}
+		return ((base - 1) / hl1Cnt_ * hl1Cnt_ - base);
+	};
+	QObject::connect(&hlUpSc_, &QShortcut::activated, this, [vMoveLam, hlUpLam] { vMoveLam(false, hlUpLam); });
+	QObject::connect(&hlUpWSSc_, &QShortcut::activated, this, [vMoveLam, hlUpLam] { vMoveLam(true, hlUpLam); });
+	auto hlDnLam = [&] {
+		int next = std::min((curPos_.step / hl1Cnt_ + 1) * hl1Cnt_,
+							static_cast<int>(bt_->getPatternSizeFromOrderNumber(curSongNum_, curPos_.order)));
+		return (next - curPos_.step);
+	};
+	QObject::connect(&hlDnSc_, &QShortcut::activated, this, [vMoveLam, hlDnLam] { vMoveLam(false, hlDnLam); });
+	QObject::connect(&hlDnWSSc_, &QShortcut::activated, this, [vMoveLam, hlDnLam] { vMoveLam(true, hlDnLam); });
+	auto ltRtLam = [&] (bool isLeft, bool isShift) {
+		moveCursorToRight(isLeft ? -1 : 1);
+		checkSelectionByCursorMove(isShift);
+	};
+	QObject::connect(&ltSc_, &QShortcut::activated, this, [ltRtLam] { ltRtLam(true, false); });
+	QObject::connect(&ltWSSc_, &QShortcut::activated, this, [ltRtLam] { ltRtLam(true, true); });
+	QObject::connect(&rtSc_, &QShortcut::activated, this, [ltRtLam] { ltRtLam(false, false); });
+	QObject::connect(&rtWSSc_, &QShortcut::activated, this, [ltRtLam] { ltRtLam(false, true); });
+	QObject::connect(&keyOffSc_, &QShortcut::activated, this, [&] {
 		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
 			bt_->setStepKeyOff(curSongNum_, visTracks_.at(curPos_.trackVisIdx), curPos_.order, curPos_.step);
 			comStack_.lock()->push(new SetKeyOffToStepQtCommand(this));
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		}
 	});
-	echoBufSc_ = std::make_unique<QShortcut>(this);
-	echoBufSc_->setContext(Qt::WidgetShortcut);
-	QObject::connect(echoBufSc_.get(), &QShortcut::activated,
-					 this, [&] {
+	QObject::connect(&echoBufSc_, &QShortcut::activated, this, [&] {
 		if (!bt_->isJamMode() && curPos_.colInTrack == 0) {
 			int n = bt_->getCurrentOctave();
 			if (n > 3) n = 3;
@@ -217,28 +209,20 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 			if (!bt_->isPlaySong() || !bt_->isFollowPlay()) moveCursorToDown(editableStepCnt_);
 		}
 	});
-	stepMvUpSc_ = std::make_unique<QShortcut>(this);
-	stepMvUpSc_->setContext(Qt::WidgetShortcut);
-	QObject::connect(stepMvUpSc_.get(), &QShortcut::activated, this, [&] {
+	QObject::connect(&stepMvUpSc_, &QShortcut::activated, this, [&] {
 		if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !bt_->isJamMode())
 			deletePreviousStep();
 	});
-	stepMvDnSc_ = std::make_unique<QShortcut>(this);
-	stepMvDnSc_->setContext(Qt::WidgetShortcut);
-	QObject::connect(stepMvDnSc_.get(), &QShortcut::activated, this, [&] {
+	QObject::connect(&stepMvDnSc_, &QShortcut::activated, this, [&] {
 		if ((!bt_->isPlaySong() || !bt_->isFollowPlay()) && !bt_->isJamMode()) {
 			insertStep();
 			moveCursorToDown(1);
 		}
 	});
-	expandColSc_ = std::make_unique<QShortcut>(this);
-	expandColSc_->setContext(Qt::WidgetShortcut);
-	QObject::connect(expandColSc_.get(), &QShortcut::activated, this, [&] {
+	QObject::connect(&expandColSc_, &QShortcut::activated, this, [&] {
 		onExpandEffectColumnPressed(curPos_.trackVisIdx);
 	});
-	shrinkColSc_ = std::make_unique<QShortcut>(this);
-	shrinkColSc_->setContext(Qt::WidgetShortcut);
-	QObject::connect(shrinkColSc_.get(), &QShortcut::activated, this, [&] {
+	QObject::connect(&shrinkColSc_, &QShortcut::activated, this, [&] {
 		onShrinkEffectColumnPressed(curPos_.trackVisIdx);
 	});
 	onShortcutUpdated();
@@ -2362,20 +2346,14 @@ void PatternEditorPanel::onShortcutUpdated()
 {
 	auto shortcuts = config_->getShortcuts();
 
-	auto getKeys = [](size_t idx, QKeySequence key) {
-		return (idx ? QKeySequence("Shift+" + key.toString()) : key);
-	};
-	for (size_t i = 0; i < 2; ++i) {
-		hlUpSc_[i]->setKey(getKeys(i, strToKeySeq(shortcuts.at(Configuration::PrevHighlighted))));
-		hlDnSc_[i]->setKey(getKeys(i, strToKeySeq(shortcuts.at(Configuration::NextHighlighted))));
-	}
-
-	keyOffSc_->setKey(strToKeySeq(shortcuts.at(Configuration::KeyOff)));
-	echoBufSc_->setKey(strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
-	stepMvUpSc_->setKey(Qt::ALT + Qt::Key_Up);
-	stepMvDnSc_->setKey(Qt::ALT + Qt::Key_Down);
-	expandColSc_->setKey(strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
-	shrinkColSc_->setKey(strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
+	hlUpSc_.setKey(strToKeySeq(shortcuts.at(Configuration::PrevHighlighted)));
+	hlUpWSSc_.setKey(strToKeySeq("Shift+" + shortcuts.at(Configuration::PrevHighlighted)));
+	hlDnSc_.setKey(strToKeySeq(shortcuts.at(Configuration::NextHighlighted)));
+	hlDnWSSc_.setKey(strToKeySeq("Shift+" + shortcuts.at(Configuration::NextHighlighted)));
+	keyOffSc_.setKey(strToKeySeq(shortcuts.at(Configuration::KeyOff)));
+	echoBufSc_.setKey(strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
+	expandColSc_.setKey(strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
+	shrinkColSc_.setKey(strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
 }
 
 void PatternEditorPanel::setPatternHighlight1Count(int count)

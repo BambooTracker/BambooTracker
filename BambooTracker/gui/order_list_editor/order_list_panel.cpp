@@ -66,7 +66,10 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  orderDownCount_(0),
 	  repaintable_(true),
 	  repaintingCnt_(0),
-	  playingRow_(-1)
+	  playingRow_(-1),
+	  insSc1_(Qt::Key_Insert, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  insSc2_(Qt::ALT + Qt::Key_B, this, nullptr, nullptr, Qt::WidgetShortcut),
+	  menuSc_(Qt::Key_Menu, this, nullptr, nullptr, Qt::WidgetShortcut)
 {
 	setAttribute(Qt::WA_Hover);
 	setAttribute(Qt::WA_OpaquePaintEvent);
@@ -86,15 +89,10 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	songStyle_.type = SongType::Standard;	// Dummy
 	std::iota(visTracks_.begin(), visTracks_.end(), 0);
 
-	insSc1_ = std::make_unique<QShortcut>(this);
-	insSc1_->setContext(Qt::WidgetShortcut);
-	QObject::connect(insSc1_.get(), &QShortcut::activated, this, &OrderListPanel::insertOrderBelow);
-	insSc2_ = std::make_unique<QShortcut>(this);
-	insSc2_->setContext(Qt::WidgetShortcut);
-	QObject::connect(insSc2_.get(), &QShortcut::activated, this, &OrderListPanel::insertOrderBelow);
-	menuSc_ = std::make_unique<QShortcut>(this);
-	menuSc_->setContext(Qt::WidgetShortcut);
-	QObject::connect(menuSc_.get(), &QShortcut::activated, this, [&] {
+	// Shortcuts
+	QObject::connect(&insSc1_, &QShortcut::activated, this, &OrderListPanel::insertOrderBelow);
+	QObject::connect(&insSc2_, &QShortcut::activated, this, &OrderListPanel::insertOrderBelow);
+	QObject::connect(&menuSc_, &QShortcut::activated, this, [&] {
 		showContextMenu(
 					curPos_,
 					QPoint(calculateColumnsWidthWithRowNum(leftTrackVisIdx_, curPos_.trackVisIdx), curRowY_ - 8));
@@ -1205,9 +1203,6 @@ void OrderListPanel::onSongLoaded()
 
 void OrderListPanel::onShortcutUpdated()
 {
-	insSc1_->setKey(Qt::Key_Insert);
-	insSc2_->setKey(Qt::ALT + Qt::Key_B);
-	menuSc_->setKey(Qt::Key_Menu);
 }
 
 void OrderListPanel::onPastePressed()

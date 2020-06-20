@@ -205,12 +205,10 @@ private:
 	std::atomic_int repaintingCnt_;
 
 	// Shortcuts
-	// index 1 is shift pressed
-	std::unique_ptr<QShortcut> upSc_[2], dnSc_[2], pgUpSc_[2], pgDnSc_[2], homeSc_[2], endSc_[2];
-	std::unique_ptr<QShortcut> hlUpSc_[2], hlDnSc_[2], ltSc_[2], rtSc_[2];
-
-	std::unique_ptr<QShortcut> keyOffSc_, echoBufSc_, stepMvUpSc_, stepMvDnSc_;
-	std::unique_ptr<QShortcut> expandColSc_, shrinkColSc_;
+	QShortcut upSc_, upWSSc_, dnSc_, dnWSSc_, pgUpSc_, pgUpWSSc_, pgDnSc_, pgDnWSSc_;
+	QShortcut homeSc_, homeWSSc_, endSc_, endWSSc_, hlUpSc_, hlUpWSSc_, hlDnSc_, hlDnWSSc_;
+	QShortcut ltSc_, ltWSSc_, rtSc_, rtWSSc_;
+	QShortcut keyOffSc_, echoBufSc_, stepMvUpSc_, stepMvDnSc_, expandColSc_, shrinkColSc_;
 
 	// Meta methods
 	int midiKeyEventMethod_;

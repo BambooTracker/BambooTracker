@@ -161,7 +161,7 @@ private:
 
 	int playingRow_;
 
-	std::unique_ptr<QShortcut> insSc1_, insSc2_, menuSc_;
+	QShortcut insSc1_, insSc2_, menuSc_;
 
 	void updateSizes();
 	void initDisplay();

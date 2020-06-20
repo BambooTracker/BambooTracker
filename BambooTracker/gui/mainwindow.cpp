@@ -83,6 +83,25 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	isSelectedOrder_(false),
 	hasShownOnce_(false),
 	firstViewUpdateRequest_(false),
+	octUpSc_(nullptr),
+	octDownSc_(nullptr),
+	focusPtnSc_(this),
+	focusOdrSc_(this),
+	focusInstSc_(this),
+	playAndStopSc_(nullptr),
+	playStepSc_(nullptr),
+	goPrevOdrSc_(nullptr),
+	goNextOdrSc_(nullptr),
+	prevInstSc_(nullptr),
+	nextInstSc_(nullptr),
+	incPtnSizeSc_(nullptr),
+	decPtnSizeSc_(nullptr),
+	incEditStepSc_(nullptr),
+	decEditStepSc_(nullptr),
+	prevSongSc_(nullptr),
+	nextSongSc_(nullptr),
+	jamVolUpSc_(nullptr),
+	jamVolDownSc_(nullptr),
 	bankJamMidiCtrl_(false)
 {
 	ui->setupUi(this);
@@ -492,31 +511,24 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->orderList->addAction(ptr);
 		ui->patternEditor->addAction(ptr);
 	};
-	auto initShortcut = [linkShortcut](std::unique_ptr<QAction>& action) {
-		action = std::make_unique<QAction>(nullptr);
-		linkShortcut(action.get());
-	};
 
-	initShortcut(octUpSc_);
-	QObject::connect(octUpSc_.get(), &QAction::triggered, this, [&] { changeOctave(true); });
-	initShortcut(octDownSc_);
-	QObject::connect(octDownSc_.get(), &QAction::triggered, this, [&] { changeOctave(false); });
-	focusPtnSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(focusPtnSc_.get(), &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
-	focusOdrSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(focusOdrSc_.get(), &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
-	focusInstSc_ = std::make_unique<QShortcut>(this);
-	QObject::connect(focusInstSc_.get(), &QShortcut::activated, this, [&] {
+	linkShortcut(&octUpSc_);
+	QObject::connect(&octUpSc_, &QAction::triggered, this, [&] { changeOctave(true); });
+	linkShortcut(&octDownSc_);
+	QObject::connect(&octDownSc_, &QAction::triggered, this, [&] { changeOctave(false); });
+	QObject::connect(&focusPtnSc_, &QShortcut::activated, this, [&] { ui->patternEditor->setFocus(); });
+	QObject::connect(&focusOdrSc_, &QShortcut::activated, this, [&] { ui->orderList->setFocus(); });
+	QObject::connect(&focusInstSc_, &QShortcut::activated, this, [&] {
 		ui->instrumentList->setFocus();
 		updateMenuByInstrumentList();
 	});
-	initShortcut(playAndStopSc_);
-	QObject::connect(playAndStopSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&playAndStopSc_);
+	QObject::connect(&playAndStopSc_, &QAction::triggered, this, [&] {
 		if (bt_->isPlaySong()) stopPlaySong();
 		else startPlaySong();
 	});
-	initShortcut(playStepSc_);
-	QObject::connect(playStepSc_.get(), &QAction::triggered, this, &MainWindow::playStep);
+	linkShortcut(&playStepSc_);
+	QObject::connect(&playStepSc_, &QAction::triggered, this, &MainWindow::playStep);
 	linkShortcut(ui->actionPlay_From_Start);
 	linkShortcut(ui->actionPlay_Pattern);
 	linkShortcut(ui->actionPlay_From_Cursor);
@@ -525,24 +537,24 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentList,
 											 nullptr, nullptr, Qt::WidgetShortcut);
 	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
-	initShortcut(goPrevOdrSc_);
-	QObject::connect(goPrevOdrSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&goPrevOdrSc_);
+	QObject::connect(&goPrevOdrSc_, &QAction::triggered, this, [&] {
 		ui->orderList->onGoOrderRequested(false);
 	});
-	initShortcut(goNextOdrSc_);
-	QObject::connect(goNextOdrSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&goNextOdrSc_);
+	QObject::connect(&goNextOdrSc_, &QAction::triggered, this, [&] {
 		ui->orderList->onGoOrderRequested(true);
 	});
-	initShortcut(prevInstSc_);
-	QObject::connect(prevInstSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&prevInstSc_);
+	QObject::connect(&prevInstSc_, &QAction::triggered, this, [&] {
 		if (ui->instrumentList->count()) {
 			int row = ui->instrumentList->currentRow();
 			if (row == -1) ui->instrumentList->setCurrentRow(0);
 			else if (row > 0) ui->instrumentList->setCurrentRow(row - 1);
 		}
 	});
-	initShortcut(nextInstSc_);
-	QObject::connect(nextInstSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&nextInstSc_);
+	QObject::connect(&nextInstSc_, &QAction::triggered, this, [&] {
 		int cnt = ui->instrumentList->count();
 		if (cnt) {
 			int row = ui->instrumentList->currentRow();
@@ -550,41 +562,41 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 			else if (row < cnt - 1) ui->instrumentList->setCurrentRow(row + 1);
 		}
 	});
-	initShortcut(incPtnSizeSc_);
-	QObject::connect(incPtnSizeSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&incPtnSizeSc_);
+	QObject::connect(&incPtnSizeSc_, &QAction::triggered, this, [&] {
 		ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() + 1);
 	});
-	initShortcut(decPtnSizeSc_);
-	QObject::connect(decPtnSizeSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&decPtnSizeSc_);
+	QObject::connect(&decPtnSizeSc_, &QAction::triggered, this, [&] {
 		ui->patternSizeSpinBox->setValue(ui->patternSizeSpinBox->value() - 1);
 	});
-	initShortcut(incEditStepSc_);
-	QObject::connect(incEditStepSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&incEditStepSc_);
+	QObject::connect(&incEditStepSc_, &QAction::triggered, this, [&] {
 		ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() + 1);
 	});
-	initShortcut(decEditStepSc_);
-	QObject::connect(decEditStepSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&decEditStepSc_);
+	QObject::connect(&decEditStepSc_, &QAction::triggered, this, [&] {
 		ui->editableStepSpinBox->setValue(ui->editableStepSpinBox->value() - 1);
 	});
-	initShortcut(prevSongSc_);
-	QObject::connect(prevSongSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&prevSongSc_);
+	QObject::connect(&prevSongSc_, &QAction::triggered, this, [&] {
 		if (ui->songComboBox->isEnabled()) {
 			ui->songComboBox->setCurrentIndex(std::max(ui->songComboBox->currentIndex() - 1, 0));
 		}
 	});
-	initShortcut(nextSongSc_);
-	QObject::connect(nextSongSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&nextSongSc_);
+	QObject::connect(&nextSongSc_, &QAction::triggered, this, [&] {
 		if (ui->songComboBox->isEnabled()) {
 			ui->songComboBox->setCurrentIndex(std::min(ui->songComboBox->currentIndex() + 1,
 													   ui->songComboBox->count() - 1));
 		}
 	});
-	initShortcut(jamVolUpSc_);
-	QObject::connect(jamVolUpSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&jamVolUpSc_);
+	QObject::connect(&jamVolUpSc_, &QAction::triggered, this, [&] {
 		volume_->setValue(volume_->value() + 1);
 	});
-	initShortcut(jamVolDownSc_);
-	QObject::connect(jamVolDownSc_.get(), &QAction::triggered, this, [&] {
+	linkShortcut(&jamVolDownSc_);
+	QObject::connect(&jamVolDownSc_, &QAction::triggered, this, [&] {
 		volume_->setValue(volume_->value() - 1);
 	});
 	setShortcuts();
@@ -1057,18 +1069,18 @@ void MainWindow::unfreezeViews()
 void MainWindow::setShortcuts()
 {
 	auto shortcuts = config_.lock()->getShortcuts();
-	octUpSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
-	octDownSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
-	focusPtnSc_->setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnPattern)));
-	focusOdrSc_->setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnOrder)));
-	focusInstSc_->setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnInstrument)));
-	playAndStopSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayAndStop)));
+	octUpSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
+	octDownSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
+	focusPtnSc_.setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnPattern)));
+	focusOdrSc_.setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnOrder)));
+	focusInstSc_.setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnInstrument)));
+	playAndStopSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayAndStop)));
 	ui->actionPlay->setShortcut(strToKeySeq(shortcuts.at(Configuration::Play)));
 	ui->actionPlay_From_Start->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromStart)));
 	ui->actionPlay_Pattern->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayPattern)));
 	ui->actionPlay_From_Cursor->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromCursor)));
 	ui->actionPlay_From_Marker->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromMarker)));
-	playStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayStep)));
+	playStepSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayStep)));
 	ui->actionStop->setShortcut(strToKeySeq(shortcuts.at(Configuration::Stop)));
 	ui->actionEdit_Mode->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleEditJam)));
 	ui->actionSet_Ro_w_Marker->setShortcut(strToKeySeq(shortcuts.at(Configuration::SetMarker)));
@@ -1085,8 +1097,8 @@ void MainWindow::setShortcuts()
 	ui->actionToggle_Track->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
 	ui->actionSolo_Track->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
 	ui->actionInterpolate->setShortcut(strToKeySeq(shortcuts.at(Configuration::Interpolate)));
-	goPrevOdrSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToPrevOrder)));
-	goNextOdrSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToNextOrder)));
+	goPrevOdrSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToPrevOrder)));
+	goNextOdrSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToNextOrder)));
 	ui->action_Toggle_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleBookmark)));
 	ui->action_Previous_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::PrevBookmark)));
 	ui->action_Next_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextBookmark)));
@@ -1094,8 +1106,8 @@ void MainWindow::setShortcuts()
 	ui->actionIncrease_Note->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
 	ui->actionDecrease_Octave->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
 	ui->actionIncrease_Octave->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
-	prevInstSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PrevInstrument)));
-	nextInstSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextInstrument)));
+	prevInstSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PrevInstrument)));
+	nextInstSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::NextInstrument)));
 	ui->action_Instrument_Mask->setShortcut(strToKeySeq(shortcuts.at(Configuration::MaskInstrument)));
 	ui->action_Volume_Mask->setShortcut(strToKeySeq(shortcuts.at(Configuration::MaskVolume)));
 	ui->actionEdit->setShortcut(strToKeySeq(shortcuts.at(Configuration::EditInstrument)));
@@ -1110,15 +1122,15 @@ void MainWindow::setShortcuts()
 	ui->actionFine_Increase_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
 	ui->actionCoarse_D_ecrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
 	ui->actionCoarse_I_ncrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
-	incPtnSizeSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreasePatternSize)));
-	decPtnSizeSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
-	incEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
-	decEditStepSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
+	incPtnSizeSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreasePatternSize)));
+	decPtnSizeSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
+	incEditStepSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
+	decEditStepSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
 	ui->action_Effect_List->setShortcut(strToKeySeq(shortcuts.at(Configuration::DisplayEffectList)));
-	prevSongSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::PreviousSong)));
-	nextSongSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextSong)));
-	jamVolUpSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeUp)));
-	jamVolDownSc_->setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeDown)));
+	prevSongSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PreviousSong)));
+	nextSongSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::NextSong)));
+	jamVolUpSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeUp)));
+	jamVolDownSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeDown)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
@@ -1489,7 +1501,7 @@ void MainWindow::openInstrumentEditor()
 			throw std::invalid_argument("Invalid instrument type");
 		}
 
-		form->addActions({ octUpSc_.get(), octDownSc_.get(), jamVolUpSc_.get(), jamVolDownSc_.get() });
+		form->addActions({ &octUpSc_, &octDownSc_, &jamVolUpSc_, &jamVolDownSc_ });
 
 		instForms_->add(num, std::move(form), inst->getSoundSource(), inst->getType());
 	}
@@ -1770,7 +1782,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	QObject::connect(importBankDiag_.get(), &InstrumentSelectionDialog::jamKeyOffMidiEvent,
 					 this, [&](int key) { if (jamInst) bt_->jamKeyOffForced(key, jamInst->getSoundSource()); },
 	Qt::DirectConnection);
-	importBankDiag_->addActions({ octUpSc_.get(), octDownSc_.get() });
+	importBankDiag_->addActions({ &octUpSc_, &octDownSc_ });
 
 	if (importBankDiag_->exec() != QDialog::Accepted) {
 		assignADPCMSamples();	// Restore
