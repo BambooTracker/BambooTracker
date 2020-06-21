@@ -72,7 +72,6 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  menuSc_(Qt::Key_Menu, this, nullptr, nullptr, Qt::WidgetShortcut)
 {
 	setAttribute(Qt::WA_Hover);
-	setAttribute(Qt::WA_OpaquePaintEvent);
 	setFocusPolicy(Qt::ClickFocus);
 	setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -241,6 +240,7 @@ void OrderListPanel::initDisplay()
 	viewedCenterY_ = (viewedRowsHeight_ - rowFontHeight_) >> 1;
 	viewedCenterBaseY_ = viewedCenterY_ + rowFontAscent_ + (rowFontLeading_ >> 1);
 
+	completePixmap_ = QPixmap(geometry().size());
 	backPixmap_ = QPixmap(width, viewedRowsHeight_);
 	textPixmap_ = QPixmap(width, viewedRowsHeight_);
 	headerPixmap_ = QPixmap(width, headerHeight_);
@@ -255,6 +255,7 @@ void OrderListPanel::drawList(const QRect &rect)
 		if (backChanged_ || textChanged_ || headerChanged_ || orderDownCount_ || followModeChanged_) {
 
 			int maxWidth = std::min(geometry().width(), columnsWidthFromLeftToEnd_);
+			completePixmap_.fill(palette_->odrBackColor);
 
 			if (orderDownCount_ && !followModeChanged_) {
 				quickDrawRows(maxWidth);
@@ -271,8 +272,7 @@ void OrderListPanel::drawList(const QRect &rect)
 			}
 
 			{
-				QPainter mergePainter(this);
-				mergePainter.fillRect(rect, palette_->odrBackColor);
+				QPainter mergePainter(&completePixmap_);
 				QRect rowsRect(0, viewedRowOffset_, maxWidth, viewedRegionHeight_);
 				QRect inViewRect(0, headerHeight_, maxWidth, viewedRegionHeight_);
 				mergePainter.drawPixmap(inViewRect, backPixmap_, rowsRect);
@@ -294,6 +294,9 @@ void OrderListPanel::drawList(const QRect &rect)
 		--repaintingCnt_;	// Used module data until this line
 		repaintable_.store(true);
 	}
+
+	QPainter completePainter(this);
+	completePainter.drawPixmap(rect, completePixmap_);
 }
 
 void OrderListPanel::drawRows(int maxWidth)
@@ -659,7 +662,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 
 void OrderListPanel::drawBorders(int maxWidth)
 {
-	QPainter painter(this);
+	QPainter painter(&completePixmap_);
 
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, geometry().height());
@@ -671,7 +674,7 @@ void OrderListPanel::drawBorders(int maxWidth)
 
 void OrderListPanel::drawShadow()
 {
-	QPainter painter(this);
+	QPainter painter(&completePixmap_);
 	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
 }
 
