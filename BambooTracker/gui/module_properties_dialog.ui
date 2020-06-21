@@ -203,28 +203,79 @@
       <string>Song control</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="4" column="1">
-       <widget class="QPushButton" name="removePushButton">
-        <property name="enabled">
-         <bool>false</bool>
+      <item row="5" column="0" colspan="2">
+       <widget class="QGroupBox" name="sngGroupBox">
+        <property name="title">
+         <string>Song</string>
         </property>
-        <property name="text">
-         <string>Remove</string>
-        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QLabel" name="sngTitleLabel">
+           <property name="text">
+            <string>Title</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="sngTypeLabel">
+           <property name="text">
+            <string>Song type</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="sngTypeComboBox">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item alignment="Qt::AlignRight">
+            <widget class="QPushButton" name="insertPushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Insert</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="updateButton">
+             <property name="text">
+              <string>Update</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="sngTitleLineEdit">
+           <property name="placeholderText">
+            <string>Untitled</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
-      </item>
-      <item row="1" column="1">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
       </item>
       <item row="3" column="1">
        <widget class="QToolButton" name="downToolButton">
@@ -270,73 +321,6 @@
         </column>
        </widget>
       </item>
-      <item row="6" column="0" colspan="2">
-       <widget class="QGroupBox" name="insertGroupBox">
-        <property name="title">
-         <string>Insert song</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <widget class="QLabel" name="insertTitleLabel">
-           <property name="text">
-            <string>Title</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="insertTypeLabel">
-           <property name="text">
-            <string>Song type</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="insertTypeComboBox">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="insertPushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Insert</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="insertTitleLineEdit">
-           <property name="placeholderText">
-            <string>Untitled</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="2" column="1">
        <widget class="QToolButton" name="upToolButton">
         <property name="enabled">
@@ -356,13 +340,26 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QLineEdit" name="editTitleLineEdit">
-        <property name="enabled">
-         <bool>true</bool>
+      <item row="1" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="placeholderText">
-         <string>Untitled</string>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="4" column="1">
+       <widget class="QPushButton" name="removePushButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Remove</string>
         </property>
        </widget>
       </item>
@@ -393,10 +390,10 @@
   <tabstop>upToolButton</tabstop>
   <tabstop>downToolButton</tabstop>
   <tabstop>removePushButton</tabstop>
-  <tabstop>editTitleLineEdit</tabstop>
-  <tabstop>insertTitleLineEdit</tabstop>
-  <tabstop>insertTypeComboBox</tabstop>
+  <tabstop>sngTitleLineEdit</tabstop>
+  <tabstop>sngTypeComboBox</tabstop>
   <tabstop>insertPushButton</tabstop>
+  <tabstop>updateButton</tabstop>
  </tabstops>
  <resources/>
  <connections>

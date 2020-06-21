@@ -4,6 +4,11 @@
 #include <utility>
 #include "gui/gui_util.hpp"
 
+const std::unordered_map<SongType, QString> ModulePropertiesDialog::SONG_TYPE_TEXT_ = {
+	{ SongType::Standard, QT_TR_NOOP("Standard") },
+	{ SongType::FM3chExpanded, QT_TR_NOOP("FM3ch expanded") }
+};
+
 ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core, double configFmMixer,
 											   double configSsgMixer, QWidget *parent)
 	: QDialog(parent),
@@ -41,8 +46,8 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 		insertSong(i, utf8ToQString(title), core.lock()->getSongStyle(i).type, i);
 	}
 
-	ui->insertTypeComboBox->addItem(tr("Standard"), static_cast<int>(SongType::Standard));
-	ui->insertTypeComboBox->addItem(tr("FM3ch expanded"), static_cast<int>(SongType::FM3chExpanded));
+	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT_.at(SongType::Standard), static_cast<int>(SongType::Standard));
+	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT_.at(SongType::FM3chExpanded), static_cast<int>(SongType::FM3chExpanded));
 }
 
 ModulePropertiesDialog::~ModulePropertiesDialog()
@@ -56,10 +61,7 @@ void ModulePropertiesDialog::insertSong(int row, QString title, SongType type, i
 	item->setText(0, QString::number(row));
 	item->setData(0, Qt::UserRole, prevNum);
 	item->setText(1, title);
-	switch (type) {
-	case SongType::Standard:		item->setText(2, tr("Standard"));		break;
-	case SongType::FM3chExpanded:	item->setText(2, tr("FM3ch expanded"));	break;
-	}
+	item->setText(2, SONG_TYPE_TEXT_.at(type));
 	item->setData(2, Qt::UserRole, static_cast<int>(type));
 	ui->songTreeWidget->insertTopLevelItem(row, item);
 
@@ -149,21 +151,23 @@ void ModulePropertiesDialog::on_insertPushButton_clicked()
 	if (row == -1) row = ui->songTreeWidget->topLevelItemCount();
 
 	insertSong(row,
-			   ui->insertTitleLineEdit->text(),
-			   static_cast<SongType>(ui->insertTypeComboBox->currentData(Qt::UserRole).toInt()));
+			   ui->sngTitleLineEdit->text(),
+			   static_cast<SongType>(ui->sngTypeComboBox->currentData(Qt::UserRole).toInt()));
 	ui->songTreeWidget->setCurrentItem(ui->songTreeWidget->topLevelItem(row));
 }
 
 void ModulePropertiesDialog::on_songTreeWidget_itemSelectionChanged()
 {
-	ui->editTitleLineEdit->setText(ui->songTreeWidget->currentItem()->text(1));
+	auto item = ui->songTreeWidget->currentItem();
+	ui->sngTitleLineEdit->setText(item->text(1));
+	int type = item->data(2, Qt::UserRole).toInt();
+	for (int i = 0; i < ui->sngTypeComboBox->count(); ++i) {
+		if (ui->sngTypeComboBox->itemData(i, Qt::UserRole).toInt() == type) {
+			ui->sngTypeComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
 	checkButtonsEnabled();
-}
-
-void ModulePropertiesDialog::on_editTitleLineEdit_textEdited(const QString &arg1)
-{
-	if (ui->songTreeWidget->currentItem() != nullptr)
-		ui->songTreeWidget->currentItem()->setText(1, arg1);
 }
 
 void ModulePropertiesDialog::onAccepted()
@@ -193,15 +197,18 @@ void ModulePropertiesDialog::onAccepted()
 
 	for (int i = 0; i < tree->topLevelItemCount(); ++i) {
 		QTreeWidgetItem* item = tree->topLevelItem(i);
+		SongType type = static_cast<SongType>(item->data(2, Qt::UserRole).toInt());
+		std::string title = item->text(1).toUtf8().toStdString();
 		if (item->data(0, Qt::UserRole).toInt() == -1) {	// Add new song
 			int n = static_cast<int>(bt_.lock()->getSongCount());
-			bt_.lock()->addSong(static_cast<SongType>(item->data(2, Qt::UserRole).toInt()),
-								item->text(1).toUtf8().toStdString());
+			bt_.lock()->addSong(type, title);
 			newSongNums.push_back(n);
 		}
-		else {	// Update song meta data
+		else {	// Update song data
 			int n = item->data(0, Qt::UserRole).toInt();
-			bt_.lock()->setSongTitle(n, item->text(1).toUtf8().toStdString());
+			bt_.lock()->setSongTitle(n, title);
+			if (bt_.lock()->getSongStyle(n).type != type)
+				bt_.lock()->changeSongType(n, type);
 			newSongNums.push_back(n);
 		}
 	}
@@ -218,4 +225,14 @@ void ModulePropertiesDialog::on_mixerTypeComboBox_currentIndexChanged(int index)
 void ModulePropertiesDialog::on_customMixerSetPushButton_clicked()
 {
 	setCustomMixerLevels(configFmMixer_, configSsgMixer_);
+}
+
+void ModulePropertiesDialog::on_updateButton_clicked()
+{
+	if (auto item = ui->songTreeWidget->currentItem()) {
+		item->setText(1, ui->sngTitleLineEdit->text());
+		auto typeInt = ui->sngTypeComboBox->currentData(Qt::UserRole).toInt();
+		item->setText(2, SONG_TYPE_TEXT_.at(static_cast<SongType>(typeInt)));
+		item->setData(2, Qt::UserRole, typeInt);
+	}
 }

@@ -35,6 +35,7 @@ public:
 	SongStyle getStyle() const;
 	std::vector<TrackAttribute> getTrackAttributes() const;
 	Track& getTrack(int num);
+	void changeType(SongType type);
 
 	std::vector<OrderData> getOrderData(int order);
 	size_t getOrderSize() const;

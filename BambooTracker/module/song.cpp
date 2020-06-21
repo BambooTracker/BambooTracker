@@ -152,6 +152,33 @@ Track& Song::getTrack(int num)
 	return tracks_.at(static_cast<size_t>(num));
 }
 
+void Song::changeType(SongType type)
+{
+	if (std::exchange(type_, type) == type_) return;
+
+	switch (type_) {
+	case SongType::Standard:	// Previous type: FM3chExpanded
+		// Remove FM3-OP2,3,4 (track 3,4,5)
+		tracks_.erase(tracks_.begin() + 3, tracks_.begin() + 6);
+		for (size_t i = 3; i < tracks_.size(); ++i) {
+			const auto attrib = tracks_[i].getAttribute();
+			tracks_[i].setAttribute(static_cast<int>(i), attrib.source, attrib.channelInSource);
+		}
+		break;
+	case SongType::FM3chExpanded:	// Previous type: Standard
+		// Expand FM3 track
+		for (int i = 3; i < 6; ++i) {
+			tracks_.insert(tracks_.begin() + 3, tracks_[static_cast<size_t>(i) - 1]);
+			tracks_[static_cast<size_t>(i)].setAttribute(i, SoundSource::FM, i + 3);
+		}
+		for (size_t i = 6; i < tracks_.size(); ++i) {
+			const auto attrib = tracks_[i].getAttribute();
+			tracks_[i].setAttribute(static_cast<int>(i), attrib.source, attrib.channelInSource);
+		}
+		break;
+	}
+}
+
 std::vector<OrderData> Song::getOrderData(int order)
 {
 	std::vector<OrderData> ret;

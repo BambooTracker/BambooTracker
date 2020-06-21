@@ -340,6 +340,7 @@ public:
 	void toggleTempoOrGrooveInSong(int songNum, bool isTempo);
 	bool isUsedTempoInSong(int songNum) const;
 	SongStyle getSongStyle(int songNum) const;
+	void changeSongType(int songNum, SongType type);
 	void setSongSpeed(int songNum, int speed);
 	int getSongSpeed(int songNum) const;
 	size_t getSongCount() const;

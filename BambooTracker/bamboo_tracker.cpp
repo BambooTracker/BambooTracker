@@ -1908,6 +1908,11 @@ SongStyle BambooTracker::getSongStyle(int songNum) const
 	return mod_->getSong(songNum).getStyle();
 }
 
+void BambooTracker::changeSongType(int songNum, SongType type)
+{
+	mod_->getSong(songNum).changeType(type);
+}
+
 void BambooTracker::setSongSpeed(int songNum, int speed)
 {
 	mod_->getSong(songNum).setSpeed(speed);

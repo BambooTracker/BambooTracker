@@ -10,6 +10,7 @@
 
 ### Changed
 - [#219] - Enable SSG Tone/Noise editor to turn off tone and noise (thanks [@ImATrackMan])
+- Enable song type change without creating a new song
 
 ### Fixed
 - Resize width of the order list after closing configuration dialog
