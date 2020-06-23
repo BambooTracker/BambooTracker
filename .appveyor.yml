@@ -31,6 +31,7 @@ skip_commits:
 clone_depth: 3  # clone entire repository history if not defined
 
 environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
     # Windows 7 or later
     - APPVEYOR_JOB_NAME: for Windows 7 or later
@@ -38,12 +39,18 @@ environment:
       COMPILER: C:\Qt\Tools\mingw530_32\bin
       QT: C:\Qt\5.10.1\mingw53_32\bin
       DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev.zip
+      MAKE: mingw32-make
     # Windows XP
     - APPVEYOR_JOB_NAME: for Windows XP
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
       COMPILER: C:\Qt\Tools\mingw492_32\bin
       QT: C:\Qt\5.5\mingw492_32\bin
       DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev-winXP.zip
+      MAKE: mingw32-make
+    - APPVEYOR_JOB_NAME: for macOS (Modern)
+      APPVEYOR_BUILD_WORKER_IMAGE: macOS-Mojave
+      DEST: BambooTracker-v$APPVEYOR_BUILD_VERSION-dev-macos.zip
+      MAKE: make
 
 # scripts that run after cloning repository
 install:
@@ -59,28 +66,38 @@ platform: x86
 
 # scripts to run before build
 before_build:
-  - set PATH=%QT%;%COMPILER%;%PATH%
+  - ps: $env:Path = "$env:QT;$env:COMPILER;$env:Path"
+  - sh: |
+      brew install qt jack p7zip
+      export PATH="/usr/local/opt/qt/bin:$PATH"
+      export JACKLIB="/usr/local/opt/jack/lib"
+      export JACKINC="/usr/local/opt/jack/include"
   - cd BambooTracker
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - qmake BambooTracker.pro CONFIG+=release CONFIG-=debug
-  - mingw32-make
-  - md bin
-  - copy release\BambooTracker.exe bin
-  - cd bin
-  - windeployqt BambooTracker.exe
-  - ren translations lang
-  - cd ..
-  - copy .qm\*.qm bin\lang
+  - ps: |
+      qmake.exe BambooTracker.pro CONFIG+=debug CONFIG+=console CONFIG+=nostrip
+      & $env:MAKE -j2
+      # Fixes AppVeyor build erroring out...?
+      echo "=== BUILDING DONE ==="
+  - sh: |
+      qmake BambooTracker.pro CONFIG+=debug CONFIG+=console CONFIG+=nostrip LIBS+=-L"$JACKLIB" INCLUDEPATH+="$JACKINC"
+      $MAKE -j2
 
 # scripts to run after build (working directory and environment changes are persisted from the previous steps)
 after_build:
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - set DEPLOY_FILES=%APPVEYOR_BUILD_FOLDER%\BambooTracker\bin\*
-  - set DEPLOY_FILES=%DEPLOY_FILES% licenses img demos specs skins
-  - set DEPLOY_FILES=%DEPLOY_FILES% *.md LICENSE
-  - 7z a -tzip %DEST% %DEPLOY_FILES%
+  - cd ..
+  - mkdir packaging
+  - cd packaging
+  - ps: |
+      Copy-Item -Recurse ..\BambooTracker\debug\BambooTracker.exe,..\img,..\demos,..\licenses,..\specs,..\skins,..\*.md,..\LICENSE .
+      windeployqt.exe BambooTracker.exe -verbose=2
+      mv translations lang
+      mv ..\BambooTracker\.qm\*.qm lang\
+  - sh: bash ../ci/package_osx.sh
+  - ps: 7z a -tzip "..\$env:DEST" *
+  - sh: 7z a -tzip "../$DEST" *
 
 #---------------------------------#
 #      artifacts configuration    #

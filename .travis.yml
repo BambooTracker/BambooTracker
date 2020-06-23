@@ -1,28 +1,111 @@
 language: cpp
 
-matrix:
+jobs:
   include:
-    - os: linux
-      dist: xenial
-    - os: osx
+    - name: Windows (7 and later)
+      os: windows
+      env:
+        - TARGET_OS=windows
+        - MAKE=mingw32-make
+        - QMAKE=qmake.exe
+        - MINGWPATH=/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw32
+        - MINGWVER=7.3.0
+        - QTDIR=$HOME/Qt/win7
+        - QTVER=5.14.1
+        - QTTCH=win32_mingw73
+      cache:
+        directories:
+          - $MINGWPATH
+          - $HOME/Qt
+      before_install:
+        # Check if dependencies are cached, otherwise fetch them.
+        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
+        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
+          qtbase qtmultimedia qttools
+        - export QTPATH="$(echo "$QTDIR"/"$QTVER"/*)"
+        - export PATH="$MINGWPATH"/bin:"$QTPATH"/bin:"$PATH"
+    - name: Windows (XP)
+      os: windows
+      env:
+        - TARGET_OS=windows-xp
+        - MAKE=mingw32-make
+        - QMAKE=qmake.exe
+        - MINGWPATH=/c/tools/mingw32
+        - MINGWVER=4.9.3
+        - QTDIR=$HOME/Qt/winXP
+        - QTVER=5.5
+        - QTTCH=win32_mingw492
+      cache:
+        directories:
+          - $MINGWPATH
+          - $HOME/Qt
+      before_install:
+        # Check if dependencies are cached, otherwise fetch them.
+        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
+        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
+          essentials addons
+        - export QTPATH="$(echo "$QTDIR"/"$QTVER"/*)"
+        - export PATH="$MINGWPATH"/bin:"$QTPATH"/bin:"$PATH"
+
+    - name: macOS (Xcode 11.3)
+      os: osx
+      osx_image: xcode11.3
+      env:
+        - TARGET_OS=macos
+        - MAKE=make
+        - QMAKE="qmake DEFINES+=__UNIX_JACK__"
+      before_install:
+        # Force linking of Qt into PATH
+        - brew link --force qt
+        # Manually append JACK includes to qmake,
+        # it doesn't seem to pick them up on its own (forcing linking didn't help)
+        - JACKLIB=$(find /usr/local/Cellar/jack/ -type d -name lib)
+        - JACKINC=$(find /usr/local/Cellar/jack/ -type d -name include)
+        - export QMAKE="$QMAKE LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
+    - name: macOS (Xcode 9.3)
+      os: osx
       osx_image: xcode9.3
+      env:
+        - TARGET_OS=macos-legacy
+        - MAKE=make
+        - QMAKE="qmake DEFINES+=__UNIX_JACK__"
+      before_install:
+        # Force linking of Qt into PATH
+        - brew link --force qt
+        # Manually append JACK includes to qmake,
+        # it doesn't seem to pick them up on its own (forcing linking didn't help)
+        - JACKLIB=$(find /usr/local/Cellar/jack/ -type d -name lib)
+        - JACKINC=$(find /usr/local/Cellar/jack/ -type d -name include)
+        - export QMAKE="$QMAKE LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
+
+    - name: Linux (Ubuntu 16.04)
+      os: linux
+      dist: xenial
+      env:
+        - TARGET_OS=linux
+        - MAKE=make
+        - QMAKE="qmake DEFINES+=__LINUX_PULSE__ DEFINES+=__UNIX_JACK__"
+      # no deployment phase, manual build is preferred on Linux
+      # TODO consider Appimage?
 
 addons:
+  homebrew:
+    packages:
+      - jack
+      - qt
+      - p7zip
+    update: true
   apt:
     sources:
-      - sourceline: 'ppa:ubuntu-sdk-team/ppa'
+      - sourceline: ppa:ubuntu-sdk-team/ppa
     packages:
       - qt5-default
       - qttools5-dev-tools
       - qtmultimedia5-dev
       - libqt5multimedia5-plugins
       - libasound2-dev
-      - libjack-dev
       - libpulse-dev
-  homebrew:
-    packages:
-      - qt
-    update: true
+      - libjack-dev
 
 git:
   depth: 3
@@ -32,30 +115,25 @@ branches:
     - master
     - "/^v[0-9\\.]+$/"
 
-before_install:
-  # osx: force linking of qt into PATH
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew link --force qt; fi
-
 script:
   - cd BambooTracker
-  - qmake
-  - make
+  - "$QMAKE CONFIG+=release CONFIG-=debug"
+  - "$MAKE -j2"
+  - cd ..
 
 before_deploy:
-  - macdeployqt BambooTracker.app -verbose=2
-  - mv .qm lang
-  - mv lang BambooTracker.app/Contents/Resources
-  - mv BambooTracker.app ..
-  - cd ..
-  - zip -r BambooTracker-$TRAVIS_TAG-macOS.zip BambooTracker.app *.md img demos licenses specs skins LICENSE
+  - mkdir build
+  - cd build
+  - bash "$TRAVIS_BUILD_DIR"/ci/package_"$TRAVIS_OS_NAME".sh
+  - 7z a -tzip "$TRAVIS_BUILD_DIR"/BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS".zip *
 
 deploy:
   provider: releases
-  api_key:
+  token:
     secure: bs+nLxg+IeepN/gyUHN//I1pPvKDMXiAGF7aE8vOW7c6ZeJMoUIGydJkNzsPWIKnRhMa5RYlOXM+9/eMzYe0JAC2cVj/Zo2IMeRVYqeQDrKZ1my6CMGGvE0dUnSHXIezN0+Z4SP+p6HRRF20FLqthz/3ICWiqoSo1/HFHnj5nDCG2Ni++Xt5PFVBOa6sp9CzDBtm9I8xBwoieZFwUpU/BMOqlHHHoQ09YSdzCdu0E544bAh7RXgmyl+ayYD8klVhf5p82oynnMliAdj0IOlPRETyBhhdXXv5/Eivtoo9e5bvlbEwuuy8yvbZl9LW0fQLobB2o/2eYNtDpxOciLOZQaj8EvjhOPVeyAlEKi28VOusYFVrGk3UEuN5HoxMPdwWRJWylgcsYd1ZWS907ccj9XLrF4bVpyPOhvYiLA1zgIU+nk5B7NWqzQjcNEQK4jx+UeJURLpZMS8F1lyLlNJeWr3b5E0+6+nTmgeq5E7jGwdhUraje6W5hmXlwrKvoJ8kFnKDyRKuNCvtnoBX7XvJl7iYmp4FvQfgSWFOkIIvWdGPbByMff6vYrXU3WvkGPLErZuM9ivj7HCwx55xiBimKZCiUgrTPrbgN4KJfcnA9YbgumoF9K4xdvQmBLxV5S/LIm7pUJS5+PSyZM+PNfsbuapYPQWfdTH5/ZGetdUNgV0=
-  file: $TRAVIS_BUILD_DIR/BambooTracker-$TRAVIS_TAG-macOS.zip
+  file: $TRAVIS_BUILD_DIR/BambooTracker-$TRAVIS_TAG-$TARGET_OS.zip
   skip_cleanup: true
   on:
     repo: rerrahkr/BambooTracker
     tags: true
-    condition: $TRAVIS_OS_NAME = osx
+    condition: $TRAVIS_OS_NAME != linux
