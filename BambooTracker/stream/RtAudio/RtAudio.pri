@@ -5,12 +5,12 @@ HEADERS += \
     $$PWD/RtAudio.hpp
 
 linux {
-    contains(DEFINES, __LINUX_PULSE__) {
-        # DEFINES += __LINUX_PULSE__
+    use_pulse {
+        DEFINES += __LINUX_PULSE__
         LIBS += -lpthread -lpulse-simple -lpulse
     }
-    contains(DEFINES, __UNIX_JACK__) {
-        # DEFINES += __UNIX_JACK__
+    use_jack {
+        DEFINES += __UNIX_JACK__
         LIBS += -ljack -lpthread
     }
     DEFINES += __LINUX_ALSA__
@@ -25,8 +25,8 @@ win32 {
     LIBS += -lole32 -lwinmm -ldsound -luser32
 }
 macx {
-    contains(DEFINES, __UNIX_JACK__) {
-        # DEFINES += __UNIX_JACK__
+    use_jack {
+        DEFINES += __UNIX_JACK__
         LIBS += -ljack -lpthread
     }
     DEFINES += __MACOSX_CORE__

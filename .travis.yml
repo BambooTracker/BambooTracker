@@ -53,7 +53,7 @@ jobs:
       env:
         - TARGET_OS=macos
         - MAKE=make
-        - QMAKE="qmake DEFINES+=__UNIX_JACK__"
+        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
       before_install:
         # Force linking of Qt into PATH
         - brew link --force qt
@@ -68,7 +68,7 @@ jobs:
       env:
         - TARGET_OS=macos-legacy
         - MAKE=make
-        - QMAKE="qmake DEFINES+=__UNIX_JACK__"
+        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
       before_install:
         # Force linking of Qt into PATH
         - brew link --force qt
@@ -84,7 +84,7 @@ jobs:
       env:
         - TARGET_OS=linux
         - MAKE=make
-        - QMAKE="qmake DEFINES+=__LINUX_PULSE__ DEFINES+=__UNIX_JACK__"
+        - QMAKE="qmake CONFIG+=use_pulse CONFIG+=use_jack CONFIG+=jack_has_rename"
       # no deployment phase, manual build is preferred on Linux
       # TODO consider Appimage?
 
@@ -105,7 +105,7 @@ addons:
       - libqt5multimedia5-plugins
       - libasound2-dev
       - libpulse-dev
-      - libjack-dev
+      - libjack-jackd2-dev
 
 git:
   depth: 3
