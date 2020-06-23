@@ -68,7 +68,7 @@ else:if(gcc|clang) {
 
   # Deprecated JACK methods in use by
   # midi/RtMidi/RtMidi.cpp:(3117,3342)
-  CPPFLAGS += -Wno-error=deprecated-declarations
+#  CPPFLAGS += -Wno-error=deprecated-declarations
 
   clang {
     # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
@@ -82,7 +82,7 @@ else:if(gcc|clang) {
     # Fortify hardening settings on Linux (NixOS 19.09) detect string truncation in
     # format/wopn_file.c:186
     greaterThan(COMPILER_MAJOR_VERSION, 7) {
-      CPPFLAGS += -Wno-error=stringop-truncation
+      #CPPFLAGS += -Wno-error=stringop-truncation
     }
   }
 }
