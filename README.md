@@ -280,7 +280,8 @@ apt install \
   build-essential \
   qt5-default qtmultimedia5-dev libqt5multimedia5-plugins qttools5-dev-tools \
   libasound2-dev \
-  libpulse-dev libjack-dev
+  libpulse-dev \
+  libjack-jackd2-dev # for JACK2, or libjack-dev for JACK1
 ```
 
 ##### FreeBSD
@@ -308,13 +309,24 @@ If you installed JACK via Homebrew, You might have to manually tell `qmake` wher
 `LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include`
 
 If you want to build with **JACK Support**, append the following option to `qmake`:
-`DEFINES+=__UNIX_JACK__`
+`CONFIG+=use_jack CONFIG+=jack_has_rename`  
+If you know that building with an old version of JACK that lacks the `jack_port_rename` method or you encounter build problems like
+
+> error: ‘jack_port_rename’ was not declared in this scope
+
+, try dropping `CONFIG+=jack_has_rename`.
 
 #### Linux / BSD
 If you want to build with any of the optional dependencies, append the following options to `qmake`:
 
-- **PulseAudio Support**: `DEFINES+=__LINUX_PULSE__`
-- **JACK Support**: `DEFINES+=__UNIX_JACK__`
+- **PulseAudio Support**: `CONFIG+=use_pulse`
+- **JACK Support**: `CONFIG+=use_jack CONFIG+=jack_has_rename`
+
+If you know that building with an old version of JACK that lacks the `jack_port_rename` method or you encounter build problems like
+
+> error: ‘jack_port_rename’ was not declared in this scope
+
+, try dropping `CONFIG+=jack_has_rename`.
 
 ##### FreeBSD
 BambooTracker can be built via FreeBSD ports instead:
