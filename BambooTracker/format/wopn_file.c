@@ -183,7 +183,10 @@ static void WOPN_parseInstrument(WOPNInstrument *ins, uint8_t *cursor, uint16_t 
 static void WOPN_writeInstrument(WOPNInstrument *ins, uint8_t *cursor, uint16_t version, uint8_t has_sounding_delays)
 {
     int l;
-    strncpy((char*)cursor, ins->inst_name, 32);
+	unsigned int nameLen = strlen(ins->inst_name) + 1;
+	if (32 < nameLen) nameLen = 32;
+	memcpy(cursor, ins->inst_name, nameLen);
+	/*strncpy((char*)cursor, ins->inst_name, 32);*/
     fromSint16BE(ins->note_offset, cursor + 32);
     cursor[34] = ins->percussion_key_number;
     cursor[35] = ins->fbalg;
