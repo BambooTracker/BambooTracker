@@ -19,14 +19,6 @@
         <translation>繰り返し</translation>
     </message>
     <message>
-        <source>Import</source>
-        <translation type="vanished">サンプル読み込み</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="vanished">クリア</translation>
-    </message>
-    <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="178"/>
         <source>Root key</source>
         <translation>基準キー</translation>
@@ -104,52 +96,52 @@
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="289"/>
         <source>&amp;Resize</source>
-        <translation type="unfinished"></translation>
+        <translation>サイズ変更(&amp;R)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="298"/>
         <source>Re&amp;verse</source>
-        <translation type="unfinished"></translation>
+        <translation>反転(&amp;V)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="307"/>
         <source>Zoom I&amp;n</source>
-        <translation type="unfinished"></translation>
+        <translation>拡大(&amp;N)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="316"/>
         <source>Zoom &amp;Out</source>
-        <translation type="unfinished"></translation>
+        <translation>縮小(&amp;O)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="325"/>
         <source>&amp;Import</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプル読み込み(&amp;I)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="334"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished">クリア(&amp;C)</translation>
+        <translation>クリア(&amp;C)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="346"/>
         <source>&amp;Grid View</source>
-        <translation type="unfinished"></translation>
+        <translation>グリッド表示(&amp;G)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="351"/>
         <source>Grid &amp;Settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>グリッドの設定(&amp;S)...</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="363"/>
         <source>&amp;Draw Sample</source>
-        <translation type="unfinished"></translation>
+        <translation>サンプル描画(&amp;D)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.ui" line="375"/>
         <source>Direc&amp;t Draw</source>
-        <translation type="unfinished"></translation>
+        <translation>直接描画(&amp;T)</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/adpcm_sample_editor.cpp" line="305"/>
@@ -320,12 +312,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="186"/>
         <source>Mute hidden tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>非表示のトラックをミュートする</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="194"/>
         <source>Restore track visibility</source>
-        <translation type="unfinished"></translation>
+        <translation>トラックの非表示設定を復元</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.ui" line="269"/>
@@ -1010,12 +1002,12 @@
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="88"/>
         <source>Mute hidden tracks when visibility of tracks is changed.</source>
-        <translation type="unfinished"></translation>
+        <translation>トラックの可視性が変更されたとき、非表示のトラックをミュートします。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="90"/>
         <source>Restore the previous track visibility on startup.</source>
-        <translation type="unfinished"></translation>
+        <translation>起動時に前回のプログラム終了時のトラックの可視状態を復元します。</translation>
     </message>
     <message>
         <location filename="../../gui/configuration_dialog.cpp" line="103"/>
@@ -1603,7 +1595,7 @@
     <message>
         <location filename="../../gui/effect_list_dialog.cpp" line="65"/>
         <source>Rhythm</source>
-        <translation type="unfinished"></translation>
+        <translation>リズム</translation>
     </message>
 </context>
 <context>
@@ -1715,12 +1707,12 @@
     <message>
         <location filename="../../gui/instrument_editor/grid_settings_dialog.ui" line="14"/>
         <source>Grid Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>グリッドの設定</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/grid_settings_dialog.ui" line="22"/>
         <source>Interval</source>
-        <translation type="unfinished"></translation>
+        <translation>間隔</translation>
     </message>
 </context>
 <context>
@@ -1781,22 +1773,22 @@
     <message>
         <location filename="../../gui/hide_tracks_dialog.ui" line="14"/>
         <source>Hide Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>トラックの表示/非表示</translation>
     </message>
     <message>
         <location filename="../../gui/hide_tracks_dialog.ui" line="20"/>
         <source>Check All</source>
-        <translation type="unfinished"></translation>
+        <translation>全選択</translation>
     </message>
     <message>
         <location filename="../../gui/hide_tracks_dialog.ui" line="27"/>
         <source>Reverse</source>
-        <translation type="unfinished">反転</translation>
+        <translation>反転</translation>
     </message>
     <message>
         <location filename="../../gui/hide_tracks_dialog.ui" line="34"/>
         <source>Set the visibility of tracks:</source>
-        <translation type="unfinished"></translation>
+        <translation>表示するトラックを設定:</translation>
     </message>
 </context>
 <context>
@@ -3084,7 +3076,7 @@
     <message>
         <location filename="../../gui/mainwindow.ui" line="1658"/>
         <source>&amp;Hide Tracks...</source>
-        <translation type="unfinished"></translation>
+        <translation>トラックの表示/非表示(&amp;H)...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="1400"/>
@@ -3240,7 +3232,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1691"/>
         <source>PMD FF (*.ff)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1692"/>
@@ -3582,21 +3574,17 @@
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="209"/>
         <source>Song</source>
-        <translation type="unfinished"></translation>
+        <translation>ソング</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="264"/>
         <source>Update</source>
-        <translation type="unfinished">更新</translation>
+        <translation>更新</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="362"/>
         <source>Remove</source>
         <translation>削除</translation>
-    </message>
-    <message>
-        <source>Insert song</source>
-        <translation type="vanished">ソング追加</translation>
     </message>
     <message>
         <location filename="../../gui/module_properties_dialog.ui" line="257"/>
@@ -3687,10 +3675,6 @@
 </context>
 <context>
     <name>PatternEditorPanel</name>
-    <message>
-        <source>Invalid effect</source>
-        <translation type="vanished">無効なエフェクト</translation>
-    </message>
     <message>
         <location filename="../../gui/pattern_editor/pattern_editor_panel.cpp" line="2083"/>
         <source>&amp;Undo</source>
@@ -3981,7 +3965,7 @@
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="187"/>
         <source>None</source>
-        <translation type="unfinished">なし</translation>
+        <translation>なし</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="197"/>
@@ -4027,11 +4011,7 @@
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="301"/>
         <source>Rhythm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Drums</source>
-        <translation type="vanished">ドラム</translation>
+        <translation>リズム</translation>
     </message>
     <message>
         <location filename="../../gui/s98_export_settings_dialog.ui" line="327"/>
@@ -4056,12 +4036,12 @@
     <message>
         <location filename="../../gui/instrument_editor/sample_length_dialog.ui" line="14"/>
         <source>Resize</source>
-        <translation type="unfinished"></translation>
+        <translation>ADPCMのサイズ変更</translation>
     </message>
     <message>
         <location filename="../../gui/instrument_editor/sample_length_dialog.ui" line="22"/>
         <source>Length</source>
-        <translation type="unfinished"></translation>
+        <translation>長さ</translation>
     </message>
 </context>
 <context>
@@ -4241,7 +4221,7 @@
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="379"/>
         <source>None</source>
-        <translation type="unfinished">なし</translation>
+        <translation>なし</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="389"/>
@@ -4287,11 +4267,7 @@
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="493"/>
         <source>Rhythm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Drums</source>
-        <translation type="vanished">ドラム</translation>
+        <translation>リズム</translation>
     </message>
     <message>
         <location filename="../../gui/vgm_export_settings_dialog.ui" line="519"/>
