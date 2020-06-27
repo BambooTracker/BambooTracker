@@ -12,12 +12,9 @@
 [English](./README.md)
 
 ## ダウンロード
-### Windows
+### Windows / macOS
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
-
-### macOS
-- <https://github.com/rerrahkr/BambooTracker/releases>
 
 ### Linux / BSD
 #### Debian / Ubuntu

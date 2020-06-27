@@ -11,12 +11,13 @@
 ### Changed
 - [#219] - Enable SSG Tone/Noise editor to turn off tone and noise (thanks [@ImATrackMan])
 - Enable song type change without creating a new song
+- [#200] - Change build methods on CI (thanks [@OPNA2608])
 
 ### Fixed
 - Resize width of the order list after closing configuration dialog
 - Fix corruption while loading module
 - [#217] - Remove redundant call (thanks [@nyanpasu64])
-- [#216], [#218], [#221] - Fix some compilation warings (thanks [@nyanpasu64], [@OPNA2608])
+- [#216], [#218], [#221], [#227] - Fix some compilation warings (thanks [@nyanpasu64], [@OPNA2608])
 - [#210] - Finish editing an instrument name when leaving focus (thanks [@OPNA2608])
 - [#220] - Restore setting of FM volume reverse on launch (thanks [@nyanpasu64], [@OPNA2608])
 - Keep the main window open when canceling save dialog in closing
@@ -33,6 +34,8 @@
 [#221]: https://github.com/rerrahkr/BambooTracker/pull/221
 [#219]: https://github.com/rerrahkr/BambooTracker/issues/219
 [#225]: https://github.com/rerrahkr/BambooTracker/issues/225
+[#200]: https://github.com/rerrahkr/BambooTracker/pull/200
+[#227]: https://github.com/rerrahkr/BambooTracker/pull/227
 
 ## v0.4.2 (2020-05-10)
 ### Added
