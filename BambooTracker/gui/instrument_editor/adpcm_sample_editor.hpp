@@ -76,7 +76,7 @@ private:
 
 	inline QString updateDetailView() const
 	{
-		return tr("(%1, %2), %3, x%4")
+		return QString("(%1, %2), %3, x%4")
 				.arg(cursorSamp_.x()).arg(cursorSamp_.y()).arg(sample_.size()).arg(zoom_ + 1);
 	}
 

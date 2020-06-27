@@ -182,11 +182,6 @@
         <source>WAV signed 16-bit PCM (*.wav)</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../../gui/instrument_editor/adpcm_sample_editor.hpp" line="79"/>
-        <source>(%1, %2), %3, x%4</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>BookmarkManagerForm</name>
