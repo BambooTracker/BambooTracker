@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## 0.4.3 (2020-06-28)
 ### Added
 - [#2], [#213], [#214] - ADPCM sample editor (thanks [@freq-mod])
 - [#98] - Track visibility control (thanks [@pedipanol], [@freq-mod])
@@ -12,6 +14,7 @@
 - [#219] - Enable SSG Tone/Noise editor to turn off tone and noise (thanks [@ImATrackMan])
 - Enable song type change without creating a new song
 - [#200] - Change build methods on CI (thanks [@OPNA2608])
+- Update translation: ja
 
 ### Fixed
 - Resize width of the order list after closing configuration dialog
