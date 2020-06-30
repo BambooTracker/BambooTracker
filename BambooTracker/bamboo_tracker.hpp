@@ -346,7 +346,7 @@ public:
 	size_t getSongCount() const;
 	void addSong(SongType songType, std::string title);
 	void sortSongs(std::vector<int> numbers);
-	size_t getAllStepCount(int songNum, int loopCnt) const;
+	size_t getAllStepCount(int songNum, size_t loopCnt) const;
 	void transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts);
 	void swapTracks(int songNum, int track1, int track2);
 	/*----- Bookmark -----*/
@@ -471,5 +471,6 @@ private:
 	// Play song
 	void startPlay();
 
-	void checkNextPositionOfLastStep(int& endOrder, int& endStep) const;
+	void checkNextPositionOfLastStepAndStepSize(
+			int songNum, int& endOrder, int& endStep, size_t& nIntroStep, size_t& nLoopStep) const;
 };

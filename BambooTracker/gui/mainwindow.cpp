@@ -3190,12 +3190,9 @@ void MainWindow::on_actionWAV_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".wav")) path += ".wav";	// For linux
 
-	QProgressDialog progress(
-				tr("Export to WAV"),
-				tr("Cancel"),
-				0,
-				static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), diag.getLoopCount())) + 3
-				);
+	int max = static_cast<int>(bt_->getAllStepCount(
+								   bt_->getCurrentSongNumber(), static_cast<size_t>(diag.getLoopCount()))) + 3;
+	QProgressDialog progress(tr("Export to WAV"), tr("Cancel"), 0, max);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint
@@ -3250,12 +3247,8 @@ void MainWindow::on_actionVGM_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".vgm")) path += ".vgm";	// For linux
 
-	QProgressDialog progress(
-				tr("Export to VGM"),
-				tr("Cancel"),
-				0,
-				static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3
-				);
+	int max = static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
+	QProgressDialog progress(tr("Export to VGM"), tr("Cancel"), 0, max);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint
@@ -3309,12 +3302,8 @@ void MainWindow::on_actionS98_triggered()
 	if (path.isNull()) return;
 	if (!path.endsWith(".s98")) path += ".s98";	// For linux
 
-	QProgressDialog progress(
-				tr("Export to S98"),
-				tr("Cancel"),
-				0,
-				static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3
-				);
+	int max = static_cast<int>(bt_->getAllStepCount(bt_->getCurrentSongNumber(), 1)) + 3;
+	QProgressDialog progress(tr("Export to S98"), tr("Cancel"), 0, max);
 	progress.setValue(0);
 	progress.setWindowFlags(progress.windowFlags()
 							& ~Qt::WindowContextHelpButtonHint

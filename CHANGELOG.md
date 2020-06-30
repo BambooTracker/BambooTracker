@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+## Fixed
+- [#229] - Fix detection of effect `0Bxx`, `0Cxx` and `0Dxx` in WAV/VGM/S98 export (thanks [@YuzuMSX])
+
+[#229]: https://github.com/rerrahkr/BambooTracker/issues/229
 
 ## 0.4.3 (2020-06-28)
 ### Added

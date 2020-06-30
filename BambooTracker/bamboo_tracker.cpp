@@ -1340,7 +1340,8 @@ bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::funct
 
 	int endOrder = 0;
 	int endStep = 0;
-	checkNextPositionOfLastStep(endOrder, endStep);
+	size_t dummy = 0;
+	checkNextPositionOfLastStepAndStepSize(curSongNum_, endOrder, endStep, dummy, dummy);
 	bool endFlag = false;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
 	std::shared_ptr<chip::WavExportContainer> exCntr = std::make_shared<chip::WavExportContainer>();
@@ -1403,7 +1404,8 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 
 	int loopOrder = 0;
 	int loopStep = 0;
-	checkNextPositionOfLastStep(loopOrder, loopStep);
+	size_t dummy = 0;
+	checkNextPositionOfLastStepAndStepSize(curSongNum_, loopOrder, loopStep, dummy, dummy);
 	bool loopFlag = (loopOrder != -1);
 	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
@@ -1483,7 +1485,8 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 
 	int loopOrder = 0;
 	int loopStep = 0;
-	checkNextPositionOfLastStep(loopOrder, loopStep);
+	size_t dummy = 0;
+	checkNextPositionOfLastStepAndStepSize(curSongNum_, loopOrder, loopStep, dummy, dummy);
 	bool loopFlag = (loopOrder != -1);
 	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
@@ -1532,38 +1535,69 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 	}
 }
 
-void BambooTracker::checkNextPositionOfLastStep(int& endOrder, int& endStep) const
+void BambooTracker::checkNextPositionOfLastStepAndStepSize(int songNum, int& endOrder, int& endStep, size_t& nIntroStep, size_t& nLoopStep) const
 {
-	Song& song = mod_->getSong(curSongNum_);
-	int lastOrder = static_cast<int>(song.getOrderSize()) - 1;
-	int lastStep = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, lastOrder)) - 1;
+	Song& song = mod_->getSong(songNum);
 	endOrder = 0;
 	endStep = 0;
-	for (auto attrib : songStyle_.trackAttribs) {
-		Step& step = song.getTrack(attrib.number).getPatternFromOrderNumber(lastOrder).getStep(lastStep);
-		for (int i = 0; i < 4; ++i) {
-			Effect&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(i), step.getEffectValue(i));
-			switch (eff.type) {
-			case EffectType::PositionJump:
-				if (eff.value <= lastOrder) {
-					endOrder = eff.value;
-					endStep = 0;
+
+	int lastOrder = static_cast<int>(song.getOrderSize()) - 1;
+	std::unordered_map<int, int> orderStepMap;
+	int orderN = 0;
+	size_t stepCnt = 0;
+	do {
+		endOrder = (endOrder + 1) % (lastOrder + 1);
+		endStep = 0;
+
+		int stepN = static_cast<int>(getPatternSizeFromOrderNumber(songNum, orderN)) - 1;
+		for (auto attrib : songStyle_.trackAttribs) {
+			Step& step = song.getTrack(attrib.number).getPatternFromOrderNumber(orderN).getStep(stepN);
+			for (int i = 0; i < 4; ++i) {
+				Effect&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(i), step.getEffectValue(i));
+				switch (eff.type) {
+				case EffectType::PositionJump:
+					if (eff.value <= lastOrder) {
+						endOrder = eff.value;
+						endStep = 0;
+					}
+					break;
+				case EffectType::SongEnd:
+					endOrder = -1;
+					endStep = -1;
+					break;
+				case EffectType::PatternBreak:
+					if (orderN == lastOrder
+							&& eff.value < static_cast<int>(getPatternSizeFromOrderNumber(songNum, 0))) {
+						endOrder = 0;
+						endStep = eff.value;
+					}
+					else if (eff.value < static_cast<int>(getPatternSizeFromOrderNumber(songNum, orderN + 1))) {
+						endOrder = orderN + 1;
+						endStep = eff.value;
+					}
+					if (eff.value < static_cast<int>(getPatternSizeFromOrderNumber(songNum, 0))) {
+						endOrder = 0;
+						endStep = eff.value;
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			case EffectType::SongEnd:
-				endOrder = -1;
-				endStep = -1;
-				break;
-			case EffectType::PatternBreak:
-				if (eff.value < static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, 0))) {
-					endOrder = 0;
-					endStep = eff.value;
-				}
-				break;
-			default:
-				break;
 			}
 		}
+
+		orderStepMap[orderN] = stepCnt;
+		stepCnt += song.getPatternSizeFromOrderNumber(orderN);
+		orderN = endOrder;
+	} while (orderN != -1 && !orderStepMap.count(orderN));	// stopped song or jumped to played order
+
+	if (orderN == -1) {
+		nIntroStep = stepCnt;
+		nLoopStep = 0;
+	}
+	else {
+		nIntroStep = orderStepMap[orderN];
+		nLoopStep = stepCnt - orderStepMap[orderN];
 	}
 }
 
@@ -1939,29 +1973,14 @@ void BambooTracker::sortSongs(std::vector<int> numbers)
 	mod_->sortSongs(std::move(numbers));
 }
 
-size_t BambooTracker::getAllStepCount(int songNum, int loopCnt) const
+size_t BambooTracker::getAllStepCount(int songNum, size_t loopCnt) const
 {
-	int os = static_cast<int>(getOrderSize(songNum));
-	int loopOrder = 0;
-	int loopStep = 0;
-	checkNextPositionOfLastStep(loopOrder, loopStep);
-	if (loopOrder == -1) {
-		size_t stepCnt = 0;
-		for (int i = 0; i < os; ++i)
-			stepCnt += getPatternSizeFromOrderNumber(songNum, i);
-		return stepCnt;
-	}
-	else {
-		size_t introStepCnt = 0;
-		for (int i = 0; i < loopOrder; ++i)
-			introStepCnt += getPatternSizeFromOrderNumber(curSongNum_, i);
-		introStepCnt += static_cast<size_t>(loopStep);
-		size_t loopStepCnt = getPatternSizeFromOrderNumber(curSongNum_, loopOrder) - static_cast<size_t>(loopStep);
-		for (int i = loopOrder + 1; i < os; ++i) {
-			loopStepCnt += getPatternSizeFromOrderNumber(songNum, i);
-		}
-		return introStepCnt + loopStepCnt * static_cast<size_t>(loopCnt);
-	}
+	size_t introSize = 0;
+	size_t loopSize = 0;
+	int dummy1 = 0;
+	int dummy2 = 0;
+	checkNextPositionOfLastStepAndStepSize(songNum, dummy1, dummy2, introSize, loopSize);
+	return introSize + loopSize * loopCnt;
 }
 
 void BambooTracker::transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts)
