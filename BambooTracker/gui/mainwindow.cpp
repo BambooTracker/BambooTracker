@@ -1544,7 +1544,6 @@ void MainWindow::renameInstrument()
 	int num = item->data(Qt::UserRole).toInt();
 	renamingInstEdit_ = new QLineEdit(utf8ToQString(bt_->getInstrument(num)->getName()));
 	QObject::connect(renamingInstEdit_, &QLineEdit::editingFinished, this, &MainWindow::finishRenamingInstrument);
-	QObject::connect(renamingInstEdit_, &QLineEdit::editingFinished, this, [&] { ui->instrumentList->setFocus(); });
 	renamingInstEdit_->installEventFilter(this);
 	ui->instrumentList->setItemWidget(item, renamingInstEdit_);
 	renamingInstEdit_->selectAll();
@@ -1554,6 +1553,7 @@ void MainWindow::renameInstrument()
 void MainWindow::finishRenamingInstrument()
 {
 	if (!renamingInstItem_ || !renamingInstEdit_) return;
+	bool hasFocus = renamingInstEdit_->hasFocus();
 	auto list = ui->instrumentList;
 	int num = renamingInstItem_->data(Qt::UserRole).toInt();
 	int row = findRowFromInstrumentList(num);
@@ -1566,6 +1566,7 @@ void MainWindow::finishRenamingInstrument()
 	}
 	renamingInstItem_ = nullptr;
 	renamingInstEdit_ = nullptr;
+	if (hasFocus) ui->instrumentList->setFocus();
 }
 
 void MainWindow::cloneInstrument()
