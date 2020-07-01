@@ -62,7 +62,7 @@ else:if(gcc|clang) {
   }
   COMPILER_SPLIT_VERSION = $$split(COMPILER_VERSION, ".")
   COMPILER_MAJOR_VERSION = $$first(COMPILER_SPLIT_VERSION)
-  message("Compiler is version " $$COMPILER_VERSION)
+  message("Compiler is version" $$COMPILER_VERSION)
 
   # Temporary known-error downgrades
   clang {
@@ -71,6 +71,11 @@ else:if(gcc|clang) {
     # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)
     greaterThan(COMPILER_MAJOR_VERSION, 7) {
       CPPFLAGS += -Wno-error=deprecated-register
+    }
+    # FreeBSD ALSA headers use zero-length array
+    # /usr/local/include/alsa/pcm.h:597
+    freebsd {
+      CPPFLAGS += -Wno-zero-length-array
     }
   }
 }

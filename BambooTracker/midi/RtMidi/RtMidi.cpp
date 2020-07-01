@@ -56,9 +56,7 @@
 //
 // **************************************************************** //
 
-#if !defined(__LINUX_ALSA__) && !defined(__UNIX_JACK__) && !defined(__MACOSX_CORE__) && !defined(__WINDOWS_MM__)
-  #define __RTMIDI_DUMMY__
-#endif
+#define __RTMIDI_DUMMY__
 
 #if defined(__MACOSX_CORE__)
 

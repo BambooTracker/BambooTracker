@@ -4,22 +4,14 @@ SOURCES += \
 HEADERS += \
     $$PWD/RtMidi.hpp
 
-linux {
-    use_jack {
-        DEFINES += __UNIX_JACK__
-        LIBS += -ljack
-        jack_has_rename {
-            DEFINES += JACK_HAS_PORT_RENAME
-        }
-    }
-    DEFINES += __LINUX_ALSA__
-    LIBS += -lasound
-}
 win32 {
     DEFINES += __WINDOWS_MM__
     LIBS += -lwinmm
 }
-macx {
+else:macx {
+    DEFINES += __MACOSX_CORE__
+    LIBS += -framework CoreMIDI -framework CoreAudio -framework CoreFoundation
+
     use_jack {
         DEFINES += __UNIX_JACK__
         LIBS += -ljack
@@ -27,8 +19,30 @@ macx {
             DEFINES += JACK_HAS_PORT_RENAME
         }
     }
-    DEFINES += __MACOSX_CORE__
-    LIBS += -framework CoreMIDI -framework CoreAudio -framework CoreFoundation
 }
+else:linux {
+    DEFINES += __LINUX_ALSA__
+    LIBS += -lasound
 
-DEFINES += __RTMIDI_DUMMY__
+    use_jack {
+        DEFINES += __UNIX_JACK__
+        LIBS += -ljack
+        jack_has_rename {
+            DEFINES += JACK_HAS_PORT_RENAME
+        }
+    }
+}
+else:bsd {
+    # OSS does not offer MIDI functionalities, only fallback to dummy interface
+    use_alsa {
+        DEFINES += __LINUX_ALSA__
+        LIBS += -lasound
+    }
+    use_jack {
+        DEFINES += __UNIX_JACK__
+        LIBS += -ljack
+        jack_has_rename {
+            DEFINES += JACK_HAS_PORT_RENAME
+        }
+    }
+}
