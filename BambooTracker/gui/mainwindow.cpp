@@ -1890,7 +1890,7 @@ void MainWindow::swapInstruments(int row1, int row2)
 
 	bt_->swapInstruments(num1, num2, config_.lock()->getReflectInstrumentNumberChange());
 	comStack_->push(new SwapInstrumentsQtCommand(
-						ui->instrumentList, num1, num2, name1, name2, instForms_, ui->patternEditor));
+						ui->instrumentList, row1, row2, name1, name2, instForms_, ui->patternEditor));
 	//----------//
 }
 
