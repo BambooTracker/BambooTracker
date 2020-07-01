@@ -25,6 +25,7 @@ public:
 	void setCommandStack(std::weak_ptr<QUndoStack> stack);
 	void setConfiguration(std::shared_ptr<Configuration> config);
 	void setColorPallete(std::shared_ptr<ColorPalette> palette);
+	void addActionToPanel(QAction* action);
 
 	void changeEditable();
 	void updatePositionByOrderUpdate(bool isFirstUpdate);

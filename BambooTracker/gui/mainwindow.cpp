@@ -522,18 +522,25 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		ui->instrumentList->setFocus();
 		updateMenuByInstrumentList();
 	});
-	linkShortcut(&playAndStopSc_);
+	auto playLinkShortcut = [&](QAction* ptr) {
+		ptr->setShortcutContext(Qt::WidgetShortcut);
+		ui->instrumentList->addAction(ptr);
+		ui->orderList->addActionToPanel(ptr);
+		ui->patternEditor->addActionToPanel(ptr);
+	};
+	playLinkShortcut(ui->actionPlay);
+	playLinkShortcut(&playAndStopSc_);
 	QObject::connect(&playAndStopSc_, &QAction::triggered, this, [&] {
 		if (bt_->isPlaySong()) stopPlaySong();
 		else startPlaySong();
 	});
-	linkShortcut(&playStepSc_);
+	playLinkShortcut(&playStepSc_);
 	QObject::connect(&playStepSc_, &QAction::triggered, this, &MainWindow::playStep);
-	linkShortcut(ui->actionPlay_From_Start);
-	linkShortcut(ui->actionPlay_Pattern);
-	linkShortcut(ui->actionPlay_From_Cursor);
-	linkShortcut(ui->actionPlay_From_Marker);
-	linkShortcut(ui->actionStop);
+	playLinkShortcut(ui->actionPlay_From_Start);
+	playLinkShortcut(ui->actionPlay_Pattern);
+	playLinkShortcut(ui->actionPlay_From_Cursor);
+	playLinkShortcut(ui->actionPlay_From_Marker);
+	playLinkShortcut(ui->actionStop);
 	instAddSc_ = std::make_unique<QShortcut>(Qt::Key_Insert, ui->instrumentList,
 											 nullptr, nullptr, Qt::WidgetShortcut);
 	QObject::connect(instAddSc_.get(), &QShortcut::activated, this, &MainWindow::addInstrument);
@@ -1537,6 +1544,7 @@ void MainWindow::renameInstrument()
 	int num = item->data(Qt::UserRole).toInt();
 	renamingInstEdit_ = new QLineEdit(utf8ToQString(bt_->getInstrument(num)->getName()));
 	QObject::connect(renamingInstEdit_, &QLineEdit::editingFinished, this, &MainWindow::finishRenamingInstrument);
+	QObject::connect(renamingInstEdit_, &QLineEdit::editingFinished, this, [&] { ui->instrumentList->setFocus(); });
 	renamingInstEdit_->installEventFilter(this);
 	ui->instrumentList->setItemWidget(item, renamingInstEdit_);
 	renamingInstEdit_->selectAll();
@@ -1548,12 +1556,12 @@ void MainWindow::finishRenamingInstrument()
 	if (!renamingInstItem_ || !renamingInstEdit_) return;
 	auto list = ui->instrumentList;
 	int num = renamingInstItem_->data(Qt::UserRole).toInt();
+	int row = findRowFromInstrumentList(num);
 	auto oldName = utf8ToQString(bt_->getInstrument(num)->getName());
 	QString newName = renamingInstEdit_->text();
 	list->removeItemWidget(renamingInstItem_);
 	if (newName != oldName) {
 		bt_->setInstrumentName(num, newName.toUtf8().toStdString());
-		int row = findRowFromInstrumentList(num);
 		comStack_->push(new ChangeInstrumentNameQtCommand(list, num, row, instForms_, oldName, newName));
 	}
 	renamingInstItem_ = nullptr;

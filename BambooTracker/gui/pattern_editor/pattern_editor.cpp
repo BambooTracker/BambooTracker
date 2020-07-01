@@ -90,6 +90,11 @@ void PatternEditor::setColorPallete(std::shared_ptr<ColorPalette> palette)
 	ui->panel->setColorPallete(palette);
 }
 
+void PatternEditor::addActionToPanel(QAction* action)
+{
+	ui->panel->addAction(action);
+}
+
 void PatternEditor::changeEditable()
 {
 	ui->panel->changeEditable();

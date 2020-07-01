@@ -73,6 +73,11 @@ void OrderListEditor::setColorPallete(std::shared_ptr<ColorPalette> palette)
 	ui->panel->setColorPallete(palette);
 }
 
+void OrderListEditor::addActionToPanel(QAction* action)
+{
+	ui->panel->addAction(action);
+}
+
 void OrderListEditor::changeEditable()
 {
 	ui->panel->changeEditable();
