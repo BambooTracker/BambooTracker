@@ -607,25 +607,20 @@ unsigned int RtApiCore :: getDefaultInputDevice( void )
   }
 
   dataSize *= nDevices;
-  AudioDeviceID *deviceList = new AudioDeviceID[ nDevices ];
+  AudioDeviceID deviceList[ nDevices ];
   property.mSelector = kAudioHardwarePropertyDevices;
   result = AudioObjectGetPropertyData( kAudioObjectSystemObject, &property, 0, NULL, &dataSize, (void *) &deviceList );
   if ( result != noErr ) {
     errorText_ = "RtApiCore::getDefaultInputDevice: OS-X system error getting device IDs.";
     error( RtAudioError::WARNING );
-    delete[] deviceList;
     return 0;
   }
 
   for ( unsigned int i=0; i<nDevices; i++ )
-    if ( id == deviceList[i] ) {
-      delete[] deviceList;
-      return i;
-    }
+    if ( id == deviceList[i] ) return i;
 
   errorText_ = "RtApiCore::getDefaultInputDevice: No default device found!";
   error( RtAudioError::WARNING );
-  delete[] deviceList;
   return 0;
 }
 
@@ -645,25 +640,20 @@ unsigned int RtApiCore :: getDefaultOutputDevice( void )
   }
 
   dataSize = sizeof( AudioDeviceID ) * nDevices;
-  AudioDeviceID *deviceList = new AudioDeviceID[ nDevices ];
+  AudioDeviceID deviceList[ nDevices ];
   property.mSelector = kAudioHardwarePropertyDevices;
   result = AudioObjectGetPropertyData( kAudioObjectSystemObject, &property, 0, NULL, &dataSize, (void *) &deviceList );
   if ( result != noErr ) {
     errorText_ = "RtApiCore::getDefaultOutputDevice: OS-X system error getting device IDs.";
     error( RtAudioError::WARNING );
-    delete[] deviceList;
     return 0;
   }
 
   for ( unsigned int i=0; i<nDevices; i++ )
-    if ( id == deviceList[i] ) {
-      delete[] deviceList;
-      return i;
-    }
+    if ( id == deviceList[i] ) return i;
 
   errorText_ = "RtApiCore::getDefaultOutputDevice: No default device found!";
   error( RtAudioError::WARNING );
-  delete[] deviceList;
   return 0;
 }
 
@@ -686,7 +676,7 @@ RtAudio::DeviceInfo RtApiCore :: getDeviceInfo( unsigned int device )
     return info;
   }
 
-  AudioDeviceID *deviceList = new AudioDeviceID[ nDevices ];
+  AudioDeviceID deviceList[ nDevices ];
   UInt32 dataSize = sizeof( AudioDeviceID ) * nDevices;
   AudioObjectPropertyAddress property = { kAudioHardwarePropertyDevices,
                                           kAudioObjectPropertyScopeGlobal,
@@ -696,12 +686,10 @@ RtAudio::DeviceInfo RtApiCore :: getDeviceInfo( unsigned int device )
   if ( result != noErr ) {
     errorText_ = "RtApiCore::getDeviceInfo: OS-X system error getting device IDs.";
     error( RtAudioError::WARNING );
-    delete[] deviceList;
     return info;
   }
 
   AudioDeviceID id = deviceList[ device ];
-  delete[] deviceList;
 
   // Get the device name.
   info.name.erase();
@@ -840,13 +828,12 @@ RtAudio::DeviceInfo RtApiCore :: getDeviceInfo( unsigned int device )
   }
 
   UInt32 nRanges = dataSize / sizeof( AudioValueRange );
-  AudioValueRange *rangeList = new AudioValueRange[ nRanges ];
+  AudioValueRange rangeList[ nRanges ];
   result = AudioObjectGetPropertyData( id, &property, 0, NULL, &dataSize, &rangeList );
   if ( result != kAudioHardwareNoError ) {
     errorStream_ << "RtApiCore::getDeviceInfo: system error (" << getErrorCode( result ) << ") getting sample rates.";
     errorText_ = errorStream_.str();
     error( RtAudioError::WARNING );
-    delete[] rangeList;
     return info;
   }
 
@@ -874,7 +861,6 @@ RtAudio::DeviceInfo RtApiCore :: getDeviceInfo( unsigned int device )
       if ( rangeList[i].mMaximum < maximumRate ) maximumRate = rangeList[i].mMaximum;
     }
   }
-  delete[] rangeList;
 
   if ( haveValueRange ) {
     for ( unsigned int k=0; k<MAX_SAMPLE_RATES; k++ ) {
@@ -980,7 +966,7 @@ bool RtApiCore :: probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
     return FAILURE;
   }
 
-  AudioDeviceID *deviceList = new AudioDeviceID[ nDevices ];
+  AudioDeviceID deviceList[ nDevices ];
   UInt32 dataSize = sizeof( AudioDeviceID ) * nDevices;
   AudioObjectPropertyAddress property = { kAudioHardwarePropertyDevices,
                                           kAudioObjectPropertyScopeGlobal,
@@ -993,7 +979,6 @@ bool RtApiCore :: probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
   }
 
   AudioDeviceID id = deviceList[ device ];
-  delete[] deviceList;
 
   // Setup for stream mode.
   bool isInput = false;
@@ -8300,12 +8285,11 @@ void RtApiAlsa :: callbackEvent()
     if ( stream_.deviceInterleaved[1] )
       result = snd_pcm_readi( handle[1], buffer, stream_.bufferSize );
     else {
-      void **bufs = new void*[channels];
+      void *bufs[channels];
       size_t offset = stream_.bufferSize * formatBytes( format );
       for ( int i=0; i<channels; i++ )
         bufs[i] = (void *) (buffer + (i * offset));
       result = snd_pcm_readn( handle[1], bufs, stream_.bufferSize );
-      delete[] bufs;
     }
 
     if ( result < (int) stream_.bufferSize ) {
@@ -8371,12 +8355,11 @@ void RtApiAlsa :: callbackEvent()
     if ( stream_.deviceInterleaved[0] )
       result = snd_pcm_writei( handle[0], buffer, stream_.bufferSize );
     else {
-      void **bufs = new void*[channels];
+      void *bufs[channels];
       size_t offset = stream_.bufferSize * formatBytes( format );
       for ( int i=0; i<channels; i++ )
         bufs[i] = (void *) (buffer + (i * offset));
       result = snd_pcm_writen( handle[0], bufs, stream_.bufferSize );
-      delete[] bufs;
     }
 
     if ( result < (int) stream_.bufferSize ) {
