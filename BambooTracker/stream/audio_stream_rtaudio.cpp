@@ -52,7 +52,8 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 		audio->openStream(&param, nullptr, RTAUDIO_SINT16, rate, &bufferSize, callback, this, &opts);
 		return true;
 	}
-	catch (...) {
+	catch (RtAudioError& error) {
+		error.printMessage();
 		return false;
 	}
 }

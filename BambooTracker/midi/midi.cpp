@@ -45,6 +45,7 @@ void MidiInterface::switchApi(RtMidi::Api api)
 	catch (RtMidiError &error) {
 		hasInitializedMidiIn_ = false;
 		fprintf(stderr, "Cannot initialize MIDI In.\n");
+		error.printMessage();
 	}
 	if (!inputClient)
 		inputClient = new RtMidiIn(RtMidi::RTMIDI_DUMMY, MIDI_INP_CLIENT_NAME, MidiBufferSize);
@@ -63,6 +64,7 @@ void MidiInterface::switchApi(RtMidi::Api api)
 	catch (RtMidiError &error) {
 		hasInitializedMidiOut_ = true;
 		fprintf(stderr, "Cannot initialize MIDI Out.\n");
+		error.printMessage();
 	}
 	if (!outputClient)
 		outputClient = new RtMidiOut(RtMidi::RTMIDI_DUMMY, MIDI_OUT_CLIENT_NAME);

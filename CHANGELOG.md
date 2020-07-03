@@ -5,9 +5,12 @@
 - [#229] - Fix detection of effect `0Bxx`, `0Cxx` and `0Dxx` in WAV/VGM/S98 export (thanks [@YuzuMSX])
 - Enable play/stop shortcuts in the instrument list (thanks [@nyanpasu64])
 - [#228] - Fix incorrect instrument swapping (thanks [@YuzuMSX])
+- [#233] - Fix corruption of audio thread on macOS ([#231]; thanks [@OPNA2608])
 
 [#229]: https://github.com/rerrahkr/BambooTracker/issues/229
 [#228]: https://github.com/rerrahkr/BambooTracker/issues/228
+[#233]: https://github.com/rerrahkr/BambooTracker/pull/233
+[#231]: https://github.com/rerrahkr/BambooTracker/issues/231
 
 ## 0.4.3 (2020-06-28)
 ### Added
