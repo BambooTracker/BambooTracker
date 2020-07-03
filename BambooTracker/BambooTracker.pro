@@ -65,7 +65,14 @@ else:if(gcc|clang) {
   message("Compiler is version " $$COMPILER_VERSION)
 
   # Temporary known-error downgrades
+
+  # RtAudio code contains VLAs for multiple APIs, needs a stronger patch in the future
+  CPPFLAGS += -Wno-error=vla
+
   clang {
+    # See VLA workaround, needs additional switch on Clang
+    CPPFLAGS += -Wno-vla-extension
+
     # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
     # using system-installed JACK headers in RtAudio & RtMidi
     # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)

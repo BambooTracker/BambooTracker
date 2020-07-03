@@ -13,6 +13,8 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 
 ## Downloads
 ### Windows / macOS
+***macOS: Due to issue https://github.com/rerrahkr/BambooTracker/issues/231, the v0.4.3 macOS builds are broken. Until a new release is pushed, please use a development build instead!***
+
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
