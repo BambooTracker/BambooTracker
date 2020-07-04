@@ -245,10 +245,12 @@ private:
 
 	// Midi //
 public:
-	void setMidiInputPort(const std::string &port);
+	void setMidiAPI(const std::string& api);
+	std::string getMidiAPI() const;
+	void setMidiInputPort(const std::string& port);
 	std::string getMidiInputPort() const;
 private:
-	std::string midiInPort_;
+	std::string midiAPI_, midiInPort_;
 
 	// Mixer //
 public:

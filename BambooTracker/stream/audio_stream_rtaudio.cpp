@@ -121,7 +121,9 @@ std::vector<QString> AudioStreamRtAudio::getAvailableDevices(const QString& back
 
 	std::vector<QString> list;
 	auto a = std::make_unique<RtAudio>(api);
-	for (unsigned int i = 0; i < a->getDeviceCount(); ++i) {
+	unsigned int deviceCnt = a->getDeviceCount();
+	list.reserve(deviceCnt);
+	for (unsigned int i = 0; i < deviceCnt; ++i) {
 		RtAudio::DeviceInfo info = a->getDeviceInfo(i);
 		if (info.outputChannels >= 2)
 			list.push_back(QString::fromStdString(info.name));

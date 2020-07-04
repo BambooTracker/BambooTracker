@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="generalTab">
       <attribute name="title">
@@ -338,7 +338,7 @@
           <string>MIDI input</string>
          </property>
          <layout class="QFormLayout" name="formLayout_2">
-          <item row="0" column="1">
+          <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
              <widget class="QLineEdit" name="midiInputNameLine">
@@ -355,6 +355,23 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="midiInputNameLabel">
+            <property name="text">
+             <string>Device</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="midiApiLabel">
+            <property name="text">
+             <string>API</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="midiApiComboBox"/>
           </item>
          </layout>
         </widget>
@@ -1260,7 +1277,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -2614,6 +2631,7 @@ color: rgb(255, 255, 255);</string>
   <tabstop>soundAPIComboBox</tabstop>
   <tabstop>soundDeviceComboBox</tabstop>
   <tabstop>realChipComboBox</tabstop>
+  <tabstop>midiApiComboBox</tabstop>
   <tabstop>midiInputNameLine</tabstop>
   <tabstop>midiInputChoiceButton</tabstop>
   <tabstop>sampleRateComboBox</tabstop>
@@ -2632,9 +2650,9 @@ color: rgb(255, 255, 255);</string>
   <tabstop>odrRowFontComboBox</tabstop>
   <tabstop>odrRowFontSizeComboBox</tabstop>
   <tabstop>envelopeTypeListWidget</tabstop>
+  <tabstop>envelopeSetNameLineEdit</tabstop>
   <tabstop>addEnvelopeSetPushButton</tabstop>
   <tabstop>removeEnvelopeSetpushButton</tabstop>
-  <tabstop>envelopeSetNameLineEdit</tabstop>
   <tabstop>editEnvelopeSetPushButton</tabstop>
   <tabstop>shortcutsTreeWidget</tabstop>
   <tabstop>keyboardTypeComboBox</tabstop>

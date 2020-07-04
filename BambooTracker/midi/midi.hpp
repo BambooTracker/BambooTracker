@@ -17,9 +17,14 @@ private:
 
 public:
 	RtMidi::Api currentApi() const;
+	std::string currentApiName() const;
+	std::vector<std::string> getAvailableApi() const;
+	void switchApi(std::string api);
 	void switchApi(RtMidi::Api api);
 	bool supportsVirtualPort() const;
+	bool supportsVirtualPort(std::string api) const;
 	std::vector<std::string> getRealInputPorts();
+	std::vector<std::string> getRealInputPorts(const std::string& api);
 	std::vector<std::string> getRealOutputPorts();
 
 	bool hasInitializedInput() const;

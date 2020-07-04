@@ -5,12 +5,14 @@
 - [#242] - Estimate Song Length (thanks [@Drillimation])
 - Settings of header color and editor shadow
 - [#136] - Support MUCOM88 voice file import (thanks [@freq-mod])
+- MIDI API selection
 - 1 new sample module (thanks SuperJet Spade)
 - 5 new color schemes
 
 ## Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
 - [#239] - Improve compiler & version detection (thanks [@OPNA2608])
+- Update RtMidi library
 - Change painting order of pattern and order border
 
 ## Fixed

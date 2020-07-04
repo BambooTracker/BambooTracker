@@ -234,16 +234,16 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Sound //
 	{
 		QSignalBlocker blocker(ui->soundAPIComboBox);
-		int apiRow = -1;
-		int defApiRow = 0;
+		int sndApiRow = -1;
+		int defSndApiRow = 0;
 		for (auto& name : stream.lock()->getAvailableBackends()) {
 			ui->soundAPIComboBox->addItem(name);
 			if (name == QString::fromStdString(configLocked->getSoundAPI()))
-				apiRow = ui->soundAPIComboBox->count() - 1;
+				sndApiRow = ui->soundAPIComboBox->count() - 1;
 			if (name == stream.lock()->getCurrentBackend())
-				defApiRow = apiRow = ui->soundAPIComboBox->count() - 1;
+				defSndApiRow = sndApiRow = ui->soundAPIComboBox->count() - 1;
 		}
-		ui->soundAPIComboBox->setCurrentIndex((apiRow == -1) ? defApiRow : apiRow);
+		ui->soundAPIComboBox->setCurrentIndex((sndApiRow == -1) ? defSndApiRow : sndApiRow);
 	}
 	on_soundAPIComboBox_currentIndexChanged(ui->soundAPIComboBox->currentText());
 
@@ -257,7 +257,17 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	case RealChipInterface::C86CTL:	ui->realChipComboBox->setCurrentIndex(2);	break;
 	}
 
-	MidiInterface &midiIntf = MidiInterface::instance();
+	MidiInterface& midiIntf = MidiInterface::instance();
+	int midiApiRow = -1;
+	int defMidiApiRow = 0;
+	for (auto& name : midiIntf.getAvailableApi()) {
+		ui->midiApiComboBox->addItem(utf8ToQString(name));
+		if (name == configLocked->getMidiAPI())
+			midiApiRow = ui->midiApiComboBox->count() - 1;
+		if (name == midiIntf.currentApiName())
+			defMidiApiRow = midiApiRow = ui->midiApiComboBox->count() - 1;
+	}
+	ui->midiApiComboBox->setCurrentIndex((midiApiRow == -1) ? defMidiApiRow : midiApiRow);
 	if (midiIntf.supportsVirtualPort())
 		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
 	ui->midiInputNameLine->setText(QString::fromStdString(configLocked->getMidiInputPort()));
@@ -385,6 +395,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setSoundAPI(ui->soundAPIComboBox->currentText().toUtf8().toStdString());
 	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
 										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
+	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setMidiInputPort(ui->midiInputNameLine->text().toStdString());
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
 	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
@@ -500,8 +511,17 @@ void ConfigurationDialog::on_midiInputChoiceButton_clicked()
 	QAction *action;
 
 	MidiInterface &intf = MidiInterface::instance();
-	std::vector<std::string> ports = intf.getRealInputPorts();
-	bool vport = intf.supportsVirtualPort();
+	std::vector<std::string> ports;
+	bool vport;
+	std::string apiName = ui->midiApiComboBox->currentText().toUtf8().toStdString();
+	if (intf.currentApiName() == apiName) {
+		ports = intf.getRealInputPorts();
+		vport = intf.supportsVirtualPort();
+	}
+	else {
+		ports = intf.getRealInputPorts(apiName);
+		vport = intf.supportsVirtualPort(apiName);
+	}
 
 	if (vport) {
 		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));

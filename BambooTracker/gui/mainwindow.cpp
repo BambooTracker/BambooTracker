@@ -149,7 +149,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->orderList->setColorPallete(palette_);
 	updateInstrumentListColors();
 	ui->waveVisual->setColorPalette(palette_);
-	setMidiConfiguration();
 
 	/* Command stack */
 	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
@@ -615,6 +614,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 
 	/* MIDI */
+	setMidiConfiguration();
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
 	midiProgramEventMethod_ = metaObject()->indexOfSlot("midiProgramEvent(uchar,uchar)");
@@ -2265,8 +2265,10 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 void MainWindow::setMidiConfiguration()
 {
 	MidiInterface &midiIntf = MidiInterface::instance();
+	std::string midiApi = config_.lock()->getMidiAPI();
 	std::string midiInPortName = config_.lock()->getMidiInputPort();
 
+	midiIntf.switchApi(midiApi);
 	if (!midiIntf.hasInitializedInput()) {
 		QMessageBox::critical(this, tr("Error"),
 							  tr("Could not initialize MIDI input."),
