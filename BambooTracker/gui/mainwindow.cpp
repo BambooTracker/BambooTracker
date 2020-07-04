@@ -16,7 +16,6 @@
 #include <QProgressDialog>
 #include <QRect>
 #include <QDesktopWidget>
-#include <QAudioDeviceInfo>
 #include <QMetaMethod>
 #include <QScreen>
 #include <QComboBox>
@@ -623,17 +622,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
 
 	/* Audio stream */
-	bool savedDeviceExists = false;
-	for (const QAudioDeviceInfo& audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
-			savedDeviceExists = true;
-			break;
-		}
-	}
-	if (!savedDeviceExists) {
-		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
-		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
-	}
 	stream_ = std::make_shared<AudioStreamRtAudio>();
 	stream_->setTickUpdateCallback(+[](void* cbPtr) -> int {
 		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
@@ -644,6 +632,17 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		bt->getStreamSamples(container, nSamples);
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
+	bool savedDeviceExists = false;
+	for (const QString& audioDevice : stream_->getAvailableDevices()) {
+		if (audioDevice.toUtf8().toStdString() == config.lock()->getSoundDevice()) {
+			savedDeviceExists = true;
+			break;
+		}
+	}
+	if (!savedDeviceExists) {
+		QString sndDev =  stream_->getDefaultOutputDevice();
+		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
+	}
 	bool streamState = stream_->initialize(
 						   static_cast<uint32_t>(bt_->getStreamRate()),
 						   static_cast<uint32_t>(bt_->getStreamDuration()),
@@ -2890,7 +2889,7 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	ConfigurationDialog diag(config_.lock(), palette_, stream_->getCurrentBackend(), stream_->getAvailableBackends());
+	ConfigurationDialog diag(config_.lock(), palette_, stream_);
 	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
 	if (diag.exec() == QDialog::Accepted) {

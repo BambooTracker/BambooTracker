@@ -69,8 +69,7 @@ void AudioStreamRtAudio::setBackend(const QString& backend)
 	RtAudio::getCompiledApi(apis);
 	size_t i = 0;
 	for (const auto& api : apis) {
-		std::string name = RtAudio::getApiDisplayName(api);
-		if (backend == QString::fromStdString(name)) {
+		if (backend == QString::fromStdString(RtAudio::getApiDisplayName(api))) {
 			audio_.reset(new RtAudio(apis[i]));
 			return;
 		}
@@ -79,32 +78,77 @@ void AudioStreamRtAudio::setBackend(const QString& backend)
 	audio_.reset(new RtAudio);
 }
 
-std::vector<std::string> AudioStreamRtAudio::getAvailableDevices() const
+std::vector<QString> AudioStreamRtAudio::getAvailableBackends() const
+{
+	std::vector<RtAudio::Api> apis;
+	std::vector<QString> names;
+	RtAudio::getCompiledApi(apis);
+	for (const auto& api : apis)
+		names.push_back(QString::fromStdString(RtAudio::getApiDisplayName(api)));
+	return names;
+}
+
+QString AudioStreamRtAudio::getCurrentBackend() const
+{
+	return QString::fromStdString(RtAudio::getApiDisplayName(audio_->getCurrentApi()));
+}
+
+std::vector<QString> AudioStreamRtAudio::getAvailableDevices() const
 {
 	RtAudio* audio = audio_.get();
-	std::vector<std::string> devices;
+	std::vector<QString> devices;
 
 	for (unsigned int i = 0, n = audio->getDeviceCount(); i < n; ++i) {
 		RtAudio::DeviceInfo info = audio->getDeviceInfo(i);
 		if (info.outputChannels >= 2)
-			devices.push_back(info.name);
+			devices.push_back(QString::fromStdString(info.name));
 	}
 
 	return devices;
 }
 
-std::vector<std::string> AudioStreamRtAudio::getAvailableBackends() const
+std::vector<QString> AudioStreamRtAudio::getAvailableDevices(const QString& backend) const
 {
 	std::vector<RtAudio::Api> apis;
-	std::vector<std::string> names;
 	RtAudio::getCompiledApi(apis);
-	for (const auto& api : apis) names.push_back(RtAudio::getApiDisplayName(api));
-	return names;
+	RtAudio::Api api = RtAudio::RTAUDIO_DUMMY;
+	for (const auto& apiAvailable : apis) {
+		if (backend == QString::fromStdString(RtAudio::getApiDisplayName(apiAvailable))) {
+			api = apiAvailable;
+			break;
+		}
+	}
+
+	std::vector<QString> list;
+	auto a = std::make_unique<RtAudio>(api);
+	for (unsigned int i = 0; i < a->getDeviceCount(); ++i) {
+		RtAudio::DeviceInfo info = a->getDeviceInfo(i);
+		if (info.outputChannels >= 2)
+			list.push_back(QString::fromStdString(info.name));
+	}
+	return list;
 }
 
-std::string AudioStreamRtAudio::getCurrentBackend() const
+QString AudioStreamRtAudio::getDefaultOutputDevice() const
 {
-	return RtAudio::getApiDisplayName(audio_->getCurrentApi());
+	return QString::fromStdString(audio_->getDeviceInfo(audio_->getDefaultOutputDevice()).name);
+}
+
+QString AudioStreamRtAudio::getDefaultOutputDevice(const QString& backend) const
+{
+	std::vector<RtAudio::Api> apis;
+	RtAudio::getCompiledApi(apis);
+	RtAudio::Api api = RtAudio::RTAUDIO_DUMMY;
+	for (const auto& apiAvailable : apis) {
+		if (backend == QString::fromStdString(RtAudio::getApiDisplayName(apiAvailable))) {
+			api = apiAvailable;
+			break;
+		}
+	}
+
+	std::vector<QString> list;
+	auto a = std::make_unique<RtAudio>(api);
+	return QString::fromStdString(a->getDeviceInfo(a->getDefaultOutputDevice()).name);
 }
 
 void AudioStreamRtAudio::start()
