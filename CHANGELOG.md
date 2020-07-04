@@ -5,14 +5,14 @@
 - [#242] - Estimate Song Length (thanks [@Drillimation])
 - Settings of header color and editor shadow
 - [#136] - Support MUCOM88 voice file import (thanks [@freq-mod])
-- MIDI API selection
+- [#238] - MIDI API selection
 - 1 new sample module (thanks SuperJet Spade)
 - 5 new color schemes
 
 ## Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
 - [#239] - Improve compiler & version detection (thanks [@OPNA2608])
-- Update RtMidi library
+- [#238] - Update RtMidi library
 - Change painting order of pattern and order border
 
 ## Fixed
@@ -37,6 +37,7 @@
 [#230]: https://github.com/rerrahkr/BambooTracker/pull/230
 [#235]: https://github.com/rerrahkr/BambooTracker/issues/235
 [#236]: https://github.com/rerrahkr/BambooTracker/pull/236
+[#238]: https://github.com/rerrahkr/BambooTracker/pull/238
 [#239]: https://github.com/rerrahkr/BambooTracker/pull/239
 [#241]: https://github.com/rerrahkr/BambooTracker/pull/241
 [#242]: https://github.com/rerrahkr/BambooTracker/issues/242

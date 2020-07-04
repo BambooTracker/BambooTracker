@@ -233,19 +233,19 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 
 	// Sound //
 	{
-		QSignalBlocker blocker(ui->soundAPIComboBox);
+		QSignalBlocker blocker(ui->audioApiComboBox);
 		int sndApiRow = -1;
 		int defSndApiRow = 0;
 		for (auto& name : stream.lock()->getAvailableBackends()) {
-			ui->soundAPIComboBox->addItem(name);
+			ui->audioApiComboBox->addItem(name);
 			if (name == QString::fromStdString(configLocked->getSoundAPI()))
-				sndApiRow = ui->soundAPIComboBox->count() - 1;
+				sndApiRow = ui->audioApiComboBox->count() - 1;
 			if (name == stream.lock()->getCurrentBackend())
-				defSndApiRow = sndApiRow = ui->soundAPIComboBox->count() - 1;
+				defSndApiRow = sndApiRow = ui->audioApiComboBox->count() - 1;
 		}
-		ui->soundAPIComboBox->setCurrentIndex((sndApiRow == -1) ? defSndApiRow : sndApiRow);
+		ui->audioApiComboBox->setCurrentIndex((sndApiRow == -1) ? defSndApiRow : sndApiRow);
 	}
-	on_soundAPIComboBox_currentIndexChanged(ui->soundAPIComboBox->currentText());
+	on_audioApiComboBox_currentIndexChanged(ui->audioApiComboBox->currentText());
 
 	ui->realChipComboBox->addItem(tr("None"), static_cast<int>(RealChipInterface::NONE));
 	ui->realChipComboBox->addItem("SCCI", static_cast<int>(RealChipInterface::SCCI));
@@ -391,8 +391,8 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	}
 
 	// Sound //
-	configLocked->setSoundDevice(ui->soundDeviceComboBox->currentText().toUtf8().toStdString());
-	configLocked->setSoundAPI(ui->soundAPIComboBox->currentText().toUtf8().toStdString());
+	configLocked->setSoundDevice(ui->audioDeviceComboBox->currentText().toUtf8().toStdString());
+	configLocked->setSoundAPI(ui->audioApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
 										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
 	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());
@@ -544,19 +544,19 @@ void ConfigurationDialog::on_midiInputChoiceButton_clicked()
 	}
 }
 
-void ConfigurationDialog::on_soundAPIComboBox_currentIndexChanged(const QString &arg1)
+void ConfigurationDialog::on_audioApiComboBox_currentIndexChanged(const QString &arg1)
 {
-	ui->soundDeviceComboBox->clear();
+	ui->audioDeviceComboBox->clear();
 	int devRow = -1;
 	int defDevRow = 0;
 	for (auto& name : stream_.lock()->getAvailableDevices(arg1)) {
-		ui->soundDeviceComboBox->addItem(name);
+		ui->audioDeviceComboBox->addItem(name);
 		if (name == utf8ToQString(config_.lock()->getSoundDevice()))
-			devRow = ui->soundDeviceComboBox->count() - 1;
+			devRow = ui->audioDeviceComboBox->count() - 1;
 		if (name == stream_.lock()->getDefaultOutputDevice(arg1))
-			defDevRow = ui->soundDeviceComboBox->count() - 1;
+			defDevRow = ui->audioDeviceComboBox->count() - 1;
 	}
-	ui->soundDeviceComboBox->setCurrentIndex((devRow == -1) ? defDevRow : devRow);
+	ui->audioDeviceComboBox->setCurrentIndex((devRow == -1) ? defDevRow : devRow);
 }
 
 /*****Formats *****/

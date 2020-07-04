@@ -63,7 +63,7 @@ private slots:
 	/***** Sound *****/
 private slots:
 	void on_midiInputChoiceButton_clicked();
-	void on_soundAPIComboBox_currentIndexChanged(const QString &arg1);
+	void on_audioApiComboBox_currentIndexChanged(const QString &arg1);
 
 	/***** Formats *****/
 private:
