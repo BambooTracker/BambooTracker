@@ -310,9 +310,9 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 		return;
 	}
 
-	if (wav->getSampleRate() < 2000 || 16000 < wav->getSampleRate()) {
+	if (wav->getSampleRate() < 2000 || 55466 < wav->getSampleRate()) {
 		QMessageBox::critical(this, tr("Error"),
-							  tr("Supported sample rate is 2kHz-16kHz, but the rate of selected sample is %1.")
+							  tr("Supported sample rate is 2kHz-55.5kHz, but the rate of selected sample is %1.")
 							  .arg(wav->getSampleRate()));
 		return;
 	}

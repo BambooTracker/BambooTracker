@@ -204,7 +204,7 @@ The tracker can load instrument from the following files.
 - .ins (MVSTracker instrument file)
 
 It also supports loading plain text of FM envelope.  
-ADPCM waveform editor supports .wav import (16-bit mono 2k-16kHz).
+ADPCM waveform editor supports .wav import (16-bit mono 2k-55.5kHz).
 
 A instrument saves as .bti file.
 
