@@ -12,11 +12,21 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 [日本語](./README_ja.md)
 
 ## Downloads
-### Windows / macOS
-***macOS: Due to issue https://github.com/rerrahkr/BambooTracker/issues/231, the v0.4.3 macOS builds are broken. Until a new release is pushed, please use a development build instead!***
-
+### Windows
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
+
+### macOS
+***Due to issue https://github.com/rerrahkr/BambooTracker/issues/231, the v0.4.3 macOS builds are broken. Until a new release is pushed, please use a development build instead!***
+
+#### GitHub Builds
+- <https://github.com/rerrahkr/BambooTracker/releases>
+- *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
+
+#### Nixpkgs
+Alternatively, you can install the latest BambooTracker release via the [Nix package manager](https://nixos.org/) (You might need to update your nixpkgs-unstable channel first):
+
+`nix-env -iA nixpkgs.bambootracker`
 
 ### Linux / BSD
 #### Debian / Ubuntu
@@ -24,6 +34,12 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 
 #### FreeBSD
 `pkg install bambootracker`
+
+#### Cross-Distribution
+##### Nixpkgs
+(After updating your nixpkgs-unstable channel):
+
+`nix-env -iA nixpkgs.bambootracker`
 
 #### Other
 - See chapter "Building"
