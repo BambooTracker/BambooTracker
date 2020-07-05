@@ -266,7 +266,7 @@ void PlaybackManager::findNextStep()
 	// Search
 	int ptnSize = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_));
 	if (!ptnSize || nextReadStep_ >= ptnSize - 1) {
-		if (!(playState_ & 0x10)) {	// Not play pattern
+		if (!(playState_ & 0x10)) {	// Loop pattern
 			if (nextReadOrder_ >= static_cast<int>(getOrderSize(curSongNum_)) - 1) {
 				nextReadOrder_ = 0;
 			}
@@ -595,14 +595,20 @@ bool PlaybackManager::executeStoredEffectsGlobal()
 	for (const auto& eff : stepEndBasedEffsGlobal_) {
 		switch (eff.first) {
 		case EffectType::PositionJump:
-			changedNextPos |= effPositionJump(eff.second);
+			if (!(playState_ & 0x10)) {	// Skip when loop pattern
+				changedNextPos |= effPositionJump(eff.second);
+			}
 			break;
 		case EffectType::SongEnd:
-			effSongEnd();
-			changedNextPos = true;
+			if (!(playState_ & 0x10)) {	// Skip when loop pattern
+				effSongEnd();
+				changedNextPos = true;
+			}
 			break;
 		case EffectType::PatternBreak:
-			changedNextPos |= effPatternBreak(eff.second);
+			if (!(playState_ & 0x10)) {	// Skip when loop pattern
+				changedNextPos |= effPatternBreak(eff.second);
+			}
 			break;
 		default:
 			break;

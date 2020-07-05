@@ -9,6 +9,7 @@
 - Enable play/stop shortcuts in the instrument list (thanks [@nyanpasu64])
 - [#228] - Fix incorrect instrument swapping (thanks [@YuzuMSX])
 - [#233] - Fix corruption of audio thread on macOS ([#231]; thanks [@OPNA2608])
+- [#232] - Ignore `0Bxx`, `0Cxx` and `0Dxx` when looping a pattern (thanks [@OPNA2608])
 
 [@superctr]: https://github.com/superctr
 
@@ -17,6 +18,7 @@
 [#233]: https://github.com/rerrahkr/BambooTracker/pull/233
 [#231]: https://github.com/rerrahkr/BambooTracker/issues/231
 [#234]: https://github.com/rerrahkr/BambooTracker/issues/234
+[#232]: https://github.com/rerrahkr/BambooTracker/issues/232
 
 ## 0.4.3 (2020-06-28)
 ### Added
