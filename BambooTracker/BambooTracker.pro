@@ -42,26 +42,40 @@ CONFIG += c++14
 
 # C/C++ compiler flags
 msvc {
+  message("Qt configured with MSVC")
+  message("Compiler is version" $$QT_MSC_FULL_VER)
   CPP_WARNING_FLAGS += /Wall /Wp64 /WX
   CPP_WARNING_FLAGS += /source-charset:utf-8
 }
-else:if(gcc|clang) {
+else:clang|if(gcc:!intel_icc) {
   # Pedantic settings, warning -> error escalation and C standard specification
   CPP_WARNING_FLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
   QMAKE_CFLAGS += -std=gnu11
 
-  # Attempt to get the compiler version for version-specific handling
-  # Clang returns an ancient pinned GCC version, attempt hacky & ugly output grepping instead
+  # Get the compiler version for version-specific handling
   clang {
-    message("Qt configured with Clang")
-    COMPILER_VERSION = $$system($$QMAKE_CXX " --version | grep -Eo '[[:space:]][[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+([[:space:]]+|$)'")
+    defined(QMAKE_APPLE_CLANG_MAJOR_VERSION, var) {
+      message("Qt configured with Apple LLVM")
+      CONFIG += clang-apple
+      COMPILER_MAJOR_VERSION = $$QT_APPLE_CLANG_MAJOR_VERSION
+      COMPILER_MINOR_VERSION = $$QT_APPLE_CLANG_MINOR_VERSION
+      COMPILER_PATCH_VERSION = $$QT_APPLE_CLANG_PATCH_VERSION
+    }
+    else {
+      message("Qt configured with LLVM")
+      CONFIG += clang-normal
+      COMPILER_MAJOR_VERSION = $$QT_CLANG_MAJOR_VERSION
+      COMPILER_MINOR_VERSION = $$QT_CLANG_MINOR_VERSION
+      COMPILER_PATCH_VERSION = $$QT_CLANG_PATCH_VERSION
+    }
   }
   else {
     message("Qt configured with GCC")
-    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+    COMPILER_MAJOR_VERSION = $$QT_GCC_MAJOR_VERSION
+    COMPILER_MINOR_VERSION = $$QT_GCC_MINOR_VERSION
+    COMPILER_PATCH_VERSION = $$QT_GCC_PATCH_VERSION
   }
-  COMPILER_SPLIT_VERSION = $$split(COMPILER_VERSION, ".")
-  COMPILER_MAJOR_VERSION = $$first(COMPILER_SPLIT_VERSION)
+  COMPILER_VERSION = $${COMPILER_MAJOR_VERSION}.$${COMPILER_MINOR_VERSION}.$${COMPILER_PATCH_VERSION}
   message("Compiler is version" $$COMPILER_VERSION)
 
   # Temporary known-error downgrades
@@ -76,8 +90,8 @@ else:if(gcc|clang) {
     # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
     # using system-installed JACK headers in RtAudio & RtMidi
     # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)
-    greaterThan(COMPILER_MAJOR_VERSION, 7) {
-      CPP_WARNING_FLAGS += -Wno-error=deprecated-register
+    clang-apple {
+      CPP_WARNING_FLAGS += -Wno-deprecated-register
     }
 
     # FreeBSD ALSA headers use zero-length array
@@ -89,9 +103,9 @@ else:if(gcc|clang) {
     # Definition of implicit copy constructor with user-declared copy assignment operator deprecated
     # Problem in Qt5 itself, nothing we can fix about it
     # Introduced by LLVM 10, triggered by any reference to QString
-    # NOT a problem with macOS LLVM 11, does not understand the switch either
+    # TODO: Extend to clang-apple once LLVM 10 reaches the platform and they decide on a new custom version
     # /usr/local/include/qt5/QtCore/(qbytearray.h:586,qstring.h:1191)
-    !osx:greaterThan(COMPILER_MAJOR_VERSION, 9) {
+    clang-normal:greaterThan(COMPILER_MAJOR_VERSION, 9) {
       CPP_WARNING_FLAGS += -Wno-deprecated-copy
     }
   }
