@@ -42,12 +42,12 @@ CONFIG += c++14
 
 # C/C++ compiler flags
 msvc {
-  CPPFLAGS += /Wall /Wp64 /WX
-  CPPFLAGS += /source-charset:utf-8
+  CPP_WARNING_FLAGS += /Wall /Wp64 /WX
+  CPP_WARNING_FLAGS += /source-charset:utf-8
 }
 else:if(gcc|clang) {
   # Pedantic settings, warning -> error escalation and C standard specification
-  CPPFLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
+  CPP_WARNING_FLAGS += -Wall -Wextra -Werror -pedantic -pedantic-errors
   QMAKE_CFLAGS += -std=gnu11
 
   # Attempt to get the compiler version for version-specific handling
@@ -67,30 +67,49 @@ else:if(gcc|clang) {
   # Temporary known-error downgrades
 
   # RtAudio code contains VLAs for multiple APIs, needs a stronger patch in the future
-  CPPFLAGS += -Wno-error=vla
+  CPP_WARNING_FLAGS += -Wno-error=vla
 
   clang {
     # See VLA workaround, needs additional switch on Clang
-    CPPFLAGS += -Wno-vla-extension
+    CPP_WARNING_FLAGS += -Wno-vla-extension
 
     # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
     # using system-installed JACK headers in RtAudio & RtMidi
     # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)
     greaterThan(COMPILER_MAJOR_VERSION, 7) {
-      CPPFLAGS += -Wno-error=deprecated-register
+      CPP_WARNING_FLAGS += -Wno-error=deprecated-register
     }
+
     # FreeBSD ALSA headers use zero-length array
     # /usr/local/include/alsa/pcm.h:597
     freebsd {
-      CPPFLAGS += -Wno-zero-length-array
+      CPP_WARNING_FLAGS += -Wno-zero-length-array
+    }
+
+    # Definition of implicit copy constructor with user-declared copy assignment operator deprecated
+    # Problem in Qt5 itself, nothing we can fix about it
+    # Introduced by LLVM 10, triggered by any reference to QString
+    # NOT a problem with macOS LLVM 11, does not understand the switch either
+    # /usr/local/include/qt5/QtCore/(qbytearray.h:586,qstring.h:1191)
+    !osx:greaterThan(COMPILER_MAJOR_VERSION, 9) {
+      CPP_WARNING_FLAGS += -Wno-deprecated-copy
+    }
+  }
+  else {
+    # Definition of implicit copy constructor with user-declared copy assignment operator deprecated
+    # Problem in Qt5 itself, nothing we can fix about it
+    # Introduced by GCC 9, triggered by any reference to QString
+    # /usr/local/include/qt5/QtCore/(qbytearray.h:586,qstring.h:1191)
+    greaterThan(COMPILER_MAJOR_VERSION, 8) {
+      CPP_WARNING_FLAGS += -Wno-error=deprecated-copy
     }
   }
 }
 else {
   message("Unknown compiler, won't attempt to add warning & pedantic compiler switches.")
 }
-QMAKE_CFLAGS += $$CPPFLAGS
-QMAKE_CXXFLAGS += $$CPPFLAGS
+QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
+QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
     chips/c86ctl/c86ctl_wrapper.cpp \
