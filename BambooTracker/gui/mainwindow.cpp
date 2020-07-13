@@ -632,23 +632,35 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		bt->getStreamSamples(container, nSamples);
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
+	QString audioApi = utf8ToQString(config.lock()->getSoundAPI());
+	bool savedApiExists = false;
+	const std::vector<QString> audioApis = stream_->getAvailableBackends();
+	for (const QString& api : audioApis) {
+		if (api.toUtf8().toStdString() == config.lock()->getSoundAPI()) {
+			savedApiExists = true;
+			break;
+		}
+	}
+	if (!savedApiExists) {
+		audioApi = audioApis.front();
+		config.lock()->setSoundAPI(audioApi.toUtf8().toStdString());
+	}
+	QString audioDevice = utf8ToQString(config.lock()->getSoundDevice());
 	bool savedDeviceExists = false;
-	for (const QString& audioDevice : stream_->getAvailableDevices()) {
-		if (audioDevice.toUtf8().toStdString() == config.lock()->getSoundDevice()) {
+	for (const QString& device : stream_->getAvailableDevices(audioApi)) {
+		if (device.toUtf8().toStdString() == config.lock()->getSoundDevice()) {
 			savedDeviceExists = true;
 			break;
 		}
 	}
 	if (!savedDeviceExists) {
-		QString sndDev =  stream_->getDefaultOutputDevice();
-		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
+		audioDevice = stream_->getDefaultOutputDevice(audioDevice);
+		config.lock()->setSoundDevice(audioDevice.toUtf8().toStdString());
 	}
 	bool streamState = stream_->initialize(
 						   static_cast<uint32_t>(bt_->getStreamRate()),
 						   static_cast<uint32_t>(bt_->getStreamDuration()),
-						   bt_->getModuleTickFrequency(),
-						   utf8ToQString(config.lock()->getSoundAPI()),
-						   utf8ToQString(config.lock()->getSoundDevice()));
+						   bt_->getModuleTickFrequency(), audioApi, audioDevice);
 	if (!streamState) showStreamFailedDialog();
 	RealChipInterface intf = config.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
