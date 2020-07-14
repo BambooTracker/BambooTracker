@@ -24,7 +24,9 @@ public:
 	void setTickUpdateCallback(TickUpdateCallback* cb, void* cbPtr);
 
 	// duration: miliseconds
-	virtual bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& backend, const QString& device);
+	virtual bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate,
+							const QString& backend, const QString& device,
+							QString* errDetail = nullptr);
 	virtual void shutdown() = 0;
 
 	virtual std::vector<QString> getAvailableBackends() const = 0;

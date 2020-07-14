@@ -657,11 +657,12 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		audioDevice = stream_->getDefaultOutputDevice(audioDevice);
 		config.lock()->setSoundDevice(audioDevice.toUtf8().toStdString());
 	}
+	QString streamErr;
 	bool streamState = stream_->initialize(
 						   static_cast<uint32_t>(bt_->getStreamRate()),
 						   static_cast<uint32_t>(bt_->getStreamDuration()),
-						   bt_->getModuleTickFrequency(), audioApi, audioDevice);
-	if (!streamState) showStreamFailedDialog();
+						   bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
+	if (!streamState) showStreamFailedDialog(streamErr);
 	RealChipInterface intf = config.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
 		bt_->useSCCI(nullptr);
@@ -2187,13 +2188,15 @@ void MainWindow::changeConfiguration()
 		timer_.reset();
 		bt_->useSCCI(nullptr);
 		bt_->useC86CTL(nullptr);
+		QString streamErr;
 		bool streamState = stream_->initialize(
 							   config_.lock()->getSampleRate(),
 							   config_.lock()->getBufferLength(),
 							   bt_->getModuleTickFrequency(),
 							   utf8ToQString(config_.lock()->getSoundAPI()),
-							   utf8ToQString(config_.lock()->getSoundDevice()));
-		if (!streamState) showStreamFailedDialog();
+							   utf8ToQString(config_.lock()->getSoundDevice()),
+							   &streamErr);
+		if (!streamState) showStreamFailedDialog(streamErr);
 		stream_->start();
 	}
 	else {

@@ -13,7 +13,9 @@ AudioStreamRtAudio::~AudioStreamRtAudio()
 {
 }
 
-bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& backend, const QString& device)
+bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate,
+									const QString& backend, const QString& device,
+									QString* errDetail)
 {
 	shutdown();
 
@@ -50,10 +52,12 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 	unsigned int bufferSize = rate * duration / 1000;
 	try {
 		audio->openStream(&param, nullptr, RTAUDIO_SINT16, rate, &bufferSize, callback, this, &opts);
+		if (errDetail) *errDetail = "";
 		return true;
 	}
 	catch (RtAudioError& error) {
 		error.printMessage();
+		if (errDetail) *errDetail = QString::fromStdString(error.getMessage());
 		return false;
 	}
 }

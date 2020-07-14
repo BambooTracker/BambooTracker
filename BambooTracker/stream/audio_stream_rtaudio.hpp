@@ -11,7 +11,9 @@ public:
 	explicit AudioStreamRtAudio(QObject* parent = nullptr);
 	~AudioStreamRtAudio() override;
 
-	bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate, const QString& backend, const QString& device) override;
+	bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate,
+					const QString& backend, const QString& device,
+					QString* errDetail) override;
 	void shutdown() override;
 
 	std::vector<QString> getAvailableBackends() const override;
