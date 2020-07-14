@@ -314,24 +314,6 @@
           <string>MIDI input</string>
          </property>
          <layout class="QFormLayout" name="formLayout_2">
-          <item row="1" column="1">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLineEdit" name="midiInputNameLine">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="midiInputChoiceButton">
-              <property name="text">
-               <string notr="true">...</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="midiInputNameLabel">
             <property name="text">
@@ -348,6 +330,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="midiApiComboBox"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="midiInputDeviceComboBox"/>
           </item>
          </layout>
         </widget>
@@ -2637,8 +2622,7 @@ color: rgb(255, 255, 255);</string>
   <tabstop>audioDeviceComboBox</tabstop>
   <tabstop>realChipComboBox</tabstop>
   <tabstop>midiApiComboBox</tabstop>
-  <tabstop>midiInputNameLine</tabstop>
-  <tabstop>midiInputChoiceButton</tabstop>
+  <tabstop>midiInputDeviceComboBox</tabstop>
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>bufferLengthHorizontalSlider</tabstop>
   <tabstop>mixerResetPushButton</tabstop>

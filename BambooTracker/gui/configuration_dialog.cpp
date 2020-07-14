@@ -257,20 +257,21 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	case RealChipInterface::C86CTL:	ui->realChipComboBox->setCurrentIndex(2);	break;
 	}
 
-	MidiInterface& midiIntf = MidiInterface::instance();
-	int midiApiRow = -1;
-	int defMidiApiRow = 0;
-	for (auto& name : midiIntf.getAvailableApi()) {
-		ui->midiApiComboBox->addItem(utf8ToQString(name));
-		if (name == configLocked->getMidiAPI())
-			midiApiRow = ui->midiApiComboBox->count() - 1;
-		if (name == midiIntf.currentApiName())
-			defMidiApiRow = midiApiRow = ui->midiApiComboBox->count() - 1;
+	{
+		QSignalBlocker blocker(ui->midiInputDeviceComboBox);
+		MidiInterface& midiIntf = MidiInterface::instance();
+		int midiApiRow = -1;
+		int defMidiApiRow = 0;
+		for (auto& name : midiIntf.getAvailableApi()) {
+			ui->midiApiComboBox->addItem(utf8ToQString(name));
+			if (name == configLocked->getMidiAPI())
+				midiApiRow = ui->midiApiComboBox->count() - 1;
+			if (name == midiIntf.currentApiName())
+				defMidiApiRow = midiApiRow = ui->midiApiComboBox->count() - 1;
+		}
+		ui->midiApiComboBox->setCurrentIndex((midiApiRow == -1) ? defMidiApiRow : midiApiRow);
 	}
-	ui->midiApiComboBox->setCurrentIndex((midiApiRow == -1) ? defMidiApiRow : midiApiRow);
-	if (midiIntf.supportsVirtualPort())
-		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
-	ui->midiInputNameLine->setText(QString::fromStdString(configLocked->getMidiInputPort()));
+	on_midiApiComboBox_currentIndexChanged(ui->midiApiComboBox->currentText());
 
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
@@ -396,7 +397,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
 										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
 	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());
-	configLocked->setMidiInputPort(ui->midiInputNameLine->text().toStdString());
+	configLocked->setMidiInputPort(ui->midiInputDeviceComboBox->currentData().toString().toUtf8().toStdString());
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
 	configLocked->setBufferLength(static_cast<size_t>(ui->bufferLengthHorizontalSlider->value()));
 
@@ -504,46 +505,6 @@ void ConfigurationDialog::on_mixerResetPushButton_clicked()
 }
 
 /***** Sound *****/
-void ConfigurationDialog::on_midiInputChoiceButton_clicked()
-{
-	QToolButton *button = ui->midiInputChoiceButton;
-	QMenu menu;
-	QAction *action;
-
-	MidiInterface &intf = MidiInterface::instance();
-	std::vector<std::string> ports;
-	bool vport;
-	std::string apiName = ui->midiApiComboBox->currentText().toUtf8().toStdString();
-	if (intf.currentApiName() == apiName) {
-		ports = intf.getRealInputPorts();
-		vport = intf.supportsVirtualPort();
-	}
-	else {
-		ports = intf.getRealInputPorts(apiName);
-		vport = intf.supportsVirtualPort(apiName);
-	}
-
-	if (vport) {
-		ui->midiInputNameLine->setPlaceholderText(tr("Virtual port"));
-		action = menu.addAction(tr("Virtual port"));
-		action->setData(QString());
-	}
-
-	for (unsigned i = 0, n = ports.size(); i < n; ++i) {
-		if (i == 0 && vport)
-			menu.addSeparator();
-		QString portName = QString::fromStdString(ports[i]);
-		action = menu.addAction(portName);
-		action->setData(portName);
-	}
-
-	QAction *choice = menu.exec(button->mapToGlobal(button->rect().bottomLeft()));
-	if (choice) {
-		QString portName = choice->data().toString();
-		ui->midiInputNameLine->setText(portName);
-	}
-}
-
 void ConfigurationDialog::on_audioApiComboBox_currentIndexChanged(const QString &arg1)
 {
 	ui->audioDeviceComboBox->clear();
@@ -557,6 +518,34 @@ void ConfigurationDialog::on_audioApiComboBox_currentIndexChanged(const QString 
 			defDevRow = ui->audioDeviceComboBox->count() - 1;
 	}
 	ui->audioDeviceComboBox->setCurrentIndex((devRow == -1) ? defDevRow : devRow);
+}
+
+void ConfigurationDialog::on_midiApiComboBox_currentIndexChanged(const QString &arg1)
+{
+	ui->midiInputDeviceComboBox->clear();
+
+	MidiInterface &intf = MidiInterface::instance();
+	std::vector<std::string> ports;
+	bool vport;
+	std::string apiName = arg1.toStdString();
+	if (intf.currentApiName() == apiName) {
+		ports = intf.getRealInputPorts();
+		vport = intf.supportsVirtualPort();
+	}
+	else {
+		ports = intf.getRealInputPorts(apiName);
+		vport = intf.supportsVirtualPort(apiName);
+	}
+
+	int devRow = -1;
+	if (vport) ui->midiInputDeviceComboBox->addItem(tr("Virtual port"), QString());
+	for (auto& portName : ports) {
+		auto name = QString::fromStdString(portName);
+		ui->midiInputDeviceComboBox->addItem(name, name);
+		if (portName == config_.lock()->getMidiInputPort())
+			devRow = ui->midiInputDeviceComboBox->count() - 1;
+	}
+	ui->midiInputDeviceComboBox->setCurrentIndex((devRow == -1) ? 0 : devRow);
 }
 
 /*****Formats *****/
