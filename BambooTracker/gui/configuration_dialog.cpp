@@ -508,9 +508,17 @@ void ConfigurationDialog::on_mixerResetPushButton_clicked()
 void ConfigurationDialog::on_audioApiComboBox_currentIndexChanged(const QString &arg1)
 {
 	ui->audioDeviceComboBox->clear();
+	std::vector<QString> devices = stream_.lock()->getAvailableDevices(arg1);
+	if (devices.empty()) {
+		ui->audioDeviceComboBox->setEnabled(false);
+		return;
+	}
+	else {
+		ui->audioDeviceComboBox->setEnabled(true);
+	}
 	int devRow = -1;
 	int defDevRow = 0;
-	for (auto& name : stream_.lock()->getAvailableDevices(arg1)) {
+	for (auto& name : devices) {
 		ui->audioDeviceComboBox->addItem(name);
 		if (name == utf8ToQString(config_.lock()->getSoundDevice()))
 			devRow = ui->audioDeviceComboBox->count() - 1;
@@ -538,7 +546,14 @@ void ConfigurationDialog::on_midiApiComboBox_currentIndexChanged(const QString &
 	}
 
 	int devRow = -1;
-	if (vport) ui->midiInputDeviceComboBox->addItem(tr("Virtual port"), QString());
+	if (vport) {
+		ui->midiInputDeviceComboBox->addItem(tr("Virtual port"), QString());
+	}
+	else if (ports.empty()) {
+		ui->midiInputDeviceComboBox->setEnabled(false);
+		return;
+	}
+	ui->midiInputDeviceComboBox->setEnabled(true);
 	for (auto& portName : ports) {
 		auto name = QString::fromStdString(portName);
 		ui->midiInputDeviceComboBox->addItem(name, name);
