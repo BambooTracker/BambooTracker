@@ -124,18 +124,18 @@ signals:
 	void effectEntered(QString text);
 
 protected:
-	virtual bool event(QEvent *event) override;
+	bool event(QEvent *event) override;
 	bool keyPressed(QKeyEvent* event);
 	bool keyReleased(QKeyEvent* event);
-	virtual void paintEvent(QPaintEvent* event) override;
-	virtual void resizeEvent(QResizeEvent* event) override;
-	virtual void mousePressEvent(QMouseEvent* event) override;
-	virtual void mouseMoveEvent(QMouseEvent* event) override;
-	virtual void mouseReleaseEvent(QMouseEvent* event) override;
-	virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
+	void paintEvent(QPaintEvent* event) override;
+	void resizeEvent(QResizeEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
+	void mouseDoubleClickEvent(QMouseEvent* event) override;
 	bool mouseHoverd(QHoverEvent* event);
-	virtual void wheelEvent(QWheelEvent* event) override;
-	virtual void leaveEvent(QEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
+	void leaveEvent(QEvent* event) override;
 
 	// Midi
 private:

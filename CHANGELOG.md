@@ -3,6 +3,7 @@
 ## Unreleased
 ## Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
+- [#239] - Improve compiler & version detection (thanks [@OPNA2608])
 
 ## Fixed
 - [#229] - Fix detection of effect `0Bxx`, `0Cxx` and `0Dxx` in WAV/VGM/S98 export (thanks [@YuzuMSX])
@@ -10,6 +11,7 @@
 - [#228] - Fix incorrect instrument swapping (thanks [@YuzuMSX])
 - [#233] - Fix corruption of audio thread on macOS ([#231]; thanks [@OPNA2608])
 - [#232] - Ignore `0Bxx`, `0Cxx` and `0Dxx` when looping a pattern (thanks [@OPNA2608])
+- [#230], [#236] - Fix compilation error on BSD ([#235]; thanks [@ehaupt], [@OPNA2608])
 
 [@superctr]: https://github.com/superctr
 
@@ -19,6 +21,10 @@
 [#231]: https://github.com/rerrahkr/BambooTracker/issues/231
 [#234]: https://github.com/rerrahkr/BambooTracker/issues/234
 [#232]: https://github.com/rerrahkr/BambooTracker/issues/232
+[#230]: https://github.com/rerrahkr/BambooTracker/pull/230
+[#235]: https://github.com/rerrahkr/BambooTracker/issues/235
+[#236]: https://github.com/rerrahkr/BambooTracker/pull/236
+[#239]: https://github.com/rerrahkr/BambooTracker/pull/239
 
 ## 0.4.3 (2020-06-28)
 ### Added
