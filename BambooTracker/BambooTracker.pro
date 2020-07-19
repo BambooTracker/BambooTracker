@@ -90,13 +90,13 @@ else:clang|if(gcc:!intel_icc) {
     # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
     # using system-installed JACK headers in RtAudio & RtMidi
     # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)
-    clang-apple {
+    use_jack {
       CPP_WARNING_FLAGS += -Wno-deprecated-register
     }
 
     # FreeBSD ALSA headers use zero-length array
     # /usr/local/include/alsa/pcm.h:597
-    freebsd {
+    freebsd:use_alsa {
       CPP_WARNING_FLAGS += -Wno-zero-length-array
     }
 
