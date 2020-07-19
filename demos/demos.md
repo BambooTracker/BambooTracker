@@ -5,7 +5,7 @@
 - [maak] - breeze 2608.btm, Rude Buster.btm
 - Rerrah - Lotus.btm
 - [RigidatoMS] - Is This What You Desired.btm
-- [SuperJet Spade] - Underwater Ruins.btm
+- [SuperJet Spade] - No Time To Waste.btm, Underwater Ruins.btm
 - [TastySnax12] - Wild Battle (RSE).btm
 
 ## Sample instruments

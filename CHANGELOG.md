@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+## Added
+- 1 new sample module (thanks SuperJet Spade)
+
 ## Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
 - [#239] - Improve compiler & version detection (thanks [@OPNA2608])
