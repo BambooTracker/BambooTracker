@@ -1073,7 +1073,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 void PatternEditorPanel::drawBorders(int maxWidth)
 {
 	QPainter painter(&completePixmap_);
-
+	painter.setPen(palette_->ptnBorderColor);
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, geometry().height());
 	size_t trackVisIdx = static_cast<size_t>(leftTrackVisIdx_);

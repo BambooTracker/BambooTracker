@@ -66,7 +66,7 @@ ColorPalette::ColorPalette()
 	odrRowNumColor = QColor::fromRgb(255, 200, 180, 255);
 	odrHeaderTextColor = QColor::fromRgb(240, 240, 200, 255);
 	odrHeaderRowColor = QColor::fromRgb(60, 60, 60, 255);
-	odrBorderColor = QColor::fromRgb(120, 120, 120, 255);
+	odrBorderColor = QColor::fromRgb(0, 0, 0, 255);
 	odrBackColor = QColor::fromRgb(0, 0, 0, 255);
 
 	// Pattern editor
@@ -92,7 +92,7 @@ ColorPalette::ColorPalette()
 	ptnHeaderTextColor = QColor::fromRgb(240, 240, 200, 255);
 	ptnHeaderRowColor = QColor::fromRgb(60, 60, 60, 255);
 	ptnMaskColor = QColor::fromRgb(0, 0, 0, 127);
-	ptnBorderColor = QColor::fromRgb(120, 120, 120, 255);
+	ptnBorderColor = QColor::fromRgb(0, 0, 0, 255);
 	ptnMuteColor = QColor::fromRgb(255, 0, 0, 255);
 	ptnUnmuteColor = QColor::fromRgb(0, 255, 0, 255);
 	ptnBackColor = QColor::fromRgb(0, 0, 0, 255);

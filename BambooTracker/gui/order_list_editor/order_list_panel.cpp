@@ -663,7 +663,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 void OrderListPanel::drawBorders(int maxWidth)
 {
 	QPainter painter(&completePixmap_);
-
+	painter.setPen(palette_->odrBorderColor);
 	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
 	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, geometry().height());
 	for (int x = rowNumWidth_ + trackWidth_, trackVisIdx = leftTrackVisIdx_; x <= maxWidth; ++trackVisIdx) {

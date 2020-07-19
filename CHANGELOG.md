@@ -12,6 +12,7 @@
 - [#233] - Fix corruption of audio thread on macOS ([#231]; thanks [@OPNA2608])
 - [#232] - Ignore `0Bxx`, `0Cxx` and `0Dxx` when looping a pattern (thanks [@OPNA2608])
 - [#230], [#236] - Fix compilation error on BSD ([#235]; thanks [@ehaupt], [@OPNA2608])
+- Fix to enable border color setting of the pattern editor and the order list
 
 [@superctr]: https://github.com/superctr
 
