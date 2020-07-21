@@ -49,7 +49,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Set digit types in the order of appearence.</string>
+      <string>Set digit types in the order of appearance.</string>
      </property>
     </widget>
    </item>
