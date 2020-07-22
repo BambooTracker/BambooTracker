@@ -11,7 +11,7 @@ bool QApplicationWrapper::notify(QObject* receiver, QEvent* event)
 	}
 	catch (std::exception& e) {
 		QMessageBox::critical(nullptr, QObject::tr("Error"),
-							  QObject::tr("An unknown error occured.\n%1").arg(e.what()));
+							  QObject::tr("An unknown error occurred.\n%1").arg(e.what()));
 		return false;
 	}
 }
