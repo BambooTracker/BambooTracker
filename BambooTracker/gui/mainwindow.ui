@@ -701,6 +701,8 @@
     <addaction name="separator"/>
     <addaction name="action_Transpose_Song"/>
     <addaction name="action_Swap_Tracks"/>
+    <addaction name="separator"/>
+    <addaction name="action_Estimate_Song_Length"/>
    </widget>
    <widget class="QMenu" name="menuModule">
     <property name="title">
@@ -1656,6 +1658,11 @@
   <action name="action_Hide_Tracks">
    <property name="text">
     <string>&amp;Hide Tracks...</string>
+   </property>
+  </action>
+  <action name="action_Estimate_Song_Length">
+   <property name="text">
+    <string>&amp;Estimate Song Length...</string>
    </property>
   </action>
  </widget>

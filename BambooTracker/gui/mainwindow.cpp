@@ -3654,3 +3654,14 @@ void MainWindow::on_action_Hide_Tracks_triggered()
 		setTrackVisibility(diag.getVisibleTracks());
 	}
 }
+
+void MainWindow::on_action_Estimate_Song_Length_triggered()
+{
+	double time = bt_->calculateSongLength(bt_->getCurrentSongNumber());
+	int seconds = static_cast<int>(std::round(time));
+	QMessageBox box;
+	box.setIcon(QMessageBox::Information);
+	box.setText(tr("Approximate song length: %1m%2s")
+				.arg(seconds / 60).arg(seconds % 60, 2, 10, QChar('0')));
+	box.exec();
+}

@@ -349,6 +349,7 @@ public:
 	size_t getAllStepCount(int songNum, size_t loopCnt) const;
 	void transposeSong(int songNum, int seminotes, std::vector<int> excludeInsts);
 	void swapTracks(int songNum, int track1, int track2);
+	double calculateSongLength(int songNum) const;
 	/*----- Bookmark -----*/
 	void addBookmark(int songNum, std::string name, int order, int step);
 	void changeBookmark(int songNum, int i, std::string name, int order, int step);

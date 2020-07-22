@@ -7,6 +7,7 @@
 #include "commands.hpp"
 #include "io_handlers.hpp"
 #include "bank.hpp"
+#include "song_length_calculator.hpp"
 
 const uint32_t BambooTracker::CHIP_CLOCK = 3993600 * 2;
 
@@ -1991,6 +1992,12 @@ void BambooTracker::transposeSong(int songNum, int seminotes, std::vector<int> e
 void BambooTracker::swapTracks(int songNum, int track1, int track2)
 {
 	mod_->getSong(songNum).swapTracks(track1, track2);
+}
+
+double BambooTracker::calculateSongLength(int songNum) const
+{
+	SongLengthCalculator calculator(*mod_.get(), songNum);
+	return calculator.calculateBySecond();
 }
 
 /*----- Bookmark -----*/

@@ -331,6 +331,7 @@ private slots:
 	void on_action_Swap_Tracks_triggered();
 	void on_action_Insert_triggered();
 	void on_action_Hide_Tracks_triggered();
+	void on_action_Estimate_Song_Length_triggered();
 };
 
 #endif // MAINWINDOW_HPP

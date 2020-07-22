@@ -2,6 +2,7 @@
 
 ## Unreleased
 ## Added
+- [#242] - Estimate Song Length (thanks [@Drillimation])
 - 1 new sample module (thanks SuperJet Spade)
 
 ## Changed
@@ -19,6 +20,7 @@
 - [#243] - Fix several typos (thanks [@alexmyczko])
 
 [@superctr]: https://github.com/superctr
+[@Drillimation]: https://github.com/Drillimation
 
 [#229]: https://github.com/rerrahkr/BambooTracker/issues/229
 [#228]: https://github.com/rerrahkr/BambooTracker/issues/228
@@ -31,6 +33,7 @@
 [#236]: https://github.com/rerrahkr/BambooTracker/pull/236
 [#239]: https://github.com/rerrahkr/BambooTracker/pull/239
 [#241]: https://github.com/rerrahkr/BambooTracker/pull/241
+[#242]: https://github.com/rerrahkr/BambooTracker/issues/242
 [#243]: https://github.com/rerrahkr/BambooTracker/pull/243
 
 ## 0.4.3 (2020-06-28)

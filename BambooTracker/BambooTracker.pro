@@ -170,6 +170,7 @@ SOURCES += \
     bamboo_tracker.cpp \
     module/effect.cpp \
     playback.cpp \
+    song_length_calculator.cpp \
     stream/audio_stream.cpp \
     jam_manager.cpp \
     pitch_converter.cpp \
@@ -361,6 +362,7 @@ HEADERS += \
     io/wav_container.hpp \
     module/effect.hpp \
     playback.hpp \
+    song_length_calculator.hpp \
     stream/audio_stream.hpp \
     chips/chip_def.h \
     jam_manager.hpp \
