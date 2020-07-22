@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include "effect.hpp"
+#include "enum_hash.hpp"
 
 SongLengthCalculator::SongLengthCalculator(Module& mod, int songNum)
 	: mod_(mod), songNum_(songNum)

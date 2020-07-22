@@ -9,6 +9,7 @@
 #include "module.hpp"
 #include "tick_counter.hpp"
 #include "effect.hpp"
+#include "enum_hash.hpp"
 
 /// Divede playback routine from main class BambooTracker
 class PlaybackManager
