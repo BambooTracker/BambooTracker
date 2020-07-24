@@ -3,7 +3,7 @@
 ## Unreleased
 ## Added
 - [#242] - Estimate Song Length (thanks [@Drillimation])
-- Add setting of header color
+- Add settings of header color and editor shadow
 - 1 new sample module (thanks SuperJet Spade)
 
 ## Changed

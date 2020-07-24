@@ -680,7 +680,7 @@ void OrderListPanel::drawBorders(int maxWidth)
 void OrderListPanel::drawShadow()
 {
 	QPainter painter(&completePixmap_);
-	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
+	painter.fillRect(0, 0, geometry().width(), geometry().height(), palette_->odrUnfocusedShadowColor);
 }
 
 void OrderListPanel::moveCursorToRight(int n)

@@ -63,6 +63,7 @@ void ColorPaletteHandler::save(QSettings& settings, std::weak_ptr<ColorPalette> 
 	settings.setValue("unmute", paletteLocked->ptnUnmuteColor.name(QColor::HexArgb));
 	settings.setValue("background", paletteLocked->ptnBackColor.name(QColor::HexArgb));
 	settings.setValue("marker", paletteLocked->ptnMarkerColor.name(QColor::HexArgb));
+	settings.setValue("unfocusedShadow", paletteLocked->ptnUnfocusedShadowColor.name(QColor::HexArgb));
 	settings.endGroup();
 
 	settings.beginGroup("OrderList");
@@ -81,6 +82,7 @@ void ColorPaletteHandler::save(QSettings& settings, std::weak_ptr<ColorPalette> 
 	settings.setValue("border", paletteLocked->odrBorderColor.name(QColor::HexArgb));
 	settings.setValue("headerBorder", paletteLocked->odrHeaderBorderColor.name(QColor::HexArgb));
 	settings.setValue("background", paletteLocked->odrBackColor.name(QColor::HexArgb));
+	settings.setValue("unfocusedShadow", paletteLocked->odrUnfocusedShadowColor.name(QColor::HexArgb));
 	settings.endGroup();
 
 	settings.beginGroup("InstrumentList");
@@ -152,6 +154,7 @@ void ColorPaletteHandler::load(QSettings& settings, std::weak_ptr<ColorPalette> 
 	paletteLocked->ptnUnmuteColor = settings.value("unmute", paletteLocked->ptnUnmuteColor).value<QColor>();
 	paletteLocked->ptnBackColor = settings.value("background", paletteLocked->ptnBackColor).value<QColor>();
 	paletteLocked->ptnMarkerColor = settings.value("marker", paletteLocked->ptnMarkerColor).value<QColor>();
+	paletteLocked->ptnUnfocusedShadowColor = settings.value("unfocusedShadow", paletteLocked->ptnUnfocusedShadowColor).value<QColor>();
 	settings.endGroup();
 
 	settings.beginGroup("OrderList");
@@ -170,6 +173,7 @@ void ColorPaletteHandler::load(QSettings& settings, std::weak_ptr<ColorPalette> 
 	paletteLocked->odrBorderColor = settings.value("border", paletteLocked->odrBorderColor).value<QColor>();
 	paletteLocked->odrHeaderBorderColor = settings.value("headerBorder", paletteLocked->odrHeaderBorderColor).value<QColor>();
 	paletteLocked->odrBackColor = settings.value("background", paletteLocked->odrBackColor).value<QColor>();
+	paletteLocked->odrUnfocusedShadowColor = settings.value("unfocusedShadow", paletteLocked->odrUnfocusedShadowColor).value<QColor>();
 	settings.endGroup();
 
 	settings.beginGroup("InstrumentList");

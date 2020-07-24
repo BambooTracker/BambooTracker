@@ -69,6 +69,7 @@ ColorPalette::ColorPalette()
 	odrBorderColor = QColor::fromRgb(0, 0, 0, 255);
 	odrHeaderBorderColor = QColor::fromRgb(0, 0, 0, 255);
 	odrBackColor = QColor::fromRgb(0, 0, 0, 255);
+	odrUnfocusedShadowColor = QColor::fromRgb(0, 0, 0, 47);
 
 	// Pattern editor
 	ptnDefTextColor = QColor::fromRgb(180, 180, 180, 255);
@@ -99,6 +100,7 @@ ColorPalette::ColorPalette()
 	ptnUnmuteColor = QColor::fromRgb(0, 255, 0, 255);
 	ptnBackColor = QColor::fromRgb(0, 0, 0, 255);
 	ptnMarkerColor = QColor::fromRgb(255, 255, 255, 128);
+	ptnUnfocusedShadowColor = QColor::fromRgb(0, 0, 0, 47);
 
 	// Wave visual
 	wavBackColor = QColor::fromRgb(0, 0, 33, 255);

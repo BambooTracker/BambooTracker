@@ -51,6 +51,7 @@ public:
 	QColor odrHeaderTextColor, odrHeaderRowColor;
 	QColor odrBorderColor, odrHeaderBorderColor;
 	QColor odrBackColor;
+	QColor odrUnfocusedShadowColor;
 
 	// Pattern editor
 	QColor ptnDefTextColor, ptnDefStepColor, ptnHl1StepColor, ptnHl2StepColor;
@@ -67,6 +68,7 @@ public:
 	QColor ptnMuteColor, ptnUnmuteColor;
 	QColor ptnBackColor;
 	QColor ptnMarkerColor;
+	QColor ptnUnfocusedShadowColor;
 
 	// Wave visual
 	QColor wavBackColor;

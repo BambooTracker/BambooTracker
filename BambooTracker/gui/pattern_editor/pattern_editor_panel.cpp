@@ -1037,7 +1037,7 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 	}
 
 	if (foreChanged_ && bt_->isMute(trackNum))	// Paint mute mask
-		forePainter.fillRect(x, rowY, offset - x, stepFontHeight_, palette_->ptnMaskColor);
+		forePainter.fillRect(x, rowY, offset - x - 1, stepFontHeight_, palette_->ptnMaskColor);
 
 	return baseTrackWidth_ + effWidth_ * rightEffn_[static_cast<size_t>(trackVisIdx)];
 }
@@ -1092,7 +1092,7 @@ void PatternEditorPanel::drawBorders(int maxWidth)
 void PatternEditorPanel::drawShadow()
 {
 	QPainter painter(&completePixmap_);
-	painter.fillRect(0, 0, geometry().width(), geometry().height(), QColor::fromRgb(0, 0, 0, 47));
+	painter.fillRect(0, 0, geometry().width(), geometry().height(), palette_->ptnUnfocusedShadowColor);
 }
 
 // NOTE: end >= -1
