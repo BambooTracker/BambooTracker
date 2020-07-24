@@ -3,11 +3,13 @@
 ## Unreleased
 ## Added
 - [#242] - Estimate Song Length (thanks [@Drillimation])
+- Add setting of header color
 - 1 new sample module (thanks SuperJet Spade)
 
 ## Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
 - [#239] - Improve compiler & version detection (thanks [@OPNA2608])
+- Change painting order of pattern and order border
 
 ## Fixed
 - [#229] - Fix detection of effect `0Bxx`, `0Cxx` and `0Dxx` in WAV/VGM/S98 export (thanks [@YuzuMSX])

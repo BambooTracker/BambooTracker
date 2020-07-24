@@ -292,7 +292,7 @@ void PatternEditorPanel::updateSizes()
 	hdEffCompandButtonWidth_ = m.width("+");
 #endif
 	hdMuteToggleWidth_ = baseTrackWidth_ - hdEffCompandButtonWidth_ - stepFontWidth_ / 2 * 3;
-	headerHeight_ = m.height() * 2;
+	headerHeight_ = m.height() * 2 + 1;
 	hdPlusY_ = headerHeight_ / 4 + m.lineSpacing() / 2 - m.leading() / 2 - m.descent();
 	hdMinusY_ = headerHeight_ / 2 + hdPlusY_;
 
@@ -506,6 +506,7 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 					if (foreChanged_) forePixmap_.fill(Qt::transparent);
 					drawRows(maxWidth);
 				}
+				drawBorders(maxWidth);
 
 				if (headerChanged_) {
 					// headerPixmap_->fill(Qt::transparent);
@@ -523,7 +524,6 @@ void PatternEditorPanel::drawPattern(const QRect &rect)
 				mergePainter.drawPixmap(headerPixmap_.rect(), headerPixmap_);
 			}
 
-			drawBorders(maxWidth);
 			if (!hasFocus()) drawShadow();
 
 			backChanged_ = false;
@@ -1048,23 +1048,28 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 	painter.setFont(headerFont_);
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->ptnHeaderRowColor);
+	painter.setPen(palette_->ptnHeaderBorderColor);
+	int bottomLineY = headerHeight_ - 1;
+	painter.drawLine(0, bottomLineY, geometry().width(), bottomLineY);
 	int lspace = stepFontWidth_ / 2;
-	for (int x = stepNumWidth_ + lspace, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+	for (int x = stepNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+		painter.setPen(palette_->ptnHeaderBorderColor);
+		painter.drawLine(x, 0, x, headerHeight_);
 		int trackNum = visTracks_.at(trackVisIdx);
 		int tw = baseTrackWidth_ + effWidth_ * rightEffn_.at(static_cast<size_t>(trackVisIdx));
 		if (hovPos_.order == -2 && hovPos_.trackVisIdx == trackVisIdx)
-			painter.fillRect(x - lspace, 0, tw, headerHeight_, palette_->ptnHovCellColor);
-
+			painter.fillRect(x, 0, tw, headerHeight_, palette_->ptnHovCellColor);
+		int left = x + lspace;
 		painter.setPen(palette_->ptnHeaderTextColor);
 		const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
-		painter.drawText(x, headerFontAscent_,
+		painter.drawText(left, headerFontAscent_,
 						 getTrackName(songStyle_.type, attrib.source, attrib.channelInSource));
 
-		painter.fillRect(x, headerHeight_ - 4, hdMuteToggleWidth_, 2,
+		painter.fillRect(left, headerHeight_ - 4, hdMuteToggleWidth_, 2,
 						 bt_->isMute(trackNum) ? palette_->ptnMuteColor : palette_->ptnUnmuteColor);
 
-		painter.drawText(x + hdMuteToggleWidth_ + lspace, hdPlusY_, "+");
-		painter.drawText(x + hdMuteToggleWidth_ + lspace, hdMinusY_, "-");
+		painter.drawText(left + hdMuteToggleWidth_ + lspace, hdPlusY_, "+");
+		painter.drawText(left + hdMuteToggleWidth_ + lspace, hdMinusY_, "-");
 
 		x += tw;
 	}
@@ -1072,15 +1077,14 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 
 void PatternEditorPanel::drawBorders(int maxWidth)
 {
-	QPainter painter(&completePixmap_);
+	QPainter painter(&backPixmap_);
 	painter.setPen(palette_->ptnBorderColor);
-	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
-	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, geometry().height());
+	painter.drawLine(stepNumWidth_, 0, stepNumWidth_, backPixmap_.height());
 	size_t trackVisIdx = static_cast<size_t>(leftTrackVisIdx_);
 	for (int x = stepNumWidth_; trackVisIdx < rightEffn_.size(); ) {
 		x += (baseTrackWidth_ + effWidth_ * rightEffn_.at(trackVisIdx));
 		if (x > maxWidth) break;
-		painter.drawLine(x, 0, x, geometry().height());
+		painter.drawLine(x, 0, x, backPixmap_.height());
 		++trackVisIdx;
 	}
 }

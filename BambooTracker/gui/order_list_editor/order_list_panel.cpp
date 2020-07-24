@@ -207,7 +207,7 @@ void OrderListPanel::updateSizes()
 	rowFontHeight_ = rowFontAscent_ + rowFontLeading_;
 
 	hdFontMets_ = std::make_unique<QFontMetrics>(headerFont_);
-	headerHeight_ = hdFontMets_->height() + 4;
+	headerHeight_ = hdFontMets_->height() + 5;
 	headerFontAscent_ = hdFontMets_->ascent() + 2;
 
 	/* Width & height */
@@ -265,6 +265,7 @@ void OrderListPanel::drawList(const QRect &rect)
 				if (textChanged_) textPixmap_.fill(Qt::transparent);
 				drawRows(maxWidth);
 			}
+			drawBorders(maxWidth);
 
 			if (headerChanged_) {
 				// headerPixmap_->fill(Qt::transparent);
@@ -280,7 +281,6 @@ void OrderListPanel::drawList(const QRect &rect)
 				mergePainter.drawPixmap(headerPixmap_.rect(), headerPixmap_);
 			}
 
-			drawBorders(maxWidth);
 			if (!hasFocus()) drawShadow();
 
 			backChanged_ = false;
@@ -599,8 +599,13 @@ void OrderListPanel::drawHeaders(int maxWidth)
 	painter.setFont(headerFont_);
 
 	painter.fillRect(0, 0, geometry().width(), headerHeight_, palette_->odrHeaderRowColor);
-	painter.setPen(palette_->odrHeaderTextColor);
+	painter.setPen(palette_->odrHeaderBorderColor);
+	int bottomLineY = headerHeight_ - 1;
+	painter.drawLine(0, bottomLineY, geometry().width(), bottomLineY);
+
 	for (int x = rowNumWidth_, trackVisIdx = leftTrackVisIdx_; x < maxWidth; ++trackVisIdx) {
+		painter.setPen(palette_->odrHeaderBorderColor);
+		painter.drawLine(x, 0, x, headerHeight_);
 		QString str;
 		auto& attrib = songStyle_.trackAttribs[static_cast<size_t>(visTracks_.at(trackVisIdx))];
 		switch (attrib.source) {
@@ -654,6 +659,7 @@ void OrderListPanel::drawHeaders(int maxWidth)
 		int rw = trackWidth_ - hdFontMets_->width(str);
 #endif
 		rw = (rw < 0) ? 0 : (rw / 2);
+		painter.setPen(palette_->odrHeaderTextColor);
 		painter.drawText(x + rw, headerFontAscent_, str);
 
 		x += trackWidth_;
@@ -662,12 +668,11 @@ void OrderListPanel::drawHeaders(int maxWidth)
 
 void OrderListPanel::drawBorders(int maxWidth)
 {
-	QPainter painter(&completePixmap_);
+	QPainter painter(&backPixmap_);
 	painter.setPen(palette_->odrBorderColor);
-	painter.drawLine(0, headerHeight_, geometry().width(), headerHeight_);
-	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, geometry().height());
+	painter.drawLine(rowNumWidth_, 0, rowNumWidth_, backPixmap_.height());
 	for (int x = rowNumWidth_ + trackWidth_, trackVisIdx = leftTrackVisIdx_; x <= maxWidth; ++trackVisIdx) {
-		painter.drawLine(x, 0, x, geometry().height());
+		painter.drawLine(x, 0, x, backPixmap_.height());
 		x += trackWidth_;
 	}
 }

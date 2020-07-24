@@ -49,7 +49,7 @@ public:
 	QColor odrHovCellColor;
 	QColor odrRowNumColor;
 	QColor odrHeaderTextColor, odrHeaderRowColor;
-	QColor odrBorderColor;
+	QColor odrBorderColor, odrHeaderBorderColor;
 	QColor odrBackColor;
 
 	// Pattern editor
@@ -63,7 +63,7 @@ public:
 	QColor ptnErrorColor;
 	QColor ptnHeaderTextColor, ptnHeaderRowColor;
 	QColor ptnMaskColor;
-	QColor ptnBorderColor;
+	QColor ptnBorderColor, ptnHeaderBorderColor;
 	QColor ptnMuteColor, ptnUnmuteColor;
 	QColor ptnBackColor;
 	QColor ptnMarkerColor;

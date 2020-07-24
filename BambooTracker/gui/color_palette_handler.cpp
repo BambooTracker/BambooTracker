@@ -58,6 +58,7 @@ void ColorPaletteHandler::save(QSettings& settings, std::weak_ptr<ColorPalette> 
 	settings.setValue("headerBackground", paletteLocked->ptnHeaderRowColor.name(QColor::HexArgb));
 	settings.setValue("mask", paletteLocked->ptnMaskColor.name(QColor::HexArgb));
 	settings.setValue("border", paletteLocked->ptnBorderColor.name(QColor::HexArgb));
+	settings.setValue("headerBorder", paletteLocked->ptnHeaderBorderColor.name(QColor::HexArgb));
 	settings.setValue("mute", paletteLocked->ptnMuteColor.name(QColor::HexArgb));
 	settings.setValue("unmute", paletteLocked->ptnUnmuteColor.name(QColor::HexArgb));
 	settings.setValue("background", paletteLocked->ptnBackColor.name(QColor::HexArgb));
@@ -78,6 +79,7 @@ void ColorPaletteHandler::save(QSettings& settings, std::weak_ptr<ColorPalette> 
 	settings.setValue("headerText", paletteLocked->odrHeaderTextColor.name(QColor::HexArgb));
 	settings.setValue("headerBackground", paletteLocked->odrHeaderRowColor.name(QColor::HexArgb));
 	settings.setValue("border", paletteLocked->odrBorderColor.name(QColor::HexArgb));
+	settings.setValue("headerBorder", paletteLocked->odrHeaderBorderColor.name(QColor::HexArgb));
 	settings.setValue("background", paletteLocked->odrBackColor.name(QColor::HexArgb));
 	settings.endGroup();
 
@@ -145,6 +147,7 @@ void ColorPaletteHandler::load(QSettings& settings, std::weak_ptr<ColorPalette> 
 	paletteLocked->ptnHeaderRowColor = settings.value("headerBackground", paletteLocked->ptnHeaderRowColor).value<QColor>();
 	paletteLocked->ptnMaskColor = settings.value("mask", paletteLocked->ptnMaskColor).value<QColor>();
 	paletteLocked->ptnBorderColor = settings.value("border", paletteLocked->ptnBorderColor).value<QColor>();
+	paletteLocked->ptnHeaderBorderColor = settings.value("headerBorder", paletteLocked->ptnHeaderBorderColor).value<QColor>();
 	paletteLocked->ptnMuteColor = settings.value("mute", paletteLocked->ptnMuteColor).value<QColor>();
 	paletteLocked->ptnUnmuteColor = settings.value("unmute", paletteLocked->ptnUnmuteColor).value<QColor>();
 	paletteLocked->ptnBackColor = settings.value("background", paletteLocked->ptnBackColor).value<QColor>();
@@ -165,6 +168,7 @@ void ColorPaletteHandler::load(QSettings& settings, std::weak_ptr<ColorPalette> 
 	paletteLocked->odrHeaderTextColor = settings.value("headerText", paletteLocked->odrHeaderTextColor).value<QColor>();
 	paletteLocked->odrHeaderRowColor = settings.value("headerBackground", paletteLocked->odrHeaderRowColor).value<QColor>();
 	paletteLocked->odrBorderColor = settings.value("border", paletteLocked->odrBorderColor).value<QColor>();
+	paletteLocked->odrHeaderBorderColor = settings.value("headerBorder", paletteLocked->odrHeaderBorderColor).value<QColor>();
 	paletteLocked->odrBackColor = settings.value("background", paletteLocked->odrBackColor).value<QColor>();
 	settings.endGroup();
 
