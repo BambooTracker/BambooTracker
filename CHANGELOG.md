@@ -4,6 +4,7 @@
 ## Added
 - [#242] - Estimate Song Length (thanks [@Drillimation])
 - Add settings of header color and editor shadow
+- 5 new color schemes
 - 1 new sample module (thanks SuperJet Spade)
 
 ## Changed
