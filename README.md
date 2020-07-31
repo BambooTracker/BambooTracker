@@ -216,6 +216,7 @@ The tracker can load bank from the following files.
 - .ff (PMD FF file)
 - .ppc (PMD PPC file)
 - .pvi (FMP PVI file)
+- .dat (MUCOM88 voice file)
 
 A bank saves as .btb file.
 

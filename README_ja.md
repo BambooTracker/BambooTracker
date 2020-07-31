@@ -213,6 +213,7 @@ Z X CV B N M, .
 - .ff (PMD FF file)
 - .ppc (PMD PPC file)
 - .pvi (FMP PVI file)
+- .dat (MUCOM88 voice file)
 
 書き出しは.btbのみ対応しています。
 

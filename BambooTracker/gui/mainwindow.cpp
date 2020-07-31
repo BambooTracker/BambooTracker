@@ -1699,7 +1699,8 @@ void MainWindow::importInstrumentsFromBank()
 				tr("WOPN bank (*.wopn)"),
 				tr("PMD FF (*.ff)"),
 				tr("PMD PPC (*.ppc)"),
-				tr("FMP PVI (*.pvi)")
+				tr("FMP PVI (*.pvi)"),
+				tr("MUCOM88 voice (*.dat)")
 	};
 	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
 
@@ -1744,7 +1745,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	}
 
 	// Change text codec
-	if (auto ff = dynamic_cast<FfBank*>(bank.get())) {
+	if (auto ff = dynamic_cast<RawFMBank*>(bank.get())) {
 		QTextCodec* codec = QTextCodec::codecForName("Shift-JIS");
 		for (size_t i = 0; i < ff->getNumInstruments(); ++i) {
 			std::string sjis = ff->getInstrumentName(i);

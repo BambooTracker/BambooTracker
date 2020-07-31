@@ -61,10 +61,10 @@ private:
 	std::vector<InstEntry> entries_;
 };
 
-class FfBank : public AbstractBank
+class RawFMBank : public AbstractBank
 {
 public:
-	explicit FfBank(std::vector<int> ids, std::vector<std::string> names, std::vector<BinaryContainer> ctrs);
+	explicit RawFMBank(std::vector<int> ids, std::vector<std::string> names, std::vector<BinaryContainer> ctrs);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;

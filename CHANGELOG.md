@@ -3,9 +3,10 @@
 ## Unreleased
 ## Added
 - [#242] - Estimate Song Length (thanks [@Drillimation])
-- Add settings of header color and editor shadow
-- 5 new color schemes
+- Settings of header color and editor shadow
+- [#136] - Support MUCOM88 voice file import (thanks [@freq-mod])
 - 1 new sample module (thanks SuperJet Spade)
+- 5 new color schemes
 
 ## Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])

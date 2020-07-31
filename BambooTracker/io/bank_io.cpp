@@ -876,6 +876,7 @@ AbstractBank* BankIO::loadBank(const BinaryContainer& ctr, const std::string& pa
 	if (ext.compare("ff") == 0) return BankIO::loadFFFile(ctr);
 	if (ext.compare("ppc") == 0) return BankIO::loadPPCFile(ctr);
 	if (ext.compare("pvi") == 0) return BankIO::loadPVIFile(ctr);
+	if (ext.compare("dat") == 0) return BankIO::loadMucom88File(ctr);
 	throw FileInputError(FileIO::FileType::Bank);
 }
 
@@ -981,7 +982,7 @@ AbstractBank* BankIO::loadFFFile(const BinaryContainer& ctr)
 		ctrs.push_back(block);
 	}
 
-	return new FfBank(std::move(ids), std::move(names), std::move(ctrs));
+	return new RawFMBank(std::move(ids), std::move(names), std::move(ctrs));
 }
 
 AbstractBank* BankIO::loadPPCFile(const BinaryContainer& ctr)
@@ -1040,4 +1041,39 @@ void BankIO::extractADPCMSamples(const BinaryContainer& ctr, size_t addrPos, siz
 			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
 		}
 	}
+}
+
+AbstractBank* BankIO::loadMucom88File(const BinaryContainer& ctr)
+{
+	size_t csr = 0;
+	// File size check
+	size_t ctrSize = ctr.size();
+	if (!ctrSize || ctrSize != 0x2000)
+		throw FileCorruptionError(FileIO::FileType::Bank);
+
+	std::vector<int> ids;
+	std::vector<std::string> names;
+	std::vector<BinaryContainer> ctrs;
+	for (int i = 0; i < 256; ++i) {
+		csr++;	// Skip first byte (unknown byte)
+		BinaryContainer block = ctr.getSubcontainer(csr, 25);
+		csr += 25;
+		std::string name = "";
+		for (size_t j = 0; j < 6; ++j) {
+			if (char c = ctr.readChar(csr + j)) name += c;
+			else break;
+		}
+		csr += 6;
+
+		// Empty
+		if (std::all_of(block.getPointer(), block.getPointer() + 25,
+						[](const char c) { return c == 0; }) && name.empty())
+			continue;
+
+		ids.push_back(i);
+		names.push_back(name);
+		ctrs.push_back(block);
+	}
+
+	return new RawFMBank(std::move(ids), std::move(names), std::move(ctrs));
 }

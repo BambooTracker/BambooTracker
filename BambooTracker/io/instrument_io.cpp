@@ -4302,10 +4302,10 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 	}
 }
 
-AbstractInstrument* InstrumentIO::loadFfInstrument(const BinaryContainer& instCtr,
-												   const std::string& name,
-												   std::weak_ptr<InstrumentsManager> instMan,
-												   int instNum)
+AbstractInstrument* InstrumentIO::loadRawFMInstrument(const BinaryContainer& instCtr,
+													  const std::string& name,
+													  std::weak_ptr<InstrumentsManager> instMan,
+													  int instNum)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
