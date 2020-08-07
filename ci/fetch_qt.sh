@@ -17,7 +17,7 @@ QT_TARGETCMP="$@"
 
 echo "Test if fetching Qt freshly is required."
 
-if [[ -d "$QT_TARGETDIR"/"$QT_TARGETVER" ]]; then
+if [[ -d "$QT_TARGETDIR"/"$QT_TARGETVER"/"$(echo $QT_TARGETTCH | sed -e 's/^win\([[:digit:]]*\)_\(.*\)$/\2_\1/')"/bin ]]; then
   echo "Qt seems cached."
   echo "If cache is incorrect, please delete the cache and restart the build."
   exit 0
