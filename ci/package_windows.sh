@@ -2,17 +2,24 @@
 
 set -e
 
-DEPLOY_OPTIONS="--no-quick-import --no-system-d3d-compiler --no-compiler-runtime --no-webkit2 --no-angle --no-svg"
-ADDITIONAL_OPTIONS=("--no-opengl-sw" "--no-virtualkeyboard")
+HELP_OUT=$(./windeployqt.exe -h)
+DEPLOY_OPTS="-verbose=2"
+PLUGIN_OPTS=("--no-quick-import" "--no-system-d3d-compiler" "--no-compiler-runtime" "--no-webkit2" "--no-opengl-sw" "--no-virtualkeyboard", "--no-angle")
+for opt in ${PLUGIN_OPTS[@]}; do
+  if [[ $(echo $HELP_OUT | grep -e $opt) ]]; then
+    DEPLOY_OPTS="$DEPLOY_OPTS $opt"
+  fi
+done
 
-for opt in ${CHECK_OPTIONS[@]}; do
-  if [[ $(./windeployqt.exe -h | grep -e $opt) ]]; then
-    DEPLOY_OPTIONS="$DEPLOY_OPTIONS $opt"
+EXLIB_OPTS=("svg")
+for opt in ${EXLIB_OPTS[@]}; do
+  if [[ $(echo $HELP_OUT | grep -e $opt) ]]; then
+    DEPLOY_OPTS="$DEPLOY_OPTS --no-$opt"
   fi
 done
 
 cp -a "$(find ../ -name BambooTracker.exe)" ../{img,demos,licenses,specs,skins,*.md,LICENSE} .
-windeployqt BambooTracker.exe -verbose=2 $DEPLOY_OPTIONS
+windeployqt BambooTracker.exe $DEPLOY_OPTS
 mv translations lang
 mv ../BambooTracker/.qm/*.qm lang/
 rm -rf imageformats
