@@ -1,19 +1,23 @@
 # Changelog
 
 ## Unreleased
-## Added
+### Added
 - [#242] - Estimate Song Length (thanks [@Drillimation])
 - Settings of header color and editor shadow
 - [#136] - Support MUCOM88 voice file import (thanks [@freq-mod])
+- [#237] - Supported by Nixpkgs (thanks [@OPNA2608])
 - 1 new sample module (thanks SuperJet Spade)
 - 5 new color schemes
 
-## Changed
+### Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
 - [#239] - Improve compiler & version detection (thanks [@OPNA2608])
 - Change painting order of pattern and order border
+- [#250] - Improve misc file installation ([#248]; thanks [@OPNA2608])
+- [#253] - Reduce build package size ([#251])
+- [#252] - Support bank import from .FF including SSG-EG params (thanks [@freq-mod])
 
-## Fixed
+### Fixed
 - [#229] - Fix detection of effect `0Bxx`, `0Cxx` and `0Dxx` in WAV/VGM/S98 export (thanks [@YuzuMSX])
 - Enable play/stop shortcuts in the instrument list (thanks [@nyanpasu64])
 - [#228] - Fix incorrect instrument swapping (thanks [@YuzuMSX])
@@ -39,6 +43,12 @@
 [#241]: https://github.com/rerrahkr/BambooTracker/pull/241
 [#242]: https://github.com/rerrahkr/BambooTracker/issues/242
 [#243]: https://github.com/rerrahkr/BambooTracker/pull/243
+[#237]: https://github.com/rerrahkr/BambooTracker/pull/237
+[#248]: https://github.com/rerrahkr/BambooTracker/issues/248
+[#250]: https://github.com/rerrahkr/BambooTracker/pull/250/files
+[#251]: https://github.com/rerrahkr/BambooTracker/issues/251
+[#253]: https://github.com/rerrahkr/BambooTracker/pull/253
+[#252]: https://github.com/rerrahkr/BambooTracker/issues/252
 
 ## 0.4.3 (2020-06-28)
 ### Added

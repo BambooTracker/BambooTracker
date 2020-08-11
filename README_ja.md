@@ -12,9 +12,23 @@
 [English](./README.md)
 
 ## ダウンロード
-### Windows / macOS
+### Windows
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
+
+### macOS
+***[#231](https://github.com/rerrahkr/BambooTracker/issues/231)の問題により、v0.4.3のmacOS版のビルドは動作しません。お手数ですが、次期リリースまで開発版ビルドのご利用お願いいたします。***
+
+#### GitHubビルド
+- <https://github.com/rerrahkr/BambooTracker/releases>
+- *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
+
+#### Nixpkgs
+Alternatively, you can install the latest BambooTracker release via the [Nix package manager](https://nixos.org/) (You might need to update your nixpkgs-unstable channel first):
+
+[Nix package manager](https://nixos.org/)から最新版のインストールが可能です。(最初にnixpkgs-unstableチャンネルの更新が必要な場合があります。):
+
+`nix-env -iA nixpkgs.bambootracker`
 
 ### Linux / BSD
 #### Debian / Ubuntu
@@ -22,6 +36,12 @@
 
 #### FreeBSD
 `pkg install bambootracker`
+
+#### クロスディストリビューション
+##### Nixpkgs
+(nixpkgs-unstableチャンネルの更新後に以下のコマンドを実行):
+
+`nix-env -iA nixpkgs.bambootracker`
 
 #### その他
 - "ビルド方法"の章を参照してください。

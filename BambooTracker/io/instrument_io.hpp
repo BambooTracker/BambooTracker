@@ -48,16 +48,20 @@ public:
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum,
 												 uint32_t bankVersion);
-	static AbstractInstrument* loadRawFMInstrument(const BinaryContainer& instCtr,
-												   const std::string& name,
-												   std::weak_ptr<InstrumentsManager> instMan,
-												   int instNum);
+	static AbstractInstrument* loadFFInstrument(const BinaryContainer& instCtr,
+												const std::string& name,
+												std::weak_ptr<InstrumentsManager> instMan,
+												int instNum);
 	static AbstractInstrument* loadPPCInstrument(const std::vector<uint8_t> sample,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum);
 	static AbstractInstrument* loadPVIInstrument(const std::vector<uint8_t> sample,
 												 std::weak_ptr<InstrumentsManager> instMan,
 												 int instNum);
+	static AbstractInstrument* loadMUCOM88Instrument(const BinaryContainer& instCtr,
+													 const std::string& name,
+													 std::weak_ptr<InstrumentsManager> instMan,
+													 int instNum);
 
 private:
 	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(

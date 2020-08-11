@@ -982,7 +982,7 @@ AbstractBank* BankIO::loadFFFile(const BinaryContainer& ctr)
 		ctrs.push_back(block);
 	}
 
-	return new RawFMBank(std::move(ids), std::move(names), std::move(ctrs));
+	return new FfBank(std::move(ids), std::move(names), std::move(ctrs));
 }
 
 AbstractBank* BankIO::loadPPCFile(const BinaryContainer& ctr)
@@ -1075,5 +1075,5 @@ AbstractBank* BankIO::loadMucom88File(const BinaryContainer& ctr)
 		ctrs.push_back(block);
 	}
 
-	return new RawFMBank(std::move(ids), std::move(names), std::move(ctrs));
+	return new Mucom88Bank(std::move(ids), std::move(names), std::move(ctrs));
 }
