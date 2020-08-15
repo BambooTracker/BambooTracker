@@ -25,6 +25,7 @@
 - [#232] - Ignore `0Bxx`, `0Cxx` and `0Dxx` when looping a pattern (thanks [@OPNA2608])
 - [#230], [#236], [#241] - Fix compilation error on BSD ([#235]; thanks [@ehaupt], [@OPNA2608])
 - Fix to enable border color setting of the pattern editor and the order list
+- Fix .vgi import to load the operator 2 and 3 correctly
 - [#243] - Fix several typos (thanks [@alexmyczko])
 
 [@superctr]: https://github.com/superctr
