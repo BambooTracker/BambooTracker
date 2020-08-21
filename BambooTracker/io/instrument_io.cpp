@@ -2883,20 +2883,6 @@ AbstractInstrument* InstrumentIO::loadVGIFile(const BinaryContainer& ctr, std::s
 	ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
-	uint8_t drams3 = ctr.readUint8(csr++);
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, drams3 & 31);
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
-	int ssgeg3 = ctr.readUint8(csr++);
-	ssgeg3 = ssgeg3 & 8 ? ssgeg1 & 7 : -1;
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
-
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
@@ -2910,6 +2896,20 @@ AbstractInstrument* InstrumentIO::loadVGIFile(const BinaryContainer& ctr, std::s
 	int ssgeg2 = ctr.readUint8(csr++);
 	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
+
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, ctr.readUint8(csr++));
+	uint8_t drams3 = ctr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, drams3 & 31);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, ctr.readUint8(csr++));
+	int ssgeg3 = ctr.readUint8(csr++);
+	ssgeg3 = ssgeg3 & 8 ? ssgeg1 & 7 : -1;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
 
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));
@@ -4302,10 +4302,142 @@ AbstractInstrument* InstrumentIO::loadBTBInstrument(const BinaryContainer& instC
 	}
 }
 
-AbstractInstrument* InstrumentIO::loadFfInstrument(const BinaryContainer& instCtr,
+AbstractInstrument* InstrumentIO::loadFFInstrument(const BinaryContainer& instCtr,
 												   const std::string& name,
 												   std::weak_ptr<InstrumentsManager> instMan,
 												   int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
+	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	InstrumentFM* fm = new InstrumentFM(instNum, name, instManLocked.get());
+	fm->setEnvelopeNumber(envIdx);
+
+	size_t csr = 0;
+	uint8_t tmp = instCtr.readUint8(csr++);
+	uint8_t ssgeg1 = (tmp & 0x80) ? 8 : 0;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT1, (tmp & 0x70) >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML1, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	uint8_t ssgeg3 = (tmp & 0x80) ? 8 : 0;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, (tmp & 0x70) >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	uint8_t ssgeg2 = (tmp & 0x80) ? 8 : 0;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, (tmp & 0x70) >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	uint8_t ssgeg4 = (tmp & 0x80) ? 8 : 0;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, (tmp & 0x70) >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	if (tmp & 0x80) ssgeg1 |= 4;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL1, tmp & 0x7f);
+	tmp = instCtr.readUint8(csr++);
+	if (tmp & 0x80) ssgeg3 |= 4;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, tmp & 0x7f);
+	tmp = instCtr.readUint8(csr++);
+	if (tmp & 0x80) ssgeg2 |= 4;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, tmp & 0x7f);
+	tmp = instCtr.readUint8(csr++);
+	if (tmp & 0x80) ssgeg4 |= 4;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL4, tmp & 0x7f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS1, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR1, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS3, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR3, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS4, tmp >> 6);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR4, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	ssgeg1 |= ((tmp & 0x60) >> 5);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, (ssgeg1 & 8) ? ssgeg1 & 7 : -1);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR1, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	ssgeg3 |= ((tmp & 0x60) >> 5);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, (ssgeg3 & 8) ? ssgeg3 & 7 : -1);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR3, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	ssgeg2 |= ((tmp & 0x60) >> 5);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, (ssgeg2 & 8) ? ssgeg2 & 7 : -1);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	ssgeg4 |= ((tmp & 0x60) >> 5);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG4, (ssgeg4 & 8) ? ssgeg4 & 7 : -1);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR4, tmp & 0x1f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR1, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR3, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR4, tmp);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL1, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR1, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL3, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR3, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL4, tmp >> 4);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR4, tmp & 0x0f);
+	tmp = instCtr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, tmp >> 3);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, tmp & 0x07);
+
+	return fm;
+}
+
+AbstractInstrument* InstrumentIO::loadPPCInstrument(const std::vector<uint8_t> sample,
+													std::weak_ptr<InstrumentsManager> instMan,
+													int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
+	if (sampIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
+	adpcm->setSampleNumber(sampIdx);
+
+	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
+	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
+
+	return adpcm;
+}
+
+AbstractInstrument* InstrumentIO::loadPVIInstrument(const std::vector<uint8_t> sample,
+													std::weak_ptr<InstrumentsManager> instMan,
+													int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
+	if (sampIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
+
+	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
+	adpcm->setSampleNumber(sampIdx);
+
+	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
+	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
+
+	return adpcm;
+}
+
+AbstractInstrument* InstrumentIO::loadMUCOM88Instrument(const BinaryContainer& instCtr,
+														const std::string& name,
+														std::weak_ptr<InstrumentsManager> instMan,
+														int instNum)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
@@ -4380,40 +4512,4 @@ AbstractInstrument* InstrumentIO::loadFfInstrument(const BinaryContainer& instCt
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, tmp & 0x07);
 
 	return fm;
-}
-
-AbstractInstrument* InstrumentIO::loadPPCInstrument(const std::vector<uint8_t> sample,
-													std::weak_ptr<InstrumentsManager> instMan,
-													int instNum)
-{
-	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
-	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
-	if (sampIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
-
-	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
-	adpcm->setSampleNumber(sampIdx);
-
-	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
-	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
-
-	return adpcm;
-}
-
-AbstractInstrument* InstrumentIO::loadPVIInstrument(const std::vector<uint8_t> sample,
-													std::weak_ptr<InstrumentsManager> instMan,
-													int instNum)
-{
-	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
-	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
-	if (sampIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank);
-
-	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
-	adpcm->setSampleNumber(sampIdx);
-
-	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
-	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
-
-	return adpcm;
 }

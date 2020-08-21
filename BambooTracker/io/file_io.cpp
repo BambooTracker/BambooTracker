@@ -76,6 +76,7 @@ FileIO::FileType FileIO::judgeFileTypeFromExtension(std::string ext)
 	if (ext == "ff") return FileType::Bank;
 	if (ext == "ppc") return FileType::Bank;
 	if (ext == "pvi") return FileType::Bank;
+	if (ext == "dat") return FileType::Bank;
 
 	if (ext == "vgm") return FileType::VGM;
 	if (ext == "s98") return FileType::S98;

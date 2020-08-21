@@ -19,6 +19,7 @@ public:
 	static AbstractBank* loadFFFile(const BinaryContainer& ctr);
 	static AbstractBank* loadPPCFile(const BinaryContainer& ctr);
 	static AbstractBank* loadPVIFile(const BinaryContainer& ctr);
+	static AbstractBank* loadMucom88File(const BinaryContainer& ctr);
 
 private:
 	BankIO();

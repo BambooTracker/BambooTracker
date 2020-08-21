@@ -141,7 +141,7 @@ std::string FfBank::getInstrumentName(size_t index) const
 
 AbstractInstrument* FfBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	return InstrumentIO::loadFfInstrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
+	return InstrumentIO::loadFFInstrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
 }
 
 void FfBank::setInstrumentName(size_t index, const std::string& name)
@@ -201,4 +201,35 @@ std::string PviBank::getInstrumentName(size_t index) const
 AbstractInstrument* PviBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
 	return InstrumentIO::loadPVIInstrument(samples_.at(index), instMan, instNum);
+}
+
+/******************************/
+Mucom88Bank::Mucom88Bank(std::vector<int> ids, std::vector<std::string> names, std::vector<BinaryContainer> ctrs)
+	: ids_(ids), names_(names), instCtrs_(ctrs)
+{
+}
+
+size_t Mucom88Bank::getNumInstruments() const
+{
+	return ids_.size();
+}
+
+std::string Mucom88Bank::getInstrumentIdentifier(size_t index) const
+{
+	return std::to_string(ids_.at(index));
+}
+
+std::string Mucom88Bank::getInstrumentName(size_t index) const
+{
+	return names_.at(index);
+}
+
+AbstractInstrument* Mucom88Bank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	return InstrumentIO::loadMUCOM88Instrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
+}
+
+void Mucom88Bank::setInstrumentName(size_t index, const std::string& name)
+{
+	names_.at(index) = name;
 }

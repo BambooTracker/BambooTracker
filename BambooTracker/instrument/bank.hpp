@@ -108,3 +108,21 @@ private:
 	std::vector<int> ids_;
 	std::vector<std::vector<uint8_t>> samples_;
 };
+
+class Mucom88Bank : public AbstractBank
+{
+public:
+	explicit Mucom88Bank(std::vector<int> ids, std::vector<std::string> names, std::vector<BinaryContainer> ctrs);
+
+	size_t getNumInstruments() const override;
+	std::string getInstrumentIdentifier(size_t index) const override;
+	std::string getInstrumentName(size_t index) const override;
+	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+
+	void setInstrumentName(size_t index, const std::string& name);
+
+private:
+	std::vector<int> ids_;
+	std::vector<std::string> names_;
+	std::vector<BinaryContainer> instCtrs_;
+};

@@ -1699,7 +1699,8 @@ void MainWindow::importInstrumentsFromBank()
 				tr("WOPN bank (*.wopn)"),
 				tr("PMD FF (*.ff)"),
 				tr("PMD PPC (*.ppc)"),
-				tr("FMP PVI (*.pvi)")
+				tr("FMP PVI (*.pvi)"),
+				tr("MUCOM88 voice (*.dat)")
 	};
 	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
 
@@ -1750,6 +1751,14 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 			std::string sjis = ff->getInstrumentName(i);
 			std::string utf8 = codec->toUnicode(sjis.c_str(), sjis.length()).toStdString();
 			ff->setInstrumentName(i, utf8);
+		}
+	}
+	else if (auto mu88 = dynamic_cast<Mucom88Bank*>(bank.get())) {
+		QTextCodec* codec = QTextCodec::codecForName("Shift-JIS");
+		for (size_t i = 0; i < mu88->getNumInstruments(); ++i) {
+			std::string sjis = mu88->getInstrumentName(i);
+			std::string utf8 = codec->toUnicode(sjis.c_str(), sjis.length()).toStdString();
+			mu88->setInstrumentName(i, utf8);
 		}
 	}
 
