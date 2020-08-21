@@ -2274,18 +2274,18 @@
         <location filename="../../gui/mainwindow.cpp" line="174"/>
         <location filename="../../gui/mainwindow.cpp" line="840"/>
         <location filename="../../gui/mainwindow.cpp" line="903"/>
-        <location filename="../../gui/mainwindow.cpp" line="1928"/>
-        <location filename="../../gui/mainwindow.cpp" line="2329"/>
-        <location filename="../../gui/mainwindow.cpp" line="2331"/>
-        <location filename="../../gui/mainwindow.cpp" line="2357"/>
-        <location filename="../../gui/mainwindow.cpp" line="2943"/>
-        <location filename="../../gui/mainwindow.cpp" line="3072"/>
+        <location filename="../../gui/mainwindow.cpp" line="1937"/>
+        <location filename="../../gui/mainwindow.cpp" line="2338"/>
+        <location filename="../../gui/mainwindow.cpp" line="2340"/>
+        <location filename="../../gui/mainwindow.cpp" line="2366"/>
+        <location filename="../../gui/mainwindow.cpp" line="2952"/>
+        <location filename="../../gui/mainwindow.cpp" line="3081"/>
         <source>Untitled</source>
         <translation>無題</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.ui" line="244"/>
-        <location filename="../../gui/mainwindow.cpp" line="3403"/>
+        <location filename="../../gui/mainwindow.cpp" line="3412"/>
         <source>Groove</source>
         <translation>グルーブ</translation>
     </message>
@@ -3117,7 +3117,7 @@
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="489"/>
-        <location filename="../../gui/mainwindow.cpp" line="2166"/>
+        <location filename="../../gui/mainwindow.cpp" line="2175"/>
         <source>Octave: %1</source>
         <oldsource>Octave: </oldsource>
         <translation>オクターブ: %1</translation>
@@ -3126,16 +3126,16 @@
         <location filename="../../gui/mainwindow.cpp" line="177"/>
         <location filename="../../gui/mainwindow.cpp" line="843"/>
         <location filename="../../gui/mainwindow.cpp" line="906"/>
-        <location filename="../../gui/mainwindow.cpp" line="2946"/>
-        <location filename="../../gui/mainwindow.cpp" line="3075"/>
+        <location filename="../../gui/mainwindow.cpp" line="2955"/>
+        <location filename="../../gui/mainwindow.cpp" line="3084"/>
         <source>Save changes to %1?</source>
         <oldsource>Save changes to </oldsource>
         <translation>%1の変更を保存しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2271"/>
-        <location filename="../../gui/mainwindow.cpp" line="2317"/>
-        <location filename="../../gui/mainwindow.cpp" line="2408"/>
+        <location filename="../../gui/mainwindow.cpp" line="2280"/>
+        <location filename="../../gui/mainwindow.cpp" line="2326"/>
+        <location filename="../../gui/mainwindow.cpp" line="2417"/>
         <location filename="../../gui/mainwindow.hpp" line="223"/>
         <source>Error</source>
         <translation>エラー</translation>
@@ -3158,23 +3158,23 @@
         <translation>インストゥルメント保存</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1706"/>
+        <location filename="../../gui/mainwindow.cpp" line="1707"/>
         <source>Open bank</source>
         <translation>バンクを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1758"/>
+        <location filename="../../gui/mainwindow.cpp" line="1767"/>
         <source>Select instruments to load:</source>
         <translation>読み込むインストゥルメントを選択:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2346"/>
-        <location filename="../../gui/mainwindow.cpp" line="2448"/>
+        <location filename="../../gui/mainwindow.cpp" line="2355"/>
+        <location filename="../../gui/mainwindow.cpp" line="2457"/>
         <source>No instrument</source>
         <translation>インストゥルメントなし</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2080"/>
+        <location filename="../../gui/mainwindow.cpp" line="2089"/>
         <source>Standard</source>
         <translation>標準</translation>
     </message>
@@ -3231,13 +3231,13 @@
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1631"/>
-        <location filename="../../gui/mainwindow.cpp" line="1813"/>
+        <location filename="../../gui/mainwindow.cpp" line="1822"/>
         <source>The number of instruments has reached the upper limit.</source>
         <translation>インストゥルメント数が上限に達しています。</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="1698"/>
-        <location filename="../../gui/mainwindow.cpp" line="1852"/>
+        <location filename="../../gui/mainwindow.cpp" line="1861"/>
         <source>BambooTracker bank (*.btb)</source>
         <translation></translation>
     </message>
@@ -3262,244 +3262,249 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1845"/>
+        <location filename="../../gui/mainwindow.cpp" line="1703"/>
+        <source>MUCOM88 voice (*.dat)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainwindow.cpp" line="1854"/>
         <source>Select instruments to save:</source>
         <translation>保存するインストゥルメントを選択:</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1851"/>
+        <location filename="../../gui/mainwindow.cpp" line="1860"/>
         <source>Save bank</source>
         <translation>バンク保存</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1957"/>
+        <location filename="../../gui/mainwindow.cpp" line="1966"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1962"/>
+        <location filename="../../gui/mainwindow.cpp" line="1971"/>
         <source>Custom</source>
         <translation>カスタム</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1967"/>
+        <location filename="../../gui/mainwindow.cpp" line="1976"/>
         <source>PC-9821 with PC-9801-86</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1972"/>
+        <location filename="../../gui/mainwindow.cpp" line="1981"/>
         <source>PC-9821 with Speak Board</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1977"/>
+        <location filename="../../gui/mainwindow.cpp" line="1986"/>
         <source>PC-88VA2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="1982"/>
+        <location filename="../../gui/mainwindow.cpp" line="1991"/>
         <source>NEC PC-8801mkIISR</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2081"/>
+        <location filename="../../gui/mainwindow.cpp" line="2090"/>
         <source>FM3ch expanded</source>
         <translation>FM3ch拡張</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2229"/>
+        <location filename="../../gui/mainwindow.cpp" line="2238"/>
         <source>The module has been changed. Do you want to save it?</source>
         <translation>モジュールが変更されています。保存しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2272"/>
+        <location filename="../../gui/mainwindow.cpp" line="2281"/>
         <source>Could not initialize MIDI input.</source>
         <translation>MIDI Inを初期化できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2392"/>
+        <location filename="../../gui/mainwindow.cpp" line="2401"/>
         <source>Failed to export to %1.</source>
         <translation>%1の書き出しに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2842"/>
+        <location filename="../../gui/mainwindow.cpp" line="2851"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
         <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3032"/>
-        <location filename="../../gui/mainwindow.cpp" line="3092"/>
+        <location filename="../../gui/mainwindow.cpp" line="3041"/>
+        <location filename="../../gui/mainwindow.cpp" line="3101"/>
         <source>BambooTracker module (*.btm)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3198"/>
+        <location filename="../../gui/mainwindow.cpp" line="3207"/>
         <source>WAV signed 16-bit PCM (*.wav)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3255"/>
+        <location filename="../../gui/mainwindow.cpp" line="3264"/>
         <source>VGM file (*.vgm)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3310"/>
+        <location filename="../../gui/mainwindow.cpp" line="3319"/>
         <source>S98 file (*.s98)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3463"/>
+        <location filename="../../gui/mainwindow.cpp" line="3472"/>
         <source>Do you want to remove all duplicate instruments?</source>
         <translation>重複したインストゥルメントを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3569"/>
+        <location filename="../../gui/mainwindow.cpp" line="3578"/>
         <source>Do you want to remove all unused ADPCM samples?</source>
         <translation>未使用のADPCMサンプルを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3608"/>
+        <location filename="../../gui/mainwindow.cpp" line="3617"/>
         <source>Do you want to transpose a song?</source>
         <translation>ソングをトランスポーズしますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3629"/>
+        <location filename="../../gui/mainwindow.cpp" line="3638"/>
         <source>Do you want to swap tracks?</source>
         <translation>トラックを入れ替えますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3664"/>
+        <location filename="../../gui/mainwindow.cpp" line="3673"/>
         <source>Approximate song length: %1m%2s</source>
         <translation>ソングの長さ: %1分%2秒</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2450"/>
+        <location filename="../../gui/mainwindow.cpp" line="2459"/>
         <source>Instrument: %1</source>
         <oldsource>Instrument: </oldsource>
         <translation>インストゥルメント: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2741"/>
+        <location filename="../../gui/mainwindow.cpp" line="2750"/>
         <source>Do you want to change song properties?</source>
         <translation>ソング情報を変更しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2817"/>
+        <location filename="../../gui/mainwindow.cpp" line="2826"/>
         <source>Change to jam mode</source>
         <translation>ジャムモードに切り替え</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2817"/>
+        <location filename="../../gui/mainwindow.cpp" line="2826"/>
         <source>Change to edit mode</source>
         <translation>編集モードに切り替え</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2839"/>
+        <location filename="../../gui/mainwindow.cpp" line="2848"/>
         <source>About</source>
         <translation>バージョン情報</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2317"/>
+        <location filename="../../gui/mainwindow.cpp" line="2326"/>
         <source>Failed to backup module.</source>
         <translation>モジュールのバックアップ作成に失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2375"/>
+        <location filename="../../gui/mainwindow.cpp" line="2384"/>
         <source>module</source>
         <translation>モジュール</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2376"/>
+        <location filename="../../gui/mainwindow.cpp" line="2385"/>
         <source>s98</source>
         <translation>S98</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2377"/>
+        <location filename="../../gui/mainwindow.cpp" line="2386"/>
         <source>vgm</source>
         <translation>VGM</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2378"/>
+        <location filename="../../gui/mainwindow.cpp" line="2387"/>
         <source>wav</source>
         <translation>WAV</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2379"/>
+        <location filename="../../gui/mainwindow.cpp" line="2388"/>
         <source>bank</source>
         <translation>バンク</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2380"/>
+        <location filename="../../gui/mainwindow.cpp" line="2389"/>
         <source>instrument</source>
         <translation>インストゥルメント</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2385"/>
+        <location filename="../../gui/mainwindow.cpp" line="2394"/>
         <source>Failed to load the %1.</source>
         <translation>%1の読み込みに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2395"/>
+        <location filename="../../gui/mainwindow.cpp" line="2404"/>
         <source>Failed to save the %1.</source>
         <translation>%1の保存に失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2401"/>
+        <location filename="../../gui/mainwindow.cpp" line="2410"/>
         <source>Could not load the %1 properly. Please make sure that you have the latest version of BambooTracker.</source>
         <translation>%1を読み込めませんでした。最新版のBambooTrackerで読み込みを行なってください。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2405"/>
+        <location filename="../../gui/mainwindow.cpp" line="2414"/>
         <source>Could not load the %1. It may be corrupted.</source>
         <translation>%1を読み込めませんでした。ファイルが破損している可能性があります。</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3030"/>
+        <location filename="../../gui/mainwindow.cpp" line="3039"/>
         <source>Save module</source>
         <translation>モジュール保存</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3091"/>
+        <location filename="../../gui/mainwindow.cpp" line="3100"/>
         <source>Open module</source>
         <translation>モジュールを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3157"/>
+        <location filename="../../gui/mainwindow.cpp" line="3166"/>
         <source>Do you want to remove all unused instruments?</source>
         <translation>未使用のインストゥルメントを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3178"/>
+        <location filename="../../gui/mainwindow.cpp" line="3187"/>
         <source>Do you want to remove all unused patterns?</source>
         <translation>未使用のパターンを削除しますか?</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3196"/>
-        <location filename="../../gui/mainwindow.cpp" line="3204"/>
+        <location filename="../../gui/mainwindow.cpp" line="3205"/>
+        <location filename="../../gui/mainwindow.cpp" line="3213"/>
         <source>Export to WAV</source>
         <translation>WAV書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3204"/>
-        <location filename="../../gui/mainwindow.cpp" line="3260"/>
-        <location filename="../../gui/mainwindow.cpp" line="3315"/>
+        <location filename="../../gui/mainwindow.cpp" line="3213"/>
+        <location filename="../../gui/mainwindow.cpp" line="3269"/>
+        <location filename="../../gui/mainwindow.cpp" line="3324"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3253"/>
-        <location filename="../../gui/mainwindow.cpp" line="3260"/>
+        <location filename="../../gui/mainwindow.cpp" line="3262"/>
+        <location filename="../../gui/mainwindow.cpp" line="3269"/>
         <source>Export to VGM</source>
         <translation>VGM書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="3308"/>
-        <location filename="../../gui/mainwindow.cpp" line="3315"/>
+        <location filename="../../gui/mainwindow.cpp" line="3317"/>
+        <location filename="../../gui/mainwindow.cpp" line="3324"/>
         <source>Export to S98</source>
         <translation>S98書き出し</translation>
     </message>
     <message>
-        <location filename="../../gui/mainwindow.cpp" line="2228"/>
+        <location filename="../../gui/mainwindow.cpp" line="2237"/>
         <location filename="../../gui/mainwindow.hpp" line="215"/>
         <source>Warning</source>
         <translation>注意</translation>
