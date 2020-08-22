@@ -94,7 +94,7 @@ after_build:
       Copy-Item -Recurse ..\BambooTracker\debug\BambooTracker.exe,..\img,..\demos,..\licenses,..\specs,..\skins,..\*.md,..\LICENSE .
       $HELP_OUT = (windeployqt.exe -h)
       $DEPLOY_OPTS = "-verbose=2"
-      $PLUGIN_OPTS = @("--no-quick-import","--no-system-d3d-compiler","--no-compiler-runtime","--no-webkit2","--no-opengl-sw","--no-virtualkeyboard","--no-angle")
+      $PLUGIN_OPTS = @("--no-quick-import","--no-system-d3d-compiler","--no-webkit2","--no-opengl-sw","--no-virtualkeyboard","--no-angle")
       $PLUGIN_OPTS | ForEach{If ($HELP_OUT | Select-String $_) { $DEPLOY_OPTS = $DEPLOY_OPTS + " " + $_ }}
       $EXLIB_OPTS = @("svg")
       $EXLIB_OPTS | ForEach{If ($HELP_OUT | Select-String $_) { $DEPLOY_OPTS = $DEPLOY_OPTS + " --no-" + $_ }}
