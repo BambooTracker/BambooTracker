@@ -1,5 +1,5 @@
 # ![icon](./img/icon.png) BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.4.3-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.4.4-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | macos | linux](https://img.shields.io/badge/platform-windows%20|%20macos%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.com/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.com/rerrahkr/BambooTracker)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
@@ -17,8 +17,6 @@
 - *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
 
 ### macOS
-***[#231](https://github.com/rerrahkr/BambooTracker/issues/231)の問題により、v0.4.3のmacOS版のビルドは動作しません。お手数ですが、次期リリースまで開発版ビルドのご利用お願いいたします。***
-
 #### GitHubビルド
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード

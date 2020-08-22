@@ -1,5 +1,5 @@
 # ![icon](./img/icon.png) BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.4.3-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.4.4-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | macos | linux](https://img.shields.io/badge/platform-windows%20|%20macos%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.com/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.com/rerrahkr/BambooTracker)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
@@ -17,8 +17,6 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
 ### macOS
-***Due to issue [#231](https://github.com/rerrahkr/BambooTracker/issues/231), the v0.4.3 macOS builds are broken. Until a new release is pushed, please use a development build instead!***
-
 #### GitHub Builds
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *Development builds*: get "artifacts" from [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.4.4 (2020-08-22)
 ### Added
 - [#242] - Estimate Song Length (thanks [@Drillimation])
 - Settings of header color and editor shadow
