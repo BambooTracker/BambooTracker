@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+### Added
+- 1 new color schemes (thanks [@Yuzu4K])
+
+[@Yuzu4K]: https://twitter.com/Yuzu4K
+
 ## v0.4.4 (2020-08-22)
 ### Added
 - [#242] - Estimate Song Length (thanks [@Drillimation])
