@@ -39,7 +39,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 	  headerHeight_(0),
 	  curRowBaselineY_(0),
 	  curRowY_(0),
-	  visTracks_(16),	// Dummy
+	  visTracks_(1),	// Dummy
 	  leftTrackVisIdx_(0),
 	  curSongNum_(0),
 	  curPos_{ 0, 0 },
@@ -86,6 +86,7 @@ OrderListPanel::OrderListPanel(QWidget *parent)
 
 	// Track visibility
 	songStyle_.type = SongType::Standard;	// Dummy
+	songStyle_.trackAttribs.push_back({ 0, SoundSource::FM, 0 });	// Dummy
 	std::iota(visTracks_.begin(), visTracks_.end(), 0);
 
 	// Shortcuts
