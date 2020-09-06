@@ -6,10 +6,12 @@
 
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
+- [#259] - Fix copying and pasting position error when hiding any tracks (thanks [@YoshiLightStar])
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 
 [#256]: https://github.com/rerrahkr/BambooTracker/issues/256
+[#259]: https://github.com/rerrahkr/BambooTracker/issues/259
 
 ## v0.4.4 (2020-08-22)
 ### Added
