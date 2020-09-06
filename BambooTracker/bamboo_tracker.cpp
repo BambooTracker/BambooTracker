@@ -1576,10 +1576,6 @@ void BambooTracker::checkNextPositionOfLastStepAndStepSize(int songNum, int& end
 						endOrder = orderN + 1;
 						endStep = eff.value;
 					}
-					if (eff.value < static_cast<int>(getPatternSizeFromOrderNumber(songNum, 0))) {
-						endOrder = 0;
-						endStep = eff.value;
-					}
 					break;
 				default:
 					break;

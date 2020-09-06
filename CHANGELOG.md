@@ -7,11 +7,14 @@
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
 - [#259] - Fix copying and pasting position error when hiding any tracks (thanks [@YoshiLightStar])
+- [#258] - Fix an error of wav/vgm/s98 export (thanks [@Zexxerd])
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
+[@Zexxerd]: https://github.com/Zexxerd
 
 [#256]: https://github.com/rerrahkr/BambooTracker/issues/256
 [#259]: https://github.com/rerrahkr/BambooTracker/issues/259
+[#258]: https://github.com/rerrahkr/BambooTracker/issues/258
 
 ## v0.4.4 (2020-08-22)
 ### Added
