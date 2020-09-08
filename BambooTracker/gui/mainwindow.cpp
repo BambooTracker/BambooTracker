@@ -2860,7 +2860,7 @@ void MainWindow::on_actionAbout_triggered()
 						 "- RtAudio by (C) Gary P. Scavone (RtAudio License)<br>"
 						 "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
 						 "- SCCI by (C) gasshi (SCCI License)<br>"
-						 "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
+						 "- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)<br>"
 						 "- Qt (GPL v2+ or LGPL v3)<br>"
 						 "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
 						 "<br>"

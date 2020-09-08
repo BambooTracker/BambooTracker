@@ -371,10 +371,10 @@ demos, skins, licensesなどその他のファイル、フォルダは適宜任�
 
 - Qt
 - YM2608のエミュレーションコードに関してMAME開発チームさんとValley Bellさん
-- ツールバーに使用しているアイコンに関してMark Jamesさん
+- トラッカーのアイコンに関してDecidettoさん
+- その他のアイコンに用いているSilk iconsに関してMark Jamesさん
 - VGMファイルのフォーマットのドキュメントに関してVGMRipsチームの方々
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
-- トラッカーのアイコンに関してDecidettoさん
 - サンプル曲を提供してくださったmaakさん、SuperJet Spadeさん、Dippyさん、RigidatoMSさん、ImATrackManさん
 - サンプルインストゥルメントを提供してくださったpapiezakさん、阿保　剛さん
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん
