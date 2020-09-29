@@ -35,7 +35,7 @@ private slots:
 private:
 	Ui::ConfigurationDialog *ui;
 	std::weak_ptr<Configuration> config_;
-	std::weak_ptr<ColorPalette> palette_;
+	std::weak_ptr<ColorPalette> refPalette_;
 
 	inline Qt::CheckState toCheckState(bool enabled)
 	{
@@ -91,7 +91,8 @@ private slots:
 	void on_colorSavePushButton_clicked();
 
 private:
-	void updateColorTree();
+	void updateColorTreeFrom(const ColorPalette* const palette);
+	void setPaletteFromColorTree(ColorPalette* const palette);
 };
 
 #endif // CONFIGURATION_DIALOG_HPP

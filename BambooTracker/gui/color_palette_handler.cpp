@@ -8,7 +8,7 @@ const QString ColorPaletteHandler::application = "BambooTracker";
 
 ColorPaletteHandler::ColorPaletteHandler() {}
 
-bool ColorPaletteHandler::savePalette(std::weak_ptr<ColorPalette> palette)
+bool ColorPaletteHandler::savePalette(const ColorPalette* const palette)
 {
 	try {
 		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ColorPaletteHandler::organization, ColorPaletteHandler::application);
@@ -19,7 +19,7 @@ bool ColorPaletteHandler::savePalette(std::weak_ptr<ColorPalette> palette)
 	}
 }
 
-bool ColorPaletteHandler::savePalette(QString file, std::weak_ptr<ColorPalette> palette)
+bool ColorPaletteHandler::savePalette(QString file, const ColorPalette* const palette)
 {
 	try {
 		QSettings settings(file, QSettings::IniFormat);
@@ -30,76 +30,74 @@ bool ColorPaletteHandler::savePalette(QString file, std::weak_ptr<ColorPalette> 
 	}
 }
 
-void ColorPaletteHandler::save(QSettings& settings, std::weak_ptr<ColorPalette> palette)
+void ColorPaletteHandler::save(QSettings& settings, const ColorPalette* const palette)
 {
-	std::shared_ptr<ColorPalette> paletteLocked = palette.lock();
-
 	settings.beginGroup("PatternEditor");
-	settings.setValue("defaultStepText", paletteLocked->ptnDefTextColor.name(QColor::HexArgb));
-	settings.setValue("defaultStepBackground", paletteLocked->ptnDefStepColor.name(QColor::HexArgb));
-	settings.setValue("highlightedStep1Background", paletteLocked->ptnHl1StepColor.name(QColor::HexArgb));
-	settings.setValue("highlightedStep2Background", paletteLocked->ptnHl2StepColor.name(QColor::HexArgb));
-	settings.setValue("currentStepText", paletteLocked->ptnCurTextColor.name(QColor::HexArgb));
-	settings.setValue("currentStepBackground", paletteLocked->ptnCurStepColor.name(QColor::HexArgb));
-	settings.setValue("currentEditingStepBackground", paletteLocked->ptnCurEditStepColor.name(QColor::HexArgb));
-	settings.setValue("currentCellBackground", paletteLocked->ptnCurCellColor.name(QColor::HexArgb));
-	settings.setValue("currentPlayingStepBackground", paletteLocked->ptnPlayStepColor.name(QColor::HexArgb));
-	settings.setValue("selectionBackground", paletteLocked->ptnSelCellColor.name(QColor::HexArgb));
-	settings.setValue("hoveredCellBackground", paletteLocked->ptnHovCellColor.name(QColor::HexArgb));
-	settings.setValue("defaultStepNumber", paletteLocked->ptnDefStepNumColor.name(QColor::HexArgb));
-	settings.setValue("highlightedStep1Number", paletteLocked->ptnHl1StepNumColor.name(QColor::HexArgb));
-	settings.setValue("highlightedStep2Number", paletteLocked->ptnHl2StepNumColor.name(QColor::HexArgb));
-	settings.setValue("noteText", paletteLocked->ptnNoteColor.name(QColor::HexArgb));
-	settings.setValue("instrumentText", paletteLocked->ptnInstColor.name(QColor::HexArgb));
-	settings.setValue("volumeText", paletteLocked->ptnVolColor.name(QColor::HexArgb));
-	settings.setValue("effectText", paletteLocked->ptnEffColor.name(QColor::HexArgb));
-	settings.setValue("errorText", paletteLocked->ptnErrorColor.name(QColor::HexArgb));
-	settings.setValue("headerText", paletteLocked->ptnHeaderTextColor.name(QColor::HexArgb));
-	settings.setValue("headerBackground", paletteLocked->ptnHeaderRowColor.name(QColor::HexArgb));
-	settings.setValue("mask", paletteLocked->ptnMaskColor.name(QColor::HexArgb));
-	settings.setValue("border", paletteLocked->ptnBorderColor.name(QColor::HexArgb));
-	settings.setValue("headerBorder", paletteLocked->ptnHeaderBorderColor.name(QColor::HexArgb));
-	settings.setValue("mute", paletteLocked->ptnMuteColor.name(QColor::HexArgb));
-	settings.setValue("unmute", paletteLocked->ptnUnmuteColor.name(QColor::HexArgb));
-	settings.setValue("background", paletteLocked->ptnBackColor.name(QColor::HexArgb));
-	settings.setValue("marker", paletteLocked->ptnMarkerColor.name(QColor::HexArgb));
-	settings.setValue("unfocusedShadow", paletteLocked->ptnUnfocusedShadowColor.name(QColor::HexArgb));
+	settings.setValue("defaultStepText", palette->ptnDefTextColor.name(QColor::HexArgb));
+	settings.setValue("defaultStepBackground", palette->ptnDefStepColor.name(QColor::HexArgb));
+	settings.setValue("highlightedStep1Background", palette->ptnHl1StepColor.name(QColor::HexArgb));
+	settings.setValue("highlightedStep2Background", palette->ptnHl2StepColor.name(QColor::HexArgb));
+	settings.setValue("currentStepText", palette->ptnCurTextColor.name(QColor::HexArgb));
+	settings.setValue("currentStepBackground", palette->ptnCurStepColor.name(QColor::HexArgb));
+	settings.setValue("currentEditingStepBackground", palette->ptnCurEditStepColor.name(QColor::HexArgb));
+	settings.setValue("currentCellBackground", palette->ptnCurCellColor.name(QColor::HexArgb));
+	settings.setValue("currentPlayingStepBackground", palette->ptnPlayStepColor.name(QColor::HexArgb));
+	settings.setValue("selectionBackground", palette->ptnSelCellColor.name(QColor::HexArgb));
+	settings.setValue("hoveredCellBackground", palette->ptnHovCellColor.name(QColor::HexArgb));
+	settings.setValue("defaultStepNumber", palette->ptnDefStepNumColor.name(QColor::HexArgb));
+	settings.setValue("highlightedStep1Number", palette->ptnHl1StepNumColor.name(QColor::HexArgb));
+	settings.setValue("highlightedStep2Number", palette->ptnHl2StepNumColor.name(QColor::HexArgb));
+	settings.setValue("noteText", palette->ptnNoteColor.name(QColor::HexArgb));
+	settings.setValue("instrumentText", palette->ptnInstColor.name(QColor::HexArgb));
+	settings.setValue("volumeText", palette->ptnVolColor.name(QColor::HexArgb));
+	settings.setValue("effectText", palette->ptnEffColor.name(QColor::HexArgb));
+	settings.setValue("errorText", palette->ptnErrorColor.name(QColor::HexArgb));
+	settings.setValue("headerText", palette->ptnHeaderTextColor.name(QColor::HexArgb));
+	settings.setValue("headerBackground", palette->ptnHeaderRowColor.name(QColor::HexArgb));
+	settings.setValue("mask", palette->ptnMaskColor.name(QColor::HexArgb));
+	settings.setValue("border", palette->ptnBorderColor.name(QColor::HexArgb));
+	settings.setValue("headerBorder", palette->ptnHeaderBorderColor.name(QColor::HexArgb));
+	settings.setValue("mute", palette->ptnMuteColor.name(QColor::HexArgb));
+	settings.setValue("unmute", palette->ptnUnmuteColor.name(QColor::HexArgb));
+	settings.setValue("background", palette->ptnBackColor.name(QColor::HexArgb));
+	settings.setValue("marker", palette->ptnMarkerColor.name(QColor::HexArgb));
+	settings.setValue("unfocusedShadow", palette->ptnUnfocusedShadowColor.name(QColor::HexArgb));
 	settings.endGroup();
 
 	settings.beginGroup("OrderList");
-	settings.setValue("defaultRowText", paletteLocked->odrDefTextColor.name(QColor::HexArgb));
-	settings.setValue("defaultRowBackground", paletteLocked->odrDefRowColor.name(QColor::HexArgb));
-	settings.setValue("currentRowText", paletteLocked->odrCurTextColor.name(QColor::HexArgb));
-	settings.setValue("currentRowBackground", paletteLocked->odrCurRowColor.name(QColor::HexArgb));
-	settings.setValue("currentEditingRowBackground", paletteLocked->odrCurEditRowColor.name(QColor::HexArgb));
-	settings.setValue("currentCellBackground", paletteLocked->odrCurCellColor.name(QColor::HexArgb));
-	settings.setValue("currentPlayingRowBackground", paletteLocked->odrPlayRowColor.name(QColor::HexArgb));
-	settings.setValue("selectionBackground", paletteLocked->odrSelCellColor.name(QColor::HexArgb));
-	settings.setValue("hoveredCellBackground", paletteLocked->odrHovCellColor.name(QColor::HexArgb));
-	settings.setValue("rowNumber", paletteLocked->odrRowNumColor.name(QColor::HexArgb));
-	settings.setValue("headerText", paletteLocked->odrHeaderTextColor.name(QColor::HexArgb));
-	settings.setValue("headerBackground", paletteLocked->odrHeaderRowColor.name(QColor::HexArgb));
-	settings.setValue("border", paletteLocked->odrBorderColor.name(QColor::HexArgb));
-	settings.setValue("headerBorder", paletteLocked->odrHeaderBorderColor.name(QColor::HexArgb));
-	settings.setValue("background", paletteLocked->odrBackColor.name(QColor::HexArgb));
-	settings.setValue("unfocusedShadow", paletteLocked->odrUnfocusedShadowColor.name(QColor::HexArgb));
+	settings.setValue("defaultRowText", palette->odrDefTextColor.name(QColor::HexArgb));
+	settings.setValue("defaultRowBackground", palette->odrDefRowColor.name(QColor::HexArgb));
+	settings.setValue("currentRowText", palette->odrCurTextColor.name(QColor::HexArgb));
+	settings.setValue("currentRowBackground", palette->odrCurRowColor.name(QColor::HexArgb));
+	settings.setValue("currentEditingRowBackground", palette->odrCurEditRowColor.name(QColor::HexArgb));
+	settings.setValue("currentCellBackground", palette->odrCurCellColor.name(QColor::HexArgb));
+	settings.setValue("currentPlayingRowBackground", palette->odrPlayRowColor.name(QColor::HexArgb));
+	settings.setValue("selectionBackground", palette->odrSelCellColor.name(QColor::HexArgb));
+	settings.setValue("hoveredCellBackground", palette->odrHovCellColor.name(QColor::HexArgb));
+	settings.setValue("rowNumber", palette->odrRowNumColor.name(QColor::HexArgb));
+	settings.setValue("headerText", palette->odrHeaderTextColor.name(QColor::HexArgb));
+	settings.setValue("headerBackground", palette->odrHeaderRowColor.name(QColor::HexArgb));
+	settings.setValue("border", palette->odrBorderColor.name(QColor::HexArgb));
+	settings.setValue("headerBorder", palette->odrHeaderBorderColor.name(QColor::HexArgb));
+	settings.setValue("background", palette->odrBackColor.name(QColor::HexArgb));
+	settings.setValue("unfocusedShadow", palette->odrUnfocusedShadowColor.name(QColor::HexArgb));
 	settings.endGroup();
 
 	settings.beginGroup("InstrumentList");
-	settings.setValue("defaultText", paletteLocked->ilistTextColor.name(QColor::HexArgb));
-	settings.setValue("background", paletteLocked->ilistBackColor.name(QColor::HexArgb));
-	settings.setValue("selectedBackground", paletteLocked->ilistSelBackColor.name(QColor::HexArgb));
-	settings.setValue("hoveredBackground", paletteLocked->ilistHovBackColor.name(QColor::HexArgb));
-	settings.setValue("selectedHoveredBackground", paletteLocked->ilistHovSelBackColor.name(QColor::HexArgb));
+	settings.setValue("defaultText", palette->ilistTextColor.name(QColor::HexArgb));
+	settings.setValue("background", palette->ilistBackColor.name(QColor::HexArgb));
+	settings.setValue("selectedBackground", palette->ilistSelBackColor.name(QColor::HexArgb));
+	settings.setValue("hoveredBackground", palette->ilistHovBackColor.name(QColor::HexArgb));
+	settings.setValue("selectedHoveredBackground", palette->ilistHovSelBackColor.name(QColor::HexArgb));
 	settings.endGroup();
 
 	settings.beginGroup("Oscilloscope");
-	settings.setValue("background", paletteLocked->wavBackColor.name(QColor::HexArgb));
-	settings.setValue("foreground", paletteLocked->wavDrawColor.name(QColor::HexArgb));
+	settings.setValue("background", palette->wavBackColor.name(QColor::HexArgb));
+	settings.setValue("foreground", palette->wavDrawColor.name(QColor::HexArgb));
 	settings.endGroup();
 }
 
-bool ColorPaletteHandler::loadPalette(std::weak_ptr<ColorPalette> palette)
+bool ColorPaletteHandler::loadPalette(ColorPalette* const palette)
 {
 	try {
 		QSettings settings(QSettings::IniFormat, QSettings::UserScope, ColorPaletteHandler::organization, ColorPaletteHandler::application);
@@ -110,7 +108,7 @@ bool ColorPaletteHandler::loadPalette(std::weak_ptr<ColorPalette> palette)
 	}
 }
 
-bool ColorPaletteHandler::loadPalette(QString file, std::weak_ptr<ColorPalette> palette)
+bool ColorPaletteHandler::loadPalette(QString file, ColorPalette* const palette)
 {
 	try {
 		QSettings settings(file, QSettings::IniFormat);
@@ -121,71 +119,69 @@ bool ColorPaletteHandler::loadPalette(QString file, std::weak_ptr<ColorPalette> 
 	}
 }
 
-void ColorPaletteHandler::load(QSettings& settings, std::weak_ptr<ColorPalette> palette)
+void ColorPaletteHandler::load(QSettings& settings, ColorPalette* const palette)
 {
-	std::shared_ptr<ColorPalette> paletteLocked = palette.lock();
-
 	settings.beginGroup("PatternEditor");
-	paletteLocked->ptnDefTextColor = settings.value("defaultStepText", paletteLocked->ptnDefTextColor).value<QColor>();
-	paletteLocked->ptnDefStepColor = settings.value("defaultStepBackground", paletteLocked->ptnDefStepColor).value<QColor>();
-	paletteLocked->ptnHl1StepColor = settings.value("highlightedStep1Background", paletteLocked->ptnHl1StepColor).value<QColor>();
-	paletteLocked->ptnHl2StepColor = settings.value("highlightedStep2Background", paletteLocked->ptnHl2StepColor).value<QColor>();
-	paletteLocked->ptnCurTextColor = settings.value("currentStepText", paletteLocked->ptnCurTextColor).value<QColor>();
-	paletteLocked->ptnCurStepColor = settings.value("currentStepBackground", paletteLocked->ptnCurStepColor).value<QColor>();
-	paletteLocked->ptnCurEditStepColor = settings.value("currentEditingStepBackground", paletteLocked->ptnCurEditStepColor).value<QColor>();
-	paletteLocked->ptnCurCellColor = settings.value("currentCellBackground", paletteLocked->ptnCurCellColor).value<QColor>();
-	paletteLocked->ptnPlayStepColor = settings.value("currentPlayingStepBackground", paletteLocked->ptnPlayStepColor).value<QColor>();
-	paletteLocked->ptnSelCellColor = settings.value("selectionBackground", paletteLocked->ptnSelCellColor).value<QColor>();
-	paletteLocked->ptnHovCellColor = settings.value("hoveredCellBackground", paletteLocked->ptnHovCellColor).value<QColor>();
-	paletteLocked->ptnDefStepNumColor = settings.value("defaultStepNumber", paletteLocked->ptnDefStepNumColor).value<QColor>();
-	paletteLocked->ptnHl1StepNumColor = settings.value("highlightedStep1Number", paletteLocked->ptnHl1StepNumColor).value<QColor>();
-	paletteLocked->ptnHl2StepNumColor = settings.value("highlightedStep2Number", paletteLocked->ptnHl2StepNumColor).value<QColor>();
-	paletteLocked->ptnNoteColor = settings.value("noteText", paletteLocked->ptnNoteColor).value<QColor>();
-	paletteLocked->ptnInstColor = settings.value("instrumentText", paletteLocked->ptnInstColor).value<QColor>();
-	paletteLocked->ptnVolColor = settings.value("volumeText", paletteLocked->ptnVolColor).value<QColor>();
-	paletteLocked->ptnEffColor = settings.value("effectText", paletteLocked->ptnEffColor).value<QColor>();
-	paletteLocked->ptnErrorColor = settings.value("errorText", paletteLocked->ptnErrorColor).value<QColor>();
-	paletteLocked->ptnHeaderTextColor = settings.value("headerText", paletteLocked->ptnHeaderTextColor).value<QColor>();
-	paletteLocked->ptnHeaderRowColor = settings.value("headerBackground", paletteLocked->ptnHeaderRowColor).value<QColor>();
-	paletteLocked->ptnMaskColor = settings.value("mask", paletteLocked->ptnMaskColor).value<QColor>();
-	paletteLocked->ptnBorderColor = settings.value("border", paletteLocked->ptnBorderColor).value<QColor>();
-	paletteLocked->ptnHeaderBorderColor = settings.value("headerBorder", paletteLocked->ptnHeaderBorderColor).value<QColor>();
-	paletteLocked->ptnMuteColor = settings.value("mute", paletteLocked->ptnMuteColor).value<QColor>();
-	paletteLocked->ptnUnmuteColor = settings.value("unmute", paletteLocked->ptnUnmuteColor).value<QColor>();
-	paletteLocked->ptnBackColor = settings.value("background", paletteLocked->ptnBackColor).value<QColor>();
-	paletteLocked->ptnMarkerColor = settings.value("marker", paletteLocked->ptnMarkerColor).value<QColor>();
-	paletteLocked->ptnUnfocusedShadowColor = settings.value("unfocusedShadow", paletteLocked->ptnUnfocusedShadowColor).value<QColor>();
+	palette->ptnDefTextColor = settings.value("defaultStepText", palette->ptnDefTextColor).value<QColor>();
+	palette->ptnDefStepColor = settings.value("defaultStepBackground", palette->ptnDefStepColor).value<QColor>();
+	palette->ptnHl1StepColor = settings.value("highlightedStep1Background", palette->ptnHl1StepColor).value<QColor>();
+	palette->ptnHl2StepColor = settings.value("highlightedStep2Background", palette->ptnHl2StepColor).value<QColor>();
+	palette->ptnCurTextColor = settings.value("currentStepText", palette->ptnCurTextColor).value<QColor>();
+	palette->ptnCurStepColor = settings.value("currentStepBackground", palette->ptnCurStepColor).value<QColor>();
+	palette->ptnCurEditStepColor = settings.value("currentEditingStepBackground", palette->ptnCurEditStepColor).value<QColor>();
+	palette->ptnCurCellColor = settings.value("currentCellBackground", palette->ptnCurCellColor).value<QColor>();
+	palette->ptnPlayStepColor = settings.value("currentPlayingStepBackground", palette->ptnPlayStepColor).value<QColor>();
+	palette->ptnSelCellColor = settings.value("selectionBackground", palette->ptnSelCellColor).value<QColor>();
+	palette->ptnHovCellColor = settings.value("hoveredCellBackground", palette->ptnHovCellColor).value<QColor>();
+	palette->ptnDefStepNumColor = settings.value("defaultStepNumber", palette->ptnDefStepNumColor).value<QColor>();
+	palette->ptnHl1StepNumColor = settings.value("highlightedStep1Number", palette->ptnHl1StepNumColor).value<QColor>();
+	palette->ptnHl2StepNumColor = settings.value("highlightedStep2Number", palette->ptnHl2StepNumColor).value<QColor>();
+	palette->ptnNoteColor = settings.value("noteText", palette->ptnNoteColor).value<QColor>();
+	palette->ptnInstColor = settings.value("instrumentText", palette->ptnInstColor).value<QColor>();
+	palette->ptnVolColor = settings.value("volumeText", palette->ptnVolColor).value<QColor>();
+	palette->ptnEffColor = settings.value("effectText", palette->ptnEffColor).value<QColor>();
+	palette->ptnErrorColor = settings.value("errorText", palette->ptnErrorColor).value<QColor>();
+	palette->ptnHeaderTextColor = settings.value("headerText", palette->ptnHeaderTextColor).value<QColor>();
+	palette->ptnHeaderRowColor = settings.value("headerBackground", palette->ptnHeaderRowColor).value<QColor>();
+	palette->ptnMaskColor = settings.value("mask", palette->ptnMaskColor).value<QColor>();
+	palette->ptnBorderColor = settings.value("border", palette->ptnBorderColor).value<QColor>();
+	palette->ptnHeaderBorderColor = settings.value("headerBorder", palette->ptnHeaderBorderColor).value<QColor>();
+	palette->ptnMuteColor = settings.value("mute", palette->ptnMuteColor).value<QColor>();
+	palette->ptnUnmuteColor = settings.value("unmute", palette->ptnUnmuteColor).value<QColor>();
+	palette->ptnBackColor = settings.value("background", palette->ptnBackColor).value<QColor>();
+	palette->ptnMarkerColor = settings.value("marker", palette->ptnMarkerColor).value<QColor>();
+	palette->ptnUnfocusedShadowColor = settings.value("unfocusedShadow", palette->ptnUnfocusedShadowColor).value<QColor>();
 	settings.endGroup();
 
 	settings.beginGroup("OrderList");
-	paletteLocked->odrDefTextColor = settings.value("defaultRowText", paletteLocked->odrDefTextColor).value<QColor>();
-	paletteLocked->odrDefRowColor = settings.value("defaultRowBackground", paletteLocked->odrDefRowColor).value<QColor>();
-	paletteLocked->odrCurTextColor = settings.value("currentRowText", paletteLocked->odrCurTextColor).value<QColor>();
-	paletteLocked->odrCurRowColor = settings.value("currentRowBackground", paletteLocked->odrCurRowColor).value<QColor>();
-	paletteLocked->odrCurEditRowColor = settings.value("currentEditingRowBackground", paletteLocked->odrCurEditRowColor).value<QColor>();
-	paletteLocked->odrCurCellColor = settings.value("currentCellBackground", paletteLocked->odrCurCellColor).value<QColor>();
-	paletteLocked->odrPlayRowColor = settings.value("currentPlayingRowBackground", paletteLocked->odrPlayRowColor).value<QColor>();
-	paletteLocked->odrSelCellColor = settings.value("selectionBackground", paletteLocked->odrSelCellColor).value<QColor>();
-	paletteLocked->odrHovCellColor = settings.value("hoveredCellBackground", paletteLocked->odrHovCellColor).value<QColor>();
-	paletteLocked->odrRowNumColor = settings.value("rowNumber", paletteLocked->odrRowNumColor).value<QColor>();
-	paletteLocked->odrHeaderTextColor = settings.value("headerText", paletteLocked->odrHeaderTextColor).value<QColor>();
-	paletteLocked->odrHeaderRowColor = settings.value("headerBackground", paletteLocked->odrHeaderRowColor).value<QColor>();
-	paletteLocked->odrBorderColor = settings.value("border", paletteLocked->odrBorderColor).value<QColor>();
-	paletteLocked->odrHeaderBorderColor = settings.value("headerBorder", paletteLocked->odrHeaderBorderColor).value<QColor>();
-	paletteLocked->odrBackColor = settings.value("background", paletteLocked->odrBackColor).value<QColor>();
-	paletteLocked->odrUnfocusedShadowColor = settings.value("unfocusedShadow", paletteLocked->odrUnfocusedShadowColor).value<QColor>();
+	palette->odrDefTextColor = settings.value("defaultRowText", palette->odrDefTextColor).value<QColor>();
+	palette->odrDefRowColor = settings.value("defaultRowBackground", palette->odrDefRowColor).value<QColor>();
+	palette->odrCurTextColor = settings.value("currentRowText", palette->odrCurTextColor).value<QColor>();
+	palette->odrCurRowColor = settings.value("currentRowBackground", palette->odrCurRowColor).value<QColor>();
+	palette->odrCurEditRowColor = settings.value("currentEditingRowBackground", palette->odrCurEditRowColor).value<QColor>();
+	palette->odrCurCellColor = settings.value("currentCellBackground", palette->odrCurCellColor).value<QColor>();
+	palette->odrPlayRowColor = settings.value("currentPlayingRowBackground", palette->odrPlayRowColor).value<QColor>();
+	palette->odrSelCellColor = settings.value("selectionBackground", palette->odrSelCellColor).value<QColor>();
+	palette->odrHovCellColor = settings.value("hoveredCellBackground", palette->odrHovCellColor).value<QColor>();
+	palette->odrRowNumColor = settings.value("rowNumber", palette->odrRowNumColor).value<QColor>();
+	palette->odrHeaderTextColor = settings.value("headerText", palette->odrHeaderTextColor).value<QColor>();
+	palette->odrHeaderRowColor = settings.value("headerBackground", palette->odrHeaderRowColor).value<QColor>();
+	palette->odrBorderColor = settings.value("border", palette->odrBorderColor).value<QColor>();
+	palette->odrHeaderBorderColor = settings.value("headerBorder", palette->odrHeaderBorderColor).value<QColor>();
+	palette->odrBackColor = settings.value("background", palette->odrBackColor).value<QColor>();
+	palette->odrUnfocusedShadowColor = settings.value("unfocusedShadow", palette->odrUnfocusedShadowColor).value<QColor>();
 	settings.endGroup();
 
 	settings.beginGroup("InstrumentList");
-	paletteLocked->ilistTextColor = settings.value("defaultText", paletteLocked->ilistTextColor).value<QColor>();
-	paletteLocked->ilistBackColor = settings.value("background", paletteLocked->ilistBackColor).value<QColor>();
-	paletteLocked->ilistSelBackColor = settings.value("selectedBackground", paletteLocked->ilistSelBackColor).value<QColor>();
-	paletteLocked->ilistHovBackColor = settings.value("hoveredBackground", paletteLocked->ilistHovBackColor).value<QColor>();
-	paletteLocked->ilistHovSelBackColor = settings.value("selectedHoveredBackground", paletteLocked->ilistHovSelBackColor).value<QColor>();
+	palette->ilistTextColor = settings.value("defaultText", palette->ilistTextColor).value<QColor>();
+	palette->ilistBackColor = settings.value("background", palette->ilistBackColor).value<QColor>();
+	palette->ilistSelBackColor = settings.value("selectedBackground", palette->ilistSelBackColor).value<QColor>();
+	palette->ilistHovBackColor = settings.value("hoveredBackground", palette->ilistHovBackColor).value<QColor>();
+	palette->ilistHovSelBackColor = settings.value("selectedHoveredBackground", palette->ilistHovSelBackColor).value<QColor>();
 	settings.endGroup();
 
 	settings.beginGroup("Oscilloscope");
-	paletteLocked->wavBackColor = settings.value("background", paletteLocked->wavBackColor).value<QColor>();
-	paletteLocked->wavDrawColor = settings.value("foreground", paletteLocked->wavDrawColor).value<QColor>();
+	palette->wavBackColor = settings.value("background", palette->wavBackColor).value<QColor>();
+	palette->wavDrawColor = settings.value("foreground", palette->wavDrawColor).value<QColor>();
 	settings.endGroup();
 }

@@ -145,7 +145,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->patternEditor->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll(), false);
 	ui->patternEditor->setCore(bt_);
 	ui->orderList->setCore(bt_);
-	ColorPaletteHandler::loadPalette(palette_);
+	ColorPaletteHandler::loadPalette(palette_.get());
 	ui->patternEditor->setColorPallete(palette_);
 	ui->orderList->setColorPallete(palette_);
 	updateInstrumentListColors();
@@ -2905,7 +2905,7 @@ void MainWindow::on_actionConfiguration_triggered()
 		bt_->stopPlaySong();
 		changeConfiguration();
 		ConfigurationHandler::saveConfiguration(config_.lock());
-		ColorPaletteHandler::savePalette(palette_);
+		ColorPaletteHandler::savePalette(palette_.get());
 		lockWidgets(false);
 	}
 }
