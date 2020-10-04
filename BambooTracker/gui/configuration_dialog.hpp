@@ -17,13 +17,15 @@ namespace Ui {
 	class ConfigurationDialog;
 }
 
+class AudioStream;
+
 class ConfigurationDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
 	ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
-						std::string curApi, std::vector<std::string> apis, QWidget *parent = nullptr);
+						std::weak_ptr<const AudioStream> stream, QWidget *parent = nullptr);
 	~ConfigurationDialog() override;
 
 signals:
@@ -36,6 +38,7 @@ private:
 	Ui::ConfigurationDialog *ui;
 	std::weak_ptr<Configuration> config_;
 	std::weak_ptr<ColorPalette> refPalette_;
+	std::weak_ptr<const AudioStream> stream_;
 
 	inline Qt::CheckState toCheckState(bool enabled)
 	{
@@ -59,7 +62,8 @@ private slots:
 
 	/***** Sound *****/
 private slots:
-	void on_midiInputChoiceButton_clicked();
+	void on_audioApiComboBox_currentIndexChanged(const QString &arg1);
+	void on_midiApiComboBox_currentIndexChanged(const QString &arg1);
 
 	/***** Formats *****/
 private:

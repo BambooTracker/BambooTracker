@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- [#238] - MIDI API selection ([#230]; thanks [@OPNA2608], [@ehaupt])
 - 1 new color schemes (thanks [@Yuzu4K])
 
 ### Fixed
@@ -20,6 +21,7 @@
 [#258]: https://github.com/rerrahkr/BambooTracker/issues/258
 [#260]: https://github.com/rerrahkr/BambooTracker/issues/260
 [#261]: https://github.com/rerrahkr/BambooTracker/issues/261
+[#238]: https://github.com/rerrahkr/BambooTracker/pull/238
 
 ## v0.4.4 (2020-08-22)
 ### Added
@@ -33,6 +35,7 @@
 ### Changed
 - [#234] - Change maximum import rate of ADPCM sample to 55.5kHz (thanks [@superctr], [@OPNA2608])
 - [#239] - Improve compiler & version detection (thanks [@OPNA2608])
+- [#238] - Update RtMidi library
 - Change painting order of pattern and order border
 - [#250] - Improve misc file installation ([#248]; thanks [@OPNA2608])
 - [#253] - Reduce build package size ([#251])

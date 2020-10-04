@@ -32,6 +32,35 @@ RtMidi::Api MidiInterface::currentApi() const
 	return inputClient_->getCurrentApi();
 }
 
+std::string MidiInterface::currentApiName() const
+{
+	return RtMidi::getApiDisplayName(currentApi());
+}
+
+std::vector<std::string> MidiInterface::getAvailableApi() const
+{
+	std::vector<RtMidi::Api> apis;
+	RtMidi::getCompiledApi(apis);
+	std::vector<std::string> list;
+	for (const auto& apiAvailable : apis)
+		list.push_back(RtMidi::getApiDisplayName(apiAvailable));
+	return list;
+}
+
+void MidiInterface::switchApi(std::string api)
+{
+	std::vector<RtMidi::Api> apis;
+	RtMidi::getCompiledApi(apis);
+
+	for (const auto& apiAvailable : apis) {
+		if (api == RtMidi::getApiDisplayName(apiAvailable)) {
+			switchApi(apiAvailable);
+			return;
+		}
+	}
+	switchApi(RtMidi::RTMIDI_DUMMY);
+}
+
 void MidiInterface::switchApi(RtMidi::Api api)
 {
 	if (inputClient_ && api == inputClient_->getCurrentApi())
@@ -84,6 +113,26 @@ bool MidiInterface::supportsVirtualPort() const
 	}
 }
 
+bool MidiInterface::supportsVirtualPort(std::string api) const
+{
+	std::vector<RtMidi::Api> apis;
+	RtMidi::getCompiledApi(apis);
+	RtMidi::Api apiType = RtMidi::RTMIDI_DUMMY;
+	for (const auto& apiAvailable : apis) {
+		if (api == RtMidi::getApiDisplayName(apiAvailable)) {
+			apiType = apiAvailable;
+			break;
+		}
+	}
+
+	switch (apiType) {
+	case RtMidi::MACOSX_CORE: case RtMidi::LINUX_ALSA: case RtMidi::UNIX_JACK:
+		return true;
+	default:
+		return false;
+	}
+}
+
 std::vector<std::string> MidiInterface::getRealInputPorts()
 {
 	RtMidiIn &client = *inputClient_;
@@ -94,6 +143,33 @@ std::vector<std::string> MidiInterface::getRealInputPorts()
 
 	for (unsigned i = 0; i < count; ++i)
 		ports.push_back(client.getPortName(i));
+	return ports;
+}
+
+std::vector<std::string> MidiInterface::getRealInputPorts(const std::string& api)
+{
+	std::vector<RtMidi::Api> apis;
+	RtMidi::getCompiledApi(apis);
+
+	RtMidi::Api apiType = RtMidi::RTMIDI_DUMMY;
+	for (const auto& apiAvailable : apis) {
+		if (api == RtMidi::getApiDisplayName(apiAvailable)) {
+			apiType = apiAvailable;
+			break;
+		}
+	}
+
+	std::vector<std::string> ports;
+	try {
+		auto client = std::make_unique<RtMidiIn>(apiType);
+		unsigned count = client->getPortCount();
+		ports.reserve(count);
+		for (unsigned i = 0; i < count; ++i)
+			ports.push_back(client->getPortName(i));
+	}
+	catch (RtMidiError& error) {
+		error.printMessage();
+	}
 	return ports;
 }
 

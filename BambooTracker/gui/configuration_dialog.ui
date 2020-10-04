@@ -251,30 +251,6 @@
        <string>Sound</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout" columnstretch="5,5">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBoxEmulation">
-         <property name="title">
-          <string>Emulation core</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QComboBox" name="emulatorComboBox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="soundAPIGroupBox">
-         <property name="title">
-          <string>API</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <widget class="QComboBox" name="soundAPIComboBox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="3" column="0">
         <widget class="QGroupBox" name="sampleRateGroupBox">
          <property name="title">
@@ -338,45 +314,76 @@
           <string>MIDI input</string>
          </property>
          <layout class="QFormLayout" name="formLayout_2">
+          <item row="1" column="0">
+           <widget class="QLabel" name="midiInputNameLabel">
+            <property name="text">
+             <string>Device</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="midiApiLabel">
+            <property name="text">
+             <string>API</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="1">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLineEdit" name="midiInputNameLine">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="midiInputChoiceButton">
-              <property name="text">
-               <string notr="true">...</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QComboBox" name="midiApiComboBox"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="midiInputDeviceComboBox"/>
           </item>
          </layout>
         </widget>
        </item>
        <item row="1" column="0" colspan="2">
-        <widget class="QGroupBox" name="soundDeviceGroupBox">
+        <widget class="QGroupBox" name="audioOutputGroupBox">
          <property name="title">
-          <string>Device</string>
+          <string>Audio output</string>
          </property>
          <layout class="QFormLayout" name="formLayout_5">
-          <item row="0" column="0" colspan="2">
-           <widget class="QComboBox" name="soundDeviceComboBox"/>
-          </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="realChipLabel">
             <property name="text">
              <string>Real chip interface</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <widget class="QComboBox" name="realChipComboBox"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="audioDeviceComboBox"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="audioDeviceLabel">
+            <property name="text">
+             <string>Device</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="audioApiLabel">
+            <property name="text">
+             <string>API</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="audioApiComboBox"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBoxEmulation">
+         <property name="title">
+          <string>Emulation core</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QComboBox" name="emulatorComboBox"/>
           </item>
          </layout>
         </widget>
@@ -1260,7 +1267,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <property name="usesScrollButtons">
              <bool>false</bool>
@@ -2611,11 +2618,11 @@ color: rgb(255, 255, 255);</string>
   <tabstop>generalSettingsListWidget</tabstop>
   <tabstop>pageJumpLengthSpinBox</tabstop>
   <tabstop>emulatorComboBox</tabstop>
-  <tabstop>soundAPIComboBox</tabstop>
-  <tabstop>soundDeviceComboBox</tabstop>
+  <tabstop>audioApiComboBox</tabstop>
+  <tabstop>audioDeviceComboBox</tabstop>
   <tabstop>realChipComboBox</tabstop>
-  <tabstop>midiInputNameLine</tabstop>
-  <tabstop>midiInputChoiceButton</tabstop>
+  <tabstop>midiApiComboBox</tabstop>
+  <tabstop>midiInputDeviceComboBox</tabstop>
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>bufferLengthHorizontalSlider</tabstop>
   <tabstop>mixerResetPushButton</tabstop>
@@ -2632,9 +2639,9 @@ color: rgb(255, 255, 255);</string>
   <tabstop>odrRowFontComboBox</tabstop>
   <tabstop>odrRowFontSizeComboBox</tabstop>
   <tabstop>envelopeTypeListWidget</tabstop>
+  <tabstop>envelopeSetNameLineEdit</tabstop>
   <tabstop>addEnvelopeSetPushButton</tabstop>
   <tabstop>removeEnvelopeSetpushButton</tabstop>
-  <tabstop>envelopeSetNameLineEdit</tabstop>
   <tabstop>editEnvelopeSetPushButton</tabstop>
   <tabstop>shortcutsTreeWidget</tabstop>
   <tabstop>keyboardTypeComboBox</tabstop>

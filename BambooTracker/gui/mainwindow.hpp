@@ -218,10 +218,11 @@ private:
 									 QMessageBox::No) == QMessageBox::Yes);
 	}
 
-	inline void showStreamFailedDialog()
+	inline void showStreamFailedDialog(const QString& errDetail)
 	{
 		QMessageBox::critical(this, tr("Error"),
-							  tr("Could not open the audio stream. Please change the sound settings in Configuration."),
+							  tr("Could not open the audio stream. Please change the sound settings in Configuration.")
+							  + "\n\n" + errDetail,
 							  QMessageBox::Ok, QMessageBox::Ok);
 	}
 

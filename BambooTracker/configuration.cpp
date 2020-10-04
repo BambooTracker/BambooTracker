@@ -155,6 +155,7 @@ Configuration::Configuration()
 	bufferLength_ = 40;
 
 	// Midi //
+	midiAPI_ = u8"";
 	midiInPort_ = u8"";
 
 	// Mixer //
@@ -958,7 +959,11 @@ void Configuration::setBufferLength(size_t length) { bufferLength_ = length; }
 size_t Configuration::getBufferLength() const { return bufferLength_; }
 
 // Midi //
-void Configuration::setMidiInputPort(const std::string &port) { midiInPort_ = port; }
+void Configuration::setMidiAPI(const std::string& api) { midiAPI_ = api; }
+
+std::string Configuration::getMidiAPI() const { return midiAPI_; }
+
+void Configuration::setMidiInputPort(const std::string& port) { midiInPort_ = port; }
 
 std::string Configuration::getMidiInputPort() const { return midiInPort_; }
 

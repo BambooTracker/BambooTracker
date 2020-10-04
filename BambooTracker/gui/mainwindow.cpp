@@ -16,7 +16,6 @@
 #include <QProgressDialog>
 #include <QRect>
 #include <QDesktopWidget>
-#include <QAudioDeviceInfo>
 #include <QMetaMethod>
 #include <QScreen>
 #include <QComboBox>
@@ -150,7 +149,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->orderList->setColorPallete(palette_);
 	updateInstrumentListColors();
 	ui->waveVisual->setColorPalette(palette_);
-	setMidiConfiguration();
 
 	/* Command stack */
 	QObject::connect(comStack_.get(), &QUndoStack::indexChanged,
@@ -616,6 +614,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	});
 
 	/* MIDI */
+	setMidiConfiguration();
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
 	midiProgramEventMethod_ = metaObject()->indexOfSlot("midiProgramEvent(uchar,uchar)");
@@ -623,17 +622,6 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
 
 	/* Audio stream */
-	bool savedDeviceExists = false;
-	for (const QAudioDeviceInfo& audioDevice : QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-		if (audioDevice.deviceName().toUtf8().toStdString() == config.lock()->getSoundDevice()) {
-			savedDeviceExists = true;
-			break;
-		}
-	}
-	if (!savedDeviceExists) {
-		QString sndDev = QAudioDeviceInfo::defaultOutputDevice().deviceName();
-		config.lock()->setSoundDevice(sndDev.toUtf8().toStdString());
-	}
 	stream_ = std::make_shared<AudioStreamRtAudio>();
 	stream_->setTickUpdateCallback(+[](void* cbPtr) -> int {
 		auto bt = reinterpret_cast<BambooTracker*>(cbPtr);
@@ -644,13 +632,37 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		bt->getStreamSamples(container, nSamples);
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
+	QString audioApi = utf8ToQString(config.lock()->getSoundAPI());
+	bool savedApiExists = false;
+	const std::vector<QString> audioApis = stream_->getAvailableBackends();
+	for (const QString& api : audioApis) {
+		if (api.toUtf8().toStdString() == config.lock()->getSoundAPI()) {
+			savedApiExists = true;
+			break;
+		}
+	}
+	if (!savedApiExists) {
+		audioApi = audioApis.front();
+		config.lock()->setSoundAPI(audioApi.toUtf8().toStdString());
+	}
+	QString audioDevice = utf8ToQString(config.lock()->getSoundDevice());
+	bool savedDeviceExists = false;
+	for (const QString& device : stream_->getAvailableDevices(audioApi)) {
+		if (device.toUtf8().toStdString() == config.lock()->getSoundDevice()) {
+			savedDeviceExists = true;
+			break;
+		}
+	}
+	if (!savedDeviceExists) {
+		audioDevice = stream_->getDefaultOutputDevice(audioDevice);
+		config.lock()->setSoundDevice(audioDevice.toUtf8().toStdString());
+	}
+	QString streamErr;
 	bool streamState = stream_->initialize(
 						   static_cast<uint32_t>(bt_->getStreamRate()),
 						   static_cast<uint32_t>(bt_->getStreamDuration()),
-						   bt_->getModuleTickFrequency(),
-						   utf8ToQString(config.lock()->getSoundAPI()),
-						   utf8ToQString(config.lock()->getSoundDevice()));
-	if (!streamState) showStreamFailedDialog();
+						   bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
+	if (!streamState) showStreamFailedDialog(streamErr);
 	RealChipInterface intf = config.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
 		bt_->useSCCI(nullptr);
@@ -2184,13 +2196,15 @@ void MainWindow::changeConfiguration()
 		timer_.reset();
 		bt_->useSCCI(nullptr);
 		bt_->useC86CTL(nullptr);
+		QString streamErr;
 		bool streamState = stream_->initialize(
 							   config_.lock()->getSampleRate(),
 							   config_.lock()->getBufferLength(),
 							   bt_->getModuleTickFrequency(),
 							   utf8ToQString(config_.lock()->getSoundAPI()),
-							   utf8ToQString(config_.lock()->getSoundDevice()));
-		if (!streamState) showStreamFailedDialog();
+							   utf8ToQString(config_.lock()->getSoundDevice()),
+							   &streamErr);
+		if (!streamState) showStreamFailedDialog(streamErr);
 		stream_->start();
 	}
 	else {
@@ -2274,8 +2288,10 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 void MainWindow::setMidiConfiguration()
 {
 	MidiInterface &midiIntf = MidiInterface::instance();
+	std::string midiApi = config_.lock()->getMidiAPI();
 	std::string midiInPortName = config_.lock()->getMidiInputPort();
 
+	midiIntf.switchApi(midiApi);
 	if (!midiIntf.hasInitializedInput()) {
 		QMessageBox::critical(this, tr("Error"),
 							  tr("Could not initialize MIDI input."),
@@ -2898,7 +2914,7 @@ void MainWindow::on_actionGroove_Settings_triggered()
 
 void MainWindow::on_actionConfiguration_triggered()
 {
-	ConfigurationDialog diag(config_.lock(), palette_, stream_->getCurrentBackend(), stream_->getAvailableBackends());
+	ConfigurationDialog diag(config_.lock(), palette_, stream_);
 	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
 	if (diag.exec() == QDialog::Accepted) {
