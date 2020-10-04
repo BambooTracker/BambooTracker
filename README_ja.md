@@ -1,5 +1,5 @@
 # ![icon](./img/icon.png) BambooTracker
-[![GitHub release](https://img.shields.io/badge/release-v0.4.3-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.4.4-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
 ![Platform: windows | macos | linux](https://img.shields.io/badge/platform-windows%20|%20macos%20|%20linux-lightgrey.svg)
 [![Travis CI Build Status](https://travis-ci.com/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.com/rerrahkr/BambooTracker)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
@@ -12,9 +12,21 @@
 [English](./README.md)
 
 ## ダウンロード
-### Windows / macOS
+### Windows
 - <https://github.com/rerrahkr/BambooTracker/releases>
 - *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
+
+### macOS
+#### GitHubビルド
+- <https://github.com/rerrahkr/BambooTracker/releases>
+- *開発版*: [Appveyor](https://ci.appveyor.com/project/rerrahkr/bambootracker)から"Artifacts"をダウンロード
+
+#### Nixpkgs
+Alternatively, you can install the latest BambooTracker release via the [Nix package manager](https://nixos.org/) (You might need to update your nixpkgs-unstable channel first):
+
+[Nix package manager](https://nixos.org/)から最新版のインストールが可能です。(最初にnixpkgs-unstableチャンネルの更新が必要な場合があります。):
+
+`nix-env -iA nixpkgs.bambootracker`
 
 ### Linux / BSD
 #### Debian / Ubuntu
@@ -22,6 +34,12 @@
 
 #### FreeBSD
 `pkg install bambootracker`
+
+#### クロスディストリビューション
+##### Nixpkgs
+(nixpkgs-unstableチャンネルの更新後に以下のコマンドを実行):
+
+`nix-env -iA nixpkgs.bambootracker`
 
 #### その他
 - "ビルド方法"の章を参照してください。
@@ -353,10 +371,10 @@ demos, skins, licensesなどその他のファイル、フォルダは適宜任�
 
 - Qt
 - YM2608のエミュレーションコードに関してMAME開発チームさんとValley Bellさん
-- ツールバーに使用しているアイコンに関してMark Jamesさん
+- トラッカーのアイコンに関してDecidettoさん
+- その他のアイコンに用いているSilk iconsに関してMark Jamesさん
 - VGMファイルのフォーマットのドキュメントに関してVGMRipsチームの方々
 - トラッカーのUIやルーチンに関して多くのトラッカー作成者様、特に0CC-FamiTrackerのHertzDevilさん、Deflemask TrackerのLeonardo Demartino (delek)さん、GoatTrackerのLasse Öörni (Cadaver)さん
-- トラッカーのアイコンに関してDecidettoさん
 - サンプル曲を提供してくださったmaakさん、SuperJet Spadeさん、Dippyさん、RigidatoMSさん、ImATrackManさん
 - サンプルインストゥルメントを提供してくださったpapiezakさん、阿保　剛さん
 - WOPNインストゥルメントのフォーマットファイルに関してVitaly Novichkov (Wohlstand)さん

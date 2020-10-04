@@ -1,7 +1,6 @@
 #pragma once
 
 #include "chip_def.h"
-#include <vector>
 #include <cmath>
 #include <cstddef>
 

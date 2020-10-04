@@ -570,31 +570,21 @@ equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 12) {
       qmfile  ~= s/.ts$/.qm/
       qmfile  ~= s,^res/lang,.qm,
 
-              thisqmcom  = $${qmfile}.commands
-      win32:$$thisqmcom  = mkdir .qm;
-       else:$$thisqmcom  = test -d .qm || mkdir -p .qm;
-            $$thisqmcom += lrelease -qm $$qmfile $$PWD/$$tsfile
-        thisqmdep  = $${qmfile}.depends
-      $$thisqmdep  = $$PWD/$${tsfile}
+      win32:$${qmfile}.commands = mkdir .qm;
+      else:$${qmfile}.commands = test -d .qm || mkdir -p .qm;
+      $${qmfile}.commands += lrelease -qm $$qmfile $$PWD/$$tsfile
+      $${qmfile}.depends = $$PWD/$${tsfile}
 
       PRE_TARGETDEPS      += $${qmfile}
       QMAKE_EXTRA_TARGETS += $${qmfile}
 
+      translations_target = translations_$${qmfile}
+      $${translations_target}.depends = $$qmfile
+      $${translations_target}.CONFIG = no_check_exist
+      $${translations_target}.files = $$PWD/$$qmfile
+      $${translations_target}.path = $$QM_FILES_INSTALL_PATH
 
-        thisinst    = translations_$${qmfile}
-        thisinstdep = $${thisinst}.depends
-      $$thisinstdep = $$qmfile
-
-        thisinstcfg = $${thisinst}.CONFIG
-      $$thisinstcfg = no_check_exist
-
-        thisinstfil = $${thisinst}.files
-      $$thisinstfil = $$PWD/$$qmfile
-
-        thisinstpat = $${thisinst}.path
-      $$thisinstpat = $$QM_FILES_INSTALL_PATH
-
-      INSTALLS += $$thisinst
+      INSTALLS += $${translations_target}
     }
 }
 else {
@@ -607,4 +597,31 @@ else {
 
 win32 {
     RC_ICONS = res/icon/BambooTracker.ico
+}
+
+unix {
+  manpages.files = $$PWD/../BambooTracker*.1
+  manpages.path = $$PREFIX/share/man/man1/
+  INSTALLS += manpages
+
+  desktopfile.files = $$PWD/../BambooTracker.desktop
+  desktopfile.path = $$PREFIX/share/applications/
+  INSTALLS += desktopfile
+
+  iconsizes = 16 256
+  for(iconsize, iconsizes) {
+    iconres = $${iconsize}x$${iconsize}
+    thisicon = iconfile_$${iconres}
+    $${thisicon}.files = $$PWD/res/icon/app_icon/$${iconres}/BambooTracker.png
+    $${thisicon}.path = $$PREFIX/share/icons/hicolor/$${iconres}/apps/
+    INSTALLS += $${thisicon}
+  }
+
+  distfiles.files = $$PWD/../demos $$PWD/../skins
+  distfiles.path = $$PREFIX/share/BambooTracker/
+  INSTALLS += distfiles
+
+  docfiles.files = $$PWD/../licenses $$PWD/../LICENSE
+  docfiles.path = $$PREFIX/share/doc/BambooTracker
+  INSTALLS += docfiles
 }

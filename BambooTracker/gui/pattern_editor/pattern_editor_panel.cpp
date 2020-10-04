@@ -54,7 +54,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  hdMinusY_(0),
 	  curRowBaselineY_(0),
 	  curRowY_(0),
-	  visTracks_(16),	// Dummy
+	  visTracks_(1),	// Dummy
 	  rightEffn_(16),	// Dummy
 	  leftTrackVisIdx_(0),
 	  curSongNum_(0),
@@ -134,6 +134,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 
 	// Track visibility
 	songStyle_.type = SongType::Standard;	// Dummy
+	songStyle_.trackAttribs.push_back({ 0, SoundSource::FM, 0 });	// Dummy
 	std::iota(visTracks_.begin(), visTracks_.end(), 0);
 
 	// Shortcuts
@@ -1758,43 +1759,44 @@ void PatternEditorPanel::copySelectedCells()
 					   QString::number(h));
 	// NOTE: After this line, PatternPosition.trackVisIdx indecates a real track number.
 	PatternPosition pos = {
-		visTracks_.at(selLeftAbovePos_.trackVisIdx), selLeftAbovePos_.colInTrack,
+		selLeftAbovePos_.trackVisIdx, selLeftAbovePos_.colInTrack,
 		selLeftAbovePos_.order, selLeftAbovePos_.step
 	};
 	while (true) {
+		int trackIdx = visTracks_.at(pos.trackVisIdx);
 		switch (pos.colInTrack) {
 		case 0:
-			str += QString::number(bt_->getStepNoteNumber(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
+			str += QString::number(bt_->getStepNoteNumber(curSongNum_, trackIdx, pos.order, pos.step));
 			break;
 		case 1:
-			str += QString::number(bt_->getStepInstrument(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
+			str += QString::number(bt_->getStepInstrument(curSongNum_, trackIdx, pos.order, pos.step));
 			break;
 		case 2:
-			str += QString::number(bt_->getStepVolume(curSongNum_, pos.trackVisIdx, pos.order, pos.step));
+			str += QString::number(bt_->getStepVolume(curSongNum_, trackIdx, pos.order, pos.step));
 			break;
 		case 3:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 0));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 0));
 			break;
 		case 4:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 0));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 0));
 			break;
 		case 5:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 1));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 1));
 			break;
 		case 6:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 1));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 1));
 			break;
 		case 7:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 2));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 2));
 			break;
 		case 8:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 2));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 2));
 			break;
 		case 9:
-			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 3));
+			str += QString::fromStdString(bt_->getStepEffectID(curSongNum_, trackIdx, pos.order, pos.step, 3));
 			break;
 		case 10:
-			str += QString::number(bt_->getStepEffectValue(curSongNum_, pos.trackVisIdx, pos.order, pos.step, 3));
+			str += QString::number(bt_->getStepEffectValue(curSongNum_, trackIdx, pos.order, pos.step, 3));
 			break;
 		}
 
@@ -1837,7 +1839,7 @@ void PatternEditorPanel::pasteCopiedCells(const PatternPosition& cursorPos)
 	}
 
 	bt_->pastePatternCells(
-				curSongNum_, pos.trackVisIdx, pos.colInTrack, pos.order, pos.step, std::move(cells));
+				curSongNum_, visTracks_.at(pos.trackVisIdx), pos.colInTrack, pos.order, pos.step, std::move(cells));
 	comStack_.lock()->push(new PasteCopiedDataToPatternQtCommand(this));
 }
 

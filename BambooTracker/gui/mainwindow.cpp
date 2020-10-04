@@ -144,7 +144,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	ui->patternEditor->setHorizontalScrollMode(config.lock()->getMoveCursorByHorizontalScroll(), false);
 	ui->patternEditor->setCore(bt_);
 	ui->orderList->setCore(bt_);
-	ColorPaletteHandler::loadPalette(palette_);
+	ColorPaletteHandler::loadPalette(palette_.get());
 	ui->patternEditor->setColorPallete(palette_);
 	ui->orderList->setColorPallete(palette_);
 	updateInstrumentListColors();
@@ -1757,12 +1757,20 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	}
 
 	// Change text codec
-	if (auto ff = dynamic_cast<RawFMBank*>(bank.get())) {
+	if (auto ff = dynamic_cast<FfBank*>(bank.get())) {
 		QTextCodec* codec = QTextCodec::codecForName("Shift-JIS");
 		for (size_t i = 0; i < ff->getNumInstruments(); ++i) {
 			std::string sjis = ff->getInstrumentName(i);
 			std::string utf8 = codec->toUnicode(sjis.c_str(), sjis.length()).toStdString();
 			ff->setInstrumentName(i, utf8);
+		}
+	}
+	else if (auto mu88 = dynamic_cast<Mucom88Bank*>(bank.get())) {
+		QTextCodec* codec = QTextCodec::codecForName("Shift-JIS");
+		for (size_t i = 0; i < mu88->getNumInstruments(); ++i) {
+			std::string sjis = mu88->getInstrumentName(i);
+			std::string utf8 = codec->toUnicode(sjis.c_str(), sjis.length()).toStdString();
+			mu88->setInstrumentName(i, utf8);
 		}
 	}
 
@@ -2868,7 +2876,7 @@ void MainWindow::on_actionAbout_triggered()
 						 "- RtAudio by (C) Gary P. Scavone (RtAudio License)<br>"
 						 "- RtMidi by (C) Gary P. Scavone (RtMidi License)<br>"
 						 "- SCCI by (C) gasshi (SCCI License)<br>"
-						 "- Silk icon set 1.3 by (C) Mark James (CC BY 2.5)<br>"
+						 "- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)<br>"
 						 "- Qt (GPL v2+ or LGPL v3)<br>"
 						 "- VGMPlay by (C) Valley Bell (GPL v2)<br>"
 						 "<br>"
@@ -2913,7 +2921,7 @@ void MainWindow::on_actionConfiguration_triggered()
 		bt_->stopPlaySong();
 		changeConfiguration();
 		ConfigurationHandler::saveConfiguration(config_.lock());
-		ColorPaletteHandler::savePalette(palette_);
+		ColorPaletteHandler::savePalette(palette_.get());
 		lockWidgets(false);
 	}
 }

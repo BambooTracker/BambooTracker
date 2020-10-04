@@ -16,7 +16,7 @@
   - BambooTracker/midi/RtMidi/*
 - [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) by がし３ (gasshi) - [scci_license.txt](./scci_license.txt)
   - BambooTracker/chips/scci/*
-- [Silk icon](https://www.iconfinder.com/iconsets/silk2) set 1.3 by Mark James - CC BY 2.5
+- [Silk icons](http://www.famfamfam.com/lab/icons/silk/) by Mark James - CC BY 2.5 or 3.0
   - BambooTracker/res/icon/if_*.png
   - BambooTracker/res/icon/iconfinder_*.png
 - [VGMPlay](https://github.com/vgmrips/vgmplay) by Valley Bell - GPL v2

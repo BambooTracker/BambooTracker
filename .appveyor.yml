@@ -3,7 +3,7 @@
 #---------------------------------#
 
 # version format
-version: 0.4.3.{build}
+version: 0.4.4.{build}
 
 # branches to build
 branches:
@@ -92,9 +92,16 @@ after_build:
   - cd packaging
   - ps: |
       Copy-Item -Recurse ..\BambooTracker\debug\BambooTracker.exe,..\img,..\demos,..\licenses,..\specs,..\skins,..\*.md,..\LICENSE .
-      windeployqt.exe BambooTracker.exe -verbose=2
+      $HELP_OUT = (windeployqt.exe -h)
+      $DEPLOY_OPTS = "-verbose=2"
+      $PLUGIN_OPTS = @("--no-quick-import","--no-system-d3d-compiler","--no-webkit2","--no-opengl-sw","--no-virtualkeyboard","--no-angle")
+      $PLUGIN_OPTS | ForEach{If ($HELP_OUT | Select-String $_) { $DEPLOY_OPTS = $DEPLOY_OPTS + " " + $_ }}
+      $EXLIB_OPTS = @("svg")
+      $EXLIB_OPTS | ForEach{If ($HELP_OUT | Select-String $_) { $DEPLOY_OPTS = $DEPLOY_OPTS + " --no-" + $_ }}
+      Invoke-Expression ("windeployqt.exe BambooTracker.exe " + $DEPLOY_OPTS)
       mv translations lang
       mv ..\BambooTracker\.qm\*.qm lang\
+      Remove-Item -Recurse -Force imageformats
   - sh: bash ../ci/package_osx.sh
   - ps: 7z a -tzip "..\$env:DEST" *
   - sh: 7z a -tzip "../$DEST" *
