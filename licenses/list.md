@@ -1,4 +1,7 @@
-# List of libraries
+# Licenses
+- BambooTracker - GPL v2
+
+## Libraries
 - [adpcm](https://github.com/superctr/adpcm) by Ian Karlsson (superctr) - Public domain
   - BambooTracker/chips/codec/*
 - [C86CTL](https://github.com/honet/c86ctl) by honet - [BSD 3-Clause](./c86ctl_lisence.txt)
@@ -6,6 +9,7 @@
 - [libOPNMIDI](https://github.com/Wohlstand/libOPNMIDI) by Vitaly Novichkov (Wohlstand) - MIT
   - BambooTracker/format/wopn_file.*
 - [MAME](https://github.com/mamedev/mame) - [mame_license.txt](./mame_license.txt)
+  - BambooTracker/chips/chip_def.h
   - BambooTracker/chips/mame/*
 - Nuked OPN-MOD (added OPNA functionality to [Nuked-OPN2](https://github.com/nukeykt/Nuked-OPN2) by Alexey Khokholov (Nuke.YKT)) by Jean Pierre Cimalando - LGPL v2.1
   - BambooTracker/chips/nuked/ym3438.*
@@ -21,3 +25,15 @@
   - BambooTracker/res/icon/iconfinder_*.png
 - [VGMPlay](https://github.com/vgmrips/vgmplay) by Valley Bell - GPL v2
   - BambooTracker/chips/mame/*
+
+## Other parts
+- MIT license
+  - BambooTracker/*.{hpp,cpp}
+  - BambooTracker/chips/*.{hpp,h,cpp} (except chip_def.h)
+  - BambooTracker/command/*
+  - BambooTracker/gui/*
+  - BambooTracker/instrument/*
+  - BambooTracker/io/*
+  - BambooTracker/midi/*.{hpp,cpp}
+  - BambooTracker/module/*
+  - BambooTracker/stream/*.{hpp,cpp}

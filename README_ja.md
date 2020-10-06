@@ -364,7 +364,7 @@ demos, skins, licensesなどその他のファイル、フォルダは適宜任�
 ## ライセンス
 このプログラム及びソースコードのライセンスははGNU General License Version 2です。
 
-*[LICENSE](./LICENSE)とライブラリに関して[list.md](./licenses/list.md)も参照してください。*
+*詳細は[LICENSE](./LICENSE)と[list.md](./licenses/list.md)を参照してください。*
 
 ## クレジット
 このアプリの作成において、以下の方々にお世話になっております。ありがとうございます。

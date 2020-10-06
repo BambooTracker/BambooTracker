@@ -5,6 +5,9 @@
 - [#238] - MIDI API selection ([#230]; thanks [@OPNA2608], [@ehaupt])
 - 1 new color schemes (thanks [@Yuzu4K])
 
+### Changed
+- [#266] - Set a license to a part of the source code (thanks [@superctr])
+
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
 - [#259] - Fix copying and pasting position error when hiding any tracks (thanks [@YoshiLightStar])
@@ -22,6 +25,7 @@
 [#260]: https://github.com/rerrahkr/BambooTracker/issues/260
 [#261]: https://github.com/rerrahkr/BambooTracker/issues/261
 [#238]: https://github.com/rerrahkr/BambooTracker/pull/238
+[#266]: https://github.com/rerrahkr/BambooTracker/issues/266
 
 ## v0.4.4 (2020-08-22)
 ### Added

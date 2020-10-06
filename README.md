@@ -365,7 +365,7 @@ For miscellaneous files like the example demos, skins, license informations etc,
 ## License
 This program and its source code are licensed under the GNU General License Version 2.
 
-*See [LICENSE](./LICENSE) and [list.md](./licenses/list.md) of libraries.*
+*See [LICENSE](./LICENSE) and [list.md](./licenses/list.md) for details.*
 
 ## Credits
 I would like to thank the following people for making it:
