@@ -14,6 +14,7 @@
 - [#258] - Fix an error of wav/vgm/s98 export (thanks [@Zexxerd])
 - [#260] - Update license of Silk icons (thanks [@alexmyczko])
 - [#261] - Fix the update timing of color scheme when color is changed (thanks [@Genatari])
+- Add the missing descriptions to the effect list dialog
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 [@Zexxerd]: https://github.com/Zexxerd

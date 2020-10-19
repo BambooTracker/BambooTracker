@@ -63,6 +63,9 @@ EffectListDialog::EffectListDialog(QWidget *parent) :
 	addRow(EffectType::ToneNoiseMix, { SoundSource::SSG });
 	addRow(EffectType::MasterVolume, { SoundSource::RHYTHM });
 	addRow(EffectType::NoisePitch, { SoundSource::SSG });
+	addRow(EffectType::RegisterAddress0, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
+	addRow(EffectType::RegisterAddress1, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
+	addRow(EffectType::RegisterValue, { SoundSource::FM, SoundSource::SSG, SoundSource::RHYTHM, SoundSource::ADPCM });
 	addRow(EffectType::ARControl, { SoundSource::FM });
 	addRow(EffectType::Brightness, { SoundSource::FM });
 	addRow(EffectType::DRControl, { SoundSource::FM });
