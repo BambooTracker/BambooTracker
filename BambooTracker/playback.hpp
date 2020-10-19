@@ -36,6 +36,12 @@
 #include "effect.hpp"
 #include "enum_hash.hpp"
 
+struct RegisterUnit
+{
+	int address, value;
+	bool hasCompleted;
+};
+
 /// Divede playback routine from main class BambooTracker
 class PlaybackManager
 {
@@ -109,15 +115,20 @@ private:
 	EffectMemory stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
 	using EffectMemorySource = std::vector<std::unordered_map<EffectType, int>>;
 	std::unordered_map<SoundSource, EffectMemorySource> keyOnBasedEffs_, stepBeginBasedEffs_;
+	using DirectRegisterSetQueue = std::vector<RegisterUnit>;
+	using DirectRegisterSetSource = std::vector<DirectRegisterSetQueue>;
+	std::unordered_map<SoundSource, DirectRegisterSetSource> directRegisterSets_;
 	bool executeStoredEffectsGlobal();
-	bool storeEffectToMapFM(int ch, Effect eff);
+	bool storeEffectToMapFM(int ch, const Effect& eff);
 	void executeStoredEffectsFM(int ch);
-	bool storeEffectToMapSSG(int ch, Effect eff);
+	bool storeEffectToMapSSG(int ch, const Effect& eff);
 	void executeStoredEffectsSSG(int ch);
-	bool storeEffectToMapRhythm(int ch, Effect eff);
+	bool storeEffectToMapRhythm(int ch, const Effect& eff);
 	void executeStoredEffectsRhythm(int ch);
-	bool storeEffectToMapADPCM(int ch, Effect eff);
+	bool storeEffectToMapADPCM(int ch, const Effect& eff);
 	void executeStoredEffectsADPCM();
+	void storeDirectRegisterSetEffectToQueue(SoundSource src, int ch, const Effect& eff);
+	void executeDirectRegisterSetEffect(DirectRegisterSetQueue& queue);
 
 	bool effPositionJump(int nextOrder);
 	void effSongEnd();

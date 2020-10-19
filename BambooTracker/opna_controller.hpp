@@ -38,12 +38,6 @@
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
-struct RegisterUnit
-{
-	int address, value;
-	bool hasCompleted;
-};
-
 struct ToneDetail
 {
 	int octave;
@@ -75,8 +69,7 @@ public:
 	void tickEvent(SoundSource src, int ch);
 
 	// Direct register set
-	void sendRegisterAddress(int bank, int address);
-	void sendRegisterValue(int value);
+	void sendRegister(int address, int value);
 
 	// DRAM
 	size_t getDRAMSize() const;
@@ -118,7 +111,7 @@ private:
 	std::unique_ptr<chip::OPNA> opna_;
 	SongType mode_;
 
-	std::vector<RegisterUnit> registerSetBuf_;
+	std::vector<std::pair<int, int>> registerSetBuf_;
 
 	std::unique_ptr<int16_t[]> outputHistory_;
 	size_t outputHistoryIndex_;

@@ -132,23 +132,9 @@ void OPNAController::tickEvent(SoundSource src, int ch)
 }
 
 /********** Direct register set **********/
-void OPNAController::sendRegisterAddress(int bank, int address)
+void OPNAController::sendRegister(int address, int value)
 {
-	address = (bank << 8) | address;
-
-	if (registerSetBuf_.empty() || registerSetBuf_.back().hasCompleted)
-		registerSetBuf_.push_back({ address, 0, false });
-	else
-		registerSetBuf_.back().address = address;
-}
-
-void OPNAController::sendRegisterValue(int value)
-{
-	if (!registerSetBuf_.empty()) {
-		auto& unit = registerSetBuf_.back();
-		unit.value = value;
-		unit.hasCompleted = true;
-	}
+	registerSetBuf_.push_back(std::make_pair(address, value));
 }
 
 /********** DRAM **********/
@@ -164,9 +150,8 @@ void OPNAController::updateRegisterStates()
 
 	// Check direct register set
 	if (!registerSetBuf_.empty()) {
-		if (!registerSetBuf_.back().hasCompleted) registerSetBuf_.pop_back();
 		for (auto& unit : registerSetBuf_) {
-			opna_->setRegister(static_cast<uint32_t>(unit.address), static_cast<uint8_t>(unit.value));
+			opna_->setRegister(static_cast<uint32_t>(unit.first), static_cast<uint8_t>(unit.second));
 		}
 		registerSetBuf_.clear();
 	}

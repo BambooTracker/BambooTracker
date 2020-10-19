@@ -15,6 +15,7 @@
 - [#260] - Update license of Silk icons (thanks [@alexmyczko])
 - [#261] - Fix the update timing of color scheme when color is changed (thanks [@Genatari])
 - Add the missing descriptions to the effect list dialog
+- Fix `0Xxx`, `0Yxx` and `0Zxx` to work
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 [@Zexxerd]: https://github.com/Zexxerd

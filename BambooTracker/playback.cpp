@@ -62,6 +62,7 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	isNoteDelay_[SoundSource::FM] = std::vector<bool>(fmch);
 	keyOnBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
 	stepBeginBasedEffs_[SoundSource::FM] = EffectMemorySource(fmch);
+	directRegisterSets_[SoundSource::FM] = DirectRegisterSetSource(fmch);
 	ntDlyCntFM_ = std::vector<int>(fmch);
 	ntCutDlyCntFM_ = std::vector<int>(fmch);
 	volDlyCntFM_ = std::vector<int>(fmch);
@@ -72,6 +73,7 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	isNoteDelay_[SoundSource::SSG] = std::vector<bool>(3);
 	keyOnBasedEffs_[SoundSource::SSG] = EffectMemorySource(3);
 	stepBeginBasedEffs_[SoundSource::SSG] = EffectMemorySource(3);
+	directRegisterSets_[SoundSource::SSG] = DirectRegisterSetSource(3);
 	ntDlyCntSSG_ = std::vector<int>(3);
 	ntCutDlyCntSSG_ = std::vector<int>(3);
 	volDlyCntSSG_ = std::vector<int>(3);
@@ -82,6 +84,7 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	isNoteDelay_[SoundSource::RHYTHM] = std::vector<bool>(6);
 	keyOnBasedEffs_[SoundSource::RHYTHM] = EffectMemorySource(6);
 	stepBeginBasedEffs_[SoundSource::RHYTHM] = EffectMemorySource(6);
+	directRegisterSets_[SoundSource::RHYTHM] = DirectRegisterSetSource(6);
 	ntDlyCntRhythm_ = std::vector<int>(6);
 	ntCutDlyCntRhythm_ = std::vector<int>(6);
 	volDlyCntRhythm_ = std::vector<int>(6);
@@ -90,6 +93,7 @@ void PlaybackManager::setSong(std::weak_ptr<Module> mod, int songNum)
 	isNoteDelay_[SoundSource::ADPCM] = std::vector<bool>(1);
 	keyOnBasedEffs_[SoundSource::ADPCM] = EffectMemorySource(1);
 	stepBeginBasedEffs_[SoundSource::ADPCM] = EffectMemorySource(1);
+	directRegisterSets_[SoundSource::ADPCM] = DirectRegisterSetSource(1);
 	ntDlyCntADPCM_ = 0;
 	ntCutDlyCntADPCM_ = 0;
 	volDlyCntADPCM_ = 0;
@@ -348,7 +352,8 @@ void PlaybackManager::stepProcess()
 					 .getPatternFromOrderNumber(playOrderNum_).getStep(playStepNum_);
 		size_t uch = static_cast<size_t>(attrib.channelInSource);
 		keyOnBasedEffs_[attrib.source].at(uch).clear();
-		bool (PlaybackManager::*storeEffectToMap)(int, Effect) = nullptr;
+		directRegisterSets_[attrib.source].at(uch).clear();
+		bool (PlaybackManager::*storeEffectToMap)(int, const Effect&) = nullptr;
 		switch (attrib.source) {
 		case SoundSource::FM:		storeEffectToMap = &PlaybackManager::storeEffectToMapFM;		break;
 		case SoundSource::SSG:		storeEffectToMap = &PlaybackManager::storeEffectToMapSSG;		break;
@@ -662,7 +667,7 @@ bool PlaybackManager::executeStoredEffectsGlobal()
 	return changedNextPos;
 }
 
-bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapFM(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -685,9 +690,6 @@ bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
 	case EffectType::ARControl:
 	case EffectType::DRControl:
 	case EffectType::RRControl:
-	case EffectType::RegisterAddress0:
-	case EffectType::RegisterAddress1:
-	case EffectType::RegisterValue:
 	case EffectType::Brightness:
 		keyOnBasedEffs_[SoundSource::FM].at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
@@ -707,6 +709,7 @@ bool PlaybackManager::storeEffectToMapFM(int ch, Effect eff)
 		stepEndBasedEffsGlobal_[eff.type] = eff.value;
 		return false;
 	default:
+		storeDirectRegisterSetEffectToQueue(SoundSource::FM, ch, eff);
 		return false;
 	}
 }
@@ -827,21 +830,6 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 				if (0 < op && op < 5 && -1 < val && val < 16) opnaCtrl_->setRRControlFM(ch, op - 1, val);
 				break;
 			}
-			case EffectType::RegisterAddress0:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.second);
-				break;
-			}
-			case EffectType::RegisterAddress1:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.second);
-				break;
-			}
-			case EffectType::RegisterValue:
-			{
-				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
-				break;
-			}
 			case EffectType::Brightness:
 			{
 				if (0 < eff.second) opnaCtrl_->setBrightnessFM(ch, eff.second - 0x80);
@@ -852,10 +840,12 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 			}
 		}
 		keyOnBasedEffs.clear();
+
+		executeDirectRegisterSetEffect(directRegisterSets_[SoundSource::FM].at(uch));
 	}
 }
 
-bool PlaybackManager::storeEffectToMapSSG(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapSSG(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -876,9 +866,6 @@ bool PlaybackManager::storeEffectToMapSSG(int ch, Effect eff)
 	case EffectType::HardEnvHighPeriod:
 	case EffectType::HardEnvLowPeriod:
 	case EffectType::AutoEnvelope:
-	case EffectType::RegisterAddress0:
-	case EffectType::RegisterAddress1:
-	case EffectType::RegisterValue:
 		keyOnBasedEffs_[SoundSource::SSG].at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
@@ -897,6 +884,7 @@ bool PlaybackManager::storeEffectToMapSSG(int ch, Effect eff)
 		stepEndBasedEffsGlobal_[eff.type] = eff.value;
 		return false;
 	default:
+		storeDirectRegisterSetEffectToQueue(SoundSource::SSG, ch, eff);
 		return false;
 	}
 }
@@ -991,39 +979,23 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 			case EffectType::AutoEnvelope:
 				opnaCtrl_->setAutoEnvelopeSSG(ch, (eff.second >> 4) - 8, eff.second & 0x0f);
 				break;
-			case EffectType::RegisterAddress0:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.second);
-				break;
-			}
-			case EffectType::RegisterAddress1:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.second);
-				break;
-			}
-			case EffectType::RegisterValue:
-			{
-				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
-				break;
-			}
 			default:
 				break;
 			}
 		}
 		keyOnBasedEffs.clear();
+
+		executeDirectRegisterSetEffect(directRegisterSets_[SoundSource::SSG].at(uch));
 	}
 }
 
-bool PlaybackManager::storeEffectToMapRhythm(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapRhythm(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Pan:
 	case EffectType::NoteCut:
 	case EffectType::MasterVolume:
 	case EffectType::VolumeDelay:
-	case EffectType::RegisterAddress0:
-	case EffectType::RegisterAddress1:
-	case EffectType::RegisterValue:
 		keyOnBasedEffs_[SoundSource::RHYTHM].at(static_cast<size_t>(ch))[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
@@ -1042,6 +1014,7 @@ bool PlaybackManager::storeEffectToMapRhythm(int ch, Effect eff)
 		stepEndBasedEffsGlobal_[eff.type] = eff.value;
 		return false;
 	default:
+		storeDirectRegisterSetEffectToQueue(SoundSource::RHYTHM, ch, eff);
 		return false;
 	}
 }
@@ -1088,30 +1061,17 @@ void PlaybackManager::executeStoredEffectsRhythm(int ch)
 				}
 				break;
 			}
-			case EffectType::RegisterAddress0:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.second);
-				break;
-			}
-			case EffectType::RegisterAddress1:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.second);
-				break;
-			}
-			case EffectType::RegisterValue:
-			{
-				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
-				break;
-			}
 			default:
 				break;
 			}
 		}
 		keyOnBasedEffs.clear();
+
+		executeDirectRegisterSetEffect(directRegisterSets_[SoundSource::RHYTHM].at(uch));
 	}
 }
 
-bool PlaybackManager::storeEffectToMapADPCM(int ch, Effect eff)
+bool PlaybackManager::storeEffectToMapADPCM(int ch, const Effect& eff)
 {
 	switch (eff.type) {
 	case EffectType::Arpeggio:
@@ -1128,10 +1088,7 @@ bool PlaybackManager::storeEffectToMapADPCM(int ch, Effect eff)
 	case EffectType::NoteCut:
 	case EffectType::TransposeDelay:
 	case EffectType::VolumeDelay:
-	case EffectType::RegisterAddress0:
-	case EffectType::RegisterAddress1:
-	case EffectType::RegisterValue:
-		keyOnBasedEffs_[SoundSource::ADPCM].at(static_cast<size_t>(ch))[eff.type] = eff.value;
+		keyOnBasedEffs_[SoundSource::ADPCM].front()[eff.type] = eff.value;
 		return false;
 	case EffectType::SpeedTempoChange:
 	case EffectType::Groove:
@@ -1139,7 +1096,7 @@ bool PlaybackManager::storeEffectToMapADPCM(int ch, Effect eff)
 		return false;
 	case EffectType::NoteDelay:
 		if (eff.value < tickCounter_.lock()->getSpeed()) {
-			stepBeginBasedEffs_[SoundSource::ADPCM].at(static_cast<size_t>(ch))[EffectType::NoteDelay] = eff.value;
+			stepBeginBasedEffs_[SoundSource::ADPCM].front()[EffectType::NoteDelay] = eff.value;
 			return true;
 		}
 		return false;
@@ -1149,6 +1106,7 @@ bool PlaybackManager::storeEffectToMapADPCM(int ch, Effect eff)
 		stepEndBasedEffsGlobal_[eff.type] = eff.value;
 		return false;
 	default:
+		storeDirectRegisterSetEffectToQueue(SoundSource::ADPCM, ch, eff);
 		return false;
 	}
 }
@@ -1230,27 +1188,51 @@ void PlaybackManager::executeStoredEffectsADPCM()
 				}
 				break;
 			}
-			case EffectType::RegisterAddress0:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(0, eff.second);
-				break;
-			}
-			case EffectType::RegisterAddress1:
-			{
-				if (-1 < eff.second && eff.second < 0x6c) opnaCtrl_->sendRegisterAddress(1, eff.second);
-				break;
-			}
-			case EffectType::RegisterValue:
-			{
-				if (-1 < eff.second) opnaCtrl_->sendRegisterValue(eff.second);
-				break;
-			}
 			default:
 				break;
 			}
 		}
 		keyOnBasedEffs.clear();
+
+		executeDirectRegisterSetEffect(directRegisterSets_[SoundSource::ADPCM].front());
 	}
+}
+
+void PlaybackManager::storeDirectRegisterSetEffectToQueue(SoundSource src, int ch, const Effect& eff)
+{
+	size_t uch = static_cast<size_t>(ch);
+	switch (eff.type) {
+	case EffectType::RegisterAddress0:
+		if (-1 < eff.value && eff.value < 0x6c) {
+			directRegisterSets_.at(src).at(uch).push_back({ eff.value, 0, false });
+		}
+		break;
+	case EffectType::RegisterAddress1:
+		if (-1 < eff.value && eff.value < 0x6c) {
+			directRegisterSets_.at(src).at(uch).push_back({ 0x100 | eff.value, 0, false });
+		}
+		break;
+	case EffectType::RegisterValue:
+	{
+		DirectRegisterSetQueue& queue = directRegisterSets_.at(src).at(uch);
+		if (!queue.empty() && -1 < eff.value) {
+			RegisterUnit& unit = queue.back();
+			unit.value = eff.value;
+			unit.hasCompleted = true;
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void PlaybackManager::executeDirectRegisterSetEffect(DirectRegisterSetQueue& queue)
+{
+	for (const RegisterUnit& unit : queue) {
+		if (unit.hasCompleted) opnaCtrl_->sendRegister(unit.address, unit.value);
+	}
+	queue.clear();
 }
 
 bool PlaybackManager::effPositionJump(int nextOrder)
@@ -1448,6 +1430,9 @@ void PlaybackManager::clearEffectMaps()
 	}
 	for (auto& maps: stepBeginBasedEffs_) {
 		for (EffectMemory& map : maps.second) map.clear();
+	}
+	for (auto& maps: directRegisterSets_) {
+		for (DirectRegisterSetQueue& queue : maps.second) queue.clear();
 	}
 }
 
