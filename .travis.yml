@@ -78,7 +78,7 @@ jobs:
         - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
       before_install:
         # Check out commit with Qt 5.6.2 bump
-        - cd "$(brew --repo homebrew/core)" && git checkout 106d0878ee812cb8f5c403f717bdebe836445aee
+        - git -C "$(brew --repo homebrew/core)" checkout 106d0878ee812cb8f5c403f717bdebe836445aee
         - HOMEBREW_NO_AUTO_UPDATE=1 brew install qt5 jack p7zip
         # Force linking of Qt into PATH
         - brew link --force qt5
@@ -87,8 +87,6 @@ jobs:
         - JACKLIB=$(find /usr/local/Cellar/jack/ -type d -name lib)
         - JACKINC=$(find /usr/local/Cellar/jack/ -type d -name include)
         - export QMAKE="$QMAKE LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
-        - pwd
-        - ls -ahl
 
     - name: Linux (Ubuntu 16.04)
       os: linux
