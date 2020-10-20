@@ -33,7 +33,7 @@ We maintain 2 Windows targets for build tests, releases and development builds:
 ### macOS
 We maintain 2 macOS targets for build tests and releases. Their supported macOS & linked-against Qt5 versions depend on what's being offered by [Travis CI](https://docs.travis-ci.com/user/reference/osx#macos-version), [Qt5](https://doc.qt.io/qt-5/macos.html#supported-versions) and [Homebrew](https://formulae.brew.sh/formula/qt). Denoted here are Travis CI's macOS & Xcode versions and the installed Qt5 version at build time.
 
-- macOS Modern
+- macOS (Modern)
   macOS 10.15.7, Xcode 12.2, Qt 5.15.1
 - macOS Legacy
   macOS 10.11, Xcode 7.3.1, Qt 5.6.2

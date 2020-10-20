@@ -79,9 +79,9 @@ jobs:
       before_install:
         # Check out commit with Qt 5.6.2 bump
         - cd "$(brew --repo homebrew/core)" && git checkout 106d0878ee812cb8f5c403f717bdebe836445aee
-        - HOMEBREW_NO_AUTO_UPDATE=1 brew install qt jack p7zip
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew install qt5 jack p7zip
         # Force linking of Qt into PATH
-        - brew link --force qt
+        - brew link --force qt5
         # Manually append JACK includes to qmake,
         # it doesn't seem to pick them up on its own (forcing linking didn't help)
         - JACKLIB=$(find /usr/local/Cellar/jack/ -type d -name lib)
