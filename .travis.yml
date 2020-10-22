@@ -88,26 +88,38 @@ jobs:
         - JACKINC=$(find /usr/local/Cellar/jack/ -type d -name include)
         - export QMAKE="$QMAKE LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
 
+    # Build test with older packages
     - name: Linux (Ubuntu 16.04)
+      os: linux
+      dist: xenial
+      env:
+        - MAKE=make
+        - QMAKE="qmake CONFIG+=use_pulse CONFIG+=use_jack CONFIG+=jack_has_rename"
+      addons:
+        apt:
+          sources:
+            - sourceline: ppa:ubuntu-sdk-team/ppa
+          packages:
+            - qt5-default
+            - qttools5-dev-tools
+            - libasound2-dev
+            - libpulse-dev
+            - libjack-jackd2-dev
+    # Deploying system, updated packages
+    - name: Linux (Nixpkgs)
       os: linux
       dist: xenial
       env:
         - TARGET_OS=linux
         - MAKE=make
         - QMAKE="qmake CONFIG+=use_pulse CONFIG+=use_jack CONFIG+=jack_has_rename"
-      # no deployment phase, manual build is preferred on Linux
-      # TODO consider Appimage?
-
-addons:
-  apt:
-    sources:
-      - sourceline: ppa:ubuntu-sdk-team/ppa
-    packages:
-      - qt5-default
-      - qttools5-dev-tools
-      - libasound2-dev
-      - libpulse-dev
-      - libjack-jackd2-dev
+        - NIX_PATH="nixpkgs=channel:nixpkgs-unstable"
+      version: ~> 1.0 
+      import: nix-community/nix-travis-ci:nix.yml@main
+      script:
+        - nix-build ci/BambooTracker.nix -A build
+      before_deploy:
+        - nix-build ci/BambooTracker.nix -A bundle
 
 git:
   depth: 3
@@ -139,4 +151,3 @@ deploy:
   on:
     repo: OPNA2608/BambooTracker
     tags: true
-    condition: $TRAVIS_OS_NAME != linux
