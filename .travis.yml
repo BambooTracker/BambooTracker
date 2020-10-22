@@ -22,7 +22,7 @@ jobs:
         directories:
           - $MINGW_PREFIX
           - $QT_FETCHDIR
-      before_install:
+      install:
         # Check if dependencies are cached, otherwise fetch them.
         - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGW_PREFIX" "$MINGW_VERSION"
         - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QT_FETCHDIR" "$QT_VERSION" "$QT_TOOLCHAIN"
@@ -44,7 +44,7 @@ jobs:
         directories:
           - $MINGW_PREFIX
           - $QT_FETCHDIR
-      before_install:
+      install:
         # Check if dependencies are cached, otherwise fetch them.
         - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGW_PREFIX" "$MINGW_VERSION"
         - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QT_FETCHDIR" "$QT_VERSION" "$QT_TOOLCHAIN"
@@ -66,7 +66,7 @@ jobs:
             - jack
             - p7zip
           update: true
-      before_install:
+      install:
         # Force linking of Qt into PATH
         - brew link --force qt
         # Manually append JACK includes to qmake,
@@ -81,7 +81,7 @@ jobs:
         - TARGET_OS=macos-legacy
         - MAKE=make
         - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
-      before_install:
+      install:
         # Check out commit with Qt 5.6.2 bump
         - git -C "$(brew --repo homebrew/core)" checkout 106d0878ee812cb8f5c403f717bdebe836445aee
         - HOMEBREW_NO_AUTO_UPDATE=1 brew install qt5 jack p7zip
@@ -110,6 +110,8 @@ jobs:
             - libasound2-dev
             - libpulse-dev
             - libjack-jackd2-dev
+      install:
+        - echo "Stub to override Nix import…"
     # Deploying system, updated packages
     - name: Linux (Nixpkgs)
       <<: *use_nix
@@ -119,7 +121,7 @@ jobs:
       env:
         - TARGET_OS=linux
         - NIX_PATH="nixpkgs=channel:nixpkgs-unstable"
-      before_install:
+      install:
         - >
           [ ! -z $TRAVIS_TAG ]
           && export buildVersion="${TRAVIS_TAG#v}"
