@@ -1,7 +1,7 @@
 version: ~> 1.0
 import:
   - source: nix-community/nix-travis-ci:nix.yml@main
-    mode: merge
+    mode: deep_merge
 
 language: cpp
 

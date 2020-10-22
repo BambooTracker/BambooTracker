@@ -4,7 +4,7 @@
 let
   bambootracker-local = pkgs.bambootracker.overrideAttrs (oldAttrs: {
     version = buildVersion;
-    src = ./..;
+    src = ./.;
     sourceRoot = "BambooTracker";
   });
 in {
