@@ -112,11 +112,15 @@ jobs:
     - name: Linux (Nixpkgs)
       os: linux
       dist: xenial
+      <<: *use_nix
+      sudo: false
       env:
         - TARGET_OS=linux
         - NIX_PATH="nixpkgs=channel:nixpkgs-unstable"
+      before_install:
+        - [ ! -z $TRAVIS_TAG ] && export buildVersion="${TRAVIS_TAG#v}" || export buildVersion="unstable-$TRAVIS_COMMIT"
       script:
-        - nix-build ci/BambooTracker.nix -A build
+        - nix-build ci/BambooTracker.nix --argstr buildVersion "$buildVersion" -A build
 
 git:
   depth: 3

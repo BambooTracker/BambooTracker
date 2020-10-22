@@ -1,8 +1,10 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> {}
+,buildVersion }:
 
 let
   bambootracker-local = pkgs.bambootracker.overrideAttrs (oldAttrs: {
-    src = ../;
+    version = buildVersion;
+    src = ./..;
   });
 in {
   build = bambootracker-local;
