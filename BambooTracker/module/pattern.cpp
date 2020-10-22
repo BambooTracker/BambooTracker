@@ -112,9 +112,10 @@ void Pattern::deletePreviousStep(int n)
 
 bool Pattern::existCommand() const
 {
-	auto&& it = std::find_if(steps_.begin(), steps_.begin() + static_cast<int>(size_),
+	auto endIt = steps_.begin() + static_cast<int>(size_);
+	auto&& it = std::find_if(steps_.begin(), endIt,
 							 [](const Step& step) { return step.existCommand(); });
-	return (it != steps_.end());
+	return (it != endIt);
 }
 
 std::vector<int> Pattern::getEditedStepIndices() const

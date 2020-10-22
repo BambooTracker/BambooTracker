@@ -17,10 +17,12 @@
 - Add the missing descriptions to the effect list dialog
 - Fix `0Xxx`, `0Yxx` and `0Zxx` to work
 - [#267] - Fix a crash when changing the current song type (thanks [@Zexxerd])
+- [#269] - Fix order insert when changing the pattern size to less than 64 (thanks [@Toonlink8101])
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 [@Zexxerd]: https://github.com/Zexxerd
 [@Genatari]: https://github.com/Genatari
+[@Toonlink8101]: https://github.com/Toonlink8101
 
 [#256]: https://github.com/rerrahkr/BambooTracker/issues/256
 [#259]: https://github.com/rerrahkr/BambooTracker/issues/259
@@ -30,6 +32,7 @@
 [#238]: https://github.com/rerrahkr/BambooTracker/pull/238
 [#266]: https://github.com/rerrahkr/BambooTracker/issues/266
 [#267]: https://github.com/rerrahkr/BambooTracker/issues/267
+[#269]: https://github.com/rerrahkr/BambooTracker/issues/269
 
 ## v0.4.4 (2020-08-22)
 ### Added
