@@ -1,8 +1,6 @@
+version: ~> 1.0
 language: cpp
 
-import:
-  - source: nix-community/nix-travis-ci:nix.yml@main
-    if: env(TARGET_OS) == linux
 jobs:
   include:
     - name: Windows (7 and later)
@@ -112,6 +110,8 @@ jobs:
     - name: Linux (Nixpkgs)
       os: linux
       dist: xenial
+      import:
+        - source: nix-community/nix-travis-ci:nix.yml@main
       env:
         - TARGET_OS=linux
         - NIX_PATH="nixpkgs=channel:nixpkgs-unstable"
