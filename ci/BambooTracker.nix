@@ -1,13 +1,17 @@
 { pkgs ? import <nixpkgs> {}
-,buildVersion }:
+, buildVersion }:
 
 let
   bambootracker-local = pkgs.bambootracker.overrideAttrs (oldAttrs: {
     version = buildVersion;
     src = ./..;
     sourceRoot = "BambooTracker/BambooTracker";
-    preConfigure = "pwd && ls -ahl && exit 1";
   });
 in {
   build = bambootracker-local;
+  bundle = (import "${pkgs.nix-bundle}/share/nix-bundle/default.nix" {}).nix-bootstrap {
+    extraTargets = [];
+    target = bambootracker-local;
+    run = "/bin/BambooTracker";
+  };
 }

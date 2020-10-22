@@ -5,6 +5,11 @@ import:
 
 language: cpp
 
+env:
+  - DEPLOY_EXTENSION=.zip
+  - MAKE=make
+  - QMAKE=qmake
+
 jobs:
   include:
     - name: Windows (7 and later)
@@ -12,7 +17,7 @@ jobs:
       env:
         - TARGET_OS=windows
         - MAKE=mingw32-make
-        - QMAKE=qmake.exe
+        # - QMAKE=qmake.exe
         - MINGW_PREFIX=/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw32/
         - MINGW_VERSION=8.1.0
         - QT_FETCHDIR=$HOME/Qt/
@@ -34,7 +39,7 @@ jobs:
       env:
         - TARGET_OS=windows-xp
         - MAKE=mingw32-make
-        - QMAKE=qmake.exe
+        # - QMAKE=qmake.exe
         - MINGW_PREFIX=/c/tools/mingw32/
         - MINGW_VERSION=4.9.3
         - QT_FETCHDIR=$HOME/Qt/
@@ -57,8 +62,7 @@ jobs:
       osx_image: xcode12.2
       env:
         - TARGET_OS=macos
-        - MAKE=make
-        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
+        - QMAKE_ARGUMENTS="CONFIG+=use_jack CONFIG+=jack_has_rename"
       addons:
         homebrew:
           packages:
@@ -73,14 +77,14 @@ jobs:
         # it doesn't seem to pick them up on its own (forcing linking didn't help)
         - JACKLIB=$(find /usr/local/Cellar/jack/ -type d -name lib)
         - JACKINC=$(find /usr/local/Cellar/jack/ -type d -name include)
-        - export QMAKE="$QMAKE LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
+        - export QMAKE_ARGUMENTS="$QMAKE_ARGUMENTS LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
     - name: macOS Legacy
       os: osx
       osx_image: xcode7.3
       env:
         - TARGET_OS=macos-legacy
         - MAKE=make
-        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
+        - QMAKE_ARGUMENTS="CONFIG+=use_jack CONFIG+=jack_has_rename"
       install:
         # Check out commit with Qt 5.6.2 bump
         - git -C "$(brew --repo homebrew/core)" checkout 106d0878ee812cb8f5c403f717bdebe836445aee
@@ -91,15 +95,14 @@ jobs:
         # it doesn't seem to pick them up on its own (forcing linking didn't help)
         - JACKLIB=$(find /usr/local/Cellar/jack/ -type d -name lib)
         - JACKINC=$(find /usr/local/Cellar/jack/ -type d -name include)
-        - export QMAKE="$QMAKE LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
+        - export QMAKE_ARGUMENTS="$QMAKE_ARGUMENTS LIBS+=-L$JACKLIB INCLUDEPATH+=$JACKINC"
 
     # Build test with older packages
     - name: Linux (Ubuntu 16.04)
       os: linux
       dist: xenial
       env:
-        - MAKE=make
-        - QMAKE="qmake CONFIG+=use_pulse CONFIG+=use_jack CONFIG+=jack_has_rename"
+        - QMAKE_ARGUMENTS="CONFIG+=use_pulse CONFIG+=use_jack CONFIG+=jack_has_rename"
       addons:
         apt:
           sources:
@@ -120,6 +123,7 @@ jobs:
       sudo: false
       env:
         - TARGET_OS=linux
+        - DEPLOY_EXTENSION=""
         - NIX_PATH="nixpkgs=channel:nixpkgs-unstable"
       before_install:
         - >
@@ -128,6 +132,9 @@ jobs:
           || export buildVersion="unstable-$TRAVIS_COMMIT"
       script:
         - nix-build ci/BambooTracker.nix --argstr buildVersion "$buildVersion" -A build
+      before_deploy:
+        - nix-build ci/BambooTracker.nix --argstr buildVersion "$buildVersion" -A bundle
+        - cp -L result BambooTracker-$TRAVIS_TAG-$TARGET_OS$DEPLOY_EXTENSION
 
 git:
   depth: 3
@@ -140,7 +147,7 @@ branches:
 
 script:
   - cd BambooTracker
-  - "$QMAKE CONFIG+=release CONFIG-=debug"
+  - "qmake $QMAKE_ARGUMENTS CONFIG+=release CONFIG-=debug"
   - "$MAKE -j2"
   - cd ..
 
@@ -154,7 +161,7 @@ deploy:
   provider: releases
   token:
     secure: Vy5JQ4AeSi+H9hKcpD6VrKVCmAAlqJHCE5EHiKYng8Z0HTeJYrj40JuULDUVWyl/gK2Cy1SAq4Ma9u0SPOr2IScEyzo0o8VbNPWZzz2fmwI4PBvpqnt+eBNg9GhsrYQiN4TpY7UIKQjLAP3anPk6NABQQ+RpmyBLoN8VWwVfCBx8GpxvAF1+B5qezsgCs5vHP7Qrzrtt0n0H6XxGM0xb1W2eiCc9h7YZTXyvtgWsWY6wqR0whlvO8i5YiP/fyy+WHQTtSfg69CZqHXbaSE0uosYmvXOZMD1Cr25+6oSEGSN7G0u2bvjWeykCP+v2PrqyojFeUcRfVriorRpzpDtdeZ2pPu84Ujz9C2wFTJ4FXzo96MRCNyjRAQE2ueHzgEf6+g6wbbOsZzREklnjFMSj3WRM6SFy0IGdNRwtMUqZtlYqgPvZYjiOssi7EppMM20CelZ702FJCPaX8rVmhXyaK5QRUA2M2cCJLZITf+MuDOpJKsyxwqHiVLmiHUsxu5I/qUFSDQMxfNJzSXieq93FbX12Y9jXyRvMG8MtQNQvfOsZTlGwiRBqdSnjFzaKTEoQo5lfPdSMJzIm6qGmsl9YiK2gvdfmc9/wMu8PeCb/T1sUlJ4F/2gHMbIH2HGJpHrhisdwjYkVo1EFYF2CZ3yIoE2KjjyRLNOtMQllG5II+Mw=
-  file: $TRAVIS_BUILD_DIR/BambooTracker-$TRAVIS_TAG-$TARGET_OS.zip
+  file: $TRAVIS_BUILD_DIR/BambooTracker-$TRAVIS_TAG-$TARGET_OS$DEPLOY_EXTENSION
   skip_cleanup: true
   on:
     repo: OPNA2608/BambooTracker
