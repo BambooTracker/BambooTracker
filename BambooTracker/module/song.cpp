@@ -193,8 +193,9 @@ void Song::changeType(SongType type)
 	case SongType::FM3chExpanded:	// Previous type: Standard
 		// Expand FM3 track
 		for (int i = 3; i < 6; ++i) {
-			tracks_.insert(tracks_.begin() + 3, tracks_[static_cast<size_t>(i) - 1]);
-			tracks_[static_cast<size_t>(i)].setAttribute(i, SoundSource::FM, i + 3);
+			Track src = tracks_[2];
+			src.setAttribute(i, SoundSource::FM, i + 3);
+			tracks_.insert(tracks_.begin() + i, std::move(src));
 		}
 		for (size_t i = 6; i < tracks_.size(); ++i) {
 			const auto attrib = tracks_[i].getAttribute();
