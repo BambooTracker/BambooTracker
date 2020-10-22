@@ -6,9 +6,10 @@ import:
 language: cpp
 
 env:
-  - DEPLOY_EXTENSION=.zip
-  - MAKE=make
-  - QMAKE=qmake
+  global:
+    - DEPLOY_EXTENSION=.zip
+    - MAKE=make
+    - QMAKE=qmake
 
 jobs:
   include:

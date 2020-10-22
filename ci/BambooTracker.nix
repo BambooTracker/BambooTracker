@@ -10,7 +10,6 @@ let
 in {
   build = bambootracker-local;
   bundle = (import "${pkgs.nix-bundle}/share/nix-bundle/default.nix" {}).nix-bootstrap {
-    extraTargets = [];
     target = bambootracker-local;
     run = "/bin/BambooTracker";
   };
