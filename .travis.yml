@@ -1,5 +1,7 @@
 version: ~> 1.0
-import: nix-community/nix-travis-ci:nix.yml@main
+import:
+  - source: nix-community/nix-travis-ci:nix.yml@main
+    mode: merge
 
 language: cpp
 
