@@ -1,5 +1,8 @@
 language: cpp
 
+import:
+  - source: nix-community/nix-travis-ci:nix.yml@main
+    if: env(TARGET_OS) == linux
 jobs:
   include:
     - name: Windows (7 and later)
@@ -111,15 +114,9 @@ jobs:
       dist: xenial
       env:
         - TARGET_OS=linux
-        - MAKE=make
-        - QMAKE="qmake CONFIG+=use_pulse CONFIG+=use_jack CONFIG+=jack_has_rename"
         - NIX_PATH="nixpkgs=channel:nixpkgs-unstable"
-      version: ~> 1.0 
-      import: nix-community/nix-travis-ci:nix.yml@main
       script:
         - nix-build ci/BambooTracker.nix -A build
-      before_deploy:
-        - nix-build ci/BambooTracker.nix -A bundle
 
 git:
   depth: 3
