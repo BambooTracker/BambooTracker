@@ -21,9 +21,7 @@ done
 cp -a "$(find ../ -name BambooTracker.exe)" ../{img,demos,licenses,specs,skins,*.md,LICENSE} .
 windeployqt BambooTracker.exe $DEPLOY_OPTS
 mv translations lang
-[ -f ../BambooTracker/release/*.qm ] \
-  && mv ../BambooTracker/release/*.qm lang/ \
-  || mv ../BambooTracker/.qm/*.qm lang/
+[ -d ../BambooTracker/release/ ] && mv ../BambooTracker/release/*.qm lang/ || mv ../BambooTracker/.qm/*.qm lang/
 rm -rf imageformats
 
 exit 0
