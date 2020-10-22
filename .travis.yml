@@ -18,7 +18,6 @@ jobs:
       env:
         - TARGET_OS=windows
         - MAKE=mingw32-make
-        # - QMAKE=qmake.exe
         - MINGW_PREFIX=/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw32/
         - MINGW_VERSION=8.1.0
         - QT_FETCHDIR=$HOME/Qt/
@@ -167,3 +166,4 @@ deploy:
   on:
     repo: OPNA2608/BambooTracker
     tags: true
+    condition: $TARGET_OS != ""
