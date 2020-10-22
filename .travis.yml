@@ -121,7 +121,7 @@ jobs:
       env:
         - TARGET_OS=linux
         - NIX_PATH="nixpkgs=channel:nixpkgs-unstable"
-      install:
+      before_install:
         - >
           [ ! -z $TRAVIS_TAG ]
           && export buildVersion="${TRAVIS_TAG#v}"
