@@ -39,7 +39,6 @@ jobs:
       env:
         - TARGET_OS=windows-xp
         - MAKE=mingw32-make
-        # - QMAKE=qmake.exe
         - MINGW_PREFIX=/c/tools/mingw32/
         - MINGW_VERSION=4.9.3
         - QT_FETCHDIR=$HOME/Qt/
@@ -114,7 +113,7 @@ jobs:
             - libpulse-dev
             - libjack-jackd2-dev
       install:
-        - echo "Stub to override Nix import…"
+        - # Stub to override Nix import
     # Deploying system, updated packages
     - name: Linux (Nixpkgs)
       os: linux
