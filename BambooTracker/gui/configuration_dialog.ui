@@ -24,7 +24,36 @@
        <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
-       <item row="1" column="1">
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="editSettingsGroupBox">
+         <property name="title">
+          <string>Edit settings</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="pageJumpLengthLabel">
+            <property name="text">
+             <string>Page jump length</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="pageJumpLengthSpinBox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>128</number>
+            </property>
+            <property name="value">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -37,7 +66,7 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="0" rowspan="2">
+       <item row="0" column="0" rowspan="3">
         <widget class="QGroupBox" name="generalSettingsGroupBox">
          <property name="title">
           <string>General settings</string>
@@ -215,29 +244,32 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="editSettingsGroupBox">
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="waveViewGroupBox">
          <property name="title">
-          <string>Edit settings</string>
+          <string>Wave view</string>
          </property>
-         <layout class="QFormLayout" name="formLayout_3">
-          <item row="0" column="0">
-           <widget class="QLabel" name="pageJumpLengthLabel">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="waveViewRateLabel">
             <property name="text">
-             <string>Page jump length</string>
+             <string>Frame rate</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="pageJumpLengthSpinBox">
+          <item>
+           <widget class="QSpinBox" name="waveViewRateSpinBox">
+            <property name="suffix">
+             <string notr="true">fps</string>
+            </property>
             <property name="minimum">
-             <number>1</number>
+             <number>20</number>
             </property>
             <property name="maximum">
-             <number>128</number>
+             <number>100</number>
             </property>
             <property name="value">
-             <number>4</number>
+             <number>30</number>
             </property>
            </widget>
           </item>
@@ -2617,6 +2649,7 @@ color: rgb(255, 255, 255);</string>
   <tabstop>tabWidget</tabstop>
   <tabstop>generalSettingsListWidget</tabstop>
   <tabstop>pageJumpLengthSpinBox</tabstop>
+  <tabstop>waveViewRateSpinBox</tabstop>
   <tabstop>emulatorComboBox</tabstop>
   <tabstop>audioApiComboBox</tabstop>
   <tabstop>audioDeviceComboBox</tabstop>

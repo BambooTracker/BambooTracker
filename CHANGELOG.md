@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#238] - MIDI API selection ([#230]; thanks [@OPNA2608], [@ehaupt])
+- Frame rate setting in the wave view
 - 1 new color schemes (thanks [@Yuzu4K])
 
 ### Changed

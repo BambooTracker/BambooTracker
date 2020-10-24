@@ -481,8 +481,9 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 	/* Wave view */
 	visualTimer_.reset(new QTimer);
-	visualTimer_->start(40);
 	QObject::connect(visualTimer_.get(), &QTimer::timeout, this, &MainWindow::updateVisuals);
+	if (config.lock()->getVisibleWaveView())
+		visualTimer_->start(static_cast<int>(std::round(1000. / config.lock()->getWaveViewFrameRate())));
 
 	/* Status bar */
 	statusDetail_ = new QLabel();
@@ -2265,6 +2266,9 @@ void MainWindow::changeConfiguration()
 	updateInstrumentListColors();
 	bmManForm_->onConfigurationChanged(config_.lock()->getShowRowNumberInHex());
 
+	visualTimer_->stop();
+	visualTimer_->start(static_cast<int>(std::round(1000. / config_.lock()->getWaveViewFrameRate())));
+
 	update();
 }
 
@@ -3649,6 +3653,10 @@ void MainWindow::on_action_Wave_View_triggered(bool checked)
 {
 	config_.lock()->setVisibleWaveView(checked);
 	ui->waveVisual->setVisible(checked);
+	if (checked)
+		visualTimer_->start(static_cast<int>(std::round(1000. / config_.lock()->getWaveViewFrameRate())));
+	else
+		visualTimer_->stop();
 }
 
 void MainWindow::on_action_Transpose_Song_triggered()

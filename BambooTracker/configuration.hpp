@@ -208,6 +208,13 @@ private:
 	size_t pageJumpLength_, editableStep_;
 	bool keyRepetision_;
 
+	// Wave view
+public:
+	void setWaveViewFrameRate(int rate);
+	int getWaveViewFrameRate() const;
+private:
+	int waveViewFps_;
+
 	// Keys
 public:
 	enum ShortcutAction : int

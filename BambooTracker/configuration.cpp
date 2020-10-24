@@ -97,6 +97,9 @@ Configuration::Configuration()
 	editableStep_ = 1;
 	keyRepetision_ = true;
 
+	// Wave view
+	waveViewFps_ = 30;
+
 	// Keys
 	shortcuts_ = {
 		{ KeyOff, u8"-" },
@@ -938,6 +941,11 @@ size_t Configuration::getEditableStep() const { return editableStep_; }
 void Configuration::setKeyRepetition(bool enabled) { keyRepetision_ = enabled; }
 
 bool Configuration::getKeyRepetition() const { return keyRepetision_; }
+
+// Wave view
+void Configuration::setWaveViewFrameRate(int rate) { waveViewFps_ = rate; }
+
+int Configuration::getWaveViewFrameRate() const { return waveViewFps_; }
 
 // Keys
 void Configuration::setShortcuts(std::unordered_map<ShortcutAction, std::string> shortcuts) { shortcuts_ = shortcuts; }

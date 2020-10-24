@@ -218,6 +218,11 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		settings.setValue("keyRepetition", configLocked->getKeyRepetition());
 		settings.endGroup();
 
+		// Wave view
+		settings.beginGroup("WaveView");
+		settings.setValue("frameRate", configLocked->getWaveViewFrameRate());
+		settings.endGroup();
+
 		// Keys
 		settings.beginGroup("Keys");
 		for (const auto& pair : configLocked->getShortcuts()) {
@@ -371,6 +376,11 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		editableStepWorkaround.setValue(configLocked->getEditableStep());
 		configLocked->setEditableStep(static_cast<size_t>(settings.value("editableStep", editableStepWorkaround).toInt()));
 		configLocked->setKeyRepetition(settings.value("keyRepetition", configLocked->getKeyRepetition()).toBool());
+		settings.endGroup();
+
+		// Wave view
+		settings.beginGroup("WaveView");
+		configLocked->setWaveViewFrameRate(settings.value("frameRate", configLocked->getWaveViewFrameRate()).toInt());
 		settings.endGroup();
 
 		// Keys

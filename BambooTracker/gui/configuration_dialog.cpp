@@ -118,6 +118,9 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Edit settings
 	ui->pageJumpLengthSpinBox->setValue(static_cast<int>(configLocked->getPageJumpLength()));
 
+	// Wave view
+	ui->waveViewRateSpinBox->setValue(configLocked->getWaveViewFrameRate());
+
 	// Keys
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
 	ui->shortcutsTreeWidget->header()->setSectionResizeMode(1, QHeaderView::Fixed);
@@ -392,6 +395,9 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 
 	// Edit settings
 	configLocked->setPageJumpLength(static_cast<size_t>(ui->pageJumpLengthSpinBox->value()));
+
+	// Wave view
+	configLocked->setWaveViewFrameRate(ui->waveViewRateSpinBox->value());
 
 	// Keys
 	std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts;
