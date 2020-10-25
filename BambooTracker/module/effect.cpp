@@ -235,6 +235,16 @@ EffectType Effect::toEffectType(SoundSource src, std::string id)
 			return EffectType::NoEffect;
 		}
 	}
+	else if (id == "FP") {
+		switch (src) {
+		case SoundSource::FM:
+		case SoundSource::SSG:
+		case SoundSource::ADPCM:
+			return EffectType::FineDetune;
+		default:
+			return EffectType::NoEffect;
+		}
+	}
 	else if (id == "ML") {
 		switch (src) {
 		case SoundSource::FM:

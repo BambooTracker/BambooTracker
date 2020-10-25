@@ -679,6 +679,7 @@ bool PlaybackManager::storeEffectToMapFM(int ch, const Effect& eff)
 	case EffectType::Pan:
 	case EffectType::VolumeSlide:
 	case EffectType::Detune:
+	case EffectType::FineDetune:
 	case EffectType::NoteSlideUp:
 	case EffectType::NoteSlideDown:
 	case EffectType::NoteCut:
@@ -770,6 +771,9 @@ void PlaybackManager::executeStoredEffectsFM(int ch)
 			case EffectType::Detune:
 				opnaCtrl_->setDetuneFM(ch, eff.second - 0x80);
 				break;
+			case EffectType::FineDetune:
+				opnaCtrl_->setFineDetuneFM(ch, eff.second - 0x80);
+				break;
 			case EffectType::NoteSlideUp:
 				opnaCtrl_->setNoteSlideFM(ch, eff.second >> 4, eff.second & 0x0f);
 				break;
@@ -856,6 +860,7 @@ bool PlaybackManager::storeEffectToMapSSG(int ch, const Effect& eff)
 	case EffectType::Tremolo:
 	case EffectType::VolumeSlide:
 	case EffectType::Detune:
+	case EffectType::FineDetune:
 	case EffectType::NoteSlideUp:
 	case EffectType::NoteSlideDown:
 	case EffectType::NoteCut:
@@ -941,6 +946,9 @@ void PlaybackManager::executeStoredEffectsSSG(int ch)
 			}
 			case EffectType::Detune:
 				opnaCtrl_->setDetuneSSG(ch, eff.second - 0x80);
+				break;
+			case EffectType::FineDetune:
+				opnaCtrl_->setFineDetuneSSG(ch, eff.second - 0x80);
 				break;
 			case EffectType::NoteSlideUp:
 				opnaCtrl_->setNoteSlideSSG(ch, eff.second >> 4, eff.second & 0x0f);
@@ -1083,6 +1091,7 @@ bool PlaybackManager::storeEffectToMapADPCM(int ch, const Effect& eff)
 	case EffectType::Pan:
 	case EffectType::VolumeSlide:
 	case EffectType::Detune:
+	case EffectType::FineDetune:
 	case EffectType::NoteSlideUp:
 	case EffectType::NoteSlideDown:
 	case EffectType::NoteCut:
@@ -1165,6 +1174,9 @@ void PlaybackManager::executeStoredEffectsADPCM()
 			}
 			case EffectType::Detune:
 				opnaCtrl_->setDetuneADPCM(eff.second - 0x80);
+				break;
+			case EffectType::FineDetune:
+				opnaCtrl_->setFineDetuneADPCM(eff.second - 0x80);
 				break;
 			case EffectType::NoteSlideUp:
 				opnaCtrl_->setNoteSlideADPCM(eff.second >> 4, eff.second & 0x0f);
@@ -1558,14 +1570,14 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<bool> isSetPanFM(fmch, false), isSetVolSldFM(fmch, false), isSetDtnFM(fmch, false);
 	std::vector<bool> isSetFBCtrlFM(fmch, false), isSetTLCtrlFM(fmch, false), isSetMLCtrlFM(fmch, false);
 	std::vector<bool> isSetARCtrlFM(fmch, false), isSetDRCtrlFM(fmch, false), isSetRRCtrlFM(fmch, false);
-	std::vector<bool> isSetBrightFM(fmch, false);
+	std::vector<bool> isSetBrightFM(fmch, false), isSetFiDtnFM(fmch, false);
 	std::vector<bool> isSetInstSSG(3, false), isSetVolSSG(3, false), isSetArpSSG(3, false), isSetPrtSSG(3, false);
 	std::vector<bool> isSetVibSSG(3, false), isSetTreSSG(3, false), isSetVolSldSSG(3, false), isSetDtnSSG(3, false);
-	std::vector<bool> isSetTNMixSSG(3, false);
+	std::vector<bool> isSetTNMixSSG(3, false), isSetFiDtnSSG(3, false);
 	std::vector<bool> isSetVolRhythm(6, false), isSetPanRhythm(6, false);
 	bool isSetInstADPCM(false), isSetVolADPCM(false), isSetArpADPCM(false), isSetPrtADPCM(false);
 	bool isSetVibADPCM(false), isSetTreADPCM(false), isSetPanADPCM(false), isSetVolSldADPCM(false);
-	bool isSetDtnADPCM = false;
+	bool isSetDtnADPCM(false), isSetFiDtnADPCM(false);
 	bool isSetMVolRhythm = false;
 	bool isSetNoisePitchSSG = false;
 	bool isSetHardEnvPeriodHighSSG = false;
@@ -1687,6 +1699,12 @@ void PlaybackManager::retrieveChannelStates()
 						if (!isSetDtnFM[uch]) {
 							isSetDtnFM[uch] = true;
 							if (isPrevPos) opnaCtrl_->setDetuneFM(ch, eff.value - 0x80);
+						}
+						break;
+					case EffectType::FineDetune:
+						if (!isSetFiDtnFM[uch]) {
+							isSetFiDtnFM[uch] = true;
+							if (isPrevPos) opnaCtrl_->setFineDetuneFM(ch, eff.value - 0x80);
 						}
 						break;
 					case EffectType::FBControl:
@@ -1876,6 +1894,12 @@ void PlaybackManager::retrieveChannelStates()
 						if (!isSetDtnSSG[uch]) {
 							isSetDtnSSG[uch] = true;
 							if (isPrevPos) opnaCtrl_->setDetuneSSG(ch, eff.value - 0x80);
+						}
+						break;
+					case EffectType::FineDetune:
+						if (!isSetFiDtnSSG[uch]) {
+							isSetFiDtnSSG[uch] = true;
+							if (isPrevPos) opnaCtrl_->setFineDetuneSSG(ch, eff.value - 0x80);
 						}
 						break;
 					case EffectType::ToneNoiseMix:
@@ -2079,6 +2103,12 @@ void PlaybackManager::retrieveChannelStates()
 						if (!isSetDtnADPCM) {
 							isSetDtnADPCM = true;
 							if (isPrevPos) opnaCtrl_->setDetuneADPCM(eff.value - 0x80);
+						}
+						break;
+					case EffectType::FineDetune:
+						if (!isSetFiDtnADPCM) {
+							isSetFiDtnADPCM = true;
+							if (isPrevPos) opnaCtrl_->setFineDetuneADPCM(eff.value - 0x80);
 						}
 						break;
 					default:

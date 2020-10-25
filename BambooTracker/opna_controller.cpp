@@ -848,6 +848,12 @@ void OPNAController::setDetuneFM(int ch, int pitch)
 	needToneSetFM_[ch] = true;
 }
 
+void OPNAController::setFineDetuneFM(int ch, int pitch)
+{
+	fdetuneFM_[ch] = pitch;
+	needToneSetFM_[ch] = true;
+}
+
 void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 {
 	if (seminote) {
@@ -1041,6 +1047,7 @@ void OPNAController::initFM()
 		volSldFM_[ch] = 0;
 		sumVolSldFM_[ch] = 0;
 		detuneFM_[ch] = 0;
+		fdetuneFM_[ch] = 0;
 		nsItFM_[ch].reset();
 		sumNoteSldFM_[ch] = 0;
 		noteSldFMSetFlag_[ch] = false;
@@ -1909,7 +1916,8 @@ void OPNAController::writePitchFM(int ch)
 					 + (vibItFM_[ch] ? vibItFM_[ch]->getCommandType() : 0)
 					 + detuneFM_[ch]
 					 + sumNoteSldFM_[ch]
-					 + transposeFM_[ch]);
+					 + transposeFM_[ch],
+					 fdetuneFM_[ch]);
 	uint32_t offset = getFMChannelOffset(ch, true);
 	opna_->setRegister(0xa4 + offset, p >> 8);
 	opna_->setRegister(0xa0 + offset, p & 0x00ff);
@@ -2191,6 +2199,12 @@ void OPNAController::setDetuneSSG(int ch, int pitch)
 	needToneSetSSG_[ch] = true;
 }
 
+void OPNAController::setFineDetuneSSG(int ch, int pitch)
+{
+	fdetuneSSG_[ch] = pitch;
+	needToneSetSSG_[ch] = true;
+}
+
 void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 {
 	if (seminote) {
@@ -2359,6 +2373,7 @@ void OPNAController::initSSG()
 		volSldSSG_[ch] = 0;
 		sumVolSldSSG_[ch] = 0;
 		detuneSSG_[ch] = 0;
+		fdetuneSSG_[ch] = 0;
 		nsItSSG_[ch].reset();
 		sumNoteSldSSG_[ch] = 0;
 		noteSldSSGSetFlag_ = false;
@@ -3077,7 +3092,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SQUARE:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGSquare(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
+							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			uint8_t offset = static_cast<uint8_t>(ch << 1);
 			opna_->setRegister(0x00 + offset, pitch & 0xff);
@@ -3092,7 +3107,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::TRIANGLE:
 		if (needToneSetSSG_[ch]) {
 			uint16_t pitch = PitchConverter::getPitchSSGTriangle(
-								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
+								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
@@ -3101,7 +3116,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::INVSAW:
 		if (needToneSetSSG_[ch]){
 			uint16_t pitch = PitchConverter::getPitchSSGSaw(
-								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
+								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
 		}
@@ -3109,7 +3124,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGTriangle(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
+							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
@@ -3128,7 +3143,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SQM_INVSAW:
 	{
 		uint16_t pitch = PitchConverter::getPitchSSGSaw(
-							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p);
+							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
@@ -3553,6 +3568,14 @@ void OPNAController::setDetuneADPCM(int pitch)
 	needToneSetADPCM_ = true;
 }
 
+void OPNAController::setFineDetuneADPCM(int pitch)
+{
+	if (refInstKit_) return;
+
+	fdetuneADPCM_ = pitch;
+	needToneSetADPCM_ = true;
+}
+
 void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 {
 	if (refInstKit_) return;
@@ -3645,6 +3668,7 @@ void OPNAController::initADPCM()
 	volSldADPCM_ = 0;
 	sumVolSldADPCM_ = 0;
 	detuneADPCM_ = 0;
+	fdetuneADPCM_ = 0;
 	nsItADPCM_.reset();
 	sumNoteSldADPCM_ = 0;
 	noteSldADPCMSetFlag_ = false;
@@ -3837,7 +3861,7 @@ void OPNAController::writePitchADPCM()
 
 void OPNAController::writePitchADPCMToRegister(int pitchDiff, int rtDeltaN)
 {
-	int deltan = static_cast<int>(std::round(rtDeltaN * std::pow(2., pitchDiff / 384.)));
+	int deltan = static_cast<int>(std::round(rtDeltaN * std::pow(2., pitchDiff / 384.))) + fdetuneADPCM_;
 	opna_->setRegister(0x109, deltan & 0xff);
 	opna_->setRegister(0x10a, (deltan >> 8) & 0xff);
 }

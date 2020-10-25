@@ -161,6 +161,7 @@ public:
 	void setTremoloEffectFM(int ch, int period, int depth);
 	void setVolumeSlideFM(int ch, int depth, bool isUp);
 	void setDetuneFM(int ch, int pitch);
+	void setFineDetuneFM(int ch, int pitch);
 	void setNoteSlideFM(int ch, int speed, int seminote);
 	void setTransposeEffectFM(int ch, int seminote);
 	void setFBControlFM(int ch, int value);
@@ -207,7 +208,7 @@ private:
 	std::unique_ptr<WavingEffectIterator> vibItFM_[9];
 	std::unique_ptr<WavingEffectIterator> treItFM_[9];
 	int volSldFM_[9], sumVolSldFM_[9];
-	int detuneFM_[9];
+	int detuneFM_[9], fdetuneFM_[9];
 	std::unique_ptr<NoteSlideEffectIterator> nsItFM_[9];
 	int sumNoteSldFM_[9];
 	bool noteSldFMSetFlag_[9];
@@ -337,6 +338,7 @@ public:
 	void setTremoloEffectSSG(int ch, int period, int depth);
 	void setVolumeSlideSSG(int ch, int depth, bool isUp);
 	void setDetuneSSG(int ch, int pitch);
+	void setFineDetuneSSG(int ch, int pitch);
 	void setNoteSlideSSG(int ch, int speed, int seminote);
 	void setTransposeEffectSSG(int ch, int seminote);
 	void setToneNoiseMixSSG(int ch, int value);
@@ -382,7 +384,7 @@ private:
 	std::unique_ptr<WavingEffectIterator> vibItSSG_[3];
 	std::unique_ptr<WavingEffectIterator> treItSSG_[3];
 	int volSldSSG_[3], sumVolSldSSG_[3];
-	int detuneSSG_[3];
+	int detuneSSG_[3], fdetuneSSG_[3];
 	std::unique_ptr<NoteSlideEffectIterator> nsItSSG_[3];
 	int sumNoteSldSSG_[3];
 	bool noteSldSSGSetFlag_;
@@ -497,6 +499,7 @@ public:
 	void setTremoloEffectADPCM(int period, int depth);
 	void setVolumeSlideADPCM(int depth, bool isUp);
 	void setDetuneADPCM(int pitch);
+	void setFineDetuneADPCM(int pitch);
 	void setNoteSlideADPCM(int speed, int seminote);
 	void setTransposeEffectADPCM(int seminote);
 
@@ -535,7 +538,7 @@ private:
 	std::unique_ptr<WavingEffectIterator> vibItADPCM_;
 	std::unique_ptr<WavingEffectIterator> treItADPCM_;
 	int volSldADPCM_, sumVolSldADPCM_;
-	int detuneADPCM_;
+	int detuneADPCM_, fdetuneADPCM_;
 	std::unique_ptr<NoteSlideEffectIterator> nsItADPCM_;
 	int sumNoteSldADPCM_;
 	bool noteSldADPCMSetFlag_;

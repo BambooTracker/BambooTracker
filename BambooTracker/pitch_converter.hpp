@@ -33,11 +33,11 @@ class PitchConverter
 public:
 	static constexpr int SEMINOTE_PITCH = 32;
 
-	static uint16_t getPitchFM(Note note, int octave, int pitch);
-	static uint16_t getPitchSSGSquare(Note note, int octave, int pitch);
+	static uint16_t getPitchFM(Note note, int octave, int pitch, int finePitch);
+	static uint16_t getPitchSSGSquare(Note note, int octave, int pitch, int finePitch);
 	static uint16_t getPitchSSGSquare(int n);
-	static uint16_t getPitchSSGTriangle(Note note, int octave, int pitch);
-	static uint16_t getPitchSSGSaw(Note note, int octave, int pitch);
+	static uint16_t getPitchSSGTriangle(Note note, int octave, int pitch, int finePitch);
+	static uint16_t getPitchSSGSaw(Note note, int octave, int pitch, int finePitch);
 
 	static int calculatePitchIndex(int octave, Note note, int pitch);
 

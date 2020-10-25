@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -60,6 +60,7 @@ const std::unordered_map<EffectType, EffectDescription::EffectDetail> EffectDesc
 	{ EffectType::Brightness, { "B0xx", QT_TR_NOOP("Brightness, xx: relative value (01-FF)") } },
 	{ EffectType::DRControl, { "Dxyy", QT_TR_NOOP("DR control, x: operator (1-4), yy: decay rate (00-1F)") } },
 	{ EffectType::FBControl, { "FBxx", QT_TR_NOOP("FB control, xx: feedback value (00-07)") } },
+	{ EffectType::FineDetune, { "FPxx", QT_TR_NOOP("Fine detune, xx: pitch (00-FF)") } },
 	{ EffectType::MLControl, { "MLxy", QT_TR_NOOP("ML control, x: operator (1-4), y: multiple (0-F)") } },
 	{ EffectType::VolumeDelay, { "Mxyy", QT_TR_NOOP("Volume delay, x: count (1-F), yy: volume (00-FF)") } },
 	{ EffectType::RRControl, { "RRxy", QT_TR_NOOP("RR control, x: operator (1-4), y: release rate (0-F)") } },

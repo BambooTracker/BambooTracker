@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,7 +35,7 @@ enum class EffectType
 	SongEnd, PatternBreak, SpeedTempoChange, NoteDelay, Groove, Detune, NoteSlideUp, NoteSlideDown,
 	NoteCut, TransposeDelay, MasterVolume, VolumeDelay, ToneNoiseMix, NoisePitch, HardEnvHighPeriod,
 	HardEnvLowPeriod, AutoEnvelope, FBControl, TLControl, MLControl, ARControl, DRControl, RRControl,
-	RegisterAddress0, RegisterAddress1, RegisterValue, Brightness
+	RegisterAddress0, RegisterAddress1, RegisterValue, Brightness, FineDetune
 };
 
 struct Effect
