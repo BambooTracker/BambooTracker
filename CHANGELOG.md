@@ -9,6 +9,7 @@
 
 ### Changed
 - [#266] - Set a license to a part of the source code (thanks [@superctr])
+- Try to initialize audio stream by multiple APIs on the first launch ([#270]; thanks [@N-SPC700], [@OPNA2608])
 
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
@@ -20,6 +21,7 @@
 - Fix `0Xxx`, `0Yxx` and `0Zxx` to work
 - [#267] - Fix a crash when changing the current song type (thanks [@Zexxerd])
 - [#269] - Fix order insert when changing the pattern size to less than 64 (thanks [@Toonlink8101])
+- [#272] - Fix FM3ch expanded labeling and muting bug when changing the song type (thanks [@Toonlink8101])
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 [@Zexxerd]: https://github.com/Zexxerd
@@ -35,6 +37,8 @@
 [#266]: https://github.com/rerrahkr/BambooTracker/issues/266
 [#267]: https://github.com/rerrahkr/BambooTracker/issues/267
 [#269]: https://github.com/rerrahkr/BambooTracker/issues/269
+[#270]: https://github.com/rerrahkr/BambooTracker/issues/270
+[#272]: https://github.com/rerrahkr/BambooTracker/issues/272
 
 ## v0.4.4 (2020-08-22)
 ### Added
