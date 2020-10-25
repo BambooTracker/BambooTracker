@@ -48,6 +48,11 @@ Alternatively, you can install the latest BambooTracker release via the [Nix pac
 WikiでBambooTrackerのインターフェースなどを説明しています。
 日本語版Wikiは[こちら](https://github.com/rerrahkr/BambooTracker/wiki/%E3%83%9B%E3%83%BC%E3%83%A0)です。
 
+## Discord
+Discordでおしゃべりや質問、曲を聴いたりすることができます。
+
+- [公式Discordサーバー](https://discord.gg/gBscTMF)
+
 ## ショートカット
 macOSでは一部のキーを以下のものに置き換えてください。
 

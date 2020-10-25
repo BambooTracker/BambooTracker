@@ -47,6 +47,11 @@ Wiki explains the BambooTracker interface etc.
 
 - [BambooTracker Wiki (GitHub Wiki)](https://github.com/rerrahkr/BambooTracker/wiki)
 
+## Discord
+We can chat, help and listen tunes on Discord.
+
+- [Official Discord Server](https://discord.gg/gBscTMF)
+
 ## Key commands
 Please replace some keys with the following in macOS:
 
