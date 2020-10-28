@@ -117,6 +117,7 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	  stepDownCount_(0),
 	  repaintable_(true),
 	  repaintingCnt_(0),
+	  isInitedFirstMod_(false),
 	  upSc_(Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  upWSSc_(Qt::SHIFT + Qt::Key_Up, this, nullptr, nullptr, Qt::WidgetShortcut),
 	  dnSc_(Qt::Key_Down, this, nullptr, nullptr, Qt::WidgetShortcut),
@@ -2415,6 +2416,9 @@ void PatternEditorPanel::setEditableStep(int n)
 
 void PatternEditorPanel::onSongLoaded()
 {
+	// NOTE: Temporary fix for https://github.com/rerrahkr/BambooTracker/issues/276
+	isInitedFirstMod_.store(true);
+
 	// Initialize cursor position
 	curSongNum_ = bt_->getCurrentSongNumber();
 	SongType prevType = songStyle_.type;
@@ -2847,7 +2851,7 @@ bool PatternEditorPanel::keyReleased(QKeyEvent* event)
 
 void PatternEditorPanel::paintEvent(QPaintEvent *event)
 {	
-	if (bt_) {
+	if (bt_ && isInitedFirstMod_.load()) {
 		// Check order size
 		int odrSize = static_cast<int>(bt_->getOrderSize(curSongNum_));
 		if (curPos_.order >= odrSize) curPos_.setRows(odrSize - 1, 0);
