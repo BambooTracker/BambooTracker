@@ -1,0 +1,41 @@
+<RCC>
+  <qresource prefix="/icon">
+    <file alias="redo">if_arrow_redo_4989.png</file>
+    <file alias="undo">if_arrow_undo_4998.png</file>
+    <file alias="config">if_cog_5175.png</file>
+    <file alias="cut">if_cut_red_5249.png</file>
+    <file alias="save">if_disk_5276.png</file>
+    <file alias="open">if_folder_5362.png</file>
+    <file alias="new">if_page_white_5568.png</file>
+    <file alias="copy">if_page_white_copy_5579.png</file>
+    <file alias="paste">if_paste_plain_5629.png</file>
+    <file alias="play_pattern">if_resultset_last_5687.png</file>
+    <file alias="play">if_resultset_next_5688.png</file>
+    <file alias="stop">if_shape_square_5750.png</file>
+    <file alias="property">if_table_edit_5800.png</file>
+    <file alias="inst_ssg">inst_ssg.png</file>
+    <file alias="inst_fm">inst_fm.png</file>
+    <file alias="app_icon">BambooTracker.ico</file>
+    <file alias="add_inst">iconfinder_add_4941.png</file>
+    <file alias="remove_inst">iconfinder_cross_5233.png</file>
+    <file alias="clone_inst">iconfinder_page_copy_5551.png</file>
+    <file alias="load_inst">iconfinder_page_white_get_5593.png</file>
+    <file alias="save_inst">iconfinder_page_white_put_5609.png</file>
+    <file alias="edit_inst">iconfinder_pencil_5631.png</file>
+    <file alias="record">iconfinder_stop_5785.png</file>
+    <file alias="order_down">iconfinder_arrow_down_4982.png</file>
+    <file alias="order_up">iconfinder_arrow_up_4999.png</file>
+    <file alias="duplicate_order">iconfinder_asterisk_yellow_5001.png</file>
+    <file alias="insert_order">iconfinder_page_add_5548.png</file>
+    <file alias="remove_order">iconfinder_page_delete_5552.png</file>
+    <file alias="rename_inst">iconfinder_textfield_rename_5877.png</file>
+    <file alias="inst_adpcm">inst_adpcm.png</file>
+    <file alias="inst_kit">inst_kit.png</file>
+    <file alias="settings">iconfinder_wrench_orange_5931.png</file>
+    <file alias="reverse">iconfinder_shape_flip_horizontal_5740.png</file>
+    <file alias="zoom_out">iconfinder_magifier_zoom_out_5483.png</file>
+    <file alias="zoom_in">iconfinder_magnifier_zoom_in_5485.png</file>
+    <file alias="eye">iconfinder_eye_5333.png</file>
+    <file alias="chart_edit">iconfinder_chart_line_edit_5152.png</file>
+  </qresource>
+</RCC>

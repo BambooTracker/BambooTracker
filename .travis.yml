@@ -53,7 +53,7 @@ jobs:
       env:
         - TARGET_OS=macos
         - MAKE=make
-        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
+        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat"
       before_install:
         # Force linking of Qt into PATH
         - brew link --force qt
@@ -68,7 +68,7 @@ jobs:
       env:
         - TARGET_OS=macos-legacy
         - MAKE=make
-        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
+        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat"
       before_install:
         # Force linking of Qt into PATH
         - brew link --force qt
@@ -114,26 +114,29 @@ branches:
   only:
     - master
     - "/^v[0-9\\.]+$/"
+    - separate-data-files
 
 script:
-  - cd BambooTracker
-  - "$QMAKE CONFIG+=release CONFIG-=debug"
+  - pushd BambooTracker
+  - "$QMAKE PREFIX=$TRAVIS_BUILD_DIR/target/ CONFIG+=release CONFIG-=debug"
   - "$MAKE -j2"
-  - cd ..
 
 before_deploy:
-  - mkdir build
-  - cd build
+  - "$MAKE install"
+  - popd
+  - pushd target
   - bash "$TRAVIS_BUILD_DIR"/ci/package_"$TRAVIS_OS_NAME".sh
-  - 7z a -tzip "$TRAVIS_BUILD_DIR"/BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS".zip *
+  - popd
+  - mv target BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS"
+  - 7z a -tzip "$TRAVIS_BUILD_DIR"/BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS".zip BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS"
 
 deploy:
   provider: releases
   token:
-    secure: bs+nLxg+IeepN/gyUHN//I1pPvKDMXiAGF7aE8vOW7c6ZeJMoUIGydJkNzsPWIKnRhMa5RYlOXM+9/eMzYe0JAC2cVj/Zo2IMeRVYqeQDrKZ1my6CMGGvE0dUnSHXIezN0+Z4SP+p6HRRF20FLqthz/3ICWiqoSo1/HFHnj5nDCG2Ni++Xt5PFVBOa6sp9CzDBtm9I8xBwoieZFwUpU/BMOqlHHHoQ09YSdzCdu0E544bAh7RXgmyl+ayYD8klVhf5p82oynnMliAdj0IOlPRETyBhhdXXv5/Eivtoo9e5bvlbEwuuy8yvbZl9LW0fQLobB2o/2eYNtDpxOciLOZQaj8EvjhOPVeyAlEKi28VOusYFVrGk3UEuN5HoxMPdwWRJWylgcsYd1ZWS907ccj9XLrF4bVpyPOhvYiLA1zgIU+nk5B7NWqzQjcNEQK4jx+UeJURLpZMS8F1lyLlNJeWr3b5E0+6+nTmgeq5E7jGwdhUraje6W5hmXlwrKvoJ8kFnKDyRKuNCvtnoBX7XvJl7iYmp4FvQfgSWFOkIIvWdGPbByMff6vYrXU3WvkGPLErZuM9ivj7HCwx55xiBimKZCiUgrTPrbgN4KJfcnA9YbgumoF9K4xdvQmBLxV5S/LIm7pUJS5+PSyZM+PNfsbuapYPQWfdTH5/ZGetdUNgV0=
+    secure: Vy5JQ4AeSi+H9hKcpD6VrKVCmAAlqJHCE5EHiKYng8Z0HTeJYrj40JuULDUVWyl/gK2Cy1SAq4Ma9u0SPOr2IScEyzo0o8VbNPWZzz2fmwI4PBvpqnt+eBNg9GhsrYQiN4TpY7UIKQjLAP3anPk6NABQQ+RpmyBLoN8VWwVfCBx8GpxvAF1+B5qezsgCs5vHP7Qrzrtt0n0H6XxGM0xb1W2eiCc9h7YZTXyvtgWsWY6wqR0whlvO8i5YiP/fyy+WHQTtSfg69CZqHXbaSE0uosYmvXOZMD1Cr25+6oSEGSN7G0u2bvjWeykCP+v2PrqyojFeUcRfVriorRpzpDtdeZ2pPu84Ujz9C2wFTJ4FXzo96MRCNyjRAQE2ueHzgEf6+g6wbbOsZzREklnjFMSj3WRM6SFy0IGdNRwtMUqZtlYqgPvZYjiOssi7EppMM20CelZ702FJCPaX8rVmhXyaK5QRUA2M2cCJLZITf+MuDOpJKsyxwqHiVLmiHUsxu5I/qUFSDQMxfNJzSXieq93FbX12Y9jXyRvMG8MtQNQvfOsZTlGwiRBqdSnjFzaKTEoQo5lfPdSMJzIm6qGmsl9YiK2gvdfmc9/wMu8PeCb/T1sUlJ4F/2gHMbIH2HGJpHrhisdwjYkVo1EFYF2CZ3yIoE2KjjyRLNOtMQllG5II+Mw=
   file: $TRAVIS_BUILD_DIR/BambooTracker-$TRAVIS_TAG-$TARGET_OS.zip
   skip_cleanup: true
   on:
-    repo: rerrahkr/BambooTracker
+    repo: OPNA2608/BambooTracker
     tags: true
     condition: $TRAVIS_OS_NAME != linux

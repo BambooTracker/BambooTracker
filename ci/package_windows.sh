@@ -18,10 +18,8 @@ for opt in ${EXLIB_OPTS[@]}; do
   fi
 done
 
-cp -a "$(find ../ -name BambooTracker.exe)" ../{img,demos,licenses,specs,skins,*.md,LICENSE} .
+cp -va ../{img,*.md} .
 windeployqt BambooTracker.exe $DEPLOY_OPTS
-mv translations lang
-mv ../BambooTracker/.qm/*.qm lang/
-rm -rf imageformats
+rm -vrf imageformats translations
 
 exit 0

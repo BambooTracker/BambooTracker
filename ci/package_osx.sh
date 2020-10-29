@@ -2,14 +2,18 @@
 
 set -e
 
-cp -a "$(find ../ -name BambooTracker.app)" ../{img,demos,licenses,specs,skins,*.md,LICENSE} .
+cp -va ../{img,*.md} .
 macdeployqt BambooTracker.app -verbose=2
+
 LANGDIR="BambooTracker.app/Contents/Resources/lang"
-mv ../BambooTracker/.qm/ $LANGDIR
+mv lang $LANGDIR
+ls -ahl "$LANGDIR"
+find "$(dirname $(dirname $(realpath $(which qmake))))/translations" -type f -name 'qtbase_*.qm' -print0 \
+| while IFS= read -r -d '' qtbasetranslation; do
+  cp -v "$qtbasetranslation" "$(echo $qtbasetranslation | sed -e 's,.*qtbase_,'"$LANGDIR"'/qt_,g')"
+done
 
-find "$(dirname $(dirname $(which qmake)))/translations" -name "qtbase*" | sed -e "s%^\(.*qtbase_\(.*\)\)$%cp \1 $LANGDIR/qt_\2%g" | bash
-
-rm -rf BambooTracker.app/Contents/Frameworks/{QtPdf.framework,QtQuick.framework,QtVirtualKeyboard.framework,QtQmlModels.framework,QtSvg.framework,QtQml.framework,QtOpenGL.framework,QtMultimediaWidgets.framework}
-rm -rf BambooTracker.app/Contents/PlugIns/{platforminputcontexts,virtualkeyboard,iconengines,imageformats,audio,bearer,mediaservice}
+rm -vrf BambooTracker.app/Contents/Frameworks/Qt{Pdf,Quick,VirtualKeyboard,QmlModels,Svg,Qml,OpenGL,MultimediaWidgets}.framework
+rm -vrf BambooTracker.app/Contents/PlugIns/{platforminputcontexts,virtualkeyboard,iconengines,imageformats,audio,bearer,mediaservice}
 
 exit 0
