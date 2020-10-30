@@ -228,6 +228,7 @@ private:
 
 	std::atomic_bool repaintable_;	// Recurrensive repaint guard
 	std::atomic_int repaintingCnt_;
+	std::atomic_bool isInitedFirstMod_;
 
 	// Shortcuts
 	QShortcut upSc_, upWSSc_, dnSc_, dnWSSc_, pgUpSc_, pgUpWSSc_, pgDnSc_, pgDnWSSc_;
