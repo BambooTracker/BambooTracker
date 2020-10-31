@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,38 +27,49 @@
 
 #include <stdexcept>
 #include <cstdint>
+#include <string>
 #include "file_io.hpp"
+
 
 class FileIOError : public std::runtime_error
 {
-public:
-	FileIO::FileType getFileType() const;
-
 protected:
-	FileIOError(std::string text, const FileIO::FileType type);
-	const FileIO::FileType type_;
+	const FileIO::FileType ftype_;
+
+	FileIOError(std::string text, const FileIO::FileType ftype)
+		: std::runtime_error(text), ftype_(ftype) {}
+
+public:
+	inline FileIO::FileType fileType() const { return ftype_; }
 };
 
-class FileInputError : public FileIOError
+class FileNotExistError : public FileIOError
 {
-public:
-	FileInputError(const FileIO::FileType type);
+	FileNotExistError(const FileIO::FileType type)
+		: FileIOError("File not exist error", type) {}
 };
 
-class FileOutputError : public FileIOError
+class FileUnsupportedError : public FileIOError
 {
 public:
-	FileOutputError(const FileIO::FileType type);
+	FileUnsupportedError(const FileIO::FileType type)
+		: FileIOError("File unsupported error", type) {}
 };
 
 class FileVersionError : public FileIOError
 {
 public:
-	FileVersionError(const FileIO::FileType type);
+	FileVersionError(const FileIO::FileType type)
+		: FileIOError("File version error", type) {}
 };
 
 class FileCorruptionError : public FileIOError
 {
+private:
+	size_t pos_;
+
 public:
-	FileCorruptionError(const FileIO::FileType type);
+	FileCorruptionError(const FileIO::FileType type, size_t pos, const std::string& desc = "File corruption error")
+		: FileIOError(desc, type), pos_(pos) {}
+	inline size_t position() const { return pos_; }
 };

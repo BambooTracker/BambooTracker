@@ -141,6 +141,7 @@ SOURCES += \
     gui/drop_detect_list_widget.cpp \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
+    gui/file_io_error_message_box.cpp \
     gui/go_to_dialog.cpp \
     gui/hide_tracks_dialog.cpp \
     gui/instrument_editor/adpcm_sample_editor.cpp \
@@ -288,7 +289,6 @@ SOURCES += \
     gui/color_palette.cpp \
     gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.cpp \
     command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp \
-    io/file_io_error.cpp \
     format/wopn_file.c \
     instrument/bank.cpp \
     gui/instrument_selection_dialog.cpp \
@@ -328,6 +328,7 @@ HEADERS += \
     gui/drop_detect_list_widget.hpp \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \
+    gui/file_io_error_message_box.hpp \
     gui/go_to_dialog.hpp \
     gui/gui_util.hpp \
     gui/hide_tracks_dialog.hpp \

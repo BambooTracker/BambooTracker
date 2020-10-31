@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,40 +23,35 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef FILE_IO_ERROR_MESSAGE_BOX_HPP
+#define FILE_IO_ERROR_MESSAGE_BOX_HPP
+
+#include <unordered_map>
+#include <QString>
+#include <QWidget>
+#include "file_io.hpp"
 #include "file_io_error.hpp"
-#include <string>
-#include "misc.hpp"
+#include "enum_hash.hpp"
 
-FileIOError::FileIOError(std::string text, const FileIO::FileType type)
-	: std::runtime_error(text), type_(type)
+class FileIOErrorMessageBox
 {
-}
+public:
+	FileIOErrorMessageBox(const QString& file, bool isInput, FileIO::FileType ftype, const QString desc, QWidget* parent = nullptr);
+	FileIOErrorMessageBox(const QString& file, bool isInput, const FileIOError& e, QWidget* parent = nullptr);
+	void exec();
 
-FileIO::FileType FileIOError::getFileType() const
-{
-	return type_;
-}
+	inline static void openError(const QString& file, bool isInput, FileIO::FileType ftype, QWidget* parent = nullptr)
+	{
+		FileIOErrorMessageBox(file, isInput, ftype, QObject::tr("Could not open the file."), parent).exec();
+	}
 
-/******************************/
-FileInputError::FileInputError(const FileIO::FileType type)
-	: FileIOError("File input error", type)
-{
-}
+private:
+	QWidget* parent_;
+	QString text_, desc_;
 
-/******************************/
-FileOutputError::FileOutputError(const FileIO::FileType type)
-	: FileIOError("File output error", type)
-{
-}
+	static const std::unordered_map<FileIO::FileType, QString> FILE_NAMES_;
 
-/******************************/
-FileVersionError::FileVersionError(const FileIO::FileType type)
-	: FileIOError("File version error", type)
-{
-}
+	void setText(const QString& file, bool isInput, FileIO::FileType ftype);
+};
 
-/******************************/
-FileCorruptionError::FileCorruptionError(const FileIO::FileType type)
-	: FileIOError("File corruption error", type)
-{
-}
+#endif // FILE_IO_ERROR_MESSAGE_BOX_HPP

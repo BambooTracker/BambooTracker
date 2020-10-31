@@ -59,5 +59,8 @@ private:
 	uint32_t rate_;
 	BinaryContainer buf_;
 
-	static inline void assertFormat(bool f) { if (!f) throw FileInputError(FileIO::FileType::WAV); }
+	static inline void assertValue(bool f, size_t pos)
+	{
+		if (!f) throw FileCorruptionError(FileIO::FileType::WAV, pos);
+	}
 };

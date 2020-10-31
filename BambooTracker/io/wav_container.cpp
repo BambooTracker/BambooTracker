@@ -39,12 +39,12 @@ WavContainer::WavContainer(size_t defCapacity, uint32_t rate, uint16_t nCh, uint
 WavContainer::WavContainer(const BinaryContainer& bc)
 {
 	size_t p = 0;
-	assertFormat(bc.readString(p, 4) == "RIFF");
+	assertValue(bc.readString(p, 4) == "RIFF", p);
 	p += 4;
 	uint32_t fileSize = bc.readUint32(p) + 8;
-	assertFormat(fileSize == bc.size());
+	assertValue(fileSize == bc.size(), p);
 	p += 4;
-	assertFormat(bc.readString(p, 4) == "WAVE");
+	assertValue(bc.readString(p, 4) == "WAVE", p);
 	p += 4;
 
 	while (p < fileSize) {
@@ -55,7 +55,7 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 			uint32_t fmtSize = bc.readUint32(p);
 			size_t fmtp = p + 4;
 			p = fmtp + fmtSize;
-			assertFormat(bc.readUint16(fmtp) == 1);	// Only support linear PCM
+			assertValue(bc.readUint16(fmtp) == 1, fmtp);	// Only support linear PCM
 			fmtp += 2;
 			nCh_ = bc.readUint16(fmtp);
 			fmtp += 2;
@@ -64,17 +64,17 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 			uint32_t byteRate = bc.readUint32(fmtp);
 			fmtp += 4;
 			uint16_t blockSize = bc.readUint16(fmtp);
+			assertValue(byteRate == blockSize * rate_, fmtp);
 			fmtp += 2;
 			bitSize_ = bc.readUint16(fmtp);
-			assertFormat(bitSize_ == 16);	// Only support 16-bit
+			assertValue(bitSize_ == 16, fmtp);	// Only support 16-bit
+			assertValue(blockSize == nCh_ * bitSize_ / 8, fmtp);
 			fmtp += 2;
-			assertFormat(byteRate == blockSize * rate_);
-			assertFormat(blockSize == nCh_ * bitSize_ / 8);
 		}
 		else if (id == "data") {
 			uint32_t dataSize = bc.readUint32(p);
+			assertValue(p + dataSize <= bc.size(), p);
 			p += 4;
-			assertFormat(p + dataSize <= bc.size());
 			buf_.appendBinaryContainer(bc.getSubcontainer(p, dataSize));
 			p += dataSize;
 		}

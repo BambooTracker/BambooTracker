@@ -881,7 +881,7 @@ void ModuleIO::saveModule(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 		switch (style.type) {
 		case SongType::Standard:		ctr.appendUint8(0x00);	break;
 		case SongType::FM3chExpanded:	ctr.appendUint8(0x01);	break;
-		default:	throw FileOutputError(FileIO::FileType::Mod);
+		default:	throw std::out_of_range("");
 		}
 
 		// Bookmark
@@ -972,7 +972,7 @@ void ModuleIO::loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerMod")
-		throw FileCorruptionError(FileIO::FileType::Mod);
+		throw FileCorruptionError(FileIO::FileType::Mod, globCsr);
 	globCsr += 16;
 	size_t eofOfs = ctr.readUint32(globCsr);
 	size_t eof = globCsr + eofOfs;
@@ -994,7 +994,7 @@ void ModuleIO::loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
 		else if (ctr.readString(globCsr, 8) == "SONG    ")
 			globCsr = loadSongSectionInModule(mod, ctr, globCsr + 8, fileVersion);
 		else
-			throw FileCorruptionError(FileIO::FileType::Mod);
+			throw FileCorruptionError(FileIO::FileType::Mod, globCsr);
 	}
 }
 
@@ -1185,7 +1185,7 @@ size_t ModuleIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager>
 			break;
 		}
 		default:
-			throw FileCorruptionError(FileIO::FileType::Mod);
+			throw FileCorruptionError(FileIO::FileType::Mod, iCsr);
 		}
 		instCsr += iOfs;
 	}
@@ -1668,7 +1668,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
@@ -1689,7 +1689,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 							break;
 						}
 						else {
-							throw FileCorruptionError(FileIO::FileType::Mod);
+							throw FileCorruptionError(FileIO::FileType::Mod, csr);
 						}
 					}
 				}
@@ -1747,7 +1747,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
@@ -1765,7 +1765,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 							break;
 						}
 						else {
-							throw FileCorruptionError(FileIO::FileType::Mod);
+							throw FileCorruptionError(FileIO::FileType::Mod, csr);
 						}
 					}
 				}
@@ -1837,7 +1837,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					++csr;	// Skip sequence type
@@ -1902,7 +1902,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					++csr;	// Skip sequence type
@@ -1985,7 +1985,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					++csr;	// Skip sequence type
@@ -2044,7 +2044,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
@@ -2065,7 +2065,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 							break;
 						}
 						else {
-							throw FileCorruptionError(FileIO::FileType::Mod);
+							throw FileCorruptionError(FileIO::FileType::Mod, csr);
 						}
 					}
 				}
@@ -2123,7 +2123,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				if (version >= Version::toBCD(1, 0, 1)) {
 					switch (ctr.readUint8(csr++)) {
@@ -2141,7 +2141,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 							break;
 						}
 						else {
-							throw FileCorruptionError(FileIO::FileType::Mod);
+							throw FileCorruptionError(FileIO::FileType::Mod, csr);
 						}
 					}
 				}
@@ -2239,7 +2239,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				++csr;	// Skip sequence type
 
@@ -2295,7 +2295,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// Absolute
@@ -2308,7 +2308,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					instManLocked->setArpeggioADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 
 				instPropCsr += ofs;
@@ -2363,7 +2363,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// Absolute
@@ -2373,7 +2373,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 					instManLocked->setPitchADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 					break;
 				default:
-					throw FileCorruptionError(FileIO::FileType::Mod);
+					throw FileCorruptionError(FileIO::FileType::Mod, csr);
 				}
 
 				instPropCsr += ofs;
@@ -2381,7 +2381,7 @@ size_t ModuleIO::loadInstrumentPropertySectionInModule(std::weak_ptr<Instruments
 			break;
 		}
 		default:
-			throw FileCorruptionError(FileIO::FileType::Mod);
+			throw FileCorruptionError(FileIO::FileType::Mod, instPropCsr);
 		}
 	}
 
@@ -2437,7 +2437,7 @@ size_t ModuleIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter para
 		break;
 	}
 	default:
-		throw FileCorruptionError(FileIO::FileType::Mod);
+		throw FileCorruptionError(FileIO::FileType::Mod, csr);
 	}
 
 	if (version >= Version::toBCD(1, 0, 1)) {
@@ -2505,7 +2505,7 @@ size_t ModuleIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const Binary
 		case 0x00:	songType = SongType::Standard;	break;
 		case 0x01:	songType = SongType::FM3chExpanded;	break;
 		default:
-			throw FileCorruptionError(FileIO::FileType::Mod);
+			throw FileCorruptionError(FileIO::FileType::Mod, scsr);
 		}
 		modLocked->addSong(idx, songType, title, isTempo,
 						   static_cast<int>(tempo), groove, static_cast<int>(speed), ptnSize);

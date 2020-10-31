@@ -9,7 +9,9 @@
 
 ### Changed
 - [#266] - Set a license to a part of the source code (thanks [@superctr])
-- Try to initialize audio stream by multiple APIs on the first launch ([#270]; thanks [@N-SPC700], [@OPNA2608])
+- [#274] - Try to initialize audio stream by multiple APIs on the first launch ([#270]; thanks [@N-SPC700], [@OPNA2608])
+- [#268], [#273] - Changed issue template policy (thanks [@OPNA2608])
+- Display error descriptions in File I/O
 
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
@@ -22,6 +24,7 @@
 - [#267] - Fix a crash when changing the current song type (thanks [@Zexxerd])
 - [#269] - Fix order insert when changing the pattern size to less than 64 (thanks [@Toonlink8101])
 - [#272] - Fix FM3ch expanded labeling and muting bug when changing the song type (thanks [@Toonlink8101])
+- [#277] - Wait pattern drawing until initializing internal data ([#276]; thanks [@OPNA2608])
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 [@Zexxerd]: https://github.com/Zexxerd
@@ -39,6 +42,11 @@
 [#269]: https://github.com/rerrahkr/BambooTracker/issues/269
 [#270]: https://github.com/rerrahkr/BambooTracker/issues/270
 [#272]: https://github.com/rerrahkr/BambooTracker/issues/272
+[#274]: https://github.com/rerrahkr/BambooTracker/pull/274
+[#268]: https://github.com/rerrahkr/BambooTracker/pull/268
+[#273]: https://github.com/rerrahkr/BambooTracker/pull/273
+[#276]: https://github.com/rerrahkr/BambooTracker/issues/276
+[#277]: https://github.com/rerrahkr/BambooTracker/pull/277
 
 ## v0.4.4 (2020-08-22)
 ### Added

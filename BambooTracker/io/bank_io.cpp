@@ -902,14 +902,14 @@ AbstractBank* BankIO::loadBank(const BinaryContainer& ctr, const std::string& pa
 	if (ext.compare("ppc") == 0) return BankIO::loadPPCFile(ctr);
 	if (ext.compare("pvi") == 0) return BankIO::loadPVIFile(ctr);
 	if (ext.compare("dat") == 0) return BankIO::loadMucom88File(ctr);
-	throw FileInputError(FileIO::FileType::Bank);
+	throw FileUnsupportedError(FileIO::FileType::Bank);
 }
 
 AbstractBank* BankIO::loadBTBFile(const BinaryContainer& ctr)
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerBnk")
-		throw FileCorruptionError(FileIO::FileType::Bank);
+		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
 	globCsr += 16;
 	/*size_t eofOfs = */ctr.readUint32(globCsr);
 	globCsr += 4;
@@ -923,7 +923,8 @@ AbstractBank* BankIO::loadBTBFile(const BinaryContainer& ctr)
 	std::vector<int> ids;
 	std::vector<std::string> names;
 	std::vector<BinaryContainer> instCtrs;
-	if (ctr.readString(globCsr, 8) != "INSTRMNT") throw FileCorruptionError(FileIO::FileType::Bank);
+	if (ctr.readString(globCsr, 8) != "INSTRMNT")
+		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
 	globCsr += 8;
 	size_t instOfs = ctr.readUint32(globCsr);
 	size_t instCsr = globCsr + 4;
@@ -951,7 +952,8 @@ AbstractBank* BankIO::loadBTBFile(const BinaryContainer& ctr)
 
 
 	/***** Instrument property section *****/
-	if (ctr.readString(globCsr, 8) != "INSTPROP") throw FileCorruptionError(FileIO::FileType::Inst);
+	if (ctr.readString(globCsr, 8) != "INSTPROP")
+		throw FileCorruptionError(FileIO::FileType::Inst, globCsr);
 	globCsr += 8;
 	size_t instPropOfs = ctr.readUint32(globCsr);
 	BinaryContainer propCtr = ctr.getSubcontainer(globCsr + 4, instPropOfs - 4);
@@ -968,7 +970,7 @@ AbstractBank* BankIO::loadWOPNFile(const BinaryContainer& ctr)
 	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
 	wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
 	if (!wopn)
-		throw FileCorruptionError(FileIO::FileType::Bank);
+		throw FileCorruptionError(FileIO::FileType::Bank, 0);
 
 	WopnBank *bank = new WopnBank(wopn.get());
 	wopn.release();
@@ -981,7 +983,7 @@ AbstractBank* BankIO::loadFFFile(const BinaryContainer& ctr)
 	// File size check
 	size_t ctrSize = ctr.size();
 	if (!ctrSize || ctrSize & 0x1f || ctrSize > 0x2000)
-		throw FileCorruptionError(FileIO::FileType::Bank);
+		throw FileCorruptionError(FileIO::FileType::Bank, csr);
 
 	std::vector<int> ids;
 	std::vector<std::string> names;
@@ -1014,15 +1016,15 @@ AbstractBank* BankIO::loadPPCFile(const BinaryContainer& ctr)
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 30) != "ADPCM DATA for  PMD ver.4.4-  ")
-		throw FileCorruptionError(FileIO::FileType::Bank);
+		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
 	globCsr += 30;
 	uint16_t nextAddr = ctr.readUint16(globCsr);
 	if ((nextAddr - 0x26u) * 0x20u + 0x420u != ctr.size())	// File size check
-		throw FileCorruptionError(FileIO::FileType::Bank);
+		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
 	globCsr += 2;
 
 	size_t sampOffs = globCsr + 256 * 4;
-	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank);
+	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
@@ -1035,11 +1037,11 @@ AbstractBank* BankIO::loadPVIFile(const BinaryContainer& ctr)
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 4) != "PVI2")
-		throw FileCorruptionError(FileIO::FileType::Bank);
+		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
 	globCsr += 0x10;
 
 	size_t sampOffs = globCsr + 128 * 4;
-	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank);
+	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
@@ -1074,7 +1076,7 @@ AbstractBank* BankIO::loadMucom88File(const BinaryContainer& ctr)
 	// File size check
 	size_t ctrSize = ctr.size();
 	if (!ctrSize || ctrSize != 0x2000)
-		throw FileCorruptionError(FileIO::FileType::Bank);
+		throw FileCorruptionError(FileIO::FileType::Bank, csr);
 
 	std::vector<int> ids;
 	std::vector<std::string> names;

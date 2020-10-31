@@ -35,7 +35,6 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QStringList>
-#include <QMessageBox>
 #include <QPainter>
 #include <QRect>
 #include <QRectF>
@@ -48,6 +47,7 @@
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
+#include "gui/file_io_error_message_box.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
@@ -319,31 +319,34 @@ void ADPCMSampleEditor::importSampleFrom(const QString file)
 	std::unique_ptr<WavContainer> wav;
 	try {
 		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::WAV);
+		if (!fp.open(QIODevice::ReadOnly)) {
+			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::WAV, this);
+			return;
+		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
 		wav = std::make_unique<WavContainer>(BinaryContainer(std::vector<char>(array.begin(), array.end())));
 	}
 	catch (FileIOError& e) {
-		Q_UNUSED(e)
-		QMessageBox::critical(this, tr("Error"), tr("Failed to import the wav."));
+		FileIOErrorMessageBox(file, true, e, this).exec();
 		return;
 	}
 	catch (std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), tr("Failed to import the wav.\n%1").arg(QString(e.what())));
+		FileIOErrorMessageBox(file, true, FileIO::FileType::WAV, QString(e.what()), this).exec();
 		return;
 	}
 
 	if (wav->getSampleRate() < 2000 || 55466 < wav->getSampleRate()) {
-		QMessageBox::critical(this, tr("Error"),
+		FileIOErrorMessageBox(file, true, FileIO::FileType::WAV,
 							  tr("Supported sample rate is 2kHz-55.5kHz, but the rate of selected sample is %1.")
-							  .arg(wav->getSampleRate()));
+							  .arg(wav->getSampleRate()), this).exec();
 		return;
 	}
 
 	if (wav->getChannelCount() != 1) {
-		QMessageBox::critical(this, tr("Error"), tr("The selected sample is not mono channel."));
+		FileIOErrorMessageBox(file, true, FileIO::FileType::WAV,
+							  tr("The selected sample is not mono channel."), this).exec();
 		return;
 	}
 

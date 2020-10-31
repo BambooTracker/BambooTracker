@@ -83,6 +83,7 @@
 #include "gui/swap_tracks_dialog.hpp"
 #include "gui/hide_tracks_dialog.hpp"
 #include "gui/track_visibility_memory_handler.hpp"
+#include "gui/file_io_error_message_box.hpp"
 #include "gui/gui_util.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
@@ -1682,14 +1683,17 @@ void MainWindow::funcLoadInstrument(QString file)
 {
 	int n = bt_->findFirstFreeInstrumentNumber();
 	if (n == -1) {
-		showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst),
-							  tr( "The number of instruments has reached the upper limit."));
+		FileIOErrorMessageBox(file, true, FileIO::FileType::Inst,
+							  tr("The number of instruments has reached the upper limit."), this).exec();
 		return;
 	}
 
 	try {
 		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::Inst);
+		if (!fp.open(QIODevice::ReadOnly)) {
+			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Inst, this);
+			return;
+		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
@@ -1705,10 +1709,10 @@ void MainWindow::funcLoadInstrument(QString file)
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(file, true, e, this).exec();
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(file, true, FileIO::FileType::Inst, QString(e.what()), this).exec();
 	}
 }
 
@@ -1730,17 +1734,20 @@ void MainWindow::saveInstrument()
 		bt_->saveInstrument(container, n);
 
 		QFile fp(file);
-		if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Inst);
+		if (!fp.open(QIODevice::WriteOnly)) {
+			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Inst, this);
+			return;
+		}
 		fp.write(container.getPointer(), container.size());
 		fp.close();
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(file, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileOutputError(FileIO::FileType::Inst), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(file, false, FileIO::FileType::Inst, QString(e.what()), this).exec();
 	}
 }
 
@@ -1780,7 +1787,10 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	std::shared_ptr<InstrumentsManager> bankMan = std::make_shared<InstrumentsManager>(true);
 	try {
 		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::Bank);
+		if (!fp.open(QIODevice::ReadOnly)) {
+			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Bank, this);
+			return;
+		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
@@ -1791,11 +1801,11 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(file, true, e, this).exec();
 		return;
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileInputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(file, true, FileIO::FileType::Bank, QString(e.what()), this).exec();
 		return;
 	}
 
@@ -1873,8 +1883,8 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		for (const size_t& index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
-				showFileIOErrorDialog(FileInputError(FileIO::FileType::Inst),
-									  tr( "The number of instruments has reached the upper limit."));
+				FileIOErrorMessageBox(file, true, FileIO::FileType::Inst,
+									  tr("The number of instruments has reached the upper limit."), this).exec();
 				ui->instrumentList->setCurrentRow(lastNum);
 				return;
 			}
@@ -1894,10 +1904,10 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		if (sampleRestoreRequested) assignADPCMSamples();	// Store only once
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(file, true, e, this).exec();
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileInputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(file, true, FileIO::FileType::Bank, QString(e.what()), this).exec();
 	}
 }
 
@@ -1928,17 +1938,20 @@ void MainWindow::exportInstrumentsToBank()
 		bt_->exportInstruments(container, sel);
 
 		QFile fp(file);
-		if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Bank);
+		if (!fp.open(QIODevice::WriteOnly)) {
+			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Bank, this);
+			return;
+		}
 		fp.write(container.getPointer(), container.size());
 		fp.close();
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(file, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileOutputError(FileIO::FileType::Bank), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(file, false, FileIO::FileType::Bank, QString(e.what()), this).exec();
 	}
 }
 
@@ -2066,7 +2079,10 @@ void MainWindow::openModule(QString file)
 
 		BinaryContainer container;
 		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) throw FileInputError(FileIO::FileType::Mod);
+		if (!fp.open(QIODevice::ReadOnly)) {
+			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Mod, this);
+			return;
+		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
@@ -2081,10 +2097,10 @@ void MainWindow::openModule(QString file)
 	}
 	catch (std::exception& e) {
 		if (auto ef = dynamic_cast<FileIOError*>(&e)) {
-			showFileIOErrorDialog(*ef);
+			FileIOErrorMessageBox(file, true, *ef, this).exec();
 		}
 		else {
-			showFileIOErrorDialog(FileInputError(FileIO::FileType::Mod), "\n" + QString(e.what()));
+			FileIOErrorMessageBox(file, true, FileIO::FileType::Mod, QString(e.what()), this).exec();
 		}
 		// Init module
 		freezeViews();
@@ -2435,48 +2451,6 @@ int MainWindow::getSelectedFileFilter(QString& file, QStringList& filters) const
 	for (int i = 0; i < filters.size(); ++i)
 		if (ex == re.match(filters[i]).captured(1)) return i;
 	return -1;
-}
-
-void MainWindow::showFileIOErrorDialog(const FileIOError& e, const QString sub)
-{
-	const FileIOError *err = &e;
-	QString text, type;
-
-	switch (err->getFileType()) {
-	case FileIO::FileType::Mod:		type = tr("module");		break;
-	case FileIO::FileType::S98:		type = tr("s98");			break;
-	case FileIO::FileType::VGM:		type = tr("vgm");			break;
-	case FileIO::FileType::WAV:		type = tr("wav");			break;
-	case FileIO::FileType::Bank:	type = tr("bank");			break;
-	case FileIO::FileType::Inst:	type = tr("instrument");	break;
-	default:	break;
-	}
-
-	if (dynamic_cast<const FileInputError*>(err)) {
-		text = tr("Failed to load the %1.").arg(type);
-	}
-	else if (dynamic_cast<const FileOutputError*>(err)) {
-		switch (err->getFileType()) {
-		case FileIO::FileType::S98:
-		case FileIO::FileType::VGM:
-		case FileIO::FileType::WAV:
-			text = tr("Failed to export to %1.");
-			break;
-		default:
-			text = tr("Failed to save the %1.");
-			break;
-		}
-		text = text.arg(type);
-	}
-	else if (dynamic_cast<const FileVersionError*>(err)) {
-		text = tr("Could not load the %1 properly. "
-				  "Please make sure that you have the latest version of BambooTracker.").arg(type);
-	}
-	else if (dynamic_cast<const FileCorruptionError*>(err)) {
-		text = tr("Could not load the %1. It may be corrupted.").arg(type);
-	}
-
-	QMessageBox::critical(this, tr("Error"), text + sub);
 }
 
 /******************************/
@@ -3070,7 +3044,10 @@ bool MainWindow::on_actionSave_triggered()
 			bt_->saveModule(container);
 
 			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Mod);
+			if (!fp.open(QIODevice::WriteOnly)) {
+				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::Mod, this);
+				return false;
+			}
 			fp.write(container.getPointer(), container.size());
 			fp.close();
 
@@ -3081,11 +3058,11 @@ bool MainWindow::on_actionSave_triggered()
 			return true;
 		}
 		catch (FileIOError& e) {
-			showFileIOErrorDialog(e);
+			FileIOErrorMessageBox(path, false, e, this).exec();
 			return false;
 		}
 		catch (std::exception& e) {
-			showFileIOErrorDialog(FileOutputError(FileIO::FileType::Mod), "\n" + QString(e.what()));
+			FileIOErrorMessageBox(path, false, FileIO::FileType::Mod, QString(e.what()), this).exec();
 			return false;
 		}
 	}
@@ -3114,7 +3091,10 @@ bool MainWindow::on_actionSave_As_triggered()
 		bt_->saveModule(container);
 
 		QFile fp(file);
-		if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::Mod);
+		if (!fp.open(QIODevice::WriteOnly)) {
+			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Mod, this);
+			return false;
+		}
 		fp.write(container.getPointer(), container.size());
 		fp.close();
 
@@ -3127,11 +3107,11 @@ bool MainWindow::on_actionSave_As_triggered()
 		return true;
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(file, false, e, this).exec();
 		return false;
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileOutputError(FileIO::FileType::Mod), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(file, false, FileIO::FileType::Mod, QString(e.what()), this).exec();
 		return false;
 	}
 }
@@ -3294,20 +3274,24 @@ void MainWindow::on_actionWAV_triggered()
 		bool res = bt_->exportToWav(container, diag.getLoopCount(), bar);
 		if (res) {
 			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::WAV);
-			BinaryContainer bc = container.createWavBinary();
-			fp.write(bc.getPointer(), bc.size());
-			fp.close();
-			bar();
+			if (!fp.open(QIODevice::WriteOnly)) {
+				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::WAV, this);
+			}
+			else {
+				BinaryContainer bc = container.createWavBinary();
+				fp.write(bc.getPointer(), bc.size());
+				fp.close();
+				bar();
 
-			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+				config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+			}
 		}
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileOutputError(FileIO::FileType::WAV), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(path, false, FileIO::FileType::WAV, QString(e.what()), this).exec();
 	}
 
 	stream_->start();
@@ -3350,19 +3334,23 @@ void MainWindow::on_actionVGM_triggered()
 		bool res = bt_->exportToVgm(container, diag.getExportTarget(), diag.enabledGD3(), tag, bar);
 		if (res) {
 			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::VGM);
-			fp.write(container.getPointer(), container.size());
-			fp.close();
-			bar();
+			if (!fp.open(QIODevice::WriteOnly)) {
+				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::VGM, this);
+			}
+			else {
+				fp.write(container.getPointer(), container.size());
+				fp.close();
+				bar();
 
-			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+				config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+			}
 		}
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileOutputError(FileIO::FileType::VGM), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(path, false, FileIO::FileType::VGM, QString(e.what()), this).exec();
 	}
 
 	stream_->start();
@@ -3406,19 +3394,23 @@ void MainWindow::on_actionS98_triggered()
 									tag, diag.getResolution(), bar);
 		if (res) {
 			QFile fp(path);
-			if (!fp.open(QIODevice::WriteOnly)) throw FileOutputError(FileIO::FileType::S98);
-			fp.write(container.getPointer(), container.size());
-			fp.close();
-			bar();
+			if (!fp.open(QIODevice::WriteOnly)) {
+				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::S98, this);
+			}
+			else {
+				fp.write(container.getPointer(), container.size());
+				fp.close();
+				bar();
 
-			config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+				config_.lock()->setWorkingDirectory(QFileInfo(path).dir().path().toStdString());
+			}
 		}
 	}
 	catch (FileIOError& e) {
-		showFileIOErrorDialog(e);
+		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		showFileIOErrorDialog(FileOutputError(FileIO::FileType::S98), "\n" + QString(e.what()));
+		FileIOErrorMessageBox(path, false, FileIO::FileType::S98, QString(e.what()), this).exec();
 	}
 
 	stream_->start();
