@@ -40,12 +40,9 @@ MidiInterface &MidiInterface::instance()
 }
 
 MidiInterface::MidiInterface()
-	: hasInitializedMidiIn_(false),
-	  hasInitializedMidiOut_(false),
-	  hasOpenInputPort_(false),
-	  hasOpenOutputPort_(false)
+	  : hasOpenInputPort_(false)
 {
-	switchApi(RtMidi::UNSPECIFIED);
+	switchApi(RtMidi::RTMIDI_DUMMY);
 }
 
 MidiInterface::~MidiInterface()
@@ -72,60 +69,43 @@ std::vector<std::string> MidiInterface::getAvailableApi() const
 	return list;
 }
 
-void MidiInterface::switchApi(std::string api)
+bool MidiInterface::switchApi(std::string api, std::string* errDetail)
 {
 	std::vector<RtMidi::Api> apis;
 	RtMidi::getCompiledApi(apis);
 
 	for (const auto& apiAvailable : apis) {
 		if (api == RtMidi::getApiDisplayName(apiAvailable)) {
-			switchApi(apiAvailable);
-			return;
+			return switchApi(apiAvailable, errDetail);
 		}
 	}
-	switchApi(RtMidi::RTMIDI_DUMMY);
+	return switchApi(RtMidi::RTMIDI_DUMMY, errDetail);
 }
 
-void MidiInterface::switchApi(RtMidi::Api api)
+bool MidiInterface::switchApi(RtMidi::Api api, std::string* errDetail)
 {
 	if (inputClient_ && api == inputClient_->getCurrentApi())
-		return;
+		return true;
 
 	RtMidiIn *inputClient = nullptr;
 	try {
 		inputClient = new RtMidiIn(api, MIDI_INP_CLIENT_NAME, MidiBufferSize);
-		hasInitializedMidiIn_ = true;
+		if (errDetail) *errDetail = "";
 	}
 	catch (RtMidiError &error) {
-		hasInitializedMidiIn_ = false;
-		fprintf(stderr, "Cannot initialize MIDI In.\n");
 		error.printMessage();
+		if (errDetail) *errDetail = error.getMessage();
 	}
+	bool res = (inputClient != nullptr);
 	if (!inputClient)
 		inputClient = new RtMidiIn(RtMidi::RTMIDI_DUMMY, MIDI_INP_CLIENT_NAME, MidiBufferSize);
 
 	inputClient->ignoreTypes(MIDI_INP_IGNORE_SYSEX, MIDI_INP_IGNORE_TIME, MIDI_INP_IGNORE_SENSE);
 	inputClient_.reset(inputClient);
-	inputClient->setErrorCallback(&onMidiError, this);
 	inputClient->setCallback(&onMidiInput, this);
 	hasOpenInputPort_ = false;
 
-	RtMidiOut *outputClient = nullptr;
-	try {
-		outputClient = new RtMidiOut(api, MIDI_OUT_CLIENT_NAME);
-		hasInitializedMidiOut_ = false;
-	}
-	catch (RtMidiError &error) {
-		hasInitializedMidiOut_ = true;
-		fprintf(stderr, "Cannot initialize MIDI Out.\n");
-		error.printMessage();
-	}
-	if (!outputClient)
-		outputClient = new RtMidiOut(RtMidi::RTMIDI_DUMMY, MIDI_OUT_CLIENT_NAME);
-
-	outputClient_.reset(outputClient);
-	outputClient->setErrorCallback(&onMidiError, this);
-	hasOpenOutputPort_ = false;
+	return res;
 }
 
 bool MidiInterface::supportsVirtualPort() const
@@ -198,29 +178,6 @@ std::vector<std::string> MidiInterface::getRealInputPorts(const std::string& api
 	return ports;
 }
 
-std::vector<std::string> MidiInterface::getRealOutputPorts()
-{
-	RtMidiOut &client = *outputClient_;
-	unsigned count = client.getPortCount();
-
-	std::vector<std::string> ports;
-	ports.reserve(count);
-
-	for (unsigned i = 0; i < count; ++i)
-		ports.push_back(client.getPortName(i));
-	return ports;
-}
-
-bool MidiInterface::hasInitializedInput() const
-{
-	return hasInitializedMidiIn_;
-}
-
-bool MidiInterface::hasInitializedOutput() const
-{
-	return hasInitializedMidiOut_;
-}
-
 void MidiInterface::closeInputPort()
 {
 	RtMidiIn &client = *inputClient_;
@@ -230,17 +187,9 @@ void MidiInterface::closeInputPort()
 	}
 }
 
-void MidiInterface::closeOutputPort()
+bool MidiInterface::openInputPort(unsigned port, std::string* errDetail)
 {
-	RtMidiOut &client = *outputClient_;
-	if (hasOpenOutputPort_) {
-		client.closePort();
-		hasOpenOutputPort_ = false;
-	}
-}
-
-void MidiInterface::openInputPort(unsigned port)
-{
+	try {
 	RtMidiIn &client = *inputClient_;
 	closeInputPort();
 
@@ -253,63 +202,28 @@ void MidiInterface::openInputPort(unsigned port)
 		client.openPort(port, name);
 		hasOpenInputPort_ = client.isPortOpen();
 	}
-}
-
-void MidiInterface::openOutputPort(unsigned port)
-{
-	RtMidiOut &client = *outputClient_;
-	closeOutputPort();
-
-	std::string name = MIDI_OUT_PORT_NAME;
-	if (port == ~0u) {
-		client.openVirtualPort(name);
-		hasOpenOutputPort_ = true;
+	if (errDetail) *errDetail = "";
+	return true;
 	}
-	else {
-		client.openPort(port, name);
-		hasOpenOutputPort_ = client.isPortOpen();
+	catch (RtMidiError& error) {
+		if (errDetail) *errDetail = error.getMessage();
+		hasOpenInputPort_ = false;
+		return false;
 	}
 }
 
-void MidiInterface::openInputPortByName(const std::string &portName)
+bool MidiInterface::openInputPortByName(const std::string &portName, std::string* errDetail)
 {
 	std::vector<std::string> ports = getRealInputPorts();
 
 	for (unsigned i = 0, n = ports.size(); i < n; ++i) {
 		if (ports[i] == portName) {
-			openInputPort(i);
-			return;
+			return openInputPort(i, errDetail);;
 		}
 	}
-}
 
-void MidiInterface::openOutputPortByName(const std::string &portName)
-{
-	std::vector<std::string> ports = getRealOutputPorts();
-
-	for (unsigned i = 0, n = ports.size(); i < n; ++i) {
-		if (ports[i] == portName) {
-			openOutputPort(i);
-			return;
-		}
-	}
-}
-
-void MidiInterface::sendMessage(const uint8_t *data, size_t length)
-{
-	RtMidiOut &client = *outputClient_;
-	if (hasOpenOutputPort_)
-		client.sendMessage(data, length);
-}
-
-void MidiInterface::onMidiError(RtMidiError::Type type, const std::string &text, void *user_data)
-{
-	MidiInterface *self = reinterpret_cast<MidiInterface *>(user_data);
-
-	(void)type;
-	(void)self;
-
-	fprintf(stderr, "[Midi Out] %s\n", text.c_str());
+	if (errDetail) *errDetail = "There is no port such the name.";
+	return false;
 }
 
 void MidiInterface::installInputHandler(InputHandler *handler, void *user_data)

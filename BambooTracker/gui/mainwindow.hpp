@@ -249,6 +249,14 @@ private:
 							  QMessageBox::Ok, QMessageBox::Ok);
 	}
 
+	inline void showMidiFailedDialog(const QString& errDetail)
+	{
+		QMessageBox::critical(this, tr("Error"),
+							  tr("Could not initialize MIDI input.")
+							  + "\n\n" + errDetail,
+							  QMessageBox::Ok, QMessageBox::Ok);
+	}
+
 private slots:
 	void on_instrumentList_customContextMenuRequested(const QPoint& pos);
 	void on_instrumentList_itemDoubleClicked(QListWidgetItem* item);

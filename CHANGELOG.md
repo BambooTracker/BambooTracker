@@ -11,7 +11,8 @@
 - [#266] - Set a license to a part of the source code (thanks [@superctr])
 - [#274] - Try to initialize audio stream by multiple APIs on the first launch ([#270]; thanks [@N-SPC700], [@OPNA2608])
 - [#268], [#273] - Changed issue template policy (thanks [@OPNA2608])
-- Display error descriptions in File I/O
+- [#278] - Display error descriptions in File I/O and MIDI input (thanks [@OPNA2608])
+- [#278] - Set Dummy API to MIDI input during the initialization (thanks [@OPNA2608])
 
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
@@ -47,6 +48,7 @@
 [#273]: https://github.com/rerrahkr/BambooTracker/pull/273
 [#276]: https://github.com/rerrahkr/BambooTracker/issues/276
 [#277]: https://github.com/rerrahkr/BambooTracker/pull/277
+[#278]: https://github.com/rerrahkr/BambooTracker/issues/278
 
 ## v0.4.4 (2020-08-22)
 ### Added

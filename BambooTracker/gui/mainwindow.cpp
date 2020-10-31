@@ -2353,17 +2353,16 @@ void MainWindow::setMidiConfiguration()
 	std::string midiApi = config_.lock()->getMidiAPI();
 	std::string midiInPortName = config_.lock()->getMidiInputPort();
 
-	midiIntf.switchApi(midiApi);
-	if (!midiIntf.hasInitializedInput()) {
-		QMessageBox::critical(this, tr("Error"),
-							  tr("Could not initialize MIDI input."),
-							  QMessageBox::Ok, QMessageBox::Ok);
-	}
+	std::string errDetail;
+	if (!midiIntf.switchApi(midiApi, &errDetail))
+		showMidiFailedDialog(QString::fromStdString(errDetail));
 
+	bool res = true;
 	if (!midiInPortName.empty())
-		midiIntf.openInputPortByName(midiInPortName);
+		res = midiIntf.openInputPortByName(midiInPortName, &errDetail);
 	else if (midiIntf.supportsVirtualPort())
-		midiIntf.openInputPort(~0u);
+		res = midiIntf.openInputPort(~0u, &errDetail);
+	if (!res) showMidiFailedDialog(QString::fromStdString(errDetail));
 }
 
 void MainWindow::updateFonts()
