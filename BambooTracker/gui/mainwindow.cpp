@@ -673,7 +673,16 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 							  bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
 			if (streamState) break;
 		}
-		if (!streamState) showStreamFailedDialog(streamErr);
+		if (streamState) {
+			uint32_t sr = stream_->getStreamRate();
+			if (config.lock()->getSampleRate() != sr) {
+				showStreamRateWarningDialog(sr);
+				bt_->setStreamRate(sr);
+			}
+		}
+		else {
+			showStreamFailedDialog(streamErr);
+		}
 	}
 	else {	// Ordinary launch
 		bool savedApiExists = false;
@@ -705,7 +714,16 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 							   static_cast<uint32_t>(bt_->getStreamRate()),
 							   static_cast<uint32_t>(bt_->getStreamDuration()),
 							   bt_->getModuleTickFrequency(), audioApi, audioDevice, &streamErr);
-		if (!streamState) showStreamFailedDialog(streamErr);
+		if (streamState) {
+			uint32_t sr = stream_->getStreamRate();
+			if (config.lock()->getSampleRate() != sr) {
+				showStreamRateWarningDialog(sr);
+				bt_->setStreamRate(sr);
+			}
+		}
+		else {
+			showStreamFailedDialog(streamErr);
+		}
 	}
 	RealChipInterface intf = config.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
@@ -2250,13 +2268,14 @@ void MainWindow::changeOctave(bool upFlag)
 void MainWindow::changeConfiguration()
 {
 	// Real chip interface
+	bool streamState = false;
 	RealChipInterface intf = config_.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
 		timer_.reset();
 		bt_->useSCCI(nullptr);
 		bt_->useC86CTL(nullptr);
 		QString streamErr;
-		bool streamState = stream_->initialize(
+		streamState = stream_->initialize(
 							   config_.lock()->getSampleRate(),
 							   config_.lock()->getBufferLength(),
 							   bt_->getModuleTickFrequency(),
@@ -2294,6 +2313,14 @@ void MainWindow::changeConfiguration()
 	instForms_->updateByConfiguration();
 
 	bt_->changeConfiguration(config_);
+
+	if (streamState) {
+		uint32_t sr = stream_->getStreamRate();
+		if (config_.lock()->getSampleRate() != sr) {
+			showStreamRateWarningDialog(sr);
+			bt_->setStreamRate(sr);
+		}
+	}
 
 	setShortcuts();
 	updateInstrumentListColors();

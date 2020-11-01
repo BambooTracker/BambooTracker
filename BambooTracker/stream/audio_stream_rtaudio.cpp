@@ -46,8 +46,6 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 
 	setBackend(backend);
 
-	AudioStream::initialize(rate, duration, intrRate, backend, device);
-
 	RtAudio* audio = audio_.get();
 	const std::string deviceUtf8 = device.toStdString();
 
@@ -75,16 +73,20 @@ bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t i
 	};
 
 	unsigned int bufferSize = rate * duration / 1000;
+	bool isSuccessed = false;
 	try {
 		audio->openStream(&param, nullptr, RTAUDIO_SINT16, rate, &bufferSize, callback, this, &opts);
 		if (errDetail) *errDetail = "";
-		return true;
+		isSuccessed = true;
+		rate = audio->getStreamSampleRate();	// Match to real rate (for ALSA)
 	}
 	catch (RtAudioError& error) {
 		error.printMessage();
 		if (errDetail) *errDetail = QString::fromStdString(error.getMessage());
-		return false;
 	}
+
+	AudioStream::initialize(rate, duration, intrRate, backend, device);
+	return isSuccessed;
 }
 
 void AudioStreamRtAudio::shutdown()

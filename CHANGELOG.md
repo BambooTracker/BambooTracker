@@ -26,6 +26,7 @@
 - [#269] - Fix order insert when changing the pattern size to less than 64 (thanks [@Toonlink8101])
 - [#272] - Fix FM3ch expanded labeling and muting bug when changing the song type (thanks [@Toonlink8101])
 - [#277] - Wait pattern drawing until initializing internal data ([#276]; thanks [@OPNA2608])
+- [#279] - Synchronize sample rate between the emulation and the audio stream (thanks [@OPNA2608])
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 [@Zexxerd]: https://github.com/Zexxerd
@@ -49,6 +50,7 @@
 [#276]: https://github.com/rerrahkr/BambooTracker/issues/276
 [#277]: https://github.com/rerrahkr/BambooTracker/pull/277
 [#278]: https://github.com/rerrahkr/BambooTracker/issues/278
+[#279]: https://github.com/rerrahkr/BambooTracker/issues/279
 
 ## v0.4.4 (2020-08-22)
 ### Added
