@@ -12,35 +12,32 @@ BambooTracker is a music tracker for the Yamaha YM2608 (OPNA) sound chip which w
 [日本語](./README_ja.md)
 
 ## Supported platforms & Downloads
-The following is a list of officially supported platforms & instructions on how to install BambooTracker on them. If your operating system / distribution is not on this list, please refer to [Building](#building) for instructions on how to build BambooTracker manually.
+We offer 2 kinds of downloads: Releases and Development builds.
 
-We offer up to 2 kinds of downloads: Releases and Development builds.
+*Releases* are pinned, permanent versions released every once in a while. They're built on Travis CI and uploaded to our [Releases page](https://github.com/rerrahkr/BambooTracker/releases/).  
+Releases are recommended for most users, as they should provide the best & most stable experience.
 
-*Releases* are pinned, permanent versions released every once in a while. They're built on Travis CI and uploaded to our [Releases page](https://github.com/rerrahkr/BambooTracker/releases/).
-Releases are recommended for most users, at they should provide a stable experience.
+*Development builds* are temporary builds as part of our continuous integration configuration on [AppVeyor](https://ci.appveyor.com/project/rerrahkr/bambootracker/history/). They're built & uploaded whenever a code change has been committed to the base repository or a pull request.  
+Development builds offer the latest features and fixes, but may not be optimised for regular use. Their primary goal is to provide feedback to code changes and offer improved debugging. We aim for stability, but no guarantees can be made if you chose to use them.
 
-*Development builds* are temporary builds as part of our continuous integration configuration on [AppVeyor](https://ci.appveyor.com/project/rerrahkr/bambootracker/history/). They're built & uploaded whenever a code change has been committed to the repository or a pull request.
-Development builds offer the latest features and fixes, but are not optimised for regular use. Their primary goal is to provide feedback to code changes and offer improved debugging. We try our best, but no stability guarantees can be made if you chose to use them.
+The following is a list of platforms we support via CI tests, *Releases* and/or *Development builds*. Included are instructions on how to install BambooTracker via means other than our official builds as well. If your operating system or distribution is not on this list, please refer to [Building](#building) for instructions on how to build BambooTracker manually. If your package manager's version of BambooTracker is missing from the macOS / Linux section and you want to add it to the list, please [open a pull request](https://github.com/rerrahkr/BambooTracker/compare) or tell us about it on our Discord server!
 
 ### Windows
-We maintain 2 Windows targets for build tests, releases and development builds:
+Tests, *Releases* & *Development builds*:
+- Windows (7 or higher)  
+  Qt 5.15.1, MinGW 8.1.0
+- Windows XP  
+  Qt 5.5, MinGW 4.9.3
 
-- Windows (7 or higher)
-  recommended & most tested, using latest reasonable version of Qt5 (depending on CI system)
-- Windows XP
-  confirmed working, using last Qt5 version with XP support (5.5), weaker hardware may struggle
+### OS X / macOS
+Tests & *Releases*:
+- macOS (Modern)  
+  macOS 10.15.7, Xcode 12.2, Qt 5.15.1 [(supported macOS version here)](https://doc.qt.io/qt-5/macos.html#supported-versions)
+- macOS Legacy  
+  macOS 10.11, Xcode 7.3.1, Qt 5.6.2 [(supported macOS versions here)](https://doc.qt.io/archives/qt-5.6/supported-platforms.html#supported-configurations)
 
-### macOS
-We maintain 2 macOS targets for build tests and releases. Their supported macOS & linked-against Qt5 versions depend on what's being offered by [Travis CI](https://docs.travis-ci.com/user/reference/osx#macos-version), [Qt5](https://doc.qt.io/qt-5/macos.html#supported-versions) and [Homebrew](https://formulae.brew.sh/formula/qt). Denoted here are Travis CI's macOS & Xcode versions and the installed Qt5 version at build time.
-
-- macOS (Modern)
-  macOS 10.15.7, Xcode 12.2, Qt 5.15.1
-- macOS Legacy
-  macOS 10.11, Xcode 7.3.1, Qt 5.6.2
-
-For the development builds, we're opting for the oldest macOS environment offered by AppVeyor for maximum support via testers.
-
-- macOS
+*Development builds*:
+- macOS  
   macOS 10.14.6, Xcode 11.3.1, Qt 5.15.1
 
 #### Nixpkgs
@@ -49,12 +46,16 @@ Alternatively, you can install the latest BambooTracker release via the [Nix pac
 `nix-env -iA nixpkgs.bambootracker`
 
 ### Linux / BSD
-At the time of writing, there are no binary downloads offered for Linux or BSD. An AppPackage approach is being considered, but won't be a priority or extensively tested. Instead, we encourage you to use your package manager of choice to either install BambooTracker or write a package definition for it in case it's missing.
+Tests only:
+- Linux (Ubuntu 16.04)  
+  Qt 5.5.1, GCC 5.4.0
 
-The following is a list of distributions / package managers with known packaging efforts & the associated command to install BambooTracker. If you've added a package definition to some distribution / packaging system, feel free to add your system & install command to this list and optionally your contact details in case major build changes require your attention.
+Tests & *Releases*:
+- Linux (Nixpkgs)  
+  Qt 5.15.0, GCC 9.3.0
 
 #### Debian / Ubuntu
-`apt install bambootracker`
+`sudo apt install bambootracker`
 
 #### Nix package manager
 ##### NixOS
@@ -286,8 +287,6 @@ To build BambooTracker, you'll need the following required dependencies:
 - A C++ compiler (GCC/Clang/...)
 - make
 - Qt5 Base
-- Qt5 Multimedia
-- Qt5 Multimedia plugins
 - Qt5 Tools (qmake, lrelease, ...)
 
 The way of acquiring all these will depend on your OS & distribution.
@@ -307,7 +306,7 @@ The following optional dependency exists:
 
 - **JACK Support**: JACK headers & libraries (for example [through Homebrew](https://formulae.brew.sh/formula/jack))
 
-#### Linux / BSD
+#### Linux and BSD
 You should usually be able to install all required dependencies through your distribution's package manager.
 
 To build BambooTracker, you'll additionally need:
@@ -319,7 +318,7 @@ The following optional dependencies exist:
 - **PulseAudio Support**: PulseAudio headers & libraries
 - **JACK Support**: JACK headers & libraries
 
-##### Debian / Ubuntu:
+##### Debian and Ubuntu:
 ```bash
 apt install \
   build-essential \
@@ -330,7 +329,7 @@ apt install \
 ```
 
 ##### FreeBSD
-You may skip to "Compilation" - "Linux / BSD" - "FreeBSD" if you want to build via FreeBSD ports.
+You may skip to "Compilation" - "Linux and BSD" - "FreeBSD" if you want to build via FreeBSD ports.
 
 ### Compilation
 Generally, BambooTracker releases are built like this:
@@ -361,7 +360,7 @@ If you know that building with an old version of JACK that lacks the `jack_port_
 
 , try dropping `CONFIG+=jack_has_rename`.
 
-#### Linux / BSD
+#### Linux and BSD
 If you want to build with any of the optional dependencies, append the following options to `qmake`:
 
 - **PulseAudio Support**: `CONFIG+=use_pulse`
