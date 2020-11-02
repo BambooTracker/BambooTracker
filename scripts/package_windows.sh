@@ -20,6 +20,7 @@ done
 
 cp -va ../{img,*.md} .
 windeployqt BambooTracker.exe $DEPLOY_OPTS
+cp -va translations/*.qm lang
 rm -vrf imageformats translations
 
 exit 0
