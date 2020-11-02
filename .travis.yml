@@ -19,9 +19,9 @@ jobs:
           - $HOME/Qt
       before_install:
         # Check if dependencies are cached, otherwise fetch them.
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
-          qtbase qtmultimedia qttools
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
+          qtbase qttools
         - export QTPATH="$(echo "$QTDIR"/"$QTVER"/*)"
         - export PATH="$MINGWPATH"/bin:"$QTPATH"/bin:"$PATH"
     - name: Windows (XP)
@@ -41,8 +41,8 @@ jobs:
           - $HOME/Qt
       before_install:
         # Check if dependencies are cached, otherwise fetch them.
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
           essentials addons
         - export QTPATH="$(echo "$QTDIR"/"$QTVER"/*)"
         - export PATH="$MINGWPATH"/bin:"$QTPATH"/bin:"$PATH"
@@ -114,7 +114,6 @@ branches:
   only:
     - master
     - "/^v[0-9\\.]+$/"
-    - separate-data-files
 
 script:
   - pushd BambooTracker
@@ -125,7 +124,7 @@ before_deploy:
   - "$MAKE install"
   - popd
   - pushd target
-  - bash "$TRAVIS_BUILD_DIR"/ci/package_"$TRAVIS_OS_NAME".sh
+  - bash "$TRAVIS_BUILD_DIR"/scripts/package_"$TRAVIS_OS_NAME".sh
   - popd
   - mv target BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS"
   - 7z a -tzip "$TRAVIS_BUILD_DIR"/BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS".zip BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS"
