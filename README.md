@@ -29,7 +29,7 @@ Tests, *Releases* & *Development builds*:
 - Windows XP  
   Qt 5.5, MinGW 4.9.3
 
-### OS X / macOS
+### OS X - macOS
 Tests & *Releases*:
 - macOS (Modern)  
   macOS 10.15.7, Xcode 12.2, Qt 5.15.1 [(supported macOS version here)](https://doc.qt.io/qt-5/macos.html#supported-versions)
@@ -45,7 +45,7 @@ Alternatively, you can install the latest BambooTracker release via the [Nix pac
 
 `nix-env -iA nixpkgs.bambootracker`
 
-### Linux / BSD
+### Linux - BSD
 Tests only:
 - Linux (Ubuntu 16.04)  
   Qt 5.5.1, GCC 5.4.0
@@ -54,7 +54,7 @@ Tests & *Releases*:
 - Linux (Nixpkgs)  
   Qt 5.15.0, GCC 9.3.0
 
-#### Debian / Ubuntu
+#### Debian - Ubuntu
 `sudo apt install bambootracker`
 
 #### Nix package manager
@@ -306,7 +306,7 @@ The following optional dependency exists:
 
 - **JACK Support**: JACK headers & libraries (for example [through Homebrew](https://formulae.brew.sh/formula/jack))
 
-#### Linux and BSD
+#### Linux - BSD
 You should usually be able to install all required dependencies through your distribution's package manager.
 
 To build BambooTracker, you'll additionally need:
@@ -318,7 +318,7 @@ The following optional dependencies exist:
 - **PulseAudio Support**: PulseAudio headers & libraries
 - **JACK Support**: JACK headers & libraries
 
-##### Debian and Ubuntu:
+##### Debian - Ubuntu:
 ```bash
 apt install \
   build-essential \
@@ -329,7 +329,7 @@ apt install \
 ```
 
 ##### FreeBSD
-You may skip to "Compilation" - "Linux and BSD" - "FreeBSD" if you want to build via FreeBSD ports.
+You may skip to "Compilation" - "Linux - BSD" - "FreeBSD" if you want to build via FreeBSD ports.
 
 ### Compilation
 Generally, BambooTracker releases are built like this:
@@ -360,7 +360,7 @@ If you know that building with an old version of JACK that lacks the `jack_port_
 
 , try dropping `CONFIG+=jack_has_rename`.
 
-#### Linux and BSD
+#### Linux - BSD
 If you want to build with any of the optional dependencies, append the following options to `qmake`:
 
 - **PulseAudio Support**: `CONFIG+=use_pulse`
