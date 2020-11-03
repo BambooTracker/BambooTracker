@@ -85,6 +85,11 @@ void AudioStream::setInterruption(uint32_t intrRate)
 	intrCount_ = rate_ / intrRate_;
 }
 
+uint32_t AudioStream::getStreamRate() const
+{
+	return rate_;
+}
+
 void AudioStream::start()
 {
 	std::lock_guard<std::mutex> lock(mutex_);

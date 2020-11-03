@@ -249,6 +249,14 @@ private:
 							  QMessageBox::Ok, QMessageBox::Ok);
 	}
 
+	inline void showStreamRateWarningDialog(uint32_t curRate)
+	{
+		QMessageBox::warning(this, tr("Warning"),
+							 tr("Could not set the sample rate of the audio stream to %1Hz. Currently the stream runs on %2Hz instead.")
+							 .arg(config_.lock()->getSampleRate()).arg(curRate),
+							 QMessageBox::Ok, QMessageBox::Ok);
+	}
+
 	inline void showMidiFailedDialog(const QString& errDetail)
 	{
 		QMessageBox::critical(this, tr("Error"),
