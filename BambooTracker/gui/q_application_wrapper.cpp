@@ -27,7 +27,7 @@
 #include <exception>
 #include <QMessageBox>
 
-QApplicationWrapper::QApplicationWrapper(int& argc, char** argv) : QApplication (argc, argv) {}
+QApplicationWrapper::QApplicationWrapper(int& argc, char** argv) : QApplication(argc, argv) {}
 
 bool QApplicationWrapper::notify(QObject* receiver, QEvent* event)
 {
