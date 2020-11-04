@@ -34,21 +34,24 @@ environment:
   APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
     # Windows 7 or later
-    - APPVEYOR_JOB_NAME: for Windows 7 or later
+    - APPVEYOR_JOB_NAME: for Windows (7 or later)
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       COMPILER: C:\Qt\Tools\mingw530_32\bin
       QT: C:\Qt\5.10.1\mingw53_32\bin
-      DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev.zip
+      PLATFORM: windows
+      DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev-windows.zip
       MAKE: mingw32-make
     # Windows XP
     - APPVEYOR_JOB_NAME: for Windows XP
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
       COMPILER: C:\Qt\Tools\mingw492_32\bin
       QT: C:\Qt\5.5\mingw492_32\bin
-      DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev-winXP.zip
+      PLATFORM: windows-xp
+      DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev-windows-xp.zip
       MAKE: mingw32-make
-    - APPVEYOR_JOB_NAME: for macOS (Modern)
+    - APPVEYOR_JOB_NAME: for macOS
       APPVEYOR_BUILD_WORKER_IMAGE: macOS-Mojave
+      PLATFORM: macos
       DEST: BambooTracker-v$APPVEYOR_BUILD_VERSION-dev-macos.zip
       MAKE: make
 
@@ -77,21 +80,21 @@ before_build:
 # to run your custom scripts instead of automatic MSBuild
 build_script:
   - ps: |
-      qmake.exe BambooTracker.pro CONFIG+=debug CONFIG+=console CONFIG+=nostrip
-      & $env:MAKE -j2
-      # Fixes AppVeyor build erroring out...?
-      echo "=== BUILDING DONE ==="
+      qmake.exe BambooTracker.pro PREFIX=..\target CONFIG+=debug CONFIG+=console CONFIG+=nostrip
+      Invoke-Expression ($env:MAKE + " -j2")
   - sh: |
-      qmake BambooTracker.pro CONFIG+=debug CONFIG+=console CONFIG+=nostrip LIBS+=-L"$JACKLIB" INCLUDEPATH+="$JACKINC"
+      qmake BambooTracker.pro PREFIX=../target CONFIG+=debug CONFIG+=console CONFIG+=nostrip LIBS+=-L"$JACKLIB" INCLUDEPATH+="$JACKINC" CONFIG+=install_flat
       $MAKE -j2
 
 # scripts to run after build (working directory and environment changes are persisted from the previous steps)
 after_build:
+  - ps: Invoke-Expression ($env:MAKE + " install")
+  - sh: $MAKE install
   - cd ..
-  - mkdir packaging
-  - cd packaging
+  - cd target
+  # Port of scripts/package_windows.sh to PowerShell
   - ps: |
-      Copy-Item -Recurse ..\BambooTracker\debug\BambooTracker.exe,..\img,..\demos,..\licenses,..\specs,..\skins,..\*.md,..\LICENSE .
+      Copy-Item -Recurse ..\img,..\*.md .
       $HELP_OUT = (windeployqt.exe -h)
       $DEPLOY_OPTS = "-verbose=2"
       $PLUGIN_OPTS = @("--no-quick-import","--no-system-d3d-compiler","--no-webkit2","--no-opengl-sw","--no-virtualkeyboard","--no-angle")
@@ -99,12 +102,16 @@ after_build:
       $EXLIB_OPTS = @("svg")
       $EXLIB_OPTS | ForEach{If ($HELP_OUT | Select-String $_) { $DEPLOY_OPTS = $DEPLOY_OPTS + " --no-" + $_ }}
       Invoke-Expression ("windeployqt.exe BambooTracker.exe " + $DEPLOY_OPTS)
-      mv translations lang
-      mv ..\BambooTracker\.qm\*.qm lang\
-      Remove-Item -Recurse -Force imageformats
-  - sh: bash ../ci/package_osx.sh
-  - ps: 7z a -tzip "..\$env:DEST" *
-  - sh: 7z a -tzip "../$DEST" *
+      Copy-Item -Recurse translations\*.qm lang
+      Remove-Item -Recurse -Force imageformats,translations
+  - sh: bash ../scripts/package_osx.sh
+  - cd ..
+  - ps: |
+      mv target BambooTracker-v"$env:APPVEYOR_BUILD_VERSION"-dev-"$env:PLATFORM"
+      7z a -tzip "$env:DEST" BambooTracker-v"$env:APPVEYOR_BUILD_VERSION"-dev-"$env:PLATFORM"
+  - sh: |
+      mv target BambooTracker-v"$APPVEYOR_BUILD_VERSION"-dev-"$PLATFORM"
+      7z a -tzip "$DEST" BambooTracker-v"$APPVEYOR_BUILD_VERSION"-dev-"$PLATFORM"
 
 #---------------------------------#
 #      artifacts configuration    #

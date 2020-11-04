@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/doc">
+    <file alias="shortcuts">keyboard_shortcuts.html</file>
+  </qresource>
+</RCC>

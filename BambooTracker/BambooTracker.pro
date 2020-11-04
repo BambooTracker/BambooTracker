@@ -29,12 +29,10 @@ isEmpty(PREFIX) {
     else:PREFIX = /usr/local
 }
 INSTALLS += target
-win32 {
-    QM_FILES_INSTALL_PATH = $$PREFIX/lang
+win32|install_flat {
     target.path = $$PREFIX
 }
 else {
-    QM_FILES_INSTALL_PATH = $$PREFIX/share/BambooTracker/lang
     target.path = $$PREFIX/bin
 }
 
@@ -553,76 +551,8 @@ INCLUDEPATH += \
     $$PWD/module \
     $$PWD/io
 
-RESOURCES += \
-    bamboo_tracker.qrc
-
-TRANSLATIONS += \
-    res/lang/bamboo_tracker_fr.ts \
-    res/lang/bamboo_tracker_ja.ts
-
 include("stream/RtAudio/RtAudio.pri")
 include("midi/RtMidi/RtMidi.pri")
 
-equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 12) {
-    message(Using a workaround for missing 'lrelease' option in Qt <5.12...)
+include("../data/data.pri")
 
-    for(tsfile, TRANSLATIONS) {
-      qmfile   = $$tsfile
-      qmfile  ~= s/.ts$/.qm/
-      qmfile  ~= s,^res/lang,.qm,
-
-      win32:$${qmfile}.commands = mkdir .qm;
-      else:$${qmfile}.commands = test -d .qm || mkdir -p .qm;
-      $${qmfile}.commands += lrelease -qm $$qmfile $$PWD/$$tsfile
-      $${qmfile}.depends = $$PWD/$${tsfile}
-
-      PRE_TARGETDEPS      += $${qmfile}
-      QMAKE_EXTRA_TARGETS += $${qmfile}
-
-      translations_target = translations_$${qmfile}
-      $${translations_target}.depends = $$qmfile
-      $${translations_target}.CONFIG = no_check_exist
-      $${translations_target}.files = $$PWD/$$qmfile
-      $${translations_target}.path = $$QM_FILES_INSTALL_PATH
-
-      INSTALLS += $${translations_target}
-    }
-}
-else {
-    !versionAtLeast(QT_VERSION, 5.14.2) {
-      message(Using a workaround for 'qm_files' target missing its install phase due to checking for the translations too early...)
-      qm_files.CONFIG = no_check_exist
-    }
-    CONFIG += lrelease
-}
-
-win32 {
-    RC_ICONS = res/icon/BambooTracker.ico
-}
-
-unix {
-  manpages.files = $$PWD/../BambooTracker*.1
-  manpages.path = $$PREFIX/share/man/man1/
-  INSTALLS += manpages
-
-  desktopfile.files = $$PWD/../BambooTracker.desktop
-  desktopfile.path = $$PREFIX/share/applications/
-  INSTALLS += desktopfile
-
-  iconsizes = 16 256
-  for(iconsize, iconsizes) {
-    iconres = $${iconsize}x$${iconsize}
-    thisicon = iconfile_$${iconres}
-    $${thisicon}.files = $$PWD/res/icon/app_icon/$${iconres}/BambooTracker.png
-    $${thisicon}.path = $$PREFIX/share/icons/hicolor/$${iconres}/apps/
-    INSTALLS += $${thisicon}
-  }
-
-  distfiles.files = $$PWD/../demos $$PWD/../skins
-  distfiles.path = $$PREFIX/share/BambooTracker/
-  INSTALLS += distfiles
-
-  docfiles.files = $$PWD/../licenses $$PWD/../LICENSE
-  docfiles.path = $$PREFIX/share/doc/BambooTracker
-  INSTALLS += docfiles
-}

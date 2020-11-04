@@ -10,18 +10,21 @@ jobs:
         - QMAKE=qmake.exe
         - MINGWPATH=/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw32
         - MINGWVER=7.3.0
-        - QTDIR=$HOME/Qt/win7
+        - QTDIRBASE=$HOME/Qt
         - QTVER=5.14.1
         - QTTCH=win32_mingw73
+        - QTCOMP="qtbase qttools qttranslations"
       cache:
         directories:
           - $MINGWPATH
-          - $HOME/Qt
+          - $QTDIRBASE
       before_install:
+        # Hash of various variables prevents cache problems (toolchain / components change, doesn't propagate to either travis or scripts/fetch_qt.sh)
+        - export QTDIRHASH=$(echo "$TARGET_OS" "$QTVER" "$QTTCH" $QTCOMP | md5sum | cut -d' ' -f1)
+        - export QTDIR=$QTDIRBASE/$QTDIRHASH
         # Check if dependencies are cached, otherwise fetch them.
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
-          qtbase qtmultimedia qttools
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH" $QTCOMP
         - export QTPATH="$(echo "$QTDIR"/"$QTVER"/*)"
         - export PATH="$MINGWPATH"/bin:"$QTPATH"/bin:"$PATH"
     - name: Windows (XP)
@@ -32,17 +35,21 @@ jobs:
         - QMAKE=qmake.exe
         - MINGWPATH=/c/tools/mingw32
         - MINGWVER=4.9.3
-        - QTDIR=$HOME/Qt/winXP
+        - QTDIRBASE=$HOME/Qt
         - QTVER=5.5
         - QTTCH=win32_mingw492
+        - QTCOMP="essentials addons"
       cache:
         directories:
           - $MINGWPATH
-          - $HOME/Qt
+          - $QTDIRBASE
       before_install:
+        # Hash of various variables prevents cache problems (toolchain / components change, doesn't propagate to either travis or scripts/fetch_qt.sh)
+        - export QTDIRHASH=$(echo "$TARGET_OS" "$QTVER" "$QTTCH" $QTCOMP | md5sum | cut -d' ' -f1)
+        - export QTDIR=$QTDIRBASE/$QTDIRHASH
         # Check if dependencies are cached, otherwise fetch them.
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
-        - bash "$TRAVIS_BUILD_DIR"/ci/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH"
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_mingw.sh "$MINGWPATH" "$MINGWVER"
+        - bash "$TRAVIS_BUILD_DIR"/scripts/fetch_qt.sh "$QTDIR" "$QTVER" "$QTTCH" $QTCOMP
           essentials addons
         - export QTPATH="$(echo "$QTDIR"/"$QTVER"/*)"
         - export PATH="$MINGWPATH"/bin:"$QTPATH"/bin:"$PATH"
@@ -53,7 +60,7 @@ jobs:
       env:
         - TARGET_OS=macos
         - MAKE=make
-        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
+        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat"
       before_install:
         # Force linking of Qt into PATH
         - brew link --force qt
@@ -68,7 +75,7 @@ jobs:
       env:
         - TARGET_OS=macos-legacy
         - MAKE=make
-        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename"
+        - QMAKE="qmake CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat"
       before_install:
         # Force linking of Qt into PATH
         - brew link --force qt
@@ -116,16 +123,18 @@ branches:
     - "/^v[0-9\\.]+$/"
 
 script:
-  - cd BambooTracker
-  - "$QMAKE CONFIG+=release CONFIG-=debug"
+  - pushd BambooTracker
+  - "$QMAKE PREFIX=$TRAVIS_BUILD_DIR/target/ CONFIG+=release CONFIG-=debug"
   - "$MAKE -j2"
-  - cd ..
 
 before_deploy:
-  - mkdir build
-  - cd build
-  - bash "$TRAVIS_BUILD_DIR"/ci/package_"$TRAVIS_OS_NAME".sh
-  - 7z a -tzip "$TRAVIS_BUILD_DIR"/BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS".zip *
+  - "$MAKE install"
+  - popd
+  - pushd target
+  - bash "$TRAVIS_BUILD_DIR"/scripts/package_"$TRAVIS_OS_NAME".sh
+  - popd
+  - mv target BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS"
+  - 7z a -tzip "$TRAVIS_BUILD_DIR"/BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS".zip BambooTracker-"$TRAVIS_TAG"-"$TARGET_OS"
 
 deploy:
   provider: releases
