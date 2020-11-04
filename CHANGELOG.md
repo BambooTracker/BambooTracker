@@ -13,6 +13,7 @@
 - [#268], [#273] - Changed issue template policy (thanks [@OPNA2608])
 - [#278] - Display error descriptions in File I/O and MIDI input (thanks [@OPNA2608])
 - [#278] - Set Dummy API to MIDI input during the initialization (thanks [@OPNA2608])
+- [#281] - Separate data and code in the repository (thanks [@OPNA2608])
 
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
@@ -26,7 +27,8 @@
 - [#269] - Fix order insert when changing the pattern size to less than 64 (thanks [@Toonlink8101])
 - [#272] - Fix FM3ch expanded labeling and muting bug when changing the song type (thanks [@Toonlink8101])
 - [#277] - Wait pattern drawing until initializing internal data ([#276]; thanks [@OPNA2608])
-- [#279] - Synchronize sample rate between the emulation and the audio stream (thanks [@OPNA2608])
+- [#280] - Synchronize sample rate between the emulation and the audio stream ([#279]; thanks [@OPNA2608])
+- [#283] - Fix the module open error when launching the tracker firstly by macOS finder ([#282]; thanks [@N-SPC700], [@OPNA2608])
 
 [@Yuzu4K]: https://twitter.com/Yuzu4K
 [@Zexxerd]: https://github.com/Zexxerd
@@ -51,6 +53,10 @@
 [#277]: https://github.com/rerrahkr/BambooTracker/pull/277
 [#278]: https://github.com/rerrahkr/BambooTracker/issues/278
 [#279]: https://github.com/rerrahkr/BambooTracker/issues/279
+[#280]: https://github.com/rerrahkr/BambooTracker/pull/280
+[#281]: https://github.com/rerrahkr/BambooTracker/pull/281
+[#282]: https://github.com/rerrahkr/BambooTracker/issues/282
+[#283]: https://github.com/rerrahkr/BambooTracker/pull/283
 
 ## v0.4.4 (2020-08-22)
 ### Added

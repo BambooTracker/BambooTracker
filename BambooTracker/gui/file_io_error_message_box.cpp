@@ -48,17 +48,17 @@ FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, 
 	QString type = FILE_NAMES_.at(err->fileType());
 
 	if (dynamic_cast<const FileNotExistError*>(err)) {
-		desc_ = QObject::tr("Path does not exist.");
+		desc_ = tr("Path does not exist.");
 	}
 	else if (dynamic_cast<const FileUnsupportedError*>(err)) {
-		desc_ = QObject::tr("Unsupported file format.");
+		desc_ = tr("Unsupported file format.");
 	}
 	else if (dynamic_cast<const FileVersionError*>(err)) {
-		desc_ = QObject::tr("Could not load the %1 properly. "
-							"Please make sure that you have the latest version of BambooTracker.").arg(file);
+		desc_ = tr("Could not load the %1 properly. "
+				   "Please make sure that you have the latest version of BambooTracker.").arg(file);
 	}
 	else if (auto ce = dynamic_cast<const FileCorruptionError*>(err)) {
-		desc_ = QObject::tr("Could not load the %1. It may be corrupted. Stopped at %2.").arg(type).arg(ce->position());
+		desc_ = tr("Could not load the %1. It may be corrupted. Stopped at %2.").arg(type).arg(ce->position());
 	}
 
 	setText(file, isInput, e.fileType());
@@ -67,17 +67,17 @@ FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, 
 void FileIOErrorMessageBox::setText(const QString& file, bool isInput, FileIO::FileType ftype)
 {
 	if (isInput) {
-		text_ = QObject::tr("Failed to load %1.").arg(file);
+		text_ = tr("Failed to load %1.").arg(file);
 	}
 	else {
 		switch (ftype) {
 		case FileIO::FileType::S98:
 		case FileIO::FileType::VGM:
 		case FileIO::FileType::WAV:
-			text_ = QObject::tr("Failed to export to %1.");
+			text_ = tr("Failed to export to %1.");
 			break;
 		default:
-			text_ = QObject::tr("Failed to save the %1.");
+			text_ = tr("Failed to save the %1.");
 			break;
 		}
 		text_ = text_.arg(file);
@@ -86,5 +86,5 @@ void FileIOErrorMessageBox::setText(const QString& file, bool isInput, FileIO::F
 
 void FileIOErrorMessageBox::exec()
 {
-	QMessageBox::critical(parent_, QObject::tr("Error"), text_ + "\n" + desc_);
+	QMessageBox::critical(parent_, tr("Error"), text_ + "\n" + desc_);
 }

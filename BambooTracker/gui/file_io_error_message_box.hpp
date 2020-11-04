@@ -33,8 +33,10 @@
 #include "file_io_error.hpp"
 #include "enum_hash.hpp"
 
-class FileIOErrorMessageBox
+class FileIOErrorMessageBox : public QObject
 {
+	Q_OBJECT
+
 public:
 	FileIOErrorMessageBox(const QString& file, bool isInput, FileIO::FileType ftype, const QString desc, QWidget* parent = nullptr);
 	FileIOErrorMessageBox(const QString& file, bool isInput, const FileIOError& e, QWidget* parent = nullptr);
@@ -42,7 +44,7 @@ public:
 
 	inline static void openError(const QString& file, bool isInput, FileIO::FileType ftype, QWidget* parent = nullptr)
 	{
-		FileIOErrorMessageBox(file, isInput, ftype, QObject::tr("Could not open the file."), parent).exec();
+		FileIOErrorMessageBox(file, isInput, ftype, tr("Could not open the file."), parent).exec();
 	}
 
 private:
