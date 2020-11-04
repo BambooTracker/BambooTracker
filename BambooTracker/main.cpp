@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,11 +43,9 @@ static void setupTranslations();
 static QString findQtTranslationsDir();
 static QString findAppTranslationsDir();
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	try {
-		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
-
 		std::shared_ptr<Configuration> config = std::make_shared<Configuration>();
 		ConfigurationHandler::loadConfiguration(config);
 
@@ -58,6 +56,9 @@ int main(int argc, char *argv[])
 		std::unique_ptr<QApplicationWrapper> a(std::make_unique<QApplicationWrapper>(argc, argv));
 		if (config->getEnableTranslation()) setupTranslations();
 		a->setWindowIcon(QIcon(":/icon/app_icon"));
+
+		QString filePath = (argc > 1) ? argv[argc - 1] : "";	// Last argument file
+
 		std::unique_ptr<MainWindow> w(std::make_unique<MainWindow>(config, filePath));
 		w->show();
 		int ret = a->exec();
