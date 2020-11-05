@@ -7,6 +7,7 @@
 - [RigidatoMS] - Is This What You Desired.btm
 - [SuperJet Spade] - No Time To Waste.btm, Underwater Ruins.btm
 - [TastySnax12] - Wild Battle (RSE).btm
+- Zexxerd - Jump.btm
 
 ## Sample instruments
 - [papiezak] - 2 banks (32 instruments)
