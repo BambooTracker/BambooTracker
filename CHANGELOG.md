@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## v0.4.5 (2020-11-05)
 ### Added
 - [#238] - MIDI API selection ([#230]; thanks [@OPNA2608], [@ehaupt])
 - Frame rate setting in the wave view
