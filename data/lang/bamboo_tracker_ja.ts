@@ -144,20 +144,6 @@
         <translation>直接描画(&amp;T)</translation>
     </message>
     <message>
-        <source>Error</source>
-        <translation type="vanished">エラー</translation>
-    </message>
-    <message>
-        <source>Failed to import the wav.</source>
-        <translation type="vanished">wavの読み込みに失敗しました。</translation>
-    </message>
-    <message>
-        <source>Failed to import the wav.
-%1</source>
-        <translation type="vanished">wavの読み込みに失敗しました。
-%1</translation>
-    </message>
-    <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.cpp" line="342"/>
         <source>Supported sample rate is 2kHz-55.5kHz, but the rate of selected sample is %1.</source>
         <translation>サンプルレートが%1Hzのため読み込めません。2kHzから55.5kHzの間で設定してください。</translation>
@@ -327,12 +313,12 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="250"/>
         <source>Wave view</source>
-        <translation type="unfinished"></translation>
+        <translation>オシロスコープ</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="256"/>
         <source>Frame rate</source>
-        <translation type="unfinished"></translation>
+        <translation>フレームレート</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="375"/>
@@ -1568,7 +1554,7 @@
     <message>
         <location filename="../../BambooTracker/gui/effect_description.cpp" line="63"/>
         <source>Fine detune, xx: pitch (00-FF)</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイン・デチューン, xx: ピッチ(00-FF)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/effect_description.cpp" line="64"/>
@@ -1710,77 +1696,77 @@
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="30"/>
         <source>module</source>
-        <translation type="unfinished">モジュール</translation>
+        <translation>モジュール</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="31"/>
         <source>s98</source>
-        <translation type="unfinished">S98</translation>
+        <translation>S98</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="32"/>
         <source>vgm</source>
-        <translation type="unfinished">VGM</translation>
+        <translation>VGM</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="33"/>
         <source>wav</source>
-        <translation type="unfinished">WAV</translation>
+        <translation>WAV</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="34"/>
         <source>bank</source>
-        <translation type="unfinished">バンク</translation>
+        <translation>バンク</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="35"/>
         <source>instrument</source>
-        <translation type="unfinished">インストゥルメント</translation>
+        <translation>インストゥルメント</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="51"/>
         <source>Path does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation>指定されたパスが存在しません。</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="54"/>
         <source>Unsupported file format.</source>
-        <translation type="unfinished"></translation>
+        <translation>非対応のファイルフォーマットです。</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="57"/>
         <source>Could not load the %1 properly. Please make sure that you have the latest version of BambooTracker.</source>
-        <translation type="unfinished">%1を読み込めませんでした。最新版のBambooTrackerで読み込みを行なってください。</translation>
+        <translation>%1を読み込めませんでした。最新版のBambooTrackerで読み込みを行なってください。</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="61"/>
         <source>Could not load the %1. It may be corrupted. Stopped at %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1を読み込めませんでした。ファイルが破損している可能性があります。停止ポイント: %2。</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="70"/>
         <source>Failed to load %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1の読み込みに失敗しました。</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="77"/>
         <source>Failed to export to %1.</source>
-        <translation type="unfinished">%1の書き出しに失敗しました。</translation>
+        <translation>%1の書き出しに失敗しました。</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="80"/>
         <source>Failed to save the %1.</source>
-        <translation type="unfinished">%1の保存に失敗しました。</translation>
+        <translation>%1の保存に失敗しました。</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="89"/>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.hpp" line="47"/>
         <source>Could not open the file.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイルを開けません。</translation>
     </message>
 </context>
 <context>
@@ -3413,10 +3399,6 @@
         <translation>MIDI Inを初期化できませんでした。</translation>
     </message>
     <message>
-        <source>Failed to export to %1.</source>
-        <translation type="vanished">%1の書き出しに失敗しました。</translation>
-    </message>
-    <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3106"/>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3169"/>
         <source>BambooTracker module (*.btm)</source>
@@ -3494,46 +3476,6 @@
         <translation>モジュールのバックアップ作成に失敗しました。</translation>
     </message>
     <message>
-        <source>module</source>
-        <translation type="vanished">モジュール</translation>
-    </message>
-    <message>
-        <source>s98</source>
-        <translation type="vanished">S98</translation>
-    </message>
-    <message>
-        <source>vgm</source>
-        <translation type="vanished">VGM</translation>
-    </message>
-    <message>
-        <source>wav</source>
-        <translation type="vanished">WAV</translation>
-    </message>
-    <message>
-        <source>bank</source>
-        <translation type="vanished">バンク</translation>
-    </message>
-    <message>
-        <source>instrument</source>
-        <translation type="vanished">インストゥルメント</translation>
-    </message>
-    <message>
-        <source>Failed to load the %1.</source>
-        <translation type="vanished">%1の読み込みに失敗しました。</translation>
-    </message>
-    <message>
-        <source>Failed to save the %1.</source>
-        <translation type="vanished">%1の保存に失敗しました。</translation>
-    </message>
-    <message>
-        <source>Could not load the %1 properly. Please make sure that you have the latest version of BambooTracker.</source>
-        <translation type="vanished">%1を読み込めませんでした。最新版のBambooTrackerで読み込みを行なってください。</translation>
-    </message>
-    <message>
-        <source>Could not load the %1. It may be corrupted.</source>
-        <translation type="vanished">%1を読み込めませんでした。ファイルが破損している可能性があります。</translation>
-    </message>
-    <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="2913"/>
         <source>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;Libraries:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;Also see changelog which lists contributors.</source>
         <translation>&lt;b&gt;YM2608 (OPNA) Music Tracker&lt;br&gt;Copyright (C) 2018-2020 Rerrah&lt;/b&gt;&lt;br&gt;&lt;hr&gt;使用ライブラリ:&lt;br&gt;- C86CTL by (C) honet (BSD 3-Clause)&lt;br&gt;- libOPNMIDI by (C) Vitaly Novichkov (MIT License part)&lt;br&gt;- MAME (MAME License)&lt;br&gt;- Nuked OPN-MOD by (C) Alexey Khokholov (Nuke.YKT)&lt;br&gt;and (C) Jean Pierre Cimalando (LGPL v2.1)&lt;br&gt;- RtAudio by (C) Gary P. Scavone (RtAudio License)&lt;br&gt;- RtMidi by (C) Gary P. Scavone (RtMidi License)&lt;br&gt;- SCCI by (C) gasshi (SCCI License)&lt;br&gt;- Silk icons by (C) Mark James (CC BY 2.5 or 3.0)&lt;br&gt;- Qt (GPL v2+ or LGPL v3)&lt;br&gt;- VGMPlay by (C) Valley Bell (GPL v2)&lt;br&gt;&lt;br&gt;このプロジェクトのコントリビューターについてはChangelogもご覧ください。</translation>
@@ -3603,7 +3545,7 @@
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.hpp" line="255"/>
         <source>Could not set the sample rate of the audio stream to %1Hz. Currently the stream runs on %2Hz instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>オーディオ出力のサンプルレートを%1Hzに設定できませんでした。一時的に%2Hzで出力します。</translation>
     </message>
 </context>
 <context>

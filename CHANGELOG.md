@@ -14,6 +14,7 @@
 - [#278] - Display error descriptions in File I/O and MIDI input (thanks [@OPNA2608])
 - [#278] - Set Dummy API to MIDI input during the initialization (thanks [@OPNA2608])
 - [#281] - Separate data and code in the repository (thanks [@OPNA2608])
+- Update translation: ja
 
 ### Fixed
 - [#256] - Fix a crash bug on launch when maximized (thanks [@nyanpasu64])
