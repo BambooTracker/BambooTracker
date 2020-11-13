@@ -1,0 +1,99 @@
+name: macOS
+
+on:
+  push:
+    branches: master
+    tags: 'v*.*.*'
+  pull_request:
+    branches: master
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  BUILD_TARGET: macos
+  SCRIPT_NAME: osx
+  MAKE: make
+  BT_INSTALLBASE: ${{ github.workspace }}/target/
+  QMAKE_EXTRA_ARGUMENTS: CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Identify build type.
+        id: identify-build
+        run: |
+          case ${GITHUB_REF} in
+            refs/tags/* )
+              TAG=${GITHUB_REF/refs\/tags\//}
+              echo "Release ${TAG}"
+              echo "::set-output name=build-tag::${TAG}"
+              echo "::set-output name=release::true"
+              ;;
+            refs/heads/* )
+              BRANCH=${GITHUB_REF/refs\/heads\//}
+              echo "Test ${BRANCH}"
+              echo "::set-output name=build-tag::${BRANCH}"
+              echo "::set-output name=release::false"
+              ;;
+            * )
+              echo "Test (unknown)"
+              echo "::set-output name=build-tag::unknown"
+              echo "::set-output name=release::false"
+              ;;
+          esac
+
+      - name: Checking out repository.
+        uses: actions/checkout@v2
+
+      ## macOS-specific steps
+
+      - name: Installing dependencies.
+        run: |
+          brew install qt jack p7zip
+          brew link --force qt
+
+      ## End macOS-specific steps
+
+      - name: Configuring.
+        run: |
+          pushd BambooTracker
+          qmake BambooTracker.pro PREFIX=${BT_INSTALLBASE} \
+            CONFIG+=release CONFIG-=debug ${QMAKE_EXTRA_ARGUMENTS}
+          popd
+
+      - name: Building.
+        run: |
+          ${MAKE} -C BambooTracker -j2
+
+      - name: Installing.
+        run: |
+          ${MAKE} -C BambooTracker -j2 install
+
+      - name: Test packaging.
+        if: env.DONT_PACKAGE != 'true'
+        run: |
+          pushd ${BT_INSTALLBASE}
+          bash ${GITHUB_WORKSPACE}/scripts/package_${SCRIPT_NAME:-${BUILD_TARGET%%-*}}.sh
+          popd
+
+      - name: Finalize packaging.
+        id: packaging
+        if: steps.identify-build.outputs.release == 'true' && env.DONT_PACKAGE != 'true'
+        run: |
+          export package_name="BambooTracker-${{ steps.identify-build.outputs.build-tag }}-${BUILD_TARGET}"
+          echo "::set-output name=package-name::${package_name}"
+          mv -v ${BT_INSTALLBASE} ${package_name}
+          7z a -tzip ${package_name}{.zip,}
+
+      - name: Upload release package.
+        if: steps.identify-build.outputs.release == 'true' && env.DONT_PACKAGE != 'true'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ steps.packaging.outputs.package-name }}.zip
+          asset_name: ${{ steps.packaging.outputs.package-name }}.zip
+          tag: ${{ github.ref }}
