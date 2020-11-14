@@ -91,7 +91,7 @@
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.ui" line="265"/>
         <source>Rate</source>
-        <translation>Częstotliwość samplowania</translation>
+        <translation>Częstotliwość próbkowania</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.ui" line="289"/>
@@ -136,7 +136,7 @@
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.ui" line="363"/>
         <source>&amp;Draw Sample</source>
-        <translation>Rysuj samplel(&amp;D)</translation>
+        <translation>Rysuj próbkę(&amp;D)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.ui" line="375"/>
@@ -146,17 +146,17 @@
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.cpp" line="342"/>
         <source>Supported sample rate is 2kHz-55.5kHz, but the rate of selected sample is %1.</source>
-        <translation>Wspierana częstotiwość samplowania to 2kHz-55.5kHz, podczys gdy częstotliwość tego sampla to %1.</translation>
+        <translation>Wspierana częstotiwość próbkowania to 2kHz-55.5kHz, podczas gdy częstotliwość tej próbki to %1.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.cpp" line="349"/>
         <source>The selected sample is not mono channel.</source>
-        <translation>Wybrany sampel nie jest mono.</translation>
+        <translation>Wybrana próbka nie jest mono.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.cpp" line="609"/>
         <source>Import sample</source>
-        <translation>Importuj sampel</translation>
+        <translation>Importuj próbkę</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/adpcm_sample_editor.cpp" line="610"/>
@@ -267,7 +267,7 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="191"/>
         <source>Write only used samples</source>
-        <translation>Zapisuj tylko używane sample</translation>
+        <translation>Zapisuj tylko używane próbki</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="381"/>
@@ -328,7 +328,7 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="473"/>
         <source>The level setting for each part is valid when the mixer in the module properties is not checked.</source>
-        <translation>Ustawienie poziomu głośności dla każdej częsci składowej będzie uwzględniane dopero gdy pozycja &quot;mikser&quot; we właściwościach modułu jest odznaczona.</translation>
+        <translation>Ustawienie poziomu głośności dla każdej części składowej będzie uwzględniane dopero gdy pozycja &quot;mikser&quot; we właściwościach modułu jest odznaczona.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="506"/>
@@ -850,7 +850,7 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="289"/>
         <source>Sample rate</source>
-        <translation>Częstotliwość samplowania</translation>
+        <translation>Częstotliwość próbkowania</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="301"/>
@@ -923,17 +923,17 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="78"/>
         <source>Warp the cursor around the edges of the pattern editor.</source>
-        <translation>Przemieszcza kursor wokółkrańców edytora wzorców.</translation>
+        <translation>Przemieszcza kursor wokół krańców edytora wzorców.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="80"/>
         <source>Move to previous or next order when reaching top or bottom in the pattern editor.</source>
-        <translation>Przechodzi to poprzedniej lub następnej klatki po osiągnięciu początku lub końca wzorca.</translation>
+        <translation>Przechodzi do poprzedniej lub następnej klatki po osiągnięciu początku lub końca wzorca.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="82"/>
         <source>Display row numbers and the playback position on the status bar in hexadecimal.</source>
-        <translation>Wyswietla numery wierszów i pozycję odtwarzania na pasku stanu w systemie szesnastkowym.</translation>
+        <translation>Wyświetla numery wierszów i pozycję odtwarzania na pasku stanu w systemie szesnastkowym.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="84"/>
@@ -943,7 +943,7 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="86"/>
         <source>Create a backup copy of the existing file when saving a module.</source>
-        <translation>Twórzy kopię zapasową istniejącego pliku podczas zapisywania modułów.</translation>
+        <translation>Tworzy kopię zapasową istniejącego pliku podczas zapisywania modułów.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="88"/>
@@ -984,17 +984,17 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="102"/>
         <source>Move the cursor position by cell with horizontal scroll bar in the order list and the pattern editor.</source>
-        <translation>Przesuń pozycję kursora o komórkę przy pomocy pionowego paska przewijania w liscie klatek i w edytorze wzorców.</translation>
+        <translation>Przesuwa pozycję kursora o komórkę przy pomocy pionowego paska przewijania w liscie klatek i w edytorze wzorców.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="104"/>
         <source>Overwrite unused and unedited instrument properties on creating new properties. When disabled, override unused properties regardless of editing.</source>
-        <translation>Nadpisz nieużywane i niezedytowane właściwości instrumentu przy tworzeniu nowych właściwości. Gdy wyłączone, nieużywane właściwości bedą zastępowane niezależnie od tego, czy były edytowane.</translation>
+        <translation>Nadpisuje nieużywane i niezedytowane właściwości instrumentu przy tworzeniu nowych właściwości. Gdy wyłączone, nieużywane właściwości bedą zastępowane niezależnie od tego, czy były edytowane.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="107"/>
         <source>Send only ADPCM samples used by instruments to the ADPCM memory. Recommend to turn off if you change ADPCM samples frequently due to take the high rewriting cost.</source>
-        <translation>Wysyła do pamięci ADPCM tylko sample używane przez instrumenty. Zalecane jest wyłączenie tej opcji jeżeli często zmieniasz sample ADPCM ze względu na długi czas nadpsywania. </translation>
+        <translation>Wysyła do pamięci ADPCM tylko próbki używane przez instrumenty. Zalecane jest wyłączenie tej opcji jeżeli często zmieniasz próbki ADPCM ze względu na długi czas nadpsywania. </translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="110"/>
@@ -1309,7 +1309,7 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="190"/>
         <source>Increase edit step</source>
-        <translation>Zwieksz krok podczas edycji</translation>
+        <translation>Zwiększ krok podczas edycji</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="191"/>
@@ -1339,7 +1339,7 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="196"/>
         <source>Jam volume down</source>
-        <translation>Odniż głośność przy improwizacji</translation>
+        <translation>Obniż głośność przy improwizacji</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="278"/>
@@ -1549,7 +1549,7 @@
     <message>
         <location filename="../../BambooTracker/gui/effect_description.cpp" line="62"/>
         <source>FB control, xx: feedback value (00-07)</source>
-        <translation>Konrola FB, xx: ilość sygnału zwrotnego (00-07)</translation>
+        <translation>Kontrola FB, xx: ilość sygnału zwrotnego (00-07)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/effect_description.cpp" line="63"/>
@@ -1726,7 +1726,7 @@
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="51"/>
         <source>Path does not exist.</source>
-        <translation>Ścieżka do podanego pliku nie instnieje.</translation>
+        <translation>Ścieżka do podanego pliku nie istnieje.</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/file_io_error_message_box.cpp" line="54"/>
@@ -1894,7 +1894,7 @@
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_adpcm_form.ui" line="27"/>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_adpcm_form.ui" line="33"/>
         <source>Sample</source>
-        <translation>Sample</translation>
+        <translation>Próbka</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_adpcm_form.ui" line="46"/>
@@ -1924,7 +1924,7 @@
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="125"/>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="188"/>
         <source>Absolute</source>
-        <translation>Całowity</translation>
+        <translation>Całkowity</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_adpcm_form.cpp" line="126"/>
@@ -1943,7 +1943,7 @@
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_drumkit_form.ui" line="20"/>
         <source>Sample assignment</source>
-        <translation>Przypisanie sampla</translation>
+        <translation>Przypisanie próbki</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_drumkit_form.ui" line="57"/>
@@ -1959,7 +1959,7 @@
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_drumkit_form.ui" line="99"/>
         <source>Sample</source>
-        <translation>Sampel</translation>
+        <translation>Próbka</translation>
     </message>
 </context>
 <context>
@@ -3111,7 +3111,7 @@
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.ui" line="1575"/>
         <source>Remove Unused &amp;ADPCM Samples</source>
-        <translation>Usuń nieużywane sample ADPCM(&amp;A)</translation>
+        <translation>Usuń nieużywane próbki ADPCM(&amp;A)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.ui" line="1586"/>
@@ -3422,12 +3422,12 @@
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3552"/>
         <source>Do you want to remove all duplicate instruments?</source>
-        <translation>Czy chcesz usunąc wszystkie zdupliowane instrumenty?</translation>
+        <translation>Czy chcesz usunąć wszystkie zduplikowane instrumenty?</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3658"/>
         <source>Do you want to remove all unused ADPCM samples?</source>
-        <translation>Czy chcesz usunąć wszystkie nieużywane sample ADPCM?</translation>
+        <translation>Czy chcesz usunąć wszystkie nieużywane próbki ADPCM?</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3701"/>
@@ -3493,12 +3493,12 @@
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3234"/>
         <source>Do you want to remove all unused instruments?</source>
-        <translation>Czy chcesz usunać wszystkie nieużywane instrumenty?</translation>
+        <translation>Czy chcesz usunąć wszystkie nieużywane instrumenty?</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3255"/>
         <source>Do you want to remove all unused patterns?</source>
-        <translation>Czy chcesz usunać wszystkie nieużywane wzorce?</translation>
+        <translation>Czy chcesz usunąć wszystkie nieużywane wzorce?</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.cpp" line="3273"/>
@@ -3545,7 +3545,7 @@
     <message>
         <location filename="../../BambooTracker/gui/mainwindow.hpp" line="255"/>
         <source>Could not set the sample rate of the audio stream to %1Hz. Currently the stream runs on %2Hz instead.</source>
-        <translation>Nie udało się ustawić częstotliwość samplowaia na %1Hz. Obecnie strumień działa na częstotliwości %2Hz.</translation>
+        <translation>Nie udało się ustawić częstotliwośći próbkowania na %1Hz. Obecnie strumień działa na częstotliwości %2Hz.</translation>
     </message>
 </context>
 <context>
@@ -3574,7 +3574,7 @@
         <location filename="../../BambooTracker/gui/module_properties_dialog.ui" line="54"/>
         <location filename="../../BambooTracker/gui/module_properties_dialog.ui" line="101"/>
         <source>Custom</source>
-        <translation>Niestandartowy</translation>
+        <translation>Niestandardowy</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/module_properties_dialog.ui" line="85"/>
@@ -3604,7 +3604,7 @@
     <message>
         <location filename="../../BambooTracker/gui/module_properties_dialog.ui" line="132"/>
         <source>Custom mixer</source>
-        <translation>Niestandartowy mikser</translation>
+        <translation>Niestandardowy mikser</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/module_properties_dialog.ui" line="138"/>
@@ -3803,7 +3803,7 @@
     <message>
         <location filename="../../BambooTracker/gui/pattern_editor/pattern_editor_panel.cpp" line="2156"/>
         <source>R&amp;eplace Instrument</source>
-        <translation>Zamień istrument(&amp;E)</translation>
+        <translation>Zamień instrument(&amp;E)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/pattern_editor/pattern_editor_panel.cpp" line="2159"/>
@@ -3921,7 +3921,7 @@
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="14"/>
         <source>S98 export settings</source>
-        <translation>Ustawienia eksportu do formatu S98.</translation>
+        <translation>Ustawienia eksportu do formatu S98</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="45"/>
@@ -3932,54 +3932,54 @@
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="54"/>
         <source>Title</source>
         <oldsource>Title:</oldsource>
-        <translation>Tytuł</translation>
+        <translation>Tytuł:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="64"/>
         <source>Artist</source>
         <oldsource>Artist:</oldsource>
-        <translation>Wykonawca</translation>
+        <translation>Wykonawca:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="74"/>
         <source>Game</source>
         <oldsource>Game:</oldsource>
-        <translation>Gra</translation>
+        <translation>Gra:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="84"/>
         <source>Year</source>
         <oldsource>Year:</oldsource>
-        <translation>Rok</translation>
+        <translation>Rok:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="94"/>
         <source>Genre</source>
         <oldsource>Genre:</oldsource>
-        <translation>Gatunek</translation>
+        <translation>Gatunek:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="104"/>
         <source>Comment</source>
-        <translation>omentarz</translation>
+        <translation>Komentarz</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="114"/>
         <source>Copyright</source>
         <oldsource>Copyright:</oldsource>
-        <translation>Copyright</translation>
+        <translation>Copyright:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="124"/>
         <source>S98by</source>
         <oldsource>S98by:</oldsource>
-        <translation>S98przez</translation>
+        <translation>S98przez:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="134"/>
         <source>System</source>
         <oldsource>System:</oldsource>
-        <translation>System</translation>
+        <translation>System:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="141"/>
@@ -4085,7 +4085,7 @@
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/sample_length_dialog.ui" line="14"/>
         <source>Resize</source>
-        <translation>Zmień rozmiar sampla ADPCM</translation>
+        <translation>Zmień rozmiar próbki ADPCM</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/sample_length_dialog.ui" line="22"/>
@@ -4173,7 +4173,7 @@
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="71"/>
         <source>Name</source>
         <oldsource>Name:</oldsource>
-        <translation>Nazwa gry</translation>
+        <translation>Nazwa gry:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="78"/>
@@ -4217,7 +4217,7 @@
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="199"/>
         <source>Title</source>
         <oldsource>Title:</oldsource>
-        <translation>Tytuł</translation>
+        <translation>Tytuł:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="238"/>
@@ -4234,7 +4234,7 @@
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="286"/>
         <source>Creator</source>
         <oldsource>Creator:</oldsource>
-        <translation>Twórca</translation>
+        <translation>Twórca:</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="327"/>
@@ -4311,7 +4311,7 @@
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.cpp" line="242"/>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.cpp" line="243"/>
         <source>Yes</source>
-        <translation></translation>
+        <translation>Tak</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="493"/>
@@ -4328,7 +4328,7 @@
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.cpp" line="242"/>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.cpp" line="243"/>
         <source>No</source>
-        <translation></translation>
+        <translation>Nie</translation>
     </message>
 </context>
 <context>
@@ -4383,7 +4383,7 @@
     <message>
         <location filename="../../BambooTracker/gui/wave_export_settings_dialog.ui" line="14"/>
         <source>WAV export settings</source>
-        <translation>Ustawienia eportu do formatu WAV</translation>
+        <translation>Ustawienia eksportu do formatu WAV</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/wave_export_settings_dialog.ui" line="30"/>
@@ -4393,7 +4393,7 @@
     <message>
         <location filename="../../BambooTracker/gui/wave_export_settings_dialog.ui" line="20"/>
         <source>Sample rate</source>
-        <translation>Częstotliwość samplowania</translation>
+        <translation>Częstotliwość próbkowania</translation>
     </message>
 </context>
 </TS>
