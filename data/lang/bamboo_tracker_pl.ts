@@ -247,7 +247,7 @@
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="14"/>
         <location filename="../../BambooTracker/gui/configuration_dialog.cpp" line="456"/>
         <source>Configuration</source>
-        <translation>Konfigujacja</translation>
+        <translation>Konfiguracja</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="24"/>
