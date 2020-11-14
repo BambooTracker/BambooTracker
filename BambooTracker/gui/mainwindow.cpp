@@ -2097,21 +2097,25 @@ void MainWindow::openModule(QString file)
 
 		BinaryContainer container;
 		QFile fp(file);
-		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Mod, this);
-			return;
+		if (fp.open(QIODevice::ReadOnly)) {
+
+			QByteArray array = fp.readAll();
+			fp.close();
+
+			container.appendVector(std::vector<char>(array.begin(), array.end()));
+			bt_->loadModule(container);
+			bt_->setModulePath(file.toStdString());
+
+			loadModule();
+
+			config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
+			changeFileHistory(file);
+
+			goto AFTER_LOADING;	// Skip error handling section
 		}
-		QByteArray array = fp.readAll();
-		fp.close();
-
-		container.appendVector(std::vector<char>(array.begin(), array.end()));
-		bt_->loadModule(container);
-		bt_->setModulePath(file.toStdString());
-
-		loadModule();
-
-		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
-		changeFileHistory(file);
+		else {
+			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Mod, this);
+		}
 	}
 	catch (std::exception& e) {
 		if (auto ef = dynamic_cast<FileIOError*>(&e)) {
@@ -2120,12 +2124,14 @@ void MainWindow::openModule(QString file)
 		else {
 			FileIOErrorMessageBox(file, true, FileIO::FileType::Mod, QString(e.what()), this).exec();
 		}
-		// Init module
-		freezeViews();
-		bt_->makeNewModule();
-		loadModule();
 	}
 
+	// Init module as a plain when something is wrong
+	freezeViews();
+	bt_->makeNewModule();
+	loadModule();
+
+AFTER_LOADING:	// Post process of module loading
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
 	if (timer_) timer_->start();

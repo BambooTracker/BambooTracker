@@ -1,6 +1,17 @@
 # Changelog
 
 ## Unreleased
+### Added
+- [#285] - inux build (thanks [@OPNA2608])
+
+### Changed
+- [#285] - Change CI service from Travis CI to GitHub Actions (thanks [@OPNA2608])
+
+### Fixed
+- [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
+
+[#285]: https://github.com/rerrahkr/BambooTracker/pull/285
+[#284]: https://github.com/rerrahkr/BambooTracker/issues/284
 
 ## v0.4.5 (2020-11-05)
 ### Added
