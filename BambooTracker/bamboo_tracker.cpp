@@ -1006,16 +1006,28 @@ void BambooTracker::jamKeyOn(int keyNum, bool volumeSet)
 void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst)
 {
 	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
-	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOn(key, keyNum, *it, volumeSet, inst);
+	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
+	if (attrib.source == src) {
+		funcJamKeyOn(key, keyNum, attrib, volumeSet);
+	}
+	else {
+		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
+							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		funcJamKeyOn(key, keyNum, *it, volumeSet, inst);
+	}
 }
 
 void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst)
 {
-	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOn(JamKey::MidiKey, keyNum, *it, volumeSet, inst);
+	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
+	if (attrib.source == src) {
+		funcJamKeyOn(JamKey::MidiKey, keyNum, attrib, volumeSet);
+	}
+	else {
+		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
+							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		funcJamKeyOn(JamKey::MidiKey, keyNum, *it, volumeSet, inst);
+	}
 }
 
 void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& attrib, bool volumeSet,
@@ -1135,16 +1147,28 @@ void BambooTracker::jamKeyOff(int keyNum)
 void BambooTracker::jamKeyOffForced(JamKey key, SoundSource src)
 {
 	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
-	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOff(key, keyNum, *it);
+	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
+	if (attrib.source == src) {
+		funcJamKeyOff(key, keyNum, attrib);
+	}
+	else {
+		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
+							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		funcJamKeyOff(key, keyNum, *it);
+	}
 }
 
 void BambooTracker::jamKeyOffForced(int keyNum, SoundSource src)
 {
-	auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
-						   [src](TrackAttribute& attrib) { return attrib.source == src; });
-	funcJamKeyOff(JamKey::MidiKey, keyNum, *it);
+	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
+	if (attrib.source == src) {
+		funcJamKeyOff(JamKey::MidiKey, keyNum, attrib);
+	}
+	else {
+		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
+							   [src](TrackAttribute& attrib) { return attrib.source == src; });
+		funcJamKeyOff(JamKey::MidiKey, keyNum, *it);
+	}
 }
 
 void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& attrib)

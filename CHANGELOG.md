@@ -6,6 +6,7 @@
 
 ### Changed
 - [#285] - Change CI service from Travis CI to GitHub Actions (thanks [@OPNA2608])
+- Use current channel in jam mode when editing an instrument (thanks [@Ravancloak])
 
 ### Fixed
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
