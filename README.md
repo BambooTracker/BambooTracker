@@ -1,9 +1,15 @@
 # ![icon](./img/icon.png) BambooTracker
 [![GitHub release](https://img.shields.io/badge/release-v0.4.5-brightgreen.svg)](https://github.com/rerrahkr/BambooTracker/releases)
-![Platform: windows | macos | linux](https://img.shields.io/badge/platform-windows%20|%20macos%20|%20linux-lightgrey.svg)
-[![Travis CI Build Status](https://travis-ci.com/rerrahkr/BambooTracker.svg?branch=master)](https://travis-ci.com/rerrahkr/BambooTracker)
-[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
+![Platforms: windows | macos | linux](https://img.shields.io/badge/platforms-windows%20|%20macos%20|%20linux-lightgrey.svg)
 [![LICENSE](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
+
+[![Windows (7 and up)](https://github.com/OPNA2608/BambooTracker/workflows/Windows%20(7%20and%20up)/badge.svg)](https://github.com/OPNA2608/BambooTracker/actions?query=workflow%3A%22Windows+%287+and+up%29%22)
+[![Windows XP](https://github.com/OPNA2608/BambooTracker/workflows/Windows%20XP/badge.svg)](https://github.com/OPNA2608/BambooTracker/actions?query=workflow%3A%22Windows+XP%22)
+[![macOS](https://github.com/OPNA2608/BambooTracker/workflows/macOS/badge.svg)](https://github.com/OPNA2608/BambooTracker/actions?query=workflow%3AmacOS)
+[![Ubuntu 16.04](https://github.com/OPNA2608/BambooTracker/workflows/Linux%20(Ubuntu%2016.04)/badge.svg)](https://github.com/OPNA2608/BambooTracker/actions?query=workflow%3A%22Linux+%28Ubuntu+16.04%29%22)
+[![Nixpkgs 20.09](https://github.com/OPNA2608/BambooTracker/workflows/Linux%20(Nixpkgs)/badge.svg)](https://github.com/OPNA2608/BambooTracker/actions?query=workflow%3A%22Linux+%28Nixpkgs%29%22)
+
+[![Development builds (Appveyor)](https://ci.appveyor.com/api/projects/status/jgg75iyduc1ij7ew?svg=true)](https://ci.appveyor.com/project/rerrahkr/bambootracker)
 
 ![Example](./img/overview.gif)
 
