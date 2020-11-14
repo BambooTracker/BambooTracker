@@ -2970,11 +2970,9 @@ void MainWindow::on_actionConfiguration_triggered()
 	QObject::connect(&diag, &ConfigurationDialog::applyPressed, this, &MainWindow::changeConfiguration);
 
 	if (diag.exec() == QDialog::Accepted) {
-		bt_->stopPlaySong();
 		changeConfiguration();
 		ConfigurationHandler::saveConfiguration(config_.lock());
 		ColorPaletteHandler::savePalette(palette_.get());
-		lockWidgets(false);
 	}
 }
 

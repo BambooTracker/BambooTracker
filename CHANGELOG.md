@@ -2,11 +2,12 @@
 
 ## Unreleased
 ### Added
-- [#285] - inux build (thanks [@OPNA2608])
+- [#285] - Linux build (thanks [@OPNA2608])
 
 ### Changed
 - [#285] - Change CI service from Travis CI to GitHub Actions (thanks [@OPNA2608])
 - Use current channel in jam mode when editing an instrument (thanks [@Ravancloak])
+- Keep playing state after changing the configuration (thanks [@OPNA2608])
 
 ### Fixed
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
