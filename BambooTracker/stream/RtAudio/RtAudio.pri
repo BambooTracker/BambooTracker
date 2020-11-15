@@ -2,7 +2,7 @@ SOURCES += \
     $$PWD/RtAudio.cpp
 
 HEADERS += \
-    $$PWD/RtAudio.hpp
+    $$PWD/RtAudio.h
 
 win32 {
     DEFINES += __WINDOWS_DS__
@@ -52,3 +52,5 @@ else:bsd {
         LIBS += -ljack
     }
 }
+
+INCLUDEPATH += $$PWD

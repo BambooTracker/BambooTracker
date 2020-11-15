@@ -24,12 +24,13 @@
  */
 
 #pragma once
-#include "RtMidi/RtMidi.hpp"
+
 #include <string>
 #include <vector>
 #include <memory>
 #include <mutex>
 #include <cstdint>
+#include "RtMidi.h"
 
 class MidiInterface
 {

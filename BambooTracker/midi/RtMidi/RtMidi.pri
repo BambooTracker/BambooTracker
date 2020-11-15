@@ -2,7 +2,7 @@ SOURCES += \
     $$PWD/RtMidi.cpp
 
 HEADERS += \
-    $$PWD/RtMidi.hpp
+    $$PWD/RtMidi.h
 
 win32 {
     DEFINES += __WINDOWS_MM__
@@ -46,3 +46,5 @@ else:bsd {
         }
     }
 }
+
+INCLUDEPATH += $$PWD
