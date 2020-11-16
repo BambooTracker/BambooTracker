@@ -285,12 +285,13 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	case RealChipInterface::C86CTL:	ui->realChipComboBox->setCurrentIndex(2);	break;
 	}
 
+	ui->midiInputGroupBox->setChecked(configLocked->getMidiEnabled());
 	{
 		QSignalBlocker blocker(ui->midiInputDeviceComboBox);
 		MidiInterface& midiIntf = MidiInterface::instance();
 		int midiApiRow = -1;
 		int defMidiApiRow = 0;
-		for (auto& name : midiIntf.getAvailableApi()) {
+		for (auto& name : midiIntf.getAvailableApis()) {
 			ui->midiApiComboBox->addItem(utf8ToQString(name));
 			if (name == configLocked->getMidiAPI())
 				midiApiRow = ui->midiApiComboBox->count() - 1;
@@ -426,6 +427,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setSoundAPI(ui->audioApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
 										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
+	configLocked->setMidiEnabled(ui->midiInputGroupBox->isChecked());
 	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setMidiInputPort(ui->midiInputDeviceComboBox->currentData().toString().toUtf8().toStdString());
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());

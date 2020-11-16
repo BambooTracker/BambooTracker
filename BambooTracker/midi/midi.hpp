@@ -43,7 +43,8 @@ private:
 public:
 	RtMidi::Api currentApi() const;
 	std::string currentApiName() const;
-	std::vector<std::string> getAvailableApi() const;
+	std::vector<std::string> getAvailableApis() const;
+	bool isAvailableApi(const std::string& api) const;
 	bool switchApi(std::string api, std::string* errDetail = nullptr);
 	bool switchApi(RtMidi::Api api, std::string* errDetail = nullptr);	// Use internal
 	bool supportsVirtualPort() const;

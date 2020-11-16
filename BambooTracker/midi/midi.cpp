@@ -26,6 +26,7 @@
 #include "midi.hpp"
 #include "midi_def.h"
 #include <stdio.h>
+#include <algorithm>
 
 std::unique_ptr<MidiInterface> MidiInterface::instance_;
 
@@ -58,14 +59,20 @@ std::string MidiInterface::currentApiName() const
 	return RtMidi::getApiDisplayName(currentApi());
 }
 
-std::vector<std::string> MidiInterface::getAvailableApi() const
+std::vector<std::string> MidiInterface::getAvailableApis() const
 {
 	std::vector<RtMidi::Api> apis;
 	RtMidi::getCompiledApi(apis);
 	std::vector<std::string> list;
 	for (const auto& apiAvailable : apis)
 		list.push_back(RtMidi::getApiDisplayName(apiAvailable));
-	return list;
+	return (list.empty() ? std::vector<std::string>({ "" }) : list);
+}
+
+bool MidiInterface::isAvailableApi(const std::string& api) const
+{
+	const std::vector<std::string> apis = getAvailableApis();
+	return (std::find(apis.begin(), apis.end(), api) != apis.end());
 }
 
 bool MidiInterface::switchApi(std::string api, std::string* errDetail)
@@ -78,6 +85,9 @@ bool MidiInterface::switchApi(std::string api, std::string* errDetail)
 			return switchApi(apiAvailable, errDetail);
 		}
 	}
+
+	inputClient_ = nullptr;
+	if (errDetail) *errDetail = "No available midi api.";
 	return false;
 }
 

@@ -246,6 +246,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 
 		// Midi //
 		settings.beginGroup("Midi");
+		settings.setValue("midiEnabled", configLocked->getMidiEnabled());
 		settings.setValue("midiAPI", QString::fromStdString(configLocked->getMidiAPI()));
 		settings.setValue("inputPort", QString::fromStdString(configLocked->getMidiInputPort()));
 		settings.endGroup();
@@ -426,8 +427,9 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 
 		// Midi //
 		settings.beginGroup("Midi");
-		configLocked->setMidiAPI(settings.value("midiAPI").toString().toStdString());
-		configLocked->setMidiInputPort(settings.value("inputPort").toString().toStdString());
+		configLocked->setMidiEnabled(settings.value("midiEnabled", configLocked->getMidiEnabled()).toBool());
+		configLocked->setMidiAPI(settings.value("midiAPI", QString::fromStdString(configLocked->getMidiAPI())).toString().toStdString());
+		configLocked->setMidiInputPort(settings.value("inputPort", QString::fromStdString(configLocked->getMidiInputPort())).toString().toStdString());
 		settings.endGroup();
 
 		// Mixer //

@@ -345,6 +345,12 @@
          <property name="title">
           <string>MIDI input</string>
          </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
          <layout class="QFormLayout" name="formLayout_2">
           <item row="1" column="0">
            <widget class="QLabel" name="midiInputNameLabel">
@@ -2654,6 +2660,7 @@ color: rgb(255, 255, 255);</string>
   <tabstop>audioApiComboBox</tabstop>
   <tabstop>audioDeviceComboBox</tabstop>
   <tabstop>realChipComboBox</tabstop>
+  <tabstop>midiInputGroupBox</tabstop>
   <tabstop>midiApiComboBox</tabstop>
   <tabstop>midiInputDeviceComboBox</tabstop>
   <tabstop>sampleRateComboBox</tabstop>
