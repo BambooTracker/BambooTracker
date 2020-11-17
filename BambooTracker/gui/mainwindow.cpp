@@ -2394,7 +2394,7 @@ void MainWindow::setMidiConfiguration()
 		}
 		else {
 			if (!midiIntf.isAvailableApi(midiApi)) {
-				config_.lock()->setMidiEnabled(false);
+				showMidiFailedDialog("Invalid API name.");
 				midiIntf.switchApi("");	// Clear
 				return;
 			}
@@ -2408,13 +2408,11 @@ void MainWindow::setMidiConfiguration()
 					config_.lock()->setMidiEnabled(false);
 				if (!resPort) {
 					showMidiFailedDialog(QString::fromStdString(errDetail));
-					config_.lock()->setMidiEnabled(false);
 					midiIntf.switchApi("");	// Clear
 				}
 			}
 			else {
 				showMidiFailedDialog(QString::fromStdString(errDetail));
-				config_.lock()->setMidiEnabled(false);
 				midiIntf.switchApi("");	// Clear
 			}
 		}
