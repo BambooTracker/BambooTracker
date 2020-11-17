@@ -2908,20 +2908,6 @@ AbstractInstrument* InstrumentIO::loadVGIFile(const BinaryContainer& ctr, std::s
 	ssgeg1 = ssgeg1 & 8 ? ssgeg1 & 7 : -1;
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG1, ssgeg1);
 
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
-	uint8_t drams2 = ctr.readUint8(csr++);
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, drams2 & 31);
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
-	int ssgeg2 = ctr.readUint8(csr++);
-	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
-
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML3, ctr.readUint8(csr++));
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT3, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL3, ctr.readUint8(csr++));
@@ -2935,6 +2921,20 @@ AbstractInstrument* InstrumentIO::loadVGIFile(const BinaryContainer& ctr, std::s
 	int ssgeg3 = ctr.readUint8(csr++);
 	ssgeg3 = ssgeg3 & 8 ? ssgeg1 & 7 : -1;
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG3, ssgeg3);
+
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT2, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR2, ctr.readUint8(csr++));
+	uint8_t drams2 = ctr.readUint8(csr++);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR2, drams2 & 31);
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR2, ctr.readUint8(csr++));
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL2, ctr.readUint8(csr++));
+	int ssgeg2 = ctr.readUint8(csr++);
+	ssgeg2 = ssgeg2 & 8 ? ssgeg2 & 7 : -1;
+	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG2, ssgeg2);
 
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML4, ctr.readUint8(csr++));
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT4, convertDTInTFIVGIDMP(ctr.readUint8(csr++)));

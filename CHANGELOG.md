@@ -11,6 +11,7 @@
 
 ### Fixed
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
+- Fixed incorrect fix of VGI order of operators (thanks [@OPNA2608])
 
 [#285]: https://github.com/rerrahkr/BambooTracker/pull/285
 [#284]: https://github.com/rerrahkr/BambooTracker/issues/284
