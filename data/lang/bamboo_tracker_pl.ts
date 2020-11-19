@@ -262,7 +262,7 @@
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="183"/>
         <source>Overwrite unused&amp;unedited property</source>
-        <translation type="unfinished">Nadpisuj nieużywane i niezedytowane własności</translation>
+        <translation>Nadpisz nieużywane i niezedytowane własności</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/configuration_dialog.ui" line="191"/>
@@ -2060,7 +2060,7 @@
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_fm_form.ui" line="514"/>
         <source>Arpeggio/Pitch</source>
-        <translation type="unfinished">Wysokość / arpeggio</translation>
+        <translation>Wysokość tonu / arpeggio</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/instrument_editor/instrument_editor_fm_form.ui" line="626"/>
@@ -3624,7 +3624,7 @@
     <message>
         <location filename="../../BambooTracker/gui/module_properties_dialog.ui" line="203"/>
         <source>Song control</source>
-        <translation type="unfinished">Ustawienia piosenki</translation>
+        <translation>Ustawienia piosenki</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/module_properties_dialog.ui" line="209"/>
@@ -3671,7 +3671,7 @@
     <message>
         <location filename="../../BambooTracker/gui/module_properties_dialog.cpp" line="33"/>
         <source>Standard</source>
-        <translation type="unfinished">Standardowy</translation>
+        <translation>Standardowy</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/module_properties_dialog.cpp" line="34"/>
@@ -3684,17 +3684,17 @@
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1084"/>
         <source>&amp;Insert Order</source>
-        <translation type="unfinished">Wstaw klatkę(&amp;I)</translation>
+        <translation>Wstaw klatkę(&amp;I)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1087"/>
         <source>&amp;Remove Order</source>
-        <translation type="unfinished">Usuń klatkę(&amp;R)</translation>
+        <translation>Usuń klatkę(&amp;R)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1090"/>
         <source>&amp;Duplicate Order</source>
-        <translation type="unfinished">Duplikuj klatkę&amp;D)</translation>
+        <translation>Duplikuj klatkę&amp;D)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1093"/>
@@ -3704,18 +3704,18 @@
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1095"/>
         <source>Clone &amp;Order</source>
-        <translation type="unfinished">Klonuj klatkę(&amp;O)</translation>
+        <translation>Klonuj klatkę(&amp;O)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1098"/>
         <source>Move Order &amp;Up</source>
-        <translation type="unfinished">Przesuń klatkę do góry(&amp;U)</translation>
+        <translation>Przesuń klatkę do góry(&amp;U)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1101"/>
         <source>Move Order Do&amp;wn</source>
         <oldsource>Move Order Dow&amp;n</oldsource>
-        <translation type="unfinished">Przesuń klatkę w dół(&amp;W)</translation>
+        <translation>Przesuń klatkę w dół(&amp;W)</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/order_list_editor/order_list_panel.cpp" line="1105"/>
@@ -3932,31 +3932,31 @@
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="54"/>
         <source>Title</source>
         <oldsource>Title:</oldsource>
-        <translation>Tytuł:</translation>
+        <translation>Tytuł</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="64"/>
         <source>Artist</source>
         <oldsource>Artist:</oldsource>
-        <translation>Wykonawca:</translation>
+        <translation>Wykonawca</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="74"/>
         <source>Game</source>
         <oldsource>Game:</oldsource>
-        <translation>Gra:</translation>
+        <translation>Gra</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="84"/>
         <source>Year</source>
         <oldsource>Year:</oldsource>
-        <translation>Rok:</translation>
+        <translation>Rok</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="94"/>
         <source>Genre</source>
         <oldsource>Genre:</oldsource>
-        <translation>Gatunek:</translation>
+        <translation>Gatunek</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="104"/>
@@ -3967,19 +3967,19 @@
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="114"/>
         <source>Copyright</source>
         <oldsource>Copyright:</oldsource>
-        <translation>Copyright:</translation>
+        <translation>Copyright</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="124"/>
         <source>S98by</source>
         <oldsource>S98by:</oldsource>
-        <translation>S98przez:</translation>
+        <translation>S98przez</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="134"/>
         <source>System</source>
         <oldsource>System:</oldsource>
-        <translation>System:</translation>
+        <translation>System</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/s98_export_settings_dialog.ui" line="141"/>
@@ -4217,7 +4217,7 @@
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="199"/>
         <source>Title</source>
         <oldsource>Title:</oldsource>
-        <translation>Tytuł:</translation>
+        <translation>Tytuł</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="238"/>
@@ -4234,7 +4234,7 @@
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="286"/>
         <source>Creator</source>
         <oldsource>Creator:</oldsource>
-        <translation>Twórca:</translation>
+        <translation>Twórca</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/vgm_export_settings_dialog.ui" line="327"/>
@@ -4388,7 +4388,7 @@
     <message>
         <location filename="../../BambooTracker/gui/wave_export_settings_dialog.ui" line="30"/>
         <source>Loop</source>
-        <translation type="unfinished">Ilość powtórzeń</translation>
+        <translation>Ilość powtórzeń</translation>
     </message>
     <message>
         <location filename="../../BambooTracker/gui/wave_export_settings_dialog.ui" line="20"/>
