@@ -277,11 +277,14 @@ private:
 
 	// Midi //
 public:
+	void setMidiEnabled(const bool enabled);
+	bool getMidiEnabled() const;
 	void setMidiAPI(const std::string& api);
 	std::string getMidiAPI() const;
 	void setMidiInputPort(const std::string& port);
 	std::string getMidiInputPort() const;
 private:
+	bool midiEnabled_;
 	std::string midiAPI_, midiInPort_;
 
 	// Mixer //

@@ -2386,16 +2386,37 @@ void MainWindow::setMidiConfiguration()
 	std::string midiApi = config_.lock()->getMidiAPI();
 	std::string midiInPortName = config_.lock()->getMidiInputPort();
 
-	std::string errDetail;
-	if (!midiIntf.switchApi(midiApi, &errDetail))
-		showMidiFailedDialog(QString::fromStdString(errDetail));
-
-	bool res = true;
-	if (!midiInPortName.empty())
-		res = midiIntf.openInputPortByName(midiInPortName, &errDetail);
-	else if (midiIntf.supportsVirtualPort())
-		res = midiIntf.openInputPort(~0u, &errDetail);
-	if (!res) showMidiFailedDialog(QString::fromStdString(errDetail));
+	if (config_.lock()->getMidiEnabled()) {
+		std::string errDetail;
+		if (midiApi.empty()) {
+			config_.lock()->setMidiEnabled(false);
+			midiIntf.switchApi("");	// Clear
+		}
+		else {
+			if (!midiIntf.isAvailableApi(midiApi)) {
+				showMidiFailedDialog("Invalid API name.");
+				midiIntf.switchApi("");	// Clear
+				return;
+			}
+			if (midiIntf.switchApi(midiApi, &errDetail)) {
+				bool resPort = true;
+				if (!midiInPortName.empty())
+					resPort = midiIntf.openInputPortByName(midiInPortName, &errDetail);
+				else if (midiIntf.supportsVirtualPort())
+					resPort = midiIntf.openInputPort(~0u, &errDetail);
+				else
+					config_.lock()->setMidiEnabled(false);
+				if (!resPort) {
+					showMidiFailedDialog(QString::fromStdString(errDetail));
+					midiIntf.switchApi("");	// Clear
+				}
+			}
+			else {
+				showMidiFailedDialog(QString::fromStdString(errDetail));
+				midiIntf.switchApi("");	// Clear
+			}
+		}
+	}
 }
 
 void MainWindow::updateFonts()

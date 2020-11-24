@@ -26,6 +26,7 @@
 #include "midi.hpp"
 #include "midi_def.h"
 #include <stdio.h>
+#include <algorithm>
 
 std::unique_ptr<MidiInterface> MidiInterface::instance_;
 
@@ -42,7 +43,6 @@ MidiInterface &MidiInterface::instance()
 MidiInterface::MidiInterface()
 	  : hasOpenInputPort_(false)
 {
-	switchApi(RtMidi::RTMIDI_DUMMY);
 }
 
 MidiInterface::~MidiInterface()
@@ -51,7 +51,7 @@ MidiInterface::~MidiInterface()
 
 RtMidi::Api MidiInterface::currentApi() const
 {
-	return inputClient_->getCurrentApi();
+	return (inputClient_ ? inputClient_->getCurrentApi() : RtMidi::RTMIDI_DUMMY);
 }
 
 std::string MidiInterface::currentApiName() const
@@ -59,14 +59,20 @@ std::string MidiInterface::currentApiName() const
 	return RtMidi::getApiDisplayName(currentApi());
 }
 
-std::vector<std::string> MidiInterface::getAvailableApi() const
+std::vector<std::string> MidiInterface::getAvailableApis() const
 {
 	std::vector<RtMidi::Api> apis;
 	RtMidi::getCompiledApi(apis);
 	std::vector<std::string> list;
 	for (const auto& apiAvailable : apis)
 		list.push_back(RtMidi::getApiDisplayName(apiAvailable));
-	return list;
+	return (list.empty() ? std::vector<std::string>({ "" }) : list);
+}
+
+bool MidiInterface::isAvailableApi(const std::string& api) const
+{
+	const std::vector<std::string> apis = getAvailableApis();
+	return (std::find(apis.begin(), apis.end(), api) != apis.end());
 }
 
 bool MidiInterface::switchApi(std::string api, std::string* errDetail)
@@ -79,7 +85,10 @@ bool MidiInterface::switchApi(std::string api, std::string* errDetail)
 			return switchApi(apiAvailable, errDetail);
 		}
 	}
-	return switchApi(RtMidi::RTMIDI_DUMMY, errDetail);
+
+	inputClient_ = nullptr;
+	if (errDetail) *errDetail = "No available midi api.";
+	return false;
 }
 
 bool MidiInterface::switchApi(RtMidi::Api api, std::string* errDetail)
@@ -96,16 +105,15 @@ bool MidiInterface::switchApi(RtMidi::Api api, std::string* errDetail)
 		error.printMessage();
 		if (errDetail) *errDetail = error.getMessage();
 	}
-	bool res = (inputClient != nullptr);
-	if (!inputClient)
-		inputClient = new RtMidiIn(RtMidi::RTMIDI_DUMMY, MIDI_INP_CLIENT_NAME, MidiBufferSize);
 
-	inputClient->ignoreTypes(MIDI_INP_IGNORE_SYSEX, MIDI_INP_IGNORE_TIME, MIDI_INP_IGNORE_SENSE);
+	if (inputClient) {
+		inputClient->ignoreTypes(MIDI_INP_IGNORE_SYSEX, MIDI_INP_IGNORE_TIME, MIDI_INP_IGNORE_SENSE);
+		inputClient->setCallback(&onMidiInput, this);
+	}
 	inputClient_.reset(inputClient);
-	inputClient->setCallback(&onMidiInput, this);
 	hasOpenInputPort_ = false;
 
-	return res;
+	return (inputClient != nullptr);
 }
 
 bool MidiInterface::supportsVirtualPort() const
@@ -140,6 +148,8 @@ bool MidiInterface::supportsVirtualPort(std::string api) const
 
 std::vector<std::string> MidiInterface::getRealInputPorts()
 {
+	if (!inputClient_) return { "" };	// Error
+
 	RtMidiIn &client = *inputClient_;
 	unsigned count = client.getPortCount();
 
@@ -163,6 +173,9 @@ std::vector<std::string> MidiInterface::getRealInputPorts(const std::string& api
 			break;
 		}
 	}
+	if (apiType == RtMidi::RTMIDI_DUMMY) {
+		return { "" };	// Error
+	}
 
 	std::vector<std::string> ports;
 	try {
@@ -180,6 +193,8 @@ std::vector<std::string> MidiInterface::getRealInputPorts(const std::string& api
 
 void MidiInterface::closeInputPort()
 {
+	if (!inputClient_) return;
+
 	RtMidiIn &client = *inputClient_;
 	if (hasOpenInputPort_) {
 		client.closePort();
@@ -189,6 +204,12 @@ void MidiInterface::closeInputPort()
 
 bool MidiInterface::openInputPort(unsigned port, std::string* errDetail)
 {
+	if (!inputClient_) {
+		if (errDetail) *errDetail = "Not opened input client.";
+		hasOpenInputPort_ = false;
+		return false;
+	}
+
 	try {
 	RtMidiIn &client = *inputClient_;
 	closeInputPort();

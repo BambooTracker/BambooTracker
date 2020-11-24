@@ -286,11 +286,11 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	}
 
 	{
-		QSignalBlocker blocker(ui->midiInputDeviceComboBox);
+		QSignalBlocker blocker1(ui->midiInputDeviceComboBox), blocker2(ui->midiApiComboBox);
 		MidiInterface& midiIntf = MidiInterface::instance();
 		int midiApiRow = -1;
 		int defMidiApiRow = 0;
-		for (auto& name : midiIntf.getAvailableApi()) {
+		for (auto& name : midiIntf.getAvailableApis()) {
 			ui->midiApiComboBox->addItem(utf8ToQString(name));
 			if (name == configLocked->getMidiAPI())
 				midiApiRow = ui->midiApiComboBox->count() - 1;
@@ -299,7 +299,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		}
 		ui->midiApiComboBox->setCurrentIndex((midiApiRow == -1) ? defMidiApiRow : midiApiRow);
 	}
-	on_midiApiComboBox_currentIndexChanged(ui->midiApiComboBox->currentText());
+	onMidiApiChanged(ui->midiApiComboBox->currentText(), false);
+	ui->midiInputGroupBox->setChecked(configLocked->getMidiEnabled());
 
 	ui->sampleRateComboBox->addItem("44100Hz", 44100);
 	ui->sampleRateComboBox->addItem("48000Hz", 48000);
@@ -426,6 +427,7 @@ void ConfigurationDialog::on_ConfigurationDialog_accepted()
 	configLocked->setSoundAPI(ui->audioApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setRealChipInterface(static_cast<RealChipInterface>(
 										   ui->realChipComboBox->currentData(Qt::UserRole).toInt()));
+	configLocked->setMidiEnabled(ui->midiInputGroupBox->isChecked());
 	configLocked->setMidiAPI(ui->midiApiComboBox->currentText().toUtf8().toStdString());
 	configLocked->setMidiInputPort(ui->midiInputDeviceComboBox->currentData().toString().toUtf8().toStdString());
 	configLocked->setSampleRate(ui->sampleRateComboBox->currentData(Qt::UserRole).toUInt());
@@ -500,6 +502,11 @@ void ConfigurationDialog::on_audioApiComboBox_currentIndexChanged(const QString 
 
 void ConfigurationDialog::on_midiApiComboBox_currentIndexChanged(const QString &arg1)
 {
+	onMidiApiChanged(arg1);
+}
+
+void ConfigurationDialog::onMidiApiChanged(const QString &arg1, bool hasInitialized)
+{
 	ui->midiInputDeviceComboBox->clear();
 
 	MidiInterface &intf = MidiInterface::instance();
@@ -523,7 +530,8 @@ void ConfigurationDialog::on_midiApiComboBox_currentIndexChanged(const QString &
 		ui->midiInputDeviceComboBox->setEnabled(false);
 		return;
 	}
-	ui->midiInputDeviceComboBox->setEnabled(true);
+	if (hasInitialized)	// To reflect unchecked groupbox when displaying the dialog for the first time
+		ui->midiInputDeviceComboBox->setEnabled(true);
 	for (auto& portName : ports) {
 		auto name = QString::fromStdString(portName);
 		ui->midiInputDeviceComboBox->addItem(name, name);

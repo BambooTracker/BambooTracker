@@ -89,6 +89,7 @@ private slots:
 private slots:
 	void on_audioApiComboBox_currentIndexChanged(const QString &arg1);
 	void on_midiApiComboBox_currentIndexChanged(const QString &arg1);
+	void onMidiApiChanged(const QString &arg1, bool hasInitialized = true);
 
 	/***** Formats *****/
 private:
