@@ -570,7 +570,6 @@ FORMS += \
 
 INCLUDEPATH += \
     $$PWD/instrument \
-    $$PWD/command \
     $$PWD/module
 
 include("stream/RtAudio/RtAudio.pri")

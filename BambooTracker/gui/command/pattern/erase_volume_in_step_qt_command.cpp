@@ -24,7 +24,7 @@
  */
 
 #include "erase_volume_in_step_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 EraseVolumeInStepQtCommand::EraseVolumeInStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

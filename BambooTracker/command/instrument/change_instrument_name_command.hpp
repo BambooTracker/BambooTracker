@@ -27,7 +27,7 @@
 
 #include <memory>
 #include <string>
-#include "abstract_command.hpp"
+#include "../abstract_command.hpp"
 #include "instruments_manager.hpp"
 
 class ChangeInstrumentNameCommand : public AbstractCommand

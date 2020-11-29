@@ -24,7 +24,7 @@
  */
 
 #include "expand_pattern_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 ExpandPatternQtCommand::ExpandPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

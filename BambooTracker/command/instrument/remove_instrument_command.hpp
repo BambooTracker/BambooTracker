@@ -26,7 +26,7 @@
 #pragma once
 
 #include <memory>
-#include "abstract_command.hpp"
+#include "../abstract_command.hpp"
 #include "instruments_manager.hpp"
 #include "instrument.hpp"
 

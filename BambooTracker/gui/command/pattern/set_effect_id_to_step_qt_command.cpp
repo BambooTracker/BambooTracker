@@ -24,7 +24,7 @@
  */
 
 #include "set_effect_id_to_step_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 SetEffectIDToStepQtCommand::SetEffectIDToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, bool secondEntry, QUndoCommand* parent)
 	: QUndoCommand(parent),

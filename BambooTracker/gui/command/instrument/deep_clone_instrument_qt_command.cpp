@@ -25,7 +25,7 @@
 
 #include "deep_clone_instrument_qt_command.hpp"
 #include "instrument.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
 DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,

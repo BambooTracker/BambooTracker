@@ -25,7 +25,7 @@
 
 #include "add_instrument_qt_command.hpp"
 #include <utility>
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
 AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, InstrumentType type,

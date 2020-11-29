@@ -24,6 +24,7 @@
  */
 
 #include "change_values_in_pattern_qt_command.hpp"
+#include "command/command_id.hpp"
 
 ChangeValuesInPatternQtCommand::ChangeValuesInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

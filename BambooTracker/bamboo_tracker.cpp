@@ -29,7 +29,7 @@
 #include <unordered_set>
 #include <exception>
 #include <unordered_map>
-#include "commands.hpp"
+#include "command/commands.hpp"
 #include "io/module_io.hpp"
 #include "io/instrument_io.hpp"
 #include "io/bank_io.hpp"

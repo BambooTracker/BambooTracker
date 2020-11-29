@@ -24,7 +24,7 @@
  */
 
 #include "set_pattern_to_order_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, bool secondEntry, QUndoCommand* parent)
 	: QUndoCommand(parent),

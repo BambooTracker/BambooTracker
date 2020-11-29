@@ -24,7 +24,7 @@
  */
 
 #include "interpolate_pattern_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 InterpolatePatternQtCommand::InterpolatePatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
 #include <string>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 
 class PasteMixCopiedDataToPatternCommand : public AbstractCommand

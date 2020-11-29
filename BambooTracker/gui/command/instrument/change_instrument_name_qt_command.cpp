@@ -24,7 +24,7 @@
  */
 
 #include "change_instrument_name_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
 ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,

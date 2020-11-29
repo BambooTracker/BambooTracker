@@ -26,7 +26,7 @@
 #include "swap_instruments_qt_command.hpp"
 #include <QListWidgetItem>
 #include "instrument.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 #include "gui/pattern_editor/pattern_editor.hpp"
 #include "gui/instrument_list_misc.hpp"
 

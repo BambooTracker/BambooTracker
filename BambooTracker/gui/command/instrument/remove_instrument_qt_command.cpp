@@ -26,7 +26,7 @@
 #include "remove_instrument_qt_command.hpp"
 #include <utility>
 #include "instrument.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 #include "gui/instrument_list_misc.hpp"
 
 RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row, QString name, InstrumentType type,

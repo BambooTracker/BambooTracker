@@ -24,7 +24,7 @@
  */
 
 #include "duplicate_order_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 DuplicateOrderQtCommand::DuplicateOrderQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

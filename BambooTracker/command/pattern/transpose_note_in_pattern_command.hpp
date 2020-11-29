@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 
 class TransposeNoteInPatternCommand : public AbstractCommand

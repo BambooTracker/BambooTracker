@@ -24,7 +24,7 @@
  */
 
 #include "set_key_off_to_step_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 SetKeyOffToStepQtCommand::SetKeyOffToStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

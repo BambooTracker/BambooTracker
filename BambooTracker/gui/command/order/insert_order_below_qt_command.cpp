@@ -24,7 +24,7 @@
  */
 
 #include "insert_order_below_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 InsertOrderBelowQtCommand::InsertOrderBelowQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

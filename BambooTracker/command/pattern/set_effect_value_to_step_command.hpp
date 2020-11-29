@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 #include "misc.hpp"
 

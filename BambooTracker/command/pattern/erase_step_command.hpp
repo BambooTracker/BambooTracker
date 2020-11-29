@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <string>
 #include <memory>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 
 class EraseStepCommand : public AbstractCommand
