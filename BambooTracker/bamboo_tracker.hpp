@@ -44,9 +44,9 @@
 #include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "effect.hpp"
 #include "playback.hpp"
-#include "binary_container.hpp"
-#include "wav_container.hpp"
-#include "export_io.hpp"
+#include "io/binary_container.hpp"
+#include "io/wav_container.hpp"
+#include "io/export_io.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 

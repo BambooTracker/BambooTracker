@@ -25,7 +25,7 @@
 
 #include "s98_export_settings_dialog.hpp"
 #include "ui_s98_export_settings_dialog.h"
-#include "export_io.hpp"
+#include "io/export_io.hpp"
 
 S98ExportSettingsDialog::S98ExportSettingsDialog(QWidget *parent) :
 	QDialog(parent),

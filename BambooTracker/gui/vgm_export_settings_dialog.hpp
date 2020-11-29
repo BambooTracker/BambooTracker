@@ -28,7 +28,7 @@
 
 #include <QDialog>
 #include <QString>
-#include "export_io.hpp"
+#include "io/export_io.hpp"
 
 namespace Ui {
 	class VgmExportSettingsDialog;

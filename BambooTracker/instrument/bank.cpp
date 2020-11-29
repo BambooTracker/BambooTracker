@@ -26,14 +26,14 @@
 #include "bank.hpp"
 #include <stdio.h>
 #include <utility>
-#include "instrument_io.hpp"
+#include "io/instrument_io.hpp"
+#include "io/opni_io.hpp"
+#include "io/btb_io.hpp"
+#include "io/ff_io.hpp"
+#include "io/ppc_io.hpp"
+#include "io/pvi_io.hpp"
+#include "io/dat_io.hpp"
 #include "format/wopn_file.h"
-#include "opni_io.hpp"
-#include "btb_io.hpp"
-#include "ff_io.hpp"
-#include "ppc_io.hpp"
-#include "pvi_io.hpp"
-#include "dat_io.hpp"
 
 BtBank::BtBank(std::vector<int> ids, std::vector<std::string> names)
 	: ids_(std::move(ids)),

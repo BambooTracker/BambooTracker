@@ -30,9 +30,9 @@
 #include <exception>
 #include <unordered_map>
 #include "commands.hpp"
-#include "module_io.hpp"
-#include "instrument_io.hpp"
-#include "bank_io.hpp"
+#include "io/module_io.hpp"
+#include "io/instrument_io.hpp"
+#include "io/bank_io.hpp"
 #include "bank.hpp"
 #include "song_length_calculator.hpp"
 

@@ -62,7 +62,6 @@
 #include "gui/bookmark_manager_form.hpp"
 #include "gui/instrument_selection_dialog.hpp"
 #include "gui/comment_edit_dialog.hpp"
-#include "file_io_error.hpp"
 #include "enum_hash.hpp"
 
 namespace Ui {

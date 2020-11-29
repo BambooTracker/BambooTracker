@@ -29,8 +29,8 @@
 #include <unordered_map>
 #include <QString>
 #include <QWidget>
-#include "file_io.hpp"
-#include "file_io_error.hpp"
+#include "io/file_io.hpp"
+#include "io/file_io_error.hpp"
 #include "enum_hash.hpp"
 
 class FileIOErrorMessageBox : public QObject

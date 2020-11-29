@@ -27,7 +27,7 @@
 #define S98_EXPORT_SETTINGS_DIALOG_HPP
 
 #include <QDialog>
-#include "export_io.hpp"
+#include "io/export_io.hpp"
 
 namespace Ui {
 	class S98ExportSettingsDialog;

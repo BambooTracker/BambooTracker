@@ -25,8 +25,8 @@
 
 #include "vgm_export_settings_dialog.hpp"
 #include "ui_vgm_export_settings_dialog.h"
-#include "export_io.hpp"
 #include <QTextCodec>
+#include "io/export_io.hpp"
 
 VgmExportSettingsDialog::VgmExportSettingsDialog(QWidget *parent) :
 	QDialog(parent),

@@ -573,8 +573,7 @@ INCLUDEPATH += \
     $$PWD/stream \
     $$PWD/instrument \
     $$PWD/command \
-    $$PWD/module \
-    $$PWD/io
+    $$PWD/module
 
 include("stream/RtAudio/RtAudio.pri")
 include("midi/RtMidi/RtMidi.pri")
