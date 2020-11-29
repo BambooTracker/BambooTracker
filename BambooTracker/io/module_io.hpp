@@ -38,6 +38,7 @@ class AbstractModuleIO
 public:
 	AbstractModuleIO(std::string ext, std::string desc, bool loadable, bool savable)
 		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
+	virtual ~AbstractModuleIO() = default;
 	virtual void load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
 					  std::weak_ptr<InstrumentsManager> instMan) const;
 	virtual void save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,

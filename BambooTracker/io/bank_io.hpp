@@ -37,6 +37,7 @@ class AbstractBankIO
 public:
 	AbstractBankIO(std::string ext, std::string desc, bool loadable, bool savable)
 		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
+	virtual ~AbstractBankIO() = default;
 	virtual AbstractBank* load(const BinaryContainer& ctr) const;
 	virtual void save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> instMan,
 					  const std::vector<int>& instNums) const;

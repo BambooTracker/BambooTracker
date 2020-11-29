@@ -38,6 +38,7 @@ class AbstractInstrumentIO
 public:
 	AbstractInstrumentIO(std::string ext, std::string desc, bool loadable, bool savable)
 		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
+	virtual ~AbstractInstrumentIO() = default;
 	virtual AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
 									 std::weak_ptr<InstrumentsManager> instMan,
 									 int instNum) const;
