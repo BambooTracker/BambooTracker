@@ -27,20 +27,23 @@
 #include "format/wopn_file.h"
 #include "file_io_error.hpp"
 
-WopnIO::WopnIO() : AbstractBankIO("wopn", "WOPN bank", true, false) {}
-
-AbstractBank* WopnIO::load(const BinaryContainer& ctr) const
+namespace io
 {
-	struct WOPNDeleter {
-		void operator()(WOPNFile *x) { WOPN_Free(x); }
-	};
+	WopnIO::WopnIO() : AbstractBankIO("wopn", "WOPN bank", true, false) {}
 
-	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
-	wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
-	if (!wopn)
-		throw FileCorruptionError(FileIO::FileType::Bank, 0);
+	AbstractBank* WopnIO::load(const BinaryContainer& ctr) const
+	{
+		struct WOPNDeleter {
+			void operator()(WOPNFile *x) { WOPN_Free(x); }
+		};
 
-	WopnBank *bank = new WopnBank(wopn.get());
-	wopn.release();
-	return bank;
+		std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
+		wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
+		if (!wopn)
+			throw FileCorruptionError(FileType::Bank, 0);
+
+		WopnBank *bank = new WopnBank(wopn.get());
+		wopn.release();
+		return bank;
+	}
 }

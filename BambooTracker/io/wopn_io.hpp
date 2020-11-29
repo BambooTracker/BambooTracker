@@ -27,9 +27,12 @@
 
 #include "bank_io.hpp"
 
-class WopnIO final : public AbstractBankIO
+namespace io
 {
-public:
-	WopnIO();
-	AbstractBank* load(const BinaryContainer& ctr) const override;
-};
+	class WopnIO final : public AbstractBankIO
+	{
+	public:
+		WopnIO();
+		AbstractBank* load(const BinaryContainer& ctr) const override;
+	};
+}

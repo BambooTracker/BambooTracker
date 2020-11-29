@@ -26,54 +26,54 @@
 #include "file_io_error_message_box.hpp"
 #include <QMessageBox>
 
-const std::unordered_map<FileIO::FileType, QString> FileIOErrorMessageBox::FILE_NAMES_ = {
-	{ FileIO::FileType::Mod, QT_TR_NOOP("module") },
-	{ FileIO::FileType::S98, QT_TR_NOOP("s98") },
-	{ FileIO::FileType::VGM, QT_TR_NOOP("vgm") },
-	{ FileIO::FileType::WAV, QT_TR_NOOP("wav") },
-	{ FileIO::FileType::Bank, QT_TR_NOOP("bank") },
-	{ FileIO::FileType::Inst, QT_TR_NOOP("instrument") }
+const std::unordered_map<io::FileType, QString> FileIOErrorMessageBox::FILE_NAMES_ = {
+	{ io::FileType::Mod, QT_TR_NOOP("module") },
+	{ io::FileType::S98, QT_TR_NOOP("s98") },
+	{ io::FileType::VGM, QT_TR_NOOP("vgm") },
+	{ io::FileType::WAV, QT_TR_NOOP("wav") },
+	{ io::FileType::Bank, QT_TR_NOOP("bank") },
+	{ io::FileType::Inst, QT_TR_NOOP("instrument") }
 };
 
-FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, FileIO::FileType ftype, const QString desc, QWidget* parent)
+FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, io::FileType ftype, const QString desc, QWidget* parent)
 	: parent_(parent), desc_(desc)
 {
 	setText(file, isInput, ftype);
 }
 
-FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, const FileIOError& e, QWidget* parent)
+FileIOErrorMessageBox::FileIOErrorMessageBox(const QString& file, bool isInput, const io::FileIOError& e, QWidget* parent)
 	: parent_(parent)
 {
-	const FileIOError *err = &e;
+	const io::FileIOError *err = &e;
 	QString type = FILE_NAMES_.at(err->fileType());
 
-	if (dynamic_cast<const FileNotExistError*>(err)) {
+	if (dynamic_cast<const io::FileNotExistError*>(err)) {
 		desc_ = tr("Path does not exist.");
 	}
-	else if (dynamic_cast<const FileUnsupportedError*>(err)) {
+	else if (dynamic_cast<const io::FileUnsupportedError*>(err)) {
 		desc_ = tr("Unsupported file format.");
 	}
-	else if (dynamic_cast<const FileVersionError*>(err)) {
+	else if (dynamic_cast<const io::FileVersionError*>(err)) {
 		desc_ = tr("Could not load the %1 properly. "
 				   "Please make sure that you have the latest version of BambooTracker.").arg(file);
 	}
-	else if (auto ce = dynamic_cast<const FileCorruptionError*>(err)) {
+	else if (auto ce = dynamic_cast<const io::FileCorruptionError*>(err)) {
 		desc_ = tr("Could not load the %1. It may be corrupted. Stopped at %2.").arg(type).arg(ce->position());
 	}
 
 	setText(file, isInput, e.fileType());
 }
 
-void FileIOErrorMessageBox::setText(const QString& file, bool isInput, FileIO::FileType ftype)
+void FileIOErrorMessageBox::setText(const QString& file, bool isInput, io::FileType ftype)
 {
 	if (isInput) {
 		text_ = tr("Failed to load %1.").arg(file);
 	}
 	else {
 		switch (ftype) {
-		case FileIO::FileType::S98:
-		case FileIO::FileType::VGM:
-		case FileIO::FileType::WAV:
+		case io::FileType::S98:
+		case io::FileType::VGM:
+		case io::FileType::WAV:
 			text_ = tr("Failed to export to %1.");
 			break;
 		default:

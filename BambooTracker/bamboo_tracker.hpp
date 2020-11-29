@@ -40,14 +40,13 @@
 #include "tick_counter.hpp"
 #include "module.hpp"
 #include "song.hpp"
-#include "gd3_tag.hpp"
-#include "s98_tag.hpp"
 #include "chips/scci/scci.hpp"
 #include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "effect.hpp"
 #include "playback.hpp"
 #include "binary_container.hpp"
 #include "wav_container.hpp"
+#include "export_io.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -84,10 +83,10 @@ public:
 	void cloneInstrument(int num, int refNum);
 	void deepCloneInstrument(int num, int refNum);
 	void swapInstruments(int a, int b, bool patternChange);
-	void loadInstrument(BinaryContainer& container, std::string path, int instNum);
-	void saveInstrument(BinaryContainer& container, int instNum);
+	void loadInstrument(io::BinaryContainer& container, std::string path, int instNum);
+	void saveInstrument(io::BinaryContainer& container, int instNum);
 	void importInstrument(const AbstractBank &bank, size_t index, int instNum);
-	void exportInstruments(BinaryContainer& container, std::vector<int> instNums);
+	void exportInstruments(io::BinaryContainer& container, std::vector<int> instNums);
 	int findFirstFreeInstrumentNumber() const;
 	void setInstrumentName(int num, std::string name);
 	void clearAllInstrument();
@@ -290,10 +289,10 @@ public:
 	int getMarkerStep() const;
 
 	// Export
-	bool exportToWav(WavContainer& container, int loopCnt, std::function<bool()> bar);
-	bool exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
-					 GD3Tag tag, std::function<bool()> bar);
-	bool exportToS98(BinaryContainer& container, int target, bool tagEnabled, S98Tag tag,
+	bool exportToWav(io::WavContainer& container, int loopCnt, std::function<bool()> bar);
+	bool exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
+					 io::GD3Tag tag, std::function<bool()> bar);
+	bool exportToS98(io::BinaryContainer& container, int target, bool tagEnabled, io::S98Tag tag,
 					 int rate, std::function<bool()> bar);
 
 	// Real chip interface
@@ -324,8 +323,8 @@ public:
 	// Module details
 	/*----- Module -----*/
 	void makeNewModule();
-	void loadModule(BinaryContainer& container);
-	void saveModule(BinaryContainer& container);
+	void loadModule(io::BinaryContainer& container);
+	void saveModule(io::BinaryContainer& container);
 	void setModulePath(std::string path);
 	std::string getModulePath() const;
 	void setModuleTitle(std::string title);

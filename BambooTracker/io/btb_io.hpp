@@ -27,21 +27,24 @@
 
 #include "bank_io.hpp"
 
-class BtbIO final : public AbstractBankIO
+namespace io
 {
-public:
-	BtbIO();
-	AbstractBank* load(const BinaryContainer& ctr) const override;
-	void save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> instMan,
-			  const std::vector<int>& instNums) const override;
+	class BtbIO final : public AbstractBankIO
+	{
+	public:
+		BtbIO();
+		AbstractBank* load(const BinaryContainer& ctr) const override;
+		void save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> instMan,
+				  const std::vector<int>& instNums) const override;
 
-	static AbstractInstrument* loadInstrument(const BinaryContainer& instCtr,
-											  const BinaryContainer& propCtr,
-											  std::weak_ptr<InstrumentsManager> instMan,
-											  int instNum,
-											  uint32_t bankVersion);
+		static AbstractInstrument* loadInstrument(const BinaryContainer& instCtr,
+												  const BinaryContainer& propCtr,
+												  std::weak_ptr<InstrumentsManager> instMan,
+												  int instNum,
+												  uint32_t bankVersion);
 
-private:
-	static size_t getPropertyPosition(const BinaryContainer& propCtr,
-									  uint8_t subsecType, uint8_t index);
-};
+	private:
+		static size_t getPropertyPosition(const BinaryContainer& propCtr,
+										  uint8_t subsecType, uint8_t index);
+	};
+}

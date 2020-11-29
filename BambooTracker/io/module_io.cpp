@@ -27,47 +27,50 @@
 #include "file_io_error.hpp"
 #include "btm_io.hpp"
 
-void AbstractModuleIO::load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
-				  std::weak_ptr<InstrumentsManager> instMan) const
+namespace io
 {
-	(void)ctr;
-	(void)mod;
-	(void)instMan;
-	throw FileUnsupportedError(FileIO::FileType::Mod);
-}
+	void AbstractModuleIO::load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
+					  std::weak_ptr<InstrumentsManager> instMan) const
+	{
+		(void)ctr;
+		(void)mod;
+		(void)instMan;
+		throw FileUnsupportedError(FileType::Mod);
+	}
 
-void AbstractModuleIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
-				  const std::weak_ptr<InstrumentsManager> instMan) const
-{
-	(void)ctr;
-	(void)mod;
-	(void)instMan;
-	throw FileUnsupportedError(FileIO::FileType::Mod);
-}
+	void AbstractModuleIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
+					  const std::weak_ptr<InstrumentsManager> instMan) const
+	{
+		(void)ctr;
+		(void)mod;
+		(void)instMan;
+		throw FileUnsupportedError(FileType::Mod);
+	}
 
-//------------------------------------------------------------
+	//------------------------------------------------------------
 
-std::unique_ptr<ModuleIO> ModuleIO::instance_;
+	std::unique_ptr<ModuleIO> ModuleIO::instance_;
 
-ModuleIO::ModuleIO()
-{
-	handler_.add(new BtmIO);
-}
+	ModuleIO::ModuleIO()
+	{
+		handler_.add(new BtmIO);
+	}
 
-ModuleIO& ModuleIO::getInstance()
-{
-	if (!instance_) instance_.reset(new ModuleIO);
-	return *instance_;
-}
+	ModuleIO& ModuleIO::getInstance()
+	{
+		if (!instance_) instance_.reset(new ModuleIO);
+		return *instance_;
+	}
 
-void ModuleIO::saveModule(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
-						  const std::weak_ptr<InstrumentsManager> instMan)
-{
-	handler_.at("btm")->save(ctr, mod, instMan);
-}
+	void ModuleIO::saveModule(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
+							  const std::weak_ptr<InstrumentsManager> instMan)
+	{
+		handler_.at("btm")->save(ctr, mod, instMan);
+	}
 
-void ModuleIO::loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
-						  std::weak_ptr<InstrumentsManager> instMan)
-{
-	handler_.at("btm")->load(ctr, mod, instMan);
+	void ModuleIO::loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
+							  std::weak_ptr<InstrumentsManager> instMan)
+	{
+		handler_.at("btm")->load(ctr, mod, instMan);
+	}
 }

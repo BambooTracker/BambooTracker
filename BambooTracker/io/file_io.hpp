@@ -32,44 +32,41 @@
 #include <algorithm>
 #include "instruments_manager.hpp"
 
-class FileIO
+namespace io
 {
-public:
 	enum class FileType
 	{
 		Mod, Inst, WAV, VGM, Bank, S98, Unknown
 	};
 
-	static std::string getExtension(const std::string& path)
+	DECL_MAYBE_UNUSED
+	inline std::string getExtension(const std::string& path)
 	{
 		std::string ext = path.substr(path.find_last_of(".") + 1);
 		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 		return ext;
 	}
 
-private:
-	FileIO() {}
-};
-
-template<class T>
-class FileIOManagerMap
-{
-public:
-	void add(T* handler)
+	template<class T>
+	class FileIOManagerMap
 	{
-		map_[handler->getExtension()].reset(handler);
-		const std::string filter = handler->getFilterText();
-		if (handler->isLoadable()) ldFilters_.push_back(filter);
-		if (handler->isSavable()) svFilters_.push_back(filter);
-	}
-	inline bool containExtension(const std::string& ext) const { return map_.count(ext); }
-	inline bool testLoadableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isLoadable()); }
-	inline bool testSavableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isSavable()); }
-	inline const std::unique_ptr<T>& at(std::string ext) const { return map_.at(ext); }
-	inline std::vector<std::string> getLoadFilterList() const { return ldFilters_; }
-	inline std::vector<std::string> getSaveFilterList() const { return svFilters_; }
+	public:
+		void add(T* handler)
+		{
+			map_[handler->getExtension()].reset(handler);
+			const std::string filter = handler->getFilterText();
+			if (handler->isLoadable()) ldFilters_.push_back(filter);
+			if (handler->isSavable()) svFilters_.push_back(filter);
+		}
+		inline bool containExtension(const std::string& ext) const { return map_.count(ext); }
+		inline bool testLoadableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isLoadable()); }
+		inline bool testSavableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isSavable()); }
+		inline const std::unique_ptr<T>& at(std::string ext) const { return map_.at(ext); }
+		inline std::vector<std::string> getLoadFilterList() const { return ldFilters_; }
+		inline std::vector<std::string> getSaveFilterList() const { return svFilters_; }
 
-private:
-	std::unordered_map<std::string, std::unique_ptr<T>> map_;
-	std::vector<std::string> ldFilters_, svFilters_;
-};
+	private:
+		std::unordered_map<std::string, std::unique_ptr<T>> map_;
+		std::vector<std::string> ldFilters_, svFilters_;
+	};
+}

@@ -24,7 +24,7 @@
  */
 
 #include "export_container.hpp"
-#include "export_handler.hpp"
+#include "export_io.hpp"
 #include <algorithm>
 
 namespace chip
@@ -77,22 +77,22 @@ namespace chip
 	{
 		if (lastWait_) setWait();
 
-		const int fm = target_ & Export_FmMask;
-		const int ssg = target_ & Export_SsgMask;
+		const int fm = target_ & io::Export_FmMask;
+		const int ssg = target_ & io::Export_SsgMask;
 
 		const uint8_t cmdSsg =
-				(ssg != Export_InternalSsg) ? 0xa0
-											: (fm == Export_YM2608) ? 0x56
-																	: (fm == Export_YM2203) ? 0x55
+				(ssg != io::Export_InternalSsg) ? 0xa0
+											: (fm == io::Export_YM2608) ? 0x56
+																	: (fm == io::Export_YM2203) ? 0x55
 																							: 0x00;
 		const uint8_t cmdFmPortA =
-				(fm == Export_YM2608) ? 0x56
-									  : (fm == Export_YM2612) ? 0x52
-															  : (fm == Export_YM2203) ? 0x55
+				(fm == io::Export_YM2608) ? 0x56
+									  : (fm == io::Export_YM2612) ? 0x52
+															  : (fm == io::Export_YM2203) ? 0x55
 																					  : 0x00;
 		const uint8_t cmdFmPortB =
-				(fm == Export_YM2608) ? 0x57
-									  : (fm == Export_YM2612) ? 0x53
+				(fm == io::Export_YM2608) ? 0x57
+									  : (fm == io::Export_YM2612) ? 0x53
 															  : 0x00;
 
 		if (cmdSsg && offset < 0x10) {
@@ -104,13 +104,13 @@ namespace chip
 			bool compatible = true;
 
 			if (offset == 0x28) { // Key register
-				if (fm == Export_YM2203 && (value & 7) >= 3)
+				if (fm == io::Export_YM2203 && (value & 7) >= 3)
 					compatible = false;
 			}
 			else if (offset == 0x29) // Mode register
-				compatible = fm == Export_YM2608;
+				compatible = fm == io::Export_YM2608;
 			else if ((offset & 0xf0) == 0x10) // Rhythm section
-				compatible = fm == Export_YM2608;
+				compatible = fm == io::Export_YM2608;
 
 			if (compatible) {
 				buf_.push_back(cmdFmPortA);
@@ -122,7 +122,7 @@ namespace chip
 			bool compatible = true;
 
 			if (offset < 0x10) // ADPCM section
-				compatible = fm == Export_YM2608;
+				compatible = fm == io::Export_YM2608;
 
 			if (compatible) {
 				buf_.push_back(cmdFmPortB);
@@ -345,18 +345,18 @@ namespace chip
 	{
 		if (lastWait_) setWait();
 
-		const int fm = target_ & Export_FmMask;
-		const int ssg = target_ & Export_SsgMask;
+		const int fm = target_ & io::Export_FmMask;
+		const int ssg = target_ & io::Export_SsgMask;
 
 		const uint8_t cmdSsg =
-				(ssg != Export_InternalSsg) ? (fm == Export_NoneFm) ? 0x01 : 0x02
-																	: (fm == Export_YM2608) ? 0x00
-																							: (fm == Export_YM2203) ? 0x00
+				(ssg != io::Export_InternalSsg) ? (fm == io::Export_NoneFm) ? 0x01 : 0x02
+																	: (fm == io::Export_YM2608) ? 0x00
+																							: (fm == io::Export_YM2203) ? 0x00
 																													: 0xff;
 		const uint8_t cmdFmPortA =
-				(fm != Export_NoneFm) ? 0x00 : 0xff;
+				(fm != io::Export_NoneFm) ? 0x00 : 0xff;
 		const uint8_t cmdFmPortB =
-				(fm == Export_YM2608 || fm == Export_YM2612) ? 0x01 : 0xff;
+				(fm == io::Export_YM2608 || fm == io::Export_YM2612) ? 0x01 : 0xff;
 
 		if (cmdSsg != 0xff && offset < 0x10) {
 			buf_.push_back(cmdSsg);
@@ -367,13 +367,13 @@ namespace chip
 			bool compatible = true;
 
 			if (offset == 0x28) { // Key register
-				if (fm == Export_YM2203 && (value & 7) >= 3)
+				if (fm == io::Export_YM2203 && (value & 7) >= 3)
 					compatible = false;
 			}
 			else if (offset == 0x29) // Mode register
-				compatible = fm == Export_YM2608;
+				compatible = fm == io::Export_YM2608;
 			else if ((offset & 0xf0) == 0x10) // Rhythm section
-				compatible = fm == Export_YM2608;
+				compatible = fm == io::Export_YM2608;
 
 			if (compatible) {
 				buf_.push_back(cmdFmPortA);
@@ -385,7 +385,7 @@ namespace chip
 			bool compatible = true;
 
 			if (offset < 0x10) // ADPCM section
-				compatible = fm == Export_YM2608;
+				compatible = fm == io::Export_YM2608;
 
 			if (compatible) {
 				buf_.push_back(cmdFmPortB);

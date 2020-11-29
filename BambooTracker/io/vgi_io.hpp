@@ -27,10 +27,13 @@
 
 #include "instrument_io.hpp"
 
-class VgiIO final : public AbstractInstrumentIO
+namespace io
 {
-public:
-	VgiIO();
-	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
-							 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
-};
+	class VgiIO final : public AbstractInstrumentIO
+	{
+	public:
+		VgiIO();
+		AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+								 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+	};
+}

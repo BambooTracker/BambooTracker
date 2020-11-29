@@ -27,7 +27,7 @@
 #define S98_EXPORT_SETTINGS_DIALOG_HPP
 
 #include <QDialog>
-#include "s98_tag.hpp"
+#include "export_io.hpp"
 
 namespace Ui {
 	class S98ExportSettingsDialog;
@@ -43,7 +43,7 @@ public:
 
 	int getResolution() const;
 	bool enabledTag() const;
-	S98Tag getS98Tag() const;
+	io::S98Tag getS98Tag() const;
 	int getExportTarget() const;
 
 private slots:

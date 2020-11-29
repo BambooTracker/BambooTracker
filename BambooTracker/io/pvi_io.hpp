@@ -29,13 +29,16 @@
 
 class AbstractInstrument;
 
-class PviIO final : public AbstractBankIO
+namespace io
 {
-public:
-	PviIO();
-	AbstractBank* load(const BinaryContainer& ctr) const override;
+	class PviIO final : public AbstractBankIO
+	{
+	public:
+		PviIO();
+		AbstractBank* load(const BinaryContainer& ctr) const override;
 
-	static AbstractInstrument* loadInstrument(const std::vector<uint8_t> sample,
-											  std::weak_ptr<InstrumentsManager> instMan,
-											  int instNum);
-};
+		static AbstractInstrument* loadInstrument(const std::vector<uint8_t> sample,
+												  std::weak_ptr<InstrumentsManager> instMan,
+												  int instNum);
+	};
+}

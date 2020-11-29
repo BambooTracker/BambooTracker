@@ -49,8 +49,7 @@ class BtBank : public AbstractBank
 public:
 	BtBank(std::vector<int> ids, std::vector<std::string> names);
 	BtBank(std::vector<int> ids, std::vector<std::string> names,
-		   std::vector<BinaryContainer> instSecs, BinaryContainer propSec, uint32_t version);
-	~BtBank() override;
+		   std::vector<io::BinaryContainer> instSecs, io::BinaryContainer propSec, uint32_t version);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -58,8 +57,8 @@ public:
 	AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
 private:
-	std::vector<BinaryContainer> instCtrs_;
-	BinaryContainer propCtr_;
+	std::vector<io::BinaryContainer> instCtrs_;
+	io::BinaryContainer propCtr_;
 	std::vector<int> ids_;
 	std::vector<std::string> names_;
 	uint32_t version_;
@@ -69,7 +68,6 @@ class WopnBank : public AbstractBank
 {
 public:
 	explicit WopnBank(WOPNFile *wopn);
-	~WopnBank() override;
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -89,7 +87,7 @@ private:
 class FfBank : public AbstractBank
 {
 public:
-	explicit FfBank(std::vector<int> ids, std::vector<std::string> names, std::vector<BinaryContainer> ctrs);
+	explicit FfBank(std::vector<int> ids, std::vector<std::string> names, std::vector<io::BinaryContainer> ctrs);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -101,7 +99,7 @@ public:
 private:
 	std::vector<int> ids_;
 	std::vector<std::string> names_;
-	std::vector<BinaryContainer> instCtrs_;
+	std::vector<io::BinaryContainer> instCtrs_;
 };
 
 class PpcBank : public AbstractBank
@@ -137,7 +135,7 @@ private:
 class Mucom88Bank : public AbstractBank
 {
 public:
-	explicit Mucom88Bank(std::vector<int> ids, std::vector<std::string> names, std::vector<BinaryContainer> ctrs);
+	explicit Mucom88Bank(std::vector<int> ids, std::vector<std::string> names, std::vector<io::BinaryContainer> ctrs);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -149,5 +147,5 @@ public:
 private:
 	std::vector<int> ids_;
 	std::vector<std::string> names_;
-	std::vector<BinaryContainer> instCtrs_;
+	std::vector<io::BinaryContainer> instCtrs_;
 };

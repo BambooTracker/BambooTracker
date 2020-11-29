@@ -30,39 +30,42 @@
 #include "file_io_error.hpp"
 #include "misc.hpp"
 
-PviIO::PviIO() : AbstractBankIO("pvi", "FMP PVI", true, false) {}
-
-AbstractBank* PviIO::load(const BinaryContainer& ctr) const
+namespace io
 {
-	size_t globCsr = 0;
-	if (ctr.readString(globCsr, 4) != "PVI2")
-		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
-	globCsr += 0x10;
+	PviIO::PviIO() : AbstractBankIO("pvi", "FMP PVI", true, false) {}
 
-	size_t sampOffs = globCsr + 128 * 4;
-	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
+	AbstractBank* PviIO::load(const BinaryContainer& ctr) const
+	{
+		size_t globCsr = 0;
+		if (ctr.readString(globCsr, 4) != "PVI2")
+			throw FileCorruptionError(FileType::Bank, globCsr);
+		globCsr += 0x10;
 
-	std::vector<int> ids;
-	std::vector<std::vector<uint8_t>> samples;
-	BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
+		size_t sampOffs = globCsr + 128 * 4;
+		if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, globCsr);
 
-	return new PviBank(std::move(ids), std::move(samples));
-}
+		std::vector<int> ids;
+		std::vector<std::vector<uint8_t>> samples;
+		BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
 
-AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t> sample,
-										  std::weak_ptr<InstrumentsManager> instMan,
-										  int instNum)
-{
-	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
-	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
-	if (sampIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank, 0);
+		return new PviBank(std::move(ids), std::move(samples));
+	}
 
-	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
-	adpcm->setSampleNumber(sampIdx);
+	AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t> sample,
+											  std::weak_ptr<InstrumentsManager> instMan,
+											  int instNum)
+	{
+		std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+		int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
+		if (sampIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 
-	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
-	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
+		InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
+		adpcm->setSampleNumber(sampIdx);
 
-	return adpcm;
+		instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
+		instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
+		instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
+
+		return adpcm;
+	}
 }

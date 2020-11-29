@@ -33,78 +33,81 @@
 #include "binary_container.hpp"
 #include "file_io.hpp"
 
-class AbstractInstrumentIO
+namespace io
 {
-public:
-	AbstractInstrumentIO(std::string ext, std::string desc, bool loadable, bool savable)
-		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
-	virtual ~AbstractInstrumentIO() = default;
-	virtual AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
-									 std::weak_ptr<InstrumentsManager> instMan,
-									 int instNum) const;
-	virtual void save(BinaryContainer& ctr,
-					  const std::weak_ptr<InstrumentsManager> instMan, int instNum) const;
-	inline std::string getExtension() const { return ext_; }
-	inline std::string getFilterText() const { return desc_ + "(*." + ext_ + ")"; }
-	inline bool isLoadable() const { return loadable_; }
-	inline bool isSavable() const { return savable_; }
-
-private:
-	std::string ext_, desc_;
-	bool loadable_, savable_;
-};
-
-class InstrumentIO
-{
-public:
-	static InstrumentIO& getInstance();
-
-	void saveInstrument(BinaryContainer& ctr,
-						const std::weak_ptr<InstrumentsManager> instMan, int instNum);
-	AbstractInstrument* loadInstrument(const BinaryContainer& ctr,
-									   const std::string& path,
-									   std::weak_ptr<InstrumentsManager> instMan,
-									   int instNum);
-
-	inline bool testLoadableFormat(const std::string& ext) const
+	class AbstractInstrumentIO
 	{
-		return handler_.testLoadableExtension(ext);
-	}
+	public:
+		AbstractInstrumentIO(std::string ext, std::string desc, bool loadable, bool savable)
+			: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
+		virtual ~AbstractInstrumentIO() = default;
+		virtual AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+										 std::weak_ptr<InstrumentsManager> instMan,
+										 int instNum) const;
+		virtual void save(BinaryContainer& ctr,
+						  const std::weak_ptr<InstrumentsManager> instMan, int instNum) const;
+		inline std::string getExtension() const { return ext_; }
+		inline std::string getFilterText() const { return desc_ + "(*." + ext_ + ")"; }
+		inline bool isLoadable() const { return loadable_; }
+		inline bool isSavable() const { return savable_; }
 
-	inline bool testSavableFormat(const std::string& ext) const
+	private:
+		std::string ext_, desc_;
+		bool loadable_, savable_;
+	};
+
+	class InstrumentIO
 	{
-		return handler_.testSavableExtension(ext);
-	}
+	public:
+		static InstrumentIO& getInstance();
 
-	inline std::vector<std::string> getLoadFilter() const
-	{
-		return handler_.getLoadFilterList();
-	}
+		void saveInstrument(BinaryContainer& ctr,
+							const std::weak_ptr<InstrumentsManager> instMan, int instNum);
+		AbstractInstrument* loadInstrument(const BinaryContainer& ctr,
+										   const std::string& path,
+										   std::weak_ptr<InstrumentsManager> instMan,
+										   int instNum);
 
-	inline std::vector<std::string> getSaveFilter() const
-	{
-		return handler_.getSaveFilterList();
-	}
-
-private:
-	InstrumentIO();
-
-	static std::unique_ptr<InstrumentIO> instance_;
-	FileIOManagerMap<AbstractInstrumentIO> handler_;
-
-public:
-	static inline int convertDTInTFIVGIDMP(int dt)
-	{
-		switch (dt) {
-		case 0:		return 7;
-		case 1:		return 6;
-		case 2:		return 5;
-		case 3:		return 0;
-		case 4:		return 1;
-		case 5:		return 2;
-		case 6:		return 3;
-		case 7:		return 3;
-		default:	throw std::out_of_range("Out of range dt");
+		inline bool testLoadableFormat(const std::string& ext) const
+		{
+			return handler_.testLoadableExtension(ext);
 		}
-	}
-};
+
+		inline bool testSavableFormat(const std::string& ext) const
+		{
+			return handler_.testSavableExtension(ext);
+		}
+
+		inline std::vector<std::string> getLoadFilter() const
+		{
+			return handler_.getLoadFilterList();
+		}
+
+		inline std::vector<std::string> getSaveFilter() const
+		{
+			return handler_.getSaveFilterList();
+		}
+
+	private:
+		InstrumentIO();
+
+		static std::unique_ptr<InstrumentIO> instance_;
+		FileIOManagerMap<AbstractInstrumentIO> handler_;
+
+	public:
+		static inline int convertDTInTFIVGIDMP(int dt)
+		{
+			switch (dt) {
+			case 0:		return 7;
+			case 1:		return 6;
+			case 2:		return 5;
+			case 3:		return 0;
+			case 4:		return 1;
+			case 5:		return 2;
+			case 6:		return 3;
+			case 7:		return 3;
+			default:	throw std::out_of_range("Out of range dt");
+			}
+		}
+	};
+}

@@ -30,7 +30,9 @@
 #include <exception>
 #include <unordered_map>
 #include "commands.hpp"
-#include "io_handlers.hpp"
+#include "module_io.hpp"
+#include "instrument_io.hpp"
+#include "bank_io.hpp"
 #include "bank.hpp"
 #include "song_length_calculator.hpp"
 
@@ -164,16 +166,16 @@ void BambooTracker::swapInstruments(int a, int b, bool patternChange)
 	comMan_.invoke(std::make_unique<SwapInstrumentsCommand>(instMan_, mod_, a, b, curSongNum_, patternChange));
 }
 
-void BambooTracker::loadInstrument(BinaryContainer& container, std::string path, int instNum)
+void BambooTracker::loadInstrument(io::BinaryContainer& container, std::string path, int instNum)
 {
-	auto inst = InstrumentIO::getInstance().loadInstrument(container, path, instMan_, instNum);
+	auto inst = io::InstrumentIO::getInstance().loadInstrument(container, path, instMan_, instNum);
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
-void BambooTracker::saveInstrument(BinaryContainer& container, int instNum)
+void BambooTracker::saveInstrument(io::BinaryContainer& container, int instNum)
 {
-	InstrumentIO::getInstance().saveInstrument(container, instMan_, instNum);
+	io::InstrumentIO::getInstance().saveInstrument(container, instMan_, instNum);
 }
 
 void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)
@@ -183,9 +185,9 @@ void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
-void BambooTracker::exportInstruments(BinaryContainer& container, std::vector<int> instNums)
+void BambooTracker::exportInstruments(io::BinaryContainer& container, std::vector<int> instNums)
 {
-	BankIO::getInstance().saveBank(container, instMan_, instNums);
+	io::BankIO::getInstance().saveBank(container, instMan_, instNums);
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const
@@ -1379,7 +1381,7 @@ int BambooTracker::getMarkerStep() const
 }
 
 /********** Export **********/
-bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::function<bool()> bar)
+bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(static_cast<int>(container.getSampleRate()));
@@ -1441,8 +1443,8 @@ bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::funct
 	return true;
 }
 
-bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
-								GD3Tag tag, std::function<bool()> bar)
+bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
+								io::GD3Tag tag, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -1513,17 +1515,17 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeVgm(container, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
-								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
-								exCntr->getSampleLength(), gd3TagEnabled, tag);
+		io::writeVgm(container, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+					 loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
+					 exCntr->getSampleLength(), gd3TagEnabled, tag);
 		return true;
 	} catch (...) {
 		throw;
 	}
 }
 
-bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tagEnabled,
-								S98Tag tag, int rate, std::function<bool()> bar)
+bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
+								io::S98Tag tag, int rate, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(rate);
@@ -1577,8 +1579,8 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeS98(container, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(rate),
-								loopFlag, loopPoint, tagEnabled, tag);
+		io::writeS98(container, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(rate),
+					 loopFlag, loopPoint, tagEnabled, tag);
 		return true;
 	} catch (...) {
 		throw;
@@ -1761,13 +1763,13 @@ void BambooTracker::makeNewModule()
 	clearCommandHistory();
 }
 
-void BambooTracker::loadModule(BinaryContainer& container)
+void BambooTracker::loadModule(io::BinaryContainer& container)
 {
 	makeNewModule();
 
 	std::exception_ptr ep;
 	try {
-		ModuleIO::getInstance().loadModule(container, mod_, instMan_);
+		io::ModuleIO::getInstance().loadModule(container, mod_, instMan_);
 	}
 	catch (...) {
 		ep = std::current_exception();
@@ -1780,9 +1782,9 @@ void BambooTracker::loadModule(BinaryContainer& container)
 	if (ep) std::rethrow_exception(ep);
 }
 
-void BambooTracker::saveModule(BinaryContainer& container)
+void BambooTracker::saveModule(io::BinaryContainer& container)
 {
-	ModuleIO::getInstance().saveModule(container, mod_, instMan_);
+	io::ModuleIO::getInstance().saveModule(container, mod_, instMan_);
 }
 
 void BambooTracker::setModulePath(std::string path)

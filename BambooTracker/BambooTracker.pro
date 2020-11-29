@@ -159,6 +159,7 @@ SOURCES += \
     io/btm_io.cpp \
     io/dat_io.cpp \
     io/dmp_io.cpp \
+    io/export_io.cpp \
     io/ff_io.cpp \
     io/ins_io.cpp \
     io/opni_io.cpp \
@@ -306,7 +307,6 @@ SOURCES += \
     gui/s98_export_settings_dialog.cpp \
     stream/timer.cpp \
     io/module_io.cpp \
-    io/export_handler.cpp \
     io/instrument_io.cpp \
     io/bank_io.cpp \
     gui/fm_envelope_set_edit_dialog.cpp \
@@ -377,6 +377,7 @@ HEADERS += \
     io/btm_io.hpp \
     io/dat_io.hpp \
     io/dmp_io.hpp \
+    io/export_io.hpp \
     io/ff_io.hpp \
     io/ins_io.hpp \
     io/opni_io.hpp \
@@ -513,7 +514,6 @@ HEADERS += \
     chips/export_container.hpp \
     gui/vgm_export_settings_dialog.hpp \
     gui/wave_export_settings_dialog.hpp \
-    io/gd3_tag.hpp \
     configuration.hpp \
     gui/configuration_handler.hpp \
     gui/color_palette.hpp \
@@ -523,12 +523,9 @@ HEADERS += \
     format/wopn_file.h \
     instrument/bank.hpp \
     gui/instrument_selection_dialog.hpp \
-    io/s98_tag.hpp \
     gui/s98_export_settings_dialog.hpp \
     stream/timer.hpp \
     io/module_io.hpp \
-    io/io_handlers.hpp \
-    io/export_handler.hpp \
     io/instrument_io.hpp \
     io/bank_io.hpp \
     gui/fm_envelope_set_edit_dialog.hpp \

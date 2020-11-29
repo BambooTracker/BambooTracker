@@ -38,11 +38,11 @@ class FileIOErrorMessageBox : public QObject
 	Q_OBJECT
 
 public:
-	FileIOErrorMessageBox(const QString& file, bool isInput, FileIO::FileType ftype, const QString desc, QWidget* parent = nullptr);
-	FileIOErrorMessageBox(const QString& file, bool isInput, const FileIOError& e, QWidget* parent = nullptr);
+	FileIOErrorMessageBox(const QString& file, bool isInput, io::FileType ftype, const QString desc, QWidget* parent = nullptr);
+	FileIOErrorMessageBox(const QString& file, bool isInput, const io::FileIOError& e, QWidget* parent = nullptr);
 	void exec();
 
-	inline static void openError(const QString& file, bool isInput, FileIO::FileType ftype, QWidget* parent = nullptr)
+	inline static void openError(const QString& file, bool isInput, io::FileType ftype, QWidget* parent = nullptr)
 	{
 		FileIOErrorMessageBox(file, isInput, ftype, tr("Could not open the file."), parent).exec();
 	}
@@ -51,9 +51,9 @@ private:
 	QWidget* parent_;
 	QString text_, desc_;
 
-	static const std::unordered_map<FileIO::FileType, QString> FILE_NAMES_;
+	static const std::unordered_map<io::FileType, QString> FILE_NAMES_;
 
-	void setText(const QString& file, bool isInput, FileIO::FileType ftype);
+	void setText(const QString& file, bool isInput, io::FileType ftype);
 };
 
 #endif // FILE_IO_ERROR_MESSAGE_BOX_HPP

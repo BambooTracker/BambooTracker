@@ -892,9 +892,9 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 	auto mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1) {
 		const std::string ext = QFileInfo(mime->urls().first().toLocalFile()).suffix().toLower().toStdString();
-		if (ModuleIO::getInstance().testLoadableFormat(ext)
-				| InstrumentIO::getInstance().testLoadableFormat(ext)
-				| BankIO::getInstance().testLoadableFormat(ext))
+		if (io::ModuleIO::getInstance().testLoadableFormat(ext)
+				| io::InstrumentIO::getInstance().testLoadableFormat(ext)
+				| io::BankIO::getInstance().testLoadableFormat(ext))
 			event->acceptProposedAction();
 	}
 }
@@ -904,7 +904,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 	QString file = event->mimeData()->urls().first().toLocalFile();
 
 	const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
-	if (ModuleIO::getInstance().testLoadableFormat(ext)) {
+	if (io::ModuleIO::getInstance().testLoadableFormat(ext)) {
 		if (isWindowModified()) {
 			QString modTitle = utf8ToQString(bt_->getModuleTitle());
 			if (modTitle.isEmpty()) modTitle = tr("Untitled");
@@ -930,10 +930,10 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 		openModule(file);
 	}
-	else if (InstrumentIO::getInstance().testLoadableFormat(ext)) {
+	else if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
 		funcLoadInstrument(file);
 	}
-	if (BankIO::getInstance().testLoadableFormat(ext)) {
+	if (io::BankIO::getInstance().testLoadableFormat(ext)) {
 		funcImportInstrumentsFromBank(file);
 	}
 }
@@ -1663,7 +1663,7 @@ void MainWindow::deepCloneInstrument()
 void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = InstrumentIO::getInstance().getLoadFilter();
+	std::vector<std::string> orgFilters = io::InstrumentIO::getInstance().getLoadFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1683,7 +1683,7 @@ void MainWindow::funcLoadInstrument(QString file)
 {
 	int n = bt_->findFirstFreeInstrumentNumber();
 	if (n == -1) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Inst,
+		FileIOErrorMessageBox(file, true, io::FileType::Inst,
 							  tr("The number of instruments has reached the upper limit."), this).exec();
 		return;
 	}
@@ -1691,13 +1691,13 @@ void MainWindow::funcLoadInstrument(QString file)
 	try {
 		QFile fp(file);
 		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Inst, this);
+			FileIOErrorMessageBox::openError(file, true, io::FileType::Inst, this);
 			return;
 		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
-		BinaryContainer contaner;
+		io::BinaryContainer contaner;
 		contaner.appendVector(std::vector<char>(array.begin(), array.end()));
 		bt_->loadInstrument(contaner, file.toStdString(), n);
 
@@ -1708,11 +1708,11 @@ void MainWindow::funcLoadInstrument(QString file)
 		ui->instrumentList->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Inst, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, true, io::FileType::Inst, QString(e.what()), this).exec();
 	}
 }
 
@@ -1722,7 +1722,7 @@ void MainWindow::saveInstrument()
 	QString name = utf8ToQString(bt_->getInstrument(n)->getName());
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = InstrumentIO::getInstance().getSaveFilter();
+	std::vector<std::string> orgFilters = io::InstrumentIO::getInstance().getSaveFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1735,12 +1735,12 @@ void MainWindow::saveInstrument()
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		bt_->saveInstrument(container, n);
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Inst, this);
+			FileIOErrorMessageBox::openError(file, false, io::FileType::Inst, this);
 			return;
 		}
 		fp.write(container.getPointer(), container.size());
@@ -1748,11 +1748,11 @@ void MainWindow::saveInstrument()
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, false, FileIO::FileType::Inst, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, false, io::FileType::Inst, QString(e.what()), this).exec();
 	}
 }
 
@@ -1761,7 +1761,7 @@ void MainWindow::importInstrumentsFromBank()
 	stopPlaySong();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = BankIO::getInstance().getLoadFilter();
+	std::vector<std::string> orgFilters = io::BankIO::getInstance().getLoadFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1788,24 +1788,24 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	try {
 		QFile fp(file);
 		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Bank, this);
+			FileIOErrorMessageBox::openError(file, true, io::FileType::Bank, this);
 			return;
 		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
-		BinaryContainer container;
+		io::BinaryContainer container;
 		container.appendVector(std::vector<char>(array.begin(), array.end()));
 
-		bank.reset(BankIO::getInstance().loadBank(container, file.toStdString()));
+		bank.reset(io::BankIO::getInstance().loadBank(container, file.toStdString()));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();
 		return;
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Bank, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, true, io::FileType::Bank, QString(e.what()), this).exec();
 		return;
 	}
 
@@ -1883,7 +1883,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		for (const size_t& index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
-				FileIOErrorMessageBox(file, true, FileIO::FileType::Inst,
+				FileIOErrorMessageBox(file, true, io::FileType::Inst,
 									  tr("The number of instruments has reached the upper limit."), this).exec();
 				ui->instrumentList->setCurrentRow(lastNum);
 				return;
@@ -1903,11 +1903,11 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 
 		if (sampleRestoreRequested) assignADPCMSamples();	// Store only once
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Bank, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, true, io::FileType::Bank, QString(e.what()), this).exec();
 	}
 }
 
@@ -1922,7 +1922,7 @@ void MainWindow::exportInstrumentsToBank()
 		return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = BankIO::getInstance().getSaveFilter();
+	std::vector<std::string> orgFilters = io::BankIO::getInstance().getSaveFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1939,12 +1939,12 @@ void MainWindow::exportInstrumentsToBank()
 	std::sort(sel.begin(), sel.end());
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		bt_->exportInstruments(container, sel);
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Bank, this);
+			FileIOErrorMessageBox::openError(file, false, io::FileType::Bank, this);
 			return;
 		}
 		fp.write(container.getPointer(), container.size());
@@ -1952,11 +1952,11 @@ void MainWindow::exportInstrumentsToBank()
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, false, FileIO::FileType::Bank, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, false, io::FileType::Bank, QString(e.what()), this).exec();
 	}
 }
 
@@ -2082,7 +2082,7 @@ void MainWindow::openModule(QString file)
 		if (timer_) timer_->stop();
 		else stream_->stop();
 
-		BinaryContainer container;
+		io::BinaryContainer container;
 		QFile fp(file);
 		if (fp.open(QIODevice::ReadOnly)) {
 
@@ -2101,15 +2101,15 @@ void MainWindow::openModule(QString file)
 			goto AFTER_LOADING;	// Skip error handling section
 		}
 		else {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Mod, this);
+			FileIOErrorMessageBox::openError(file, true, io::FileType::Mod, this);
 		}
 	}
 	catch (std::exception& e) {
-		if (auto ef = dynamic_cast<FileIOError*>(&e)) {
+		if (auto ef = dynamic_cast<io::FileIOError*>(&e)) {
 			FileIOErrorMessageBox(file, true, *ef, this).exec();
 		}
 		else {
-			FileIOErrorMessageBox(file, true, FileIO::FileType::Mod, QString(e.what()), this).exec();
+			FileIOErrorMessageBox(file, true, io::FileType::Mod, QString(e.what()), this).exec();
 		}
 	}
 
@@ -3078,12 +3078,12 @@ bool MainWindow::on_actionSave_triggered()
 		if (!backupModule(path)) return false;
 
 		try {
-			BinaryContainer container;
+			io::BinaryContainer container;
 			bt_->saveModule(container);
 
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::Mod, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::Mod, this);
 				return false;
 			}
 			fp.write(container.getPointer(), container.size());
@@ -3095,12 +3095,12 @@ bool MainWindow::on_actionSave_triggered()
 			setWindowTitle();
 			return true;
 		}
-		catch (FileIOError& e) {
+		catch (io::FileIOError& e) {
 			FileIOErrorMessageBox(path, false, e, this).exec();
 			return false;
 		}
 		catch (std::exception& e) {
-			FileIOErrorMessageBox(path, false, FileIO::FileType::Mod, QString(e.what()), this).exec();
+			FileIOErrorMessageBox(path, false, io::FileType::Mod, QString(e.what()), this).exec();
 			return false;
 		}
 	}
@@ -3125,12 +3125,12 @@ bool MainWindow::on_actionSave_As_triggered()
 
 	bt_->setModulePath(file.toStdString());
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		bt_->saveModule(container);
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Mod, this);
+			FileIOErrorMessageBox::openError(file, false, io::FileType::Mod, this);
 			return false;
 		}
 		fp.write(container.getPointer(), container.size());
@@ -3144,12 +3144,12 @@ bool MainWindow::on_actionSave_As_triggered()
 		changeFileHistory(file);
 		return true;
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, false, e, this).exec();
 		return false;
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, false, FileIO::FileType::Mod, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, false, io::FileType::Mod, QString(e.what()), this).exec();
 		return false;
 	}
 }
@@ -3302,7 +3302,7 @@ void MainWindow::on_actionWAV_triggered()
 	stream_->stop();
 
 	try {
-		WavContainer container(0, static_cast<uint32_t>(diag.getSampleRate()));
+		io::WavContainer container(0, static_cast<uint32_t>(diag.getSampleRate()));
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
@@ -3313,10 +3313,10 @@ void MainWindow::on_actionWAV_triggered()
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::WAV, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
 			}
 			else {
-				BinaryContainer bc = container.createWavBinary();
+				io::BinaryContainer bc = container.createWavBinary();
 				fp.write(bc.getPointer(), bc.size());
 				fp.close();
 				bar();
@@ -3325,11 +3325,11 @@ void MainWindow::on_actionWAV_triggered()
 			}
 		}
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, FileIO::FileType::WAV, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(path, false, io::FileType::WAV, QString(e.what()), this).exec();
 	}
 
 	stream_->start();
@@ -3339,7 +3339,7 @@ void MainWindow::on_actionVGM_triggered()
 {
 	VgmExportSettingsDialog diag;
 	if (diag.exec() != QDialog::Accepted) return;
-	GD3Tag tag = diag.getGD3Tag();
+	io::GD3Tag tag = diag.getGD3Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
@@ -3362,7 +3362,7 @@ void MainWindow::on_actionVGM_triggered()
 	stream_->stop();
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
@@ -3373,7 +3373,7 @@ void MainWindow::on_actionVGM_triggered()
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::VGM, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::VGM, this);
 			}
 			else {
 				fp.write(container.getPointer(), container.size());
@@ -3384,11 +3384,11 @@ void MainWindow::on_actionVGM_triggered()
 			}
 		}
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, FileIO::FileType::VGM, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(path, false, io::FileType::VGM, QString(e.what()), this).exec();
 	}
 
 	stream_->start();
@@ -3398,7 +3398,7 @@ void MainWindow::on_actionS98_triggered()
 {
 	S98ExportSettingsDialog diag;
 	if (diag.exec() != QDialog::Accepted) return;
-	S98Tag tag = diag.getS98Tag();
+	io::S98Tag tag = diag.getS98Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
@@ -3421,7 +3421,7 @@ void MainWindow::on_actionS98_triggered()
 	stream_->stop();
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
@@ -3433,7 +3433,7 @@ void MainWindow::on_actionS98_triggered()
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::S98, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::S98, this);
 			}
 			else {
 				fp.write(container.getPointer(), container.size());
@@ -3444,11 +3444,11 @@ void MainWindow::on_actionS98_triggered()
 			}
 		}
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, FileIO::FileType::S98, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(path, false, io::FileType::S98, QString(e.what()), this).exec();
 	}
 
 	stream_->start();

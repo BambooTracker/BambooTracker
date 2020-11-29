@@ -27,18 +27,21 @@
 
 #include "instrument_io.hpp"
 
-class BtiIO final : public AbstractInstrumentIO
+namespace io
 {
-public:
-	BtiIO();
-	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
-							 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
-	void save(BinaryContainer& ctr,
-			  const std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+	class BtiIO final : public AbstractInstrumentIO
+	{
+	public:
+		BtiIO();
+		AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+								 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+		void save(BinaryContainer& ctr,
+				  const std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 
-private:
-	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
-			FMEnvelopeParameter param, size_t instMemCsr,
-			std::shared_ptr<InstrumentsManager>& instManLocked,
-			const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
-};
+	private:
+		static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
+				FMEnvelopeParameter param, size_t instMemCsr,
+				std::shared_ptr<InstrumentsManager>& instManLocked,
+				const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
+	};
+}

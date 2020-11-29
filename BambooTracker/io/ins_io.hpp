@@ -27,10 +27,13 @@
 
 #include "instrument_io.hpp"
 
-class InsIO final : public AbstractInstrumentIO
+namespace io
 {
-public:
-	InsIO();
-	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
-							 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
-};
+	class InsIO final : public AbstractInstrumentIO
+	{
+	public:
+		InsIO();
+		AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+								 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+	};
+}

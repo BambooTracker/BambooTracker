@@ -30,44 +30,46 @@
 #include "file_io_error.hpp"
 #include "misc.hpp"
 
-PpcIO::PpcIO() : AbstractBankIO("ppc", "PMD PPC", true, false) {}
-
-AbstractBank* PpcIO::load(const BinaryContainer& ctr) const
+namespace io
 {
-	size_t globCsr = 0;
-	if (ctr.readString(globCsr, 30) != "ADPCM DATA for  PMD ver.4.4-  ")
-		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
-	globCsr += 30;
-	uint16_t nextAddr = ctr.readUint16(globCsr);
-	if ((nextAddr - 0x26u) * 0x20u + 0x420u != ctr.size())	// File size check
-		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
-	globCsr += 2;
+	PpcIO::PpcIO() : AbstractBankIO("ppc", "PMD PPC", true, false) {}
 
-	size_t sampOffs = globCsr + 256 * 4;
-	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
+	AbstractBank* PpcIO::load(const BinaryContainer& ctr) const
+	{
+		size_t globCsr = 0;
+		if (ctr.readString(globCsr, 30) != "ADPCM DATA for  PMD ver.4.4-  ")
+			throw FileCorruptionError(FileType::Bank, globCsr);
+		globCsr += 30;
+		uint16_t nextAddr = ctr.readUint16(globCsr);
+		if ((nextAddr - 0x26u) * 0x20u + 0x420u != ctr.size())	// File size check
+			throw FileCorruptionError(FileType::Bank, globCsr);
+		globCsr += 2;
 
-	std::vector<int> ids;
-	std::vector<std::vector<uint8_t>> samples;
-	BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 256, ids, samples);
+		size_t sampOffs = globCsr + 256 * 4;
+		if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, globCsr);
 
-	return new PpcBank(std::move(ids), std::move(samples));
+		std::vector<int> ids;
+		std::vector<std::vector<uint8_t>> samples;
+		BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 256, ids, samples);
+
+		return new PpcBank(std::move(ids), std::move(samples));
+	}
+
+	AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t> sample,
+											  std::weak_ptr<InstrumentsManager> instMan,
+											  int instNum)
+	{
+		std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+		int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
+		if (sampIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
+
+		InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
+		adpcm->setSampleNumber(sampIdx);
+
+		instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
+		instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
+		instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
+
+		return adpcm;
+	}
 }
-
-AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t> sample,
-										  std::weak_ptr<InstrumentsManager> instMan,
-										  int instNum)
-{
-	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
-	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
-	if (sampIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank, 0);
-
-	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
-	adpcm->setSampleNumber(sampIdx);
-
-	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
-	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 67);	// o5g
-	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
-
-	return adpcm;
-}
-
