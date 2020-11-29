@@ -570,7 +570,6 @@ FORMS += \
 
 INCLUDEPATH += \
     $$PWD/chips \
-    $$PWD/stream \
     $$PWD/instrument \
     $$PWD/command \
     $$PWD/module

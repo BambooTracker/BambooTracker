@@ -40,7 +40,7 @@ class AudioStream : public QObject
 
 public:
 	explicit AudioStream(QObject* parent = nullptr);
-	virtual ~AudioStream();
+	virtual ~AudioStream() override;
 
 	using GenerateCallback = void (int16_t*, size_t, void*);
 	void setGenerateCallback(GenerateCallback* cb, void* cbPtr);

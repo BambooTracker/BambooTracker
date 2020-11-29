@@ -77,7 +77,7 @@
 #include "chips/c86ctl/c86ctl_wrapper.hpp"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
-#include "audio_stream_rtaudio.hpp"
+#include "stream/audio_stream_rtaudio.hpp"
 #include "color_palette_handler.hpp"
 #include "enum_hash.hpp"
 #include "gui/go_to_dialog.hpp"

@@ -40,14 +40,14 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QSignalBlocker>
-#include "slider_style.hpp"
-#include "fm_envelope_set_edit_dialog.hpp"
+#include "stream/audio_stream.hpp"
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
 #include "chips/chip_misc.hpp"
+#include "slider_style.hpp"
+#include "fm_envelope_set_edit_dialog.hpp"
 #include "color_palette_handler.hpp"
-#include "audio_stream.hpp"
-#include "gui/gui_util.hpp"
+#include "gui_util.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
 										 std::weak_ptr<const AudioStream> stream, QWidget *parent)
