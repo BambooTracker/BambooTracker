@@ -569,7 +569,6 @@ FORMS += \
     gui/fm_envelope_set_edit_dialog.ui
 
 INCLUDEPATH += \
-    $$PWD/chips \
     $$PWD/instrument \
     $$PWD/command \
     $$PWD/module

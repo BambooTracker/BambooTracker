@@ -29,9 +29,9 @@
 #include <memory>
 #include <unordered_map>
 #include <deque>
-#include "opna.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
+#include "chips/opna.hpp"
 #include "chips/chip_misc.hpp"
 #include "chips/scci/scci.hpp"
 #include "chips/c86ctl/c86ctl_wrapper.hpp"
