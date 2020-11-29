@@ -59,7 +59,7 @@ class InstrumentIO
 public:
 	static InstrumentIO& getInstance();
 
-	virtual void saveInstrument(BinaryContainer& ctr,
+	void saveInstrument(BinaryContainer& ctr,
 						const std::weak_ptr<InstrumentsManager> instMan, int instNum);
 	AbstractInstrument* loadInstrument(const BinaryContainer& ctr,
 									   const std::string& path,
