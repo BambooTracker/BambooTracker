@@ -52,8 +52,10 @@
 #include "track.hpp"
 #include "instrument.hpp"
 #include "bank.hpp"
-#include "bank_io.hpp"
 #include "file_io.hpp"
+#include "module_io.hpp"
+#include "instrument_io.hpp"
+#include "bank_io.hpp"
 #include "version.hpp"
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -889,16 +891,11 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
 	auto mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1) {
-		switch (FileIO::judgeFileTypeFromExtension(
-					QFileInfo(mime->urls().first().toLocalFile()).suffix().toStdString())) {
-		case FileIO::FileType::Mod:
-		case FileIO::FileType::Inst:
-		case FileIO::FileType::Bank:
+		const std::string ext = QFileInfo(mime->urls().first().toLocalFile()).suffix().toStdString();
+		if (ModuleIO::getInstance().testLoadableFormat(ext)
+				| InstrumentIO::getInstance().testLoadableFormat(ext)
+				| BankIO::getInstance().testLoadableFormat(ext))
 			event->acceptProposedAction();
-			break;
-		default:
-			break;
-		}
 	}
 }
 
@@ -906,9 +903,8 @@ void MainWindow::dropEvent(QDropEvent* event)
 {
 	QString file = event->mimeData()->urls().first().toLocalFile();
 
-	switch (FileIO::judgeFileTypeFromExtension(QFileInfo(file).suffix().toStdString())) {
-	case FileIO::FileType::Mod:
-	{
+	const std::string ext = QFileInfo(file).suffix().toStdString();
+	if (ModuleIO::getInstance().testLoadableFormat(ext)) {
 		if (isWindowModified()) {
 			QString modTitle = utf8ToQString(bt_->getModuleTitle());
 			if (modTitle.isEmpty()) modTitle = tr("Untitled");
@@ -933,20 +929,12 @@ void MainWindow::dropEvent(QDropEvent* event)
 		lockWidgets(false);
 
 		openModule(file);
-		break;
 	}
-	case FileIO::FileType::Inst:
-	{
+	else if (InstrumentIO::getInstance().testLoadableFormat(ext)) {
 		funcLoadInstrument(file);
-		break;
 	}
-	case FileIO::FileType::Bank:
-	{
+	if (BankIO::getInstance().testLoadableFormat(ext)) {
 		funcImportInstrumentsFromBank(file);
-		break;
-	}
-	default:
-		break;
 	}
 }
 
@@ -1675,17 +1663,11 @@ void MainWindow::deepCloneInstrument()
 void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QStringList filters {
-		tr("BambooTracker instrument (*.bti)"),
-				tr("DefleMask preset (*.dmp)"),
-				tr("TFM Music Maker instrument (*.tfi)"),
-				tr("VGM Music Maker instrument (*.vgi)"),
-				tr("WOPN instrument (*.opni)"),
-				tr("Gens KMod dump (*.y12)"),
-				tr("MVSTracker instrument (*.ins)")
-	};
+	std::vector<std::string> orgFilters = InstrumentIO::getInstance().getLoadFilter();
+	QStringList filters;
+	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
+				   [](const std::string& f) { return QString::fromStdString(f); });
 	QString defaultFilter = filters.at(config_.lock()->getInstrumentOpenFormat());
-
 	QString file = QFileDialog::getOpenFileName(this, tr("Open instrument"), (dir.isEmpty() ? "./" : dir),
 												filters.join(";;"), &defaultFilter);
 	if (file.isNull()) return;
@@ -1740,10 +1722,15 @@ void MainWindow::saveInstrument()
 	QString name = utf8ToQString(bt_->getInstrument(n)->getName());
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
+	std::vector<std::string> orgFilters = InstrumentIO::getInstance().getSaveFilter();
+	QStringList filters;
+	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
+				   [](const std::string& f) { return QString::fromStdString(f); });
+	QString defaultFilter = filters.front();	// bti
 	QString file = QFileDialog::getSaveFileName(
 					   this, tr("Save instrument"),
 					   QString("%1/%2.bti").arg(dir.isEmpty() ? "." : dir, name),
-					   tr("BambooTracker instrument (*.bti)"));
+					   filters.join(";;"), &defaultFilter);
 	if (file.isNull()) return;
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
@@ -1774,16 +1761,11 @@ void MainWindow::importInstrumentsFromBank()
 	stopPlaySong();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	QStringList filters {
-		tr("BambooTracker bank (*.btb)"),
-				tr("WOPN bank (*.wopn)"),
-				tr("PMD FF (*.ff)"),
-				tr("PMD PPC (*.ppc)"),
-				tr("FMP PVI (*.pvi)"),
-				tr("MUCOM88 voice (*.dat)")
-	};
+	std::vector<std::string> orgFilters = BankIO::getInstance().getLoadFilter();
+	QStringList filters;
+	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
+				   [](const std::string& f) { return QString::fromStdString(f); });
 	QString defaultFilter = filters.at(config_.lock()->getBankOpenFormat());
-
 	QString file = QFileDialog::getOpenFileName(this, tr("Open bank"), (dir.isEmpty() ? "./" : dir),
 												filters.join(";;"), &defaultFilter);
 	if (file.isNull()) {
@@ -1815,7 +1797,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		BinaryContainer container;
 		container.appendVector(std::vector<char>(array.begin(), array.end()));
 
-		bank.reset(BankIO::loadBank(container, file.toStdString()));
+		bank.reset(BankIO::getInstance().loadBank(container, file.toStdString()));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
 	catch (FileIOError& e) {
@@ -1940,8 +1922,13 @@ void MainWindow::exportInstrumentsToBank()
 		return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
+	std::vector<std::string> orgFilters = BankIO::getInstance().getSaveFilter();
+	QStringList filters;
+	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
+				   [](const std::string& f) { return QString::fromStdString(f); });
+	QString defaultFilter = filters.front();	// btb
 	QString file = QFileDialog::getSaveFileName(this, tr("Save bank"), (dir.isEmpty() ? "./" : dir),
-												tr("BambooTracker bank (*.btb)"));
+												filters.join(";;"), &defaultFilter);
 	if (file.isNull()) return;
 
 	QVector<size_t> selection = dlg.currentInstrumentSelection();

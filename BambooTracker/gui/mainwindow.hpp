@@ -65,8 +65,6 @@
 #include "file_io_error.hpp"
 #include "enum_hash.hpp"
 
-class AbstractBank;
-
 namespace Ui {
 	class MainWindow;
 }

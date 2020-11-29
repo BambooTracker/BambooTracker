@@ -166,14 +166,14 @@ void BambooTracker::swapInstruments(int a, int b, bool patternChange)
 
 void BambooTracker::loadInstrument(BinaryContainer& container, std::string path, int instNum)
 {
-	auto inst = InstrumentIO::loadInstrument(container, path, instMan_, instNum);
+	auto inst = InstrumentIO::getInstance().loadInstrument(container, path, instMan_, instNum);
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
 void BambooTracker::saveInstrument(BinaryContainer& container, int instNum)
 {
-	InstrumentIO::saveInstrument(container, instMan_, instNum);
+	InstrumentIO::getInstance().saveInstrument(container, instMan_, instNum);
 }
 
 void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)
@@ -185,7 +185,7 @@ void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int
 
 void BambooTracker::exportInstruments(BinaryContainer& container, std::vector<int> instNums)
 {
-	BankIO::saveBank(container, instNums, instMan_);
+	BankIO::getInstance().saveBank(container, instMan_, instNums);
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const
@@ -1767,7 +1767,7 @@ void BambooTracker::loadModule(BinaryContainer& container)
 
 	std::exception_ptr ep;
 	try {
-		ModuleIO::loadModule(container, mod_, instMan_);
+		ModuleIO::getInstance().loadModule(container, mod_, instMan_);
 	}
 	catch (...) {
 		ep = std::current_exception();
@@ -1782,7 +1782,7 @@ void BambooTracker::loadModule(BinaryContainer& container)
 
 void BambooTracker::saveModule(BinaryContainer& container)
 {
-	ModuleIO::saveModule(container, mod_, instMan_);
+	ModuleIO::getInstance().saveModule(container, mod_, instMan_);
 }
 
 void BambooTracker::setModulePath(std::string path)

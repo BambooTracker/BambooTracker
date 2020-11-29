@@ -27,77 +27,83 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+#include <stdexcept>
 #include "instruments_manager.hpp"
 #include "binary_container.hpp"
-#include "format/wopn_file.h"
+#include "file_io.hpp"
+
+class AbstractInstrumentIO
+{
+public:
+	AbstractInstrumentIO(std::string ext, std::string desc, bool loadable, bool savable)
+		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
+	virtual AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+									 std::weak_ptr<InstrumentsManager> instMan,
+									 int instNum) const;
+	virtual void save(BinaryContainer& ctr,
+					  const std::weak_ptr<InstrumentsManager> instMan, int instNum) const;
+	inline std::string getExtension() const { return ext_; }
+	inline std::string getFilterText() const { return desc_ + "(*." + ext_ + ")"; }
+	inline bool isLoadable() const { return loadable_; }
+	inline bool isSavable() const { return savable_; }
+
+private:
+	std::string ext_, desc_;
+	bool loadable_, savable_;
+};
 
 class InstrumentIO
 {
 public:
-	static void saveInstrument(BinaryContainer& ctr,
-							   const std::weak_ptr<InstrumentsManager> instMan, int instNum);
-	static AbstractInstrument* loadInstrument(const BinaryContainer& ctr,
-											  const std::string& path,
-											  std::weak_ptr<InstrumentsManager> instMan,
-											  int instNum);
+	static InstrumentIO& getInstance();
 
-private:
-	static AbstractInstrument* loadBTIFile(const BinaryContainer& ctr,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
-	static AbstractInstrument* loadDMPFile(const BinaryContainer& ctr,std::string path,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
-	static AbstractInstrument* loadTFIFile(const BinaryContainer& ctr,std::string path,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
-	static AbstractInstrument* loadVGIFile(const BinaryContainer& ctr,std::string path,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
-	static AbstractInstrument* loadOPNIFile(const BinaryContainer& ctr,
-											std::weak_ptr<InstrumentsManager> instMan,
-											int instNum);
-	static AbstractInstrument* loadY12File(const BinaryContainer& ctr,std::string path,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
-	static AbstractInstrument* loadINSFile(const BinaryContainer& ctr,
-										   std::weak_ptr<InstrumentsManager> instMan,
-										   int instNum);
+	virtual void saveInstrument(BinaryContainer& ctr,
+						const std::weak_ptr<InstrumentsManager> instMan, int instNum);
+	AbstractInstrument* loadInstrument(const BinaryContainer& ctr,
+									   const std::string& path,
+									   std::weak_ptr<InstrumentsManager> instMan,
+									   int instNum);
 
-public:
-	static AbstractInstrument* loadWOPNInstrument(const WOPNInstrument &srcInst,
-												  std::weak_ptr<InstrumentsManager> instMan,
-												  int instNum);
-	static AbstractInstrument* loadBTBInstrument(const BinaryContainer& instCtr,
-												 const BinaryContainer& propCtr,
-												 std::weak_ptr<InstrumentsManager> instMan,
-												 int instNum,
-												 uint32_t bankVersion);
-	static AbstractInstrument* loadFFInstrument(const BinaryContainer& instCtr,
-												const std::string& name,
-												std::weak_ptr<InstrumentsManager> instMan,
-												int instNum);
-	static AbstractInstrument* loadPPCInstrument(const std::vector<uint8_t> sample,
-												 std::weak_ptr<InstrumentsManager> instMan,
-												 int instNum);
-	static AbstractInstrument* loadPVIInstrument(const std::vector<uint8_t> sample,
-												 std::weak_ptr<InstrumentsManager> instMan,
-												 int instNum);
-	static AbstractInstrument* loadMUCOM88Instrument(const BinaryContainer& instCtr,
-													 const std::string& name,
-													 std::weak_ptr<InstrumentsManager> instMan,
-													 int instNum);
+	inline bool testLoadableFormat(const std::string& ext) const
+	{
+		return handler_.testLoadableExtension(ext);
+	}
 
-private:
-	static size_t loadInstrumentPropertyOperatorSequenceForInstrument(
-			FMEnvelopeParameter param, size_t instMemCsr,
-			std::shared_ptr<InstrumentsManager>& instManLocked,
-			const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
-	static size_t getPropertyPositionForBTB(const BinaryContainer& propCtr,
-											uint8_t subsecType, uint8_t index);
-	static int convertDTInTFIVGIDMP(int dt);
+	inline bool testSavableFormat(const std::string& ext) const
+	{
+		return handler_.testSavableExtension(ext);
+	}
 
+	inline std::vector<std::string> getLoadFilter() const
+	{
+		return handler_.getLoadFilterList();
+	}
+
+	inline std::vector<std::string> getSaveFilter() const
+	{
+		return handler_.getSaveFilterList();
+	}
 
 private:
 	InstrumentIO();
+
+	static std::unique_ptr<InstrumentIO> instance_;
+	FileIOManagerMap<AbstractInstrumentIO> handler_;
+
+public:
+	static inline int convertDTInTFIVGIDMP(int dt)
+	{
+		switch (dt) {
+		case 0:		return 7;
+		case 1:		return 6;
+		case 2:		return 5;
+		case 3:		return 0;
+		case 4:		return 1;
+		case 5:		return 2;
+		case 6:		return 3;
+		case 7:		return 3;
+		default:	throw std::out_of_range("Out of range dt");
+		}
+	}
 };

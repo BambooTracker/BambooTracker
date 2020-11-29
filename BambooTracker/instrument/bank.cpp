@@ -28,6 +28,12 @@
 #include <utility>
 #include "instrument_io.hpp"
 #include "format/wopn_file.h"
+#include "opni_io.hpp"
+#include "btb_io.hpp"
+#include "ff_io.hpp"
+#include "ppc_io.hpp"
+#include "pvi_io.hpp"
+#include "dat_io.hpp"
 
 BtBank::BtBank(std::vector<int> ids, std::vector<std::string> names)
 	: ids_(std::move(ids)),
@@ -66,7 +72,7 @@ std::string BtBank::getInstrumentName(size_t index) const
 
 AbstractInstrument* BtBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	return InstrumentIO::loadBTBInstrument(instCtrs_.at(static_cast<size_t>(index)), propCtr_, instMan, instNum, version_);
+	return BtbIO::loadInstrument(instCtrs_.at(static_cast<size_t>(index)), propCtr_, instMan, instNum, version_);
 }
 
 /******************************/
@@ -140,7 +146,7 @@ std::string WopnBank::getInstrumentName(size_t index) const
 AbstractInstrument* WopnBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
 	const InstEntry &ent = entries_.at(index);
-	return InstrumentIO::loadWOPNInstrument(*ent.inst, instMan, instNum);
+	return OpniIO::loadWOPNInstrument(*ent.inst, instMan, instNum);
 }
 
 /******************************/
@@ -166,7 +172,7 @@ std::string FfBank::getInstrumentName(size_t index) const
 
 AbstractInstrument* FfBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	return InstrumentIO::loadFFInstrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
+	return FfIO::loadInstrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
 }
 
 void FfBank::setInstrumentName(size_t index, const std::string& name)
@@ -198,7 +204,7 @@ std::string PpcBank::getInstrumentName(size_t index) const
 
 AbstractInstrument* PpcBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	return InstrumentIO::loadPPCInstrument(samples_.at(index), instMan, instNum);
+	return PpcIO::loadInstrument(samples_.at(index), instMan, instNum);
 }
 
 /******************************/
@@ -225,7 +231,7 @@ std::string PviBank::getInstrumentName(size_t index) const
 
 AbstractInstrument* PviBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	return InstrumentIO::loadPVIInstrument(samples_.at(index), instMan, instNum);
+	return PviIO::loadInstrument(samples_.at(index), instMan, instNum);
 }
 
 /******************************/
@@ -251,7 +257,7 @@ std::string Mucom88Bank::getInstrumentName(size_t index) const
 
 AbstractInstrument* Mucom88Bank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	return InstrumentIO::loadMUCOM88Instrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
+	return DatIO::loadInstrument(instCtrs_.at(index), names_.at(index), instMan, instNum);
 }
 
 void Mucom88Bank::setInstrumentName(size_t index, const std::string& name)
