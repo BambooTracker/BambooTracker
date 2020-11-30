@@ -53,6 +53,7 @@ jobs:
 
       - name: Installing dependencies.
         run: |
+          sudo apt update
           sudo apt install qt5-default qttools5-dev-tools \
             libasound2-dev libpulse-dev libjack-jackd2-dev
 
