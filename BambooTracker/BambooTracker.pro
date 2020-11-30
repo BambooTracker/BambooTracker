@@ -185,7 +185,7 @@ SOURCES += \
     module/effect.cpp \
     playback.cpp \
     song_length_calculator.cpp \
-    stream/audio_stream.cpp \
+    audio/audio_stream.cpp \
     jam_manager.cpp \
     pitch_converter.cpp \
     instrument/instruments_manager.cpp \
@@ -205,7 +205,7 @@ SOURCES += \
     instrument/instrument.cpp \
     instrument/envelope_fm.cpp \
     gui/event_guard.cpp \
-    stream/audio_stream_rtaudio.cpp \
+    audio/audio_stream_rtaudio.cpp \
     tick_counter.cpp \
     module/module.cpp \
     module/song.cpp \
@@ -305,7 +305,7 @@ SOURCES += \
     instrument/bank.cpp \
     gui/instrument_selection_dialog.cpp \
     gui/s98_export_settings_dialog.cpp \
-    stream/timer.cpp \
+    audio/timer.cpp \
     io/module_io.cpp \
     io/instrument_io.cpp \
     io/bank_io.cpp \
@@ -391,7 +391,7 @@ HEADERS += \
     module/effect.hpp \
     playback.hpp \
     song_length_calculator.hpp \
-    stream/audio_stream.hpp \
+    audio/audio_stream.hpp \
     chips/chip_def.h \
     jam_manager.hpp \
     misc.hpp \
@@ -415,7 +415,7 @@ HEADERS += \
     instrument/instrument.hpp \
     instrument/envelope_fm.hpp \
     gui/event_guard.hpp \
-    stream/audio_stream_rtaudio.hpp \
+    audio/audio_stream_rtaudio.hpp \
     tick_counter.hpp \
     module/module.hpp \
     module/song.hpp \
@@ -524,7 +524,7 @@ HEADERS += \
     instrument/bank.hpp \
     gui/instrument_selection_dialog.hpp \
     gui/s98_export_settings_dialog.hpp \
-    stream/timer.hpp \
+    audio/timer.hpp \
     io/module_io.hpp \
     io/instrument_io.hpp \
     io/bank_io.hpp \
@@ -572,7 +572,7 @@ INCLUDEPATH += \
     $$PWD/instrument \
     $$PWD/module
 
-include("stream/RtAudio/RtAudio.pri")
+include("audio/RtAudio/RtAudio.pri")
 include("midi/RtMidi/RtMidi.pri")
 
 include("../data/data.pri")

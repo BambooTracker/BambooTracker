@@ -52,8 +52,8 @@
 #include <QLineEdit>
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
-#include "stream/audio_stream.hpp"
-#include "stream/timer.hpp"
+#include "audio/audio_stream.hpp"
+#include "audio/timer.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "gui/color_palette.hpp"
 #include "gui/file_history.hpp"

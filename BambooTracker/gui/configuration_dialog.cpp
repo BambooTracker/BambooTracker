@@ -40,7 +40,7 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QSignalBlocker>
-#include "stream/audio_stream.hpp"
+#include "audio/audio_stream.hpp"
 #include "midi/midi.hpp"
 #include "jam_manager.hpp"
 #include "chips/chip_misc.hpp"

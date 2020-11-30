@@ -15,7 +15,7 @@
   - BambooTracker/chips/nuked/ym3438.*
 - [Qt](https://www.qt.io/) - GPL v2+ or LGPLv3
 - [RtAudio](http://www.music.mcgill.ca/~gary/rtaudio/) by Gary P. Scavone - [rtaudio_license.txt](./rtaudio_license.txt)
-  - BambooTracker/stream/RtAudio/*
+  - BambooTracker/audio/RtAudio/*
 - [RtMidi](https://github.com/Wohlstand/rtmidi) by Gary P. Scavone - [rtmidi_license.txt](./rtmidi_license.txt)
   - BambooTracker/midi/RtMidi/*
 - [SCCI](http://www.pyonpyon.jp/~gasshi/fm/scci.html) by がし３ (gasshi) - [scci_license.txt](./scci_license.txt)
@@ -29,6 +29,7 @@
 ## Other parts
 - MIT license
   - BambooTracker/*.{hpp,cpp}
+  - BambooTracker/audio/*.{hpp,cpp}
   - BambooTracker/chips/*.{hpp,h,cpp} (except chip_def.h)
   - BambooTracker/command/*
   - BambooTracker/gui/*
@@ -36,4 +37,3 @@
   - BambooTracker/io/*
   - BambooTracker/midi/*.{hpp,cpp}
   - BambooTracker/module/*
-  - BambooTracker/stream/*.{hpp,cpp}
