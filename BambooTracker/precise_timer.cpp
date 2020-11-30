@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,26 +23,25 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "timer.hpp"
+#include "precise_timer.hpp"
+#include <chrono>
 
-Timer::Timer() {}
-
-Timer::~Timer()
+PreciseTimer::~PreciseTimer()
 {
 	stop();
 }
 
-void Timer::setFunction(std::function<void()> func)
+void PreciseTimer::setFunction(std::function<void()> func)
 {
 	func_ = func;
 }
 
-void Timer::setInterval(const int microsec)
+void PreciseTimer::setInterval(const int microsec)
 {
 	time_.store(microsec);
 }
 
-void Timer::start()
+void PreciseTimer::start()
 {
 	isContinue_.store(true);
 	thread_ = std::thread([&] {
@@ -53,7 +52,7 @@ void Timer::start()
 	});
 }
 
-void Timer::stop()
+void PreciseTimer::stop()
 {
 	if (isContinue_.load()) {
 		isContinue_.store(false);

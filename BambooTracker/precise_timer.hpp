@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,15 +26,13 @@
 #pragma once
 
 #include <functional>
-#include <chrono>
 #include <atomic>
 #include <thread>
 
-class Timer
+class PreciseTimer
 {
 public:
-	Timer();
-	~Timer();
+	~PreciseTimer();
 
 	void setFunction(std::function<void()> func);
 	void setInterval(const int microsec);
@@ -43,7 +41,7 @@ public:
 	void stop();
 
 private:
-	std::atomic<int> time_;
+	std::atomic_int time_;
 	std::function<void()> func_;
 	std::thread thread_;
 	std::atomic_bool isContinue_;

@@ -375,10 +375,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, [&](int num) {
 		if (num == -1) return;
 		freezeViews();
-		if (!timer_) stream_->stop();
+		if (!tickTimerForRealChip_) stream_->stop();
 		bt_->setCurrentSongNumber(num);
 		loadSong();
-		if (!timer_) stream_->start();
+		if (!tickTimerForRealChip_) stream_->start();
 	});
 
 	/* Song settings */
@@ -733,18 +733,18 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		bt_->useC86CTL(nullptr);
 	}
 	else {
-		timer_ = std::make_unique<Timer>();
-		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+		tickTimerForRealChip_ = std::make_unique<PreciseTimer>();
+		tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
 		Q_ASSERT(tickEventMethod_ != -1);
-		timer_->setFunction([&]{
+		tickTimerForRealChip_->setFunction([&]{
 			QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
 			method.invoke(this, Qt::QueuedConnection);
 		});
 
 		setRealChipInterface(intf);
 
-		timer_->start();
+		tickTimerForRealChip_->start();
 	}
 
 	/* Load module */
@@ -752,7 +752,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		loadModule();
 		setInitialSelectedInstrument();
 		assignADPCMSamples();
-		if (!timer_) stream_->start();
+		if (!tickTimerForRealChip_) stream_->start();
 	}
 	else {
 		openModule(filePath);	// If use emulation, stream stars
@@ -2027,7 +2027,7 @@ void MainWindow::loadModule()
 
 	// Set tick frequency
 	stream_->setInterruption(bt_->getModuleTickFrequency());
-	if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+	if (tickTimerForRealChip_) tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 
 	// Set mixer
@@ -2079,7 +2079,7 @@ void MainWindow::openModule(QString file)
 {
 	try {
 		freezeViews();
-		if (timer_) timer_->stop();
+		if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
 		else stream_->stop();
 
 		io::BinaryContainer container;
@@ -2121,7 +2121,7 @@ void MainWindow::openModule(QString file)
 AFTER_LOADING:	// Post process of module loading
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
-	if (timer_) timer_->start();
+	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
 	else stream_->start();
 	setInitialSelectedInstrument();
 	assignADPCMSamples();
@@ -2180,11 +2180,11 @@ void MainWindow::assignADPCMSamples()
 {
 	bt_->stopPlaySong();
 	lockWidgets(false);
-	if (timer_) timer_->stop();
+	if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
 	else stream_->stop();
 	bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instForms_->onInstrumentADPCMSampleMemoryUpdated();
-	if (timer_) timer_->start();
+	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
 	else stream_->start();
 }
 
@@ -2264,7 +2264,7 @@ void MainWindow::changeConfiguration()
 	bool streamState = false;
 	RealChipInterface intf = config_.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
-		timer_.reset();
+		tickTimerForRealChip_.reset();
 		bt_->useSCCI(nullptr);
 		bt_->useC86CTL(nullptr);
 		QString streamErr;
@@ -2280,15 +2280,15 @@ void MainWindow::changeConfiguration()
 	}
 	else {
 		stream_->stop();
-		if (timer_) {
-			timer_->stop();
+		if (tickTimerForRealChip_) {
+			tickTimerForRealChip_->stop();
 		}
 		else {
-			timer_ = std::make_unique<Timer>();
-			timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+			tickTimerForRealChip_ = std::make_unique<PreciseTimer>();
+			tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
 			Q_ASSERT(tickEventMethod_ != -1);
-			timer_->setFunction([&]{
+			tickTimerForRealChip_->setFunction([&]{
 				QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
 				method.invoke(this, Qt::QueuedConnection);
 			});
@@ -2296,7 +2296,7 @@ void MainWindow::changeConfiguration()
 
 		setRealChipInterface(intf);
 
-		timer_->start();
+		tickTimerForRealChip_->start();
 	}
 
 	setMidiConfiguration();
@@ -2829,12 +2829,12 @@ void MainWindow::on_actionModule_Properties_triggered()
 		lockWidgets(false);
 		dialog.onAccepted();
 		freezeViews();
-		if (!timer_) stream_->stop();
+		if (!tickTimerForRealChip_) stream_->stop();
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
 		ui->instrumentList->setCurrentRow(instRow);
-		if (!timer_) stream_->start();
+		if (!tickTimerForRealChip_) stream_->start();
 		assignADPCMSamples();
 	}
 }
@@ -3044,13 +3044,13 @@ void MainWindow::on_actionNew_triggered()
 	bt_->stopPlaySong();
 	lockWidgets(false);
 	freezeViews();
-	if (!timer_) stream_->stop();
+	if (!tickTimerForRealChip_) stream_->stop();
 	bt_->makeNewModule();
 	loadModule();
 	setInitialSelectedInstrument();
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
-	if (!timer_) stream_->start();
+	if (!tickTimerForRealChip_) stream_->start();
 	assignADPCMSamples();
 }
 

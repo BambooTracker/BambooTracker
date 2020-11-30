@@ -305,7 +305,7 @@ SOURCES += \
     instrument/bank.cpp \
     gui/instrument_selection_dialog.cpp \
     gui/s98_export_settings_dialog.cpp \
-    audio/timer.cpp \
+    precise_timer.cpp \
     io/module_io.cpp \
     io/instrument_io.cpp \
     io/bank_io.cpp \
@@ -524,7 +524,7 @@ HEADERS += \
     instrument/bank.hpp \
     gui/instrument_selection_dialog.hpp \
     gui/s98_export_settings_dialog.hpp \
-    audio/timer.hpp \
+    precise_timer.hpp \
     io/module_io.hpp \
     io/instrument_io.hpp \
     io/bank_io.hpp \
