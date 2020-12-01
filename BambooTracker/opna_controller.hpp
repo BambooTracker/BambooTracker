@@ -31,10 +31,10 @@
 #include <deque>
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
-#include "chips/opna.hpp"
-#include "chips/chip_misc.hpp"
-#include "chips/scci/scci.hpp"
-#include "chips/c86ctl/c86ctl_wrapper.hpp"
+#include "chip/opna.hpp"
+#include "chip/chip_misc.hpp"
+#include "chip/scci/scci.hpp"
+#include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 

@@ -124,7 +124,7 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
-    chips/c86ctl/c86ctl_wrapper.cpp \
+    chip/c86ctl/c86ctl_wrapper.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
     command/pattern/paste_insert_copied_data_to_pattern_command.cpp \
@@ -172,15 +172,15 @@ SOURCES += \
     io/y12_io.cpp \
     main.cpp \
     gui/mainwindow.cpp \
-    chips/chip.cpp \
-    chips/opna.cpp \
-    chips/resampler.cpp \
-    chips/mame/2608intf.c \
-    chips/mame/emu2149.c \
-    chips/mame/fm.c \
-    chips/mame/ymdeltat.c \
-    chips/nuked/nuke2608intf.c \
-    chips/nuked/ym3438.c \
+    chip/chip.cpp \
+    chip/opna.cpp \
+    chip/resampler.cpp \
+    chip/mame/2608intf.c \
+    chip/mame/emu2149.c \
+    chip/mame/fm.c \
+    chip/mame/ymdeltat.c \
+    chip/nuked/nuke2608intf.c \
+    chip/nuked/ym3438.c \
     bamboo_tracker.cpp \
     module/effect.cpp \
     playback.cpp \
@@ -293,7 +293,7 @@ SOURCES += \
     command/pattern/reverse_pattern_command.cpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.cpp \
     command/pattern/replace_instrument_in_pattern_command.cpp \
-    chips/export_container.cpp \
+    chip/export_container.cpp \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
@@ -317,12 +317,12 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
-    chips/chip_misc.hpp \
-    chips/codec/ymb_codec.hpp \
-    chips/c86ctl/c86ctl.h \
-    chips/c86ctl/c86ctl_wrapper.hpp \
-    chips/scci/SCCIDefines.hpp \
-    chips/scci/scci.hpp \
+    chip/chip_misc.hpp \
+    chip/codec/ymb_codec.hpp \
+    chip/c86ctl/c86ctl.h \
+    chip/c86ctl/c86ctl_wrapper.hpp \
+    chip/scci/SCCIDefines.hpp \
+    chip/scci/scci.hpp \
     command/command_id.hpp \
     command/instrument/swap_instruments_command.hpp \
     command/pattern/change_values_in_pattern_command.hpp \
@@ -355,17 +355,17 @@ HEADERS += \
     gui/jam_layout.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
-    chips/mame/2608intf.h \
-    chips/mame/emu2149.h \
-    chips/mame/emutypes.h \
-    chips/mame/fm.h \
-    chips/mame/mamedef.h \
-    chips/mame/ymdeltat.h \
-    chips/nuked/nuke2608intf.h \
-    chips/nuked/ym3438.h \
-    chips/chip.hpp \
-    chips/opna.hpp \
-    chips/resampler.hpp \
+    chip/mame/2608intf.h \
+    chip/mame/emu2149.h \
+    chip/mame/emutypes.h \
+    chip/mame/fm.h \
+    chip/mame/mamedef.h \
+    chip/mame/ymdeltat.h \
+    chip/nuked/nuke2608intf.h \
+    chip/nuked/ym3438.h \
+    chip/chip.hpp \
+    chip/opna.hpp \
+    chip/resampler.hpp \
     bamboo_tracker.hpp \
     gui/swap_tracks_dialog.hpp \
     gui/track_visibility_memory_handler.hpp \
@@ -392,7 +392,7 @@ HEADERS += \
     playback.hpp \
     song_length_calculator.hpp \
     audio/audio_stream.hpp \
-    chips/chip_def.h \
+    chip/chip_def.h \
     jam_manager.hpp \
     misc.hpp \
     pitch_converter.hpp \
@@ -511,7 +511,7 @@ HEADERS += \
     command/pattern/reverse_pattern_command.hpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.hpp \
     command/pattern/replace_instrument_in_pattern_command.hpp \
-    chips/export_container.hpp \
+    chip/export_container.hpp \
     gui/vgm_export_settings_dialog.hpp \
     gui/wave_export_settings_dialog.hpp \
     configuration.hpp \

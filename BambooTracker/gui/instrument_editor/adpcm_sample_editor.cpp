@@ -43,7 +43,7 @@
 #include <QToolButton>
 #include <QWheelEvent>
 #include <QHoverEvent>
-#include "chips/codec/ymb_codec.hpp"
+#include "chip/codec/ymb_codec.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
