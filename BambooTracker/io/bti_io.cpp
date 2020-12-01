@@ -31,7 +31,7 @@
 #include "enum_hash.hpp"
 #include "version.hpp"
 #include "file_io_error.hpp"
-#include "pitch_converter.hpp"
+#include "calc_pitch.hpp"
 #include "bt_io_defs.hpp"
 
 namespace io
@@ -1101,7 +1101,7 @@ namespace io
 								subdata = ctr.readUint16(csr);
 								csr += 2;
 								if (subdata != -1)
-									subdata = PitchConverter::getPitchSSGSquare(subdata);
+									subdata = calc_pitch::calculateSSGSquareTP(subdata);
 							}
 							if (l == 0)
 								instManLocked->setWaveformSSGSequenceCommand(idx, 0, data, subdata);

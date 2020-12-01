@@ -24,7 +24,7 @@
  */
 
 #include "effect_iterator.hpp"
-#include "pitch_converter.hpp"
+#include "calc_pitch.hpp"
 #include <cstddef>
 
 ArpeggioEffectIterator::ArpeggioEffectIterator(int second, int third)
@@ -158,7 +158,7 @@ int WavingEffectIterator::end()
 NoteSlideEffectIterator::NoteSlideEffectIterator(int speed, int seminote)
 	: started_(false)
 {
-	int d = seminote * PitchConverter::SEMINOTE_PITCH;
+	int d = seminote * calc_pitch::SEMINOTE_PITCH;
 	if (speed) {
 		int prev = 0;
 		for (int i = 0; i <= speed; ++i) {

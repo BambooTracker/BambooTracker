@@ -29,7 +29,7 @@
 #include <utility>
 #include <stdexcept>
 #include "gui/event_guard.hpp"
-#include "pitch_converter.hpp"
+#include "calc_pitch.hpp"
 #include "command_sequence.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_util.hpp"

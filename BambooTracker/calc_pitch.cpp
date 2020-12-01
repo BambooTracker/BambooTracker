@@ -23,48 +23,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "pitch_converter.hpp"
+#include "calc_pitch.hpp"
 
-uint16_t PitchConverter::getPitchFM(Note note, int octave, int pitch, int finePitch)
+namespace
 {
-	uint16_t p = centTableFM_[calculatePitchIndex(octave, note, pitch)];
-	return (finePitch ? (finePitch > 0 ? p + finePitch : p - static_cast<uint16_t>(-finePitch))
-					  : p);
-}
-
-uint16_t PitchConverter::getPitchSSGSquare(Note note, int octave, int pitch, int finePitch)
-{
-	uint16_t p = centTableSSGSquare_[calculatePitchIndex(octave, note, pitch)];
-	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
-					   : p);
-}
-
-uint16_t PitchConverter::getPitchSSGSquare(int n)
-{
-	return centTableSSGSquare_[n];
-}
-
-uint16_t PitchConverter::getPitchSSGTriangle(Note note, int octave, int pitch, int finePitch)
-{
-	uint16_t p = centTableSSGTriangle_[calculatePitchIndex(octave, note, pitch)];
-	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
-					   : p);
-}
-
-uint16_t PitchConverter::getPitchSSGSaw(Note note, int octave, int pitch, int finePitch)
-{
-	uint16_t p = centTableSSGSaw_[calculatePitchIndex(octave, note, pitch)];
-	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
-					   : p);
-}
-
-int PitchConverter::calculatePitchIndex(int octave, Note note, int pitch)
-{
-	int idx = 384 * octave + static_cast<int>(note) + pitch;
-	return clamp(idx, 0, 3071);
-}
-
-const uint16_t PitchConverter::centTableFM_[3072] = {
+const uint16_t centTableFM[3072] = {
 	0x026a, 0x026b, 0x026c, 0x026e, 0x026f, 0x0270, 0x0271, 0x0272, 0x0273, 0x0274, 0x0276, 0x0277,
 	0x0278, 0x0279, 0x027a, 0x027b, 0x027c, 0x027e, 0x027f, 0x0280, 0x0281, 0x0282, 0x0283, 0x0284,
 	0x0286, 0x0287, 0x0288, 0x0289, 0x028a, 0x028b, 0x028d, 0x028e, 0x028f, 0x0290, 0x0291, 0x0293,
@@ -323,7 +286,7 @@ const uint16_t PitchConverter::centTableFM_[3072] = {
 	0x3cba, 0x3cbc, 0x3cbe, 0x3cc1, 0x3cc3, 0x3cc5, 0x3cc7, 0x3cc9, 0x3ccc, 0x3cce, 0x3cd0, 0x3cd2
 };
 
-const uint16_t PitchConverter::centTableSSGSquare_[3072] = {
+const uint16_t centTableSSGSquare[3072] = {
 	0xee8, 0xee1, 0xeda, 0xed4, 0xecd, 0xec6, 0xebf, 0xeb8, 0xeb1, 0xeab, 0xea4, 0xe9d,
 	0xe96, 0xe90, 0xe89, 0xe82, 0xe7c, 0xe75, 0xe6e, 0xe67, 0xe61, 0xe5a, 0xe54, 0xe4d,
 	0xe46, 0xe40, 0xe39, 0xe33, 0xe2c, 0xe26, 0xe1f, 0xe18, 0xe12, 0xe0b, 0xe05, 0xdff,
@@ -582,7 +545,7 @@ const uint16_t PitchConverter::centTableSSGSquare_[3072] = {
 	0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f, 0x00f
 };
 
-const uint16_t PitchConverter::centTableSSGTriangle_[3072] = {
+const uint16_t centTableSSGTriangle[3072] = {
 	0x077, 0x077, 0x077, 0x077, 0x076, 0x076, 0x076, 0x076, 0x076, 0x075, 0x075, 0x075,
 	0x075, 0x074, 0x074, 0x074, 0x074, 0x074, 0x073, 0x073, 0x073, 0x073, 0x073, 0x072,
 	0x072, 0x072, 0x072, 0x072, 0x071, 0x071, 0x071, 0x071, 0x071, 0x070, 0x070, 0x070,
@@ -841,7 +804,7 @@ const uint16_t PitchConverter::centTableSSGTriangle_[3072] = {
 	0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001
 };
 
-const uint16_t PitchConverter::centTableSSGSaw_[3072] = {
+const uint16_t centTableSSGSaw[3072] = {
 	0x0ef, 0x0ee, 0x0ee, 0x0ed, 0x0ed, 0x0ec, 0x0ec, 0x0ec, 0x0eb, 0x0eb, 0x0ea, 0x0ea,
 	0x0e9, 0x0e9, 0x0e9, 0x0e8, 0x0e8, 0x0e7, 0x0e7, 0x0e6, 0x0e6, 0x0e6, 0x0e5, 0x0e5,
 	0x0e4, 0x0e4, 0x0e4, 0x0e3, 0x0e3, 0x0e2, 0x0e2, 0x0e2, 0x0e1, 0x0e1, 0x0e0, 0x0e0,
@@ -1099,7 +1062,46 @@ const uint16_t PitchConverter::centTableSSGSaw_[3072] = {
 	0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
 	0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001
 };
+}
 
-PitchConverter::PitchConverter()
+namespace calc_pitch
 {
+uint16_t calculateFNumber(Note note, int octave, int pitch, int finePitch)
+{
+	uint16_t p = centTableFM[calculatePitchIndex(octave, note, pitch)];
+	return (finePitch ? (finePitch > 0 ? p + finePitch : p - static_cast<uint16_t>(-finePitch))
+					  : p);
+}
+
+uint16_t calculateSSGSquareTP(Note note, int octave, int pitch, int finePitch)
+{
+	uint16_t p = centTableSSGSquare[calculatePitchIndex(octave, note, pitch)];
+	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
+					   : p);
+}
+
+uint16_t calculateSSGSquareTP(int n)
+{
+	return centTableSSGSquare[n];
+}
+
+uint16_t calculateSSGTriangleEP(Note note, int octave, int pitch, int finePitch)
+{
+	uint16_t p = centTableSSGTriangle[calculatePitchIndex(octave, note, pitch)];
+	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
+					   : p);
+}
+
+uint16_t calculateSSGSawEP(Note note, int octave, int pitch, int finePitch)
+{
+	uint16_t p = centTableSSGSaw[calculatePitchIndex(octave, note, pitch)];
+	return  (finePitch ? (finePitch > 0 ? p - finePitch : p + static_cast<uint16_t>(-finePitch))
+					   : p);
+}
+
+int calculatePitchIndex(int octave, Note note, int pitch)
+{
+	int idx = 384 * octave + static_cast<int>(note) + pitch;
+	return clamp(idx, 0, 3071);
+}
 }

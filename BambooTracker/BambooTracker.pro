@@ -124,6 +124,7 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
+    calc_pitch.cpp \
     chip/c86ctl/c86ctl_wrapper.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
@@ -187,7 +188,6 @@ SOURCES += \
     song_length_calculator.cpp \
     audio/audio_stream.cpp \
     jam_manager.cpp \
-    pitch_converter.cpp \
     instrument/instruments_manager.cpp \
     command/command_manager.cpp \
     command/instrument/add_instrument_command.cpp \
@@ -317,6 +317,7 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
+    calc_pitch.hpp \
     chip/chip_misc.hpp \
     chip/codec/ymb_codec.hpp \
     chip/c86ctl/c86ctl.h \
@@ -395,7 +396,6 @@ HEADERS += \
     chip/chip_def.h \
     jam_manager.hpp \
     misc.hpp \
-    pitch_converter.hpp \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \
     command/instrument/add_instrument_command.hpp \
