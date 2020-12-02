@@ -29,12 +29,12 @@
 
 namespace io
 {
-	class Y12IO final : public AbstractInstrumentIO
-	{
-	public:
-		Y12IO();
-		AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
-								 std::weak_ptr<InstrumentsManager> instMan,
-								 int instNum) const override;
-	};
+class Y12IO final : public AbstractInstrumentIO
+{
+public:
+	Y12IO();
+	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+							 std::weak_ptr<InstrumentsManager> instMan,
+							 int instNum) const override;
+};
 }

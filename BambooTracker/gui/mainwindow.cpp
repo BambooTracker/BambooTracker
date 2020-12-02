@@ -52,7 +52,7 @@
 #include "track.hpp"
 #include "instrument.hpp"
 #include "bank.hpp"
-#include "io/file_io.hpp"
+#include "io/io_file_type.hpp"
 #include "io/module_io.hpp"
 #include "io/instrument_io.hpp"
 #include "io/bank_io.hpp"

@@ -29,11 +29,11 @@
 
 namespace io
 {
-	class DmpIO final : public AbstractInstrumentIO
-	{
-	public:
-		DmpIO();
-		AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
-								 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
-	};
+class DmpIO final : public AbstractInstrumentIO
+{
+public:
+	DmpIO();
+	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+							 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+};
 }

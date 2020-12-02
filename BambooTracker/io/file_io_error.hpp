@@ -28,50 +28,50 @@
 #include <stdexcept>
 #include <cstdint>
 #include <string>
-#include "file_io.hpp"
+#include "io_file_type.hpp"
 
 namespace io
 {
-	class FileIOError : public std::runtime_error
-	{
-	protected:
-		const FileType ftype_;
+class FileIOError : public std::runtime_error
+{
+protected:
+	const FileType ftype_;
 
-		FileIOError(std::string text, const FileType ftype)
-			: std::runtime_error(text), ftype_(ftype) {}
+	FileIOError(std::string text, const FileType ftype)
+		: std::runtime_error(text), ftype_(ftype) {}
 
-	public:
-		inline FileType fileType() const { return ftype_; }
-	};
+public:
+	inline FileType fileType() const { return ftype_; }
+};
 
-	class FileNotExistError : public FileIOError
-	{
-		FileNotExistError(const FileType type)
-			: FileIOError("File not exist error", type) {}
-	};
+class FileNotExistError : public FileIOError
+{
+	FileNotExistError(const FileType type)
+		: FileIOError("File not exist error", type) {}
+};
 
-	class FileUnsupportedError : public FileIOError
-	{
-	public:
-		FileUnsupportedError(const FileType type)
-			: FileIOError("File unsupported error", type) {}
-	};
+class FileUnsupportedError : public FileIOError
+{
+public:
+	FileUnsupportedError(const FileType type)
+		: FileIOError("File unsupported error", type) {}
+};
 
-	class FileVersionError : public FileIOError
-	{
-	public:
-		FileVersionError(const FileType type)
-			: FileIOError("File version error", type) {}
-	};
+class FileVersionError : public FileIOError
+{
+public:
+	FileVersionError(const FileType type)
+		: FileIOError("File version error", type) {}
+};
 
-	class FileCorruptionError : public FileIOError
-	{
-	private:
-		size_t pos_;
+class FileCorruptionError : public FileIOError
+{
+private:
+	size_t pos_;
 
-	public:
-		FileCorruptionError(const FileType type, size_t pos, const std::string& desc = "File corruption error")
-			: FileIOError(desc, type), pos_(pos) {}
-		inline size_t position() const { return pos_; }
-	};
+public:
+	FileCorruptionError(const FileType type, size_t pos, const std::string& desc = "File corruption error")
+		: FileIOError(desc, type), pos_(pos) {}
+	inline size_t position() const { return pos_; }
+};
 }

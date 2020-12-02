@@ -34,60 +34,54 @@
 
 namespace chip
 {
-	class Chip
-	{
-	public:
-		// [rate]
-		// 0 = auto-set mode (set internal chip rate)
-		Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
-			 std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2,
-			 std::shared_ptr<ExportContainerInterface> exportContainer);
-		virtual ~Chip();
+class Chip
+{
+public:
+	// [rate]
+	// 0 = auto-set mode (set internal chip rate)
+	Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
+		 std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2,
+		 std::shared_ptr<ExportContainerInterface> exportContainer);
+	virtual ~Chip();
 
-		virtual void reset() = 0;
-		virtual void setRegister(uint32_t offset, uint8_t value) = 0;
-		virtual uint8_t getRegister(uint32_t offset) const = 0;
+	virtual void reset() = 0;
+	virtual void setRegister(uint32_t offset, uint8_t value) = 0;
+	virtual uint8_t getRegister(uint32_t offset) const = 0;
 
-		virtual void setRate(int rate);
-		int getRate() const;
+	virtual void setRate(int rate);
+	int getRate() const;
 
-		int getClock() const;
+	int getClock() const;
 
-		void setMaxDuration(size_t maxDuration);
-		size_t getMaxDuration() const;
-		
-		void setExportContainer(std::shared_ptr<ExportContainerInterface> cntr = nullptr);
+	void setMaxDuration(size_t maxDuration);
+	size_t getMaxDuration() const;
 
-		void setMasterVolume(int percentage);
+	void setExportContainer(std::shared_ptr<ExportContainerInterface> cntr = nullptr);
 
-		virtual void mix(int16_t* stream, size_t nSamples) = 0;
+	void setMasterVolume(int percentage);
 
-	protected:
-		const int id_;
-		std::mutex mutex_;
+	virtual void mix(int16_t* stream, size_t nSamples) = 0;
 
-		int rate_, clock_;
-		const int autoRate_;
-		int internalRate_[2];
-		size_t maxDuration_;
+protected:
+	const int id_;
+	std::mutex mutex_;
 
-		double masterVolumeRatio_;
-		double volumeRatio_[2];
+	int rate_, clock_;
+	const int autoRate_;
+	int internalRate_[2];
+	size_t maxDuration_;
 
-		sample* buffer_[2][2];
-		std::unique_ptr<AbstractResampler> resampler_[2];
+	double masterVolumeRatio_;
+	double volumeRatio_[2];
 
-		std::shared_ptr<ExportContainerInterface> exCntr_;
-		bool needSampleGen_;
+	sample* buffer_[2][2];
+	std::unique_ptr<AbstractResampler> resampler_[2];
 
-		void initResampler();
+	std::shared_ptr<ExportContainerInterface> exCntr_;
+	bool needSampleGen_;
 
-		void funcSetRate(int rate);
+	void initResampler();
 
-	private:
-		inline static bool isNeedSampleGeneration(std::shared_ptr<ExportContainerInterface> cntr)
-		{
-			return (cntr == nullptr || cntr->isNeedSampleGeneration());
-		}
-	};
+	void funcSetRate(int rate);
+};
 }

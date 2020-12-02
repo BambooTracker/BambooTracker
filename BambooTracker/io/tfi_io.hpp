@@ -29,11 +29,11 @@
 
 namespace io
 {
-	class TfiIO final : public AbstractInstrumentIO
-	{
-	public:
-		TfiIO();
-		AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
-								 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
-	};
+class TfiIO final : public AbstractInstrumentIO
+{
+public:
+	TfiIO();
+	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
+							 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+};
 }

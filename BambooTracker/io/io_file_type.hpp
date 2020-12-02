@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,37 +23,12 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef FILE_IO_ERROR_MESSAGE_BOX_HPP
-#define FILE_IO_ERROR_MESSAGE_BOX_HPP
+#pragma once
 
-#include <unordered_map>
-#include <QString>
-#include <QWidget>
-#include "io/io_file_type.hpp"
-#include "io/file_io_error.hpp"
-#include "enum_hash.hpp"
-
-class FileIOErrorMessageBox : public QObject
+namespace io
 {
-	Q_OBJECT
-
-public:
-	FileIOErrorMessageBox(const QString& file, bool isInput, io::FileType ftype, const QString desc, QWidget* parent = nullptr);
-	FileIOErrorMessageBox(const QString& file, bool isInput, const io::FileIOError& e, QWidget* parent = nullptr);
-	void exec();
-
-	inline static void openError(const QString& file, bool isInput, io::FileType ftype, QWidget* parent = nullptr)
-	{
-		FileIOErrorMessageBox(file, isInput, ftype, tr("Could not open the file."), parent).exec();
-	}
-
-private:
-	QWidget* parent_;
-	QString text_, desc_;
-
-	static const std::unordered_map<io::FileType, QString> FILE_NAMES_;
-
-	void setText(const QString& file, bool isInput, io::FileType ftype);
+enum class FileType
+{
+	Mod, Inst, WAV, VGM, Bank, S98, Unknown
 };
-
-#endif // FILE_IO_ERROR_MESSAGE_BOX_HPP
+}

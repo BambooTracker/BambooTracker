@@ -31,14 +31,14 @@ class AbstractInstrument;
 
 namespace io
 {
-	class PpcIO final : public AbstractBankIO
-	{
-	public:
-		PpcIO();
-		AbstractBank* load(const BinaryContainer& ctr) const override;
+class PpcIO final : public AbstractBankIO
+{
+public:
+	PpcIO();
+	AbstractBank* load(const BinaryContainer& ctr) const override;
 
-		static AbstractInstrument* loadInstrument(const std::vector<uint8_t> sample,
-												  std::weak_ptr<InstrumentsManager> instMan,
-												  int instNum);
-	};
+	static AbstractInstrument* loadInstrument(const std::vector<uint8_t> sample,
+											  std::weak_ptr<InstrumentsManager> instMan,
+											  int instNum);
+};
 }

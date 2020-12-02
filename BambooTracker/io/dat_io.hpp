@@ -31,15 +31,15 @@ class AbstractInstrument;
 
 namespace io
 {
-	class DatIO final : public AbstractBankIO
-	{
-	public:
-		DatIO();
-		AbstractBank* load(const BinaryContainer& ctr) const override;
+class DatIO final : public AbstractBankIO
+{
+public:
+	DatIO();
+	AbstractBank* load(const BinaryContainer& ctr) const override;
 
-		static AbstractInstrument* loadInstrument(const BinaryContainer& instCtr,
-												  const std::string& name,
-												  std::weak_ptr<InstrumentsManager> instMan,
-												  int instNum);
-	};
+	static AbstractInstrument* loadInstrument(const BinaryContainer& instCtr,
+											  const std::string& name,
+											  std::weak_ptr<InstrumentsManager> instMan,
+											  int instNum);
+};
 }

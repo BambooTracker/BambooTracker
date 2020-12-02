@@ -35,59 +35,59 @@
 
 namespace io
 {
-	AbstractInstrument* AbstractInstrumentIO::load(const BinaryContainer& ctr, const std::string& fileName,
-									 std::weak_ptr<InstrumentsManager> instMan,
-									 int instNum) const
-	{
-		(void)ctr;
-		(void)fileName;
-		(void)instMan;
-		(void)instNum;
-		throw FileUnsupportedError(FileType::Inst);
-	}
+AbstractInstrument* AbstractInstrumentIO::load(const BinaryContainer& ctr, const std::string& fileName,
+											   std::weak_ptr<InstrumentsManager> instMan,
+											   int instNum) const
+{
+	(void)ctr;
+	(void)fileName;
+	(void)instMan;
+	(void)instNum;
+	throw FileUnsupportedError(FileType::Inst);
+}
 
-	void AbstractInstrumentIO::save(BinaryContainer& ctr,
-					  const std::weak_ptr<InstrumentsManager> instMan, int instNum) const
-	{
-		(void)ctr;
-		(void)instMan;
-		(void)instNum;
-		throw FileUnsupportedError(FileType::Inst);
-	}
+void AbstractInstrumentIO::save(BinaryContainer& ctr,
+								const std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+{
+	(void)ctr;
+	(void)instMan;
+	(void)instNum;
+	throw FileUnsupportedError(FileType::Inst);
+}
 
-	//------------------------------------------------------------
+//------------------------------------------------------------
 
-	std::unique_ptr<InstrumentIO> InstrumentIO::instance_;
+std::unique_ptr<InstrumentIO> InstrumentIO::instance_;
 
-	InstrumentIO::InstrumentIO()
-	{
-		handler_.add(new BtiIO);
-		handler_.add(new DmpIO);
-		handler_.add(new TfiIO);
-		handler_.add(new VgiIO);
-		handler_.add(new OpniIO);
-		handler_.add(new Y12IO);
-		handler_.add(new InsIO);
-	}
+InstrumentIO::InstrumentIO()
+{
+	handler_.add(new BtiIO);
+	handler_.add(new DmpIO);
+	handler_.add(new TfiIO);
+	handler_.add(new VgiIO);
+	handler_.add(new OpniIO);
+	handler_.add(new Y12IO);
+	handler_.add(new InsIO);
+}
 
-	InstrumentIO& InstrumentIO::getInstance()
-	{
-		if (!instance_) instance_.reset(new InstrumentIO);
-		return *instance_;
-	}
+InstrumentIO& InstrumentIO::getInstance()
+{
+	if (!instance_) instance_.reset(new InstrumentIO);
+	return *instance_;
+}
 
-	void InstrumentIO::saveInstrument(BinaryContainer& ctr,
-									  const std::weak_ptr<InstrumentsManager> instMan, int instNum)
-	{
-		handler_.at("bti")->save(ctr, instMan, instNum);
-	}
+void InstrumentIO::saveInstrument(BinaryContainer& ctr,
+								  const std::weak_ptr<InstrumentsManager> instMan, int instNum)
+{
+	handler_.at("bti")->save(ctr, instMan, instNum);
+}
 
-	AbstractInstrument* InstrumentIO::loadInstrument(const BinaryContainer& ctr, const std::string& path,
-													 std::weak_ptr<InstrumentsManager> instMan,
-													 int instNum)
-	{
-		size_t fnpos = path.find_last_of("/");
-		std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
-		return handler_.at(getExtension(path))->load(ctr, name, instMan, instNum);
-	}
+AbstractInstrument* InstrumentIO::loadInstrument(const BinaryContainer& ctr, const std::string& path,
+												 std::weak_ptr<InstrumentsManager> instMan,
+												 int instNum)
+{
+	size_t fnpos = path.find_last_of("/");
+	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
+	return handler_.at(getExtension(path))->load(ctr, name, instMan, instNum);
+}
 }

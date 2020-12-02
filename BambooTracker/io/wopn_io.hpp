@@ -29,10 +29,10 @@
 
 namespace io
 {
-	class WopnIO final : public AbstractBankIO
-	{
-	public:
-		WopnIO();
-		AbstractBank* load(const BinaryContainer& ctr) const override;
-	};
+class WopnIO final : public AbstractBankIO
+{
+public:
+	WopnIO();
+	AbstractBank* load(const BinaryContainer& ctr) const override;
+};
 }

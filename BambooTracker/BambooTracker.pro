@@ -163,6 +163,7 @@ SOURCES += \
     io/export_io.cpp \
     io/ff_io.cpp \
     io/ins_io.cpp \
+    io/io_utils.cpp \
     io/opni_io.cpp \
     io/ppc_io.cpp \
     io/pvi_io.cpp \
@@ -372,7 +373,6 @@ HEADERS += \
     gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
     instrument/waveform_adpcm.hpp \
-    io/bt_io_defs.hpp \
     io/btb_io.hpp \
     io/bti_io.hpp \
     io/btm_io.hpp \
@@ -381,6 +381,8 @@ HEADERS += \
     io/export_io.hpp \
     io/ff_io.hpp \
     io/ins_io.hpp \
+    io/io_file_type.hpp \
+    io/io_utils.hpp \
     io/opni_io.hpp \
     io/ppc_io.hpp \
     io/pvi_io.hpp \
@@ -502,7 +504,6 @@ HEADERS += \
     gui/command/pattern/set_echo_buffer_access_qt_command.hpp \
     command/pattern/set_echo_buffer_access_command.hpp \
     gui/comment_edit_dialog.hpp \
-    io/file_io.hpp \
     io/binary_container.hpp \
     version.hpp \
     gui/command/pattern/interpolate_pattern_qt_command.hpp \

@@ -2,10 +2,11 @@
 
 #include <cstdint>
 
-namespace c86ctl {
-	struct IRealChipBase;
-	struct IRealChip2;
-	struct IGimic2;
+namespace c86ctl
+{
+struct IRealChipBase;
+struct IRealChip2;
+struct IGimic2;
 }
 
 class C86ctlRealChip;

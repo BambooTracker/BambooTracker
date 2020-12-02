@@ -32,40 +32,40 @@
 
 namespace io
 {
-	PviIO::PviIO() : AbstractBankIO("pvi", "FMP PVI", true, false) {}
+PviIO::PviIO() : AbstractBankIO("pvi", "FMP PVI", true, false) {}
 
-	AbstractBank* PviIO::load(const BinaryContainer& ctr) const
-	{
-		size_t globCsr = 0;
-		if (ctr.readString(globCsr, 4) != "PVI2")
-			throw FileCorruptionError(FileType::Bank, globCsr);
-		globCsr += 0x10;
+AbstractBank* PviIO::load(const BinaryContainer& ctr) const
+{
+	size_t globCsr = 0;
+	if (ctr.readString(globCsr, 4) != "PVI2")
+		throw FileCorruptionError(FileType::Bank, globCsr);
+	globCsr += 0x10;
 
-		size_t sampOffs = globCsr + 128 * 4;
-		if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, globCsr);
+	size_t sampOffs = globCsr + 128 * 4;
+	if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, globCsr);
 
-		std::vector<int> ids;
-		std::vector<std::vector<uint8_t>> samples;
-		BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
+	std::vector<int> ids;
+	std::vector<std::vector<uint8_t>> samples;
+	BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
 
-		return new PviBank(std::move(ids), std::move(samples));
-	}
+	return new PviBank(std::move(ids), std::move(samples));
+}
 
-	AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t> sample,
-											  std::weak_ptr<InstrumentsManager> instMan,
-											  int instNum)
-	{
-		std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
-		int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
-		if (sampIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
+AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t> sample,
+										  std::weak_ptr<InstrumentsManager> instMan,
+										  int instNum)
+{
+	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
+	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
+	if (sampIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 
-		InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
-		adpcm->setSampleNumber(sampIdx);
+	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
+	adpcm->setSampleNumber(sampIdx);
 
-		instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
-		instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
-		instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
+	instManLocked->storeSampleADPCMRawSample(sampIdx, sample);
+	instManLocked->setSampleADPCMRootKeyNumber(sampIdx, 60);	// o5c
+	instManLocked->setSampleADPCMRootDeltaN(sampIdx, calcADPCMDeltaN(16000));
 
-		return adpcm;
-	}
+	return adpcm;
+}
 }

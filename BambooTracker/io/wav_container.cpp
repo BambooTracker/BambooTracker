@@ -30,146 +30,146 @@
 
 namespace io
 {
-	WavContainer::WavContainer(size_t defCapacity, uint32_t rate, uint16_t nCh, uint16_t bitSize)
-		: nCh_(nCh),
-		  bitSize_(bitSize),
-		  rate_(rate),
-		  buf_(defCapacity)
-	{
-	}
+WavContainer::WavContainer(size_t defCapacity, uint32_t rate, uint16_t nCh, uint16_t bitSize)
+	: nCh_(nCh),
+	  bitSize_(bitSize),
+	  rate_(rate),
+	  buf_(defCapacity)
+{
+}
 
-	WavContainer::WavContainer(const BinaryContainer& bc)
-	{
-		size_t p = 0;
-		assertValue(bc.readString(p, 4) == "RIFF", p);
-		p += 4;
-		uint32_t fileSize = bc.readUint32(p) + 8;
-		assertValue(fileSize == bc.size(), p);
-		p += 4;
-		assertValue(bc.readString(p, 4) == "WAVE", p);
+WavContainer::WavContainer(const BinaryContainer& bc)
+{
+	size_t p = 0;
+	assertValue(bc.readString(p, 4) == "RIFF", p);
+	p += 4;
+	uint32_t fileSize = bc.readUint32(p) + 8;
+	assertValue(fileSize == bc.size(), p);
+	p += 4;
+	assertValue(bc.readString(p, 4) == "WAVE", p);
+	p += 4;
+
+	while (p < fileSize) {
+		std::string id = bc.readString(p, 4);
 		p += 4;
 
-		while (p < fileSize) {
-			std::string id = bc.readString(p, 4);
+		if (id == "fmt ") {
+			uint32_t fmtSize = bc.readUint32(p);
+			size_t fmtp = p + 4;
+			p = fmtp + fmtSize;
+			assertValue(bc.readUint16(fmtp) == 1, fmtp);	// Only support linear PCM
+			fmtp += 2;
+			nCh_ = bc.readUint16(fmtp);
+			fmtp += 2;
+			rate_ = bc.readUint32(fmtp);
+			fmtp += 4;
+			uint32_t byteRate = bc.readUint32(fmtp);
+			fmtp += 4;
+			uint16_t blockSize = bc.readUint16(fmtp);
+			assertValue(byteRate == blockSize * rate_, fmtp);
+			fmtp += 2;
+			bitSize_ = bc.readUint16(fmtp);
+			assertValue(bitSize_ == 16, fmtp);	// Only support 16-bit
+			assertValue(blockSize == nCh_ * bitSize_ / 8, fmtp);
+			fmtp += 2;
+		}
+		else if (id == "data") {
+			uint32_t dataSize = bc.readUint32(p);
+			assertValue(p + dataSize <= bc.size(), p);
 			p += 4;
-
-			if (id == "fmt ") {
-				uint32_t fmtSize = bc.readUint32(p);
-				size_t fmtp = p + 4;
-				p = fmtp + fmtSize;
-				assertValue(bc.readUint16(fmtp) == 1, fmtp);	// Only support linear PCM
-				fmtp += 2;
-				nCh_ = bc.readUint16(fmtp);
-				fmtp += 2;
-				rate_ = bc.readUint32(fmtp);
-				fmtp += 4;
-				uint32_t byteRate = bc.readUint32(fmtp);
-				fmtp += 4;
-				uint16_t blockSize = bc.readUint16(fmtp);
-				assertValue(byteRate == blockSize * rate_, fmtp);
-				fmtp += 2;
-				bitSize_ = bc.readUint16(fmtp);
-				assertValue(bitSize_ == 16, fmtp);	// Only support 16-bit
-				assertValue(blockSize == nCh_ * bitSize_ / 8, fmtp);
-				fmtp += 2;
-			}
-			else if (id == "data") {
-				uint32_t dataSize = bc.readUint32(p);
-				assertValue(p + dataSize <= bc.size(), p);
-				p += 4;
-				buf_.appendBinaryContainer(bc.getSubcontainer(p, dataSize));
-				p += dataSize;
-			}
-			else {
-				p += (bc.readUint32(p) + 4);	// Jump to next chunk
-			}
+			buf_.appendBinaryContainer(bc.getSubcontainer(p, dataSize));
+			p += dataSize;
+		}
+		else {
+			p += (bc.readUint32(p) + 4);	// Jump to next chunk
 		}
 	}
+}
 
-	void WavContainer::setChannelCount(uint16_t n)
-	{
-		nCh_ = n;
-	}
+void WavContainer::setChannelCount(uint16_t n)
+{
+	nCh_ = n;
+}
 
-	uint16_t WavContainer::getChannelCount() const
-	{
-		return nCh_;
-	}
+uint16_t WavContainer::getChannelCount() const
+{
+	return nCh_;
+}
 
-	void WavContainer::setBitSize(uint16_t size)
-	{
-		bitSize_ = size;
-	}
+void WavContainer::setBitSize(uint16_t size)
+{
+	bitSize_ = size;
+}
 
-	uint16_t WavContainer::getBitSize() const
-	{
-		return bitSize_;
-	}
+uint16_t WavContainer::getBitSize() const
+{
+	return bitSize_;
+}
 
-	void WavContainer::setSampleRate(uint32_t rate)
-	{
-		rate_ = rate;
-	}
+void WavContainer::setSampleRate(uint32_t rate)
+{
+	rate_ = rate;
+}
 
-	uint32_t WavContainer::getSampleRate() const
-	{
-		return rate_;
-	}
+uint32_t WavContainer::getSampleRate() const
+{
+	return rate_;
+}
 
-	size_t WavContainer::getSampleCount() const
-	{
-		return buf_.size() * bitSize_ / 8 / nCh_;
-	}
+size_t WavContainer::getSampleCount() const
+{
+	return buf_.size() * bitSize_ / 8 / nCh_;
+}
 
-	void WavContainer::storeSample(std::vector<int16_t> sample)
-	{
-		uint32_t dataSize = sample.size() * sizeof(int16_t);
-		buf_.appendArray(reinterpret_cast<uint8_t*>(&sample[0]), dataSize);
-	}
+void WavContainer::storeSample(std::vector<int16_t> sample)
+{
+	uint32_t dataSize = sample.size() * sizeof(int16_t);
+	buf_.appendArray(reinterpret_cast<uint8_t*>(&sample[0]), dataSize);
+}
 
-	void WavContainer::storeSample(BinaryContainer sample)
-	{
-		buf_.appendBinaryContainer(sample);
-	}
+void WavContainer::storeSample(BinaryContainer sample)
+{
+	buf_.appendBinaryContainer(sample);
+}
 
-	BinaryContainer WavContainer::getSample() const
-	{
-		return buf_;
-	}
+BinaryContainer WavContainer::getSample() const
+{
+	return buf_;
+}
 
-	BinaryContainer WavContainer::createWavBinary()
-	{
-		BinaryContainer bc;
+BinaryContainer WavContainer::createWavBinary()
+{
+	BinaryContainer bc;
 
-		// RIFF header
-		bc.appendString("RIFF");
-		uint16_t byteSize = bitSize_ / 8;
-		uint32_t dataSize = buf_.size() / byteSize;
-		uint32_t offset = dataSize + 36;
-		bc.appendUint32(offset);
-		bc.appendString("WAVE");
+	// RIFF header
+	bc.appendString("RIFF");
+	uint16_t byteSize = bitSize_ / 8;
+	uint32_t dataSize = buf_.size() / byteSize;
+	uint32_t offset = dataSize + 36;
+	bc.appendUint32(offset);
+	bc.appendString("WAVE");
 
-		// fmt chunk
-		bc.appendString("fmt ");
-		uint32_t chunkOfs = 16;
-		bc.appendUint32(chunkOfs);
-		uint16_t fmtId = 1;	// Raw linear PCM
-		bc.appendUint16(fmtId);
-		bc.appendUint16(nCh_);
-		bc.appendUint32(rate_);
-		uint16_t blockSize = byteSize * nCh_;
-		uint32_t byteRate = blockSize * rate_;
-		bc.appendUint32(byteRate);
-		bc.appendUint16(blockSize);
-		bc.appendUint16(bitSize_);
+	// fmt chunk
+	bc.appendString("fmt ");
+	uint32_t chunkOfs = 16;
+	bc.appendUint32(chunkOfs);
+	uint16_t fmtId = 1;	// Raw linear PCM
+	bc.appendUint16(fmtId);
+	bc.appendUint16(nCh_);
+	bc.appendUint32(rate_);
+	uint16_t blockSize = byteSize * nCh_;
+	uint32_t byteRate = blockSize * rate_;
+	bc.appendUint32(byteRate);
+	bc.appendUint16(blockSize);
+	bc.appendUint16(bitSize_);
 
-		// Data chunk
-		bc.appendString("data");
-		bc.appendUint32(buf_.size());
-		bc.appendBinaryContainer(buf_);
+	// Data chunk
+	bc.appendString("data");
+	bc.appendUint32(buf_.size());
+	bc.appendBinaryContainer(buf_);
 
-		return bc;
-	}
+	return bc;
+}
 
 //	WavContainer* WavContainer::resample(const WavContainer* src, uint32_t rate)
 //	{

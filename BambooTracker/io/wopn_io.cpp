@@ -29,21 +29,21 @@
 
 namespace io
 {
-	WopnIO::WopnIO() : AbstractBankIO("wopn", "WOPN bank", true, false) {}
+WopnIO::WopnIO() : AbstractBankIO("wopn", "WOPN bank", true, false) {}
 
-	AbstractBank* WopnIO::load(const BinaryContainer& ctr) const
-	{
-		struct WOPNDeleter {
-			void operator()(WOPNFile *x) { WOPN_Free(x); }
-		};
+AbstractBank* WopnIO::load(const BinaryContainer& ctr) const
+{
+	struct WOPNDeleter {
+		void operator()(WOPNFile *x) { WOPN_Free(x); }
+	};
 
-		std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
-		wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
-		if (!wopn)
-			throw FileCorruptionError(FileType::Bank, 0);
+	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
+	wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
+	if (!wopn)
+		throw FileCorruptionError(FileType::Bank, 0);
 
-		WopnBank *bank = new WopnBank(wopn.get());
-		wopn.release();
-		return bank;
-	}
+	WopnBank *bank = new WopnBank(wopn.get());
+	wopn.release();
+	return bank;
+}
 }

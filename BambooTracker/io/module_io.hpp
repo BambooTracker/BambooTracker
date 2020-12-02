@@ -31,64 +31,65 @@
 #include "module.hpp"
 #include "instruments_manager.hpp"
 #include "binary_container.hpp"
-#include "file_io.hpp"
+#include "io_file_type.hpp"
+#include "io_utils.hpp"
 
 namespace io
 {
-	class AbstractModuleIO
+class AbstractModuleIO
+{
+public:
+	AbstractModuleIO(std::string ext, std::string desc, bool loadable, bool savable)
+		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
+	virtual ~AbstractModuleIO() = default;
+	virtual void load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
+					  std::weak_ptr<InstrumentsManager> instMan) const;
+	virtual void save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
+					  const std::weak_ptr<InstrumentsManager> instMan) const;
+	inline std::string getExtension() const { return ext_; }
+	inline std::string getFilterText() const { return desc_ + "(*." + ext_ + ")"; }
+	inline bool isLoadable() const { return loadable_; }
+	inline bool isSavable() const { return savable_; }
+
+private:
+	std::string ext_, desc_;
+	bool loadable_, savable_;
+};
+
+class ModuleIO
+{
+public:
+	static ModuleIO& getInstance();
+
+	void saveModule(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
+					const std::weak_ptr<InstrumentsManager> instMan);
+	void loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
+					std::weak_ptr<InstrumentsManager> instMan);
+
+	inline bool testLoadableFormat(const std::string& ext) const
 	{
-	public:
-		AbstractModuleIO(std::string ext, std::string desc, bool loadable, bool savable)
-			: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
-		virtual ~AbstractModuleIO() = default;
-		virtual void load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
-						  std::weak_ptr<InstrumentsManager> instMan) const;
-		virtual void save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
-						  const std::weak_ptr<InstrumentsManager> instMan) const;
-		inline std::string getExtension() const { return ext_; }
-		inline std::string getFilterText() const { return desc_ + "(*." + ext_ + ")"; }
-		inline bool isLoadable() const { return loadable_; }
-		inline bool isSavable() const { return savable_; }
+		return handler_.testLoadableExtension(ext);
+	}
 
-	private:
-		std::string ext_, desc_;
-		bool loadable_, savable_;
-	};
-
-	class ModuleIO
+	inline bool testSavableFormat(const std::string& ext) const
 	{
-	public:
-		static ModuleIO& getInstance();
+		return handler_.testSavableExtension(ext);
+	}
 
-		void saveModule(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
-						const std::weak_ptr<InstrumentsManager> instMan);
-		void loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
-						std::weak_ptr<InstrumentsManager> instMan);
+	inline std::vector<std::string> getLoadFilter() const
+	{
+		return handler_.getLoadFilterList();
+	}
 
-		inline bool testLoadableFormat(const std::string& ext) const
-		{
-			return handler_.testLoadableExtension(ext);
-		}
+	inline std::vector<std::string> getSaveFilter() const
+	{
+		return handler_.getSaveFilterList();
+	}
 
-		inline bool testSavableFormat(const std::string& ext) const
-		{
-			return handler_.testSavableExtension(ext);
-		}
+private:
+	ModuleIO();
 
-		inline std::vector<std::string> getLoadFilter() const
-		{
-			return handler_.getLoadFilterList();
-		}
-
-		inline std::vector<std::string> getSaveFilter() const
-		{
-			return handler_.getSaveFilterList();
-		}
-
-	private:
-		ModuleIO();
-
-		static std::unique_ptr<ModuleIO> instance_;
-		FileIOManagerMap<AbstractModuleIO> handler_;
-	};
+	static std::unique_ptr<ModuleIO> instance_;
+	FileIOManagerMap<AbstractModuleIO> handler_;
+};
 }
