@@ -891,7 +891,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
 	auto mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1) {
-		const std::string ext = QFileInfo(mime->urls().first().toLocalFile()).suffix().toStdString();
+		const std::string ext = QFileInfo(mime->urls().first().toLocalFile()).suffix().toLower().toStdString();
 		if (ModuleIO::getInstance().testLoadableFormat(ext)
 				| InstrumentIO::getInstance().testLoadableFormat(ext)
 				| BankIO::getInstance().testLoadableFormat(ext))
@@ -903,7 +903,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 {
 	QString file = event->mimeData()->urls().first().toLocalFile();
 
-	const std::string ext = QFileInfo(file).suffix().toStdString();
+	const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
 	if (ModuleIO::getInstance().testLoadableFormat(ext)) {
 		if (isWindowModified()) {
 			QString modTitle = utf8ToQString(bt_->getModuleTitle());

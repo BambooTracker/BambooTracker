@@ -1008,7 +1008,7 @@ void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet, 
 	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
-		funcJamKeyOn(key, keyNum, attrib, volumeSet);
+		funcJamKeyOn(key, keyNum, attrib, volumeSet, inst);
 	}
 	else {
 		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
@@ -1021,7 +1021,7 @@ void BambooTracker::jamKeyOnForced(int keyNum, SoundSource src, bool volumeSet, 
 {
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
-		funcJamKeyOn(JamKey::MidiKey, keyNum, attrib, volumeSet);
+		funcJamKeyOn(JamKey::MidiKey, keyNum, attrib, volumeSet, inst);
 	}
 	else {
 		auto it = std::find_if(songStyle_.trackAttribs.begin(), songStyle_.trackAttribs.end(),
