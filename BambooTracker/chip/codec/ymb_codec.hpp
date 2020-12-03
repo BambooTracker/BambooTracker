@@ -5,14 +5,16 @@
 	2019 by superctr.
 */
 
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
 
-#define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
-#define CLAMP_ZERO(x, high)  (((x) > (high)) ? (high) : (x))
+#define CD_CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define CD_CLAMP_ZERO(x, high)  (((x) > (high)) ? (high) : (x))
 
 namespace codec
 {
@@ -32,8 +34,8 @@ inline int16_t ymb_step(uint8_t step, int16_t* history, int16_t* step_size)
 	else
 		newval += diff;
 	//*step_size = CLAMP(nstep, 511, 32767);
-	*step_size = CLAMP(nstep, 127, 24576);
-	*history = newval = CLAMP(newval, -32768, 32767);
+	*step_size = CD_CLAMP(nstep, 127, 24576);
+	*history = newval = CD_CLAMP(newval, -32768, 32767);
 	return newval;
 }
 
@@ -50,7 +52,7 @@ void ymb_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 		// we remove a few bits of accuracy to reduce some noise.
 		int step = ((*buffer++) & -8) - history;
 		adpcm_sample = (abs(step)<<16) / (step_size<<14);
-		adpcm_sample = CLAMP_ZERO(adpcm_sample, 7);
+		adpcm_sample = CD_CLAMP_ZERO(adpcm_sample, 7);
 		if(step < 0)
 			adpcm_sample |= 8;
 		if(nibble)
@@ -81,3 +83,6 @@ void ymb_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 	}
 }
 }
+
+#undef CD_CLAMP
+#undef CD_CLAMP_ZERO
