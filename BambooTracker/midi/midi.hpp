@@ -34,13 +34,8 @@
 class MidiInterface
 {
 public:
-	static MidiInterface &instance();
-	~MidiInterface();
+	static MidiInterface& getInstance();
 
-private:
-	MidiInterface();
-
-public:
 	RtMidi::Api currentApi() const;
 	std::string currentApiName() const;
 	std::vector<std::string> getAvailableApis() const;
@@ -56,17 +51,18 @@ public:
 	bool openInputPort(unsigned port, std::string* errDetail = nullptr);
 	bool openInputPortByName(const std::string &portName, std::string* errDetail = nullptr);
 
-	typedef void (InputHandler)(double, const uint8_t *, size_t, void *);
+	using InputHandler = void(double, const uint8_t*, size_t, void*);
 	void installInputHandler(InputHandler *handler, void *userData);
 	void uninstallInputHandler(InputHandler *handler, void *userData);
 
 private:
-	static void onMidiInput(double timestamp, std::vector<unsigned char> *message, void *userData);
+	static std::unique_ptr<MidiInterface> instance_;
 
 	std::unique_ptr<RtMidiIn> inputClient_;
 	bool hasOpenInputPort_;
 	std::mutex inputHandlersMutex_;
-	std::vector<std::pair<InputHandler *, void *>> inputHandlers_;
+	std::vector<std::pair<InputHandler*, void*>> inputHandlers_;
 
-	static std::unique_ptr<MidiInterface> instance_;
+	MidiInterface();
+	static void onMidiInput(double timestamp, std::vector<unsigned char> *message, void *userData);
 };

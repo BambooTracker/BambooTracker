@@ -287,7 +287,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 
 	{
 		QSignalBlocker blocker1(ui->midiInputDeviceComboBox), blocker2(ui->midiApiComboBox);
-		MidiInterface& midiIntf = MidiInterface::instance();
+		MidiInterface& midiIntf = MidiInterface::getInstance();
 		int midiApiRow = -1;
 		int defMidiApiRow = 0;
 		for (auto& name : midiIntf.getAvailableApis()) {
@@ -509,7 +509,7 @@ void ConfigurationDialog::onMidiApiChanged(const QString &arg1, bool hasInitiali
 {
 	ui->midiInputDeviceComboBox->clear();
 
-	MidiInterface &intf = MidiInterface::instance();
+	MidiInterface &intf = MidiInterface::getInstance();
 	std::vector<std::string> ports;
 	bool vport;
 	std::string apiName = arg1.toStdString();

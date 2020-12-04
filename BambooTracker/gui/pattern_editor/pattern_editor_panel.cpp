@@ -256,12 +256,12 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	// MIDI
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
-	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().installInputHandler(&midiThreadReceivedEvent, this);
 }
 
 PatternEditorPanel::~PatternEditorPanel()
 {
-	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().uninstallInputHandler(&midiThreadReceivedEvent, this);
 }
 
 void PatternEditorPanel::funcResize()

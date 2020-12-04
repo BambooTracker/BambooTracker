@@ -24,13 +24,25 @@
  */
 
 #include "midi.hpp"
-#include "midi_def.h"
 #include <stdio.h>
 #include <algorithm>
 
+namespace
+{
+// Defines
+constexpr int MIDI_BUFFER_SIZE = 8192;
+
+const std::string MIDI_INP_CLIENT_NAME = "BambooTracker Rx";
+const std::string MIDI_INP_PORT_NAME = "BambooTracker MIDI In";
+
+constexpr bool MIDI_INP_IGNORE_SYSEX = false;
+constexpr bool MIDI_INP_IGNORE_TIME = false;
+constexpr bool MIDI_INP_IGNORE_SENSE = true;
+}
+
 std::unique_ptr<MidiInterface> MidiInterface::instance_;
 
-MidiInterface &MidiInterface::instance()
+MidiInterface& MidiInterface::getInstance()
 {
 	if (instance_)
 		return *instance_;
@@ -40,14 +52,7 @@ MidiInterface &MidiInterface::instance()
 	return *out;
 }
 
-MidiInterface::MidiInterface()
-	  : hasOpenInputPort_(false)
-{
-}
-
-MidiInterface::~MidiInterface()
-{
-}
+MidiInterface::MidiInterface() : hasOpenInputPort_(false) {}
 
 RtMidi::Api MidiInterface::currentApi() const
 {
@@ -98,7 +103,7 @@ bool MidiInterface::switchApi(RtMidi::Api api, std::string* errDetail)
 
 	RtMidiIn *inputClient = nullptr;
 	try {
-		inputClient = new RtMidiIn(api, MIDI_INP_CLIENT_NAME, MidiBufferSize);
+		inputClient = new RtMidiIn(api, MIDI_INP_CLIENT_NAME, MIDI_BUFFER_SIZE);
 		if (errDetail) *errDetail = "";
 	}
 	catch (RtMidiError &error) {
@@ -214,13 +219,12 @@ bool MidiInterface::openInputPort(unsigned port, std::string* errDetail)
 	RtMidiIn &client = *inputClient_;
 	closeInputPort();
 
-	std::string name = MIDI_INP_PORT_NAME;
 	if (port == ~0u) {
-		client.openVirtualPort(name);
+		client.openVirtualPort(MIDI_INP_PORT_NAME);
 		hasOpenInputPort_ = true;
 	}
 	else {
-		client.openPort(port, name);
+		client.openPort(port, MIDI_INP_PORT_NAME);
 		hasOpenInputPort_ = client.isPortOpen();
 	}
 	if (errDetail) *errDetail = "";
@@ -247,13 +251,13 @@ bool MidiInterface::openInputPortByName(const std::string &portName, std::string
 	return false;
 }
 
-void MidiInterface::installInputHandler(InputHandler *handler, void *user_data)
+void MidiInterface::installInputHandler(InputHandler* handler, void* user_data)
 {
 	std::lock_guard<std::mutex> lock(inputHandlersMutex_);
 	inputHandlers_.push_back(std::make_pair(handler, user_data));
 }
 
-void MidiInterface::uninstallInputHandler(InputHandler *handler, void *user_data)
+void MidiInterface::uninstallInputHandler(InputHandler* handler, void* user_data)
 {
 	std::lock_guard<std::mutex> lock(inputHandlersMutex_);
 	for (size_t i = 0, n = inputHandlers_.size(); i < n; ++i) {

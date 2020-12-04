@@ -648,7 +648,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	Q_ASSERT(midiKeyEventMethod_ != -1);
 	midiProgramEventMethod_ = metaObject()->indexOfSlot("midiProgramEvent(uchar,uchar)");
 	Q_ASSERT(midiProgramEventMethod_ != -1);
-	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().installInputHandler(&midiThreadReceivedEvent, this);
 
 	/* Audio stream */
 	stream_ = std::make_shared<AudioStreamRtAudio>();
@@ -775,7 +775,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 MainWindow::~MainWindow()
 {
-	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().uninstallInputHandler(&midiThreadReceivedEvent, this);
 	stream_->shutdown();
 }
 
@@ -2369,7 +2369,7 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 
 void MainWindow::setMidiConfiguration()
 {
-	MidiInterface &midiIntf = MidiInterface::instance();
+	MidiInterface &midiIntf = MidiInterface::getInstance();
 	std::string midiApi = config_.lock()->getMidiAPI();
 	std::string midiInPortName = config_.lock()->getMidiInputPort();
 

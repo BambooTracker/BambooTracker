@@ -533,7 +533,6 @@ HEADERS += \
     gui/file_history_handler.hpp \
     gui/file_history.hpp \
     midi/midi.hpp \
-    midi/midi_def.h \
     gui/q_application_wrapper.hpp \
     gui/wave_visual.hpp
 
