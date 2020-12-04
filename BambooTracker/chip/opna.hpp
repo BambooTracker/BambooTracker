@@ -50,17 +50,18 @@ public:
 	uint8_t getRegister(uint32_t offset) const override;
 	void setVolumeFM(double dB);
 	void setVolumeSSG(double dB);
+	size_t getDRAMSize() const noexcept;
 	void mix(int16_t* stream, size_t nSamples) override;
 	void useSCCI(scci::SoundInterfaceManager* manager);
-	bool isUsedSCCI() const;
+	bool isUsedSCCI() const noexcept;
 	void useC86CTL(C86ctlBase* base);
-	bool isUsedC86CTL() const;
-	size_t getDRAMSize() const;
+	bool isUsedC86CTL() const noexcept;
 
 private:
 	static size_t count_;
 
 	intf2608* intf_;
+	size_t dramSize_;
 
 	// For SCCI
 	scci::SoundInterfaceManager* scciManager_;

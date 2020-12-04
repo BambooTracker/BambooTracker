@@ -49,12 +49,12 @@ public:
 	virtual uint8_t getRegister(uint32_t offset) const = 0;
 
 	virtual void setRate(int rate);
-	int getRate() const;
+	int getRate() const noexcept;
 
-	int getClock() const;
+	int getClock() const noexcept;
 
 	void setMaxDuration(size_t maxDuration);
-	size_t getMaxDuration() const;
+	size_t getMaxDuration() const noexcept;
 
 	void setRegisterWriteLogger(std::shared_ptr<AbstractRegisterWriteLogger> logger = nullptr);
 
@@ -81,6 +81,6 @@ protected:
 
 	void initResampler();
 
-	void funcSetRate(int rate);
+	void funcSetRate(int rate) noexcept;
 };
 }

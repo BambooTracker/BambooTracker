@@ -95,32 +95,32 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 	}
 }
 
-void WavContainer::setChannelCount(uint16_t n)
+void WavContainer::setChannelCount(uint16_t n) noexcept
 {
 	nCh_ = n;
 }
 
-uint16_t WavContainer::getChannelCount() const
+uint16_t WavContainer::getChannelCount() const noexcept
 {
 	return nCh_;
 }
 
-void WavContainer::setBitSize(uint16_t size)
+void WavContainer::setBitSize(uint16_t size) noexcept
 {
 	bitSize_ = size;
 }
 
-uint16_t WavContainer::getBitSize() const
+uint16_t WavContainer::getBitSize() const noexcept
 {
 	return bitSize_;
 }
 
-void WavContainer::setSampleRate(uint32_t rate)
+void WavContainer::setSampleRate(uint32_t rate) noexcept
 {
 	rate_ = rate;
 }
 
-uint32_t WavContainer::getSampleRate() const
+uint32_t WavContainer::getSampleRate() const noexcept
 {
 	return rate_;
 }
@@ -147,7 +147,7 @@ void WavContainer::appendSample(const BinaryContainer& sample)
 	buf_.appendBinaryContainer(sample);
 }
 
-BinaryContainer WavContainer::getSample() const
+BinaryContainer WavContainer::getSample() const noexcept
 {
 	return buf_;
 }

@@ -36,12 +36,12 @@ class BinaryContainer
 public:
 	explicit BinaryContainer(size_t defCapacity = 0);
 	explicit BinaryContainer(std::vector<char> buf);
-	size_t size() const;
+	size_t size() const noexcept;
 	void clear();
 	void reserve(size_t capacity);
 
-	void setEndian(bool isLittleEndian);
-	bool isLittleEndian() const;
+	void setEndian(bool isLittleEndian) noexcept;
+	bool isLittleEndian() const noexcept;
 
 	void appendInt8(const int8_t v);
 	void appendUint8(const uint8_t v);

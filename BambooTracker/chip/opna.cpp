@@ -51,6 +51,7 @@ OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 	: Chip(count_++, clock, rate, 110933, maxDuration,
 		   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
 		   logger),
+	  dramSize_(dramSize),
 	  scciManager_(nullptr),
 	  scciChip_(nullptr),
 	  c86ctlBase_(nullptr),
@@ -165,6 +166,11 @@ void OPNA::setVolumeSSG(double dB)
 	}
 }
 
+size_t OPNA::getDRAMSize() const noexcept
+{
+	return dramSize_;
+}
+
 void OPNA::mix(int16_t* stream, size_t nSamples)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
@@ -223,7 +229,7 @@ void OPNA::useSCCI(scci::SoundInterfaceManager* manager)
 	}
 }
 
-bool OPNA::isUsedSCCI() const
+bool OPNA::isUsedSCCI() const noexcept
 {
 	return (scciManager_ != nullptr);
 }
@@ -258,7 +264,7 @@ void OPNA::useC86CTL(C86ctlBase* base)
 	c86ctlBase_.reset();
 }
 
-bool OPNA::isUsedC86CTL() const
+bool OPNA::isUsedC86CTL() const noexcept
 {
 	return (c86ctlBase_ != nullptr);
 }

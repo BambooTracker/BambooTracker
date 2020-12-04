@@ -62,7 +62,7 @@ public:
 	virtual QString getDefaultOutputDevice(const QString& backend) const = 0;
 
 	void setInterruption(uint32_t inrtRate);
-	uint32_t getStreamRate() const;
+	uint32_t getStreamRate() const noexcept;
 
 	virtual void start();
 	virtual void stop();

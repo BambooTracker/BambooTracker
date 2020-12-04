@@ -68,10 +68,10 @@ OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 						FMEnvelopeParameter::DT4
 						}}
 						}),
-	  dramSize_(262144),	// 256KiB
 	  storePointADPCM_(0)
 {
-	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration, dramSize_,
+	constexpr size_t DRAM_SIZE = 262144;	// 256KiB
+	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration, DRAM_SIZE,
 										 std::make_unique<chip::LinearResampler>(),
 										 std::make_unique<chip::LinearResampler>());
 
@@ -140,7 +140,7 @@ void OPNAController::sendRegister(int address, int value)
 /********** DRAM **********/
 size_t OPNAController::getDRAMSize() const
 {
-	return dramSize_;
+	return opna_->getDRAMSize();
 }
 
 /********** Update register states after tick process **********/
@@ -3446,7 +3446,7 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 	opna_->setRegister(0x100, 0x60);
 	opna_->setRegister(0x101, 0x02);
 
-	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+	size_t dramLim = (opna_->getDRAMSize() - 1) >> 5;	// By 32 bytes
 	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 
@@ -3676,7 +3676,7 @@ void OPNAController::initADPCM()
 
 	opna_->setRegister(0x100, 0xa1);	// Stop synthesis
 	// Limit address
-	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+	size_t dramLim = (opna_->getDRAMSize() - 1) >> 5;	// By 32 bytes
 	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 }

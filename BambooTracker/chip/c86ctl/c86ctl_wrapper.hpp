@@ -16,7 +16,7 @@ class C86ctlBase
 {
 public:
 	explicit C86ctlBase(void (*func)());
-	bool isEmpty() const;
+	bool isEmpty() const noexcept;
 
 	void initialize();
 	void deinitialize();

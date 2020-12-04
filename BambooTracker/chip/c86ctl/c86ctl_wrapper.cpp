@@ -13,7 +13,7 @@ C86ctlBase::C86ctlBase(void (*func)())
 #endif
 }
 
-bool C86ctlBase::isEmpty() const
+bool C86ctlBase::isEmpty() const noexcept
 {
 	return (base_ == nullptr);
 }

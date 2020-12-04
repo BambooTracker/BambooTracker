@@ -86,17 +86,17 @@ void Chip::setRate(int rate)
 	}
 }
 
-void Chip::funcSetRate(int rate)
+void Chip::funcSetRate(int rate) noexcept
 {
 	rate_ = CHIP_SAMPLE_RATE = ((rate) ? rate : autoRate_);
 }
 
-int Chip::getClock() const
+int Chip::getClock() const noexcept
 {
 	return clock_;
 }
 
-int Chip::getRate() const
+int Chip::getRate() const noexcept
 {
 	return rate_;
 }
@@ -109,7 +109,7 @@ void Chip::setMaxDuration(size_t maxDuration)
 	}
 }
 
-size_t Chip::getMaxDuration() const
+size_t Chip::getMaxDuration() const noexcept
 {
 	return maxDuration_;
 }

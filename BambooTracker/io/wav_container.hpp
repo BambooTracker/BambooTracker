@@ -37,19 +37,19 @@ public:
 	explicit WavContainer(size_t defCapacity = 0, uint32_t rate = 44100, uint16_t nCh = 2, uint16_t getBitSize = 16);
 	explicit WavContainer(const BinaryContainer& bc);
 
-	void setChannelCount(uint16_t n);
-	uint16_t getChannelCount() const;
-	void setBitSize(uint16_t size);
-	uint16_t getBitSize() const;
-	void setSampleRate(uint32_t rate);
-	uint32_t getSampleRate() const;
+	void setChannelCount(uint16_t n) noexcept;
+	uint16_t getChannelCount() const noexcept;
+	void setBitSize(uint16_t size) noexcept;
+	uint16_t getBitSize() const noexcept;
+	void setSampleRate(uint32_t rate) noexcept;
+	uint32_t getSampleRate() const noexcept;
 
 	size_t getSampleCount() const;
 
 	void appendSample(const int16_t* sample, size_t nSamples);
 	void appendSample(const std::vector<int16_t>& sample);
 	void appendSample(const BinaryContainer& sample);
-	BinaryContainer getSample() const;
+	BinaryContainer getSample() const noexcept;
 
 	BinaryContainer createWavBinary();
 

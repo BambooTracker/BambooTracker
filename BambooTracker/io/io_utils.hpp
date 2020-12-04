@@ -55,8 +55,8 @@ public:
 	inline bool testLoadableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isLoadable()); }
 	inline bool testSavableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isSavable()); }
 	inline const std::unique_ptr<T>& at(std::string ext) const { return map_.at(ext); }
-	inline std::vector<std::string> getLoadFilterList() const { return ldFilters_; }
-	inline std::vector<std::string> getSaveFilterList() const { return svFilters_; }
+	inline std::vector<std::string> getLoadFilterList() const noexcept { return ldFilters_; }
+	inline std::vector<std::string> getSaveFilterList() const noexcept { return svFilters_; }
 
 private:
 	std::unordered_map<std::string, std::unique_ptr<T>> map_;

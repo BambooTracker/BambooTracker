@@ -56,7 +56,7 @@ void AbstractResampler::setDestributionRate(int destRate)
 	updateRateRatio();
 }
 
-void AbstractResampler::setMaxDuration(size_t maxDuration)
+void AbstractResampler::setMaxDuration(size_t maxDuration) noexcept
 {
 	maxDuration_ = maxDuration;
 }

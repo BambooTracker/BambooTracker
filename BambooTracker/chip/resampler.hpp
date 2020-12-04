@@ -38,7 +38,7 @@ public:
 	virtual ~AbstractResampler();
 	virtual void init(int srcRate, int destRate, size_t maxDuration);
 	virtual void setDestributionRate(int destRate);
-	virtual void setMaxDuration(size_t maxDuration);
+	virtual void setMaxDuration(size_t maxDuration) noexcept;
 	virtual sample** interpolate(sample** src, size_t nSamples, size_t intrSize) = 0;
 
 	inline size_t calculateInternalSampleSize(size_t nSamples)
@@ -52,7 +52,8 @@ protected:
 	float rateRatio_;
 	sample* destBuf_[2];
 
-	inline void updateRateRatio() {
+	inline void updateRateRatio()
+	{
 		rateRatio_ = static_cast<float>(srcRate_) / destRate_;
 	}
 };

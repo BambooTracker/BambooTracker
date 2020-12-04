@@ -85,7 +85,7 @@ void AudioStream::setInterruption(uint32_t intrRate)
 	intrCount_ = rate_ / intrRate_;
 }
 
-uint32_t AudioStream::getStreamRate() const
+uint32_t AudioStream::getStreamRate() const noexcept
 {
 	return rate_;
 }
