@@ -105,7 +105,7 @@ public:
 	void setMasterVolume(int percentage);
 
 	// Export
-	void setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr = nullptr);
+	void setExportContainer(std::shared_ptr<chip::AbstractRegisterWriteLogger> cntr = nullptr);
 
 private:
 	std::unique_ptr<chip::OPNA> opna_;

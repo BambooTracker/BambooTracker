@@ -3302,14 +3302,19 @@ void MainWindow::on_actionWAV_triggered()
 	stream_->stop();
 
 	try {
-		io::WavContainer container(0, static_cast<uint32_t>(diag.getSampleRate()));
+		const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
+		const uint16_t nCh = 2;
+		const int loopCnt = diag.getLoopCount();
+		size_t defCap = static_cast<size_t>(rate * nCh * loopCnt
+										 * bt_->calculateSongLength(bt_->getCurrentSongNumber()));
+		io::WavContainer container(defCap, rate, nCh, 16);
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
 				   return progress.wasCanceled();
 	};
 
-		bool res = bt_->exportToWav(container, diag.getLoopCount(), bar);
+		bool res = bt_->exportToWav(container, loopCnt, bar);
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {

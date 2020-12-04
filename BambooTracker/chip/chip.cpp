@@ -36,27 +36,18 @@ INT32 CHIP_SAMPLE_RATE;
 stream_sample_t* DUMMYBUF[] = { nullptr, nullptr };
 }
 
-namespace
-{
-inline bool isNeedSampleGeneration(std::shared_ptr<chip::ExportContainerInterface> cntr)
-{
-	return (cntr == nullptr || cntr->isNeedSampleGeneration());
-}
-}
-
 namespace chip
 {
 Chip::Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
 		   std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2,
-		   std::shared_ptr<ExportContainerInterface> exportContainer)
+		   std::shared_ptr<AbstractRegisterWriteLogger> logger)
 	: id_(id),
 	  rate_(rate),	// Dummy set
 	  clock_(clock),
 	  autoRate_(autoRate),
 	  maxDuration_(maxDuration),
 	  masterVolumeRatio_(100),
-	  exCntr_(exportContainer),
-	  needSampleGen_(isNeedSampleGeneration(exportContainer))
+	  logger_(logger)
 {
 	resampler_[0] = std::move(resampler1);
 	resampler_[1] = std::move(resampler2);
@@ -123,10 +114,9 @@ size_t Chip::getMaxDuration() const
 	return maxDuration_;
 }
 
-void Chip::setExportContainer(std::shared_ptr<ExportContainerInterface> cntr)
+void Chip::setRegisterWriteLogger(std::shared_ptr<AbstractRegisterWriteLogger> logger)
 {
-	exCntr_ = cntr;
-	needSampleGen_ = isNeedSampleGeneration(cntr);
+	logger_ = logger;
 }
 
 void Chip::setMasterVolume(int percentage)

@@ -23,57 +23,69 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "export_container.hpp"
+#include "register_write_logger.hpp"
 #include "io/export_io.hpp"
 #include <algorithm>
 
 namespace chip
 {
-ExportContainerInterface::~ExportContainerInterface() {}
-
-//******************************//
-WavExportContainer::WavExportContainer()
-{
-}
-
-void WavExportContainer::recordRegisterChange(uint32_t offset, uint8_t value)
-{
-	(void)offset;
-	(void)value;
-}
-
-void WavExportContainer::recordStream(int16_t* stream, size_t nSamples)
-{
-	std::copy(stream, stream + (nSamples << 1), std::back_inserter(samples_));
-}
-
-bool WavExportContainer::empty() const
-{
-	return samples_.empty();
-}
-
-void WavExportContainer::clear()
-{
-	samples_.clear();
-}
-
-std::vector<int16_t> WavExportContainer::getStream() const
-{
-	return samples_;
-}
-
-//******************************//
-VgmExportContainer::VgmExportContainer(int target, uint32_t intrRate)
+AbstractRegisterWriteLogger::AbstractRegisterWriteLogger(int target)
 	: target_(target),
 	  lastWait_(0),
-	  totalSampCnt_(0),
-	  intrRate_(intrRate),
 	  isSetLoop_(false),
 	  loopPoint_(0)
 {
 }
 
-void VgmExportContainer::recordRegisterChange(uint32_t offset, uint8_t value)
+void AbstractRegisterWriteLogger::elapse(size_t count) noexcept
+{
+	lastWait_ += count;
+	totalSampCnt_ += count;
+}
+
+bool AbstractRegisterWriteLogger::empty() const noexcept
+{
+	return (buf_.empty() || lastWait_ != 0);
+}
+
+void AbstractRegisterWriteLogger::clear() noexcept
+{
+	buf_.clear();
+	lastWait_ = 0;
+	totalSampCnt_ = 0;
+	isSetLoop_ = false;
+	loopPoint_ = 0;
+}
+
+std::vector<uint8_t> AbstractRegisterWriteLogger::getData()
+{
+	if (lastWait_) setWait();
+	return buf_;
+}
+
+size_t AbstractRegisterWriteLogger::getSampleLength() const noexcept
+{
+	return totalSampCnt_;
+}
+
+size_t AbstractRegisterWriteLogger::setLoopPoint()
+{
+	if (lastWait_) setWait();
+	isSetLoop_ = true;
+	return loopPoint_;
+}
+
+size_t AbstractRegisterWriteLogger::forceMoveLoopPoint() noexcept
+{
+	loopPoint_ = buf_.size();
+	return loopPoint_;
+}
+
+//******************************//
+VgmLogger::VgmLogger(int target, uint32_t intrRate)
+	: AbstractRegisterWriteLogger(target), intrRate_(intrRate) {}
+
+void VgmLogger::recordRegisterChange(uint32_t offset, uint8_t value)
 {
 	if (lastWait_) setWait();
 
@@ -132,52 +144,7 @@ void VgmExportContainer::recordRegisterChange(uint32_t offset, uint8_t value)
 	}
 }
 
-void VgmExportContainer::recordStream(int16_t* stream, size_t nSamples)
-{
-	(void)stream;
-	lastWait_ += nSamples;
-	totalSampCnt_ += nSamples;
-}
-
-void VgmExportContainer::clear()
-{
-	buf_.clear();
-	lastWait_ = 0;
-	totalSampCnt_ = 0;
-	isSetLoop_ = false;
-	loopPoint_ = 0;
-}
-
-bool VgmExportContainer::empty() const
-{
-	return (buf_.empty() || lastWait_ != 0);
-}
-
-std::vector<uint8_t> VgmExportContainer::getData()
-{
-	if (lastWait_) setWait();
-	return buf_;
-}
-
-size_t VgmExportContainer::getSampleLength() const
-{
-	return totalSampCnt_;
-}
-
-size_t VgmExportContainer::setLoopPoint()
-{
-	if (lastWait_) setWait();
-	isSetLoop_ = true;
-	return loopPoint_;
-}
-
-size_t VgmExportContainer::forceMoveLoopPoint()
-{
-	loopPoint_ = buf_.size();
-	return loopPoint_;
-}
-
-void VgmExportContainer::setDataBlock(std::vector<uint8_t> data)
+void VgmLogger::setDataBlock(std::vector<uint8_t> data)
 {
 	buf_.push_back(0x67);
 	buf_.push_back(0x66);
@@ -195,7 +162,7 @@ void VgmExportContainer::setDataBlock(std::vector<uint8_t> data)
 	std::copy(data.begin(), data.end(), std::back_inserter(buf_));
 }
 
-void VgmExportContainer::setWait()
+void VgmLogger::setWait()
 {
 	while (lastWait_) {
 		uint32_t sub;
@@ -332,16 +299,9 @@ void VgmExportContainer::setWait()
 }
 
 //******************************//
-S98ExportContainer::S98ExportContainer(int target)
-	: target_(target),
-	  lastWait_(0),
-	  totalSampCnt_(0),
-	  isSetLoop_(false),
-	  loopPoint_(0)
-{
-}
+S98Logger::S98Logger(int target) : AbstractRegisterWriteLogger(target) {}
 
-void S98ExportContainer::recordRegisterChange(uint32_t offset, uint8_t value)
+void S98Logger::recordRegisterChange(uint32_t offset, uint8_t value)
 {
 	if (lastWait_) setWait();
 
@@ -395,52 +355,7 @@ void S98ExportContainer::recordRegisterChange(uint32_t offset, uint8_t value)
 	}
 }
 
-void S98ExportContainer::recordStream(int16_t* stream, size_t nSamples)
-{
-	(void)stream;
-	lastWait_ += nSamples;
-	totalSampCnt_ += nSamples;
-}
-
-void S98ExportContainer::clear()
-{
-	buf_.clear();
-	lastWait_ = 0;
-	totalSampCnt_ = 0;
-	isSetLoop_ = false;
-	loopPoint_ = 0;
-}
-
-bool S98ExportContainer::empty() const
-{
-	return (buf_.empty() || lastWait_ != 0);
-}
-
-std::vector<uint8_t> S98ExportContainer::getData()
-{
-	if (lastWait_) setWait();
-	return buf_;
-}
-
-size_t S98ExportContainer::getSampleLength() const
-{
-	return totalSampCnt_;
-}
-
-size_t S98ExportContainer::setLoopPoint()
-{
-	if (lastWait_) setWait();
-	isSetLoop_ = true;
-	return loopPoint_;
-}
-
-size_t S98ExportContainer::forceMoveLoopPoint()
-{
-	loopPoint_ = buf_.size();
-	return loopPoint_;
-}
-
-void S98ExportContainer::setWait()
+void S98Logger::setWait()
 {
 	if (lastWait_ == 1) {
 		buf_.push_back(0xff);

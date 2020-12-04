@@ -30,7 +30,7 @@
 #include <memory>
 #include <mutex>
 #include "resampler.hpp"
-#include "export_container.hpp"
+#include "register_write_logger.hpp"
 
 namespace chip
 {
@@ -41,7 +41,7 @@ public:
 	// 0 = auto-set mode (set internal chip rate)
 	Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
 		 std::unique_ptr<AbstractResampler> resampler1, std::unique_ptr<AbstractResampler> resampler2,
-		 std::shared_ptr<ExportContainerInterface> exportContainer);
+		 std::shared_ptr<AbstractRegisterWriteLogger> logger);
 	virtual ~Chip();
 
 	virtual void reset() = 0;
@@ -56,7 +56,7 @@ public:
 	void setMaxDuration(size_t maxDuration);
 	size_t getMaxDuration() const;
 
-	void setExportContainer(std::shared_ptr<ExportContainerInterface> cntr = nullptr);
+	void setRegisterWriteLogger(std::shared_ptr<AbstractRegisterWriteLogger> logger = nullptr);
 
 	void setMasterVolume(int percentage);
 
@@ -77,8 +77,7 @@ protected:
 	sample* buffer_[2][2];
 	std::unique_ptr<AbstractResampler> resampler_[2];
 
-	std::shared_ptr<ExportContainerInterface> exCntr_;
-	bool needSampleGen_;
+	std::shared_ptr<AbstractRegisterWriteLogger> logger_;
 
 	void initResampler();
 

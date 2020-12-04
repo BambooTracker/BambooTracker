@@ -42,7 +42,7 @@ public:
 	OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 		 std::unique_ptr<AbstractResampler> fmResampler = std::make_unique<LinearResampler>(),
 		 std::unique_ptr<AbstractResampler> ssgResampler = std::make_unique<LinearResampler>(),
-		 std::shared_ptr<ExportContainerInterface> exportContainer = nullptr);
+		 std::shared_ptr<AbstractRegisterWriteLogger> logger = nullptr);
 	~OPNA() override;
 
 	void reset() override;

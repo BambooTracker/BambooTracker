@@ -288,9 +288,9 @@ void OPNAController::setMasterVolume(int percentage)
 	opna_->setMasterVolume(percentage);
 }
 
-void OPNAController::setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr)
+void OPNAController::setExportContainer(std::shared_ptr<chip::AbstractRegisterWriteLogger> cntr)
 {
-	opna_->setExportContainer(cntr);
+	opna_->setRegisterWriteLogger(cntr);
 }
 
 /********** Internal process **********/

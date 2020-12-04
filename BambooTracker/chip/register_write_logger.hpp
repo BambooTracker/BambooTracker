@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,39 +26,58 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 #include <vector>
-#include "binary_container.hpp"
 
-namespace io
+namespace chip
 {
-class WavContainer
+class AbstractRegisterWriteLogger
 {
 public:
-	explicit WavContainer(size_t defCapacity = 0, uint32_t rate = 44100, uint16_t nCh = 2, uint16_t getBitSize = 16);
-	explicit WavContainer(const BinaryContainer& bc);
+	explicit AbstractRegisterWriteLogger(int target);
+	virtual ~AbstractRegisterWriteLogger() = default;
+	virtual void recordRegisterChange(uint32_t offset, uint8_t value) = 0;
+	void elapse(size_t count) noexcept;
+	bool empty() const noexcept;
+	void clear() noexcept;
+	std::vector<uint8_t> getData();
+	size_t getSampleLength() const noexcept;
+	size_t setLoopPoint();
+	size_t forceMoveLoopPoint() noexcept;
 
-	void setChannelCount(uint16_t n);
-	uint16_t getChannelCount() const;
-	void setBitSize(uint16_t size);
-	uint16_t getBitSize() const;
-	void setSampleRate(uint32_t rate);
-	uint32_t getSampleRate() const;
+protected:
+	int target_;
+	std::vector<uint8_t> buf_;
+	uint64_t lastWait_;
+	bool isSetLoop_;
+	uint32_t loopPoint_;
 
-	size_t getSampleCount() const;
-
-	void appendSample(const int16_t* sample, size_t nSamples);
-	void appendSample(const std::vector<int16_t>& sample);
-	void appendSample(const BinaryContainer& sample);
-	BinaryContainer getSample() const;
-
-	BinaryContainer createWavBinary();
-
-	//		static WavContainer* resample(const WavContainer* src, uint32_t rate);
-	//		static WavContainer* mono(const WavContainer* src);
+	virtual void setWait() = 0;
 
 private:
-	uint16_t nCh_, bitSize_;
-	uint32_t rate_;
-	BinaryContainer buf_;
+	uint64_t totalSampCnt_;
+};
+
+class VgmLogger final : public AbstractRegisterWriteLogger
+{
+public:
+	VgmLogger(int target, uint32_t intrRate);
+	void recordRegisterChange(uint32_t offset, uint8_t value) override;
+	void setDataBlock(std::vector<uint8_t> data);
+
+private:
+	uint32_t intrRate_;
+
+	void setWait() override;
+};
+
+class S98Logger final : public AbstractRegisterWriteLogger
+{
+public:
+	explicit S98Logger(int target);
+	void recordRegisterChange(uint32_t offset, uint8_t value) override;
+
+private:
+	void setWait() override;
 };
 }

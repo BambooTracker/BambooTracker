@@ -126,6 +126,7 @@ QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 SOURCES += \
     calc_pitch.cpp \
     chip/c86ctl/c86ctl_wrapper.cpp \
+    chip/register_write_logger.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
     command/pattern/paste_insert_copied_data_to_pattern_command.cpp \
@@ -294,7 +295,6 @@ SOURCES += \
     command/pattern/reverse_pattern_command.cpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.cpp \
     command/pattern/replace_instrument_in_pattern_command.cpp \
-    chip/export_container.cpp \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
@@ -323,6 +323,7 @@ HEADERS += \
     chip/codec/ymb_codec.hpp \
     chip/c86ctl/c86ctl.h \
     chip/c86ctl/c86ctl_wrapper.hpp \
+    chip/register_write_logger.hpp \
     chip/scci/SCCIDefines.hpp \
     chip/scci/scci.hpp \
     command/command_id.hpp \
@@ -512,7 +513,6 @@ HEADERS += \
     command/pattern/reverse_pattern_command.hpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.hpp \
     command/pattern/replace_instrument_in_pattern_command.hpp \
-    chip/export_container.hpp \
     gui/vgm_export_settings_dialog.hpp \
     gui/wave_export_settings_dialog.hpp \
     configuration.hpp \

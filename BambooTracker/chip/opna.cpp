@@ -47,10 +47,10 @@ size_t OPNA::count_ = 0;
 
 OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 		   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
-		   std::shared_ptr<ExportContainerInterface> exportContainer)
+		   std::shared_ptr<AbstractRegisterWriteLogger> logger)
 	: Chip(count_++, clock, rate, 110933, maxDuration,
 		   std::move(fmResampler), std::move(ssgResampler),	// autoRate = 110933: FM internal rate
-		   exportContainer),
+		   logger),
 	  scciManager_(nullptr),
 	  scciChip_(nullptr),
 	  c86ctlBase_(nullptr),
@@ -114,7 +114,10 @@ void OPNA::setRegister(uint32_t offset, uint8_t value)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
 
-	if (needSampleGen_) {
+	if (logger_) {
+		logger_->recordRegisterChange(offset, value);
+	}
+	else {
 		if (offset & 0x100) {
 			intf_->control_port_b_w(id_, 2, offset & 0xff);
 			intf_->data_port_b_w(id_, 3, value & 0xff);
@@ -128,8 +131,6 @@ void OPNA::setRegister(uint32_t offset, uint8_t value)
 
 	if (scciChip_) scciChip_->setRegister(offset, value);
 	if (c86ctlRC_) c86ctlRC_->out(offset, value);
-
-	if (exCntr_) exCntr_->recordRegisterChange(offset, value);
 }
 
 uint8_t OPNA::getRegister(uint32_t offset) const
@@ -168,40 +169,36 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
 
-	if (needSampleGen_) {
-		sample **bufFM, **bufSSG;
+	sample **bufFM, **bufSSG;
 
-		// Set FM buffer
-		if (internalRate_[FM] == rate_) {
-			intf_->stream_update(id_, buffer_[FM], nSamples);
-			bufFM = buffer_[FM];
-		}
-		else {
-			size_t intrSize = resampler_[FM]->calculateInternalSampleSize(nSamples);
-			intf_->stream_update(id_, buffer_[FM], intrSize);
-			bufFM = resampler_[FM]->interpolate(buffer_[FM], nSamples, intrSize);
-		}
-
-		// Set SSG buffer
-		if (internalRate_[SSG] == rate_) {
-			intf_->stream_update_ay(id_, buffer_[SSG], nSamples);
-			bufSSG = buffer_[SSG];
-		}
-		else {
-			size_t intrSize = resampler_[SSG]->calculateInternalSampleSize(nSamples);
-			intf_->stream_update_ay(id_, buffer_[SSG], intrSize);
-			bufSSG = resampler_[SSG]->interpolate(buffer_[SSG], nSamples, intrSize);
-		}
-		int16_t* p = stream;
-		for (size_t i = 0; i < nSamples; ++i) {
-			for (int pan = LEFT; pan <= RIGHT; ++pan) {
-				double s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
-				*p++ = static_cast<int16_t>(clamp(s * masterVolumeRatio_, -32768.0, 32767.0));
-			}
-		}
+	// Set FM buffer
+	if (internalRate_[FM] == rate_) {
+		intf_->stream_update(id_, buffer_[FM], nSamples);
+		bufFM = buffer_[FM];
+	}
+	else {
+		size_t intrSize = resampler_[FM]->calculateInternalSampleSize(nSamples);
+		intf_->stream_update(id_, buffer_[FM], intrSize);
+		bufFM = resampler_[FM]->interpolate(buffer_[FM], nSamples, intrSize);
 	}
 
-	if (exCntr_) exCntr_->recordStream(stream, nSamples);
+	// Set SSG buffer
+	if (internalRate_[SSG] == rate_) {
+		intf_->stream_update_ay(id_, buffer_[SSG], nSamples);
+		bufSSG = buffer_[SSG];
+	}
+	else {
+		size_t intrSize = resampler_[SSG]->calculateInternalSampleSize(nSamples);
+		intf_->stream_update_ay(id_, buffer_[SSG], intrSize);
+		bufSSG = resampler_[SSG]->interpolate(buffer_[SSG], nSamples, intrSize);
+	}
+	int16_t* p = stream;
+	for (size_t i = 0; i < nSamples; ++i) {
+		for (int pan = LEFT; pan <= RIGHT; ++pan) {
+			double s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
+			*p++ = static_cast<int16_t>(clamp(s * masterVolumeRatio_, -32768.0, 32767.0));
+		}
+	}
 }
 
 void OPNA::useSCCI(scci::SoundInterfaceManager* manager)

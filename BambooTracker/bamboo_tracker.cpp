@@ -1388,7 +1388,7 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::f
 	size_t sampCnt = static_cast<size_t>(opnaCtrl_->getRate() * opnaCtrl_->getDuration() / 1000);
 	size_t intrCnt = static_cast<size_t>(opnaCtrl_->getRate()) / mod_->getTickFrequency();
 	size_t intrCntRest = 0;
-	std::vector<int16_t> dumbuf(sampCnt << 1);
+	std::vector<int16_t> buf(sampCnt << 1);
 
 	int endOrder = 0;
 	int endStep = 0;
@@ -1396,8 +1396,6 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::f
 	checkNextPositionOfLastStepAndStepSize(curSongNum_, endOrder, endStep, dummy, dummy);
 	bool endFlag = false;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
-	std::shared_ptr<chip::WavExportContainer> exCntr = std::make_shared<chip::WavExportContainer>();
-	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
 
 	while (true) {
@@ -1427,18 +1425,16 @@ bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::f
 			sampCntRest -= count;
 			intrCntRest -= count;
 
-			opnaCtrl_->getStreamSamples(&dumbuf[0], count);
+			opnaCtrl_->getStreamSamples(buf.data(), count);
+			container.appendSample(buf.data(), count);
 		}
 
 		if (endFlag) break;
 	}
 
-	opnaCtrl_->setExportContainer();
 	stopPlaySong();
 	isFollowPlay_ = tmpFollow;
 	opnaCtrl_->setRate(tmpRate);
-
-	container.storeSample(exCntr->getStream());
 
 	return true;
 }
@@ -1452,7 +1448,6 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 	size_t intrCnt = static_cast<size_t>(dblIntrCnt);
 	double intrCntDiff = dblIntrCnt - intrCnt;
 	double intrCntRest = 0;
-	std::vector<int16_t> dumbuf((intrCnt + 1) << 1);
 
 	int loopOrder = 0;
 	int loopStep = 0;
@@ -1464,8 +1459,7 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 	uint32_t loopPoint = 0;
 	uint32_t loopPointSamples = 0;
 
-	std::shared_ptr<chip::VgmExportContainer> exCntr
-			= std::make_shared<chip::VgmExportContainer>(target, mod_->getTickFrequency());
+	auto exCntr = std::make_shared<chip::VgmLogger>(target, mod_->getTickFrequency());
 
 	// Set ADPCM
 	opnaCtrl_->clearSamplesADPCM();
@@ -1506,7 +1500,8 @@ bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool
 		intrCntRest += intrCntDiff;
 		size_t extraIntrCnt = static_cast<size_t>(intrCntRest);
 		intrCntRest -= extraIntrCnt;
-		opnaCtrl_->getStreamSamples(&dumbuf[0], intrCnt + extraIntrCnt);
+
+		exCntr->elapse(intrCnt + extraIntrCnt);
 	}
 
 	opnaCtrl_->setExportContainer();
@@ -1533,7 +1528,6 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 	size_t intrCnt = static_cast<size_t>(dblIntrCnt);
 	double intrCntDiff = dblIntrCnt - intrCnt;
 	double intrCntRest = 0;
-	std::vector<int16_t> dumbuf((intrCnt + 1) << 1);
 
 	int loopOrder = 0;
 	int loopStep = 0;
@@ -1543,7 +1537,7 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
 	uint32_t loopPoint = 0;
-	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>(target);
+	auto exCntr = std::make_shared<chip::S98Logger>(target);
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
 	assignSampleADPCMRawSamples();
@@ -1570,7 +1564,7 @@ bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool
 		intrCntRest += intrCntDiff;
 		size_t extraIntrCnt = static_cast<size_t>(intrCntRest);
 		intrCntRest -= extraIntrCnt;
-		opnaCtrl_->getStreamSamples(&dumbuf[0], intrCnt + extraIntrCnt);
+		exCntr->elapse(intrCnt + extraIntrCnt);
 	}
 
 	opnaCtrl_->setExportContainer();

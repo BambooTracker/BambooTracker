@@ -130,13 +130,19 @@ size_t WavContainer::getSampleCount() const
 	return buf_.size() * bitSize_ / 8 / nCh_;
 }
 
-void WavContainer::storeSample(std::vector<int16_t> sample)
+void WavContainer::appendSample(const int16_t* sample, size_t nSamples)
 {
-	uint32_t dataSize = sample.size() * sizeof(int16_t);
-	buf_.appendArray(reinterpret_cast<uint8_t*>(&sample[0]), dataSize);
+	size_t dataSize = nCh_ * nSamples * sizeof(int16_t);
+	buf_.appendArray(reinterpret_cast<const uint8_t*>(sample), dataSize);
 }
 
-void WavContainer::storeSample(BinaryContainer sample)
+void WavContainer::appendSample(const std::vector<int16_t>& sample)
+{
+	size_t dataSize = sample.size() * sizeof(int16_t);
+	buf_.appendArray(reinterpret_cast<const uint8_t*>(sample.data()), dataSize);
+}
+
+void WavContainer::appendSample(const BinaryContainer& sample)
 {
 	buf_.appendBinaryContainer(sample);
 }
