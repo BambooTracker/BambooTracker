@@ -1784,7 +1784,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	stopPlaySong();
 
 	std::unique_ptr<AbstractBank> bank;
-	std::shared_ptr<InstrumentsManager> bankMan = std::make_shared<InstrumentsManager>(true);
+	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	try {
 		QFile fp(file);
 		if (!fp.open(QIODevice::ReadOnly)) {

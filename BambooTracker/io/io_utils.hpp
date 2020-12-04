@@ -33,12 +33,15 @@
 #include <algorithm>
 #include "instruments_manager.hpp"
 #include "envelope_fm.hpp"
+#include "enum_hash.hpp"
 #include "misc.hpp"
 
 namespace io
 {
+class BinaryContainer;
+
 template<class T>
-class FileIOManagerMap
+class FileIOHandlerMap
 {
 public:
 	void add(T* handler)
@@ -60,6 +63,12 @@ private:
 	std::vector<std::string> ldFilters_, svFilters_;
 };
 
+enum class FMOperatorParameter
+{
+	AR, DR, SR, RR, SL, TL, KS, ML, DT, SSGEG
+};
+
+extern const std::unordered_map<FMOperatorParameter, FMEnvelopeParameter> FM_OP_PARAMS[4];
 extern const FMEnvelopeParameter FM_OPSEQ_PARAMS[38];
 extern const FMOperatorType FM_OP_TYPES[4];
 
@@ -71,4 +80,8 @@ inline std::string getExtension(const std::string& path)
 }
 
 int convertDtFromDmpTfiVgi(int dt);
+
+void extractADPCMSamples(const BinaryContainer& ctr, size_t addrPos, size_t sampOffs,
+						 int maxCnt, std::vector<int>& ids,
+						 std::vector<std::vector<uint8_t>>& samples);
 }

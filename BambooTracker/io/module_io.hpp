@@ -90,6 +90,6 @@ private:
 	ModuleIO();
 
 	static std::unique_ptr<ModuleIO> instance_;
-	FileIOManagerMap<AbstractModuleIO> handler_;
+	FileIOHandlerMap<AbstractModuleIO> handler_;
 };
 }

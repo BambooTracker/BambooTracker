@@ -87,11 +87,6 @@ private:
 	BankIO();
 
 	static std::unique_ptr<BankIO> instance_;
-	FileIOManagerMap<AbstractBankIO> handler_;
-
-public:
-	static void extractADPCMSamples(const BinaryContainer& ctr, size_t addrPos, size_t sampOffs,
-									int maxCnt, std::vector<int>& ids,
-									std::vector<std::vector<uint8_t>>& samples);
+	FileIOHandlerMap<AbstractBankIO> handler_;
 };
 }

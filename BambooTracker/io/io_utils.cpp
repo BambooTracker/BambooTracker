@@ -1,8 +1,60 @@
 #include "io_utils.hpp"
 #include <stdexcept>
+#include "binary_container.hpp"
 
 namespace io
 {
+const std::unordered_map<FMOperatorParameter, FMEnvelopeParameter> FM_OP_PARAMS[4] = {
+	{
+		{ FMOperatorParameter::AR, FMEnvelopeParameter::AR1 },
+		{ FMOperatorParameter::DR, FMEnvelopeParameter::DR1 },
+		{ FMOperatorParameter::SR, FMEnvelopeParameter::SR1 },
+		{ FMOperatorParameter::RR, FMEnvelopeParameter::RR1 },
+		{ FMOperatorParameter::SL, FMEnvelopeParameter::SL1 },
+		{ FMOperatorParameter::TL, FMEnvelopeParameter::TL1 },
+		{ FMOperatorParameter::KS, FMEnvelopeParameter::KS1 },
+		{ FMOperatorParameter::ML, FMEnvelopeParameter::ML1 },
+		{ FMOperatorParameter::DT, FMEnvelopeParameter::DT1 },
+		{ FMOperatorParameter::SSGEG, FMEnvelopeParameter::SSGEG1 }
+	},
+	{
+		{ FMOperatorParameter::AR, FMEnvelopeParameter::AR2 },
+		{ FMOperatorParameter::DR, FMEnvelopeParameter::DR2 },
+		{ FMOperatorParameter::SR, FMEnvelopeParameter::SR2 },
+		{ FMOperatorParameter::RR, FMEnvelopeParameter::RR2 },
+		{ FMOperatorParameter::SL, FMEnvelopeParameter::SL2 },
+		{ FMOperatorParameter::TL, FMEnvelopeParameter::TL2 },
+		{ FMOperatorParameter::KS, FMEnvelopeParameter::KS2 },
+		{ FMOperatorParameter::ML, FMEnvelopeParameter::ML2 },
+		{ FMOperatorParameter::DT, FMEnvelopeParameter::DT2 },
+		{ FMOperatorParameter::SSGEG, FMEnvelopeParameter::SSGEG2 }
+	},
+	{
+		{ FMOperatorParameter::AR, FMEnvelopeParameter::AR3 },
+		{ FMOperatorParameter::DR, FMEnvelopeParameter::DR3 },
+		{ FMOperatorParameter::SR, FMEnvelopeParameter::SR3 },
+		{ FMOperatorParameter::RR, FMEnvelopeParameter::RR3 },
+		{ FMOperatorParameter::SL, FMEnvelopeParameter::SL3 },
+		{ FMOperatorParameter::TL, FMEnvelopeParameter::TL3 },
+		{ FMOperatorParameter::KS, FMEnvelopeParameter::KS3 },
+		{ FMOperatorParameter::ML, FMEnvelopeParameter::ML3 },
+		{ FMOperatorParameter::DT, FMEnvelopeParameter::DT3 },
+		{ FMOperatorParameter::SSGEG, FMEnvelopeParameter::SSGEG3 }
+	},
+	{
+		{ FMOperatorParameter::AR, FMEnvelopeParameter::AR4 },
+		{ FMOperatorParameter::DR, FMEnvelopeParameter::DR4 },
+		{ FMOperatorParameter::SR, FMEnvelopeParameter::SR4 },
+		{ FMOperatorParameter::RR, FMEnvelopeParameter::RR4 },
+		{ FMOperatorParameter::SL, FMEnvelopeParameter::SL4 },
+		{ FMOperatorParameter::TL, FMEnvelopeParameter::TL4 },
+		{ FMOperatorParameter::KS, FMEnvelopeParameter::KS4 },
+		{ FMOperatorParameter::ML, FMEnvelopeParameter::ML4 },
+		{ FMOperatorParameter::DT, FMEnvelopeParameter::DT4 },
+		{ FMOperatorParameter::SSGEG, FMEnvelopeParameter::SSGEG4 }
+	},
+};
+
 const FMEnvelopeParameter FM_OPSEQ_PARAMS[38] = {
 	FMEnvelopeParameter::AL, FMEnvelopeParameter::FB,
 	FMEnvelopeParameter::AR1, FMEnvelopeParameter::DR1, FMEnvelopeParameter::SR1,
@@ -35,6 +87,27 @@ int convertDtFromDmpTfiVgi(int dt)
 	case 6:		return 3;
 	case 7:		return 3;
 	default:	throw std::out_of_range("Out of range dt");
+	}
+}
+
+void extractADPCMSamples(const BinaryContainer& ctr, size_t addrPos, size_t sampOffs,
+						 int maxCnt, std::vector<int>& ids,
+						 std::vector<std::vector<uint8_t>>& samples)
+{
+	size_t ofs = 0;
+	for (int i = 0; i < maxCnt; ++i) {
+		uint16_t start = ctr.readUint16(addrPos);
+		addrPos += 2;
+		uint16_t stop = ctr.readUint16(addrPos);
+		addrPos += 2;
+
+		if (stop && start <= stop) {
+			if (ids.empty()) ofs = start;
+			ids.push_back(i);
+			size_t st = sampOffs + static_cast<size_t>((start - ofs) << 5);
+			size_t sampSize = std::min(static_cast<size_t>((stop + 1 - start) << 5), ctr.size() - st);
+			samples.push_back(ctr.getSubcontainer(st, sampSize).toVector());
+		}
 	}
 }
 }

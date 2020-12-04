@@ -92,6 +92,6 @@ private:
 	InstrumentIO();
 
 	static std::unique_ptr<InstrumentIO> instance_;
-	FileIOManagerMap<AbstractInstrumentIO> handler_;
+	FileIOHandlerMap<AbstractInstrumentIO> handler_;
 };
 }

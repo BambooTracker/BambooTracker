@@ -28,6 +28,7 @@
 #include <utility>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
+#include "io_utils.hpp"
 #include "misc.hpp"
 
 namespace io
@@ -46,7 +47,7 @@ AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
+	extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
 
 	return new PviBank(std::move(ids), std::move(samples));
 }

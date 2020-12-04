@@ -26,7 +26,16 @@
 #include "wav_container.hpp"
 #include <cmath>
 #include <memory>
+#include "file_io_error.hpp"
 #include "misc.hpp"
+
+namespace
+{
+inline void assertValue(bool f, size_t pos)
+{
+	if (!f) throw io::FileCorruptionError(io::FileType::WAV, pos);
+}
+}
 
 namespace io
 {

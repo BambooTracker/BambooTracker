@@ -524,82 +524,27 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					uint8_t tmp = ctr.readUint8(csr++);
 					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
 					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
-					// Operator 1
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 0, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					// Operator 2
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 1, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					// Operator 3
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 2, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					// Operator 4
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 3, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+					for (int op = 0; op < 4; ++op) {
+						auto& params = FM_OP_PARAMS[op];
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMOperatorEnabled(idx, op, (0x20 & tmp) ? true : false);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::AR), tmp & 0x1f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::KS), tmp >> 5);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::DR), tmp & 0x1f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::DT), tmp >> 5);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SR), tmp & 0x1f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SL), tmp >> 4);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::RR), tmp & 0x0f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::TL), tmp);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::ML), tmp & 0x0f);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SSGEG),
+															  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+					}
 					instPropCsr += ofs;
 					break;
 				}
@@ -1931,82 +1876,28 @@ void BtiIO::save(BinaryContainer& ctr,
 			uint8_t tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL) << 4)
 						  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB));
 			ctr.appendUint8(tmp);
-			// Operator 1
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 0);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1));
-			ctr.appendUint8(tmp);
-			int tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1));
-			ctr.appendUint8(tmp);
-			// Operator 2
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 1);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2));
-			ctr.appendUint8(tmp);
-			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2));
-			ctr.appendUint8(tmp);
-			// Operator 3
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 2);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3));
-			ctr.appendUint8(tmp);
-			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3));
-			ctr.appendUint8(tmp);
-			// Operator 4
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 3);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4));
-			ctr.appendUint8(tmp);
-			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4));
-			ctr.appendUint8(tmp);
+			for (int op = 0; op < 4; ++op) {
+				auto& params = FM_OP_PARAMS[op];
+				tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, op);
+				tmp = static_cast<uint8_t>(tmp << 5)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::AR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::KS)) << 5)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::DR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::DT)) << 5)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SL)) << 4)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::RR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::TL)));
+				ctr.appendUint8(tmp);
+				int tmp2 = instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SSGEG));
+				tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::ML)));
+				ctr.appendUint8(tmp);
+			}
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
 

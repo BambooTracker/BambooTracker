@@ -28,7 +28,6 @@
 #include <cstdint>
 #include <vector>
 #include "binary_container.hpp"
-#include "file_io_error.hpp"
 
 namespace io
 {
@@ -60,10 +59,5 @@ private:
 	uint16_t nCh_, bitSize_;
 	uint32_t rate_;
 	BinaryContainer buf_;
-
-	static inline void assertValue(bool f, size_t pos)
-	{
-		if (!f) throw FileCorruptionError(FileType::WAV, pos);
-	}
 };
 }
