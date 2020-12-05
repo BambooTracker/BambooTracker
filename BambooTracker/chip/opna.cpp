@@ -26,6 +26,7 @@
 #include "opna.hpp"
 #include <cstdint>
 #include <cmath>
+#include <algorithm>
 #include "scci/SCCIDefines.hpp"
 #include "scci/scci.hpp"
 #include "c86ctl/c86ctl_wrapper.hpp"
@@ -42,13 +43,18 @@ namespace
 constexpr double VOL_REDUC_ = 7.5;
 
 enum SoundSourceIndex : int { FM = 0, SSG = 1 };
+
+inline double clamp(double value, double low, double high)
+{
+	return std::min<double>(std::max<double>(value, low), high);
+}
 }
 
 namespace chip
 {
 size_t OPNA::count_ = 0;
 
-OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
+OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 		   std::unique_ptr<AbstractResampler> fmResampler, std::unique_ptr<AbstractResampler> ssgResampler,
 		   std::shared_ptr<AbstractRegisterWriteLogger> logger)
 	: Chip(count_++, clock, rate, 110933, maxDuration,
@@ -65,11 +71,11 @@ OPNA::OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 	default:
 		fprintf(stderr, "Unknown emulator choice. Using the default.\n");
 		/* fall through */
-	case Emu::Mame:
+	case OpnaEmulator::Mame:
 		fprintf(stderr, "Using emulator: MAME YM2608\n");
 		intf_ = &mame_intf2608;
 		break;
-	case Emu::Nuked:
+	case OpnaEmulator::Nuked:
 		fprintf(stderr, "Using emulator: Nuked OPN-Mod\n");
 		intf_ = &nuked_intf2608;
 		break;
@@ -203,7 +209,7 @@ void OPNA::mix(int16_t* stream, size_t nSamples)
 	}
 	int16_t* p = stream;
 	for (size_t i = 0; i < nSamples; ++i) {
-		for (int pan = LEFT; pan <= RIGHT; ++pan) {
+		for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 			double s = volumeRatio_[FM] * bufFM[pan][i] + volumeRatio_[SSG] * bufSSG[pan][i];
 			*p++ = static_cast<int16_t>(clamp(s * masterVolumeRatio_, -32768.0, 32767.0));
 		}

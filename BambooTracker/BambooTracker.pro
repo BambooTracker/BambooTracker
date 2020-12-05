@@ -322,7 +322,6 @@ SOURCES += \
 
 HEADERS += \
     calc_pitch.hpp \
-    chip/chip_misc.hpp \
     chip/codec/ymb_codec.hpp \
     chip/c86ctl/c86ctl.h \
     chip/c86ctl/c86ctl_wrapper.hpp \

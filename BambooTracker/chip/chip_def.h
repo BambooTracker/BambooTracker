@@ -4,6 +4,10 @@
 
 typedef int32_t	sample;
 
+enum { CHIP_SMPL_BUF_SIZE_ = 0x10000 };
+
+enum Stereo { STEREO_LEFT, STEREO_RIGHT };
+
 struct intf2608
 {
 	void (*set_ay_emu_core)(uint8_t Emulator);

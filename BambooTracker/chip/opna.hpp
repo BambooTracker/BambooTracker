@@ -28,7 +28,6 @@
 #include "chip.hpp"
 #include <memory>
 #include "resampler.hpp"
-#include "chip_misc.hpp"
 
 namespace scci
 {
@@ -42,12 +41,20 @@ class C86ctlGimic;
 
 namespace chip
 {
+enum class OpnaEmulator
+{
+	Mame,
+	Nuked,
+	First = Mame,
+	Last = Nuked,
+};
+
 class OPNA : public Chip
 {
 public:
 	// [rate]
 	// 0 = rate is 55466 (FM synthesis rate when clock is 3993600 * 2)
-	OPNA(Emu emu, int clock, int rate, size_t maxDuration, size_t dramSize,
+	OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dramSize,
 		 std::unique_ptr<AbstractResampler> fmResampler = std::make_unique<LinearResampler>(),
 		 std::unique_ptr<AbstractResampler> ssgResampler = std::make_unique<LinearResampler>(),
 		 std::shared_ptr<AbstractRegisterWriteLogger> logger = nullptr);

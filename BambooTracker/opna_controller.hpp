@@ -32,7 +32,6 @@
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
 #include "chip/opna.hpp"
-#include "chip/chip_misc.hpp"
 #include "chip/scci/scci.hpp"
 #include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
@@ -60,7 +59,7 @@ struct SSGWaveform
 class OPNAController
 {
 public:
-	OPNAController(chip::Emu emu, int clock, int rate, int duration);
+	OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration);
 
 	// Reset and initialize
 	void reset();

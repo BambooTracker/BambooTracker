@@ -27,7 +27,6 @@
 #include <utility>
 #include "resampler.hpp"
 #include "register_write_logger.hpp"
-#include "chip_misc.hpp"
 
 extern "C"
 {
@@ -54,16 +53,16 @@ Chip::Chip(int id, int clock, int rate, int autoRate, size_t maxDuration,
 	resampler_[0] = std::move(resampler1);
 	resampler_[1] = std::move(resampler2);
 
-	for (int pan = LEFT; pan <= RIGHT; ++pan) {
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		for (auto& buf : buffer_) {
-			buf[pan] = new stream_sample_t[SMPL_BUF_SIZE_];
+			buf[pan] = new stream_sample_t[CHIP_SMPL_BUF_SIZE_];
 		}
 	}
 }
 
 Chip::~Chip()
 {
-	for (int pan = LEFT; pan <= RIGHT; ++pan) {
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		for (auto& buf : buffer_) {
 			delete[] buf[pan];
 		}

@@ -24,20 +24,19 @@
  */
 
 #include "resampler.hpp"
-#include "chip_misc.hpp"
 
 namespace chip
 {
 AbstractResampler::AbstractResampler()
 {
-	for (int pan = LEFT; pan <= RIGHT; ++pan) {
-		destBuf_[pan] = new sample[SMPL_BUF_SIZE_]();
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
+		destBuf_[pan] = new sample[CHIP_SMPL_BUF_SIZE_]();
 	}
 }
 
 AbstractResampler::~AbstractResampler()
 {
-	for (int pan = LEFT; pan <= RIGHT; ++pan) {
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		delete[] destBuf_[pan];
 	}
 }
@@ -67,7 +66,7 @@ sample** LinearResampler::interpolate(sample** src, size_t nSamples, size_t intr
 	(void)intrSize;
 
 	// Linear interplation
-	for (int pan = LEFT; pan <= RIGHT; ++pan) {
+	for (int pan = STEREO_LEFT; pan <= STEREO_RIGHT; ++pan) {
 		for (size_t n = 0; n < nSamples; ++n) {
 			float curnf = n * rateRatio_;
 			int curni = static_cast<int>(curnf);

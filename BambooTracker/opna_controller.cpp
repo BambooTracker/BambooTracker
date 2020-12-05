@@ -28,7 +28,7 @@
 #include <limits>
 #include "calc_pitch.hpp"
 
-OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
+OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration)
 	: mode_(SongType::Standard),
 	  FM_ENV_PARAMS_OP_({
 { FMOperatorType::All, {

@@ -55,7 +55,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  isFollowPlay_(true)
 {
 	opnaCtrl_ = std::make_shared<OPNAController>(
-					static_cast<chip::Emu>(config.lock()->getEmulator()),
+					static_cast<chip::OpnaEmulator>(config.lock()->getEmulator()),
 					CHIP_CLOCK,
 					config.lock()->getSampleRate(),
 					config.lock()->getBufferLength());
