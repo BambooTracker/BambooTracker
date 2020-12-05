@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,21 +38,12 @@ public:
 								EffectDisplayControl ctrl, bool secondEntry);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
-
-	int getSong() const;
-	int getTrack() const;
-	int getOrder() const;
-	int getStep() const;
-	int getN() const;
-	bool isSecondEntry() const;
-	int getEffectValue() const;
 
 private:
 	std::weak_ptr<Module> mod_;
-	int song_, track_, order_, step_, n_;
+	const int song_, track_, order_, step_, n_;
 	int val_, prevVal_;
-	EffectDisplayControl ctrl_;
-	bool isSecond_;
+	const EffectDisplayControl ctrl_;
+	bool isSecondEntry_;
 };

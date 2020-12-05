@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,15 +24,17 @@
  */
 
 #include "set_key_off_to_step_command.hpp"
+#include "pattern_command_utils.hpp"
 
 SetKeyOffToStepCommand::SetKeyOffToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
-	: mod_(mod),
+	: AbstractCommand(CommandId::SetKeyOffToStep),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum)
 {
-	auto& st = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum).getStep(stepNum);
+	Step& st = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum);
 	prevNote_ = st.getNoteNumber();
 	prevInst_ = st.getInstrumentNumber();
 	prevVol_ = st.getVolume();
@@ -44,7 +46,7 @@ SetKeyOffToStepCommand::SetKeyOffToStepCommand(std::weak_ptr<Module> mod, int so
 
 void SetKeyOffToStepCommand::redo()
 {
-	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
 	st.setNoteNumber(-2);
 	st.setInstrumentNumber(-1);
 	st.setVolume(-1);
@@ -56,7 +58,7 @@ void SetKeyOffToStepCommand::redo()
 
 void SetKeyOffToStepCommand::undo()
 {
-	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
 	st.setNoteNumber(prevNote_);
 	st.setInstrumentNumber(prevInst_);
 	st.setVolume(prevVol_);
@@ -64,9 +66,4 @@ void SetKeyOffToStepCommand::undo()
 		st.setEffectID(i, prevEffID_[i]);
 		st.setEffectValue(i, prevEffVal_[i]);
 	}
-}
-
-CommandId SetKeyOffToStepCommand::getID() const
-{
-	return CommandId::SetKeyOffToStep;
 }

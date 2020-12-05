@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,9 +26,7 @@
 #include "insert_order_below_command.hpp"
 
 InsertOrderBelowCommand::InsertOrderBelowCommand(std::weak_ptr<Module> mod, int songNum, int orderNum)
-	: mod_(mod),
-	  song_(songNum),
-	  order_(orderNum)
+	: AbstractCommand(CommandId::InsertOrderBelow), mod_(mod), song_(songNum), order_(orderNum)
 {
 }
 
@@ -40,9 +38,4 @@ void InsertOrderBelowCommand::redo()
 void InsertOrderBelowCommand::undo()
 {
 	mod_.lock()->getSong(song_).deleteOrder(order_ + 1);
-}
-
-CommandId InsertOrderBelowCommand::getID() const
-{
-	return CommandId::InsertOrderBelow;
 }

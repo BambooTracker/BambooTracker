@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,22 +32,16 @@
 class SetInstrumentToStepCommand : public AbstractCommand
 {
 public:
-	SetInstrumentToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int instNum, bool secondEntry);
+	SetInstrumentToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
+							   int orderNum, int stepNum, int instNum, bool secondEntry);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
-
-	int getSong() const;
-	int getTrack() const;
-	int getOrder() const;
-	int getStep() const;
-	bool isSecondEntry() const;
-	int getInst() const;
 
 private:
 	std::weak_ptr<Module> mod_;
-	int song_, track_, order_, step_, inst_;
-	int prevInst_;
-	bool isSecond_;
+	const int song_, track_, order_, step_;
+	int inst_;
+	const int prevInst_;
+	bool isSecondEntry_;
 };

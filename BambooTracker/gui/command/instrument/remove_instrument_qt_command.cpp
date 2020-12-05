@@ -41,7 +41,8 @@ RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num,
 	  formMan_(formMan),
 	  mainwin_(mainwin),
 	  updateRequested_(updateRequested)
-{}
+{
+}
 
 void RemoveInstrumentQtCommand::undo()
 {

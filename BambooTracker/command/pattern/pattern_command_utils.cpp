@@ -24,8 +24,9 @@
  */
 
 #include "pattern_command_utils.hpp"
-#include "song.hpp"
 
+namespace command_utils
+{
 size_t calculateColumnSize(int beginTrack, int beginColumn, int endTrack, int endColumn)
 {
 	int w = 0;
@@ -109,4 +110,5 @@ void restorePattern(Song& song, const std::vector<std::vector<std::string>>& cel
 		}
 		++s;
 	}
+}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,102 +24,66 @@
  */
 
 #include "set_effect_id_to_step_command.hpp"
+#include "pattern_command_utils.hpp"
 
-SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry)
-	: mod_(mod),
+SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum,
+												   int trackNum, int orderNum, int stepNum,
+												   int n, std::string id, bool fillValue00,
+												   bool secondEntry)
+	: AbstractCommand(CommandId::SetEffectIDToStep),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
 	  n_(n),
 	  effID_(id),
-	  isSecond_(secondEntry)
+	  isSecondEntry_(secondEntry)
 {
-	Step& step = mod_.lock()->getSong(songNum).getTrack(trackNum)
-				 .getPatternFromOrderNumber(orderNum).getStep(stepNum);
+	Step& step = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum);
 	prevEffID_ = step.getEffectID(n);
 	filledValue00_ = fillValue00 && (step.getEffectValue(n) == -1);
 }
 
 void SetEffectIDToStepCommand::redo()
 {
-	std::string str = isSecond_ ? effID_ : ("0" + effID_);
-	Step& step = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	std::string str = isSecondEntry_ ? effID_ : ("0" + effID_);
+	Step& step = command_utils::getStep(mod_, song_, track_, order_, step_);
 	step.setEffectID(n_, str);
 	if (filledValue00_) step.setEffectValue(n_, 0);
 }
 
 void SetEffectIDToStepCommand::undo()
 {
-	Step& step = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	Step& step = command_utils::getStep(mod_, song_, track_, order_, step_);
 	step.setEffectID(n_, prevEffID_);
 	if (filledValue00_) step.setEffectValue(n_, -1);
 
-	if (!isSecond_) {	// Forced complete
+	if (!isSecondEntry_) {	// Forced complete
 		effID_ = "0" + effID_;
-		isSecond_ = true;
+		isSecondEntry_ = true;
 	}
-}
-
-CommandId SetEffectIDToStepCommand::getID() const
-{
-	return CommandId::SetEffectIDToStep;
 }
 
 bool SetEffectIDToStepCommand::mergeWith(const AbstractCommand* other)
 {
-	if (other->getID() == getID() && !isSecond_) {
+	if (other->getID() == getID() && !isSecondEntry_) {
 		auto com = dynamic_cast<const SetEffectIDToStepCommand*>(other);
-		if (com->getSong() == song_ && com->getTrack() == track_
-				&& com->getOrder() == order_ && com->getStep() == step_ && com->getN() == n_
-				&& com->isSecondEntry()) {
-			effID_ = effID_ + com->getEffectID();
-			isSecond_ = true;
+		if (com->song_ == song_ && com->track_ == track_
+				&& com->order_ == order_ && com->step_ == step_ && com->n_ == n_
+				&& com->isSecondEntry_) {
+			effID_ = effID_ + com->effID_;
+			isSecondEntry_ = true;
 			redo();
 			return true;
 		}
 	}
 
 	// Enterd only 1 character
-	if (!isSecond_) {
+	if (!isSecondEntry_) {
 		effID_ = "0" + effID_;
-		isSecond_ = true;
+		isSecondEntry_ = true;
 	}
 
 	return false;
-}
-
-int SetEffectIDToStepCommand::getSong() const
-{
-	return song_;
-}
-
-int SetEffectIDToStepCommand::getTrack() const
-{
-	return track_;
-}
-
-int SetEffectIDToStepCommand::getOrder() const
-{
-	return order_;
-}
-
-int SetEffectIDToStepCommand::getStep() const
-{
-	return step_;
-}
-
-int SetEffectIDToStepCommand::getN() const
-{
-	return n_;
-}
-
-bool SetEffectIDToStepCommand::isSecondEntry() const
-{
-	return isSecond_;
-}
-
-std::string SetEffectIDToStepCommand::getEffectID() const
-{
-	return effID_;
 }

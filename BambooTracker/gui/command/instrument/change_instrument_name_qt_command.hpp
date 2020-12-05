@@ -44,10 +44,10 @@ public:
 
 private:
 	QListWidget *list_;
-	int num_;
-	int row_;
+	const int num_;
+	const int row_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
-	QString oldName_, newName_;
+	const QString oldName_, newName_;
 };
 
 #endif // CHANGE_INSTRUMENT_NAME_QT_COMMAND_HPP

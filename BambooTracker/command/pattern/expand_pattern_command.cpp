@@ -30,7 +30,8 @@ ExpandPatternCommand::ExpandPatternCommand(std::weak_ptr<Module> mod,
 										   int songNum, int beginTrack, int beginColumn,
 										   int beginOrder, int beginStep,
 										   int endTrack, int endColumn, int endStep)
-	: mod_(mod),
+	: AbstractCommand(CommandId::ExpandPattern),
+	  mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
 	  bCol_(beginColumn),
@@ -39,8 +40,8 @@ ExpandPatternCommand::ExpandPatternCommand(std::weak_ptr<Module> mod,
 {
 	auto& song = mod.lock()->getSong(songNum);
 	size_t h = static_cast<size_t>(endStep - beginStep + 1);
-	size_t w = calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
-	prevCells_ = getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
+	size_t w = command_utils::calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
+	prevCells_ = command_utils::getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void ExpandPatternCommand::redo()
@@ -52,7 +53,7 @@ void ExpandPatternCommand::redo()
 		int t = bTrack_;
 		int c = bCol_;
 		for (size_t j = 0; j < prevCells_.at(i).size(); ++j) {
-			Step& st = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
+			Step& st = command_utils::getStep(sng, t, order_, s);
 			switch (c) {
 			case 0:
 			{
@@ -132,10 +133,5 @@ void ExpandPatternCommand::redo()
 
 void ExpandPatternCommand::undo()
 {
-	restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
-}
-
-CommandId ExpandPatternCommand::getID() const
-{
-	return CommandId::ExpandPattern;
+	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
 }

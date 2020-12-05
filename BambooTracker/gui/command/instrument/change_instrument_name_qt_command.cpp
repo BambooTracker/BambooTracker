@@ -38,7 +38,8 @@ ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, 
 	  formMan_(formMan),
 	  oldName_(oldName),
 	  newName_(newName)
-{}
+{
+}
 
 void ChangeInstrumentNameQtCommand::redo()
 {

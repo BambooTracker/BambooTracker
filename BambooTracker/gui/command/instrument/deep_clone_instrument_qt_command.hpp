@@ -47,12 +47,12 @@ public:
 
 private:
 	QListWidget* list_;
-	int cloneNum_;
+	const int cloneNum_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
-	InstrumentType type_;
-	QString name_;
+	const InstrumentType type_;
+	const QString name_;
 	MainWindow* mainwin_;
-	bool onlyUsed_;
+	const bool onlyUsed_;
 };
 
 #endif // DEEP_CLONE_INSTRUMENT_QT_COMMAND_HPP

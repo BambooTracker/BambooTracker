@@ -35,7 +35,6 @@ public:
 	DuplicateOrderCommand(std::weak_ptr<Module> mod, int songNum, int orderNum);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

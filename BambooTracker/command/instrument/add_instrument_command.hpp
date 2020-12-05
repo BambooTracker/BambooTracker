@@ -34,12 +34,12 @@
 class AddInstrumentCommand : public AbstractCommand
 {
 public:
-	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, InstrumentType type, std::string name);
-	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, std::unique_ptr<AbstractInstrument> inst);
-
+	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
+						 int num, InstrumentType type, std::string name);
+	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
+						 std::unique_ptr<AbstractInstrument> inst);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<InstrumentsManager> manager_;

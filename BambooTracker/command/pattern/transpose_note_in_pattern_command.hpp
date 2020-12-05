@@ -38,7 +38,6 @@ public:
 								  int endTrack, int endStep, int seminote);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

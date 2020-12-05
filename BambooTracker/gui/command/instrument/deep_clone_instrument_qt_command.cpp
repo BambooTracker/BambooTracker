@@ -39,7 +39,8 @@ DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, in
 	  name_(name),
 	  mainwin_(mainwin),
 	  onlyUsed_(onlyUsed)
-{}
+{
+}
 
 void DeepCloneInstrumentQtCommand::redo()
 {

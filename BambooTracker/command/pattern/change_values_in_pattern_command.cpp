@@ -24,12 +24,14 @@
  */
 
 #include "change_values_in_pattern_command.hpp"
+#include "pattern_command_utils.hpp"
 #include "misc.hpp"
 
 ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack,
 														   int beginColumn, int beginOrder, int beginStep,
 														   int endTrack, int endColumn, int endStep, int value, bool isFMReversed)
-	: mod_(mod),
+	: AbstractCommand(CommandId::ChangeValuesInPattern),
+	  mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
 	  bCol_(beginColumn),
@@ -49,7 +51,7 @@ ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(std::weak_ptr<Module>
 		std::vector<int> vals;
 		while (true) {
 			int val;
-			Step& st = sng.getTrack(track).getPatternFromOrderNumber(beginOrder).getStep(step);
+			Step& st = command_utils::getStep(sng, track, beginOrder, step);
 			switch (col) {
 			case 1:		val = st.getInstrumentNumber();	break;
 			case 2:		val = st.getVolume();			break;
@@ -120,7 +122,7 @@ void ChangeValuesInPatternCommand::undo()
 		int col = bCol_;
 		auto valit = it->begin();
 		while (true) {
-			Step& st = sng.getTrack(track).getPatternFromOrderNumber(order_).getStep(step);
+			Step& st = command_utils::getStep(sng, track, order_, step);
 			switch (col) {
 			case 1:
 				if (st.getInstrumentNumber() > -1) st.setInstrumentNumber(*valit++);
@@ -148,9 +150,4 @@ void ChangeValuesInPatternCommand::undo()
 			col %= 11;
 		}
 	}
-}
-
-CommandId ChangeValuesInPatternCommand::getID() const
-{
-	return CommandId::ChangeValuesInPattern;
 }

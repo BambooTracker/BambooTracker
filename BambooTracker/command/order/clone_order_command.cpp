@@ -26,9 +26,7 @@
 #include "clone_order_command.hpp"
 
 CloneOrderCommand::CloneOrderCommand(std::weak_ptr<Module> mod, int songNum, int orderNum)
-	: mod_(mod),
-	  song_(songNum),
-	  order_(orderNum)
+	: AbstractCommand(CommandId::CloneOrder), mod_(mod), song_(songNum), order_(orderNum)
 {
 }
 
@@ -52,9 +50,4 @@ void CloneOrderCommand::undo()
 		if (p.getUsedCount() == 1) p.clear();
 	}
 	sng.deleteOrder(order_ + 1);
-}
-
-CommandId CloneOrderCommand::getID() const
-{
-	return CommandId::CloneOrder;
 }

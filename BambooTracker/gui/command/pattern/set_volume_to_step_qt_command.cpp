@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,7 +30,7 @@ SetVolumeToStepQtCommand::SetVolumeToStepQtCommand(PatternEditorPanel* panel, Pa
 	: QUndoCommand(parent),
 	  panel_(panel),
 	  pos_(pos),
-	  isSecond_(secondEntry)
+	  isSecondEntry_(secondEntry)
 {
 }
 
@@ -52,25 +52,15 @@ int SetVolumeToStepQtCommand::id() const
 
 bool SetVolumeToStepQtCommand::mergeWith(const QUndoCommand* other)
 {
-	if (other->id() == id() && !isSecond_) {
+	if (other->id() == id() && !isSecondEntry_) {
 		auto com = dynamic_cast<const SetVolumeToStepQtCommand*>(other);
-		if (com->getPos() == pos_ && com->isSecondEntry()) {
-			isSecond_ = true;
+		if (com->pos_ == pos_ && com->isSecondEntry_) {
+			isSecondEntry_ = true;
 			redo();
 			return true;
 		}
 	}
 
-	isSecond_ = true;
+	isSecondEntry_ = true;
 	return false;
-}
-
-PatternPosition SetVolumeToStepQtCommand::getPos() const
-{
-	return pos_;
-}
-
-bool SetVolumeToStepQtCommand::isSecondEntry() const
-{
-	return isSecond_;
 }

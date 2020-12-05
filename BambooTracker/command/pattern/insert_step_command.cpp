@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,9 +24,12 @@
  */
 
 #include "insert_step_command.hpp"
+#include "pattern_command_utils.hpp"
 
-InsertStepCommand::InsertStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
-	: mod_(mod),
+InsertStepCommand::InsertStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
+									 int orderNum, int stepNum)
+	: AbstractCommand(CommandId::InsertStep),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
@@ -36,15 +39,10 @@ InsertStepCommand::InsertStepCommand(std::weak_ptr<Module> mod, int songNum, int
 
 void InsertStepCommand::redo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).insertStep(step_);
+	command_utils::getPattern(mod_, song_, track_, order_).insertStep(step_);
 }
 
 void InsertStepCommand::undo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).deletePreviousStep(step_ + 1);
-}
-
-CommandId InsertStepCommand::getID() const
-{
-	return CommandId::InsertStep;
+	command_utils::getPattern(mod_, song_, track_, order_).deletePreviousStep(step_ + 1);
 }

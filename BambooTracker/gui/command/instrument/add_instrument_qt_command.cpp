@@ -40,7 +40,8 @@ AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QStri
 	  mainwin_(mainwin),
 	  onlyUsed_(onlyUsed),
 	  hasDone_(!preventFirstStore)
-{}
+{
+}
 
 void AddInstrumentQtCommand::undo()
 {

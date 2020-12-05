@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,21 +37,12 @@ public:
 							 int n, std::string id, bool fillValue00, bool secondEntry);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
-
-	int getSong() const;
-	int getTrack() const;
-	int getOrder() const;
-	int getStep() const;
-	int getN() const;
-	bool isSecondEntry() const;
-	std::string getEffectID() const;
 
 private:
 	std::weak_ptr<Module> mod_;
-	int song_, track_, order_, step_, n_;
+	const int song_, track_, order_, step_, n_;
 	std::string effID_, prevEffID_;
 	bool filledValue00_;
-	bool isSecond_;
+	bool isSecondEntry_;
 };

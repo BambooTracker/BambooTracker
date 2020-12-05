@@ -28,7 +28,8 @@
 SwapInstrumentsCommand::SwapInstrumentsCommand(std::weak_ptr<InstrumentsManager> manager,
 											   std::weak_ptr<Module> mod, int inst1, int inst2,
 											   int song, bool patternChange)
-	: manager_(manager),
+	: AbstractCommand(CommandId::SwapInstruments),
+	  manager_(manager),
 	  mod_(mod),
 	  inst1Num_(inst1),
 	  inst2Num_(inst2),
@@ -47,11 +48,6 @@ void SwapInstrumentsCommand::undo()
 {
 	manager_.lock()->swapInstruments(inst1Num_, inst2Num_);
 	if (patternChange_) swapInstrumentsInPatterns();
-}
-
-CommandId SwapInstrumentsCommand::getID() const
-{
-	return CommandId::SwapInstruments;
 }
 
 void SwapInstrumentsCommand::swapInstrumentsInPatterns()

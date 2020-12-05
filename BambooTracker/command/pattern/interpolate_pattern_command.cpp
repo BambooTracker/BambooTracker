@@ -26,11 +26,20 @@
 #include "interpolate_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
+namespace
+{
+inline int interp(int a, int b, size_t t, int div)
+{
+	return a + (b - a) * static_cast<int>(t) / div;
+}
+}
+
 InterpolatePatternCommand::InterpolatePatternCommand(std::weak_ptr<Module> mod,
 													 int songNum, int beginTrack, int beginColumn,
 													 int beginOrder, int beginStep,
 													 int endTrack, int endColumn, int endStep)
-	: mod_(mod),
+	: AbstractCommand(CommandId::InterpolatePattern),
+	  mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
 	  bCol_(beginColumn),
@@ -40,8 +49,8 @@ InterpolatePatternCommand::InterpolatePatternCommand(std::weak_ptr<Module> mod,
 {
 	auto& song = mod.lock()->getSong(songNum);
 	size_t h = static_cast<size_t>(endStep - beginStep + 1);
-	size_t w = calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
-	prevCells_ = getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
+	size_t w = command_utils::calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
+	prevCells_ = command_utils::getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void InterpolatePatternCommand::redo()
@@ -58,7 +67,7 @@ void InterpolatePatternCommand::redo()
 			switch (c) {
 			case 0:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				int a = pattern.getStep(bStep_).getNoteNumber();
 				int b = pattern.getStep(eStep_).getNoteNumber();
 				if (a > -1 && b > -1)
@@ -67,7 +76,7 @@ void InterpolatePatternCommand::redo()
 			}
 			case 1:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				int a = pattern.getStep(bStep_).getInstrumentNumber();
 				int b = pattern.getStep(eStep_).getInstrumentNumber();
 				if (a > -1 && b > -1)
@@ -76,7 +85,7 @@ void InterpolatePatternCommand::redo()
 			}
 			case 2:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				int a = pattern.getStep(bStep_).getVolume();
 				int b = pattern.getStep(eStep_).getVolume();
 				if (a > -1 && b > -1)
@@ -85,17 +94,16 @@ void InterpolatePatternCommand::redo()
 			}
 			case 3:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				std::string a = pattern.getStep(bStep_).getEffectID(0);
 				std::string b = pattern.getStep(eStep_).getEffectID(0);
 				if (a == b)
-					sng.getTrack(t).getPatternFromOrderNumber(order_)
-							.getStep(s).setEffectID(0, a);
+					pattern.getStep(s).setEffectID(0, a);
 				break;
 			}
 			case 4:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				int a = pattern.getStep(bStep_).getEffectValue(0);
 				int b = pattern.getStep(eStep_).getEffectValue(0);
 				if (a > -1 && b > -1)
@@ -104,17 +112,16 @@ void InterpolatePatternCommand::redo()
 			}
 			case 5:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				std::string a = pattern.getStep(bStep_).getEffectID(1);
 				std::string b = pattern.getStep(eStep_).getEffectID(1);
 				if (a == b)
-					sng.getTrack(t).getPatternFromOrderNumber(order_)
-							.getStep(s).setEffectID(1, a);
+					pattern.getStep(s).setEffectID(1, a);
 				break;
 			}
 			case 6:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				int a = pattern.getStep(bStep_).getEffectValue(1);
 				int b = pattern.getStep(eStep_).getEffectValue(1);
 				if (a > -1 && b > -1)
@@ -123,17 +130,16 @@ void InterpolatePatternCommand::redo()
 			}
 			case 7:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				std::string a = pattern.getStep(bStep_).getEffectID(2);
 				std::string b = pattern.getStep(eStep_).getEffectID(2);
 				if (a == b)
-					sng.getTrack(t).getPatternFromOrderNumber(order_)
-							.getStep(s).setEffectID(2, a);
+					pattern.getStep(s).setEffectID(2, a);
 				break;
 			}
 			case 8:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				int a = pattern.getStep(bStep_).getEffectValue(2);
 				int b = pattern.getStep(eStep_).getEffectValue(2);
 				if (a > -1 && b > -1)
@@ -142,17 +148,16 @@ void InterpolatePatternCommand::redo()
 			}
 			case 9:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				std::string a = pattern.getStep(bStep_).getEffectID(3);
 				std::string b = pattern.getStep(eStep_).getEffectID(3);
 				if (a == b)
-					sng.getTrack(t).getPatternFromOrderNumber(order_)
-							.getStep(s).setEffectID(3, a);
+					pattern.getStep(s).setEffectID(3, a);
 				break;
 			}
 			case 10:
 			{
-				auto& pattern = sng.getTrack(t).getPatternFromOrderNumber(order_);
+				auto& pattern = command_utils::getPattern(sng, t, order_);
 				int a = pattern.getStep(bStep_).getEffectValue(3);
 				int b = pattern.getStep(eStep_).getEffectValue(3);
 				if (a > -1 && b > -1)
@@ -171,10 +176,5 @@ void InterpolatePatternCommand::redo()
 
 void InterpolatePatternCommand::undo()
 {
-	restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
-}
-
-CommandId InterpolatePatternCommand::getID() const
-{
-	return CommandId::InterpolatePattern;
+	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
 }

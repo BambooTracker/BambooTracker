@@ -30,7 +30,8 @@ PasteCopiedDataToPatternCommand::PasteCopiedDataToPatternCommand(std::weak_ptr<M
 																 int beginTrack, int beginColmn,
 																 int beginOrder, int beginStep,
 																 std::vector<std::vector<std::string>> cells)
-	: mod_(mod),
+	: AbstractCommand(CommandId::PasteCopiedDataToPattern),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(beginTrack),
 	  col_(beginColmn),
@@ -39,21 +40,16 @@ PasteCopiedDataToPatternCommand::PasteCopiedDataToPatternCommand(std::weak_ptr<M
 	  cells_(cells)
 {
 	auto& song = mod.lock()->getSong(songNum);
-	prevCells_ = getPreviousCells(song, cells.front().size(), cells.size(),
-								  beginTrack, beginColmn, beginOrder, beginStep);
+	prevCells_ = command_utils::getPreviousCells(song, cells.front().size(), cells.size(),
+												 beginTrack, beginColmn, beginOrder, beginStep);
 }
 
 void PasteCopiedDataToPatternCommand::redo()
 {
-	restorePattern(mod_.lock()->getSong(song_), cells_, track_, col_, order_, step_);
+	command_utils::restorePattern(mod_.lock()->getSong(song_), cells_, track_, col_, order_, step_);
 }
 
 void PasteCopiedDataToPatternCommand::undo()
 {
-	restorePattern(mod_.lock()->getSong(song_), prevCells_, track_, col_, order_, step_);
-}
-
-CommandId PasteCopiedDataToPatternCommand::getID() const
-{
-	return CommandId::PasteCopiedDataToPattern;
+	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, track_, col_, order_, step_);
 }

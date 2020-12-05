@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,10 +34,8 @@ class RemoveInstrumentCommand : public AbstractCommand
 {
 public:
 	RemoveInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int number);
-
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<InstrumentsManager> manager_;

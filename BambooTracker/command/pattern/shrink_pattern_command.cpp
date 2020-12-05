@@ -30,7 +30,8 @@ ShrinkPatternCommand::ShrinkPatternCommand(std::weak_ptr<Module> mod,
 										   int songNum, int beginTrack, int beginColumn,
 										   int beginOrder, int beginStep,
 										   int endTrack, int endColumn, int endStep)
-	: mod_(mod),
+	: AbstractCommand(CommandId::ShrinkPattern),
+	  mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
 	  bCol_(beginColumn),
@@ -40,8 +41,8 @@ ShrinkPatternCommand::ShrinkPatternCommand(std::weak_ptr<Module> mod,
 {
 	auto& song = mod.lock()->getSong(songNum);
 	size_t h = static_cast<size_t>(endStep - beginStep + 1);
-	size_t w = calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
-	prevCells_ = getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
+	size_t w = command_utils::calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
+	prevCells_ = command_utils::getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void ShrinkPatternCommand::redo()
@@ -53,7 +54,7 @@ void ShrinkPatternCommand::redo()
 		int t = bTrack_;
 		int c = bCol_;
 		for (size_t j = 0; j < prevCells_.at(i).size(); ++j) {
-			Step& st = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
+			Step& st = command_utils::getStep(sng, t, order_, s);
 			switch (c) {
 			case 0:		st.setNoteNumber(std::stoi(prevCells_.at(i).at(j)));		break;
 			case 1:		st.setInstrumentNumber(std::stoi(prevCells_.at(i).at(j)));	break;
@@ -79,7 +80,7 @@ void ShrinkPatternCommand::redo()
 		int t = bTrack_;
 		int c = bCol_;
 		for (size_t j = 0; j < prevCells_.at(0).size(); ++j) {
-			Step& st = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
+			Step& st = command_utils::getStep(sng, t, order_, s);
 			switch (c) {
 			case 0:		st.setNoteNumber(-1);		break;
 			case 1:		st.setInstrumentNumber(-1);	break;
@@ -102,10 +103,5 @@ void ShrinkPatternCommand::redo()
 
 void ShrinkPatternCommand::undo()
 {
-	restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
-}
-
-CommandId ShrinkPatternCommand::getID() const
-{
-	return CommandId::ShrinkPattern;
+	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
 }

@@ -37,7 +37,8 @@ CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, I
 	  formMan_(formMan),
 	  type_(type),
 	  name_(name)
-{}
+{
+}
 
 void CloneInstrumentQtCommand::redo()
 {

@@ -39,7 +39,6 @@ public:
 											 std::vector<std::vector<std::string>> cells);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

@@ -35,10 +35,8 @@ class SwapInstrumentsCommand : public AbstractCommand
 public:
 	SwapInstrumentsCommand(std::weak_ptr<InstrumentsManager> manager, std::weak_ptr<Module> mod,
 						   int inst1, int inst2, int song, bool patternChange);
-
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<InstrumentsManager> manager_;

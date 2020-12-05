@@ -36,7 +36,6 @@ public:
 						  int noteNum, bool instMask, int instNum, bool volMask, int vol, bool isFMReversed);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,9 +26,7 @@
 #include "delete_order_command.hpp"
 
 DeleteOrderCommand::DeleteOrderCommand(std::weak_ptr<Module> mod, int songNum, int orderNum)
-	: mod_(mod),
-	  song_(songNum),
-	  order_(orderNum)
+	: AbstractCommand(CommandId::DeleteOrder), mod_(mod), song_(songNum), order_(orderNum)
 {
 	prevOdr_ = mod_.lock()->getSong(songNum).getOrderData(orderNum);
 }
@@ -45,9 +43,4 @@ void DeleteOrderCommand::undo()
 	for (const auto& t : prevOdr_) {
 		sng.getTrack(t.trackAttribute.number).registerPatternToOrder(t.order, t.patten);
 	}
-}
-
-CommandId DeleteOrderCommand::getID() const
-{
-	return CommandId::DeleteOrder;
 }

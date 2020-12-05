@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,10 +26,11 @@
 #include "remove_instrument_command.hpp"
 #include <utility>
 
-RemoveInstrumentCommand::RemoveInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int number) :
-	manager_(manager),
-	number_(number)
-{}
+RemoveInstrumentCommand::RemoveInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
+												 int number)
+	: AbstractCommand(CommandId::RemoveInstrument), manager_(manager), number_(number)
+{
+}
 
 void RemoveInstrumentCommand::redo()
 {
@@ -39,9 +40,4 @@ void RemoveInstrumentCommand::redo()
 void RemoveInstrumentCommand::undo()
 {
 	manager_.lock()->addInstrument(std::move(inst_));
-}
-
-CommandId RemoveInstrumentCommand::getID() const
-{
-	return CommandId::RemoveInstrument;
 }

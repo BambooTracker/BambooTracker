@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,8 @@
 
 PasteCopiedDataToOrderCommand::PasteCopiedDataToOrderCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginOrder,
 															 std::vector<std::vector<std::string>> cells)
-	: mod_(mod),
+	: AbstractCommand(CommandId::PasteCopiedDataToOrder),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(beginTrack),
 	  order_(beginOrder),
@@ -52,11 +53,6 @@ void PasteCopiedDataToOrderCommand::redo()
 void PasteCopiedDataToOrderCommand::undo()
 {
 	setCells(prevCells_);
-}
-
-CommandId PasteCopiedDataToOrderCommand::getID() const
-{
-	return CommandId::PasteCopiedDataToOrder;
 }
 
 void PasteCopiedDataToOrderCommand::setCells(std::vector<std::vector<std::string>>& cells)

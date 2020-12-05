@@ -30,7 +30,8 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 																	   int beginTrack, int beginColumn,
 																	   int beginOrder, int beginStep,
 																	   std::vector<std::vector<std::string>> cells)
-	: mod_(mod),
+	: AbstractCommand(CommandId::PasteMixCopiedDataToPattern),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(beginTrack),
 	  col_(beginColumn),
@@ -39,8 +40,8 @@ PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak
 	  cells_(cells)
 {
 	auto& song = mod.lock()->getSong(songNum);
-	prevCells_ = getPreviousCells(song, cells.front().size(), cells.size(),
-								  beginTrack, beginColumn, beginOrder, beginStep);
+	prevCells_ = command_utils::getPreviousCells(song, cells.front().size(), cells.size(),
+												 beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void PasteMixCopiedDataToPatternCommand::redo()
@@ -52,7 +53,7 @@ void PasteMixCopiedDataToPatternCommand::redo()
 		int t = track_;
 		int c = col_;
 		for (const std::string& cell : row) {
-			auto& step = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
+			Step& step = command_utils::getStep(sng, t, order_, s);
 			switch (c) {
 			case 0:
 			{
@@ -129,10 +130,5 @@ void PasteMixCopiedDataToPatternCommand::redo()
 
 void PasteMixCopiedDataToPatternCommand::undo()
 {
-	restorePattern(mod_.lock()->getSong(song_), prevCells_, track_, col_, order_, step_);
-}
-
-CommandId PasteMixCopiedDataToPatternCommand::getID() const
-{
-	return CommandId::PasteMixCopiedDataToPattern;
+	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, track_, col_, order_, step_);
 }

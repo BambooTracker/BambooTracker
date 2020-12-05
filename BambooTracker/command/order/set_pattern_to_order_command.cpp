@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,16 +25,19 @@
 
 #include "set_pattern_to_order_command.hpp"
 
-SetPatternToOrderCommand::SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry)
-	: mod_(mod),
+SetPatternToOrderCommand::SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum,
+												   int trackNum, int orderNum, int patternNum,
+												   bool secondEntry)
+	: AbstractCommand(CommandId::SetPatternToOrder),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  pattern_(patternNum),
-	  isSecond_(secondEntry)
+	  prevPattern_(mod_.lock()->getSong(songNum).getTrack(trackNum)
+				   .getPatternFromOrderNumber(orderNum).getNumber()),
+	  isSecondEntry_(secondEntry)
 {
-	prevPattern_ = mod_.lock()->getSong(songNum).getTrack(trackNum)
-				   .getPatternFromOrderNumber(orderNum).getNumber();
 }
 
 void SetPatternToOrderCommand::redo()
@@ -45,52 +48,22 @@ void SetPatternToOrderCommand::redo()
 void SetPatternToOrderCommand::undo()
 {
 	mod_.lock()->getSong(song_).getTrack(track_).registerPatternToOrder(order_, prevPattern_);
-	isSecond_ = true;	// Forced complete
-}
-
-CommandId SetPatternToOrderCommand::getID() const
-{
-	return CommandId::SetPatternToOrder;
+	isSecondEntry_ = true;	// Forced complete
 }
 
 bool SetPatternToOrderCommand::mergeWith(const AbstractCommand* other)
 {
-	if (other->getID() == getID() && !isSecond_) {
+	if (other->getID() == getID() && !isSecondEntry_) {
 		auto com = dynamic_cast<const SetPatternToOrderCommand*>(other);
-		if (com->getSong() == song_ && com->getTrack() == track_
-				&& com->getOrder() == order_ && com->isSecondEntry()) {
-			pattern_ = (pattern_ << 4) + com->getPattern();
+		if (com->song_ == song_ && com->track_ == track_
+				&& com->order_ == order_ && com->isSecondEntry_) {
+			pattern_ = (pattern_ << 4) + com->pattern_;
 			redo();
-			isSecond_ = true;
+			isSecondEntry_ = true;
 			return true;
 		}
 	}
 
-	isSecond_ = true;
+	isSecondEntry_ = true;
 	return false;
-}
-
-int SetPatternToOrderCommand::getSong() const
-{
-	return song_;
-}
-
-int SetPatternToOrderCommand::getTrack() const
-{
-	return track_;
-}
-
-int SetPatternToOrderCommand::getOrder() const
-{
-	return order_;
-}
-
-bool SetPatternToOrderCommand::isSecondEntry() const
-{
-	return isSecond_;
-}
-
-int SetPatternToOrderCommand::getPattern() const
-{
-	return pattern_;
 }

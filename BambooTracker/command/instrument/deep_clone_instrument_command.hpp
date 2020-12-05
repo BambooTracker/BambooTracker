@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,10 +33,8 @@ class DeepCloneInstrumentCommand : public AbstractCommand
 {
 public:
 	DeepCloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, int refNum);
-
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<InstrumentsManager> manager_;
