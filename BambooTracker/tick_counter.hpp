@@ -29,7 +29,7 @@
 #include <cstddef>
 #include <vector>
 
-enum class GrooveTrigger
+enum class GrooveState
 {
 	ValidByGlobal,
 	ValidByLocal,
@@ -42,13 +42,13 @@ public:
 	TickCounter();
 	void setInterruptRate(uint32_t rate);
 	void setTempo(int tempo);
-	int getTempo() const;
+	int getTempo() const noexcept;
 	void setSpeed(int speed);
-	int getSpeed() const;
+	int getSpeed() const noexcept;
 	void setGroove(std::vector<int> seq);
-	void setGrooveTrigger(GrooveTrigger trigger);
-	bool getGrooveEnabled() const;
-	void setPlayState(bool isPlaySong);
+	void setGrooveState(GrooveState state);
+	bool getGrooveEnabled() const noexcept;
+	void setPlayState(bool isPlaySong) noexcept;
 	int countUp();
 	void resetCount();
 
@@ -62,9 +62,9 @@ private:
 	int defStepSize_;
 	int restTickToNextStep_;
 
-	float tickDif_;
-	float tickDifSum_;
+	float tickDiff_;
+	float tickDiffSum_;
 
-	void updateTickDIf();
+	void updateTickDifference();
 	void resetRest();
 };

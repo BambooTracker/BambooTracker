@@ -33,7 +33,7 @@
 #include <unordered_map>
 #include "configuration.hpp"
 #include "opna_controller.hpp"
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "instruments_manager.hpp"
 #include "instrument.hpp"
 #include "tick_counter.hpp"

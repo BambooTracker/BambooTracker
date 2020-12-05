@@ -923,8 +923,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tickCounter_->setTempo(song.getTempo());
 	tickCounter_->setSpeed(song.getSpeed());
 	tickCounter_->setGroove(mod_->getGroove(song.getGroove()).getSequence());
-	tickCounter_->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
-													  : GrooveTrigger::ValidByGlobal);
+	tickCounter_->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
+													: GrooveState::ValidByGlobal);
 
 	std::unordered_map<SoundSource, int> pairs = {
 		{ SoundSource::FM, getFMChannelCount(songStyle_.type) },
@@ -994,7 +994,7 @@ bool BambooTracker::isJamMode() const
 
 void BambooTracker::jamKeyOn(JamKey key, bool volumeSet)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	funcJamKeyOn(key, keyNum, attrib, volumeSet);
 }
@@ -1007,7 +1007,7 @@ void BambooTracker::jamKeyOn(int keyNum, bool volumeSet)
 
 void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
 		funcJamKeyOn(key, keyNum, attrib, volumeSet, inst);
@@ -1044,23 +1044,23 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {
-		std::vector<JamKeyData>&& list = jamMan_->keyOn(key, attrib.channelInSource, attrib.source, keyNum);
+		std::vector<JamKeyInfo>&& list = jamMan_->keyOn(key, attrib.channelInSource, attrib.source, keyNum);
 		if (list.size() == 2) {	// Key off
-			JamKeyData& offData = list[1];
-			switch (offData.source) {
+			JamKeyInfo& offInfo = list[1];
+			switch (offInfo.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FM3chExpanded && offData.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && offInfo.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
 					opnaCtrl_->keyOffFM(8, true);
 				}
 				else {
-					opnaCtrl_->keyOffFM(offData.channelInSource, true);
+					opnaCtrl_->keyOffFM(offInfo.channelInSource, true);
 				}
 				break;
 			case SoundSource::SSG:
-				opnaCtrl_->keyOffSSG(offData.channelInSource, true);
+				opnaCtrl_->keyOffSSG(offInfo.channelInSource, true);
 				break;
 			case SoundSource::ADPCM:
 				opnaCtrl_->keyOffADPCM(true);
@@ -1073,18 +1073,18 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		if (!inst) {	// Use current instrument if not specified
 			inst = instMan_->getInstrumentSharedPtr(curInstNum_);
 		}
-		JamKeyData& onData = list.front();
+		JamKeyInfo& onInfo = list.front();
 
 		Note note;
 		int octave, pitch;
 		if (key == JamKey::MidiKey) {
-			auto octNote = noteNumberToOctaveAndNote(onData.keyNum);
+			auto octNote = noteNumberToOctaveAndNote(onInfo.keyNum);
 			note = octNote.second;
 			octave = octNote.first;
 		}
 		else {
-			note = JamManager::jamKeyToNote(onData.key);
-			octave = JamManager::calcOctave(curOctave_, onData.key);
+			note = jam_utils::jamKeyToNote(onInfo.key);
+			octave = jam_utils::calculateJamKeyOctave(curOctave_, onInfo.key);
 			if (octave > 7) {	// Tone range check
 				octave = 7;
 				note = Note::B;
@@ -1092,32 +1092,32 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		}
 		pitch = 0;
 
-		switch (onData.source) {
+		switch (onInfo.source) {
 		case SoundSource::FM:
 			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(inst))
-				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
+				opnaCtrl_->setInstrumentFM(onInfo.channelInSource, fm);
 			if (volumeSet) {
 				int vol;
 				if (volFMReversed_) vol = (curVolume_ < 0x80) ? (0x7f - curVolume_) : 0;
 				else vol = std::min(curVolume_, 0x7f);
-				opnaCtrl_->setVolumeFM(onData.channelInSource, vol);
+				opnaCtrl_->setVolumeFM(onInfo.channelInSource, vol);
 			}
-			if (songStyle_.type == SongType::FM3chExpanded && onData.channelInSource == 2) {
+			if (songStyle_.type == SongType::FM3chExpanded && onInfo.channelInSource == 2) {
 				opnaCtrl_->keyOnFM(2, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(6, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(7, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(8, note, octave, pitch, true);
 			}
 			else {
-				opnaCtrl_->keyOnFM(onData.channelInSource, note, octave, pitch, true);
+				opnaCtrl_->keyOnFM(onInfo.channelInSource, note, octave, pitch, true);
 			}
 			break;
 		case SoundSource::SSG:
 			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(inst))
-				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
+				opnaCtrl_->setInstrumentSSG(onInfo.channelInSource, ssg);
 			if (volumeSet)
-				opnaCtrl_->setVolumeSSG(onData.channelInSource, std::min(curVolume_, 0xf));
-			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
+				opnaCtrl_->setVolumeSSG(onInfo.channelInSource, std::min(curVolume_, 0xf));
+			opnaCtrl_->keyOnSSG(onInfo.channelInSource, note, octave, pitch, true);
 			break;
 		case SoundSource::ADPCM:
 			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(inst))
@@ -1135,7 +1135,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 void BambooTracker::jamKeyOff(JamKey key)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	funcJamKeyOff(key, keyNum, attrib);
 }
@@ -1148,7 +1148,7 @@ void BambooTracker::jamKeyOff(int keyNum)
 
 void BambooTracker::jamKeyOffForced(JamKey key, SoundSource src)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
 		funcJamKeyOff(key, keyNum, attrib);
@@ -1180,23 +1180,23 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {
-		JamKeyData&& data = jamMan_->keyOff(key, keyNum);
+		JamKeyInfo&& info = jamMan_->keyOff(key, keyNum);
 
-		if (data.channelInSource > -1) {	// Key still sound
-			switch (data.source) {
+		if (info.channelInSource > -1) {	// Key still sound
+			switch (info.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FM3chExpanded && data.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && info.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
 					opnaCtrl_->keyOffFM(8, true);
 				}
 				else {
-					opnaCtrl_->keyOffFM(data.channelInSource, true);
+					opnaCtrl_->keyOffFM(info.channelInSource, true);
 				}
 				break;
 			case SoundSource::SSG:
-				opnaCtrl_->keyOffSSG(data.channelInSource, true);
+				opnaCtrl_->keyOffSSG(info.channelInSource, true);
 				break;
 			case SoundSource::ADPCM:
 				opnaCtrl_->keyOffADPCM(true);
@@ -1682,7 +1682,7 @@ void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 
 void BambooTracker::killSound()
 {
-	jamMan_->clear();
+	jamMan_->reset();
 	opnaCtrl_->reset();
 }
 
@@ -1970,8 +1970,8 @@ int BambooTracker::getSongGroove(int songNum) const
 void BambooTracker::toggleTempoOrGrooveInSong(int songNum, bool isTempo)
 {
 	mod_->getSong(songNum).toggleTempoOrGroove(isTempo);
-	tickCounter_->setGrooveTrigger(isTempo ? GrooveTrigger::Invalid
-										   : GrooveTrigger::ValidByGlobal);
+	tickCounter_->setGrooveState(isTempo ? GrooveState::Invalid
+										 : GrooveState::ValidByGlobal);
 }
 
 bool BambooTracker::isUsedTempoInSong(int songNum) const

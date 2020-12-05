@@ -46,7 +46,7 @@
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "midi/midi.hpp"
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "gui/effect_description.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/gui_util.hpp"
@@ -1552,7 +1552,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 			default:
 				break;
 			}
-			setStepKeyOn(JamManager::jamKeyToNote(possibleJamKey), baseOct + octaveOffset);
+			setStepKeyOn(jam_utils::jamKeyToNote(possibleJamKey), baseOct + octaveOffset);
 		} catch (std::invalid_argument &) {}
 	}
 

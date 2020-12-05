@@ -173,6 +173,7 @@ SOURCES += \
     io/wav_container.cpp \
     io/wopn_io.cpp \
     io/y12_io.cpp \
+    jamming.cpp \
     main.cpp \
     gui/mainwindow.cpp \
     chip/chip.cpp \
@@ -189,7 +190,6 @@ SOURCES += \
     playback.cpp \
     song_length_calculator.cpp \
     audio/audio_stream.cpp \
-    jam_manager.cpp \
     instrument/instruments_manager.cpp \
     command/command_manager.cpp \
     command/instrument/add_instrument_command.cpp \
@@ -392,12 +392,12 @@ HEADERS += \
     io/wav_container.hpp \
     io/wopn_io.hpp \
     io/y12_io.hpp \
+    jamming.hpp \
     module/effect.hpp \
     playback.hpp \
     song_length_calculator.hpp \
     audio/audio_stream.hpp \
     chip/chip_def.h \
-    jam_manager.hpp \
     misc.hpp \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \

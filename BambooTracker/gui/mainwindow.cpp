@@ -47,7 +47,7 @@
 #include <QToolButton>
 #include <QSignalBlocker>
 #include <QTextCodec>
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "song.hpp"
 #include "track.hpp"
 #include "instrument.hpp"

@@ -26,7 +26,7 @@
 #include "configuration_handler.hpp"
 #include <vector>
 #include <unordered_map>
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include"enum_hash.hpp"
 
 // config path (*nix): ~/.config/<organization>/<application>.ini

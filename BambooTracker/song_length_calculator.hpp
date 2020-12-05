@@ -35,10 +35,5 @@ public:
 
 private:
 	Module& mod_;
-	int songNum_;
-
-	inline double getStrictStepTicks(int rate, int tempo, int speed) const
-	{
-		return 2.5 * rate * speed / tempo;
-	}
+	const int songNum_;
 };

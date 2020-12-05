@@ -32,24 +32,24 @@ TickCounter::TickCounter() :
 	nextGroovePos_(-1),
 	defStepSize_(6)    // Dummy set
 {
-	updateTickDIf();
+	updateTickDifference();
 }
 
 void TickCounter::setInterruptRate(uint32_t rate)
 {
 	tickRate_ = static_cast<int>(rate);
-	updateTickDIf();
+	updateTickDifference();
 }
 
 void TickCounter::setTempo(int tempo)
 {
 	tempo_ = tempo;
-	updateTickDIf();
-	tickDifSum_ = 0;
+	updateTickDifference();
+	tickDiffSum_ = 0;
 	resetRest();
 }
 
-int TickCounter::getTempo() const
+int TickCounter::getTempo() const noexcept
 {
 	return tempo_;
 }
@@ -57,12 +57,12 @@ int TickCounter::getTempo() const
 void TickCounter::setSpeed(int speed)
 {
 	defStepSize_ = speed;
-	updateTickDIf();
-	tickDifSum_ = 0;
+	updateTickDifference();
+	tickDiffSum_ = 0;
 	resetRest();
 }
 
-int TickCounter::getSpeed() const
+int TickCounter::getSpeed() const noexcept
 {
 	return defStepSize_;
 }
@@ -73,31 +73,31 @@ void TickCounter::setGroove(std::vector<int> seq)
 	if (nextGroovePos_ != -1) nextGroovePos_ = 0;
 }
 
-void TickCounter::setGrooveTrigger(GrooveTrigger trigger)
+void TickCounter::setGrooveState(GrooveState state)
 {
-	switch (trigger) {
-	case GrooveTrigger::ValidByGlobal:
+	switch (state) {
+	case GrooveState::ValidByGlobal:
 		nextGroovePos_ = static_cast<int>(grooves_.size()) - 1;
 		resetRest();
 		break;
-	case GrooveTrigger::ValidByLocal:
+	case GrooveState::ValidByLocal:
 		nextGroovePos_ = 0;
 		resetRest();
 		--restTickToNextStep_;	// Count down by step head
 		break;
-	case GrooveTrigger::Invalid:
+	case GrooveState::Invalid:
 		nextGroovePos_ = -1;
 		resetRest();
 		break;
 	}
 }
 
-bool TickCounter::getGrooveEnabled() const
+bool TickCounter::getGrooveEnabled() const noexcept
 {
 	return (nextGroovePos_ != -1);
 }
 
-void TickCounter::setPlayState(bool isPlaySong)
+void TickCounter::setPlayState(bool isPlaySong) noexcept
 {
 	isPlaySong_ = isPlaySong;
 }
@@ -124,26 +124,26 @@ int TickCounter::countUp()
 	}
 }
 
-void TickCounter::updateTickDIf()
+void TickCounter::updateTickDifference()
 {
 	float strictTicksPerStepByBpm = 10.0f * tickRate_ * defStepSize_ / (tempo_ << 2);
-	tickDif_ = strictTicksPerStepByBpm - static_cast<float>(defStepSize_);
+	tickDiff_ = strictTicksPerStepByBpm - static_cast<float>(defStepSize_);
 }
 
 void TickCounter::resetCount()
 {
 	restTickToNextStep_ = 0;
-	tickDifSum_ = 0;
+	tickDiffSum_ = 0;
 }
 
 void TickCounter::resetRest()
 {
 	if (nextGroovePos_ == -1) {
-		tickDifSum_ += tickDif_;
-		int castedTickDifSum = static_cast<int>(tickDifSum_);
+		tickDiffSum_ += tickDiff_;
+		int castedTickDifSum = static_cast<int>(tickDiffSum_);
 		restTickToNextStep_ = defStepSize_ + castedTickDifSum;
 		if (restTickToNextStep_ < 1) restTickToNextStep_ = 1;	// Prevent wait count changing to 0 (freeze)
-		tickDifSum_ -= castedTickDifSum;
+		tickDiffSum_ -= castedTickDifSum;
 	}
 	else {
 		restTickToNextStep_ = grooves_.at(static_cast<size_t>(nextGroovePos_));

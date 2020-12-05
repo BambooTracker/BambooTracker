@@ -160,8 +160,8 @@ void PlaybackManager::playStep(int order, int step)
 		tickCounter_.lock()->setTempo(song.getTempo());
 		tickCounter_.lock()->setSpeed(song.getSpeed());
 		tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()).getSequence());
-		tickCounter_.lock()->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
-																 : GrooveTrigger::ValidByGlobal);
+		tickCounter_.lock()->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
+															   : GrooveState::ValidByGlobal);
 	}
 	tickCounter_.lock()->resetCount();
 	tickCounter_.lock()->setPlayState(true);
@@ -185,8 +185,8 @@ void PlaybackManager::startPlay()
 	tickCounter_.lock()->setTempo(song.getTempo());
 	tickCounter_.lock()->setSpeed(song.getSpeed());
 	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()).getSequence());
-	tickCounter_.lock()->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
-															 : GrooveTrigger::ValidByGlobal);
+	tickCounter_.lock()->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
+														   : GrooveState::ValidByGlobal);
 	tickCounter_.lock()->resetCount();
 	tickCounter_.lock()->setPlayState(true);
 
@@ -1282,19 +1282,19 @@ bool PlaybackManager::effPatternBreak(int nextStep)
 void PlaybackManager::effSpeedChange(int speed)
 {
 	tickCounter_.lock()->setSpeed(speed ? speed : 1);
-	tickCounter_.lock()->setGrooveTrigger(GrooveTrigger::Invalid);
+	tickCounter_.lock()->setGrooveState(GrooveState::Invalid);
 }
 
 void PlaybackManager::effTempoChange(int tempo)
 {
 	tickCounter_.lock()->setTempo(tempo);
-	tickCounter_.lock()->setGrooveTrigger(GrooveTrigger::Invalid);
+	tickCounter_.lock()->setGrooveState(GrooveState::Invalid);
 }
 
 void PlaybackManager::effGrooveChange(int num)
 {
 	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(num).getSequence());
-	tickCounter_.lock()->setGrooveTrigger(GrooveTrigger::ValidByLocal);
+	tickCounter_.lock()->setGrooveState(GrooveState::ValidByLocal);
 }
 
 void PlaybackManager::tickProcess(int rest)

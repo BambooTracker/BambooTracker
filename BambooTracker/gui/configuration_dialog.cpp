@@ -42,7 +42,7 @@
 #include <QSignalBlocker>
 #include "audio/audio_stream.hpp"
 #include "midi/midi.hpp"
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "chip/chip_misc.hpp"
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"

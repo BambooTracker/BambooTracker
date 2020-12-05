@@ -31,43 +31,41 @@
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
-
-struct JamKeyData;
+struct JamKeyInfo;
 enum class JamKey;
 
+namespace jam_utils
+{
+Note jamKeyToNote(JamKey& key);
+JamKey noteToJamKey(Note& note);
+int calculateJamKeyOctave(int baseOctave, JamKey& key);
+}
 
 class JamManager
 {
 public:
 	JamManager();
 	bool toggleJamMode();
-	bool isJamMode() const;
+	bool isJamMode() const noexcept;
 	void polyphonic(bool flag);
-	std::vector<JamKeyData> keyOn(JamKey key, int channel, SoundSource source, int keyNum);
-	JamKeyData keyOff(JamKey key, int keyNum);
-
-	static Note jamKeyToNote(JamKey& key);
-	static JamKey noteToJamKey(Note& note);
-	static int calcOctave(int baseOctave, JamKey& key);
-
-	void clear();
+	std::vector<JamKeyInfo> keyOn(JamKey key, int channel, SoundSource source, int keyNum);
+	JamKeyInfo keyOff(JamKey key, int keyNum);
+	void reset();
 
 private:
 	bool isJamMode_;
 	bool isPoly_;
-	std::vector<JamKeyData> keyOnTable_;
+	std::vector<JamKeyInfo> keyOnTable_;
 	std::unordered_map<SoundSource, std::deque<int>> unusedCh_;
 };
 
-
-struct JamKeyData
+struct JamKeyInfo
 {
 	JamKey key;
 	int channelInSource;
 	SoundSource source;
 	int keyNum;
 };
-
 
 enum class JamKey
 {

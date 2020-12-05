@@ -24,7 +24,7 @@
  */
 
 #include "configuration.hpp"
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 
 Configuration::Configuration()
 {

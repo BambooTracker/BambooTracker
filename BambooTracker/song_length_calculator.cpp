@@ -29,6 +29,14 @@
 #include "effect.hpp"
 #include "enum_hash.hpp"
 
+namespace
+{
+inline double calculateStrictStepTicks(int rate, int tempo, int speed)
+{
+	return 2.5 * rate * speed / tempo;
+}
+}
+
 SongLengthCalculator::SongLengthCalculator(Module& mod, int songNum)
 	: mod_(mod), songNum_(songNum)
 {
@@ -44,7 +52,7 @@ double SongLengthCalculator::calculateBySecond() const
 	int tempo = song.getTempo();
 	int speed = song.getSpeed();
 	std::vector<int> groove = mod_.getGroove(song.getGroove()).getSequence();
-	double stepTicks = getStrictStepTicks(rate, tempo, speed);
+	double stepTicks = calculateStrictStepTicks(rate, tempo, speed);
 	size_t grooveIdx = 0;
 	bool isTempo = song.isUsedTempo();
 
@@ -87,12 +95,12 @@ double SongLengthCalculator::calculateBySecond() const
 				if (it->second < 0x20 && speed != it->second) {
 					speed = it->second;
 					isTempo = true;
-					stepTicks = getStrictStepTicks(rate, tempo, speed);
+					stepTicks = calculateStrictStepTicks(rate, tempo, speed);
 				}
 				else if (tempo != it->second) {
 					tempo = it->second;
 					isTempo = true;
-					stepTicks = getStrictStepTicks(rate, tempo, speed);
+					stepTicks = calculateStrictStepTicks(rate, tempo, speed);
 				}
 			}
 			for (const auto& eff : speedEffMap) {
