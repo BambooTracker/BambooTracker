@@ -29,11 +29,12 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include "resampler.hpp"
-#include "register_write_logger.hpp"
 
 namespace chip
 {
+class AbstractResampler;
+class AbstractRegisterWriteLogger;
+
 class Chip
 {
 public:

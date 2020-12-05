@@ -26,10 +26,12 @@
 #pragma once
 
 #include <vector>
-#include "binary_container.hpp"
+#include <string>
 
 namespace io
 {
+class BinaryContainer;
+
 // VGM ----------
 struct GD3Tag
 {

@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "module.hpp"
+class Module;
 
 class SongLengthCalculator
 {

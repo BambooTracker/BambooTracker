@@ -25,7 +25,9 @@
 
 #include "playback.hpp"
 #include <algorithm>
-#include "song.hpp"
+#include "opna_controller.hpp"
+#include "instruments_manager.hpp"
+#include "tick_counter.hpp"
 #include "misc.hpp"
 
 PlaybackManager::PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
@@ -212,22 +214,22 @@ void PlaybackManager::stopPlay()
 	playStepNum_ = -1;
 }
 
-bool PlaybackManager::isPlaySong() const
+bool PlaybackManager::isPlaySong() const noexcept
 {
 	return ((playState_ & 0x01) > 0);
 }
 
-bool PlaybackManager::isPlayingStep() const
+bool PlaybackManager::isPlayingStep() const noexcept
 {
 	return ((playState_ & 0x20) > 0);
 }
 
-int PlaybackManager::getPlayingOrderNumber() const
+int PlaybackManager::getPlayingOrderNumber() const noexcept
 {
 	return playOrderNum_;
 }
 
-int PlaybackManager::getPlayingStepNumber() const
+int PlaybackManager::getPlayingStepNumber() const noexcept
 {
 	return playStepNum_;
 }

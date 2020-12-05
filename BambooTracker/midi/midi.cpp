@@ -26,6 +26,7 @@
 #include "midi.hpp"
 #include <stdio.h>
 #include <algorithm>
+#include "RtMidi/RtMidi.hpp"
 
 namespace
 {
@@ -54,14 +55,13 @@ MidiInterface& MidiInterface::getInstance()
 
 MidiInterface::MidiInterface() : hasOpenInputPort_(false) {}
 
-RtMidi::Api MidiInterface::currentApi() const
-{
-	return (inputClient_ ? inputClient_->getCurrentApi() : RtMidi::RTMIDI_DUMMY);
-}
+MidiInterface::~MidiInterface() = default;
 
 std::string MidiInterface::currentApiName() const
 {
-	return RtMidi::getApiDisplayName(currentApi());
+	RtMidi::Api api = inputClient_ ? inputClient_->getCurrentApi()
+								   : RtMidi::RTMIDI_DUMMY;
+	return RtMidi::getApiDisplayName(api);
 }
 
 std::vector<std::string> MidiInterface::getAvailableApis() const
@@ -87,7 +87,27 @@ bool MidiInterface::switchApi(std::string api, std::string* errDetail)
 
 	for (const auto& apiAvailable : apis) {
 		if (api == RtMidi::getApiDisplayName(apiAvailable)) {
-			return switchApi(apiAvailable, errDetail);
+			if (inputClient_ && apiAvailable == inputClient_->getCurrentApi())
+				return true;
+
+			RtMidiIn *inputClient = nullptr;
+			try {
+				inputClient = new RtMidiIn(apiAvailable, MIDI_INP_CLIENT_NAME, MIDI_BUFFER_SIZE);
+				if (errDetail) *errDetail = "";
+			}
+			catch (RtMidiError &error) {
+				error.printMessage();
+				if (errDetail) *errDetail = error.getMessage();
+			}
+
+			if (inputClient) {
+				inputClient->ignoreTypes(MIDI_INP_IGNORE_SYSEX, MIDI_INP_IGNORE_TIME, MIDI_INP_IGNORE_SENSE);
+				inputClient->setCallback(&onMidiInput, this);
+			}
+			inputClient_.reset(inputClient);
+			hasOpenInputPort_ = false;
+
+			return (inputClient != nullptr);
 		}
 	}
 
@@ -96,34 +116,11 @@ bool MidiInterface::switchApi(std::string api, std::string* errDetail)
 	return false;
 }
 
-bool MidiInterface::switchApi(RtMidi::Api api, std::string* errDetail)
-{
-	if (inputClient_ && api == inputClient_->getCurrentApi())
-		return true;
-
-	RtMidiIn *inputClient = nullptr;
-	try {
-		inputClient = new RtMidiIn(api, MIDI_INP_CLIENT_NAME, MIDI_BUFFER_SIZE);
-		if (errDetail) *errDetail = "";
-	}
-	catch (RtMidiError &error) {
-		error.printMessage();
-		if (errDetail) *errDetail = error.getMessage();
-	}
-
-	if (inputClient) {
-		inputClient->ignoreTypes(MIDI_INP_IGNORE_SYSEX, MIDI_INP_IGNORE_TIME, MIDI_INP_IGNORE_SENSE);
-		inputClient->setCallback(&onMidiInput, this);
-	}
-	inputClient_.reset(inputClient);
-	hasOpenInputPort_ = false;
-
-	return (inputClient != nullptr);
-}
-
 bool MidiInterface::supportsVirtualPort() const
 {
-	switch (currentApi()) {
+	if (!inputClient_) return false;
+
+	switch (inputClient_->getCurrentApi()) {
 	case RtMidi::MACOSX_CORE: case RtMidi::LINUX_ALSA: case RtMidi::UNIX_JACK:
 		return true;
 	default:

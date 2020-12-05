@@ -26,6 +26,8 @@
 #include "song_length_calculator.hpp"
 #include <unordered_set>
 #include <unordered_map>
+#include <vector>
+#include "module.hpp"
 #include "effect.hpp"
 #include "enum_hash.hpp"
 

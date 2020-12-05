@@ -31,10 +31,10 @@
 #include <memory>
 #include <unordered_map>
 #include <algorithm>
-#include "instruments_manager.hpp"
-#include "envelope_fm.hpp"
 #include "enum_hash.hpp"
-#include "misc.hpp"
+
+enum class FMEnvelopeParameter;
+enum class FMOperatorType;
 
 namespace io
 {

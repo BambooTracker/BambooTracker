@@ -25,6 +25,8 @@
 
 #include "chip.hpp"
 #include <utility>
+#include "resampler.hpp"
+#include "register_write_logger.hpp"
 #include "chip_misc.hpp"
 
 extern "C"

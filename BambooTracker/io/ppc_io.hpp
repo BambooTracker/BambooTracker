@@ -27,8 +27,6 @@
 
 #include "bank_io.hpp"
 
-class AbstractInstrument;
-
 namespace io
 {
 class PpcIO final : public AbstractBankIO

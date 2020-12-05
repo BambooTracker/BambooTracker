@@ -24,6 +24,7 @@
  */
 
 #include "export_io.hpp"
+#include "binary_container.hpp"
 #include "io_file_type.hpp"
 #include "file_io_error.hpp"
 

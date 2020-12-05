@@ -1,6 +1,8 @@
 #include "io_utils.hpp"
 #include <stdexcept>
 #include "binary_container.hpp"
+#include "envelope_fm.hpp"
+#include "misc.hpp"
 
 namespace io
 {

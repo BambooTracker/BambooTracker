@@ -30,6 +30,7 @@
 #include <exception>
 #include <unordered_map>
 #include "command/commands.hpp"
+#include "chip/register_write_logger.hpp"
 #include "io/module_io.hpp"
 #include "io/instrument_io.hpp"
 #include "io/bank_io.hpp"

@@ -28,8 +28,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "instruments_manager.hpp"
 #include "bank.hpp"
-#include "io_file_type.hpp"
 #include "binary_container.hpp"
 #include "io_utils.hpp"
 

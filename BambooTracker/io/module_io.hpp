@@ -31,7 +31,6 @@
 #include "module.hpp"
 #include "instruments_manager.hpp"
 #include "binary_container.hpp"
-#include "io_file_type.hpp"
 #include "io_utils.hpp"
 
 namespace io

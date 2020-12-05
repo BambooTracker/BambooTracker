@@ -26,12 +26,15 @@
 #include "audio_stream_rtaudio.hpp"
 #include <string>
 #include <vector>
+#include "RtAudio/RtAudio.hpp"
 
 AudioStreamRtAudio::AudioStreamRtAudio(QObject* parent)
 	: AudioStream(parent)
 {
 	audio_.reset(new RtAudio);
 }
+
+AudioStreamRtAudio::~AudioStreamRtAudio() = default;
 
 bool AudioStreamRtAudio::initialize(uint32_t rate, uint32_t duration, uint32_t intrRate,
 									const QString& backend, const QString& device,

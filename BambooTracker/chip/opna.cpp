@@ -26,7 +26,10 @@
 #include "opna.hpp"
 #include <cstdint>
 #include <cmath>
-#include "chip_misc.hpp"
+#include "scci/SCCIDefines.hpp"
+#include "scci/scci.hpp"
+#include "c86ctl/c86ctl_wrapper.hpp"
+#include "register_write_logger.hpp"
 
 extern "C"
 {

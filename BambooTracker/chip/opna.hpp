@@ -27,10 +27,18 @@
 
 #include "chip.hpp"
 #include <memory>
+#include "resampler.hpp"
 #include "chip_misc.hpp"
-#include "scci/scci.hpp"
-#include "scci/SCCIDefines.hpp"
-#include "c86ctl/c86ctl_wrapper.hpp"
+
+namespace scci
+{
+class SoundInterfaceManager;
+class SoundChip;
+}
+
+class C86ctlBase;
+class C86ctlRealChip;
+class C86ctlGimic;
 
 namespace chip
 {

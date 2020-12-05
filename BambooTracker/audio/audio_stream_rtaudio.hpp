@@ -27,7 +27,6 @@
 
 #include "audio_stream.hpp"
 #include <memory>
-#include "RtAudio/RtAudio.hpp"
 
 class RtAudio;
 
@@ -35,6 +34,7 @@ class AudioStreamRtAudio final : public AudioStream
 {
 public:
 	explicit AudioStreamRtAudio(QObject* parent = nullptr);
+	~AudioStreamRtAudio() override;
 
 	bool initialize(uint32_t rate, uint32_t duration, uint32_t intrRate,
 					const QString& backend, const QString& device,
