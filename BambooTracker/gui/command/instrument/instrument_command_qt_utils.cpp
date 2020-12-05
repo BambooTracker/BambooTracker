@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,36 +23,29 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CONF_HPP
-#define CONF_HPP
-
-#include <memory>
+#include "instrument_command_qt_utils.hpp"
 #include <unordered_map>
-#include <QString>
-#include <QSettings>
-#include "configuration.hpp"
-#include "gui/gui_utils.hpp"
+#include <QIcon>
+#include "instrument.hpp"
+#include "enum_hash.hpp"
 
-enum class JamKey : int;
-
-class ConfigurationHandler
-{	
-public:
-	static bool saveConfiguration(std::weak_ptr<Configuration> config);
-	static bool loadConfiguration(std::weak_ptr<Configuration> config);
-
-private:
-	ConfigurationHandler();
-	const static QString ORGANIZATION_;
-	const static QString APPLICATION_;
-
-	const static std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP_;
-	const static std::unordered_map<JamKey, QString> JAM_KEY_NAME_MAP_;
-
-	static inline std::string loadShortcut(const QSettings& settings, const QString key, const std::string shortcut)
-	{
-		return settings.value(key, gui_utils::utf8ToQString(shortcut)).toString().toUtf8().toStdString();
-	}
+namespace
+{
+const std::unordered_map<InstrumentType, const char*> ICON_SRC = {
+	{ InstrumentType::FM, ":/icon/inst_fm" },
+	{ InstrumentType::SSG, ":/icon/inst_ssg" },
+	{ InstrumentType::ADPCM, ":/icon/inst_adpcm" },
+	{ InstrumentType::Drumkit, ":/icon/inst_kit" }
 };
+}
 
-#endif // CONF_HPP
+namespace gui_command_utils
+{
+QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, QString name)
+{
+	QListWidgetItem *item = new QListWidgetItem(QIcon(ICON_SRC.at(type)), makeInstrumentListText(num, name));
+	item->setSizeHint(QSize(130, 17));
+	item->setData(Qt::UserRole, num);
+	return item;
+}
+}

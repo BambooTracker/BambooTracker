@@ -27,7 +27,7 @@
 #include "ui_module_properties_dialog.h"
 #include <vector>
 #include <utility>
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 const std::unordered_map<SongType, QString> ModulePropertiesDialog::SONG_TYPE_TEXT_ = {
 	{ SongType::Standard, QT_TR_NOOP("Standard") },
@@ -68,7 +68,7 @@ ModulePropertiesDialog::ModulePropertiesDialog(std::weak_ptr<BambooTracker> core
 	int songCnt = static_cast<int>(core.lock()->getSongCount());
 	for (int i = 0; i < songCnt; ++i) {
 		auto title = core.lock()->getSongTitle(i);
-		insertSong(i, utf8ToQString(title), core.lock()->getSongStyle(i).type, i);
+		insertSong(i, gui_utils::utf8ToQString(title), core.lock()->getSongStyle(i).type, i);
 	}
 
 	ui->sngTypeComboBox->addItem(SONG_TYPE_TEXT_.at(SongType::Standard), static_cast<int>(SongType::Standard));

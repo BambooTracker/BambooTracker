@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,36 +23,22 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CONF_HPP
-#define CONF_HPP
+#ifndef INSTRUMENT_COMMAND_QT_UTILS_HPP
+#define INSTRUMENT_COMMAND_QT_UTILS_HPP
 
-#include <memory>
-#include <unordered_map>
 #include <QString>
-#include <QSettings>
-#include "configuration.hpp"
-#include "gui/gui_utils.hpp"
+#include <QListWidgetItem>
 
-enum class JamKey : int;
+enum class InstrumentType;
 
-class ConfigurationHandler
-{	
-public:
-	static bool saveConfiguration(std::weak_ptr<Configuration> config);
-	static bool loadConfiguration(std::weak_ptr<Configuration> config);
+namespace gui_command_utils
+{
+inline QString makeInstrumentListText(int num, QString name)
+{
+	return QString("%1: %2").arg(num, 2, 16, QChar('0')).toUpper().arg(name);
+}
 
-private:
-	ConfigurationHandler();
-	const static QString ORGANIZATION_;
-	const static QString APPLICATION_;
+QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, QString name);
+}
 
-	const static std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP_;
-	const static std::unordered_map<JamKey, QString> JAM_KEY_NAME_MAP_;
-
-	static inline std::string loadShortcut(const QSettings& settings, const QString key, const std::string shortcut)
-	{
-		return settings.value(key, gui_utils::utf8ToQString(shortcut)).toString().toUtf8().toStdString();
-	}
-};
-
-#endif // CONF_HPP
+#endif // INSTRUMENT_COMMAND_QT_UTILS_HPP

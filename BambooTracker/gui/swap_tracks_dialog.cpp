@@ -27,7 +27,7 @@
 #include "ui_swap_tracks_dialog.h"
 #include "song.hpp"
 #include <QString>
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 SwapTracksDialog::SwapTracksDialog(const SongStyle& style, QWidget *parent) :
 	QDialog(parent),
@@ -38,7 +38,7 @@ SwapTracksDialog::SwapTracksDialog(const SongStyle& style, QWidget *parent) :
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
 	for (const auto& attrib : style.trackAttribs) {
-		QString text = getTrackName(style.type, attrib.source, attrib.channelInSource);
+		QString text = gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource);
 		ui->track1ComboBox->addItem(text, attrib.number);
 		ui->track2ComboBox->addItem(text, attrib.number);
 	}

@@ -29,7 +29,7 @@
 #include "instrument.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 InstrumentEditorDrumkitForm::InstrumentEditorDrumkitForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -110,7 +110,7 @@ void InstrumentEditorDrumkitForm::updateInstrumentParameters()
 
 	std::unique_ptr<AbstractInstrument> inst = bt_.lock()->getInstrument(instNum_);
 	auto instKit = dynamic_cast<InstrumentDrumkit*>(inst.get());
-	auto name = utf8ToQString(instKit->getName());
+	auto name = gui_utils::utf8ToQString(instKit->getName());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	for (const auto& key : instKit->getAssignedKeys()) {

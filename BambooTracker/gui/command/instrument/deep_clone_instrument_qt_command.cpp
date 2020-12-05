@@ -26,7 +26,7 @@
 #include "deep_clone_instrument_qt_command.hpp"
 #include "instrument.hpp"
 #include "command/command_id.hpp"
-#include "gui/instrument_list_misc.hpp"
+#include "instrument_command_qt_utils.hpp"
 
 DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,
 														   std::weak_ptr<InstrumentFormManager> formMan,
@@ -44,7 +44,7 @@ DeepCloneInstrumentQtCommand::DeepCloneInstrumentQtCommand(QListWidget *list, in
 
 void DeepCloneInstrumentQtCommand::redo()
 {
-	list_->insertItem(cloneNum_, createInstrumentListItem(cloneNum_, type_, name_));
+	list_->insertItem(cloneNum_, gui_command_utils::createInstrumentListItem(cloneNum_, type_, name_));
 
 	if (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)
 		mainwin_->assignADPCMSamples();

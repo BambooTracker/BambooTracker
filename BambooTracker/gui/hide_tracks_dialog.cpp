@@ -28,7 +28,7 @@
 #include <algorithm>
 #include <QListWidgetItem>
 #include "song.hpp"
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int>& tracks, QWidget *parent) :
 	QDialog(parent),
@@ -39,7 +39,7 @@ HideTracksDialog::HideTracksDialog(const SongStyle& style, const std::vector<int
 	setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
 	for (const auto& attrib : style.trackAttribs) {
-		auto item = new QListWidgetItem(getTrackName(style.type, attrib.source, attrib.channelInSource), ui->listWidget);
+		auto item = new QListWidgetItem(gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource), ui->listWidget);
 		int n = attrib.number;
 		item->setData(Qt::UserRole, n);	// Track numbers are sorted
 		bool exists = std::any_of(tracks.begin(), tracks.end(), [n](int t) { return n == t; });

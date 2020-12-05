@@ -47,7 +47,7 @@
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "color_palette_handler.hpp"
-#include "gui_util.hpp"
+#include "gui_utils.hpp"
 
 ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, std::weak_ptr<ColorPalette> palette,
 										 std::weak_ptr<const AudioStream> stream, QWidget *parent)
@@ -203,7 +203,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		ui->shortcutsTreeWidget->insertTopLevelItem(row, item);
 		auto widget = new QWidget();
 		widget->setLayout(new QHBoxLayout());
-		auto seq = new QKeySequenceEdit(utf8ToQString(shortcuts.at(pair.first)));
+		auto seq = new QKeySequenceEdit(gui_utils::utf8ToQString(shortcuts.at(pair.first)));
 		shortcutsMap_[pair.first] = seq;
 		auto button = new QToolButton();
 		button->setIcon(QIcon(":/icon/remove_inst"));
@@ -251,7 +251,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		{ JamKey::HighD2,  ui->highHighDEdit }
 	};
 	for (const auto& pair : configLocked->getCustomLayoutKeys()) {
-		customLayoutKeysMap_.at(pair.second)->setKeySequence(QKeySequence(utf8ToQString(pair.first)));
+		customLayoutKeysMap_.at(pair.second)->setKeySequence(QKeySequence(gui_utils::utf8ToQString(pair.first)));
 	}
 
 	// Emulation //
@@ -291,7 +291,7 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 		int midiApiRow = -1;
 		int defMidiApiRow = 0;
 		for (auto& name : midiIntf.getAvailableApis()) {
-			ui->midiApiComboBox->addItem(utf8ToQString(name));
+			ui->midiApiComboBox->addItem(gui_utils::utf8ToQString(name));
 			if (name == configLocked->getMidiAPI())
 				midiApiRow = ui->midiApiComboBox->count() - 1;
 			if (name == midiIntf.currentApiName())
@@ -354,13 +354,13 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	// Appearance //
 	ui->colorsTreeWidget->setColumnWidth(0, 250);
 	updateColorTreeFrom(palette.lock().get());
-	ui->ptnHdFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getPatternEditorHeaderFont())));
+	ui->ptnHdFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorHeaderFont())));
 	ui->ptnHdFontSizeComboBox->setCurrentText(QString::number(configLocked->getPatternEditorHeaderFontSize()));
-	ui->ptnRowFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getPatternEditorRowsFont())));
+	ui->ptnRowFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getPatternEditorRowsFont())));
 	ui->ptnRowFontSizeComboBox->setCurrentText(QString::number(configLocked->getPatternEditorRowsFontSize()));
-	ui->odrHdFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getOrderListHeaderFont())));
+	ui->odrHdFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getOrderListHeaderFont())));
 	ui->odrHdFontSizeComboBox->setCurrentText(QString::number(configLocked->getOrderListHeaderFontSize()));
-	ui->odrRowFontComboBox->setCurrentFont(QFont(utf8ToQString(configLocked->getOrderListRowsFont())));
+	ui->odrRowFontComboBox->setCurrentFont(QFont(gui_utils::utf8ToQString(configLocked->getOrderListRowsFont())));
 	ui->odrRowFontSizeComboBox->setCurrentText(QString::number(configLocked->getOrderListRowsFontSize()));
 }
 
@@ -492,7 +492,7 @@ void ConfigurationDialog::on_audioApiComboBox_currentIndexChanged(const QString 
 	int defDevRow = 0;
 	for (auto& name : devices) {
 		ui->audioDeviceComboBox->addItem(name);
-		if (name == utf8ToQString(config_.lock()->getSoundDevice()))
+		if (name == gui_utils::utf8ToQString(config_.lock()->getSoundDevice()))
 			devRow = ui->audioDeviceComboBox->count() - 1;
 		if (name == stream_.lock()->getDefaultOutputDevice(arg1))
 			defDevRow = ui->audioDeviceComboBox->count() - 1;
@@ -599,7 +599,7 @@ void ConfigurationDialog::updateEnvelopeSetUi()
 
 	ui->envelopeTypeListWidget->clear();
 	for (auto& texts : fmEnvelopeTexts_)
-		ui->envelopeTypeListWidget->addItem(utf8ToQString(texts.name));
+		ui->envelopeTypeListWidget->addItem(gui_utils::utf8ToQString(texts.name));
 }
 
 /***** Keys *****/
@@ -627,7 +627,7 @@ void ConfigurationDialog::addShortcutItem(QString action, std::string shortcut)
 	auto titem = new QTreeWidgetItem();
 	titem->setText(0, action);
 	ui->shortcutsTreeWidget->insertTopLevelItem(row, titem);
-	ui->shortcutsTreeWidget->setItemWidget(titem, 1, new QKeySequenceEdit(utf8ToQString(shortcut)));
+	ui->shortcutsTreeWidget->setItemWidget(titem, 1, new QKeySequenceEdit(gui_utils::utf8ToQString(shortcut)));
 }
 
 std::string ConfigurationDialog::getShortcutString(int row) const

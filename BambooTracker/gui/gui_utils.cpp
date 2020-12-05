@@ -23,18 +23,12 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef GUI_UTIL_HPP
-#define GUI_UTIL_HPP
-
-#include <string>
-#include <vector>
+#include "gui_utils.hpp"
 #include <algorithm>
-#include <QString>
-#include <QKeySequence>
-#include "song.hpp"
-#include "misc.hpp"
 
-inline QString getTrackName(SongType songType, SoundSource src, int chInSrc)
+namespace gui_utils
+{
+QString getTrackName(SongType songType, SoundSource src, int chInSrc)
 {
 	QString name;
 	switch (src) {
@@ -84,18 +78,8 @@ inline QString getTrackName(SongType songType, SoundSource src, int chInSrc)
 	return name;
 }
 
-inline QString utf8ToQString(const std::string& str)
-{
-	return QString::fromUtf8(str.c_str(), static_cast<int>(str.length()));
-}
-
-inline QKeySequence strToKeySeq(std::string str)
-{
-	return QKeySequence(utf8ToQString(str));
-}
-
-inline std::vector<int> adaptVisibleTrackList(const std::vector<int> list,
-											  const SongType prevType, const SongType curType)
+std::vector<int> adaptVisibleTrackList(const std::vector<int> list,
+									   const SongType prevType, const SongType curType)
 {
 	if (prevType == curType) return list;
 
@@ -144,5 +128,4 @@ inline std::vector<int> adaptVisibleTrackList(const std::vector<int> list,
 	}
 	return tracks;
 }
-
-#endif // GUI_UTIL_HPP
+}

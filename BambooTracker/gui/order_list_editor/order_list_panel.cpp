@@ -45,7 +45,7 @@
 #include "gui/command/order/order_commands.hpp"
 #include "playback.hpp"
 #include "track.hpp"
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 OrderListPanel::OrderListPanel(QWidget *parent)
 	: QWidget(parent),
@@ -1115,9 +1115,9 @@ void OrderListPanel::showContextMenu(const OrderPosition& pos, const QPoint& poi
 	paste->setShortcutVisibleInContextMenu(true);
 #endif
 	auto shortcuts = config_->getShortcuts();
-	duplicate->setShortcut(strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
-	clonep->setShortcut(strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
-	cloneo->setShortcut(strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
+	duplicate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
+	clonep->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
+	cloneo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
 
@@ -1211,7 +1211,7 @@ void OrderListPanel::onSongLoaded()
 	curSongNum_ = bt_->getCurrentSongNumber();
 	SongType prevType = songStyle_.type;
 	songStyle_ = bt_->getSongStyle(curSongNum_);
-	visTracks_ = adaptVisibleTrackList(visTracks_, prevType, songStyle_.type);
+	visTracks_ = gui_utils::adaptVisibleTrackList(visTracks_, prevType, songStyle_.type);
 	curPos_ = { visTracks_.front(), bt_->getCurrentOrderNumber() };
 	// Set cursor to the most lest-placed visible track
 	if (visTracks_.front() != bt_->getCurrentTrackAttribute().number) {

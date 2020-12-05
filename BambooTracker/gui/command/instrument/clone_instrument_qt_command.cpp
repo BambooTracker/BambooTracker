@@ -26,7 +26,7 @@
 #include "clone_instrument_qt_command.hpp"
 #include "instrument.hpp"
 #include "command/command_id.hpp"
-#include "gui/instrument_list_misc.hpp"
+#include "instrument_command_qt_utils.hpp"
 
 CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,
 												   std::weak_ptr<InstrumentFormManager> formMan,
@@ -42,7 +42,7 @@ CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, I
 
 void CloneInstrumentQtCommand::redo()
 {
-	list_->insertItem(cloneNum_, createInstrumentListItem(cloneNum_, type_, name_));
+	list_->insertItem(cloneNum_, gui_command_utils::createInstrumentListItem(cloneNum_, type_, name_));
 }
 
 void CloneInstrumentQtCommand::undo()

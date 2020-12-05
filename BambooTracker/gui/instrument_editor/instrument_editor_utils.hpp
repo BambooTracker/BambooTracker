@@ -23,34 +23,18 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef INSTRUMENT_LIST_MISC_HPP
-#define INSTRUMENT_LIST_MISC_HPP
+#ifndef INSTRUMENT_EDITOR_UTILS_HPP
+#define INSTRUMENT_EDITOR_UTILS_HPP
 
-#include <unordered_map>
-#include <QString>
-#include <QListWidgetItem>
-#include <QIcon>
-#include "instrument.hpp"
-#include "enum_hash.hpp"
+#include "command_sequence.hpp"
+#include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 
-static const std::unordered_map<InstrumentType, const char*> ICON_SRC = {
-	{ InstrumentType::FM, ":/icon/inst_fm" },
-	{ InstrumentType::SSG, ":/icon/inst_ssg" },
-	{ InstrumentType::ADPCM, ":/icon/inst_adpcm" },
-	{ InstrumentType::Drumkit, ":/icon/inst_kit" }
-};
-
-inline QString makeInstrumentListText(int num, QString name)
+namespace inst_edit_utils
 {
-	return QString("%1: %2").arg(num, 2, 16, QChar('0')).toUpper().arg(name);
+SequenceType convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type);
+VisualizedInstrumentMacroEditor::SequenceType convertSequenceTypeForUI(SequenceType type);
+ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
+VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
 }
 
-inline QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, QString name)
-{
-	QListWidgetItem *item = new QListWidgetItem(QIcon(ICON_SRC.at(type)), makeInstrumentListText(num, name));
-	item->setSizeHint(QSize(130, 17));
-	item->setData(Qt::UserRole, num);
-	return item;
-}
-
-#endif // INSTRUMENT_LIST_MISC_HPP
+#endif // INSTRUMENT_EDITOR_UTILS_HPP

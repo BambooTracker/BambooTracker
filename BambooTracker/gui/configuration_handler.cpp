@@ -226,18 +226,18 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		// Keys
 		settings.beginGroup("Keys");
 		for (const auto& pair : configLocked->getShortcuts()) {
-			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP_.at(pair.first), utf8ToQString(pair.second));
+			settings.setValue("shortcut_" + SHORTCUTS_NAME_MAP_.at(pair.first), gui_utils::utf8ToQString(pair.second));
 		}
 		settings.setValue("noteEntryLayout", static_cast<int>(configLocked->getNoteEntryLayout()));
 		for (const auto& pair : configLocked->getCustomLayoutKeys()) {
-			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP_.at(pair.second), utf8ToQString(pair.first));
+			settings.setValue("customLayout_" + JAM_KEY_NAME_MAP_.at(pair.second), gui_utils::utf8ToQString(pair.first));
 		}
 		settings.endGroup();
 
 		// Sound //
 		settings.beginGroup("Sound");
-		settings.setValue("soundAPI", utf8ToQString(configLocked->getSoundAPI()));
-		settings.setValue("soundDevice", utf8ToQString(configLocked->getSoundDevice()));
+		settings.setValue("soundAPI", gui_utils::utf8ToQString(configLocked->getSoundAPI()));
+		settings.setValue("soundDevice", gui_utils::utf8ToQString(configLocked->getSoundDevice()));
 		settings.setValue("realChipInterface",	static_cast<int>(configLocked->getRealChipInterface()));
 		settings.setValue("emulator",		configLocked->getEmulator());
 		settings.setValue("sampleRate",   static_cast<int>(configLocked->getSampleRate()));
@@ -264,7 +264,7 @@ bool ConfigurationHandler::saveConfiguration(std::weak_ptr<Configuration> config
 		int n = 0;
 		for (auto texts : config.lock()->getFMEnvelopeTexts()) {
 			settings.setArrayIndex(n++);
-			settings.setValue("type", utf8ToQString(texts.name));
+			settings.setValue("type", gui_utils::utf8ToQString(texts.name));
 			QStringList typeList;
 			std::transform(texts.texts.begin(), texts.texts.end(), std::back_inserter(typeList),
 						   [](FMEnvelopeTextType type) { return QString::number(static_cast<int>(type)); });
@@ -389,7 +389,7 @@ bool ConfigurationHandler::loadConfiguration(std::weak_ptr<Configuration> config
 		std::unordered_map<Configuration::ShortcutAction, std::string> shortcuts;
 		for (const auto& pair : SHORTCUTS_NAME_MAP_) {
 			std::string def = configLocked->getShortcuts().at(pair.first);
-			shortcuts[pair.first] = settings.value("shortcut_" + pair.second, utf8ToQString(def)).toString().toUtf8().toStdString();
+			shortcuts[pair.first] = settings.value("shortcut_" + pair.second, gui_utils::utf8ToQString(def)).toString().toUtf8().toStdString();
 		}
 		configLocked->setShortcuts(shortcuts);
 		configLocked->setNoteEntryLayout(static_cast<Configuration::KeyboardLayout>(

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,36 +23,31 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CONF_HPP
-#define CONF_HPP
+#ifndef GUI_UTILS_HPP
+#define GUI_UTILS_HPP
 
-#include <memory>
-#include <unordered_map>
+#include <string>
+#include <vector>
 #include <QString>
-#include <QSettings>
-#include "configuration.hpp"
-#include "gui/gui_utils.hpp"
+#include <QKeySequence>
+#include "misc.hpp"
 
-enum class JamKey : int;
+namespace gui_utils
+{
+QString getTrackName(SongType songType, SoundSource src, int chInSrc);
 
-class ConfigurationHandler
-{	
-public:
-	static bool saveConfiguration(std::weak_ptr<Configuration> config);
-	static bool loadConfiguration(std::weak_ptr<Configuration> config);
+inline QString utf8ToQString(const std::string& str)
+{
+	return QString::fromUtf8(str.c_str(), static_cast<int>(str.length()));
+}
 
-private:
-	ConfigurationHandler();
-	const static QString ORGANIZATION_;
-	const static QString APPLICATION_;
+inline QKeySequence strToKeySeq(std::string str)
+{
+	return QKeySequence(utf8ToQString(str));
+}
 
-	const static std::unordered_map<Configuration::ShortcutAction, QString> SHORTCUTS_NAME_MAP_;
-	const static std::unordered_map<JamKey, QString> JAM_KEY_NAME_MAP_;
+std::vector<int> adaptVisibleTrackList(const std::vector<int> list,
+									   const SongType prevType, const SongType curType);
+}
 
-	static inline std::string loadShortcut(const QSettings& settings, const QString key, const std::string shortcut)
-	{
-		return settings.value(key, gui_utils::utf8ToQString(shortcut)).toString().toUtf8().toStdString();
-	}
-};
-
-#endif // CONF_HPP
+#endif // GUI_UTILS_HPP

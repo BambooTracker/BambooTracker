@@ -134,6 +134,7 @@ SOURCES += \
     command/pattern/transpose_note_in_pattern_command.cpp \
     gui/bookmark_manager_form.cpp \
     gui/color_palette_handler.cpp \
+    gui/command/instrument/instrument_command_qt_utils.cpp \
     gui/command/instrument/swap_instruments_qt_command.cpp \
     gui/command/pattern/change_values_in_pattern_qt_command.cpp \
     gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.cpp \
@@ -143,12 +144,14 @@ SOURCES += \
     gui/effect_list_dialog.cpp \
     gui/file_io_error_message_box.cpp \
     gui/go_to_dialog.cpp \
+    gui/gui_utils.cpp \
     gui/hide_tracks_dialog.cpp \
     gui/instrument_editor/adpcm_sample_editor.cpp \
     gui/instrument_editor/arpeggio_macro_editor.cpp \
     gui/instrument_editor/grid_settings_dialog.cpp \
     gui/instrument_editor/instrument_editor_adpcm_form.cpp \
     gui/instrument_editor/instrument_editor_drumkit_form.cpp \
+    gui/instrument_editor/instrument_editor_utils.cpp \
     gui/instrument_editor/sample_length_dialog.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
@@ -335,6 +338,7 @@ HEADERS += \
     enum_hash.hpp \
     gui/bookmark_manager_form.hpp \
     gui/color_palette_handler.hpp \
+    gui/command/instrument/instrument_command_qt_utils.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
     gui/command/pattern/change_values_in_pattern_qt_command.hpp \
     gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.hpp \
@@ -344,17 +348,16 @@ HEADERS += \
     gui/effect_list_dialog.hpp \
     gui/file_io_error_message_box.hpp \
     gui/go_to_dialog.hpp \
-    gui/gui_util.hpp \
+    gui/gui_utils.hpp \
     gui/hide_tracks_dialog.hpp \
     gui/instrument_editor/adpcm_sample_editor.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
     gui/instrument_editor/grid_settings_dialog.hpp \
     gui/instrument_editor/instrument_editor_adpcm_form.hpp \
     gui/instrument_editor/instrument_editor_drumkit_form.hpp \
-    gui/instrument_editor/instrument_editor_util.hpp \
+    gui/instrument_editor/instrument_editor_utils.hpp \
     gui/instrument_editor/sample_length_dialog.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
-    gui/instrument_list_misc.hpp \
     gui/jam_layout.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \

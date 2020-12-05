@@ -26,7 +26,7 @@
 #include "go_to_dialog.hpp"
 #include "ui_go_to_dialog.h"
 #include <QString>
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 GoToDialog::GoToDialog(std::weak_ptr<BambooTracker> bt, QWidget *parent) :
 	QDialog(parent),
@@ -46,7 +46,7 @@ GoToDialog::GoToDialog(std::weak_ptr<BambooTracker> bt, QWidget *parent) :
 	auto style = bt.lock()->getSongStyle(bt.lock()->getCurrentSongNumber());
 	for (auto& attrib : style.trackAttribs) {
 		ui->trackComboBox->addItem(
-					getTrackName(style.type, attrib.source, attrib.channelInSource), attrib.number);
+					gui_utils::getTrackName(style.type, attrib.source, attrib.channelInSource), attrib.number);
 		if (bt.lock()->getCurrentTrackAttribute().number == attrib.number)
 			ui->trackComboBox->setCurrentIndex(ui->trackComboBox->count() - 1);
 	}
