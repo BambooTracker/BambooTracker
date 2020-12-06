@@ -40,10 +40,10 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QSignalBlocker>
+#include "chip/opna.hpp"
 #include "audio/audio_stream.hpp"
 #include "midi/midi.hpp"
 #include "jamming.hpp"
-#include "chip/chip_misc.hpp"
 #include "slider_style.hpp"
 #include "fm_envelope_set_edit_dialog.hpp"
 #include "color_palette_handler.hpp"
@@ -255,8 +255,8 @@ ConfigurationDialog::ConfigurationDialog(std::weak_ptr<Configuration> config, st
 	}
 
 	// Emulation //
-	ui->emulatorComboBox->addItem("MAME YM2608", static_cast<int>(chip::Emu::Mame));
-	ui->emulatorComboBox->addItem("Nuked OPN-Mod", static_cast<int>(chip::Emu::Nuked));
+	ui->emulatorComboBox->addItem("MAME YM2608", static_cast<int>(chip::OpnaEmulator::Mame));
+	ui->emulatorComboBox->addItem("Nuked OPN-Mod", static_cast<int>(chip::OpnaEmulator::Nuked));
 	ui->emulatorComboBox->setCurrentIndex(ui->emulatorComboBox->findData(configLocked->getEmulator()));
 
 	// Sound //

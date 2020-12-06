@@ -81,13 +81,8 @@ private:
 	SongStyle songStyle_;
 	int playOrderNum_, playStepNum_;
 	int nextReadOrder_, nextReadStep_;
-	/// High nibble - play type
-	///		bit 4: If high, loop pattern
-	///		bit 5: Play step
-	/// Low nibble - read state
-	///		bit 0: playing
-	///		bit 1: have read first step data
-	unsigned int playState_;
+
+	uint8_t playStateFlags_;
 
 	// Play song
 	bool isFindNextStep_;

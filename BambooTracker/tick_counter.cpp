@@ -102,10 +102,6 @@ void TickCounter::setPlayState(bool isPlaySong) noexcept
 	isPlaySong_ = isPlaySong;
 }
 
-/// Reuturn:
-///		-1: not tick or step
-///		 0: head of step
-///		0<: rest tick count to next step
 int TickCounter::countUp()
 {
 	if (isPlaySong_) {

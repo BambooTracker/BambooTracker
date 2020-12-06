@@ -49,6 +49,10 @@ public:
 	void setGrooveState(GrooveState state);
 	bool getGrooveEnabled() const noexcept;
 	void setPlayState(bool isPlaySong) noexcept;
+	/// Reuturn:
+	///		-1: not tick or step
+	///		 0: head of step
+	///		0<: rest tick count to next step
 	int countUp();
 	void resetCount();
 
