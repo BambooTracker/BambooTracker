@@ -73,8 +73,8 @@ double SongLengthCalculator::calculateBySecond() const
 			// Load effects
 			for (const TrackAttribute& attrib : attribs) {
 				Step& step = song.getTrack(attrib.number).getPatternFromOrderNumber(orderNum).getStep(stepNum);
-				for (int e = 0; e < 4; ++e) {
-					const Effect&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(e), step.getEffectValue(e));
+				for (int e = 0; e < Step::N_EFFECT; ++e) {
+					const Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(e));
 					switch (eff.type) {
 					case EffectType::SpeedTempoChange:
 					case EffectType::Groove:

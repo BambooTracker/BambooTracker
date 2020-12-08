@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,83 +25,37 @@
 
 #include "step.hpp"
 
+const std::string Step::EFF_ID_NONE = "--";
+
 Step::Step()
-	: noteNum_(-1),
-	  instNum_(-1),
-	  vol_(-1)
+	: note_(NOTE_NONE),
+	  inst_(INST_NONE),
+	  vol_(VOLUME_NONE)
 {
-	for (size_t i = 0; i < 4; ++i) {
-		effID_[i] = "--";
-		effVal_[i] = -1;
+	for (size_t i = 0; i < N_EFFECT; ++i) {
+		eff_[i].id = EFF_ID_NONE;
+		eff_[i].value = EFF_VAL_NONE;
 	}
 }
 
-int Step::getNoteNumber() const
+void Step::clear()
 {
-	return noteNum_;
-}
-
-void Step::setNoteNumber(int num)
-{
-	noteNum_ = num;
-}
-
-int Step::getInstrumentNumber() const
-{
-	return instNum_;
-}
-
-void Step::setInstrumentNumber(int num)
-{
-	instNum_ = num;
-}
-
-int Step::getVolume() const
-{
-	return vol_;
-}
-
-void Step::setVolume(int volume)
-{
-	vol_ = volume;
-}
-
-std::string Step::getEffectID(int n) const
-{
-	return effID_[n];
-}
-
-void Step::setEffectID(int n, std::string str)
-{
-	effID_[n] = str;
-}
-
-int Step::getEffectValue(int n) const
-{
-	return effVal_[n];
-}
-
-void Step::setEffectValue(int n, int v)
-{
-	effVal_[n] = v;
-}
-
-int Step::checkEffectID(std::string str) const
-{
-	for (int i = 0; i < 4; ++i) {
-		if (effID_[i] == str && effVal_[i] != -1) return i;
+	clearNoteNumber();
+	clearInstrumentNumber();
+	clearVolume();
+	for (size_t i = 0; i < N_EFFECT; ++i) {
+		clearEffect(i);
 	}
-	return -1;
 }
 
 bool Step::existCommand() const
 {
-	if (noteNum_ != -1) return true;
-	if (instNum_ != -1) return true;
-	if (vol_ != -1) return true;
-	for (int i = 0; i < 4; ++i) {
-		if (effID_[i] != "--") return true;
-		if (effVal_[i] != -1) return true;
+	if (!isEmptyNote()) return true;
+	if (hasInstrument()) return true;
+	if (hasVolume()) return true;
+	for (int i = 0; i < N_EFFECT; ++i) {
+		if (hasEffectId(i)) return true;
+		if (hasEffectValue(i)) return true;
 	}
 	return false;
 }

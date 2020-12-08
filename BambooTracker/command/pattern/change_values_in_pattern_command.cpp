@@ -50,21 +50,27 @@ ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(std::weak_ptr<Module>
 		int col = beginColumn;
 		std::vector<int> vals;
 		while (true) {
-			int val;
 			Step& st = command_utils::getStep(sng, track, beginOrder, step);
 			switch (col) {
-			case 1:		val = st.getInstrumentNumber();	break;
-			case 2:		val = st.getVolume();			break;
-			case 4:		val = st.getEffectValue(0);		break;
-			case 6:		val = st.getEffectValue(1);		break;
-			case 8:		val = st.getEffectValue(2);		break;
-			case 10:	val = st.getEffectValue(3);		break;
-			default:	val = -1;						break;
+			case 1:
+				if (st.hasInstrument()) vals.push_back(st.getInstrumentNumber());
+				break;
+			case 2:
+				if (st.hasVolume()) vals.push_back(st.getVolume());
+				break;
+			default:
+			{
+				if (col) {
+					int ec = col - 3;
+					int ei = ec / 2;
+					if (ec % 2 && st.hasEffectValue(ei)) vals.push_back(st.getEffectValue(ei));
+				}
+				break;
 			}
-			if (val > -1) vals.push_back(val);
+			}
 			if (track == endTrack && col == endColumn) break;
-			track += (++col / 11);
-			col %= 11;
+			track += (++col / Step::N_COLUMN);
+			col %= Step::N_COLUMN;
 		}
 		prevVals_.push_back(vals);
 	}
@@ -83,32 +89,30 @@ void ChangeValuesInPatternCommand::redo()
 			Step& st = tr.getPatternFromOrderNumber(order_).getStep(step);
 			switch (col) {
 			case 1:
-				if (st.getInstrumentNumber() > -1) st.setInstrumentNumber(clamp(diff_ + *valit++, 0, 127));
+				if (st.hasInstrument())
+					st.setInstrumentNumber(clamp(diff_ + *valit++, 0, 127));
 				break;
 			case 2:
-				if (st.getVolume() > -1) {
-					int d = (tr.getAttribute().source == SoundSource::FM && fmReverse_) ? -diff_ : diff_;
+				if (st.hasVolume()) {
+					int d = (tr.getAttribute().source == SoundSource::FM && fmReverse_) ? -diff_
+																						: diff_;
 					st.setVolume(clamp(d + *valit++, 0, 255));
 				}
 				break;
-			case 4:
-				if (st.getEffectValue(0) > -1) st.setEffectValue(0, clamp(diff_ + *valit++, 0, 255));
-				break;
-			case 6:
-				if (st.getEffectValue(1) > -1) st.setEffectValue(1, clamp(diff_ + *valit++, 0, 255));
-				break;
-			case 8:
-				if (st.getEffectValue(2) > -1) st.setEffectValue(2, clamp(diff_ + *valit++, 0, 255));
-				break;
-			case 10:
-				if (st.getEffectValue(3) > -1) st.setEffectValue(3, clamp(diff_ + *valit++, 0, 255));
-				break;
 			default:
+			{
+				if (col) {
+					int ec = col - 3;
+					int ei = ec / 2;
+					if (ec % 2 && st.hasEffectValue(ei))
+						st.setEffectValue(ei, clamp(diff_ + *valit++, 0, 255));
+				}
 				break;
 			}
+			}
 			if (track == eTrack_ && col == eCol_) break;
-			track += (++col / 11);
-			col %= 11;
+			track += (++col / Step::N_COLUMN);
+			col %= Step::N_COLUMN;
 		}
 	}
 }
@@ -125,29 +129,24 @@ void ChangeValuesInPatternCommand::undo()
 			Step& st = command_utils::getStep(sng, track, order_, step);
 			switch (col) {
 			case 1:
-				if (st.getInstrumentNumber() > -1) st.setInstrumentNumber(*valit++);
+				if (st.hasInstrument()) st.setInstrumentNumber(*valit++);
 				break;
 			case 2:
-				if (st.getVolume() > -1) st.setVolume(*valit++);
-				break;
-			case 4:
-				if (st.getEffectValue(0) > -1) st.setEffectValue(0, *valit++);
-				break;
-			case 6:
-				if (st.getEffectValue(1) > -1) st.setEffectValue(1, *valit++);
-				break;
-			case 8:
-				if (st.getEffectValue(2) > -1) st.setEffectValue(2, *valit++);
-				break;
-			case 10:
-				if (st.getEffectValue(3) > -1) st.setEffectValue(3, *valit++);
+				if (st.hasVolume()) st.setVolume(*valit++);
 				break;
 			default:
+			{
+				if (col) {
+					int ec = col - 3;
+					int ei = ec / 2;
+					if (ec % 2 && st.hasEffectValue(ei)) st.setEffectValue(ei, *valit++);
+				}
 				break;
 			}
+			}
 			if (track == eTrack_ && col == eCol_) break;
-			track += (++col / 11);
-			col %= 11;
+			track += (++col / Step::N_COLUMN);
+			col %= Step::N_COLUMN;
 		}
 	}
 }

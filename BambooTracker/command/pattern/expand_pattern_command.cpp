@@ -57,74 +57,40 @@ void ExpandPatternCommand::redo()
 			switch (c) {
 			case 0:
 			{
-				int n = (i % 2) ? -1 : std::stoi(prevCells_.at(i / 2).at(j));
-				st.setNoteNumber(n);
+				if (i % 2) st.clearNoteNumber();
+				else st.setNoteNumber(std::stoi(prevCells_.at(i / 2).at(j)));
 				break;
 			}
 			case 1:
 			{
-				int n = (i % 2) ? -1 : std::stoi(prevCells_.at(i / 2).at(j));
-				st.setInstrumentNumber(n);
+				if (i % 2) st.clearInstrumentNumber();
+				else st.setInstrumentNumber(std::stoi(prevCells_.at(i / 2).at(j)));
 				break;
 			}
 			case 2:
 			{
-				int v = (i % 2) ? -1 : std::stoi(prevCells_.at(i / 2).at(j));
-				st.setVolume(v);
+				if (i % 2) st.clearVolume();
+				else st.setVolume(std::stoi(prevCells_.at(i / 2).at(j)));
 				break;
 			}
-			case 3:
+			default:
 			{
-				std::string id = (i % 2) ? "--" : prevCells_.at(i / 2).at(j);
-				st.setEffectID(0, id);
-				break;
-			}
-			case 4:
-			{
-				int v = (i % 2) ? -1 : std::stoi(prevCells_.at(i / 2).at(j));
-				st.setEffectValue(0, v);
-				break;
-			}
-			case 5:
-			{
-				std::string id = (i % 2) ? "--" : prevCells_.at(i / 2).at(j);
-				st.setEffectID(1, id);
-				break;
-			}
-			case 6:
-			{
-				int v = (i % 2) ? -1 : std::stoi(prevCells_.at(i / 2).at(j));
-				st.setEffectValue(1, v);
-				break;
-			}
-			case 7:
-			{
-				std::string id = (i % 2) ? "--" : prevCells_.at(i / 2).at(j);
-				st.setEffectID(2, id);
-				break;
-			}
-			case 8:
-			{
-				int v = (i % 2) ? -1 : std::stoi(prevCells_.at(i / 2).at(j));
-				st.setEffectValue(2, v);
-				break;
-			}
-			case 9:
-			{
-				std::string id = (i % 2) ? "--" : prevCells_.at(i / 2).at(j);
-				st.setEffectID(3, id);
-				break;
-			}
-			case 10:
-			{
-				int v = (i % 2) ? -1 : std::stoi(prevCells_.at(i / 2).at(j));
-				st.setEffectValue(3, v);
+				int ec = c - 3;
+				int ei = ec / 2;
+				if (ec % 2) {
+					if (i % 2) st.clearEffectValue(ei);
+					else st.setEffectValue(ei, std::stoi(prevCells_.at(i / 2).at(j)));
+				}
+				else {
+					if (i % 2) st.clearEffectId(ei);
+					else st.setEffectId(ei, prevCells_.at(i / 2).at(j));
+				}
 				break;
 			}
 			}
 
-			t += (++c / 11);
-			c %= 11;
+			t += (++c / Step::N_COLUMN);
+			c %= Step::N_COLUMN;
 		}
 
 		++s;

@@ -234,7 +234,7 @@ inline static bool isModulatedWaveformSSG(int id)
 
 template <typename T>
 DECL_MAYBE_UNUSED
-inline const T& clamp(const T& value, const T& low, const T& high)
+inline T clamp(T value, T low, T high)
 {
 	return std::min(std::max(value, low), high);
 }
@@ -244,3 +244,8 @@ inline static int calcADPCMDeltaN(unsigned int rate)
 {
 	return static_cast<int>(std::round((rate << 16) / 55500.));
 }
+
+constexpr int NSTEP_FM_VOLUME = 0x80;
+constexpr int NSTEP_SSG_VOLUME = 0x10;
+constexpr int NSTEP_RHYTHM_VOLUME = 0x20;
+constexpr int NSTEP_ADPCM_VOLUME = 0x100;

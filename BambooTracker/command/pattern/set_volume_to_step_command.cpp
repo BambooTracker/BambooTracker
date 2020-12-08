@@ -25,6 +25,7 @@
 
 #include "set_volume_to_step_command.hpp"
 #include "pattern_command_utils.hpp"
+#include "effect.hpp"
 #include "misc.hpp"
 
 SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry)
@@ -36,14 +37,14 @@ SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int so
 	  step_(stepNum),
 	  vol_(volume),
 	  prevVol_(command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum).getVolume()),
-	  isFMReserved_(isFMReversed),
+	  isFMReversed_(isFMReversed),
 	  isSecondEntry_(secondEntry)
 {
 }
 
 void SetVolumeToStepCommand::redo()
 {
-	int volume = (isFMReserved_ && vol_ < 0x80) ? (0x7f - vol_) : vol_;
+	int volume = isFMReversed_ ? effect_utils::reverseFmVolume(vol_) : vol_;
 	command_utils::getStep(mod_, song_, track_, order_, step_).setVolume(volume);
 }
 

@@ -64,104 +64,43 @@ void InterpolatePatternCommand::redo()
 	for (size_t i = 0; i < prevCells_.front().size(); ++i) {
 		int s = bStep_;
 		for (size_t j = 0; j < prevCells_.size(); ++j) {
+			Pattern& pattern = command_utils::getPattern(sng, t, order_);
+			Step& sa = pattern.getStep(bStep_);
+			Step& sb = pattern.getStep(eStep_);
 			switch (c) {
 			case 0:
 			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				int a = pattern.getStep(bStep_).getNoteNumber();
-				int b = pattern.getStep(eStep_).getNoteNumber();
-				if (a > -1 && b > -1)
-					pattern.getStep(s).setNoteNumber(interp(a, b, j, div));
+				if (sa.hasGeneralNote() && sb.hasGeneralNote())
+					pattern.getStep(s).setNoteNumber(
+								interp(sa.getNoteNumber(), sb.getNoteNumber(), j, div));
 				break;
 			}
 			case 1:
 			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				int a = pattern.getStep(bStep_).getInstrumentNumber();
-				int b = pattern.getStep(eStep_).getInstrumentNumber();
-				if (a > -1 && b > -1)
-					pattern.getStep(s).setInstrumentNumber(interp(a, b, j, div));
+				if (sa.hasInstrument() && sb.hasInstrument())
+					pattern.getStep(s).setInstrumentNumber(interp(sa.getInstrumentNumber(), sb.getInstrumentNumber(), j, div));
 				break;
 			}
 			case 2:
 			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				int a = pattern.getStep(bStep_).getVolume();
-				int b = pattern.getStep(eStep_).getVolume();
-				if (a > -1 && b > -1)
-					pattern.getStep(s).setVolume(interp(a, b, j, div));
+				if (sa.hasVolume() && sb.hasVolume())
+					pattern.getStep(s).setVolume(interp(sa.getVolume(), sb.getVolume(), j, div));
 				break;
 			}
-			case 3:
+			default:
 			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				std::string a = pattern.getStep(bStep_).getEffectID(0);
-				std::string b = pattern.getStep(eStep_).getEffectID(0);
-				if (a == b)
-					pattern.getStep(s).setEffectID(0, a);
-				break;
-			}
-			case 4:
-			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				int a = pattern.getStep(bStep_).getEffectValue(0);
-				int b = pattern.getStep(eStep_).getEffectValue(0);
-				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(0, interp(a, b, j, div));
-				break;
-			}
-			case 5:
-			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				std::string a = pattern.getStep(bStep_).getEffectID(1);
-				std::string b = pattern.getStep(eStep_).getEffectID(1);
-				if (a == b)
-					pattern.getStep(s).setEffectID(1, a);
-				break;
-			}
-			case 6:
-			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				int a = pattern.getStep(bStep_).getEffectValue(1);
-				int b = pattern.getStep(eStep_).getEffectValue(1);
-				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(1, interp(a, b, j, div));
-				break;
-			}
-			case 7:
-			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				std::string a = pattern.getStep(bStep_).getEffectID(2);
-				std::string b = pattern.getStep(eStep_).getEffectID(2);
-				if (a == b)
-					pattern.getStep(s).setEffectID(2, a);
-				break;
-			}
-			case 8:
-			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				int a = pattern.getStep(bStep_).getEffectValue(2);
-				int b = pattern.getStep(eStep_).getEffectValue(2);
-				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(2, interp(a, b, j, div));
-				break;
-			}
-			case 9:
-			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				std::string a = pattern.getStep(bStep_).getEffectID(3);
-				std::string b = pattern.getStep(eStep_).getEffectID(3);
-				if (a == b)
-					pattern.getStep(s).setEffectID(3, a);
-				break;
-			}
-			case 10:
-			{
-				auto& pattern = command_utils::getPattern(sng, t, order_);
-				int a = pattern.getStep(bStep_).getEffectValue(3);
-				int b = pattern.getStep(eStep_).getEffectValue(3);
-				if (a > -1 && b > -1)
-					pattern.getStep(s).setEffectValue(3, interp(a, b, j, div));
+				int ec = c - 3;
+				int ei = ec / 2;
+				if (ec % 2) {	// Value
+					if (sa.hasEffectValue(ei) && sb.hasEffectValue(ei))
+						pattern.getStep(s).setEffectValue(ei, interp(sa.getEffectValue(ei), sb.getEffectValue(ei), j, div));
+				}
+				else {	// ID
+					std::string a = sa.getEffectId(ei);
+					std::string b = sb.getEffectId(ei);
+					if (a == b)
+						pattern.getStep(s).setEffectId(ei, a);
+				}
 				break;
 			}
 			}
@@ -169,8 +108,8 @@ void InterpolatePatternCommand::redo()
 			++s;
 		}
 		++c;
-		t += (c / 11);
-		c %= 11;
+		t += (c / Step::N_COLUMN);
+		c %= Step::N_COLUMN;
 	}
 }
 

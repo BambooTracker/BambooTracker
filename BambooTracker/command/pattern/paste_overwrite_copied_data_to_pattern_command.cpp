@@ -57,69 +57,38 @@ void PasteOverwriteCopiedDataToPatternCommand::redo()
 			case 0:
 			{
 				int n = std::stoi(cell);
-				if (n != -1) st.setNoteNumber(n);
+				if (!Step::testEmptyNote(n)) st.setNoteNumber(n);
 				break;
 			}
 			case 1:
 			{
 				int n = std::stoi(cell);
-				if (n != -1) st.setInstrumentNumber(n);
+				if (!Step::testEmptyInstrument(n)) st.setInstrumentNumber(n);
 				break;
 			}
 			case 2:
 			{
 				int vol = std::stoi(cell);
-				if (vol != -1) st.setVolume(vol);
+				if (!Step::testEmptyVolume(vol)) st.setVolume(vol);
 				break;
 			}
-			case 3:
+			default:
 			{
-				if (cell != "--") st.setEffectID(0, cell);
-				break;
-			}
-			case 4:
-			{
-				int val = std::stoi(cell);
-				if (val != -1) st.setEffectValue(0, val);
-				break;
-			}
-			case 5:
-			{
-				if (cell != "--") st.setEffectID(1, cell);
-				break;
-			}
-			case 6:
-			{
-				int val = std::stoi(cell);
-				if (val != -1) st.setEffectValue(1, val);
-				break;
-			}
-			case 7:
-			{
-				if (cell != "--") st.setEffectID(2, cell);
-				break;
-			}
-			case 8:
-			{
-				int val = std::stoi(cell);
-				if (val != -1) st.setEffectValue(2, val);
-				break;
-			}
-			case 9:
-			{
-				if (cell != "--") st.setEffectID(3, cell);
-				break;
-			}
-			case 10:
-			{
-				int val = std::stoi(cell);
-				if (val != -1) st.setEffectValue(3, val);
+				int ec = c - 3;
+				int ei = ec / 2;
+				if (ec % 2) {
+					int val = std::stoi(cell);
+					if (!Step::testEmptyEffectValue(val)) st.setEffectValue(ei, val);
+				}
+				else {
+					if (!Step::testEmptyEffectId(cell)) st.setEffectId(ei, cell);
+				}
 				break;
 			}
 			}
 
-			t += (++c / 11);
-			c %= 11;
+			t += (++c / Step::N_COLUMN);
+			c %= Step::N_COLUMN;
 		}
 
 		++s;

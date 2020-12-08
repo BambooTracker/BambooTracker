@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,29 +26,91 @@
 #pragma once
 
 #include <string>
+#include <stdexcept>
 
 class Step
 {
 public:
 	Step();
 
-	int getNoteNumber() const;
-	void setNoteNumber(int num);
+	enum NoteValue : int
+	{
+		NOTE_NONE		= -1,
+		// Special notes
+		NOTE_KEY_OFF	= -2,
+		NOTE_ECHO0		= -3,
+		NOTE_ECHO1		= -4,
+		NOTE_ECHO2		= -5,
+		NOTE_ECHO3		= -6
+	};
+	inline int getNoteNumber() const noexcept { return note_; }
+	inline void setNoteNumber(int num) { note_ = num; }
+	inline void setKeyOff() { note_ = NOTE_KEY_OFF; }
+	inline void setEchoBuffer(int n) { note_ = NOTE_ECHO0 - n; }
+	inline void clearNoteNumber() noexcept { note_ = NOTE_NONE; }
+	inline bool hasGeneralNote() const noexcept { return note_ > NOTE_KEY_OFF; }
+	inline bool hasKeyOff() const noexcept { return note_ == NOTE_KEY_OFF; }
+	inline bool hasNoteEchoBuffer(int n) const { return note_ == (NOTE_ECHO0 - n); }
+	inline bool isEmptyNote() const noexcept { return note_ == NOTE_NONE; }
 
-	int getInstrumentNumber() const;
-	void setInstrumentNumber(int num);
+	static inline bool testEmptyNote(int note) { return note == NOTE_NONE; }
 
-	int getVolume() const;
-	void setVolume(int volume);
+	static constexpr int INST_NONE = -1;
+	inline int getInstrumentNumber() const noexcept { return inst_; }
+	inline void setInstrumentNumber(int num) { inst_ = num; }
+	inline void clearInstrumentNumber() noexcept { inst_ = INST_NONE; }
+	inline bool hasInstrument() const noexcept { return inst_ != INST_NONE; }
 
-	std::string getEffectID(int n) const;
-	void setEffectID(int n, std::string str);
+	static inline bool testEmptyInstrument(int inst) { return inst == INST_NONE; }
 
-	int getEffectValue(int n) const;
-	void setEffectValue(int n, int v);
+	static constexpr int VOLUME_NONE = -1;
+	inline int getVolume() const noexcept { return vol_; }
+	inline void setVolume(int volume) { vol_ = volume; }
+	inline void clearVolume() noexcept { vol_ = VOLUME_NONE; }
+	inline bool hasVolume() const noexcept { return vol_ != VOLUME_NONE; }
 
-	/// NOTE: Deprecated
-	int checkEffectID(std::string str) const;
+	static inline bool testEmptyVolume(int vol) { return vol == VOLUME_NONE; }
+
+	static const std::string EFF_ID_NONE;	// "--"
+	inline std::string getEffectId(int n) const { return eff_[n].id; }
+	inline void setEffectId(int n, const std::string& str) { eff_[n].id = str; }
+	inline void clearEffectId(int n) { eff_[n].id = EFF_ID_NONE; }
+	inline bool hasEffectId(int n) const { return eff_[n].id != EFF_ID_NONE; }
+
+	static inline bool testEmptyEffectId(const std::string& id) { return id == EFF_ID_NONE; }
+
+	static constexpr int EFF_VAL_NONE = -1;
+	inline int getEffectValue(int n) const { return eff_[n].value; }
+	inline void setEffectValue(int n, int v) { eff_[n].value = v; }
+	inline void clearEffectValue(int n) { eff_[n].value = EFF_VAL_NONE; }
+	inline bool hasEffectValue(int n) const { return eff_[n].value != EFF_VAL_NONE; }
+
+	static inline bool testEmptyEffectValue(int v) { return v == EFF_VAL_NONE; }
+
+	struct PlainEffect
+	{
+		std::string id;
+		int value;
+	};
+
+	static constexpr int N_EFFECT = 4;
+
+	inline PlainEffect getEffect(int n) const { return eff_[n]; }
+	inline void setEffect(int n, const PlainEffect& effect) { eff_[n] = effect; }
+	inline void setEffect(int n, const std::string& id, int value)
+	{
+		setEffectId(n, id);
+		setEffectValue(n, value);
+	}
+	inline void clearEffect(int n)
+	{
+		clearEffectId(n);
+		clearEffectValue(n);
+	}
+
+	static constexpr int N_COLUMN = 3 + N_EFFECT * 2;
+
+	void clear();
 
 	bool existCommand() const;
 
@@ -61,18 +123,21 @@ private:
 	///		 -4: echo 2 notes before
 	///		 -5: echo 3 notes before
 	///		 -6: echo 4 notes before
-	int noteNum_;
+	int note_;
 	/// instNum_
 	///		0<=: instrument number
 	///		 -1: none
-	int instNum_;
+	int inst_;
 	/// vol_
 	///		0<=: volume level
 	///		 -1: none
 	int vol_;
-	std::string effID_[4];
-	/// effVal_
+	/// eff
+	///	[id]
+	///		 "--": none
+	///		other: effect id
+	/// [value]
 	///		0<=: effect value
 	///		 -1: none
-	int effVal_[4];
+	PlainEffect eff_[N_EFFECT];
 };

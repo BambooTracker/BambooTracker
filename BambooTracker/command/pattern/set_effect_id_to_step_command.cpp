@@ -41,23 +41,23 @@ SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, in
 	  isSecondEntry_(secondEntry)
 {
 	Step& step = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum);
-	prevEffID_ = step.getEffectID(n);
-	filledValue00_ = fillValue00 && (step.getEffectValue(n) == -1);
+	prevEffID_ = step.getEffectId(n);
+	filledValue00_ = fillValue00 && !step.hasEffectValue(n);
 }
 
 void SetEffectIDToStepCommand::redo()
 {
 	std::string str = isSecondEntry_ ? effID_ : ("0" + effID_);
 	Step& step = command_utils::getStep(mod_, song_, track_, order_, step_);
-	step.setEffectID(n_, str);
+	step.setEffectId(n_, str);
 	if (filledValue00_) step.setEffectValue(n_, 0);
 }
 
 void SetEffectIDToStepCommand::undo()
 {
 	Step& step = command_utils::getStep(mod_, song_, track_, order_, step_);
-	step.setEffectID(n_, prevEffID_);
-	if (filledValue00_) step.setEffectValue(n_, -1);
+	step.setEffectId(n_, prevEffID_);
+	if (filledValue00_) step.clearEffectValue(n_);
 
 	if (!isSecondEntry_) {	// Forced complete
 		effID_ = "0" + effID_;

@@ -42,5 +42,5 @@ private:
 	int song_, track_, order_, step_, note_, inst_, vol_;
 	int prevNote_, prevInst_, prevVol_;
 	bool instMask_, volMask_;
-	bool isFMReserved_;
+	bool isFMReversed_;
 };

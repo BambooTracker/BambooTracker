@@ -38,31 +38,6 @@ Pattern::Pattern(int n, size_t size, std::vector<Step> steps)
 {
 }
 
-void Pattern::setNumber(int n)
-{
-	num_ = n;
-}
-
-int Pattern::getNumber() const
-{
-	return num_;
-}
-
-int Pattern::usedCountUp()
-{
-	return ++usedCnt_;
-}
-
-int Pattern::usedCountDown()
-{
-	return --usedCnt_;
-}
-
-int Pattern::getUsedCount() const
-{
-	return usedCnt_;
-}
-
 Step& Pattern::getStep(int n)
 {
 	return steps_.at(static_cast<size_t>(n));
@@ -71,10 +46,10 @@ Step& Pattern::getStep(int n)
 size_t Pattern::getSize() const
 {
 	for (size_t i = 0; i < size_; ++i) {
-		for (int j = 0; j < 4; ++j) {
-			switch (Effect::makeEffectData(	// "SoundSource::FM" is dummy
-											SoundSource::FM, steps_[i].getEffectID(j), steps_[i].getEffectValue(j)
-											).type) {
+		for (int j = 0; j < Step::N_EFFECT; ++j) {
+			if (!steps_[i].hasEffectValue(j)) continue;
+			// "SoundSource::FM" is dummy, these effects are not related with sound source
+			switch (effect_utils::validateEffectId(SoundSource::FM, steps_[i].getEffectId(j))) {
 			case EffectType::PositionJump:
 			case EffectType::SongEnd:
 			case EffectType::PatternBreak:
@@ -89,7 +64,7 @@ size_t Pattern::getSize() const
 
 void Pattern::changeSize(size_t size)
 {
-	if (0 < size && size <= 256) {
+	if (size && size <= MAX_STEPS) {
 		size_ = size;
 		if (steps_.size() < size) steps_.resize(size);
 	}
@@ -113,9 +88,8 @@ void Pattern::deletePreviousStep(int n)
 bool Pattern::existCommand() const
 {
 	auto endIt = steps_.begin() + static_cast<int>(size_);
-	auto&& it = std::find_if(steps_.begin(), endIt,
-							 [](const Step& step) { return step.existCommand(); });
-	return (it != endIt);
+	return std::any_of(steps_.begin(), endIt,
+					   [](const Step& step) { return step.existCommand(); });
 }
 
 std::vector<int> Pattern::getEditedStepIndices() const
@@ -132,8 +106,8 @@ std::unordered_set<int> Pattern::getRegisteredInstruments() const
 {
 	std::unordered_set<int> set;
 	for (size_t i = 0; i < size_; ++i) {
-		int n = steps_.at(i).getInstrumentNumber();
-		if (n > -1) set.insert(n);
+		const Step& step = steps_.at(i);
+		if (step.hasInstrument()) set.insert(step.getInstrumentNumber());
 	}
 	return set;
 }
@@ -148,7 +122,7 @@ void Pattern::transpose(int seminotes, std::vector<int> excludeInsts)
 	for (size_t i = 0; i < size_; ++i) {
 		Step& step = steps_.at(i);
 		int note = step.getNoteNumber();
-		if (note > -1 && std::none_of(excludeInsts.begin(), excludeInsts.end(),
+		if (step.hasGeneralNote() && std::none_of(excludeInsts.begin(), excludeInsts.end(),
 									  [a = step.getInstrumentNumber()](int b) { return a == b; })) {
 			step.setNoteNumber(clamp(note + seminotes, 0, 95));
 		}

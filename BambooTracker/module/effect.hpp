@@ -26,6 +26,7 @@
 #pragma once
 
 #include <string>
+#include "step.hpp"
 #include "misc.hpp"
 
 enum class EffectType
@@ -44,5 +45,26 @@ struct Effect
 	int value;
 
 	static EffectType toEffectType(SoundSource src, std::string id);
-	static Effect makeEffectData(SoundSource src, std::string id, int value);
+		static Effect makeEffectData(SoundSource src, std::string id, int value);
 };
+
+namespace effect_utils
+{
+EffectType validateEffectId(SoundSource src, const std::string& id);
+Effect validateEffect(SoundSource src, const std::string& id, int value);
+inline Effect validateEffect(SoundSource src, const Step::PlainEffect& plain)
+{
+	return validateEffect(src, plain.id, plain.value);
+}
+
+inline int reverseFmVolume(int volume, bool over0 = false) noexcept
+{
+	return (volume < NSTEP_FM_VOLUME) ? (NSTEP_FM_VOLUME - 1 - volume)
+									  : over0 ? 0 : volume;
+}
+
+inline int reverseFmBrightness(int value) noexcept
+{
+	return (value > 0) ? (0xff - value + 1) : value;
+}
+}

@@ -1590,8 +1590,8 @@ size_t BtmIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryCon
 					EffectType efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0008)	{
 						std::string id = ctr.readString(pcsr, 2);
-						step.setEffectID(0, id);
-						efftype = Effect::toEffectType(sndsrc, id);
+						step.setEffectId(0, id);
+						efftype = effect_utils::validateEffectId(sndsrc, id);
 						pcsr += 2;
 					}
 					if (eventFlag & 0x0010)	{
@@ -1603,8 +1603,8 @@ size_t BtmIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryCon
 					efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0020)	{
 						std::string id = ctr.readString(pcsr, 2);
-						step.setEffectID(1, id);
-						efftype = Effect::toEffectType(sndsrc, id);
+						step.setEffectId(1, id);
+						efftype = effect_utils::validateEffectId(sndsrc, id);
 						pcsr += 2;
 					}
 					if (eventFlag & 0x0040)	{
@@ -1616,8 +1616,8 @@ size_t BtmIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryCon
 					efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0080)	{
 						std::string id = ctr.readString(pcsr, 2);
-						step.setEffectID(2, id);
-						efftype = Effect::toEffectType(sndsrc, id);
+						step.setEffectId(2, id);
+						efftype = effect_utils::validateEffectId(sndsrc, id);
 						pcsr += 2;
 					}
 					if (eventFlag & 0x0100)	{
@@ -1629,8 +1629,8 @@ size_t BtmIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryCon
 					efftype = EffectType::NoEffect;
 					if (eventFlag & 0x0200)	{
 						std::string id = ctr.readString(pcsr, 2);
-						step.setEffectID(3, id);
-						efftype = Effect::toEffectType(sndsrc, id);
+						step.setEffectId(3, id);
+						efftype = effect_utils::validateEffectId(sndsrc, id);
 						pcsr += 2;
 					}
 					if (eventFlag & 0x0400)	{
@@ -2502,28 +2502,28 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 					auto& step = pattern.getStep(sidx);
 					uint16_t eventFlag = 0;
 					int tmp = step.getNoteNumber();
-					if (tmp != -1) {
+					if (!Step::testEmptyNote(tmp)) {
 						eventFlag |= 0x0001;
 						ctr.appendInt8(static_cast<int8_t>(tmp));
 					}
 					tmp = step.getInstrumentNumber();
-					if (tmp != -1) {
+					if (!Step::testEmptyInstrument(tmp)) {
 						eventFlag |= 0x0002;
 						ctr.appendUint8(static_cast<uint8_t>(tmp));
 					}
 					tmp = step.getVolume();
-					if (tmp != -1) {
+					if (!Step::testEmptyVolume(tmp)) {
 						eventFlag |= 0x0004;
 						ctr.appendUint8(static_cast<uint8_t>(tmp));
 					}
-					for (int i = 0; i < 4; ++i) {
-						std::string tmpstr = step.getEffectID(i);
-						if (tmpstr != "--") {
+					for (int i = 0; i < Step::N_EFFECT; ++i) {
+						std::string tmpstr = step.getEffectId(i);
+						if (!Step::testEmptyEffectId(tmpstr)) {
 							eventFlag |= (0x0008 << (i << 1));
 							ctr.appendString(tmpstr);
 						}
 						tmp = step.getEffectValue(i);
-						if (tmp != -1) {
+						if (!Step::testEmptyEffectValue(tmp)) {
 							eventFlag |= (0x0010 << (i << 1));
 							ctr.appendUint8(static_cast<uint8_t>(tmp));
 						}

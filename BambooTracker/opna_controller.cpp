@@ -2114,21 +2114,21 @@ void OPNAController::updateInstrumentSSG(int instNum)
 /********** Set volume **********/
 void OPNAController::setVolumeSSG(int ch, int volume)
 {
-	if (volume > 0xf) return;	// Out of range
+	if (volume < NSTEP_SSG_VOLUME) {
+		baseVolSSG_[ch] = volume;
+		tmpVolSSG_[ch] = -1;
 
-	baseVolSSG_[ch] = volume;
-	tmpVolSSG_[ch] = -1;
-
-	if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
+		if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
+	}
 }
 
 void OPNAController::setTemporaryVolumeSSG(int ch, int volume)
 {
-	if (volume > 0xf) return;	// Out of range
+	if (volume < NSTEP_SSG_VOLUME) {
+		tmpVolSSG_[ch] = volume;
 
-	tmpVolSSG_[ch] = volume;
-
-	if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
+		if (isKeyOnSSG_[ch]) setRealVolumeSSG(ch);
+	}
 }
 
 void OPNAController::setRealVolumeSSG(int ch)
@@ -2344,7 +2344,7 @@ void OPNAController::initSSG()
 		keyToneSSG_[ch].pitch = 0;	// Dummy
 		sumPitchSSG_[ch] = 0;
 		tnSSG_[ch] = { false, false, CommandSequenceUnit::NODATA };
-		baseVolSSG_[ch] = 0xf;	// Init volume
+		baseVolSSG_[ch] = NSTEP_SSG_VOLUME - 1;	// Init volume
 		tmpVolSSG_[ch] = -1;
 		isHardEnvSSG_[ch] = false;
 		isBuzzEffSSG_[ch] = false;
@@ -3231,11 +3231,11 @@ void OPNAController::setKeyOffFlagRhythm(int ch)
 /********** Set volume **********/
 void OPNAController::setVolumeRhythm(int ch, int volume)
 {
-	if (volume > 0x1f) return;	// Out of range
-
-	volRhythm_[ch] = volume;
-	tmpVolRhythm_[ch] = -1;
-	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
+	if (volume < NSTEP_RHYTHM_VOLUME) {
+		volRhythm_[ch] = volume;
+		tmpVolRhythm_[ch] = -1;
+		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
+	}
 }
 
 void OPNAController::setMasterVolumeRhythm(int volume)
@@ -3246,10 +3246,10 @@ void OPNAController::setMasterVolumeRhythm(int volume)
 
 void OPNAController::setTemporaryVolumeRhythm(int ch, int volume)
 {
-	if (volume > 0x1f) return;	// Out of range
-
-	tmpVolRhythm_[ch] = volume;
-	opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
+	if (volume < NSTEP_RHYTHM_VOLUME) {
+		tmpVolRhythm_[ch] = volume;
+		opna_->setRegister(0x18 + static_cast<uint32_t>(ch), static_cast<uint8_t>((panRhythm_[ch] << 6) | volume));
+	}
 }
 
 /********** Set effect **********/
@@ -3268,7 +3268,7 @@ void OPNAController::initRhythm()
 	opna_->setRegister(0x11, 0x3f);	// Rhythm total volume
 
 	for (int ch = 0; ch < 6; ++ch) {
-		volRhythm_[ch] = 0x1f;	// Init volume
+		volRhythm_[ch] = NSTEP_RHYTHM_VOLUME - 1;	// Init volume
 		tmpVolRhythm_[ch] = -1;
 
 		// Init pan
@@ -3478,21 +3478,21 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 /********** Set volume **********/
 void OPNAController::setVolumeADPCM(int volume)
 {
-	if (volume > 0xff) return;	// Out of range
+	if (volume < NSTEP_ADPCM_VOLUME) {
+		baseVolADPCM_ = volume;
+		tmpVolADPCM_ = -1;
 
-	baseVolADPCM_ = volume;
-	tmpVolADPCM_ = -1;
-
-	if (isKeyOnADPCM_) setRealVolumeADPCM();
+		if (isKeyOnADPCM_) setRealVolumeADPCM();
+	}
 }
 
 void OPNAController::setTemporaryVolumeADPCM(int volume)
 {
-	if (volume > 0xff) return;	// Out of range
+	if (volume < NSTEP_ADPCM_VOLUME) {
+		tmpVolADPCM_ = volume;
 
-	tmpVolADPCM_ = volume;
-
-	if (isKeyOnADPCM_) setRealVolumeADPCM();
+		if (isKeyOnADPCM_) setRealVolumeADPCM();
+	}
 }
 
 void OPNAController::setRealVolumeADPCM()
@@ -3500,12 +3500,12 @@ void OPNAController::setRealVolumeADPCM()
 	int volume = (tmpVolADPCM_ == -1) ? baseVolADPCM_ : tmpVolADPCM_;
 	if (envItADPCM_) {
 		int type = envItADPCM_->getCommandType();
-		if (type >= 0) volume -= (0xff - type);
+		if (type >= 0) volume -= (NSTEP_ADPCM_VOLUME - 1 - type);
 	}
 	if (treItADPCM_) volume += treItADPCM_->getCommandType();
 	volume += sumVolSldADPCM_;
 
-	volume = clamp(volume, 0, 0xff);
+	volume = clamp(volume, 0, NSTEP_ADPCM_VOLUME - 1);
 
 	opna_->setRegister(0x10b, static_cast<uint8_t>(volume));
 	needEnvSetADPCM_ = false;
@@ -3644,7 +3644,7 @@ void OPNAController::initADPCM()
 	keyToneADPCM_.octave = -1;
 	keyToneADPCM_.pitch = 0;	// Dummy
 	sumPitchADPCM_ = 0;
-	baseVolADPCM_ = 0xff;	// Init volume
+	baseVolADPCM_ = NSTEP_ADPCM_VOLUME - 1;	// Init volume
 	tmpVolADPCM_ = -1;
 	panADPCM_ = 0xc0;
 	startAddrADPCM_ = std::numeric_limits<size_t>::max();

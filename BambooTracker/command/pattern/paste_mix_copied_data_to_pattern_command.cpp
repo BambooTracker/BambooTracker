@@ -58,70 +58,39 @@ void PasteMixCopiedDataToPatternCommand::redo()
 			case 0:
 			{
 				int n = std::stoi(cell);
-				if (n != -1 && step.getNoteNumber() == -1) step.setNoteNumber(n);
+				if (!Step::testEmptyNote(n) && step.isEmptyNote()) step.setNoteNumber(n);
 				break;
 			}
 			case 1:
 			{
 				int n = std::stoi(cell);
-				if (n != -1 && step.getInstrumentNumber() == -1) step.setInstrumentNumber(n);
+				if (!Step::testEmptyInstrument(n) && !step.hasInstrument()) step.setInstrumentNumber(n);
 				break;
 			}
 			case 2:
 			{
 				int vol = std::stoi(cell);
-				if (vol != -1 && step.getVolume() == -1) step.setVolume(vol);
+				if (!Step::testEmptyVolume(vol) && !step.hasVolume()) step.setVolume(vol);
 				break;
 			}
-			case 3:
+			default:
 			{
-				if (cell != "--" && step.getEffectID(0) == "--") step.setEffectID(0, cell);
-				break;
-			}
-			case 4:
-			{
-				int val = std::stoi(cell);
-				if (val != -1 && step.getEffectValue(0) == -1) step.setEffectValue(0, val);
-				break;
-			}
-			case 5:
-			{
-				if (cell != "--" && step.getEffectID(1) == "--") step.setEffectID(1, cell);
-				break;
-			}
-			case 6:
-			{
-				int val = std::stoi(cell);
-				if (val != -1 && step.getEffectValue(1) == -1) step.setEffectValue(1, val);
-				break;
-			}
-			case 7:
-			{
-				if (cell!= "--" && step.getEffectID(2) == "--") step.setEffectID(2, cell);
-				break;
-			}
-			case 8:
-			{
-				int val = std::stoi(cell);
-				if (val != -1 && step.getEffectValue(2) == -1) step.setEffectValue(2, val);
-				break;
-			}
-			case 9:
-			{
-				if (cell != "--" && step.getEffectID(3) == "--") step.setEffectID(3, cell);
-				break;
-			}
-			case 10:
-			{
-				int val = std::stoi(cell);
-				if (val != -1 && step.getEffectValue(3) == -1) step.setEffectValue(3, val);
+				int ec = c - 3;
+				int ei = ec / 2;
+				if (ec % 2) {	// Value
+					int val = std::stoi(cell);
+					if (!Step::testEmptyEffectValue(val) && !step.hasEffectValue(ei)) step.setEffectValue(ei, val);
+				}
+				else {	// ID
+					if (!Step::testEmptyEffectId(cell) && !step.hasEffectId(ei)) step.setEffectId(ei, cell);
+				}
 				break;
 			}
 			}
 
 			++c;
-			t += (c / 11);
-			c %= 11;
+			t += (c / Step::N_COLUMN);
+			c %= Step::N_COLUMN;
 		}
 
 		++s;

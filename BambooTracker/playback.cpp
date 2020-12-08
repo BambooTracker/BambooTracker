@@ -378,8 +378,8 @@ void PlaybackManager::stepProcess()
 		case SoundSource::ADPCM:	storeEffectToMap = &PlaybackManager::storeEffectToMapADPCM;		break;
 		}
 		bool isDelay = false;
-		for (int i = 0; i < 4; ++i) {
-			Effect&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(i), step.getEffectValue(i));
+		for (int i = 0; i < Step::N_EFFECT; ++i) {
+			Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
 			isDelay |= (this->*storeEffectToMap)(attrib.channelInSource, std::move(eff));
 		}
 		isNoteDelay_[attrib.source].at(uch) = isDelay;
@@ -441,17 +441,16 @@ void PlaybackManager::stepProcess()
 
 void PlaybackManager::executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay)
 {
-	int noteNum = step.getNoteNumber();
-	if (!calledByNoteDelay && noteNum != -1) clearFMDelayBeyondStepCounts(ch);	// Except no key event
+	if (!calledByNoteDelay && !step.isEmptyNote()) clearFMDelayBeyondStepCounts(ch);	// Except no key event
 
 	// Set volume
 	int vol = step.getVolume();
-	if (0 <= vol && vol < 0x80) {
+	if (step.hasVolume() && vol < NSTEP_FM_VOLUME) {
 		opnaCtrl_->setVolumeFM(ch, vol);
 	}
 
 	// Set instrument
-	if (step.getInstrumentNumber() != -1) {
+	if (step.hasInstrument()) {
 		if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
 					instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber())))
 			opnaCtrl_->setInstrumentFM(ch, inst);
@@ -464,31 +463,32 @@ void PlaybackManager::executeFMStepEvents(Step& step, int ch, bool calledByNoteD
 	executeStoredEffectsFM(ch);
 
 	// Set key
+	int noteNum = step.getNoteNumber();
 	switch (noteNum) {
-	case -1:	// None
+	case Step::NOTE_NONE:
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkFMDelayEventsInTick(step, ch);
 			opnaCtrl_->tickEvent(SoundSource::FM, ch);
 		}
 		break;
-	case -2:	// Key off
+	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffFM(ch);
 		break;
-	case -3:	// Echo 0
+	case Step::NOTE_ECHO0:
 		opnaCtrl_->keyOnFM(ch, 0);
 		break;
-	case -4:	// Echo 1
+	case Step::NOTE_ECHO1:
 		opnaCtrl_->keyOnFM(ch, 1);
 		break;
-	case -5:	// Echo 2
+	case Step::NOTE_ECHO2:
 		opnaCtrl_->keyOnFM(ch, 2);
 		break;
-	case -6:	// Echo 3
+	case Step::NOTE_ECHO3:
 		opnaCtrl_->keyOnFM(ch, 3);
 		break;
 	default:	// Key on
 	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
+		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
 		opnaCtrl_->keyOnFM(ch, octNote.second, octNote.first, 0);
 		break;
 	}
@@ -497,17 +497,16 @@ void PlaybackManager::executeFMStepEvents(Step& step, int ch, bool calledByNoteD
 
 void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay)
 {
-	int noteNum = step.getNoteNumber();
-	if (!calledByNoteDelay && noteNum != -1) clearSSGDelayBeyondStepCounts(ch);	// Except no key event
+	if (!calledByNoteDelay && !step.isEmptyNote()) clearSSGDelayBeyondStepCounts(ch);	// Except no key event
 
 	// Set volume
 	int vol = step.getVolume();
-	if (0 <= vol && vol < 0x10) {
+	if (step.hasVolume() && vol < NSTEP_SSG_VOLUME) {
 		opnaCtrl_->setVolumeSSG(ch, vol);
 	}
 
 	// Set instrument
-	if (step.getInstrumentNumber() != -1) {
+	if (step.hasInstrument()) {
 		if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
 					instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber())))
 			opnaCtrl_->setInstrumentSSG(ch, inst);
@@ -517,31 +516,32 @@ void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNote
 	executeStoredEffectsSSG(ch);
 
 	// Set key
+	int noteNum = step.getNoteNumber();
 	switch (noteNum) {
-	case -1:	// None
+	case Step::NOTE_NONE:
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkSSGDelayEventsInTick(step, ch);
 			opnaCtrl_->tickEvent(SoundSource::SSG, ch);
 		}
 		break;
-	case -2:	// Key off
+	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffSSG(ch);
 		break;
-	case -3:	// Echo 0
+	case Step::NOTE_ECHO0:
 		opnaCtrl_->keyOnSSG(ch, 0);
 		break;
-	case -4:	// Echo 1
+	case Step::NOTE_ECHO1:
 		opnaCtrl_->keyOnSSG(ch, 1);
 		break;
-	case -5:	// Echo 2
+	case Step::NOTE_ECHO2:
 		opnaCtrl_->keyOnSSG(ch, 2);
 		break;
-	case -6:	// Echo 3
+	case Step::NOTE_ECHO3:
 		opnaCtrl_->keyOnSSG(ch, 3);
 		break;
 	default:	// Key on
 	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
+		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
 		opnaCtrl_->keyOnSSG(ch, octNote.second, octNote.first, 0);
 		break;
 	}
@@ -550,12 +550,11 @@ void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNote
 
 void PlaybackManager::executeRhythmStepEvents(Step& step, int ch, bool calledByNoteDelay)
 {
-	int noteNum = step.getNoteNumber();
-	if (!calledByNoteDelay && noteNum != -1) clearRhythmDelayBeyondStepCounts(ch);	// Except no key event
+	if (!calledByNoteDelay && !step.isEmptyNote()) clearRhythmDelayBeyondStepCounts(ch);	// Except no key event
 
 	// Set volume
 	int vol = step.getVolume();
-	if (0 <= vol && vol < 0x20) {
+	if (step.hasVolume() && vol < NSTEP_RHYTHM_VOLUME) {
 		opnaCtrl_->setVolumeRhythm(ch, vol);
 	}
 
@@ -563,14 +562,14 @@ void PlaybackManager::executeRhythmStepEvents(Step& step, int ch, bool calledByN
 	executeStoredEffectsRhythm(ch);
 
 	// Set key
-	switch (noteNum) {
-	case -1:	// None
+	switch (step.getNoteNumber()) {
+	case Step::NOTE_NONE:
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkRhythmDelayEventsInTick(step, ch);
 			opnaCtrl_->tickEvent(SoundSource::RHYTHM, ch);
 		}
 		break;
-	case -2:	// Key off
+	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->setKeyOffFlagRhythm(ch);
 		break;
 	default:	// Key on & Echo
@@ -581,17 +580,16 @@ void PlaybackManager::executeRhythmStepEvents(Step& step, int ch, bool calledByN
 
 void PlaybackManager::executeADPCMStepEvents(Step& step, bool calledByNoteDelay)
 {
-	int noteNum = step.getNoteNumber();
-	if (!calledByNoteDelay && noteNum != -1) clearADPCMDelayBeyondStepCounts();	// Except no key event
+	if (!calledByNoteDelay && !step.isEmptyNote()) clearADPCMDelayBeyondStepCounts();	// Except no key event
 
 	// Set volume
 	int vol = step.getVolume();
-	if (0 <= vol && vol < 0x100) {
+	if (step.hasVolume() && vol < NSTEP_ADPCM_VOLUME) {
 		opnaCtrl_->setVolumeADPCM(vol);
 	}
 
 	// Set instrument
-	if (step.getInstrumentNumber() != -1) {
+	if (step.hasInstrument()) {
 		auto inst = instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber());
 		if (inst->getType() == InstrumentType::ADPCM)
 			opnaCtrl_->setInstrumentADPCM(std::dynamic_pointer_cast<InstrumentADPCM>(inst));
@@ -603,31 +601,32 @@ void PlaybackManager::executeADPCMStepEvents(Step& step, bool calledByNoteDelay)
 	executeStoredEffectsADPCM();
 
 	// Set key
+	int noteNum = step.getNoteNumber();
 	switch (noteNum) {
-	case -1:	// None
+	case Step::NOTE_NONE:
 		if (!calledByNoteDelay) {	// When this is called by note delay, tick event will be updated in readTick
 			checkADPCMDelayEventsInTick(step);
 			opnaCtrl_->tickEvent(SoundSource::ADPCM, 0);
 		}
 		break;
-	case -2:	// Key off
+	case Step::NOTE_KEY_OFF:
 		opnaCtrl_->keyOffADPCM();
 		break;
-	case -3:	// Echo 0
+	case Step::NOTE_ECHO0:
 		opnaCtrl_->keyOnADPCM(0);
 		break;
-	case -4:	// Echo 1
+	case Step::NOTE_ECHO1:
 		opnaCtrl_->keyOnADPCM(1);
 		break;
-	case -5:	// Echo 2
+	case Step::NOTE_ECHO2:
 		opnaCtrl_->keyOnADPCM(2);
 		break;
-	case -6:	// Echo 3
+	case Step::NOTE_ECHO3:
 		opnaCtrl_->keyOnADPCM(3);
 		break;
 	default:	// Key on
 	{
-		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(step.getNoteNumber());
+		std::pair<int, Note> octNote = noteNumberToOctaveAndNote(noteNum);
 		opnaCtrl_->keyOnADPCM(octNote.second, octNote.first, 0);
 		break;
 	}
@@ -1336,8 +1335,8 @@ void PlaybackManager::tickProcess(int rest)
 			// Channel envelope reset before next key on
 			auto& step = song.getTrack(attrib.number)
 						 .getPatternFromOrderNumber(nextReadOrder_).getStep(nextReadStep_);
-			for (int i = 0; i < 4; ++i) {
-				auto&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(i), step.getEffectValue(i));
+			for (int i = 0; i < Step::N_EFFECT; ++i) {
+				auto&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
 				if (eff.type == EffectType::NoteDelay && eff.value > 0) {	// Note delay check
 					opnaCtrl_->tickEvent(attrib.source, ch);
 					return;
@@ -1382,12 +1381,10 @@ void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(Step& step, int ch)
 
 void PlaybackManager::envelopeResetEffectFM(Step& step, int ch)
 {
-	int n = step.getNoteNumber();
-	if ((n >= 0 || n < -2)
+	if (!(step.isEmptyNote() || step.hasKeyOff())
 			&& opnaCtrl_->enableFMEnvelopeReset(ch)) {	// Key on or echo buffer access
-		for (int i = 0; i < 4; ++i) {
-			auto&& eff = Effect::makeEffectData(	// "SoundSource::FM" is dummy
-													SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
+		for (int i = 0; i < Step::N_EFFECT; ++i) {
+			auto&& eff = effect_utils::validateEffect(SoundSource::FM, step.getEffect(i)); // "SoundSource::FM" is dummy
 			if (eff.type == EffectType::TonePortamento) {
 				if (eff.value) opnaCtrl_->tickEvent(SoundSource::FM, ch);
 				else opnaCtrl_->resetFMChannelEnvelope(ch);
@@ -1575,12 +1572,12 @@ void PlaybackManager::retrieveChannelStates()
 	std::vector<int> tonesCntFM(fmch), tonesCntSSG(3);
 	int tonesCntADPCM = 0;
 	std::vector<std::vector<int>> toneFM(fmch), toneSSG(3);
-	std::vector<int> toneADPCM = std::vector<int>(3, -1);
+	std::vector<int> toneADPCM = std::vector<int>(3, Step::NOTE_NONE);
 	for (size_t i = 0; i < fmch; ++i) {
-		toneFM.at(i) = std::vector<int>(3, -1);
+		toneFM.at(i) = std::vector<int>(3, Step::NOTE_NONE);
 	}
 	for (size_t i = 0; i < 3; ++i) {
-		toneSSG.at(i) = std::vector<int>(3, -1);
+		toneSSG.at(i) = std::vector<int>(3, Step::NOTE_NONE);
 	}
 	std::vector<bool> isSetInstFM(fmch, false), isSetVolFM(fmch, false), isSetArpFM(fmch, false);
 	std::vector<bool> isSetPrtFM(fmch, false), isSetVibFM(fmch, false), isSetTreFM(fmch, false);
@@ -1621,13 +1618,13 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolFM[uch] && 0 <= vol && vol < 0x80) {
+				if (!isSetVolFM[uch] && step.hasVolume() && vol < NSTEP_FM_VOLUME) {
 					isSetVolFM[uch] = true;
 					if (isPrevPos)
-						opnaCtrl_->setVolumeFM(ch, step.getVolume());
+						opnaCtrl_->setVolumeFM(ch, vol);
 				}
 				// Instrument
-				if (!isSetInstFM[uch] && step.getInstrumentNumber() != -1) {
+				if (!isSetInstFM[uch] && step.hasInstrument()) {
 					if (auto inst = std::dynamic_pointer_cast<InstrumentFM>(
 								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
 						isSetInstFM[uch] = true;
@@ -1636,8 +1633,8 @@ void PlaybackManager::retrieveChannelStates()
 					}
 				}
 				// Effects
-				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(SoundSource::FM, step.getEffectID(i), step.getEffectValue(i));
+				for (int i = Step::N_EFFECT - 1; i > -1; --i) {
+					Effect eff = effect_utils::validateEffect(SoundSource::FM, step.getEffect(i));
 					switch (eff.type) {
 					case EffectType::Arpeggio:
 						if (!isSetArpFM[uch]) {
@@ -1800,17 +1797,16 @@ void PlaybackManager::retrieveChannelStates()
 					}
 				}
 				// Tone
-				int t = step.getNoteNumber();
-				if (isPrevPos && t != -1 && t != -2) {
+				if (isPrevPos && !step.isEmptyNote() && !step.hasKeyOff()) {
 					--tonesCntFM[uch];
 					for (auto it2 = toneFM[uch].rbegin();
 						 it2 != toneFM[uch].rend(); ++it2) {
-						if (*it2 == -1 || *it2 == tonesCntFM[uch]) {
-							if (t >= 0) {
-								*it2 = t;
+						if (Step::testEmptyNote(*it2) || *it2 == tonesCntFM[uch]) {
+							if (step.hasGeneralNote()) {
+								*it2 = step.getNoteNumber();
 							}
-							else if (t < -2) {
-								*it2 = tonesCntFM[uch] - t + 2;
+							else {
+								*it2 = tonesCntFM[uch] - step.getNoteNumber() + 2;
 							}
 							break;
 						}
@@ -1822,13 +1818,13 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolSSG[uch] && 0 <= vol && vol < 0x10) {
+				if (!isSetVolSSG[uch] && step.hasVolume() && vol < NSTEP_SSG_VOLUME) {
 					isSetVolSSG[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeSSG(ch, vol);
 				}
 				// Instrument
-				if (!isSetInstSSG[uch] && step.getInstrumentNumber() != -1) {
+				if (!isSetInstSSG[uch] && step.hasInstrument()) {
 					if (auto inst = std::dynamic_pointer_cast<InstrumentSSG>(
 								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
 						isSetInstSSG[uch] = true;
@@ -1837,8 +1833,8 @@ void PlaybackManager::retrieveChannelStates()
 					}
 				}
 				// Effects
-				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(SoundSource::SSG, step.getEffectID(i), step.getEffectValue(i));
+				for (int i = Step::N_EFFECT - 1; i > -1; --i) {
+					Effect eff = effect_utils::validateEffect(SoundSource::SSG, step.getEffect(i));
 					switch (eff.type) {
 					case EffectType::Arpeggio:
 						if (!isSetArpSSG[uch]) {
@@ -1954,17 +1950,16 @@ void PlaybackManager::retrieveChannelStates()
 					}
 				}
 				// Tone
-				int t = step.getNoteNumber();
-				if (isPrevPos && t != -1 && t != -2) {
+				if (isPrevPos && !step.isEmptyNote() && !step.hasKeyOff()) {
 					--tonesCntSSG[uch];
 					for (auto it2 = toneSSG[uch].rbegin();
 						 it2 != toneSSG[uch].rend(); ++it2) {
-						if (*it2 == -1 || *it2 == tonesCntSSG[uch]) {
-							if (t >= 0) {
-								*it2 = t;
+						if (Step::testEmptyNote(*it2) || *it2 == tonesCntSSG[uch]) {
+							if (step.hasGeneralNote()) {
+								*it2 = step.getNoteNumber();
 							}
-							else if (t < -2) {
-								*it2 = tonesCntSSG[uch] - t + 2;
+							else {
+								*it2 = tonesCntSSG[uch] - step.getNoteNumber() + 2;
 							}
 							break;
 						}
@@ -1976,14 +1971,14 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolRhythm[uch] && 0 <= vol && vol < 0x20) {
+				if (!isSetVolRhythm[uch] && step.hasVolume() && vol < NSTEP_RHYTHM_VOLUME) {
 					isSetVolRhythm[uch] = true;
 					if (isPrevPos)
 						opnaCtrl_->setVolumeRhythm(ch, vol);
 				}
 				// Effects
-				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(SoundSource::RHYTHM, step.getEffectID(i), step.getEffectValue(i));
+				for (int i = Step::N_EFFECT - 1; i > -1; --i) {
+					Effect eff = effect_utils::validateEffect(SoundSource::RHYTHM, step.getEffect(i));
 					switch (eff.type) {
 					case EffectType::Pan:
 						if (-1 < eff.value && eff.value < 4 && !isSetPanRhythm[uch]) {
@@ -2027,13 +2022,13 @@ void PlaybackManager::retrieveChannelStates()
 			{
 				// Volume
 				int vol = step.getVolume();
-				if (!isSetVolADPCM && 0 <= vol && vol < 0x100) {
+				if (!isSetVolADPCM && step.hasVolume() && vol < NSTEP_ADPCM_VOLUME) {
 					isSetVolADPCM = true;
 					if (isPrevPos)
-						opnaCtrl_->setVolumeADPCM(step.getVolume());
+						opnaCtrl_->setVolumeADPCM(vol);
 				}
 				// Instrument
-				if (!isSetInstADPCM && step.getInstrumentNumber() != -1) {
+				if (!isSetInstADPCM && step.hasInstrument()) {
 					if (auto inst = std::dynamic_pointer_cast<InstrumentADPCM>(
 								instMan_.lock()->getInstrumentSharedPtr(step.getInstrumentNumber()))) {
 						isSetInstADPCM = true;
@@ -2042,8 +2037,8 @@ void PlaybackManager::retrieveChannelStates()
 					}
 				}
 				// Effects
-				for (int i = 3; i > -1; --i) {
-					Effect eff = Effect::makeEffectData(SoundSource::ADPCM, step.getEffectID(i), step.getEffectValue(i));
+				for (int i = Step::N_EFFECT - 1; i > -1; --i) {
+					Effect eff = effect_utils::validateEffect(SoundSource::ADPCM, step.getEffect(i));
 					switch (eff.type) {
 					case EffectType::Arpeggio:
 						if (!isSetArpADPCM) {
@@ -2133,17 +2128,16 @@ void PlaybackManager::retrieveChannelStates()
 					}
 				}
 				// Tone
-				int t = step.getNoteNumber();
-				if (isPrevPos && t != -1 && t != -2) {
+				if (isPrevPos && !step.isEmptyNote() && !step.hasKeyOff()) {
 					--tonesCntADPCM;
 					for (auto it2 = toneADPCM.rbegin();
 						 it2 != toneADPCM.rend(); ++it2) {
-						if (*it2 == -1 || *it2 == tonesCntADPCM) {
-							if (t >= 0) {
-								*it2 = t;
+						if (Step::testEmptyNote(*it2) || *it2 == tonesCntADPCM) {
+							if (step.hasGeneralNote()) {
+								*it2 = step.getNoteNumber();
 							}
-							else if (t < -2) {
-								*it2 = tonesCntADPCM - t + 2;
+							else {
+								*it2 = tonesCntADPCM - step.getNoteNumber() + 2;
 							}
 							break;
 						}

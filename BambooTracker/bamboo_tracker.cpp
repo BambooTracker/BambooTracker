@@ -1040,7 +1040,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 	if (attrib.source == SoundSource::RHYTHM) {
 		if (volumeSet)
-			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, 0x1f));
+			opnaCtrl_->setVolumeRhythm(attrib.channelInSource, std::min(curVolume_, NSTEP_RHYTHM_VOLUME - 1));
 		opnaCtrl_->setKeyOnFlagRhythm(attrib.channelInSource);
 		opnaCtrl_->updateRegisterStates();
 	}
@@ -1099,8 +1099,8 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 				opnaCtrl_->setInstrumentFM(onInfo.channelInSource, fm);
 			if (volumeSet) {
 				int vol;
-				if (volFMReversed_) vol = (curVolume_ < 0x80) ? (0x7f - curVolume_) : 0;
-				else vol = std::min(curVolume_, 0x7f);
+				if (volFMReversed_) vol = effect_utils::reverseFmVolume(curVolume_, true);
+				else vol = std::min(curVolume_, NSTEP_FM_VOLUME - 1);
 				opnaCtrl_->setVolumeFM(onInfo.channelInSource, vol);
 			}
 			if (songStyle_.type == SongType::FM3chExpanded && onInfo.channelInSource == 2) {
@@ -1599,8 +1599,8 @@ void BambooTracker::checkNextPositionOfLastStepAndStepSize(int songNum, int& end
 		int stepN = static_cast<int>(getPatternSizeFromOrderNumber(songNum, orderN)) - 1;
 		for (auto attrib : songStyle_.trackAttribs) {
 			Step& step = song.getTrack(attrib.number).getPatternFromOrderNumber(orderN).getStep(stepN);
-			for (int i = 0; i < 4; ++i) {
-				Effect&& eff = Effect::makeEffectData(attrib.source, step.getEffectID(i), step.getEffectValue(i));
+			for (int i = 0; i < Step::N_EFFECT; ++i) {
+				Effect&& eff = effect_utils::validateEffect(attrib.source, step.getEffect(i));
 				switch (eff.type) {
 				case EffectType::PositionJump:
 					if (eff.value <= lastOrder) {
@@ -2250,7 +2250,7 @@ int BambooTracker::setStepVolumeDigit(int songNum, int trackNum, int orderNum, i
 					   && songStyle_.trackAttribs.at(static_cast<size_t>(trackNum)).source == SoundSource::FM);
 	comMan_.invoke(std::make_unique<SetVolumeToStepCommand>(mod_, songNum, trackNum, orderNum, stepNum, volume, fmReversed, secondEntry));
 	curVolume_ = mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum).getStep(stepNum).getVolume();
-	if (fmReversed && curVolume_ < 0x80) curVolume_ = 0x7f - curVolume_;
+	if (fmReversed) curVolume_ = effect_utils::reverseFmVolume(curVolume_);
 	return curVolume_;
 }
 
@@ -2262,7 +2262,7 @@ void BambooTracker::eraseStepVolume(int songNum, int trackNum, int orderNum, int
 std::string BambooTracker::getStepEffectID(int songNum, int trackNum, int orderNum, int stepNum, int n) const
 {
 	return mod_->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-			.getStep(stepNum).getEffectID(n);
+			.getStep(stepNum).getEffectId(n);
 }
 
 void BambooTracker::setStepEffectIDCharacter(int songNum, int trackNum, int orderNum, int stepNum, int n, std::string id, bool fillValue00, bool secondEntry)

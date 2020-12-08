@@ -59,18 +59,18 @@ void ReversePatternCommand::redo()
 			case 0:		st.setNoteNumber(std::stoi(prevCells_.at(l - i).at(j)));		break;
 			case 1:		st.setInstrumentNumber(std::stoi(prevCells_.at(l - i).at(j)));	break;
 			case 2:		st.setVolume(std::stoi(prevCells_.at(l - i).at(j)));			break;
-			case 3:		st.setEffectID(0, prevCells_.at(l - i).at(j));					break;
-			case 4:		st.setEffectValue(0, std::stoi(prevCells_.at(l - i).at(j)));	break;
-			case 5:		st.setEffectID(1, prevCells_.at(l - i).at(j));					break;
-			case 6:		st.setEffectValue(1, std::stoi(prevCells_.at(l - i).at(j)));	break;
-			case 7:		st.setEffectID(2, prevCells_.at(l - i).at(j));					break;
-			case 8:		st.setEffectValue(2, std::stoi(prevCells_.at(l - i).at(j)));	break;
-			case 9:		st.setEffectID(3, prevCells_.at(l - i).at(j));					break;
-			case 10:	st.setEffectValue(3, std::stoi(prevCells_.at(l - i).at(j)));	break;
+			default:
+			{
+				int ec = c - 3;
+				int ei = ec / 2;
+				if (ec % 2) st.setEffectValue(ei, std::stoi(prevCells_.at(l - i).at(j)));
+				else st.setEffectId(ei, prevCells_.at(l - i).at(j));
+				break;
+			}
 			}
 
-			t += (++c / 11);
-			c %= 11;
+			t += (++c / Step::N_COLUMN);
+			c %= Step::N_COLUMN;
 		}
 
 		++s;

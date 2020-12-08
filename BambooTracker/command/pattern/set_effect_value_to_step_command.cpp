@@ -25,6 +25,7 @@
 
 #include "set_effect_value_to_step_command.hpp"
 #include "pattern_command_utils.hpp"
+#include "effect.hpp"
 
 SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
 														 int orderNum, int stepNum, int n, int value,
@@ -52,10 +53,10 @@ void SetEffectValueToStepCommand::redo()
 		value = val_;
 		break;
 	case EffectDisplayControl::ReverseFMVolumeDelay:
-		value = (val_ < 0x80) ? (0x7f - val_) : val_;
+		value = effect_utils::reverseFmVolume(val_);
 		break;
 	case EffectDisplayControl::ReverseFMBrightness:
-		value = (val_ > 0) ? (0xff - val_ + 1) : val_;
+		value = effect_utils::reverseFmBrightness(val_);
 		break;
 	}
 	command_utils::getStep(mod_, song_, track_, order_, step_).setEffectValue(n_, value);

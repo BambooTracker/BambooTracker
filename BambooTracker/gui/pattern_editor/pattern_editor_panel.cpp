@@ -986,10 +986,10 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 		else {
 			int volLim = 0;	// Dummy set
 			switch (src) {
-			case SoundSource::FM:		volLim = 0x80;	break;
-			case SoundSource::SSG:		volLim = 0x10;	break;
-			case SoundSource::RHYTHM:		volLim = 0x20;	break;
-			case SoundSource::ADPCM:	volLim = 0x100;	break;
+			case SoundSource::FM:		volLim = NSTEP_FM_VOLUME	;	break;
+			case SoundSource::SSG:		volLim = NSTEP_SSG_VOLUME;		break;
+			case SoundSource::RHYTHM:	volLim = NSTEP_RHYTHM_VOLUME;	break;
+			case SoundSource::ADPCM:	volLim = NSTEP_ADPCM_VOLUME;	break;
 			}
 			textPainter.setPen((vol < volLim) ? palette_->ptnVolColor : palette_->ptnErrorColor);
 			if (src == SoundSource::FM && vol < volLim && config_->getReverseFMVolumeOrder()) {
@@ -1044,14 +1044,14 @@ int PatternEditorPanel::drawStep(QPainter &forePainter, QPainter &textPainter, Q
 			}
 			else {
 				textPainter.setPen(palette_->ptnEffColor);
-				switch (Effect::toEffectType(src, effId)) {
+				switch (effect_utils::validateEffectId(src, effId)) {
 				case EffectType::VolumeDelay:
-					if (src == SoundSource::FM && config_->getReverseFMVolumeOrder() && effVal < 0x80)
-						effVal = 0x7f - effVal;
+					if (src == SoundSource::FM && config_->getReverseFMVolumeOrder())
+						effVal = effect_utils::reverseFmVolume(effVal);
 					break;
 				case EffectType::Brightness:
-					if (config_->getReverseFMVolumeOrder() && effVal > 0)
-						effVal = 0xff - effVal + 1;
+					if (config_->getReverseFMVolumeOrder())
+						effVal = effect_utils::reverseFmBrightness(effVal);
 					break;
 				default:
 					break;
@@ -1701,7 +1701,7 @@ void PatternEditorPanel::setStepEffectID(QString str)
 	std::string id = bt_->getStepEffectID(curSongNum_, visTracks_.at(editPos.trackVisIdx), editPos.order,
 										  editPos.step, (editPos.colInTrack - 3) / 2);
 	SoundSource src = songStyle_.trackAttribs.at(static_cast<size_t>(curTrackNum)).source;
-	emit effectEntered(EffectDescription::getEffectFormatAndDetailString(Effect::toEffectType(src, id)));
+	emit effectEntered(EffectDescription::getEffectFormatAndDetailString(effect_utils::validateEffectId(src, id)));
 }
 
 bool PatternEditorPanel::enterEffectValue(int key)
@@ -1733,7 +1733,7 @@ void PatternEditorPanel::setStepEffectValue(int value)
 	int n = (curPos_.colInTrack - 4) / 2;
 	EffectDisplayControl ctrl = EffectDisplayControl::Unset;
 	SoundSource src = songStyle_.trackAttribs[static_cast<size_t>(trackNum)].source;
-	switch (Effect::toEffectType(
+	switch (effect_utils::validateEffectId(
 				src,
 				bt_->getStepEffectID(curSongNum_, trackNum, curPos_.order, curPos_.step, n))) {
 	case EffectType::VolumeDelay:

@@ -41,7 +41,7 @@ EraseInstrumentInStepCommand::EraseInstrumentInStepCommand(
 
 void EraseInstrumentInStepCommand::redo()
 {
-	command_utils::getStep(mod_, song_, track_, order_, step_).setInstrumentNumber(-1);
+	command_utils::getStep(mod_, song_, track_, order_, step_).clearInstrumentNumber();
 }
 
 void EraseInstrumentInStepCommand::undo()

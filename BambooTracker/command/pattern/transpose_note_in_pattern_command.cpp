@@ -45,8 +45,8 @@ TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(std::weak_ptr<Modul
 
 	for (int step = beginStep; step <= endStep; ++step) {
 		for (int track = beginTrack; track <= endTrack; ++track) {
-			int n = command_utils::getStep(sng, track, beginOrder, step).getNoteNumber();
-			if (n > -1) prevKeys_.push_back(n);
+			Step& st = command_utils::getStep(sng, track, beginOrder, step);
+			if (st.hasGeneralNote()) prevKeys_.push_back(st.getNoteNumber());
 		}
 	}
 }
@@ -57,10 +57,10 @@ void TransposeNoteInPatternCommand::redo()
 
 	for (int step = bStep_; step <= eStep_; ++step) {
 		for (int track = bTrack_; track <= eTrack_; ++track) {
-			Step& s = command_utils::getStep(sng, track, order_, step);
-			int n = s.getNoteNumber();
-			if (n > -1) {
-				s.setNoteNumber(clamp(n + seminote_, 0, 95));
+			Step& st = command_utils::getStep(sng, track, order_, step);
+			int n = st.getNoteNumber();
+			if (st.hasGeneralNote()) {
+				st.setNoteNumber(clamp(n + seminote_, 0, 95));
 			}
 		}
 	}
@@ -73,8 +73,8 @@ void TransposeNoteInPatternCommand::undo()
 	size_t i = 0;
 	for (int step = bStep_; step <= eStep_; ++step) {
 		for (int track = bTrack_; track <= eTrack_; ++track) {
-			Step& s = command_utils::getStep(sng, track, order_, step);
-			if (s.getNoteNumber() > -1) s.setNoteNumber(prevKeys_.at(i++));
+			Step& st = command_utils::getStep(sng, track, order_, step);
+			if (st.hasGeneralNote()) st.setNoteNumber(prevKeys_.at(i++));
 		}
 	}
 }

@@ -43,6 +43,6 @@ private:
 	const int song_, track_, order_, step_;
 	int vol_;
 	const int prevVol_;
-	const bool isFMReserved_;
+	const bool isFMReversed_;
 	bool isSecondEntry_;
 };

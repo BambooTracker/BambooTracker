@@ -25,6 +25,7 @@
 
 #include "set_key_on_to_step_command.hpp"
 #include "pattern_command_utils.hpp"
+#include "effect.hpp"
 
 SetKeyOnToStepCommand::SetKeyOnToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum,
 											 int stepNum, int noteNum, bool instMask, int instNum, bool volMask, int vol, bool isFMReversed)
@@ -39,7 +40,7 @@ SetKeyOnToStepCommand::SetKeyOnToStepCommand(std::weak_ptr<Module> mod, int song
 	  vol_(vol),
 	  instMask_(instMask),
 	  volMask_(volMask),
-	  isFMReserved_(isFMReversed)
+	  isFMReversed_(isFMReversed)
 {
 	Step& st = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum);
 	prevNote_ = st.getNoteNumber();
@@ -52,7 +53,7 @@ void SetKeyOnToStepCommand::redo()
 	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
 	st.setNoteNumber(note_);
 	if (!instMask_) st.setInstrumentNumber(inst_);
-	if (!volMask_) st.setVolume((isFMReserved_ && vol_ < 0x80) ? (0x7f - vol_) : vol_);
+	if (!volMask_) st.setVolume(isFMReversed_ ? effect_utils::reverseFmVolume(vol_) : vol_);
 }
 
 void SetKeyOnToStepCommand::undo()

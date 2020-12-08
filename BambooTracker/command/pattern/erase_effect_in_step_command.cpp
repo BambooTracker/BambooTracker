@@ -36,21 +36,15 @@ EraseEffectInStepCommand::EraseEffectInStepCommand(std::weak_ptr<Module> mod, in
 	  step_(stepNum),
 	  n_(n)
 {
-	Step& st = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum);
-	prevEffID_ = st.getEffectID(n);
-	prevEffVal_ = st.getEffectValue(n);
+	prevEff_ = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum).getEffect(n);
 }
 
 void EraseEffectInStepCommand::redo()
 {
-	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
-	st.setEffectID(n_, "--");
-	st.setEffectValue(n_, -1);
+	command_utils::getStep(mod_, song_, track_, order_, step_).clearEffect(n_);
 }
 
 void EraseEffectInStepCommand::undo()
 {
-	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
-	st.setEffectID(n_, prevEffID_);
-	st.setEffectValue(n_, prevEffVal_);
+	command_utils::getStep(mod_, song_, track_, order_, step_).setEffect(n_, prevEff_);
 }

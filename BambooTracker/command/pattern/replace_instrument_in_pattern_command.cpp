@@ -44,8 +44,8 @@ ReplaceInstrumentInPatternCommand::ReplaceInstrumentInPatternCommand(std::weak_p
 
 	for (int step = beginStep; step <= endStep; ++step) {
 		for (int track = beginTrack; track <= endTrack; ++track) {
-			int n = command_utils::getStep(sng, track, beginOrder, step).getInstrumentNumber();
-			if (n > -1) prevInsts_.push_back(n);
+			Step& st = command_utils::getStep(sng, track, beginOrder, step);
+			if (st.hasInstrument()) prevInsts_.push_back(st.getInstrumentNumber());
 		}
 	}
 }
@@ -56,9 +56,8 @@ void ReplaceInstrumentInPatternCommand::redo()
 
 	for (int step = bStep_; step <= eStep_; ++step) {
 		for (int track = bTrack_; track <= eTrack_; ++track) {
-			Step& s = command_utils::getStep(sng, track, order_, step);
-			int n = s.getInstrumentNumber();
-			if (n > -1) s.setInstrumentNumber(inst_);
+			Step& st = command_utils::getStep(sng, track, order_, step);
+			if (st.hasInstrument()) st.setInstrumentNumber(inst_);
 		}
 	}
 }
@@ -70,8 +69,8 @@ void ReplaceInstrumentInPatternCommand::undo()
 	size_t i = 0;
 	for (int step = bStep_; step <= eStep_; ++step) {
 		for (int track = bTrack_; track <= eTrack_; ++track) {
-			Step& s = command_utils::getStep(sng, track, order_, step);
-			if (s.getInstrumentNumber() > -1) s.setInstrumentNumber(prevInsts_.at(i));
+			Step& st = command_utils::getStep(sng, track, order_, step);
+			if (st.hasInstrument()) st.setInstrumentNumber(prevInsts_.at(i));
 		}
 	}
 }

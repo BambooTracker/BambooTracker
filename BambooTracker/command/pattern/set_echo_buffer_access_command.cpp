@@ -41,7 +41,7 @@ SetEchoBufferAccessCommand::SetEchoBufferAccessCommand(
 
 void SetEchoBufferAccessCommand::redo()
 {
-	command_utils::getStep(mod_, song_, track_, order_, step_).setNoteNumber(-buf_ - 3);
+	command_utils::getStep(mod_, song_, track_, order_, step_).setEchoBuffer(buf_);
 }
 
 void SetEchoBufferAccessCommand::undo()

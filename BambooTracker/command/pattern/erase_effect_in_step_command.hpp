@@ -41,6 +41,5 @@ public:
 private:
 	std::weak_ptr<Module> mod_;
 	int song_, track_, order_, step_, n_;
-	std::string prevEffID_;
-	int prevEffVal_;
+	Step::PlainEffect prevEff_;
 };

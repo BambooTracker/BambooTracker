@@ -35,15 +35,16 @@ class Pattern
 public:
 	Pattern(int n, size_t defSize);
 
-	void setNumber(int n);
-	int getNumber() const;
+	inline void setNumber(int n) noexcept { num_ = n; }
+	inline int getNumber() const noexcept { return num_; }
 
-	int usedCountUp();
-	int usedCountDown();
-	int getUsedCount() const;
+	inline int usedCountUp() noexcept { return ++usedCnt_; }
+	inline int usedCountDown() noexcept { return --usedCnt_; }
+	inline int getUsedCount() const noexcept { return usedCnt_; }
 
 	Step& getStep(int n);
 
+	static constexpr size_t MAX_STEPS = 256;
 	size_t getSize() const;
 	void changeSize(size_t size);
 

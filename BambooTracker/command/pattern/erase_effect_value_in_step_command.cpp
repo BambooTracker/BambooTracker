@@ -41,7 +41,7 @@ EraseEffectValueInStepCommand::EraseEffectValueInStepCommand(
 
 void EraseEffectValueInStepCommand::redo()
 {
-	command_utils::getStep(mod_, song_, track_, order_, step_).setEffectValue(n_, -1);
+	command_utils::getStep(mod_, song_, track_, order_, step_).clearEffectValue(n_);
 }
 
 void EraseEffectValueInStepCommand::undo()

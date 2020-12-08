@@ -38,22 +38,14 @@ EraseStepCommand::EraseStepCommand(std::weak_ptr<Module> mod, int songNum, int t
 	prevNote_ = st.getNoteNumber();
 	prevInst_ = st.getInstrumentNumber();
 	prevVol_ = st.getVolume();
-	for (int i = 0; i < 4; ++i) {
-		prevEffID_[i] = st.getEffectID(i);
-		prevEffVal_[i] = st.getEffectValue(i);
+	for (int i = 0; i < Step::N_EFFECT; ++i) {
+		prevEff_[i] = st.getEffect(i);
 	}
 }
 
 void EraseStepCommand::redo()
 {
-	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
-	st.setNoteNumber(-1);
-	st.setInstrumentNumber(-1);
-	st.setVolume(-1);
-	for (int i = 0; i < 4; ++i){
-		st.setEffectID(i, "--");
-		st.setEffectValue(i, -1);
-	}
+	command_utils::getStep(mod_, song_, track_, order_, step_).clear();
 }
 
 void EraseStepCommand::undo()
@@ -62,8 +54,7 @@ void EraseStepCommand::undo()
 	st.setNoteNumber(prevNote_);
 	st.setInstrumentNumber(prevInst_);
 	st.setVolume(prevVol_);
-	for (int i = 0; i < 4; ++i) {
-		st.setEffectID(i, prevEffID_[i]);
-		st.setEffectValue(i, prevEffVal_[i]);
+	for (int i = 0; i < Step::N_EFFECT; ++i) {
+		st.setEffect(i, prevEff_[i]);
 	}
 }

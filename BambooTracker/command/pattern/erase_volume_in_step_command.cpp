@@ -39,7 +39,7 @@ EraseVolumeInStepCommand::EraseVolumeInStepCommand(std::weak_ptr<Module> mod, in
 
 void EraseVolumeInStepCommand::redo()
 {
-	command_utils::getStep(mod_, song_, track_, order_, step_).setVolume(-1);
+	command_utils::getStep(mod_, song_, track_, order_, step_).clearVolume();
 }
 
 void EraseVolumeInStepCommand::undo()
