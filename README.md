@@ -257,8 +257,9 @@ The tracker can export a song to the following files.
 BambooTracker supports following languages:
 
 - English (default)
-- French
-- Japanese
+- Français / French
+- Polski / Polish
+- 日本語 / Japanese
 
 ## Building
 ### Dependencies
@@ -391,11 +392,13 @@ I would like to thank the following people for making it:
 - Vitaly Novichkov (Wohlstand) for WOPN instrument format files
 - maak, SuperJet Spade, Dippy, RigidatoMS and ImATrackMan for sample modules
 - papiezak and Takeshi Abo for sample instruments
+- Yuzu4K for sample skin
 - Ru^3 for S98 file format documentation
 - がし３ (gasshi) for SCCI libraries
 - honet for C86CTL libraries
 - Gary P. Scavone and others for RtAudio and RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - Jean Pierre Cimalando and Olivier Humbert for French translation
+- freq-mod and Midori for Polish translation
 - Ian Karlsson for ADPCM encoder/decoder
 - And everyone who helps this project!

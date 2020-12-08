@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#285] - Linux build (thanks [@OPNA2608])
+- [#286] - Polish support (thanks [@freq-mod])
 
 ### Changed
 - [#285] - Change CI service from Travis CI to GitHub Actions (thanks [@OPNA2608])
@@ -14,6 +15,7 @@
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
 - [#291] - Fix icon install paths (thanks [@OPNA2608])
 - Fix .tfi import to load the operator 2 and 3 correctly ([#290]; thanks [@OPNA2608])
+- Clean some code
 
 [#285]: https://github.com/rerrahkr/BambooTracker/pull/285
 [#284]: https://github.com/rerrahkr/BambooTracker/issues/284
@@ -21,6 +23,7 @@
 [#289]: https://github.com/rerrahkr/BambooTracker/pull/289
 [#290]: https://github.com/rerrahkr/BambooTracker/pull/290
 [#291]: https://github.com/rerrahkr/BambooTracker/pull/291
+[#286]: https://github.com/rerrahkr/BambooTracker/pull/286
 
 ## v0.4.5 (2020-11-05)
 ### Added
