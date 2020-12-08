@@ -580,10 +580,12 @@ INCLUDEPATH += \
     $$PWD/io
 
 # Linking settings
-system_rtaudio:LIBS += -lrtaudio
+system_*:CONFIG += link_pkgconfig
+
+system_rtaudio:PKGCONFIG += rtaudio
 else:include("stream/RtAudio/RtAudio.pri")
 
-system_rtmidi: LIBS += -lrtmidi
+system_rtmidi:PKGCONFIG += rtmidi
 else:include("midi/RtMidi/RtMidi.pri")
 
 include("../data/data.pri")
