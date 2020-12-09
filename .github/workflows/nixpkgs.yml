@@ -43,12 +43,14 @@ jobs:
               echo "Test (unknown)"
               echo "::set-output name=build-tag::unknown"
               echo "::set-output name=release::false"
-              echo "::set-output name=buildVersion::${BRANCH}-${GITHUB_SHA}" # nixpkgs
+              echo "::set-output name=buildVersion::unknown-${GITHUB_SHA}" # nixpkgs
               ;;
           esac
 
       - name: Checking out repository.
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       ## Nixpkgs-specific steps
 

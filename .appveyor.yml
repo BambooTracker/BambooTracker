@@ -71,26 +71,30 @@ platform: x86
 before_build:
   - ps: $env:Path = "$env:QT;$env:COMPILER;$env:Path"
   - sh: |
-      brew install qt jack p7zip
+      brew install qt pkg-config jack p7zip
       export PATH="/usr/local/opt/qt/bin:$PATH"
       export JACKLIB="/usr/local/opt/jack/lib"
       export JACKINC="/usr/local/opt/jack/include"
-  - cd BambooTracker
+      find /usr/local/opt/jack/
+      find /usr/local/Cellar/jack/
+      export PKG_CONFIG_PATH="/usr/local/opt/jack/lib/pkgconfig"${PKG_CONFIG_PATH:+':'}$PKG_CONFIG_PATH
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
   - ps: |
-      qmake.exe BambooTracker.pro PREFIX=..\target CONFIG+=debug CONFIG+=console CONFIG+=nostrip
+      qmake.exe Project.pro PREFIX=..\target CONFIG+=debug CONFIG+=console CONFIG+=nostrip
+      Invoke-Expression ($env:MAKE + " qmake_all")
       Invoke-Expression ($env:MAKE + " -j2")
   - sh: |
-      qmake BambooTracker.pro PREFIX=../target CONFIG+=debug CONFIG+=console CONFIG+=nostrip LIBS+=-L"$JACKLIB" INCLUDEPATH+="$JACKINC" CONFIG+=install_flat
+      qmake Project.pro PREFIX=../target CONFIG+=debug CONFIG+=console CONFIG+=nostrip CONFIG+=install_flat CONFIG+=use_jack CONFIG+=jack_has_rename # LIBS+=-L"$JACKLIB" INCLUDEPATH+="$JACKINC"
+      $MAKE qmake_all
+      cat submodules/RtAudio/config.log
       $MAKE -j2
 
 # scripts to run after build (working directory and environment changes are persisted from the previous steps)
 after_build:
   - ps: Invoke-Expression ($env:MAKE + " install")
   - sh: $MAKE install
-  - cd ..
   - cd target
   # Port of scripts/package_windows.sh to PowerShell
   - ps: |

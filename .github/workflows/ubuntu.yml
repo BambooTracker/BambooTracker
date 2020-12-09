@@ -48,6 +48,8 @@ jobs:
 
       - name: Checking out repository.
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       ## Ubuntu-specific steps
 
@@ -61,18 +63,17 @@ jobs:
 
       - name: Configuring.
         run: |
-          pushd BambooTracker
-          qmake BambooTracker.pro PREFIX=${BT_INSTALLBASE} \
+          qmake Project.pro PREFIX=${BT_INSTALLBASE} \
             CONFIG+=release CONFIG-=debug ${QMAKE_EXTRA_ARGUMENTS}
-          popd
+          ${MAKE} qmake_all
 
       - name: Building.
         run: |
-          ${MAKE} -C BambooTracker -j2
+          ${MAKE} -j2
 
       - name: Installing.
         run: |
-          ${MAKE} -C BambooTracker -j2 install
+          ${MAKE} -j2 install
 
       - name: Test packaging.
         if: env.DONT_PACKAGE != 'true'

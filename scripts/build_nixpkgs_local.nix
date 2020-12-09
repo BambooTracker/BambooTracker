@@ -5,7 +5,7 @@ let
     bambootracker = pkgs.bambootracker.overrideAttrs (oldAttrs: {
       version = buildVersion;
       src = ./..;
-      sourceRoot = "BambooTracker/BambooTracker";
+      sourceRoot = "BambooTracker";
     });
   };
   pkgs = import <nixpkgs> { config = { inherit packageOverrides; }; };
