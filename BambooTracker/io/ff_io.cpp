@@ -112,7 +112,7 @@ AbstractInstrument* FfIO::loadInstrument(const BinaryContainer& instCtr,
 		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::SL), tmp >> 4);
 		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::RR), tmp & 0x0f);
 	}
-	tmp = instCtr.readUint8(25);
+	tmp = instCtr.readUint8(24);
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::FB, tmp >> 3);
 	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AL, tmp & 0x07);
 
