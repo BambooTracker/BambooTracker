@@ -15,6 +15,7 @@
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
 - [#291] - Fix icon install paths (thanks [@OPNA2608])
 - Fix .tfi import to load the operator 2 and 3 correctly ([#290]; thanks [@OPNA2608])
+- [#299] - Fix a glitch in instrument macro editors when scrolling (thanks [@freq-mod])
 - Clean some code ([#295]; thanks [@freq-mod])
 
 [#285]: https://github.com/rerrahkr/BambooTracker/pull/285
@@ -25,6 +26,7 @@
 [#291]: https://github.com/rerrahkr/BambooTracker/pull/291
 [#286]: https://github.com/rerrahkr/BambooTracker/pull/286
 [#295]: https://github.com/rerrahkr/BambooTracker/issues/295
+[#299]: https://github.com/rerrahkr/BambooTracker/issues/299
 
 ## v0.4.5 (2020-11-05)
 ### Added
