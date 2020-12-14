@@ -1,19 +1,7 @@
 requires(!system_rtmidi)
-# system_rtmidi {
-#   !packagesExist(rtmidi) {
-#     error("System-installed RtMidi could not be found! (system_rtmidi is set)")
-#   }
-# }
-# else {
 
 include("../common/library.pri")
 TARGET = rtmidi
-
-qtCompileTest(alsa)
-qtCompileTest(jack_pkgconfig)
-qtCompileTest(jack_lib)
-qtCompileTest(jack_pkgconfig_rename)
-qtCompileTest(jack_lib_rename)
 
 pkgconfig_required = false
 pthread_required = false
@@ -30,22 +18,15 @@ macx {
   LIBS += -framework CoreMIDI -framework CoreAudio -framework CoreFoundation -framework CoreServices
 }
 
-linux|if(!linux:if(use_alsa|config_alsa)) {
-  linux: type = "default"
-  else:use_alsa: type = "enabled"
-  else: type = "detected"
-
-  message("["$${type}"]" "Adding ALSA Sequencer")
+tests_alsa = alsa
+if(libraryFeature("ALSA", linux, alsa, tests_alsa)) {
   DEFINES += __LINUX_ALSA__
   LIBS += -lasound
   pthread_required = true
 }
 
-use_jack|config_jack_* {
-  use_jack: type = "enabled"
-  else: type = "detected"
-
-  message("["$${type}"]" "Adding JACK")
+tests_jack = jack_pkgconfig jack_lib jack_pkgconfig_rename jack_lib_rename
+if(libraryFeature("JACK", , jack, tests_jack)) {
   DEFINES += __UNIX_JACK__
   pthread_required = true
 

@@ -1,25 +1,7 @@
 requires(!system_rtaudio)
-# system_rtaudio {
-#   !packagesExist(rtaudio) {
-#     error("System-installed RtAudio could not be found! (system_rtaudio is set)")
-#   }
-# }
-# else {
 
 include("../common/library.pri")
 TARGET = rtaudio
-
-qtCompileTest(alsa)
-qtCompileTest(oss)
-qtCompileTest(oss_ossaudio)
-qtCompileTest(oss_sys)
-qtCompileTest(oss_sys_ossaudio)
-qtCompileTest(pulse_pkgconfig)
-qtCompileTest(pulse_lib)
-qtCompileTest(jack_pkgconfig)
-qtCompileTest(jack_lib)
-qtCompileTest(jack_pkgconfig_rename)
-qtCompileTest(jack_lib_rename)
 
 pkgconfig_required = false
 pthread_required = false
@@ -42,23 +24,15 @@ macx {
   LIBS += -framework CoreAudio -framework CoreFoundation
 }
 
-linux|if(!linux:if(use_alsa|config_alsa)) {
-  linux: type = "default"
-  else:use_alsa: type = "enabled"
-  else: type = "detected"
-
-  message("["$${type}"]" "Adding ALSA")
+tests_alsa = alsa
+if(libraryFeature("ALSA", linux, alsa, tests_alsa)) {
   DEFINES += __LINUX_ALSA__
   LIBS += -lasound
   pthread_required = true
 }
 
-bsd|if(!bsd:if(use_oss|config_oss*)) {
-  bsd: type = "default"
-  else:use_oss: type = "enabled"
-  else: type = "detected"
-
-  message("["$${type}"]" "Adding OSS4")
+tests_oss = oss oss_sys oss_ossaudio oss_sys_ossaudio
+if(libraryFeature("OSS4", bsd, oss, tests_oss)) {
   DEFINES += __LINUX_OSS__
   pthread_required = true
 
@@ -67,11 +41,8 @@ bsd|if(!bsd:if(use_oss|config_oss*)) {
   }
 }
 
-use_pulse|config_pulse_* {
-  use_pulse: type = "enabled"
-  else: type = "detected"
-
-  message("["$${type}"]" "Adding PulseAudio")
+tests_pulse = pulse_pkgconfig pulse_lib
+if(libraryFeature("PulseAudio", , pulse, tests_pulse)) {
   DEFINES += __LINUX_PULSE__
   pthread_required = true
 
@@ -84,11 +55,8 @@ use_pulse|config_pulse_* {
   }
 }
 
-use_jack|config_jack_* {
-  use_jack: type = "enabled"
-  else: type = "detected"
-
-  message("["$${type}"]" "Adding JACK")
+tests_jack = jack_pkgconfig jack_lib jack_pkgconfig_rename jack_lib_rename
+if(libraryFeature("JACK", , jack, tests_jack)) {
   DEFINES += __UNIX_JACK__
   pthread_required = true
 
