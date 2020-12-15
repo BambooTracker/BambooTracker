@@ -592,18 +592,18 @@ system_* {
   CONFIG += link_pkgconfig
 }
 
-!system_rtaudio {
+system_rtaudio {
+  PKGCONFIG += rtaudio
+}
+else {
   INCLUDEPATH += $$PWD/../submodules/RtAudio/src
   LIBS += -L$$PWD/../submodules/RtAudio -lrtaudio
 }
-else {
-  PKGCONFIG += rtaudio
-}
 
-!system_rtmidi {
+system_rtmidi {
+  PKGCONFIG += rtmidi
+}
+else {
   INCLUDEPATH += $$PWD/../submodules/RtMidi/src
   LIBS += -L$$PWD/../submodules/RtMidi -lrtmidi
-}
-else {
-  PKGCONFIG += rtmidi
 }
