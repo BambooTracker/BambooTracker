@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,8 +27,9 @@
 #include <algorithm>
 #include <iterator>
 
-Module::Module(std::string filePath, std::string title, std::string author, std::string copyright,
-			   std::string comment, unsigned int tickFreq)
+Module::Module(const std::string& filePath, const std::string& title,
+			   const std::string& author, const std::string& copyright,
+			   const std::string& comment, unsigned int tickFreq)
 	: filePath_(filePath),
 	  title_(title),
 	  author_(author),
@@ -42,87 +43,7 @@ Module::Module(std::string filePath, std::string title, std::string author, std:
 	  customLevelSSG_(0)
 {
 	songs_.emplace_back(0);
-	grooves_.emplace_back();
-}
-
-void Module::setFilePath(std::string path)
-{
-	filePath_ = path;
-}
-
-std::string Module::getFilePath() const
-{
-	return filePath_;
-}
-
-void Module::setTitle(std::string title)
-{
-	title_ = title;
-}
-
-std::string Module::getTitle() const
-{
-	return title_;
-}
-
-void Module::setAuthor(std::string author)
-{
-	author_ = author;
-}
-
-std::string Module::getAuthor() const
-{
-	return author_;
-}
-
-void Module::setCopyright(std::string copyright)
-{
-	copyright_ = copyright;
-}
-
-std::string Module::getCopyright() const
-{
-	return copyright_;
-}
-
-void Module::setComment(std::string comment)
-{
-	comment_ = comment;
-}
-
-std::string Module::getComment() const
-{
-	return comment_;
-}
-
-void Module::setTickFrequency(unsigned int freq)
-{
-	tickFreq_ = freq;
-}
-
-unsigned int Module::getTickFrequency() const
-{
-	return tickFreq_;
-}
-
-void Module::setStepHighlight1Distance(size_t dist)
-{
-	stepHl1Dist_ = dist;
-}
-
-size_t Module::getStepHighlight1Distance() const
-{
-	return stepHl1Dist_;
-}
-
-void Module::setStepHighlight2Distance(size_t dist)
-{
-	stepHl2Dist_ = dist;
-}
-
-size_t Module::getStepHighlight2Distance() const
-{
-	return stepHl2Dist_;
+	addGroove();
 }
 
 size_t Module::getSongCount() const
@@ -135,43 +56,12 @@ size_t Module::getGrooveCount() const
 	return grooves_.size();
 }
 
-void Module::setMixerType(MixerType type)
+void Module::addSong(SongType songType, const std::string& title)
 {
-	mixType_ = type;
+	songs_.emplace_back(static_cast<int>(songs_.size()), songType, title);
 }
 
-MixerType Module::getMixerType() const
-{
-	return mixType_;
-}
-
-void Module::setCustomMixerFMLevel(double level)
-{
-	customLevelFM_ = level;
-}
-
-double Module::getCustomMixerFMLevel() const
-{
-	return customLevelFM_;
-}
-
-void Module::setCustomMixerSSGLevel(double level)
-{
-	customLevelSSG_ = level;
-}
-
-double Module::getCustomMixerSSGLevel() const
-{
-	return customLevelSSG_;
-}
-
-void Module::addSong(SongType songType, std::string title)
-{
-	int n = static_cast<int>(songs_.size());
-	songs_.emplace_back(n, songType, title);
-}
-
-void Module::addSong(int n, SongType songType, std::string title, bool isUsedTempo,
+void Module::addSong(int n, SongType songType, const std::string& title, bool isUsedTempo,
 					 int tempo, int groove, int speed, size_t defaultPatternSize)
 {
 	if (n < static_cast<int>(songs_.size()))
@@ -182,7 +72,7 @@ void Module::addSong(int n, SongType songType, std::string title, bool isUsedTem
 					n, songType, title, isUsedTempo, tempo, groove, speed, defaultPatternSize);
 }
 
-void Module::sortSongs(std::vector<int> numbers)
+void Module::sortSongs(const std::vector<int>& numbers)
 {
 	std::vector<Song> newSongs;
 	newSongs.reserve(songs_.size());
@@ -193,9 +83,7 @@ void Module::sortSongs(std::vector<int> numbers)
 		newSongs.push_back(*it);
 	}
 
-	songs_.assign(std::make_move_iterator(newSongs.begin()),
-				  std::make_move_iterator(newSongs.end()));
-	songs_.shrink_to_fit();
+	songs_ = std::move(newSongs);
 }
 
 Song& Module::getSong(int num)
@@ -221,12 +109,12 @@ void Module::setGroove(int num, const std::vector<int>& seq)
 	grooves_.at(static_cast<size_t>(num)) = seq;
 }
 
-void Module::setGrooves(std::vector<std::vector<int>> seqs)
+void Module::setGrooves(const std::vector<std::vector<int>>& seqs)
 {
 	grooves_ = seqs;
 }
 
-Groove Module::getGroove(int num)
+Groove Module::getGroove(int num) const
 {
 	return grooves_.at(static_cast<size_t>(num));
 }
@@ -234,20 +122,19 @@ Groove Module::getGroove(int num)
 std::unordered_set<int> Module::getRegisterdInstruments() const
 {
 	std::unordered_set<int> set;
-	for (auto& song : songs_) {
-		for (auto& n : song.getRegisteredInstruments()) {
-			set.insert(n);
-		}
+	for (const Song& song : songs_) {
+		auto&& subset = song.getRegisteredInstruments();
+		std::copy(subset.begin(), subset.end(), std::inserter(set, set.end()));
 	}
 	return set;
 }
 
 void Module::clearUnusedPatterns()
 {
-	for (auto& song : songs_) song.clearUnusedPatterns();
+	for (Song& song : songs_) song.clearUnusedPatterns();
 }
 
-void Module::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map)
+void Module::replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map)
 {
-	for (auto& song : songs_) song.replaceDuplicateInstrumentsInPatterns(map);
+	for (Song& song : songs_) song.replaceDuplicateInstrumentsInPatterns(map);
 }

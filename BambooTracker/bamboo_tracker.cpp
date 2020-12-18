@@ -1898,14 +1898,14 @@ size_t BambooTracker::getGrooveCount() const
 	return mod_->getGrooveCount();
 }
 
-void BambooTracker::setGroove(int num, std::vector<int> seq)
+void BambooTracker::setGroove(int num, const std::vector<int>& seq)
 {
-	mod_->setGroove(num, std::move(seq));
+	mod_->setGroove(num, seq);
 }
 
-void BambooTracker::setGrooves(std::vector<std::vector<int>> seqs)
+void BambooTracker::setGrooves(const std::vector<std::vector<int>>& seqs)
 {
-	mod_->setGrooves(std::move(seqs));
+	mod_->setGrooves(seqs);
 }
 
 std::vector<int> BambooTracker::getGroove(int num) const
@@ -1918,10 +1918,10 @@ void BambooTracker::clearUnusedPatterns()
 	mod_->clearUnusedPatterns();
 }
 
-void BambooTracker::replaceDuplicateInstrumentsInPatterns(std::vector<std::vector<int>> list)
+void BambooTracker::replaceDuplicateInstrumentsInPatterns(const std::vector<std::vector<int> >& list)
 {
 	std::unordered_map<int, int> map;
-	for (auto& group : list) {
+	for (const auto& group : list) {
 		for (size_t i = 1; i < group.size(); ++i) {
 			map.emplace(group[i], group.front());
 		}

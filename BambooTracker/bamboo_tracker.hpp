@@ -348,11 +348,11 @@ public:
 	void setModuleCustomMixerSSGLevel(double level);
 	double getModuleCustomMixerSSGLevel() const;
 	size_t getGrooveCount() const;
-	void setGroove(int num, std::vector<int> seq);
-	void setGrooves(std::vector<std::vector<int>> seqs);
+	void setGroove(int num, const std::vector<int>& seq);
+	void setGrooves(const std::vector<std::vector<int>>& seqs);
 	std::vector<int> getGroove(int num) const;
 	void clearUnusedPatterns();
-	void replaceDuplicateInstrumentsInPatterns(std::vector<std::vector<int>> list);
+	void replaceDuplicateInstrumentsInPatterns(const std::vector<std::vector<int>>& list);
 	void clearUnusedADPCMSamples();
 	/*----- Song -----*/
 	void setSongTitle(int songNum, std::string title);

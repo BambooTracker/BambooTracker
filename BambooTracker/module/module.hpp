@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -46,50 +46,51 @@ enum class MixerType : int
 class Module
 {
 public:
-	Module(std::string filePath = "", std::string title = u8"", std::string author = u8"",
-		   std::string copyright = u8"", std::string comment = u8"", unsigned int tickFreq = 60);
+	Module(const std::string& filePath = "", const std::string& title = u8"",
+		   const std::string& author = u8"", const std::string& copyright = u8"",
+		   const std::string& comment = u8"", unsigned int tickFreq = 60);
 
-	void setFilePath(std::string path);
-	std::string getFilePath() const;
-	void setTitle(std::string title);
-	std::string getTitle() const;
-	void setAuthor(std::string author);
-	std::string getAuthor() const;
-	void setCopyright(std::string copyright);
-	std::string getCopyright() const;
-	void setComment(std::string comment);
-	std::string getComment() const;
-	void setTickFrequency(unsigned int freq);
-	unsigned int getTickFrequency() const;
-	void setStepHighlight1Distance(size_t dist);
-	size_t getStepHighlight1Distance() const;
-	void setStepHighlight2Distance(size_t dist);
-	size_t getStepHighlight2Distance() const;
+	inline void setFilePath(const std::string& path) { filePath_ = path; }
+	std::string getFilePath() const noexcept { return filePath_; };
+	inline void setTitle(const std::string& title) { title_ = title; }
+	inline std::string getTitle() const noexcept { return title_; }
+	inline void setAuthor(const std::string& author) { author_ = author; }
+	inline std::string getAuthor() const noexcept { return author_; }
+	inline void setCopyright(const std::string& copyright) { copyright_ = copyright; }
+	inline std::string getCopyright() const noexcept { return copyright_; }
+	inline void setComment(const std::string& comment) { comment_ = comment; }
+	inline std::string getComment() const noexcept { return comment_; }
+	inline void setTickFrequency(unsigned int freq) { tickFreq_ = freq; }
+	inline unsigned int getTickFrequency() const noexcept { return tickFreq_; }
+	inline void setStepHighlight1Distance(size_t dist) { stepHl1Dist_ = dist; }
+	inline size_t getStepHighlight1Distance() const noexcept { return stepHl1Dist_; }
+	inline void setStepHighlight2Distance(size_t dist) { stepHl2Dist_ = dist; }
+	inline size_t getStepHighlight2Distance() const noexcept { return stepHl2Dist_; }
 	size_t getSongCount() const;
 	size_t getGrooveCount() const;
-	void setMixerType(MixerType type);
-	MixerType getMixerType() const;
-	void setCustomMixerFMLevel(double level);
-	double getCustomMixerFMLevel() const;
-	void setCustomMixerSSGLevel(double level);
-	double getCustomMixerSSGLevel() const;
+	inline void setMixerType(MixerType type) { mixType_ = type; }
+	inline MixerType getMixerType() const noexcept { return mixType_; }
+	inline void setCustomMixerFMLevel(double level) { customLevelFM_ = level; }
+	inline double getCustomMixerFMLevel() const noexcept { return customLevelFM_; }
+	inline void setCustomMixerSSGLevel(double level) { customLevelSSG_ = level; }
+	inline double getCustomMixerSSGLevel() const noexcept { return customLevelSSG_; }
 
-	void addSong(SongType songType, std::string title);
-	void addSong(int n, SongType songType, std::string title, bool isUsedTempo,
+	void addSong(SongType songType, const std::string& title);
+	void addSong(int n, SongType songType, const std::string& title, bool isUsedTempo,
 				 int tempo, int groove, int speed, size_t defaultPatternSize);
-	void sortSongs(std::vector<int> numbers);
+	void sortSongs(const std::vector<int>& numbers);
 	Song& getSong(int num);
 
 	void addGroove();
 	void removeGroove(int num);
 	void setGroove(int num, const std::vector<int>& seq);
-	void setGrooves(std::vector<std::vector<int>> seqs);
-	Groove getGroove(int num);
+	void setGrooves(const std::vector<std::vector<int>>& seqs);
+	Groove getGroove(int num) const;
 
 	std::unordered_set<int> getRegisterdInstruments() const;
 
 	void clearUnusedPatterns();
-	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
+	void replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map);
 
 private:
 	std::string filePath_;
