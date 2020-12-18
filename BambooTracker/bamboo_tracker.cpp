@@ -923,7 +923,7 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tickCounter_->resetCount();
 	tickCounter_->setTempo(song.getTempo());
 	tickCounter_->setSpeed(song.getSpeed());
-	tickCounter_->setGroove(mod_->getGroove(song.getGroove()).getSequence());
+	tickCounter_->setGroove(mod_->getGroove(song.getGroove()));
 	tickCounter_->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
 													: GrooveState::ValidByGlobal);
 
@@ -1910,7 +1910,7 @@ void BambooTracker::setGrooves(std::vector<std::vector<int>> seqs)
 
 std::vector<int> BambooTracker::getGroove(int num) const
 {
-	return mod_->getGroove(num).getSequence();
+	return mod_->getGroove(num);
 }
 
 void BambooTracker::clearUnusedPatterns()
@@ -1960,7 +1960,7 @@ int BambooTracker::getSongTempo(int songNum) const
 void BambooTracker::setSongGroove(int songNum, int groove)
 {
 	mod_->getSong(songNum).setGroove(groove);
-	tickCounter_->setGroove(mod_->getGroove(groove).getSequence());
+	tickCounter_->setGroove(mod_->getGroove(groove));
 }
 
 int BambooTracker::getSongGroove(int songNum) const

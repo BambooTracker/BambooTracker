@@ -176,7 +176,7 @@ void PlaybackManager::playStep(int order, int step)
 		Song& song = mod_.lock()->getSong(curSongNum_);
 		tickCounter_.lock()->setTempo(song.getTempo());
 		tickCounter_.lock()->setSpeed(song.getSpeed());
-		tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()).getSequence());
+		tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()));
 		tickCounter_.lock()->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
 															   : GrooveState::ValidByGlobal);
 	}
@@ -201,7 +201,7 @@ void PlaybackManager::startPlay()
 	Song& song = mod_.lock()->getSong(curSongNum_);
 	tickCounter_.lock()->setTempo(song.getTempo());
 	tickCounter_.lock()->setSpeed(song.getSpeed());
-	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()).getSequence());
+	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()));
 	tickCounter_.lock()->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
 														   : GrooveState::ValidByGlobal);
 	tickCounter_.lock()->resetCount();
@@ -1309,7 +1309,7 @@ void PlaybackManager::effTempoChange(int tempo)
 
 void PlaybackManager::effGrooveChange(int num)
 {
-	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(num).getSequence());
+	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(num));
 	tickCounter_.lock()->setGrooveState(GrooveState::ValidByLocal);
 }
 

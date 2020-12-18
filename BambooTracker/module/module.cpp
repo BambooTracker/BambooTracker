@@ -207,7 +207,8 @@ Song& Module::getSong(int num)
 
 void Module::addGroove()
 {
-	grooves_.emplace_back();
+	// Default groove is "6 6"
+	grooves_.push_back({ 6, 6 });
 }
 
 void Module::removeGroove(int num)
@@ -215,20 +216,17 @@ void Module::removeGroove(int num)
 	grooves_.erase(grooves_.begin() + num);
 }
 
-void Module::setGroove(int num, std::vector<int> seq)
+void Module::setGroove(int num, const std::vector<int>& seq)
 {
-	grooves_.at(static_cast<size_t>(num)).setSequrnce(seq);
+	grooves_.at(static_cast<size_t>(num)) = seq;
 }
 
 void Module::setGrooves(std::vector<std::vector<int>> seqs)
 {
-	grooves_.clear();
-	for (auto& seq : seqs) {
-		grooves_.emplace_back(seq);
-	}
+	grooves_ = seqs;
 }
 
-Groove& Module::getGroove(int num)
+Groove Module::getGroove(int num)
 {
 	return grooves_.at(static_cast<size_t>(num));
 }

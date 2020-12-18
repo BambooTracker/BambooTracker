@@ -53,7 +53,7 @@ double SongLengthCalculator::calculateBySecond() const
 	const int rate = static_cast<int>(mod_.getTickFrequency());
 	int tempo = song.getTempo();
 	int speed = song.getSpeed();
-	std::vector<int> groove = mod_.getGroove(song.getGroove()).getSequence();
+	std::vector<int> groove = mod_.getGroove(song.getGroove());
 	double stepTicks = calculateStrictStepTicks(rate, tempo, speed);
 	size_t grooveIdx = 0;
 	bool isTempo = song.isUsedTempo();
@@ -109,7 +109,7 @@ double SongLengthCalculator::calculateBySecond() const
 				switch (eff.first) {
 				case EffectType::Groove:
 					if (eff.second < static_cast<int>(mod_.getGrooveCount())) {
-						groove = mod_.getGroove(eff.second).getSequence();
+						groove = mod_.getGroove(eff.second);
 						isTempo = false;
 						grooveIdx = 0;
 					}

@@ -234,7 +234,6 @@ SOURCES += \
     command/pattern/paste_mix_copied_data_to_pattern_command.cpp \
     gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.cpp \
     gui/module_properties_dialog.cpp \
-    module/groove.cpp \
     gui/groove_settings_dialog.cpp \
     gui/configuration_dialog.cpp \
     command/pattern/expand_pattern_command.cpp \
@@ -449,7 +448,6 @@ HEADERS += \
     command/pattern/paste_mix_copied_data_to_pattern_command.hpp \
     gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.hpp \
     gui/module_properties_dialog.hpp \
-    module/groove.hpp \
     gui/groove_settings_dialog.hpp \
     gui/configuration_dialog.hpp \
     command/pattern/expand_pattern_command.hpp \

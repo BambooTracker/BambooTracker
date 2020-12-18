@@ -30,7 +30,8 @@
 #include <string>
 #include <unordered_map>
 #include "song.hpp"
-#include "groove.hpp"
+
+using Groove = std::vector<int>;
 
 enum class MixerType : int
 {
@@ -81,9 +82,9 @@ public:
 
 	void addGroove();
 	void removeGroove(int num);
-	void setGroove(int num, std::vector<int> seq);
+	void setGroove(int num, const std::vector<int>& seq);
 	void setGrooves(std::vector<std::vector<int>> seqs);
-	Groove& getGroove(int num);
+	Groove getGroove(int num);
 
 	std::unordered_set<int> getRegisterdInstruments() const;
 
