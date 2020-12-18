@@ -31,6 +31,7 @@
 namespace
 {
 constexpr int PATTERN_SIZE = 256;
+constexpr int MAX_ORDER_SIZE = 256;
 }
 
 Track::Track(int number, SoundSource source, int channelInSource, int defPattenSize)
@@ -55,7 +56,7 @@ void Track::setAttribute(int number, SoundSource source, int channelInSource) no
 	attrib_.channelInSource = channelInSource;
 }
 
-OrderInfo Track::getOrderInfo(int order)
+OrderInfo Track::getOrderInfo(int order) const
 {
 	OrderInfo info;
 	info.trackAttribute = attrib_;
@@ -67,6 +68,11 @@ OrderInfo Track::getOrderInfo(int order)
 size_t Track::getOrderSize() const
 {
 	return order_.size();
+}
+
+bool Track::canAddNewOrder() const
+{
+	return order_.size() < MAX_ORDER_SIZE;
 }
 
 Pattern& Track::getPattern(int num)
@@ -172,5 +178,5 @@ void Track::replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, 
 
 void Track::transpose(int seminotes, const std::vector<int>& excludeInsts)
 {
-	for (auto& pattern : patterns_) pattern.transpose(seminotes, excludeInsts);
+	for (Pattern& pattern : patterns_) pattern.transpose(seminotes, excludeInsts);
 }

@@ -52,8 +52,9 @@ public:
 
 	void setAttribute(int number, SoundSource source, int channelInSource) noexcept;
 	inline TrackAttribute getAttribute() const noexcept { return attrib_; }
-	OrderInfo getOrderInfo(int order);
+	OrderInfo getOrderInfo(int order) const;
 	size_t getOrderSize() const;
+	bool canAddNewOrder() const;
 	Pattern& getPattern(int num);
 	Pattern& getPatternFromOrderNumber(int num);
 	int searchFirstUneditedUnusedPattern() const;

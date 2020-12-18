@@ -32,29 +32,41 @@
 #include "track.hpp"
 #include "misc.hpp"
 
-struct SongStyle;
-struct Bookmark;
+struct SongStyle
+{
+	SongType type;
+	std::vector<TrackAttribute> trackAttribs;	// Always sorted by number
+};
+
+struct Bookmark
+{
+	std::string name = u8"";
+	int order, step;
+
+	Bookmark(const std::string& argname, int argorder, int argstep);
+};
 
 class Song
 {
 public:
-	Song(int number, SongType songType = SongType::Standard, std::string title = u8"", bool isUsedTempo = true,
-		 int tempo = 150, int groove = 0, int speed = 6, size_t defaultPatternSize = 64);
+	Song(int number, SongType songType = SongType::Standard, const std::string& title = u8"",
+		 bool isUsedTempo = true, int tempo = 150, int groove = 0, int speed = 6,
+		 size_t defaultPatternSize = 64);
 
-	void setNumber(int n);
-	int getNumber() const;
-	void setTitle(std::string title);
-	std::string getTitle() const;
-	void setTempo(int tempo);
-	int getTempo() const;
-	void setGroove(int groove);
-	int getGroove() const;
-	void toggleTempoOrGroove(bool isUsedTempo);
-	bool isUsedTempo() const;
-	void setSpeed(int speed);
-	int getSpeed() const;
+	inline void setNumber(int n) noexcept { num_ = n; }
+	inline int getNumber() const noexcept { return num_; }
+	inline void setTitle(const std::string& title) { title_ = title; }
+	inline std::string getTitle() const noexcept { return title_; }
+	inline void setTempo(int tempo) noexcept { tempo_ = tempo; }
+	inline int getTempo() const noexcept { return tempo_; }
+	inline void setGroove(int groove) noexcept { groove_ = groove; }
+	inline int getGroove() const noexcept { return groove_; }
+	inline void toggleTempoOrGroove(bool isUsedTempo) noexcept { isUsedTempo_ = isUsedTempo; }
+	inline bool isUsedTempo() const noexcept { return isUsedTempo_; }
+	inline void setSpeed(int speed) noexcept { speed_ = speed; }
+	inline int getSpeed() const noexcept { return speed_; }
 	void setDefaultPatternSize(size_t size);
-	size_t getDefaultPatternSize() const;
+	inline size_t getDefaultPatternSize() const noexcept { return defPtnSize_; }
 	size_t getPatternSizeFromOrderNumber(int order);
 
 	SongStyle getStyle() const;
@@ -62,7 +74,7 @@ public:
 	Track& getTrack(int num);
 	void changeType(SongType type);
 
-	std::vector<OrderInfo> getOrderData(int order);
+	std::vector<OrderInfo> getOrderData(int order) const;
 	size_t getOrderSize() const;
 	bool canAddNewOrder() const;
 	void insertOrderBelow(int order);
@@ -74,8 +86,12 @@ public:
 	void clearUnusedPatterns();
 	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
 
-	int addBookmark(std::string name, int order, int step);
-	void changeBookmark(int i, std::string name, int order, int step);
+	void transpose(int seminotes, const std::vector<int>& excludeInsts);
+	void swapTracks(int track1, int track2);
+
+	// Bookmark
+	int addBookmark(const std::string& name, int order, int step);
+	void changeBookmark(int i, const std::string& name, int order, int step);
 	void removeBookmark(int i);
 	void clearBookmark();
 	void swapBookmarks(int a, int b);
@@ -83,12 +99,9 @@ public:
 	void sortBookmarkByName();
 	Bookmark getBookmark(int i) const;
 	std::vector<int> findBookmarks(int order, int step) const;
-	Bookmark getPreviousBookmark(int order, int step);
-	Bookmark getNextBookmark(int order, int step);
+	Bookmark getPreviousBookmark(int order, int step) const;
+	Bookmark getNextBookmark(int order, int step) const;
 	size_t getBookmarkSize() const;
-
-	void transpose(int seminotes, std::vector<int> excludeInsts);
-	void swapTracks(int track1, int track2);
 
 private:
 	int num_;
@@ -104,18 +117,4 @@ private:
 	std::vector<Bookmark> bms_;
 
 	std::vector<Bookmark> getSortedBookmarkList() const;
-};
-
-struct SongStyle
-{
-	SongType type;
-	std::vector<TrackAttribute> trackAttribs;	// Always sorted by number
-};
-
-struct Bookmark
-{
-	std::string name = u8"";
-	int order, step;
-
-	Bookmark(std::string argname, int argorder, int argstep);
 };

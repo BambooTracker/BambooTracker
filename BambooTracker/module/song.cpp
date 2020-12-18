@@ -28,7 +28,12 @@
 #include <utility>
 #include <stdexcept>
 
-Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
+Bookmark::Bookmark(const std::string& argname, int argorder, int argstep)
+	: name(argname), order(argorder), step(argstep)
+{
+}
+
+Song::Song(int number, SongType songType, const std::string& title, bool isUsedTempo,
 		   int tempo, int groove, int speed, size_t defaultPatternSize)
 	: num_(number),
 	  type_(songType),
@@ -71,77 +76,12 @@ Song::Song(int number, SongType songType, std::string title, bool isUsedTempo,
 	}
 }
 
-void Song::setNumber(int n)
-{
-	num_ = n;
-}
-
-int Song::getNumber() const
-{
-	return num_;
-}
-
-void Song::setTitle(std::string title)
-{
-	title_ = title;
-}
-
-std::string Song::getTitle() const
-{
-	return title_;
-}
-
-void Song::setTempo(int tempo)
-{
-	tempo_ = tempo;
-}
-
-int Song::getTempo() const
-{
-	return tempo_;
-}
-
-void Song::setGroove(int groove)
-{
-	groove_ = groove;
-}
-
-int Song::getGroove() const
-{
-	return groove_;
-}
-
-void Song::toggleTempoOrGroove(bool isUsedTempo)
-{
-	isUsedTempo_ = isUsedTempo;
-}
-
-bool Song::isUsedTempo() const
-{
-	return isUsedTempo_;
-}
-
-void Song::setSpeed(int speed)
-{
-	speed_ = speed;
-}
-
-int Song::getSpeed() const
-{
-	return speed_;
-}
-
 void Song::setDefaultPatternSize(size_t size)
 {
 	defPtnSize_ = size;
 	for (auto& t : tracks_) {
 		t.changeDefaultPatternSize(size);
 	}
-}
-
-size_t Song::getDefaultPatternSize() const
-{
-	return defPtnSize_;
 }
 
 size_t Song::getPatternSizeFromOrderNumber(int order)
@@ -167,6 +107,7 @@ SongStyle Song::getStyle() const
 std::vector<TrackAttribute> Song::getTrackAttributes() const
 {
 	std::vector<TrackAttribute> ret;
+	ret.reserve(tracks_.size());
 	std::transform(tracks_.begin(), tracks_.end(), std::back_inserter(ret),
 				   [](const Track& track) { return track.getAttribute(); });
 	return ret;
@@ -205,10 +146,10 @@ void Song::changeType(SongType type)
 	}
 }
 
-std::vector<OrderInfo> Song::getOrderData(int order)
+std::vector<OrderInfo> Song::getOrderData(int order) const
 {
 	std::vector<OrderInfo> ret;
-	for (auto& track : tracks_) {
+	for (const Track& track : tracks_) {
 		ret.push_back(track.getOrderInfo(order));
 	}
 	return ret;
@@ -221,27 +162,27 @@ size_t Song::getOrderSize() const
 
 bool Song::canAddNewOrder() const
 {
-	return getOrderSize() < 256;
+	return tracks_[0].canAddNewOrder();
 }
 
 void Song::insertOrderBelow(int order)
 {
 	if (!canAddNewOrder()) return;
-	for (auto& track : tracks_) {
+	for (Track& track : tracks_) {
 		track.insertOrderBelow(order);
 	}
 }
 
 void Song::deleteOrder(int order)
 {
-	for (auto& track : tracks_) {
+	for (Track& track : tracks_) {
 		track.deleteOrder(order);
 	}
 }
 
 void Song::swapOrder(int a, int b)
 {
-	for (auto& track : tracks_) {
+	for (Track& track : tracks_) {
 		track.swapOrder(a, b);
 	}
 }
@@ -249,36 +190,59 @@ void Song::swapOrder(int a, int b)
 std::unordered_set<int> Song::getRegisteredInstruments() const
 {
 	std::unordered_set<int> set;
-	for (auto& track : tracks_) {
-		for (auto& n : track.getRegisteredInstruments()) {
-			set.insert(n);
-		}
+	for (const Track& track : tracks_) {
+		auto&& subset = track.getRegisteredInstruments();
+		std::copy(subset.begin(), subset.end(), std::inserter(set, set.end()));
 	}
 	return set;
 }
 
 void Song::clearUnusedPatterns()
 {
-	for (auto& track : tracks_) track.clearUnusedPatterns();
+	for (Track& track : tracks_) track.clearUnusedPatterns();
 }
 
 void Song::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map)
 {
-	for (auto& track : tracks_) track.replaceDuplicateInstrumentsInPatterns(map);
+	for (Track& track : tracks_) track.replaceDuplicateInstrumentsInPatterns(map);
 }
 
-int Song::addBookmark(std::string name, int order, int step)
+void Song::transpose(int seminotes, const std::vector<int>& excludeInsts)
+{
+	for (Track& track : tracks_) track.transpose(seminotes, excludeInsts);
+}
+
+void Song::swapTracks(int track1, int track2)
+{
+	auto it1 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+		return t.getAttribute().number == track1;
+	});
+	if (it1 == tracks_.end()) throw std::invalid_argument("Invalid track number");
+	auto it2 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
+		return t.getAttribute().number == track2;
+	});
+	if (it2 == tracks_.end()) throw std::invalid_argument("Invalid track number");
+
+	TrackAttribute attrib1 = it1->getAttribute();
+	TrackAttribute attrib2 = it2->getAttribute();
+	it1->setAttribute(attrib2.number, attrib2.source, attrib2.channelInSource);
+	it2->setAttribute(attrib1.number, attrib1.source, attrib1.channelInSource);
+
+	std::iter_swap(it1, it2);
+}
+
+int Song::addBookmark(const std::string& name, int order, int step)
 {
 	bms_.push_back(Bookmark(name, order, step));
 	return static_cast<int>(bms_.size() - 1);
 }
 
-void Song::changeBookmark(int i, std::string name, int order, int step)
+void Song::changeBookmark(int i, const std::string& name, int order, int step)
 {
 	Bookmark& bm = bms_.at(static_cast<size_t>(i));
 	bm.name = name;
 	bm.order = order;
-	bm.step  = step;
+	bm.step = step;
 }
 
 void Song::removeBookmark(int i)
@@ -335,7 +299,7 @@ std::vector<Bookmark> Song::getSortedBookmarkList() const
 	return tmp;
 }
 
-Bookmark Song::getPreviousBookmark(int order, int step)
+Bookmark Song::getPreviousBookmark(int order, int step) const
 {
 	std::vector<Bookmark> list = getSortedBookmarkList();
 	size_t i = 0;
@@ -348,7 +312,7 @@ Bookmark Song::getPreviousBookmark(int order, int step)
 	return list.at((list.size() + i - 1) % list.size());
 }
 
-Bookmark Song::getNextBookmark(int order, int step)
+Bookmark Song::getNextBookmark(int order, int step) const
 {
 	std::vector<Bookmark> list = getSortedBookmarkList();
 	size_t i = 0;
@@ -364,33 +328,4 @@ Bookmark Song::getNextBookmark(int order, int step)
 size_t Song::getBookmarkSize() const
 {
 	return bms_.size();
-}
-
-void Song::transpose(int seminotes, std::vector<int> excludeInsts)
-{
-	for (auto& track : tracks_) track.transpose(seminotes, excludeInsts);
-}
-
-void Song::swapTracks(int track1, int track2)
-{
-	auto it1 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
-		return t.getAttribute().number == track1;
-	});
-	if (it1 == tracks_.end()) throw std::invalid_argument("Invalid track number");
-	auto it2 = std::find_if(tracks_.begin(), tracks_.end(), [&](const Track& t) {
-		return t.getAttribute().number == track2;
-	});
-	if (it2 == tracks_.end()) throw std::invalid_argument("Invalid track number");
-
-	TrackAttribute attrib1 = it1->getAttribute();
-	TrackAttribute attrib2 = it2->getAttribute();
-	it1->setAttribute(attrib2.number, attrib2.source, attrib2.channelInSource);
-	it2->setAttribute(attrib1.number, attrib1.source, attrib1.channelInSource);
-
-	std::iter_swap(it1, it2);
-}
-
-Bookmark::Bookmark(std::string argname, int argorder, int argstep)
-	: name(argname), order(argorder), step(argstep)
-{
 }
