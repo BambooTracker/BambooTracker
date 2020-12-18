@@ -2483,7 +2483,7 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			size_t odrSize = track.getOrderSize();
 			ctr.appendUint8(static_cast<uint8_t>(odrSize) - 1);
 			for (size_t o = 0; o < odrSize; ++o)
-				ctr.appendUint8(static_cast<uint8_t>(track.getOrderData(static_cast<int>(o)).patten));
+				ctr.appendUint8(static_cast<uint8_t>(track.getOrderInfo(static_cast<int>(o)).patten));
 			ctr.appendUint8(static_cast<uint8_t>(track.getEffectDisplayWidth()));
 
 			// Pattern

@@ -331,7 +331,7 @@ void OrderListPanel::drawRows(int maxWidth)
 	QPainter backPainter(&backPixmap_);
 	textPainter.setFont(rowFont_);
 
-	std::vector<OrderData> orderRowData_;
+	std::vector<OrderInfo> orderRowData_;
 	int textOffset = trackWidth_ / 2 - rowFontWidth_;
 
 	/* Current row */
@@ -486,7 +486,7 @@ void OrderListPanel::quickDrawRows(int maxWidth)
 	QPainter backPainter(&backPixmap_);
 	textPainter.setFont(rowFont_);
 
-	std::vector<OrderData> orderRowData_;
+	std::vector<OrderInfo> orderRowData_;
 	int textOffset = trackWidth_ / 2 - rowFontWidth_;
 
 	/* Clear previous cursor row, current cursor row and last rows text */
@@ -999,7 +999,7 @@ void OrderListPanel::copySelectedCells()
 	QString str = QString("ORDER_COPY:%1,%2,")
 				  .arg(QString::number(w), QString::number(h));
 	for (int i = 0; i < h; ++i) {
-		std::vector<OrderData> odrs = bt_->getOrderData(curSongNum_, selLeftAbovePos_.row + i);
+		std::vector<OrderInfo> odrs = bt_->getOrderData(curSongNum_, selLeftAbovePos_.row + i);
 		for (int j = 0; j < w; ++j) {
 			str += QString::number(odrs.at(static_cast<size_t>(visTracks_.at(selLeftAbovePos_.trackVisIdx) + j)).patten);
 			if (i < h - 1 || j < w - 1) str += ",";

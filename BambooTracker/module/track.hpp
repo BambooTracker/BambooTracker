@@ -27,26 +27,32 @@
 
 #include <vector>
 #include <unordered_set>
-#include <memory>
 #include <unordered_map>
 #include "pattern.hpp"
 #include "misc.hpp"
 
-struct TrackAttribute;
-struct OrderData;
+struct TrackAttribute
+{
+	int number;
+	SoundSource source;
+	int channelInSource;
+};
+
+struct OrderInfo
+{
+	TrackAttribute trackAttribute;
+	int order;
+	int patten;
+};
 
 class Track
 {
 public:
 	Track(int number, SoundSource source, int channelInSource, int defPattenSize);
-	Track(const Track& other);
-	Track& operator=(const Track& other);
-	Track(Track&& other) noexcept;
-	Track& operator=(Track&& other) noexcept;
 
-	void setAttribute(int number, SoundSource source, int channelInSource);
-	TrackAttribute getAttribute() const;
-	OrderData getOrderData(int order);
+	void setAttribute(int number, SoundSource source, int channelInSource) noexcept;
+	inline TrackAttribute getAttribute() const noexcept { return attrib_; }
+	OrderInfo getOrderInfo(int order);
 	size_t getOrderSize() const;
 	Pattern& getPattern(int num);
 	Pattern& getPatternFromOrderNumber(int num);
@@ -62,33 +68,18 @@ public:
 
 	void changeDefaultPatternSize(size_t size);
 
-	void setEffectDisplayWidth(size_t w);
-	size_t getEffectDisplayWidth() const;
+	inline void setEffectDisplayWidth(size_t w) noexcept { effetDisplayWidth_ = w; }
+	inline size_t getEffectDisplayWidth() const noexcept { return effetDisplayWidth_; }
 
 	void clearUnusedPatterns();
-	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
+	void replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map);
 
-	void transpose(int seminotes, std::vector<int> excludeInsts);
+	void transpose(int seminotes, const std::vector<int>& excludeInsts);
 
 private:
-	std::unique_ptr<TrackAttribute> attrib_;
+	TrackAttribute attrib_;
 
 	std::vector<int> order_;
 	std::vector<Pattern> patterns_;
 	size_t effetDisplayWidth_;
-};
-
-struct TrackAttribute
-{
-	int number;
-	SoundSource source;
-	int channelInSource;
-};
-
-
-struct OrderData
-{
-	TrackAttribute trackAttribute;
-	int order;
-	int patten;
 };

@@ -28,12 +28,17 @@
 #include "misc.hpp"
 #include <algorithm>
 
+namespace
+{
+constexpr size_t MAX_STEP_SIZE = 256;
+}
+
 Pattern::Pattern(int n, size_t defSize)
 	: num_(n), size_(defSize), steps_(defSize), usedCnt_(0)
 {
 }
 
-Pattern::Pattern(int n, size_t size, std::vector<Step> steps)
+Pattern::Pattern(int n, size_t size, const std::vector<Step>& steps)
 	: num_(n), size_(size), steps_(steps), usedCnt_(0)
 {
 }
@@ -64,7 +69,7 @@ size_t Pattern::getSize() const
 
 void Pattern::changeSize(size_t size)
 {
-	if (size && size <= MAX_STEPS) {
+	if (size && size <= MAX_STEP_SIZE) {
 		size_ = size;
 		if (steps_.size() < size) steps_.resize(size);
 	}
@@ -85,18 +90,18 @@ void Pattern::deletePreviousStep(int n)
 		steps_.resize(size_);
 }
 
-bool Pattern::existCommand() const
+bool Pattern::hasEvent() const
 {
 	auto endIt = steps_.begin() + static_cast<int>(size_);
 	return std::any_of(steps_.begin(), endIt,
-					   [](const Step& step) { return step.existCommand(); });
+					   [](const Step& step) { return step.hasEvent(); });
 }
 
 std::vector<int> Pattern::getEditedStepIndices() const
 {
 	std::vector<int> list;
 	for (size_t i = 0; i < size_; ++i) {
-		if (steps_.at(i).existCommand())
+		if (steps_.at(i).hasEvent())
 			list.push_back(static_cast<int>(i));
 	}
 	return list;
@@ -117,7 +122,7 @@ Pattern Pattern::clone(int asNumber)
 	return Pattern(asNumber, size_, steps_);
 }
 
-void Pattern::transpose(int seminotes, std::vector<int> excludeInsts)
+void Pattern::transpose(int seminotes, const std::vector<int>& excludeInsts)
 {
 	for (size_t i = 0; i < size_; ++i) {
 		Step& step = steps_.at(i);

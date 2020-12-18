@@ -36,7 +36,7 @@ void DuplicateOrderCommand::redo()
 	sng.insertOrderBelow(order_);
 	for (auto& t : sng.getTrackAttributes()) {
 		auto& track = sng.getTrack(t.number);
-		track.registerPatternToOrder(order_ + 1, track.getOrderData(order_).patten);
+		track.registerPatternToOrder(order_ + 1, track.getOrderInfo(order_).patten);
 	}
 }
 

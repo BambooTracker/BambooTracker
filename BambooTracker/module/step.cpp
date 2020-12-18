@@ -48,7 +48,7 @@ void Step::clear()
 	}
 }
 
-bool Step::existCommand() const
+bool Step::hasEvent() const
 {
 	if (!isEmptyNote()) return true;
 	if (hasInstrument()) return true;

@@ -38,26 +38,25 @@ public:
 	inline void setNumber(int n) noexcept { num_ = n; }
 	inline int getNumber() const noexcept { return num_; }
 
-	inline int usedCountUp() noexcept { return ++usedCnt_; }
-	inline int usedCountDown() noexcept { return --usedCnt_; }
+	inline int increaseUsedCount() noexcept { return ++usedCnt_; }
+	inline int decreaseUsedCount() noexcept { return --usedCnt_; }
 	inline int getUsedCount() const noexcept { return usedCnt_; }
 
 	Step& getStep(int n);
 
-	static constexpr size_t MAX_STEPS = 256;
 	size_t getSize() const;
 	void changeSize(size_t size);
 
 	void insertStep(int n);
 	void deletePreviousStep(int n);
 
-	bool existCommand() const;
+	bool hasEvent() const;
 	std::vector<int> getEditedStepIndices() const;
 	std::unordered_set<int> getRegisteredInstruments() const;
 
 	Pattern clone(int asNumber);
 
-	void transpose(int seminotes, std::vector<int> excludeInsts);
+	void transpose(int seminotes, const std::vector<int>& excludeInsts);
 
 	void clear();
 
@@ -67,5 +66,5 @@ private:
 	std::vector<Step> steps_;
 	int usedCnt_;
 
-	Pattern(int n, size_t size, std::vector<Step> steps);
+	Pattern(int n, size_t size, const std::vector<Step>& steps);
 };

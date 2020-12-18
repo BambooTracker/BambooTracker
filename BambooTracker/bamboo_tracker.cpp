@@ -2114,7 +2114,7 @@ size_t BambooTracker::getEffectDisplayWidth(int songNum, int trackNum) const
 }
 
 /*----- Order -----*/
-std::vector<OrderData> BambooTracker::getOrderData(int songNum, int orderNum) const
+std::vector<OrderInfo> BambooTracker::getOrderData(int songNum, int orderNum) const
 {
 	return mod_->getSong(songNum).getOrderData(orderNum);
 }

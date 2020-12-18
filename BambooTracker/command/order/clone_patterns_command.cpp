@@ -39,7 +39,7 @@ ClonePatternsCommand::ClonePatternsCommand(std::weak_ptr<Module> mod, int songNu
 		prevOdrs_.emplace_back();
 		for (int t = beginTrack; t <= endTrack; ++t) {
 			prevOdrs_.at(static_cast<size_t>(o - beginOrder)).push_back(
-						mod_.lock()->getSong(songNum).getTrack(t).getOrderData(o));
+						mod_.lock()->getSong(songNum).getTrack(t).getOrderInfo(o));
 		}
 	}
 }
@@ -50,7 +50,7 @@ void ClonePatternsCommand::redo()
 	for (int o = bOrder_; o <= eOrder_; ++o) {
 		for (int t = bTrack_; t <= eTrack_; ++t) {
 			auto& track = sng.getTrack(t);
-			track.registerPatternToOrder(o, track.clonePattern(track.getOrderData(o).patten));
+			track.registerPatternToOrder(o, track.clonePattern(track.getOrderInfo(o).patten));
 		}
 	}
 }

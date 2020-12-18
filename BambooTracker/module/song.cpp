@@ -205,11 +205,11 @@ void Song::changeType(SongType type)
 	}
 }
 
-std::vector<OrderData> Song::getOrderData(int order)
+std::vector<OrderInfo> Song::getOrderData(int order)
 {
-	std::vector<OrderData> ret;
+	std::vector<OrderInfo> ret;
 	for (auto& track : tracks_) {
-		ret.push_back(track.getOrderData(order));
+		ret.push_back(track.getOrderInfo(order));
 	}
 	return ret;
 }

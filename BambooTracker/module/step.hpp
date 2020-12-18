@@ -112,7 +112,7 @@ public:
 
 	void clear();
 
-	bool existCommand() const;
+	bool hasEvent() const;
 
 private:
 	/// noteNum_

@@ -41,5 +41,5 @@ public:
 private:
 	std::weak_ptr<Module> mod_;
 	int song_, bOrder_, bTrack_, eOrder_, eTrack_;
-	std::vector<std::vector<OrderData>> prevOdrs_;
+	std::vector<std::vector<OrderInfo>> prevOdrs_;
 };

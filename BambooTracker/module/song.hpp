@@ -62,7 +62,7 @@ public:
 	Track& getTrack(int num);
 	void changeType(SongType type);
 
-	std::vector<OrderData> getOrderData(int order);
+	std::vector<OrderInfo> getOrderData(int order);
 	size_t getOrderSize() const;
 	bool canAddNewOrder() const;
 	void insertOrderBelow(int order);

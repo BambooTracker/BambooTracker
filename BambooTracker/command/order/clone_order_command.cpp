@@ -38,7 +38,7 @@ void CloneOrderCommand::redo()
 		auto& track = sng.getTrack(t.number);
 		// Set previous pattern to avoid leaving unused pattern
 		track.registerPatternToOrder(order_ + 1, track.getPatternFromOrderNumber(order_).getNumber());
-		track.registerPatternToOrder(order_ + 1, track.clonePattern(track.getOrderData(order_).patten));
+		track.registerPatternToOrder(order_ + 1, track.clonePattern(track.getOrderInfo(order_).patten));
 	}
 }
 

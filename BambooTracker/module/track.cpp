@@ -25,76 +25,43 @@
 
 #include "track.hpp"
 #include <utility>
+#include <algorithm>
+#include <iterator>
+
+namespace
+{
+constexpr int PATTERN_SIZE = 256;
+}
 
 Track::Track(int number, SoundSource source, int channelInSource, int defPattenSize)
-	: attrib_(std::make_unique<TrackAttribute>()),
-	  effetDisplayWidth_(0)
+	: effetDisplayWidth_(0)
 
 {	
 	setAttribute(number, source, channelInSource);
 
-	for (int i = 0; i < 256; ++i) {
+	patterns_.reserve(PATTERN_SIZE);
+	for (int i = 0; i < PATTERN_SIZE; ++i) {
 		patterns_.emplace_back(i, defPattenSize);
 	}
 
-	patterns_[0].usedCountUp();
+	patterns_[0].increaseUsedCount();
 	order_.push_back(0);	// Set first order
 }
 
-Track::Track(const Track& other)
-	: attrib_(std::make_unique<TrackAttribute>())
+void Track::setAttribute(int number, SoundSource source, int channelInSource) noexcept
 {
-	setAttribute(other.attrib_->number, other.attrib_->source, other.attrib_->channelInSource);
-	order_ = other.order_;
-	patterns_ = other.patterns_;
-	effetDisplayWidth_ = other.effetDisplayWidth_;
+	attrib_.number = number;
+	attrib_.source = source;
+	attrib_.channelInSource = channelInSource;
 }
 
-Track& Track::operator=(const Track& other)
+OrderInfo Track::getOrderInfo(int order)
 {
-	setAttribute(other.attrib_->number, other.attrib_->source, other.attrib_->channelInSource);
-	order_ = other.order_;
-	patterns_ = other.patterns_;
-	effetDisplayWidth_ = other.effetDisplayWidth_;
-	return *this;
-}
-
-Track::Track(Track&& other) noexcept
-{
-	attrib_ = std::move(other.attrib_);
-	order_ = std::move(other.order_);
-	patterns_ = std::move(other.patterns_);
-	effetDisplayWidth_ = std::move(other.effetDisplayWidth_);
-}
-
-Track& Track::operator=(Track&& other) noexcept
-{
-	attrib_ = std::move(other.attrib_);
-	order_ = std::move(other.order_);
-	patterns_ = std::move(other.patterns_);
-	effetDisplayWidth_ = std::move(other.effetDisplayWidth_);
-	return *this;
-}
-
-void Track::setAttribute(int number, SoundSource source, int channelInSource)
-{
-	attrib_->number = number;
-	attrib_->source = source;
-	attrib_->channelInSource = channelInSource;
-}
-
-TrackAttribute Track::getAttribute() const
-{
-	return *attrib_;
-}
-
-OrderData Track::getOrderData(int order)
-{
-	OrderData res;
-	res.trackAttribute = getAttribute();
-	res.order = order;
-	res.patten = order_.at(static_cast<size_t>(order));
-	return res;
+	OrderInfo info;
+	info.trackAttribute = attrib_;
+	info.order = order;
+	info.patten = order_.at(static_cast<size_t>(order));
+	return info;
 }
 
 size_t Track::getOrderSize() const
@@ -114,11 +81,10 @@ Pattern& Track::getPatternFromOrderNumber(int num)
 
 int Track::searchFirstUneditedUnusedPattern() const
 {
-	for (size_t i = 0; i < patterns_.size(); ++i) {
-		if (!patterns_[i].existCommand() && !patterns_[i].getUsedCount())
-			return static_cast<int>(i);
-	}
-	return -1;
+	auto it = std::find_if(patterns_.begin(), patterns_.end(), [](const Pattern& pattern) {
+		return (!pattern.hasEvent() && !pattern.getUsedCount());
+	});
+	return (it == patterns_.end() ? -1 : std::distance(patterns_.begin(), it));
 }
 
 int Track::clonePattern(int num)
@@ -134,8 +100,8 @@ int Track::clonePattern(int num)
 std::vector<int> Track::getEditedPatternIndices() const
 {
 	std::vector<int> list;
-	for (size_t i = 0; i < 256; ++i) {
-		if (patterns_[i].existCommand()) list.push_back(static_cast<int>(i));
+	for (size_t i = 0; i < PATTERN_SIZE; ++i) {
+		if (patterns_[i].hasEvent()) list.push_back(static_cast<int>(i));
 	}
 	return list;
 }
@@ -143,34 +109,33 @@ std::vector<int> Track::getEditedPatternIndices() const
 std::unordered_set<int> Track::getRegisteredInstruments() const
 {
 	std::unordered_set<int> set;
-	for (auto& pattern : patterns_) {
-		for (auto& n : pattern.getRegisteredInstruments()) {
-			set.insert(n);
-		}
+	for (const Pattern& pattern : patterns_) {
+		auto&& insts = pattern.getRegisteredInstruments();
+		std::copy(insts.begin(), insts.end(), std::inserter(set, set.end()));
 	}
 	return set;
 }
 
 void Track::registerPatternToOrder(int order, int pattern)
 {
-	patterns_.at(static_cast<size_t>(pattern)).usedCountUp();
-	patterns_.at(static_cast<size_t>(order_.at(static_cast<size_t>(order)))).usedCountDown();
+	patterns_.at(static_cast<size_t>(pattern)).increaseUsedCount();
+	patterns_.at(static_cast<size_t>(order_.at(static_cast<size_t>(order)))).decreaseUsedCount();
 	order_.at(static_cast<size_t>(order)) = pattern;
 }
 
 void Track::insertOrderBelow(int order)
 {
 	int n = searchFirstUneditedUnusedPattern();
-	if (n == -1) n = 255;
+	if (n == -1) n = PATTERN_SIZE - 1;
 
 	if (order == static_cast<int>(order_.size()) - 1) order_.push_back(n);
 	else order_.insert(order_.begin() + order + 1, n);
-	patterns_[static_cast<size_t>(n)].usedCountUp();
+	patterns_[static_cast<size_t>(n)].increaseUsedCount();
 }
 
 void Track::deleteOrder(int order)
 {
-	patterns_.at(static_cast<size_t>(order_.at(static_cast<size_t>(order)))).usedCountDown();
+	patterns_.at(static_cast<size_t>(order_.at(static_cast<size_t>(order)))).decreaseUsedCount();
 	order_.erase(order_.begin() + order);
 }
 
@@ -181,45 +146,31 @@ void Track::swapOrder(int a, int b)
 
 void Track::changeDefaultPatternSize(size_t size)
 {
-	for (auto& ptn : patterns_) {
-		ptn.changeSize(size);
-	}
-}
-
-void Track::setEffectDisplayWidth(size_t w)
-{
-	effetDisplayWidth_ = w;
-}
-
-size_t Track::getEffectDisplayWidth() const
-{
-	return effetDisplayWidth_;
+	for (auto& ptn : patterns_) ptn.changeSize(size);
 }
 
 void Track::clearUnusedPatterns()
 {
-	for (size_t i = 0; i < 256; ++i) {
-		if (!patterns_[i].getUsedCount() && patterns_[i].existCommand())
-			patterns_[i].clear();
+	for (Pattern& pattern : patterns_) {
+		if (!pattern.getUsedCount() && pattern.hasEvent())
+			pattern.clear();
 	}
 }
 
-void Track::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map)
+void Track::replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map)
 {
-	for (size_t i = 0; i < 256; ++i) {
-		Pattern& pattern = patterns_[i];
-		if (pattern.existCommand()) {
+	for (Pattern& pattern : patterns_) {
+		if (pattern.hasEvent()) {
 			for (size_t i = 0; i < pattern.getSize(); ++i) {
 				Step& step = pattern.getStep(static_cast<int>(i));
 				int inst = step.getInstrumentNumber();
-				if (map.count(inst)) step.setInstrumentNumber(map[inst]);
+				if (map.count(inst)) step.setInstrumentNumber(map.at(inst));
 			}
 		}
-
 	}
 }
 
-void Track::transpose(int seminotes, std::vector<int> excludeInsts)
+void Track::transpose(int seminotes, const std::vector<int>& excludeInsts)
 {
 	for (auto& pattern : patterns_) pattern.transpose(seminotes, excludeInsts);
 }

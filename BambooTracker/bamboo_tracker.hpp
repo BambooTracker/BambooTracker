@@ -391,7 +391,7 @@ public:
 	void setEffectDisplayWidth(int songNum, int trackNum, size_t w);
 	size_t getEffectDisplayWidth(int songNum, int trackNum) const;
 	/*----- Order -----*/
-	std::vector<OrderData> getOrderData(int songNum, int orderNum) const;
+	std::vector<OrderInfo> getOrderData(int songNum, int orderNum) const;
 	void setOrderPatternDigit(int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry);
 	void insertOrderBelow(int songNum, int orderNum);
 	void deleteOrder(int songNum, int orderNum);
