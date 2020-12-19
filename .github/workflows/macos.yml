@@ -16,7 +16,7 @@ env:
   SCRIPT_NAME: osx
   MAKE: make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
-  QMAKE_EXTRA_ARGUMENTS: CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat # LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include
+  QMAKE_EXTRA_ARGUMENTS: CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat
 
 jobs:
   build:
@@ -61,7 +61,6 @@ jobs:
           brew update
           brew install qt pkg-config jack p7zip
           brew link --force qt
-          find /usr/local/Cellar/jack/
 
       ## End macOS-specific steps
 
@@ -70,11 +69,10 @@ jobs:
           qmake Project.pro PREFIX=${BT_INSTALLBASE} \
             CONFIG+=release CONFIG-=debug ${QMAKE_EXTRA_ARGUMENTS}
           ${MAKE} qmake_all
-          cat submodules/RtAudio/config.log
 
       - name: Building.
         run: |
-          ${MAKE} -j1
+          ${MAKE} -j2
 
       - name: Installing.
         run: |

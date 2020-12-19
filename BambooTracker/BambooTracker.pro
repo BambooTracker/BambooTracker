@@ -77,48 +77,7 @@ else:clang|if(gcc:!intel_icc) {
   COMPILER_VERSION = $${COMPILER_MAJOR_VERSION}.$${COMPILER_MINOR_VERSION}.$${COMPILER_PATCH_VERSION}
   message("Compiler is version" $$COMPILER_VERSION)
 
-  # Temporary known-error downgrades
-
-  # RtAudio code contains VLAs for multiple APIs, needs a stronger patch in the future
-  # CPP_WARNING_FLAGS += -Wno-error=vla
-
-  clang {
-    message("No Clang workaround flags. :)")
-    # See VLA workaround, needs additional switch on Clang
-    # CPP_WARNING_FLAGS += -Wno-vla-extension
-
-    # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
-    # using system-installed JACK headers in RtAudio & RtMidi
-    # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)
-    # use_jack {
-    #   CPP_WARNING_FLAGS += -Wno-deprecated-register
-    # }
-
-    # FreeBSD ALSA headers use zero-length array
-    # /usr/local/include/alsa/pcm.h:597
-    # freebsd:use_alsa {
-    #   CPP_WARNING_FLAGS += -Wno-zero-length-array
-    # }
-
-    # Definition of implicit copy constructor with user-declared copy assignment operator deprecated
-    # Problem in Qt5 itself, nothing we can fix about it
-    # Introduced by LLVM 10, triggered by any reference to QString
-    # TODO: Extend to clang-apple once LLVM 10 reaches the platform and they decide on a new custom version
-    # /usr/local/include/qt5/QtCore/(qbytearray.h:586,qstring.h:1191)
-    # clang-normal:greaterThan(COMPILER_MAJOR_VERSION, 9) {
-    #   CPP_WARNING_FLAGS += -Wno-deprecated-copy
-    # }
-  }
-  else {
-    message("No GCC workaround flags. :)")
-    # Definition of implicit copy constructor with user-declared copy assignment operator deprecated
-    # Problem in Qt5 itself, nothing we can fix about it
-    # Introduced by GCC 9, triggered by any reference to QString
-    # /usr/local/include/qt5/QtCore/(qbytearray.h:586,qstring.h:1191)
-    # greaterThan(COMPILER_MAJOR_VERSION, 8) {
-    #   CPP_WARNING_FLAGS += -Wno-error=deprecated-copy
-    # }
-  }
+  # Temporary known-error downgrades here
 }
 else {
   message("Configured compiler is unknown, no attempt to add warning & pedantic compiler switches")
