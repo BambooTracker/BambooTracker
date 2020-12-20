@@ -84,7 +84,7 @@ public:
 	std::unordered_set<int> getRegisteredInstruments() const;
 
 	void clearUnusedPatterns();
-	void replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map);
+	void replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map);
 
 	void transpose(int seminotes, const std::vector<int>& excludeInsts);
 	void swapTracks(int track1, int track2);

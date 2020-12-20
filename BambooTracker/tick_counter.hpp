@@ -45,7 +45,7 @@ public:
 	int getTempo() const noexcept;
 	void setSpeed(int speed);
 	int getSpeed() const noexcept;
-	void setGroove(std::vector<int> seq);
+	void setGroove(const std::vector<int>& seq);
 	void setGrooveState(GrooveState state);
 	bool getGrooveEnabled() const noexcept;
 	void setPlayState(bool isPlaySong) noexcept;

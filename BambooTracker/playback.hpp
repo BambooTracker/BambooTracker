@@ -95,10 +95,10 @@ private:
 	void stepProcess();
 	std::unordered_map<SoundSource, std::vector<bool>> isNoteDelay_;
 
-	void executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
-	void executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
-	void executeRhythmStepEvents(Step& step, int ch, bool calledByNoteDelay = false);
-	void executeADPCMStepEvents(Step& step, bool calledByNoteDelay = false);
+	void executeFMStepEvents(const Step& step, int ch, bool calledByNoteDelay = false);
+	void executeSSGStepEvents(const Step& step, int ch, bool calledByNoteDelay = false);
+	void executeRhythmStepEvents(const Step& step, int ch, bool calledByNoteDelay = false);
+	void executeADPCMStepEvents(const Step& step, bool calledByNoteDelay = false);
 
 	using EffectMemory = std::unordered_map<EffectType, int>;
 	EffectMemory stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
@@ -136,12 +136,12 @@ private:
 
 	void tickProcess(int rest);
 
-	void checkFMDelayEventsInTick(Step& step, int ch);
-	void checkFMNoteDelayAndEnvelopeReset(Step& step, int ch);
-	void envelopeResetEffectFM(Step& step, int ch);
-	void checkSSGDelayEventsInTick(Step& step, int ch);
-	void checkRhythmDelayEventsInTick(Step& step, int ch);
-	void checkADPCMDelayEventsInTick(Step& step);
+	void checkFMDelayEventsInTick(const Step& step, int ch);
+	void checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch);
+	void envelopeResetEffectFM(const Step& step, int ch);
+	void checkSSGDelayEventsInTick(const Step& step, int ch);
+	void checkRhythmDelayEventsInTick(const Step& step, int ch);
+	void checkADPCMDelayEventsInTick(const Step& step);
 
 
 	std::vector<int> ntDlyCntFM_, ntCutDlyCntFM_, volDlyCntFM_;

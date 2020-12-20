@@ -439,7 +439,7 @@ void PlaybackManager::stepProcess()
 	isFindNextStep_ = isNextSet;
 }
 
-void PlaybackManager::executeFMStepEvents(Step& step, int ch, bool calledByNoteDelay)
+void PlaybackManager::executeFMStepEvents(const Step& step, int ch, bool calledByNoteDelay)
 {
 	if (!calledByNoteDelay && !step.isEmptyNote()) clearFMDelayBeyondStepCounts(ch);	// Except no key event
 
@@ -495,7 +495,7 @@ void PlaybackManager::executeFMStepEvents(Step& step, int ch, bool calledByNoteD
 	}
 }
 
-void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNoteDelay)
+void PlaybackManager::executeSSGStepEvents(const Step& step, int ch, bool calledByNoteDelay)
 {
 	if (!calledByNoteDelay && !step.isEmptyNote()) clearSSGDelayBeyondStepCounts(ch);	// Except no key event
 
@@ -548,7 +548,7 @@ void PlaybackManager::executeSSGStepEvents(Step& step, int ch, bool calledByNote
 	}
 }
 
-void PlaybackManager::executeRhythmStepEvents(Step& step, int ch, bool calledByNoteDelay)
+void PlaybackManager::executeRhythmStepEvents(const Step& step, int ch, bool calledByNoteDelay)
 {
 	if (!calledByNoteDelay && !step.isEmptyNote()) clearRhythmDelayBeyondStepCounts(ch);	// Except no key event
 
@@ -578,7 +578,7 @@ void PlaybackManager::executeRhythmStepEvents(Step& step, int ch, bool calledByN
 	}
 }
 
-void PlaybackManager::executeADPCMStepEvents(Step& step, bool calledByNoteDelay)
+void PlaybackManager::executeADPCMStepEvents(const Step& step, bool calledByNoteDelay)
 {
 	if (!calledByNoteDelay && !step.isEmptyNote()) clearADPCMDelayBeyondStepCounts();	// Except no key event
 
@@ -1351,7 +1351,7 @@ void PlaybackManager::tickProcess(int rest)
 	opnaCtrl_->updateRegisterStates();
 }
 
-void PlaybackManager::checkFMDelayEventsInTick(Step& step, int ch)
+void PlaybackManager::checkFMDelayEventsInTick(const Step& step, int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
@@ -1367,7 +1367,7 @@ void PlaybackManager::checkFMDelayEventsInTick(Step& step, int ch)
 	checkFMNoteDelayAndEnvelopeReset(step, ch);
 }
 
-void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(Step& step, int ch)
+void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(const Step& step, int ch)
 {
 	int cnt = ntDlyCntFM_.at(static_cast<size_t>(ch));
 	if (!cnt) {
@@ -1379,7 +1379,7 @@ void PlaybackManager::checkFMNoteDelayAndEnvelopeReset(Step& step, int ch)
 	}
 }
 
-void PlaybackManager::envelopeResetEffectFM(Step& step, int ch)
+void PlaybackManager::envelopeResetEffectFM(const Step& step, int ch)
 {
 	if (!(step.isEmptyNote() || step.hasKeyOff())
 			&& opnaCtrl_->enableFMEnvelopeReset(ch)) {	// Key on or echo buffer access
@@ -1399,7 +1399,7 @@ void PlaybackManager::envelopeResetEffectFM(Step& step, int ch)
 	}
 }
 
-void PlaybackManager::checkSSGDelayEventsInTick(Step& step, int ch)
+void PlaybackManager::checkSSGDelayEventsInTick(const Step& step, int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
@@ -1416,7 +1416,7 @@ void PlaybackManager::checkSSGDelayEventsInTick(Step& step, int ch)
 		executeSSGStepEvents(step, ch, true);
 }
 
-void PlaybackManager::checkRhythmDelayEventsInTick(Step& step, int ch)
+void PlaybackManager::checkRhythmDelayEventsInTick(const Step& step, int ch)
 {
 	size_t uch = static_cast<size_t>(ch);
 	// Check volume delay
@@ -1430,7 +1430,7 @@ void PlaybackManager::checkRhythmDelayEventsInTick(Step& step, int ch)
 		executeRhythmStepEvents(step, ch, true);
 }
 
-void PlaybackManager::checkADPCMDelayEventsInTick(Step& step)
+void PlaybackManager::checkADPCMDelayEventsInTick(const Step& step)
 {
 	// Check volume delay
 	if (!volDlyCntADPCM_)

@@ -67,7 +67,7 @@ int TickCounter::getSpeed() const noexcept
 	return defStepSize_;
 }
 
-void TickCounter::setGroove(std::vector<int> seq)
+void TickCounter::setGroove(const std::vector<int>& seq)
 {
 	grooves_ = seq;
 	if (nextGroovePos_ != -1) nextGroovePos_ = 0;

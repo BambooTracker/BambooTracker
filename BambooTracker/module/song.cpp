@@ -202,7 +202,7 @@ void Song::clearUnusedPatterns()
 	for (Track& track : tracks_) track.clearUnusedPatterns();
 }
 
-void Song::replaceDuplicateInstrumentsInPatterns(std::unordered_map<int, int> map)
+void Song::replaceDuplicateInstrumentsInPatterns(const std::unordered_map<int, int>& map)
 {
 	for (Track& track : tracks_) track.replaceDuplicateInstrumentsInPatterns(map);
 }

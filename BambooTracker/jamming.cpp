@@ -25,6 +25,7 @@
 
 #include "jamming.hpp"
 #include <algorithm>
+#include <numeric>
 #include <functional>
 #include <stdexcept>
 
@@ -125,8 +126,7 @@ int calculateJamKeyOctave(int baseOctave, JamKey &key)
 }
 
 JamManager::JamManager()
-	: isJamMode_(true),
-	  isPoly_(true)
+	: isJamMode_(true), isPoly_(true)
 {
 	reset();
 }
@@ -225,10 +225,7 @@ void JamManager::reset()
 		unusedCh_[SoundSource::FM] = std::deque<int>(6);
 		unusedCh_[SoundSource::SSG] = std::deque<int>(3);
 		unusedCh_[SoundSource::ADPCM] = std::deque<int>(1);
-
-		for (auto& pair : unusedCh_) {
-			std::generate(pair.second.begin(), pair.second.end(), [i = 0]() mutable -> int { return i++; });
-		}
+		for (auto& pair : unusedCh_) std::iota(pair.second.begin(), pair.second.end(), 0);
 	}
 	else {
 		for (auto& pair : unusedCh_) pair.second.resize(1);
