@@ -33,12 +33,12 @@ enum class InstrumentType;
 
 namespace gui_command_utils
 {
-inline QString makeInstrumentListText(int num, QString name)
+inline QString makeInstrumentListText(int num, const QString& name)
 {
 	return QString("%1: %2").arg(num, 2, 16, QChar('0')).toUpper().arg(name);
 }
 
-QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, QString name);
+QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, const QString& name);
 }
 
 #endif // INSTRUMENT_COMMAND_QT_UTILS_HPP

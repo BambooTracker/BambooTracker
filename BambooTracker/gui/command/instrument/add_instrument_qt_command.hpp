@@ -36,16 +36,16 @@
 
 enum class InstrumentType;
 
-class AddInstrumentQtCommand : public QUndoCommand
+class AddInstrumentQtCommand final : public QUndoCommand
 {
 public:
-	AddInstrumentQtCommand(QListWidget *list, int num, QString name, InstrumentType type,
+	AddInstrumentQtCommand(QListWidget *list, int num, const QString& name, InstrumentType type,
 						   std::weak_ptr<InstrumentFormManager> formMan,
 						   MainWindow* mainwin, bool onlyUsed, bool preventFirstStore = false,
 						   QUndoCommand *parent = nullptr);
-	void undo() Q_DECL_OVERRIDE;
-	void redo() Q_DECL_OVERRIDE;
-	int id() const Q_DECL_OVERRIDE;
+	void undo() override;
+	void redo() override;
+	int id() const override;
 
 private:
 	QListWidget *list_;

@@ -29,9 +29,10 @@
 #include "command/command_id.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row, QString name, InstrumentType type,
-													 std::weak_ptr<InstrumentFormManager> formMan,
-													 MainWindow* mainwin, bool updateRequested, QUndoCommand *parent)
+RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(
+		QListWidget *list, int num, int row, const QString& name, InstrumentType type,
+		std::weak_ptr<InstrumentFormManager> formMan,
+		MainWindow* mainwin, bool updateRequested, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),

@@ -28,9 +28,10 @@
 #include "command/command_id.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, InstrumentType type,
-											   std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin,
-											   bool onlyUsed, bool preventFirstStore, QUndoCommand *parent)
+AddInstrumentQtCommand::AddInstrumentQtCommand(
+		QListWidget *list, int num, const QString& name, InstrumentType type,
+		std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin,
+		bool onlyUsed, bool preventFirstStore, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),

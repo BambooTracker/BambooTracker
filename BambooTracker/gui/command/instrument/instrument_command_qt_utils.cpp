@@ -41,7 +41,7 @@ const std::unordered_map<InstrumentType, const char*> ICON_SRC = {
 };
 }
 
-QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, QString name)
+QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, const QString& name)
 {
 	QListWidgetItem *item = new QListWidgetItem(QIcon(ICON_SRC.at(type)), makeInstrumentListText(num, name));
 	item->setSizeHint(QSize(130, 17));

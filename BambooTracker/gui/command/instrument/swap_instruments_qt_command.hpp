@@ -34,17 +34,16 @@
 
 class PatternEditor;
 
-class SwapInstrumentsQtCommand : public QUndoCommand
+class SwapInstrumentsQtCommand final : public QUndoCommand
 {
 public:
 	SwapInstrumentsQtCommand(QListWidget *list, int inst1Row, int inst2Row,
-							 QString inst1Name, QString inst2Name,
+							 const QString& inst1Name, const QString& inst2Name,
 							 std::weak_ptr<InstrumentFormManager> formMan,
-							 PatternEditor* pattern,
-							 QUndoCommand* parent = nullptr);
-	void undo() Q_DECL_OVERRIDE;
-	void redo() Q_DECL_OVERRIDE;
-	int id() const Q_DECL_OVERRIDE;
+							 PatternEditor* pattern, QUndoCommand* parent = nullptr);
+	void undo() override;
+	void redo() override;
+	int id() const override;
 
 private:
 	QListWidget* list_;

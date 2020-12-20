@@ -28,9 +28,9 @@
 #include "command/command_id.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-CloneInstrumentQtCommand::CloneInstrumentQtCommand(QListWidget *list, int num, InstrumentType type, QString name,
-												   std::weak_ptr<InstrumentFormManager> formMan,
-												   QUndoCommand *parent)
+CloneInstrumentQtCommand::CloneInstrumentQtCommand(
+		QListWidget *list, int num, InstrumentType type, const QString& name,
+		std::weak_ptr<InstrumentFormManager> formMan, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  cloneNum_(num),

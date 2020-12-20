@@ -36,15 +36,15 @@
 
 enum class InstrumentType;
 
-class RemoveInstrumentQtCommand : public QUndoCommand
+class RemoveInstrumentQtCommand final : public QUndoCommand
 {
 public:
-	RemoveInstrumentQtCommand(QListWidget *list, int num, int row, QString name, InstrumentType type,
-							  std::weak_ptr<InstrumentFormManager> formMan,
+	RemoveInstrumentQtCommand(QListWidget *list, int num, int row, const QString& name,
+							  InstrumentType type, std::weak_ptr<InstrumentFormManager> formMan,
 							  MainWindow* mainwin, bool updateRequested, QUndoCommand *parent = nullptr);
-	void undo() Q_DECL_OVERRIDE;
-	void redo() Q_DECL_OVERRIDE;
-	int id() const Q_DECL_OVERRIDE;
+	void undo() override;
+	void redo() override;
+	int id() const override;
 
 private:
 	QListWidget *list_;

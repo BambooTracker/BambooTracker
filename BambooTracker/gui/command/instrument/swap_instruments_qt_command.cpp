@@ -30,11 +30,10 @@
 #include "gui/pattern_editor/pattern_editor.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-SwapInstrumentsQtCommand::SwapInstrumentsQtCommand(QListWidget* list, int inst1Row, int inst2Row,
-												   QString inst1Name, QString inst2Name,
-												   std::weak_ptr<InstrumentFormManager> formMan,
-												   PatternEditor* pattern,
-												   QUndoCommand* parent)
+SwapInstrumentsQtCommand::SwapInstrumentsQtCommand(
+		QListWidget* list, int inst1Row, int inst2Row, const QString& inst1Name,
+		const QString& inst2Name, std::weak_ptr<InstrumentFormManager> formMan,
+		PatternEditor* pattern, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  ptn_(pattern),

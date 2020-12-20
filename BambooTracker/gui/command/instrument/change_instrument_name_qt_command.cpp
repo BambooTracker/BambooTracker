@@ -27,10 +27,9 @@
 #include "command/command_id.hpp"
 #include "instrument_command_qt_utils.hpp"
 
-ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(QListWidget *list, int num, int row,
-															 std::weak_ptr<InstrumentFormManager> formMan,
-															 QString oldName, QString newName,
-															 QUndoCommand *parent)
+ChangeInstrumentNameQtCommand::ChangeInstrumentNameQtCommand(
+		QListWidget *list, int num, int row, std::weak_ptr<InstrumentFormManager> formMan,
+		const QString& oldName, const QString& newName, QUndoCommand *parent)
 	: QUndoCommand(parent),
 	  list_(list),
 	  num_(num),
