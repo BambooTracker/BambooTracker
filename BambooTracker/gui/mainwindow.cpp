@@ -59,7 +59,7 @@
 #include "io/binary_container.hpp"
 #include "io/wav_container.hpp"
 #include "version.hpp"
-#include "gui/command/commands_qt.hpp"
+#include "gui/command/instrument/instrument_commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
 #include "gui/instrument_editor/instrument_editor_ssg_form.hpp"
 #include "gui/instrument_editor/instrument_editor_adpcm_form.hpp"

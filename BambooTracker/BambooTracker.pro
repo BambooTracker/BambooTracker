@@ -292,6 +292,7 @@ HEADERS += \
     gui/bookmark_manager_form.hpp \
     gui/color_palette_handler.hpp \
     gui/command/instrument/instrument_command_qt_utils.hpp \
+    gui/command/instrument/instrument_commands_qt.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
     gui/command/order_commands_qt.hpp \
     gui/command/pattern/change_values_in_pattern_qt_command.hpp \
@@ -362,7 +363,6 @@ HEADERS += \
     command/instrument/remove_instrument_command.hpp \
     command/commands.hpp \
     gui/command/instrument/add_instrument_qt_command.hpp \
-    gui/command/commands_qt.hpp \
     gui/command/instrument/remove_instrument_qt_command.hpp \
     gui/instrument_editor/instrument_editor_fm_form.hpp \
     gui/instrument_editor/fm_operator_table.hpp \

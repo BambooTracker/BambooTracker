@@ -23,15 +23,15 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef COMMANDS_QT_HPP
-#define COMMANDS_QT_HPP
+#ifndef INSTRUMENT_COMMANDS_QT_HPP
+#define INSTRUMENT_COMMANDS_QT_HPP
 
 /********** Instrument edit **********/
-#include "./instrument/add_instrument_qt_command.hpp"
-#include "./instrument/remove_instrument_qt_command.hpp"
-#include "./instrument/change_instrument_name_qt_command.hpp"
-#include "./instrument/clone_instrument_qt_command.hpp"
-#include "./instrument/deep_clone_instrument_qt_command.hpp"
-#include "./instrument/swap_instruments_qt_command.hpp"
+#include "add_instrument_qt_command.hpp"
+#include "remove_instrument_qt_command.hpp"
+#include "change_instrument_name_qt_command.hpp"
+#include "clone_instrument_qt_command.hpp"
+#include "deep_clone_instrument_qt_command.hpp"
+#include "swap_instruments_qt_command.hpp"
 
-#endif // COMMANDS_QT_HPP
+#endif // INSTRUMENT_COMMANDS_QT_HPP
