@@ -38,7 +38,7 @@ namespace io
 class AbstractInstrumentIO
 {
 public:
-	AbstractInstrumentIO(std::string ext, std::string desc, bool loadable, bool savable)
+	AbstractInstrumentIO(const std::string& ext, const std::string& desc, bool loadable, bool savable)
 		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
 	virtual ~AbstractInstrumentIO() = default;
 	virtual AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
@@ -52,7 +52,7 @@ public:
 	inline bool isSavable() const noexcept { return savable_; }
 
 private:
-	std::string ext_, desc_;
+	const std::string ext_, desc_;
 	bool loadable_, savable_;
 };
 

@@ -35,7 +35,7 @@ public:
 	PviIO();
 	AbstractBank* load(const BinaryContainer& ctr) const override;
 
-	static AbstractInstrument* loadInstrument(const std::vector<uint8_t> sample,
+	static AbstractInstrument* loadInstrument(const std::vector<uint8_t>& sample,
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum);
 };

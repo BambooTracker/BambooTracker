@@ -37,7 +37,7 @@ class FileIOError : public std::runtime_error
 protected:
 	const FileType ftype_;
 
-	FileIOError(std::string text, const FileType ftype)
+	FileIOError(const std::string& text, const FileType ftype)
 		: std::runtime_error(text), ftype_(ftype) {}
 
 public:

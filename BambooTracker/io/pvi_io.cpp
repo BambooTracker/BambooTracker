@@ -52,7 +52,7 @@ AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 	return new PviBank(std::move(ids), std::move(samples));
 }
 
-AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t> sample,
+AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t>& sample,
 										  std::weak_ptr<InstrumentsManager> instMan,
 										  int instNum)
 {

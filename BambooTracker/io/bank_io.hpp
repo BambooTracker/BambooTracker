@@ -38,7 +38,7 @@ namespace io
 class AbstractBankIO
 {
 public:
-	AbstractBankIO(std::string ext, std::string desc, bool loadable, bool savable)
+	AbstractBankIO(const std::string& ext, const std::string& desc, bool loadable, bool savable)
 		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
 	virtual ~AbstractBankIO() = default;
 	virtual AbstractBank* load(const BinaryContainer& ctr) const;
@@ -50,7 +50,7 @@ public:
 	inline bool isSavable() const noexcept { return savable_; }
 
 private:
-	std::string ext_, desc_;
+	const std::string ext_, desc_;
 	bool loadable_, savable_;
 };
 

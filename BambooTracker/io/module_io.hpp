@@ -38,7 +38,7 @@ namespace io
 class AbstractModuleIO
 {
 public:
-	AbstractModuleIO(std::string ext, std::string desc, bool loadable, bool savable)
+	AbstractModuleIO(const std::string& ext, const std::string& desc, bool loadable, bool savable)
 		: ext_(ext), desc_(desc), loadable_(loadable), savable_(savable) {}
 	virtual ~AbstractModuleIO() = default;
 	virtual void load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
@@ -51,7 +51,7 @@ public:
 	inline bool isSavable() const noexcept { return savable_; }
 
 private:
-	std::string ext_, desc_;
+	const std::string ext_, desc_;
 	bool loadable_, savable_;
 };
 

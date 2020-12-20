@@ -56,7 +56,7 @@ AbstractBank* PpcIO::load(const BinaryContainer& ctr) const
 	return new PpcBank(std::move(ids), std::move(samples));
 }
 
-AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t> sample,
+AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t>& sample,
 										  std::weak_ptr<InstrumentsManager> instMan,
 										  int instNum)
 {

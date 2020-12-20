@@ -36,6 +36,70 @@
 
 namespace io
 {
+namespace
+{
+size_t loadInstrumentPropertyOperatorSequenceForInstrument(
+		FMEnvelopeParameter param, size_t instMemCsr,
+		std::shared_ptr<InstrumentsManager>& instManLocked,
+		const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version)
+{
+	inst->setOperatorSequenceEnabled(param, true);
+	inst->setOperatorSequenceNumber(param, idx);
+	uint16_t ofs = ctr.readUint16(instMemCsr);
+	size_t csr = instMemCsr + 2;
+
+	uint16_t seqLen = ctr.readUint16(csr);
+	csr += 2;
+	for (uint16_t l = 0; l < seqLen; ++l) {
+		uint16_t data = ctr.readUint16(csr);
+		csr += 2;
+		if (version < Version::toBCD(1, 2, 1)) csr += 2;
+		if (l == 0)
+			instManLocked->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
+		else
+			instManLocked->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
+	}
+
+	uint16_t loopCnt = ctr.readUint16(csr);
+	csr += 2;
+	if (loopCnt > 0) {
+		std::vector<int> begins, ends, times;
+		for (uint16_t l = 0; l < loopCnt; ++l) {
+			begins.push_back(ctr.readUint16(csr));
+			csr += 2;
+			ends.push_back(ctr.readUint16(csr));
+			csr += 2;
+			times.push_back(ctr.readUint8(csr++));
+		}
+		instManLocked->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
+	}
+
+	switch (ctr.readUint8(csr++)) {
+	case 0x00:	// No release
+		instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		break;
+	case 0x01:	// Fixed
+	{
+		uint16_t pos = ctr.readUint16(csr);
+		csr += 2;
+		// Release point check (prevents a bug)
+		// https://github.com/rerrahkr/BambooTracker/issues/11
+		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
+		else instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		break;
+	}
+	default:
+		throw FileCorruptionError(FileType::Inst, csr);
+	}
+
+	if (version >= Version::toBCD(1, 0, 1)) {
+		++csr;	// Skip sequence type
+	}
+
+	return ofs;
+}
+}
+
 BtiIO::BtiIO() : AbstractInstrumentIO("bti", "BambooTracker instrument", true, true) {}
 
 AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& fileName,
@@ -1656,67 +1720,6 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 
 		return inst;
 	}
-}
-
-size_t BtiIO::loadInstrumentPropertyOperatorSequenceForInstrument(
-		FMEnvelopeParameter param, size_t instMemCsr,
-		std::shared_ptr<InstrumentsManager>& instManLocked,
-		const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version)
-{
-	inst->setOperatorSequenceEnabled(param, true);
-	inst->setOperatorSequenceNumber(param, idx);
-	uint16_t ofs = ctr.readUint16(instMemCsr);
-	size_t csr = instMemCsr + 2;
-
-	uint16_t seqLen = ctr.readUint16(csr);
-	csr += 2;
-	for (uint16_t l = 0; l < seqLen; ++l) {
-		uint16_t data = ctr.readUint16(csr);
-		csr += 2;
-		if (version < Version::toBCD(1, 2, 1)) csr += 2;
-		if (l == 0)
-			instManLocked->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
-		else
-			instManLocked->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
-	}
-
-	uint16_t loopCnt = ctr.readUint16(csr);
-	csr += 2;
-	if (loopCnt > 0) {
-		std::vector<int> begins, ends, times;
-		for (uint16_t l = 0; l < loopCnt; ++l) {
-			begins.push_back(ctr.readUint16(csr));
-			csr += 2;
-			ends.push_back(ctr.readUint16(csr));
-			csr += 2;
-			times.push_back(ctr.readUint8(csr++));
-		}
-		instManLocked->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
-	}
-
-	switch (ctr.readUint8(csr++)) {
-	case 0x00:	// No release
-		instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
-		break;
-	case 0x01:	// Fixed
-	{
-		uint16_t pos = ctr.readUint16(csr);
-		csr += 2;
-		// Release point check (prevents a bug)
-		// https://github.com/rerrahkr/BambooTracker/issues/11
-		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
-		else instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
-		break;
-	}
-	default:
-		throw FileCorruptionError(FileType::Inst, csr);
-	}
-
-	if (version >= Version::toBCD(1, 0, 1)) {
-		++csr;	// Skip sequence type
-	}
-
-	return ofs;
 }
 
 void BtiIO::save(BinaryContainer& ctr,

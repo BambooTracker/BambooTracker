@@ -54,7 +54,7 @@ public:
 	inline bool containExtension(const std::string& ext) const { return map_.count(ext); }
 	inline bool testLoadableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isLoadable()); }
 	inline bool testSavableExtension(const std::string& ext) const { return (map_.count(ext) && map_.at(ext)->isSavable()); }
-	inline const std::unique_ptr<T>& at(std::string ext) const { return map_.at(ext); }
+	inline const std::unique_ptr<T>& at(const std::string& ext) const { return map_.at(ext); }
 	inline std::vector<std::string> getLoadFilterList() const noexcept { return ldFilters_; }
 	inline std::vector<std::string> getSaveFilterList() const noexcept { return svFilters_; }
 

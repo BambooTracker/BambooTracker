@@ -37,6 +37,7 @@ public:
 	OpniIO();
 	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
 							 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
+
 	static AbstractInstrument* loadWOPNInstrument(const WOPNInstrument &srcInst,
 												  std::weak_ptr<InstrumentsManager> instMan,
 												  int instNum);

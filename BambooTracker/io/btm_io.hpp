@@ -37,23 +37,5 @@ public:
 			  std::weak_ptr<InstrumentsManager> instMan) const override;
 	void save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			  const std::weak_ptr<InstrumentsManager> instMan) const override;
-
-private:
-	static size_t loadModuleSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
-											size_t globCsr, uint32_t version);
-	static size_t loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-												const BinaryContainer& ctr, size_t globCsr,
-												uint32_t version);
-	static size_t loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-														const BinaryContainer& ctr, size_t globCsr,
-														uint32_t version);
-	static size_t loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
-														 size_t instMemCsr,
-														 std::shared_ptr<InstrumentsManager>& instManLocked,
-														 const BinaryContainer& ctr, uint32_t version);
-	static size_t loadGrooveSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
-											size_t globCsr, uint32_t version);
-	static size_t loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
-										  size_t globCsr, uint32_t version);
 };
 }

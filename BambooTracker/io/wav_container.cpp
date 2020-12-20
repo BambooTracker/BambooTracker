@@ -29,6 +29,8 @@
 #include "file_io_error.hpp"
 #include "misc.hpp"
 
+namespace io
+{
 namespace
 {
 inline void assertValue(bool f, size_t pos)
@@ -55,8 +57,6 @@ enum WavOffset : size_t
 };
 }
 
-namespace io
-{
 WavContainer::WavContainer(uint32_t rate, uint16_t nCh, uint16_t bitSize)
 	: nCh_(nCh),
 	  bitSize_(bitSize),

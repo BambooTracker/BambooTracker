@@ -32,41 +32,10 @@
 
 namespace io
 {
-BtmIO::BtmIO() : AbstractModuleIO("btm", "BambooTracker module", true, true) {}
-
-void BtmIO::load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
-				 std::weak_ptr<InstrumentsManager> instMan) const
+namespace
 {
-	size_t globCsr = 0;
-	if (ctr.readString(globCsr, 16) != "BambooTrackerMod")
-		throw FileCorruptionError(FileType::Mod, globCsr);
-	globCsr += 16;
-	size_t eofOfs = ctr.readUint32(globCsr);
-	size_t eof = globCsr + eofOfs;
-	globCsr += 4;
-	size_t fileVersion = ctr.readUint32(globCsr);
-	if (fileVersion > Version::ofModuleFileInBCD())
-		throw FileVersionError(FileType::Mod);
-	globCsr += 4;
-
-	while (globCsr < eof) {
-		if (ctr.readString(globCsr, 8) == "MODULE  ")
-			globCsr = loadModuleSectionInModule(mod, ctr, globCsr + 8, fileVersion);
-		else if (ctr.readString(globCsr, 8) == "INSTRMNT")
-			globCsr = loadInstrumentSectionInModule(instMan, ctr, globCsr + 8, fileVersion);
-		else if (ctr.readString(globCsr, 8) == "INSTPROP")
-			globCsr = loadInstrumentPropertySectionInModule(instMan, ctr, globCsr + 8, fileVersion);
-		else if (ctr.readString(globCsr, 8) == "GROOVE  ")
-			globCsr = loadGrooveSectionInModule(mod, ctr, globCsr + 8, fileVersion);
-		else if (ctr.readString(globCsr, 8) == "SONG    ")
-			globCsr = loadSongSectionInModule(mod, ctr, globCsr + 8, fileVersion);
-		else
-			throw FileCorruptionError(FileType::Mod, globCsr);
-	}
-}
-
-size_t BtmIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
-										size_t globCsr, uint32_t version)
+size_t loadModuleSection(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
+						 size_t globCsr, uint32_t version)
 {
 	std::shared_ptr<Module> modLocked = mod.lock();
 
@@ -122,9 +91,8 @@ size_t BtmIO::loadModuleSectionInModule(std::weak_ptr<Module> mod, const BinaryC
 	return globCsr + modOfs;
 }
 
-size_t BtmIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-											const BinaryContainer& ctr, size_t globCsr,
-											uint32_t version)
+size_t loadInstrumentSection(std::weak_ptr<InstrumentsManager> instMan,
+							 const BinaryContainer& ctr, size_t globCsr, uint32_t version)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 
@@ -260,9 +228,66 @@ size_t BtmIO::loadInstrumentSectionInModule(std::weak_ptr<InstrumentsManager> in
 	return globCsr + instOfs;
 }
 
-size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsManager> instMan,
-													const BinaryContainer& ctr, size_t globCsr,
-													uint32_t version)
+size_t loadOperatorSequence(FMEnvelopeParameter param, size_t instMemCsr,
+							std::shared_ptr<InstrumentsManager>& instManLocked,
+							const BinaryContainer& ctr, uint32_t version)
+{
+	uint8_t idx = ctr.readUint8(instMemCsr++);
+	uint16_t ofs = ctr.readUint16(instMemCsr);
+	size_t csr = instMemCsr + 2;
+
+	uint16_t seqLen = ctr.readUint16(csr);
+	csr += 2;
+	for (uint16_t l = 0; l < seqLen; ++l) {
+		uint16_t data = ctr.readUint16(csr);
+		csr += 2;
+		if (version < Version::toBCD(1, 2, 2)) csr += 2;
+		if (l == 0)
+			instManLocked->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
+		else
+			instManLocked->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
+	}
+
+	uint16_t loopCnt = ctr.readUint16(csr);
+	csr += 2;
+	if (loopCnt > 0) {
+		std::vector<int> begins, ends, times;
+		for (uint16_t l = 0; l < loopCnt; ++l) {
+			begins.push_back(ctr.readUint16(csr));
+			csr += 2;
+			ends.push_back(ctr.readUint16(csr));
+			csr += 2;
+			times.push_back(ctr.readUint8(csr++));
+		}
+		instManLocked->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
+	}
+
+	switch (ctr.readUint8(csr++)) {
+	case 0x00:	// No release
+		instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		break;
+	case 0x01:	// Fixed
+	{
+		uint16_t pos = ctr.readUint16(csr);
+		csr += 2;
+		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
+		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
+		else instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
+		break;
+	}
+	default:
+		throw FileCorruptionError(FileType::Mod, csr);
+	}
+
+	if (version >= Version::toBCD(1, 0, 1)) {
+		++csr;	// Skip sequence type
+	}
+
+	return ofs + 1;
+}
+
+size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
+									 const BinaryContainer& ctr, size_t globCsr, uint32_t version)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 
@@ -332,7 +357,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::AL, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -340,7 +365,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::FB, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -348,7 +373,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::AR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -356,7 +381,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -364,7 +389,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -372,7 +397,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::RR1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -380,7 +405,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SL1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -388,7 +413,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::TL1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -396,7 +421,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::KS1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -404,7 +429,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::ML1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -412,7 +437,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DT1, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -420,7 +445,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::AR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -428,7 +453,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -436,7 +461,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -444,7 +469,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::RR2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -452,7 +477,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SL2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -460,7 +485,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::TL2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -468,7 +493,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::KS2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -476,7 +501,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::ML2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -484,7 +509,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DT2, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -492,7 +517,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::AR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -500,7 +525,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -508,7 +533,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -516,7 +541,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::RR3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -524,7 +549,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SL3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -532,7 +557,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::TL3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -540,7 +565,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::KS3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -548,7 +573,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::ML3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -556,7 +581,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DT3, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -564,7 +589,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::AR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -572,7 +597,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -580,7 +605,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -588,7 +613,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::RR4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -596,7 +621,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::SL4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -604,7 +629,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::TL4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -612,7 +637,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::KS4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -620,7 +645,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::ML4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -628,7 +653,7 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 		{
 			uint8_t cnt = ctr.readUint8(instPropCsr++);
 			for (size_t i = 0; i < cnt; ++i)
-				instPropCsr += loadInstrumentPropertyOperatorSequence(
+				instPropCsr += loadOperatorSequence(
 								   FMEnvelopeParameter::DT4, instPropCsr, instManLocked, ctr, version);
 			break;
 		}
@@ -1400,67 +1425,8 @@ size_t BtmIO::loadInstrumentPropertySectionInModule(std::weak_ptr<InstrumentsMan
 	return globCsr;
 }
 
-size_t BtmIO::loadInstrumentPropertyOperatorSequence(FMEnvelopeParameter param,
-													 size_t instMemCsr,
-													 std::shared_ptr<InstrumentsManager>& instManLocked,
-													 const BinaryContainer& ctr, uint32_t version)
-{
-	uint8_t idx = ctr.readUint8(instMemCsr++);
-	uint16_t ofs = ctr.readUint16(instMemCsr);
-	size_t csr = instMemCsr + 2;
-
-	uint16_t seqLen = ctr.readUint16(csr);
-	csr += 2;
-	for (uint16_t l = 0; l < seqLen; ++l) {
-		uint16_t data = ctr.readUint16(csr);
-		csr += 2;
-		if (version < Version::toBCD(1, 2, 2)) csr += 2;
-		if (l == 0)
-			instManLocked->setOperatorSequenceFMSequenceCommand(param, idx, 0, data, 0);
-		else
-			instManLocked->addOperatorSequenceFMSequenceCommand(param, idx, data, 0);
-	}
-
-	uint16_t loopCnt = ctr.readUint16(csr);
-	csr += 2;
-	if (loopCnt > 0) {
-		std::vector<int> begins, ends, times;
-		for (uint16_t l = 0; l < loopCnt; ++l) {
-			begins.push_back(ctr.readUint16(csr));
-			csr += 2;
-			ends.push_back(ctr.readUint16(csr));
-			csr += 2;
-			times.push_back(ctr.readUint8(csr++));
-		}
-		instManLocked->setOperatorSequenceFMLoops(param, idx, begins, ends, times);
-	}
-
-	switch (ctr.readUint8(csr++)) {
-	case 0x00:	// No release
-		instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
-		break;
-	case 0x01:	// Fixed
-	{
-		uint16_t pos = ctr.readUint16(csr);
-		csr += 2;
-		// Release point check (prevents a bug; see rerrahkr/BambooTracker issue #11)
-		if (pos < seqLen) instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::FixedRelease, pos);
-		else instManLocked->setOperatorSequenceFMRelease(param, idx, ReleaseType::NoRelease, -1);
-		break;
-	}
-	default:
-		throw FileCorruptionError(FileType::Mod, csr);
-	}
-
-	if (version >= Version::toBCD(1, 0, 1)) {
-		++csr;	// Skip sequence type
-	}
-
-	return ofs + 1;
-}
-
-size_t BtmIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
-										size_t globCsr, uint32_t version)
+size_t loadGrooveSection(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
+						 size_t globCsr, uint32_t version)
 {
 	(void)version;
 
@@ -1484,8 +1450,8 @@ size_t BtmIO::loadGrooveSectionInModule(std::weak_ptr<Module> mod, const BinaryC
 	return globCsr + grvOfs;
 }
 
-size_t BtmIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
-									  size_t globCsr, uint32_t version)
+size_t loadSongSection(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
+					   size_t globCsr, uint32_t version)
 {
 	std::shared_ptr<Module> modLocked = mod.lock();
 
@@ -1662,6 +1628,41 @@ size_t BtmIO::loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryCon
 	}
 
 	return globCsr + songOfs;
+}
+
+}
+
+BtmIO::BtmIO() : AbstractModuleIO("btm", "BambooTracker module", true, true) {}
+
+void BtmIO::load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
+				 std::weak_ptr<InstrumentsManager> instMan) const
+{
+	size_t globCsr = 0;
+	if (ctr.readString(globCsr, 16) != "BambooTrackerMod")
+		throw FileCorruptionError(FileType::Mod, globCsr);
+	globCsr += 16;
+	size_t eofOfs = ctr.readUint32(globCsr);
+	size_t eof = globCsr + eofOfs;
+	globCsr += 4;
+	size_t fileVersion = ctr.readUint32(globCsr);
+	if (fileVersion > Version::ofModuleFileInBCD())
+		throw FileVersionError(FileType::Mod);
+	globCsr += 4;
+
+	while (globCsr < eof) {
+		if (ctr.readString(globCsr, 8) == "MODULE  ")
+			globCsr = loadModuleSection(mod, ctr, globCsr + 8, fileVersion);
+		else if (ctr.readString(globCsr, 8) == "INSTRMNT")
+			globCsr = loadInstrumentSection(instMan, ctr, globCsr + 8, fileVersion);
+		else if (ctr.readString(globCsr, 8) == "INSTPROP")
+			globCsr = loadInstrumentPropertySection(instMan, ctr, globCsr + 8, fileVersion);
+		else if (ctr.readString(globCsr, 8) == "GROOVE  ")
+			globCsr = loadGrooveSection(mod, ctr, globCsr + 8, fileVersion);
+		else if (ctr.readString(globCsr, 8) == "SONG    ")
+			globCsr = loadSongSection(mod, ctr, globCsr + 8, fileVersion);
+		else
+			throw FileCorruptionError(FileType::Mod, globCsr);
+	}
 }
 
 void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
