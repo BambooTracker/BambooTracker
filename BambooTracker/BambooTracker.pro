@@ -98,6 +98,7 @@ SOURCES += \
     gui/color_palette_handler.cpp \
     gui/command/instrument/instrument_command_qt_utils.cpp \
     gui/command/instrument/swap_instruments_qt_command.cpp \
+    gui/command/order_commands_qt.cpp \
     gui/command/pattern/change_values_in_pattern_qt_command.cpp \
     gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.cpp \
     gui/command/pattern/transpose_note_in_pattern_qt_command.cpp \
@@ -215,17 +216,13 @@ SOURCES += \
     command/instrument/clone_instrument_command.cpp \
     gui/command/instrument/clone_instrument_qt_command.cpp \
     command/order/set_pattern_to_order_command.cpp \
-    gui/command/order/set_pattern_to_order_qt_command.cpp \
     command/order/insert_order_below_command.cpp \
     command/order/delete_order_command.cpp \
-    gui/command/order/insert_order_below_qt_command.cpp \
-    gui/command/order/delete_order_qt_command.cpp \
     command/pattern/paste_copied_data_to_pattern_command.cpp \
     gui/command/pattern/paste_copied_data_to_pattern_qt_command.cpp \
     command/pattern/erase_cells_in_pattern_command.cpp \
     gui/command/pattern/erase_cells_in_pattern_qt_command.cpp \
     command/order/paste_copied_data_to_order_command.cpp \
-    gui/command/order/paste_copied_data_to_order_qt_command.cpp \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
     gui/instrument_editor/visualized_instrument_macro_editor.cpp \
@@ -245,10 +242,6 @@ SOURCES += \
     command/order/move_order_command.cpp \
     command/order/clone_patterns_command.cpp \
     command/order/clone_order_command.cpp \
-    gui/command/order/duplicate_order_qt_command.cpp \
-    gui/command/order/move_order_qt_command.cpp \
-    gui/command/order/clone_patterns_qt_command.cpp \
-    gui/command/order/clone_order_qt_command.cpp \
     gui/command/pattern/set_echo_buffer_access_qt_command.cpp \
     command/pattern/set_echo_buffer_access_command.cpp \
     gui/comment_edit_dialog.cpp \
@@ -300,6 +293,7 @@ HEADERS += \
     gui/color_palette_handler.hpp \
     gui/command/instrument/instrument_command_qt_utils.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
+    gui/command/order_commands_qt.hpp \
     gui/command/pattern/change_values_in_pattern_qt_command.hpp \
     gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.hpp \
     gui/command/pattern/transpose_note_in_pattern_qt_command.hpp \
@@ -427,18 +421,13 @@ HEADERS += \
     gui/command/instrument/clone_instrument_qt_command.hpp \
     gui/order_list_editor/order_position.hpp \
     command/order/set_pattern_to_order_command.hpp \
-    gui/command/order/set_pattern_to_order_qt_command.hpp \
-    gui/command/order/order_commands.hpp \
     command/order/insert_order_below_command.hpp \
     command/order/delete_order_command.hpp \
-    gui/command/order/insert_order_below_qt_command.hpp \
-    gui/command/order/delete_order_qt_command.hpp \
     command/pattern/paste_copied_data_to_pattern_command.hpp \
     gui/command/pattern/paste_copied_data_to_pattern_qt_command.hpp \
     command/pattern/erase_cells_in_pattern_command.hpp \
     gui/command/pattern/erase_cells_in_pattern_qt_command.hpp \
     command/order/paste_copied_data_to_order_command.hpp \
-    gui/command/order/paste_copied_data_to_order_qt_command.hpp \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
     gui/instrument_editor/visualized_instrument_macro_editor.hpp \
@@ -460,10 +449,6 @@ HEADERS += \
     command/order/move_order_command.hpp \
     command/order/clone_patterns_command.hpp \
     command/order/clone_order_command.hpp \
-    gui/command/order/duplicate_order_qt_command.hpp \
-    gui/command/order/move_order_qt_command.hpp \
-    gui/command/order/clone_patterns_qt_command.hpp \
-    gui/command/order/clone_order_qt_command.hpp \
     gui/command/pattern/set_echo_buffer_access_qt_command.hpp \
     command/pattern/set_echo_buffer_access_command.hpp \
     gui/comment_edit_dialog.hpp \

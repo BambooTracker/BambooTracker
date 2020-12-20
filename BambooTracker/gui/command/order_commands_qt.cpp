@@ -23,33 +23,43 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "set_pattern_to_order_qt_command.hpp"
-#include "command/command_id.hpp"
+#include "order_commands_qt.hpp"
+#include "gui/order_list_editor/order_list_panel.hpp"
 
-SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, bool secondEntry, QUndoCommand* parent)
-	: QUndoCommand(parent),
-	  panel_(panel),
+OrderListCommonQtCommand::OrderListCommonQtCommand(CommandId id, OrderListPanel* panel, bool orderLengthChanged, QUndoCommand* parent)
+	: QUndoCommand(parent), panel_(panel), id_(id), orderLenChanged_(orderLengthChanged)
+{
+}
+
+void OrderListCommonQtCommand::redo()
+{
+	panel_->onOrderEdited();
+	panel_->redrawByPatternChanged(orderLenChanged_);
+}
+
+void OrderListCommonQtCommand::undo()
+{
+	panel_->onOrderEdited();
+	panel_->redrawByPatternChanged(orderLenChanged_);
+}
+
+int OrderListCommonQtCommand::id() const
+{
+	return id_;
+}
+
+SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(
+		OrderListPanel* panel, const OrderPosition& pos, bool secondEntry, QUndoCommand* parent)
+	: OrderListCommonQtCommand(CommandId::SetPatternToOrder, panel, false, parent),
 	  pos_(pos),
 	  isSecondEntry_(secondEntry)
 {
 }
 
-void SetPatternToOrderQtCommand::redo()
-{
-	panel_->onOrderEdited();
-	panel_->redrawByPatternChanged();
-}
-
 void SetPatternToOrderQtCommand::undo()
 {
-	panel_->onOrderEdited();
-	panel_->redrawByPatternChanged();
+	OrderListCommonQtCommand::undo();
 	panel_->resetEntryCount();
-}
-
-int SetPatternToOrderQtCommand::id() const
-{
-	return CommandId::SetPatternToOrder;
 }
 
 bool SetPatternToOrderQtCommand::mergeWith(const QUndoCommand* other)
