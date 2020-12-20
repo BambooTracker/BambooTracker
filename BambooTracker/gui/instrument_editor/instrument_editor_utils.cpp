@@ -28,6 +28,8 @@
 #include <algorithm>
 #include "enum_hash.hpp"
 
+namespace inst_edit_utils
+{
 namespace
 {
 const std::unordered_map<VisualizedInstrumentMacroEditor::SequenceType, SequenceType> SEQ_TYPE_MAP = {
@@ -45,8 +47,6 @@ const std::unordered_map<VisualizedInstrumentMacroEditor::ReleaseType, ReleaseTy
 };
 }
 
-namespace inst_edit_utils
-{
 SequenceType convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type)
 {
 	return SEQ_TYPE_MAP.at(type);

@@ -29,6 +29,8 @@
 #include "instrument.hpp"
 #include "enum_hash.hpp"
 
+namespace gui_command_utils
+{
 namespace
 {
 const std::unordered_map<InstrumentType, const char*> ICON_SRC = {
@@ -39,8 +41,6 @@ const std::unordered_map<InstrumentType, const char*> ICON_SRC = {
 };
 }
 
-namespace gui_command_utils
-{
 QListWidgetItem* createInstrumentListItem(int num, InstrumentType type, QString name)
 {
 	QListWidgetItem *item = new QListWidgetItem(QIcon(ICON_SRC.at(type)), makeInstrumentListText(num, name));

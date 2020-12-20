@@ -38,6 +38,8 @@ extern "C"
 #include "nuked/nuke2608intf.h"
 }
 
+namespace chip
+{
 namespace
 {
 constexpr double VOL_REDUC_ = 7.5;
@@ -50,8 +52,6 @@ inline double clamp(double value, double low, double high)
 }
 }
 
-namespace chip
-{
 size_t OPNA::count_ = 0;
 
 OPNA::OPNA(OpnaEmulator emu, int clock, int rate, size_t maxDuration, size_t dramSize,

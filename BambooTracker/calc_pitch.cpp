@@ -25,6 +25,8 @@
 
 #include "calc_pitch.hpp"
 
+namespace calc_pitch
+{
 namespace
 {
 const uint16_t centTableFM[3072] = {
@@ -1064,8 +1066,6 @@ const uint16_t centTableSSGSaw[3072] = {
 };
 }
 
-namespace calc_pitch
-{
 uint16_t calculateFNumber(Note note, int octave, int pitch, int finePitch)
 {
 	uint16_t p = centTableFM[calculatePitchIndex(octave, note, pitch)];
