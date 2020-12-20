@@ -29,7 +29,7 @@
 PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum,
 																	   int beginTrack, int beginColumn,
 																	   int beginOrder, int beginStep,
-																	   std::vector<std::vector<std::string>> cells)
+																	   const std::vector<std::vector<std::string> >& cells)
 	: AbstractCommand(CommandId::PasteMixCopiedDataToPattern),
 	  mod_(mod),
 	  song_(songNum),

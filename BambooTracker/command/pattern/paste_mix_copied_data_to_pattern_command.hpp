@@ -35,7 +35,7 @@ class PasteMixCopiedDataToPatternCommand : public AbstractCommand
 {
 public:
 	PasteMixCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
-									   int beginOrder, int beginStep, std::vector<std::vector<std::string>> cells);
+									   int beginOrder, int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void redo() override;
 	void undo() override;
 

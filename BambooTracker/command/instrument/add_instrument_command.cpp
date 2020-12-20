@@ -27,7 +27,7 @@
 #include <utility>
 
 AddInstrumentCommand::AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
-										   int num, InstrumentType type, std::string name)
+										   int num, InstrumentType type, const std::string& name)
 	: AbstractCommand(CommandId::AddInstrument),
 	  manager_(manager),
 	  num_(num),
@@ -40,9 +40,9 @@ AddInstrumentCommand::AddInstrumentCommand(std::weak_ptr<InstrumentsManager> man
 										   std::unique_ptr<AbstractInstrument> inst)
 	: AbstractCommand(CommandId::AddInstrument),
 	  manager_(manager),
+	  num_(inst->getNumber()),
 	  inst_(std::move(inst))
 {
-	num_ = inst_->getNumber();
 }
 
 void AddInstrumentCommand::redo()

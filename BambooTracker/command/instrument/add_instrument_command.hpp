@@ -35,7 +35,7 @@ class AddInstrumentCommand : public AbstractCommand
 {
 public:
 	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
-						 int num, InstrumentType type, std::string name);
+						 int num, InstrumentType type, const std::string& name);
 	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
 						 std::unique_ptr<AbstractInstrument> inst);
 	void redo() override;

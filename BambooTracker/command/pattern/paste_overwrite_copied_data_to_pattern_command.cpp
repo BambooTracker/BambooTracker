@@ -26,9 +26,8 @@
 #include "paste_overwrite_copied_data_to_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
-PasteOverwriteCopiedDataToPatternCommand::PasteOverwriteCopiedDataToPatternCommand(
-		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
-		int beginOrder, int beginStep, std::vector<std::vector<std::string>> cells)
+PasteOverwriteCopiedDataToPatternCommand::PasteOverwriteCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
+		int beginOrder, int beginStep, const std::vector<std::vector<std::string>>& cells)
 	: AbstractCommand(CommandId::PasteOverwriteCopiedDataToPattern),
 	  mod_(mod),
 	  song_(songNum),

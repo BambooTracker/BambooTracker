@@ -35,7 +35,7 @@ class PasteCopiedDataToOrderCommand : public AbstractCommand
 {
 public:
 	PasteCopiedDataToOrderCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginOrder,
-								  std::vector<std::vector<std::string>> cells);
+								  const std::vector<std::vector<std::string>>& cells);
 	void redo() override;
 	void undo() override;
 
@@ -44,5 +44,5 @@ private:
 	int song_, track_, order_;
 	std::vector<std::vector<std::string>> cells_, prevCells_;
 
-	void setCells(std::vector<std::vector<std::string>>& cells);
+	void setCells(const std::vector<std::vector<std::string>>& cells);
 };

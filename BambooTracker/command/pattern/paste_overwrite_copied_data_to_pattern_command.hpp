@@ -36,7 +36,7 @@ class PasteOverwriteCopiedDataToPatternCommand : public AbstractCommand
 public:
 	PasteOverwriteCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
 											 int beginOrder, int beginStep,
-											 std::vector<std::vector<std::string>> cells);
+											 const std::vector<std::vector<std::string>>& cells);
 	void redo() override;
 	void undo() override;
 

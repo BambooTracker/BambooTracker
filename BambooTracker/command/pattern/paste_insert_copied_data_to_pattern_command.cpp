@@ -27,9 +27,8 @@
 #include <algorithm>
 #include "pattern_command_utils.hpp"
 
-PasteInsertCopiedDataToPatternCommand::PasteInsertCopiedDataToPatternCommand(
-		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
-		int beginOrder, int beginStep, std::vector<std::vector<std::string>> cells)
+PasteInsertCopiedDataToPatternCommand::PasteInsertCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
+		int beginOrder, int beginStep, const std::vector<std::vector<std::string> >& cells)
 	: AbstractCommand(CommandId::PasteInsertCopiedDataToPattern),
 	  mod_(mod),
 	  song_(songNum),

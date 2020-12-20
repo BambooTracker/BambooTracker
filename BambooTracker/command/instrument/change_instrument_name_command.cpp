@@ -26,7 +26,7 @@
 #include "change_instrument_name_command.hpp"
 
 ChangeInstrumentNameCommand::ChangeInstrumentNameCommand(std::weak_ptr<InstrumentsManager> manager,
-														 int num, std::string name)
+														 int num, const std::string& name)
 	: AbstractCommand(CommandId::ChangeInstrumentName),
 	  manager_(manager),
 	  instNum_(num),

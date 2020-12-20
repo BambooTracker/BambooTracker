@@ -34,7 +34,7 @@ class ChangeInstrumentNameCommand : public AbstractCommand
 {
 public:
 	ChangeInstrumentNameCommand(std::weak_ptr<InstrumentsManager> manager,
-								int num, std::string name);
+								int num, const std::string& name);
 	void redo() override;
 	void undo() override;
 

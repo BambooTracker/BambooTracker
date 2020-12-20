@@ -27,7 +27,7 @@
 #include "track.hpp"
 
 PasteCopiedDataToOrderCommand::PasteCopiedDataToOrderCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginOrder,
-															 std::vector<std::vector<std::string>> cells)
+															 const std::vector<std::vector<std::string>>& cells)
 	: AbstractCommand(CommandId::PasteCopiedDataToOrder),
 	  mod_(mod),
 	  song_(songNum),
@@ -55,7 +55,7 @@ void PasteCopiedDataToOrderCommand::undo()
 	setCells(prevCells_);
 }
 
-void PasteCopiedDataToOrderCommand::setCells(std::vector<std::vector<std::string>>& cells)
+void PasteCopiedDataToOrderCommand::setCells(const std::vector<std::vector<std::string>>& cells)
 {
 	auto& sng = mod_.lock()->getSong(song_);
 
