@@ -31,7 +31,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class ExpandPatternCommand : public AbstractCommand
+class ExpandPatternCommand final : public AbstractCommand
 {
 public:
 	ExpandPatternCommand(std::weak_ptr<Module> mod, int songNum,

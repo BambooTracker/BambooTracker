@@ -30,7 +30,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class ReplaceInstrumentInPatternCommand : public AbstractCommand
+class ReplaceInstrumentInPatternCommand final : public AbstractCommand
 {
 public:
 	ReplaceInstrumentInPatternCommand(std::weak_ptr<Module> mod, int songNum,

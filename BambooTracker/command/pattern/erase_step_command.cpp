@@ -26,7 +26,8 @@
 #include "erase_step_command.hpp"
 #include "pattern_command_utils.hpp"
 
-EraseStepCommand::EraseStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
+EraseStepCommand::EraseStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
 	: AbstractCommand(CommandId::EraseStep),
 	  mod_(mod),
 	  song_(songNum),

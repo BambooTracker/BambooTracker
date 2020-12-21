@@ -26,10 +26,9 @@
 #include "shrink_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
-ShrinkPatternCommand::ShrinkPatternCommand(std::weak_ptr<Module> mod,
-										   int songNum, int beginTrack, int beginColumn,
-										   int beginOrder, int beginStep,
-										   int endTrack, int endColumn, int endStep)
+ShrinkPatternCommand::ShrinkPatternCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
+		int beginOrder, int beginStep, int endTrack, int endColumn, int endStep)
 	: AbstractCommand(CommandId::ShrinkPattern),
 	  mod_(mod),
 	  song_(songNum),

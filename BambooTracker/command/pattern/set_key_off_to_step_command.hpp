@@ -30,7 +30,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class SetKeyOffToStepCommand : public AbstractCommand
+class SetKeyOffToStepCommand final : public AbstractCommand
 {
 public:
 	SetKeyOffToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,

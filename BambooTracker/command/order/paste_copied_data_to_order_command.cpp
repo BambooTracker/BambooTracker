@@ -26,8 +26,9 @@
 #include "paste_copied_data_to_order_command.hpp"
 #include "track.hpp"
 
-PasteCopiedDataToOrderCommand::PasteCopiedDataToOrderCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginOrder,
-															 const std::vector<std::vector<std::string>>& cells)
+PasteCopiedDataToOrderCommand::PasteCopiedDataToOrderCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginOrder,
+		const std::vector<std::vector<std::string>>& cells)
 	: AbstractCommand(CommandId::PasteCopiedDataToOrder),
 	  mod_(mod),
 	  song_(songNum),

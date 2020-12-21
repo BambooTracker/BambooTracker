@@ -30,7 +30,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class SetEchoBufferAccessCommand : public AbstractCommand
+class SetEchoBufferAccessCommand final : public AbstractCommand
 {
 public:
 	SetEchoBufferAccessCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,

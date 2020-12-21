@@ -30,7 +30,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class ClonePatternsCommand : public AbstractCommand
+class ClonePatternsCommand final : public AbstractCommand
 {
 public:
 	ClonePatternsCommand(std::weak_ptr<Module> mod, int songNum,

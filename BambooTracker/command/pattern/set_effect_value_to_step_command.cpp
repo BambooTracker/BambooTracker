@@ -27,9 +27,9 @@
 #include "pattern_command_utils.hpp"
 #include "effect.hpp"
 
-SetEffectValueToStepCommand::SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
-														 int orderNum, int stepNum, int n, int value,
-														 EffectDisplayControl ctrl, bool secondEntry)
+SetEffectValueToStepCommand::SetEffectValueToStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
+		int n, int value, EffectDisplayControl ctrl, bool secondEntry)
 	: AbstractCommand(CommandId::SetEffectValueToStep),
 	  mod_(mod),
 	  song_(songNum),

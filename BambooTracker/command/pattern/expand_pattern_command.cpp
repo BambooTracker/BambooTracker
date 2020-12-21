@@ -26,10 +26,9 @@
 #include "expand_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
-ExpandPatternCommand::ExpandPatternCommand(std::weak_ptr<Module> mod,
-										   int songNum, int beginTrack, int beginColumn,
-										   int beginOrder, int beginStep,
-										   int endTrack, int endColumn, int endStep)
+ExpandPatternCommand::ExpandPatternCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
+		int beginOrder, int beginStep, int endTrack, int endColumn, int endStep)
 	: AbstractCommand(CommandId::ExpandPattern),
 	  mod_(mod),
 	  song_(songNum),

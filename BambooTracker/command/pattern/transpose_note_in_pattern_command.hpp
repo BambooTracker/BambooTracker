@@ -30,7 +30,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class TransposeNoteInPatternCommand : public AbstractCommand
+class TransposeNoteInPatternCommand final : public AbstractCommand
 {
 public:
 	TransposeNoteInPatternCommand(std::weak_ptr<Module> mod, int songNum,

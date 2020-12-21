@@ -26,8 +26,8 @@
 #include "insert_step_command.hpp"
 #include "pattern_command_utils.hpp"
 
-InsertStepCommand::InsertStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
-									 int orderNum, int stepNum)
+InsertStepCommand::InsertStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
 	: AbstractCommand(CommandId::InsertStep),
 	  mod_(mod),
 	  song_(songNum),

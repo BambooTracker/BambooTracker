@@ -34,10 +34,9 @@ inline int interp(int a, int b, size_t t, int div)
 }
 }
 
-InterpolatePatternCommand::InterpolatePatternCommand(std::weak_ptr<Module> mod,
-													 int songNum, int beginTrack, int beginColumn,
-													 int beginOrder, int beginStep,
-													 int endTrack, int endColumn, int endStep)
+InterpolatePatternCommand::InterpolatePatternCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
+		int beginOrder, int beginStep, int endTrack, int endColumn, int endStep)
 	: AbstractCommand(CommandId::InterpolatePattern),
 	  mod_(mod),
 	  song_(songNum),

@@ -31,7 +31,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class EraseCellsInPatternCommand : public AbstractCommand
+class EraseCellsInPatternCommand final : public AbstractCommand
 {
 public:
 	EraseCellsInPatternCommand(std::weak_ptr<Module> mod, int songNum,

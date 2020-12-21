@@ -29,7 +29,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class SetInstrumentToStepCommand : public AbstractCommand
+class SetInstrumentToStepCommand final : public AbstractCommand
 {
 public:
 	SetInstrumentToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,

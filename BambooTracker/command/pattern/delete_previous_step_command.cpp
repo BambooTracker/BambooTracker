@@ -26,8 +26,8 @@
 #include "delete_previous_step_command.hpp"
 #include "pattern_command_utils.hpp"
 
-DeletePreviousStepCommand::DeletePreviousStepCommand(std::weak_ptr<Module> mod, int songNum,
-													 int trackNum, int orderNum, int stepNum)
+DeletePreviousStepCommand::DeletePreviousStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
 	: AbstractCommand(CommandId::DeletePreviousStep),
 	  mod_(mod),
 	  song_(songNum),

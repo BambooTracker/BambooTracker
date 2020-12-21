@@ -29,11 +29,11 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class SetVolumeToStepCommand : public AbstractCommand
+class SetVolumeToStepCommand final : public AbstractCommand
 {
 public:
-	SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
-						   int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry);
+	SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum,
+						   int stepNum, int volume, bool isFMReversed, bool secondEntry);
 	void redo() override;
 	void undo() override;
 	bool mergeWith(const AbstractCommand* other) override;

@@ -27,10 +27,9 @@
 #include "pattern_command_utils.hpp"
 #include "misc.hpp"
 
-TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(std::weak_ptr<Module> mod,
-															 int songNum, int beginTrack,
-															 int beginOrder, int beginStep,
-															 int endTrack, int endStep, int seminote)
+TransposeNoteInPatternCommand::TransposeNoteInPatternCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack,
+		int beginOrder, int beginStep, int endTrack, int endStep, int seminote)
 	: AbstractCommand(CommandId::TransposeNoteInPattern),
 	  mod_(mod),
 	  song_(songNum),

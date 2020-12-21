@@ -30,7 +30,7 @@
 #include "instruments_manager.hpp"
 #include "module.hpp"
 
-class SwapInstrumentsCommand : public AbstractCommand
+class SwapInstrumentsCommand final : public AbstractCommand
 {
 public:
 	SwapInstrumentsCommand(std::weak_ptr<InstrumentsManager> manager, std::weak_ptr<Module> mod,

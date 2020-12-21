@@ -29,7 +29,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class MoveOrderCommand : public AbstractCommand
+class MoveOrderCommand final : public AbstractCommand
 {
 public:
 	MoveOrderCommand(std::weak_ptr<Module> mod, int songNum, int orderNum, bool isUp);

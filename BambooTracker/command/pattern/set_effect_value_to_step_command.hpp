@@ -30,7 +30,7 @@
 #include "module.hpp"
 #include "misc.hpp"
 
-class SetEffectValueToStepCommand : public AbstractCommand
+class SetEffectValueToStepCommand final : public AbstractCommand
 {
 public:
 	SetEffectValueToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,

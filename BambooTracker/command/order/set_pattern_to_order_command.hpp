@@ -29,7 +29,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class SetPatternToOrderCommand : public AbstractCommand
+class SetPatternToOrderCommand final : public AbstractCommand
 {
 public:
 	SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,

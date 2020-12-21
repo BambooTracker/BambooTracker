@@ -26,10 +26,9 @@
 #include "paste_mix_copied_data_to_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
-PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum,
-																	   int beginTrack, int beginColumn,
-																	   int beginOrder, int beginStep,
-																	   const std::vector<std::vector<std::string> >& cells)
+PasteMixCopiedDataToPatternCommand::PasteMixCopiedDataToPatternCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
+		int beginOrder, int beginStep, const std::vector<std::vector<std::string>>& cells)
 	: AbstractCommand(CommandId::PasteMixCopiedDataToPattern),
 	  mod_(mod),
 	  song_(songNum),

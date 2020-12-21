@@ -29,11 +29,12 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class SetKeyOnToStepCommand : public AbstractCommand
+class SetKeyOnToStepCommand final : public AbstractCommand
 {
 public:
-	SetKeyOnToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
-						  int noteNum, bool instMask, int instNum, bool volMask, int vol, bool isFMReversed);
+	SetKeyOnToStepCommand(
+			std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
+			int noteNum, bool instMask, int instNum, bool volMask, int vol, bool isFMReversed);
 	void redo() override;
 	void undo() override;
 

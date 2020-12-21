@@ -29,7 +29,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class InsertStepCommand : public AbstractCommand
+class InsertStepCommand final : public AbstractCommand
 {
 public:
 	InsertStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum);

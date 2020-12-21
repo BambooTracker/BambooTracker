@@ -30,7 +30,7 @@
 #include "instruments_manager.hpp"
 #include "instrument.hpp"
 
-class RemoveInstrumentCommand : public AbstractCommand
+class RemoveInstrumentCommand final : public AbstractCommand
 {
 public:
 	RemoveInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int number);

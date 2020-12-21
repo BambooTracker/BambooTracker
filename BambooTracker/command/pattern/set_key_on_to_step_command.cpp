@@ -27,8 +27,9 @@
 #include "pattern_command_utils.hpp"
 #include "effect.hpp"
 
-SetKeyOnToStepCommand::SetKeyOnToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum,
-											 int stepNum, int noteNum, bool instMask, int instNum, bool volMask, int vol, bool isFMReversed)
+SetKeyOnToStepCommand::SetKeyOnToStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
+		int noteNum, bool instMask, int instNum, bool volMask, int vol, bool isFMReversed)
 	: AbstractCommand(CommandId::SetKeyOnToStep),
 	  mod_(mod),
 	  song_(songNum),

@@ -30,7 +30,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class ChangeValuesInPatternCommand : public AbstractCommand
+class ChangeValuesInPatternCommand final : public AbstractCommand
 {
 public:
 	ChangeValuesInPatternCommand(std::weak_ptr<Module> mod, int songNum,

@@ -29,7 +29,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class InsertOrderBelowCommand : public AbstractCommand
+class InsertOrderBelowCommand final : public AbstractCommand
 {
 public:
 	InsertOrderBelowCommand(std::weak_ptr<Module> mod, int songNum, int orderNum);

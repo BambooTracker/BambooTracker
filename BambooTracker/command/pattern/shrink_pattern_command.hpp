@@ -31,7 +31,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class ShrinkPatternCommand : public AbstractCommand
+class ShrinkPatternCommand final : public AbstractCommand
 {
 public:
 	ShrinkPatternCommand(std::weak_ptr<Module> mod, int songNum,

@@ -26,7 +26,9 @@
 #include "set_instrument_to_step_command.hpp"
 #include "pattern_command_utils.hpp"
 
-SetInstrumentToStepCommand::SetInstrumentToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int instNum, bool secondEntry)
+SetInstrumentToStepCommand::SetInstrumentToStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum,
+		int stepNum, int instNum, bool secondEntry)
 	: AbstractCommand(CommandId::SetInstrumentInStep),
 	  mod_(mod),
 	  song_(songNum),

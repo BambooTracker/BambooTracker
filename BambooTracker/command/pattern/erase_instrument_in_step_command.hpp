@@ -29,7 +29,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class EraseInstrumentInStepCommand : public AbstractCommand
+class EraseInstrumentInStepCommand final : public AbstractCommand
 {
 public:
 	EraseInstrumentInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,

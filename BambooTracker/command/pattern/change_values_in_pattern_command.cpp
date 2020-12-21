@@ -27,9 +27,9 @@
 #include "pattern_command_utils.hpp"
 #include "misc.hpp"
 
-ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack,
-														   int beginColumn, int beginOrder, int beginStep,
-														   int endTrack, int endColumn, int endStep, int value, bool isFMReversed)
+ChangeValuesInPatternCommand::ChangeValuesInPatternCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn, int beginOrder,
+		int beginStep, int endTrack, int endColumn, int endStep, int value, bool isFMReversed)
 	: AbstractCommand(CommandId::ChangeValuesInPattern),
 	  mod_(mod),
 	  song_(songNum),

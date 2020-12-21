@@ -29,7 +29,7 @@
 #include "../abstract_command.hpp"
 #include "instruments_manager.hpp"
 
-class DeepCloneInstrumentCommand : public AbstractCommand
+class DeepCloneInstrumentCommand final : public AbstractCommand
 {
 public:
 	DeepCloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, int refNum);

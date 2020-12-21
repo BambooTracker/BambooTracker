@@ -31,7 +31,7 @@
 #include "instrument.hpp"
 #include "instruments_manager.hpp"
 
-class AddInstrumentCommand : public AbstractCommand
+class AddInstrumentCommand final : public AbstractCommand
 {
 public:
 	AddInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,

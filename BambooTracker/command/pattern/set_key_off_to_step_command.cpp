@@ -26,7 +26,8 @@
 #include "set_key_off_to_step_command.hpp"
 #include "pattern_command_utils.hpp"
 
-SetKeyOffToStepCommand::SetKeyOffToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
+SetKeyOffToStepCommand::SetKeyOffToStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
 	: AbstractCommand(CommandId::SetKeyOffToStep),
 	  mod_(mod),
 	  song_(songNum),

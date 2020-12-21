@@ -31,7 +31,7 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class ReversePatternCommand : public AbstractCommand
+class ReversePatternCommand final : public AbstractCommand
 {
 public:
 	ReversePatternCommand(std::weak_ptr<Module> mod, int songNum,

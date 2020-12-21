@@ -31,11 +31,12 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class PasteInsertCopiedDataToPatternCommand : public AbstractCommand
+class PasteInsertCopiedDataToPatternCommand final : public AbstractCommand
 {
 public:
-	PasteInsertCopiedDataToPatternCommand(std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
-										  int beginOrder, int beginStep, const std::vector<std::vector<std::string>>& cells);
+	PasteInsertCopiedDataToPatternCommand(
+			std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
+			int beginOrder, int beginStep, const std::vector<std::vector<std::string>>& cells);
 	void redo() override;
 	void undo() override;
 

@@ -28,7 +28,9 @@
 #include "effect.hpp"
 #include "misc.hpp"
 
-SetVolumeToStepCommand::SetVolumeToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int volume, bool isFMReversed, bool secondEntry)
+SetVolumeToStepCommand::SetVolumeToStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum,
+		int stepNum, int volume, bool isFMReversed, bool secondEntry)
 	: AbstractCommand(CommandId::SetVolumeToStep),
 	  mod_(mod),
 	  song_(songNum),

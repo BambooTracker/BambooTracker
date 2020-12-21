@@ -30,11 +30,12 @@
 #include "../abstract_command.hpp"
 #include "module.hpp"
 
-class SetEffectIDToStepCommand : public AbstractCommand
+class SetEffectIDToStepCommand final : public AbstractCommand
 {
 public:
-	SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
-							 int n, std::string id, bool fillValue00, bool secondEntry);
+	SetEffectIDToStepCommand(
+			std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
+			int n, std::string id, bool fillValue00, bool secondEntry);
 	void redo() override;
 	void undo() override;
 	bool mergeWith(const AbstractCommand* other) override;

@@ -26,10 +26,9 @@
 #include "replace_instrument_in_pattern_command.hpp"
 #include "pattern_command_utils.hpp"
 
-ReplaceInstrumentInPatternCommand::ReplaceInstrumentInPatternCommand(std::weak_ptr<Module> mod,
-																	 int songNum, int beginTrack,
-																	 int beginOrder, int beginStep,
-																	 int endTrack, int endStep, int newInst)
+ReplaceInstrumentInPatternCommand::ReplaceInstrumentInPatternCommand(
+		std::weak_ptr<Module> mod, int songNum, int beginTrack,
+		int beginOrder, int beginStep, int endTrack, int endStep, int newInst)
 	: AbstractCommand(CommandId::ReplaceInstrumentInPattern),
 	  mod_(mod),
 	  song_(songNum),

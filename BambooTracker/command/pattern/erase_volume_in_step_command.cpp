@@ -26,7 +26,8 @@
 #include "erase_volume_in_step_command.hpp"
 #include "pattern_command_utils.hpp"
 
-EraseVolumeInStepCommand::EraseVolumeInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
+EraseVolumeInStepCommand::EraseVolumeInStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
 	: AbstractCommand(CommandId::EraseVolumeInStep),
 	  mod_(mod),
 	  song_(songNum),

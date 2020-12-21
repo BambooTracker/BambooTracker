@@ -26,10 +26,9 @@
 #include "set_effect_id_to_step_command.hpp"
 #include "pattern_command_utils.hpp"
 
-SetEffectIDToStepCommand::SetEffectIDToStepCommand(std::weak_ptr<Module> mod, int songNum,
-												   int trackNum, int orderNum, int stepNum,
-												   int n, std::string id, bool fillValue00,
-												   bool secondEntry)
+SetEffectIDToStepCommand::SetEffectIDToStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum,
+		int n, std::string id, bool fillValue00, bool secondEntry)
 	: AbstractCommand(CommandId::SetEffectIDToStep),
 	  mod_(mod),
 	  song_(songNum),
