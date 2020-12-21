@@ -99,9 +99,7 @@ SOURCES += \
     gui/command/instrument/instrument_command_qt_utils.cpp \
     gui/command/instrument/swap_instruments_qt_command.cpp \
     gui/command/order_commands_qt.cpp \
-    gui/command/pattern/change_values_in_pattern_qt_command.cpp \
-    gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.cpp \
-    gui/command/pattern/transpose_note_in_pattern_qt_command.cpp \
+    gui/command/pattern/pattern_editor_common_qt_command.cpp \
     gui/drop_detect_list_widget.cpp \
     gui/effect_description.cpp \
     gui/effect_list_dialog.cpp \
@@ -185,31 +183,18 @@ SOURCES += \
     gui/pattern_editor/pattern_editor_panel.cpp \
     gui/pattern_editor/pattern_editor.cpp \
     gui/instrument_editor/instrument_editor_ssg_form.cpp \
-    gui/command/pattern/set_key_off_to_step_qt_command.cpp \
     command/pattern/set_key_off_to_step_command.cpp \
     command/pattern/set_key_on_to_step_command.cpp \
-    gui/command/pattern/set_key_on_to_step_qt_command.cpp \
-    gui/command/pattern/set_instrument_to_step_qt_command.cpp \
     command/pattern/set_instrument_to_step_command.cpp \
-    gui/command/pattern/erase_instrument_in_step_qt_command.cpp \
     command/pattern/erase_instrument_in_step_command.cpp \
-    gui/command/pattern/set_volume_to_step_qt_command.cpp \
     command/pattern/set_volume_to_step_command.cpp \
-    gui/command/pattern/erase_volume_in_step_qt_command.cpp \
     command/pattern/erase_volume_in_step_command.cpp \
     command/pattern/set_effect_id_to_step_command.cpp \
-    gui/command/pattern/set_effect_id_to_step_qt_command.cpp \
     command/pattern/erase_effect_in_step_command.cpp \
-    gui/command/pattern/erase_effect_in_step_qt_command.cpp \
     command/pattern/set_effect_value_to_step_command.cpp \
-    gui/command/pattern/set_effect_value_to_step_qt_command.cpp \
     command/pattern/erase_effect_value_in_step_command.cpp \
-    gui/command/pattern/erase_effect_value_in_step_qt_command.cpp \
     command/pattern/insert_step_command.cpp \
     command/pattern/delete_previous_step_command.cpp \
-    gui/command/pattern/insert_step_qt_command.cpp \
-    gui/command/pattern/delete_previous_step_qt_command.cpp \
-    gui/command/pattern/erase_step_qt_command.cpp \
     command/pattern/erase_step_command.cpp \
     gui/command/instrument/deep_clone_instrument_qt_command.cpp \
     command/instrument/deep_clone_instrument_command.cpp \
@@ -219,9 +204,7 @@ SOURCES += \
     command/order/insert_order_below_command.cpp \
     command/order/delete_order_command.cpp \
     command/pattern/paste_copied_data_to_pattern_command.cpp \
-    gui/command/pattern/paste_copied_data_to_pattern_qt_command.cpp \
     command/pattern/erase_cells_in_pattern_command.cpp \
-    gui/command/pattern/erase_cells_in_pattern_qt_command.cpp \
     command/order/paste_copied_data_to_order_command.cpp \
     gui/instrument_editor/instrument_form_manager.cpp \
     instrument/lfo_fm.cpp \
@@ -229,35 +212,27 @@ SOURCES += \
     instrument/command_sequence.cpp \
     instrument/effect_iterator.cpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.cpp \
-    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.cpp \
     gui/module_properties_dialog.cpp \
     gui/groove_settings_dialog.cpp \
     gui/configuration_dialog.cpp \
     command/pattern/expand_pattern_command.cpp \
-    gui/command/pattern/expand_pattern_qt_command.cpp \
     command/pattern/shrink_pattern_command.cpp \
-    gui/command/pattern/shrink_pattern_qt_command.cpp \
     instrument/abstract_instrument_property.cpp \
     command/order/duplicate_order_command.cpp \
     command/order/move_order_command.cpp \
     command/order/clone_patterns_command.cpp \
     command/order/clone_order_command.cpp \
-    gui/command/pattern/set_echo_buffer_access_qt_command.cpp \
     command/pattern/set_echo_buffer_access_command.cpp \
     gui/comment_edit_dialog.cpp \
     io/binary_container.cpp \
-    gui/command/pattern/interpolate_pattern_qt_command.cpp \
     command/pattern/interpolate_pattern_command.cpp \
-    gui/command/pattern/reverse_pattern_qt_command.cpp \
     command/pattern/reverse_pattern_command.cpp \
-    gui/command/pattern/replace_instrument_in_pattern_qt_command.cpp \
     command/pattern/replace_instrument_in_pattern_command.cpp \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
     gui/configuration_handler.cpp \
     gui/color_palette.cpp \
-    gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.cpp \
     command/pattern/paste_overwrite_copied_data_to_pattern_command.cpp \
     format/wopn_file.c \
     instrument/bank.cpp \
@@ -295,9 +270,7 @@ HEADERS += \
     gui/command/instrument/instrument_commands_qt.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
     gui/command/order_commands_qt.hpp \
-    gui/command/pattern/change_values_in_pattern_qt_command.hpp \
-    gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.hpp \
-    gui/command/pattern/transpose_note_in_pattern_qt_command.hpp \
+    gui/command/pattern/pattern_editor_common_qt_command.hpp \
     gui/drop_detect_list_widget.hpp \
     gui/effect_description.hpp \
     gui/effect_list_dialog.hpp \
@@ -387,33 +360,20 @@ HEADERS += \
     gui/pattern_editor/pattern_editor_panel.hpp \
     gui/pattern_editor/pattern_editor.hpp \
     gui/instrument_editor/instrument_editor_ssg_form.hpp \
-    gui/command/pattern/set_key_off_to_step_qt_command.hpp \
     command/pattern/set_key_off_to_step_command.hpp \
     gui/command/pattern/pattern_commands_qt.hpp \
     command/pattern/set_key_on_to_step_command.hpp \
-    gui/command/pattern/set_key_on_to_step_qt_command.hpp \
     gui/pattern_editor/pattern_position.hpp \
-    gui/command/pattern/set_instrument_to_step_qt_command.hpp \
     command/pattern/set_instrument_to_step_command.hpp \
-    gui/command/pattern/erase_instrument_in_step_qt_command.hpp \
     command/pattern/erase_instrument_in_step_command.hpp \
-    gui/command/pattern/set_volume_to_step_qt_command.hpp \
     command/pattern/set_volume_to_step_command.hpp \
-    gui/command/pattern/erase_volume_in_step_qt_command.hpp \
     command/pattern/erase_volume_in_step_command.hpp \
     command/pattern/set_effect_id_to_step_command.hpp \
-    gui/command/pattern/set_effect_id_to_step_qt_command.hpp \
     command/pattern/erase_effect_in_step_command.hpp \
-    gui/command/pattern/erase_effect_in_step_qt_command.hpp \
     command/pattern/set_effect_value_to_step_command.hpp \
-    gui/command/pattern/set_effect_value_to_step_qt_command.hpp \
     command/pattern/erase_effect_value_in_step_command.hpp \
-    gui/command/pattern/erase_effect_value_in_step_qt_command.hpp \
     command/pattern/insert_step_command.hpp \
     command/pattern/delete_previous_step_command.hpp \
-    gui/command/pattern/insert_step_qt_command.hpp \
-    gui/command/pattern/delete_previous_step_qt_command.hpp \
-    gui/command/pattern/erase_step_qt_command.hpp \
     command/pattern/erase_step_command.hpp \
     gui/command/instrument/deep_clone_instrument_qt_command.hpp \
     command/instrument/deep_clone_instrument_command.hpp \
@@ -424,9 +384,7 @@ HEADERS += \
     command/order/insert_order_below_command.hpp \
     command/order/delete_order_command.hpp \
     command/pattern/paste_copied_data_to_pattern_command.hpp \
-    gui/command/pattern/paste_copied_data_to_pattern_qt_command.hpp \
     command/pattern/erase_cells_in_pattern_command.hpp \
-    gui/command/pattern/erase_cells_in_pattern_qt_command.hpp \
     command/order/paste_copied_data_to_order_command.hpp \
     gui/instrument_editor/instrument_form_manager.hpp \
     instrument/lfo_fm.hpp \
@@ -435,37 +393,29 @@ HEADERS += \
     instrument/sequence_iterator_interface.hpp \
     instrument/effect_iterator.hpp \
     command/pattern/paste_mix_copied_data_to_pattern_command.hpp \
-    gui/command/pattern/paste_mix_copied_data_to_pattern_qt_command.hpp \
     gui/module_properties_dialog.hpp \
     gui/groove_settings_dialog.hpp \
     gui/configuration_dialog.hpp \
     command/pattern/expand_pattern_command.hpp \
-    gui/command/pattern/expand_pattern_qt_command.hpp \
     command/pattern/shrink_pattern_command.hpp \
-    gui/command/pattern/shrink_pattern_qt_command.hpp \
     command/abstract_command.hpp \
     instrument/abstract_instrument_property.hpp \
     command/order/duplicate_order_command.hpp \
     command/order/move_order_command.hpp \
     command/order/clone_patterns_command.hpp \
     command/order/clone_order_command.hpp \
-    gui/command/pattern/set_echo_buffer_access_qt_command.hpp \
     command/pattern/set_echo_buffer_access_command.hpp \
     gui/comment_edit_dialog.hpp \
     io/binary_container.hpp \
     version.hpp \
-    gui/command/pattern/interpolate_pattern_qt_command.hpp \
     command/pattern/interpolate_pattern_command.hpp \
-    gui/command/pattern/reverse_pattern_qt_command.hpp \
     command/pattern/reverse_pattern_command.hpp \
-    gui/command/pattern/replace_instrument_in_pattern_qt_command.hpp \
     command/pattern/replace_instrument_in_pattern_command.hpp \
     gui/vgm_export_settings_dialog.hpp \
     gui/wave_export_settings_dialog.hpp \
     configuration.hpp \
     gui/configuration_handler.hpp \
     gui/color_palette.hpp \
-    gui/command/pattern/paste_overwrite_copied_data_to_pattern_qt_command.hpp \
     command/pattern/paste_overwrite_copied_data_to_pattern_command.hpp \
     io/file_io_error.hpp \
     format/wopn_file.h \

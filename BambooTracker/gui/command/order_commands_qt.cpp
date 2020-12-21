@@ -26,7 +26,8 @@
 #include "order_commands_qt.hpp"
 #include "gui/order_list_editor/order_list_panel.hpp"
 
-OrderListCommonQtCommand::OrderListCommonQtCommand(CommandId id, OrderListPanel* panel, bool orderLengthChanged, QUndoCommand* parent)
+OrderListCommonQtCommand::OrderListCommonQtCommand(
+		CommandId id, OrderListPanel* panel, bool orderLengthChanged, QUndoCommand* parent)
 	: QUndoCommand(parent), panel_(panel), id_(id), orderLenChanged_(orderLengthChanged)
 {
 }

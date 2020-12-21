@@ -41,7 +41,8 @@ public:
 
 protected:
 	OrderListPanel* panel_;
-	OrderListCommonQtCommand(CommandId id, OrderListPanel* panel, bool orderLengthChanged, QUndoCommand* parent);
+	OrderListCommonQtCommand(CommandId id, OrderListPanel* panel,
+							 bool orderLengthChanged, QUndoCommand* parent);
 
 private:
 	CommandId id_;

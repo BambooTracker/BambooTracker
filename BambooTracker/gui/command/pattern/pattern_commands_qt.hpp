@@ -26,32 +26,33 @@
 #ifndef PATTERN_COMMANDS_QT_HPP
 #define PATTERN_COMMANDS_QT_HPP
 
-/********** Pattern edit **********/
-#include "set_key_on_to_step_qt_command.hpp"
-#include "set_key_off_to_step_qt_command.hpp"
-#include "erase_step_qt_command.hpp"
-#include "set_instrument_to_step_qt_command.hpp"
-#include "erase_instrument_in_step_qt_command.hpp"
-#include "set_volume_to_step_qt_command.hpp"
-#include "erase_volume_in_step_qt_command.hpp"
-#include "set_effect_id_to_step_qt_command.hpp"
-#include "erase_effect_in_step_qt_command.hpp"
-#include "set_effect_value_to_step_qt_command.hpp"
-#include "erase_effect_value_in_step_qt_command.hpp"
-#include "insert_step_qt_command.hpp"
-#include "delete_previous_step_qt_command.hpp"
-#include "paste_copied_data_to_pattern_qt_command.hpp"
-#include "erase_cells_in_pattern_qt_command.hpp"
-#include "paste_mix_copied_data_to_pattern_qt_command.hpp"
-#include "transpose_note_in_pattern_qt_command.hpp"
-#include "expand_pattern_qt_command.hpp"
-#include "shrink_pattern_qt_command.hpp"
-#include "set_echo_buffer_access_qt_command.hpp"
-#include "interpolate_pattern_qt_command.hpp"
-#include "reverse_pattern_qt_command.hpp"
-#include "replace_instrument_in_pattern_qt_command.hpp"
-#include "paste_overwrite_copied_data_to_pattern_qt_command.hpp"
-#include "change_values_in_pattern_qt_command.hpp"
-#include "paste_insert_copied_data_to_pattern_qt_command.hpp"
+#include "pattern_editor_common_qt_command.hpp"
+
+using ChangeValuesInPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::ChangeValuesInPattern>;
+using DeletePreviousStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::DeletePreviousStep>;
+using EraseCellsInPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::EraseCellsInPattern>;
+using EraseEffectInStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::EraseEffectInStep>;
+using EraseEffectValueInStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::EraseEffectValueInStep>;
+using EraseInstrumentInStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::EraseInstrumentInStep>;
+using EraseStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::EraseStep>;
+using EraseVolumeInStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::EraseVolumeInStep>;
+using ExpandPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::ExpandPattern>;
+using InsertStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::InsertStep>;
+using InterpolatePatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::InterpolatePattern>;
+using PasteCopiedDataToPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::PasteCopiedDataToPattern>;
+using PasteInsertCopiedDataToPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::PasteInsertCopiedDataToPattern>;
+using PasteMixCopiedDataToPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::PasteMixCopiedDataToPattern>;
+using PasteOverwriteCopiedDataToPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::PasteOverwriteCopiedDataToPattern>;
+using ReplaceInstrumentInPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::ReplaceInstrumentInPattern>;
+using ReversePatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::ReversePattern>;
+using SetEchoBufferAccessQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::SetEchoBufferAccess>;
+using SetEffectIDToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommandRedrawAll<CommandId::SetEffectIDToStep>;
+using SetEffectValueToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommandRedrawText<CommandId::SetEffectValueToStep>;
+using SetInstrumentToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommandRedrawText<CommandId::SetInstrumentInStep>;
+using SetKeyOffToStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::SetKeyOffToStep>;
+using SetKeyOnToStepQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::SetKeyOnToStep>;
+using SetVolumeToStepQtCommand = gui_command_impl::PatternEditorEntryQtCommandRedrawText<CommandId::SetVolumeToStep>;
+using ShrinkPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawAll<CommandId::ShrinkPattern>;
+using TransposeNoteInPatternQtCommand = gui_command_impl::PatternEditorCommonQtCommandRedrawText<CommandId::TransposeNoteInPattern>;
 
 #endif // PATTERN_COMMANDS_QT_HPP

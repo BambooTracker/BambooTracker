@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,37 +23,49 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "set_volume_to_step_qt_command.hpp"
-#include "command/command_id.hpp"
+#include "pattern_editor_common_qt_command.hpp"
+#include "gui/pattern_editor/pattern_editor_panel.hpp"
 
-SetVolumeToStepQtCommand::SetVolumeToStepQtCommand(PatternEditorPanel* panel, PatternPosition pos, bool secondEntry, QUndoCommand* parent)
-	: QUndoCommand(parent),
-	  panel_(panel),
+namespace gui_command_impl
+{
+PatternEditorCommonQtCommand::PatternEditorCommonQtCommand(
+		CommandId id, PatternEditorPanel* panel, bool redrawAll, QUndoCommand* parent)
+	: QUndoCommand(parent), panel_(panel), id_(id), redrawAll_(redrawAll)
+{
+}
+
+void PatternEditorCommonQtCommand::redo()
+{
+	panel_->redrawByPatternChanged(redrawAll_);
+}
+
+void PatternEditorCommonQtCommand::undo()
+{
+	panel_->redrawByPatternChanged(redrawAll_);
+}
+
+int PatternEditorCommonQtCommand::id() const
+{
+	return id_;
+}
+
+PatternEditorEntryQtCommand::PatternEditorEntryQtCommand(CommandId id, PatternEditorPanel* panel, bool redrawAll, PatternPosition pos, bool secondEntry, QUndoCommand* parent)
+	: PatternEditorCommonQtCommand(id, panel, redrawAll, parent),
 	  pos_(pos),
 	  isSecondEntry_(secondEntry)
 {
 }
 
-void SetVolumeToStepQtCommand::redo()
+void PatternEditorEntryQtCommand::undo()
 {
-	panel_->redrawByPatternChanged();
-}
-
-void SetVolumeToStepQtCommand::undo()
-{
-	panel_->redrawByPatternChanged();
+	PatternEditorCommonQtCommand::undo();
 	panel_->resetEntryCount();
 }
 
-int SetVolumeToStepQtCommand::id() const
-{
-	return CommandId::SetVolumeToStep;
-}
-
-bool SetVolumeToStepQtCommand::mergeWith(const QUndoCommand* other)
+bool PatternEditorEntryQtCommand::mergeWith(const QUndoCommand* other)
 {
 	if (other->id() == id() && !isSecondEntry_) {
-		auto com = dynamic_cast<const SetVolumeToStepQtCommand*>(other);
+		auto com = dynamic_cast<const PatternEditorEntryQtCommand*>(other);
 		if (com->pos_ == pos_ && com->isSecondEntry_) {
 			isSecondEntry_ = true;
 			redo();
@@ -63,4 +75,5 @@ bool SetVolumeToStepQtCommand::mergeWith(const QUndoCommand* other)
 
 	isSecondEntry_ = true;
 	return false;
+}
 }
