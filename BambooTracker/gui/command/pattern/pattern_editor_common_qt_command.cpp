@@ -49,7 +49,9 @@ int PatternEditorCommonQtCommand::id() const
 	return id_;
 }
 
-PatternEditorEntryQtCommand::PatternEditorEntryQtCommand(CommandId id, PatternEditorPanel* panel, bool redrawAll, PatternPosition pos, bool secondEntry, QUndoCommand* parent)
+PatternEditorEntryQtCommand::PatternEditorEntryQtCommand(
+		CommandId id, PatternEditorPanel* panel, bool redrawAll, const PatternPosition& pos,
+		bool secondEntry, QUndoCommand* parent)
 	: PatternEditorCommonQtCommand(id, panel, redrawAll, parent),
 	  pos_(pos),
 	  isSecondEntry_(secondEntry)

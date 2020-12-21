@@ -42,7 +42,7 @@
 #include <QString>
 #include <QIcon>
 #include "gui/event_guard.hpp"
-#include "gui/command/order_commands_qt.hpp"
+#include "gui/command/order/order_commands_qt.hpp"
 #include "playback.hpp"
 #include "track.hpp"
 #include "gui/gui_utils.hpp"

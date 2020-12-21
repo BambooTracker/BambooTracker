@@ -23,18 +23,18 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef PATTERN_EDITOR_COMMON_QT_COMMAND_HPP
-#define PATTERN_EDITOR_COMMON_QT_COMMAND_HPP
+#ifndef ORDER_LIST_COMMON_QT_COMMAND_HPP
+#define ORDER_LIST_COMMON_QT_COMMAND_HPP
 
 #include <QUndoCommand>
 #include "command/command_id.hpp"
-#include "gui/pattern_editor/pattern_position.hpp"
+#include "gui/order_list_editor/order_position.hpp"
 
-class PatternEditorPanel;
+class OrderListPanel;
 
 namespace gui_command_impl
 {
-class PatternEditorCommonQtCommand : public QUndoCommand
+class OrderListCommonQtCommand : public QUndoCommand
 {
 public:
 	virtual void redo() override;
@@ -42,58 +42,58 @@ public:
 	int id() const override final;
 
 protected:
-	PatternEditorPanel* panel_;
-	PatternEditorCommonQtCommand(CommandId id, PatternEditorPanel* panel,
-								 bool redrawAll, QUndoCommand* parent);
+	OrderListPanel* panel_;
+	OrderListCommonQtCommand(CommandId id, OrderListPanel* panel,
+							 bool redrawAll, QUndoCommand* parent);
 
 private:
 	CommandId id_;
-	bool redrawAll_;
+	bool orderLenChanged_;
 };
 
 template<CommandId comId, bool redrawAll>
-class PatternEditorCommonQtCommandRedraw final : public PatternEditorCommonQtCommand
+class OrderListCommonQtCommandRedraw final : public OrderListCommonQtCommand
 {
 public:
-	PatternEditorCommonQtCommandRedraw(PatternEditorPanel* panel, QUndoCommand* parent = nullptr)
-		: PatternEditorCommonQtCommand(comId, panel, redrawAll, parent) {}
+	OrderListCommonQtCommandRedraw(OrderListPanel* panel, QUndoCommand* parent = nullptr)
+		: OrderListCommonQtCommand(comId, panel, redrawAll, parent) {}
 };
 
 template<CommandId id>
-using PatternEditorCommonQtCommandRedrawAll = PatternEditorCommonQtCommandRedraw<id, true>;
+using OrderListCommonQtCommandRedrawAll = OrderListCommonQtCommandRedraw<id, true>;
 
 template<CommandId id>
-using PatternEditorCommonQtCommandRedrawText = PatternEditorCommonQtCommandRedraw<id, false>;
+using OrderListCommonQtCommandRedrawText = OrderListCommonQtCommandRedraw<id, false>;
 
-class PatternEditorEntryQtCommand : public PatternEditorCommonQtCommand
+class OrderListEntryQtCommand : public OrderListCommonQtCommand
 {
 public:
 	void undo() override;
 	bool mergeWith(const QUndoCommand* other) override;
 
 protected:
-	PatternEditorEntryQtCommand(CommandId id, PatternEditorPanel* panel, bool redrawAll,
-								const PatternPosition& pos, bool secondEntry, QUndoCommand* parent);
+	OrderListEntryQtCommand(CommandId id, OrderListPanel* panel, bool redrawAll,
+							const OrderPosition& pos, bool secondEntry, QUndoCommand* parent);
 
 private:
-	const PatternPosition pos_;
+	const OrderPosition pos_;
 	bool isSecondEntry_;
 };
 
 template<CommandId comId, bool redrawAll>
-class PatternEditorEntryQtCommandRedraw final : public PatternEditorEntryQtCommand
+class OrderListEntryQtCommandRedraw final : public OrderListEntryQtCommand
 {
 public:
-	PatternEditorEntryQtCommandRedraw(PatternEditorPanel* panel, const PatternPosition& pos,
+	OrderListEntryQtCommandRedraw(OrderListPanel* panel, const OrderPosition& pos,
 									  bool secondEntry, QUndoCommand* parent = nullptr)
-		: PatternEditorEntryQtCommand(comId, panel, redrawAll, pos, secondEntry, parent) {}
+		: OrderListEntryQtCommand(comId, panel, redrawAll, pos, secondEntry, parent) {}
 };
 
 template<CommandId id>
-using PatternEditorEntryQtCommandRedrawAll = PatternEditorEntryQtCommandRedraw<id, true>;
+using OrderListEntryQtCommandRedrawAll = OrderListEntryQtCommandRedraw<id, true>;
 
 template<CommandId id>
-using PatternEditorEntryQtCommandRedrawText = PatternEditorEntryQtCommandRedraw<id, false>;
+using OrderListEntryQtCommandRedrawText = OrderListEntryQtCommandRedraw<id, false>;
 }
 
-#endif // PATTERN_EDITOR_COMMON_QT_COMMAND_HPP
+#endif // ORDER_LIST_COMMON_QT_COMMAND_HPP

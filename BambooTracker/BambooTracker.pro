@@ -98,7 +98,7 @@ SOURCES += \
     gui/color_palette_handler.cpp \
     gui/command/instrument/instrument_command_qt_utils.cpp \
     gui/command/instrument/swap_instruments_qt_command.cpp \
-    gui/command/order_commands_qt.cpp \
+    gui/command/order/order_list_common_qt_command.cpp \
     gui/command/pattern/pattern_editor_common_qt_command.cpp \
     gui/drop_detect_list_widget.cpp \
     gui/effect_description.cpp \
@@ -269,7 +269,8 @@ HEADERS += \
     gui/command/instrument/instrument_command_qt_utils.hpp \
     gui/command/instrument/instrument_commands_qt.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
-    gui/command/order_commands_qt.hpp \
+    gui/command/order/order_commands_qt.hpp \
+    gui/command/order/order_list_common_qt_command.hpp \
     gui/command/pattern/pattern_editor_common_qt_command.hpp \
     gui/drop_detect_list_widget.hpp \
     gui/effect_description.hpp \

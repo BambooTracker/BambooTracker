@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,9 +23,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "order_commands_qt.hpp"
+#include "order_list_common_qt_command.hpp"
 #include "gui/order_list_editor/order_list_panel.hpp"
 
+namespace gui_command_impl
+{
 OrderListCommonQtCommand::OrderListCommonQtCommand(
 		CommandId id, OrderListPanel* panel, bool orderLengthChanged, QUndoCommand* parent)
 	: QUndoCommand(parent), panel_(panel), id_(id), orderLenChanged_(orderLengthChanged)
@@ -49,24 +51,25 @@ int OrderListCommonQtCommand::id() const
 	return id_;
 }
 
-SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(
-		OrderListPanel* panel, const OrderPosition& pos, bool secondEntry, QUndoCommand* parent)
-	: OrderListCommonQtCommand(CommandId::SetPatternToOrder, panel, false, parent),
+OrderListEntryQtCommand::OrderListEntryQtCommand(
+		CommandId id, OrderListPanel* panel, bool redrawAll, const OrderPosition& pos,
+		bool secondEntry, QUndoCommand* parent)
+	: OrderListCommonQtCommand(id, panel, redrawAll, parent),
 	  pos_(pos),
 	  isSecondEntry_(secondEntry)
 {
 }
 
-void SetPatternToOrderQtCommand::undo()
+void OrderListEntryQtCommand::undo()
 {
 	OrderListCommonQtCommand::undo();
 	panel_->resetEntryCount();
 }
 
-bool SetPatternToOrderQtCommand::mergeWith(const QUndoCommand* other)
+bool OrderListEntryQtCommand::mergeWith(const QUndoCommand* other)
 {
 	if (other->id() == id() && !isSecondEntry_) {
-		auto com = dynamic_cast<const SetPatternToOrderQtCommand*>(other);
+		auto com = dynamic_cast<const OrderListEntryQtCommand*>(other);
 		if (com->pos_ == pos_ && com->isSecondEntry_) {
 			isSecondEntry_ = true;
 			redo();
@@ -76,4 +79,5 @@ bool SetPatternToOrderQtCommand::mergeWith(const QUndoCommand* other)
 
 	isSecondEntry_ = true;
 	return false;
+}
 }
