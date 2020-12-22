@@ -30,7 +30,6 @@
 #include <algorithm>
 #include <unordered_map>
 #include <limits>
-#include <utility>
 #include "enum_hash.hpp"
 #include "version.hpp"
 #include "instrument.hpp"
@@ -104,7 +103,7 @@ AbstractBank* BtbIO::load(const BinaryContainer& ctr) const
 	size_t instPropOfs = ctr.readUint32(globCsr);
 	BinaryContainer propCtr = ctr.getSubcontainer(globCsr + 4, instPropOfs - 4);
 
-	return new BtBank(std::move(ids), std::move(names), std::move(instCtrs), std::move(propCtr), fileVersion);
+	return new BtBank(ids, names, instCtrs, propCtr, fileVersion);
 }
 
 void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> instMan,
@@ -718,7 +717,7 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			ctr.appendUint8(static_cast<uint8_t>(instMan.lock()->isSampleADPCMRepeatable(idx)));
 			std::vector<uint8_t> samples = instMan.lock()->getSampleADPCMRawSample(idx);
 			ctr.appendUint32(samples.size());
-			ctr.appendVector(std::move(samples));
+			ctr.appendVector(samples);
 			ctr.writeUint32(ofs, ctr.size() - ofs);
 		}
 	}

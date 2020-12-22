@@ -26,7 +26,6 @@
 #include "ff_io.hpp"
 #include <vector>
 #include <algorithm>
-#include <utility>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
 
@@ -66,7 +65,7 @@ AbstractBank* FfIO::load(const BinaryContainer& ctr) const
 		ctrs.push_back(block);
 	}
 
-	return new FfBank(std::move(ids), std::move(names), std::move(ctrs));
+	return new FfBank(ids, names, ctrs);
 }
 
 AbstractInstrument* FfIO::loadInstrument(const BinaryContainer& instCtr,

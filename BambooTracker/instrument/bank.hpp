@@ -27,6 +27,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 #include "io/binary_container.hpp"
 
 class AbstractInstrument;
@@ -44,12 +45,12 @@ public:
 	virtual AbstractInstrument* loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const = 0;
 };
 
-class BtBank : public AbstractBank
+class BtBank final : public AbstractBank
 {
 public:
-	BtBank(std::vector<int> ids, std::vector<std::string> names);
-	BtBank(std::vector<int> ids, std::vector<std::string> names,
-		   std::vector<io::BinaryContainer> instSecs, io::BinaryContainer propSec, uint32_t version);
+	BtBank(const std::vector<int>& ids, const std::vector<std::string>& names);
+	BtBank(const std::vector<int>& ids, const std::vector<std::string>& names,
+		   const std::vector<io::BinaryContainer>& instSecs, const io::BinaryContainer& propSec, uint32_t version);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -64,7 +65,7 @@ private:
 	uint32_t version_;
 };
 
-class WopnBank : public AbstractBank
+class WopnBank final : public AbstractBank
 {
 public:
 	explicit WopnBank(WOPNFile *wopn);
@@ -84,10 +85,10 @@ private:
 	std::vector<InstEntry> entries_;
 };
 
-class FfBank : public AbstractBank
+class FfBank final : public AbstractBank
 {
 public:
-	explicit FfBank(std::vector<int> ids, std::vector<std::string> names, std::vector<io::BinaryContainer> ctrs);
+	FfBank(const std::vector<int>& ids, const std::vector<std::string>& names, const std::vector<io::BinaryContainer>& ctrs);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -102,10 +103,10 @@ private:
 	std::vector<io::BinaryContainer> instCtrs_;
 };
 
-class PpcBank : public AbstractBank
+class PpcBank final : public AbstractBank
 {
 public:
-	explicit PpcBank(std::vector<int> ids, std::vector<std::vector<uint8_t>> samples);
+	PpcBank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -117,10 +118,10 @@ private:
 	std::vector<std::vector<uint8_t>> samples_;
 };
 
-class PviBank : public AbstractBank
+class PviBank final : public AbstractBank
 {
 public:
-	explicit PviBank(std::vector<int> ids, std::vector<std::vector<uint8_t>> samples);
+	PviBank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;
@@ -132,10 +133,10 @@ private:
 	std::vector<std::vector<uint8_t>> samples_;
 };
 
-class Mucom88Bank : public AbstractBank
+class Mucom88Bank final : public AbstractBank
 {
 public:
-	explicit Mucom88Bank(std::vector<int> ids, std::vector<std::string> names, std::vector<io::BinaryContainer> ctrs);
+	Mucom88Bank(const std::vector<int>& ids, const std::vector<std::string>& names, const std::vector<io::BinaryContainer>& ctrs);
 
 	size_t getNumInstruments() const override;
 	std::string getInstrumentIdentifier(size_t index) const override;

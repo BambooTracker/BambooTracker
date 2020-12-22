@@ -25,7 +25,6 @@
 
 #include "pvi_io.hpp"
 #include <vector>
-#include <utility>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
 #include "io_utils.hpp"
@@ -49,7 +48,7 @@ AbstractBank* PviIO::load(const BinaryContainer& ctr) const
 	std::vector<std::vector<uint8_t>> samples;
 	extractADPCMSamples(ctr, globCsr, sampOffs, 128, ids, samples);
 
-	return new PviBank(std::move(ids), std::move(samples));
+	return new PviBank(ids, samples);
 }
 
 AbstractInstrument* PviIO::loadInstrument(const std::vector<uint8_t>& sample,

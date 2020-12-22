@@ -24,8 +24,7 @@
  */
 
 #include "bank.hpp"
-#include <stdio.h>
-#include <utility>
+#include <cstdio>
 #include "io/instrument_io.hpp"
 #include "io/opni_io.hpp"
 #include "io/btb_io.hpp"
@@ -35,18 +34,18 @@
 #include "io/dat_io.hpp"
 #include "format/wopn_file.h"
 
-BtBank::BtBank(std::vector<int> ids, std::vector<std::string> names)
-	: ids_(std::move(ids)),
-	  names_(std::move(names))
+BtBank::BtBank(const std::vector<int>& ids, const std::vector<std::string>& names)
+	: ids_(ids),
+	  names_(names)
 {
 }
 
-BtBank::BtBank(std::vector<int> ids, std::vector<std::string> names,
-			   std::vector<io::BinaryContainer> instSecs, io::BinaryContainer propSec, uint32_t version)
-	: instCtrs_(std::move(instSecs)),
-	  propCtr_(std::move(propSec)),
-	  ids_(std::move(ids)),
-	  names_(std::move(names)),
+BtBank::BtBank(const std::vector<int>& ids, const std::vector<std::string>& names,
+			   const std::vector<io::BinaryContainer>& instSecs, const io::BinaryContainer& propSec, uint32_t version)
+	: instCtrs_(instSecs),
+	  propCtr_(propSec),
+	  ids_(ids),
+	  names_(names),
 	  version_(version)
 {
 }
@@ -89,7 +88,7 @@ struct WopnBank::InstEntry
 	} vals;
 };
 
-WopnBank::WopnBank(WOPNFile *wopn)
+WopnBank::WopnBank(WOPNFile* wopn)
 	: wopn_(wopn)
 {
 	unsigned numM = wopn->banks_count_melodic;
@@ -122,27 +121,27 @@ size_t WopnBank::getNumInstruments() const
 
 std::string WopnBank::getInstrumentIdentifier(size_t index) const
 {
-	const InstEntry &ent = entries_.at(index);
+	const InstEntry& ent = entries_.at(index);
 	char identifier[64];
-	sprintf(identifier, "%c%03d:%03d:%03d", "MP"[ent.vals.percussive],
+	std::sprintf(identifier, "%c%03d:%03d:%03d", "MP"[ent.vals.percussive],
 			ent.vals.msb, ent.vals.lsb, ent.vals.nth);
 	return identifier;
 }
 
 std::string WopnBank::getInstrumentName(size_t index) const
 {
-	const InstEntry &ent = entries_.at(index);
+	const InstEntry& ent = entries_.at(index);
 	return ent.inst->inst_name;
 }
 
 AbstractInstrument* WopnBank::loadInstrument(size_t index, std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
-	const InstEntry &ent = entries_.at(index);
+	const InstEntry& ent = entries_.at(index);
 	return io::OpniIO::loadWOPNInstrument(*ent.inst, instMan, instNum);
 }
 
 /******************************/
-FfBank::FfBank(std::vector<int> ids, std::vector<std::string> names, std::vector<io::BinaryContainer> ctrs)
+FfBank::FfBank(const std::vector<int>& ids, const std::vector<std::string>& names, const std::vector<io::BinaryContainer>& ctrs)
 	: ids_(ids), names_(names), instCtrs_(ctrs)
 {
 }
@@ -173,7 +172,7 @@ void FfBank::setInstrumentName(size_t index, const std::string& name)
 }
 
 /******************************/
-PpcBank::PpcBank(std::vector<int> ids, std::vector<std::vector<uint8_t> > samples)
+PpcBank::PpcBank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples)
 	: ids_(ids), samples_(samples)
 {
 }
@@ -200,7 +199,7 @@ AbstractInstrument* PpcBank::loadInstrument(size_t index, std::weak_ptr<Instrume
 }
 
 /******************************/
-PviBank::PviBank(std::vector<int> ids, std::vector<std::vector<uint8_t> > samples)
+PviBank::PviBank(const std::vector<int>& ids, const std::vector<std::vector<uint8_t>>& samples)
 	: ids_(ids), samples_(samples)
 {
 }
@@ -227,7 +226,7 @@ AbstractInstrument* PviBank::loadInstrument(size_t index, std::weak_ptr<Instrume
 }
 
 /******************************/
-Mucom88Bank::Mucom88Bank(std::vector<int> ids, std::vector<std::string> names, std::vector<io::BinaryContainer> ctrs)
+Mucom88Bank::Mucom88Bank(const std::vector<int>& ids, const std::vector<std::string>& names, const std::vector<io::BinaryContainer>& ctrs)
 	: ids_(ids), names_(names), instCtrs_(ctrs)
 {
 }

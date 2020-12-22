@@ -25,7 +25,6 @@
 
 #include "ppc_io.hpp"
 #include <vector>
-#include <utility>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
 #include "io_utils.hpp"
@@ -53,7 +52,7 @@ AbstractBank* PpcIO::load(const BinaryContainer& ctr) const
 	std::vector<std::vector<uint8_t>> samples;
 	extractADPCMSamples(ctr, globCsr, sampOffs, 256, ids, samples);
 
-	return new PpcBank(std::move(ids), std::move(samples));
+	return new PpcBank(ids, samples);
 }
 
 AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t>& sample,
