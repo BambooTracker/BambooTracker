@@ -31,6 +31,7 @@
 #include <vector>
 #include <functional>
 #include <unordered_map>
+#include <set>
 #include "configuration.hpp"
 #include "opna_controller.hpp"
 #include "jamming.hpp"
@@ -100,12 +101,12 @@ public:
 	void setEnvelopeFMParameter(int envNum, FMEnvelopeParameter param, int value);
 	void setEnvelopeFMOperatorEnable(int envNum, int opNum, bool enable);
 	void setInstrumentFMEnvelope(int instNum, int envNum);
-	std::vector<int> getEnvelopeFMUsers(int envNum) const;
+	std::multiset<int> getEnvelopeFMUsers(int envNum) const;
 
 	void setLFOFMParameter(int lfoNum, FMLFOParameter param, int value);
 	void setInstrumentFMLFOEnabled(int instNum, bool enabled);
 	void setInstrumentFMLFO(int instNum, int lfoNum);
-	std::vector<int> getLFOFMUsers(int lfoNum) const;
+	std::multiset<int> getLFOFMUsers(int lfoNum) const;
 
 	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
 	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
@@ -114,7 +115,7 @@ public:
 	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
 	void setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param, bool enabled);
-	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
+	std::multiset<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 
 	void setArpeggioFMType(int arpNum, SequenceType type);
 	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
@@ -124,7 +125,7 @@ public:
 	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
 	void setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum);
 	void setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled);
-	std::vector<int> getArpeggioFMUsers(int arpNum) const;
+	std::multiset<int> getArpeggioFMUsers(int arpNum) const;
 
 	void setPitchFMType(int ptNum, SequenceType type);
 	void addPitchFMSequenceCommand(int ptNum, int type, int data);
@@ -134,7 +135,7 @@ public:
 	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
 	void setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum);
 	void setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled);
-	std::vector<int> getPitchFMUsers(int ptNum) const;
+	std::multiset<int> getPitchFMUsers(int ptNum) const;
 
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
@@ -146,7 +147,7 @@ public:
 	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
 	void setInstrumentSSGWaveform(int instNum, int wfNum);
 	void setInstrumentSSGWaveformEnabled(int instNum, bool enabled);
-	std::vector<int> getWaveformSSGUsers(int wfNum) const;
+	std::multiset<int> getWaveformSSGUsers(int wfNum) const;
 
 	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
 	void removeToneNoiseSSGSequenceCommand(int tnNum);
@@ -155,7 +156,7 @@ public:
 	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
 	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
-	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
+	std::multiset<int> getToneNoiseSSGUsers(int tnNum) const;
 
 	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
 	void removeEnvelopeSSGSequenceCommand(int envNum);
@@ -164,7 +165,7 @@ public:
 	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	void setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled);
-	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
+	std::multiset<int> getEnvelopeSSGUsers(int envNum) const;
 
 	void setArpeggioSSGType(int arpNum, SequenceType type);
 	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
@@ -174,7 +175,7 @@ public:
 	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
 	void setInstrumentSSGArpeggioEnabled(int instNum, bool enabled);
-	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
+	std::multiset<int> getArpeggioSSGUsers(int arpNum) const;
 
 	void setPitchSSGType(int ptNum, SequenceType type);
 	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
@@ -184,7 +185,7 @@ public:
 	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);
 	void setInstrumentSSGPitch(int instNum, int ptNum);
 	void setInstrumentSSGPitchEnabled(int instNum, bool enabled);
-	std::vector<int> getPitchSSGUsers(int ptNum) const;
+	std::multiset<int> getPitchSSGUsers(int ptNum) const;
 
 	//--- ADPCM
 	size_t getADPCMLimit() const;
@@ -203,7 +204,7 @@ public:
 	size_t getSampleADPCMStartAddress(int sampNum) const;
 	size_t getSampleADPCMStopAddress(int sampNum) const;
 	void setInstrumentADPCMSample(int instNum, int sampNum);
-	std::vector<int> getSampleADPCMUsers(int sampNum) const;
+	std::multiset<int> getSampleADPCMUsers(int sampNum) const;
 
 	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
 	void removeEnvelopeADPCMSequenceCommand(int envNum);
@@ -212,7 +213,7 @@ public:
 	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
 	void setInstrumentADPCMEnvelope(int instNum, int envNum);
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
-	std::vector<int> getEnvelopeADPCMUsers(int envNum) const;
+	std::multiset<int> getEnvelopeADPCMUsers(int envNum) const;
 
 	void setArpeggioADPCMType(int arpNum, SequenceType type);
 	void addArpeggioADPCMSequenceCommand(int arpNum, int type, int data);
@@ -222,7 +223,7 @@ public:
 	void setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin);
 	void setInstrumentADPCMArpeggio(int instNum, int arpNum);
 	void setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled);
-	std::vector<int> getArpeggioADPCMUsers(int arpNum) const;
+	std::multiset<int> getArpeggioADPCMUsers(int arpNum) const;
 
 	void setPitchADPCMType(int ptNum, SequenceType type);
 	void addPitchADPCMSequenceCommand(int ptNum, int type, int data);
@@ -232,7 +233,7 @@ public:
 	void setPitchADPCMRelease(int ptNum, ReleaseType type, int begin);
 	void setInstrumentADPCMPitch(int instNum, int ptNum);
 	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
-	std::vector<int> getPitchADPCMUsers(int ptNum) const;
+	std::multiset<int> getPitchADPCMUsers(int ptNum) const;
 
 	//--- Drumkit
 	void setInstrumentDrumkitSample(int instNum, int key, int sampNum);

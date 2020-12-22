@@ -25,21 +25,20 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
+#include <set>
 
 class AbstractInstrumentProperty
 {
 public:
 	virtual ~AbstractInstrumentProperty() = default;
 
-	void setNumber(int num);
-	int getNumber() const;
+	inline void setNumber(int num) noexcept { num_ = num; }
+	inline int getNumber() const noexcept { return num_; }
 
 	void registerUserInstrument(int instNum);
 	void deregisterUserInstrument(int instNum);
 	bool isUserInstrument() const;
-	std::vector<int> getUserInstruments() const;
+	inline std::multiset<int> getUserInstruments() const noexcept { return users_; }
 	void clearUserInstruments();
 
 	virtual bool isEdited() const = 0;
@@ -47,9 +46,8 @@ public:
 
 protected:
 	explicit AbstractInstrumentProperty(int num);
-	AbstractInstrumentProperty(const AbstractInstrumentProperty& other);
 
 private:
 	int num_;
-	std::vector<int> users_;
+	std::multiset<int> users_;
 };

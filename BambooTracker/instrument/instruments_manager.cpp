@@ -941,7 +941,7 @@ bool InstrumentsManager::getEnvelopeFMOperatorEnabled(int envNum, int opNum) con
 	return envFM_.at(static_cast<size_t>(envNum))->getOperatorEnabled(opNum);
 }
 
-std::vector<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
+std::multiset<int> InstrumentsManager::getEnvelopeFMUsers(int envNum) const
 {
 	return envFM_.at(static_cast<size_t>(envNum))->getUserInstruments();
 }
@@ -1009,7 +1009,7 @@ int InstrumentsManager::getLFOFMparameter(int lfoNum, FMLFOParameter param) cons
 	return lfoFM_.at(static_cast<size_t>(lfoNum))->getParameterValue(param);
 }
 
-std::vector<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
+std::multiset<int> InstrumentsManager::getLFOFMUsers(int lfoNum) const
 {
 	return lfoFM_.at(static_cast<size_t>(lfoNum))->getUserInstruments();
 }
@@ -1115,7 +1115,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getOperatorSequen
 	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
+std::multiset<int> InstrumentsManager::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
 {
 	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getUserInstruments();
 }
@@ -1232,7 +1232,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioFMIter
 	return arpFM_.at(static_cast<size_t>(arpNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getArpeggioFMUsers(int arpNum) const
+std::multiset<int> InstrumentsManager::getArpeggioFMUsers(int arpNum) const
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getUserInstruments();
 }
@@ -1348,7 +1348,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchFMIterato
 	return ptFM_.at(static_cast<size_t>(ptNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getPitchFMUsers(int ptNum) const
+std::multiset<int> InstrumentsManager::getPitchFMUsers(int ptNum) const
 {
 	return ptFM_.at(static_cast<size_t>(ptNum))->getUserInstruments();
 }
@@ -1495,7 +1495,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getWaveformSSGIte
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getWaveformSSGUsers(int wfNum) const
+std::multiset<int> InstrumentsManager::getWaveformSSGUsers(int wfNum) const
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getUserInstruments();
 }
@@ -1601,7 +1601,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getToneNoiseSSGIt
 	return tnSSG_.at(static_cast<size_t>(tnNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getToneNoiseSSGUsers(int tnNum) const
+std::multiset<int> InstrumentsManager::getToneNoiseSSGUsers(int tnNum) const
 {
 	return tnSSG_.at(static_cast<size_t>(tnNum))->getUserInstruments();
 }
@@ -1707,7 +1707,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getEnvelopeSSGIte
 	return envSSG_.at(static_cast<size_t>(envNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getEnvelopeSSGUsers(int envNum) const
+std::multiset<int> InstrumentsManager::getEnvelopeSSGUsers(int envNum) const
 {
 	return envSSG_.at(static_cast<size_t>(envNum))->getUserInstruments();
 }
@@ -1823,7 +1823,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioSSGIte
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getArpeggioSSGUsers(int arpNum) const
+std::multiset<int> InstrumentsManager::getArpeggioSSGUsers(int arpNum) const
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getUserInstruments();
 }
@@ -1939,7 +1939,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchSSGIterat
 	return ptSSG_.at(static_cast<size_t>(ptNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getPitchSSGUsers(int ptNum) const
+std::multiset<int> InstrumentsManager::getPitchSSGUsers(int ptNum) const
 {
 	return ptSSG_.at(static_cast<size_t>(ptNum))->getUserInstruments();
 }
@@ -2083,7 +2083,7 @@ size_t InstrumentsManager::getSampleADPCMStopAddress(int sampNum) const
 	return sampADPCM_.at(static_cast<size_t>(sampNum))->getStopAddress();
 }
 
-std::vector<int> InstrumentsManager::getSampleADPCMUsers(int sampNum) const
+std::multiset<int> InstrumentsManager::getSampleADPCMUsers(int sampNum) const
 {
 	return sampADPCM_.at(static_cast<size_t>(sampNum))->getUserInstruments();
 }
@@ -2208,7 +2208,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getEnvelopeADPCMI
 	return envADPCM_.at(static_cast<size_t>(envNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getEnvelopeADPCMUsers(int envNum) const
+std::multiset<int> InstrumentsManager::getEnvelopeADPCMUsers(int envNum) const
 {
 	return envADPCM_.at(static_cast<size_t>(envNum))->getUserInstruments();
 }
@@ -2324,7 +2324,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioADPCMI
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getArpeggioADPCMUsers(int arpNum) const
+std::multiset<int> InstrumentsManager::getArpeggioADPCMUsers(int arpNum) const
 {
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getUserInstruments();
 }
@@ -2440,7 +2440,7 @@ std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchADPCMIter
 	return ptADPCM_.at(static_cast<size_t>(ptNum))->getIterator();
 }
 
-std::vector<int> InstrumentsManager::getPitchADPCMUsers(int ptNum) const
+std::multiset<int> InstrumentsManager::getPitchADPCMUsers(int ptNum) const
 {
 	return ptADPCM_.at(static_cast<size_t>(ptNum))->getUserInstruments();
 }

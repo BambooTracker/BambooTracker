@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,48 +24,26 @@
  */
 
 #include "abstract_instrument_property.hpp"
-#include <algorithm>
 
 AbstractInstrumentProperty::AbstractInstrumentProperty(int num)
 	: num_(num)
 {
 }
 
-AbstractInstrumentProperty::AbstractInstrumentProperty(const AbstractInstrumentProperty& other)
-{
-	num_ = other.num_;
-	users_ = other.users_;
-}
-
-void AbstractInstrumentProperty::setNumber(int num)
-{
-	num_ = num;
-}
-
-int AbstractInstrumentProperty::getNumber() const
-{
-	return num_;
-}
-
 void AbstractInstrumentProperty::registerUserInstrument(int instNum)
 {
-	users_.push_back(instNum);
-	std::sort(users_.begin(), users_.end());
+	users_.insert(instNum);
 }
 
 void AbstractInstrumentProperty::deregisterUserInstrument(int instNum)
 {
-	users_.erase(std::find(users_.begin(), users_.end(), instNum));
+	auto&& it = users_.find(instNum);
+	if (it != users_.end()) users_.erase(it);
 }
 
 bool AbstractInstrumentProperty::isUserInstrument() const
 {
 	return !users_.empty();
-}
-
-std::vector<int> AbstractInstrumentProperty::getUserInstruments() const
-{
-	return users_;
 }
 
 void AbstractInstrumentProperty::clearUserInstruments()

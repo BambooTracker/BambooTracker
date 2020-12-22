@@ -255,7 +255,7 @@ void BambooTracker::setInstrumentFMEnvelope(int instNum, int envNum)
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
-std::vector<int> BambooTracker::getEnvelopeFMUsers(int envNum) const
+std::multiset<int> BambooTracker::getEnvelopeFMUsers(int envNum) const
 {
 	return instMan_->getEnvelopeFMUsers(envNum);
 }
@@ -278,7 +278,7 @@ void BambooTracker::setInstrumentFMLFO(int instNum, int lfoNum)
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
-std::vector<int> BambooTracker::getLFOFMUsers(int lfoNum) const
+std::multiset<int> BambooTracker::getLFOFMUsers(int lfoNum) const
 {
 	return instMan_->getLFOFMUsers(lfoNum);
 }
@@ -320,7 +320,7 @@ void BambooTracker::setInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelo
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
-std::vector<int> BambooTracker::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
+std::multiset<int> BambooTracker::getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const
 {
 	return instMan_->getOperatorSequenceFMUsers(param, opSeqNum);
 }
@@ -367,7 +367,7 @@ void BambooTracker::setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType o
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
-std::vector<int> BambooTracker::getArpeggioFMUsers(int arpNum) const
+std::multiset<int> BambooTracker::getArpeggioFMUsers(int arpNum) const
 {
 	return instMan_->getArpeggioFMUsers(arpNum);
 }
@@ -414,7 +414,7 @@ void BambooTracker::setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, 
 	opnaCtrl_->updateInstrumentFM(instNum);
 }
 
-std::vector<int> BambooTracker::getPitchFMUsers(int ptNum) const
+std::multiset<int> BambooTracker::getPitchFMUsers(int ptNum) const
 {
 	return instMan_->getPitchFMUsers(ptNum);
 }
@@ -463,7 +463,7 @@ void BambooTracker::setInstrumentSSGWaveformEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
-std::vector<int> BambooTracker::getWaveformSSGUsers(int wfNum) const
+std::multiset<int> BambooTracker::getWaveformSSGUsers(int wfNum) const
 {
 	return instMan_->getWaveformSSGUsers(wfNum);
 }
@@ -505,7 +505,7 @@ void BambooTracker::setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
-std::vector<int> BambooTracker::getToneNoiseSSGUsers(int tnNum) const
+std::multiset<int> BambooTracker::getToneNoiseSSGUsers(int tnNum) const
 {
 	return instMan_->getToneNoiseSSGUsers(tnNum);
 }
@@ -547,7 +547,7 @@ void BambooTracker::setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
-std::vector<int> BambooTracker::getEnvelopeSSGUsers(int envNum) const
+std::multiset<int> BambooTracker::getEnvelopeSSGUsers(int envNum) const
 {
 	return instMan_->getEnvelopeSSGUsers(envNum);
 }
@@ -594,7 +594,7 @@ void BambooTracker::setInstrumentSSGArpeggioEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
-std::vector<int> BambooTracker::getArpeggioSSGUsers(int arpNum) const
+std::multiset<int> BambooTracker::getArpeggioSSGUsers(int arpNum) const
 {
 	return instMan_->getArpeggioSSGUsers(arpNum);
 }
@@ -641,7 +641,7 @@ void BambooTracker::setInstrumentSSGPitchEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentSSG(instNum);
 }
 
-std::vector<int> BambooTracker::getPitchSSGUsers(int ptNum) const
+std::multiset<int> BambooTracker::getPitchSSGUsers(int ptNum) const
 {
 	return instMan_->getPitchSSGUsers(ptNum);
 }
@@ -735,7 +735,7 @@ void BambooTracker::setInstrumentADPCMSample(int instNum, int sampNum)
 	opnaCtrl_->updateInstrumentADPCM(instNum);
 }
 
-std::vector<int> BambooTracker::getSampleADPCMUsers(int sampNum) const
+std::multiset<int> BambooTracker::getSampleADPCMUsers(int sampNum) const
 {
 	return instMan_->getSampleADPCMUsers(sampNum);
 }
@@ -777,7 +777,7 @@ void BambooTracker::setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentADPCM(instNum);
 }
 
-std::vector<int> BambooTracker::getEnvelopeADPCMUsers(int envNum) const
+std::multiset<int> BambooTracker::getEnvelopeADPCMUsers(int envNum) const
 {
 	return instMan_->getEnvelopeADPCMUsers(envNum);
 }
@@ -824,7 +824,7 @@ void BambooTracker::setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentADPCM(instNum);
 }
 
-std::vector<int> BambooTracker::getArpeggioADPCMUsers(int arpNum) const
+std::multiset<int> BambooTracker::getArpeggioADPCMUsers(int arpNum) const
 {
 	return instMan_->getArpeggioADPCMUsers(arpNum);
 }
@@ -871,7 +871,7 @@ void BambooTracker::setInstrumentADPCMPitchEnabled(int instNum, bool enabled)
 	opnaCtrl_->updateInstrumentADPCM(instNum);
 }
 
-std::vector<int> BambooTracker::getPitchADPCMUsers(int ptNum) const
+std::multiset<int> BambooTracker::getPitchADPCMUsers(int ptNum) const
 {
 	return instMan_->getPitchADPCMUsers(ptNum);
 }

@@ -29,6 +29,7 @@
 #include <memory>
 #include <array>
 #include <vector>
+#include <set>
 #include <unordered_map>
 #include "instrument.hpp"
 #include "envelope_fm.hpp"
@@ -88,7 +89,7 @@ public:
 	int getEnvelopeFMParameter(int envNum, FMEnvelopeParameter param) const;
 	void setEnvelopeFMOperatorEnabled(int envNum, int opNum, bool enabled);
 	bool getEnvelopeFMOperatorEnabled(int envNum, int opNum) const;
-	std::vector<int> getEnvelopeFMUsers(int envNum) const;
+	std::multiset<int> getEnvelopeFMUsers(int envNum) const;
 	std::vector<int> getEnvelopeFMEntriedIndices() const;
 	int findFirstAssignableEnvelopeFM() const;
 
@@ -98,7 +99,7 @@ public:
 	int getInstrumentFMLFO(int instNum) const;
 	void setLFOFMParameter(int lfoNum, FMLFOParameter param, int value);
 	int getLFOFMparameter(int lfoNum, FMLFOParameter param) const;
-	std::vector<int> getLFOFMUsers(int lfoNum) const;
+	std::multiset<int> getLFOFMUsers(int lfoNum) const;
 	std::vector<int> getLFOFMEntriedIndices() const;
 	int findFirstAssignableLFOFM() const;
 
@@ -115,7 +116,7 @@ public:
 	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
 	Release getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const;
-	std::vector<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
+	std::multiset<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 	std::vector<int> getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const;
 	int findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter param) const;
 
@@ -134,7 +135,7 @@ public:
 	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
 	Release getArpeggioFMRelease(int arpNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioFMIterator(int arpNum) const;
-	std::vector<int> getArpeggioFMUsers(int arpNum) const;
+	std::multiset<int> getArpeggioFMUsers(int arpNum) const;
 	std::vector<int> getArpeggioFMEntriedIndices() const;
 	int findFirstAssignableArpeggioFM() const;
 
@@ -153,7 +154,7 @@ public:
 	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
 	Release getPitchFMRelease(int ptNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getPitchFMIterator(int ptNum) const;
-	std::vector<int> getPitchFMUsers(int ptNum) const;
+	std::multiset<int> getPitchFMUsers(int ptNum) const;
 	std::vector<int> getPitchFMEntriedIndices() const;
 	int findFirstAssignablePitchFM() const;
 
@@ -192,7 +193,7 @@ public:
 	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
 	Release getWaveformSSGRelease(int wfNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getWaveformSSGIterator(int wfNum) const;
-	std::vector<int> getWaveformSSGUsers(int wfNum) const;
+	std::multiset<int> getWaveformSSGUsers(int wfNum) const;
 	std::vector<int> getWaveformSSGEntriedIndices() const;
 	int findFirstAssignableWaveformSSG() const;
 
@@ -209,7 +210,7 @@ public:
 	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
 	Release getToneNoiseSSGRelease(int tnNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSSGIterator(int tnNum) const;
-	std::vector<int> getToneNoiseSSGUsers(int tnNum) const;
+	std::multiset<int> getToneNoiseSSGUsers(int tnNum) const;
 	std::vector<int> getToneNoiseSSGEntriedIndices() const;
 	int findFirstAssignableToneNoiseSSG() const;
 
@@ -226,7 +227,7 @@ public:
 	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
 	Release getEnvelopeSSGRelease(int envNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSSGIterator(int envNum) const;
-	std::vector<int> getEnvelopeSSGUsers(int envNum) const;
+	std::multiset<int> getEnvelopeSSGUsers(int envNum) const;
 	std::vector<int> getEnvelopeSSGEntriedIndices() const;
 	int findFirstAssignableEnvelopeSSG() const;
 
@@ -245,7 +246,7 @@ public:
 	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
 	Release getArpeggioSSGRelease(int arpNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioSSGIterator(int arpNum) const;
-	std::vector<int> getArpeggioSSGUsers(int arpNum) const;
+	std::multiset<int> getArpeggioSSGUsers(int arpNum) const;
 	std::vector<int> getArpeggioSSGEntriedIndices() const;
 	int findFirstAssignableArpeggioSSG() const;
 
@@ -264,7 +265,7 @@ public:
 	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);
 	Release getPitchSSGRelease(int ptNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getPitchSSGIterator(int ptNum) const;
-	std::vector<int> getPitchSSGUsers(int ptNum) const;
+	std::multiset<int> getPitchSSGUsers(int ptNum) const;
 	std::vector<int> getPitchSSGEntriedIndices() const;
 	int findFirstAssignablePitchSSG() const;
 
@@ -300,7 +301,7 @@ public:
 	size_t getSampleADPCMStartAddress(int sampNum) const;
 	void setSampleADPCMStopAddress(int sampNum, size_t addr);
 	size_t getSampleADPCMStopAddress(int sampNum) const;
-	std::vector<int> getSampleADPCMUsers(int sampNum) const;
+	std::multiset<int> getSampleADPCMUsers(int sampNum) const;
 	std::vector<int> getSampleADPCMEntriedIndices() const;
 	std::vector<int> getSampleADPCMValidIndices() const;
 	void clearUnusedSamplesADPCM();
@@ -319,7 +320,7 @@ public:
 	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
 	Release getEnvelopeADPCMRelease(int envNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getEnvelopeADPCMIterator(int envNum) const;
-	std::vector<int> getEnvelopeADPCMUsers(int envNum) const;
+	std::multiset<int> getEnvelopeADPCMUsers(int envNum) const;
 	std::vector<int> getEnvelopeADPCMEntriedIndices() const;
 	int findFirstAssignableEnvelopeADPCM() const;
 
@@ -338,7 +339,7 @@ public:
 	void setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin);
 	Release getArpeggioADPCMRelease(int arpNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getArpeggioADPCMIterator(int arpNum) const;
-	std::vector<int> getArpeggioADPCMUsers(int arpNum) const;
+	std::multiset<int> getArpeggioADPCMUsers(int arpNum) const;
 	std::vector<int> getArpeggioADPCMEntriedIndices() const;
 	int findFirstAssignableArpeggioADPCM() const;
 
@@ -357,7 +358,7 @@ public:
 	void setPitchADPCMRelease(int ptNum, ReleaseType type, int begin);
 	Release getPitchADPCMRelease(int ptNum) const;
 	std::unique_ptr<CommandSequence::Iterator> getPitchADPCMIterator(int ptNum) const;
-	std::vector<int> getPitchADPCMUsers(int ptNum) const;
+	std::multiset<int> getPitchADPCMUsers(int ptNum) const;
 	std::vector<int> getPitchADPCMEntriedIndices() const;
 	int findFirstAssignablePitchADPCM() const;
 

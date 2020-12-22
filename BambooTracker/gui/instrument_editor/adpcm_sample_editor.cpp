@@ -28,6 +28,7 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <set>
 #include <algorithm>
 #include <QMimeData>
 #include <QFile>
@@ -48,6 +49,7 @@
 #include "gui/instrument_editor/sample_length_dialog.hpp"
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
 #include "gui/file_io_error_message_box.hpp"
+#include "gui/instrument_editor/instrument_editor_utils.hpp"
 
 ADPCMSampleEditor::ADPCMSampleEditor(QWidget *parent) :
 	QWidget(parent),
@@ -455,12 +457,8 @@ void ADPCMSampleEditor::updateSampleView()
 
 void ADPCMSampleEditor::updateUsersView()
 {
-	std::vector<int> users = bt_.lock()->getSampleADPCMUsers(ui->sampleNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->usersLineEdit->setText(l.join(","));
+	std::multiset<int> users = bt_.lock()->getSampleADPCMUsers(ui->sampleNumSpinBox->value());
+	ui->usersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void ADPCMSampleEditor::detectCursorSamplePosition(int cx, int cy)

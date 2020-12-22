@@ -25,6 +25,7 @@
 
 #include "instrument_editor_adpcm_form.hpp"
 #include "ui_instrument_editor_adpcm_form.h"
+#include <set>
 #include "instrument.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
@@ -388,12 +389,8 @@ void InstrumentEditorADPCMForm::setInstrumentEnvelopeParameters()
 void InstrumentEditorADPCMForm::onEnvelopeNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getEnvelopeADPCMUsers(ui->envNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->envUsersLineEdit->setText(l.join((",")));
+	std::multiset<int> users = bt_.lock()->getEnvelopeADPCMUsers(ui->envNumSpinBox->value());
+	ui->envUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void InstrumentEditorADPCMForm::onEnvelopeParameterChanged(int envNum)
@@ -466,12 +463,8 @@ void InstrumentEditorADPCMForm::setInstrumentArpeggioParameters()
 void InstrumentEditorADPCMForm::onArpeggioNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getArpeggioADPCMUsers(ui->arpNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->arpUsersLineEdit->setText(l.join(","));
+	std::multiset<int> users = bt_.lock()->getArpeggioADPCMUsers(ui->arpNumSpinBox->value());
+	ui->arpUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void InstrumentEditorADPCMForm::onArpeggioParameterChanged(int tnNum)
@@ -559,12 +552,8 @@ void InstrumentEditorADPCMForm::setInstrumentPitchParameters()
 void InstrumentEditorADPCMForm::onPitchNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getPitchADPCMUsers(ui->ptNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->ptUsersLineEdit->setText(l.join(","));
+	std::multiset<int> users = bt_.lock()->getPitchADPCMUsers(ui->ptNumSpinBox->value());
+	ui->ptUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void InstrumentEditorADPCMForm::onPitchParameterChanged(int tnNum)

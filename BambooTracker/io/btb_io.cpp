@@ -25,6 +25,7 @@
 
 #include "btb_io.hpp"
 #include <vector>
+#include <set>
 #include <iterator>
 #include <algorithm>
 #include <unordered_map>
@@ -38,6 +39,16 @@
 
 namespace io
 {
+namespace
+{
+bool judgeRequiredProperty(const std::multiset<int>& usedInstIdcs, const std::vector<int>& reqInstIdcs)
+{
+	std::vector<int> intrsct;
+	std::set_intersection(usedInstIdcs.begin(), usedInstIdcs.end(), reqInstIdcs.begin(), reqInstIdcs.end(), std::back_inserter(intrsct));
+	return !intrsct.empty();
+}
+}
+
 BtbIO::BtbIO() : AbstractBankIO("btb", "BambooTracker bank", true, true) {}
 
 AbstractBank* BtbIO::load(const BinaryContainer& ctr) const
@@ -208,10 +219,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// FM envelope
 	std::vector<int> envFMIdcs;
 	for (auto& idx : instMan.lock()->getEnvelopeFMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getEnvelopeFMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) envFMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getEnvelopeFMUsers(idx), instNums))
+			envFMIdcs.push_back(idx);
 	}
 	if (!envFMIdcs.empty()) {
 		ctr.appendUint8(0x00);
@@ -252,10 +261,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// FM LFO
 	std::vector<int> lfoFMIdcs;
 	for (auto& idx : instMan.lock()->getLFOFMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getLFOFMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) lfoFMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getLFOFMUsers(idx), instNums))
+			lfoFMIdcs.push_back(idx);
 	}
 	if (!lfoFMIdcs.empty()) {
 		ctr.appendUint8(0x01);
@@ -283,10 +290,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	for (size_t i = 0; i < 38; ++i) {
 		std::vector<int> idcs;
 		for (auto& idx : instMan.lock()->getOperatorSequenceFMEntriedIndices(FM_OPSEQ_PARAMS[i])) {
-			std::vector<int> users = instMan.lock()->getOperatorSequenceFMUsers(FM_OPSEQ_PARAMS[i], idx);
-			std::vector<int> intersection;
-			std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-			if (!intersection.empty()) idcs.push_back(idx);
+			if (judgeRequiredProperty(instMan.lock()->getOperatorSequenceFMUsers(FM_OPSEQ_PARAMS[i], idx), instNums))
+				idcs.push_back(idx);
 		}
 		if (!idcs.empty()) {
 			ctr.appendUint8(0x02 + static_cast<uint8_t>(i));
@@ -334,10 +339,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// FM arpeggio
 	std::vector<int> arpFMIdcs;
 	for (auto& idx : instMan.lock()->getArpeggioFMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getArpeggioFMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) arpFMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getArpeggioFMUsers(idx), instNums))
+			arpFMIdcs.push_back(idx);
 	}
 	if (!arpFMIdcs.empty()) {
 		ctr.appendUint8(0x28);
@@ -390,10 +393,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// FM pitch
 	std::vector<int> ptFMIdcs;
 	for (auto& idx : instMan.lock()->getPitchFMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getPitchFMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) ptFMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getPitchFMUsers(idx), instNums))
+			ptFMIdcs.push_back(idx);
 	}
 	if (!ptFMIdcs.empty()) {
 		ctr.appendUint8(0x29);
@@ -445,10 +446,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// SSG waveform
 	std::vector<int> wfSSGIdcs;
 	for (auto& idx : instMan.lock()->getWaveformSSGEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getWaveformSSGUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) wfSSGIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getWaveformSSGUsers(idx), instNums))
+			wfSSGIdcs.push_back(idx);
 	}
 	if (!wfSSGIdcs.empty()) {
 		ctr.appendUint8(0x30);
@@ -497,10 +496,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// SSG tone/noise
 	std::vector<int> tnSSGIdcs;
 	for (auto& idx : instMan.lock()->getToneNoiseSSGEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getToneNoiseSSGUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) tnSSGIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getToneNoiseSSGUsers(idx), instNums))
+			tnSSGIdcs.push_back(idx);
 	}
 	if (!tnSSGIdcs.empty()) {
 		ctr.appendUint8(0x31);
@@ -548,10 +545,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// SSG envelope
 	std::vector<int> envSSGIdcs;
 	for (auto& idx : instMan.lock()->getEnvelopeSSGEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getEnvelopeSSGUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) envSSGIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getEnvelopeSSGUsers(idx), instNums))
+			envSSGIdcs.push_back(idx);
 	}
 	if (!envSSGIdcs.empty()) {
 		ctr.appendUint8(0x32);
@@ -601,10 +596,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// SSG arpeggio
 	std::vector<int> arpSSGIdcs;
 	for (auto& idx : instMan.lock()->getArpeggioSSGEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getArpeggioSSGUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) arpSSGIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getArpeggioSSGUsers(idx), instNums))
+			arpSSGIdcs.push_back(idx);
 	}
 	if (!arpSSGIdcs.empty()) {
 		ctr.appendUint8(0x33);
@@ -657,10 +650,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// SSG pitch
 	std::vector<int> ptSSGIdcs;
 	for (auto& idx : instMan.lock()->getPitchSSGEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getPitchSSGUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) ptSSGIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getPitchSSGUsers(idx), instNums))
+			ptSSGIdcs.push_back(idx);
 	}
 	if (!ptSSGIdcs.empty()) {
 		ctr.appendUint8(0x34);
@@ -712,10 +703,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// ADPCM sample
 	std::vector<int> sampADPCMIdcs;
 	for (auto& idx : instMan.lock()->getSampleADPCMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getSampleADPCMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) sampADPCMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getSampleADPCMUsers(idx), instNums))
+			sampADPCMIdcs.push_back(idx);
 	}
 	if (!sampADPCMIdcs.empty()) {
 		ctr.appendUint8(0x40);
@@ -737,10 +726,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// ADPCM envelope
 	std::vector<int> envADPCMIdcs;
 	for (auto& idx : instMan.lock()->getEnvelopeADPCMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getEnvelopeADPCMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) envADPCMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getEnvelopeADPCMUsers(idx), instNums))
+			envADPCMIdcs.push_back(idx);
 	}
 	if (!envADPCMIdcs.empty()) {
 		ctr.appendUint8(0x41);
@@ -790,10 +777,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// ADPCM arpeggio
 	std::vector<int> arpADPCMIdcs;
 	for (auto& idx : instMan.lock()->getArpeggioADPCMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getArpeggioADPCMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) arpADPCMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getArpeggioADPCMUsers(idx), instNums))
+			arpADPCMIdcs.push_back(idx);
 	}
 	if (!arpADPCMIdcs.empty()) {
 		ctr.appendUint8(0x42);
@@ -846,10 +831,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	// ADPCM pitch
 	std::vector<int> ptADPCMIdcs;
 	for (auto& idx : instMan.lock()->getPitchADPCMEntriedIndices()) {
-		std::vector<int> users = instMan.lock()->getPitchADPCMUsers(idx);
-		std::vector<int> intersection;
-		std::set_intersection(users.begin(), users.end(), instNums.begin(), instNums.end(), std::back_inserter(intersection));
-		if (!intersection.empty()) ptADPCMIdcs.push_back(idx);
+		if (judgeRequiredProperty(instMan.lock()->getPitchADPCMUsers(idx), instNums))
+			ptADPCMIdcs.push_back(idx);
 	}
 	if (!ptADPCMIdcs.empty()) {
 		ctr.appendUint8(0x43);

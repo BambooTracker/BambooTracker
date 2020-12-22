@@ -37,6 +37,7 @@
 #include <QGraphicsSimpleTextItem>
 #include <QStringList>
 #include <QMessageBox>
+#include <set>
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
 #include "gui/instrument_editor/instrument_editor_utils.hpp"
@@ -1260,12 +1261,8 @@ void InstrumentEditorFMForm::onEnvelopeParameterChanged(int envNum)
 void InstrumentEditorFMForm::onEnvelopeNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getEnvelopeFMUsers(ui->envNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->envUsersLineEdit->setText(l.join((",")));
+	std::multiset<int> users = bt_.lock()->getEnvelopeFMUsers(ui->envNumSpinBox->value());
+	ui->envUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 //========== LFO ==========//
@@ -1338,12 +1335,8 @@ void InstrumentEditorFMForm::onLFOParameterChanged(int lfoNum)
 void InstrumentEditorFMForm::onLFONumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getLFOFMUsers(ui->lfoNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->lfoUsersLineEdit->setText(l.join(","));
+	std::multiset<int> users = bt_.lock()->getLFOFMUsers(ui->lfoNumSpinBox->value());
+	ui->lfoUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void InstrumentEditorFMForm::on_lfoGroupBox_customContextMenuRequested(const QPoint &pos)
@@ -1516,12 +1509,8 @@ void InstrumentEditorFMForm::setOperatorSequenceEditor()
 void InstrumentEditorFMForm::onOperatorSequenceNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getOperatorSequenceFMUsers(getOperatorSequenceParameter(), ui->opSeqNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->opSeqUsersLineEdit->setText(l.join(","));
+	std::multiset<int> users = bt_.lock()->getOperatorSequenceFMUsers(getOperatorSequenceParameter(), ui->opSeqNumSpinBox->value());
+	ui->opSeqUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void InstrumentEditorFMForm::onOperatorSequenceParameterChanged(FMEnvelopeParameter param, int tnNum)
@@ -1608,12 +1597,8 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 void InstrumentEditorFMForm::onArpeggioNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getArpeggioFMUsers(ui->arpNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->arpUsersLineEdit->setText(l.join(","));
+	std::multiset<int> users = bt_.lock()->getArpeggioFMUsers(ui->arpNumSpinBox->value());
+	ui->arpUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void InstrumentEditorFMForm::onArpeggioParameterChanged(int tnNum)
@@ -1715,12 +1700,8 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 void InstrumentEditorFMForm::onPitchNumberChanged()
 {
 	// Change users view
-	std::vector<int> users = bt_.lock()->getPitchFMUsers(ui->ptNumSpinBox->value());
-	QStringList l;
-	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
-		return QString("%1").arg(n, 2, 16, QChar('0')).toUpper();
-	});
-	ui->ptUsersLineEdit->setText(l.join(","));
+	std::multiset<int> users = bt_.lock()->getPitchFMUsers(ui->ptNumSpinBox->value());
+	ui->ptUsersLineEdit->setText(inst_edit_utils::generateUsersString(users));
 }
 
 void InstrumentEditorFMForm::onPitchParameterChanged(int tnNum)

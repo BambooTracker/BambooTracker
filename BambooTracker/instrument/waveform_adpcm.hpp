@@ -28,6 +28,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include "abstract_instrument_property.hpp"
 
 class SampleADPCM : public AbstractInstrumentProperty

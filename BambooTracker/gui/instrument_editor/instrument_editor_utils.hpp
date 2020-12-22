@@ -26,6 +26,8 @@
 #ifndef INSTRUMENT_EDITOR_UTILS_HPP
 #define INSTRUMENT_EDITOR_UTILS_HPP
 
+#include <set>
+#include <QString>
 #include "command_sequence.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 
@@ -35,6 +37,7 @@ SequenceType convertSequenceTypeForData(VisualizedInstrumentMacroEditor::Sequenc
 VisualizedInstrumentMacroEditor::SequenceType convertSequenceTypeForUI(SequenceType type);
 ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
 VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
+QString generateUsersString(const std::multiset<int>& users);
 }
 
 #endif // INSTRUMENT_EDITOR_UTILS_HPP

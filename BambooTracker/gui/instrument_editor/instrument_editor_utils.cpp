@@ -26,6 +26,7 @@
 #include "instrument_editor_utils.hpp"
 #include <unordered_map>
 #include <algorithm>
+#include <QStringList>
 #include "enum_hash.hpp"
 
 namespace inst_edit_utils
@@ -69,5 +70,14 @@ VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType
 	return std::find_if(REL_TYPE_MAP.begin(), REL_TYPE_MAP.end(), [type](const auto& pair) {
 		return (pair.second == type);
 	})->first;
+}
+
+QString generateUsersString(const std::multiset<int>& users)
+{
+	QStringList l;
+	std::transform(users.begin(), users.end(), std::back_inserter(l), [](int n) {
+		return QString("%1").arg(n, 2, 16, QChar('0'));
+	});
+	return l.join(",").toUpper();
 }
 }
