@@ -1,4 +1,5 @@
 TEMPLATE = lib
+CONFIG -= debug_and_release debug_and_release_target
 CONFIG += staticlib create_prl
 
 CONFIG += c++11

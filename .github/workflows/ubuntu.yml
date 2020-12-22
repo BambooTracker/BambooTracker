@@ -16,7 +16,7 @@ env:
   DONT_PACKAGE: true
   MAKE: make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
-  QMAKE_EXTRA_ARGUMENTS: CONFIG+=use_pulse CONFIG+=use_jack CONFIG+=jack_has_rename
+  QMAKE_EXTRA_ARGUMENTS: CONFIG+=use_pulse CONFIG+=use_jack
 
 jobs:
   build:

@@ -16,7 +16,7 @@ env:
   SCRIPT_NAME: osx
   MAKE: make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
-  QMAKE_EXTRA_ARGUMENTS: CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat
+  QMAKE_EXTRA_ARGUMENTS: CONFIG+=install_flat CONFIG+=use_jack
 
 jobs:
   build:
@@ -59,8 +59,12 @@ jobs:
       - name: Installing dependencies.
         run: |
           brew update
-          brew install qt pkg-config jack p7zip
-          brew link --force qt
+          # JACK implies brew link python-3.9, fails due to shipped python binaries
+          brew unlink python@3.9
+          brew link --overwrite python@3.9
+          brew upgrade --force python@3.9
+          brew install qt5 pkg-config jack p7zip
+          brew link --force qt5
 
       ## End macOS-specific steps
 

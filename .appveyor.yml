@@ -73,18 +73,16 @@ before_build:
   - sh: |
       brew install qt pkg-config jack p7zip
       export PATH="/usr/local/opt/qt/bin:$PATH"
-      export JACKLIB="/usr/local/opt/jack/lib"
-      export JACKINC="/usr/local/opt/jack/include"
       export PKG_CONFIG_PATH="/usr/local/opt/jack/lib/pkgconfig"${PKG_CONFIG_PATH:+':'}$PKG_CONFIG_PATH
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
   - ps: |
-      qmake.exe Project.pro PREFIX=..\target CONFIG+=debug CONFIG+=console CONFIG+=nostrip
+      qmake.exe Project.pro PREFIX="$pwd\target" CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip
       Invoke-Expression ($env:MAKE + " qmake_all")
       Invoke-Expression ($env:MAKE + " -j2")
   - sh: |
-      qmake Project.pro PREFIX=../target CONFIG+=debug CONFIG+=console CONFIG+=nostrip CONFIG+=install_flat CONFIG+=use_jack CONFIG+=jack_has_rename
+      qmake Project.pro PREFIX="$APPVEYOR_BUILD_FOLDER"/target CONFIG-=release CONFIG+=debug CONFIG+=console CONFIG+=nostrip CONFIG+=install_flat CONFIG+=use_jack
       $MAKE qmake_all
       $MAKE -j2
 
