@@ -1,5 +1,4 @@
 TEMPLATE = lib
-CONFIG -= debug_and_release debug_and_release_target
 CONFIG += staticlib create_prl
 
 CONFIG += c++11
@@ -8,9 +7,7 @@ load(configure)
 QMAKE_CONFIG_TESTS_DIR = $$PWD/../config.tests
 CONFIG += recheck
 
-DESTDIR = $$_PRO_FILE_PWD_
-OBJECTS_DIR = $$_PRO_FILE_PWD_
-MOC_DIR = $$_PRO_FILE_PWD_
+DESTDIR = $$OUT_PWD
 
 defineTest(libraryFeature) {
   # Used for printing & identifying what feature this function should check for

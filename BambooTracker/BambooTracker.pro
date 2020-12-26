@@ -556,7 +556,9 @@ system_rtaudio {
 }
 else {
   INCLUDEPATH += $$PWD/../submodules/RtAudio/src
-  LIBS += -L$$PWD/../submodules/RtAudio -lrtaudio
+  LIBS += -L$$OUT_PWD/../submodules/RtAudio
+  CONFIG(debug, debug|release):LIBS += -lrtaudiod
+  else:CONFIG(release, debug|release):LIBS += -lrtaudio
 }
 
 system_rtmidi {
@@ -564,5 +566,7 @@ system_rtmidi {
 }
 else {
   INCLUDEPATH += $$PWD/../submodules/RtMidi/src
-  LIBS += -L$$PWD/../submodules/RtMidi -lrtmidi
+  LIBS += -L$$OUT_PWD/../submodules/RtMidi
+  CONFIG(debug, debug|release):LIBS += -lrtmidid
+  else:CONFIG(release, debug|release):LIBS += -lrtmidi
 }

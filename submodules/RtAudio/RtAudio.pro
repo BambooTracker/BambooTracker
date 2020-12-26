@@ -5,7 +5,9 @@ system_rtaudio {
 }
 else {
   include("../common/library.pri")
-  TARGET = rtaudio
+
+  CONFIG(debug, debug|release):TARGET = rtaudiod
+  else:CONFIG(release, debug|release):TARGET = rtaudio
 
   pkgconfig_required = false
   pthread_required = false

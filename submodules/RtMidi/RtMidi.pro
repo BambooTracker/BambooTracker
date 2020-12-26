@@ -5,7 +5,9 @@ system_rtmidi {
 }
 else {
   include("../common/library.pri")
-  TARGET = rtmidi
+
+  CONFIG(debug, debug|release):TARGET = rtmidid
+  else:CONFIG(release, debug|release):TARGET = rtmidi
 
   pkgconfig_required = false
   pthread_required = false
