@@ -16,11 +16,11 @@ env:
   SCRIPT_NAME: osx
   MAKE: make
   BT_INSTALLBASE: ${{ github.workspace }}/target/
-  QMAKE_EXTRA_ARGUMENTS: CONFIG+=use_jack CONFIG+=jack_has_rename CONFIG+=install_flat LIBS+=-L/usr/local/opt/jack/lib INCLUDEPATH+=/usr/local/opt/jack/include
+  QMAKE_EXTRA_ARGUMENTS: CONFIG+=install_flat CONFIG+=use_jack
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-10.15
 
     steps:
       - name: Identify build type.
@@ -48,30 +48,39 @@ jobs:
 
       - name: Checking out repository.
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       ## macOS-specific steps
 
+      - name: Pin Xcode version
+        run: sudo xcode-select -s "/Applications/Xcode_12.1.1.app"
+
       - name: Installing dependencies.
         run: |
-          brew install qt jack p7zip
-          brew link --force qt
+          brew update
+          # JACK implies brew link python-3.9, fails due to shipped python binaries
+          brew unlink python@3.9
+          brew link --overwrite python@3.9
+          brew upgrade --force python@3.9
+          brew install qt5 pkg-config jack p7zip
+          brew link --force qt5
 
       ## End macOS-specific steps
 
       - name: Configuring.
         run: |
-          pushd BambooTracker
-          qmake BambooTracker.pro PREFIX=${BT_INSTALLBASE} \
+          qmake Project.pro PREFIX=${BT_INSTALLBASE} \
             CONFIG+=release CONFIG-=debug ${QMAKE_EXTRA_ARGUMENTS}
-          popd
+          ${MAKE} qmake_all
 
       - name: Building.
         run: |
-          ${MAKE} -C BambooTracker -j2
+          ${MAKE} -j2
 
       - name: Installing.
         run: |
-          ${MAKE} -C BambooTracker -j2 install
+          ${MAKE} -j2 install
 
       - name: Test packaging.
         if: env.DONT_PACKAGE != 'true'

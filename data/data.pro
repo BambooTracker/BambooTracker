@@ -1,3 +1,5 @@
+TEMPLATE = aux
+
 # Common path variables
 
 win32|install_flat {
@@ -42,10 +44,6 @@ INSTALLS += licenses
     }
   }
 }
-
-# Resource bundle wrapper
-
-include("resources/resources.pri")
 
 # i18n generation & installation
 

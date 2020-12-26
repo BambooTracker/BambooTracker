@@ -39,8 +39,9 @@ else {
 CONFIG += c++14
 
 # C/C++ compiler flags
+message("Qt is version" $$QT_VERSION)
 msvc {
-  message("Qt configured with MSVC")
+  message("Configured compiler is MSVC")
   message("Compiler is version" $$QT_MSC_FULL_VER)
   CPP_WARNING_FLAGS += /Wall /Wp64 /WX
   CPP_WARNING_FLAGS += /source-charset:utf-8
@@ -53,14 +54,14 @@ else:clang|if(gcc:!intel_icc) {
   # Get the compiler version for version-specific handling
   clang {
     defined(QMAKE_APPLE_CLANG_MAJOR_VERSION, var) {
-      message("Qt configured with Apple LLVM")
+      message("Configured compiler is Apple LLVM")
       CONFIG += clang-apple
       COMPILER_MAJOR_VERSION = $$QT_APPLE_CLANG_MAJOR_VERSION
       COMPILER_MINOR_VERSION = $$QT_APPLE_CLANG_MINOR_VERSION
       COMPILER_PATCH_VERSION = $$QT_APPLE_CLANG_PATCH_VERSION
     }
     else {
-      message("Qt configured with LLVM")
+      message("Configured compiler is LLVM")
       CONFIG += clang-normal
       COMPILER_MAJOR_VERSION = $$QT_CLANG_MAJOR_VERSION
       COMPILER_MINOR_VERSION = $$QT_CLANG_MINOR_VERSION
@@ -68,7 +69,7 @@ else:clang|if(gcc:!intel_icc) {
     }
   }
   else {
-    message("Qt configured with GCC")
+    message("Configured compiler is GCC")
     COMPILER_MAJOR_VERSION = $$QT_GCC_MAJOR_VERSION
     COMPILER_MINOR_VERSION = $$QT_GCC_MINOR_VERSION
     COMPILER_PATCH_VERSION = $$QT_GCC_PATCH_VERSION
@@ -76,49 +77,10 @@ else:clang|if(gcc:!intel_icc) {
   COMPILER_VERSION = $${COMPILER_MAJOR_VERSION}.$${COMPILER_MINOR_VERSION}.$${COMPILER_PATCH_VERSION}
   message("Compiler is version" $$COMPILER_VERSION)
 
-  # Temporary known-error downgrades
-
-  # RtAudio code contains VLAs for multiple APIs, needs a stronger patch in the future
-  CPP_WARNING_FLAGS += -Wno-error=vla
-
-  clang {
-    # See VLA workaround, needs additional switch on Clang
-    CPP_WARNING_FLAGS += -Wno-vla-extension
-
-    # macOS 10.14 (LLVM 11.0.0) targeting gnu++1y (C++14) errors when
-    # using system-installed JACK headers in RtAudio & RtMidi
-    # /usr/local/Cellar/jack/0.125.0_4/include/jack/types.h:(389,411)
-    use_jack {
-      CPP_WARNING_FLAGS += -Wno-deprecated-register
-    }
-
-    # FreeBSD ALSA headers use zero-length array
-    # /usr/local/include/alsa/pcm.h:597
-    freebsd:use_alsa {
-      CPP_WARNING_FLAGS += -Wno-zero-length-array
-    }
-
-    # Definition of implicit copy constructor with user-declared copy assignment operator deprecated
-    # Problem in Qt5 itself, nothing we can fix about it
-    # Introduced by LLVM 10, triggered by any reference to QString
-    # TODO: Extend to clang-apple once LLVM 10 reaches the platform and they decide on a new custom version
-    # /usr/local/include/qt5/QtCore/(qbytearray.h:586,qstring.h:1191)
-    clang-normal:greaterThan(COMPILER_MAJOR_VERSION, 9) {
-      CPP_WARNING_FLAGS += -Wno-deprecated-copy
-    }
-  }
-  else {
-    # Definition of implicit copy constructor with user-declared copy assignment operator deprecated
-    # Problem in Qt5 itself, nothing we can fix about it
-    # Introduced by GCC 9, triggered by any reference to QString
-    # /usr/local/include/qt5/QtCore/(qbytearray.h:586,qstring.h:1191)
-    greaterThan(COMPILER_MAJOR_VERSION, 8) {
-      CPP_WARNING_FLAGS += -Wno-error=deprecated-copy
-    }
-  }
+  # Temporary known-error downgrades here
 }
 else {
-  message("Unknown compiler, won't attempt to add warning & pedantic compiler switches.")
+  message("Configured compiler is unknown, no attempt to add warning & pedantic compiler switches")
 }
 QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
@@ -579,13 +541,32 @@ INCLUDEPATH += \
     $$PWD/module \
     $$PWD/io
 
-# Linking settings
-system_*:CONFIG += link_pkgconfig
+# In-app resource bundle. Needs to be handled here because it generates an object file to link against
+include("resources/resources.pri")
 
-system_rtaudio:PKGCONFIG += rtaudio
-else:include("stream/RtAudio/RtAudio.pri")
+!system_rtaudio|!system_rtmidi {
+  CONFIG += link_prl
+}
+system_* {
+  CONFIG += link_pkgconfig
+}
 
-system_rtmidi:PKGCONFIG += rtmidi
-else:include("midi/RtMidi/RtMidi.pri")
+system_rtaudio {
+  PKGCONFIG += rtaudio
+}
+else {
+  INCLUDEPATH += $$PWD/../submodules/RtAudio/src
+  LIBS += -L$$OUT_PWD/../submodules/RtAudio
+  CONFIG(debug, debug|release):LIBS += -lrtaudiod
+  else:CONFIG(release, debug|release):LIBS += -lrtaudio
+}
 
-include("../data/data.pri")
+system_rtmidi {
+  PKGCONFIG += rtmidi
+}
+else {
+  INCLUDEPATH += $$PWD/../submodules/RtMidi/src
+  LIBS += -L$$OUT_PWD/../submodules/RtMidi
+  CONFIG(debug, debug|release):LIBS += -lrtmidid
+  else:CONFIG(release, debug|release):LIBS += -lrtmidi
+}
