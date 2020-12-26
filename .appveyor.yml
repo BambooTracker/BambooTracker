@@ -3,16 +3,14 @@
 #---------------------------------#
 
 # version format
-version: 0.4.4.{build}
+version: 0.4.5.{build}
 
 # branches to build
 branches:
   # whitelist
   only:
     - master
-
-# Do not build on tags
-skip_tags: true
+    - /v\d*\.\d*\.\d*/
 
 # Skipping commits with particular message or from specific user
 skip_commits:
@@ -41,7 +39,8 @@ environment:
       PLATFORM: windows
       DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev-windows.zip
       MAKE: mingw32-make
-    # Windows XP
+      RELEASE_BUILD: false
+    # Windows XP (Debug)
     - APPVEYOR_JOB_NAME: for Windows XP
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
       COMPILER: C:\Qt\Tools\mingw492_32\bin
@@ -49,11 +48,36 @@ environment:
       PLATFORM: windows-xp
       DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-dev-windows-xp.zip
       MAKE: mingw32-make
+      RELEASE_BUILD: false
+    # Windows XP (Release)
+    - APPVEYOR_JOB_NAME: for Windows XP (Release)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      COMPILER: C:\Qt\Tools\mingw492_32\bin
+      QT: C:\Qt\5.5\mingw492_32\bin
+      PLATFORM: windows-xp
+      DEST: BambooTracker-v%APPVEYOR_BUILD_VERSION%-windows-xp.zip
+      MAKE: mingw32-make
+      RELEASE_BUILD: true
     - APPVEYOR_JOB_NAME: for macOS
       APPVEYOR_BUILD_WORKER_IMAGE: macOS-Mojave
       PLATFORM: macos
       DEST: BambooTracker-v$APPVEYOR_BUILD_VERSION-dev-macos.zip
       MAKE: make
+      RELEASE_BUILD: false
+
+for:
+-
+  # Debug
+  matrix:
+    only:
+      - RELEASE_BUILD: false
+  skip_tags: true
+-
+  # Release
+  matrix:
+    only:
+      - RELEASE_BUILD: true
+  skip_non_tags: true
 
 # scripts that run after cloning repository
 install:
@@ -80,7 +104,9 @@ before_build:
 # to run your custom scripts instead of automatic MSBuild
 build_script:
   - ps: |
-      qmake.exe BambooTracker.pro PREFIX=..\target CONFIG+=debug CONFIG+=console CONFIG+=nostrip
+      $QMAKE_CONFIGS = if ($env:RELEASE_BUILD -ieq "true") { "CONFIG+=release CONFIG-=debug" } else { "CONFIG+=debug CONFIG+=console CONFIG+=nostrip" }
+      echo $QMAKE_CONFIGS
+      Invoke-Expression ("qmake.exe BambooTracker.pro PREFIX=..\target " + $QMAKE_CONFIGS)
       Invoke-Expression ($env:MAKE + " -j2")
   - sh: |
       qmake BambooTracker.pro PREFIX=../target CONFIG+=debug CONFIG+=console CONFIG+=nostrip LIBS+=-L"$JACKLIB" INCLUDEPATH+="$JACKINC" CONFIG+=install_flat
@@ -107,8 +133,9 @@ after_build:
   - sh: bash ../scripts/package_osx.sh
   - cd ..
   - ps: |
-      mv target BambooTracker-v"$env:APPVEYOR_BUILD_VERSION"-dev-"$env:PLATFORM"
-      7z a -tzip "$env:DEST" BambooTracker-v"$env:APPVEYOR_BUILD_VERSION"-dev-"$env:PLATFORM"
+      $DEV_LAB = if ($env:RELEASE_BUILD -ieq "true") { "-" } else { "-dev-" }
+      mv target BambooTracker-v"$env:APPVEYOR_BUILD_VERSION$DEV_LAB$env:PLATFORM"
+      7z a -tzip "$env:DEST" BambooTracker-v"$env:APPVEYOR_BUILD_VERSION$DEV_LAB$env:PLATFORM"
   - sh: |
       mv target BambooTracker-v"$APPVEYOR_BUILD_VERSION"-dev-"$PLATFORM"
       7z a -tzip "$DEST" BambooTracker-v"$APPVEYOR_BUILD_VERSION"-dev-"$PLATFORM"

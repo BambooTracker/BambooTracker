@@ -10,6 +10,7 @@
 - Use current channel in jam mode when editing an instrument (thanks [@Ravancloak])
 - Keep playing state after changing the configuration (thanks [@OPNA2608])
 - [#289] - Change MIDI input initialization ([#288]; thanks [@OPNA2608])
+- [#296] - Make the release build for Windows XP in appveyor (thanks [@OPNA2608])
 
 ### Fixed
 - [#284] - Fix the bug locking paint events after opening non-existent module (thanks [@OPNA2608])
@@ -27,6 +28,7 @@
 [#286]: https://github.com/rerrahkr/BambooTracker/pull/286
 [#295]: https://github.com/rerrahkr/BambooTracker/issues/295
 [#299]: https://github.com/rerrahkr/BambooTracker/issues/299
+[#296]: https://github.com/rerrahkr/BambooTracker/issues/296
 
 ## v0.4.5 (2020-11-05)
 ### Added
