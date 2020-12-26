@@ -4,7 +4,6 @@
 [![LICENSE](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
 [![Windows (7 and up)](https://github.com/rerrahkr/BambooTracker/workflows/Windows%20(7%20and%20up)/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+%287+and+up%29%22)
-[![Windows XP](https://github.com/rerrahkr/BambooTracker/workflows/Windows%20XP/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+XP%22)
 [![macOS](https://github.com/rerrahkr/BambooTracker/workflows/macOS/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3AmacOS)
 [![Ubuntu 16.04](https://github.com/rerrahkr/BambooTracker/workflows/Linux%20(Ubuntu%2016.04)/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Linux+%28Ubuntu+16.04%29%22)
 [![Nixpkgs 20.09](https://github.com/rerrahkr/BambooTracker/workflows/Linux%20(Nixpkgs)/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Linux+%28Nixpkgs%29%22)
