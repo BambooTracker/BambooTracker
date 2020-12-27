@@ -32,7 +32,7 @@
 #include <QTreeWidgetItem>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "gui/color_palette.hpp"
 
 namespace Ui {

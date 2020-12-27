@@ -24,7 +24,7 @@
  */
 
 #include "erase_step_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 EraseStepQtCommand::EraseStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

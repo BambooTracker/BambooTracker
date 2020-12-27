@@ -86,7 +86,9 @@ QMAKE_CFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 QMAKE_CXXFLAGS_WARN_ON += $$CPP_WARNING_FLAGS
 
 SOURCES += \
-    chips/c86ctl/c86ctl_wrapper.cpp \
+    calc_pitch.cpp \
+    chip/c86ctl/c86ctl_wrapper.cpp \
+    chip/register_write_logger.cpp \
     command/instrument/swap_instruments_command.cpp \
     command/pattern/change_values_in_pattern_command.cpp \
     command/pattern/paste_insert_copied_data_to_pattern_command.cpp \
@@ -94,6 +96,7 @@ SOURCES += \
     command/pattern/transpose_note_in_pattern_command.cpp \
     gui/bookmark_manager_form.cpp \
     gui/color_palette_handler.cpp \
+    gui/command/instrument/instrument_command_qt_utils.cpp \
     gui/command/instrument/swap_instruments_qt_command.cpp \
     gui/command/pattern/change_values_in_pattern_qt_command.cpp \
     gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.cpp \
@@ -103,12 +106,14 @@ SOURCES += \
     gui/effect_list_dialog.cpp \
     gui/file_io_error_message_box.cpp \
     gui/go_to_dialog.cpp \
+    gui/gui_utils.cpp \
     gui/hide_tracks_dialog.cpp \
     gui/instrument_editor/adpcm_sample_editor.cpp \
     gui/instrument_editor/arpeggio_macro_editor.cpp \
     gui/instrument_editor/grid_settings_dialog.cpp \
     gui/instrument_editor/instrument_editor_adpcm_form.cpp \
     gui/instrument_editor/instrument_editor_drumkit_form.cpp \
+    gui/instrument_editor/instrument_editor_utils.cpp \
     gui/instrument_editor/sample_length_dialog.cpp \
     gui/instrument_editor/tone_noise_macro_editor.cpp \
     gui/keyboard_shortcut_list_dialog.cpp \
@@ -121,8 +126,10 @@ SOURCES += \
     io/btm_io.cpp \
     io/dat_io.cpp \
     io/dmp_io.cpp \
+    io/export_io.cpp \
     io/ff_io.cpp \
     io/ins_io.cpp \
+    io/io_utils.cpp \
     io/opni_io.cpp \
     io/ppc_io.cpp \
     io/pvi_io.cpp \
@@ -131,24 +138,23 @@ SOURCES += \
     io/wav_container.cpp \
     io/wopn_io.cpp \
     io/y12_io.cpp \
+    jamming.cpp \
     main.cpp \
     gui/mainwindow.cpp \
-    chips/chip.cpp \
-    chips/opna.cpp \
-    chips/resampler.cpp \
-    chips/mame/2608intf.c \
-    chips/mame/emu2149.c \
-    chips/mame/fm.c \
-    chips/mame/ymdeltat.c \
-    chips/nuked/nuke2608intf.c \
-    chips/nuked/ym3438.c \
+    chip/chip.cpp \
+    chip/opna.cpp \
+    chip/resampler.cpp \
+    chip/mame/2608intf.c \
+    chip/mame/emu2149.c \
+    chip/mame/fm.c \
+    chip/mame/ymdeltat.c \
+    chip/nuked/nuke2608intf.c \
+    chip/nuked/ym3438.c \
     bamboo_tracker.cpp \
     module/effect.cpp \
     playback.cpp \
     song_length_calculator.cpp \
-    stream/audio_stream.cpp \
-    jam_manager.cpp \
-    pitch_converter.cpp \
+    audio/audio_stream.cpp \
     instrument/instruments_manager.cpp \
     command/command_manager.cpp \
     command/instrument/add_instrument_command.cpp \
@@ -166,7 +172,7 @@ SOURCES += \
     instrument/instrument.cpp \
     instrument/envelope_fm.cpp \
     gui/event_guard.cpp \
-    stream/audio_stream_rtaudio.cpp \
+    audio/audio_stream_rtaudio.cpp \
     tick_counter.cpp \
     module/module.cpp \
     module/song.cpp \
@@ -254,7 +260,6 @@ SOURCES += \
     command/pattern/reverse_pattern_command.cpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.cpp \
     command/pattern/replace_instrument_in_pattern_command.cpp \
-    chips/export_container.cpp \
     gui/vgm_export_settings_dialog.cpp \
     gui/wave_export_settings_dialog.cpp \
     configuration.cpp \
@@ -266,9 +271,8 @@ SOURCES += \
     instrument/bank.cpp \
     gui/instrument_selection_dialog.cpp \
     gui/s98_export_settings_dialog.cpp \
-    stream/timer.cpp \
+    precise_timer.cpp \
     io/module_io.cpp \
-    io/export_handler.cpp \
     io/instrument_io.cpp \
     io/bank_io.cpp \
     gui/fm_envelope_set_edit_dialog.cpp \
@@ -279,12 +283,13 @@ SOURCES += \
     gui/wave_visual.cpp
 
 HEADERS += \
-    chips/chip_misc.hpp \
-    chips/codec/ymb_codec.hpp \
-    chips/c86ctl/c86ctl.h \
-    chips/c86ctl/c86ctl_wrapper.hpp \
-    chips/scci/SCCIDefines.hpp \
-    chips/scci/scci.hpp \
+    calc_pitch.hpp \
+    chip/codec/ymb_codec.hpp \
+    chip/c86ctl/c86ctl.h \
+    chip/c86ctl/c86ctl_wrapper.hpp \
+    chip/register_write_logger.hpp \
+    chip/scci/SCCIDefines.hpp \
+    chip/scci/scci.hpp \
     command/command_id.hpp \
     command/instrument/swap_instruments_command.hpp \
     command/pattern/change_values_in_pattern_command.hpp \
@@ -294,6 +299,7 @@ HEADERS += \
     enum_hash.hpp \
     gui/bookmark_manager_form.hpp \
     gui/color_palette_handler.hpp \
+    gui/command/instrument/instrument_command_qt_utils.hpp \
     gui/command/instrument/swap_instruments_qt_command.hpp \
     gui/command/pattern/change_values_in_pattern_qt_command.hpp \
     gui/command/pattern/paste_insert_copied_data_to_pattern_qt_command.hpp \
@@ -303,44 +309,45 @@ HEADERS += \
     gui/effect_list_dialog.hpp \
     gui/file_io_error_message_box.hpp \
     gui/go_to_dialog.hpp \
-    gui/gui_util.hpp \
+    gui/gui_utils.hpp \
     gui/hide_tracks_dialog.hpp \
     gui/instrument_editor/adpcm_sample_editor.hpp \
     gui/instrument_editor/arpeggio_macro_editor.hpp \
     gui/instrument_editor/grid_settings_dialog.hpp \
     gui/instrument_editor/instrument_editor_adpcm_form.hpp \
     gui/instrument_editor/instrument_editor_drumkit_form.hpp \
-    gui/instrument_editor/instrument_editor_util.hpp \
+    gui/instrument_editor/instrument_editor_utils.hpp \
     gui/instrument_editor/sample_length_dialog.hpp \
     gui/instrument_editor/tone_noise_macro_editor.hpp \
-    gui/instrument_list_misc.hpp \
     gui/jam_layout.hpp \
     gui/keyboard_shortcut_list_dialog.hpp \
     gui/mainwindow.hpp \
-    chips/mame/2608intf.h \
-    chips/mame/emu2149.h \
-    chips/mame/emutypes.h \
-    chips/mame/fm.h \
-    chips/mame/mamedef.h \
-    chips/mame/ymdeltat.h \
-    chips/nuked/nuke2608intf.h \
-    chips/nuked/ym3438.h \
-    chips/chip.hpp \
-    chips/opna.hpp \
-    chips/resampler.hpp \
+    chip/mame/2608intf.h \
+    chip/mame/emu2149.h \
+    chip/mame/emutypes.h \
+    chip/mame/fm.h \
+    chip/mame/mamedef.h \
+    chip/mame/ymdeltat.h \
+    chip/nuked/nuke2608intf.h \
+    chip/nuked/ym3438.h \
+    chip/chip.hpp \
+    chip/opna.hpp \
+    chip/resampler.hpp \
     bamboo_tracker.hpp \
     gui/swap_tracks_dialog.hpp \
     gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
     instrument/waveform_adpcm.hpp \
-    io/bt_io_defs.hpp \
     io/btb_io.hpp \
     io/bti_io.hpp \
     io/btm_io.hpp \
     io/dat_io.hpp \
     io/dmp_io.hpp \
+    io/export_io.hpp \
     io/ff_io.hpp \
     io/ins_io.hpp \
+    io/io_file_type.hpp \
+    io/io_utils.hpp \
     io/opni_io.hpp \
     io/ppc_io.hpp \
     io/pvi_io.hpp \
@@ -349,14 +356,13 @@ HEADERS += \
     io/wav_container.hpp \
     io/wopn_io.hpp \
     io/y12_io.hpp \
+    jamming.hpp \
     module/effect.hpp \
     playback.hpp \
     song_length_calculator.hpp \
-    stream/audio_stream.hpp \
-    chips/chip_def.h \
-    jam_manager.hpp \
+    audio/audio_stream.hpp \
+    chip/chip_def.h \
     misc.hpp \
-    pitch_converter.hpp \
     instrument/instruments_manager.hpp \
     command/command_manager.hpp \
     command/instrument/add_instrument_command.hpp \
@@ -376,7 +382,7 @@ HEADERS += \
     instrument/instrument.hpp \
     instrument/envelope_fm.hpp \
     gui/event_guard.hpp \
-    stream/audio_stream_rtaudio.hpp \
+    audio/audio_stream_rtaudio.hpp \
     tick_counter.hpp \
     module/module.hpp \
     module/song.hpp \
@@ -463,7 +469,6 @@ HEADERS += \
     gui/command/pattern/set_echo_buffer_access_qt_command.hpp \
     command/pattern/set_echo_buffer_access_command.hpp \
     gui/comment_edit_dialog.hpp \
-    io/file_io.hpp \
     io/binary_container.hpp \
     version.hpp \
     gui/command/pattern/interpolate_pattern_qt_command.hpp \
@@ -472,10 +477,8 @@ HEADERS += \
     command/pattern/reverse_pattern_command.hpp \
     gui/command/pattern/replace_instrument_in_pattern_qt_command.hpp \
     command/pattern/replace_instrument_in_pattern_command.hpp \
-    chips/export_container.hpp \
     gui/vgm_export_settings_dialog.hpp \
     gui/wave_export_settings_dialog.hpp \
-    io/gd3_tag.hpp \
     configuration.hpp \
     gui/configuration_handler.hpp \
     gui/color_palette.hpp \
@@ -485,19 +488,15 @@ HEADERS += \
     format/wopn_file.h \
     instrument/bank.hpp \
     gui/instrument_selection_dialog.hpp \
-    io/s98_tag.hpp \
     gui/s98_export_settings_dialog.hpp \
-    stream/timer.hpp \
+    precise_timer.hpp \
     io/module_io.hpp \
-    io/io_handlers.hpp \
-    io/export_handler.hpp \
     io/instrument_io.hpp \
     io/bank_io.hpp \
     gui/fm_envelope_set_edit_dialog.hpp \
     gui/file_history_handler.hpp \
     gui/file_history.hpp \
     midi/midi.hpp \
-    midi/midi_def.h \
     gui/q_application_wrapper.hpp \
     gui/wave_visual.hpp
 
@@ -534,12 +533,8 @@ FORMS += \
     gui/fm_envelope_set_edit_dialog.ui
 
 INCLUDEPATH += \
-    $$PWD/chips \
-    $$PWD/stream \
     $$PWD/instrument \
-    $$PWD/command \
-    $$PWD/module \
-    $$PWD/io
+    $$PWD/module
 
 # In-app resource bundle. Needs to be handled here because it generates an object file to link against
 include("resources/resources.pri")

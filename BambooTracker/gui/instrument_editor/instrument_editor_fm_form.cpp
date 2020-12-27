@@ -39,9 +39,9 @@
 #include <QMessageBox>
 #include "gui/event_guard.hpp"
 #include "gui/jam_layout.hpp"
-#include "gui/instrument_editor/instrument_editor_util.hpp"
+#include "gui/instrument_editor/instrument_editor_utils.hpp"
 #include "misc.hpp"
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -411,7 +411,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
 			FMEnvelopeParameter param = getOperatorSequenceParameter();
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setOperatorSequenceFMRelease(param, ui->opSeqNumSpinBox->value(), t, point);
 			emit operatorSequenceParameterChanged(param, ui->opSeqNumSpinBox->value(), instNum_);
 			emit modified();
@@ -470,7 +470,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setArpeggioFMRelease(ui->arpNumSpinBox->value(), t, point);
 			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 			emit modified();
@@ -541,7 +541,7 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setPitchFMRelease(ui->ptNumSpinBox->value(), t, point);
 			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 			emit modified();
@@ -619,7 +619,7 @@ void InstrumentEditorFMForm::setConfiguration(std::weak_ptr<Configuration> confi
 
 	std::vector<QString> names;
 	for (const auto& texts : config.lock()->getFMEnvelopeTexts()) {
-		names.push_back(utf8ToQString(texts.name));
+		names.push_back(gui_utils::utf8ToQString(texts.name));
 	}
 	ui->op1Table->setEnvelopeSetNames(names);
 	ui->op2Table->setEnvelopeSetNames(names);
@@ -655,7 +655,7 @@ void InstrumentEditorFMForm::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	auto name = utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
+	auto name = gui_utils::utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentEnvelopeParameters();
@@ -851,7 +851,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QSt
 		auto name = config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).name;
 		QMessageBox::critical(this, tr("Error"),
 							  tr("Did not match the clipboard text format with %1.")
-							  .arg(utf8ToQString(name)));
+							  .arg(gui_utils::utf8ToQString(name)));
 		return;
 	}
 
@@ -918,7 +918,7 @@ void InstrumentEditorFMForm::setInstrumentEnvelopeParameters(int envTypeNum, QSt
 		auto name = config_.lock()->getFMEnvelopeTexts().at(static_cast<size_t>(envTypeNum)).name;
 		QMessageBox::critical(this, tr("Error"),
 							  tr("Did not match the clipboard text format with %1.")
-							  .arg(utf8ToQString(name)));
+							  .arg(gui_utils::utf8ToQString(name)));
 		return;
 	}
 }
@@ -1240,7 +1240,7 @@ void InstrumentEditorFMForm::on_envGroupBox_customContextMenuRequested(const QPo
 	QMenu* pasteFrom = menu.addMenu(tr("Paste envelope From"));
 	std::vector<FMEnvelopeText> textsSet = config_.lock()->getFMEnvelopeTexts();
 	for (size_t i = 0; i < textsSet.size(); ++i) {
-		QAction* act = pasteFrom->addAction(utf8ToQString(textsSet[i].name));
+		QAction* act = pasteFrom->addAction(gui_utils::utf8ToQString(textsSet[i].name));
 		act->setData(static_cast<int>(i));
 	}
 	QObject::connect(pasteFrom, &QMenu::triggered,
@@ -1421,7 +1421,7 @@ void InstrumentEditorFMForm::setInstrumentOperatorSequenceParameters()
 	for (auto& l : instFM->getOperatorSequenceLoops(param)) {
 		ui->opSeqEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->opSeqEditor->setRelease(convertReleaseTypeForUI(instFM->getOperatorSequenceRelease(param).type),
+	ui->opSeqEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instFM->getOperatorSequenceRelease(param).type),
 								instFM->getOperatorSequenceRelease(param).begin);
 	if (instFM->getOperatorSequenceEnabled(param)) {
 		ui->opSeqEditGroupBox->setChecked(true);
@@ -1586,10 +1586,10 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 	for (auto& l : instFM->getArpeggioLoops(param)) {
 		ui->arpEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->arpEditor->setRelease(convertReleaseTypeForUI(instFM->getArpeggioRelease(param).type),
+	ui->arpEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instFM->getArpeggioRelease(param).type),
 							  instFM->getArpeggioRelease(param).begin);
 	for (int i = 0; i < ui->arpTypeComboBox->count(); ++i) {
-		if (instFM->getArpeggioType(param) == convertSequenceTypeForData(
+		if (instFM->getArpeggioType(param) == inst_edit_utils::convertSequenceTypeForData(
 					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->arpTypeComboBox->itemData(i).toInt()))) {
 			ui->arpTypeComboBox->setCurrentIndex(i);
 			break;
@@ -1638,7 +1638,7 @@ void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
 	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(
 					ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(), convertSequenceTypeForData(type));
+		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
@@ -1693,10 +1693,10 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 	for (auto& l : instFM->getPitchLoops(param)) {
 		ui->ptEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->ptEditor->setRelease(convertReleaseTypeForUI(instFM->getPitchRelease(param).type),
+	ui->ptEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instFM->getPitchRelease(param).type),
 							 instFM->getPitchRelease(param).begin);
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (instFM->getPitchType(param) == convertSequenceTypeForData(
+		if (instFM->getPitchType(param) == inst_edit_utils::convertSequenceTypeForData(
 					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
@@ -1744,7 +1744,7 @@ void InstrumentEditorFMForm::onPitchTypeChanged(int index)
 
 	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(), convertSequenceTypeForData(type));
+		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}

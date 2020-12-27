@@ -27,6 +27,8 @@
 
 #include "module_io.hpp"
 
+namespace io
+{
 class BtmIO final : public AbstractModuleIO
 {
 public:
@@ -54,3 +56,4 @@ private:
 	static size_t loadSongSectionInModule(std::weak_ptr<Module> mod, const BinaryContainer& ctr,
 										  size_t globCsr, uint32_t version);
 };
+}

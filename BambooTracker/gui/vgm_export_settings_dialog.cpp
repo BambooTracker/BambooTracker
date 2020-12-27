@@ -25,8 +25,8 @@
 
 #include "vgm_export_settings_dialog.hpp"
 #include "ui_vgm_export_settings_dialog.h"
-#include "export_handler.hpp"
 #include <QTextCodec>
+#include "io/export_io.hpp"
 
 VgmExportSettingsDialog::VgmExportSettingsDialog(QWidget *parent) :
 	QDialog(parent),
@@ -110,9 +110,9 @@ QString VgmExportSettingsDialog::getNotes() const
 	return ui->notesPlainTextEdit->toPlainText();
 }
 
-GD3Tag VgmExportSettingsDialog::getGD3Tag() const
+io::GD3Tag VgmExportSettingsDialog::getGD3Tag() const
 {
-	GD3Tag tag;
+	io::GD3Tag tag;
 	QTextCodec* sjis = QTextCodec::codecForName("Shift-JIS");
 	std::string endNull = "";
 	endNull += '\0';
@@ -199,16 +199,16 @@ int VgmExportSettingsDialog::getExportTarget() const
 	int target = 0;
 
 	if (ui->ym2608RadioButton->isChecked())
-		target |= Export_YM2608;
+		target |= io::Export_YM2608;
 	else if (ui->ym2612RadioButton->isChecked())
-		target |= Export_YM2612;
+		target |= io::Export_YM2612;
 	else if (ui->ym2203RadioButton->isChecked())
-		target |= Export_YM2203;
+		target |= io::Export_YM2203;
 
 	if (ui->ay8910PsgRadioButton->isChecked())
-		target |= Export_AY8910Psg;
+		target |= io::Export_AY8910Psg;
 	else if (ui->ym2149PsgRadioButton->isChecked())
-		target |= Export_YM2149Psg;
+		target |= io::Export_YM2149Psg;
 
 	return target;
 }
@@ -218,24 +218,24 @@ void VgmExportSettingsDialog::updateSupportInformation()
 	int target = getExportTarget();
 	int channels;
 
-	int fm = target & Export_FmMask;
-	int ssg = target & Export_SsgMask;
+	int fm = target & io::Export_FmMask;
+	int ssg = target & io::Export_SsgMask;
 
 	switch (fm) {
 	default:
 		channels = 6;
 		break;
-	case Export_YM2203:
+	case io::Export_YM2203:
 		channels = 3;
 		break;
-	case Export_NoneFm:
+	case io::Export_NoneFm:
 		channels = 0;
 		break;
 	}
 
-	bool haveSsg = fm == Export_YM2608 || fm == Export_YM2203 || ssg != Export_InternalSsg;
-	bool haveRhythm = fm == Export_YM2608;
-	bool haveAdpcm = fm == Export_YM2608;
+	bool haveSsg = fm == io::Export_YM2608 || fm == io::Export_YM2203 || ssg != io::Export_InternalSsg;
+	bool haveRhythm = fm == io::Export_YM2608;
+	bool haveAdpcm = fm == io::Export_YM2608;
 
 	ui->supportFmChannelsLabel->setText(QString::number(channels));
 	ui->supportSsgLabel->setText(haveSsg ? tr("Yes") : tr("No"));

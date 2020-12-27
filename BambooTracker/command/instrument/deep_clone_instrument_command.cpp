@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,12 @@
 
 #include "deep_clone_instrument_command.hpp"
 
-DeepCloneInstrumentCommand::DeepCloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, int refNum)
-	: manager_(manager), cloneInstNum_(num), refInstNum_(refNum)
+DeepCloneInstrumentCommand::DeepCloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
+													   int num, int refNum)
+	: AbstractCommand(CommandId::DeepCloneInstrument),
+	  manager_(manager),
+	  cloneInstNum_(num),
+	  refInstNum_(refNum)
 {
 }
 
@@ -38,9 +42,4 @@ void DeepCloneInstrumentCommand::redo()
 void DeepCloneInstrumentCommand::undo()
 {
 	manager_.lock()->removeInstrument(cloneInstNum_);
-}
-
-CommandId DeepCloneInstrumentCommand::getID() const
-{
-	return CommandId::DeepCloneInstrument;
 }

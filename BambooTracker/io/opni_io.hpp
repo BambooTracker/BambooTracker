@@ -29,6 +29,8 @@
 
 struct WOPNInstrument;
 
+namespace io
+{
 class OpniIO final : public AbstractInstrumentIO
 {
 public:
@@ -39,3 +41,4 @@ public:
 												  std::weak_ptr<InstrumentsManager> instMan,
 												  int instNum);
 };
+}

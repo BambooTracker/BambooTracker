@@ -33,24 +33,26 @@
 #include "y12_io.hpp"
 #include "ins_io.hpp"
 
+namespace io
+{
 AbstractInstrument* AbstractInstrumentIO::load(const BinaryContainer& ctr, const std::string& fileName,
-								 std::weak_ptr<InstrumentsManager> instMan,
-								 int instNum) const
+											   std::weak_ptr<InstrumentsManager> instMan,
+											   int instNum) const
 {
 	(void)ctr;
 	(void)fileName;
 	(void)instMan;
 	(void)instNum;
-	throw FileUnsupportedError(FileIO::FileType::Inst);
+	throw FileUnsupportedError(FileType::Inst);
 }
 
 void AbstractInstrumentIO::save(BinaryContainer& ctr,
-				  const std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+								const std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
 	(void)ctr;
 	(void)instMan;
 	(void)instNum;
-	throw FileUnsupportedError(FileIO::FileType::Inst);
+	throw FileUnsupportedError(FileType::Inst);
 }
 
 //------------------------------------------------------------
@@ -86,5 +88,6 @@ AbstractInstrument* InstrumentIO::loadInstrument(const BinaryContainer& ctr, con
 {
 	size_t fnpos = path.find_last_of("/");
 	std::string name = path.substr(fnpos + 1, path.find_last_of(".") - fnpos - 1);
-	return handler_.at(FileIO::getExtension(path))->load(ctr, name, instMan, instNum);
+	return handler_.at(getExtension(path))->load(ctr, name, instMan, instNum);
+}
 }

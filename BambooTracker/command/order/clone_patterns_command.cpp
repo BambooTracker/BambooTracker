@@ -27,7 +27,8 @@
 
 ClonePatternsCommand::ClonePatternsCommand(std::weak_ptr<Module> mod, int songNum,
 										   int beginOrder, int beginTrack, int endOrder, int endTrack)
-	: mod_(mod),
+	: AbstractCommand(CommandId::ClonePatterns),
+	  mod_(mod),
 	  song_(songNum),
 	  bOrder_(beginOrder),
 	  bTrack_(beginTrack),
@@ -67,9 +68,4 @@ void ClonePatternsCommand::undo()
 						prevOdrs_.at(static_cast<size_t>(o - bOrder_)).at(static_cast<size_t>(t - bTrack_)).patten);
 		}
 	}
-}
-
-CommandId ClonePatternsCommand::getID() const
-{
-	return CommandId::ClonePatterns;
 }

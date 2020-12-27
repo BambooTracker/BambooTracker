@@ -29,20 +29,14 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
-#include "opna_controller.hpp"
-#include "instruments_manager.hpp"
 #include "module.hpp"
-#include "tick_counter.hpp"
 #include "effect.hpp"
 #include "enum_hash.hpp"
 
-struct RegisterUnit
-{
-	int address, value;
-	bool hasCompleted;
-};
+class OPNAController;
+class InstrumentsManager;
+class TickCounter;
 
-/// Divede playback routine from main class BambooTracker
 class PlaybackManager
 {
 public:
@@ -60,10 +54,10 @@ public:
 	void startPlayFromPosition(int order, int step);
 	void playStep(int order, int step);
 	void stopPlaySong();
-	bool isPlaySong() const;
-	bool isPlayingStep() const;
-	int getPlayingOrderNumber() const;
-	int getPlayingStepNumber() const;
+	bool isPlaySong() const noexcept;
+	bool isPlayingStep() const noexcept;
+	int getPlayingOrderNumber() const noexcept;
+	int getPlayingStepNumber() const noexcept;
 
 	// Stream events
 	/// 0<: Tick
@@ -87,13 +81,8 @@ private:
 	SongStyle songStyle_;
 	int playOrderNum_, playStepNum_;
 	int nextReadOrder_, nextReadStep_;
-	/// High nibble - play type
-	///		bit 4: If high, loop pattern
-	///		bit 5: Play step
-	/// Low nibble - read state
-	///		bit 0: playing
-	///		bit 1: have read first step data
-	unsigned int playState_;
+
+	uint8_t playStateFlags_;
 
 	// Play song
 	bool isFindNextStep_;
@@ -115,9 +104,17 @@ private:
 	EffectMemory stepBeginBasedEffsGlobal_, stepEndBasedEffsGlobal_;
 	using EffectMemorySource = std::vector<std::unordered_map<EffectType, int>>;
 	std::unordered_map<SoundSource, EffectMemorySource> keyOnBasedEffs_, stepBeginBasedEffs_;
+
+	struct RegisterUnit
+	{
+		int address, value;
+		bool hasCompleted;
+	};
+
 	using DirectRegisterSetQueue = std::vector<RegisterUnit>;
 	using DirectRegisterSetSource = std::vector<DirectRegisterSetQueue>;
 	std::unordered_map<SoundSource, DirectRegisterSetSource> directRegisterSets_;
+
 	bool executeStoredEffectsGlobal();
 	bool storeEffectToMapFM(int ch, const Effect& eff);
 	void executeStoredEffectsFM(int ch);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,9 +26,7 @@
 #include "duplicate_order_command.hpp"
 
 DuplicateOrderCommand::DuplicateOrderCommand(std::weak_ptr<Module> mod, int songNum, int orderNum)
-	: mod_(mod),
-	  song_(songNum),
-	  order_(orderNum)
+	: AbstractCommand(CommandId::DuplicateOrder), mod_(mod), song_(songNum), order_(orderNum)
 {
 }
 
@@ -45,9 +43,4 @@ void DuplicateOrderCommand::redo()
 void DuplicateOrderCommand::undo()
 {
 	mod_.lock()->getSong(song_).deleteOrder(order_ + 1);
-}
-
-CommandId DuplicateOrderCommand::getID() const
-{
-	return CommandId::DuplicateOrder;
 }

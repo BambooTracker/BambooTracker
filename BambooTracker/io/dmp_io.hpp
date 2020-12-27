@@ -27,6 +27,8 @@
 
 #include "instrument_io.hpp"
 
+namespace io
+{
 class DmpIO final : public AbstractInstrumentIO
 {
 public:
@@ -34,3 +36,4 @@ public:
 	AbstractInstrument* load(const BinaryContainer& ctr, const std::string& fileName,
 							 std::weak_ptr<InstrumentsManager> instMan, int instNum) const override;
 };
+}

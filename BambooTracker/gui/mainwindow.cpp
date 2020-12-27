@@ -47,15 +47,17 @@
 #include <QToolButton>
 #include <QSignalBlocker>
 #include <QTextCodec>
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "song.hpp"
 #include "track.hpp"
 #include "instrument.hpp"
 #include "bank.hpp"
-#include "file_io.hpp"
-#include "module_io.hpp"
-#include "instrument_io.hpp"
-#include "bank_io.hpp"
+#include "io/io_file_type.hpp"
+#include "io/module_io.hpp"
+#include "io/instrument_io.hpp"
+#include "io/bank_io.hpp"
+#include "io/binary_container.hpp"
+#include "io/wav_container.hpp"
 #include "version.hpp"
 #include "gui/command/commands_qt.hpp"
 #include "gui/instrument_editor/instrument_editor_fm_form.hpp"
@@ -71,14 +73,12 @@
 #include "gui/s98_export_settings_dialog.hpp"
 #include "gui/configuration_handler.hpp"
 #include "gui/jam_layout.hpp"
-#include "chips/scci/SCCIDefines.hpp"
-#include "chips/c86ctl/c86ctl_wrapper.hpp"
+#include "chip/scci/SCCIDefines.hpp"
+#include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "gui/file_history_handler.hpp"
 #include "midi/midi.hpp"
-#include "audio_stream_rtaudio.hpp"
+#include "audio/audio_stream_rtaudio.hpp"
 #include "color_palette_handler.hpp"
-#include "binary_container.hpp"
-#include "wav_container.hpp"
 #include "enum_hash.hpp"
 #include "gui/go_to_dialog.hpp"
 #include "gui/transpose_song_dialog.hpp"
@@ -86,7 +86,7 @@
 #include "gui/hide_tracks_dialog.hpp"
 #include "gui/track_visibility_memory_handler.hpp"
 #include "gui/file_io_error_message_box.hpp"
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QWidget *parent) :
 	QMainWindow(parent),
@@ -196,7 +196,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	QObject::connect(ui->menu_Recent_Files, &QMenu::triggered, this, [&](QAction* action) {
 		if (action != ui->actionClear) {
 			if (isWindowModified()) {
-				QString modTitle = utf8ToQString(bt_->getModuleTitle());
+				QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
 				if (modTitle.isEmpty()) modTitle = tr("Untitled");
 				QMessageBox dialog(QMessageBox::Warning,
 								   "BambooTracker",
@@ -375,10 +375,10 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 					 this, [&](int num) {
 		if (num == -1) return;
 		freezeViews();
-		if (!timer_) stream_->stop();
+		if (!tickTimerForRealChip_) stream_->stop();
 		bt_->setCurrentSongNumber(num);
 		loadSong();
-		if (!timer_) stream_->start();
+		if (!tickTimerForRealChip_) stream_->start();
 	});
 
 	/* Song settings */
@@ -648,7 +648,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	Q_ASSERT(midiKeyEventMethod_ != -1);
 	midiProgramEventMethod_ = metaObject()->indexOfSlot("midiProgramEvent(uchar,uchar)");
 	Q_ASSERT(midiProgramEventMethod_ != -1);
-	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().installInputHandler(&midiThreadReceivedEvent, this);
 
 	/* Audio stream */
 	stream_ = std::make_shared<AudioStreamRtAudio>();
@@ -661,7 +661,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		bt->getStreamSamples(container, nSamples);
 	}, bt_.get());
 	QObject::connect(stream_.get(), &AudioStream::streamInterrupted, this, &MainWindow::onNewTickSignaled);
-	QString audioApi = utf8ToQString(config.lock()->getSoundAPI());
+	QString audioApi = gui_utils::utf8ToQString(config.lock()->getSoundAPI());
 	if (audioApi.isEmpty()) {	// On the first launch
 		bool streamState = false;
 		QString streamErr;
@@ -699,7 +699,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 			audioApi = audioApis.front();
 			config.lock()->setSoundAPI(audioApi.toUtf8().toStdString());
 		}
-		QString audioDevice = utf8ToQString(config.lock()->getSoundDevice());
+		QString audioDevice = gui_utils::utf8ToQString(config.lock()->getSoundDevice());
 		bool savedDeviceExists = false;
 		for (const QString& device : stream_->getAvailableDevices(audioApi)) {
 			if (device.toUtf8().toStdString() == config.lock()->getSoundDevice()) {
@@ -733,18 +733,18 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		bt_->useC86CTL(nullptr);
 	}
 	else {
-		timer_ = std::make_unique<Timer>();
-		timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+		tickTimerForRealChip_ = std::make_unique<PreciseTimer>();
+		tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 		tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
 		Q_ASSERT(tickEventMethod_ != -1);
-		timer_->setFunction([&]{
+		tickTimerForRealChip_->setFunction([&]{
 			QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
 			method.invoke(this, Qt::QueuedConnection);
 		});
 
 		setRealChipInterface(intf);
 
-		timer_->start();
+		tickTimerForRealChip_->start();
 	}
 
 	/* Load module */
@@ -752,7 +752,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 		loadModule();
 		setInitialSelectedInstrument();
 		assignADPCMSamples();
-		if (!timer_) stream_->start();
+		if (!tickTimerForRealChip_) stream_->start();
 	}
 	else {
 		openModule(filePath);	// If use emulation, stream stars
@@ -764,7 +764,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 	if (config.lock()->getRestoreTrackVisibility()
 			&& TrackVisibilityMemoryHandler::loadTrackVisibilityMemory(memSongType, visTracks)) {
 		SongType songType = bt_->getSongStyle(bt_->getCurrentSongNumber()).type;
-		visTracks = adaptVisibleTrackList(visTracks, songType, songType);
+		visTracks = gui_utils::adaptVisibleTrackList(visTracks, songType, songType);
 	}
 	else {
 		visTracks.resize(bt_->getSongStyle(0).trackAttribs.size());
@@ -775,7 +775,7 @@ MainWindow::MainWindow(std::weak_ptr<Configuration> config, QString filePath, QW
 
 MainWindow::~MainWindow()
 {
-	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().uninstallInputHandler(&midiThreadReceivedEvent, this);
 	stream_->shutdown();
 }
 
@@ -892,9 +892,9 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 	auto mime = event->mimeData();
 	if (mime->hasUrls() && mime->urls().length() == 1) {
 		const std::string ext = QFileInfo(mime->urls().first().toLocalFile()).suffix().toLower().toStdString();
-		if (ModuleIO::getInstance().testLoadableFormat(ext)
-				| InstrumentIO::getInstance().testLoadableFormat(ext)
-				| BankIO::getInstance().testLoadableFormat(ext))
+		if (io::ModuleIO::getInstance().testLoadableFormat(ext)
+				| io::InstrumentIO::getInstance().testLoadableFormat(ext)
+				| io::BankIO::getInstance().testLoadableFormat(ext))
 			event->acceptProposedAction();
 	}
 }
@@ -904,9 +904,9 @@ void MainWindow::dropEvent(QDropEvent* event)
 	QString file = event->mimeData()->urls().first().toLocalFile();
 
 	const std::string ext = QFileInfo(file).suffix().toLower().toStdString();
-	if (ModuleIO::getInstance().testLoadableFormat(ext)) {
+	if (io::ModuleIO::getInstance().testLoadableFormat(ext)) {
 		if (isWindowModified()) {
-			QString modTitle = utf8ToQString(bt_->getModuleTitle());
+			QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
 			if (modTitle.isEmpty()) modTitle = tr("Untitled");
 			QMessageBox dialog(QMessageBox::Warning,
 							   "BambooTracker",
@@ -930,10 +930,10 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 		openModule(file);
 	}
-	else if (InstrumentIO::getInstance().testLoadableFormat(ext)) {
+	else if (io::InstrumentIO::getInstance().testLoadableFormat(ext)) {
 		funcLoadInstrument(file);
 	}
-	if (BankIO::getInstance().testLoadableFormat(ext)) {
+	if (io::BankIO::getInstance().testLoadableFormat(ext)) {
 		funcImportInstrumentsFromBank(file);
 	}
 }
@@ -961,7 +961,7 @@ void MainWindow::moveEvent(QMoveEvent* event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (isWindowModified()) {
-		QString modTitle = utf8ToQString(bt_->getModuleTitle());
+		QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -1138,68 +1138,68 @@ void MainWindow::unfreezeViews()
 void MainWindow::setShortcuts()
 {
 	auto shortcuts = config_.lock()->getShortcuts();
-	octUpSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
-	octDownSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
-	focusPtnSc_.setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnPattern)));
-	focusOdrSc_.setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnOrder)));
-	focusInstSc_.setKey(strToKeySeq(shortcuts.at(Configuration::FocusOnInstrument)));
-	playAndStopSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayAndStop)));
-	ui->actionPlay->setShortcut(strToKeySeq(shortcuts.at(Configuration::Play)));
-	ui->actionPlay_From_Start->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromStart)));
-	ui->actionPlay_Pattern->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayPattern)));
-	ui->actionPlay_From_Cursor->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromCursor)));
-	ui->actionPlay_From_Marker->setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayFromMarker)));
-	playStepSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PlayStep)));
-	ui->actionStop->setShortcut(strToKeySeq(shortcuts.at(Configuration::Stop)));
-	ui->actionEdit_Mode->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleEditJam)));
-	ui->actionSet_Ro_w_Marker->setShortcut(strToKeySeq(shortcuts.at(Configuration::SetMarker)));
-	ui->actionMix->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteMix)));
-	ui->actionOverwrite->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
-	ui->action_Insert->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
-	ui->actionAll->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectAll)));
-	ui->actionNone->setShortcut(strToKeySeq(shortcuts.at(Configuration::Deselect)));
-	ui->actionRow->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectRow)));
-	ui->actionColumn->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectColumn)));
-	ui->actionPattern->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectColumn)));
-	ui->actionOrder->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectOrder)));
-	ui->action_Go_To->setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToStep)));
-	ui->actionToggle_Track->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-	ui->actionSolo_Track->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
-	ui->actionInterpolate->setShortcut(strToKeySeq(shortcuts.at(Configuration::Interpolate)));
-	goPrevOdrSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToPrevOrder)));
-	goNextOdrSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::GoToNextOrder)));
-	ui->action_Toggle_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleBookmark)));
-	ui->action_Previous_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::PrevBookmark)));
-	ui->action_Next_Bookmark->setShortcut(strToKeySeq(shortcuts.at(Configuration::NextBookmark)));
-	ui->actionDecrease_Note->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
-	ui->actionIncrease_Note->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
-	ui->actionDecrease_Octave->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
-	ui->actionIncrease_Octave->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
-	prevInstSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PrevInstrument)));
-	nextInstSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::NextInstrument)));
-	ui->action_Instrument_Mask->setShortcut(strToKeySeq(shortcuts.at(Configuration::MaskInstrument)));
-	ui->action_Volume_Mask->setShortcut(strToKeySeq(shortcuts.at(Configuration::MaskVolume)));
-	ui->actionEdit->setShortcut(strToKeySeq(shortcuts.at(Configuration::EditInstrument)));
-	ui->actionFollow_Mode->setShortcut(strToKeySeq(shortcuts.at(Configuration::FollowMode)));
-	ui->actionDuplicate_Order->setShortcut(strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
-	ui->actionClone_Patterns->setShortcut(strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
-	ui->actionClone_Order->setShortcut(strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
-	ui->actionReplace_Instrument->setShortcut(strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
-	ui->actionExpand->setShortcut(strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
-	ui->actionShrink->setShortcut(strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
-	ui->actionFine_Decrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
-	ui->actionFine_Increase_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
-	ui->actionCoarse_D_ecrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
-	ui->actionCoarse_I_ncrease_Values->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
-	incPtnSizeSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreasePatternSize)));
-	decPtnSizeSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
-	incEditStepSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
-	decEditStepSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
-	ui->action_Effect_List->setShortcut(strToKeySeq(shortcuts.at(Configuration::DisplayEffectList)));
-	prevSongSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::PreviousSong)));
-	nextSongSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::NextSong)));
-	jamVolUpSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeUp)));
-	jamVolDownSc_.setShortcut(strToKeySeq(shortcuts.at(Configuration::JamVolumeDown)));
+	octUpSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::OctaveUp)));
+	octDownSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::OctaveDown)));
+	focusPtnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::FocusOnPattern)));
+	focusOdrSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::FocusOnOrder)));
+	focusInstSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::FocusOnInstrument)));
+	playAndStopSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayAndStop)));
+	ui->actionPlay->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Play)));
+	ui->actionPlay_From_Start->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayFromStart)));
+	ui->actionPlay_Pattern->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayPattern)));
+	ui->actionPlay_From_Cursor->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayFromCursor)));
+	ui->actionPlay_From_Marker->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayFromMarker)));
+	playStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PlayStep)));
+	ui->actionStop->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Stop)));
+	ui->actionEdit_Mode->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleEditJam)));
+	ui->actionSet_Ro_w_Marker->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SetMarker)));
+	ui->actionMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteMix)));
+	ui->actionOverwrite->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
+	ui->action_Insert->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
+	ui->actionAll->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectAll)));
+	ui->actionNone->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Deselect)));
+	ui->actionRow->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectRow)));
+	ui->actionColumn->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectColumn)));
+	ui->actionPattern->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectColumn)));
+	ui->actionOrder->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectOrder)));
+	ui->action_Go_To->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::GoToStep)));
+	ui->actionToggle_Track->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
+	ui->actionSolo_Track->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
+	ui->actionInterpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Interpolate)));
+	goPrevOdrSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::GoToPrevOrder)));
+	goNextOdrSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::GoToNextOrder)));
+	ui->action_Toggle_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleBookmark)));
+	ui->action_Previous_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PrevBookmark)));
+	ui->action_Next_Bookmark->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextBookmark)));
+	ui->actionDecrease_Note->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
+	ui->actionIncrease_Note->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
+	ui->actionDecrease_Octave->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
+	ui->actionIncrease_Octave->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
+	prevInstSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PrevInstrument)));
+	nextInstSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextInstrument)));
+	ui->action_Instrument_Mask->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::MaskInstrument)));
+	ui->action_Volume_Mask->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::MaskVolume)));
+	ui->actionEdit->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::EditInstrument)));
+	ui->actionFollow_Mode->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FollowMode)));
+	ui->actionDuplicate_Order->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DuplicateOrder)));
+	ui->actionClone_Patterns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ClonePatterns)));
+	ui->actionClone_Order->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CloneOrder)));
+	ui->actionReplace_Instrument->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
+	ui->actionExpand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
+	ui->actionShrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
+	ui->actionFine_Decrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
+	ui->actionFine_Increase_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
+	ui->actionCoarse_D_ecrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
+	ui->actionCoarse_I_ncrease_Values->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
+	incPtnSizeSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreasePatternSize)));
+	decPtnSizeSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreasePatternSize)));
+	incEditStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseEditStep)));
+	decEditStepSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseEditStep)));
+	ui->action_Effect_List->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DisplayEffectList)));
+	prevSongSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PreviousSong)));
+	nextSongSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextSong)));
+	jamVolUpSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::JamVolumeUp)));
+	jamVolDownSc_.setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::JamVolumeDown)));
 
 	ui->orderList->onShortcutUpdated();
 	ui->patternEditor->onShortcutUpdated();
@@ -1373,7 +1373,7 @@ void MainWindow::removeInstrument(int row)
 	}
 
 	bt_->removeInstrument(num);
-	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, utf8ToQString(inst->getName()),
+	comStack_->push(new RemoveInstrumentQtCommand(list, num, row, gui_utils::utf8ToQString(inst->getName()),
 												  inst->getType(), instForms_, this, updateRequest));
 }
 
@@ -1604,7 +1604,7 @@ void MainWindow::renameInstrument()
 	renamingInstItem_ = item;
 
 	int num = item->data(Qt::UserRole).toInt();
-	renamingInstEdit_ = new QLineEdit(utf8ToQString(bt_->getInstrument(num)->getName()));
+	renamingInstEdit_ = new QLineEdit(gui_utils::utf8ToQString(bt_->getInstrument(num)->getName()));
 	QObject::connect(renamingInstEdit_, &QLineEdit::editingFinished, this, &MainWindow::finishRenamingInstrument);
 	renamingInstEdit_->installEventFilter(this);
 	ui->instrumentList->setItemWidget(item, renamingInstEdit_);
@@ -1619,7 +1619,7 @@ void MainWindow::finishRenamingInstrument()
 	auto list = ui->instrumentList;
 	int num = renamingInstItem_->data(Qt::UserRole).toInt();
 	int row = findRowFromInstrumentList(num);
-	auto oldName = utf8ToQString(bt_->getInstrument(num)->getName());
+	auto oldName = gui_utils::utf8ToQString(bt_->getInstrument(num)->getName());
 	QString newName = renamingInstEdit_->text();
 	list->removeItemWidget(renamingInstItem_);
 	if (newName != oldName) {
@@ -1641,7 +1641,7 @@ void MainWindow::cloneInstrument()
 	bt_->cloneInstrument(num, refNum);
 	auto inst = bt_->getInstrument(num);
 	comStack_->push(new CloneInstrumentQtCommand(ui->instrumentList, num, inst->getType(),
-												 utf8ToQString(inst->getName()), instForms_));
+												 gui_utils::utf8ToQString(inst->getName()), instForms_));
 	//----------//
 }
 
@@ -1655,7 +1655,7 @@ void MainWindow::deepCloneInstrument()
 	bt_->deepCloneInstrument(num, refNum);
 	auto inst = bt_->getInstrument(num);
 	comStack_->push(new DeepCloneInstrumentQtCommand(
-						ui->instrumentList, num, inst->getType(), utf8ToQString(inst->getName()),
+						ui->instrumentList, num, inst->getType(), gui_utils::utf8ToQString(inst->getName()),
 						instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
 	//----------//
 }
@@ -1663,7 +1663,7 @@ void MainWindow::deepCloneInstrument()
 void MainWindow::loadInstrument()
 {
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = InstrumentIO::getInstance().getLoadFilter();
+	std::vector<std::string> orgFilters = io::InstrumentIO::getInstance().getLoadFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1683,7 +1683,7 @@ void MainWindow::funcLoadInstrument(QString file)
 {
 	int n = bt_->findFirstFreeInstrumentNumber();
 	if (n == -1) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Inst,
+		FileIOErrorMessageBox(file, true, io::FileType::Inst,
 							  tr("The number of instruments has reached the upper limit."), this).exec();
 		return;
 	}
@@ -1691,38 +1691,38 @@ void MainWindow::funcLoadInstrument(QString file)
 	try {
 		QFile fp(file);
 		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Inst, this);
+			FileIOErrorMessageBox::openError(file, true, io::FileType::Inst, this);
 			return;
 		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
-		BinaryContainer contaner;
+		io::BinaryContainer contaner;
 		contaner.appendVector(std::vector<char>(array.begin(), array.end()));
 		bt_->loadInstrument(contaner, file.toStdString(), n);
 
 		auto inst = bt_->getInstrument(n);
 		comStack_->push(new AddInstrumentQtCommand(
-							ui->instrumentList, n, utf8ToQString(inst->getName()), inst->getType(),
+							ui->instrumentList, n, gui_utils::utf8ToQString(inst->getName()), inst->getType(),
 							instForms_, this, config_.lock()->getWriteOnlyUsedSamples()));
 		ui->instrumentList->setCurrentRow(n);
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Inst, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, true, io::FileType::Inst, QString(e.what()), this).exec();
 	}
 }
 
 void MainWindow::saveInstrument()
 {
 	int n = ui->instrumentList->currentItem()->data(Qt::UserRole).toInt();
-	QString name = utf8ToQString(bt_->getInstrument(n)->getName());
+	QString name = gui_utils::utf8ToQString(bt_->getInstrument(n)->getName());
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = InstrumentIO::getInstance().getSaveFilter();
+	std::vector<std::string> orgFilters = io::InstrumentIO::getInstance().getSaveFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1735,12 +1735,12 @@ void MainWindow::saveInstrument()
 	if (!file.endsWith(".bti")) file += ".bti";	// For linux
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		bt_->saveInstrument(container, n);
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Inst, this);
+			FileIOErrorMessageBox::openError(file, false, io::FileType::Inst, this);
 			return;
 		}
 		fp.write(container.getPointer(), container.size());
@@ -1748,11 +1748,11 @@ void MainWindow::saveInstrument()
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, false, FileIO::FileType::Inst, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, false, io::FileType::Inst, QString(e.what()), this).exec();
 	}
 }
 
@@ -1761,7 +1761,7 @@ void MainWindow::importInstrumentsFromBank()
 	stopPlaySong();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = BankIO::getInstance().getLoadFilter();
+	std::vector<std::string> orgFilters = io::BankIO::getInstance().getLoadFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1784,28 +1784,28 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 	stopPlaySong();
 
 	std::unique_ptr<AbstractBank> bank;
-	std::shared_ptr<InstrumentsManager> bankMan = std::make_shared<InstrumentsManager>(true);
+	auto bankMan = std::make_shared<InstrumentsManager>(true);
 	try {
 		QFile fp(file);
 		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Bank, this);
+			FileIOErrorMessageBox::openError(file, true, io::FileType::Bank, this);
 			return;
 		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
-		BinaryContainer container;
+		io::BinaryContainer container;
 		container.appendVector(std::vector<char>(array.begin(), array.end()));
 
-		bank.reset(BankIO::getInstance().loadBank(container, file.toStdString()));
+		bank.reset(io::BankIO::getInstance().loadBank(container, file.toStdString()));
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();
 		return;
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Bank, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, true, io::FileType::Bank, QString(e.what()), this).exec();
 		return;
 	}
 
@@ -1883,7 +1883,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 		for (const size_t& index : selection) {
 			int n = bt_->findFirstFreeInstrumentNumber();
 			if (n == -1){
-				FileIOErrorMessageBox(file, true, FileIO::FileType::Inst,
+				FileIOErrorMessageBox(file, true, io::FileType::Inst,
 									  tr("The number of instruments has reached the upper limit."), this).exec();
 				ui->instrumentList->setCurrentRow(lastNum);
 				return;
@@ -1893,7 +1893,7 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 
 			auto inst = bt_->getInstrument(n);
 			comStack_->push(new AddInstrumentQtCommand(
-								ui->instrumentList, n, utf8ToQString(inst->getName()),
+								ui->instrumentList, n, gui_utils::utf8ToQString(inst->getName()),
 								inst->getType(), instForms_, this, config_.lock()->getWriteOnlyUsedSamples(), true));
 			lastNum = n;
 
@@ -1903,11 +1903,11 @@ void MainWindow::funcImportInstrumentsFromBank(QString file)
 
 		if (sampleRestoreRequested) assignADPCMSamples();	// Store only once
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::Bank, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, true, io::FileType::Bank, QString(e.what()), this).exec();
 	}
 }
 
@@ -1922,7 +1922,7 @@ void MainWindow::exportInstrumentsToBank()
 		return;
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
-	std::vector<std::string> orgFilters = BankIO::getInstance().getSaveFilter();
+	std::vector<std::string> orgFilters = io::BankIO::getInstance().getSaveFilter();
 	QStringList filters;
 	std::transform(orgFilters.begin(), orgFilters.end(), std::back_inserter(filters),
 				   [](const std::string& f) { return QString::fromStdString(f); });
@@ -1939,12 +1939,12 @@ void MainWindow::exportInstrumentsToBank()
 	std::sort(sel.begin(), sel.end());
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		bt_->exportInstruments(container, sel);
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Bank, this);
+			FileIOErrorMessageBox::openError(file, false, io::FileType::Bank, this);
 			return;
 		}
 		fp.write(container.getPointer(), container.size());
@@ -1952,11 +1952,11 @@ void MainWindow::exportInstrumentsToBank()
 
 		config_.lock()->setWorkingDirectory(QFileInfo(file).dir().path().toStdString());
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, false, FileIO::FileType::Bank, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, false, io::FileType::Bank, QString(e.what()), this).exec();
 	}
 }
 
@@ -1967,8 +1967,8 @@ void MainWindow::swapInstruments(int row1, int row2)
 	// KEEP CODE ORDER //
 	int num1 = ui->instrumentList->item(row1)->data(Qt::UserRole).toInt();
 	int num2 = ui->instrumentList->item(row2)->data(Qt::UserRole).toInt();
-	QString name1 = utf8ToQString(bt_->getInstrument(num1)->getName());
-	QString name2 = utf8ToQString(bt_->getInstrument(num2)->getName());
+	QString name1 = gui_utils::utf8ToQString(bt_->getInstrument(num1)->getName());
+	QString name2 = gui_utils::utf8ToQString(bt_->getInstrument(num2)->getName());
 
 	bt_->swapInstruments(num1, num2, config_.lock()->getReflectInstrumentNumberChange());
 	comStack_->push(new SwapInstrumentsQtCommand(
@@ -1996,17 +1996,17 @@ void MainWindow::loadModule()
 	ui->instrumentList->clear();
 	on_instrumentList_itemSelectionChanged();
 
-	ui->modTitleLineEdit->setText(utf8ToQString(bt_->getModuleTitle()));
+	ui->modTitleLineEdit->setText(gui_utils::utf8ToQString(bt_->getModuleTitle()));
 	ui->modTitleLineEdit->setCursorPosition(0);
-	ui->authorLineEdit->setText(utf8ToQString(bt_->getModuleAuthor()));
+	ui->authorLineEdit->setText(gui_utils::utf8ToQString(bt_->getModuleAuthor()));
 	ui->authorLineEdit->setCursorPosition(0);
-	ui->copyrightLineEdit->setText(utf8ToQString(bt_->getModuleCopyright()));
+	ui->copyrightLineEdit->setText(gui_utils::utf8ToQString(bt_->getModuleCopyright()));
 	ui->copyrightLineEdit->setCursorPosition(0);
 	{
 		QSignalBlocker blocker(ui->songComboBox);	// Prevent duplicated call "loadSong"
 		ui->songComboBox->clear();
 		for (size_t i = 0; i < bt_->getSongCount(); ++i) {
-			QString title = utf8ToQString(bt_->getSongTitle(static_cast<int>(i)));
+			QString title = gui_utils::utf8ToQString(bt_->getSongTitle(static_cast<int>(i)));
 			if (title.isEmpty()) title = tr("Untitled");
 			ui->songComboBox->addItem(QString("#%1 %2").arg(i).arg(title));
 		}
@@ -2017,7 +2017,7 @@ void MainWindow::loadModule()
 	for (auto& idx : bt_->getInstrumentIndices()) {
 		auto inst = bt_->getInstrument(idx);
 		comStack_->push(new AddInstrumentQtCommand(
-							ui->instrumentList, idx, utf8ToQString(inst->getName()), inst->getType(),
+							ui->instrumentList, idx, gui_utils::utf8ToQString(inst->getName()), inst->getType(),
 							instForms_, this, config_.lock()->getWriteOnlyUsedSamples(), true));
 	}
 
@@ -2027,7 +2027,7 @@ void MainWindow::loadModule()
 
 	// Set tick frequency
 	stream_->setInterruption(bt_->getModuleTickFrequency());
-	if (timer_) timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+	if (tickTimerForRealChip_) tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 	statusIntr_->setText(QString::number(bt_->getModuleTickFrequency()) + QString("Hz"));
 
 	// Set mixer
@@ -2067,7 +2067,7 @@ void MainWindow::loadModule()
 	statusMixer_->setText(text);
 
 	// Set comment
-	if (commentDiag_) commentDiag_->setComment(utf8ToQString(bt_->getModuleComment()));
+	if (commentDiag_) commentDiag_->setComment(gui_utils::utf8ToQString(bt_->getModuleComment()));
 
 	// Clear records
 	QApplication::clipboard()->clear();
@@ -2079,10 +2079,10 @@ void MainWindow::openModule(QString file)
 {
 	try {
 		freezeViews();
-		if (timer_) timer_->stop();
+		if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
 		else stream_->stop();
 
-		BinaryContainer container;
+		io::BinaryContainer container;
 		QFile fp(file);
 		if (fp.open(QIODevice::ReadOnly)) {
 
@@ -2101,15 +2101,15 @@ void MainWindow::openModule(QString file)
 			goto AFTER_LOADING;	// Skip error handling section
 		}
 		else {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::Mod, this);
+			FileIOErrorMessageBox::openError(file, true, io::FileType::Mod, this);
 		}
 	}
 	catch (std::exception& e) {
-		if (auto ef = dynamic_cast<FileIOError*>(&e)) {
+		if (auto ef = dynamic_cast<io::FileIOError*>(&e)) {
 			FileIOErrorMessageBox(file, true, *ef, this).exec();
 		}
 		else {
-			FileIOErrorMessageBox(file, true, FileIO::FileType::Mod, QString(e.what()), this).exec();
+			FileIOErrorMessageBox(file, true, io::FileType::Mod, QString(e.what()), this).exec();
 		}
 	}
 
@@ -2121,7 +2121,7 @@ void MainWindow::openModule(QString file)
 AFTER_LOADING:	// Post process of module loading
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
-	if (timer_) timer_->start();
+	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
 	else stream_->start();
 	setInitialSelectedInstrument();
 	assignADPCMSamples();
@@ -2180,11 +2180,11 @@ void MainWindow::assignADPCMSamples()
 {
 	bt_->stopPlaySong();
 	lockWidgets(false);
-	if (timer_) timer_->stop();
+	if (tickTimerForRealChip_) tickTimerForRealChip_->stop();
 	else stream_->stop();
 	bt_->assignSampleADPCMRawSamples();	// Mutex register
 	instForms_->onInstrumentADPCMSampleMemoryUpdated();
-	if (timer_) timer_->start();
+	if (tickTimerForRealChip_) tickTimerForRealChip_->start();
 	else stream_->start();
 }
 
@@ -2264,31 +2264,31 @@ void MainWindow::changeConfiguration()
 	bool streamState = false;
 	RealChipInterface intf = config_.lock()->getRealChipInterface();
 	if (intf == RealChipInterface::NONE) {
-		timer_.reset();
+		tickTimerForRealChip_.reset();
 		bt_->useSCCI(nullptr);
 		bt_->useC86CTL(nullptr);
 		QString streamErr;
 		streamState = stream_->initialize(
-							   config_.lock()->getSampleRate(),
-							   config_.lock()->getBufferLength(),
-							   bt_->getModuleTickFrequency(),
-							   utf8ToQString(config_.lock()->getSoundAPI()),
-							   utf8ToQString(config_.lock()->getSoundDevice()),
-							   &streamErr);
+						  config_.lock()->getSampleRate(),
+						  config_.lock()->getBufferLength(),
+						  bt_->getModuleTickFrequency(),
+						  gui_utils::utf8ToQString(config_.lock()->getSoundAPI()),
+						  gui_utils::utf8ToQString(config_.lock()->getSoundDevice()),
+						  &streamErr);
 		if (!streamState) showStreamFailedDialog(streamErr);
 		stream_->start();
 	}
 	else {
 		stream_->stop();
-		if (timer_) {
-			timer_->stop();
+		if (tickTimerForRealChip_) {
+			tickTimerForRealChip_->stop();
 		}
 		else {
-			timer_ = std::make_unique<Timer>();
-			timer_->setInterval(1000000 / bt_->getModuleTickFrequency());
+			tickTimerForRealChip_ = std::make_unique<PreciseTimer>();
+			tickTimerForRealChip_->setInterval(1000000 / bt_->getModuleTickFrequency());
 			tickEventMethod_ = metaObject()->indexOfSlot("onNewTickSignaledRealChip()");
 			Q_ASSERT(tickEventMethod_ != -1);
-			timer_->setFunction([&]{
+			tickTimerForRealChip_->setFunction([&]{
 				QMetaMethod method = this->metaObject()->method(this->tickEventMethod_);
 				method.invoke(this, Qt::QueuedConnection);
 			});
@@ -2296,7 +2296,7 @@ void MainWindow::changeConfiguration()
 
 		setRealChipInterface(intf);
 
-		timer_->start();
+		tickTimerForRealChip_->start();
 	}
 
 	setMidiConfiguration();
@@ -2369,7 +2369,7 @@ void MainWindow::setRealChipInterface(RealChipInterface intf)
 
 void MainWindow::setMidiConfiguration()
 {
-	MidiInterface &midiIntf = MidiInterface::instance();
+	MidiInterface &midiIntf = MidiInterface::getInstance();
 	std::string midiApi = config_.lock()->getMidiAPI();
 	std::string midiInPortName = config_.lock()->getMidiInputPort();
 
@@ -2409,14 +2409,14 @@ void MainWindow::setMidiConfiguration()
 void MainWindow::updateFonts()
 {
 	ui->patternEditor->setFonts(
-				utf8ToQString(config_.lock()->getPatternEditorHeaderFont()),
+				gui_utils::utf8ToQString(config_.lock()->getPatternEditorHeaderFont()),
 				config_.lock()->getPatternEditorHeaderFontSize(),
-				utf8ToQString(config_.lock()->getPatternEditorRowsFont()),
+				gui_utils::utf8ToQString(config_.lock()->getPatternEditorRowsFont()),
 				config_.lock()->getPatternEditorRowsFontSize());
 	ui->orderList->setFonts(
-				utf8ToQString(config_.lock()->getOrderListHeaderFont()),
+				gui_utils::utf8ToQString(config_.lock()->getOrderListHeaderFont()),
 				config_.lock()->getOrderListHeaderFontSize(),
-				utf8ToQString(config_.lock()->getOrderListRowsFont()),
+				gui_utils::utf8ToQString(config_.lock()->getOrderListRowsFont()),
 				config_.lock()->getOrderListRowsFontSize());
 }
 
@@ -2454,7 +2454,7 @@ void MainWindow::setWindowTitle()
 	int n = bt_->getCurrentSongNumber();
 	QString filePath = QString::fromStdString(bt_->getModulePath());
 	QString fileName = filePath.isEmpty() ? tr("Untitled") : QFileInfo(filePath).fileName();
-	QString songTitle = utf8ToQString(bt_->getSongTitle(n));
+	QString songTitle = gui_utils::utf8ToQString(bt_->getSongTitle(n));
 	if (songTitle.isEmpty()) songTitle = tr("Untitled");
 	QMainWindow::setWindowTitle(QString("%1[*] [#%2 %3] - BambooTracker")
 								.arg(fileName, QString::number(n), songTitle));
@@ -2829,12 +2829,12 @@ void MainWindow::on_actionModule_Properties_triggered()
 		lockWidgets(false);
 		dialog.onAccepted();
 		freezeViews();
-		if (!timer_) stream_->stop();
+		if (!tickTimerForRealChip_) stream_->stop();
 		loadModule();
 		setModifiedTrue();
 		setWindowTitle();
 		ui->instrumentList->setCurrentRow(instRow);
-		if (!timer_) stream_->start();
+		if (!tickTimerForRealChip_) stream_->start();
 		assignADPCMSamples();
 	}
 }
@@ -3022,7 +3022,7 @@ void MainWindow::on_actionClone_Order_triggered()
 void MainWindow::on_actionNew_triggered()
 {
 	if (isWindowModified()) {
-		QString modTitle = utf8ToQString(bt_->getModuleTitle());
+		QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -3044,13 +3044,13 @@ void MainWindow::on_actionNew_triggered()
 	bt_->stopPlaySong();
 	lockWidgets(false);
 	freezeViews();
-	if (!timer_) stream_->stop();
+	if (!tickTimerForRealChip_) stream_->stop();
 	bt_->makeNewModule();
 	loadModule();
 	setInitialSelectedInstrument();
 	isModifiedForNotCommand_ = false;
 	setWindowModified(false);
-	if (!timer_) stream_->start();
+	if (!tickTimerForRealChip_) stream_->start();
 	assignADPCMSamples();
 }
 
@@ -3061,7 +3061,7 @@ void MainWindow::on_actionComments_triggered()
 		else commentDiag_->show();
 	}
 	else {
-		commentDiag_ = std::make_unique<CommentEditDialog>(utf8ToQString(bt_->getModuleComment()));
+		commentDiag_ = std::make_unique<CommentEditDialog>(gui_utils::utf8ToQString(bt_->getModuleComment()));
 		commentDiag_->show();
 		QObject::connect(commentDiag_.get(), &CommentEditDialog::commentChanged,
 						 this, [&](const QString text) {
@@ -3078,12 +3078,12 @@ bool MainWindow::on_actionSave_triggered()
 		if (!backupModule(path)) return false;
 
 		try {
-			BinaryContainer container;
+			io::BinaryContainer container;
 			bt_->saveModule(container);
 
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::Mod, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::Mod, this);
 				return false;
 			}
 			fp.write(container.getPointer(), container.size());
@@ -3095,12 +3095,12 @@ bool MainWindow::on_actionSave_triggered()
 			setWindowTitle();
 			return true;
 		}
-		catch (FileIOError& e) {
+		catch (io::FileIOError& e) {
 			FileIOErrorMessageBox(path, false, e, this).exec();
 			return false;
 		}
 		catch (std::exception& e) {
-			FileIOErrorMessageBox(path, false, FileIO::FileType::Mod, QString(e.what()), this).exec();
+			FileIOErrorMessageBox(path, false, io::FileType::Mod, QString(e.what()), this).exec();
 			return false;
 		}
 	}
@@ -3125,12 +3125,12 @@ bool MainWindow::on_actionSave_As_triggered()
 
 	bt_->setModulePath(file.toStdString());
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		bt_->saveModule(container);
 
 		QFile fp(file);
 		if (!fp.open(QIODevice::WriteOnly)) {
-			FileIOErrorMessageBox::openError(file, false, FileIO::FileType::Mod, this);
+			FileIOErrorMessageBox::openError(file, false, io::FileType::Mod, this);
 			return false;
 		}
 		fp.write(container.getPointer(), container.size());
@@ -3144,12 +3144,12 @@ bool MainWindow::on_actionSave_As_triggered()
 		changeFileHistory(file);
 		return true;
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, false, e, this).exec();
 		return false;
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, false, FileIO::FileType::Mod, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, false, io::FileType::Mod, QString(e.what()), this).exec();
 		return false;
 	}
 }
@@ -3157,7 +3157,7 @@ bool MainWindow::on_actionSave_As_triggered()
 void MainWindow::on_actionOpen_triggered()
 {
 	if (isWindowModified()) {
-		QString modTitle = utf8ToQString(bt_->getModuleTitle());
+		QString modTitle = gui_utils::utf8ToQString(bt_->getModuleTitle());
 		if (modTitle.isEmpty()) modTitle = tr("Untitled");
 		QMessageBox dialog(QMessageBox::Warning,
 						   "BambooTracker",
@@ -3302,21 +3302,26 @@ void MainWindow::on_actionWAV_triggered()
 	stream_->stop();
 
 	try {
-		WavContainer container(0, static_cast<uint32_t>(diag.getSampleRate()));
+		const uint32_t rate = static_cast<uint32_t>(diag.getSampleRate());
+		const uint16_t nCh = 2;
+		const int loopCnt = diag.getLoopCount();
+		size_t defCap = static_cast<size_t>(rate * nCh * loopCnt
+											* bt_->calculateSongLength(bt_->getCurrentSongNumber()));
+		io::WavContainer container(defCap, rate, nCh, 16);
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
 				   return progress.wasCanceled();
 	};
 
-		bool res = bt_->exportToWav(container, diag.getLoopCount(), bar);
+		bool res = bt_->exportToWav(container, loopCnt, bar);
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::WAV, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
 			}
 			else {
-				BinaryContainer bc = container.createWavBinary();
+				io::BinaryContainer bc = container.createWavBinary();
 				fp.write(bc.getPointer(), bc.size());
 				fp.close();
 				bar();
@@ -3325,11 +3330,11 @@ void MainWindow::on_actionWAV_triggered()
 			}
 		}
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, FileIO::FileType::WAV, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(path, false, io::FileType::WAV, QString(e.what()), this).exec();
 	}
 
 	stream_->start();
@@ -3339,7 +3344,7 @@ void MainWindow::on_actionVGM_triggered()
 {
 	VgmExportSettingsDialog diag;
 	if (diag.exec() != QDialog::Accepted) return;
-	GD3Tag tag = diag.getGD3Tag();
+	io::GD3Tag tag = diag.getGD3Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
@@ -3362,7 +3367,7 @@ void MainWindow::on_actionVGM_triggered()
 	stream_->stop();
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
@@ -3373,7 +3378,7 @@ void MainWindow::on_actionVGM_triggered()
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::VGM, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::VGM, this);
 			}
 			else {
 				fp.write(container.getPointer(), container.size());
@@ -3384,11 +3389,11 @@ void MainWindow::on_actionVGM_triggered()
 			}
 		}
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, FileIO::FileType::VGM, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(path, false, io::FileType::VGM, QString(e.what()), this).exec();
 	}
 
 	stream_->start();
@@ -3398,7 +3403,7 @@ void MainWindow::on_actionS98_triggered()
 {
 	S98ExportSettingsDialog diag;
 	if (diag.exec() != QDialog::Accepted) return;
-	S98Tag tag = diag.getS98Tag();
+	io::S98Tag tag = diag.getS98Tag();
 
 	QString dir = QString::fromStdString(config_.lock()->getWorkingDirectory());
 	QString path = QFileDialog::getSaveFileName(
@@ -3421,7 +3426,7 @@ void MainWindow::on_actionS98_triggered()
 	stream_->stop();
 
 	try {
-		BinaryContainer container;
+		io::BinaryContainer container;
 		auto bar = [&progress]() -> bool {
 				   QApplication::processEvents();
 				   progress.setValue(progress.value() + 1);
@@ -3433,7 +3438,7 @@ void MainWindow::on_actionS98_triggered()
 		if (res) {
 			QFile fp(path);
 			if (!fp.open(QIODevice::WriteOnly)) {
-				FileIOErrorMessageBox::openError(path, false, FileIO::FileType::S98, this);
+				FileIOErrorMessageBox::openError(path, false, io::FileType::S98, this);
 			}
 			else {
 				fp.write(container.getPointer(), container.size());
@@ -3444,11 +3449,11 @@ void MainWindow::on_actionS98_triggered()
 			}
 		}
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(path, false, e, this).exec();
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(path, false, FileIO::FileType::S98, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(path, false, io::FileType::S98, QString(e.what()), this).exec();
 	}
 
 	stream_->start();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,35 +24,33 @@
  */
 
 #include "erase_effect_in_step_command.hpp"
+#include "pattern_command_utils.hpp"
 
-EraseEffectInStepCommand::EraseEffectInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n)
-	: mod_(mod),
+EraseEffectInStepCommand::EraseEffectInStepCommand(std::weak_ptr<Module> mod, int songNum,
+												   int trackNum, int orderNum, int stepNum, int n)
+	: AbstractCommand(CommandId::EraseEffectInStep),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
 	  n_(n)
 {
-	auto& st = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum).getStep(stepNum);
+	Step& st = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum);
 	prevEffID_ = st.getEffectID(n);
 	prevEffVal_ = st.getEffectValue(n);
 }
 
 void EraseEffectInStepCommand::redo()
 {
-	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
 	st.setEffectID(n_, "--");
 	st.setEffectValue(n_, -1);
 }
 
 void EraseEffectInStepCommand::undo()
 {
-	auto& st = mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_).getStep(step_);
+	Step& st = command_utils::getStep(mod_, song_, track_, order_, step_);
 	st.setEffectID(n_, prevEffID_);
 	st.setEffectValue(n_, prevEffVal_);
-}
-
-CommandId EraseEffectInStepCommand::getID() const
-{
-	return CommandId::EraseEffectInStep;
 }

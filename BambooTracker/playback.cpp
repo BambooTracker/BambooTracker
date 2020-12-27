@@ -25,8 +25,26 @@
 
 #include "playback.hpp"
 #include <algorithm>
-#include "song.hpp"
+#include "opna_controller.hpp"
+#include "instruments_manager.hpp"
+#include "tick_counter.hpp"
 #include "misc.hpp"
+
+namespace
+{
+namespace PlayStateFlag
+{
+enum : uint8_t
+{
+	// Read state
+	Playing			= 1 << 0,
+	ReadFirstStep	= 1 << 1,
+	// Play type
+	LoopPattern		= 1 << 2,
+	PlayStep		= 1 << 3
+};
+}
+}
 
 PlaybackManager::PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
 								 std::weak_ptr<InstrumentsManager> instMan, std::weak_ptr<TickCounter> tickCounter,
@@ -39,7 +57,6 @@ PlaybackManager::PlaybackManager(std::shared_ptr<OPNAController> opnaCtrl,
 	  curSongNum_(0),
 	  playOrderNum_(-1),
 	  playStepNum_(-1),
-	  playState_(0),
 	  isFindNextStep_(false),
 	  isRetrieveChannel_(isRetrieveChannel)
 {
@@ -106,7 +123,7 @@ void PlaybackManager::startPlaySong(int order)
 	std::lock_guard<std::mutex> lock(mutex_);
 
 	startPlay();
-	playState_ = 0x01;
+	playStateFlags_ = PlayStateFlag::Playing;
 	playStepNum_ = 0;
 	playOrderNum_ = order;
 	findNextStep();
@@ -118,7 +135,7 @@ void PlaybackManager::startPlayFromStart()
 	std::lock_guard<std::mutex> lock(mutex_);
 
 	startPlay();
-	playState_ = 0x01;
+	playStateFlags_ = PlayStateFlag::Playing;
 	playOrderNum_ = 0;
 	playStepNum_ = 0;
 	findNextStep();
@@ -129,7 +146,7 @@ void PlaybackManager::startPlayPattern(int order)
 	std::lock_guard<std::mutex> lock(mutex_);
 
 	startPlay();
-	playState_ = 0x11;
+	playStateFlags_ = PlayStateFlag::Playing | PlayStateFlag::LoopPattern;
 	playStepNum_ = 0;
 	playOrderNum_ = order;
 	findNextStep();
@@ -141,7 +158,7 @@ void PlaybackManager::startPlayFromPosition(int order, int step)
 	std::lock_guard<std::mutex> lock(mutex_);
 
 	startPlay();
-	playState_ = 0x01;
+	playStateFlags_ = PlayStateFlag::Playing;
 	playOrderNum_ = order;
 	playStepNum_ = step;
 	findNextStep();
@@ -160,8 +177,8 @@ void PlaybackManager::playStep(int order, int step)
 		tickCounter_.lock()->setTempo(song.getTempo());
 		tickCounter_.lock()->setSpeed(song.getSpeed());
 		tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()).getSequence());
-		tickCounter_.lock()->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
-																 : GrooveTrigger::ValidByGlobal);
+		tickCounter_.lock()->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
+															   : GrooveState::ValidByGlobal);
 	}
 	tickCounter_.lock()->resetCount();
 	tickCounter_.lock()->setPlayState(true);
@@ -170,7 +187,7 @@ void PlaybackManager::playStep(int order, int step)
 	clearNoteDelayCounts();
 	clearDelayBeyondStepCounts();
 
-	playState_ = 0x20;
+	playStateFlags_ = PlayStateFlag::PlayStep;
 	playOrderNum_ = order;
 	playStepNum_ = step;
 
@@ -185,8 +202,8 @@ void PlaybackManager::startPlay()
 	tickCounter_.lock()->setTempo(song.getTempo());
 	tickCounter_.lock()->setSpeed(song.getSpeed());
 	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(song.getGroove()).getSequence());
-	tickCounter_.lock()->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
-															 : GrooveTrigger::ValidByGlobal);
+	tickCounter_.lock()->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
+														   : GrooveState::ValidByGlobal);
 	tickCounter_.lock()->resetCount();
 	tickCounter_.lock()->setPlayState(true);
 
@@ -207,27 +224,27 @@ void PlaybackManager::stopPlay()
 	opnaCtrl_->reset();
 
 	tickCounter_.lock()->setPlayState(false);
-	playState_ = 0;
+	playStateFlags_ = 0;
 	playOrderNum_ = -1;
 	playStepNum_ = -1;
 }
 
-bool PlaybackManager::isPlaySong() const
+bool PlaybackManager::isPlaySong() const noexcept
 {
-	return ((playState_ & 0x01) > 0);
+	return playStateFlags_ & PlayStateFlag::Playing;
 }
 
-bool PlaybackManager::isPlayingStep() const
+bool PlaybackManager::isPlayingStep() const noexcept
 {
-	return ((playState_ & 0x20) > 0);
+	return playStateFlags_ & PlayStateFlag::PlayStep;
 }
 
-int PlaybackManager::getPlayingOrderNumber() const
+int PlaybackManager::getPlayingOrderNumber() const noexcept
 {
 	return playOrderNum_;
 }
 
-int PlaybackManager::getPlayingStepNumber() const
+int PlaybackManager::getPlayingStepNumber() const noexcept
 {
 	return playStepNum_;
 }
@@ -239,11 +256,11 @@ int PlaybackManager::streamCountUp()
 
 	int state = tickCounter_.lock()->countUp();
 
-	if (state > 0) {
+	if (state > 0) {	// Tick process in playback
 		checkValidPosition();
 		tickProcess(state);
 	}
-	else if (!state) {
+	else if (!state) {	// Step process in playback
 		checkValidPosition();
 		if (stepDown()) {
 			stepProcess();
@@ -253,7 +270,7 @@ int PlaybackManager::streamCountUp()
 			stopPlay();
 		}
 	}
-	else {
+	else {	// Stop playback
 		for (auto& attrib : songStyle_.trackAttribs) {
 			opnaCtrl_->tickEvent(attrib.source, attrib.channelInSource);
 		}
@@ -264,7 +281,7 @@ int PlaybackManager::streamCountUp()
 
 bool PlaybackManager::stepDown()
 {
-	if (playState_ & 0x02) {	// Foward current step
+	if (playStateFlags_ & PlayStateFlag::ReadFirstStep) {	// Foward current step
 		if (isPlayingStep()) {
 			return false;
 		}
@@ -280,7 +297,7 @@ bool PlaybackManager::stepDown()
 		}
 	}
 	else {	// First read
-		playState_ |= 0x02;
+		playStateFlags_ |= PlayStateFlag::ReadFirstStep;
 	}
 
 	return true;
@@ -295,7 +312,7 @@ void PlaybackManager::findNextStep()
 	// Search
 	int ptnSize = static_cast<int>(getPatternSizeFromOrderNumber(curSongNum_, nextReadOrder_));
 	if (!ptnSize || nextReadStep_ >= ptnSize - 1) {
-		if (!(playState_ & 0x10)) {	// Loop pattern
+		if (!(playStateFlags_ & PlayStateFlag::LoopPattern)) {	// Loop pattern
 			if (nextReadOrder_ >= static_cast<int>(getOrderSize(curSongNum_)) - 1) {
 				nextReadOrder_ = 0;
 			}
@@ -625,18 +642,18 @@ bool PlaybackManager::executeStoredEffectsGlobal()
 	for (const auto& eff : stepEndBasedEffsGlobal_) {
 		switch (eff.first) {
 		case EffectType::PositionJump:
-			if (!(playState_ & 0x10)) {	// Skip when loop pattern
+			if (!(playStateFlags_ & PlayStateFlag::LoopPattern)) {	// Skip when loop pattern
 				changedNextPos |= effPositionJump(eff.second);
 			}
 			break;
 		case EffectType::SongEnd:
-			if (!(playState_ & 0x10)) {	// Skip when loop pattern
+			if (!(playStateFlags_ & PlayStateFlag::LoopPattern)) {	// Skip when loop pattern
 				effSongEnd();
 				changedNextPos = true;
 			}
 			break;
 		case EffectType::PatternBreak:
-			if (!(playState_ & 0x10)) {	// Skip when loop pattern
+			if (!(playStateFlags_ & PlayStateFlag::LoopPattern)) {	// Skip when loop pattern
 				changedNextPos |= effPatternBreak(eff.second);
 			}
 			break;
@@ -1282,24 +1299,24 @@ bool PlaybackManager::effPatternBreak(int nextStep)
 void PlaybackManager::effSpeedChange(int speed)
 {
 	tickCounter_.lock()->setSpeed(speed ? speed : 1);
-	tickCounter_.lock()->setGrooveTrigger(GrooveTrigger::Invalid);
+	tickCounter_.lock()->setGrooveState(GrooveState::Invalid);
 }
 
 void PlaybackManager::effTempoChange(int tempo)
 {
 	tickCounter_.lock()->setTempo(tempo);
-	tickCounter_.lock()->setGrooveTrigger(GrooveTrigger::Invalid);
+	tickCounter_.lock()->setGrooveState(GrooveState::Invalid);
 }
 
 void PlaybackManager::effGrooveChange(int num)
 {
 	tickCounter_.lock()->setGroove(mod_.lock()->getGroove(num).getSequence());
-	tickCounter_.lock()->setGrooveTrigger(GrooveTrigger::ValidByLocal);
+	tickCounter_.lock()->setGrooveState(GrooveState::ValidByLocal);
 }
 
 void PlaybackManager::tickProcess(int rest)
 {
-	if (!(playState_ & 0x02)) return;	// When it has not read first step
+	if (!(playStateFlags_ & PlayStateFlag::ReadFirstStep)) return;	// When it has not read first step
 
 	updateDelayEventCounts();
 

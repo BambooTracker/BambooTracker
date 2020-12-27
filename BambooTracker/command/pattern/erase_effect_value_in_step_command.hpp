@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,17 +25,17 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 
 class EraseEffectValueInStepCommand : public AbstractCommand
 {
 public:
-	EraseEffectValueInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int n);
+	EraseEffectValueInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
+								  int orderNum, int stepNum, int n);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

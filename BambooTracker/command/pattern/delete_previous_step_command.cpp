@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,16 +24,18 @@
  */
 
 #include "delete_previous_step_command.hpp"
+#include "pattern_command_utils.hpp"
 
-DeletePreviousStepCommand::DeletePreviousStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
-	: mod_(mod),
+DeletePreviousStepCommand::DeletePreviousStepCommand(std::weak_ptr<Module> mod, int songNum,
+													 int trackNum, int orderNum, int stepNum)
+	: AbstractCommand(CommandId::DeletePreviousStep),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum)
 {
-	auto& st = mod_.lock()->getSong(songNum).getTrack(trackNum)
-			   .getPatternFromOrderNumber(orderNum).getStep(stepNum - 1);
+	Step& st = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum - 1);
 	prevNote_ = st.getNoteNumber();
 	prevInst_ = st.getInstrumentNumber();
 	prevVol_ = st.getVolume();
@@ -45,13 +47,12 @@ DeletePreviousStepCommand::DeletePreviousStepCommand(std::weak_ptr<Module> mod, 
 
 void DeletePreviousStepCommand::redo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_)
-			.getPatternFromOrderNumber(order_).deletePreviousStep(step_);
+	command_utils::getPattern(mod_, song_, track_, order_).deletePreviousStep(step_);
 }
 
 void DeletePreviousStepCommand::undo()
 {
-	auto& pt =  mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_);
+	auto& pt = command_utils::getPattern(mod_, song_, track_, order_);
 	pt.insertStep(step_ - 1);	// Insert previous step
 	auto& st = pt.getStep(step_ - 1);
 	st.setNoteNumber(prevNote_);
@@ -61,9 +62,4 @@ void DeletePreviousStepCommand::undo()
 		st.setEffectID(i, prevEffID_[i]);
 		st.setEffectValue(i, prevEffVal_[i]);
 	}
-}
-
-CommandId DeletePreviousStepCommand::getID() const
-{
-	return CommandId::DeletePreviousStep;
 }

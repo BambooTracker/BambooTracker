@@ -24,31 +24,27 @@
  */
 
 #include "erase_instrument_in_step_command.hpp"
+#include "pattern_command_utils.hpp"
 
-EraseInstrumentInStepCommand::EraseInstrumentInStepCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
-	: mod_(mod),
+EraseInstrumentInStepCommand::EraseInstrumentInStepCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum)
+	: AbstractCommand(CommandId::EraseInstrumentInStep),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum)
 {
-	prevInst_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-				.getStep(stepNum).getInstrumentNumber();
+	prevInst_ = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum)
+				.getInstrumentNumber();
 }
 
 void EraseInstrumentInStepCommand::redo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-			.getStep(step_).setInstrumentNumber(-1);
+	command_utils::getStep(mod_, song_, track_, order_, step_).setInstrumentNumber(-1);
 }
 
 void EraseInstrumentInStepCommand::undo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-			.getStep(step_).setInstrumentNumber(prevInst_);
-}
-
-CommandId EraseInstrumentInStepCommand::getID() const
-{
-	return CommandId::EraseInstrumentInStep;
+	command_utils::getStep(mod_, song_, track_, order_, step_).setInstrumentNumber(prevInst_);
 }

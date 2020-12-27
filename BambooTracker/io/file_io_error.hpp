@@ -28,38 +28,39 @@
 #include <stdexcept>
 #include <cstdint>
 #include <string>
-#include "file_io.hpp"
+#include "io_file_type.hpp"
 
-
+namespace io
+{
 class FileIOError : public std::runtime_error
 {
 protected:
-	const FileIO::FileType ftype_;
+	const FileType ftype_;
 
-	FileIOError(std::string text, const FileIO::FileType ftype)
+	FileIOError(std::string text, const FileType ftype)
 		: std::runtime_error(text), ftype_(ftype) {}
 
 public:
-	inline FileIO::FileType fileType() const { return ftype_; }
+	inline FileType fileType() const { return ftype_; }
 };
 
 class FileNotExistError : public FileIOError
 {
-	FileNotExistError(const FileIO::FileType type)
+	FileNotExistError(const FileType type)
 		: FileIOError("File not exist error", type) {}
 };
 
 class FileUnsupportedError : public FileIOError
 {
 public:
-	FileUnsupportedError(const FileIO::FileType type)
+	FileUnsupportedError(const FileType type)
 		: FileIOError("File unsupported error", type) {}
 };
 
 class FileVersionError : public FileIOError
 {
 public:
-	FileVersionError(const FileIO::FileType type)
+	FileVersionError(const FileType type)
 		: FileIOError("File version error", type) {}
 };
 
@@ -69,7 +70,8 @@ private:
 	size_t pos_;
 
 public:
-	FileCorruptionError(const FileIO::FileType type, size_t pos, const std::string& desc = "File corruption error")
+	FileCorruptionError(const FileType type, size_t pos, const std::string& desc = "File corruption error")
 		: FileIOError(desc, type), pos_(pos) {}
 	inline size_t position() const { return pos_; }
 };
+}

@@ -29,12 +29,12 @@
 #include <utility>
 #include <stdexcept>
 #include "gui/event_guard.hpp"
-#include "pitch_converter.hpp"
+#include "calc_pitch.hpp"
 #include "command_sequence.hpp"
 #include "gui/jam_layout.hpp"
-#include "gui/instrument_editor/instrument_editor_util.hpp"
+#include "gui/instrument_editor/instrument_editor_utils.hpp"
 #include "misc.hpp"
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QWidget(parent),
@@ -95,7 +95,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setWaveformSSGRelease(ui->waveNumSpinBox->value(), t, point);
 			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
@@ -141,7 +141,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setToneNoiseSSGRelease(ui->tnNumSpinBox->value(), t, point);
 			emit toneNoiseParameterChanged(ui->tnNumSpinBox->value(), instNum_);
 			emit modified();
@@ -204,7 +204,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setEnvelopeSSGRelease(ui->envNumSpinBox->value(), t, point);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
@@ -254,7 +254,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setArpeggioSSGRelease(ui->arpNumSpinBox->value(), t, point);
 			emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 			emit modified();
@@ -316,7 +316,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
 					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = convertReleaseTypeForData(type);
+			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setPitchSSGRelease(ui->ptNumSpinBox->value(), t, point);
 			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 			emit modified();
@@ -366,7 +366,7 @@ void InstrumentEditorSSGForm::updateInstrumentParameters()
 {
 	Ui::EventGuard eg(isIgnoreEvent_);
 
-	auto name = utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
+	auto name = gui_utils::utf8ToQString(bt_.lock()->getInstrument(instNum_)->getName());
 	setWindowTitle(QString("%1: %2").arg(instNum_, 2, 16, QChar('0')).toUpper().arg(name));
 
 	setInstrumentWaveformParameters();
@@ -438,7 +438,7 @@ void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
 	for (auto& l : instSSG->getWaveformLoops()) {
 		ui->waveEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->waveEditor->setRelease(convertReleaseTypeForUI(instSSG->getWaveformRelease().type),
+	ui->waveEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instSSG->getWaveformRelease().type),
 							   instSSG->getWaveformRelease().begin);
 	if (instSSG->getWaveformEnabled()) {
 		ui->waveEditGroupBox->setChecked(true);
@@ -534,7 +534,7 @@ void InstrumentEditorSSGForm::setInstrumentToneNoiseParameters()
 	for (auto& l : instSSG->getToneNoiseLoops()) {
 		ui->tnEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->tnEditor->setRelease(convertReleaseTypeForUI(instSSG->getToneNoiseRelease().type),
+	ui->tnEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instSSG->getToneNoiseRelease().type),
 							 instSSG->getToneNoiseRelease().begin);
 	if (instSSG->getToneNoiseEnabled()) {
 		ui->tnEditGroupBox->setChecked(true);
@@ -615,7 +615,7 @@ void InstrumentEditorSSGForm::setInstrumentEnvelopeParameters()
 	for (auto& l : instSSG->getEnvelopeLoops()) {
 		ui->envEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->envEditor->setRelease(convertReleaseTypeForUI(instSSG->getEnvelopeRelease().type),
+	ui->envEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instSSG->getEnvelopeRelease().type),
 							  instSSG->getEnvelopeRelease().begin);
 	if (instSSG->getEnvelopeEnabled()) {
 		ui->envEditGroupBox->setChecked(true);
@@ -709,10 +709,10 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 	for (auto& l : instSSG->getArpeggioLoops()) {
 		ui->arpEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->arpEditor->setRelease(convertReleaseTypeForUI(instSSG->getArpeggioRelease().type),
+	ui->arpEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instSSG->getArpeggioRelease().type),
 							  instSSG->getArpeggioRelease().begin);
 	for (int i = 0; i < ui->arpTypeComboBox->count(); ++i) {
-		if (instSSG->getArpeggioType() == convertSequenceTypeForData(
+		if (instSSG->getArpeggioType() == inst_edit_utils::convertSequenceTypeForData(
 					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->arpTypeComboBox->itemData(i).toInt()))) {
 			ui->arpTypeComboBox->setCurrentIndex(i);
 			break;
@@ -754,7 +754,7 @@ void InstrumentEditorSSGForm::onArpeggioTypeChanged(int index)
 	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(
 					ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), convertSequenceTypeForData(type));
+		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
@@ -802,10 +802,10 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 	for (auto& l : instSSG->getPitchLoops()) {
 		ui->ptEditor->addLoop(l.begin, l.end, l.times);
 	}
-	ui->ptEditor->setRelease(convertReleaseTypeForUI(instSSG->getPitchRelease().type),
+	ui->ptEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instSSG->getPitchRelease().type),
 							 instSSG->getPitchRelease().begin);
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (instSSG->getPitchType() == convertSequenceTypeForData(
+		if (instSSG->getPitchType() == inst_edit_utils::convertSequenceTypeForData(
 					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
@@ -846,7 +846,7 @@ void InstrumentEditorSSGForm::onPitchTypeChanged(int index)
 
 	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(), convertSequenceTypeForData(type));
+		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}

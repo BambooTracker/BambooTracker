@@ -29,7 +29,8 @@
 PasteOverwriteCopiedDataToPatternCommand::PasteOverwriteCopiedDataToPatternCommand(
 		std::weak_ptr<Module> mod, int songNum, int beginTrack, int beginColumn,
 		int beginOrder, int beginStep, std::vector<std::vector<std::string>> cells)
-	: mod_(mod),
+	: AbstractCommand(CommandId::PasteOverwriteCopiedDataToPattern),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(beginTrack),
 	  col_(beginColumn),
@@ -38,8 +39,8 @@ PasteOverwriteCopiedDataToPatternCommand::PasteOverwriteCopiedDataToPatternComma
 	  cells_(cells)
 {
 	auto& song = mod.lock()->getSong(songNum);
-	prevCells_ = getPreviousCells(song, cells.front().size(), cells.size(),
-								  beginTrack, beginColumn, beginOrder, beginStep);
+	prevCells_ = command_utils::getPreviousCells(song, cells.front().size(), cells.size(),
+												 beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void PasteOverwriteCopiedDataToPatternCommand::redo()
@@ -51,7 +52,7 @@ void PasteOverwriteCopiedDataToPatternCommand::redo()
 		int t = track_;
 		int c = col_;
 		for (const std::string& cell : row) {
-			Step& st = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
+			Step& st = command_utils::getStep(sng, t, order_, s);
 			switch (c) {
 			case 0:
 			{
@@ -127,10 +128,5 @@ void PasteOverwriteCopiedDataToPatternCommand::redo()
 
 void PasteOverwriteCopiedDataToPatternCommand::undo()
 {
-	restorePattern(mod_.lock()->getSong(song_), prevCells_, track_, col_, order_, step_);
-}
-
-CommandId PasteOverwriteCopiedDataToPatternCommand::getID() const
-{
-	return CommandId::PasteOverwriteCopiedDataToPattern;
+	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, track_, col_, order_, step_);
 }

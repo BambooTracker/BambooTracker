@@ -27,6 +27,8 @@
 
 #include "bank_io.hpp"
 
+namespace io
+{
 class BtbIO final : public AbstractBankIO
 {
 public:
@@ -40,8 +42,5 @@ public:
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum,
 											  uint32_t bankVersion);
-
-private:
-	static size_t getPropertyPosition(const BinaryContainer& propCtr,
-									  uint8_t subsecType, uint8_t index);
 };
+}

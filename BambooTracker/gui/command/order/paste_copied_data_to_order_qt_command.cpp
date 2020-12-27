@@ -24,7 +24,7 @@
  */
 
 #include "paste_copied_data_to_order_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 PasteCopiedDataToOrderQtCommand::PasteCopiedDataToOrderQtCommand(OrderListPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

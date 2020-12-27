@@ -24,7 +24,7 @@
  */
 
 #include "insert_step_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 InsertStepQtCommand::InsertStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 
 class ChangeValuesInPatternCommand : public AbstractCommand
@@ -38,7 +38,6 @@ public:
 								 int endTrack, int endColumn, int endStep, int value, bool isFMReversed);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

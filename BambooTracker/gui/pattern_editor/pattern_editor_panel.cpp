@@ -46,10 +46,10 @@
 #include "gui/event_guard.hpp"
 #include "gui/command/pattern/pattern_commands_qt.hpp"
 #include "midi/midi.hpp"
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "gui/effect_description.hpp"
 #include "gui/jam_layout.hpp"
-#include "gui/gui_util.hpp"
+#include "gui/gui_utils.hpp"
 
 PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	: QWidget(parent),
@@ -256,12 +256,12 @@ PatternEditorPanel::PatternEditorPanel(QWidget *parent)
 	// MIDI
 	midiKeyEventMethod_ = metaObject()->indexOfSlot("midiKeyEvent(uchar,uchar,uchar)");
 	Q_ASSERT(midiKeyEventMethod_ != -1);
-	MidiInterface::instance().installInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().installInputHandler(&midiThreadReceivedEvent, this);
 }
 
 PatternEditorPanel::~PatternEditorPanel()
 {
-	MidiInterface::instance().uninstallInputHandler(&midiThreadReceivedEvent, this);
+	MidiInterface::getInstance().uninstallInputHandler(&midiThreadReceivedEvent, this);
 }
 
 void PatternEditorPanel::funcResize()
@@ -1090,7 +1090,7 @@ void PatternEditorPanel::drawHeaders(int maxWidth)
 		painter.setPen(palette_->ptnHeaderTextColor);
 		const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(trackNum)];
 		painter.drawText(left, headerFontAscent_,
-						 getTrackName(songStyle_.type, attrib.source, attrib.channelInSource));
+						 gui_utils::getTrackName(songStyle_.type, attrib.source, attrib.channelInSource));
 
 		painter.fillRect(left, headerHeight_ - 4, hdMuteToggleWidth_, 2,
 						 bt_->isMute(trackNum) ? palette_->ptnMuteColor : palette_->ptnUnmuteColor);
@@ -1552,7 +1552,7 @@ bool PatternEditorPanel::enterToneData(QKeyEvent* event)
 			default:
 				break;
 			}
-			setStepKeyOn(JamManager::jamKeyToNote(possibleJamKey), baseOct + octaveOffset);
+			setStepKeyOn(jam_utils::jamKeyToNote(possibleJamKey), baseOct + octaveOffset);
 		} catch (std::invalid_argument &) {}
 	}
 
@@ -2223,28 +2223,28 @@ void PatternEditorPanel::showPatternContextMenu(const PatternPosition& pos, cons
 	copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	cut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
 	paste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
-	pasteMix->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteMix)));
-	pasteOver->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
-	pasteIns->setShortcut(strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
+	pasteMix->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteMix)));
+	pasteOver->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteOverwrite)));
+	pasteIns->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::PasteInsert)));
 	erase->setShortcut(QKeySequence(Qt::Key_Delete));
-	select->setShortcut(strToKeySeq(shortcuts.at(Configuration::SelectAll)));
-	interpolate->setShortcut(strToKeySeq(shortcuts.at(Configuration::Interpolate)));
-	reverse->setShortcut(strToKeySeq(shortcuts.at(Configuration::Reverse)));
-	replace->setShortcut(strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
-	expand->setShortcut(strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
-	shrink->setShortcut(strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
-	deNote->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
-	inNote->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
-	deOct->setShortcut(strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
-	inOct->setShortcut(strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
-	fdeVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
-	finVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
-	cdeVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
-	cinVal->setShortcut(strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
-	toggle->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-	solo->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
-	exeff->setShortcut(strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
-	sheff->setShortcut(strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
+	select->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SelectAll)));
+	interpolate->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Interpolate)));
+	reverse->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::Reverse)));
+	replace->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ReplaceInstrument)));
+	expand->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandPattern)));
+	shrink->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkPattern)));
+	deNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseNote)));
+	inNote->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseNote)));
+	deOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::DecreaseOctave)));
+	inOct->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::IncreaseOctave)));
+	fdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineDecreaseValues)));
+	finVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::FineIncreaseValues)));
+	cdeVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseDecreaseValues)));
+	cinVal->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::CoarseIncreaseValuse)));
+	toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
+	solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
+	exeff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
+	sheff->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
 
 	if (bt_->isJamMode() || pos.order < 0 || pos.trackVisIdx < 0) {
 		copy->setEnabled(false);
@@ -2381,14 +2381,14 @@ void PatternEditorPanel::onShortcutUpdated()
 {
 	auto shortcuts = config_->getShortcuts();
 
-	hlUpSc_.setKey(strToKeySeq(shortcuts.at(Configuration::PrevHighlighted)));
-	hlUpWSSc_.setKey(strToKeySeq("Shift+" + shortcuts.at(Configuration::PrevHighlighted)));
-	hlDnSc_.setKey(strToKeySeq(shortcuts.at(Configuration::NextHighlighted)));
-	hlDnWSSc_.setKey(strToKeySeq("Shift+" + shortcuts.at(Configuration::NextHighlighted)));
-	keyOffSc_.setKey(strToKeySeq(shortcuts.at(Configuration::KeyOff)));
-	echoBufSc_.setKey(strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
-	expandColSc_.setKey(strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
-	shrinkColSc_.setKey(strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
+	hlUpSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::PrevHighlighted)));
+	hlUpWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::PrevHighlighted)));
+	hlDnSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::NextHighlighted)));
+	hlDnWSSc_.setKey(gui_utils::strToKeySeq("Shift+" + shortcuts.at(Configuration::NextHighlighted)));
+	keyOffSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::KeyOff)));
+	echoBufSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::EchoBuffer)));
+	expandColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ExpandEffect)));
+	shrinkColSc_.setKey(gui_utils::strToKeySeq(shortcuts.at(Configuration::ShrinkEffect)));
 }
 
 void PatternEditorPanel::setPatternHighlight1Count(int count)
@@ -2423,7 +2423,7 @@ void PatternEditorPanel::onSongLoaded()
 	curSongNum_ = bt_->getCurrentSongNumber();
 	SongType prevType = songStyle_.type;
 	songStyle_ = bt_->getSongStyle(curSongNum_);
-	visTracks_ = adaptVisibleTrackList(visTracks_, prevType, songStyle_.type);
+	visTracks_ = gui_utils::adaptVisibleTrackList(visTracks_, prevType, songStyle_.type);
 	rightEffn_.resize(visTracks_.size());
 	std::transform(visTracks_.begin(), visTracks_.end(), rightEffn_.begin(), [&](int t) {
 		return static_cast<int>(bt_->getEffectDisplayWidth(curSongNum_, t));
@@ -2989,8 +2989,8 @@ void PatternEditorPanel::mouseReleaseEvent(QMouseEvent* event)
 			solo->setShortcutVisibleInContextMenu(true);
 #endif
 			auto shortcuts = config_->getShortcuts();
-			toggle->setShortcut(strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
-			solo->setShortcut(strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
+			toggle->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::ToggleTrack)));
+			solo->setShortcut(gui_utils::strToKeySeq(shortcuts.at(Configuration::SoloTrack)));
 			if (mousePressPos_.trackVisIdx < 0) {
 				toggle->setEnabled(false);
 				solo->setEnabled(false);

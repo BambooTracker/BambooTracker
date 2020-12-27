@@ -27,6 +27,8 @@
 
 #include "instrument_io.hpp"
 
+namespace io
+{
 class BtiIO final : public AbstractInstrumentIO
 {
 public:
@@ -42,3 +44,4 @@ private:
 			std::shared_ptr<InstrumentsManager>& instManLocked,
 			const BinaryContainer& ctr, InstrumentFM* inst, int idx, uint32_t version);
 };
+}

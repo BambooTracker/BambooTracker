@@ -30,7 +30,8 @@ EraseCellsInPatternCommand::EraseCellsInPatternCommand(std::weak_ptr<Module> mod
 													   int songNum, int beginTrack, int beginColumn,
 													   int beginOrder, int beginStep,
 													   int endTrack, int endColumn, int endStep)
-	: mod_(mod),
+	: AbstractCommand(CommandId::EraseCellsInPattern),
+	  mod_(mod),
 	  song_(songNum),
 	  bTrack_(beginTrack),
 	  bCol_(beginColumn),
@@ -39,8 +40,8 @@ EraseCellsInPatternCommand::EraseCellsInPatternCommand(std::weak_ptr<Module> mod
 {
 	auto& song = mod.lock()->getSong(songNum);
 	size_t h = static_cast<size_t>(endStep - beginStep + 1);
-	size_t w = calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
-	prevCells_ = getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
+	size_t w = command_utils::calculateColumnSize(beginTrack, beginColumn, endTrack, endColumn);
+	prevCells_ = command_utils::getPreviousCells(song, w, h, beginTrack, beginColumn, beginOrder, beginStep);
 }
 
 void EraseCellsInPatternCommand::redo()
@@ -52,7 +53,7 @@ void EraseCellsInPatternCommand::redo()
 		int t = bTrack_;
 		int c = bCol_;
 		for (size_t j = 0; j < prevCells_.at(i).size(); ++j) {
-			Step& st = sng.getTrack(t).getPatternFromOrderNumber(order_).getStep(s);
+			Step& st = command_utils::getStep(sng, t, order_, s);
 			switch (c) {
 			case 0:		st.setNoteNumber(-1);		break;
 			case 1:		st.setInstrumentNumber(-1);	break;
@@ -77,10 +78,5 @@ void EraseCellsInPatternCommand::redo()
 
 void EraseCellsInPatternCommand::undo()
 {
-	restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
-}
-
-CommandId EraseCellsInPatternCommand::getID() const
-{
-	return CommandId::EraseCellsInPattern;
+	command_utils::restorePattern(mod_.lock()->getSong(song_), prevCells_, bTrack_, bCol_, order_, bStep_);
 }

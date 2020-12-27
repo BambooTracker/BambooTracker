@@ -27,8 +27,8 @@
 
 #include "bank_io.hpp"
 
-class AbstractInstrument;
-
+namespace io
+{
 class FfIO final : public AbstractBankIO
 {
 public:
@@ -40,3 +40,4 @@ public:
 											  std::weak_ptr<InstrumentsManager> instMan,
 											  int instNum);
 };
+}

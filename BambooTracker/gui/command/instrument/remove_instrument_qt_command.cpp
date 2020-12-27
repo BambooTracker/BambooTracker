@@ -26,8 +26,8 @@
 #include "remove_instrument_qt_command.hpp"
 #include <utility>
 #include "instrument.hpp"
-#include "command_id.hpp"
-#include "gui/instrument_list_misc.hpp"
+#include "command/command_id.hpp"
+#include "instrument_command_qt_utils.hpp"
 
 RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num, int row, QString name, InstrumentType type,
 													 std::weak_ptr<InstrumentFormManager> formMan,
@@ -41,11 +41,12 @@ RemoveInstrumentQtCommand::RemoveInstrumentQtCommand(QListWidget *list, int num,
 	  formMan_(formMan),
 	  mainwin_(mainwin),
 	  updateRequested_(updateRequested)
-{}
+{
+}
 
 void RemoveInstrumentQtCommand::undo()
 {
-	list_->insertItem(row_, createInstrumentListItem(num_, type_, name_));
+	list_->insertItem(row_, gui_command_utils::createInstrumentListItem(num_, type_, name_));
 
 	if (updateRequested_ && (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)) {
 		mainwin_->assignADPCMSamples();

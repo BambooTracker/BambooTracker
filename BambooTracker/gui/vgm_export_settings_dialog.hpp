@@ -28,7 +28,7 @@
 
 #include <QDialog>
 #include <QString>
-#include "gd3_tag.hpp"
+#include "io/export_io.hpp"
 
 namespace Ui {
 	class VgmExportSettingsDialog;
@@ -54,7 +54,7 @@ public:
 	QString getReleaseDate() const;
 	QString getVgmCreator() const;
 	QString getNotes() const;
-	GD3Tag getGD3Tag() const;
+	io::GD3Tag getGD3Tag() const;
 	int getExportTarget() const;
 
 private slots:

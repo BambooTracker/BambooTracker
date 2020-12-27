@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,15 +27,20 @@
 
 #include "command_id.hpp"
 
-struct AbstractCommand
+class AbstractCommand
 {
-	virtual ~AbstractCommand() {}
+public:
+	AbstractCommand(CommandId id) : id_(id) {}
+	virtual ~AbstractCommand() = default;
 	virtual void redo() = 0;
 	virtual void undo() = 0;
-	virtual CommandId getID() const = 0;
+	inline CommandId getID() const noexcept { return id_; };
 	virtual bool mergeWith(const AbstractCommand* other)
 	{
 		(void)other;
 		return false;
 	}
+
+private:
+	const CommandId id_;
 };

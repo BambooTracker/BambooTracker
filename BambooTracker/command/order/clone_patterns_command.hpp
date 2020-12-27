@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,11 +25,10 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
+#include "../abstract_command.hpp"
 #include "module.hpp"
-#include "track.hpp"
 
 class ClonePatternsCommand : public AbstractCommand
 {
@@ -38,7 +37,6 @@ public:
 						 int beginOrder, int beginTrack, int endOrder, int endTrack);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

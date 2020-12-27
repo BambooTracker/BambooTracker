@@ -24,7 +24,7 @@
  */
 
 #include "transpose_note_in_pattern_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 TransposeNoteInPatternQtCommand::TransposeNoteInPatternQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

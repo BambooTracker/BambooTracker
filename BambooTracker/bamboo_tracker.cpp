@@ -29,8 +29,11 @@
 #include <unordered_set>
 #include <exception>
 #include <unordered_map>
-#include "commands.hpp"
-#include "io_handlers.hpp"
+#include "command/commands.hpp"
+#include "chip/register_write_logger.hpp"
+#include "io/module_io.hpp"
+#include "io/instrument_io.hpp"
+#include "io/bank_io.hpp"
 #include "bank.hpp"
 #include "song_length_calculator.hpp"
 
@@ -52,7 +55,7 @@ BambooTracker::BambooTracker(std::weak_ptr<Configuration> config)
 	  isFollowPlay_(true)
 {
 	opnaCtrl_ = std::make_shared<OPNAController>(
-					static_cast<chip::Emu>(config.lock()->getEmulator()),
+					static_cast<chip::OpnaEmulator>(config.lock()->getEmulator()),
 					CHIP_CLOCK,
 					config.lock()->getSampleRate(),
 					config.lock()->getBufferLength());
@@ -164,16 +167,16 @@ void BambooTracker::swapInstruments(int a, int b, bool patternChange)
 	comMan_.invoke(std::make_unique<SwapInstrumentsCommand>(instMan_, mod_, a, b, curSongNum_, patternChange));
 }
 
-void BambooTracker::loadInstrument(BinaryContainer& container, std::string path, int instNum)
+void BambooTracker::loadInstrument(io::BinaryContainer& container, std::string path, int instNum)
 {
-	auto inst = InstrumentIO::getInstance().loadInstrument(container, path, instMan_, instNum);
+	auto inst = io::InstrumentIO::getInstance().loadInstrument(container, path, instMan_, instNum);
 	comMan_.invoke(std::make_unique<AddInstrumentCommand>(
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
-void BambooTracker::saveInstrument(BinaryContainer& container, int instNum)
+void BambooTracker::saveInstrument(io::BinaryContainer& container, int instNum)
 {
-	InstrumentIO::getInstance().saveInstrument(container, instMan_, instNum);
+	io::InstrumentIO::getInstance().saveInstrument(container, instMan_, instNum);
 }
 
 void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int instNum)
@@ -183,9 +186,9 @@ void BambooTracker::importInstrument(const AbstractBank &bank, size_t index, int
 					   instMan_, std::unique_ptr<AbstractInstrument>(inst)));
 }
 
-void BambooTracker::exportInstruments(BinaryContainer& container, std::vector<int> instNums)
+void BambooTracker::exportInstruments(io::BinaryContainer& container, std::vector<int> instNums)
 {
-	BankIO::getInstance().saveBank(container, instMan_, instNums);
+	io::BankIO::getInstance().saveBank(container, instMan_, instNums);
 }
 
 int BambooTracker::findFirstFreeInstrumentNumber() const
@@ -921,8 +924,8 @@ void BambooTracker::setCurrentSongNumber(int num)
 	tickCounter_->setTempo(song.getTempo());
 	tickCounter_->setSpeed(song.getSpeed());
 	tickCounter_->setGroove(mod_->getGroove(song.getGroove()).getSequence());
-	tickCounter_->setGrooveTrigger(song.isUsedTempo() ? GrooveTrigger::Invalid
-													  : GrooveTrigger::ValidByGlobal);
+	tickCounter_->setGrooveState(song.isUsedTempo() ? GrooveState::Invalid
+													: GrooveState::ValidByGlobal);
 
 	std::unordered_map<SoundSource, int> pairs = {
 		{ SoundSource::FM, getFMChannelCount(songStyle_.type) },
@@ -992,7 +995,7 @@ bool BambooTracker::isJamMode() const
 
 void BambooTracker::jamKeyOn(JamKey key, bool volumeSet)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	funcJamKeyOn(key, keyNum, attrib, volumeSet);
 }
@@ -1005,7 +1008,7 @@ void BambooTracker::jamKeyOn(int keyNum, bool volumeSet)
 
 void BambooTracker::jamKeyOnForced(JamKey key, SoundSource src, bool volumeSet, std::shared_ptr<AbstractInstrument> inst)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
 		funcJamKeyOn(key, keyNum, attrib, volumeSet, inst);
@@ -1042,23 +1045,23 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {
-		std::vector<JamKeyData>&& list = jamMan_->keyOn(key, attrib.channelInSource, attrib.source, keyNum);
+		std::vector<JamKeyInfo>&& list = jamMan_->keyOn(key, attrib.channelInSource, attrib.source, keyNum);
 		if (list.size() == 2) {	// Key off
-			JamKeyData& offData = list[1];
-			switch (offData.source) {
+			JamKeyInfo& offInfo = list[1];
+			switch (offInfo.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FM3chExpanded && offData.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && offInfo.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
 					opnaCtrl_->keyOffFM(8, true);
 				}
 				else {
-					opnaCtrl_->keyOffFM(offData.channelInSource, true);
+					opnaCtrl_->keyOffFM(offInfo.channelInSource, true);
 				}
 				break;
 			case SoundSource::SSG:
-				opnaCtrl_->keyOffSSG(offData.channelInSource, true);
+				opnaCtrl_->keyOffSSG(offInfo.channelInSource, true);
 				break;
 			case SoundSource::ADPCM:
 				opnaCtrl_->keyOffADPCM(true);
@@ -1071,18 +1074,18 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		if (!inst) {	// Use current instrument if not specified
 			inst = instMan_->getInstrumentSharedPtr(curInstNum_);
 		}
-		JamKeyData& onData = list.front();
+		JamKeyInfo& onInfo = list.front();
 
 		Note note;
 		int octave, pitch;
 		if (key == JamKey::MidiKey) {
-			auto octNote = noteNumberToOctaveAndNote(onData.keyNum);
+			auto octNote = noteNumberToOctaveAndNote(onInfo.keyNum);
 			note = octNote.second;
 			octave = octNote.first;
 		}
 		else {
-			note = JamManager::jamKeyToNote(onData.key);
-			octave = JamManager::calcOctave(curOctave_, onData.key);
+			note = jam_utils::jamKeyToNote(onInfo.key);
+			octave = jam_utils::calculateJamKeyOctave(curOctave_, onInfo.key);
 			if (octave > 7) {	// Tone range check
 				octave = 7;
 				note = Note::B;
@@ -1090,32 +1093,32 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 		}
 		pitch = 0;
 
-		switch (onData.source) {
+		switch (onInfo.source) {
 		case SoundSource::FM:
 			if (auto fm = std::dynamic_pointer_cast<InstrumentFM>(inst))
-				opnaCtrl_->setInstrumentFM(onData.channelInSource, fm);
+				opnaCtrl_->setInstrumentFM(onInfo.channelInSource, fm);
 			if (volumeSet) {
 				int vol;
 				if (volFMReversed_) vol = (curVolume_ < 0x80) ? (0x7f - curVolume_) : 0;
 				else vol = std::min(curVolume_, 0x7f);
-				opnaCtrl_->setVolumeFM(onData.channelInSource, vol);
+				opnaCtrl_->setVolumeFM(onInfo.channelInSource, vol);
 			}
-			if (songStyle_.type == SongType::FM3chExpanded && onData.channelInSource == 2) {
+			if (songStyle_.type == SongType::FM3chExpanded && onInfo.channelInSource == 2) {
 				opnaCtrl_->keyOnFM(2, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(6, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(7, note, octave, pitch, true);
 				opnaCtrl_->keyOnFM(8, note, octave, pitch, true);
 			}
 			else {
-				opnaCtrl_->keyOnFM(onData.channelInSource, note, octave, pitch, true);
+				opnaCtrl_->keyOnFM(onInfo.channelInSource, note, octave, pitch, true);
 			}
 			break;
 		case SoundSource::SSG:
 			if (auto ssg = std::dynamic_pointer_cast<InstrumentSSG>(inst))
-				opnaCtrl_->setInstrumentSSG(onData.channelInSource, ssg);
+				opnaCtrl_->setInstrumentSSG(onInfo.channelInSource, ssg);
 			if (volumeSet)
-				opnaCtrl_->setVolumeSSG(onData.channelInSource, std::min(curVolume_, 0xf));
-			opnaCtrl_->keyOnSSG(onData.channelInSource, note, octave, pitch, true);
+				opnaCtrl_->setVolumeSSG(onInfo.channelInSource, std::min(curVolume_, 0xf));
+			opnaCtrl_->keyOnSSG(onInfo.channelInSource, note, octave, pitch, true);
 			break;
 		case SoundSource::ADPCM:
 			if (auto adpcm = std::dynamic_pointer_cast<InstrumentADPCM>(inst))
@@ -1133,7 +1136,7 @@ void BambooTracker::funcJamKeyOn(JamKey key, int keyNum, const TrackAttribute& a
 
 void BambooTracker::jamKeyOff(JamKey key)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	funcJamKeyOff(key, keyNum, attrib);
 }
@@ -1146,7 +1149,7 @@ void BambooTracker::jamKeyOff(int keyNum)
 
 void BambooTracker::jamKeyOffForced(JamKey key, SoundSource src)
 {
-	int keyNum = octaveAndNoteToNoteNumber(curOctave_, JamManager::jamKeyToNote(key));
+	int keyNum = octaveAndNoteToNoteNumber(curOctave_, jam_utils::jamKeyToNote(key));
 	const TrackAttribute& attrib = songStyle_.trackAttribs[static_cast<size_t>(curTrackNum_)];
 	if (attrib.source == src) {
 		funcJamKeyOff(key, keyNum, attrib);
@@ -1178,23 +1181,23 @@ void BambooTracker::funcJamKeyOff(JamKey key, int keyNum, const TrackAttribute& 
 		opnaCtrl_->updateRegisterStates();
 	}
 	else {
-		JamKeyData&& data = jamMan_->keyOff(key, keyNum);
+		JamKeyInfo&& info = jamMan_->keyOff(key, keyNum);
 
-		if (data.channelInSource > -1) {	// Key still sound
-			switch (data.source) {
+		if (info.channelInSource > -1) {	// Key still sound
+			switch (info.source) {
 			case SoundSource::FM:
-				if (songStyle_.type == SongType::FM3chExpanded && data.channelInSource == 2) {
+				if (songStyle_.type == SongType::FM3chExpanded && info.channelInSource == 2) {
 					opnaCtrl_->keyOffFM(2, true);
 					opnaCtrl_->keyOffFM(6, true);
 					opnaCtrl_->keyOffFM(7, true);
 					opnaCtrl_->keyOffFM(8, true);
 				}
 				else {
-					opnaCtrl_->keyOffFM(data.channelInSource, true);
+					opnaCtrl_->keyOffFM(info.channelInSource, true);
 				}
 				break;
 			case SoundSource::SSG:
-				opnaCtrl_->keyOffSSG(data.channelInSource, true);
+				opnaCtrl_->keyOffSSG(info.channelInSource, true);
 				break;
 			case SoundSource::ADPCM:
 				opnaCtrl_->keyOffADPCM(true);
@@ -1379,14 +1382,14 @@ int BambooTracker::getMarkerStep() const
 }
 
 /********** Export **********/
-bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::function<bool()> bar)
+bool BambooTracker::exportToWav(io::WavContainer& container, int loopCnt, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(static_cast<int>(container.getSampleRate()));
 	size_t sampCnt = static_cast<size_t>(opnaCtrl_->getRate() * opnaCtrl_->getDuration() / 1000);
 	size_t intrCnt = static_cast<size_t>(opnaCtrl_->getRate()) / mod_->getTickFrequency();
 	size_t intrCntRest = 0;
-	std::vector<int16_t> dumbuf(sampCnt << 1);
+	std::vector<int16_t> buf(sampCnt << 1);
 
 	int endOrder = 0;
 	int endStep = 0;
@@ -1394,8 +1397,6 @@ bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::funct
 	checkNextPositionOfLastStepAndStepSize(curSongNum_, endOrder, endStep, dummy, dummy);
 	bool endFlag = false;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
-	std::shared_ptr<chip::WavExportContainer> exCntr = std::make_shared<chip::WavExportContainer>();
-	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
 
 	while (true) {
@@ -1425,24 +1426,22 @@ bool BambooTracker::exportToWav(WavContainer& container, int loopCnt, std::funct
 			sampCntRest -= count;
 			intrCntRest -= count;
 
-			opnaCtrl_->getStreamSamples(&dumbuf[0], count);
+			opnaCtrl_->getStreamSamples(buf.data(), count);
+			container.appendSample(buf.data(), count);
 		}
 
 		if (endFlag) break;
 	}
 
-	opnaCtrl_->setExportContainer();
 	stopPlaySong();
 	isFollowPlay_ = tmpFollow;
 	opnaCtrl_->setRate(tmpRate);
 
-	container.storeSample(exCntr->getStream());
-
 	return true;
 }
 
-bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3TagEnabled,
-								GD3Tag tag, std::function<bool()> bar)
+bool BambooTracker::exportToVgm(io::BinaryContainer& container, int target, bool gd3TagEnabled,
+								io::GD3Tag tag, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(44100);
@@ -1450,7 +1449,6 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 	size_t intrCnt = static_cast<size_t>(dblIntrCnt);
 	double intrCntDiff = dblIntrCnt - intrCnt;
 	double intrCntRest = 0;
-	std::vector<int16_t> dumbuf((intrCnt + 1) << 1);
 
 	int loopOrder = 0;
 	int loopStep = 0;
@@ -1462,8 +1460,7 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 	uint32_t loopPoint = 0;
 	uint32_t loopPointSamples = 0;
 
-	std::shared_ptr<chip::VgmExportContainer> exCntr
-			= std::make_shared<chip::VgmExportContainer>(target, mod_->getTickFrequency());
+	auto exCntr = std::make_shared<chip::VgmLogger>(target, mod_->getTickFrequency());
 
 	// Set ADPCM
 	opnaCtrl_->clearSamplesADPCM();
@@ -1504,7 +1501,8 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 		intrCntRest += intrCntDiff;
 		size_t extraIntrCnt = static_cast<size_t>(intrCntRest);
 		intrCntRest -= extraIntrCnt;
-		opnaCtrl_->getStreamSamples(&dumbuf[0], intrCnt + extraIntrCnt);
+
+		exCntr->elapse(intrCnt + extraIntrCnt);
 	}
 
 	opnaCtrl_->setExportContainer();
@@ -1513,17 +1511,17 @@ bool BambooTracker::exportToVgm(BinaryContainer& container, int target, bool gd3
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeVgm(container, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
-								loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
-								exCntr->getSampleLength(), gd3TagEnabled, tag);
+		io::writeVgm(container, target, exCntr->getData(), CHIP_CLOCK, mod_->getTickFrequency(),
+					 loopFlag, loopPoint, exCntr->getSampleLength() - loopPointSamples,
+					 exCntr->getSampleLength(), gd3TagEnabled, tag);
 		return true;
 	} catch (...) {
 		throw;
 	}
 }
 
-bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tagEnabled,
-								S98Tag tag, int rate, std::function<bool()> bar)
+bool BambooTracker::exportToS98(io::BinaryContainer& container, int target, bool tagEnabled,
+								io::S98Tag tag, int rate, std::function<bool()> bar)
 {
 	int tmpRate = opnaCtrl_->getRate();
 	opnaCtrl_->setRate(rate);
@@ -1531,7 +1529,6 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 	size_t intrCnt = static_cast<size_t>(dblIntrCnt);
 	double intrCntDiff = dblIntrCnt - intrCnt;
 	double intrCntRest = 0;
-	std::vector<int16_t> dumbuf((intrCnt + 1) << 1);
 
 	int loopOrder = 0;
 	int loopStep = 0;
@@ -1541,7 +1538,7 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 	int endCnt = (loopOrder == -1) ? 0 : 1;
 	bool tmpFollow = std::exchange(isFollowPlay_, false);
 	uint32_t loopPoint = 0;
-	std::shared_ptr<chip::S98ExportContainer> exCntr = std::make_shared<chip::S98ExportContainer>(target);
+	auto exCntr = std::make_shared<chip::S98Logger>(target);
 	opnaCtrl_->setExportContainer(exCntr);
 	startPlayFromStart();
 	assignSampleADPCMRawSamples();
@@ -1568,7 +1565,7 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 		intrCntRest += intrCntDiff;
 		size_t extraIntrCnt = static_cast<size_t>(intrCntRest);
 		intrCntRest -= extraIntrCnt;
-		opnaCtrl_->getStreamSamples(&dumbuf[0], intrCnt + extraIntrCnt);
+		exCntr->elapse(intrCnt + extraIntrCnt);
 	}
 
 	opnaCtrl_->setExportContainer();
@@ -1577,8 +1574,8 @@ bool BambooTracker::exportToS98(BinaryContainer& container, int target, bool tag
 	opnaCtrl_->setRate(tmpRate);
 
 	try {
-		ExportHandler::writeS98(container, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(rate),
-								loopFlag, loopPoint, tagEnabled, tag);
+		io::writeS98(container, target, exCntr->getData(), CHIP_CLOCK, static_cast<uint32_t>(rate),
+					 loopFlag, loopPoint, tagEnabled, tag);
 		return true;
 	} catch (...) {
 		throw;
@@ -1686,7 +1683,7 @@ void BambooTracker::getStreamSamples(int16_t *container, size_t nSamples)
 
 void BambooTracker::killSound()
 {
-	jamMan_->clear();
+	jamMan_->reset();
 	opnaCtrl_->reset();
 }
 
@@ -1761,13 +1758,13 @@ void BambooTracker::makeNewModule()
 	clearCommandHistory();
 }
 
-void BambooTracker::loadModule(BinaryContainer& container)
+void BambooTracker::loadModule(io::BinaryContainer& container)
 {
 	makeNewModule();
 
 	std::exception_ptr ep;
 	try {
-		ModuleIO::getInstance().loadModule(container, mod_, instMan_);
+		io::ModuleIO::getInstance().loadModule(container, mod_, instMan_);
 	}
 	catch (...) {
 		ep = std::current_exception();
@@ -1780,9 +1777,9 @@ void BambooTracker::loadModule(BinaryContainer& container)
 	if (ep) std::rethrow_exception(ep);
 }
 
-void BambooTracker::saveModule(BinaryContainer& container)
+void BambooTracker::saveModule(io::BinaryContainer& container)
 {
-	ModuleIO::getInstance().saveModule(container, mod_, instMan_);
+	io::ModuleIO::getInstance().saveModule(container, mod_, instMan_);
 }
 
 void BambooTracker::setModulePath(std::string path)
@@ -1974,8 +1971,8 @@ int BambooTracker::getSongGroove(int songNum) const
 void BambooTracker::toggleTempoOrGrooveInSong(int songNum, bool isTempo)
 {
 	mod_->getSong(songNum).toggleTempoOrGroove(isTempo);
-	tickCounter_->setGrooveTrigger(isTempo ? GrooveTrigger::Invalid
-										   : GrooveTrigger::ValidByGlobal);
+	tickCounter_->setGrooveState(isTempo ? GrooveState::Invalid
+										 : GrooveState::ValidByGlobal);
 }
 
 bool BambooTracker::isUsedTempoInSong(int songNum) const

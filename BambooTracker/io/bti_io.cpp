@@ -31,9 +31,11 @@
 #include "enum_hash.hpp"
 #include "version.hpp"
 #include "file_io_error.hpp"
-#include "pitch_converter.hpp"
-#include "bt_io_defs.hpp"
+#include "calc_pitch.hpp"
+#include "io_utils.hpp"
 
+namespace io
+{
 BtiIO::BtiIO() : AbstractInstrumentIO("bti", "BambooTracker instrument", true, true) {}
 
 AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& fileName,
@@ -44,19 +46,19 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerIst")
-		throw FileCorruptionError(FileIO::FileType::Inst, globCsr);
+		throw FileCorruptionError(FileType::Inst, globCsr);
 	globCsr += 16;
 	/*size_t eofOfs = */ctr.readUint32(globCsr);
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
 	if (fileVersion > Version::ofInstrumentFileInBCD())
-		throw FileVersionError(FileIO::FileType::Inst);
+		throw FileVersionError(FileType::Inst);
 	globCsr += 4;
 
 
 	/***** Instrument section *****/
 	if (ctr.readString(globCsr, 8) != "INSTRMNT")
-		throw FileCorruptionError(FileIO::FileType::Inst, globCsr);
+		throw FileCorruptionError(FileType::Inst, globCsr);
 	else {
 		globCsr += 8;
 		size_t instOfs = ctr.readUint32(globCsr);
@@ -122,14 +124,14 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 			break;
 		}
 		default:
-			throw FileCorruptionError(FileIO::FileType::Inst, instCsr);
+			throw FileCorruptionError(FileType::Inst, instCsr);
 		}
 		globCsr += instOfs;
 
 
 		/***** Instrument property section *****/
 		if (ctr.readString(globCsr, 8) != "INSTPROP")
-			throw FileCorruptionError(FileIO::FileType::Inst, globCsr);
+			throw FileCorruptionError(FileType::Inst, globCsr);
 		else {
 			globCsr += 8;
 			size_t instPropOfs = ctr.readUint32(globCsr);
@@ -145,336 +147,336 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 				case 0x00:	// FM envelope
 				{
 					nums.push_back(instManLocked->findFirstAssignableEnvelopeFM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x01:	// FM LFO
 				{
 					nums.push_back(instManLocked->findFirstAssignableLFOFM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint8(instPropCsr);
 					break;
 				}
 				case 0x02:	// FM AL
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AL));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x03:	// FM FB
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::FB));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x04:	// FM AR1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x05:	// FM DR1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x06:	// FM SR1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x07:	// FM RR1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x08:	// FM SL1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x09:	// FM TL1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0a:	// FM KS1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0b:	// FM ML1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0c:	// FM DT1
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT1));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0d:	// FM AR2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0e:	// FM DR2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x0f:	// FM SR2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x10:	// FM RR2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x11:	// FM SL2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x12:	// FM TL2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x13:	// FM KS2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x14:	// FM ML2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x15:	// FM DT2
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT2));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x16:	// FM AR3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x17:	// FM DR3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x18:	// FM SR3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x19:	// FM RR3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1a:	// FM SL3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1b:	// FM TL3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1c:	// FM KS3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1d:	// FM ML3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1e:	// FM DT3
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT3));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x1f:	// FM AR4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::AR4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x20:	// FM DR4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DR4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x21:	// FM SR4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SR4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x22:	// FM RR4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::RR4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x23:	// FM SL4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::SL4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x24:	// FM TL4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::TL4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x25:	// FM KS4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::KS4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x26:	// FM ML4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::ML4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x27:	// FM DT4
 				{
 					nums.push_back(instManLocked->findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter::DT4));
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x28:	// FM arpeggio
 				{
 					nums.push_back(instManLocked->findFirstAssignableArpeggioFM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x29:	// FM pitch
 				{
 					nums.push_back(instManLocked->findFirstAssignablePitchFM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x30:	// SSG waveform
 				{
 					nums.push_back(instManLocked->findFirstAssignableWaveformSSG());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x31:	// SSG tone/noise
 				{
 					nums.push_back(instManLocked->findFirstAssignableToneNoiseSSG());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x32:	// SSG envelope
 				{
 					nums.push_back(instManLocked->findFirstAssignableEnvelopeSSG());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x33:	// SSG arpeggio
 				{
 					nums.push_back(instManLocked->findFirstAssignableArpeggioSSG());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x34:	// SSG pitch
 				{
 					nums.push_back(instManLocked->findFirstAssignablePitchSSG());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x40:	// ADPCM sample
 				{
 					adpcmSampIdx = instManLocked->findFirstAssignableSampleADPCM(adpcmSampIdx);
-					if (adpcmSampIdx == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (adpcmSampIdx == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					nums.push_back(adpcmSampIdx);
 					if (inst->getType() == InstrumentType::Drumkit) {
 						kitSampMap[adpcmSampIdx] = kitSampFileMap.at(kitSampCnt++);
@@ -486,26 +488,26 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 				case 0x41:	// ADPCM envelope
 				{
 					nums.push_back(instManLocked->findFirstAssignableEnvelopeADPCM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x42:	// ADPCM arpeggio
 				{
 					nums.push_back(instManLocked->findFirstAssignableArpeggioADPCM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				case 0x43:	// ADPCM pitch
 				{
 					nums.push_back(instManLocked->findFirstAssignablePitchADPCM());
-					if (nums.back() == -1) throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					if (nums.back() == -1) throw FileCorruptionError(FileType::Inst, instPropCsr);
 					instPropCsr += ctr.readUint16(instPropCsr);
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					throw FileCorruptionError(FileType::Inst, instPropCsr);
 				}
 			}
 			// Read data
@@ -522,82 +524,27 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 					uint8_t tmp = ctr.readUint8(csr++);
 					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AL, tmp >> 4);
 					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::FB, tmp & 0x0f);
-					// Operator 1
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 0, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					// Operator 2
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 1, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					// Operator 3
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 2, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-					// Operator 4
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMOperatorEnabled(idx, 3, (0x20 & tmp) ? true : false);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4, tmp >> 5);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4, tmp & 0x1f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4, tmp >> 4);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4, tmp & 0x0f);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4, tmp);
-					tmp = ctr.readUint8(csr++);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4, tmp & 0x0f);
-					instManLocked->setEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4,
-														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+					for (int op = 0; op < 4; ++op) {
+						auto& params = FM_OP_PARAMS[op];
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMOperatorEnabled(idx, op, (0x20 & tmp) ? true : false);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::AR), tmp & 0x1f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::KS), tmp >> 5);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::DR), tmp & 0x1f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::DT), tmp >> 5);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SR), tmp & 0x1f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SL), tmp >> 4);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::RR), tmp & 0x0f);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::TL), tmp);
+						tmp = ctr.readUint8(csr++);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::ML), tmp & 0x0f);
+						instManLocked->setEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SSGEG),
+															  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+					}
 					instPropCsr += ofs;
 					break;
 				}
@@ -952,7 +899,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
@@ -974,7 +921,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 								break;
 							}
 							else {
-								throw FileCorruptionError(FileIO::FileType::Inst, csr);
+								throw FileCorruptionError(FileType::Inst, csr);
 							}
 						}
 					}
@@ -1045,7 +992,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
@@ -1064,7 +1011,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 								break;
 							}
 							else {
-								throw FileCorruptionError(FileIO::FileType::Inst, csr);
+								throw FileCorruptionError(FileType::Inst, csr);
 							}
 						}
 					}
@@ -1099,7 +1046,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 							subdata = ctr.readUint16(csr);
 							csr += 2;
 							if (subdata != -1)
-								subdata = PitchConverter::getPitchSSGSquare(subdata);
+								subdata = calc_pitch::calculateSSGSquareTP(subdata);
 						}
 						if (l == 0)
 							instManLocked->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
@@ -1136,7 +1083,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
@@ -1202,7 +1149,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
@@ -1286,7 +1233,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
@@ -1346,7 +1293,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
@@ -1368,7 +1315,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 								break;
 							}
 							else {
-								throw FileCorruptionError(FileIO::FileType::Inst, csr);
+								throw FileCorruptionError(FileType::Inst, csr);
 							}
 						}
 					}
@@ -1426,7 +1373,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					if (fileVersion >= Version::toBCD(1, 0, 1)) {
@@ -1445,7 +1392,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 								break;
 							}
 							else {
-								throw FileCorruptionError(FileIO::FileType::Inst, csr);
+								throw FileCorruptionError(FileType::Inst, csr);
 							}
 						}
 					}
@@ -1555,7 +1502,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					++csr;	// Skip sequence type
@@ -1613,7 +1560,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					switch (ctr.readUint8(csr++)) {
@@ -1627,7 +1574,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						instManLocked->setArpeggioADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					instPropCsr += ofs;
@@ -1683,7 +1630,7 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					switch (ctr.readUint8(csr++)) {
@@ -1694,14 +1641,14 @@ AbstractInstrument* BtiIO::load(const BinaryContainer& ctr, const std::string& f
 						instManLocked->setPitchADPCMType(idx, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Inst, csr);
+						throw FileCorruptionError(FileType::Inst, csr);
 					}
 
 					instPropCsr += ofs;
 					break;
 				}
 				default:
-					throw FileCorruptionError(FileIO::FileType::Inst, instPropCsr);
+					throw FileCorruptionError(FileType::Inst, instPropCsr);
 				}
 			}
 		}
@@ -1762,7 +1709,7 @@ size_t BtiIO::loadInstrumentPropertyOperatorSequenceForInstrument(
 		break;
 	}
 	default:
-		throw FileCorruptionError(FileIO::FileType::Inst, csr);
+		throw FileCorruptionError(FileType::Inst, csr);
 	}
 
 	if (version >= Version::toBCD(1, 0, 1)) {
@@ -1929,82 +1876,28 @@ void BtiIO::save(BinaryContainer& ctr,
 			uint8_t tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL) << 4)
 						  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB));
 			ctr.appendUint8(tmp);
-			// Operator 1
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 0);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1));
-			ctr.appendUint8(tmp);
-			int tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1));
-			ctr.appendUint8(tmp);
-			// Operator 2
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 1);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2));
-			ctr.appendUint8(tmp);
-			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2));
-			ctr.appendUint8(tmp);
-			// Operator 3
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 2);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3));
-			ctr.appendUint8(tmp);
-			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3));
-			ctr.appendUint8(tmp);
-			// Operator 4
-			tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, 3);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4) << 5)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4) << 4)
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4));
-			ctr.appendUint8(tmp);
-			tmp2 = instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4));
-			ctr.appendUint8(tmp);
+			for (int op = 0; op < 4; ++op) {
+				auto& params = FM_OP_PARAMS[op];
+				tmp = instManLocked->getEnvelopeFMOperatorEnabled(envNum, op);
+				tmp = static_cast<uint8_t>(tmp << 5)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::AR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::KS)) << 5)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::DR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::DT)) << 5)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SL)) << 4)
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::RR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::TL)));
+				ctr.appendUint8(tmp);
+				int tmp2 = instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SSGEG));
+				tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
+					  | static_cast<uint8_t>(instManLocked->getEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::ML)));
+				ctr.appendUint8(tmp);
+			}
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
 
@@ -2556,4 +2449,5 @@ void BtiIO::save(BinaryContainer& ctr,
 	ctr.writeUint32(instPropOfs, ctr.size() - instPropOfs);
 
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
+}
 }

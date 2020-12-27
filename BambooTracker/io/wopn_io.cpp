@@ -27,6 +27,8 @@
 #include "format/wopn_file.h"
 #include "file_io_error.hpp"
 
+namespace io
+{
 WopnIO::WopnIO() : AbstractBankIO("wopn", "WOPN bank", true, false) {}
 
 AbstractBank* WopnIO::load(const BinaryContainer& ctr) const
@@ -38,9 +40,10 @@ AbstractBank* WopnIO::load(const BinaryContainer& ctr) const
 	std::unique_ptr<WOPNFile, WOPNDeleter> wopn;
 	wopn.reset(WOPN_LoadBankFromMem(const_cast<char*>(ctr.getPointer()), ctr.size(), nullptr));
 	if (!wopn)
-		throw FileCorruptionError(FileIO::FileType::Bank, 0);
+		throw FileCorruptionError(FileType::Bank, 0);
 
 	WopnBank *bank = new WopnBank(wopn.get());
 	wopn.release();
 	return bank;
+}
 }

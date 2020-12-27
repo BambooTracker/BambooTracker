@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,10 +26,7 @@
 #include "move_order_command.hpp"
 
 MoveOrderCommand::MoveOrderCommand(std::weak_ptr<Module> mod, int songNum, int orderNum, bool isUp)
-	: mod_(mod),
-	  song_(songNum),
-	  order_(orderNum),
-	  isUp_(isUp)
+	: AbstractCommand(CommandId::MoveOrder), mod_(mod), song_(songNum), order_(orderNum), isUp_(isUp)
 {
 }
 
@@ -41,11 +38,6 @@ void MoveOrderCommand::redo()
 void MoveOrderCommand::undo()
 {
 	swap();
-}
-
-CommandId MoveOrderCommand::getID() const
-{
-	return CommandId::MoveOrder;
 }
 
 void MoveOrderCommand::swap()

@@ -27,22 +27,24 @@
 #include "file_io_error.hpp"
 #include "btm_io.hpp"
 
+namespace io
+{
 void AbstractModuleIO::load(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
-				  std::weak_ptr<InstrumentsManager> instMan) const
+							std::weak_ptr<InstrumentsManager> instMan) const
 {
 	(void)ctr;
 	(void)mod;
 	(void)instMan;
-	throw FileUnsupportedError(FileIO::FileType::Mod);
+	throw FileUnsupportedError(FileType::Mod);
 }
 
 void AbstractModuleIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
-				  const std::weak_ptr<InstrumentsManager> instMan) const
+							const std::weak_ptr<InstrumentsManager> instMan) const
 {
 	(void)ctr;
 	(void)mod;
 	(void)instMan;
-	throw FileUnsupportedError(FileIO::FileType::Mod);
+	throw FileUnsupportedError(FileType::Mod);
 }
 
 //------------------------------------------------------------
@@ -70,4 +72,5 @@ void ModuleIO::loadModule(const BinaryContainer& ctr, std::weak_ptr<Module> mod,
 						  std::weak_ptr<InstrumentsManager> instMan)
 {
 	handler_.at("btm")->load(ctr, mod, instMan);
+}
 }

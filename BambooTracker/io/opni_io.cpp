@@ -27,15 +27,17 @@
 #include "format/wopn_file.h"
 #include "file_io_error.hpp"
 
+namespace io
+{
 OpniIO::OpniIO() : AbstractInstrumentIO("opni", "WOPN instrument", true, false) {}
 
 AbstractInstrument* OpniIO::load(const BinaryContainer& ctr, const std::string& fileName,
-								std::weak_ptr<InstrumentsManager> instMan, int instNum) const
+								 std::weak_ptr<InstrumentsManager> instMan, int instNum) const
 {
 	(void)fileName;
 	OPNIFile opni;
 	if (WOPN_LoadInstFromMem(&opni, const_cast<char*>(ctr.getPointer()), static_cast<size_t>(ctr.size())) != 0)
-		throw FileCorruptionError(FileIO::FileType::Inst, 0);
+		throw FileCorruptionError(FileType::Inst, 0);
 
 	return loadWOPNInstrument(opni.inst, instMan, instNum);
 }
@@ -46,7 +48,7 @@ AbstractInstrument* OpniIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	int envIdx = instManLocked->findFirstAssignableEnvelopeFM();
-	if (envIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank, 0);
+	if (envIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 	const char *name = srcInst.inst_name;
 
 	InstrumentFM* inst = new InstrumentFM(instNum, name, instManLocked.get());
@@ -61,44 +63,40 @@ AbstractInstrument* OpniIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 		&srcInst.operators[3],
 	};
 
-#define LOAD_OPERATOR(n)						\
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::ML##n, op[n - 1]->dtfm_30 & 15); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DT##n, (op[n - 1]->dtfm_30 >> 4) & 7); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::TL##n, op[n - 1]->level_40); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::KS##n, op[n - 1]->rsatk_50 >> 6); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::AR##n, op[n - 1]->rsatk_50 & 31); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::DR##n, op[n - 1]->amdecay1_60 & 31); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SR##n, op[n - 1]->decay2_70 & 31); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::RR##n, op[n - 1]->susrel_80 & 15); \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SL##n, op[n - 1]->susrel_80 >> 4); \
-	int ssgeg##n = op[n - 1]->ssgeg_90; \
-	ssgeg##n = ssgeg##n & 8 ? ssgeg##n & 7 : -1; \
-	instManLocked->setEnvelopeFMParameter(envIdx, FMEnvelopeParameter::SSGEG##n, ssgeg##n); \
-	int am##n = op[n - 1]->amdecay1_60 >> 7;
-
-	LOAD_OPERATOR(1)
-	LOAD_OPERATOR(2)
-	LOAD_OPERATOR(3)
-	LOAD_OPERATOR(4)
-
-#undef LOAD_OPERATOR
+	int am[4];
+	for (int n = 0; n < 4; ++n) {
+		auto& params = FM_OP_PARAMS[n];
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::ML), op[n]->dtfm_30 & 15);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::DT), (op[n]->dtfm_30 >> 4) & 7);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::TL), op[n]->level_40);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::KS), op[n]->rsatk_50 >> 6);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::AR), op[n]->rsatk_50 & 31);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::DR), op[n]->amdecay1_60 & 31);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::SR), op[n]->decay2_70 & 31);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::RR), op[n]->susrel_80 & 15);
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::SL), op[n]->susrel_80 >> 4);
+		int ssgeg = op[n]->ssgeg_90;
+		ssgeg = ssgeg & 8 ? ssgeg & 7 : -1;
+		instManLocked->setEnvelopeFMParameter(envIdx, params.at(FMOperatorParameter::SSGEG), ssgeg);
+		am[n] = op[n]->amdecay1_60 >> 7;
+	}
 
 	if (srcInst.lfosens != 0) {
 		int lfoIdx = instManLocked->findFirstAssignableLFOFM();
-		if (lfoIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank, 0);
+		if (lfoIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 		inst->setLFOEnabled(true);
 		inst->setLFONumber(lfoIdx);
 		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::PMS, srcInst.lfosens & 7);
 		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AMS, (srcInst.lfosens >> 4) & 3);
-		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am1);
-		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am2);
-		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am3);
-		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am4);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM1, am[0]);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM2, am[1]);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM3, am[2]);
+		instManLocked->setLFOFMParameter(lfoIdx, FMLFOParameter::AM4, am[3]);
 	}
 
 	if (srcInst.note_offset != 0) {
 		int arpIdx = instManLocked->findFirstAssignableArpeggioFM();
-		if (arpIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank, 0);
+		if (arpIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
 		instManLocked->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
@@ -106,4 +104,5 @@ AbstractInstrument* OpniIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 	}
 
 	return inst;
+}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,32 +24,27 @@
  */
 
 #include "set_echo_buffer_access_command.hpp"
+#include "pattern_command_utils.hpp"
 
-SetEchoBufferAccessCommand::SetEchoBufferAccessCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int bufNum)
-	: mod_(mod),
+SetEchoBufferAccessCommand::SetEchoBufferAccessCommand(
+		std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int stepNum, int bufNum)
+	: AbstractCommand(CommandId::SetEchoBufferAccess),
+	  mod_(mod),
 	  song_(songNum),
 	  track_(trackNum),
 	  order_(orderNum),
 	  step_(stepNum),
 	  buf_(bufNum)
 {
-	prevNote_ = mod_.lock()->getSong(songNum).getTrack(trackNum).getPatternFromOrderNumber(orderNum)
-				.getStep(stepNum).getNoteNumber();
+	prevNote_ = command_utils::getStep(mod, songNum, trackNum, orderNum, stepNum).getNoteNumber();
 }
 
 void SetEchoBufferAccessCommand::redo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-			.getStep(step_).setNoteNumber(-buf_ - 3);
+	command_utils::getStep(mod_, song_, track_, order_, step_).setNoteNumber(-buf_ - 3);
 }
 
 void SetEchoBufferAccessCommand::undo()
 {
-	mod_.lock()->getSong(song_).getTrack(track_).getPatternFromOrderNumber(order_)
-			.getStep(step_).setNoteNumber(prevNote_);
-}
-
-CommandId SetEchoBufferAccessCommand::getID() const
-{
-	return CommandId::SetEchoBufferAccess;
+	command_utils::getStep(mod_, song_, track_, order_, step_).setNoteNumber(prevNote_);
 }

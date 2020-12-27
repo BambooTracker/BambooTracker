@@ -28,27 +28,30 @@
 #include <utility>
 #include "instrument.hpp"
 #include "file_io_error.hpp"
+#include "io_utils.hpp"
 #include "misc.hpp"
 
+namespace io
+{
 PpcIO::PpcIO() : AbstractBankIO("ppc", "PMD PPC", true, false) {}
 
 AbstractBank* PpcIO::load(const BinaryContainer& ctr) const
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 30) != "ADPCM DATA for  PMD ver.4.4-  ")
-		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
+		throw FileCorruptionError(FileType::Bank, globCsr);
 	globCsr += 30;
 	uint16_t nextAddr = ctr.readUint16(globCsr);
 	if ((nextAddr - 0x26u) * 0x20u + 0x420u != ctr.size())	// File size check
-		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
+		throw FileCorruptionError(FileType::Bank, globCsr);
 	globCsr += 2;
 
 	size_t sampOffs = globCsr + 256 * 4;
-	if (ctr.size() < sampOffs) throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
+	if (ctr.size() < sampOffs) throw FileCorruptionError(FileType::Bank, globCsr);
 
 	std::vector<int> ids;
 	std::vector<std::vector<uint8_t>> samples;
-	BankIO::extractADPCMSamples(ctr, globCsr, sampOffs, 256, ids, samples);
+	extractADPCMSamples(ctr, globCsr, sampOffs, 256, ids, samples);
 
 	return new PpcBank(std::move(ids), std::move(samples));
 }
@@ -59,7 +62,7 @@ AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t> sample,
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	int sampIdx = instManLocked->findFirstAssignableSampleADPCM();
-	if (sampIdx < 0) throw FileCorruptionError(FileIO::FileType::Bank, 0);
+	if (sampIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 
 	InstrumentADPCM* adpcm = new InstrumentADPCM(instNum, "", instManLocked.get());
 	adpcm->setSampleNumber(sampIdx);
@@ -70,4 +73,4 @@ AbstractInstrument* PpcIO::loadInstrument(const std::vector<uint8_t> sample,
 
 	return adpcm;
 }
-
+}

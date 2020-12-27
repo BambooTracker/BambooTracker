@@ -27,6 +27,8 @@
 
 #include "instrument_io.hpp"
 
+namespace io
+{
 class Y12IO final : public AbstractInstrumentIO
 {
 public:
@@ -35,3 +37,4 @@ public:
 							 std::weak_ptr<InstrumentsManager> instMan,
 							 int instNum) const override;
 };
+}

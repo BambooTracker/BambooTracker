@@ -25,8 +25,8 @@
 
 #include "add_instrument_qt_command.hpp"
 #include <utility>
-#include "command_id.hpp"
-#include "gui/instrument_list_misc.hpp"
+#include "command/command_id.hpp"
+#include "instrument_command_qt_utils.hpp"
 
 AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QString name, InstrumentType type,
 											   std::weak_ptr<InstrumentFormManager> formMan, MainWindow* mainwin,
@@ -40,7 +40,8 @@ AddInstrumentQtCommand::AddInstrumentQtCommand(QListWidget *list, int num, QStri
 	  mainwin_(mainwin),
 	  onlyUsed_(onlyUsed),
 	  hasDone_(!preventFirstStore)
-{}
+{
+}
 
 void AddInstrumentQtCommand::undo()
 {
@@ -56,7 +57,7 @@ void AddInstrumentQtCommand::undo()
 
 void AddInstrumentQtCommand::redo()
 {
-	list_->insertItem(num_, createInstrumentListItem(num_, type_, name_));
+	list_->insertItem(num_, gui_command_utils::createInstrumentListItem(num_, type_, name_));
 
 	if (hasDone_ && (type_ == InstrumentType::ADPCM || type_ == InstrumentType::Drumkit)) {
 		mainwin_->assignADPCMSamples();

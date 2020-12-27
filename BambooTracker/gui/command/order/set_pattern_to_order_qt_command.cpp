@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,13 +24,13 @@
  */
 
 #include "set_pattern_to_order_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 SetPatternToOrderQtCommand::SetPatternToOrderQtCommand(OrderListPanel* panel, OrderPosition pos, bool secondEntry, QUndoCommand* parent)
 	: QUndoCommand(parent),
 	  panel_(panel),
 	  pos_(pos),
-	  isSecond_(secondEntry)
+	  isSecondEntry_(secondEntry)
 {
 }
 
@@ -54,25 +54,15 @@ int SetPatternToOrderQtCommand::id() const
 
 bool SetPatternToOrderQtCommand::mergeWith(const QUndoCommand* other)
 {
-	if (other->id() == id() && !isSecond_) {
+	if (other->id() == id() && !isSecondEntry_) {
 		auto com = dynamic_cast<const SetPatternToOrderQtCommand*>(other);
-		if (com->getPos() == pos_ && com->isSecondEntry()) {
-			isSecond_ = true;
+		if (com->pos_ == pos_ && com->isSecondEntry_) {
+			isSecondEntry_ = true;
 			redo();
 			return true;
 		}
 	}
 
-	isSecond_ = true;
+	isSecondEntry_ = true;
 	return false;
-}
-
-OrderPosition SetPatternToOrderQtCommand::getPos() const
-{
-	return pos_;
-}
-
-bool SetPatternToOrderQtCommand::isSecondEntry() const
-{
-	return isSecond_;
 }

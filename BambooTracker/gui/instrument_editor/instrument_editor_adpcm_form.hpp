@@ -31,7 +31,7 @@
 #include <QKeyEvent>
 #include "bamboo_tracker.hpp"
 #include "configuration.hpp"
-#include "jam_manager.hpp"
+#include "jamming.hpp"
 #include "gui/color_palette.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 

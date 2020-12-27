@@ -26,9 +26,9 @@
 #include "swap_instruments_qt_command.hpp"
 #include <QListWidgetItem>
 #include "instrument.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 #include "gui/pattern_editor/pattern_editor.hpp"
-#include "gui/instrument_list_misc.hpp"
+#include "instrument_command_qt_utils.hpp"
 
 SwapInstrumentsQtCommand::SwapInstrumentsQtCommand(QListWidget* list, int inst1Row, int inst2Row,
 												   QString inst1Name, QString inst2Name,
@@ -76,10 +76,10 @@ void SwapInstrumentsQtCommand::swap(int above, int below, QString aboveName, QSt
 	QListWidgetItem* aboveItem = list_->takeItem(above);
 	int aboveId = aboveItem->data(Qt::UserRole).toInt();
 
-	QString newBelowName = makeInstrumentListText(belowId, aboveName);
+	QString newBelowName = gui_command_utils::makeInstrumentListText(belowId, aboveName);
 	aboveItem->setText(newBelowName);
 	aboveItem->setData(Qt::UserRole, belowId);
-	QString newAboveName = makeInstrumentListText(aboveId, belowName);
+	QString newAboveName = gui_command_utils::makeInstrumentListText(aboveId, belowName);
 	belowItem->setText(newAboveName);
 	belowItem->setData(Qt::UserRole, aboveId);
 

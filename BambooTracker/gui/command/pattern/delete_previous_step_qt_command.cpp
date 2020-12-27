@@ -24,7 +24,7 @@
  */
 
 #include "delete_previous_step_qt_command.hpp"
-#include "command_id.hpp"
+#include "command/command_id.hpp"
 
 DeletePreviousStepQtCommand::DeletePreviousStepQtCommand(PatternEditorPanel* panel, QUndoCommand* parent)
 	: QUndoCommand(parent),

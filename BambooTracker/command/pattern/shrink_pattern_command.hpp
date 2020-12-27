@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
 #include <vector>
 #include <string>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 
 class ShrinkPatternCommand : public AbstractCommand
@@ -39,7 +39,6 @@ public:
 						 int endTrack, int endColumn, int endStep);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 
 private:
 	std::weak_ptr<Module> mod_;

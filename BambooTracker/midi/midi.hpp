@@ -32,22 +32,18 @@
 #include <cstdint>
 #include "RtMidi.h"
 
+class RtMidiIn;
+
 class MidiInterface
 {
 public:
-	static MidiInterface &instance();
+	static MidiInterface& getInstance();
 	~MidiInterface();
 
-private:
-	MidiInterface();
-
-public:
-	RtMidi::Api currentApi() const;
 	std::string currentApiName() const;
 	std::vector<std::string> getAvailableApis() const;
 	bool isAvailableApi(const std::string& api) const;
 	bool switchApi(std::string api, std::string* errDetail = nullptr);
-	bool switchApi(RtMidi::Api api, std::string* errDetail = nullptr);	// Use internal
 	bool supportsVirtualPort() const;
 	bool supportsVirtualPort(std::string api) const;
 	std::vector<std::string> getRealInputPorts();
@@ -57,17 +53,18 @@ public:
 	bool openInputPort(unsigned port, std::string* errDetail = nullptr);
 	bool openInputPortByName(const std::string &portName, std::string* errDetail = nullptr);
 
-	typedef void (InputHandler)(double, const uint8_t *, size_t, void *);
+	using InputHandler = void(double, const uint8_t*, size_t, void*);
 	void installInputHandler(InputHandler *handler, void *userData);
 	void uninstallInputHandler(InputHandler *handler, void *userData);
 
 private:
-	static void onMidiInput(double timestamp, std::vector<unsigned char> *message, void *userData);
+	static std::unique_ptr<MidiInterface> instance_;
 
 	std::unique_ptr<RtMidiIn> inputClient_;
 	bool hasOpenInputPort_;
 	std::mutex inputHandlersMutex_;
-	std::vector<std::pair<InputHandler *, void *>> inputHandlers_;
+	std::vector<std::pair<InputHandler*, void*>> inputHandlers_;
 
-	static std::unique_ptr<MidiInterface> instance_;
+	MidiInterface();
+	static void onMidiInput(double timestamp, std::vector<unsigned char> *message, void *userData);
 };

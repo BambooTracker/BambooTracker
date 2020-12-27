@@ -29,12 +29,11 @@
 #include <memory>
 #include <unordered_map>
 #include <deque>
-#include "opna.hpp"
 #include "instrument.hpp"
 #include "effect_iterator.hpp"
-#include "chips/chip_misc.hpp"
-#include "chips/scci/scci.hpp"
-#include "chips/c86ctl/c86ctl_wrapper.hpp"
+#include "chip/opna.hpp"
+#include "chip/scci/scci.hpp"
+#include "chip/c86ctl/c86ctl_wrapper.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -60,7 +59,7 @@ struct SSGWaveform
 class OPNAController
 {
 public:
-	OPNAController(chip::Emu emu, int clock, int rate, int duration);
+	OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration);
 
 	// Reset and initialize
 	void reset();
@@ -105,7 +104,7 @@ public:
 	void setMasterVolume(int percentage);
 
 	// Export
-	void setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr = nullptr);
+	void setExportContainer(std::shared_ptr<chip::AbstractRegisterWriteLogger> cntr = nullptr);
 
 private:
 	std::unique_ptr<chip::OPNA> opna_;
@@ -525,7 +524,6 @@ private:
 	bool hasPreSetTickEventADPCM_;
 	bool needEnvSetADPCM_;
 	bool needToneSetADPCM_;
-	size_t dramSize_;
 	size_t startAddrADPCM_, stopAddrADPCM_;	// By 32 bytes
 	size_t storePointADPCM_;	// Move by 32 bytes
 	std::unique_ptr<CommandSequence::Iterator> envItADPCM_;

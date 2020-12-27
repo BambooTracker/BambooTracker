@@ -27,8 +27,31 @@
 
 #include <vector>
 #include <string>
+#include <memory>
+#include "module.hpp"
 
-class Song;
+namespace command_utils
+{
+inline Step& getStep(std::weak_ptr<Module> mod, int song, int track, int order, int step)
+{
+	return mod.lock()->getSong(song).getTrack(track)
+			.getPatternFromOrderNumber(order).getStep(step);
+}
+
+inline Step& getStep(Song& song, int track, int order, int step)
+{
+	return song.getTrack(track).getPatternFromOrderNumber(order).getStep(step);
+}
+
+inline Pattern& getPattern(std::weak_ptr<Module> mod, int song, int track, int order)
+{
+	return mod.lock()->getSong(song).getTrack(track).getPatternFromOrderNumber(order);
+}
+
+inline Pattern& getPattern(Song& song, int track, int order)
+{
+	return song.getTrack(track).getPatternFromOrderNumber(order);
+}
 
 size_t calculateColumnSize(int beginTrack, int beginColumn, int endTrack, int endColumn);
 
@@ -37,3 +60,4 @@ std::vector<std::vector<std::string>> getPreviousCells(Song& song, size_t w, siz
 
 void restorePattern(Song& song, const std::vector<std::vector<std::string>>& cells, int beginTrack,
 					int beginColumn, int beginOrder, int beginStep);
+}

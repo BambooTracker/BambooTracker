@@ -26,8 +26,19 @@
 #include "wav_container.hpp"
 #include <cmath>
 #include <memory>
+#include "file_io_error.hpp"
 #include "misc.hpp"
 
+namespace
+{
+inline void assertValue(bool f, size_t pos)
+{
+	if (!f) throw io::FileCorruptionError(io::FileType::WAV, pos);
+}
+}
+
+namespace io
+{
 WavContainer::WavContainer(size_t defCapacity, uint32_t rate, uint16_t nCh, uint16_t bitSize)
 	: nCh_(nCh),
 	  bitSize_(bitSize),
@@ -84,32 +95,32 @@ WavContainer::WavContainer(const BinaryContainer& bc)
 	}
 }
 
-void WavContainer::setChannelCount(uint16_t n)
+void WavContainer::setChannelCount(uint16_t n) noexcept
 {
 	nCh_ = n;
 }
 
-uint16_t WavContainer::getChannelCount() const
+uint16_t WavContainer::getChannelCount() const noexcept
 {
 	return nCh_;
 }
 
-void WavContainer::setBitSize(uint16_t size)
+void WavContainer::setBitSize(uint16_t size) noexcept
 {
 	bitSize_ = size;
 }
 
-uint16_t WavContainer::getBitSize() const
+uint16_t WavContainer::getBitSize() const noexcept
 {
 	return bitSize_;
 }
 
-void WavContainer::setSampleRate(uint32_t rate)
+void WavContainer::setSampleRate(uint32_t rate) noexcept
 {
 	rate_ = rate;
 }
 
-uint32_t WavContainer::getSampleRate() const
+uint32_t WavContainer::getSampleRate() const noexcept
 {
 	return rate_;
 }
@@ -119,18 +130,24 @@ size_t WavContainer::getSampleCount() const
 	return buf_.size() * bitSize_ / 8 / nCh_;
 }
 
-void WavContainer::storeSample(std::vector<int16_t> sample)
+void WavContainer::appendSample(const int16_t* sample, size_t nSamples)
 {
-	uint32_t dataSize = sample.size() * sizeof(int16_t);
-	buf_.appendArray(reinterpret_cast<uint8_t*>(&sample[0]), dataSize);
+	size_t dataSize = nCh_ * nSamples * sizeof(int16_t);
+	buf_.appendArray(reinterpret_cast<const uint8_t*>(sample), dataSize);
 }
 
-void WavContainer::storeSample(BinaryContainer sample)
+void WavContainer::appendSample(const std::vector<int16_t>& sample)
+{
+	size_t dataSize = sample.size() * sizeof(int16_t);
+	buf_.appendArray(reinterpret_cast<const uint8_t*>(sample.data()), dataSize);
+}
+
+void WavContainer::appendSample(const BinaryContainer& sample)
 {
 	buf_.appendBinaryContainer(sample);
 }
 
-BinaryContainer WavContainer::getSample() const
+BinaryContainer WavContainer::getSample() const noexcept
 {
 	return buf_;
 }
@@ -169,56 +186,57 @@ BinaryContainer WavContainer::createWavBinary()
 	return bc;
 }
 
-//WavContainer* WavContainer::resample(const WavContainer* src, uint32_t rate)
-//{
-//	std::unique_ptr<WavContainer> tgt
-//			= std::make_unique<WavContainer>(0, rate, src->getChannelCount(), src->getBitSize());
-//	assert(src->getBitSize() == 16);	// Only support int16_t
+//	WavContainer* WavContainer::resample(const WavContainer* src, uint32_t rate)
+//	{
+//		std::unique_ptr<WavContainer> tgt
+//				= std::make_unique<WavContainer>(0, rate, src->getChannelCount(), src->getBitSize());
+//		assert(src->getBitSize() == 16);	// Only support int16_t
 
-//	size_t nCh = src->getChannelCount();
-//	size_t tsize = src->getSampleCount() * tgt->getSampleRate() / src->getSampleRate();
-//	BinaryContainer tbc(tsize * 2 * nCh);
-//	BinaryContainer sbc = src->getSample();
-//	double r = static_cast<double>(src->getSampleRate()) / tgt->getSampleRate();
+//		size_t nCh = src->getChannelCount();
+//		size_t tsize = src->getSampleCount() * tgt->getSampleRate() / src->getSampleRate();
+//		BinaryContainer tbc(tsize * 2 * nCh);
+//		BinaryContainer sbc = src->getSample();
+//		double r = static_cast<double>(src->getSampleRate()) / tgt->getSampleRate();
 
-//	for (size_t n = 0; n < tsize; ++n) {
-//		double curnf = n * r;
-//		int curni = static_cast<int>(curnf);
-//		double sub = curnf - curni;
-//		for (size_t ch = 0; ch < nCh; ++ch) {
-//			double a = sbc.readInt16((curni * nCh + ch) * 2);
-//			if (sub == 0.) {
-//				double b = sbc.readInt16(((curni + 1) * nCh + ch) * 2);
-//				tbc.appendInt16(static_cast<int16_t>(std::round(a + (b - a) * sub)));
-//			}
-//			else {
-//				tbc.appendInt16(static_cast<int16_t>(std::round(a)));
+//		for (size_t n = 0; n < tsize; ++n) {
+//			double curnf = n * r;
+//			int curni = static_cast<int>(curnf);
+//			double sub = curnf - curni;
+//			for (size_t ch = 0; ch < nCh; ++ch) {
+//				double a = sbc.readInt16((curni * nCh + ch) * 2);
+//				if (sub == 0.) {
+//					double b = sbc.readInt16(((curni + 1) * nCh + ch) * 2);
+//					tbc.appendInt16(static_cast<int16_t>(std::round(a + (b - a) * sub)));
+//				}
+//				else {
+//					tbc.appendInt16(static_cast<int16_t>(std::round(a)));
+//				}
 //			}
 //		}
+
+//		tgt->storeSample(tbc);
+//		return tgt.release();
 //	}
 
-//	tgt->storeSample(tbc);
-//	return tgt.release();
-//}
+//	WavContainer* WavContainer::mono(const WavContainer* src)
+//	{
+//		std::unique_ptr<WavContainer> tgt
+//				= std::make_unique<WavContainer>(0, src->getSampleRate(), 1, src->getBitSize());
+//		assert(src->getBitSize() == 16);	// Only support int16_t
 
-//WavContainer* WavContainer::mono(const WavContainer* src)
-//{
-//	std::unique_ptr<WavContainer> tgt
-//			= std::make_unique<WavContainer>(0, src->getSampleRate(), 1, src->getBitSize());
-//	assert(src->getBitSize() == 16);	// Only support int16_t
-
-//	BinaryContainer tbc;
-//	BinaryContainer sbc = src->getSample();
-//	uint16_t nCh = src->getChannelCount();
-//	size_t size = src->getSampleCount();
-//	for (size_t i = 0; i < size; ++i) {
-//		int32_t v = 0;
-//		for (size_t ch = 0; ch < nCh; ++ch) {
-//			v += sbc.readInt16((i * nCh + ch) * 2);
+//		BinaryContainer tbc;
+//		BinaryContainer sbc = src->getSample();
+//		uint16_t nCh = src->getChannelCount();
+//		size_t size = src->getSampleCount();
+//		for (size_t i = 0; i < size; ++i) {
+//			int32_t v = 0;
+//			for (size_t ch = 0; ch < nCh; ++ch) {
+//				v += sbc.readInt16((i * nCh + ch) * 2);
+//			}
+//			tbc.writeInt16(i, static_cast<int16_t>(clamp(v, -32768, 32767)));
 //		}
-//		tbc.writeInt16(i, static_cast<int16_t>(clamp(v, -32768, 32767)));
-//	}
-//	tgt->storeSample(tbc);
+//		tgt->storeSample(tbc);
 
-//	return tgt.release();
-//}
+//		return tgt.release();
+//	}
+}

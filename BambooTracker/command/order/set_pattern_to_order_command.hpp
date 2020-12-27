@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,28 +25,23 @@
 
 #pragma once
 
-#include "abstract_command.hpp"
 #include <memory>
+#include "../abstract_command.hpp"
 #include "module.hpp"
 
 class SetPatternToOrderCommand : public AbstractCommand
 {
 public:
-	SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum, int orderNum, int patternNum, bool secondEntry);
+	SetPatternToOrderCommand(std::weak_ptr<Module> mod, int songNum, int trackNum,
+							 int orderNum, int patternNum, bool secondEntry);
 	void redo() override;
 	void undo() override;
-	CommandId getID() const override;
 	bool mergeWith(const AbstractCommand* other) override;
-
-	int getSong() const;
-	int getTrack() const;
-	int getOrder() const;
-	bool isSecondEntry() const;
-	int getPattern() const;
 
 private:
 	std::weak_ptr<Module> mod_;
-	int song_, track_, order_, pattern_;
-	int prevPattern_;
-	bool isSecond_;
+	const int song_, track_, order_;
+	int pattern_;
+	const int prevPattern_;
+	bool isSecondEntry_;
 };

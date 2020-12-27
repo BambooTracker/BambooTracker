@@ -34,21 +34,23 @@
 #include "version.hpp"
 #include "instrument.hpp"
 #include "file_io_error.hpp"
-#include "bt_io_defs.hpp"
+#include "io_utils.hpp"
 
+namespace io
+{
 BtbIO::BtbIO() : AbstractBankIO("btb", "BambooTracker bank", true, true) {}
 
 AbstractBank* BtbIO::load(const BinaryContainer& ctr) const
 {
 	size_t globCsr = 0;
 	if (ctr.readString(globCsr, 16) != "BambooTrackerBnk")
-		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
+		throw FileCorruptionError(FileType::Bank, globCsr);
 	globCsr += 16;
 	/*size_t eofOfs = */ctr.readUint32(globCsr);
 	globCsr += 4;
 	size_t fileVersion = ctr.readUint32(globCsr);
 	if (fileVersion > Version::ofBankFileInBCD())
-		throw FileVersionError(FileIO::FileType::Bank);
+		throw FileVersionError(FileType::Bank);
 	globCsr += 4;
 
 
@@ -57,7 +59,7 @@ AbstractBank* BtbIO::load(const BinaryContainer& ctr) const
 	std::vector<std::string> names;
 	std::vector<BinaryContainer> instCtrs;
 	if (ctr.readString(globCsr, 8) != "INSTRMNT")
-		throw FileCorruptionError(FileIO::FileType::Bank, globCsr);
+		throw FileCorruptionError(FileType::Bank, globCsr);
 	globCsr += 8;
 	size_t instOfs = ctr.readUint32(globCsr);
 	size_t instCsr = globCsr + 4;
@@ -86,7 +88,7 @@ AbstractBank* BtbIO::load(const BinaryContainer& ctr) const
 
 	/***** Instrument property section *****/
 	if (ctr.readString(globCsr, 8) != "INSTPROP")
-		throw FileCorruptionError(FileIO::FileType::Inst, globCsr);
+		throw FileCorruptionError(FileType::Inst, globCsr);
 	globCsr += 8;
 	size_t instPropOfs = ctr.readUint32(globCsr);
 	BinaryContainer propCtr = ctr.getSubcontainer(globCsr + 4, instPropOfs - 4);
@@ -221,82 +223,28 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			uint8_t tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AL) << 4)
 						  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::FB));
 			ctr.appendUint8(tmp);
-			// Operator 1
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 0);
-			tmp = static_cast<uint8_t>((tmp << 5)) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS1) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT1) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL1) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR1));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL1));
-			ctr.appendUint8(tmp);
-			int tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG1);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML1));
-			ctr.appendUint8(tmp);
-			// Operator 2
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 1);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT2) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL2) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR2));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL2));
-			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG2);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML2));
-			ctr.appendUint8(tmp);
-			// Operator 3
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 2);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS3) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT3) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL3) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR3));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL3));
-			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG3);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML3));
-			ctr.appendUint8(tmp);
-			// Operator 4
-			tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, 3);
-			tmp = static_cast<uint8_t>(tmp << 5) | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::AR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::KS4) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::DT4) << 5)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SL4) << 4)
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::RR4));
-			ctr.appendUint8(tmp);
-			tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::TL4));
-			ctr.appendUint8(tmp);
-			tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::SSGEG4);
-			tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
-				  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, FMEnvelopeParameter::ML4));
-			ctr.appendUint8(tmp);
+			for (int op = 0; op < 4; ++op) {	// Operator
+				auto& params = FM_OP_PARAMS[op];
+				tmp = instMan.lock()->getEnvelopeFMOperatorEnabled(idx, op);
+				tmp = static_cast<uint8_t>((tmp << 5))
+					  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::AR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::KS)) << 5)
+					  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::DR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::DT)) << 5)
+					  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SL)) << 4)
+					  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::RR)));
+				ctr.appendUint8(tmp);
+				tmp = static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::TL)));
+				ctr.appendUint8(tmp);
+				int tmp2 = instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::SSGEG));
+				tmp = ((tmp2 == -1) ? 0x80 : static_cast<uint8_t>(tmp2 << 4))
+					  | static_cast<uint8_t>(instMan.lock()->getEnvelopeFMParameter(idx, params.at(FMOperatorParameter::ML)));
+				ctr.appendUint8(tmp);
+			}
 			ctr.writeUint8(ofs, static_cast<uint8_t>(ctr.size() - ofs));
 		}
 	}
@@ -955,8 +903,9 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 	ctr.writeUint32(eofOfs, ctr.size() - eofOfs);
 }
 
-size_t BtbIO::getPropertyPosition(const BinaryContainer& propCtr,
-								  uint8_t subsecType, uint8_t index)
+namespace
+{
+size_t getPropertyPosition(const BinaryContainer& propCtr, uint8_t subsecType, uint8_t index)
 {
 	size_t csr = 0;
 
@@ -1016,11 +965,12 @@ size_t BtbIO::getPropertyPosition(const BinaryContainer& propCtr,
 
 	return std::numeric_limits<size_t>::max();
 }
+}
 
 AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
-													const BinaryContainer& propCtr,
-													std::weak_ptr<InstrumentsManager> instMan,
-													int instNum, uint32_t bankVersion)
+										  const BinaryContainer& propCtr,
+										  std::weak_ptr<InstrumentsManager> instMan,
+										  int instNum, uint32_t bankVersion)
 {
 	std::shared_ptr<InstrumentsManager> instManLocked = instMan.lock();
 	size_t instCsr = 5;	// Skip instrument id and offset
@@ -1041,89 +991,34 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 		{
 			auto orgEnvNum = instCtr.readUint8(instCsr++);
 			int envNum = instManLocked->findFirstAssignableEnvelopeFM();
-			if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+			if (envNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 			fm->setEnvelopeNumber(envNum);
 			size_t envCsr = getPropertyPosition(propCtr, 0x00, orgEnvNum);
 			if (envCsr != std::numeric_limits<size_t>::max()) {
 				uint8_t tmp = propCtr.readUint8(envCsr++);
 				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AL, tmp >> 4);
 				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::FB, tmp & 0x0f);
-				// Operator 1
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 0, (0x20 & tmp) ? true : false);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR1, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS1, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR1, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT1, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR1, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL1, tmp >> 4);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR1, tmp & 0x0f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL1, tmp);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML1, tmp & 0x0f);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG1,
-													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-				// Operator 2
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 1, (0x20 & tmp) ? true : false);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR2, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS2, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR2, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT2, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR2, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL2, tmp >> 4);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR2, tmp & 0x0f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL2, tmp);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML2, tmp & 0x0f);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG2,
-													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-				// Operator 3
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 2, (0x20 & tmp) ? true : false);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR3, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS3, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR3, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT3, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR3, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL3, tmp >> 4);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR3, tmp & 0x0f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL3, tmp);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML3, tmp & 0x0f);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG3,
-													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
-				// Operator 4
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMOperatorEnabled(envNum, 3, (0x20 & tmp) ? true : false);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::AR4, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::KS4, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DR4, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::DT4, tmp >> 5);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SR4, tmp & 0x1f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SL4, tmp >> 4);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::RR4, tmp & 0x0f);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::TL4, tmp);
-				tmp = propCtr.readUint8(envCsr++);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::ML4, tmp & 0x0f);
-				instManLocked->setEnvelopeFMParameter(envNum, FMEnvelopeParameter::SSGEG4,
-													  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+				for (int op = 0; op < 4; ++op) {
+					auto& params = FM_OP_PARAMS[op];
+					tmp = propCtr.readUint8(envCsr++);
+					instManLocked->setEnvelopeFMOperatorEnabled(envNum, op, (0x20 & tmp) ? true : false);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::AR), tmp & 0x1f);
+					tmp = propCtr.readUint8(envCsr++);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::KS), tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::DR), tmp & 0x1f);
+					tmp = propCtr.readUint8(envCsr++);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::DT), tmp >> 5);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SR), tmp & 0x1f);
+					tmp = propCtr.readUint8(envCsr++);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SL), tmp >> 4);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::RR), tmp & 0x0f);
+					tmp = propCtr.readUint8(envCsr++);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::TL), tmp);
+					tmp = propCtr.readUint8(envCsr++);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::ML), tmp & 0x0f);
+					instManLocked->setEnvelopeFMParameter(envNum, params.at(FMOperatorParameter::SSGEG),
+														  (tmp & 0x80) ? -1 : ((tmp >> 4) & 0x07));
+				}
 			}
 		}
 
@@ -1138,7 +1033,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				fm->setLFOEnabled(true);
 				uint8_t orgLFONum = 0x7f & tmp;
 				int lfoNum = instManLocked->findFirstAssignableLFOFM();
-				if (lfoNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (lfoNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				fm->setLFONumber(lfoNum);
 				size_t lfoCsr = getPropertyPosition(propCtr, 0x01, orgLFONum);
 				if (lfoCsr != std::numeric_limits<size_t>::max()) {
@@ -1170,7 +1065,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				fm->setOperatorSequenceEnabled(param, true);
 				uint8_t orgOpSeqNum = 0x7f & tmp;
 				int opSeqNum = instManLocked->findFirstAssignableOperatorSequenceFM(param);
-				if (opSeqNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (opSeqNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				fm->setOperatorSequenceNumber(param, opSeqNum);
 				size_t opSeqCsr = getPropertyPosition(propCtr, 0x02 + tmpCnt, orgOpSeqNum);
 
@@ -1215,7 +1110,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+						throw FileCorruptionError(FileType::Bank, instCsr);
 					}
 				}
 			}
@@ -1244,7 +1139,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgArpNum, pair.first);
 						int arpNum = instManLocked->findFirstAssignableArpeggioFM();
-						if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+						if (arpNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 						fm->setArpeggioNumber(pair.first, arpNum);
 						size_t arpCsr = getPropertyPosition(propCtr, 0x28, orgArpNum);
 
@@ -1289,7 +1184,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 								break;
 							}
 							default:
-								throw FileCorruptionError(FileIO::FileType::Bank, arpCsr);
+								throw FileCorruptionError(FileType::Bank, arpCsr);
 							}
 
 							switch (propCtr.readUint8(arpCsr++)) {
@@ -1310,7 +1205,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 									break;
 								}
 								else {
-									throw FileCorruptionError(FileIO::FileType::Bank, arpCsr);
+									throw FileCorruptionError(FileType::Bank, arpCsr);
 								}
 							}
 						}
@@ -1345,7 +1240,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 					if (it == orgNumMap.end()) {	// Make new property
 						orgNumMap.emplace(orgPtNum, pair.first);
 						int ptNum = instManLocked->findFirstAssignablePitchFM();
-						if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+						if (ptNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 						fm->setPitchNumber(pair.first, ptNum);
 						size_t ptCsr = getPropertyPosition(propCtr, 0x29, orgPtNum);
 
@@ -1390,7 +1285,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 								break;
 							}
 							default:
-								throw FileCorruptionError(FileIO::FileType::Bank, ptCsr);
+								throw FileCorruptionError(FileType::Bank, ptCsr);
 							}
 
 							switch (propCtr.readUint8(ptCsr++)) {
@@ -1408,7 +1303,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 									break;
 								}
 								else {
-									throw FileCorruptionError(FileIO::FileType::Bank, ptCsr);
+									throw FileCorruptionError(FileType::Bank, ptCsr);
 								}
 							}
 						}
@@ -1447,7 +1342,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				ssg->setWaveformEnabled(true);
 				uint8_t orgWfNum = 0x7f & tmp;
 				int wfNum = instManLocked->findFirstAssignableWaveformSSG();
-				if (wfNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (wfNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				ssg->setWaveformNumber(wfNum);
 				size_t wfCsr = getPropertyPosition(propCtr, 0x30, orgWfNum);
 
@@ -1495,7 +1390,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, wfCsr);
+						throw FileCorruptionError(FileType::Bank, wfCsr);
 					}
 				}
 			}
@@ -1512,7 +1407,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				ssg->setToneNoiseEnabled(true);
 				uint8_t orgTnNum = 0x7f & tmp;
 				int tnNum = instManLocked->findFirstAssignableToneNoiseSSG();
-				if (tnNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (tnNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				ssg->setToneNoiseNumber(tnNum);
 				size_t tnCsr = getPropertyPosition(propCtr, 0x31, orgTnNum);
 
@@ -1563,7 +1458,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, tnCsr);
+						throw FileCorruptionError(FileType::Bank, tnCsr);
 					}
 				}
 			}
@@ -1580,7 +1475,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				ssg->setEnvelopeEnabled(true);
 				uint8_t orgEnvNum = 0x7f & tmp;
 				int envNum = instManLocked->findFirstAssignableEnvelopeSSG();
-				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (envNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				ssg->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPosition(propCtr, 0x32, orgEnvNum);
 
@@ -1644,7 +1539,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, envCsr);
+						throw FileCorruptionError(FileType::Bank, envCsr);
 					}
 				}
 			}
@@ -1661,7 +1556,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				ssg->setArpeggioEnabled(true);
 				uint8_t orgArpNum = 0x7f & tmp;
 				int arpNum = instManLocked->findFirstAssignableArpeggioSSG();
-				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (arpNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				ssg->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPosition(propCtr, 0x33, orgArpNum);
 
@@ -1706,7 +1601,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, arpCsr);
+						throw FileCorruptionError(FileType::Bank, arpCsr);
 					}
 
 					switch (propCtr.readUint8(arpCsr++)) {
@@ -1727,7 +1622,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 							break;
 						}
 						else {
-							throw FileCorruptionError(FileIO::FileType::Bank, arpCsr);
+							throw FileCorruptionError(FileType::Bank, arpCsr);
 						}
 					}
 				}
@@ -1745,7 +1640,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				ssg->setPitchEnabled(true);
 				uint8_t orgPtNum = 0x7f & tmp;
 				int ptNum = instManLocked->findFirstAssignablePitchSSG();
-				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (ptNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				ssg->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPosition(propCtr, 0x34, orgPtNum);
 
@@ -1790,7 +1685,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, ptCsr);
+						throw FileCorruptionError(FileType::Bank, ptCsr);
 					}
 
 					switch (propCtr.readUint8(ptCsr++)) {
@@ -1808,7 +1703,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 							break;
 						}
 						else {
-							throw FileCorruptionError(FileIO::FileType::Bank, ptCsr);
+							throw FileCorruptionError(FileType::Bank, ptCsr);
 						}
 					}
 				}
@@ -1825,7 +1720,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 		{
 			uint8_t orgSampNum = instCtr.readUint8(instCsr++);
 			int sampNum = instManLocked->findFirstAssignableSampleADPCM();
-			if (sampNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+			if (sampNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 			adpcm->setSampleNumber(sampNum);
 			size_t sampCsr = getPropertyPosition(propCtr, 0x40, orgSampNum);
 			if (sampCsr != std::numeric_limits<size_t>::max()) {
@@ -1852,7 +1747,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				adpcm->setEnvelopeEnabled(true);
 				uint8_t orgEnvNum = 0x7f & tmp;
 				int envNum = instManLocked->findFirstAssignableEnvelopeADPCM();
-				if (envNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (envNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				adpcm->setEnvelopeNumber(envNum);
 				size_t envCsr = getPropertyPosition(propCtr, 0x41, orgEnvNum);
 
@@ -1916,7 +1811,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, envCsr);
+						throw FileCorruptionError(FileType::Bank, envCsr);
 					}
 				}
 			}
@@ -1933,7 +1828,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				adpcm->setArpeggioEnabled(true);
 				uint8_t orgArpNum = 0x7f & tmp;
 				int arpNum = instManLocked->findFirstAssignableArpeggioADPCM();
-				if (arpNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (arpNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				adpcm->setArpeggioNumber(arpNum);
 				size_t arpCsr = getPropertyPosition(propCtr, 0x42, orgArpNum);
 
@@ -1978,7 +1873,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, arpCsr);
+						throw FileCorruptionError(FileType::Bank, arpCsr);
 					}
 
 					switch (propCtr.readUint8(arpCsr++)) {
@@ -1992,7 +1887,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, arpCsr);
+						throw FileCorruptionError(FileType::Bank, arpCsr);
 					}
 				}
 			}
@@ -2009,7 +1904,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				adpcm->setPitchEnabled(true);
 				uint8_t orgPtNum = 0x7f & tmp;
 				int ptNum = instManLocked->findFirstAssignablePitchADPCM();
-				if (ptNum == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+				if (ptNum == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 				adpcm->setPitchNumber(ptNum);
 				size_t ptCsr = getPropertyPosition(propCtr, 0x43, orgPtNum);
 
@@ -2054,7 +1949,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						break;
 					}
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, ptCsr);
+						throw FileCorruptionError(FileType::Bank, ptCsr);
 					}
 
 					switch (propCtr.readUint8(ptCsr++)) {
@@ -2065,7 +1960,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						instManLocked->setPitchADPCMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
 						break;
 					default:
-						throw FileCorruptionError(FileIO::FileType::Bank, ptCsr);
+						throw FileCorruptionError(FileType::Bank, ptCsr);
 					}
 				}
 			}
@@ -2092,7 +1987,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 				}
 				else {
 					newSamp = instManLocked->findFirstAssignableSampleADPCM(newSamp);
-					if (newSamp == -1) throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+					if (newSamp == -1) throw FileCorruptionError(FileType::Bank, instCsr);
 					kit->setSampleNumber(key, newSamp);
 					sampMap[orgSamp] = newSamp;
 					size_t sampCsr = getPropertyPosition(propCtr, 0x40, orgSamp);
@@ -2118,6 +2013,7 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 		return kit;
 	}
 	default:
-		throw FileCorruptionError(FileIO::FileType::Bank, instCsr);
+		throw FileCorruptionError(FileType::Bank, instCsr);
 	}
+}
 }

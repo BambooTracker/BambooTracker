@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,12 @@
 
 #include "clone_instrument_command.hpp"
 
-cloneInstrumentCommand::cloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager, int num, int refNum)
-	: manager_(manager), cloneInstNum_(num), refInstNum_(refNum)
+cloneInstrumentCommand::cloneInstrumentCommand(std::weak_ptr<InstrumentsManager> manager,
+											   int num, int refNum)
+	: AbstractCommand(CommandId::CloneInstrument),
+	  manager_(manager),
+	  cloneInstNum_(num),
+	  refInstNum_(refNum)
 {
 }
 
@@ -38,9 +42,4 @@ void cloneInstrumentCommand::redo()
 void cloneInstrumentCommand::undo()
 {
 	manager_.lock()->removeInstrument(cloneInstNum_);
-}
-
-CommandId cloneInstrumentCommand::getID() const
-{
-	return CommandId::CloneInstrument;
 }

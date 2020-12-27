@@ -50,20 +50,19 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QLineEdit>
+#include "enum_hash.hpp"
 #include "configuration.hpp"
 #include "bamboo_tracker.hpp"
-#include "audio_stream.hpp"
+#include "precise_timer.hpp"
+#include "audio/audio_stream.hpp"
 #include "gui/instrument_editor/instrument_form_manager.hpp"
 #include "gui/color_palette.hpp"
-#include "timer.hpp"
 #include "gui/file_history.hpp"
 #include "gui/effect_list_dialog.hpp"
 #include "gui/keyboard_shortcut_list_dialog.hpp"
 #include "gui/bookmark_manager_form.hpp"
 #include "gui/instrument_selection_dialog.hpp"
 #include "gui/comment_edit_dialog.hpp"
-#include "file_io_error.hpp"
-#include "enum_hash.hpp"
 
 namespace Ui {
 	class MainWindow;
@@ -103,7 +102,7 @@ private:
 	std::shared_ptr<ColorPalette> palette_;
 	std::shared_ptr<BambooTracker> bt_;
 	std::shared_ptr<AudioStream> stream_;
-	std::unique_ptr<Timer> timer_;
+	std::unique_ptr<PreciseTimer> tickTimerForRealChip_;
 	std::unique_ptr<QTimer> visualTimer_;
 	std::shared_ptr<QUndoStack> comStack_;
 	std::shared_ptr<FileHistory> fileHistory_;

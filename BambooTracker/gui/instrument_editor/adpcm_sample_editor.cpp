@@ -43,7 +43,7 @@
 #include <QToolButton>
 #include <QWheelEvent>
 #include <QHoverEvent>
-#include "chips/codec/ymb_codec.hpp"
+#include "chip/codec/ymb_codec.hpp"
 #include "gui/event_guard.hpp"
 #include "gui/instrument_editor/sample_length_dialog.hpp"
 #include "gui/instrument_editor/grid_settings_dialog.hpp"
@@ -316,41 +316,41 @@ void ADPCMSampleEditor::setInstrumentSampleParameters(int sampNum, bool repeatab
 
 void ADPCMSampleEditor::importSampleFrom(const QString file)
 {
-	std::unique_ptr<WavContainer> wav;
+	std::unique_ptr<io::WavContainer> wav;
 	try {
 		QFile fp(file);
 		if (!fp.open(QIODevice::ReadOnly)) {
-			FileIOErrorMessageBox::openError(file, true, FileIO::FileType::WAV, this);
+			FileIOErrorMessageBox::openError(file, true, io::FileType::WAV, this);
 			return;
 		}
 		QByteArray array = fp.readAll();
 		fp.close();
 
-		wav = std::make_unique<WavContainer>(BinaryContainer(std::vector<char>(array.begin(), array.end())));
+		wav = std::make_unique<io::WavContainer>(io::BinaryContainer(std::vector<char>(array.begin(), array.end())));
 	}
-	catch (FileIOError& e) {
+	catch (io::FileIOError& e) {
 		FileIOErrorMessageBox(file, true, e, this).exec();
 		return;
 	}
 	catch (std::exception& e) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::WAV, QString(e.what()), this).exec();
+		FileIOErrorMessageBox(file, true, io::FileType::WAV, QString(e.what()), this).exec();
 		return;
 	}
 
 	if (wav->getSampleRate() < 2000 || 55466 < wav->getSampleRate()) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::WAV,
+		FileIOErrorMessageBox(file, true, io::FileType::WAV,
 							  tr("Supported sample rate is 2kHz-55.5kHz, but the rate of selected sample is %1.")
 							  .arg(wav->getSampleRate()), this).exec();
 		return;
 	}
 
 	if (wav->getChannelCount() != 1) {
-		FileIOErrorMessageBox(file, true, FileIO::FileType::WAV,
+		FileIOErrorMessageBox(file, true, io::FileType::WAV,
 							  tr("The selected sample is not mono channel."), this).exec();
 		return;
 	}
 
-	BinaryContainer bc = wav->getSample();
+	io::BinaryContainer bc = wav->getSample();
 	size_t rawSize = bc.size() / 2;
 	std::vector<int16_t> raw(rawSize);
 	for (size_t i = 0; i < rawSize; ++i) {

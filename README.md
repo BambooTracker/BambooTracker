@@ -3,8 +3,7 @@
 ![Platforms: windows | macos | linux](https://img.shields.io/badge/platforms-windows%20|%20macos%20|%20linux-lightgrey.svg)
 [![LICENSE](https://img.shields.io/github/license/rerrahkr/BambooTracker.svg)](./LICENSE)
 
-[![Windows (7 and up)](https://github.com/rerrahkr/BambooTracker/workflows/Windows%20(7%20and%20up)/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+%287+and+up%29%22)
-[![Windows XP](https://github.com/rerrahkr/BambooTracker/workflows/Windows%20XP/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+XP%22)
+[![Windows](https://github.com/rerrahkr/BambooTracker/workflows/Windows%20(7%20and%20up)/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Windows+%287+and+up%29%22)
 [![macOS](https://github.com/rerrahkr/BambooTracker/workflows/macOS/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3AmacOS)
 [![Ubuntu 16.04](https://github.com/rerrahkr/BambooTracker/workflows/Linux%20(Ubuntu%2016.04)/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Linux+%28Ubuntu+16.04%29%22)
 [![Nixpkgs 20.09](https://github.com/rerrahkr/BambooTracker/workflows/Linux%20(Nixpkgs)/badge.svg)](https://github.com/rerrahkr/BambooTracker/actions?query=workflow%3A%22Linux+%28Nixpkgs%29%22)
@@ -257,8 +256,9 @@ The tracker can export a song to the following files.
 BambooTracker supports following languages:
 
 - English (default)
-- French
-- Japanese
+- Français / French
+- Polski / Polish
+- 日本語 / Japanese
 
 ## Building
 ### Dependencies
@@ -391,11 +391,13 @@ I would like to thank the following people for making it:
 - Vitaly Novichkov (Wohlstand) for WOPN instrument format files
 - maak, SuperJet Spade, Dippy, RigidatoMS and ImATrackMan for sample modules
 - papiezak and Takeshi Abo for sample instruments
+- Yuzu4K for sample skin
 - Ru^3 for S98 file format documentation
 - がし３ (gasshi) for SCCI libraries
 - honet for C86CTL libraries
 - Gary P. Scavone and others for RtAudio and RtMidi libraries
 - Thanks Alexey Khokholov (Nuke.YKT) and Jean Pierre Cimalando for Nuked OPN-Mod emulation
 - Jean Pierre Cimalando and Olivier Humbert for French translation
+- freq-mod and Midori for Polish translation
 - Ian Karlsson for ADPCM encoder/decoder
 - And everyone who helps this project!

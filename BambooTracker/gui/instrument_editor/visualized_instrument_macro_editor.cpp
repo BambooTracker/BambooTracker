@@ -832,7 +832,7 @@ void VisualizedInstrumentMacroEditor::paintEventInView(QPaintEvent* event)
 	if (!isEnabled()) drawShadow();
 
 	QPainter painter(ui->panel);
-	painter.drawPixmap(event->rect(), pixmap_);
+	painter.drawPixmap(event->rect(), pixmap_, event->rect());
 }
 
 void VisualizedInstrumentMacroEditor::resizeEventInView(QResizeEvent* event)

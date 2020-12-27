@@ -26,9 +26,9 @@
 #include "opna_controller.hpp"
 #include <stdexcept>
 #include <limits>
-#include "pitch_converter.hpp"
+#include "calc_pitch.hpp"
 
-OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
+OPNAController::OPNAController(chip::OpnaEmulator emu, int clock, int rate, int duration)
 	: mode_(SongType::Standard),
 	  FM_ENV_PARAMS_OP_({
 { FMOperatorType::All, {
@@ -68,10 +68,10 @@ OPNAController::OPNAController(chip::Emu emu, int clock, int rate, int duration)
 						FMEnvelopeParameter::DT4
 						}}
 						}),
-	  dramSize_(262144),	// 256KiB
 	  storePointADPCM_(0)
 {
-	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration, dramSize_,
+	constexpr size_t DRAM_SIZE = 262144;	// 256KiB
+	opna_ = std::make_unique<chip::OPNA>(emu, clock, rate, duration, DRAM_SIZE,
 										 std::make_unique<chip::LinearResampler>(),
 										 std::make_unique<chip::LinearResampler>());
 
@@ -140,7 +140,7 @@ void OPNAController::sendRegister(int address, int value)
 /********** DRAM **********/
 size_t OPNAController::getDRAMSize() const
 {
-	return dramSize_;
+	return opna_->getDRAMSize();
 }
 
 /********** Update register states after tick process **********/
@@ -288,9 +288,9 @@ void OPNAController::setMasterVolume(int percentage)
 	opna_->setMasterVolume(percentage);
 }
 
-void OPNAController::setExportContainer(std::shared_ptr<chip::ExportContainerInterface> cntr)
+void OPNAController::setExportContainer(std::shared_ptr<chip::AbstractRegisterWriteLogger> cntr)
 {
-	opna_->setExportContainer(cntr);
+	opna_->setRegisterWriteLogger(cntr);
 }
 
 /********** Internal process **********/
@@ -343,9 +343,9 @@ void OPNAController::checkPortamento(const std::unique_ptr<SequenceIteratorInter
 	if ((!arpIt || arpIt->getPosition() == -1) && prtm && hasKeyOnBefore) {
 		if (isTonePrtm) {
 			int dif = ( octaveAndNoteToNoteNumber(baseTone.front().octave, baseTone.front().note)
-						* PitchConverter::SEMINOTE_PITCH + baseTone.front().pitch )
+						* calc_pitch::SEMINOTE_PITCH + baseTone.front().pitch )
 					  - ( octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
-						  * PitchConverter::SEMINOTE_PITCH + keyTone.pitch );
+						  * calc_pitch::SEMINOTE_PITCH + keyTone.pitch );
 			if (dif > 0) {
 				if (dif - prtm < 0) {
 					keyTone = baseTone.front();
@@ -866,7 +866,7 @@ void OPNAController::setNoteSlideFM(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectFM(int ch, int seminote)
 {
-	transposeFM_[ch] += (seminote * PitchConverter::SEMINOTE_PITCH);
+	transposeFM_[ch] += (seminote * calc_pitch::SEMINOTE_PITCH);
 	needToneSetFM_[ch] = true;
 }
 
@@ -1908,7 +1908,7 @@ void OPNAController::writePitchFM(int ch)
 {
 	if (keyToneFM_[ch].octave == -1) return;	// Not set note yet
 
-	uint16_t p = PitchConverter::getPitchFM(
+	uint16_t p = calc_pitch::calculateFNumber(
 					 keyToneFM_[ch].note,
 					 keyToneFM_[ch].octave,
 					 keyToneFM_[ch].pitch
@@ -2216,7 +2216,7 @@ void OPNAController::setNoteSlideSSG(int ch, int speed, int seminote)
 
 void OPNAController::setTransposeEffectSSG(int ch, int seminote)
 {
-	transposeSSG_[ch] += (seminote * PitchConverter::SEMINOTE_PITCH);
+	transposeSSG_[ch] += (seminote * calc_pitch::SEMINOTE_PITCH);
 	needToneSetSSG_[ch] = true;
 }
 
@@ -3091,7 +3091,7 @@ void OPNAController::writePitchSSG(int ch)
 	switch (wfSSG_[ch].type) {
 	case SSGWaveformType::SQUARE:
 	{
-		uint16_t pitch = PitchConverter::getPitchSSGSquare(
+		uint16_t pitch = calc_pitch::calculateSSGSquareTP(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			uint8_t offset = static_cast<uint8_t>(ch << 1);
@@ -3106,7 +3106,7 @@ void OPNAController::writePitchSSG(int ch)
 	}
 	case SSGWaveformType::TRIANGLE:
 		if (needToneSetSSG_[ch]) {
-			uint16_t pitch = PitchConverter::getPitchSSGTriangle(
+			uint16_t pitch = calc_pitch::calculateSSGTriangleEP(
 								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
@@ -3115,7 +3115,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
 		if (needToneSetSSG_[ch]){
-			uint16_t pitch = PitchConverter::getPitchSSGSaw(
+			uint16_t pitch = calc_pitch::calculateSSGSawEP(
 								 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
@@ -3123,7 +3123,7 @@ void OPNAController::writePitchSSG(int ch)
 		break;
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
-		uint16_t pitch = PitchConverter::getPitchSSGTriangle(
+		uint16_t pitch = calc_pitch::calculateSSGTriangleEP(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
@@ -3142,7 +3142,7 @@ void OPNAController::writePitchSSG(int ch)
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
 	{
-		uint16_t pitch = PitchConverter::getPitchSSGSaw(
+		uint16_t pitch = calc_pitch::calculateSSGSawEP(
 							 keyToneSSG_[ch].note, keyToneSSG_[ch].octave, p, fdetuneSSG_[ch]);
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
@@ -3446,7 +3446,7 @@ std::vector<size_t> OPNAController::storeSampleADPCM(std::vector<uint8_t> sample
 	opna_->setRegister(0x100, 0x60);
 	opna_->setRegister(0x101, 0x02);
 
-	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+	size_t dramLim = (opna_->getDRAMSize() - 1) >> 5;	// By 32 bytes
 	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 
@@ -3589,7 +3589,7 @@ void OPNAController::setNoteSlideADPCM(int speed, int seminote)
 
 void OPNAController::setTransposeEffectADPCM(int seminote)
 {
-	transposeADPCM_ += (seminote * PitchConverter::SEMINOTE_PITCH);
+	transposeADPCM_ += (seminote * calc_pitch::SEMINOTE_PITCH);
 	needToneSetADPCM_ = true;
 }
 
@@ -3676,7 +3676,7 @@ void OPNAController::initADPCM()
 
 	opna_->setRegister(0x100, 0xa1);	// Stop synthesis
 	// Limit address
-	size_t dramLim = (dramSize_ - 1) >> 5;	// By 32 bytes
+	size_t dramLim = (opna_->getDRAMSize() - 1) >> 5;	// By 32 bytes
 	opna_->setRegister(0x10c, dramLim & 0xff);
 	opna_->setRegister(0x10d, (dramLim >> 8) & 0xff);
 }
@@ -3840,16 +3840,16 @@ void OPNAController::writePitchADPCM()
 				+ detuneADPCM_
 				+ sumNoteSldADPCM_
 				+ transposeADPCM_;
-		p = PitchConverter::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
+		p = calc_pitch::calculatePitchIndex(keyToneADPCM_.octave, keyToneADPCM_.note, p);
 
-		int diff = p - PitchConverter::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
+		int diff = p - calc_pitch::SEMINOTE_PITCH * refInstADPCM_->getSampleRootKeyNumber();
 		writePitchADPCMToRegister(diff, refInstADPCM_->getSampleRootDeltaN());
 	}
 	else if (refInstKit_) {
 		int key = clamp(octaveAndNoteToNoteNumber(keyToneADPCM_.octave, keyToneADPCM_.note)
-						+ transposeADPCM_ / PitchConverter::SEMINOTE_PITCH, 0, 95);
+						+ transposeADPCM_ / calc_pitch::SEMINOTE_PITCH, 0, 95);
 		if (refInstKit_->getSampleEnabled(key)) {
-			int diff = PitchConverter::SEMINOTE_PITCH * refInstKit_->getPitch(key);
+			int diff = calc_pitch::SEMINOTE_PITCH * refInstKit_->getPitch(key);
 			writePitchADPCMToRegister(diff, refInstKit_->getSampleRootDeltaN(key));
 			hasStartRequestedKit_ = true;
 		}

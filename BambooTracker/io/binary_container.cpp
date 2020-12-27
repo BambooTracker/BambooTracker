@@ -28,6 +28,8 @@
 #include <iterator>
 #include <utility>
 
+namespace io
+{
 BinaryContainer::BinaryContainer(size_t defCapacity)
 	: isLE_(true)
 {
@@ -40,7 +42,7 @@ BinaryContainer::BinaryContainer(std::vector<char> buf)
 {
 }
 
-size_t BinaryContainer::size() const
+size_t BinaryContainer::size() const noexcept
 {
 	return buf_.size();
 }
@@ -56,12 +58,12 @@ void BinaryContainer::reserve(size_t capacity)
 	buf_.reserve(capacity);
 }
 
-void BinaryContainer::setEndian(bool isLittleEndian)
+void BinaryContainer::setEndian(bool isLittleEndian) noexcept
 {
 	isLE_ = isLittleEndian;
 }
 
-bool BinaryContainer::isLittleEndian() const
+bool BinaryContainer::isLittleEndian() const noexcept
 {
 	return isLE_;
 }
@@ -252,7 +254,7 @@ BinaryContainer BinaryContainer::getSubcontainer(size_t offset, size_t length) c
 
 const char* BinaryContainer::getPointer() const
 {
-	return &buf_[0];
+	return buf_.data();
 }
 
 std::vector<uint8_t> BinaryContainer::toVector() const
@@ -287,4 +289,5 @@ std::vector<unsigned char> BinaryContainer::read(size_t offset, size_t size) con
 	else
 		std::reverse_copy(buf_.begin() + static_cast<int>(offset), buf_.begin() + static_cast<int>(offset + size), std::back_inserter(data));
 	return data;
+}
 }

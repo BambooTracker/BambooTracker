@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,13 +39,10 @@ public:
 	int id() const Q_DECL_OVERRIDE;
 	bool mergeWith(const QUndoCommand* other) Q_DECL_OVERRIDE;
 
-	PatternPosition getPos() const;
-	bool isSecondEntry() const;
-
 private:
 	PatternEditorPanel* panel_;
-	PatternPosition pos_;
-	bool isSecond_;
+	const PatternPosition pos_;
+	bool isSecondEntry_;
 };
 
 #endif // SET_EFFECT_ID_TO_STEP_QT_COMMAND_HPP

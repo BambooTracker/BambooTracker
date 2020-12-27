@@ -49,12 +49,13 @@ public:
 
 private:
 	QListWidget *list_;
-	int num_;
-	QString name_;
-	InstrumentType type_;
+	const int num_;
+	const QString name_;
+	const InstrumentType type_;
 	std::weak_ptr<InstrumentFormManager> formMan_;
 	MainWindow* mainwin_;
-	bool onlyUsed_, hasDone_;
+	const bool onlyUsed_;
+	bool hasDone_;
 };
 
 #endif // ADD_INSTRUMENT_QT_COMMAND_HPP
