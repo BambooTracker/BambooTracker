@@ -135,8 +135,8 @@ Temporary Items
 object_script.*.Release
 object_script.*.Debug
 *_plugin_import.cpp
-/.qmake.cache
-/.qmake.stash
+.qmake.cache
+.qmake.stash
 *.pro.user
 *.pro.user.*
 *.qbs.user
@@ -150,6 +150,9 @@ ui_*.h
 *.jsc
 Makefile*
 *build-*
+.qm
+config.log
+*.prl
 
 # Qt unit tests
 target_wrapper.*
@@ -212,3 +215,5 @@ $RECYCLE.BIN/
 ##########
 
 !/BambooTracker/res/icon
+BambooTracker/BambooTracker
+submodules/config.tests/*/test

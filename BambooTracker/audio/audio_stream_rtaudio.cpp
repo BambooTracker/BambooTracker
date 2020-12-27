@@ -26,7 +26,7 @@
 #include "audio_stream_rtaudio.hpp"
 #include <string>
 #include <vector>
-#include "RtAudio/RtAudio.hpp"
+#include "RtAudio.h"
 
 AudioStreamRtAudio::AudioStreamRtAudio(QObject* parent)
 	: AudioStream(parent)

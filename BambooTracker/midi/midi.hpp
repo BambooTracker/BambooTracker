@@ -24,11 +24,13 @@
  */
 
 #pragma once
+
 #include <string>
 #include <vector>
 #include <memory>
 #include <mutex>
 #include <cstdint>
+#include "RtMidi.h"
 
 class RtMidiIn;
 

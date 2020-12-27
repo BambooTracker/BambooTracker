@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - [#285] - Linux build (thanks [@OPNA2608])
+- [#294] - Build option for linking against system RtAudio and RtMidi ([#263], [#288]; thanks [@OPNA2608])
 - [#286] - Polish support (thanks [@freq-mod])
 
 ### Changed
@@ -29,6 +30,9 @@
 [#295]: https://github.com/rerrahkr/BambooTracker/issues/295
 [#299]: https://github.com/rerrahkr/BambooTracker/issues/299
 [#296]: https://github.com/rerrahkr/BambooTracker/issues/296
+[#263]: https://github.com/rerrahkr/BambooTracker/issues/263
+[#288]: https://github.com/rerrahkr/BambooTracker/pull/288
+[#294]: https://github.com/rerrahkr/BambooTracker/pull/294
 
 ## v0.4.5 (2020-11-05)
 ### Added

@@ -4,8 +4,11 @@ let
   packageOverrides = pkgs: {
     bambootracker = pkgs.bambootracker.overrideAttrs (oldAttrs: {
       version = buildVersion;
+
       src = ./..;
-      sourceRoot = "BambooTracker/BambooTracker";
+      sourceRoot = "BambooTracker";
+
+      postConfigure = "make qmake_all";
     });
   };
   pkgs = import <nixpkgs> { config = { inherit packageOverrides; }; };
