@@ -369,6 +369,10 @@ The base files (executable + i18n) can be installed into your system like this:
 make install
 ```
 
+## Packaging status
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/bambootracker.svg)](https://repology.org/project/bambootracker/versions)
+
 For miscellaneous files like the example demos, skins, license informations etc, you'll have to copy them to the appropriate directories yourself.
 
 ## Changelog
