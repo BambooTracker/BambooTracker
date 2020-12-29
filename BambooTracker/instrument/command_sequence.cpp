@@ -371,3 +371,230 @@ int CommandSequence::Iterator::end()
 	started_ = false;
 	return -1;
 }
+
+
+//==================================================
+InstrumentSequenceBaseUnit::InstrumentSequenceBaseUnit() noexcept
+	: data(ERR_DATA)
+{
+}
+
+InstrumentSequenceBaseUnit::InstrumentSequenceBaseUnit(int d) noexcept
+	: data(d)
+{
+}
+
+InstrumentSequenceExtendUnit::InstrumentSequenceExtendUnit() noexcept
+	: InstrumentSequenceBaseUnit(),
+	  type(InstrumentSequenceExtendUnit::RawSubdata),
+	  subdata(InstrumentSequenceBaseUnit::ERR_DATA)
+{
+}
+
+InstrumentSequenceExtendUnit::InstrumentSequenceExtendUnit(int d, SubdataType subType, int subData) noexcept
+	: InstrumentSequenceBaseUnit(d), type(subType), subdata(subData)
+{
+}
+
+InstrumentSequenceExtendUnit InstrumentSequenceExtendUnit::makeRawUnit(int data, int sub) noexcept
+{
+	return InstrumentSequenceExtendUnit(data, SubdataType::RawSubdata, sub);
+}
+
+InstrumentSequenceExtendUnit InstrumentSequenceExtendUnit::makeRatioUnit(int data, int subFirst, int subSecond) noexcept
+{
+	return InstrumentSequenceExtendUnit(data, SubdataType::RatioSubdata, ((1 << 16) | (subFirst << 8) | subSecond));
+}
+
+InstrumentSequenceExtendUnit InstrumentSequenceExtendUnit::makeShiftUnit(int data, int rshift) noexcept
+{
+	int sub = (rshift > 0) ? ((2 << 16) | rshift) : ((3 << 16) | -rshift);
+	return InstrumentSequenceExtendUnit(data, SubdataType::ShiftSubdata, sub);
+}
+
+void InstrumentSequenceExtendUnit::getSubdataAsRaw(int& raw) const noexcept
+{
+	raw = subdata;
+}
+
+void InstrumentSequenceExtendUnit::getSubdataAsRatio(int& first, int& second) const noexcept
+{
+	first = (subdata & 0x0ff00) >> 8;
+	second = subdata & 0x000ff;
+}
+
+void InstrumentSequenceExtendUnit::getSubdataAsShift(int& rshift) const noexcept
+{
+	rshift = (subdata & 0x10000) ? -(0x0ffff & data) : (0x0ffff & data);
+}
+
+namespace
+{
+inline InstrumentSequenceLoop::Ptr makeSequenceLoopPtr(const InstrumentSequenceLoop& loop)
+{
+	return std::make_shared<InstrumentSequenceLoop>(loop);
+}
+}
+
+InstrumentSequenceLoop::InstrumentSequenceLoop(int begin, int end, int times, InstrumentSequenceLoop* parent)
+	: begin_(begin), end_(end), times_(times), parent_(parent)
+{
+}
+
+void InstrumentSequenceLoop::setBeginPos(int pos)
+{
+	if (begin_ < pos && hasInnerLoop()) {
+		auto&& it = std::find_if(childs_.begin(), childs_.end(), [pos](const auto& pair) {
+			return pos <= pair.second->end_;
+		});
+		if (it == childs_.end()) {
+			removeAllInnerLoops();
+		}
+		else {
+			it->second->setBeginPos(pos);
+			childs_.erase(childs_.begin(), it);
+		}
+	}
+	begin_ = pos;
+}
+
+void InstrumentSequenceLoop::setEndPos(int pos)
+{
+	if (pos < end_ && hasInnerLoop()) {
+		auto&& it = std::find_if(childs_.rbegin(), childs_.rend(), [pos](const auto& pair) {
+			return pair.second->begin_ <= pos;
+		});
+		if (it == childs_.rend()) {
+			removeAllInnerLoops();
+		}
+		else {
+			it->second->setEndPos(pos);
+			childs_.erase((--it).base(), childs_.end());
+		}
+	}
+	end_ = pos;
+}
+
+bool InstrumentSequenceLoop::addInnerLoop(const InstrumentSequenceLoop& inner)
+{
+	for (auto pair : childs_) {
+		Ptr& loop = pair.second;
+		if (loop->isOverlapped(inner)) {
+			if (loop->hasSameRegion(inner)) {
+				loop->times_ = inner.times_;
+				return true;
+			}
+			else if (loop->isContainable(inner)) {
+				return loop->addInnerLoop(inner);
+			}
+			else {	// Illegal region
+				return false;
+			}
+		}
+		else if (loop->begin_ < inner.begin_) break;
+	}
+
+	// Add new region
+	childs_.insert(std::make_pair(inner.begin_, makeSequenceLoopPtr(inner)));
+	childs_.at(inner.begin_)->setParentLoop(this);
+	return true;
+}
+
+void InstrumentSequenceLoop::removeInnerLoop(int begin, int end)
+{
+	for (auto pair : childs_) {
+		Ptr& loop = pair.second;
+		if (loop->isOverlapped(begin, end)) {
+			if (loop->hasSameRegion(begin, end)) {
+				childs_.erase(pair.first);
+			}
+			else if (loop->isContainable(begin, end)) {
+				loop->removeInnerLoop(begin, end);
+			}
+			return;
+		}
+		else if (loop->begin_ < begin) return;
+	}
+}
+
+void InstrumentSequenceLoop::removeAllInnerLoops()
+{
+	childs_.clear();
+}
+
+bool InstrumentSequenceLoop::isOverlapped(int begin, int end) const
+{
+	if (begin_ == begin) return true;
+	if (begin_ < begin) return (begin <= end_);
+	else /* begin < begin_ */ return (begin_ <= end);
+}
+
+bool InstrumentSequenceLoop::isContainable(int begin, int end) const
+{
+	return ((begin_ < begin && end <= end_)
+			|| (begin_ == begin && end < end_));
+}
+
+bool InstrumentSequenceLoop::hasSameRegion(int begin, int end) const
+{
+	return (begin_ == begin && end_ == end);
+}
+
+namespace inst_utils
+{
+LoopStack::StackItem::StackItem(const InstrumentSequenceLoop::Ptr& ptr)
+	: loop(ptr), count(ptr->getTimes()), isInfinite(ptr->isInfinite())
+{
+}
+
+LoopStack::LoopStack(const InstrumentSequenceLoop::Ptr& ptr)
+	: stack_({ StackItem(ptr) })
+{
+}
+
+void LoopStack::clear()
+{
+	stack_.erase(stack_.begin() + 1, stack_.end());
+}
+
+void LoopStack::pushLoopsAtPos(int pos)
+{
+	while (true) {
+		InstrumentSequenceLoop::Ptr& loop = stack_.back().loop;
+		if (!loop->hasInnerLoopBeginAt(pos)) break;
+		stack_.emplace_back(loop->getInnerLoopBeginAt(pos));
+	}
+}
+
+int LoopStack::checkLoopEndAndNextPos(int curPos)
+{
+	while (stack_.size() > 1) {
+		StackItem& item = stack_.back();
+		if (item.loop->getEndPos() != curPos) {
+			return curPos + 1;
+		}
+		if (item.isInfinite) {
+			return item.loop->getBeginPos();
+		}
+		if (--(item.count)) {
+			return item.loop->getBeginPos();
+		}
+		else {
+			stack_.pop_back();
+		}
+	}
+	return curPos + 1;
+}
+}
+
+InstrumentSequenceRelease::InstrumentSequenceRelease(ReleaseTypeImproved type, int beginPos)
+	: type_(beginPos == DISABLE_RELEASE ? ReleaseTypeImproved::NoRelease : type),
+	  begin_(type_ == ReleaseTypeImproved::NoRelease ? DISABLE_RELEASE : beginPos)
+{
+}
+
+void InstrumentSequenceRelease::disable()
+{
+	type_ = ReleaseTypeImproved::NoRelease;
+	begin_ = DISABLE_RELEASE;
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -41,4 +41,38 @@ public:
 	virtual int next(bool isReleaseBegin = false) = 0;
 	virtual int front() = 0;
 	virtual int end() = 0;
+};
+
+
+//========================================================
+
+enum SequenceType : int
+{
+	NO_SEQUENCE_TYPE = -1,
+	ABSOLUTE_SEQUENCE = 0,
+	FIXED_SEQUENCE = 1,
+	RELATIVE_SEQUENCE = 2
+};
+
+template<class T>
+class SequenceIterator2
+{
+public:
+	virtual ~SequenceIterator2() = default;
+
+	static constexpr int END_SEQ_POS = -1;
+	inline int pos() const noexcept { return pos_; }
+	inline bool hasEnded() const noexcept { return pos_ == END_SEQ_POS; }
+
+	virtual SequenceType type() const = 0;
+	virtual T data() const = 0;
+
+	virtual int next() = 0;
+	virtual int front() = 0;
+	virtual int release() = 0;
+	virtual int end() = 0;
+
+protected:
+	explicit SequenceIterator2(int initPos = 0) : pos_(initPos) {}
+	int pos_;
 };

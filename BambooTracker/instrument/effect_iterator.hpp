@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Rerrah
+ * Copyright (C) 2018-2020 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,6 +45,25 @@ private:
 	int second_, third_;
 };
 
+class ArpeggioEffectIterator2 : public SequenceIterator2<int>
+{
+public:
+	ArpeggioEffectIterator2(int second, int third);
+	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
+
+	static constexpr int NO_ARP_DATA = -1;
+	int data() const noexcept override;
+
+	int next() override;
+	int front() override;
+	inline int release() override { return next(); }
+	int end() override;
+
+private:
+	bool started_;
+	int second_, third_;
+};
+
 class WavingEffectIterator : public SequenceIteratorInterface
 {
 public:
@@ -63,6 +82,26 @@ private:
 	std::vector<int> seq_;
 };
 
+class WavingEffectIterator2 : public SequenceIterator2<int>
+{
+public:
+	WavingEffectIterator2(int period, int depth);
+	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
+
+	static constexpr int NO_WAVE_DATA = -1;
+	int data() const override;
+
+	int next() override;
+	int front() override;
+	inline int release() override { return next(); }
+	int end() override;
+
+private:
+	int pos_;
+	bool started_;
+	std::vector<int> seq_;
+};
+
 class NoteSlideEffectIterator : public SequenceIteratorInterface
 {
 public:
@@ -73,6 +112,26 @@ public:
 	int getCommandData() const override;
 	int next(bool isReleaseBegin = false) override;
 	int front() override;
+	int end() override;
+
+private:
+	int pos_;
+	bool started_;
+	std::vector<int> seq_;
+};
+
+class NoteSlideEffectIterator2 : public SequenceIterator2<int>
+{
+public:
+	NoteSlideEffectIterator2(int speed, int seminote);
+	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
+
+	static constexpr int NO_SLIDE_DATA = -1;
+	int data() const override;
+
+	int next() override;
+	int front() override;
+	inline int release() override { return next(); }
 	int end() override;
 
 private:
