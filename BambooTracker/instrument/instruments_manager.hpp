@@ -36,6 +36,7 @@
 #include "lfo_fm.hpp"
 #include "waveform_adpcm.hpp"
 #include "command_sequence.hpp"
+#include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -107,15 +108,18 @@ public:
 	bool getInstrumentFMOperatorSequenceEnabled(int instNum, FMEnvelopeParameter param) const;
 	void setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum);
 	int getInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param);
-	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data);
+	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int data);
 	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
-	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum);
-	void setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum) const;
-	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin);
-	Release getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const;
+	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int data);
+	std::vector<FMOperatorSequenceUnit> getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum);
+	void addOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceLoop& loop);
+	void removeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int begin, int end);
+	void changeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum);
+	InstrumentSequenceLoopRoot getOperatorSequenceFMLoopRoot(FMEnvelopeParameter param, int opSeqNum) const;
+	void setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const;
+	FMOperatorSequenceIter getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const;
 	std::multiset<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 	std::vector<int> getOperatorSequenceFMEntriedIndices(FMEnvelopeParameter param) const;
 	int findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter param) const;
@@ -163,7 +167,7 @@ public:
 private:
 	std::array<std::shared_ptr<EnvelopeFM>, 128> envFM_;
 	std::array<std::shared_ptr<LFOFM>, 128> lfoFM_;
-	std::unordered_map<FMEnvelopeParameter, std::array<std::shared_ptr<CommandSequence>, 128>> opSeqFM_;
+	std::unordered_map<FMEnvelopeParameter, std::array<std::shared_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>>, 128>> opSeqFM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> arpFM_;
 	std::array<std::shared_ptr<CommandSequence>, 128> ptFM_;
 

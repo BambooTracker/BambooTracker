@@ -305,6 +305,7 @@ HEADERS += \
     gui/swap_tracks_dialog.hpp \
     gui/track_visibility_memory_handler.hpp \
     gui/transpose_song_dialog.hpp \
+    instrument/instrument_property_defs.hpp \
     instrument/waveform_adpcm.hpp \
     io/btb_io.hpp \
     io/bti_io.hpp \

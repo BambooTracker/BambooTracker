@@ -436,8 +436,8 @@ inline InstrumentSequenceLoop::Ptr makeSequenceLoopPtr(const InstrumentSequenceL
 }
 }
 
-InstrumentSequenceLoop::InstrumentSequenceLoop(int begin, int end, int times, InstrumentSequenceLoop* parent)
-	: begin_(begin), end_(end), times_(times), parent_(parent)
+InstrumentSequenceLoop::InstrumentSequenceLoop(int begin, int end, int times)
+	: begin_(begin), end_(end), times_(times)
 {
 }
 
@@ -451,7 +451,7 @@ void InstrumentSequenceLoop::setBeginPos(int pos)
 			removeAllInnerLoops();
 		}
 		else {
-			it->second->setBeginPos(pos);
+			if (it->second->begin_ < pos) it->second->setBeginPos(pos);
 			childs_.erase(childs_.begin(), it);
 		}
 	}
@@ -468,8 +468,8 @@ void InstrumentSequenceLoop::setEndPos(int pos)
 			removeAllInnerLoops();
 		}
 		else {
-			it->second->setEndPos(pos);
-			childs_.erase((--it).base(), childs_.end());
+			if (pos < it->second->end_) it->second->setEndPos(pos);
+			childs_.erase(it.base(), childs_.end());
 		}
 	}
 	end_ = pos;
@@ -496,8 +496,22 @@ bool InstrumentSequenceLoop::addInnerLoop(const InstrumentSequenceLoop& inner)
 
 	// Add new region
 	childs_.insert(std::make_pair(inner.begin_, makeSequenceLoopPtr(inner)));
-	childs_.at(inner.begin_)->setParentLoop(this);
 	return true;
+}
+
+bool InstrumentSequenceLoop::changeInnerLoop(int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	if (hasInnerLoopBeginAt(prevBegin)) {
+		InstrumentSequenceLoop::Ptr lpt = getInnerLoopBeginAt(prevBegin);
+		if (lpt->end_ != prevEnd) return lpt->changeInnerLoop(prevBegin, prevEnd, loop);
+		if (prevBegin != loop.begin_) lpt->setBeginPos(loop.begin_);
+		if (prevEnd != loop.end_) lpt->setEndPos(loop.end_);
+		if (lpt->times_ != loop.times_) lpt->setTimes(loop.times_);
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void InstrumentSequenceLoop::removeInnerLoop(int begin, int end)
@@ -522,6 +536,17 @@ void InstrumentSequenceLoop::removeAllInnerLoops()
 	childs_.clear();
 }
 
+std::vector<InstrumentSequenceLoop> InstrumentSequenceLoop::getAllInnerLoops() const
+{
+	std::vector<InstrumentSequenceLoop> list;
+	for (const auto& pair : childs_) {
+		list.push_back(*pair.second);
+		auto in = pair.second->getAllInnerLoops();
+		list.insert(list.end(), in.begin(), in.end());
+	}
+	return list;
+}
+
 bool InstrumentSequenceLoop::isOverlapped(int begin, int end) const
 {
 	if (begin_ == begin) return true;
@@ -540,6 +565,24 @@ bool InstrumentSequenceLoop::hasSameRegion(int begin, int end) const
 	return (begin_ == begin && end_ == end);
 }
 
+InstrumentSequenceLoop InstrumentSequenceLoop::clone() const
+{
+	InstrumentSequenceLoop l(begin_, end_, times_);
+	for (const auto& pair : childs_) {
+		l.childs_.insert(std::make_pair(pair.first, makeSequenceLoopPtr(pair.second->clone())));
+	}
+	return l;
+}
+
+InstrumentSequenceLoopRoot InstrumentSequenceLoopRoot::clone() const
+{
+	InstrumentSequenceLoopRoot r(end_);
+	for (const auto& pair : childs_) {
+		r.childs_.insert(std::make_pair(pair.first, makeSequenceLoopPtr(pair.second->clone())));
+	}
+	return r;
+}
+
 namespace inst_utils
 {
 LoopStack::StackItem::StackItem(const InstrumentSequenceLoop::Ptr& ptr)
@@ -547,8 +590,8 @@ LoopStack::StackItem::StackItem(const InstrumentSequenceLoop::Ptr& ptr)
 {
 }
 
-LoopStack::LoopStack(const InstrumentSequenceLoop::Ptr& ptr)
-	: stack_({ StackItem(ptr) })
+LoopStack::LoopStack(const std::shared_ptr<InstrumentSequenceLoopRoot>& ptr)
+	: stack_{ StackItem(std::static_pointer_cast<InstrumentSequenceLoop>(ptr)) }
 {
 }
 
@@ -588,9 +631,19 @@ int LoopStack::checkLoopEndAndNextPos(int curPos)
 }
 
 InstrumentSequenceRelease::InstrumentSequenceRelease(ReleaseTypeImproved type, int beginPos)
-	: type_(beginPos == DISABLE_RELEASE ? ReleaseTypeImproved::NoRelease : type),
+	: type_(type),
 	  begin_(type_ == ReleaseTypeImproved::NoRelease ? DISABLE_RELEASE : beginPos)
 {
+}
+
+void InstrumentSequenceRelease::setType(ReleaseTypeImproved type)
+{
+	type_ = type;
+	if (type == ReleaseTypeImproved::NoRelease) begin_ = DISABLE_RELEASE;
+}
+void InstrumentSequenceRelease::setBeginPos(int pos)
+{
+	if (type_ != ReleaseTypeImproved::NoRelease) begin_ = pos;
 }
 
 void InstrumentSequenceRelease::disable()

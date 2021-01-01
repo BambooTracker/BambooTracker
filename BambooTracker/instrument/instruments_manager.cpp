@@ -497,9 +497,10 @@ int InstrumentsManager::cloneFMLFO(int srcNum)
 int InstrumentsManager::cloneFMOperatorSequence(FMEnvelopeParameter param, int srcNum)
 {
 	int cloneNum = 0;
-	for (auto& opSeq : opSeqFM_.at(param)) {
+	auto& opSeqParam = opSeqFM_.at(param);
+	for (auto& opSeq : opSeqParam) {
 		if (!opSeq->isUserInstrument()) {
-			opSeq = opSeqFM_.at(param).at(static_cast<size_t>(srcNum))->clone();
+			opSeq = opSeqParam.at(static_cast<size_t>(srcNum))->clone();
 			opSeq->setNumber(cloneNum);
 			break;
 		}
@@ -752,7 +753,7 @@ std::shared_ptr<AbstractInstrument> InstrumentsManager::getInstrumentSharedPtr(i
 void InstrumentsManager::clearAll()
 {
 	for (auto p : ENV_FM_PARAMS_) {
-		opSeqFM_.emplace(p, std::array<std::shared_ptr<CommandSequence>, 128>());
+		opSeqFM_.emplace(p, std::array<std::shared_ptr<InstrumentSequenceProperty<FMOperatorSequenceUnit>>, 128>());
 	}
 
 	for (size_t i = 0; i < 128; ++i) {
@@ -761,7 +762,8 @@ void InstrumentsManager::clearAll()
 		envFM_[i] = std::make_shared<EnvelopeFM>(i);
 		lfoFM_[i] = std::make_shared<LFOFM>(i);
 		for (auto& p : opSeqFM_) {
-			p.second[i] = std::make_shared<CommandSequence>(i);
+			p.second[i] = std::make_shared<InstrumentSequenceProperty<
+						  FMOperatorSequenceUnit>>(i, SequenceType::NO_SEQUENCE_TYPE, FMOperatorSequenceUnit(0), FMOperatorSequenceUnit());
 		}
 		arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
 		ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
@@ -827,7 +829,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			lfoFM_[i] = std::make_shared<LFOFM>(i);
 		for (auto& p : opSeqFM_) {
 			if (!p.second[i]->isUserInstrument())
-				p.second[i] = std::make_shared<CommandSequence>(i);
+				p.second[i] = std::make_shared<InstrumentSequenceProperty<
+							  FMOperatorSequenceUnit>>(i, SequenceType::NO_SEQUENCE_TYPE, FMOperatorSequenceUnit(0), FMOperatorSequenceUnit());
 		}
 		if (!arpFM_[i]->isUserInstrument())
 			arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
@@ -1070,47 +1073,62 @@ int InstrumentsManager::getInstrumentFMOperatorSequence(int instNum, FMEnvelopeP
 	return std::dynamic_pointer_cast<InstrumentFM>(insts_[static_cast<size_t>(instNum)])->getOperatorSequenceNumber(param);
 }
 
-void InstrumentsManager::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data)
+void InstrumentsManager::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int data)
 {
-	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->addSequenceCommand(type, data);
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->addSequenceUnit(FMOperatorSequenceUnit(data));
 }
 
 void InstrumentsManager::removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum)
 {
-	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->removeSequenceCommand();
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data)
+void InstrumentsManager::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int data)
 {
-	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->setSequenceCommand(cnt, type, data);
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->setSequenceUnit(cnt, FMOperatorSequenceUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum)
+std::vector<FMOperatorSequenceUnit> InstrumentsManager::getOperatorSequenceFMSequence(FMEnvelopeParameter param, int opSeqNum)
 {
 	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getSequence();
 }
 
-void InstrumentsManager::setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceLoop& loop)
 {
-	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum) const
+void InstrumentsManager::removeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int begin, int end)
 {
-	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getLoops();
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin)
+void InstrumentsManager::changeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->setRelease(type, begin);
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const
+void InstrumentsManager::clearOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum)
+{
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getOperatorSequenceFMLoopRoot(FMEnvelopeParameter param, int opSeqNum) const
+{
+	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceRelease& release)
+{
+	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum) const
 {
 	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const
+FMOperatorSequenceIter InstrumentsManager::getOperatorSequenceFMIterator(FMEnvelopeParameter param, int opSeqNum) const
 {
 	return opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->getIterator();
 }
@@ -1133,12 +1151,12 @@ std::vector<int> InstrumentsManager::getOperatorSequenceFMEntriedIndices(FMEnvel
 
 int InstrumentsManager::findFirstAssignableOperatorSequenceFM(FMEnvelopeParameter param) const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
-	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& seq) { return (seq->isUserInstrument() || seq->isEdited()); };
-	else
-		cond = [](const std::shared_ptr<CommandSequence>& seq) { return seq->isUserInstrument(); };
 	auto& opSeq = opSeqFM_.at(param);
+	std::function<bool(decltype(opSeq.front()))> cond;
+	if (regardingUnedited_)
+		cond = [](decltype(opSeq.front()) seq) { return (seq->isUserInstrument() || seq->isEdited()); };
+	else
+		cond = [](decltype(opSeq.front()) seq) { return seq->isUserInstrument(); };
 	auto&& it = std::find_if_not(opSeq.begin(), opSeq.end(), cond);
 
 	if (it == opSeq.end()) return -1;
@@ -1389,29 +1407,29 @@ bool InstrumentsManager::equalPropertiesFM(std::shared_ptr<AbstractInstrument> a
 	auto aFm = std::dynamic_pointer_cast<InstrumentFM>(a);
 	auto bFm = std::dynamic_pointer_cast<InstrumentFM>(b);
 
-	if (*envFM_[aFm->getEnvelopeNumber()].get() != *envFM_[bFm->getEnvelopeNumber()].get())
+	if (*envFM_[aFm->getEnvelopeNumber()] != *envFM_[bFm->getEnvelopeNumber()])
 		return false;
 	if (aFm->getLFOEnabled() != bFm->getLFOEnabled())
 		return false;
-	if (aFm->getLFOEnabled() && *lfoFM_[aFm->getLFONumber()].get() != *lfoFM_[bFm->getLFONumber()].get())
+	if (aFm->getLFOEnabled() && *lfoFM_[aFm->getLFONumber()] != *lfoFM_[bFm->getLFONumber()])
 		return false;
 	for (auto& pair : opSeqFM_) {
 		if (aFm->getOperatorSequenceEnabled(pair.first) != bFm->getOperatorSequenceEnabled(pair.first))
 			return false;
 		if (aFm->getOperatorSequenceEnabled(pair.first)
-				&& *pair.second[aFm->getOperatorSequenceNumber(pair.first)].get() != *pair.second[bFm->getOperatorSequenceNumber(pair.first)].get())
+				&& *pair.second[aFm->getOperatorSequenceNumber(pair.first)] != *pair.second[bFm->getOperatorSequenceNumber(pair.first)])
 			return false;
 	}
 	for (auto& type : FM_OP_TYPES_) {
 		if (aFm->getArpeggioEnabled(type) != bFm->getArpeggioEnabled(type))
 			return false;
 		if (aFm->getArpeggioEnabled(type)
-				&& *arpFM_[aFm->getArpeggioNumber(type)].get() != *arpFM_[bFm->getArpeggioNumber(type)].get())
+				&& *arpFM_[aFm->getArpeggioNumber(type)] != *arpFM_[bFm->getArpeggioNumber(type)])
 			return false;
 		if (aFm->getPitchEnabled(type) != bFm->getPitchEnabled(type))
 			return false;
 		if (aFm->getPitchEnabled(type)
-				&& *ptFM_[aFm->getPitchNumber(type)].get() != *ptFM_[bFm->getPitchNumber(type)].get())
+				&& *ptFM_[aFm->getPitchNumber(type)] != *ptFM_[bFm->getPitchNumber(type)])
 			return false;
 		if (aFm->getEnvelopeResetEnabled(type) != bFm->getEnvelopeResetEnabled(type))
 			return false;
@@ -1978,27 +1996,27 @@ bool InstrumentsManager::equalPropertiesSSG(std::shared_ptr<AbstractInstrument> 
 	if (aSsg->getWaveformEnabled() != bSsg->getWaveformEnabled())
 		return false;
 	if (aSsg->getWaveformEnabled()
-			&& *wfSSG_[aSsg->getWaveformNumber()].get() != *wfSSG_[bSsg->getWaveformNumber()].get())
+			&& *wfSSG_[aSsg->getWaveformNumber()] != *wfSSG_[bSsg->getWaveformNumber()])
 		return false;
 	if (aSsg->getToneNoiseEnabled() != bSsg->getToneNoiseEnabled())
 		return false;
 	if (aSsg->getToneNoiseEnabled()
-			&& *tnSSG_[aSsg->getToneNoiseNumber()].get() != *tnSSG_[bSsg->getToneNoiseNumber()].get())
+			&& *tnSSG_[aSsg->getToneNoiseNumber()] != *tnSSG_[bSsg->getToneNoiseNumber()])
 		return false;
 	if (aSsg->getEnvelopeEnabled() != bSsg->getEnvelopeEnabled())
 		return false;
 	if (aSsg->getEnvelopeEnabled()
-			&& *envSSG_[aSsg->getEnvelopeNumber()].get() != *envSSG_[bSsg->getEnvelopeNumber()].get())
+			&& *envSSG_[aSsg->getEnvelopeNumber()] != *envSSG_[bSsg->getEnvelopeNumber()])
 		return false;
 	if (aSsg->getArpeggioEnabled() != bSsg->getArpeggioEnabled())
 		return false;
 	if (aSsg->getArpeggioEnabled()
-			&& *arpSSG_[aSsg->getArpeggioNumber()].get() != *arpSSG_[bSsg->getArpeggioNumber()].get())
+			&& *arpSSG_[aSsg->getArpeggioNumber()] != *arpSSG_[bSsg->getArpeggioNumber()])
 		return false;
 	if (aSsg->getPitchEnabled() != bSsg->getPitchEnabled())
 		return false;
 	if (aSsg->getPitchEnabled()
-			&& *ptSSG_[aSsg->getPitchNumber()].get() != *ptSSG_[bSsg->getPitchNumber()].get())
+			&& *ptSSG_[aSsg->getPitchNumber()] != *ptSSG_[bSsg->getPitchNumber()])
 		return false;
 	return true;
 }
@@ -2476,22 +2494,22 @@ bool InstrumentsManager::equalPropertiesADPCM(std::shared_ptr<AbstractInstrument
 	auto aAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(a);
 	auto bAdpcm = std::dynamic_pointer_cast<InstrumentADPCM>(b);
 
-	if (*sampADPCM_[aAdpcm->getSampleNumber()].get() != *sampADPCM_[bAdpcm->getSampleNumber()].get())
+	if (*sampADPCM_[aAdpcm->getSampleNumber()] != *sampADPCM_[bAdpcm->getSampleNumber()])
 		return false;
 	if (aAdpcm->getEnvelopeEnabled() != bAdpcm->getEnvelopeEnabled())
 		return false;
 	if (aAdpcm->getEnvelopeEnabled()
-			&& *envADPCM_[aAdpcm->getEnvelopeNumber()].get() != *envADPCM_[bAdpcm->getEnvelopeNumber()].get())
+			&& *envADPCM_[aAdpcm->getEnvelopeNumber()] != *envADPCM_[bAdpcm->getEnvelopeNumber()])
 		return false;
 	if (aAdpcm->getArpeggioEnabled() != bAdpcm->getArpeggioEnabled())
 		return false;
 	if (aAdpcm->getArpeggioEnabled()
-			&& *arpADPCM_[aAdpcm->getArpeggioNumber()].get() != *arpADPCM_[bAdpcm->getArpeggioNumber()].get())
+			&& *arpADPCM_[aAdpcm->getArpeggioNumber()] != *arpADPCM_[bAdpcm->getArpeggioNumber()])
 		return false;
 	if (aAdpcm->getPitchEnabled() != bAdpcm->getPitchEnabled())
 		return false;
 	if (aAdpcm->getPitchEnabled()
-			&& *ptADPCM_[aAdpcm->getPitchNumber()].get() != *ptADPCM_[bAdpcm->getPitchNumber()].get())
+			&& *ptADPCM_[aAdpcm->getPitchNumber()] != *ptADPCM_[bAdpcm->getPitchNumber()])
 		return false;
 	return true;
 }
@@ -2547,7 +2565,7 @@ bool InstrumentsManager::equalPropertiesDrumkit(std::shared_ptr<AbstractInstrume
 	if (!std::includes(aKeys.begin(), aKeys.end(), bKeys.begin(), bKeys.end())) return false;
 
 	for (const int& key : aKeys) {
-		if (*sampADPCM_[aKit->getSampleNumber(key)].get() != *sampADPCM_[bKit->getSampleNumber(key)].get())
+		if (*sampADPCM_[aKit->getSampleNumber(key)] != *sampADPCM_[bKit->getSampleNumber(key)])
 			return false;
 		if (aKit->getPitch(key) != bKit->getPitch(key))
 			return false;

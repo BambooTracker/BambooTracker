@@ -198,7 +198,7 @@ private:
 	int lfoStartCntFM_[6];
 	bool hasPreSetTickEventFM_[9];
 	bool needToneSetFM_[9];
-	std::unordered_map<FMEnvelopeParameter, std::unique_ptr<CommandSequence::Iterator>> opSeqItFM_[6];
+	std::unordered_map<FMEnvelopeParameter, FMOperatorSequenceIter> opSeqItFM_[6];
 	std::unique_ptr<SequenceIteratorInterface> arpItFM_[9];
 	std::unique_ptr<CommandSequence::Iterator> ptItFM_[9];
 	bool isArpEffFM_[9];

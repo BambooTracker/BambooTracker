@@ -28,6 +28,8 @@
 #include <algorithm>
 #include <numeric>
 #include <utility>
+#include <deque>
+#include <unordered_map>
 #include <QApplication>
 #include <QFontMetrics>
 #include <QPainter>
@@ -35,6 +37,32 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include "gui/event_guard.hpp"
+#include "enum_hash.hpp"
+// TODO: TMP, REMOVE
+#include "instrument_editor_utils.hpp"
+
+// TODO: TMP
+namespace
+{
+const std::unordered_map<VisualizedInstrumentMacroEditor::ReleaseType, InstrumentSequenceRelease::ReleaseTypeImproved> REL_TYPE_MAP2 = {
+	{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, InstrumentSequenceRelease::NoRelease },
+	{ VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE, InstrumentSequenceRelease::FixedRelease },
+	{ VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE, InstrumentSequenceRelease::AbsoluteRelease },
+	{ VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE, InstrumentSequenceRelease::RelativeRelease }
+};
+
+InstrumentSequenceRelease::ReleaseTypeImproved convertReleaseTypeForData2(VisualizedInstrumentMacroEditor::ReleaseType type)
+{
+	return REL_TYPE_MAP2.at(type);
+}
+
+VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI2(InstrumentSequenceRelease::ReleaseTypeImproved type)
+{
+	return std::find_if(REL_TYPE_MAP2.begin(), REL_TYPE_MAP2.end(), [type](const auto& pair) {
+		return (pair.second == type);
+	})->first;
+}
+}
 
 VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent)
 	: QWidget(parent),
@@ -48,7 +76,7 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	  type_(NoType),
 	  permittedReleaseType_(ReleaseType::FIXED_RELEASE),
 	  isLabelOmitted_(false),
-	  release_{ ReleaseType::NO_RELEASE, -1 },
+	  release_(InstrumentSequenceRelease::NoRelease),
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
 	  pressRow_(-1),
 	  pressCol_(-1),
@@ -209,8 +237,8 @@ void VisualizedInstrumentMacroEditor::removeSequenceCommand()
 	}
 
 	// Modify release
-	if (release_.point >= static_cast<int>(cols_.size()))
-		release_.point = -1;
+	if (release_.getBeginPos() >= static_cast<int>(cols_.size()))
+		release_.disable();
 
 	updateColumnWidth();
 	ui->panel->update();
@@ -237,6 +265,7 @@ void VisualizedInstrumentMacroEditor::addLoop(int begin, int end, int times)
 
 	printMML();
 
+	emit loopAdded(InstrumentSequenceLoop(begin, end, times));
 	onLoopChanged();
 }
 
@@ -253,18 +282,23 @@ void VisualizedInstrumentMacroEditor::setPermittedReleaseTypes(int types)
 	permittedReleaseType_ = types;
 }
 
+void VisualizedInstrumentMacroEditor::setRelease(const InstrumentSequenceRelease& release)
+{
+	release_ = release;
+	printMML();
+}
+
+// TODO: DEPRECATED
 void VisualizedInstrumentMacroEditor::setRelease(ReleaseType type, int point)
 {
-	release_ = { type, point };
-
-	printMML();
+	setRelease(InstrumentSequenceRelease(convertReleaseTypeForData2(type), point));
 }
 
 void VisualizedInstrumentMacroEditor::clearData()
 {
 	cols_.clear();
 	loops_.clear();
-	release_ = { ReleaseType::NO_RELEASE, -1 };
+	release_.disable();
 	updateColumnWidth();
 
 	printMML();
@@ -429,29 +463,21 @@ void VisualizedInstrumentMacroEditor::drawRelease()
 	painter.setPen(palette_->instSeqReleaseTextColor);
 	painter.drawText(1, releaseBaseY_, tr("Release"));
 
+	static const std::unordered_map<InstrumentSequenceRelease::ReleaseTypeImproved, QString> DISP_TEXT_MAP = {
+		{ InstrumentSequenceRelease::NoRelease, "" },
+		{ InstrumentSequenceRelease::FixedRelease, tr("Fixed") },
+		{ InstrumentSequenceRelease::AbsoluteRelease, tr("Absolute") },
+		{ InstrumentSequenceRelease::RelativeRelease, tr("Relative") }
+	};
+
 	int w = labWidth_;
 	int seqLen = static_cast<int>(cols_.size());
 	for (int i = 0; i < seqLen; ++i) {
-		if (release_.point == i) {
+		if (release_.getBeginPos() == i) {
 			painter.fillRect(w, releaseY_, panelWidth() - w, fontHeight_, palette_->instSeqReleaseColor);
 			painter.fillRect(w, releaseY_, 2, fontHeight_, palette_->instSeqReleaseEdgeColor);
-			QString type;
-			switch (release_.type) {
-			case ReleaseType::NO_RELEASE:
-				type = "";
-				break;
-			case ReleaseType::FIXED_RELEASE:
-				type = tr("Fixed");
-				break;
-			case ReleaseType::ABSOLUTE_RELEASE:
-				type = tr("Absolute");
-				break;
-			case ReleaseType::RELATIVE_RELEASE:
-				type = tr("Relative");
-				break;
-			}
 			painter.setPen(palette_->instSeqReleaseTextColor);
-			painter.drawText(w + 2, releaseBaseY_, type);
+			painter.drawText(w + 2, releaseBaseY_, DISP_TEXT_MAP.at(release_.getType()));
 		}
 
 		if (hovRow_ == -3 && hovCol_ == i)
@@ -490,15 +516,17 @@ void VisualizedInstrumentMacroEditor::printMML()
 	QString text = "";
 	std::vector<Loop> lstack;
 
+	static const std::unordered_map<InstrumentSequenceRelease::ReleaseTypeImproved, QString> DISP_REL_MAP = {
+		{ InstrumentSequenceRelease::NoRelease, "" },
+		{ InstrumentSequenceRelease::FixedRelease, "| " },
+		{ InstrumentSequenceRelease::AbsoluteRelease, "/ " },
+		{ InstrumentSequenceRelease::RelativeRelease, ": " }
+	};
+
 	int seqLen = static_cast<int>(cols_.size());
 	for (int cnt = 0; cnt < seqLen; ++cnt) {
-		if (release_.point == cnt) {
-			switch (release_.type) {
-			case ReleaseType::FIXED_RELEASE:	text += "| ";	break;
-			case ReleaseType::ABSOLUTE_RELEASE:	text += "/ ";	break;
-			case ReleaseType::RELATIVE_RELEASE:	text += ": ";	break;
-			default:									break;
-			}
+		if (release_.getBeginPos() == cnt) {
+			text += DISP_REL_MAP.at(release_.getType());
 		}
 
 		for (size_t i = 0; i < loops_.size(); ++i) {
@@ -544,8 +572,14 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 
 	std::vector<Column> column;
 	std::vector<Loop> loop;
+	InstrumentSequenceLoopRoot loopRoot(1);
+
+	std::deque<int> lbstack;
+	std::deque<InstrumentSequenceLoop> loopStack;
+	InstrumentSequenceRelease release(InstrumentSequenceRelease::NoRelease);
+	// TODO: DEPRECATED
 	std::vector<size_t> lstack;
-	Release release = { ReleaseType::NO_RELEASE, -1 };
+	// ===========
 
 	int cnt = 0;
 	while (!text.isEmpty()) {
@@ -554,6 +588,7 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 		if (m.hasMatch()) {
 			loop.push_back({ cnt, cnt, 1 });
 			lstack.push_back(loop.size() - 1);
+			lbstack.push_back(cnt);
 			text.remove(QRegularExpression("^\\["));
 			continue;
 		}
@@ -568,6 +603,16 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 				else return;
 			}
 			lstack.pop_back();
+			if (lbstack.empty() || lbstack.back() == cnt) return;
+			if (!m.captured(1).isEmpty()) {
+				int t = m.captured(1).toInt();
+				if (t > 1) loopStack.push_back(InstrumentSequenceLoop(lbstack.back(), cnt - 1, t));
+				else return;
+			}
+			else {
+				loopStack.push_back(InstrumentSequenceLoop(lbstack.back(), cnt - 1));
+			}
+			lbstack.pop_back();
 			text.remove(QRegularExpression("^\\]\\d*"));
 			continue;
 		}
@@ -575,8 +620,9 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 		if (permittedReleaseType_ & ReleaseType::FIXED_RELEASE) {
 			m = QRegularExpression("^\\|").match(text);
 			if (m.hasMatch()) {
-				if (release.point > -1) return;
-				release = { ReleaseType::FIXED_RELEASE, cnt };
+				if (release.isEnabled()) return;
+				release.setType(InstrumentSequenceRelease::FixedRelease);
+				release.setBeginPos(cnt);
 				text.remove(QRegularExpression("^\\|"));
 				continue;
 			}
@@ -585,8 +631,9 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 		if (permittedReleaseType_ & ReleaseType::ABSOLUTE_RELEASE) {
 			m = QRegularExpression("^/").match(text);
 			if (m.hasMatch()) {
-				if (release.point > -1) return;
-				release = { ReleaseType::ABSOLUTE_RELEASE, cnt };
+				if (release.isEnabled()) return;
+				release.setType(InstrumentSequenceRelease::AbsoluteRelease);
+				release.setBeginPos(cnt);
 				text.remove(QRegularExpression("^/"));
 				continue;
 			}
@@ -595,16 +642,23 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 		if (permittedReleaseType_ & ReleaseType::RELATIVE_RELEASE) {
 			m = QRegularExpression("^:").match(text);
 			if (m.hasMatch()) {
-				if (release.point > -1) return;
-				release = { ReleaseType::RELATIVE_RELEASE, cnt };
+				if (release.isEnabled()) return;
+				release.setType(InstrumentSequenceRelease::RelativeRelease);
+				release.setBeginPos(cnt);
 				text.remove(QRegularExpression("^:"));
 				continue;
 			}
 		}
 
-		if (interpretSlopeInMML(text, cnt, column)) continue;	// Slope
+		if (interpretSlopeInMML(text, cnt, column)) {	// Slope
+			loopRoot.resize(cnt);
+			continue;
+		}
 
-		if (interpretDataInMML(text, cnt, column)) continue;	// Data
+		if (interpretDataInMML(text, cnt, column)) {	// Data
+			loopRoot.resize(cnt);
+			continue;
+		}
 
 		m = QRegularExpression("^ +").match(text);
 		if (m.hasMatch()) {
@@ -617,7 +671,8 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 
 	if (column.empty()) return;
 	if (!lstack.empty()) return;
-	if (release.point > -1 && release.point >= static_cast<int>(column.size())) return;
+	if (!lbstack.empty()) return;
+	if (release.isEnabled() && release.getBeginPos() >= static_cast<int>(column.size())) return;
 
 	while (cols_.size() > 1) removeSequenceCommand();
 	setSequenceCommand(column.front().row, 0);
@@ -626,10 +681,16 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 	}
 
 	loops_ = loop;
+	emit loopCleared();
+	for (const InstrumentSequenceLoop l : loopStack) {
+		emit loopAdded(l);
+	}
 	onLoopChanged();
 
 	release_ = release;
-	emit releaseChanged(release.type, release.point);
+	emit releaseChangedImproved(release);
+	// TODO: DEPRECATE
+	emit releaseChanged(convertReleaseTypeForUI2(release.getType()), release.getBeginPos());
 
 	ui->panel->update();
 }
@@ -723,44 +784,58 @@ void VisualizedInstrumentMacroEditor::moveLoop()
 {
 	if (hovCol_ < 0) return;
 
-	size_t idx = static_cast<size_t>(grabLoop_);
+	size_t glabIdxU = static_cast<size_t>(grabLoop_);
+	auto& tgtLoopRef = loops_[glabIdxU];
+	int prevBegin = tgtLoopRef.begin;
+	int prevEnd = tgtLoopRef.end;
+
 	if (isGrabLoopHead_) {
-		if (hovCol_ < loops_[idx].begin) {
-			if (grabLoop_ > 0 && loops_[idx - 1].end >= hovCol_) {
-				loops_[idx].begin = loops_[idx - 1].end + 1;
+		if (hovCol_ < prevBegin) {
+			if (glabIdxU && hovCol_ <= loops_[glabIdxU - 1].end) {
+				tgtLoopRef.begin = loops_[glabIdxU - 1].end + 1;
 			}
 			else {
-				loops_[idx].begin = hovCol_;
+				tgtLoopRef.begin = hovCol_;
 			}
 		}
-		else if (hovCol_ > loops_[idx].begin) {
-			if (hovCol_ > loops_[idx].end) {
+		else if (prevBegin < hovCol_) {
+			if (prevEnd < hovCol_) {
 				loops_.erase(loops_.begin() + grabLoop_);
+				emit loopRemoved(prevBegin, prevEnd);
+				printMML();
+				return;
 			}
 			else {
-				loops_[idx].begin = hovCol_;
+				tgtLoopRef.begin = hovCol_;
 			}
 		}
+		else return;
 	}
 	else {
-		if (hovCol_ < loops_[idx].end) {
-			if (hovCol_ < loops_[idx].begin) {
+		if (hovCol_ < prevEnd) {
+			if (hovCol_ < prevBegin) {
 				loops_.erase(loops_.begin() + grabLoop_);
+				emit loopRemoved(prevBegin, prevEnd);
+				printMML();
+				return;
 			}
 			else {
-				loops_[idx].end = hovCol_;
+				tgtLoopRef.end = hovCol_;
 			}
 		}
-		else if (hovCol_ > loops_[idx].end) {
-			if (grabLoop_ < static_cast<int>(loops_.size()) - 1 && loops_[idx + 1].begin <= hovCol_) {
-				loops_[idx].end = loops_[idx + 1].begin - 1;
+		else if (prevEnd < hovCol_) {
+			if (glabIdxU < loops_.size() - 1 && loops_[glabIdxU + 1].begin <= hovCol_) {
+				tgtLoopRef.end = loops_[glabIdxU + 1].begin - 1;
 			}
 			else {
-				loops_[idx].end = hovCol_;
+				tgtLoopRef.end = hovCol_;
 			}
 		}
+		else return;
 	}
 
+	emit loopChangedImproved(prevBegin, prevEnd,
+							 InstrumentSequenceLoop(tgtLoopRef.begin, tgtLoopRef.end, tgtLoopRef.times));
 	printMML();
 }
 
@@ -898,9 +973,9 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 			}
 		}
 	}
-	else if (hovRow_ == -3 && release_.point != -1) {
+	else if (hovRow_ == -3 && release_.isEnabled()) {
 		if (event->button() == Qt::LeftButton) {
-			int w = labWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + release_.point, 0);
+			int w = labWidth_ + std::accumulate(colWidths_.begin(), colWidths_.begin() + release_.getBeginPos(), 0);
 			if (w - 4 < x && x < w + 4) {
 				isGrabRelease_ = true;
 			}
@@ -921,6 +996,8 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 					else {	// Loop count up
 						++loops_[static_cast<size_t>(i)].times;
 						printMML();
+						auto& l = loops_[static_cast<size_t>(i)];
+						emit loopChangedImproved(l.begin, l.end, InstrumentSequenceLoop(l.begin, l.end, l.times));
 						onLoopChanged();
 					}
 					break;
@@ -930,8 +1007,12 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 					if (i > -1) {	// Loop count down
 						if (loops_[static_cast<size_t>(i)].times > 1) {
 							--loops_[static_cast<size_t>(i)].times;
+							auto& l = loops_[static_cast<size_t>(i)];
+							emit loopChangedImproved(l.begin, l.end, InstrumentSequenceLoop(l.begin, l.end, l.times));
 						}
 						else {	// Erase loop
+							auto& l = loops_[static_cast<size_t>(i)];
+							emit loopRemoved(l.begin, l.end);
 							loops_.erase(loops_.begin() + i);
 						}
 						printMML();
@@ -949,38 +1030,42 @@ void VisualizedInstrumentMacroEditor::mousePressEventInView(QMouseEvent* event)
 				switch (event->button()) {
 				case Qt::LeftButton:
 				{
-					if (release_.point == -1 || pressCol_ < release_.point) {	// New release
-						release_.type = (release_.type == ReleaseType::NO_RELEASE)
-										? ReleaseType::FIXED_RELEASE
-										: release_.type;
-						release_.point = pressCol_;
+					if (!release_.isEnabled() || pressCol_ < release_.getBeginPos()) {	// New release
+						if (!release_.isEnabled()) release_.setType(InstrumentSequenceRelease::FixedRelease);
+						release_.setBeginPos(pressCol_);
 						printMML();
-						emit releaseChanged(release_.type, release_.point);
+						emit releaseChangedImproved(release_);
+						// TODO: DEPRECATED
+						emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
 					}
 					else if (isMultiReleaseState_) {	// Change release type
-						switch (release_.type) {
-						case ReleaseType::FIXED_RELEASE:
-							release_.type = ReleaseType::ABSOLUTE_RELEASE;
+						switch (release_.getType()) {
+						case InstrumentSequenceRelease::FixedRelease:
+							release_.setType(InstrumentSequenceRelease::AbsoluteRelease);
 							break;
-						case ReleaseType::ABSOLUTE_RELEASE:
-							release_.type = ReleaseType::RELATIVE_RELEASE;
+						case InstrumentSequenceRelease::AbsoluteRelease:
+							release_.setType(InstrumentSequenceRelease::RelativeRelease);
 							break;
-						case ReleaseType::NO_RELEASE:
-						case ReleaseType::RELATIVE_RELEASE:
-							release_.type = ReleaseType::FIXED_RELEASE;
+						case InstrumentSequenceRelease::NoRelease:
+						case InstrumentSequenceRelease::RelativeRelease:
+							release_.setType(InstrumentSequenceRelease::FixedRelease);
 							break;
 						}
 						printMML();
-						emit releaseChanged(release_.type, release_.point);
+						emit releaseChangedImproved(release_);
+						// TODO: DEPRECATED
+						emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
 					}
 					break;
 				}
 				case Qt::RightButton:
 				{
-					if (pressCol_ >= release_.point) {	// Erase release
-						release_ = { ReleaseType::NO_RELEASE, -1 };
+					if (pressCol_ >= release_.getBeginPos()) {	// Erase release
+						release_.disable();
 						printMML();
-						emit releaseChanged(release_.type, release_.point);
+						emit releaseChangedImproved(release_);
+						// TODO: DEPRECATED
+						emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
 					}
 					break;
 				}
@@ -1012,9 +1097,11 @@ void VisualizedInstrumentMacroEditor::mouseReleaseEventInView(QMouseEvent* event
 	else if (isGrabRelease_) {	// Move release
 		if (event->button() == Qt::LeftButton) {
 			if (hovCol_ > -1) {
-				release_.point = hovCol_;
+				release_.setBeginPos(hovCol_);
 				printMML();
-				emit releaseChanged(release_.type, release_.point);
+				emit releaseChangedImproved(release_);
+				// TODO: DEPRECATED
+				emit releaseChanged(convertReleaseTypeForUI2(release_.getType()), release_.getBeginPos());
 			}
 		}
 	}

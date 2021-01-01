@@ -259,7 +259,7 @@ public:
 
 	static constexpr int INFINITE_LOOP = 1;
 	/// Loop in a closed interval [begin, end]
-	InstrumentSequenceLoop(int begin, int end, int times = INFINITE_LOOP, InstrumentSequenceLoop* getParentLoop = nullptr);
+	InstrumentSequenceLoop(int begin, int end, int times = INFINITE_LOOP);
 
 	friend bool operator==(const InstrumentSequenceLoop& a, const InstrumentSequenceLoop& b)
 	{
@@ -276,14 +276,13 @@ public:
 	inline int getTimes() const noexcept { return times_; }
 	inline bool isInfinite() const noexcept { return times_ == INFINITE_LOOP; }
 
-	inline void setParentLoop(InstrumentSequenceLoop* parent) { parent_ = parent; }
-	inline InstrumentSequenceLoop* getParentLoop() const noexcept { return parent_; }
-
 	inline Ptr getInnerLoopBeginAt(int pos) const { return childs_.at(pos); }
 
 	bool addInnerLoop(const InstrumentSequenceLoop& inner);
+	bool changeInnerLoop(int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
 	void removeInnerLoop(int begin, int end);
 	void removeAllInnerLoops();
+	std::vector<InstrumentSequenceLoop> getAllInnerLoops()const;
 
 	inline bool hasInnerLoop() const { return !childs_.empty(); }
 	inline bool hasInnerLoopBeginAt(int pos) const { return childs_.count(pos); }
@@ -295,21 +294,69 @@ public:
 	bool isContainable(int begin, int end) const;
 	inline bool isContainable(const InstrumentSequenceLoop& other) const
 	{
-		return  isContainable(other.begin_, other.end_);
+		return isContainable(other.begin_, other.end_);
 	}
 	bool hasSameRegion(int begin, int end) const;
 	inline bool hasSameRegion(const InstrumentSequenceLoop& other) const
 	{
 		return hasSameRegion(other.begin_, other.end_);
 	}
+	InstrumentSequenceLoop clone() const;
 
-private:
+protected:
 	int begin_, end_, times_;
-	InstrumentSequenceLoop* parent_;
 	std::map<int, Ptr> childs_;
 };
 
-using InstrumentSequenceLoopRoot = InstrumentSequenceLoop;
+class InstrumentSequenceLoopRoot : public InstrumentSequenceLoop
+{
+public:
+	InstrumentSequenceLoopRoot(int size)
+		: InstrumentSequenceLoop(0, size - 1) {}
+
+	inline int size() const { return end_; }
+	inline void extend() { setEndPos(end_ + 1); }
+	inline void shrink() { if (end_) setEndPos(end_ - 1); }
+	inline void resize(int size) { setEndPos(size - 1); }
+	inline void clear()
+	{
+		removeAllInnerLoops();
+		setEndPos(0);
+	}
+	inline Ptr getLoopBeginAt(int pos) const
+	{
+		return getInnerLoopBeginAt(pos);
+	}
+	inline bool addLoop(const InstrumentSequenceLoop& loop)
+	{
+		return addInnerLoop(loop);
+	}
+	inline bool changeLoop(int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+	{
+		return changeInnerLoop(prevBegin, prevEnd, loop);
+	}
+	inline void removeLoop(int begin, int end)
+	{
+		removeInnerLoop(begin, end);
+	}
+	inline void removeAllLoops()
+	{
+		removeAllInnerLoops();
+	}
+	inline std::vector<InstrumentSequenceLoop> getAllLoops() const
+	{
+		return getAllInnerLoops();
+	}
+	inline bool hasLoop() const
+	{
+		return hasInnerLoop();
+	}
+	inline bool hasLoopBeginAt(int pos) const
+	{
+		return hasInnerLoopBeginAt(pos);
+	}
+	InstrumentSequenceLoopRoot clone() const;
+};
 
 namespace inst_utils
 {
@@ -327,7 +374,7 @@ private:
 	std::deque<StackItem> stack_;
 
 public:
-	explicit LoopStack(const InstrumentSequenceLoop::Ptr& ptr);
+	explicit LoopStack(const std::shared_ptr<InstrumentSequenceLoopRoot>& ptr);
 	void clear();
 	void pushLoopsAtPos(int pos);
 	int checkLoopEndAndNextPos(int curPos);
@@ -357,9 +404,14 @@ public:
 	friend bool operator!=(const InstrumentSequenceRelease& a, const InstrumentSequenceRelease& b) { return !(a == b); }
 
 	inline ReleaseTypeImproved getType() const noexcept { return type_; }
-	inline void setType(ReleaseTypeImproved type) { type_ = type; }
-	inline void setBeginPos(int pos) { begin_ = pos; }
+	void setType(ReleaseTypeImproved type);
+	void setBeginPos(int pos);
 	inline int getBeginPos() const noexcept { return begin_; }
+
+	inline bool isEnabled() const noexcept
+	{
+		return (type_ != ReleaseTypeImproved::NoRelease && begin_ != DISABLE_RELEASE);
+	}
 
 	void disable();
 
@@ -378,7 +430,7 @@ public:
 		  DEF_UNIT_(defaultUnit),
 		  ERR_UNIT_(errorUnit),
 		  REL_RELEASE_DENOM_(relReleaseDenom),
-		  loops_(0, 0),
+		  loop_(std::make_shared<InstrumentSequenceLoopRoot>(1)),
 		  release_(InstrumentSequenceRelease::NoRelease)
 	{
 		clearParameters();
@@ -386,7 +438,7 @@ public:
 
 	friend bool operator==(const InstrumentSequenceProperty& a, const InstrumentSequenceProperty& b)
 	{
-		return (a.type_ == b.type_ && a.seq_ == b.seq_ && a.loops_ == b.loops_ && a.release_ == b.release_);
+		return (a.type_ == b.type_ && a.seq_ == b.seq_ && a.loop_ == b.loop_ && a.release_ == b.release_);
 	}
 
 	friend bool operator!=(const InstrumentSequenceProperty& a, const InstrumentSequenceProperty& b) { return !(a == b); }
@@ -403,15 +455,14 @@ public:
 
 	bool isEdited() const override
 	{
-		return (seq_.size() > 1 || seq_.front() != DEF_UNIT_ || loops_.hasInnerLoop() || release_.getType() != InstrumentSequenceRelease::NoRelease);
+		return (seq_.size() > 1 || seq_.front() != DEF_UNIT_ || loop_->hasLoop() || release_.getType() != InstrumentSequenceRelease::NoRelease);
 	}
 
 	void clearParameters() override
 	{
 		type_ = DEF_TYPE_;
 		seq_ = { DEF_UNIT_ };
-		loops_.removeAllInnerLoops();
-		loops_.setEndPos(0);
+		loop_->clear();
 		release_.disable();
 	}
 
@@ -419,42 +470,46 @@ public:
 	inline size_t getSequenceSize() const { return seq_.size(); }
 	T getSequenceUnit(int n) const { return seq_.at(static_cast<size_t>(n)); }
 	inline std::vector<T> getSequence() const { return seq_; }
-	void addSequenceUnit(const T& unit) { seq_.push_back(unit); }
+
+	void addSequenceUnit(const T& unit) {
+		seq_.push_back(unit);
+		loop_->extend();
+	}
 
 	void removeSequenceUnit()
 	{
 		seq_.pop_back();
-		int size = static_cast<int>(seq_.size());
-		loops_.setEndPos(size - 1);
-		if (release_.getBeginPos() == size)
+		loop_->shrink();
+		if (release_.getBeginPos() == static_cast<int>(seq_.size()))
 			release_.disable();
 	}
 
 	void setSequenceUnit(int n, const T& unit) { seq_.at(static_cast<size_t>(n)) = unit; }
 
 	//***** Loop *****
-	inline InstrumentSequenceLoopRoot getLoops() const { return loops_; }
-	//	inline void setLoops(const InstrumentSequenceLoopRoot& loops) const { loops_ = loops; }
+	inline InstrumentSequenceLoopRoot getLoopRoot() const { return *loop_; }
+	inline void addLoop(const InstrumentSequenceLoop& loop) const { loop_->addLoop(loop); }
+	inline void removeLoop(int begin, int end) const { loop_->removeLoop(begin, end); }
+	inline void clearLoops() const { loop_->removeAllLoops(); }
+	inline void changeLoop(int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+	{
+		loop_->changeLoop(prevBegin, prevEnd, loop);
+	}
 
 	//***** Release *****
 	InstrumentSequenceRelease getRelease() const noexcept { return release_; }
-	/// NOTE: need?
-	inline void setRelease(InstrumentSequenceRelease::ReleaseTypeImproved type, int beginPos)
-	{
-		release_ = InstrumentSequenceRelease(type, beginPos);
-	}
 	inline void setRelease(const InstrumentSequenceRelease& release) { release_ = release; }
 
 	class Iterator final : public SequenceIterator2<T>
 	{
 	public:
-		explicit Iterator(const InstrumentSequenceProperty* const seqProp)
+		explicit Iterator(const InstrumentSequenceProperty* seqProp)
 			: SequenceIterator2<T>(0),
 			  seqProp_(seqProp),
 			  started_(false),
-			  loopStack_(seqProp->loops_),
+			  loopStack_(seqProp->loop_),
 			  isRelease_(false),
-			  relReleaseRate_(1)
+			  relReleaseRate_(1.)
 		{
 		}
 
@@ -466,9 +521,9 @@ public:
 		T data() const override
 		{
 			if (this->hasEnded() || static_cast<int>(seqProp_->seq_.size()) <= this->pos_)
-				return seqProp_->ERR_COM_;
+				return seqProp_->ERR_UNIT_;
 			return (isRelease_ ? seqProp_->getSequenceUnit(this->pos_, relReleaseRate_)
-							   : seqProp_->getSequenceTypeAt(this->pos_));
+							   : seqProp_->getSequenceUnit(this->pos_));
 		}
 
 		int next() override
@@ -484,7 +539,7 @@ public:
 			loopStack_.pushLoopsAtPos(this->pos_);
 
 			// Range check
-			if (this->pos_ >= release_.getBeginPos()
+			if ((!isRelease_ && seqProp_->release_.isEnabled() && this->pos_ >= seqProp_->release_.getBeginPos())
 					|| this->pos_ >= static_cast<int>(seqProp_->seq_.size())) {
 				this->pos_ = this->END_SEQ_POS;
 			}
@@ -512,8 +567,8 @@ public:
 
 		int release() override
 		{
-			std::vector<T>& seq = seqProp_->seq_;
-			InstrumentSequenceRelease& release = seqProp_->release_;
+			const std::vector<T>& seq = seqProp_->seq_;
+			const InstrumentSequenceRelease& release = seqProp_->release_;
 
 			int next = this->END_SEQ_POS;
 			isRelease_ = true;
@@ -539,7 +594,7 @@ public:
 					}
 				}
 				else {
-					crtr = seq[static_cast<size_t>(this->pos_)].type;
+					crtr = seq[static_cast<size_t>(this->pos_)].data;
 				}
 
 				auto&& it = std::find_if(seq.begin() + release.getBeginPos(), seq.end(),
@@ -575,7 +630,7 @@ public:
 		}
 
 	private:
-		const InstrumentSequenceProperty* const seqProp_;
+		const InstrumentSequenceProperty* seqProp_;
 		bool started_;
 		inst_utils::LoopStack loopStack_;
 		bool isRelease_;
@@ -584,7 +639,7 @@ public:
 
 	std::unique_ptr<InstrumentSequenceProperty::Iterator> getIterator()
 	{
-		return std::unique_ptr<Iterator>(this);
+		return std::make_unique<Iterator>(this);
 	}
 
 private:
@@ -595,12 +650,12 @@ private:
 
 	SequenceType type_;
 	std::vector<T> seq_;
-	InstrumentSequenceLoopRoot loops_;
+	std::shared_ptr<InstrumentSequenceLoopRoot> loop_;
 	InstrumentSequenceRelease release_;
 
 	inline T getSequenceUnit(int n, double relRate) const
 	{
-		T&& unit = seq_.at(static_cast<size_t>(n));
+		T unit = seq_.at(static_cast<size_t>(n));
 		unit.data = static_cast<int>(unit.data * relRate);
 		return unit;
 	}

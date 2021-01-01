@@ -287,22 +287,22 @@ int InstrumentFM::getOperatorSequenceNumber(FMEnvelopeParameter param) const
 	return opSeqNum_.at(param);
 }
 
-std::vector<CommandSequenceUnit> InstrumentFM::getOperatorSequenceSequence(FMEnvelopeParameter param) const
+std::vector<FMOperatorSequenceUnit> InstrumentFM::getOperatorSequenceSequence(FMEnvelopeParameter param) const
 {
 	return owner_->getOperatorSequenceFMSequence(param, opSeqNum_.at(param));
 }
 
-std::vector<Loop> InstrumentFM::getOperatorSequenceLoops(FMEnvelopeParameter param) const
+InstrumentSequenceLoopRoot InstrumentFM::getOperatorSequenceLoopRoot(FMEnvelopeParameter param) const
 {
-	return owner_->getOperatorSequenceFMLoops(param, opSeqNum_.at(param));
+	return owner_->getOperatorSequenceFMLoopRoot(param, opSeqNum_.at(param));
 }
 
-Release InstrumentFM::getOperatorSequenceRelease(FMEnvelopeParameter param) const
+InstrumentSequenceRelease InstrumentFM::getOperatorSequenceRelease(FMEnvelopeParameter param) const
 {
 	return owner_->getOperatorSequenceFMRelease(param, opSeqNum_.at(param));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const
+FMOperatorSequenceIter InstrumentFM::getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const
 {
 	return owner_->getOperatorSequenceFMIterator(param, opSeqNum_.at(param));
 }

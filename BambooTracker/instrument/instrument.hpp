@@ -33,6 +33,7 @@
 #include "envelope_fm.hpp"
 #include "lfo_fm.hpp"
 #include "command_sequence.hpp"
+#include "instrument_property_defs.hpp"
 #include "enum_hash.hpp"
 #include "misc.hpp"
 
@@ -85,10 +86,10 @@ public:
 	bool getOperatorSequenceEnabled(FMEnvelopeParameter param) const;
 	void setOperatorSequenceNumber(FMEnvelopeParameter param, int n);
 	int getOperatorSequenceNumber(FMEnvelopeParameter param) const;
-	std::vector<CommandSequenceUnit> getOperatorSequenceSequence(FMEnvelopeParameter param) const;
-	std::vector<Loop> getOperatorSequenceLoops(FMEnvelopeParameter param) const;
-	Release getOperatorSequenceRelease(FMEnvelopeParameter param) const;
-	std::unique_ptr<CommandSequence::Iterator> getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const;
+	std::vector<FMOperatorSequenceUnit> getOperatorSequenceSequence(FMEnvelopeParameter param) const;
+	InstrumentSequenceLoopRoot getOperatorSequenceLoopRoot(FMEnvelopeParameter param) const;
+	InstrumentSequenceRelease getOperatorSequenceRelease(FMEnvelopeParameter param) const;
+	FMOperatorSequenceIter getOperatorSequenceSequenceIterator(FMEnvelopeParameter param) const;
 
 	void setArpeggioEnabled(FMOperatorType op, bool enabled);
 	bool getArpeggioEnabled(FMOperatorType op) const;

@@ -283,9 +283,9 @@ std::multiset<int> BambooTracker::getLFOFMUsers(int lfoNum) const
 	return instMan_->getLFOFMUsers(lfoNum);
 }
 
-void BambooTracker::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int type, int data)
+void BambooTracker::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int data)
 {
-	instMan_->addOperatorSequenceFMSequenceCommand(param, opSeqNum, type, data);
+	instMan_->addOperatorSequenceFMSequenceCommand(param, opSeqNum, data);
 }
 
 void BambooTracker::removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum)
@@ -293,19 +293,34 @@ void BambooTracker::removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter 
 	instMan_->removeOperatorSequenceFMSequenceCommand(param, opSeqNum);
 }
 
-void BambooTracker::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int type, int data)
+void BambooTracker::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int data)
 {
-	instMan_->setOperatorSequenceFMSequenceCommand(param, opSeqNum, cnt, type, data);
+	instMan_->setOperatorSequenceFMSequenceCommand(param, opSeqNum, cnt, data);
 }
 
-void BambooTracker::setOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setOperatorSequenceFMLoops(param, opSeqNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addOperatorSequenceFMLoop(param, opSeqNum, loop);
 }
 
-void BambooTracker::setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, ReleaseType type, int begin)
+void BambooTracker::removeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int begin, int end)
 {
-	instMan_->setOperatorSequenceFMRelease(param, opSeqNum, type, begin);
+	instMan_->removeOperatorSequenceFMLoop(param, opSeqNum, begin, end);
+}
+
+void BambooTracker::changeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeOperatorSequenceFMLoop(param, opSeqNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearOperatorSequenceFMLoops(FMEnvelopeParameter param, int opSeqNum)
+{
+	instMan_->clearOperatorSequenceFMLoops(param, opSeqNum);
+}
+
+void BambooTracker::setOperatorSequenceFMRelease(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setOperatorSequenceFMRelease(param, opSeqNum, release);
 }
 
 void BambooTracker::setInstrumentFMOperatorSequence(int instNum, FMEnvelopeParameter param, int opSeqNum)

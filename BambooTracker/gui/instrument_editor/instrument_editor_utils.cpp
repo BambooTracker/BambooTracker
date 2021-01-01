@@ -33,13 +33,14 @@ namespace inst_edit_utils
 {
 namespace
 {
+// TODO: TMP
 const std::unordered_map<VisualizedInstrumentMacroEditor::SequenceType, SequenceType> SEQ_TYPE_MAP = {
 	{ VisualizedInstrumentMacroEditor::SequenceType::NoType, SequenceType::NO_SEQUENCE_TYPE },
 	{ VisualizedInstrumentMacroEditor::SequenceType::FixedSequence, SequenceType::FIXED_SEQUENCE },
 	{ VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence, SequenceType::ABSOLUTE_SEQUENCE },
 	{ VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence, SequenceType::RELATIVE_SEQUENCE }
 };
-
+// TODO: DELETE
 const std::unordered_map<VisualizedInstrumentMacroEditor::ReleaseType, ReleaseType> REL_TYPE_MAP = {
 	{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, ReleaseType::NoRelease },
 	{ VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE, ReleaseType::FixedRelease },

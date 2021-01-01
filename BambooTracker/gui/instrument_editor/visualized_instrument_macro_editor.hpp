@@ -40,6 +40,7 @@
 #include <QString>
 #include <vector>
 #include <memory>
+#include "instrument/command_sequence.hpp"
 #include "gui/color_palette.hpp"
 
 namespace Ui {
@@ -72,6 +73,7 @@ public:
 
 	void addSequenceCommand(int row, QString str = "", int data = -1);
 	void removeSequenceCommand();
+	void clearSequenceCommand();
 
 	void addLoop(int begin, int end, int times);
 
@@ -85,6 +87,7 @@ public:
 
 	void setSequenceType(SequenceType type);
 
+	// TODO: DEPRECATED
 	enum ReleaseType : int
 	{
 		NO_RELEASE = 0,
@@ -94,6 +97,8 @@ public:
 	};
 
 	void setPermittedReleaseTypes(int types);
+	void setRelease(const InstrumentSequenceRelease& release);
+	// TODO: DEPRECATED
 	void setRelease(ReleaseType type, int point);
 
 	void clearData();
@@ -112,8 +117,15 @@ signals:
 	void sequenceCommandChanged(int row, int col);
 	void sequenceCommandAdded(int row, int col);
 	void sequenceCommandRemoved();
+	void loopCleared();
+	void loopAdded(InstrumentSequenceLoop loop);
+	void loopRemoved(int begin, int end);
+	void loopChangedImproved(int prevBegin, int prevEnd, InstrumentSequenceLoop loop);
+	void releaseChangedImproved(InstrumentSequenceRelease release);
+	// TODO: DEPRECATED
 	void loopChanged(std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
 	void releaseChanged(ReleaseType type, int point);
+	//===============
 
 protected:
 	bool eventFilter(QObject*object, QEvent* event) override;
@@ -167,14 +179,8 @@ protected:
 		int begin, end, times;
 	};
 
-	struct Release
-	{
-		ReleaseType type;
-		int point;
-	};
-
 	std::vector<Loop> loops_;
-	Release release_;
+	InstrumentSequenceRelease release_;
 
 
 	void printMML();
@@ -197,6 +203,7 @@ private slots:
 	void on_colDecrToolButton_clicked();
 	void on_verticalScrollBar_valueChanged(int value);
 	void on_lineEdit_editingFinished();
+	// TODO: DEPRECATED
 	void onLoopChanged();
 
 private:

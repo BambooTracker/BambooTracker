@@ -1825,15 +1825,14 @@ void OPNAController::checkOperatorSequenceFM(int ch, int type)
 	int inch = toInternalFMChannel(ch);
 	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) {
-			int t;
 			switch (type) {
-			case 0:	t = it->next();		break;
-			case 1:	t = it->front();	break;
-			case 2:	t = it->next(true);	break;
+			case 0:	it->next();		break;
+			case 1:	it->front();	break;
+			case 2:	it->release();	break;
 			default:	throw std::out_of_range("The range of type is 0-2.");
 			}
-			if (t != -1) {
-				int d = it->getCommandType();
+			if (!it->hasEnded()) {
+				int d = it->data().data;
 				if (d != envFM_[inch]->getParameterValue(p)) {
 					writeFMEnveropeParameterToRegister(inch, p, d);
 				}
