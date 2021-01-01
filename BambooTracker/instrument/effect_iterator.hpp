@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
 #pragma once
 #include <vector>
 #include "sequence_iterator_interface.hpp"
+#include "command_sequence.hpp"
 
 class ArpeggioEffectIterator : public SequenceIteratorInterface
 {
@@ -45,14 +46,13 @@ private:
 	int second_, third_;
 };
 
-class ArpeggioEffectIterator2 : public SequenceIterator2<int>
+class ArpeggioEffectIterator2 : public SequenceIterator2<InstrumentSequenceBaseUnit>
 {
 public:
 	ArpeggioEffectIterator2(int second, int third);
 	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
 
-	static constexpr int NO_ARP_DATA = -1;
-	int data() const noexcept override;
+	InstrumentSequenceBaseUnit data() const noexcept override;
 
 	int next() override;
 	int front() override;
@@ -61,7 +61,7 @@ public:
 
 private:
 	bool started_;
-	int second_, third_;
+	InstrumentSequenceBaseUnit second_, third_;
 };
 
 class WavingEffectIterator : public SequenceIteratorInterface
@@ -82,14 +82,13 @@ private:
 	std::vector<int> seq_;
 };
 
-class WavingEffectIterator2 : public SequenceIterator2<int>
+class WavingEffectIterator2 : public SequenceIterator2<InstrumentSequenceBaseUnit>
 {
 public:
 	WavingEffectIterator2(int period, int depth);
 	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
 
-	static constexpr int NO_WAVE_DATA = -1;
-	int data() const override;
+	InstrumentSequenceBaseUnit data() const override;
 
 	int next() override;
 	int front() override;
@@ -99,7 +98,7 @@ public:
 private:
 	int pos_;
 	bool started_;
-	std::vector<int> seq_;
+	std::vector<InstrumentSequenceBaseUnit> seq_;
 };
 
 class NoteSlideEffectIterator : public SequenceIteratorInterface
@@ -120,14 +119,13 @@ private:
 	std::vector<int> seq_;
 };
 
-class NoteSlideEffectIterator2 : public SequenceIterator2<int>
+class NoteSlideEffectIterator2 : public SequenceIterator2<InstrumentSequenceBaseUnit>
 {
 public:
 	NoteSlideEffectIterator2(int speed, int seminote);
 	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
 
-	static constexpr int NO_SLIDE_DATA = -1;
-	int data() const override;
+	InstrumentSequenceBaseUnit data() const override;
 
 	int next() override;
 	int front() override;
@@ -137,5 +135,5 @@ public:
 private:
 	int pos_;
 	bool started_;
-	std::vector<int> seq_;
+	std::vector<InstrumentSequenceBaseUnit> seq_;
 };

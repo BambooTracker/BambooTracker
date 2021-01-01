@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -96,10 +96,10 @@ public:
 	void setArpeggioNumber(FMOperatorType op, int n);
 	int getArpeggioNumber(FMOperatorType op) const;
 	SequenceType getArpeggioType(FMOperatorType op) const;
-	std::vector<CommandSequenceUnit> getArpeggioSequence(FMOperatorType op) const;
-	std::vector<Loop> getArpeggioLoops(FMOperatorType op) const;
-	Release getArpeggioRelease(FMOperatorType op) const;
-	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator(FMOperatorType op) const;
+	std::vector<FMArpeggioUnit> getArpeggioSequence(FMOperatorType op) const;
+	InstrumentSequenceLoopRoot getArpeggioLoopRoot(FMOperatorType op) const;
+	InstrumentSequenceRelease getArpeggioRelease(FMOperatorType op) const;
+	FMArpeggioIter getArpeggioSequenceIterator(FMOperatorType op) const;
 
 	void setPitchEnabled(FMOperatorType op, bool enabled);
 	bool getPitchEnabled(FMOperatorType op) const;
@@ -169,10 +169,10 @@ public:
 	void setArpeggioNumber(int n);
 	int getArpeggioNumber() const;
 	SequenceType getArpeggioType() const;
-	std::vector<CommandSequenceUnit> getArpeggioSequence() const;
-	std::vector<Loop> getArpeggioLoops() const;
-	Release getArpeggioRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
+	std::vector<SSGArpeggioUnit> getArpeggioSequence() const;
+	InstrumentSequenceLoopRoot getArpeggioLoopRoot() const;
+	InstrumentSequenceRelease getArpeggioRelease() const;
+	SSGArpeggioIter getArpeggioSequenceIterator() const;
 
 	void setPitchEnabled(bool enabled);
 	bool getPitchEnabled() const;
@@ -229,10 +229,10 @@ public:
 	void setArpeggioNumber(int n);
 	int getArpeggioNumber() const;
 	SequenceType getArpeggioType() const;
-	std::vector<CommandSequenceUnit> getArpeggioSequence() const;
-	std::vector<Loop> getArpeggioLoops() const;
-	Release getArpeggioRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getArpeggioSequenceIterator() const;
+	std::vector<ADPCMArpeggioUnit> getArpeggioSequence() const;
+	InstrumentSequenceLoopRoot getArpeggioLoopRoot() const;
+	InstrumentSequenceRelease getArpeggioRelease() const;
+	ADPCMArpeggioIter getArpeggioSequenceIterator() const;
 
 	void setPitchEnabled(bool enabled);
 	bool getPitchEnabled() const;

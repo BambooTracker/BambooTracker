@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Rerrah
+ * Copyright (C) 2020-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -89,11 +89,11 @@ AbstractInstrument* DmpIO::load(const BinaryContainer& ctr, const std::string& f
 				int data = ctr.readInt32(csr) + 36;
 				csr += 4;
 				if (arpType == 1) data -= 24;
-				if (l == 0) instManLocked->setArpeggioSSGSequenceCommand(idx, 0, data, 0);
-				else instManLocked->addArpeggioSSGSequenceCommand(idx, data, 0);
+				if (l == 0) instManLocked->setArpeggioSSGSequenceData(idx, 0, data);
+				else instManLocked->addArpeggioSSGSequenceData(idx, data);
 			}
 			int8_t loop = ctr.readInt8(csr++);
-			if (loop >= 0) instManLocked->setArpeggioSSGLoops(idx, {loop}, {arpSize - 1}, {1});
+			if (loop >= 0) instManLocked->addArpeggioSSGLoop(idx, InstrumentSequenceLoop(loop, arpSize - 1));
 		}
 		break;
 	}

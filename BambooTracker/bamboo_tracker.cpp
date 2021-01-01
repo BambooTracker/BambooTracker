@@ -283,19 +283,19 @@ std::multiset<int> BambooTracker::getLFOFMUsers(int lfoNum) const
 	return instMan_->getLFOFMUsers(lfoNum);
 }
 
-void BambooTracker::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int data)
+void BambooTracker::addOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int data)
 {
-	instMan_->addOperatorSequenceFMSequenceCommand(param, opSeqNum, data);
+	instMan_->addOperatorSequenceFMSequenceData(param, opSeqNum, data);
 }
 
-void BambooTracker::removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum)
+void BambooTracker::removeOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum)
 {
-	instMan_->removeOperatorSequenceFMSequenceCommand(param, opSeqNum);
+	instMan_->removeOperatorSequenceFMSequenceData(param, opSeqNum);
 }
 
-void BambooTracker::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int data)
+void BambooTracker::setOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int cnt, int data)
 {
-	instMan_->setOperatorSequenceFMSequenceCommand(param, opSeqNum, cnt, data);
+	instMan_->setOperatorSequenceFMSequenceData(param, opSeqNum, cnt, data);
 }
 
 void BambooTracker::addOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceLoop& loop)
@@ -345,29 +345,44 @@ void BambooTracker::setArpeggioFMType(int arpNum, SequenceType type)
 	instMan_->setArpeggioFMType(arpNum, type);
 }
 
-void BambooTracker::addArpeggioFMSequenceCommand(int arpNum, int type, int data)
+void BambooTracker::addArpeggioFMSequenceData(int arpNum, int data)
 {
-	instMan_->addArpeggioFMSequenceCommand(arpNum, type, data);
+	instMan_->addArpeggioFMSequenceData(arpNum, data);
 }
 
-void BambooTracker::removeArpeggioFMSequenceCommand(int arpNum)
+void BambooTracker::removeArpeggioFMSequenceData(int arpNum)
 {
-	instMan_->removeArpeggioFMSequenceCommand(arpNum);
+	instMan_->removeArpeggioFMSequenceData(arpNum);
 }
 
-void BambooTracker::setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data)
+void BambooTracker::setArpeggioFMSequenceData(int arpNum, int cnt, int data)
 {
-	instMan_->setArpeggioFMSequenceCommand(arpNum, cnt, type, data);
+	instMan_->setArpeggioFMSequenceData(arpNum, cnt, data);
 }
 
-void BambooTracker::setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addArpeggioFMLoop(int arpNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setArpeggioFMLoops(arpNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addArpeggioFMLoop(arpNum, loop);
 }
 
-void BambooTracker::setArpeggioFMRelease(int arpNum, ReleaseType type, int begin)
+void BambooTracker::removeArpeggioFMLoop(int arpNum, int begin, int end)
 {
-	instMan_->setArpeggioFMRelease(arpNum, type, begin);
+	instMan_->removeArpeggioFMLoop(arpNum, begin, end);
+}
+
+void BambooTracker::changeArpeggioFMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeArpeggioFMLoop(arpNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearArpeggioFMLoops(int arpNum)
+{
+	instMan_->clearArpeggioFMLoops(arpNum);
+}
+
+void BambooTracker::setArpeggioFMRelease(int arpNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setArpeggioFMRelease(arpNum, release);
 }
 
 void BambooTracker::setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum)
@@ -572,29 +587,44 @@ void BambooTracker::setArpeggioSSGType(int arpNum, SequenceType type)
 	instMan_->setArpeggioSSGType(arpNum, type);
 }
 
-void BambooTracker::addArpeggioSSGSequenceCommand(int arpNum, int type, int data)
+void BambooTracker::addArpeggioSSGSequenceData(int arpNum, int data)
 {
-	instMan_->addArpeggioSSGSequenceCommand(arpNum, type, data);
+	instMan_->addArpeggioSSGSequenceData(arpNum, data);
 }
 
-void BambooTracker::removeArpeggioSSGSequenceCommand(int arpNum)
+void BambooTracker::removeArpeggioSSGSequenceData(int arpNum)
 {
-	instMan_->removeArpeggioSSGSequenceCommand(arpNum);
+	instMan_->removeArpeggioSSGSequenceData(arpNum);
 }
 
-void BambooTracker::setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data)
+void BambooTracker::setArpeggioSSGSequenceData(int arpNum, int cnt, int data)
 {
-	instMan_->setArpeggioSSGSequenceCommand(arpNum, cnt, type, data);
+	instMan_->setArpeggioSSGSequenceData(arpNum, cnt, data);
 }
 
-void BambooTracker::setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addArpeggioSSGLoop(int arpNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setArpeggioSSGLoops(arpNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addArpeggioSSGLoop(arpNum, loop);
 }
 
-void BambooTracker::setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin)
+void BambooTracker::removeArpeggioSSGLoop(int arpNum, int begin, int end)
 {
-	instMan_->setArpeggioSSGRelease(arpNum, type, begin);
+	instMan_->removeArpeggioSSGLoop(arpNum, begin, end);
+}
+
+void BambooTracker::changeArpeggioSSGLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeArpeggioSSGLoop(arpNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearArpeggioSSGLoops(int arpNum)
+{
+	instMan_->clearArpeggioSSGLoops(arpNum);
+}
+
+void BambooTracker::setArpeggioSSGRelease(int arpNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setArpeggioSSGRelease(arpNum, release);
 }
 
 void BambooTracker::setInstrumentSSGArpeggio(int instNum, int arpNum)
@@ -802,29 +832,44 @@ void BambooTracker::setArpeggioADPCMType(int arpNum, SequenceType type)
 	instMan_->setArpeggioADPCMType(arpNum, type);
 }
 
-void BambooTracker::addArpeggioADPCMSequenceCommand(int arpNum, int type, int data)
+void BambooTracker::addArpeggioADPCMSequenceData(int arpNum, int data)
 {
-	instMan_->addArpeggioADPCMSequenceCommand(arpNum, type, data);
+	instMan_->addArpeggioADPCMSequenceData(arpNum, data);
 }
 
-void BambooTracker::removeArpeggioADPCMSequenceCommand(int arpNum)
+void BambooTracker::removeArpeggioADPCMSequenceData(int arpNum)
 {
-	instMan_->removeArpeggioADPCMSequenceCommand(arpNum);
+	instMan_->removeArpeggioADPCMSequenceData(arpNum);
 }
 
-void BambooTracker::setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data)
+void BambooTracker::setArpeggioADPCMSequenceData(int arpNum, int cnt, int data)
 {
-	instMan_->setArpeggioADPCMSequenceCommand(arpNum, cnt, type, data);
+	instMan_->setArpeggioADPCMSequenceData(arpNum, cnt, data);
 }
 
-void BambooTracker::setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addArpeggioADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setArpeggioADPCMLoops(arpNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addArpeggioADPCMLoop(arpNum, loop);
 }
 
-void BambooTracker::setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin)
+void BambooTracker::removeArpeggioADPCMLoop(int arpNum, int begin, int end)
 {
-	instMan_->setArpeggioADPCMRelease(arpNum, type, begin);
+	instMan_->removeArpeggioADPCMLoop(arpNum, begin, end);
+}
+
+void BambooTracker::changeArpeggioADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeArpeggioADPCMLoop(arpNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearArpeggioADPCMLoops(int arpNum)
+{
+	instMan_->clearArpeggioADPCMLoops(arpNum);
+}
+
+void BambooTracker::setArpeggioADPCMRelease(int arpNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setArpeggioADPCMRelease(arpNum, release);
 }
 
 void BambooTracker::setInstrumentADPCMArpeggio(int instNum, int arpNum)

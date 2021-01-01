@@ -100,7 +100,7 @@ AbstractInstrument* OpniIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 		if (arpIdx < 0) throw FileCorruptionError(FileType::Bank, 0);
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
-		instManLocked->setArpeggioFMSequenceCommand(arpIdx, 0, srcInst.note_offset + 48, -1);
+		instManLocked->setArpeggioFMSequenceData(arpIdx, 0, srcInst.note_offset + 48);
 		instManLocked->setArpeggioFMType(arpIdx, SequenceType::ABSOLUTE_SEQUENCE);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -765,18 +765,21 @@ void InstrumentsManager::clearAll()
 			p.second[i] = std::make_shared<InstrumentSequenceProperty<
 						  FMOperatorSequenceUnit>>(i, SequenceType::NO_SEQUENCE_TYPE, FMOperatorSequenceUnit(0), FMOperatorSequenceUnit());
 		}
-		arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+		arpFM_[i] = std::make_shared<InstrumentSequenceProperty<
+					FMArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, FMArpeggioUnit(48), FMArpeggioUnit());
 		ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
 		wfSSG_[i] = std::make_shared<CommandSequence>(i);
 		tnSSG_[i] = std::make_shared<CommandSequence>(i);
 		envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 15);
-		arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+		arpSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+					 SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, SSGArpeggioUnit(48), SSGArpeggioUnit());
 		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
 		sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
 		envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
-		arpADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+		arpADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
+					   SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ADPCMArpeggioUnit(48), ADPCMArpeggioUnit());
 		ptADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 	}
 }
@@ -833,7 +836,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 							  FMOperatorSequenceUnit>>(i, SequenceType::NO_SEQUENCE_TYPE, FMOperatorSequenceUnit(0), FMOperatorSequenceUnit());
 		}
 		if (!arpFM_[i]->isUserInstrument())
-			arpFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+			arpFM_[i] = std::make_shared<InstrumentSequenceProperty<
+						FMArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, FMArpeggioUnit(48), FMArpeggioUnit());
 		if (!ptFM_[i]->isUserInstrument())
 			ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
@@ -844,7 +848,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 		if (!envSSG_[i]->isUserInstrument())
 			envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 15);
 		if (!arpSSG_[i]->isUserInstrument())
-			arpSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+			arpSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+						 SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, SSGArpeggioUnit(48), SSGArpeggioUnit());
 		if (!ptSSG_[i]->isUserInstrument())
 			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 
@@ -853,7 +858,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 		if (!envADPCM_[i]->isUserInstrument())
 			envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
 		if (!arpADPCM_[i]->isUserInstrument())
-			arpADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 48);
+			arpADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
+						   SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ADPCMArpeggioUnit(48), ADPCMArpeggioUnit());
 		if (!ptADPCM_[i]->isUserInstrument())
 			ptADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
 	}
@@ -1073,17 +1079,17 @@ int InstrumentsManager::getInstrumentFMOperatorSequence(int instNum, FMEnvelopeP
 	return std::dynamic_pointer_cast<InstrumentFM>(insts_[static_cast<size_t>(instNum)])->getOperatorSequenceNumber(param);
 }
 
-void InstrumentsManager::addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int data)
+void InstrumentsManager::addOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int data)
 {
 	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->addSequenceUnit(FMOperatorSequenceUnit(data));
 }
 
-void InstrumentsManager::removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum)
+void InstrumentsManager::removeOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum)
 {
 	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int data)
+void InstrumentsManager::setOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int cnt, int data)
 {
 	opSeqFM_.at(param).at(static_cast<size_t>(opSeqNum))->setSequenceUnit(cnt, FMOperatorSequenceUnit(data));
 }
@@ -1205,47 +1211,62 @@ SequenceType InstrumentsManager::getArpeggioFMType(int arpNum) const
 	return arpFM_.at(static_cast<size_t>(arpNum))->getType();
 }
 
-void InstrumentsManager::addArpeggioFMSequenceCommand(int arpNum, int type, int data)
+void InstrumentsManager::addArpeggioFMSequenceData(int arpNum, int data)
 {
-	arpFM_.at(static_cast<size_t>(arpNum))->addSequenceCommand(type, data);
+	arpFM_.at(static_cast<size_t>(arpNum))->addSequenceUnit(FMArpeggioUnit(data));
 }
 
-void InstrumentsManager::removeArpeggioFMSequenceCommand(int arpNum)
+void InstrumentsManager::removeArpeggioFMSequenceData(int arpNum)
 {
-	arpFM_.at(static_cast<size_t>(arpNum))->removeSequenceCommand();
+	arpFM_.at(static_cast<size_t>(arpNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data)
+void InstrumentsManager::setArpeggioFMSequenceData(int arpNum, int cnt, int data)
 {
-	arpFM_.at(static_cast<size_t>(arpNum))->setSequenceCommand(cnt, type, data);
+	arpFM_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, FMArpeggioUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getArpeggioFMSequence(int arpNum)
+std::vector<FMArpeggioUnit> InstrumentsManager::getArpeggioFMSequence(int arpNum)
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getSequence();
 }
 
-void InstrumentsManager::setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addArpeggioFMLoop(int arpNum, const InstrumentSequenceLoop& loop)
 {
-	arpFM_.at(static_cast<size_t>(arpNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	arpFM_.at(static_cast<size_t>(arpNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getArpeggioFMLoops(int arpNum) const
+void InstrumentsManager::removeArpeggioFMLoop(int arpNum, int begin, int end)
 {
-	return arpFM_.at(static_cast<size_t>(arpNum))->getLoops();
+	arpFM_.at(static_cast<size_t>(arpNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setArpeggioFMRelease(int arpNum, ReleaseType type, int begin)
+void InstrumentsManager::changeArpeggioFMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	arpFM_.at(static_cast<size_t>(arpNum))->setRelease(type, begin);
+	arpFM_.at(static_cast<size_t>(arpNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getArpeggioFMRelease(int arpNum) const
+void InstrumentsManager::clearArpeggioFMLoops(int arpNum)
+{
+	arpFM_.at(static_cast<size_t>(arpNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getArpeggioFMLoopRoot(int arpNum) const
+{
+	return arpFM_.at(static_cast<size_t>(arpNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setArpeggioFMRelease(int arpNum, const InstrumentSequenceRelease& release)
+{
+	arpFM_.at(static_cast<size_t>(arpNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getArpeggioFMRelease(int arpNum) const
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioFMIterator(int arpNum) const
+FMArpeggioIter InstrumentsManager::getArpeggioFMIterator(int arpNum) const
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getIterator();
 }
@@ -1268,11 +1289,11 @@ std::vector<int> InstrumentsManager::getArpeggioFMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableArpeggioFM() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(arpFM_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); };
+		cond = [](decltype(arpFM_.front()) arp) { return (arp->isUserInstrument() || arp->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+		cond = [](decltype(arpFM_.front()) arp) { return arp->isUserInstrument(); };
 	auto&& it = std::find_if_not(arpFM_.begin(), arpFM_.end(), cond);
 
 	if (it == arpFM_.end()) return -1;
@@ -1796,47 +1817,62 @@ SequenceType InstrumentsManager::getArpeggioSSGType(int arpNum) const
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getType();
 }
 
-void InstrumentsManager::addArpeggioSSGSequenceCommand(int arpNum, int type, int data)
+void InstrumentsManager::addArpeggioSSGSequenceData(int arpNum, int data)
 {
-	arpSSG_.at(static_cast<size_t>(arpNum))->addSequenceCommand(type, data);
+	arpSSG_.at(static_cast<size_t>(arpNum))->addSequenceUnit(SSGArpeggioUnit(data));
 }
 
-void InstrumentsManager::removeArpeggioSSGSequenceCommand(int arpNum)
+void InstrumentsManager::removeArpeggioSSGSequenceData(int arpNum)
 {
-	arpSSG_.at(static_cast<size_t>(arpNum))->removeSequenceCommand();
+	arpSSG_.at(static_cast<size_t>(arpNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data)
+void InstrumentsManager::setArpeggioSSGSequenceData(int arpNum, int cnt, int data)
 {
-	arpSSG_.at(static_cast<size_t>(arpNum))->setSequenceCommand(cnt, type, data);
+	arpSSG_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, SSGArpeggioUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getArpeggioSSGSequence(int arpNum)
+std::vector<SSGArpeggioUnit> InstrumentsManager::getArpeggioSSGSequence(int arpNum)
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getSequence();
 }
 
-void InstrumentsManager::setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addArpeggioSSGLoop(int arpNum, const InstrumentSequenceLoop& loop)
 {
-	arpSSG_.at(static_cast<size_t>(arpNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	arpSSG_.at(static_cast<size_t>(arpNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getArpeggioSSGLoops(int arpNum) const
+void InstrumentsManager::removeArpeggioSSGLoop(int arpNum, int begin, int end)
 {
-	return arpSSG_.at(static_cast<size_t>(arpNum))->getLoops();
+	arpSSG_.at(static_cast<size_t>(arpNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin)
+void InstrumentsManager::changeArpeggioSSGLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	arpSSG_.at(static_cast<size_t>(arpNum))->setRelease(type, begin);
+	arpSSG_.at(static_cast<size_t>(arpNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getArpeggioSSGRelease(int arpNum) const
+void InstrumentsManager::clearArpeggioSSGLoops(int arpNum)
+{
+	arpSSG_.at(static_cast<size_t>(arpNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getArpeggioSSGLoopRoot(int arpNum) const
+{
+	return arpSSG_.at(static_cast<size_t>(arpNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setArpeggioSSGRelease(int arpNum, const InstrumentSequenceRelease& release)
+{
+	arpSSG_.at(static_cast<size_t>(arpNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getArpeggioSSGRelease(int arpNum) const
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioSSGIterator(int arpNum) const
+SSGArpeggioIter InstrumentsManager::getArpeggioSSGIterator(int arpNum) const
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getIterator();
 }
@@ -1859,11 +1895,11 @@ std::vector<int> InstrumentsManager::getArpeggioSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableArpeggioSSG() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(arpSSG_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); };
+		cond = [](decltype(arpSSG_.front()) arp) { return (arp->isUserInstrument() || arp->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+		cond = [](decltype(arpSSG_.front()) arp) { return arp->isUserInstrument(); };
 	auto&& it = std::find_if_not(arpSSG_.begin(), arpSSG_.end(), cond);
 
 	if (it == arpSSG_.end()) return -1;
@@ -2297,47 +2333,62 @@ SequenceType InstrumentsManager::getArpeggioADPCMType(int arpNum) const
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getType();
 }
 
-void InstrumentsManager::addArpeggioADPCMSequenceCommand(int arpNum, int type, int data)
+void InstrumentsManager::addArpeggioADPCMSequenceData(int arpNum, int data)
 {
-	arpADPCM_.at(static_cast<size_t>(arpNum))->addSequenceCommand(type, data);
+	arpADPCM_.at(static_cast<size_t>(arpNum))->addSequenceUnit(ADPCMArpeggioUnit(data));
 }
 
-void InstrumentsManager::removeArpeggioADPCMSequenceCommand(int arpNum)
+void InstrumentsManager::removeArpeggioADPCMSequenceData(int arpNum)
 {
-	arpADPCM_.at(static_cast<size_t>(arpNum))->removeSequenceCommand();
+	arpADPCM_.at(static_cast<size_t>(arpNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data)
+void InstrumentsManager::setArpeggioADPCMSequenceData(int arpNum, int cnt, int data)
 {
-	arpADPCM_.at(static_cast<size_t>(arpNum))->setSequenceCommand(cnt, type, data);
+	arpADPCM_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, ADPCMArpeggioUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getArpeggioADPCMSequence(int arpNum)
+std::vector<ADPCMArpeggioUnit> InstrumentsManager::getArpeggioADPCMSequence(int arpNum)
 {
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getSequence();
 }
 
-void InstrumentsManager::setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addArpeggioADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop)
 {
-	arpADPCM_.at(static_cast<size_t>(arpNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	arpADPCM_.at(static_cast<size_t>(arpNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getArpeggioADPCMLoops(int arpNum) const
+void InstrumentsManager::removeArpeggioADPCMLoop(int arpNum, int begin, int end)
 {
-	return arpADPCM_.at(static_cast<size_t>(arpNum))->getLoops();
+	arpADPCM_.at(static_cast<size_t>(arpNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin)
+void InstrumentsManager::changeArpeggioADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	arpADPCM_.at(static_cast<size_t>(arpNum))->setRelease(type, begin);
+	arpADPCM_.at(static_cast<size_t>(arpNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getArpeggioADPCMRelease(int arpNum) const
+void InstrumentsManager::clearArpeggioADPCMLoops(int arpNum)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getArpeggioADPCMLoopRoot(int arpNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(arpNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setArpeggioADPCMRelease(int arpNum, const InstrumentSequenceRelease& release)
+{
+	arpADPCM_.at(static_cast<size_t>(arpNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getArpeggioADPCMRelease(int arpNum) const
 {
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getArpeggioADPCMIterator(int arpNum) const
+ADPCMArpeggioIter InstrumentsManager::getArpeggioADPCMIterator(int arpNum) const
 {
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getIterator();
 }
@@ -2360,11 +2411,11 @@ std::vector<int> InstrumentsManager::getArpeggioADPCMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableArpeggioADPCM() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(arpADPCM_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& arp) { return (arp->isUserInstrument() || arp->isEdited()); };
+		cond = [](decltype(arpADPCM_.front()) arp) { return (arp->isUserInstrument() || arp->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& arp) { return arp->isUserInstrument(); };
+		cond = [](decltype(arpADPCM_.front()) arp) { return arp->isUserInstrument(); };
 	auto&& it = std::find_if_not(arpADPCM_.begin(), arpADPCM_.end(), cond);
 
 	if (it == arpADPCM_.end()) return -1;

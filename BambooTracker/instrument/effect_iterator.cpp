@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -91,24 +91,24 @@ int ArpeggioEffectIterator::end()
 
 namespace
 {
-constexpr int ARP_CENTER = 48;
+const InstrumentSequenceBaseUnit ARP_CENTER(48);
 }
 
 ArpeggioEffectIterator2::ArpeggioEffectIterator2(int second, int third)
-	: SequenceIterator2<int>(2),
+	: SequenceIterator2<InstrumentSequenceBaseUnit>(2),
 	  started_(false),
-	  second_(second + ARP_CENTER),
-	  third_(third + ARP_CENTER)
+	  second_(second + ARP_CENTER.data),
+	  third_(third + ARP_CENTER.data)
 {
 }
 
-int ArpeggioEffectIterator2::data() const noexcept
+InstrumentSequenceBaseUnit ArpeggioEffectIterator2::data() const noexcept
 {
 	switch (pos_) {
 	case 0:	return ARP_CENTER;
 	case 1:	return second_;
 	case 2:	return third_;
-	default:	return NO_ARP_DATA;
+	default:	return InstrumentSequenceBaseUnit();
 	}
 }
 
@@ -209,22 +209,22 @@ WavingEffectIterator2::WavingEffectIterator2(int period, int depth)
 	: started_(false)
 {
 	for (int i = 0; i <= period; ++i) {
-		seq_.push_back(i * depth);
+		seq_.emplace_back(i * depth);
 	}
 	for (size_t i = static_cast<size_t>(period - 1); i > 0; --i) {
 		seq_.push_back(seq_.at(i));
 	}
 	size_t p2 = static_cast<size_t>(period) << 1;
 	for (size_t i = 0; i < p2; ++i) {
-		seq_.push_back(-seq_.at(i));
+		seq_.emplace_back(-seq_.at(i).data);
 	}
 
 	pos_ = static_cast<int>(seq_.size()) - 1;
 }
 
-int WavingEffectIterator2::data() const
+InstrumentSequenceBaseUnit WavingEffectIterator2::data() const
 {
-	return (hasEnded() ? NO_WAVE_DATA : seq_.at(static_cast<size_t>(pos_)));
+	return (hasEnded() ? InstrumentSequenceBaseUnit() : seq_.at(static_cast<size_t>(pos_)));
 }
 
 int WavingEffectIterator2::next()
@@ -321,7 +321,7 @@ int NoteSlideEffectIterator::end()
 
 //==================================================
 NoteSlideEffectIterator2::NoteSlideEffectIterator2(int speed, int seminote)
-	: SequenceIterator2<int>(0),
+	: SequenceIterator2<InstrumentSequenceBaseUnit>(0),
 	  started_(false)
 {
 	int d = seminote * calc_pitch::SEMINOTE_PITCH;
@@ -329,18 +329,18 @@ NoteSlideEffectIterator2::NoteSlideEffectIterator2(int speed, int seminote)
 		int prev = 0;
 		for (int i = 0; i <= speed; ++i) {
 			int dif = d * i / speed - prev;
-			seq_.push_back(dif);
+			seq_.emplace_back(dif);
 			prev += dif;
 		}
 	}
 	else {
-		seq_.push_back(d);
+		seq_.emplace_back(d);
 	}
 }
 
-int NoteSlideEffectIterator2::data() const
+InstrumentSequenceBaseUnit NoteSlideEffectIterator2::data() const
 {
-	return (hasEnded() ? NO_SLIDE_DATA : seq_.at(static_cast<size_t>(pos_)));
+	return (hasEnded() ? InstrumentSequenceBaseUnit() : seq_.at(static_cast<size_t>(pos_)));
 }
 
 int NoteSlideEffectIterator2::next()

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -332,22 +332,22 @@ SequenceType InstrumentFM::getArpeggioType(FMOperatorType op) const
 	return owner_->getArpeggioFMType(arpNum_.at(op));
 }
 
-std::vector<CommandSequenceUnit> InstrumentFM::getArpeggioSequence(FMOperatorType op) const
+std::vector<FMArpeggioUnit> InstrumentFM::getArpeggioSequence(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMSequence(arpNum_.at(op));
 }
 
-std::vector<Loop> InstrumentFM::getArpeggioLoops(FMOperatorType op) const
+InstrumentSequenceLoopRoot InstrumentFM::getArpeggioLoopRoot(FMOperatorType op) const
 {
-	return owner_->getArpeggioFMLoops(arpNum_.at(op));
+	return owner_->getArpeggioFMLoopRoot(arpNum_.at(op));
 }
 
-Release InstrumentFM::getArpeggioRelease(FMOperatorType op) const
+InstrumentSequenceRelease InstrumentFM::getArpeggioRelease(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMRelease(arpNum_.at(op));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getArpeggioSequenceIterator(FMOperatorType op) const
+FMArpeggioIter InstrumentFM::getArpeggioSequenceIterator(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMIterator(arpNum_.at(op));
 }
@@ -585,22 +585,22 @@ SequenceType InstrumentSSG::getArpeggioType() const
 	return owner_->getArpeggioSSGType(arpNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getArpeggioSequence() const
+std::vector<SSGArpeggioUnit> InstrumentSSG::getArpeggioSequence() const
 {
 	return owner_->getArpeggioSSGSequence(arpNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getArpeggioLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getArpeggioLoopRoot() const
 {
-	return owner_->getArpeggioSSGLoops(arpNum_);
+	return owner_->getArpeggioSSGLoopRoot(arpNum_);
 }
 
-Release InstrumentSSG::getArpeggioRelease() const
+InstrumentSequenceRelease InstrumentSSG::getArpeggioRelease() const
 {
 	return owner_->getArpeggioSSGRelease(arpNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getArpeggioSequenceIterator() const
+SSGArpeggioIter InstrumentSSG::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioSSGIterator(arpNum_);
 }
@@ -792,22 +792,22 @@ SequenceType InstrumentADPCM::getArpeggioType() const
 	return owner_->getArpeggioADPCMType(arpNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentADPCM::getArpeggioSequence() const
+std::vector<ADPCMArpeggioUnit> InstrumentADPCM::getArpeggioSequence() const
 {
 	return owner_->getArpeggioADPCMSequence(arpNum_);
 }
 
-std::vector<Loop> InstrumentADPCM::getArpeggioLoops() const
+InstrumentSequenceLoopRoot InstrumentADPCM::getArpeggioLoopRoot() const
 {
-	return owner_->getArpeggioADPCMLoops(arpNum_);
+	return owner_->getArpeggioADPCMLoopRoot(arpNum_);
 }
 
-Release InstrumentADPCM::getArpeggioRelease() const
+InstrumentSequenceRelease InstrumentADPCM::getArpeggioRelease() const
 {
 	return owner_->getArpeggioADPCMRelease(arpNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getArpeggioSequenceIterator() const
+ADPCMArpeggioIter InstrumentADPCM::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioADPCMIterator(arpNum_);
 }

@@ -108,9 +108,9 @@ public:
 	void setInstrumentFMLFO(int instNum, int lfoNum);
 	std::multiset<int> getLFOFMUsers(int lfoNum) const;
 
-	void addOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int data);
-	void removeOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum);
-	void setOperatorSequenceFMSequenceCommand(FMEnvelopeParameter param, int opSeqNum, int cnt, int data);
+	void addOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int data);
+	void removeOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum);
+	void setOperatorSequenceFMSequenceData(FMEnvelopeParameter param, int opSeqNum, int cnt, int data);
 	void addOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, const InstrumentSequenceLoop& loop);
 	void removeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int begin, int end);
 	void changeOperatorSequenceFMLoop(FMEnvelopeParameter param, int opSeqNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
@@ -121,11 +121,14 @@ public:
 	std::multiset<int> getOperatorSequenceFMUsers(FMEnvelopeParameter param, int opSeqNum) const;
 
 	void setArpeggioFMType(int arpNum, SequenceType type);
-	void addArpeggioFMSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioFMSequenceCommand(int arpNum);
-	void setArpeggioFMSequenceCommand(int arpNum, int cnt, int type, int data);
-	void setArpeggioFMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setArpeggioFMRelease(int arpNum, ReleaseType type, int begin);
+	void addArpeggioFMSequenceData(int arpNum, int data);
+	void removeArpeggioFMSequenceData(int arpNum);
+	void setArpeggioFMSequenceData(int arpNum, int cnt, int data);
+	void addArpeggioFMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioFMLoop(int arpNum, int begin, int end);
+	void changeArpeggioFMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioFMLoops(int arpNum);
+	void setArpeggioFMRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentFMArpeggio(int instNum, FMOperatorType op, int arpNum);
 	void setInstrumentFMArpeggioEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::multiset<int> getArpeggioFMUsers(int arpNum) const;
@@ -171,11 +174,14 @@ public:
 	std::multiset<int> getEnvelopeSSGUsers(int envNum) const;
 
 	void setArpeggioSSGType(int arpNum, SequenceType type);
-	void addArpeggioSSGSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioSSGSequenceCommand(int arpNum);
-	void setArpeggioSSGSequenceCommand(int arpNum, int cnt, int type, int data);
-	void setArpeggioSSGLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setArpeggioSSGRelease(int arpNum, ReleaseType type, int begin);
+	void addArpeggioSSGSequenceData(int arpNum, int data);
+	void removeArpeggioSSGSequenceData(int arpNum);
+	void setArpeggioSSGSequenceData(int arpNum, int cnt, int data);
+	void addArpeggioSSGLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioSSGLoop(int arpNum, int begin, int end);
+	void changeArpeggioSSGLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioSSGLoops(int arpNum);
+	void setArpeggioSSGRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGArpeggio(int instNum, int arpNum);
 	void setInstrumentSSGArpeggioEnabled(int instNum, bool enabled);
 	std::multiset<int> getArpeggioSSGUsers(int arpNum) const;
@@ -219,11 +225,14 @@ public:
 	std::multiset<int> getEnvelopeADPCMUsers(int envNum) const;
 
 	void setArpeggioADPCMType(int arpNum, SequenceType type);
-	void addArpeggioADPCMSequenceCommand(int arpNum, int type, int data);
-	void removeArpeggioADPCMSequenceCommand(int arpNum);
-	void setArpeggioADPCMSequenceCommand(int arpNum, int cnt, int type, int data);
-	void setArpeggioADPCMLoops(int arpNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setArpeggioADPCMRelease(int arpNum, ReleaseType type, int begin);
+	void addArpeggioADPCMSequenceData(int arpNum, int data);
+	void removeArpeggioADPCMSequenceData(int arpNum);
+	void setArpeggioADPCMSequenceData(int arpNum, int cnt, int data);
+	void addArpeggioADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeArpeggioADPCMLoop(int arpNum, int begin, int end);
+	void changeArpeggioADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearArpeggioADPCMLoops(int arpNum);
+	void setArpeggioADPCMRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentADPCMArpeggio(int instNum, int arpNum);
 	void setInstrumentADPCMArpeggioEnabled(int instNum, bool enabled);
 	std::multiset<int> getArpeggioADPCMUsers(int arpNum) const;

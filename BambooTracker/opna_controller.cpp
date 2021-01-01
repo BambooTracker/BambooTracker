@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -294,27 +294,26 @@ void OPNAController::setExportContainer(std::shared_ptr<chip::AbstractRegisterWr
 }
 
 /********** Internal process **********/
-void OPNAController::checkRealToneByArpeggio(int seqPos,
-											 const std::unique_ptr<SequenceIteratorInterface>& arpIt,
+void OPNAController::checkRealToneByArpeggio(const std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit>>& arpIt,
 											 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
 											 bool& needToneSet)
 {
-	if (seqPos == -1) return;
+	if (arpIt->hasEnded()) return;
 
-	switch (arpIt->getSequenceType()) {
+	switch (arpIt->type()) {
 	case SequenceType::ABSOLUTE_SEQUENCE:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(baseTone.front().octave,
 																  baseTone.front().note)
-										+ arpIt->getCommandType() - 48);
+										+ arpIt->data().data - 48);
 		keyTone.octave = pair.first;
 		keyTone.note = pair.second;
 		break;
 	}
 	case SequenceType::FIXED_SEQUENCE:
 	{
-		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpIt->getCommandType());
+		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpIt->data().data);
 		keyTone.octave = pair.first;
 		keyTone.note = pair.second;
 		break;
@@ -323,7 +322,7 @@ void OPNAController::checkRealToneByArpeggio(int seqPos,
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
-										+ arpIt->getCommandType() - 48);
+										+ arpIt->data().data - 48);
 		keyTone.octave = pair.first;
 		keyTone.note = pair.second;
 		break;
@@ -335,12 +334,12 @@ void OPNAController::checkRealToneByArpeggio(int seqPos,
 	needToneSet = true;
 }
 
-void OPNAController::checkPortamento(const std::unique_ptr<SequenceIteratorInterface>& arpIt,
+void OPNAController::checkPortamento(const std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit>>& arpIt,
 									 int prtm, bool hasKeyOnBefore, bool isTonePrtm,
 									 const std::deque<ToneDetail>& baseTone,
 									 ToneDetail& keyTone, bool& needToneSet)
 {
-	if ((!arpIt || arpIt->getPosition() == -1) && prtm && hasKeyOnBefore) {
+	if ((!arpIt || arpIt->hasEnded()) && prtm && hasKeyOnBefore) {
 		if (isTonePrtm) {
 			int dif = ( octaveAndNoteToNoteNumber(baseTone.front().octave, baseTone.front().note)
 						* calc_pitch::SEMINOTE_PITCH + baseTone.front().pitch )
@@ -805,7 +804,7 @@ void OPNAController::setPanFM(int ch, int value)
 void OPNAController::setArpeggioEffectFM(int ch, int second, int third)
 {
 	if (second || third) {
-		arpItFM_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
+		arpItFM_[ch] = std::make_unique<ArpeggioEffectIterator2>(second, third);
 		isArpEffFM_[ch] = true;
 	}
 	else {
@@ -1735,7 +1734,10 @@ void OPNAController::setFrontFMSequences(int ch)
 	sumVolSldFM_[ch] += volSldFM_[ch];
 	checkVolumeEffectFM(ch);
 
-	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->front());
+	if (arpItFM_[ch]) {
+		arpItFM_[ch]->front();
+		checkRealToneFMByArpeggio(ch);
+	}
 	checkPortamentoFM(ch);
 
 	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->front());
@@ -1767,7 +1769,10 @@ void OPNAController::releaseStartFMSequences(int ch)
 	sumVolSldFM_[ch] += volSldFM_[ch];
 	checkVolumeEffectFM(ch);
 
-	if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next(true));
+	if (arpItFM_[ch]) {
+		arpItFM_[ch]->release();
+		checkRealToneFMByArpeggio(ch);
+	}
 	checkPortamentoFM(ch);
 
 	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next(true));
@@ -1803,7 +1808,10 @@ void OPNAController::tickEventFM(int ch)
 		sumVolSldFM_[ch] += volSldFM_[ch];
 		checkVolumeEffectFM(ch);
 
-		if (arpItFM_[ch]) checkRealToneFMByArpeggio(ch, arpItFM_[ch]->next());
+		if (arpItFM_[ch]) {
+			arpItFM_[ch]->next();
+			checkRealToneFMByArpeggio(ch);
+		}
 		checkPortamentoFM(ch);
 
 		if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next());
@@ -2159,7 +2167,7 @@ void OPNAController::setMasterVolumeSSG(double dB)
 void OPNAController::setArpeggioEffectSSG(int ch, int second, int third)
 {
 	if (second || third) {
-		arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
+		arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator2>(second, third);
 		isArpEffSSG_[ch] = true;
 	}
 	else {
@@ -2419,7 +2427,10 @@ void OPNAController::setFrontSSGSequences(int ch)
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->front());
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-	if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->front());
+	if (arpItSSG_[ch]) {
+		arpItSSG_[ch]->front();
+		checkRealToneSSGByArpeggio(ch);
+	}
 	checkPortamentoSSG(ch);
 
 	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->front());
@@ -2469,7 +2480,10 @@ void OPNAController::releaseStartSSGSequences(int ch)
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-	if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->next(true));
+	if (arpItSSG_[ch]) {
+		arpItSSG_[ch]->release();
+		checkRealToneSSGByArpeggio(ch);
+	}
 	checkPortamentoSSG(ch);
 
 	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next(true));
@@ -2516,7 +2530,10 @@ void OPNAController::tickEventSSG(int ch)
 		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
 		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-		if (arpItSSG_[ch]) checkRealToneSSGByArpeggio(ch, arpItSSG_[ch]->next());
+		if (arpItSSG_[ch]) {
+			arpItSSG_[ch]->next();
+			checkRealToneSSGByArpeggio(ch);
+		}
 		checkPortamentoSSG(ch);
 
 		if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next());
@@ -3522,7 +3539,7 @@ void OPNAController::setArpeggioEffectADPCM(int second, int third)
 	if (refInstKit_) return;
 
 	if (second || third) {
-		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator>(second, third);
+		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator2>(second, third);
 		isArpEffADPCM_ = true;
 	}
 	else {
@@ -3710,7 +3727,10 @@ void OPNAController::setFrontADPCMSequences()
 	if (envItADPCM_) writeEnvelopeADPCMToRegister(envItADPCM_->front());
 	else setRealVolumeADPCM();
 
-	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->front());
+	if (arpItADPCM_) {
+		arpItADPCM_->front();
+		checkRealToneADPCMByArpeggio();
+	}
 	checkPortamentoADPCM();
 
 	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->front());
@@ -3751,7 +3771,10 @@ void OPNAController::releaseStartADPCMSequences()
 		}
 	}
 
-	if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next(true));
+	if (arpItADPCM_) {
+		arpItADPCM_->release();
+		checkRealToneADPCMByArpeggio();
+	}
 	checkPortamentoADPCM();
 
 	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next(true));
@@ -3792,7 +3815,10 @@ void OPNAController::tickEventADPCM()
 			setRealVolumeADPCM();
 		}
 
-		if (arpItADPCM_) checkRealToneADPCMByArpeggio(arpItADPCM_->next());
+		if (arpItADPCM_) {
+			arpItADPCM_->next();
+			checkRealToneADPCMByArpeggio();
+		}
 		checkPortamentoADPCM();
 
 		if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next());
