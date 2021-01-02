@@ -332,7 +332,7 @@ SequenceType InstrumentFM::getArpeggioType(FMOperatorType op) const
 	return owner_->getArpeggioFMType(arpNum_.at(op));
 }
 
-std::vector<FMArpeggioUnit> InstrumentFM::getArpeggioSequence(FMOperatorType op) const
+std::vector<ArpeggioUnit> InstrumentFM::getArpeggioSequence(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMSequence(arpNum_.at(op));
 }
@@ -347,7 +347,7 @@ InstrumentSequenceRelease InstrumentFM::getArpeggioRelease(FMOperatorType op) co
 	return owner_->getArpeggioFMRelease(arpNum_.at(op));
 }
 
-FMArpeggioIter InstrumentFM::getArpeggioSequenceIterator(FMOperatorType op) const
+ArpeggioIter InstrumentFM::getArpeggioSequenceIterator(FMOperatorType op) const
 {
 	return owner_->getArpeggioFMIterator(arpNum_.at(op));
 }
@@ -377,24 +377,24 @@ SequenceType InstrumentFM::getPitchType(FMOperatorType op) const
 	return owner_->getPitchFMType(ptNum_.at(op));
 }
 
-std::vector<CommandSequenceUnit> InstrumentFM::getPitchSequence(FMOperatorType op) const
+std::vector<PitchUnit> InstrumentFM::getPitchSequence(FMOperatorType op) const
 {
 	return owner_->getPitchFMSequence(ptNum_.at(op));
 }
 
-std::vector<Loop> InstrumentFM::getPitchLoops(FMOperatorType op) const
+InstrumentSequenceLoopRoot InstrumentFM::getPitchLoopRoot(FMOperatorType op) const
 {
-	return owner_->getPitchFMLoops(ptNum_.at(op));
+	return owner_->getPitchFMLoopRoot(arpNum_.at(op));
 }
 
-Release InstrumentFM::getPitchRelease(FMOperatorType op) const
+InstrumentSequenceRelease InstrumentFM::getPitchRelease(FMOperatorType op) const
 {
-	return owner_->getPitchFMRelease(ptNum_.at(op));
+	return owner_->getPitchFMRelease(arpNum_.at(op));
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
+PitchIter InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
 {
-	return owner_->getPitchFMIterator(ptNum_.at(op));
+	return owner_->getPitchFMIterator(arpNum_.at(op));
 }
 
 /****************************************/
@@ -585,7 +585,7 @@ SequenceType InstrumentSSG::getArpeggioType() const
 	return owner_->getArpeggioSSGType(arpNum_);
 }
 
-std::vector<SSGArpeggioUnit> InstrumentSSG::getArpeggioSequence() const
+std::vector<ArpeggioUnit> InstrumentSSG::getArpeggioSequence() const
 {
 	return owner_->getArpeggioSSGSequence(arpNum_);
 }
@@ -600,7 +600,7 @@ InstrumentSequenceRelease InstrumentSSG::getArpeggioRelease() const
 	return owner_->getArpeggioSSGRelease(arpNum_);
 }
 
-SSGArpeggioIter InstrumentSSG::getArpeggioSequenceIterator() const
+ArpeggioIter InstrumentSSG::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioSSGIterator(arpNum_);
 }
@@ -630,24 +630,24 @@ SequenceType InstrumentSSG::getPitchType() const
 	return owner_->getPitchSSGType(ptNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getPitchSequence() const
+std::vector<PitchUnit> InstrumentSSG::getPitchSequence() const
 {
 	return owner_->getPitchSSGSequence(ptNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getPitchLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getPitchLoopRoot() const
 {
-	return owner_->getPitchSSGLoops(ptNum_);
+	return owner_->getPitchSSGLoopRoot(arpNum_);
 }
 
-Release InstrumentSSG::getPitchRelease() const
+InstrumentSequenceRelease InstrumentSSG::getPitchRelease() const
 {
-	return owner_->getPitchSSGRelease(ptNum_);
+	return owner_->getPitchSSGRelease(arpNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getPitchSequenceIterator() const
+PitchIter InstrumentSSG::getPitchSequenceIterator() const
 {
-	return owner_->getPitchSSGIterator(ptNum_);
+	return owner_->getPitchSSGIterator(arpNum_);
 }
 
 /****************************************/
@@ -792,7 +792,7 @@ SequenceType InstrumentADPCM::getArpeggioType() const
 	return owner_->getArpeggioADPCMType(arpNum_);
 }
 
-std::vector<ADPCMArpeggioUnit> InstrumentADPCM::getArpeggioSequence() const
+std::vector<ArpeggioUnit> InstrumentADPCM::getArpeggioSequence() const
 {
 	return owner_->getArpeggioADPCMSequence(arpNum_);
 }
@@ -807,7 +807,7 @@ InstrumentSequenceRelease InstrumentADPCM::getArpeggioRelease() const
 	return owner_->getArpeggioADPCMRelease(arpNum_);
 }
 
-ADPCMArpeggioIter InstrumentADPCM::getArpeggioSequenceIterator() const
+ArpeggioIter InstrumentADPCM::getArpeggioSequenceIterator() const
 {
 	return owner_->getArpeggioADPCMIterator(arpNum_);
 }
@@ -837,24 +837,24 @@ SequenceType InstrumentADPCM::getPitchType() const
 	return owner_->getPitchADPCMType(ptNum_);
 }
 
-std::vector<CommandSequenceUnit> InstrumentADPCM::getPitchSequence() const
+std::vector<PitchUnit> InstrumentADPCM::getPitchSequence() const
 {
 	return owner_->getPitchADPCMSequence(ptNum_);
 }
 
-std::vector<Loop> InstrumentADPCM::getPitchLoops() const
+InstrumentSequenceLoopRoot InstrumentADPCM::getPitchLoopRoot() const
 {
-	return owner_->getPitchADPCMLoops(ptNum_);
+	return owner_->getPitchADPCMLoopRoot(arpNum_);
 }
 
-Release InstrumentADPCM::getPitchRelease() const
+InstrumentSequenceRelease InstrumentADPCM::getPitchRelease() const
 {
-	return owner_->getPitchADPCMRelease(ptNum_);
+	return owner_->getPitchADPCMRelease(arpNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getPitchSequenceIterator() const
+PitchIter InstrumentADPCM::getPitchSequenceIterator() const
 {
-	return owner_->getPitchADPCMIterator(ptNum_);
+	return owner_->getPitchADPCMIterator(arpNum_);
 }
 
 /****************************************/

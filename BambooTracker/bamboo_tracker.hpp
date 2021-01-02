@@ -134,11 +134,14 @@ public:
 	std::multiset<int> getArpeggioFMUsers(int arpNum) const;
 
 	void setPitchFMType(int ptNum, SequenceType type);
-	void addPitchFMSequenceCommand(int ptNum, int type, int data);
-	void removePitchFMSequenceCommand(int ptNum);
-	void setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data);
-	void setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setPitchFMRelease(int ptNum, ReleaseType type, int begin);
+	void addPitchFMSequenceData(int ptNum, int data);
+	void removePitchFMSequenceData(int ptNum);
+	void setPitchFMSequenceData(int ptNum, int cnt, int data);
+	void addPitchFMLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchFMLoop(int ptNum, int begin, int end);
+	void changePitchFMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchFMLoops(int ptNum);
+	void setPitchFMRelease(int ptNum, const InstrumentSequenceRelease& release);
 	void setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum);
 	void setInstrumentFMPitchEnabled(int instNum, FMOperatorType op, bool enabled);
 	std::multiset<int> getPitchFMUsers(int ptNum) const;
@@ -187,11 +190,14 @@ public:
 	std::multiset<int> getArpeggioSSGUsers(int arpNum) const;
 
 	void setPitchSSGType(int ptNum, SequenceType type);
-	void addPitchSSGSequenceCommand(int ptNum, int type, int data);
-	void removePitchSSGSequenceCommand(int ptNum);
-	void setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data);
-	void setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setPitchSSGRelease(int ptNum, ReleaseType type, int begin);
+	void addPitchSSGSequenceData(int ptNum, int data);
+	void removePitchSSGSequenceData(int ptNum);
+	void setPitchSSGSequenceData(int ptNum, int cnt, int data);
+	void addPitchSSGLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchSSGLoop(int ptNum, int begin, int end);
+	void changePitchSSGLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchSSGLoops(int ptNum);
+	void setPitchSSGRelease(int ptNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGPitch(int instNum, int ptNum);
 	void setInstrumentSSGPitchEnabled(int instNum, bool enabled);
 	std::multiset<int> getPitchSSGUsers(int ptNum) const;
@@ -238,11 +244,14 @@ public:
 	std::multiset<int> getArpeggioADPCMUsers(int arpNum) const;
 
 	void setPitchADPCMType(int ptNum, SequenceType type);
-	void addPitchADPCMSequenceCommand(int ptNum, int type, int data);
-	void removePitchADPCMSequenceCommand(int ptNum);
-	void setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data);
-	void setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setPitchADPCMRelease(int ptNum, ReleaseType type, int begin);
+	void addPitchADPCMSequenceData(int ptNum, int data);
+	void removePitchADPCMSequenceData(int ptNum);
+	void setPitchADPCMSequenceData(int ptNum, int cnt, int data);
+	void addPitchADPCMLoop(int ptNum, const InstrumentSequenceLoop& loop);
+	void removePitchADPCMLoop(int ptNum, int begin, int end);
+	void changePitchADPCMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearPitchADPCMLoops(int ptNum);
+	void setPitchADPCMRelease(int ptNum, const InstrumentSequenceRelease& release);
 	void setInstrumentADPCMPitch(int instNum, int ptNum);
 	void setInstrumentADPCMPitchEnabled(int instNum, bool enabled);
 	std::multiset<int> getPitchADPCMUsers(int ptNum) const;

@@ -294,7 +294,7 @@ void OPNAController::setExportContainer(std::shared_ptr<chip::AbstractRegisterWr
 }
 
 /********** Internal process **********/
-void OPNAController::checkRealToneByArpeggio(const std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit>>& arpIt,
+void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 											 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
 											 bool& needToneSet)
 {
@@ -334,7 +334,7 @@ void OPNAController::checkRealToneByArpeggio(const std::unique_ptr<SequenceItera
 	needToneSet = true;
 }
 
-void OPNAController::checkPortamento(const std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit>>& arpIt,
+void OPNAController::checkPortamento(const ArpeggioIterInterface& arpIt,
 									 int prtm, bool hasKeyOnBefore, bool isTonePrtm,
 									 const std::deque<ToneDetail>& baseTone,
 									 ToneDetail& keyTone, bool& needToneSet)
@@ -371,17 +371,17 @@ void OPNAController::checkPortamento(const std::unique_ptr<SequenceIterator2<Ins
 	}
 }
 
-void OPNAController::checkRealToneByPitch(int seqPos, const std::unique_ptr<CommandSequence::Iterator>& ptIt,
+void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptIt,
 										  int& sumPitch, bool& needToneSet)
 {
-	if (seqPos == -1) return;
+	if (ptIt->hasEnded()) return;
 
-	switch (ptIt->getSequenceType()) {
+	switch (ptIt->type()) {
 	case SequenceType::ABSOLUTE_SEQUENCE:
-		sumPitch = ptIt->getCommandType() - 127;
+		sumPitch = ptIt->data().data - 127;
 		break;
 	case SequenceType::RELATIVE_SEQUENCE:
-		sumPitch += (ptIt->getCommandType() - 127);
+		sumPitch += (ptIt->data().data - 127);
 		break;
 	default:
 		return;
@@ -1740,7 +1740,10 @@ void OPNAController::setFrontFMSequences(int ch)
 	}
 	checkPortamentoFM(ch);
 
-	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->front());
+	if (ptItFM_[ch]) {
+		ptItFM_[ch]->front();
+		checkRealToneFMByPitch(ch);
+	}
 	if (vibItFM_[ch]) {
 		vibItFM_[ch]->front();
 		needToneSetFM_[ch] = true;
@@ -1775,7 +1778,10 @@ void OPNAController::releaseStartFMSequences(int ch)
 	}
 	checkPortamentoFM(ch);
 
-	if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next(true));
+	if (ptItFM_[ch]) {
+		ptItFM_[ch]->release();
+		checkRealToneFMByPitch(ch);
+	}
 	if (vibItFM_[ch]) {
 		vibItFM_[ch]->next(true);
 		needToneSetFM_[ch] = true;
@@ -1814,7 +1820,10 @@ void OPNAController::tickEventFM(int ch)
 		}
 		checkPortamentoFM(ch);
 
-		if (ptItFM_[ch]) checkRealToneFMByPitch(ch, ptItFM_[ch]->next());
+		if (ptItFM_[ch]) {
+			ptItFM_[ch]->next();
+			checkRealToneFMByPitch(ch);
+		}
 		if (vibItFM_[ch]) {
 			vibItFM_[ch]->next();
 			needToneSetFM_[ch] = true;
@@ -2433,7 +2442,10 @@ void OPNAController::setFrontSSGSequences(int ch)
 	}
 	checkPortamentoSSG(ch);
 
-	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->front());
+	if (ptItSSG_[ch]) {
+		ptItSSG_[ch]->front();
+		checkRealToneSSGByPitch(ch);
+	}
 	if (vibItSSG_[ch]) {
 		vibItSSG_[ch]->front();
 		needToneSetSSG_[ch] = true;
@@ -2486,7 +2498,10 @@ void OPNAController::releaseStartSSGSequences(int ch)
 	}
 	checkPortamentoSSG(ch);
 
-	if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next(true));
+	if (ptItSSG_[ch]) {
+		ptItSSG_[ch]->release();
+		checkRealToneSSGByPitch(ch);
+	}
 	if (vibItSSG_[ch]) {
 		vibItSSG_[ch]->next(true);
 		needToneSetSSG_[ch] = true;
@@ -2536,7 +2551,10 @@ void OPNAController::tickEventSSG(int ch)
 		}
 		checkPortamentoSSG(ch);
 
-		if (ptItSSG_[ch]) checkRealToneSSGByPitch(ch, ptItSSG_[ch]->next());
+		if (ptItSSG_[ch]) {
+			ptItSSG_[ch]->next();
+			checkRealToneSSGByPitch(ch);
+		}
 		if (vibItSSG_[ch]) {
 			vibItSSG_[ch]->next();
 			needToneSetSSG_[ch] = true;
@@ -3733,7 +3751,10 @@ void OPNAController::setFrontADPCMSequences()
 	}
 	checkPortamentoADPCM();
 
-	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->front());
+	if (ptItADPCM_) {
+		ptItADPCM_->front();
+		checkRealToneADPCMByPitch();
+	}
 	if (vibItADPCM_) {
 		vibItADPCM_->front();
 		needToneSetADPCM_ = true;
@@ -3777,7 +3798,10 @@ void OPNAController::releaseStartADPCMSequences()
 	}
 	checkPortamentoADPCM();
 
-	if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next(true));
+	if (ptItADPCM_) {
+		ptItADPCM_->release();
+		checkRealToneADPCMByPitch();
+	}
 	if (vibItADPCM_) {
 		vibItADPCM_->next(true);
 		needToneSetADPCM_ = true;
@@ -3821,7 +3845,10 @@ void OPNAController::tickEventADPCM()
 		}
 		checkPortamentoADPCM();
 
-		if (ptItADPCM_) checkRealToneADPCMByPitch(ptItADPCM_->next());
+		if (ptItADPCM_) {
+			ptItADPCM_->next();
+			checkRealToneADPCMByPitch();
+		}
 		if (vibItADPCM_) {
 			vibItADPCM_->next();
 			needToneSetADPCM_ = true;

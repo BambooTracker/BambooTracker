@@ -96,20 +96,20 @@ public:
 	void setArpeggioNumber(FMOperatorType op, int n);
 	int getArpeggioNumber(FMOperatorType op) const;
 	SequenceType getArpeggioType(FMOperatorType op) const;
-	std::vector<FMArpeggioUnit> getArpeggioSequence(FMOperatorType op) const;
+	std::vector<ArpeggioUnit> getArpeggioSequence(FMOperatorType op) const;
 	InstrumentSequenceLoopRoot getArpeggioLoopRoot(FMOperatorType op) const;
 	InstrumentSequenceRelease getArpeggioRelease(FMOperatorType op) const;
-	FMArpeggioIter getArpeggioSequenceIterator(FMOperatorType op) const;
+	ArpeggioIter getArpeggioSequenceIterator(FMOperatorType op) const;
 
 	void setPitchEnabled(FMOperatorType op, bool enabled);
 	bool getPitchEnabled(FMOperatorType op) const;
 	void setPitchNumber(FMOperatorType op, int n);
 	int getPitchNumber(FMOperatorType op) const;
 	SequenceType getPitchType(FMOperatorType op) const;
-	std::vector<CommandSequenceUnit> getPitchSequence(FMOperatorType op) const;
-	std::vector<Loop> getPitchLoops(FMOperatorType op) const;
-	Release getPitchRelease(FMOperatorType op) const;
-	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator(FMOperatorType op) const;
+	std::vector<PitchUnit> getPitchSequence(FMOperatorType op) const;
+	InstrumentSequenceLoopRoot getPitchLoopRoot(FMOperatorType op) const;
+	InstrumentSequenceRelease getPitchRelease(FMOperatorType op) const;
+	PitchIter getPitchSequenceIterator(FMOperatorType op) const;
 
 	void setEnvelopeResetEnabled(FMOperatorType op, bool enabled);
 	bool getEnvelopeResetEnabled(FMOperatorType op) const;
@@ -169,20 +169,20 @@ public:
 	void setArpeggioNumber(int n);
 	int getArpeggioNumber() const;
 	SequenceType getArpeggioType() const;
-	std::vector<SSGArpeggioUnit> getArpeggioSequence() const;
+	std::vector<ArpeggioUnit> getArpeggioSequence() const;
 	InstrumentSequenceLoopRoot getArpeggioLoopRoot() const;
 	InstrumentSequenceRelease getArpeggioRelease() const;
-	SSGArpeggioIter getArpeggioSequenceIterator() const;
+	ArpeggioIter getArpeggioSequenceIterator() const;
 
 	void setPitchEnabled(bool enabled);
 	bool getPitchEnabled() const;
 	void setPitchNumber(int n);
 	int getPitchNumber() const;
 	SequenceType getPitchType() const;
-	std::vector<CommandSequenceUnit> getPitchSequence() const;
-	std::vector<Loop> getPitchLoops() const;
-	Release getPitchRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;
+	std::vector<PitchUnit> getPitchSequence() const;
+	InstrumentSequenceLoopRoot getPitchLoopRoot() const;
+	InstrumentSequenceRelease getPitchRelease() const;
+	PitchIter getPitchSequenceIterator() const;
 
 private:
 	bool wfEnabled_;
@@ -229,20 +229,20 @@ public:
 	void setArpeggioNumber(int n);
 	int getArpeggioNumber() const;
 	SequenceType getArpeggioType() const;
-	std::vector<ADPCMArpeggioUnit> getArpeggioSequence() const;
+	std::vector<ArpeggioUnit> getArpeggioSequence() const;
 	InstrumentSequenceLoopRoot getArpeggioLoopRoot() const;
 	InstrumentSequenceRelease getArpeggioRelease() const;
-	ADPCMArpeggioIter getArpeggioSequenceIterator() const;
+	ArpeggioIter getArpeggioSequenceIterator() const;
 
 	void setPitchEnabled(bool enabled);
 	bool getPitchEnabled() const;
 	void setPitchNumber(int n);
 	int getPitchNumber() const;
 	SequenceType getPitchType() const;
-	std::vector<CommandSequenceUnit> getPitchSequence() const;
-	std::vector<Loop> getPitchLoops() const;
-	Release getPitchRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getPitchSequenceIterator() const;
+	std::vector<PitchUnit> getPitchSequence() const;
+	InstrumentSequenceLoopRoot getPitchLoopRoot() const;
+	InstrumentSequenceRelease getPitchRelease() const;
+	PitchIter getPitchSequenceIterator() const;
 
 private:
 	int sampNum_;

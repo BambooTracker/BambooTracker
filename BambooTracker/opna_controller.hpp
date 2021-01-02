@@ -122,12 +122,13 @@ private:
 	void fillOutputHistory(const int16_t* outputs, size_t nSamples);
 	void transferReadyHistory();
 
-	void checkRealToneByArpeggio(const std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit> >& arpIt,
+	using ArpeggioIterInterface = std::unique_ptr<SequenceIterator2<ArpeggioUnit>>;
+	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 								 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
-	void checkPortamento(const std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit> >& arpIt, int prtm, bool hasKeyOnBefore,
+	void checkPortamento(const ArpeggioIterInterface& arpIt, int prtm, bool hasKeyOnBefore,
 						 bool isTonePrtm, const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone,
 						 bool& needToneSet);
-	void checkRealToneByPitch(int seqPos, const std::unique_ptr<CommandSequence::Iterator>& ptIt,
+	void checkRealToneByPitch(const std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>& ptIt,
 							  int& sumPitch, bool& needToneSet);
 
 	/*----- FM -----*/
@@ -199,8 +200,8 @@ private:
 	bool hasPreSetTickEventFM_[9];
 	bool needToneSetFM_[9];
 	std::unordered_map<FMEnvelopeParameter, FMOperatorSequenceIter> opSeqItFM_[6];
-	std::unique_ptr<SequenceIterator2<FMArpeggioUnit>> arpItFM_[9];
-	std::unique_ptr<CommandSequence::Iterator> ptItFM_[9];
+	ArpeggioIterInterface arpItFM_[9];
+	PitchIter ptItFM_[9];
 	bool isArpEffFM_[9];
 	int prtmFM_[9];
 	bool isTonePrtmFM_[9];
@@ -252,9 +253,9 @@ private:
 						keyToneFM_[ch], needToneSetFM_[ch]);
 	}
 
-	inline void checkRealToneFMByPitch(int ch, int seqPos)
+	inline void checkRealToneFMByPitch(int ch)
 	{
-		checkRealToneByPitch(seqPos, ptItFM_[ch], sumPitchFM_[ch], needToneSetFM_[ch]);
+		checkRealToneByPitch(ptItFM_[ch], sumPitchFM_[ch], needToneSetFM_[ch]);
 	}
 
 	void writePitchFM(int ch);
@@ -375,8 +376,8 @@ private:
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandSequenceUnit envSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
-	std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit>> arpItSSG_[3];
-	std::unique_ptr<CommandSequence::Iterator> ptItSSG_[3];
+	ArpeggioIterInterface arpItSSG_[3];
+	PitchIter ptItSSG_[3];
 	bool isArpEffSSG_[3];
 	int prtmSSG_[3];
 	bool isTonePrtmSSG_[3];
@@ -424,9 +425,9 @@ private:
 						keyToneSSG_[ch], needToneSetSSG_[ch]);
 	}
 
-	inline void checkRealToneSSGByPitch(int ch, int seqPos)
+	inline void checkRealToneSSGByPitch(int ch)
 	{
-		checkRealToneByPitch(seqPos, ptItSSG_[ch], sumPitchSSG_[ch], needToneSetSSG_[ch]);
+		checkRealToneByPitch(ptItSSG_[ch], sumPitchSSG_[ch], needToneSetSSG_[ch]);
 	}
 
 	void writePitchSSG(int ch);
@@ -528,8 +529,8 @@ private:
 	size_t storePointADPCM_;	// Move by 32 bytes
 	std::unique_ptr<CommandSequence::Iterator> envItADPCM_;
 	std::unique_ptr<CommandSequence::Iterator> tnItADPCM_;
-	std::unique_ptr<SequenceIterator2<InstrumentSequenceBaseUnit>> arpItADPCM_;
-	std::unique_ptr<CommandSequence::Iterator> ptItADPCM_;
+	ArpeggioIterInterface arpItADPCM_;
+	PitchIter ptItADPCM_;
 	bool isArpEffADPCM_;
 	int prtmADPCM_;
 	bool isTonePrtmADPCM_;
@@ -565,9 +566,9 @@ private:
 						keyToneADPCM_, needToneSetADPCM_);
 	}
 
-	inline void checkRealToneADPCMByPitch(int seqPos)
+	inline void checkRealToneADPCMByPitch()
 	{
-		checkRealToneByPitch(seqPos, ptItADPCM_, sumPitchADPCM_, needToneSetADPCM_);
+		checkRealToneByPitch(ptItADPCM_, sumPitchADPCM_, needToneSetADPCM_);
 	}
 
 	void writePitchADPCM();

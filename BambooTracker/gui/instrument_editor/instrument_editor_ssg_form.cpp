@@ -300,10 +300,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
-					 this, [&](int row, int col) {
+					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->addPitchSSGSequenceCommand(
-						ui->ptNumSpinBox->value(), row, ui->ptEditor->getSequenceDataAt(col));
+			bt_.lock()->addPitchSSGSequenceData(ui->ptNumSpinBox->value(), row);
 			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -311,7 +310,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
 					 this, [&]() {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->removePitchSSGSequenceCommand(ui->ptNumSpinBox->value());
+			bt_.lock()->removePitchSSGSequenceData(ui->ptNumSpinBox->value());
 			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -319,26 +318,47 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setPitchSSGSequenceCommand(
-						ui->ptNumSpinBox->value(), col, row, ui->ptEditor->getSequenceDataAt(col));
+			bt_.lock()->setPitchSSGSequenceData(ui->ptNumSpinBox->value(), col, row);
 			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopChanged,
-					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopAdded,
+					 this, [&](InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setPitchSSGLoops(
-						ui->ptNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
+			bt_.lock()->addPitchSSGLoop(ui->ptNumSpinBox->value(), loop);
 			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
-	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
-					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopRemoved,
+					 this, [&](int begin, int end) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
-			bt_.lock()->setPitchSSGRelease(ui->ptNumSpinBox->value(), t, point);
+			bt_.lock()->removePitchSSGLoop(ui->ptNumSpinBox->value(), begin, end);
+			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopCleared,
+					 this, [&] {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->clearPitchSSGLoops(ui->ptNumSpinBox->value());
+			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->changePitchSSGLoop(ui->ptNumSpinBox->value(), prevBegin, prevEnd, loop);
+			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+					 this, [&](InstrumentSequenceRelease release) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setPitchSSGRelease(ui->ptNumSpinBox->value(), release);
 			emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -800,14 +820,13 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 
 	ui->ptNumSpinBox->setValue(instSSG->getPitchNumber());
 	ui->ptEditor->clearData();
-	for (auto& com : instSSG->getPitchSequence()) {
-		ui->ptEditor->addSequenceCommand(com.type);
+	for (auto& unit : instSSG->getPitchSequence()) {
+		ui->ptEditor->addSequenceCommand(unit.data);
 	}
-	for (auto& l : instSSG->getPitchLoops()) {
-		ui->ptEditor->addLoop(l.begin, l.end, l.times);
+	for (auto& loop : instSSG->getPitchLoopRoot().getAllLoops()) {
+		ui->ptEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
 	}
-	ui->ptEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instSSG->getPitchRelease().type),
-							 instSSG->getPitchRelease().begin);
+	ui->ptEditor->setRelease(instSSG->getPitchRelease());
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
 		if (instSSG->getPitchType() == inst_edit_utils::convertSequenceTypeForData(
 					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {

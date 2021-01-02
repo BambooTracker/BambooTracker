@@ -766,21 +766,24 @@ void InstrumentsManager::clearAll()
 						  FMOperatorSequenceUnit>>(i, SequenceType::NO_SEQUENCE_TYPE, FMOperatorSequenceUnit(0), FMOperatorSequenceUnit());
 		}
 		arpFM_[i] = std::make_shared<InstrumentSequenceProperty<
-					FMArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, FMArpeggioUnit(48), FMArpeggioUnit());
-		ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+					ArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ArpeggioUnit(48), ArpeggioUnit());
+		ptFM_[i] = std::make_shared<InstrumentSequenceProperty<
+				   PitchUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, PitchUnit(127), PitchUnit());
 
 		wfSSG_[i] = std::make_shared<CommandSequence>(i);
 		tnSSG_[i] = std::make_shared<CommandSequence>(i);
 		envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 15);
 		arpSSG_[i] = std::make_shared<InstrumentSequenceProperty<
-					 SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, SSGArpeggioUnit(48), SSGArpeggioUnit());
-		ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+					 ArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ArpeggioUnit(48), ArpeggioUnit());
+		ptSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+					PitchUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, PitchUnit(127), PitchUnit());
 
 		sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
 		envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
 		arpADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
-					   SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ADPCMArpeggioUnit(48), ADPCMArpeggioUnit());
-		ptADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+					   ArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ArpeggioUnit(48), ArpeggioUnit());
+		ptADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
+					  PitchUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, PitchUnit(127), PitchUnit());
 	}
 }
 
@@ -837,9 +840,10 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 		}
 		if (!arpFM_[i]->isUserInstrument())
 			arpFM_[i] = std::make_shared<InstrumentSequenceProperty<
-						FMArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, FMArpeggioUnit(48), FMArpeggioUnit());
+						ArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ArpeggioUnit(48), ArpeggioUnit());
 		if (!ptFM_[i]->isUserInstrument())
-			ptFM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+			ptFM_[i] = std::make_shared<InstrumentSequenceProperty<
+					   PitchUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, PitchUnit(127), PitchUnit());
 
 		if (!wfSSG_[i]->isUserInstrument())
 			wfSSG_[i] = std::make_shared<CommandSequence>(i);
@@ -849,9 +853,10 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 15);
 		if (!arpSSG_[i]->isUserInstrument())
 			arpSSG_[i] = std::make_shared<InstrumentSequenceProperty<
-						 SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, SSGArpeggioUnit(48), SSGArpeggioUnit());
+						 ArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ArpeggioUnit(48), ArpeggioUnit());
 		if (!ptSSG_[i]->isUserInstrument())
-			ptSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+			ptSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+						PitchUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, PitchUnit(127), PitchUnit());
 
 		if (!sampADPCM_[i]->isUserInstrument())
 			sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
@@ -859,9 +864,10 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			envADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::NO_SEQUENCE_TYPE, 255);
 		if (!arpADPCM_[i]->isUserInstrument())
 			arpADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
-						   SSGArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ADPCMArpeggioUnit(48), ADPCMArpeggioUnit());
+						   ArpeggioUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, ArpeggioUnit(48), ArpeggioUnit());
 		if (!ptADPCM_[i]->isUserInstrument())
-			ptADPCM_[i] = std::make_shared<CommandSequence>(i, SequenceType::ABSOLUTE_SEQUENCE, 127);
+			ptADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
+						  PitchUnit>>(i, SequenceType::ABSOLUTE_SEQUENCE, PitchUnit(127), PitchUnit());
 	}
 }
 
@@ -1213,7 +1219,7 @@ SequenceType InstrumentsManager::getArpeggioFMType(int arpNum) const
 
 void InstrumentsManager::addArpeggioFMSequenceData(int arpNum, int data)
 {
-	arpFM_.at(static_cast<size_t>(arpNum))->addSequenceUnit(FMArpeggioUnit(data));
+	arpFM_.at(static_cast<size_t>(arpNum))->addSequenceUnit(ArpeggioUnit(data));
 }
 
 void InstrumentsManager::removeArpeggioFMSequenceData(int arpNum)
@@ -1223,10 +1229,10 @@ void InstrumentsManager::removeArpeggioFMSequenceData(int arpNum)
 
 void InstrumentsManager::setArpeggioFMSequenceData(int arpNum, int cnt, int data)
 {
-	arpFM_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, FMArpeggioUnit(data));
+	arpFM_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, ArpeggioUnit(data));
 }
 
-std::vector<FMArpeggioUnit> InstrumentsManager::getArpeggioFMSequence(int arpNum)
+std::vector<ArpeggioUnit> InstrumentsManager::getArpeggioFMSequence(int arpNum)
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getSequence();
 }
@@ -1266,7 +1272,7 @@ InstrumentSequenceRelease InstrumentsManager::getArpeggioFMRelease(int arpNum) c
 	return arpFM_.at(static_cast<size_t>(arpNum))->getRelease();
 }
 
-FMArpeggioIter InstrumentsManager::getArpeggioFMIterator(int arpNum) const
+ArpeggioIter InstrumentsManager::getArpeggioFMIterator(int arpNum) const
 {
 	return arpFM_.at(static_cast<size_t>(arpNum))->getIterator();
 }
@@ -1342,49 +1348,64 @@ SequenceType InstrumentsManager::getPitchFMType(int ptNum) const
 	return ptFM_.at(static_cast<size_t>(ptNum))->getType();
 }
 
-void InstrumentsManager::addPitchFMSequenceCommand(int ptNum, int type, int data)
+void InstrumentsManager::addPitchFMSequenceData(int ptNum, int data)
 {
-	ptFM_.at(static_cast<size_t>(ptNum))->addSequenceCommand(type, data);
+	ptFM_.at(static_cast<size_t>(ptNum))->addSequenceUnit(PitchUnit(data));
 }
 
-void InstrumentsManager::removePitchFMSequenceCommand(int ptNum)
+void InstrumentsManager::removePitchFMSequenceData(int ptNum)
 {
-	ptFM_.at(static_cast<size_t>(ptNum))->removeSequenceCommand();
+	ptFM_.at(static_cast<size_t>(ptNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data)
+void InstrumentsManager::setPitchFMSequenceData(int ptNum, int cnt, int data)
 {
-	ptFM_.at(static_cast<size_t>(ptNum))->setSequenceCommand(cnt, type, data);
+	ptFM_.at(static_cast<size_t>(ptNum))->setSequenceUnit(cnt, PitchUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getPitchFMSequence(int ptNum)
+std::vector<PitchUnit> InstrumentsManager::getPitchFMSequence(int ptNum)
 {
 	return ptFM_.at(static_cast<size_t>(ptNum))->getSequence();
 }
 
-void InstrumentsManager::setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addPitchFMLoop(int ptNum, const InstrumentSequenceLoop& loop)
 {
-	ptFM_.at(static_cast<size_t>(ptNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	arpFM_.at(static_cast<size_t>(ptNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getPitchFMLoops(int ptNum) const
+void InstrumentsManager::removePitchFMLoop(int ptNum, int begin, int end)
 {
-	return ptFM_.at(static_cast<size_t>(ptNum))->getLoops();
+	arpFM_.at(static_cast<size_t>(ptNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setPitchFMRelease(int ptNum, ReleaseType type, int begin)
+void InstrumentsManager::changePitchFMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	ptFM_.at(static_cast<size_t>(ptNum))->setRelease(type, begin);
+	arpFM_.at(static_cast<size_t>(ptNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getPitchFMRelease(int ptNum) const
+void InstrumentsManager::clearPitchFMLoops(int ptNum)
 {
-	return ptFM_.at(static_cast<size_t>(ptNum))->getRelease();
+	arpFM_.at(static_cast<size_t>(ptNum))->clearLoops();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchFMIterator(int ptNum) const
+InstrumentSequenceLoopRoot InstrumentsManager::getPitchFMLoopRoot(int ptNum) const
 {
-	return ptFM_.at(static_cast<size_t>(ptNum))->getIterator();
+	return arpFM_.at(static_cast<size_t>(ptNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setPitchFMRelease(int ptNum, const InstrumentSequenceRelease& release)
+{
+	arpFM_.at(static_cast<size_t>(ptNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getPitchFMRelease(int ptNum) const
+{
+	return arpFM_.at(static_cast<size_t>(ptNum))->getRelease();
+}
+
+PitchIter InstrumentsManager::getPitchFMIterator(int ptNum) const
+{
+	return arpFM_.at(static_cast<size_t>(ptNum))->getIterator();
 }
 
 std::multiset<int> InstrumentsManager::getPitchFMUsers(int ptNum) const
@@ -1410,11 +1431,11 @@ std::vector<int> InstrumentsManager::getPitchFMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignablePitchFM() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(ptFM_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); };
+		cond = [](decltype(ptFM_.front()) pt) { return (pt->isUserInstrument() || pt->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+		cond = [](decltype(ptFM_.front()) pt) { return pt->isUserInstrument(); };
 	auto&& it = std::find_if_not(ptFM_.begin(), ptFM_.end(), cond);
 
 	if (it == ptFM_.end()) return -1;
@@ -1819,7 +1840,7 @@ SequenceType InstrumentsManager::getArpeggioSSGType(int arpNum) const
 
 void InstrumentsManager::addArpeggioSSGSequenceData(int arpNum, int data)
 {
-	arpSSG_.at(static_cast<size_t>(arpNum))->addSequenceUnit(SSGArpeggioUnit(data));
+	arpSSG_.at(static_cast<size_t>(arpNum))->addSequenceUnit(ArpeggioUnit(data));
 }
 
 void InstrumentsManager::removeArpeggioSSGSequenceData(int arpNum)
@@ -1829,10 +1850,10 @@ void InstrumentsManager::removeArpeggioSSGSequenceData(int arpNum)
 
 void InstrumentsManager::setArpeggioSSGSequenceData(int arpNum, int cnt, int data)
 {
-	arpSSG_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, SSGArpeggioUnit(data));
+	arpSSG_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, ArpeggioUnit(data));
 }
 
-std::vector<SSGArpeggioUnit> InstrumentsManager::getArpeggioSSGSequence(int arpNum)
+std::vector<ArpeggioUnit> InstrumentsManager::getArpeggioSSGSequence(int arpNum)
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getSequence();
 }
@@ -1872,7 +1893,7 @@ InstrumentSequenceRelease InstrumentsManager::getArpeggioSSGRelease(int arpNum) 
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getRelease();
 }
 
-SSGArpeggioIter InstrumentsManager::getArpeggioSSGIterator(int arpNum) const
+ArpeggioIter InstrumentsManager::getArpeggioSSGIterator(int arpNum) const
 {
 	return arpSSG_.at(static_cast<size_t>(arpNum))->getIterator();
 }
@@ -1948,49 +1969,64 @@ SequenceType InstrumentsManager::getPitchSSGType(int ptNum) const
 	return ptSSG_.at(static_cast<size_t>(ptNum))->getType();
 }
 
-void InstrumentsManager::addPitchSSGSequenceCommand(int ptNum, int type, int data)
+void InstrumentsManager::addPitchSSGSequenceData(int ptNum, int data)
 {
-	ptSSG_.at(static_cast<size_t>(ptNum))->addSequenceCommand(type, data);
+	ptSSG_.at(static_cast<size_t>(ptNum))->addSequenceUnit(PitchUnit(data));
 }
 
-void InstrumentsManager::removePitchSSGSequenceCommand(int ptNum)
+void InstrumentsManager::removePitchSSGSequenceData(int ptNum)
 {
-	ptSSG_.at(static_cast<size_t>(ptNum))->removeSequenceCommand();
+	ptSSG_.at(static_cast<size_t>(ptNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data)
+void InstrumentsManager::setPitchSSGSequenceData(int ptNum, int cnt, int data)
 {
-	ptSSG_.at(static_cast<size_t>(ptNum))->setSequenceCommand(cnt, type, data);
+	ptSSG_.at(static_cast<size_t>(ptNum))->setSequenceUnit(cnt, PitchUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getPitchSSGSequence(int ptNum)
+std::vector<PitchUnit> InstrumentsManager::getPitchSSGSequence(int ptNum)
 {
 	return ptSSG_.at(static_cast<size_t>(ptNum))->getSequence();
 }
 
-void InstrumentsManager::setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addPitchSSGLoop(int ptNum, const InstrumentSequenceLoop& loop)
 {
-	ptSSG_.at(static_cast<size_t>(ptNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	arpSSG_.at(static_cast<size_t>(ptNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getPitchSSGLoops(int ptNum) const
+void InstrumentsManager::removePitchSSGLoop(int ptNum, int begin, int end)
 {
-	return ptSSG_.at(static_cast<size_t>(ptNum))->getLoops();
+	arpSSG_.at(static_cast<size_t>(ptNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setPitchSSGRelease(int ptNum, ReleaseType type, int begin)
+void InstrumentsManager::changePitchSSGLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	ptSSG_.at(static_cast<size_t>(ptNum))->setRelease(type, begin);
+	arpSSG_.at(static_cast<size_t>(ptNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getPitchSSGRelease(int ptNum) const
+void InstrumentsManager::clearPitchSSGLoops(int ptNum)
 {
-	return ptSSG_.at(static_cast<size_t>(ptNum))->getRelease();
+	arpSSG_.at(static_cast<size_t>(ptNum))->clearLoops();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchSSGIterator(int ptNum) const
+InstrumentSequenceLoopRoot InstrumentsManager::getPitchSSGLoopRoot(int ptNum) const
 {
-	return ptSSG_.at(static_cast<size_t>(ptNum))->getIterator();
+	return arpSSG_.at(static_cast<size_t>(ptNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setPitchSSGRelease(int ptNum, const InstrumentSequenceRelease& release)
+{
+	arpSSG_.at(static_cast<size_t>(ptNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getPitchSSGRelease(int ptNum) const
+{
+	return arpSSG_.at(static_cast<size_t>(ptNum))->getRelease();
+}
+
+PitchIter InstrumentsManager::getPitchSSGIterator(int ptNum) const
+{
+	return arpSSG_.at(static_cast<size_t>(ptNum))->getIterator();
 }
 
 std::multiset<int> InstrumentsManager::getPitchSSGUsers(int ptNum) const
@@ -2011,11 +2047,11 @@ std::vector<int> InstrumentsManager::getPitchSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignablePitchSSG() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(ptSSG_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); };
+		cond = [](decltype(ptSSG_.front()) pt) { return (pt->isUserInstrument() || pt->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+		cond = [](decltype(ptSSG_.front()) pt) { return pt->isUserInstrument(); };
 	auto&& it = std::find_if_not(ptSSG_.begin(), ptSSG_.end(), cond);
 
 	if (it == ptSSG_.end()) return -1;
@@ -2335,7 +2371,7 @@ SequenceType InstrumentsManager::getArpeggioADPCMType(int arpNum) const
 
 void InstrumentsManager::addArpeggioADPCMSequenceData(int arpNum, int data)
 {
-	arpADPCM_.at(static_cast<size_t>(arpNum))->addSequenceUnit(ADPCMArpeggioUnit(data));
+	arpADPCM_.at(static_cast<size_t>(arpNum))->addSequenceUnit(ArpeggioUnit(data));
 }
 
 void InstrumentsManager::removeArpeggioADPCMSequenceData(int arpNum)
@@ -2345,10 +2381,10 @@ void InstrumentsManager::removeArpeggioADPCMSequenceData(int arpNum)
 
 void InstrumentsManager::setArpeggioADPCMSequenceData(int arpNum, int cnt, int data)
 {
-	arpADPCM_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, ADPCMArpeggioUnit(data));
+	arpADPCM_.at(static_cast<size_t>(arpNum))->setSequenceUnit(cnt, ArpeggioUnit(data));
 }
 
-std::vector<ADPCMArpeggioUnit> InstrumentsManager::getArpeggioADPCMSequence(int arpNum)
+std::vector<ArpeggioUnit> InstrumentsManager::getArpeggioADPCMSequence(int arpNum)
 {
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getSequence();
 }
@@ -2388,7 +2424,7 @@ InstrumentSequenceRelease InstrumentsManager::getArpeggioADPCMRelease(int arpNum
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getRelease();
 }
 
-ADPCMArpeggioIter InstrumentsManager::getArpeggioADPCMIterator(int arpNum) const
+ArpeggioIter InstrumentsManager::getArpeggioADPCMIterator(int arpNum) const
 {
 	return arpADPCM_.at(static_cast<size_t>(arpNum))->getIterator();
 }
@@ -2464,49 +2500,64 @@ SequenceType InstrumentsManager::getPitchADPCMType(int ptNum) const
 	return ptADPCM_.at(static_cast<size_t>(ptNum))->getType();
 }
 
-void InstrumentsManager::addPitchADPCMSequenceCommand(int ptNum, int type, int data)
+void InstrumentsManager::addPitchADPCMSequenceData(int ptNum, int data)
 {
-	ptADPCM_.at(static_cast<size_t>(ptNum))->addSequenceCommand(type, data);
+	ptADPCM_.at(static_cast<size_t>(ptNum))->addSequenceUnit(PitchUnit(data));
 }
 
-void InstrumentsManager::removePitchADPCMSequenceCommand(int ptNum)
+void InstrumentsManager::removePitchADPCMSequenceData(int ptNum)
 {
-	ptADPCM_.at(static_cast<size_t>(ptNum))->removeSequenceCommand();
+	ptADPCM_.at(static_cast<size_t>(ptNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data)
+void InstrumentsManager::setPitchADPCMSequenceData(int ptNum, int cnt, int data)
 {
-	ptADPCM_.at(static_cast<size_t>(ptNum))->setSequenceCommand(cnt, type, data);
+	ptADPCM_.at(static_cast<size_t>(ptNum))->setSequenceUnit(cnt, PitchUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getPitchADPCMSequence(int ptNum)
+std::vector<PitchUnit> InstrumentsManager::getPitchADPCMSequence(int ptNum)
 {
 	return ptADPCM_.at(static_cast<size_t>(ptNum))->getSequence();
 }
 
-void InstrumentsManager::setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addPitchADPCMLoop(int ptNum, const InstrumentSequenceLoop& loop)
 {
-	ptADPCM_.at(static_cast<size_t>(ptNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	arpADPCM_.at(static_cast<size_t>(ptNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getPitchADPCMLoops(int ptNum) const
+void InstrumentsManager::removePitchADPCMLoop(int ptNum, int begin, int end)
 {
-	return ptADPCM_.at(static_cast<size_t>(ptNum))->getLoops();
+	arpADPCM_.at(static_cast<size_t>(ptNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setPitchADPCMRelease(int ptNum, ReleaseType type, int begin)
+void InstrumentsManager::changePitchADPCMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	ptADPCM_.at(static_cast<size_t>(ptNum))->setRelease(type, begin);
+	arpADPCM_.at(static_cast<size_t>(ptNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getPitchADPCMRelease(int ptNum) const
+void InstrumentsManager::clearPitchADPCMLoops(int ptNum)
 {
-	return ptADPCM_.at(static_cast<size_t>(ptNum))->getRelease();
+	arpADPCM_.at(static_cast<size_t>(ptNum))->clearLoops();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getPitchADPCMIterator(int ptNum) const
+InstrumentSequenceLoopRoot InstrumentsManager::getPitchADPCMLoopRoot(int ptNum) const
 {
-	return ptADPCM_.at(static_cast<size_t>(ptNum))->getIterator();
+	return arpADPCM_.at(static_cast<size_t>(ptNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setPitchADPCMRelease(int ptNum, const InstrumentSequenceRelease& release)
+{
+	arpADPCM_.at(static_cast<size_t>(ptNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getPitchADPCMRelease(int ptNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(ptNum))->getRelease();
+}
+
+PitchIter InstrumentsManager::getPitchADPCMIterator(int ptNum) const
+{
+	return arpADPCM_.at(static_cast<size_t>(ptNum))->getIterator();
 }
 
 std::multiset<int> InstrumentsManager::getPitchADPCMUsers(int ptNum) const
@@ -2527,11 +2578,11 @@ std::vector<int> InstrumentsManager::getPitchADPCMEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignablePitchADPCM() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(ptADPCM_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& pt) { return (pt->isUserInstrument() || pt->isEdited()); };
+		cond = [](decltype(ptADPCM_.front()) pt) { return (pt->isUserInstrument() || pt->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& pt) { return pt->isUserInstrument(); };
+		cond = [](decltype(ptADPCM_.front()) pt) { return pt->isUserInstrument(); };
 	auto&& it = std::find_if_not(ptADPCM_.begin(), ptADPCM_.end(), cond);
 
 	if (it == ptADPCM_.end()) return -1;

@@ -407,29 +407,44 @@ void BambooTracker::setPitchFMType(int ptNum, SequenceType type)
 	instMan_->setPitchFMType(ptNum, type);
 }
 
-void BambooTracker::addPitchFMSequenceCommand(int ptNum, int type, int data)
+void BambooTracker::addPitchFMSequenceData(int ptNum, int data)
 {
-	instMan_->addPitchFMSequenceCommand(ptNum, type, data);
+	instMan_->addPitchFMSequenceData(ptNum, data);
 }
 
-void BambooTracker::removePitchFMSequenceCommand(int ptNum)
+void BambooTracker::removePitchFMSequenceData(int ptNum)
 {
-	instMan_->removePitchFMSequenceCommand(ptNum);
+	instMan_->removePitchFMSequenceData(ptNum);
 }
 
-void BambooTracker::setPitchFMSequenceCommand(int ptNum, int cnt, int type, int data)
+void BambooTracker::setPitchFMSequenceData(int ptNum, int cnt, int data)
 {
-	instMan_->setPitchFMSequenceCommand(ptNum, cnt, type, data);
+	instMan_->setPitchFMSequenceData(ptNum, cnt, data);
 }
 
-void BambooTracker::setPitchFMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addPitchFMLoop(int ptNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setPitchFMLoops(ptNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addPitchFMLoop(ptNum, loop);
 }
 
-void BambooTracker::setPitchFMRelease(int ptNum, ReleaseType type, int begin)
+void BambooTracker::removePitchFMLoop(int ptNum, int begin, int end)
 {
-	instMan_->setPitchFMRelease(ptNum, type, begin);
+	instMan_->removePitchFMLoop(ptNum, begin, end);
+}
+
+void BambooTracker::changePitchFMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changePitchFMLoop(ptNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearPitchFMLoops(int ptNum)
+{
+	instMan_->clearPitchFMLoops(ptNum);
+}
+
+void BambooTracker::setPitchFMRelease(int ptNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setPitchFMRelease(ptNum, release);
 }
 
 void BambooTracker::setInstrumentFMPitch(int instNum, FMOperatorType op, int ptNum)
@@ -649,29 +664,44 @@ void BambooTracker::setPitchSSGType(int ptNum, SequenceType type)
 	instMan_->setPitchSSGType(ptNum, type);
 }
 
-void BambooTracker::addPitchSSGSequenceCommand(int ptNum, int type, int data)
+void BambooTracker::addPitchSSGSequenceData(int ptNum, int data)
 {
-	instMan_->addPitchSSGSequenceCommand(ptNum, type, data);
+	instMan_->addPitchSSGSequenceData(ptNum, data);
 }
 
-void BambooTracker::removePitchSSGSequenceCommand(int ptNum)
+void BambooTracker::removePitchSSGSequenceData(int ptNum)
 {
-	instMan_->removePitchSSGSequenceCommand(ptNum);
+	instMan_->removePitchSSGSequenceData(ptNum);
 }
 
-void BambooTracker::setPitchSSGSequenceCommand(int ptNum, int cnt, int type, int data)
+void BambooTracker::setPitchSSGSequenceData(int ptNum, int cnt, int data)
 {
-	instMan_->setPitchSSGSequenceCommand(ptNum, cnt, type, data);
+	instMan_->setPitchSSGSequenceData(ptNum, cnt, data);
 }
 
-void BambooTracker::setPitchSSGLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addPitchSSGLoop(int ptNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setPitchSSGLoops(ptNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addPitchSSGLoop(ptNum, loop);
 }
 
-void BambooTracker::setPitchSSGRelease(int ptNum, ReleaseType type, int begin)
+void BambooTracker::removePitchSSGLoop(int ptNum, int begin, int end)
 {
-	instMan_->setPitchSSGRelease(ptNum, type, begin);
+	instMan_->removePitchSSGLoop(ptNum, begin, end);
+}
+
+void BambooTracker::changePitchSSGLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changePitchSSGLoop(ptNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearPitchSSGLoops(int ptNum)
+{
+	instMan_->clearPitchSSGLoops(ptNum);
+}
+
+void BambooTracker::setPitchSSGRelease(int ptNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setPitchSSGRelease(ptNum, release);
 }
 
 void BambooTracker::setInstrumentSSGPitch(int instNum, int ptNum)
@@ -894,29 +924,44 @@ void BambooTracker::setPitchADPCMType(int ptNum, SequenceType type)
 	instMan_->setPitchADPCMType(ptNum, type);
 }
 
-void BambooTracker::addPitchADPCMSequenceCommand(int ptNum, int type, int data)
+void BambooTracker::addPitchADPCMSequenceData(int ptNum, int data)
 {
-	instMan_->addPitchADPCMSequenceCommand(ptNum, type, data);
+	instMan_->addPitchADPCMSequenceData(ptNum, data);
 }
 
-void BambooTracker::removePitchADPCMSequenceCommand(int ptNum)
+void BambooTracker::removePitchADPCMSequenceData(int ptNum)
 {
-	instMan_->removePitchADPCMSequenceCommand(ptNum);
+	instMan_->removePitchADPCMSequenceData(ptNum);
 }
 
-void BambooTracker::setPitchADPCMSequenceCommand(int ptNum, int cnt, int type, int data)
+void BambooTracker::setPitchADPCMSequenceData(int ptNum, int cnt, int data)
 {
-	instMan_->setPitchADPCMSequenceCommand(ptNum, cnt, type, data);
+	instMan_->setPitchADPCMSequenceData(ptNum, cnt, data);
 }
 
-void BambooTracker::setPitchADPCMLoops(int ptNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addPitchADPCMLoop(int ptNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setPitchADPCMLoops(ptNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addPitchADPCMLoop(ptNum, loop);
 }
 
-void BambooTracker::setPitchADPCMRelease(int ptNum, ReleaseType type, int begin)
+void BambooTracker::removePitchADPCMLoop(int ptNum, int begin, int end)
 {
-	instMan_->setPitchADPCMRelease(ptNum, type, begin);
+	instMan_->removePitchADPCMLoop(ptNum, begin, end);
+}
+
+void BambooTracker::changePitchADPCMLoop(int ptNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changePitchADPCMLoop(ptNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearPitchADPCMLoops(int ptNum)
+{
+	instMan_->clearPitchADPCMLoops(ptNum);
+}
+
+void BambooTracker::setPitchADPCMRelease(int ptNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setPitchADPCMRelease(ptNum, release);
 }
 
 void BambooTracker::setInstrumentADPCMPitch(int instNum, int ptNum)

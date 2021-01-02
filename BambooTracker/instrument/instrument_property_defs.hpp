@@ -29,11 +29,9 @@
 
 using FMOperatorSequenceUnit = InstrumentSequenceBaseUnit;
 using FMOperatorSequenceIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
-using FMArpeggioUnit = InstrumentSequenceBaseUnit;
-using FMArpeggioIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 
-using SSGArpeggioUnit = InstrumentSequenceBaseUnit;
-using SSGArpeggioIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
+using ArpeggioUnit = InstrumentSequenceBaseUnit;
+using ArpeggioIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 
-using ADPCMArpeggioUnit = InstrumentSequenceBaseUnit;
-using ADPCMArpeggioIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
+using PitchUnit = InstrumentSequenceBaseUnit;
+using PitchIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
