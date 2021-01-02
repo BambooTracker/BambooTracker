@@ -355,7 +355,7 @@ public:
 
 private:
 	std::shared_ptr<InstrumentSSG> refInstSSG_[3];
-	bool isKeyOnSSG_[3], hasKeyOnBeforeSSG_[9];
+	bool isKeyOnSSG_[3], hasKeyOnBeforeSSG_[3];
 	uint8_t mixerSSG_;
 	std::deque<ToneDetail> baseToneSSG_[3];
 	ToneDetail keyToneSSG_[3];

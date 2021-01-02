@@ -28,29 +28,11 @@
 #include "sequence_iterator_interface.hpp"
 #include "command_sequence.hpp"
 
-class ArpeggioEffectIterator : public SequenceIteratorInterface
+class ArpeggioEffectIterator : public SequenceIterator2<InstrumentSequenceBaseUnit>
 {
 public:
 	ArpeggioEffectIterator(int second, int third);
-	int getPosition() const override;
-	int getSequenceType() const override;
-	int getCommandType() const override;
-	int getCommandData() const override;
-	int next(bool isReleaseBegin = false) override;
-	int front() override;
-	int end() override;
-
-private:
-	int pos_;
-	bool started_;
-	int second_, third_;
-};
-
-class ArpeggioEffectIterator2 : public SequenceIterator2<InstrumentSequenceBaseUnit>
-{
-public:
-	ArpeggioEffectIterator2(int second, int third);
-	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
+	SequenceType type() const noexcept override { return SequenceType::ABSOLUTE_SEQUENCE; }
 
 	InstrumentSequenceBaseUnit data() const noexcept override;
 
@@ -64,29 +46,11 @@ private:
 	InstrumentSequenceBaseUnit second_, third_;
 };
 
-class WavingEffectIterator : public SequenceIteratorInterface
+class WavingEffectIterator : public SequenceIterator2<InstrumentSequenceBaseUnit>
 {
 public:
 	WavingEffectIterator(int period, int depth);
-	int getPosition() const override;
-	int getSequenceType() const override;
-	int getCommandType() const override;
-	int getCommandData() const override;
-	int next(bool isReleaseBegin = false) override;
-	int front() override;
-	int end() override;
-
-private:
-	int pos_;
-	bool started_;
-	std::vector<int> seq_;
-};
-
-class WavingEffectIterator2 : public SequenceIterator2<InstrumentSequenceBaseUnit>
-{
-public:
-	WavingEffectIterator2(int period, int depth);
-	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
+	SequenceType type() const noexcept override { return SequenceType::ABSOLUTE_SEQUENCE; }
 
 	InstrumentSequenceBaseUnit data() const override;
 
@@ -101,29 +65,11 @@ private:
 	std::vector<InstrumentSequenceBaseUnit> seq_;
 };
 
-class NoteSlideEffectIterator : public SequenceIteratorInterface
+class NoteSlideEffectIterator : public SequenceIterator2<InstrumentSequenceBaseUnit>
 {
 public:
 	NoteSlideEffectIterator(int speed, int seminote);
-	int getPosition() const override;
-	int getSequenceType() const override;
-	int getCommandType() const override;
-	int getCommandData() const override;
-	int next(bool isReleaseBegin = false) override;
-	int front() override;
-	int end() override;
-
-private:
-	int pos_;
-	bool started_;
-	std::vector<int> seq_;
-};
-
-class NoteSlideEffectIterator2 : public SequenceIterator2<InstrumentSequenceBaseUnit>
-{
-public:
-	NoteSlideEffectIterator2(int speed, int seminote);
-	SequenceType type() const noexcept override { return SequenceType::NO_SEQUENCE_TYPE; }
+	SequenceType type() const noexcept override { return SequenceType::ABSOLUTE_SEQUENCE; }
 
 	InstrumentSequenceBaseUnit data() const override;
 

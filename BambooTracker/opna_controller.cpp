@@ -804,7 +804,7 @@ void OPNAController::setPanFM(int ch, int value)
 void OPNAController::setArpeggioEffectFM(int ch, int second, int third)
 {
 	if (second || third) {
-		arpItFM_[ch] = std::make_unique<ArpeggioEffectIterator2>(second, third);
+		arpItFM_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
 		isArpEffFM_[ch] = true;
 	}
 	else {
@@ -942,11 +942,11 @@ void OPNAController::haltSequencesFM(int ch)
 	for (auto& p : FM_ENV_PARAMS_OP_.at(toChannelOperatorType(ch))) {
 		if (auto& it = opSeqItFM_[inch].at(p)) it->end();
 	}
-	if (treItFM_[ch]) treItFM_[ch]->end();
-	if (arpItFM_[ch]) arpItFM_[ch]->end();
-	if (ptItFM_[ch]) ptItFM_[ch]->end();
-	if (vibItFM_[ch]) vibItFM_[ch]->end();
-	if (nsItFM_[ch]) nsItFM_[ch]->end();
+	if (auto& treIt = treItFM_[ch]) treIt->end();
+	if (auto& arpIt = arpItFM_[ch]) arpIt->end();
+	if (auto& ptIt = ptItFM_[ch]) ptIt->end();
+	if (auto& vibIt = vibItFM_[ch]) vibIt->end();
+	if (auto& nsIt = nsItFM_[ch]) nsIt->end();
 }
 
 /********** Chip details **********/
@@ -1730,27 +1730,30 @@ void OPNAController::setFrontFMSequences(int ch)
 
 	checkOperatorSequenceFM(ch, 1);
 
-	if (treItFM_[ch]) treItFM_[ch]->front();
+	if (auto& treIt = treItFM_[ch]) treIt->front();
 	sumVolSldFM_[ch] += volSldFM_[ch];
 	checkVolumeEffectFM(ch);
 
-	if (arpItFM_[ch]) {
-		arpItFM_[ch]->front();
+	if (auto& arpIt = arpItFM_[ch]) {
+		arpIt->front();
 		checkRealToneFMByArpeggio(ch);
 	}
 	checkPortamentoFM(ch);
 
-	if (ptItFM_[ch]) {
-		ptItFM_[ch]->front();
+	if (auto& ptIt = ptItFM_[ch]) {
+		ptIt->front();
 		checkRealToneFMByPitch(ch);
 	}
-	if (vibItFM_[ch]) {
-		vibItFM_[ch]->front();
+	if (auto& vibIt = vibItFM_[ch]) {
+		vibIt->front();
 		needToneSetFM_[ch] = true;
 	}
-	if (nsItFM_[ch] && nsItFM_[ch]->front() != -1) {
-		sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
-		needToneSetFM_[ch] = true;
+	if (auto& nsIt = nsItFM_[ch]) {
+		nsIt->front();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldFM_[ch] += nsIt->data().data;
+			needToneSetFM_[ch] = true;
+		}
 	}
 
 	writePitchFM(ch);
@@ -1768,27 +1771,30 @@ void OPNAController::releaseStartFMSequences(int ch)
 
 	checkOperatorSequenceFM(ch, 2);
 
-	if (treItFM_[ch]) treItFM_[ch]->next(true);
+	if (auto& treIt = treItFM_[ch]) treIt->release();
 	sumVolSldFM_[ch] += volSldFM_[ch];
 	checkVolumeEffectFM(ch);
 
-	if (arpItFM_[ch]) {
-		arpItFM_[ch]->release();
+	if (auto& arpIt = arpItFM_[ch]) {
+		arpIt->release();
 		checkRealToneFMByArpeggio(ch);
 	}
 	checkPortamentoFM(ch);
 
-	if (ptItFM_[ch]) {
-		ptItFM_[ch]->release();
+	if (auto& ptIt = ptItFM_[ch]) {
+		ptIt->release();
 		checkRealToneFMByPitch(ch);
 	}
-	if (vibItFM_[ch]) {
-		vibItFM_[ch]->next(true);
+	if (auto& vibIt = vibItFM_[ch]) {
+		vibIt->release();
 		needToneSetFM_[ch] = true;
 	}
-	if (nsItFM_[ch] && nsItFM_[ch]->next(true) != -1) {
-		sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
-		needToneSetFM_[ch] = true;
+	if (auto& nsIt = nsItFM_[ch]) {
+		nsIt->release();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldFM_[ch] += nsIt->data().data;
+			needToneSetFM_[ch] = true;
+		}
 	}
 
 	if (needToneSetFM_[ch]) writePitchFM(ch);
@@ -1810,27 +1816,30 @@ void OPNAController::tickEventFM(int ch)
 
 		checkOperatorSequenceFM(ch, 0);
 
-		if (treItFM_[ch]) treItFM_[ch]->next();
+		if (auto& treIt = treItFM_[ch]) treIt->next();
 		sumVolSldFM_[ch] += volSldFM_[ch];
 		checkVolumeEffectFM(ch);
 
-		if (arpItFM_[ch]) {
-			arpItFM_[ch]->next();
+		if (auto& arpIt = arpItFM_[ch]) {
+			arpIt->next();
 			checkRealToneFMByArpeggio(ch);
 		}
 		checkPortamentoFM(ch);
 
-		if (ptItFM_[ch]) {
-			ptItFM_[ch]->next();
+		if (auto& ptIt = ptItFM_[ch]) {
+			ptIt->next();
 			checkRealToneFMByPitch(ch);
 		}
-		if (vibItFM_[ch]) {
-			vibItFM_[ch]->next();
+		if (auto& vibIt = vibItFM_[ch]) {
+			vibIt->next();
 			needToneSetFM_[ch] = true;
 		}
-		if (nsItFM_[ch] && nsItFM_[ch]->next() != -1) {
-			sumNoteSldFM_[ch] += nsItFM_[ch]->getCommandType();
-			needToneSetFM_[ch] = true;
+		if (auto& nsIt = nsItFM_[ch]) {
+			nsIt->next();
+			if (!nsIt->hasEnded()) {
+				sumNoteSldFM_[ch] += nsIt->data().data;
+				needToneSetFM_[ch] = true;
+			}
 		}
 
 		if (needToneSetFM_[ch]) writePitchFM(ch);
@@ -1861,8 +1870,8 @@ void OPNAController::checkOperatorSequenceFM(int ch, int type)
 void OPNAController::checkVolumeEffectFM(int ch)
 {
 	int v;
-	if (treItFM_[ch]) {
-		v = treItFM_[ch]->getCommandType() + sumVolSldFM_[ch];
+	if (auto& treIt = treItFM_[ch]) {
+		v = treIt->data().data + sumVolSldFM_[ch];
 	}
 	else {
 		if (volSldFM_[ch]) v = sumVolSldFM_[ch];
@@ -1929,7 +1938,7 @@ void OPNAController::writePitchFM(int ch)
 					 keyToneFM_[ch].octave,
 					 keyToneFM_[ch].pitch
 					 + sumPitchFM_[ch]
-					 + (vibItFM_[ch] ? vibItFM_[ch]->getCommandType() : 0)
+					 + (vibItFM_[ch] ? vibItFM_[ch]->data().data : 0)
 					 + detuneFM_[ch]
 					 + sumNoteSldFM_[ch]
 					 + transposeFM_[ch],
@@ -2158,7 +2167,7 @@ void OPNAController::setRealVolumeSSG(int ch)
 			volume -= (15 - type);
 		}
 	}
-	if (treItSSG_[ch]) volume += treItSSG_[ch]->getCommandType();
+	if (auto& treIt = treItSSG_[ch]) volume += treIt->data().data;
 	volume += sumVolSldSSG_[ch];
 
 	volume = clamp(volume, 0, 15);
@@ -2176,7 +2185,7 @@ void OPNAController::setMasterVolumeSSG(double dB)
 void OPNAController::setArpeggioEffectSSG(int ch, int second, int third)
 {
 	if (second || third) {
-		arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator2>(second, third);
+		arpItSSG_[ch] = std::make_unique<ArpeggioEffectIterator>(second, third);
 		isArpEffSSG_[ch] = true;
 	}
 	else {
@@ -2308,14 +2317,14 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 /********** For state retrieve **********/
 void OPNAController::haltSequencesSSG(int ch)
 {
-	if (wfItSSG_[ch]) wfItSSG_[ch]->end();
-	if (treItSSG_[ch]) treItSSG_[ch]->end();
-	if (envItSSG_[ch]) envItSSG_[ch]->end();
-	if (tnItSSG_[ch]) tnItSSG_[ch]->end();
-	if (arpItSSG_[ch]) arpItSSG_[ch]->end();
-	if (ptItSSG_[ch]) ptItSSG_[ch]->end();
-	if (vibItSSG_[ch]) vibItSSG_[ch]->end();
-	if (nsItSSG_[ch]) nsItSSG_[ch]->end();
+	if (auto& wfIt = wfItSSG_[ch]) wfIt->end();
+	if (auto& treIt = treItSSG_[ch]) treIt->end();
+	if (auto& envIt = envItSSG_[ch]) envIt->end();
+	if (auto& tnIt = tnItSSG_[ch]) tnIt->end();
+	if (auto& arpIt = arpItSSG_[ch]) arpIt->end();
+	if (auto& ptIt = ptItSSG_[ch]) ptIt->end();
+	if (auto& vibIt = vibItSSG_[ch]) vibIt->end();
+	if (auto& nsIt = nsItSSG_[ch]) nsIt->end();
 }
 
 /********** Chip details **********/
@@ -2422,8 +2431,8 @@ void OPNAController::setFrontSSGSequences(int ch)
 	if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->front());
 	else writeSquareWaveform(ch);
 
-	if (treItSSG_[ch]) {
-		treItSSG_[ch]->front();
+	if (auto& treIt = treItSSG_[ch]) {
+		treIt->front();
 		needEnvSetSSG_[ch] = true;
 	}
 	if (volSldSSG_[ch]) {
@@ -2436,23 +2445,26 @@ void OPNAController::setFrontSSGSequences(int ch)
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->front());
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-	if (arpItSSG_[ch]) {
-		arpItSSG_[ch]->front();
+	if (auto& arpIt = arpItSSG_[ch]) {
+		arpIt->front();
 		checkRealToneSSGByArpeggio(ch);
 	}
 	checkPortamentoSSG(ch);
 
-	if (ptItSSG_[ch]) {
-		ptItSSG_[ch]->front();
+	if (auto& ptIt = ptItSSG_[ch]) {
+		ptIt->front();
 		checkRealToneSSGByPitch(ch);
 	}
-	if (vibItSSG_[ch]) {
-		vibItSSG_[ch]->front();
+	if (auto& vibIt = vibItSSG_[ch]) {
+		vibIt->front();
 		needToneSetSSG_[ch] = true;
 	}
-	if (nsItSSG_[ch] && nsItSSG_[ch]->front() != -1) {
-		sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
-		needToneSetSSG_[ch] = true;
+	if (auto& nsIt = nsItSSG_[ch]) {
+		nsIt->front();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldSSG_[ch] += nsIt->data().data;
+			needToneSetSSG_[ch] = true;
+		}
 	}
 
 	writePitchSSG(ch);
@@ -2466,8 +2478,8 @@ void OPNAController::releaseStartSSGSequences(int ch)
 
 	if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->next(true));
 
-	if (treItSSG_[ch]) {
-		treItSSG_[ch]->next(true);
+	if (auto& treIt = treItSSG_[ch]) {
+		treIt->release();
 		needEnvSetSSG_[ch] = true;
 	}
 	if (volSldSSG_[ch]) {
@@ -2492,23 +2504,26 @@ void OPNAController::releaseStartSSGSequences(int ch)
 	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-	if (arpItSSG_[ch]) {
-		arpItSSG_[ch]->release();
+	if (auto& arpIt = arpItSSG_[ch]) {
+		arpIt->release();
 		checkRealToneSSGByArpeggio(ch);
 	}
 	checkPortamentoSSG(ch);
 
-	if (ptItSSG_[ch]) {
-		ptItSSG_[ch]->release();
+	if (auto& ptIt = ptItSSG_[ch]) {
+		ptIt->release();
 		checkRealToneSSGByPitch(ch);
 	}
-	if (vibItSSG_[ch]) {
-		vibItSSG_[ch]->next(true);
+	if (auto& vibIt = vibItSSG_[ch]) {
+		vibIt->release();
 		needToneSetSSG_[ch] = true;
 	}
-	if (nsItSSG_[ch] && nsItSSG_[ch]->next(true) != -1) {
-		sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
-		needToneSetSSG_[ch] = true;
+	if (auto& nsIt = nsItSSG_[ch]) {
+		nsIt->release();
+		if (!nsIt->hasEnded()) {
+			sumNoteSldSSG_[ch] += nsIt->data().data;
+			needToneSetSSG_[ch] = true;
+		}
 	}
 
 	if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
@@ -2527,8 +2542,8 @@ void OPNAController::tickEventSSG(int ch)
 
 		if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->next());
 
-		if (treItSSG_[ch]) {
-			treItSSG_[ch]->next();
+		if (auto& treIt = treItSSG_[ch]) {
+			treIt->next();
 			needEnvSetSSG_[ch] = true;
 		}
 		if (volSldSSG_[ch]) {
@@ -2545,23 +2560,26 @@ void OPNAController::tickEventSSG(int ch)
 		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
 		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
-		if (arpItSSG_[ch]) {
-			arpItSSG_[ch]->next();
+		if (auto& arpIt = arpItSSG_[ch]) {
+			arpIt->next();
 			checkRealToneSSGByArpeggio(ch);
 		}
 		checkPortamentoSSG(ch);
 
-		if (ptItSSG_[ch]) {
-			ptItSSG_[ch]->next();
+		if (auto& ptIt = ptItSSG_[ch]) {
+			ptIt->next();
 			checkRealToneSSGByPitch(ch);
 		}
-		if (vibItSSG_[ch]) {
-			vibItSSG_[ch]->next();
+		if (auto& vibIt = vibItSSG_[ch]) {
+			vibIt->next();
 			needToneSetSSG_[ch] = true;
 		}
-		if (nsItSSG_[ch] && nsItSSG_[ch]->next() != -1) {
-			sumNoteSldSSG_[ch] += nsItSSG_[ch]->getCommandType();
-			needToneSetSSG_[ch] = true;
+		if (auto& nsIt = nsItSSG_[ch]) {
+			nsIt->next();
+			if (!nsIt->hasEnded()) {
+				sumNoteSldSSG_[ch] += nsIt->data().data;
+				needToneSetSSG_[ch] = true;
+			}
 		}
 
 		if (needToneSetSSG_[ch] || (isHardEnvSSG_[ch] && needEnvSetSSG_[ch]) || needSqMaskFreqSetSSG_[ch])
@@ -3117,7 +3135,7 @@ void OPNAController::writePitchSSG(int ch)
 
 	int p = keyToneSSG_[ch].pitch
 			+ sumPitchSSG_[ch]
-			+ (vibItSSG_[ch] ? vibItSSG_[ch]->getCommandType() : 0)
+			+ (vibItSSG_[ch] ? vibItSSG_[ch]->data().data : 0)
 			+ detuneSSG_[ch]
 			+ sumNoteSldSSG_[ch]
 			+ transposeSSG_[ch];
@@ -3536,7 +3554,7 @@ void OPNAController::setRealVolumeADPCM()
 		int type = envItADPCM_->getCommandType();
 		if (type >= 0) volume -= (NSTEP_ADPCM_VOLUME - 1 - type);
 	}
-	if (treItADPCM_) volume += treItADPCM_->getCommandType();
+	if (treItADPCM_) volume += treItADPCM_->data().data;
 	volume += sumVolSldADPCM_;
 
 	volume = clamp(volume, 0, NSTEP_ADPCM_VOLUME - 1);
@@ -3557,7 +3575,7 @@ void OPNAController::setArpeggioEffectADPCM(int second, int third)
 	if (refInstKit_) return;
 
 	if (second || third) {
-		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator2>(second, third);
+		arpItADPCM_ = std::make_unique<ArpeggioEffectIterator>(second, third);
 		isArpEffADPCM_ = true;
 	}
 	else {
@@ -3759,9 +3777,12 @@ void OPNAController::setFrontADPCMSequences()
 		vibItADPCM_->front();
 		needToneSetADPCM_ = true;
 	}
-	if (nsItADPCM_ && nsItADPCM_->front() != -1) {
-		sumNoteSldADPCM_ += nsItADPCM_->getCommandType();
-		needToneSetADPCM_ = true;
+	if (nsItADPCM_) {
+		nsItADPCM_->front();
+		if (!nsItADPCM_->hasEnded()) {
+			sumNoteSldADPCM_ += nsItADPCM_->data().data;
+			needToneSetADPCM_ = true;
+		}
 	}
 
 	writePitchADPCM();
@@ -3772,7 +3793,7 @@ void OPNAController::releaseStartADPCMSequences()
 	if (isMuteADPCM_ || (!refInstADPCM_ && !refInstKit_)) return;
 
 	if (treItADPCM_) {
-		treItADPCM_->next(true);
+		treItADPCM_->release();
 		needEnvSetADPCM_ = true;
 	}
 	if (volSldADPCM_) {
@@ -3803,12 +3824,15 @@ void OPNAController::releaseStartADPCMSequences()
 		checkRealToneADPCMByPitch();
 	}
 	if (vibItADPCM_) {
-		vibItADPCM_->next(true);
+		vibItADPCM_->release();
 		needToneSetADPCM_ = true;
 	}
-	if (nsItADPCM_ && nsItADPCM_->next(true) != -1) {
-		sumNoteSldADPCM_ += nsItADPCM_->getCommandType();
-		needToneSetADPCM_ = true;
+	if (nsItADPCM_) {
+		nsItADPCM_->release();
+		if (!nsItADPCM_->hasEnded()) {
+			sumNoteSldADPCM_ += nsItADPCM_->data().data;
+			needToneSetADPCM_ = true;
+		}
 	}
 
 	if (needToneSetADPCM_) writePitchADPCM();
@@ -3853,9 +3877,12 @@ void OPNAController::tickEventADPCM()
 			vibItADPCM_->next();
 			needToneSetADPCM_ = true;
 		}
-		if (nsItADPCM_ && nsItADPCM_->next() != -1) {
-			sumNoteSldADPCM_ += nsItADPCM_->getCommandType();
-			needToneSetADPCM_ = true;
+		if (nsItADPCM_) {
+			nsItADPCM_->next();
+			if (!nsItADPCM_->hasEnded()) {
+				sumNoteSldADPCM_ += nsItADPCM_->data().data;
+				needToneSetADPCM_ = true;
+			}
 		}
 
 		if (needToneSetADPCM_) writePitchADPCM();
@@ -3888,7 +3915,7 @@ void OPNAController::writePitchADPCM()
 	if (refInstADPCM_) {
 		int p = keyToneADPCM_.pitch
 				+ sumPitchADPCM_
-				+ (vibItADPCM_ ? vibItADPCM_->getCommandType() : 0)
+				+ (vibItADPCM_ ? vibItADPCM_->data().data : 0)
 				+ detuneADPCM_
 				+ sumNoteSldADPCM_
 				+ transposeADPCM_;
