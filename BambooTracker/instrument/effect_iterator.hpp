@@ -60,7 +60,6 @@ public:
 	int end() override;
 
 private:
-	int pos_;
 	bool started_;
 	std::vector<InstrumentSequenceBaseUnit> seq_;
 };
@@ -79,7 +78,6 @@ public:
 	int end() override;
 
 private:
-	int pos_;
 	bool started_;
 	std::vector<InstrumentSequenceBaseUnit> seq_;
 };

@@ -771,7 +771,8 @@ void InstrumentsManager::clearAll()
 				   PitchUnit>>(i, SequenceType::AbsoluteSequence, PitchUnit(127), PitchUnit());
 
 		wfSSG_[i] = std::make_shared<CommandSequence>(i);
-		tnSSG_[i] = std::make_shared<CommandSequence>(i);
+		tnSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+					SSGToneNoiseUnit>>(i, SequenceType::PlainSequence, SSGToneNoiseUnit(0), SSGToneNoiseUnit());
 		envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::PlainSequence, 15);
 		arpSSG_[i] = std::make_shared<InstrumentSequenceProperty<
 					 ArpeggioUnit>>(i, SequenceType::AbsoluteSequence, ArpeggioUnit(48), ArpeggioUnit());
@@ -849,7 +850,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 		if (!wfSSG_[i]->isUserInstrument())
 			wfSSG_[i] = std::make_shared<CommandSequence>(i);
 		if (!tnSSG_[i]->isUserInstrument())
-			tnSSG_[i] = std::make_shared<CommandSequence>(i);
+			tnSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+						SSGToneNoiseUnit>>(i, SequenceType::PlainSequence, SSGToneNoiseUnit(0), SSGToneNoiseUnit());
 		if (!envSSG_[i]->isUserInstrument())
 			envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::PlainSequence, 15);
 		if (!arpSSG_[i]->isUserInstrument())
@@ -1618,47 +1620,62 @@ int InstrumentsManager::getInstrumentSSGToneNoise(int instNum)
 	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)])->getToneNoiseNumber();
 }
 
-void InstrumentsManager::addToneNoiseSSGSequenceCommand(int tnNum, int type, int data)
+void InstrumentsManager::addToneNoiseSSGSequenceData(int tnNum, int data)
 {
-	tnSSG_.at(static_cast<size_t>(tnNum))->addSequenceCommand(type, data);
+	tnSSG_.at(static_cast<size_t>(tnNum))->addSequenceUnit(SSGToneNoiseUnit(data));
 }
 
-void InstrumentsManager::removeToneNoiseSSGSequenceCommand(int tnNum)
+void InstrumentsManager::removeToneNoiseSSGSequenceData(int tnNum)
 {
-	tnSSG_.at(static_cast<size_t>(tnNum))->removeSequenceCommand();
+	tnSSG_.at(static_cast<size_t>(tnNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data)
+void InstrumentsManager::setToneNoiseSSGSequenceData(int tnNum, int cnt, int data)
 {
-	tnSSG_.at(static_cast<size_t>(tnNum))->setSequenceCommand(cnt, type, data);
+	tnSSG_.at(static_cast<size_t>(tnNum))->setSequenceUnit(cnt, SSGToneNoiseUnit(data));
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getToneNoiseSSGSequence(int tnNum)
+std::vector<SSGToneNoiseUnit> InstrumentsManager::getToneNoiseSSGSequence(int tnNum)
 {
 	return tnSSG_.at(static_cast<size_t>(tnNum))->getSequence();
 }
 
-void InstrumentsManager::setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addToneNoiseSSGLoop(int tnNum, const InstrumentSequenceLoop& loop)
 {
-	tnSSG_.at(static_cast<size_t>(tnNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	tnSSG_.at(static_cast<size_t>(tnNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getToneNoiseSSGLoops(int tnNum) const
+void InstrumentsManager::removeToneNoiseSSGLoop(int tnNum, int begin, int end)
 {
-	return tnSSG_.at(static_cast<size_t>(tnNum))->getLoops();
+	tnSSG_.at(static_cast<size_t>(tnNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin)
+void InstrumentsManager::changeToneNoiseSSGLoop(int tnNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	tnSSG_.at(static_cast<size_t>(tnNum))->setRelease(type, begin);
+	tnSSG_.at(static_cast<size_t>(tnNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getToneNoiseSSGRelease(int tnNum) const
+void InstrumentsManager::clearToneNoiseSSGLoops(int tnNum)
+{
+	tnSSG_.at(static_cast<size_t>(tnNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getToneNoiseSSGLoopRoot(int tnNum) const
+{
+	return tnSSG_.at(static_cast<size_t>(tnNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setToneNoiseSSGRelease(int tnNum, const InstrumentSequenceRelease& release)
+{
+	tnSSG_.at(static_cast<size_t>(tnNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getToneNoiseSSGRelease(int tnNum) const
 {
 	return tnSSG_.at(static_cast<size_t>(tnNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getToneNoiseSSGIterator(int tnNum) const
+SSGToneNoiseIter InstrumentsManager::getToneNoiseSSGIterator(int tnNum) const
 {
 	return tnSSG_.at(static_cast<size_t>(tnNum))->getIterator();
 }
@@ -1681,11 +1698,11 @@ std::vector<int> InstrumentsManager::getToneNoiseSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableToneNoiseSSG() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(tnSSG_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& tn) { return (tn->isUserInstrument() || tn->isEdited()); };
+		cond = [](decltype(tnSSG_.front()) tn) { return (tn->isUserInstrument() || tn->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& tn) { return tn->isUserInstrument(); };
+		cond = [](decltype(tnSSG_.front()) tn) { return tn->isUserInstrument(); };
 	auto&& it = std::find_if_not(tnSSG_.begin(), tnSSG_.end(), cond);
 
 	if (it == tnSSG_.end()) return -1;

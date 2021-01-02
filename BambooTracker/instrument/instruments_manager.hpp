@@ -211,15 +211,18 @@ public:
 	bool getInstrumentSSGToneNoiseEnabled(int instNum) const;
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
 	int getInstrumentSSGToneNoise(int instNum);
-	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
-	void removeToneNoiseSSGSequenceCommand(int tnNum);
-	void setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getToneNoiseSSGSequence(int tnNum);
-	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getToneNoiseSSGLoops(int tnNum) const;
-	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
-	Release getToneNoiseSSGRelease(int tnNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSSGIterator(int tnNum) const;
+	void addToneNoiseSSGSequenceData(int tnNum, int data);
+	void removeToneNoiseSSGSequenceData(int tnNum);
+	void setToneNoiseSSGSequenceData(int tnNum, int cnt, int data);
+	std::vector<SSGToneNoiseUnit> getToneNoiseSSGSequence(int tnNum);
+	void addToneNoiseSSGLoop(int tnNum, const InstrumentSequenceLoop& loop);
+	void removeToneNoiseSSGLoop(int tnNum, int begin, int end);
+	void changeToneNoiseSSGLoop(int tnNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearToneNoiseSSGLoops(int tnNum);
+	InstrumentSequenceLoopRoot getToneNoiseSSGLoopRoot(int tnNum) const;
+	void setToneNoiseSSGRelease(int tnNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getToneNoiseSSGRelease(int tnNum) const;
+	SSGToneNoiseIter getToneNoiseSSGIterator(int tnNum) const;
 	std::multiset<int> getToneNoiseSSGUsers(int tnNum) const;
 	std::vector<int> getToneNoiseSSGEntriedIndices() const;
 	int findFirstAssignableToneNoiseSSG() const;
@@ -288,7 +291,7 @@ public:
 private:
 	std::array<std::shared_ptr<CommandSequence>, 128> wfSSG_;
 	std::array<std::shared_ptr<CommandSequence>, 128> envSSG_;
-	std::array<std::shared_ptr<CommandSequence>, 128> tnSSG_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGToneNoiseUnit>>, 128> tnSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptSSG_;
 

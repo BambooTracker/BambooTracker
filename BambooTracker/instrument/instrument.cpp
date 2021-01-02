@@ -384,17 +384,17 @@ std::vector<PitchUnit> InstrumentFM::getPitchSequence(FMOperatorType op) const
 
 InstrumentSequenceLoopRoot InstrumentFM::getPitchLoopRoot(FMOperatorType op) const
 {
-	return owner_->getPitchFMLoopRoot(arpNum_.at(op));
+	return owner_->getPitchFMLoopRoot(ptNum_.at(op));
 }
 
 InstrumentSequenceRelease InstrumentFM::getPitchRelease(FMOperatorType op) const
 {
-	return owner_->getPitchFMRelease(arpNum_.at(op));
+	return owner_->getPitchFMRelease(ptNum_.at(op));
 }
 
 PitchIter InstrumentFM::getPitchSequenceIterator(FMOperatorType op) const
 {
-	return owner_->getPitchFMIterator(arpNum_.at(op));
+	return owner_->getPitchFMIterator(ptNum_.at(op));
 }
 
 /****************************************/
@@ -500,22 +500,22 @@ int InstrumentSSG::getToneNoiseNumber() const
 	return tnNum_;
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getToneNoiseSequence() const
+std::vector<SSGToneNoiseUnit> InstrumentSSG::getToneNoiseSequence() const
 {
 	return owner_->getToneNoiseSSGSequence(tnNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getToneNoiseLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getToneNoiseLoopRoot() const
 {
-	return owner_->getToneNoiseSSGLoops(tnNum_);
+	return owner_->getToneNoiseSSGLoopRoot(tnNum_);
 }
 
-Release InstrumentSSG::getToneNoiseRelease() const
+InstrumentSequenceRelease InstrumentSSG::getToneNoiseRelease() const
 {
 	return owner_->getToneNoiseSSGRelease(tnNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getToneNoiseSequenceIterator() const
+SSGToneNoiseIter InstrumentSSG::getToneNoiseSequenceIterator() const
 {
 	return owner_->getToneNoiseSSGIterator(tnNum_);
 }
@@ -637,17 +637,17 @@ std::vector<PitchUnit> InstrumentSSG::getPitchSequence() const
 
 InstrumentSequenceLoopRoot InstrumentSSG::getPitchLoopRoot() const
 {
-	return owner_->getPitchSSGLoopRoot(arpNum_);
+	return owner_->getPitchSSGLoopRoot(ptNum_);
 }
 
 InstrumentSequenceRelease InstrumentSSG::getPitchRelease() const
 {
-	return owner_->getPitchSSGRelease(arpNum_);
+	return owner_->getPitchSSGRelease(ptNum_);
 }
 
 PitchIter InstrumentSSG::getPitchSequenceIterator() const
 {
-	return owner_->getPitchSSGIterator(arpNum_);
+	return owner_->getPitchSSGIterator(ptNum_);
 }
 
 /****************************************/
@@ -844,17 +844,17 @@ std::vector<PitchUnit> InstrumentADPCM::getPitchSequence() const
 
 InstrumentSequenceLoopRoot InstrumentADPCM::getPitchLoopRoot() const
 {
-	return owner_->getPitchADPCMLoopRoot(arpNum_);
+	return owner_->getPitchADPCMLoopRoot(ptNum_);
 }
 
 InstrumentSequenceRelease InstrumentADPCM::getPitchRelease() const
 {
-	return owner_->getPitchADPCMRelease(arpNum_);
+	return owner_->getPitchADPCMRelease(ptNum_);
 }
 
 PitchIter InstrumentADPCM::getPitchSequenceIterator() const
 {
-	return owner_->getPitchADPCMIterator(arpNum_);
+	return owner_->getPitchADPCMIterator(ptNum_);
 }
 
 /****************************************/

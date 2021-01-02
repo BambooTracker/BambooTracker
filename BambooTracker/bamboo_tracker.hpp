@@ -158,11 +158,14 @@ public:
 	void setInstrumentSSGWaveformEnabled(int instNum, bool enabled);
 	std::multiset<int> getWaveformSSGUsers(int wfNum) const;
 
-	void addToneNoiseSSGSequenceCommand(int tnNum, int type, int data);
-	void removeToneNoiseSSGSequenceCommand(int tnNum);
-	void setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data);
-	void setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin);
+	void addToneNoiseSSGSequenceData(int tnNum, int data);
+	void removeToneNoiseSSGSequenceData(int tnNum);
+	void setToneNoiseSSGSequenceData(int tnNum, int cnt, int data);
+	void addToneNoiseSSGLoop(int tnNum, const InstrumentSequenceLoop& loop);
+	void removeToneNoiseSSGLoop(int tnNum, int begin, int end);
+	void changeToneNoiseSSGLoop(int tnNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearToneNoiseSSGLoops(int tnNum);
+	void setToneNoiseSSGRelease(int tnNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGToneNoise(int instNum, int tnNum);
 	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
 	std::multiset<int> getToneNoiseSSGUsers(int tnNum) const;

@@ -2442,7 +2442,10 @@ void OPNAController::setFrontSSGSequences(int ch)
 	if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
 	else setRealVolumeSSG(ch);
 
-	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->front());
+	if (tnItSSG_[ch]) {
+		tnItSSG_[ch]->front();
+		writeToneNoiseSSGToRegister(ch);
+	}
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
 	if (auto& arpIt = arpItSSG_[ch]) {
@@ -2501,7 +2504,10 @@ void OPNAController::releaseStartSSGSequences(int ch)
 		}
 	}
 
-	if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next(true));
+	if (tnItSSG_[ch]) {
+		tnItSSG_[ch]->release();
+		writeToneNoiseSSGToRegister(ch);
+	}
 	else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
 	if (auto& arpIt = arpItSSG_[ch]) {
@@ -2557,7 +2563,10 @@ void OPNAController::tickEventSSG(int ch)
 			setRealVolumeSSG(ch);
 		}
 
-		if (tnItSSG_[ch]) writeToneNoiseSSGToRegister(ch, tnItSSG_[ch]->next());
+		if (tnItSSG_[ch]) {
+			tnItSSG_[ch]->next();
+			writeToneNoiseSSGToRegister(ch);
+		}
 		else if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 
 		if (auto& arpIt = arpItSSG_[ch]) {
@@ -2962,15 +2971,15 @@ void OPNAController::writeSquareWaveform(int ch)
 	wfSSG_[ch] = { SSGWaveformType::SQUARE, CommandSequenceUnit::NODATA };
 }
 
-void OPNAController::writeToneNoiseSSGToRegister(int ch, int seqPos)
+void OPNAController::writeToneNoiseSSGToRegister(int ch)
 {
-	if (seqPos == -1) {
+	auto& tnIt = tnItSSG_[ch];
+	if (tnIt->hasEnded()) {
 		if (needMixSetSSG_[ch]) writeToneNoiseSSGToRegisterNoReference(ch);
 		return;
 	}
 
-	int type = tnItSSG_[ch]->getCommandType();
-	if (type == -1) return;
+	int type = tnIt->data().data;
 
 	uint8_t prevMixer = mixerSSG_;
 	if (!type) {	// tone

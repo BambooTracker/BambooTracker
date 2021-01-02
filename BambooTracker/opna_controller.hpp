@@ -375,7 +375,7 @@ private:
 	SSGWaveform wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandSequenceUnit envSSG_[3];
-	std::unique_ptr<CommandSequence::Iterator> tnItSSG_[3];
+	SSGToneNoiseIter tnItSSG_[3];
 	ArpeggioIterInterface arpItSSG_[3];
 	PitchIter ptItSSG_[3];
 	bool isArpEffSSG_[3];
@@ -406,7 +406,7 @@ private:
 	void writeWaveformSSGToRegister(int ch, int seqPos);
 	void writeSquareWaveform(int ch);
 
-	void writeToneNoiseSSGToRegister(int ch, int seqPos);
+	void writeToneNoiseSSGToRegister(int ch);
 	void writeToneNoiseSSGToRegisterNoReference(int ch);
 
 	void writeEnvelopeSSGToRegister(int ch, int seqPos);

@@ -507,33 +507,33 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getToneNoiseSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instMan.lock()->getToneNoiseSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instMan.lock()->getToneNoiseSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instMan.lock()->getToneNoiseSSGRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -1396,28 +1396,25 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 							}
 						}
 						if (l == 0)
-							instManLocked->setToneNoiseSSGSequenceCommand(tnNum, 0, data, 0);
+							instManLocked->setToneNoiseSSGSequenceData(tnNum, 0, data);
 						else
-							instManLocked->addToneNoiseSSGSequenceCommand(tnNum, data, 0);
+							instManLocked->addToneNoiseSSGSequenceData(tnNum, data);
 					}
 
 					uint16_t loopCnt = propCtr.readUint16(tnCsr);
 					tnCsr += 2;
-					if (loopCnt > 0) {
-						std::vector<int> begins, ends, times;
-						for (uint16_t l = 0; l < loopCnt; ++l) {
-							begins.push_back(propCtr.readUint16(tnCsr));
-							tnCsr += 2;
-							ends.push_back(propCtr.readUint16(tnCsr));
-							tnCsr += 2;
-							times.push_back(propCtr.readUint8(tnCsr++));
-						}
-						instManLocked->setToneNoiseSSGLoops(tnNum, begins, ends, times);
+					for (uint16_t l = 0; l < loopCnt; ++l) {
+						int begin = propCtr.readUint16(tnCsr);
+						tnCsr += 2;
+						int end = propCtr.readUint16(tnCsr);
+						tnCsr += 2;
+						int times = propCtr.readUint8(tnCsr++);
+						instManLocked->addToneNoiseSSGLoop(tnNum, InstrumentSequenceLoop(begin, end, times));
 					}
 
 					switch (propCtr.readUint8(tnCsr++)) {
 					case 0x00:	// No release
-						instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
+						instManLocked->setToneNoiseSSGRelease(tnNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					case 0x01:	// Fixed
 					{
@@ -1425,8 +1422,8 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						tnCsr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::FixedRelease, pos);
-						else instManLocked->setToneNoiseSSGRelease(tnNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setToneNoiseSSGRelease(tnNum, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+						else instManLocked->setToneNoiseSSGRelease(tnNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					default:

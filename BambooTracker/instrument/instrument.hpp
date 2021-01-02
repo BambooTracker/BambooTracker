@@ -150,10 +150,10 @@ public:
 	bool getToneNoiseEnabled() const;
 	void setToneNoiseNumber(int n);
 	int getToneNoiseNumber() const;
-	std::vector<CommandSequenceUnit> getToneNoiseSequence() const;
-	std::vector<Loop> getToneNoiseLoops() const;
-	Release getToneNoiseRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getToneNoiseSequenceIterator() const;
+	std::vector<SSGToneNoiseUnit> getToneNoiseSequence() const;
+	InstrumentSequenceLoopRoot getToneNoiseLoopRoot() const;
+	InstrumentSequenceRelease getToneNoiseRelease() const;
+	SSGToneNoiseIter getToneNoiseSequenceIterator() const;
 
 	void setEnvelopeEnabled(bool enabled);
 	bool getEnvelopeEnabled() const;

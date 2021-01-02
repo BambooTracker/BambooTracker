@@ -149,13 +149,13 @@ InstrumentSequenceBaseUnit NoteSlideEffectIterator::data() const
 
 int NoteSlideEffectIterator::next()
 {
-	if (started_) {
-		return (++pos_ < static_cast<int>(seq_.size())) ? pos_ : -1;
+	if (started_ && !hasEnded()) {
+		if (++pos_ >= static_cast<int>(seq_.size())) pos_ = END_SEQ_POS;
 	}
 	else {
 		started_ = true;
-		return pos_;
 	}
+	return pos_;
 }
 
 int NoteSlideEffectIterator::front()

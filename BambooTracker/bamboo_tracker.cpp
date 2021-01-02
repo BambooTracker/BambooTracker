@@ -513,29 +513,44 @@ std::multiset<int> BambooTracker::getWaveformSSGUsers(int wfNum) const
 	return instMan_->getWaveformSSGUsers(wfNum);
 }
 
-void BambooTracker::addToneNoiseSSGSequenceCommand(int tnNum, int type, int data)
+void BambooTracker::addToneNoiseSSGSequenceData(int tnNum, int data)
 {
-	instMan_->addToneNoiseSSGSequenceCommand(tnNum, type, data);
+	instMan_->addToneNoiseSSGSequenceData(tnNum, data);
 }
 
-void BambooTracker::removeToneNoiseSSGSequenceCommand(int tnNum)
+void BambooTracker::removeToneNoiseSSGSequenceData(int tnNum)
 {
-	instMan_->removeToneNoiseSSGSequenceCommand(tnNum);
+	instMan_->removeToneNoiseSSGSequenceData(tnNum);
 }
 
-void BambooTracker::setToneNoiseSSGSequenceCommand(int tnNum, int cnt, int type, int data)
+void BambooTracker::setToneNoiseSSGSequenceData(int tnNum, int cnt, int data)
 {
-	instMan_->setToneNoiseSSGSequenceCommand(tnNum, cnt, type, data);
+	instMan_->setToneNoiseSSGSequenceData(tnNum, cnt, data);
 }
 
-void BambooTracker::setToneNoiseSSGLoops(int tnNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addToneNoiseSSGLoop(int tnNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setToneNoiseSSGLoops(tnNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addToneNoiseSSGLoop(tnNum, loop);
 }
 
-void BambooTracker::setToneNoiseSSGRelease(int tnNum, ReleaseType type, int begin)
+void BambooTracker::removeToneNoiseSSGLoop(int tnNum, int begin, int end)
 {
-	instMan_->setToneNoiseSSGRelease(tnNum, type, begin);
+	instMan_->removeToneNoiseSSGLoop(tnNum, begin, end);
+}
+
+void BambooTracker::changeToneNoiseSSGLoop(int tnNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeToneNoiseSSGLoop(tnNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearToneNoiseSSGLoops(int tnNum)
+{
+	instMan_->clearToneNoiseSSGLoops(tnNum);
+}
+
+void BambooTracker::setToneNoiseSSGRelease(int tnNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setToneNoiseSSGRelease(tnNum, release);
 }
 
 void BambooTracker::setInstrumentSSGToneNoise(int instNum, int tnNum)
