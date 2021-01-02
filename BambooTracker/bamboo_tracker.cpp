@@ -815,29 +815,44 @@ std::multiset<int> BambooTracker::getSampleADPCMUsers(int sampNum) const
 	return instMan_->getSampleADPCMUsers(sampNum);
 }
 
-void BambooTracker::addEnvelopeADPCMSequenceCommand(int envNum, int type, int data)
+void BambooTracker::addEnvelopeADPCMSequenceData(int envNum, int data)
 {
-	instMan_->addEnvelopeADPCMSequenceCommand(envNum, type, data);
+	instMan_->addEnvelopeADPCMSequenceData(envNum, data);
 }
 
-void BambooTracker::removeEnvelopeADPCMSequenceCommand(int envNum)
+void BambooTracker::removeEnvelopeADPCMSequenceData(int envNum)
 {
-	instMan_->removeEnvelopeADPCMSequenceCommand(envNum);
+	instMan_->removeEnvelopeADPCMSequenceData(envNum);
 }
 
-void BambooTracker::setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data)
+void BambooTracker::setEnvelopeADPCMSequenceData(int envNum, int cnt, int data)
 {
-	instMan_->setEnvelopeADPCMSequenceCommand(envNum, cnt, type, data);
+	instMan_->setEnvelopeADPCMSequenceData(envNum, cnt, data);
 }
 
-void BambooTracker::setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addEnvelopeADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setEnvelopeADPCMLoops(envNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addEnvelopeADPCMLoop(arpNum, loop);
 }
 
-void BambooTracker::setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin)
+void BambooTracker::removeEnvelopeADPCMLoop(int arpNum, int begin, int end)
 {
-	instMan_->setEnvelopeADPCMRelease(envNum, type, begin);
+	instMan_->removeEnvelopeADPCMLoop(arpNum, begin, end);
+}
+
+void BambooTracker::changeEnvelopeADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeEnvelopeADPCMLoop(arpNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearEnvelopeADPCMLoops(int arpNum)
+{
+	instMan_->clearEnvelopeADPCMLoops(arpNum);
+}
+
+void BambooTracker::setEnvelopeADPCMRelease(int arpNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setEnvelopeADPCMRelease(arpNum, release);
 }
 
 void BambooTracker::setInstrumentADPCMEnvelope(int instNum, int envNum)

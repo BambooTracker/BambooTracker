@@ -128,7 +128,7 @@ struct Release
 class CommandSequence : public AbstractInstrumentProperty
 {
 public:
-	CommandSequence(int num, SequenceType seqType = SequenceType::NO_SEQUENCE_TYPE, int comType = 0, int comData = -1);
+	CommandSequence(int num, SequenceType seqType = SequenceType::PlainSequence, int comType = 0, int comData = -1);
 	CommandSequence(const CommandSequence& other);
 	virtual ~CommandSequence() = default;
 	friend bool operator==(const CommandSequence& a, const CommandSequence& b);
@@ -166,7 +166,7 @@ public:
 	public:
 		explicit Iterator(CommandSequence* seq);
 		int getPosition() const override;
-		int getSequenceType() const override;
+		SequenceType getSequenceType() const override;
 		int getCommandType() const override;
 		int getCommandData() const override;
 		int next(bool isReleaseBegin = false) override;
@@ -500,11 +500,11 @@ public:
 	InstrumentSequenceRelease getRelease() const noexcept { return release_; }
 	inline void setRelease(const InstrumentSequenceRelease& release) { release_ = release; }
 
-	class Iterator final : public SequenceIterator2<T>
+	class Iterator final : public SequenceIterator<T>
 	{
 	public:
 		explicit Iterator(const InstrumentSequenceProperty* seqProp)
-			: SequenceIterator2<T>(0),
+			: SequenceIterator<T>(0),
 			  seqProp_(seqProp),
 			  started_(false),
 			  loopStack_(seqProp->loop_),

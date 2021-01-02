@@ -747,24 +747,24 @@ int InstrumentADPCM::getEnvelopeNumber() const
 	return envNum_;
 }
 
-std::vector<CommandSequenceUnit> InstrumentADPCM::getEnvelopeSequence() const
+std::vector<ADPCMEnvelopeUnit> InstrumentADPCM::getEnvelopeSequence() const
 {
 	return owner_->getEnvelopeADPCMSequence(envNum_);
 }
 
-std::vector<Loop> InstrumentADPCM::getEnvelopeLoops() const
+InstrumentSequenceLoopRoot InstrumentADPCM::getEnvelopeLoopRoot() const
 {
-	return owner_->getEnvelopeADPCMLoops(envNum_);
+	return owner_->getEnvelopeADPCMLoopRoot(arpNum_);
 }
 
-Release InstrumentADPCM::getEnvelopeRelease() const
+InstrumentSequenceRelease InstrumentADPCM::getEnvelopeRelease() const
 {
-	return owner_->getEnvelopeADPCMRelease(envNum_);
+	return owner_->getEnvelopeADPCMRelease(arpNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentADPCM::getEnvelopeSequenceIterator() const
+ADPCMEnvelopeIter InstrumentADPCM::getEnvelopeSequenceIterator() const
 {
-	return owner_->getEnvelopeADPCMIterator(envNum_);
+	return owner_->getEnvelopeADPCMIterator(arpNum_);
 }
 
 void InstrumentADPCM::setArpeggioEnabled(bool enabled)

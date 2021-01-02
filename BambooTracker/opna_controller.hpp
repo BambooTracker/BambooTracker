@@ -122,7 +122,7 @@ private:
 	void fillOutputHistory(const int16_t* outputs, size_t nSamples);
 	void transferReadyHistory();
 
-	using ArpeggioIterInterface = std::unique_ptr<SequenceIterator2<ArpeggioUnit>>;
+	using ArpeggioIterInterface = std::unique_ptr<SequenceIterator<ArpeggioUnit>>;
 	void checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 								 const std::deque<ToneDetail>& baseTone, ToneDetail& keyTone, bool& needToneSet);
 	void checkPortamento(const ArpeggioIterInterface& arpIt, int prtm, bool hasKeyOnBefore,
@@ -527,8 +527,7 @@ private:
 	bool needToneSetADPCM_;
 	size_t startAddrADPCM_, stopAddrADPCM_;	// By 32 bytes
 	size_t storePointADPCM_;	// Move by 32 bytes
-	std::unique_ptr<CommandSequence::Iterator> envItADPCM_;
-	std::unique_ptr<CommandSequence::Iterator> tnItADPCM_;
+	ADPCMEnvelopeIter envItADPCM_;
 	ArpeggioIterInterface arpItADPCM_;
 	PitchIter ptItADPCM_;
 	bool isArpEffADPCM_;
@@ -553,7 +552,7 @@ private:
 	void releaseStartADPCMSequences();
 	void tickEventADPCM();
 
-	void writeEnvelopeADPCMToRegister(int seqPos);
+	void writeEnvelopeADPCMToRegister();
 
 	inline void checkRealToneADPCMByArpeggio()
 	{

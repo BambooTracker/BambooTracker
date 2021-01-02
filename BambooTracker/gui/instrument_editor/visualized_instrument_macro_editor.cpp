@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -44,19 +44,19 @@
 // TODO: TMP
 namespace
 {
-const std::unordered_map<VisualizedInstrumentMacroEditor::ReleaseType, InstrumentSequenceRelease::ReleaseTypeImproved> REL_TYPE_MAP2 = {
-	{ VisualizedInstrumentMacroEditor::ReleaseType::NO_RELEASE, InstrumentSequenceRelease::NoRelease },
-	{ VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE, InstrumentSequenceRelease::FixedRelease },
-	{ VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE, InstrumentSequenceRelease::AbsoluteRelease },
-	{ VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE, InstrumentSequenceRelease::RelativeRelease }
+const std::unordered_map<VisualizedInstrumentMacroEditor::PermittedReleaseFlag, InstrumentSequenceRelease::ReleaseTypeImproved> REL_TYPE_MAP2 = {
+	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::NO_RELEASE, InstrumentSequenceRelease::NoRelease },
+	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::FIXED_RELEASE, InstrumentSequenceRelease::FixedRelease },
+	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::ABSOLUTE_RELEASE, InstrumentSequenceRelease::AbsoluteRelease },
+	{ VisualizedInstrumentMacroEditor::PermittedReleaseFlag::RELATIVE_RELEASE, InstrumentSequenceRelease::RelativeRelease }
 };
 
-InstrumentSequenceRelease::ReleaseTypeImproved convertReleaseTypeForData2(VisualizedInstrumentMacroEditor::ReleaseType type)
+InstrumentSequenceRelease::ReleaseTypeImproved convertReleaseTypeForData2(VisualizedInstrumentMacroEditor::PermittedReleaseFlag type)
 {
 	return REL_TYPE_MAP2.at(type);
 }
 
-VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI2(InstrumentSequenceRelease::ReleaseTypeImproved type)
+VisualizedInstrumentMacroEditor::PermittedReleaseFlag convertReleaseTypeForUI2(InstrumentSequenceRelease::ReleaseTypeImproved type)
 {
 	return std::find_if(REL_TYPE_MAP2.begin(), REL_TYPE_MAP2.end(), [type](const auto& pair) {
 		return (pair.second == type);
@@ -73,8 +73,8 @@ VisualizedInstrumentMacroEditor::VisualizedInstrumentMacroEditor(QWidget *parent
 	  defaultRow_(0),
 	  hovRow_(-1),
 	  hovCol_(-1),
-	  type_(NoType),
-	  permittedReleaseType_(ReleaseType::FIXED_RELEASE),
+	  type_(SequenceType::PlainSequence),
+	  permittedReleaseType_(PermittedReleaseFlag::FIXED_RELEASE),
 	  isLabelOmitted_(false),
 	  release_(InstrumentSequenceRelease::NoRelease),
 	  ui(new Ui::VisualizedInstrumentMacroEditor),
@@ -289,7 +289,7 @@ void VisualizedInstrumentMacroEditor::setRelease(const InstrumentSequenceRelease
 }
 
 // TODO: DEPRECATED
-void VisualizedInstrumentMacroEditor::setRelease(ReleaseType type, int point)
+void VisualizedInstrumentMacroEditor::setRelease(PermittedReleaseFlag type, int point)
 {
 	setRelease(InstrumentSequenceRelease(convertReleaseTypeForData2(type), point));
 }
@@ -617,7 +617,7 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 			continue;
 		}
 
-		if (permittedReleaseType_ & ReleaseType::FIXED_RELEASE) {
+		if (permittedReleaseType_ & PermittedReleaseFlag::FIXED_RELEASE) {
 			m = QRegularExpression("^\\|").match(text);
 			if (m.hasMatch()) {
 				if (release.isEnabled()) return;
@@ -628,7 +628,7 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 			}
 		}
 
-		if (permittedReleaseType_ & ReleaseType::ABSOLUTE_RELEASE) {
+		if (permittedReleaseType_ & PermittedReleaseFlag::ABSOLUTE_RELEASE) {
 			m = QRegularExpression("^/").match(text);
 			if (m.hasMatch()) {
 				if (release.isEnabled()) return;
@@ -639,7 +639,7 @@ void VisualizedInstrumentMacroEditor::interpretMML()
 			}
 		}
 
-		if (permittedReleaseType_ & ReleaseType::RELATIVE_RELEASE) {
+		if (permittedReleaseType_ & PermittedReleaseFlag::RELATIVE_RELEASE) {
 			m = QRegularExpression("^:").match(text);
 			if (m.hasMatch()) {
 				if (release.isEnabled()) return;

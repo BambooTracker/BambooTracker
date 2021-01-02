@@ -84,7 +84,7 @@ AbstractInstrument* DmpIO::load(const BinaryContainer& ctr, const std::string& f
 			ssg->setArpeggioEnabled(true);
 			ssg->setArpeggioNumber(idx);
 			uint8_t arpType = ctr.readUint8(csr + arpSize * 4 + 1);
-			if (arpType == 1) instManLocked->setArpeggioSSGType(idx, SequenceType::FIXED_SEQUENCE);
+			if (arpType == 1) instManLocked->setArpeggioSSGType(idx, SequenceType::FixedSequence);
 			for (uint8_t l = 0; l < arpSize; ++l) {
 				int data = ctr.readInt32(csr) + 36;
 				csr += 4;

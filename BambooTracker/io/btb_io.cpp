@@ -380,9 +380,9 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 				break;
 			}
 			switch (instMan.lock()->getArpeggioFMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -434,8 +434,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 				break;
 			}
 			switch (instMan.lock()->getPitchFMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -637,9 +637,9 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 				break;
 			}
 			switch (instMan.lock()->getArpeggioSSGType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -691,8 +691,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 				break;
 			}
 			switch (instMan.lock()->getPitchSSGType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -737,35 +737,34 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getEnvelopeADPCMSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt32(static_cast<int32_t>(com.data));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
 			}
-			auto loop = instMan.lock()->getEnvelopeADPCMLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instMan.lock()->getEnvelopeADPCMLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instMan.lock()->getEnvelopeADPCMRelease(idx);
 
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -818,9 +817,9 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 				break;
 			}
 			switch (instMan.lock()->getArpeggioADPCMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::FIXED_SEQUENCE:		ctr.appendUint8(0x01);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::FixedSequence:		ctr.appendUint8(0x01);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -872,8 +871,8 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 				break;
 			}
 			switch (instMan.lock()->getPitchADPCMType(idx)) {
-			case SequenceType::ABSOLUTE_SEQUENCE:	ctr.appendUint8(0x00);	break;
-			case SequenceType::RELATIVE_SEQUENCE:	ctr.appendUint8(0x02);	break;
+			case SequenceType::AbsoluteSequence:	ctr.appendUint8(0x00);	break;
+			case SequenceType::RelativeSequence:	ctr.appendUint8(0x02);	break;
 			default:												break;
 			}
 			ctr.writeUint16(ofs, static_cast<uint16_t>(ctr.size() - ofs));
@@ -1165,19 +1164,19 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 							switch (propCtr.readUint8(arpCsr++)) {
 							case 0x00:	// Absolute
-								instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setArpeggioFMType(arpNum, SequenceType::AbsoluteSequence);
 								break;
 							case 0x01:	// Fixed
-								instManLocked->setArpeggioFMType(arpNum, SequenceType::FIXED_SEQUENCE);
+								instManLocked->setArpeggioFMType(arpNum, SequenceType::FixedSequence);
 								break;
 							case 0x02:	// Relative
-								instManLocked->setArpeggioFMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+								instManLocked->setArpeggioFMType(arpNum, SequenceType::RelativeSequence);
 								break;
 							default:
 								if (bankVersion < Version::toBCD(1, 0, 2)) {
 									// Recover deep clone bug
 									// https://github.com/rerrahkr/BambooTracker/issues/170
-									instManLocked->setArpeggioFMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+									instManLocked->setArpeggioFMType(arpNum, SequenceType::AbsoluteSequence);
 									break;
 								}
 								else {
@@ -1263,16 +1262,16 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 							switch (propCtr.readUint8(ptCsr++)) {
 							case 0x00:	// Absolute
-								instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+								instManLocked->setPitchFMType(ptNum, SequenceType::AbsoluteSequence);
 								break;
 							case 0x02:	// Relative
-								instManLocked->setPitchFMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+								instManLocked->setPitchFMType(ptNum, SequenceType::RelativeSequence);
 								break;
 							default:
 								if (bankVersion < Version::toBCD(1, 0, 2)) {
 									// Recover deep clone bug
 									// https://github.com/rerrahkr/BambooTracker/issues/170
-									instManLocked->setPitchFMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+									instManLocked->setPitchFMType(ptNum, SequenceType::AbsoluteSequence);
 									break;
 								}
 								else {
@@ -1576,19 +1575,19 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 					switch (propCtr.readUint8(arpCsr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioSSGType(arpNum, SequenceType::AbsoluteSequence);
 						break;
 					case 0x01:	// Fixed
-						instManLocked->setArpeggioSSGType(arpNum, SequenceType::FIXED_SEQUENCE);
+						instManLocked->setArpeggioSSGType(arpNum, SequenceType::FixedSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setArpeggioSSGType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setArpeggioSSGType(arpNum, SequenceType::RelativeSequence);
 						break;
 					default:
 						if (bankVersion < Version::toBCD(1, 0, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instManLocked->setArpeggioSSGType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setArpeggioSSGType(arpNum, SequenceType::AbsoluteSequence);
 							break;
 						}
 						else {
@@ -1657,16 +1656,16 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 					switch (propCtr.readUint8(ptCsr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchSSGType(ptNum, SequenceType::AbsoluteSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setPitchSSGType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setPitchSSGType(ptNum, SequenceType::RelativeSequence);
 						break;
 					default:
 						if (bankVersion < Version::toBCD(1, 0, 2)) {
 							// Recover deep clone bug
 							// https://github.com/rerrahkr/BambooTracker/issues/170
-							instManLocked->setPitchSSGType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+							instManLocked->setPitchSSGType(ptNum, SequenceType::AbsoluteSequence);
 							break;
 						}
 						else {
@@ -1724,32 +1723,27 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 					for (uint16_t l = 0; l < seqLen; ++l) {
 						uint16_t data = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						int32_t subdata;
-						subdata = propCtr.readInt32(envCsr);
-						envCsr += 4;
+						if (bankVersion < Version::toBCD(1, 2, 1)) envCsr += 4;
 						if (l == 0)
-							instManLocked->setEnvelopeADPCMSequenceCommand(envNum, 0, data, subdata);
+							instManLocked->setEnvelopeADPCMSequenceData(envNum, 0, data);
 						else
-							instManLocked->addEnvelopeADPCMSequenceCommand(envNum, data, subdata);
+							instManLocked->addEnvelopeADPCMSequenceData(envNum, data);
 					}
 
 					uint16_t loopCnt = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (loopCnt > 0) {
-						std::vector<int> begins, ends, times;
-						for (uint16_t l = 0; l < loopCnt; ++l) {
-							begins.push_back(propCtr.readUint16(envCsr));
-							envCsr += 2;
-							ends.push_back(propCtr.readUint16(envCsr));
-							envCsr += 2;
-							times.push_back(propCtr.readUint8(envCsr++));
-						}
-						instManLocked->setEnvelopeADPCMLoops(envNum, begins, ends, times);
+					for (uint16_t l = 0; l < loopCnt; ++l) {
+						int begin = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						int end = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						int times = propCtr.readUint8(envCsr++);
+						instManLocked->addEnvelopeADPCMLoop(envNum, InstrumentSequenceLoop(begin, end, times));
 					}
 
 					switch (propCtr.readUint8(envCsr++)) {
 					case 0x00:	// No release
-						instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						instManLocked->setEnvelopeADPCMRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -1757,24 +1751,24 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 					{
 						uint16_t pos = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::FixedRelease, pos);
-						else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+						else instManLocked->setEnvelopeADPCMRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					case 0x02:	// Absolute
 					{
 						uint16_t pos = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::AbsoluteRelease, pos);
-						else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::AbsoluteRelease, pos));
+						else instManLocked->setEnvelopeADPCMRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					case 0x03:	// Relative
 					{
 						uint16_t pos = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::RelativeRelease, pos);
-						else instManLocked->setEnvelopeADPCMRelease(envNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeADPCMRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::RelativeRelease, pos));
+						else instManLocked->setEnvelopeADPCMRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					default:
@@ -1842,13 +1836,13 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 					switch (propCtr.readUint8(arpCsr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::AbsoluteSequence);
 						break;
 					case 0x01:	// Fixed
-						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::FIXED_SEQUENCE);
+						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::FixedSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setArpeggioADPCMType(arpNum, SequenceType::RelativeSequence);
 						break;
 					default:
 						throw FileCorruptionError(FileType::Bank, arpCsr);
@@ -1915,10 +1909,10 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 
 					switch (propCtr.readUint8(ptCsr++)) {
 					case 0x00:	// Absolute
-						instManLocked->setPitchADPCMType(ptNum, SequenceType::ABSOLUTE_SEQUENCE);
+						instManLocked->setPitchADPCMType(ptNum, SequenceType::AbsoluteSequence);
 						break;
 					case 0x02:	// Relative
-						instManLocked->setPitchADPCMType(ptNum, SequenceType::RELATIVE_SEQUENCE);
+						instManLocked->setPitchADPCMType(ptNum, SequenceType::RelativeSequence);
 						break;
 					default:
 						throw FileCorruptionError(FileType::Bank, ptCsr);

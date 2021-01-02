@@ -101,7 +101,7 @@ AbstractInstrument* OpniIO::loadWOPNInstrument(const WOPNInstrument &srcInst,
 		inst->setArpeggioEnabled(FMOperatorType::All, true);
 		inst->setArpeggioNumber(FMOperatorType::All, arpIdx);
 		instManLocked->setArpeggioFMSequenceData(arpIdx, 0, srcInst.note_offset + 48);
-		instManLocked->setArpeggioFMType(arpIdx, SequenceType::ABSOLUTE_SEQUENCE);
+		instManLocked->setArpeggioFMType(arpIdx, SequenceType::AbsoluteSequence);
 	}
 
 	return inst;

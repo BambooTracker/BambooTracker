@@ -454,9 +454,9 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->arpOpComboBox->addItem("Op3", static_cast<int>(FMOperatorType::Op3));
 	ui->arpOpComboBox->addItem("Op4", static_cast<int>(FMOperatorType::Op4));
 
-	ui->arpTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
-	ui->arpTypeComboBox->addItem(tr("Fixed"), VisualizedInstrumentMacroEditor::SequenceType::FixedSequence);
-	ui->arpTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
+	ui->arpTypeComboBox->addItem(tr("Fixed"), static_cast<int>(SequenceType::FixedSequence));
+	ui->arpTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int) {
@@ -546,8 +546,8 @@ InstrumentEditorFMForm::InstrumentEditorFMForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
-	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
+	ui->ptTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int) {
@@ -1641,8 +1641,7 @@ void InstrumentEditorFMForm::setInstrumentArpeggioParameters()
 	}
 	ui->arpEditor->setRelease(instFM->getArpeggioRelease(param));
 	for (int i = 0; i < ui->arpTypeComboBox->count(); ++i) {
-		if (instFM->getArpeggioType(param) == inst_edit_utils::convertSequenceTypeForData(
-					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->arpTypeComboBox->itemData(i).toInt()))) {
+		if (instFM->getArpeggioType(param) == static_cast<SequenceType>(ui->arpTypeComboBox->itemData(i).toInt())) {
 			ui->arpTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -1683,10 +1682,9 @@ void InstrumentEditorFMForm::onArpeggioTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
-	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(
-					ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
+	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
+		bt_.lock()->setArpeggioFMType(ui->arpNumSpinBox->value(), type);
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
@@ -1743,8 +1741,7 @@ void InstrumentEditorFMForm::setInstrumentPitchParameters()
 	}
 	ui->ptEditor->setRelease(instFM->getPitchRelease(param));
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (instFM->getPitchType(param) == inst_edit_utils::convertSequenceTypeForData(
-					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {
+		if (instFM->getPitchType(param) == static_cast<SequenceType>(ui->ptTypeComboBox->itemData(i).toInt())) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -1785,9 +1782,9 @@ void InstrumentEditorFMForm::onPitchTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
-	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
+	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
+		bt_.lock()->setPitchFMType(ui->ptNumSpinBox->value(), type);
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}

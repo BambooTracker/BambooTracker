@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Rerrah
+ * Copyright (C) 2018-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -77,18 +77,9 @@ public:
 
 	void addLoop(int begin, int end, int times);
 
-	enum SequenceType
-	{
-		NoType,
-		FixedSequence,
-		AbsoluteSequence,
-		RelativeSequence
-	};
-
 	void setSequenceType(SequenceType type);
 
-	// TODO: DEPRECATED
-	enum ReleaseType : int
+	enum PermittedReleaseFlag : int
 	{
 		NO_RELEASE = 0,
 		FIXED_RELEASE = 1,
@@ -99,7 +90,7 @@ public:
 	void setPermittedReleaseTypes(int types);
 	void setRelease(const InstrumentSequenceRelease& release);
 	// TODO: DEPRECATED
-	void setRelease(ReleaseType type, int point);
+	void setRelease(PermittedReleaseFlag type, int point);
 
 	void clearData();
 	void clearRow();
@@ -124,7 +115,7 @@ signals:
 	void releaseChangedImproved(InstrumentSequenceRelease release);
 	// TODO: DEPRECATED
 	void loopChanged(std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void releaseChanged(ReleaseType type, int point);
+	void releaseChanged(PermittedReleaseFlag type, int point);
 	//===============
 
 protected:

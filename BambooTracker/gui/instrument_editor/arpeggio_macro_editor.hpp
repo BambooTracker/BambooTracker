@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,15 +36,12 @@ class ArpeggioMacroEditor final : public VisualizedInstrumentMacroEditor
 
 public:
 	ArpeggioMacroEditor(QWidget *parent = nullptr);
-	~ArpeggioMacroEditor() override;
 
 protected:
 	QString convertSequenceDataUnitToMML(Column col) override;
 	bool interpretDataInMML(QString &text, int &cnt, std::vector<Column> &column) override;
 
 private:
-	static const QString TONE_LABS_[96];
-
 	void updateLabels() override;
 };
 

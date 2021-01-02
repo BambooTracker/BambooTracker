@@ -28,11 +28,11 @@
 #include "sequence_iterator_interface.hpp"
 #include "command_sequence.hpp"
 
-class ArpeggioEffectIterator : public SequenceIterator2<InstrumentSequenceBaseUnit>
+class ArpeggioEffectIterator : public SequenceIterator<InstrumentSequenceBaseUnit>
 {
 public:
 	ArpeggioEffectIterator(int second, int third);
-	SequenceType type() const noexcept override { return SequenceType::ABSOLUTE_SEQUENCE; }
+	SequenceType type() const noexcept override { return SequenceType::AbsoluteSequence; }
 
 	InstrumentSequenceBaseUnit data() const noexcept override;
 
@@ -46,11 +46,11 @@ private:
 	InstrumentSequenceBaseUnit second_, third_;
 };
 
-class WavingEffectIterator : public SequenceIterator2<InstrumentSequenceBaseUnit>
+class WavingEffectIterator : public SequenceIterator<InstrumentSequenceBaseUnit>
 {
 public:
 	WavingEffectIterator(int period, int depth);
-	SequenceType type() const noexcept override { return SequenceType::ABSOLUTE_SEQUENCE; }
+	SequenceType type() const noexcept override { return SequenceType::AbsoluteSequence; }
 
 	InstrumentSequenceBaseUnit data() const override;
 
@@ -65,11 +65,11 @@ private:
 	std::vector<InstrumentSequenceBaseUnit> seq_;
 };
 
-class NoteSlideEffectIterator : public SequenceIterator2<InstrumentSequenceBaseUnit>
+class NoteSlideEffectIterator : public SequenceIterator<InstrumentSequenceBaseUnit>
 {
 public:
 	NoteSlideEffectIterator(int speed, int seminote);
-	SequenceType type() const noexcept override { return SequenceType::ABSOLUTE_SEQUENCE; }
+	SequenceType type() const noexcept override { return SequenceType::AbsoluteSequence; }
 
 	InstrumentSequenceBaseUnit data() const override;
 

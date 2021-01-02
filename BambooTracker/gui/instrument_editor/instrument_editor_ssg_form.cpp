@@ -94,7 +94,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
-					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+					 this, [&](VisualizedInstrumentMacroEditor::PermittedReleaseFlag type, int point) {
 		if (!isIgnoreEvent_) {
 			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setWaveformSSGRelease(ui->waveNumSpinBox->value(), t, point);
@@ -140,7 +140,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->tnEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
-					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+					 this, [&](VisualizedInstrumentMacroEditor::PermittedReleaseFlag type, int point) {
 		if (!isIgnoreEvent_) {
 			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setToneNoiseSSGRelease(ui->tnNumSpinBox->value(), t, point);
@@ -161,9 +161,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->envEditor->autoFitLabelWidth();
 	ui->envEditor->setMultipleReleaseState(true);
 	ui->envEditor->setPermittedReleaseTypes(
-				VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE
-				| VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE
-				| VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE);
+				VisualizedInstrumentMacroEditor::PermittedReleaseFlag::ABSOLUTE_RELEASE
+				| VisualizedInstrumentMacroEditor::PermittedReleaseFlag::RELATIVE_RELEASE
+				| VisualizedInstrumentMacroEditor::PermittedReleaseFlag::FIXED_RELEASE);
 
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
@@ -203,7 +203,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 		}
 	});
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
-					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+					 this, [&](VisualizedInstrumentMacroEditor::PermittedReleaseFlag type, int point) {
 		if (!isIgnoreEvent_) {
 			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
 			bt_.lock()->setEnvelopeSSGRelease(ui->envNumSpinBox->value(), t, point);
@@ -213,9 +213,9 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	});
 
 	//========== Arpeggio ==========//
-	ui->arpTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
-	ui->arpTypeComboBox->addItem(tr("Fixed"), VisualizedInstrumentMacroEditor::SequenceType::FixedSequence);
-	ui->arpTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
+	ui->arpTypeComboBox->addItem(tr("Fixed"), static_cast<int>(SequenceType::FixedSequence));
+	ui->arpTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int) {
@@ -296,8 +296,8 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
-	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
+	ui->ptTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int) {
@@ -740,8 +740,7 @@ void InstrumentEditorSSGForm::setInstrumentArpeggioParameters()
 	}
 	ui->arpEditor->setRelease(instSSG->getArpeggioRelease());
 	for (int i = 0; i < ui->arpTypeComboBox->count(); ++i) {
-		if (instSSG->getArpeggioType() == inst_edit_utils::convertSequenceTypeForData(
-					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->arpTypeComboBox->itemData(i).toInt()))) {
+		if (instSSG->getArpeggioType() == static_cast<SequenceType>(ui->arpTypeComboBox->itemData(i).toInt())) {
 			ui->arpTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -775,10 +774,9 @@ void InstrumentEditorSSGForm::onArpeggioTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
-	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(
-					ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
+	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
+		bt_.lock()->setArpeggioSSGType(ui->arpNumSpinBox->value(), type);
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
@@ -828,8 +826,7 @@ void InstrumentEditorSSGForm::setInstrumentPitchParameters()
 	}
 	ui->ptEditor->setRelease(instSSG->getPitchRelease());
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (instSSG->getPitchType() == inst_edit_utils::convertSequenceTypeForData(
-					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {
+		if (instSSG->getPitchType() == static_cast<SequenceType>(ui->ptTypeComboBox->itemData(i).toInt())) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -863,9 +860,9 @@ void InstrumentEditorSSGForm::onPitchTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
-	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
+	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
+		bt_.lock()->setPitchSSGType(ui->ptNumSpinBox->value(), type);
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}

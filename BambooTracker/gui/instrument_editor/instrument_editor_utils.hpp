@@ -33,12 +33,10 @@
 
 namespace inst_edit_utils
 {
-SequenceType convertSequenceTypeForData(VisualizedInstrumentMacroEditor::SequenceType type);
-VisualizedInstrumentMacroEditor::SequenceType convertSequenceTypeForUI(SequenceType type);
 // TODO: DELETE
-ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::ReleaseType type);
+ReleaseType convertReleaseTypeForData(VisualizedInstrumentMacroEditor::PermittedReleaseFlag type);
 // TODO: DELETE
-VisualizedInstrumentMacroEditor::ReleaseType convertReleaseTypeForUI(ReleaseType type);
+VisualizedInstrumentMacroEditor::PermittedReleaseFlag convertReleaseTypeForUI(ReleaseType type);
 QString generateUsersString(const std::multiset<int>& users);
 }
 

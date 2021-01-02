@@ -204,7 +204,7 @@ int CommandSequence::Iterator::getPosition() const
 	return pos_;
 }
 
-int CommandSequence::Iterator::getSequenceType() const
+SequenceType CommandSequence::Iterator::getSequenceType() const
 {
 	return seq_->type_;
 }

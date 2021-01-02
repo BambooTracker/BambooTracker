@@ -301,7 +301,7 @@ void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 	if (arpIt->hasEnded()) return;
 
 	switch (arpIt->type()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
+	case SequenceType::AbsoluteSequence:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(baseTone.front().octave,
@@ -311,14 +311,14 @@ void OPNAController::checkRealToneByArpeggio(const ArpeggioIterInterface& arpIt,
 		keyTone.note = pair.second;
 		break;
 	}
-	case SequenceType::FIXED_SEQUENCE:
+	case SequenceType::FixedSequence:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(arpIt->data().data);
 		keyTone.octave = pair.first;
 		keyTone.note = pair.second;
 		break;
 	}
-	case SequenceType::RELATIVE_SEQUENCE:	// Relative
+	case SequenceType::RelativeSequence:
 	{
 		std::pair<int, Note> pair = noteNumberToOctaveAndNote(
 										octaveAndNoteToNoteNumber(keyTone.octave, keyTone.note)
@@ -377,10 +377,10 @@ void OPNAController::checkRealToneByPitch(const std::unique_ptr<InstrumentSequen
 	if (ptIt->hasEnded()) return;
 
 	switch (ptIt->type()) {
-	case SequenceType::ABSOLUTE_SEQUENCE:
+	case SequenceType::AbsoluteSequence:
 		sumPitch = ptIt->data().data - 127;
 		break;
-	case SequenceType::RELATIVE_SEQUENCE:
+	case SequenceType::RelativeSequence:
 		sumPitch += (ptIt->data().data - 127);
 		break;
 	default:
@@ -3551,7 +3551,7 @@ void OPNAController::setRealVolumeADPCM()
 {
 	int volume = (tmpVolADPCM_ == -1) ? baseVolADPCM_ : tmpVolADPCM_;
 	if (envItADPCM_) {
-		int type = envItADPCM_->getCommandType();
+		int type = envItADPCM_->data().data;
 		if (type >= 0) volume -= (NSTEP_ADPCM_VOLUME - 1 - type);
 	}
 	if (treItADPCM_) volume += treItADPCM_->data().data;
@@ -3760,7 +3760,10 @@ void OPNAController::setFrontADPCMSequences()
 		sumVolSldADPCM_ += volSldADPCM_;
 		needEnvSetADPCM_ = true;
 	}
-	if (envItADPCM_) writeEnvelopeADPCMToRegister(envItADPCM_->front());
+	if (envItADPCM_) {
+		envItADPCM_->front();
+		writeEnvelopeADPCMToRegister();
+	}
 	else setRealVolumeADPCM();
 
 	if (arpItADPCM_) {
@@ -3801,11 +3804,9 @@ void OPNAController::releaseStartADPCMSequences()
 		needEnvSetADPCM_ = true;
 	}
 	if (envItADPCM_) {
-		int pos = envItADPCM_->next(true);
-		if (pos == -1) {
-			opna_->setRegister(0x10b, 0);
-		}
-		else writeEnvelopeADPCMToRegister(pos);
+		envItADPCM_->release();
+		if (!envItADPCM_->hasEnded()) opna_->setRegister(0x10b, 0);
+		else writeEnvelopeADPCMToRegister();
 	}
 	else {
 		if (!hasPreSetTickEventADPCM_) {
@@ -3857,7 +3858,8 @@ void OPNAController::tickEventADPCM()
 			needEnvSetADPCM_ = true;
 		}
 		if (envItADPCM_) {
-			writeEnvelopeADPCMToRegister(envItADPCM_->next());
+			envItADPCM_->next();
+			writeEnvelopeADPCMToRegister();
 		}
 		else if (needEnvSetADPCM_) {
 			setRealVolumeADPCM();
@@ -3900,9 +3902,9 @@ void OPNAController::tickEventADPCM()
 	}
 }
 
-void OPNAController::writeEnvelopeADPCMToRegister(int seqPos)
+void OPNAController::writeEnvelopeADPCMToRegister()
 {
-	if (seqPos != -1 || needEnvSetADPCM_) {
+	if (!envItADPCM_->hasEnded() || needEnvSetADPCM_) {
 		setRealVolumeADPCM();
 		needEnvSetADPCM_ = false;
 	}

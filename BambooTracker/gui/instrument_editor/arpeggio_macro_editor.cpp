@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Rerrah
+ * Copyright (C) 2019-2021 Rerrah
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,9 @@
 #include "arpeggio_macro_editor.hpp"
 #include <QRegularExpression>
 
-const QString ArpeggioMacroEditor::TONE_LABS_[96] = {
+namespace
+{
+const QString TONE_LABS_[96] = {
 	"C-0", "C#0", "D-0", "D#0", "E-0", "F-0", "F#0", "G-0", "G#0", "A-0", "A#0", "B-0",
 	"C-1", "C#1", "D-1", "D#1", "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1",
 	"C-2", "C#2", "D-2", "D#2", "E-2", "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2",
@@ -36,6 +38,7 @@ const QString ArpeggioMacroEditor::TONE_LABS_[96] = {
 	"C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6", "A-6", "A#6", "B-6",
 	"C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "A-7", "A#7", "B-7"
 };
+}
 
 ArpeggioMacroEditor::ArpeggioMacroEditor(QWidget* parent)
 	: VisualizedInstrumentMacroEditor(parent)
@@ -51,8 +54,6 @@ ArpeggioMacroEditor::ArpeggioMacroEditor(QWidget* parent)
 	setMMLDisplay0As(-48);
 	setSequenceType(SequenceType::AbsoluteSequence);
 }
-
-ArpeggioMacroEditor::~ArpeggioMacroEditor() {}
 
 QString ArpeggioMacroEditor::convertSequenceDataUnitToMML(Column col)
 {

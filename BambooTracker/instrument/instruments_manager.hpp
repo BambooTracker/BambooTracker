@@ -327,15 +327,18 @@ public:
 	bool getInstrumentADPCMEnvelopeEnabled(int instNum) const;
 	void setInstrumentADPCMEnvelope(int instNum, int envNum);
 	int getInstrumentADPCMEnvelope(int instNum);
-	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeADPCMSequenceCommand(int envNum);
-	void setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getEnvelopeADPCMSequence(int envNum);
-	void setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getEnvelopeADPCMLoops(int envNum) const;
-	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
-	Release getEnvelopeADPCMRelease(int envNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getEnvelopeADPCMIterator(int envNum) const;
+	void addEnvelopeADPCMSequenceData(int envNum, int data);
+	void removeEnvelopeADPCMSequenceData(int envNum);
+	void setEnvelopeADPCMSequenceData(int envNum, int cnt, int data);
+	std::vector<ADPCMEnvelopeUnit> getEnvelopeADPCMSequence(int envNum);
+	void addEnvelopeADPCMLoop(int envNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeADPCMLoop(int envNum, int begin, int end);
+	void changeEnvelopeADPCMLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeADPCMLoops(int envNum);
+	InstrumentSequenceLoopRoot getEnvelopeADPCMLoopRoot(int envNum) const;
+	void setEnvelopeADPCMRelease(int envNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getEnvelopeADPCMRelease(int envNum) const;
+	ADPCMEnvelopeIter getEnvelopeADPCMIterator(int envNum) const;
 	std::multiset<int> getEnvelopeADPCMUsers(int envNum) const;
 	std::vector<int> getEnvelopeADPCMEntriedIndices() const;
 	int findFirstAssignableEnvelopeADPCM() const;
@@ -386,7 +389,7 @@ public:
 
 private:
 	std::array<std::shared_ptr<SampleADPCM>, 128> sampADPCM_;
-	std::array<std::shared_ptr<CommandSequence>, 128> envADPCM_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<ADPCMEnvelopeUnit>>, 128> envADPCM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpADPCM_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptADPCM_;
 

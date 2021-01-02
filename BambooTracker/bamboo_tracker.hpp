@@ -221,11 +221,14 @@ public:
 	void setInstrumentADPCMSample(int instNum, int sampNum);
 	std::multiset<int> getSampleADPCMUsers(int sampNum) const;
 
-	void addEnvelopeADPCMSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeADPCMSequenceCommand(int envNum);
-	void setEnvelopeADPCMSequenceCommand(int envNum, int cnt, int type, int data);
-	void setEnvelopeADPCMLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setEnvelopeADPCMRelease(int envNum, ReleaseType type, int begin);
+	void addEnvelopeADPCMSequenceData(int envNum, int data);
+	void removeEnvelopeADPCMSequenceData(int envNum);
+	void setEnvelopeADPCMSequenceData(int envNum, int cnt, int data);
+	void addEnvelopeADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeADPCMLoop(int arpNum, int begin, int end);
+	void changeEnvelopeADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeADPCMLoops(int arpNum);
+	void setEnvelopeADPCMRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentADPCMEnvelope(int instNum, int envNum);
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);
 	std::multiset<int> getEnvelopeADPCMUsers(int envNum) const;

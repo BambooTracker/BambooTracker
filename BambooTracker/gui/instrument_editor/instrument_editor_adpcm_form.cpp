@@ -73,15 +73,14 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	ui->envEditor->setUpperRow(255);
 	ui->envEditor->setMultipleReleaseState(true);
 	ui->envEditor->setPermittedReleaseTypes(
-				VisualizedInstrumentMacroEditor::ReleaseType::ABSOLUTE_RELEASE
-				| VisualizedInstrumentMacroEditor::ReleaseType::RELATIVE_RELEASE
-				| VisualizedInstrumentMacroEditor::ReleaseType::FIXED_RELEASE);
+				VisualizedInstrumentMacroEditor::PermittedReleaseFlag::ABSOLUTE_RELEASE
+				| VisualizedInstrumentMacroEditor::PermittedReleaseFlag::RELATIVE_RELEASE
+				| VisualizedInstrumentMacroEditor::PermittedReleaseFlag::FIXED_RELEASE);
 
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
-					 this, [&](int row, int col) {
+					 this, [&](int row, int) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->addEnvelopeADPCMSequenceCommand(
-						ui->envNumSpinBox->value(), row, ui->envEditor->getSequenceDataAt(col));
+			bt_.lock()->addEnvelopeADPCMSequenceData(ui->envNumSpinBox->value(), row);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -89,7 +88,7 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
 					 this, [&]() {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->removeEnvelopeADPCMSequenceCommand(ui->envNumSpinBox->value());
+			bt_.lock()->removeEnvelopeADPCMSequenceData(ui->envNumSpinBox->value());
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -97,35 +96,56 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setEnvelopeADPCMSequenceCommand(
-						ui->envNumSpinBox->value(), col, row, ui->envEditor->getSequenceDataAt(col));
+			bt_.lock()->setEnvelopeADPCMSequenceData(ui->envNumSpinBox->value(), col, row);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopChanged,
-					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopAdded,
+					 this, [&](InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setEnvelopeADPCMLoops(
-						ui->envNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
+			bt_.lock()->addEnvelopeADPCMLoop(ui->envNumSpinBox->value(), loop);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
-	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
-					 this, [&](VisualizedInstrumentMacroEditor::ReleaseType type, int point) {
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopRemoved,
+					 this, [&](int begin, int end) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
-			bt_.lock()->setEnvelopeADPCMRelease(ui->envNumSpinBox->value(), t, point);
+			bt_.lock()->removeEnvelopeADPCMLoop(ui->envNumSpinBox->value(), begin, end);
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopCleared,
+					 this, [&] {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->clearEnvelopeADPCMLoops(ui->envNumSpinBox->value());
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->changeEnvelopeADPCMLoop(ui->envNumSpinBox->value(), prevBegin, prevEnd, loop);
+			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->envEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+					 this, [&](InstrumentSequenceRelease release) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setEnvelopeADPCMRelease(ui->envNumSpinBox->value(), release);
 			emit envelopeParameterChanged(ui->envNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
 
 	//========== Arpeggio ==========//
-	ui->arpTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
-	ui->arpTypeComboBox->addItem(tr("Fixed"), VisualizedInstrumentMacroEditor::SequenceType::FixedSequence);
-	ui->arpTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
+	ui->arpTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
+	ui->arpTypeComboBox->addItem(tr("Fixed"), static_cast<int>(SequenceType::FixedSequence));
+	ui->arpTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
 	QObject::connect(ui->arpEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int) {
@@ -206,8 +226,8 @@ InstrumentEditorADPCMForm::InstrumentEditorADPCMForm(int num, QWidget *parent) :
 	ui->ptEditor->setUpperRow(134);
 	ui->ptEditor->setMMLDisplay0As(-127);
 
-	ui->ptTypeComboBox->addItem(tr("Absolute"), VisualizedInstrumentMacroEditor::SequenceType::AbsoluteSequence);
-	ui->ptTypeComboBox->addItem(tr("Relative"), VisualizedInstrumentMacroEditor::SequenceType::RelativeSequence);
+	ui->ptTypeComboBox->addItem(tr("Absolute"), static_cast<int>(SequenceType::AbsoluteSequence));
+	ui->ptTypeComboBox->addItem(tr("Relative"), static_cast<int>(SequenceType::RelativeSequence));
 
 	QObject::connect(ui->ptEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int) {
@@ -408,14 +428,13 @@ void InstrumentEditorADPCMForm::setInstrumentEnvelopeParameters()
 
 	ui->envNumSpinBox->setValue(instADPCM->getEnvelopeNumber());
 	ui->envEditor->clearData();
-	for (auto& com : instADPCM->getEnvelopeSequence()) {
-		ui->envEditor->addSequenceCommand(com.type);
+	for (auto& unit : instADPCM->getEnvelopeSequence()) {
+		ui->envEditor->addSequenceCommand(unit.data);
 	}
-	for (auto& l : instADPCM->getEnvelopeLoops()) {
-		ui->envEditor->addLoop(l.begin, l.end, l.times);
+	for (auto& loop : instADPCM->getEnvelopeLoopRoot().getAllLoops()) {
+		ui->envEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
 	}
-	ui->envEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instADPCM->getEnvelopeRelease().type),
-							  instADPCM->getEnvelopeRelease().begin);
+	ui->envEditor->setRelease(instADPCM->getEnvelopeRelease());
 	if (instADPCM->getEnvelopeEnabled()) {
 		ui->envEditGroupBox->setChecked(true);
 		onEnvelopeNumberChanged();
@@ -483,8 +502,7 @@ void InstrumentEditorADPCMForm::setInstrumentArpeggioParameters()
 	}
 	ui->arpEditor->setRelease(instADPCM->getArpeggioRelease());
 	for (int i = 0; i < ui->arpTypeComboBox->count(); ++i) {
-		if (instADPCM->getArpeggioType() == inst_edit_utils::convertSequenceTypeForData(
-					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->arpTypeComboBox->itemData(i).toInt()))) {
+		if (instADPCM->getArpeggioType() == static_cast<SequenceType>(ui->arpTypeComboBox->itemData(i).toInt())) {
 			ui->arpTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -518,10 +536,9 @@ void InstrumentEditorADPCMForm::onArpeggioTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
-	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(
-					ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
+	auto type = static_cast<SequenceType>(ui->arpTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setArpeggioADPCMType(ui->arpNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
+		bt_.lock()->setArpeggioADPCMType(ui->arpNumSpinBox->value(), type);
 		emit arpeggioParameterChanged(ui->arpNumSpinBox->value(), instNum_);
 		emit modified();
 	}
@@ -571,8 +588,7 @@ void InstrumentEditorADPCMForm::setInstrumentPitchParameters()
 	}
 	ui->ptEditor->setRelease(instADPCM->getPitchRelease());
 	for (int i = 0; i < ui->ptTypeComboBox->count(); ++i) {
-		if (instADPCM->getPitchType() == inst_edit_utils::convertSequenceTypeForData(
-					static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->itemData(i).toInt()))) {
+		if (instADPCM->getPitchType() == static_cast<SequenceType>(ui->ptTypeComboBox->itemData(i).toInt())) {
 			ui->ptTypeComboBox->setCurrentIndex(i);
 			break;
 		}
@@ -606,9 +622,9 @@ void InstrumentEditorADPCMForm::onPitchTypeChanged(int index)
 {
 	Q_UNUSED(index)
 
-	auto type = static_cast<VisualizedInstrumentMacroEditor::SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
+	auto type = static_cast<SequenceType>(ui->ptTypeComboBox->currentData(Qt::UserRole).toInt());
 	if (!isIgnoreEvent_) {
-		bt_.lock()->setPitchADPCMType(ui->ptNumSpinBox->value(), inst_edit_utils::convertSequenceTypeForData(type));
+		bt_.lock()->setPitchADPCMType(ui->ptNumSpinBox->value(), type);
 		emit pitchParameterChanged(ui->ptNumSpinBox->value(), instNum_);
 		emit modified();
 	}
