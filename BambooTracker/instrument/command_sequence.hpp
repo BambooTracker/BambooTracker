@@ -221,6 +221,7 @@ struct InstrumentSequenceExtendUnit : public InstrumentSequenceBaseUnit
 {
 	enum SubdataType : int
 	{
+		UnusedSubdata,
 		RawSubdata,
 		RatioSubdata,
 		ShiftSubdata
@@ -236,6 +237,7 @@ struct InstrumentSequenceExtendUnit : public InstrumentSequenceBaseUnit
 	InstrumentSequenceExtendUnit() noexcept;
 	explicit InstrumentSequenceExtendUnit(int d, SubdataType subType, int subData) noexcept;
 
+	static InstrumentSequenceExtendUnit makeOnlyDataUnit(int data) noexcept;
 	static InstrumentSequenceExtendUnit makeRawUnit(int data, int sub) noexcept;
 	static InstrumentSequenceExtendUnit makeRatioUnit(int data, int subFirst, int subSecond) noexcept;
 	static InstrumentSequenceExtendUnit makeShiftUnit(int data, int rshift) noexcept;

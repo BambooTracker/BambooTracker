@@ -33,6 +33,7 @@
 #include "instrument.hpp"
 #include "configuration.hpp"
 #include "jamming.hpp"
+#include "instrument/instrument_property_defs.hpp"
 #include "gui/instrument_editor/visualized_instrument_macro_editor.hpp"
 #include "gui/color_palette.hpp"
 
@@ -83,7 +84,7 @@ public slots:
 
 private:
 	void setInstrumentWaveformParameters();
-	void setWaveformSequenceColumn(int col);
+	SSGWaveformUnit setWaveformSequenceColumn(int col, int wfRow);
 
 private slots:
 	void on_waveEditGroupBox_toggled(bool arg1);

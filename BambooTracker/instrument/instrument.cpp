@@ -460,24 +460,24 @@ int InstrumentSSG::getWaveformNumber() const
 	return wfNum_;
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getWaveformSequence() const
+std::vector<SSGWaveformUnit> InstrumentSSG::getWaveformSequence() const
 {
 	return owner_->getWaveformSSGSequence(wfNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getWaveformLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getWaveformLoopRoot() const
 {
-	return owner_->getWaveformSSGLoops(wfNum_);
+	return owner_->getWaveformSSGLoopRoot(tnNum_);
 }
 
-Release InstrumentSSG::getWaveformRelease() const
+InstrumentSequenceRelease InstrumentSSG::getWaveformRelease() const
 {
-	return owner_->getWaveformSSGRelease(wfNum_);
+	return owner_->getWaveformSSGRelease(tnNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getWaveformSequenceIterator() const
+SSGWaveformIter InstrumentSSG::getWaveformSequenceIterator() const
 {
-	return owner_->getWaveformSSGIterator(wfNum_);
+	return owner_->getWaveformSSGIterator(tnNum_);
 }
 
 void InstrumentSSG::setToneNoiseEnabled(bool enabled)

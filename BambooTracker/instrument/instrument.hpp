@@ -141,10 +141,10 @@ public:
 	bool getWaveformEnabled() const;
 	void setWaveformNumber(int n);
 	int getWaveformNumber() const;
-	std::vector<CommandSequenceUnit> getWaveformSequence() const;
-	std::vector<Loop> getWaveformLoops() const;
-	Release getWaveformRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getWaveformSequenceIterator() const;
+	std::vector<SSGWaveformUnit> getWaveformSequence() const;
+	InstrumentSequenceLoopRoot getWaveformLoopRoot() const;
+	InstrumentSequenceRelease getWaveformRelease() const;
+	SSGWaveformIter getWaveformSequenceIterator() const;
 
 	void setToneNoiseEnabled(bool enabled);
 	bool getToneNoiseEnabled() const;

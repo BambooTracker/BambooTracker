@@ -49,6 +49,20 @@ class InstrumentSSG;
 class InstrumentADPCM;
 class InstrumentDrumkit;
 
+namespace SSGWaveformType {
+enum : int
+{
+	UNSET = SSGWaveformUnit::ERR_DATA,
+	SQUARE = 0,
+	TRIANGLE = 1,
+	SAW = 2,
+	INVSAW = 3,
+	SQM_TRIANGLE = 4,
+	SQM_SAW = 5,
+	SQM_INVSAW = 6
+};
+}
+
 class InstrumentsManager
 {
 public:
@@ -194,15 +208,18 @@ public:
 	bool getInstrumentSSGWaveformEnabled(int instNum) const;
 	void setInstrumentSSGWaveform(int instNum, int wfNum);
 	int getInstrumentSSGWaveform(int instNum);
-	void addWaveformSSGSequenceCommand(int wfNum, int type, int data);
-	void removeWaveformSSGSequenceCommand(int wfNum);
-	void setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getWaveformSSGSequence(int wfNum);
-	void setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getWaveformSSGLoops(int wfNum) const;
-	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
-	Release getWaveformSSGRelease(int wfNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getWaveformSSGIterator(int wfNum) const;
+	void addWaveformSSGSequenceData(int wfNum, const SSGWaveformUnit& data);
+	void removeWaveformSSGSequenceData(int wfNum);
+	void setWaveformSSGSequenceData(int wfNum, int cnt, const SSGWaveformUnit& data);
+	std::vector<SSGWaveformUnit> getWaveformSSGSequence(int wfNum);
+	void addWaveformSSGLoop(int wfNum, const InstrumentSequenceLoop& loop);
+	void removeWaveformSSGLoop(int wfNum, int begin, int end);
+	void changeWaveformSSGLoop(int wfNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearWaveformSSGLoops(int wfNum);
+	InstrumentSequenceLoopRoot getWaveformSSGLoopRoot(int wfNum) const;
+	void setWaveformSSGRelease(int wfNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getWaveformSSGRelease(int wfNum) const;
+	SSGWaveformIter getWaveformSSGIterator(int wfNum) const;
 	std::multiset<int> getWaveformSSGUsers(int wfNum) const;
 	std::vector<int> getWaveformSSGEntriedIndices() const;
 	int findFirstAssignableWaveformSSG() const;
@@ -289,7 +306,7 @@ public:
 	int findFirstAssignablePitchSSG() const;
 
 private:
-	std::array<std::shared_ptr<CommandSequence>, 128> wfSSG_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGWaveformUnit>>, 128> wfSSG_;
 	std::array<std::shared_ptr<CommandSequence>, 128> envSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGToneNoiseUnit>>, 128> tnSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpSSG_;

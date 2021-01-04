@@ -471,29 +471,44 @@ void BambooTracker::setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorT
 }
 
 //--- SSG
-void BambooTracker::addWaveformSSGSequenceCommand(int wfNum, int type, int data)
+void BambooTracker::addWaveformSSGSequenceData(int wfNum, const SSGWaveformUnit& data)
 {
-	instMan_->addWaveformSSGSequenceCommand(wfNum, type, data);
+	instMan_->addWaveformSSGSequenceData(wfNum, data);
 }
 
-void BambooTracker::removeWaveformSSGSequenceCommand(int wfNum)
+void BambooTracker::removeWaveformSSGSequenceData(int wfNum)
 {
-	instMan_->removeWaveformSSGSequenceCommand(wfNum);
+	instMan_->removeWaveformSSGSequenceData(wfNum);
 }
 
-void BambooTracker::setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data)
+void BambooTracker::setWaveformSSGSequenceData(int wfNum, int cnt, const SSGWaveformUnit& data)
 {
-	instMan_->setWaveformSSGSequenceCommand(wfNum, cnt, type, data);
+	instMan_->setWaveformSSGSequenceData(wfNum, cnt, data);
 }
 
-void BambooTracker::setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addWaveformSSGLoop(int wfNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setWaveformSSGLoops(wfNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addWaveformSSGLoop(wfNum, loop);
 }
 
-void BambooTracker::setWaveformSSGRelease(int wfNum, ReleaseType type, int begin)
+void BambooTracker::removeWaveformSSGLoop(int wfNum, int begin, int end)
 {
-	instMan_->setWaveformSSGRelease(wfNum, type, begin);
+	instMan_->removeWaveformSSGLoop(wfNum, begin, end);
+}
+
+void BambooTracker::changeWaveformSSGLoop(int wfNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeWaveformSSGLoop(wfNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearWaveformSSGLoops(int wfNum)
+{
+	instMan_->clearWaveformSSGLoops(wfNum);
+}
+
+void BambooTracker::setWaveformSSGRelease(int wfNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setWaveformSSGRelease(wfNum, release);
 }
 
 void BambooTracker::setInstrumentSSGWaveform(int instNum, int wfNum)

@@ -37,6 +37,26 @@
 #include "misc.hpp"
 #include "gui/gui_utils.hpp"
 
+namespace
+{
+bool isModulatedWaveformSSG(int type)
+{
+	switch (type) {
+	case SSGWaveformType::SQUARE:
+	case SSGWaveformType::TRIANGLE:
+	case SSGWaveformType::SAW:
+	case SSGWaveformType::INVSAW:
+		return false;
+	case SSGWaveformType::SQM_TRIANGLE:
+	case SSGWaveformType::SQM_SAW:
+	case SSGWaveformType::SQM_INVSAW:
+		return true;
+	default:
+		throw std::invalid_argument("Invalid SSGWaveformType");
+	}
+}
+}
+
 InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::InstrumentEditorSSGForm),
@@ -59,9 +79,13 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandAdded,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (isModulatedWaveformSSG(row)) setWaveformSequenceColumn(col);	// Set square-mask frequency
-			bt_.lock()->addWaveformSSGSequenceCommand(
-						ui->waveNumSpinBox->value(), row, ui->waveEditor->getSequenceDataAt(col));
+			if (isModulatedWaveformSSG(row)) {
+				SSGWaveformUnit data = setWaveformSequenceColumn(col, row);	// Set square-mask frequency
+				bt_.lock()->addWaveformSSGSequenceData(ui->waveNumSpinBox->value(), data);
+			}
+			else {
+				bt_.lock()->addWaveformSSGSequenceData(ui->waveNumSpinBox->value(), SSGWaveformUnit::makeOnlyDataUnit(row));
+			}
 			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -69,7 +93,7 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandRemoved,
 					 this, [&]() {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->removeWaveformSSGSequenceCommand(ui->waveNumSpinBox->value());
+			bt_.lock()->removeWaveformSSGSequenceData(ui->waveNumSpinBox->value());
 			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -77,27 +101,53 @@ InstrumentEditorSSGForm::InstrumentEditorSSGForm(int num, QWidget *parent) :
 	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::sequenceCommandChanged,
 					 this, [&](int row, int col) {
 		if (!isIgnoreEvent_) {
-			if (isModulatedWaveformSSG(row)) setWaveformSequenceColumn(col);	// Set square-mask frequency
-			bt_.lock()->setWaveformSSGSequenceCommand(
-						ui->waveNumSpinBox->value(), col, row, ui->waveEditor->getSequenceDataAt(col));
+			if (isModulatedWaveformSSG(row)) {
+				SSGWaveformUnit data = setWaveformSequenceColumn(col, row);	// Set square-mask frequency
+				bt_.lock()->setWaveformSSGSequenceData(ui->waveNumSpinBox->value(), col, data);
+			}
+			else {
+				bt_.lock()->setWaveformSSGSequenceData(ui->waveNumSpinBox->value(), col, SSGWaveformUnit::makeOnlyDataUnit(row));
+			}
 			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
-	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopChanged,
-					 this, [&](std::vector<int> begins, std::vector<int> ends, std::vector<int> times) {
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopAdded,
+					 this, [&](InstrumentSequenceLoop loop) {
 		if (!isIgnoreEvent_) {
-			bt_.lock()->setWaveformSSGLoops(
-						ui->waveNumSpinBox->value(), std::move(begins), std::move(ends), std::move(times));
+			bt_.lock()->addWaveformSSGLoop(ui->waveNumSpinBox->value(), loop);
 			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
 	});
-	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChanged,
-					 this, [&](VisualizedInstrumentMacroEditor::PermittedReleaseFlag type, int point) {
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopRemoved,
+					 this, [&](int begin, int end) {
 		if (!isIgnoreEvent_) {
-			ReleaseType t = inst_edit_utils::convertReleaseTypeForData(type);
-			bt_.lock()->setWaveformSSGRelease(ui->waveNumSpinBox->value(), t, point);
+			bt_.lock()->removeWaveformSSGLoop(ui->waveNumSpinBox->value(), begin, end);
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopCleared,
+					 this, [&] {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->clearWaveformSSGLoops(ui->waveNumSpinBox->value());
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::loopChangedImproved,
+					 this, [&](int prevBegin, int prevEnd, InstrumentSequenceLoop loop) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->changeWaveformSSGLoop(ui->waveNumSpinBox->value(), prevBegin, prevEnd, loop);
+			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
+			emit modified();
+		}
+	});
+	QObject::connect(ui->waveEditor, &VisualizedInstrumentMacroEditor::releaseChangedImproved,
+					 this, [&](InstrumentSequenceRelease release) {
+		if (!isIgnoreEvent_) {
+			bt_.lock()->setWaveformSSGRelease(ui->waveNumSpinBox->value(), release);
 			emit waveformParameterChanged(ui->waveNumSpinBox->value(), instNum_);
 			emit modified();
 		}
@@ -483,24 +533,24 @@ void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
 
 	ui->waveNumSpinBox->setValue(instSSG->getWaveformNumber());
 	ui->waveEditor->clearData();
-	for (auto& com : instSSG->getWaveformSequence()) {
+	for (auto& unit : instSSG->getWaveformSequence()) {
 		QString str("");
-		if (isModulatedWaveformSSG(com.type)) {
-			if (CommandSequenceUnit::checkDataType(com.data) == CommandSequenceUnit::RATIO) {
-				auto ratio = CommandSequenceUnit::data2ratio(com.data);
-				str = QString("%1/%2").arg(ratio.first).arg(ratio.second);
+		if (isModulatedWaveformSSG(unit.data)) {
+			if (unit.type == SSGWaveformUnit::RatioSubdata) {
+				int r1, r2;
+				unit.getSubdataAsRatio(r1, r2);
+				str = QString("%1/%2").arg(r1).arg(r2);
 			}
 			else {
-				str = QString::number(com.data);
+				str = QString::number(unit.data);
 			}
 		}
-		ui->waveEditor->addSequenceCommand(com.type, str, com.data);
+		ui->waveEditor->addSequenceCommand(unit.type, str, unit.data);
 	}
-	for (auto& l : instSSG->getWaveformLoops()) {
-		ui->waveEditor->addLoop(l.begin, l.end, l.times);
+	for (auto& loop : instSSG->getWaveformLoopRoot().getAllLoops()) {
+		ui->waveEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());
 	}
-	ui->waveEditor->setRelease(inst_edit_utils::convertReleaseTypeForUI(instSSG->getWaveformRelease().type),
-							   instSSG->getWaveformRelease().begin);
+	ui->waveEditor->setRelease(instSSG->getWaveformRelease());
 	if (instSSG->getWaveformEnabled()) {
 		ui->waveEditGroupBox->setChecked(true);
 		onWaveformNumberChanged();
@@ -510,20 +560,23 @@ void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
 	}
 }
 
-void InstrumentEditorSSGForm::setWaveformSequenceColumn(int col)
+SSGWaveformUnit InstrumentEditorSSGForm::setWaveformSequenceColumn(int col, int wfRow)
 {
 	auto button = ui->squareMaskButtonGroup->checkedButton();
 	if (button == ui->squareMaskRawRadioButton) {
-		ui->waveEditor->setText(col, QString::number(ui->squareMaskRawSpinBox->value()));
-		ui->waveEditor->setData(col, ui->squareMaskRawSpinBox->value());
+		SSGWaveformUnit unit = SSGWaveformUnit::makeRawUnit(wfRow, ui->squareMaskRawSpinBox->value());
+		ui->waveEditor->setText(col, QString::number(unit.subdata));
+		ui->waveEditor->setData(col, unit.subdata);
+		return unit;
 	}
 	else {
+		SSGWaveformUnit unit = SSGWaveformUnit::makeRatioUnit(wfRow, ui->squareMaskToneSpinBox->value(),
+															  ui->squareMaskMaskSpinBox->value());
 		ui->waveEditor->setText(col, QString::number(ui->squareMaskToneSpinBox->value()) + "/"
 								+ QString::number(ui->squareMaskMaskSpinBox->value()));
 
-		ui->waveEditor->setData(col, CommandSequenceUnit::ratio2data(
-									ui->squareMaskToneSpinBox->value(),
-									ui->squareMaskMaskSpinBox->value()));
+		ui->waveEditor->setData(col, unit.subdata);
+		return unit;
 	}
 }
 

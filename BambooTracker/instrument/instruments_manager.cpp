@@ -770,7 +770,10 @@ void InstrumentsManager::clearAll()
 		ptFM_[i] = std::make_shared<InstrumentSequenceProperty<
 				   PitchUnit>>(i, SequenceType::AbsoluteSequence, PitchUnit(127), PitchUnit());
 
-		wfSSG_[i] = std::make_shared<CommandSequence>(i);
+		wfSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+					SSGWaveformUnit>>(i, SequenceType::PlainSequence,
+									  SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::SQUARE),
+									  SSGWaveformUnit());
 		tnSSG_[i] = std::make_shared<InstrumentSequenceProperty<
 					SSGToneNoiseUnit>>(i, SequenceType::PlainSequence, SSGToneNoiseUnit(0), SSGToneNoiseUnit());
 		envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::PlainSequence, 15);
@@ -781,7 +784,7 @@ void InstrumentsManager::clearAll()
 
 		sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
 		envADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
-					   ADPCMEnvelopeUnit>>(i, SequenceType::PlainSequence, ADPCMEnvelopeUnit(255), ADPCMEnvelopeUnit());
+					   ADPCMEnvelopeUnit>>(i, SequenceType::PlainSequence, ADPCMEnvelopeUnit(255), ADPCMEnvelopeUnit(), 127);
 		arpADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
 					   ArpeggioUnit>>(i, SequenceType::AbsoluteSequence, ArpeggioUnit(48), ArpeggioUnit());
 		ptADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
@@ -848,7 +851,10 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 					   PitchUnit>>(i, SequenceType::AbsoluteSequence, PitchUnit(127), PitchUnit());
 
 		if (!wfSSG_[i]->isUserInstrument())
-			wfSSG_[i] = std::make_shared<CommandSequence>(i);
+			wfSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+						SSGWaveformUnit>>(i, SequenceType::PlainSequence,
+										  SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::SQUARE),
+										  SSGWaveformUnit());
 		if (!tnSSG_[i]->isUserInstrument())
 			tnSSG_[i] = std::make_shared<InstrumentSequenceProperty<
 						SSGToneNoiseUnit>>(i, SequenceType::PlainSequence, SSGToneNoiseUnit(0), SSGToneNoiseUnit());
@@ -865,7 +871,7 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			sampADPCM_[i] = std::make_shared<SampleADPCM>(i);
 		if (!envADPCM_[i]->isUserInstrument())
 			envADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
-						   ADPCMEnvelopeUnit>>(i, SequenceType::PlainSequence, ADPCMEnvelopeUnit(255), ADPCMEnvelopeUnit());
+						   ADPCMEnvelopeUnit>>(i, SequenceType::PlainSequence, ADPCMEnvelopeUnit(255), ADPCMEnvelopeUnit(), 127);
 		if (!arpADPCM_[i]->isUserInstrument())
 			arpADPCM_[i] = std::make_shared<InstrumentSequenceProperty<
 						   ArpeggioUnit>>(i, SequenceType::AbsoluteSequence, ArpeggioUnit(48), ArpeggioUnit());
@@ -1514,47 +1520,62 @@ int InstrumentsManager::getInstrumentSSGWaveform(int instNum)
 	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)])->getWaveformNumber();
 }
 
-void InstrumentsManager::addWaveformSSGSequenceCommand(int wfNum, int type, int data)
+void InstrumentsManager::addWaveformSSGSequenceData(int wfNum, const SSGWaveformUnit& data)
 {
-	wfSSG_.at(static_cast<size_t>(wfNum))->addSequenceCommand(type, data);
+	wfSSG_.at(static_cast<size_t>(wfNum))->addSequenceUnit(data);
 }
 
-void InstrumentsManager::removeWaveformSSGSequenceCommand(int wfNum)
+void InstrumentsManager::removeWaveformSSGSequenceData(int wfNum)
 {
-	wfSSG_.at(static_cast<size_t>(wfNum))->removeSequenceCommand();
+	wfSSG_.at(static_cast<size_t>(wfNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data)
+void InstrumentsManager::setWaveformSSGSequenceData(int wfNum, int cnt, const SSGWaveformUnit& data)
 {
-	wfSSG_.at(static_cast<size_t>(wfNum))->setSequenceCommand(cnt, type, data);
+	wfSSG_.at(static_cast<size_t>(wfNum))->setSequenceUnit(cnt, data);
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getWaveformSSGSequence(int wfNum)
+std::vector<SSGWaveformUnit> InstrumentsManager::getWaveformSSGSequence(int wfNum)
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getSequence();
 }
 
-void InstrumentsManager::setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addWaveformSSGLoop(int wfNum, const InstrumentSequenceLoop& loop)
 {
-	wfSSG_.at(static_cast<size_t>(wfNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	wfSSG_.at(static_cast<size_t>(wfNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getWaveformSSGLoops(int wfNum) const
+void InstrumentsManager::removeWaveformSSGLoop(int wfNum, int begin, int end)
 {
-	return wfSSG_.at(static_cast<size_t>(wfNum))->getLoops();
+	wfSSG_.at(static_cast<size_t>(wfNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setWaveformSSGRelease(int wfNum, ReleaseType type, int begin)
+void InstrumentsManager::changeWaveformSSGLoop(int wfNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	wfSSG_.at(static_cast<size_t>(wfNum))->setRelease(type, begin);
+	wfSSG_.at(static_cast<size_t>(wfNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getWaveformSSGRelease(int wfNum) const
+void InstrumentsManager::clearWaveformSSGLoops(int wfNum)
+{
+	wfSSG_.at(static_cast<size_t>(wfNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getWaveformSSGLoopRoot(int wfNum) const
+{
+	return wfSSG_.at(static_cast<size_t>(wfNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setWaveformSSGRelease(int wfNum, const InstrumentSequenceRelease& release)
+{
+	wfSSG_.at(static_cast<size_t>(wfNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getWaveformSSGRelease(int wfNum) const
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getWaveformSSGIterator(int wfNum) const
+SSGWaveformIter InstrumentsManager::getWaveformSSGIterator(int wfNum) const
 {
 	return wfSSG_.at(static_cast<size_t>(wfNum))->getIterator();
 }
@@ -1577,11 +1598,11 @@ std::vector<int> InstrumentsManager::getWaveformSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableWaveformSSG() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(wfSSG_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& wf) { return (wf->isUserInstrument() || wf->isEdited()); };
+		cond = [](decltype(wfSSG_.front()) wf) { return (wf->isUserInstrument() || wf->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& wf) { return wf->isUserInstrument(); };
+		cond = [](decltype(wfSSG_.front()) wf) { return wf->isUserInstrument(); };
 	auto&& it = std::find_if_not(wfSSG_.begin(), wfSSG_.end(), cond);
 
 	if (it == wfSSG_.end()) return -1;

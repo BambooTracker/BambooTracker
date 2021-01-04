@@ -80,18 +80,6 @@ enum class FMOperatorType : int
 	All, Op1, Op2, Op3, Op4
 };
 
-enum class SSGWaveformType : int
-{
-	UNSET = -1,
-	SQUARE = 0,
-	TRIANGLE = 1,
-	SAW = 2,
-	INVSAW = 3,
-	SQM_TRIANGLE = 4,
-	SQM_SAW = 5,
-	SQM_INVSAW = 6
-};
-
 enum class EffectDisplayControl
 {
 	Unset, ReverseFMVolumeDelay, ReverseFMBrightness
@@ -201,34 +189,6 @@ inline static size_t getFMChannelCount(SongType type)
 	case SongType::Standard:		return 6;
 	case SongType::FM3chExpanded:	return 9;
 	default:	throw std::invalid_argument("Invalid SongType.");
-	}
-}
-
-DECL_MAYBE_UNUSED
-inline static bool isModulatedWaveformSSG(SSGWaveformType type)
-{
-	switch (type) {
-	case SSGWaveformType::SQUARE:
-	case SSGWaveformType::TRIANGLE:
-	case SSGWaveformType::SAW:
-	case SSGWaveformType::INVSAW:
-		return false;
-	case SSGWaveformType::SQM_TRIANGLE:
-	case SSGWaveformType::SQM_SAW:
-	case SSGWaveformType::SQM_INVSAW:
-		return true;
-	default:
-		throw std::invalid_argument("Invalid SSGWaveformType");
-	}
-}
-
-DECL_MAYBE_UNUSED
-inline static bool isModulatedWaveformSSG(int id)
-{
-	try {
-		return isModulatedWaveformSSG(static_cast<SSGWaveformType>(id));
-	} catch (...) {
-		throw std::invalid_argument("Invalid id");
 	}
 }
 

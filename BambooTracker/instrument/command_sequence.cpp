@@ -396,6 +396,11 @@ InstrumentSequenceExtendUnit::InstrumentSequenceExtendUnit(int d, SubdataType su
 {
 }
 
+InstrumentSequenceExtendUnit InstrumentSequenceExtendUnit::makeOnlyDataUnit(int data) noexcept
+{
+	return InstrumentSequenceExtendUnit(data, SubdataType::UnusedSubdata, ERR_DATA);
+}
+
 InstrumentSequenceExtendUnit InstrumentSequenceExtendUnit::makeRawUnit(int data, int sub) noexcept
 {
 	return InstrumentSequenceExtendUnit(data, SubdataType::RawSubdata, sub);

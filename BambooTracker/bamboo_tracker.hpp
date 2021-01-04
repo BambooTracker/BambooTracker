@@ -149,11 +149,14 @@ public:
 	void setInstrumentFMEnvelopeResetEnabled(int instNum, FMOperatorType op, bool enabled);
 
 	//--- SSG
-	void addWaveformSSGSequenceCommand(int wfNum, int type, int data);
-	void removeWaveformSSGSequenceCommand(int wfNum);
-	void setWaveformSSGSequenceCommand(int wfNum, int cnt, int type, int data);
-	void setWaveformSSGLoops(int wfNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setWaveformSSGRelease(int wfNum, ReleaseType type, int begin);
+	void addWaveformSSGSequenceData(int wfNum, const SSGWaveformUnit& data);
+	void removeWaveformSSGSequenceData(int wfNum);
+	void setWaveformSSGSequenceData(int wfNum, int cnt, const SSGWaveformUnit& data);
+	void addWaveformSSGLoop(int wfNum, const InstrumentSequenceLoop& loop);
+	void removeWaveformSSGLoop(int wfNum, int begin, int end);
+	void changeWaveformSSGLoop(int wfNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearWaveformSSGLoops(int wfNum);
+	void setWaveformSSGRelease(int wfNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGWaveform(int instNum, int wfNum);
 	void setInstrumentSSGWaveformEnabled(int instNum, bool enabled);
 	std::multiset<int> getWaveformSSGUsers(int wfNum) const;

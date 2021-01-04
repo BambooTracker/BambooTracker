@@ -50,12 +50,6 @@ struct SSGToneNoise
 	int noisePeriod_;
 };
 
-struct SSGWaveform
-{
-	SSGWaveformType type;
-	int data;	// Same format with CommandSequenceUnit::data
-};
-
 class OPNAController
 {
 public:
@@ -371,8 +365,8 @@ private:
 	bool needMixSetSSG_[3];
 	bool needToneSetSSG_[3];
 	bool needSqMaskFreqSetSSG_[3];
-	std::unique_ptr<CommandSequence::Iterator> wfItSSG_[3];
-	SSGWaveform wfSSG_[3];
+	SSGWaveformIter wfItSSG_[3];
+	SSGWaveformUnit wfSSG_[3];
 	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
 	CommandSequenceUnit envSSG_[3];
 	SSGToneNoiseIter tnItSSG_[3];
@@ -403,7 +397,7 @@ private:
 	void releaseStartSSGSequences(int ch);
 	void tickEventSSG(int ch);
 
-	void writeWaveformSSGToRegister(int ch, int seqPos);
+	void writeWaveformSSGToRegister(int ch);
 	void writeSquareWaveform(int ch);
 
 	void writeToneNoiseSSGToRegister(int ch);

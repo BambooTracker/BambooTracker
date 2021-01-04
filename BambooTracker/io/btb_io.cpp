@@ -457,34 +457,34 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getWaveformSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt32(static_cast<int32_t>(com.data));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(static_cast<int32_t>(unit.subdata));
 			}
-			auto loop = instMan.lock()->getWaveformSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instMan.lock()->getWaveformSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instMan.lock()->getWaveformSSGRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -1328,28 +1328,25 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						subdata = propCtr.readInt32(wfCsr);
 						wfCsr += 4;
 						if (l == 0)
-							instManLocked->setWaveformSSGSequenceCommand(wfNum, 0, data, subdata);
+							instManLocked->setWaveformSSGSequenceData(wfNum, 0, SSGWaveformUnit::makeRawUnit(data, subdata));
 						else
-							instManLocked->addWaveformSSGSequenceCommand(wfNum, data, subdata);
+							instManLocked->addWaveformSSGSequenceData(wfNum, SSGWaveformUnit::makeRawUnit(data, subdata));
 					}
 
 					uint16_t loopCnt = propCtr.readUint16(wfCsr);
 					wfCsr += 2;
-					if (loopCnt > 0) {
-						std::vector<int> begins, ends, times;
-						for (uint16_t l = 0; l < loopCnt; ++l) {
-							begins.push_back(propCtr.readUint16(wfCsr));
-							wfCsr += 2;
-							ends.push_back(propCtr.readUint16(wfCsr));
-							wfCsr += 2;
-							times.push_back(propCtr.readUint8(wfCsr++));
-						}
-						instManLocked->setWaveformSSGLoops(wfNum, begins, ends, times);
+					for (uint16_t l = 0; l < loopCnt; ++l) {
+						int begin = propCtr.readUint16(wfCsr);
+						wfCsr += 2;
+						int end = propCtr.readUint16(wfCsr);
+						wfCsr += 2;
+						int times = propCtr.readUint8(wfCsr++);
+						instManLocked->addWaveformSSGLoop(wfNum, InstrumentSequenceLoop(begin, end, times));
 					}
 
 					switch (propCtr.readUint8(wfCsr++)) {
 					case 0x00:	// No release
-						instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
+						instManLocked->setWaveformSSGRelease(wfNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					case 0x01:	// Fixed
 					{
@@ -1357,8 +1354,8 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						wfCsr += 2;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
-						if (pos < seqLen) instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::FixedRelease, pos);
-						else instManLocked->setWaveformSSGRelease(wfNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setWaveformSSGRelease(wfNum, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+						else instManLocked->setWaveformSSGRelease(wfNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					default:

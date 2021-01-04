@@ -816,8 +816,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					uint16_t data = ctr.readUint16(csr);
 					csr += 2;
 					if (version < Version::toBCD(1, 2, 0)) {
-						if (data == 3) data = static_cast<int>(SSGWaveformType::SQM_TRIANGLE);
-						else if (data == 4) data = static_cast<int>(SSGWaveformType::SQM_SAW);
+						if (data == 3) data = SSGWaveformType::SQM_TRIANGLE;
+						else if (data == 4) data = SSGWaveformType::SQM_SAW;
 					}
 					int32_t subdata;
 					if (version >= Version::toBCD(1, 2, 0)) {
@@ -831,28 +831,25 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 							subdata = calc_pitch::calculateSSGSquareTP(subdata);
 					}
 					if (l == 0)
-						instManLocked->setWaveformSSGSequenceCommand(idx, 0, data, subdata);
+						instManLocked->setWaveformSSGSequenceData(idx, 0, SSGWaveformUnit::makeRawUnit(data, subdata));
 					else
-						instManLocked->addWaveformSSGSequenceCommand(idx, data, subdata);
+						instManLocked->addWaveformSSGSequenceData(idx,  SSGWaveformUnit::makeRawUnit(data, subdata));
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);
 				csr += 2;
-				if (loopCnt > 0) {
-					std::vector<int> begins, ends, times;
-					for (uint16_t l = 0; l < loopCnt; ++l) {
-						begins.push_back(ctr.readUint16(csr));
-						csr += 2;
-						ends.push_back(ctr.readUint16(csr));
-						csr += 2;
-						times.push_back(ctr.readUint8(csr++));
-					}
-					instManLocked->setWaveformSSGLoops(idx, begins, ends, times);
+				for (uint16_t l = 0; l < loopCnt; ++l) {
+					int begin = ctr.readUint16(csr);
+					csr += 2;
+					int end = ctr.readUint16(csr);
+					csr += 2;
+					int times = ctr.readUint8(csr++);
+					instManLocked->addWaveformSSGLoop(idx, InstrumentSequenceLoop(begin, end, times));
 				}
 
 				switch (ctr.readUint8(csr++)) {
 				case 0x00:	// No release
-					instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+					instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				case 0x01:	// Fixed
 				{
@@ -860,8 +857,8 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 					csr += 2;
 					// Release point check (prevents a bug)
 					// https://github.com/rerrahkr/BambooTracker/issues/11
-					if (pos < seqLen) instManLocked->setWaveformSSGRelease(idx, ReleaseType::FixedRelease, pos);
-					else instManLocked->setWaveformSSGRelease(idx, ReleaseType::NoRelease, -1);
+					if (pos < seqLen) instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+					else instManLocked->setWaveformSSGRelease(idx, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 					break;
 				}
 				default:
@@ -1994,34 +1991,34 @@ void BtmIO::save(BinaryContainer& ctr, const std::weak_ptr<Module> mod,
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instManLocked->getWaveformSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt32(static_cast<int32_t>(com.data));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(static_cast<int32_t>(unit.subdata));
 			}
-			auto loop = instManLocked->getWaveformSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instManLocked->getWaveformSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instManLocked->getWaveformSSGRelease(idx);
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type

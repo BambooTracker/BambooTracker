@@ -2377,7 +2377,7 @@ void OPNAController::initSSG()
 		// Init sequence
 		hasPreSetTickEventSSG_[ch] = false;
 		wfItSSG_[ch].reset();
-		wfSSG_[ch] = { SSGWaveformType::UNSET, CommandSequenceUnit::NODATA };
+		wfSSG_[ch] = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::UNSET);
 		envItSSG_[ch].reset();
 		envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
 		tnItSSG_[ch].reset();
@@ -2428,7 +2428,10 @@ void OPNAController::setFrontSSGSequences(int ch)
 
 	setHardEnvIfNecessary_[ch] = false;
 
-	if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->front());
+	if (auto& wfIt = wfItSSG_[ch]) {
+		wfIt->front();
+		writeWaveformSSGToRegister(ch);
+	}
 	else writeSquareWaveform(ch);
 
 	if (auto& treIt = treItSSG_[ch]) {
@@ -2479,7 +2482,10 @@ void OPNAController::releaseStartSSGSequences(int ch)
 
 	setHardEnvIfNecessary_[ch] = false;
 
-	if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->next(true));
+	if (auto& wfIt = wfItSSG_[ch]) {
+		wfIt->release();
+		writeWaveformSSGToRegister(ch);
+	}
 
 	if (auto& treIt = treItSSG_[ch]) {
 		treIt->release();
@@ -2546,7 +2552,10 @@ void OPNAController::tickEventSSG(int ch)
 
 		setHardEnvIfNecessary_[ch] = false;
 
-		if (wfItSSG_[ch]) writeWaveformSSGToRegister(ch, wfItSSG_[ch]->next());
+		if (auto& wfIt = wfItSSG_[ch]) {
+			wfIt->next();
+			writeWaveformSSGToRegister(ch);
+		}
 
 		if (auto& treIt = treItSSG_[ch]) {
 			treIt->next();
@@ -2596,11 +2605,13 @@ void OPNAController::tickEventSSG(int ch)
 	}
 }
 
-void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
+void OPNAController::writeWaveformSSGToRegister(int ch)
 {
-	if (seqPos == -1) return;
+	auto& wfIt = wfItSSG_[ch];
+	if (wfIt->hasEnded()) return;
 
-	switch (static_cast<SSGWaveformType>(wfItSSG_[ch]->getCommandType())) {
+	SSGWaveformUnit&& data = wfIt->data();
+	switch (data.data) {
 	case SSGWaveformType::SQUARE:
 	{
 		writeSquareWaveform(ch);
@@ -2608,9 +2619,9 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 	}
 	case SSGWaveformType::TRIANGLE:
 	{
-		if (wfSSG_[ch].type == SSGWaveformType::TRIANGLE && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::TRIANGLE && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
@@ -2622,7 +2633,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SAW:
@@ -2650,14 +2661,13 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveformType::TRIANGLE, CommandSequenceUnit::NODATA };
-		return;
+		break;
 	}
 	case SSGWaveformType::SAW:
 	{
-		if (wfSSG_[ch].type == SSGWaveformType::SAW && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SAW && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
@@ -2669,7 +2679,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2697,14 +2707,13 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveformType::SAW, CommandSequenceUnit::NODATA };
-		return;
+		break;
 	}
 	case SSGWaveformType::INVSAW:
 	{
-		if (wfSSG_[ch].type == SSGWaveformType::INVSAW && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::INVSAW && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SQM_TRIANGLE:
@@ -2716,7 +2725,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2744,15 +2753,13 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
 		needSqMaskFreqSetSSG_[ch] = false;
-		wfSSG_[ch] = { SSGWaveformType::INVSAW, CommandSequenceUnit::NODATA };
-		return;
+		break;
 	}
 	case SSGWaveformType::SQM_TRIANGLE:
 	{
-		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == SSGWaveformType::SQM_TRIANGLE && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SQM_TRIANGLE && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
@@ -2763,12 +2770,12 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		if (wfSSG_[ch].data != data) {
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (wfSSG_[ch].subdata != data.subdata) {
+			if (data.type == SSGWaveformUnit::RatioSubdata) {
 				needSqMaskFreqSetSSG_[ch] = true;
 			}
 			else {
-				uint16_t pitch = static_cast<uint16_t>(data);
+				uint16_t pitch = static_cast<uint16_t>(data.subdata);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
@@ -2779,7 +2786,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::SAW:
@@ -2806,15 +2813,13 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { SSGWaveformType::SQM_TRIANGLE, data };
-		return;
+		break;
 	}
 	case SSGWaveformType::SQM_SAW:
 	{
-		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == SSGWaveformType::SQM_SAW && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SQM_SAW && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
@@ -2825,12 +2830,12 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		if (wfSSG_[ch].data != data) {
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (wfSSG_[ch].subdata != data.subdata) {
+			if (data.type == SSGWaveformUnit::RatioSubdata) {
 				needSqMaskFreqSetSSG_[ch] = true;
 			}
 			else {
-				uint16_t pitch = static_cast<uint16_t>(data);
+				uint16_t pitch = static_cast<uint16_t>(data.subdata);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
@@ -2841,7 +2846,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2868,15 +2873,13 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { SSGWaveformType::SQM_SAW, data };
-		return;
+		break;
 	}
 	case SSGWaveformType::SQM_INVSAW:
 	{
-		int data = wfItSSG_[ch]->getCommandData();
-		if (wfSSG_[ch].type == SSGWaveformType::SQM_INVSAW && wfSSG_[ch].data == data && isKeyOnSSG_[ch]) return;
+		if (wfSSG_[ch].data == SSGWaveformType::SQM_INVSAW && wfSSG_[ch].subdata == data.subdata && isKeyOnSSG_[ch]) return;
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
@@ -2887,12 +2890,12 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			break;
 		}
 
-		if (wfSSG_[ch].data != data) {
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (wfSSG_[ch].subdata != data.subdata) {
+			if (data.type == SSGWaveformUnit::RatioSubdata) {
 				needSqMaskFreqSetSSG_[ch] = true;
 			}
 			else {
-				uint16_t pitch = static_cast<uint16_t>(data);
+				uint16_t pitch = static_cast<uint16_t>(data.subdata);
 				uint8_t offset = static_cast<uint8_t>(ch << 1);
 				opna_->setRegister(0x00 + offset, pitch & 0xff);
 				opna_->setRegister(0x01 + offset, pitch >> 8);
@@ -2903,7 +2906,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 			needSqMaskFreqSetSSG_[ch] = false;
 		}
 
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::UNSET:
 		case SSGWaveformType::SQUARE:
 		case SSGWaveformType::TRIANGLE:
@@ -2930,17 +2933,17 @@ void OPNAController::writeWaveformSSGToRegister(int ch, int seqPos)
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
-		wfSSG_[ch] = { SSGWaveformType::SQM_INVSAW, data };
-		return;
-	}
-	default:
 		break;
 	}
+	default:
+		return;
+	}
+	wfSSG_[ch] = std::move(data);
 }
 
 void OPNAController::writeSquareWaveform(int ch)
 {
-	if (wfSSG_[ch].type == SSGWaveformType::SQUARE) {
+	if (wfSSG_[ch].data == SSGWaveformType::SQUARE) {
 		if (!isKeyOnSSG_[ch]) {
 			needEnvSetSSG_[ch] = true;
 			needToneSetSSG_[ch] = true;
@@ -2948,7 +2951,7 @@ void OPNAController::writeSquareWaveform(int ch)
 		return;
 	}
 
-	switch (wfSSG_[ch].type) {
+	switch (wfSSG_[ch].data) {
 	case SSGWaveformType::SQM_TRIANGLE:
 	case SSGWaveformType::SQM_SAW:
 	case SSGWaveformType::SQM_INVSAW:
@@ -2968,7 +2971,7 @@ void OPNAController::writeSquareWaveform(int ch)
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
 	needSqMaskFreqSetSSG_[ch] = false;
-	wfSSG_[ch] = { SSGWaveformType::SQUARE, CommandSequenceUnit::NODATA };
+	wfSSG_[ch] = wfItSSG_[ch]->data();
 }
 
 void OPNAController::writeToneNoiseSSGToRegister(int ch)
@@ -2983,7 +2986,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch)
 
 	uint8_t prevMixer = mixerSSG_;
 	if (!type) {	// tone
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
@@ -3019,7 +3022,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch)
 		}
 	}
 	else if (type > 32) {	// Tone&Noise
-		switch (wfSSG_[ch].type) {
+		switch (wfSSG_[ch].data) {
 		case SSGWaveformType::TRIANGLE:
 		case SSGWaveformType::SAW:
 		case SSGWaveformType::INVSAW:
@@ -3071,7 +3074,7 @@ void OPNAController::writeToneNoiseSSGToRegister(int ch)
 
 void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
 {
-	switch (wfSSG_[ch].type) {
+	switch (wfSSG_[ch].data) {
 	case SSGWaveformType::TRIANGLE:
 	case SSGWaveformType::SAW:
 	case SSGWaveformType::INVSAW:
@@ -3149,7 +3152,7 @@ void OPNAController::writePitchSSG(int ch)
 			+ sumNoteSldSSG_[ch]
 			+ transposeSSG_[ch];
 
-	switch (wfSSG_[ch].type) {
+	switch (wfSSG_[ch].data) {
 	case SSGWaveformType::SQUARE:
 	{
 		uint16_t pitch = calc_pitch::calculateSSGSquareTP(
@@ -3189,12 +3192,12 @@ void OPNAController::writePitchSSG(int ch)
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, true);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, true);
 			}
 		}
@@ -3208,12 +3211,12 @@ void OPNAController::writePitchSSG(int ch)
 		if (needToneSetSSG_[ch]) {
 			opna_->setRegister(0x0b, pitch & 0x00ff);
 			opna_->setRegister(0x0c, pitch >> 8);
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, false);
 			}
 		}
 		else if (needSqMaskFreqSetSSG_[ch]) {
-			if (CommandSequenceUnit::checkDataType(wfSSG_[ch].data) == CommandSequenceUnit::RATIO) {
+			if (wfSSG_[ch].type == SSGWaveformUnit::RatioSubdata) {
 				writeSquareMaskPitchSSG(ch, pitch, false);
 			}
 		}
@@ -3264,9 +3267,10 @@ void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 void OPNAController::writeSquareMaskPitchSSG(int ch, double tonePitch, bool isTriangle)
 {
 	int mul = isTriangle ? 32 : 16;	// Multiple frequency if triangle
-	auto ratio = CommandSequenceUnit::data2ratio(wfSSG_[ch].data);
+	int r1, r2;
+	wfSSG_[ch].getSubdataAsRatio(r1, r2);
 	// Calculate mask period
-	uint16_t period = static_cast<uint16_t>(std::round(ratio.first * mul * tonePitch / ratio.second));
+	uint16_t period = static_cast<uint16_t>(std::round(r1 * mul * tonePitch / r2));
 	uint8_t offset = static_cast<uint8_t>(ch << 1);
 	opna_->setRegister(0x00 + offset, period & 0x00ff);
 	opna_->setRegister(0x01 + offset, period >> 8);

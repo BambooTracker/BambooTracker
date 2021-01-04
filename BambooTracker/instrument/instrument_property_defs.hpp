@@ -36,6 +36,9 @@ using ArpeggioIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequen
 using PitchUnit = InstrumentSequenceBaseUnit;
 using PitchIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 
+using SSGWaveformUnit = InstrumentSequenceExtendUnit;
+using SSGWaveformIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceExtendUnit>::Iterator>;
+
 using SSGToneNoiseUnit = InstrumentSequenceBaseUnit;
 using SSGToneNoiseIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 
