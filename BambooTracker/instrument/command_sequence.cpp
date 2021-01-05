@@ -386,7 +386,7 @@ InstrumentSequenceBaseUnit::InstrumentSequenceBaseUnit(int d) noexcept
 
 InstrumentSequenceExtendUnit::InstrumentSequenceExtendUnit() noexcept
 	: InstrumentSequenceBaseUnit(),
-	  type(InstrumentSequenceExtendUnit::RawSubdata),
+	  type(InstrumentSequenceExtendUnit::UnusedSubdata),
 	  subdata(InstrumentSequenceBaseUnit::ERR_DATA)
 {
 }

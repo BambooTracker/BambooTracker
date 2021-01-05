@@ -540,22 +540,22 @@ int InstrumentSSG::getEnvelopeNumber() const
 	return envNum_;
 }
 
-std::vector<CommandSequenceUnit> InstrumentSSG::getEnvelopeSequence() const
+std::vector<SSGEnvelopeUnit> InstrumentSSG::getEnvelopeSequence() const
 {
 	return owner_->getEnvelopeSSGSequence(envNum_);
 }
 
-std::vector<Loop> InstrumentSSG::getEnvelopeLoops() const
+InstrumentSequenceLoopRoot InstrumentSSG::getEnvelopeLoopRoot() const
 {
-	return owner_->getEnvelopeSSGLoops(envNum_);
+	return owner_->getEnvelopeSSGLoopRoot(envNum_);
 }
 
-Release InstrumentSSG::getEnvelopeRelease() const
+InstrumentSequenceRelease InstrumentSSG::getEnvelopeRelease() const
 {
 	return owner_->getEnvelopeSSGRelease(envNum_);
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentSSG::getEnvelopeSequenceIterator() const
+SSGEnvelopeIter InstrumentSSG::getEnvelopeSequenceIterator() const
 {
 	return owner_->getEnvelopeSSGIterator(envNum_);
 }

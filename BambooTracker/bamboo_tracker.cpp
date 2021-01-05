@@ -585,29 +585,44 @@ std::multiset<int> BambooTracker::getToneNoiseSSGUsers(int tnNum) const
 	return instMan_->getToneNoiseSSGUsers(tnNum);
 }
 
-void BambooTracker::addEnvelopeSSGSequenceCommand(int envNum, int type, int data)
+void BambooTracker::addEnvelopeSSGSequenceData(int envNum, const SSGEnvelopeUnit& data)
 {
-	instMan_->addEnvelopeSSGSequenceCommand(envNum, type, data);
+	instMan_->addEnvelopeSSGSequenceData(envNum, data);
 }
 
-void BambooTracker::removeEnvelopeSSGSequenceCommand(int envNum)
+void BambooTracker::removeEnvelopeSSGSequenceData(int envNum)
 {
-	instMan_->removeEnvelopeSSGSequenceCommand(envNum);
+	instMan_->removeEnvelopeSSGSequenceData(envNum);
 }
 
-void BambooTracker::setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data)
+void BambooTracker::setEnvelopeSSGSequenceData(int envNum, int cnt, const SSGEnvelopeUnit& data)
 {
-	instMan_->setEnvelopeSSGSequenceCommand(envNum, cnt, type, data);
+	instMan_->setEnvelopeSSGSequenceData(envNum, cnt, data);
 }
 
-void BambooTracker::setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void BambooTracker::addEnvelopeSSGLoop(int envNum, const InstrumentSequenceLoop& loop)
 {
-	instMan_->setEnvelopeSSGLoops(envNum, std::move(begins), std::move(ends), std::move(times));
+	instMan_->addEnvelopeSSGLoop(envNum, loop);
 }
 
-void BambooTracker::setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin)
+void BambooTracker::removeEnvelopeSSGLoop(int envNum, int begin, int end)
 {
-	instMan_->setEnvelopeSSGRelease(envNum, type, begin);
+	instMan_->removeEnvelopeSSGLoop(envNum, begin, end);
+}
+
+void BambooTracker::changeEnvelopeSSGLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+{
+	instMan_->changeEnvelopeSSGLoop(envNum, prevBegin, prevEnd, loop);
+}
+
+void BambooTracker::clearEnvelopeSSGLoops(int envNum)
+{
+	instMan_->clearEnvelopeSSGLoops(envNum);
+}
+
+void BambooTracker::setEnvelopeSSGRelease(int envNum, const InstrumentSequenceRelease& release)
+{
+	instMan_->setEnvelopeSSGRelease(envNum, release);
 }
 
 void BambooTracker::setInstrumentSSGEnvelope(int instNum, int envNum)

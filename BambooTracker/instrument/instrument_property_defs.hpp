@@ -42,5 +42,8 @@ using SSGWaveformIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSeq
 using SSGToneNoiseUnit = InstrumentSequenceBaseUnit;
 using SSGToneNoiseIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;
 
+using SSGEnvelopeUnit = InstrumentSequenceExtendUnit;
+using SSGEnvelopeIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceExtendUnit>::Iterator>;
+
 using ADPCMEnvelopeUnit = InstrumentSequenceBaseUnit;
 using ADPCMEnvelopeIter = std::unique_ptr<InstrumentSequenceProperty<InstrumentSequenceBaseUnit>::Iterator>;

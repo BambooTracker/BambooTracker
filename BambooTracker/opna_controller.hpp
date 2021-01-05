@@ -367,8 +367,8 @@ private:
 	bool needSqMaskFreqSetSSG_[3];
 	SSGWaveformIter wfItSSG_[3];
 	SSGWaveformUnit wfSSG_[3];
-	std::unique_ptr<CommandSequence::Iterator> envItSSG_[3];
-	CommandSequenceUnit envSSG_[3];
+	SSGEnvelopeIter envItSSG_[3];
+	SSGEnvelopeUnit envSSG_[3];
 	SSGToneNoiseIter tnItSSG_[3];
 	ArpeggioIterInterface arpItSSG_[3];
 	PitchIter ptItSSG_[3];
@@ -403,7 +403,7 @@ private:
 	void writeToneNoiseSSGToRegister(int ch);
 	void writeToneNoiseSSGToRegisterNoReference(int ch);
 
-	void writeEnvelopeSSGToRegister(int ch, int seqPos);
+	void writeEnvelopeSSGToRegister(int ch);
 
 	inline uint8_t SSGToneFlag(int ch) { return (1 << ch); }
 	inline uint8_t SSGNoiseFlag(int ch) { return (8 << ch); }

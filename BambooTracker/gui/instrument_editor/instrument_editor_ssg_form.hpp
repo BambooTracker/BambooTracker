@@ -118,7 +118,7 @@ public slots:
 
 private:
 	void setInstrumentEnvelopeParameters();
-	void setEnvelopeSequenceColumn(int col);
+	SSGEnvelopeUnit setEnvelopeSequenceColumn(int col, int envRow);
 
 private slots:
 	void on_envEditGroupBox_toggled(bool arg1);

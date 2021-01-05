@@ -2161,10 +2161,10 @@ void OPNAController::setRealVolumeSSG(int ch)
 	if (isBuzzEffSSG_[ch] || isHardEnvSSG_[ch]) return;
 
 	int volume = (tmpVolSSG_[ch] == -1) ? baseVolSSG_[ch] : tmpVolSSG_[ch];
-	if (envItSSG_[ch]) {
-		int type = envItSSG_[ch]->getCommandType();
-		if (0 <= type && type < 16) {
-			volume -= (15 - type);
+	if (auto& envIt = envItSSG_[ch]) {
+		int d = envIt->data().data;
+		if (0 <= d && d < 16) {
+			volume -= (15 - d);
 		}
 	}
 	if (auto& treIt = treItSSG_[ch]) volume += treIt->data().data;
@@ -2270,20 +2270,20 @@ void OPNAController::setNoisePitchSSG(int ch, int pitch)
 void OPNAController::setHardEnvelopePeriod(int ch, bool high, int period)
 {
 	bool sendable = isHardEnvSSG_[ch]
-					&& (CommandSequenceUnit::checkDataType(envSSG_[ch].data) == CommandSequenceUnit::RAW);
+					&& (envSSG_[ch].type == SSGEnvelopeUnit::RawSubdata);
 	if (high) {
 		hardEnvPeriodHighSSG_ = period;
 		if (sendable) {
-			envSSG_[ch].data = (period << 8) | (envSSG_[ch].data & 0x00ff);
-			envSSG_[ch].data |= ~(1 << 16);	// raw data flag
+			int sub = (period << 8) | (envSSG_[ch].subdata & 0x00ff);
+			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(envSSG_[ch].data, sub);
 			opna_->setRegister(0x0c, static_cast<uint8_t>(period));
 		}
 	}
 	else {
 		hardEnvPeriodLowSSG_ = period;
 		if (sendable) {
-			envSSG_[ch].data = (envSSG_[ch].data & 0xff00) | period;
-			envSSG_[ch].data |= ~(1 << 16);	// raw data flag
+			int sub = (envSSG_[ch].subdata & 0xff00) | period;
+			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(envSSG_[ch].data, sub);
 			opna_->setRegister(0x0b, static_cast<uint8_t>(period));
 		}
 	}
@@ -2293,21 +2293,21 @@ void OPNAController::setAutoEnvelopeSSG(int ch, int shift, int shape)
 {
 	if (shape) {
 		opna_->setRegister(0x0d, static_cast<uint8_t>(shape));
-		envSSG_[ch].type = AUTO_ENV_SHAPE_TYPE_[shape - 1];
+		int d = AUTO_ENV_SHAPE_TYPE_[shape - 1];
 		opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		isHardEnvSSG_[ch] = true;
 		if (shift == -8) {	// Raw
-			envSSG_[ch].data = (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_;
+			envSSG_[ch] = SSGEnvelopeUnit::makeRawUnit(d, (hardEnvPeriodHighSSG_ << 8) | hardEnvPeriodLowSSG_);
 			opna_->setRegister(0x0c, static_cast<uint8_t>(hardEnvPeriodHighSSG_));
 			opna_->setRegister(0x0b, static_cast<uint8_t>(hardEnvPeriodLowSSG_));
 		}
 		else {
-			envSSG_[ch].data = CommandSequenceUnit::shift2data(shift);
+			envSSG_[ch] = SSGEnvelopeUnit::makeShiftUnit(d, shift);
 		}
 	}
 	else {
 		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		envSSG_[ch] = SSGEnvelopeUnit();
 		// Clear hard envelope in setRealVolumeSSG
 	}
 	needEnvSetSSG_[ch] = true;
@@ -2379,7 +2379,7 @@ void OPNAController::initSSG()
 		wfItSSG_[ch].reset();
 		wfSSG_[ch] = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::UNSET);
 		envItSSG_[ch].reset();
-		envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		envSSG_[ch] = SSGEnvelopeUnit();
 		tnItSSG_[ch].reset();
 		arpItSSG_[ch].reset();
 		ptItSSG_[ch].reset();
@@ -2442,7 +2442,10 @@ void OPNAController::setFrontSSGSequences(int ch)
 		sumVolSldSSG_[ch] += volSldSSG_[ch];
 		needEnvSetSSG_[ch] = true;
 	}
-	if (envItSSG_[ch]) writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->front());
+	if (auto& envIt = envItSSG_[ch]) {
+		envIt->front();
+		writeEnvelopeSSGToRegister(ch);
+	}
 	else setRealVolumeSSG(ch);
 
 	if (tnItSSG_[ch]) {
@@ -2495,13 +2498,13 @@ void OPNAController::releaseStartSSGSequences(int ch)
 		sumVolSldSSG_[ch] += volSldSSG_[ch];
 		needEnvSetSSG_[ch] = true;
 	}
-	if (envItSSG_[ch]) {
-		int pos = envItSSG_[ch]->next(true);
-		if (pos == -1) {
+	if (auto& envIt = envItSSG_[ch]) {
+		envIt->release();
+		if (envIt->hasEnded()) {
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0);
 			isHardEnvSSG_[ch] = false;
 		}
-		else writeEnvelopeSSGToRegister(ch, pos);
+		else writeEnvelopeSSGToRegister(ch);
 	}
 	else {
 		if (!hasPreSetTickEventSSG_[ch]) {
@@ -2565,8 +2568,9 @@ void OPNAController::tickEventSSG(int ch)
 			sumVolSldSSG_[ch] += volSldSSG_[ch];
 			needEnvSetSSG_[ch] = true;
 		}
-		if (envItSSG_[ch]) {
-			writeEnvelopeSSGToRegister(ch, envItSSG_[ch]->next());
+		if (auto& envIt = envItSSG_[ch]) {
+			envIt->next();
+			writeEnvelopeSSGToRegister(ch);
 		}
 		else if (needToneSetSSG_[ch] || needEnvSetSSG_[ch]) {
 			setRealVolumeSSG(ch);
@@ -2656,7 +2660,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2702,7 +2706,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2748,7 +2752,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2809,7 +2813,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2869,7 +2873,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2929,7 +2933,7 @@ void OPNAController::writeWaveformSSGToRegister(int ch)
 			opna_->setRegister(0x08 + static_cast<uint32_t>(ch), 0x10);
 		}
 
-		if (envSSG_[ch].type == 0) envSSG_[ch] = { -1, CommandSequenceUnit::NODATA };
+		if (envSSG_[ch].data == 0) envSSG_[ch] = SSGEnvelopeUnit();
 
 		needEnvSetSSG_[ch] = false;
 		needToneSetSSG_[ch] = true;
@@ -2971,7 +2975,7 @@ void OPNAController::writeSquareWaveform(int ch)
 	needEnvSetSSG_[ch] = true;
 	needToneSetSSG_[ch] = true;
 	needSqMaskFreqSetSSG_[ch] = false;
-	wfSSG_[ch] = wfItSSG_[ch]->data();
+	wfSSG_[ch] = SSGWaveformUnit::makeOnlyDataUnit(SSGWaveformType::SQUARE);
 }
 
 void OPNAController::writeToneNoiseSSGToRegister(int ch)
@@ -3091,10 +3095,11 @@ void OPNAController::writeToneNoiseSSGToRegisterNoReference(int ch)
 	needMixSetSSG_[ch] = false;
 }
 
-void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
+void OPNAController::writeEnvelopeSSGToRegister(int ch)
 {
 	if (isBuzzEffSSG_[ch]) return;
-	if (seqPos == -1) {
+	auto& envIt = envItSSG_[ch];
+	if (envIt->hasEnded()) {
 		if (needEnvSetSSG_[ch]) {
 			setRealVolumeSSG(ch);
 			needEnvSetSSG_[ch] = false;
@@ -3102,35 +3107,34 @@ void OPNAController::writeEnvelopeSSGToRegister(int ch, int seqPos)
 		return;
 	}
 
-	int type = envItSSG_[ch]->getCommandType();
-	if (type == -1) return;
-	else if (type < 16) {	// Software envelope
+	SSGEnvelopeUnit&& data = envIt->data();
+	if (data.data < 16) {	// Software envelope
 		isHardEnvSSG_[ch] = false;
-		envSSG_[ch] = { type, CommandSequenceUnit::NODATA };
+		envSSG_[ch] = std::move(data);
 		setRealVolumeSSG(ch);
 		needEnvSetSSG_[ch] = false;
 	}
 	else {	// Hardware envelope
-		int data = envItSSG_[ch]->getCommandData();
-		if (envSSG_[ch].data != data || setHardEnvIfNecessary_[ch]) {
-			envSSG_[ch].data = data;
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO) {
+		if (envSSG_[ch].subdata != data.subdata || setHardEnvIfNecessary_[ch]) {
+			envSSG_[ch].type = data.type;
+			envSSG_[ch].subdata = data.subdata;
+			if (data.type == SSGEnvelopeUnit::RatioSubdata) {
 				/* Envelope period is set in writePitchSSG */
 				needEnvSetSSG_[ch] = true;
 			}
 			else {
-				opna_->setRegister(0x0b, 0x00ff & envSSG_[ch].data);
-				opna_->setRegister(0x0c, static_cast<uint8_t>(envSSG_[ch].data >> 8));
+				opna_->setRegister(0x0b, 0x00ff & envSSG_[ch].subdata);
+				opna_->setRegister(0x0c, static_cast<uint8_t>(envSSG_[ch].subdata >> 8));
 				needEnvSetSSG_[ch] = false;
 			}
 		}
 		else {
 			needEnvSetSSG_[ch] = false;
 		}
-		if (envSSG_[ch].type != type || !isKeyOnSSG_[ch] || setHardEnvIfNecessary_[ch]) {
-			opna_->setRegister(0x0d, static_cast<uint8_t>(type - 16 + 8));
-			envSSG_[ch].type = type;
-			if (CommandSequenceUnit::checkDataType(data) == CommandSequenceUnit::RATIO)
+		if (envSSG_[ch].data != data.data || !isKeyOnSSG_[ch] || setHardEnvIfNecessary_[ch]) {
+			opna_->setRegister(0x0d, static_cast<uint8_t>(data.data - 16 + 8));
+			envSSG_[ch].data = data.data;
+			if (data.type == SSGEnvelopeUnit::RatioSubdata)
 				needEnvSetSSG_[ch] = true;
 		}
 		if (!isHardEnvSSG_[ch]) {
@@ -3234,27 +3238,26 @@ void OPNAController::writePitchSSG(int ch)
 void OPNAController::writeAutoEnvelopePitchSSG(int ch, double tonePitch)
 {
 	// Multiple frequency if triangle
-	int div = (envSSG_[ch].type == 18 || envSSG_[ch].type == 22) ? 32 : 16;
+	int div = (envSSG_[ch].data == 18 || envSSG_[ch].data == 22) ? 32 : 16;
 
-	CommandSequenceUnit::DataType type = CommandSequenceUnit::checkDataType(envSSG_[ch].data);
-	switch (type) {
-	case CommandSequenceUnit::RATIO:
+	switch (envSSG_[ch].type) {
+	case SSGEnvelopeUnit::RatioSubdata:
 	{
-		auto ratio = CommandSequenceUnit::data2ratio(envSSG_[ch].data);
-		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * ratio.first / (ratio.second * div)));
+		int r1, r2;
+		envSSG_[ch].getSubdataAsRatio(r1, r2);
+		uint16_t period = static_cast<uint16_t>(std::round(tonePitch * r1 / (r2 * div)));
 		opna_->setRegister(0x0b, 0x00ff & period);
 		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 		break;
 	}
-	case CommandSequenceUnit::LSHIFT:
-	case CommandSequenceUnit::RSHIFT:
+	case SSGEnvelopeUnit::ShiftSubdata:
 	{
 		uint16_t period = static_cast<uint16_t>(std::round(tonePitch / div));
-		int shift = CommandSequenceUnit::data2shift(envSSG_[ch].data);
-		shift = (type == CommandSequenceUnit::LSHIFT) ? -shift : shift;
-		shift -= 4;	// Adjust rate to that of 0CC-FamiTracker
-		if (shift < 0) period <<= -shift;
-		else period >>= shift;
+		int rshift;
+		envSSG_[ch].getSubdataAsShift(rshift);
+		rshift -= 4;	// Adjust rate to that of 0CC-FamiTracker
+		if (rshift < 0) period <<= -rshift;
+		else period >>= rshift;
 		opna_->setRegister(0x0b, 0x00ff & period);
 		opna_->setRegister(0x0c, static_cast<uint8_t>(period >> 8));
 		break;

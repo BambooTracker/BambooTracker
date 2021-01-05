@@ -248,15 +248,18 @@ public:
 	bool getInstrumentSSGEnvelopeEnabled(int instNum) const;
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	int getInstrumentSSGEnvelope(int instNum);
-	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeSSGSequenceCommand(int envNum);
-	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);
-	std::vector<CommandSequenceUnit> getEnvelopeSSGSequence(int envNum);
-	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	std::vector<Loop> getEnvelopeSSGLoops(int envNum) const;
-	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
-	Release getEnvelopeSSGRelease(int envNum) const;
-	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSSGIterator(int envNum) const;
+	void addEnvelopeSSGSequenceData(int envNum, const SSGEnvelopeUnit& data);
+	void removeEnvelopeSSGSequenceData(int envNum);
+	void setEnvelopeSSGSequenceData(int envNum, int cnt, const SSGEnvelopeUnit& data);
+	std::vector<SSGEnvelopeUnit> getEnvelopeSSGSequence(int envNum);
+	void addEnvelopeSSGLoop(int envNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeSSGLoop(int envNum, int begin, int end);
+	void changeEnvelopeSSGLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeSSGLoops(int envNum);
+	InstrumentSequenceLoopRoot getEnvelopeSSGLoopRoot(int envNum) const;
+	void setEnvelopeSSGRelease(int envNum, const InstrumentSequenceRelease& release);
+	InstrumentSequenceRelease getEnvelopeSSGRelease(int envNum) const;
+	SSGEnvelopeIter getEnvelopeSSGIterator(int envNum) const;
 	std::multiset<int> getEnvelopeSSGUsers(int envNum) const;
 	std::vector<int> getEnvelopeSSGEntriedIndices() const;
 	int findFirstAssignableEnvelopeSSG() const;
@@ -307,7 +310,7 @@ public:
 
 private:
 	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGWaveformUnit>>, 128> wfSSG_;
-	std::array<std::shared_ptr<CommandSequence>, 128> envSSG_;
+	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGEnvelopeUnit>>, 128> envSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<SSGToneNoiseUnit>>, 128> tnSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<ArpeggioUnit>>, 128> arpSSG_;
 	std::array<std::shared_ptr<InstrumentSequenceProperty<PitchUnit>>, 128> ptSSG_;

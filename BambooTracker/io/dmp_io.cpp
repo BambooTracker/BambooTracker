@@ -71,11 +71,11 @@ AbstractInstrument* DmpIO::load(const BinaryContainer& ctr, const std::string& f
 				// compensate SN76489's envelope step of 2dB to SSG's 3dB
 				if (data > 0) data = 15 - (15 - data) * 2 / 3;
 				csr += 4;
-				if (l == 0) instManLocked->setEnvelopeSSGSequenceCommand(idx, 0, data, 0);
-				else instManLocked->addEnvelopeSSGSequenceCommand(idx, data, 0);
+				if (l == 0) instManLocked->setEnvelopeSSGSequenceData(idx, 0, SSGEnvelopeUnit::makeOnlyDataUnit(data));
+				else instManLocked->addEnvelopeSSGSequenceData(idx, SSGEnvelopeUnit::makeOnlyDataUnit(data));
 			}
 			int8_t loop = ctr.readInt8(csr++);
-			if (loop >= 0) instManLocked->setEnvelopeSSGLoops(idx, {loop}, {envSize - 1}, {1});
+			if (loop >= 0) instManLocked->addEnvelopeSSGLoop(idx,  InstrumentSequenceLoop(loop, envSize - 1));
 		}
 		uint8_t arpSize = ctr.readUint8(csr++);
 		if (arpSize > 0) {

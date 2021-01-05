@@ -159,10 +159,10 @@ public:
 	bool getEnvelopeEnabled() const;
 	void setEnvelopeNumber(int n);
 	int getEnvelopeNumber() const;
-	std::vector<CommandSequenceUnit> getEnvelopeSequence() const;
-	std::vector<Loop> getEnvelopeLoops() const;
-	Release getEnvelopeRelease() const;
-	std::unique_ptr<CommandSequence::Iterator> getEnvelopeSequenceIterator() const;
+	std::vector<SSGEnvelopeUnit> getEnvelopeSequence() const;
+	InstrumentSequenceLoopRoot getEnvelopeLoopRoot() const;
+	InstrumentSequenceRelease getEnvelopeRelease() const;
+	SSGEnvelopeIter getEnvelopeSequenceIterator() const;
 
 	void setArpeggioEnabled(bool enabled);
 	bool getArpeggioEnabled() const;

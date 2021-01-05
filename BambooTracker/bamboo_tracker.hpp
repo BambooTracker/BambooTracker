@@ -173,11 +173,14 @@ public:
 	void setInstrumentSSGToneNoiseEnabled(int instNum, bool enabled);
 	std::multiset<int> getToneNoiseSSGUsers(int tnNum) const;
 
-	void addEnvelopeSSGSequenceCommand(int envNum, int type, int data);
-	void removeEnvelopeSSGSequenceCommand(int envNum);
-	void setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data);
-	void setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times);
-	void setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin);
+	void addEnvelopeSSGSequenceData(int envNum, const SSGEnvelopeUnit& data);
+	void removeEnvelopeSSGSequenceData(int envNum);
+	void setEnvelopeSSGSequenceData(int envNum, int cnt, const SSGEnvelopeUnit& data);
+	void addEnvelopeSSGLoop(int envNum, const InstrumentSequenceLoop& loop);
+	void removeEnvelopeSSGLoop(int envNum, int begin, int end);
+	void changeEnvelopeSSGLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeSSGLoops(int envNum);
+	void setEnvelopeSSGRelease(int envNum, const InstrumentSequenceRelease& release);
 	void setInstrumentSSGEnvelope(int instNum, int envNum);
 	void setInstrumentSSGEnvelopeEnabled(int instNum, bool enabled);
 	std::multiset<int> getEnvelopeSSGUsers(int envNum) const;

@@ -556,35 +556,35 @@ void BtbIO::save(BinaryContainer& ctr, const std::weak_ptr<InstrumentsManager> i
 			ctr.appendUint16(0);	// Dummy offset
 			auto seq = instMan.lock()->getEnvelopeSSGSequence(idx);
 			ctr.appendUint16(static_cast<uint16_t>(seq.size()));
-			for (auto& com : seq) {
-				ctr.appendUint16(static_cast<uint16_t>(com.type));
-				ctr.appendInt32(static_cast<int32_t>(com.data));
+			for (auto& unit : seq) {
+				ctr.appendUint16(static_cast<uint16_t>(unit.data));
+				ctr.appendInt32(static_cast<int32_t>(unit.subdata));
 			}
-			auto loop = instMan.lock()->getEnvelopeSSGLoops(idx);
-			ctr.appendUint16(static_cast<uint16_t>(loop.size()));
-			for (auto& l : loop) {
-				ctr.appendUint16(static_cast<uint16_t>(l.begin));
-				ctr.appendUint16(static_cast<uint16_t>(l.end));
-				ctr.appendUint8(static_cast<uint8_t>(l.times));
+			auto loops = instMan.lock()->getEnvelopeSSGLoopRoot(idx).getAllLoops();
+			ctr.appendUint16(static_cast<uint16_t>(loops.size()));
+			for (auto& loop : loops) {
+				ctr.appendUint16(static_cast<uint16_t>(loop.getBeginPos()));
+				ctr.appendUint16(static_cast<uint16_t>(loop.getEndPos()));
+				ctr.appendUint8(static_cast<uint8_t>(loop.getTimes()));
 			}
 			auto release = instMan.lock()->getEnvelopeSSGRelease(idx);
 
-			switch (release.type) {
-			case ReleaseType::NoRelease:
+			switch (release.getType()) {
+			case InstrumentSequenceRelease::NoRelease:
 				ctr.appendUint8(0x00);
 				// If release.type is NO_RELEASE, then release.begin == -1 so omit to save it.
 				break;
-			case ReleaseType::FixedRelease:
+			case InstrumentSequenceRelease::FixedRelease:
 				ctr.appendUint8(0x01);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::AbsoluteRelease:
+			case InstrumentSequenceRelease::AbsoluteRelease:
 				ctr.appendUint8(0x02);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
-			case ReleaseType::RelativeRelease:
+			case InstrumentSequenceRelease::RelativeRelease:
 				ctr.appendUint8(0x03);
-				ctr.appendUint16(static_cast<uint16_t>(release.begin));
+				ctr.appendUint16(static_cast<uint16_t>(release.getBeginPos()));
 				break;
 			}
 			ctr.appendUint8(0);	// Skip sequence type
@@ -1327,10 +1327,21 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						int32_t subdata;
 						subdata = propCtr.readInt32(wfCsr);
 						wfCsr += 4;
+						SSGWaveformUnit unit;
+						switch (data) {
+						case SSGWaveformType::SQM_TRIANGLE:
+						case SSGWaveformType::SQM_SAW:
+						case SSGWaveformType::SQM_INVSAW:
+							unit = SSGWaveformUnit::makeUnitWithDecode(data, subdata);
+							break;
+						default:
+							unit = SSGWaveformUnit::makeOnlyDataUnit(data);
+							break;
+						}
 						if (l == 0)
-							instManLocked->setWaveformSSGSequenceData(wfNum, 0, SSGWaveformUnit::makeUnitWithDecode(data, subdata));
+							instManLocked->setWaveformSSGSequenceData(wfNum, 0, unit);
 						else
-							instManLocked->addWaveformSSGSequenceData(wfNum, SSGWaveformUnit::makeUnitWithDecode(data, subdata));
+							instManLocked->addWaveformSSGSequenceData(wfNum, unit);
 					}
 
 					uint16_t loopCnt = propCtr.readUint16(wfCsr);
@@ -1454,29 +1465,28 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						int32_t subdata;
 						subdata = propCtr.readInt32(envCsr);
 						envCsr += 4;
+						SSGEnvelopeUnit unit = (data < 16) ? SSGEnvelopeUnit::makeOnlyDataUnit(data)
+														   : SSGEnvelopeUnit::makeUnitWithDecode(data, subdata);
 						if (l == 0)
-							instManLocked->setEnvelopeSSGSequenceCommand(envNum, 0, data, subdata);
+							instManLocked->setEnvelopeSSGSequenceData(envNum, 0, unit);
 						else
-							instManLocked->addEnvelopeSSGSequenceCommand(envNum, data, subdata);
+							instManLocked->addEnvelopeSSGSequenceData(envNum, unit);
 					}
 
 					uint16_t loopCnt = propCtr.readUint16(envCsr);
 					envCsr += 2;
-					if (loopCnt > 0) {
-						std::vector<int> begins, ends, times;
-						for (uint16_t l = 0; l < loopCnt; ++l) {
-							begins.push_back(propCtr.readUint16(envCsr));
-							envCsr += 2;
-							ends.push_back(propCtr.readUint16(envCsr));
-							envCsr += 2;
-							times.push_back(propCtr.readUint8(envCsr++));
-						}
-						instManLocked->setEnvelopeSSGLoops(envNum, begins, ends, times);
+					for (uint16_t l = 0; l < loopCnt; ++l) {
+						int begin = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						int end = propCtr.readUint16(envCsr);
+						envCsr += 2;
+						int times = propCtr.readUint8(envCsr++);
+						instManLocked->addEnvelopeSSGLoop(envNum, InstrumentSequenceLoop(begin, end, times));
 					}
 
 					switch (propCtr.readUint8(envCsr++)) {
 					case 0x00:	// No release
-						instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						instManLocked->setEnvelopeSSGRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 						// Release point check (prevents a bug)
 						// https://github.com/rerrahkr/BambooTracker/issues/11
@@ -1484,24 +1494,24 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 					{
 						uint16_t pos = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::FixedRelease, pos);
-						else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::FixedRelease, pos));
+						else instManLocked->setEnvelopeSSGRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					case 0x02:	// Absolute
 					{
 						uint16_t pos = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::AbsoluteRelease, pos);
-						else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::AbsoluteRelease, pos));
+						else instManLocked->setEnvelopeSSGRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					case 0x03:	// Relative
 					{
 						uint16_t pos = propCtr.readUint16(envCsr);
 						envCsr += 2;
-						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::RelativeRelease, pos);
-						else instManLocked->setEnvelopeSSGRelease(envNum, ReleaseType::NoRelease, -1);
+						if (pos < seqLen) instManLocked->setEnvelopeSSGRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::RelativeRelease, pos));
+						else instManLocked->setEnvelopeSSGRelease(envNum, InstrumentSequenceRelease(InstrumentSequenceRelease::NoRelease));
 						break;
 					}
 					default:

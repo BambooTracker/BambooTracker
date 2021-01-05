@@ -776,7 +776,8 @@ void InstrumentsManager::clearAll()
 									  SSGWaveformUnit());
 		tnSSG_[i] = std::make_shared<InstrumentSequenceProperty<
 					SSGToneNoiseUnit>>(i, SequenceType::PlainSequence, SSGToneNoiseUnit(0), SSGToneNoiseUnit());
-		envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::PlainSequence, 15);
+		envSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+					 SSGWaveformUnit>>(i, SequenceType::PlainSequence, SSGEnvelopeUnit::makeOnlyDataUnit(15), SSGEnvelopeUnit(), 15);
 		arpSSG_[i] = std::make_shared<InstrumentSequenceProperty<
 					 ArpeggioUnit>>(i, SequenceType::AbsoluteSequence, ArpeggioUnit(48), ArpeggioUnit());
 		ptSSG_[i] = std::make_shared<InstrumentSequenceProperty<
@@ -859,7 +860,8 @@ void InstrumentsManager::clearUnusedInstrumentProperties()
 			tnSSG_[i] = std::make_shared<InstrumentSequenceProperty<
 						SSGToneNoiseUnit>>(i, SequenceType::PlainSequence, SSGToneNoiseUnit(0), SSGToneNoiseUnit());
 		if (!envSSG_[i]->isUserInstrument())
-			envSSG_[i] = std::make_shared<CommandSequence>(i, SequenceType::PlainSequence, 15);
+			envSSG_[i] = std::make_shared<InstrumentSequenceProperty<
+						 SSGWaveformUnit>>(i, SequenceType::PlainSequence, SSGEnvelopeUnit::makeOnlyDataUnit(15), SSGEnvelopeUnit(), 15);
 		if (!arpSSG_[i]->isUserInstrument())
 			arpSSG_[i] = std::make_shared<InstrumentSequenceProperty<
 						 ArpeggioUnit>>(i, SequenceType::AbsoluteSequence, ArpeggioUnit(48), ArpeggioUnit());
@@ -1762,47 +1764,62 @@ int InstrumentsManager::getInstrumentSSGEnvelope(int instNum)
 	return std::dynamic_pointer_cast<InstrumentSSG>(insts_[static_cast<size_t>(instNum)])->getEnvelopeNumber();
 }
 
-void InstrumentsManager::addEnvelopeSSGSequenceCommand(int envNum, int type, int data)
+void InstrumentsManager::addEnvelopeSSGSequenceData(int envNum, const SSGEnvelopeUnit& data)
 {
-	envSSG_.at(static_cast<size_t>(envNum))->addSequenceCommand(type, data);
+	envSSG_.at(static_cast<size_t>(envNum))->addSequenceUnit(data);
 }
 
-void InstrumentsManager::removeEnvelopeSSGSequenceCommand(int envNum)
+void InstrumentsManager::removeEnvelopeSSGSequenceData(int envNum)
 {
-	envSSG_.at(static_cast<size_t>(envNum))->removeSequenceCommand();
+	envSSG_.at(static_cast<size_t>(envNum))->removeSequenceUnit();
 }
 
-void InstrumentsManager::setEnvelopeSSGSequenceCommand(int envNum, int cnt, int type, int data)
+void InstrumentsManager::setEnvelopeSSGSequenceData(int envNum, int cnt, const SSGEnvelopeUnit& data)
 {
-	envSSG_.at(static_cast<size_t>(envNum))->setSequenceCommand(cnt, type, data);
+	envSSG_.at(static_cast<size_t>(envNum))->setSequenceUnit(cnt, data);
 }
 
-std::vector<CommandSequenceUnit> InstrumentsManager::getEnvelopeSSGSequence(int envNum)
+std::vector<SSGEnvelopeUnit> InstrumentsManager::getEnvelopeSSGSequence(int envNum)
 {
 	return envSSG_.at(static_cast<size_t>(envNum))->getSequence();
 }
 
-void InstrumentsManager::setEnvelopeSSGLoops(int envNum, std::vector<int> begins, std::vector<int> ends, std::vector<int> times)
+void InstrumentsManager::addEnvelopeSSGLoop(int envNum, const InstrumentSequenceLoop& loop)
 {
-	envSSG_.at(static_cast<size_t>(envNum))->setLoops(std::move(begins), std::move(ends), std::move(times));
+	envSSG_.at(static_cast<size_t>(envNum))->addLoop(loop);
 }
 
-std::vector<Loop> InstrumentsManager::getEnvelopeSSGLoops(int envNum) const
+void InstrumentsManager::removeEnvelopeSSGLoop(int envNum, int begin, int end)
 {
-	return envSSG_.at(static_cast<size_t>(envNum))->getLoops();
+	envSSG_.at(static_cast<size_t>(envNum))->removeLoop(begin, end);
 }
 
-void InstrumentsManager::setEnvelopeSSGRelease(int envNum, ReleaseType type, int begin)
+void InstrumentsManager::changeEnvelopeSSGLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	envSSG_.at(static_cast<size_t>(envNum))->setRelease(type, begin);
+	envSSG_.at(static_cast<size_t>(envNum))->changeLoop(prevBegin, prevEnd, loop);
 }
 
-Release InstrumentsManager::getEnvelopeSSGRelease(int envNum) const
+void InstrumentsManager::clearEnvelopeSSGLoops(int envNum)
+{
+	envSSG_.at(static_cast<size_t>(envNum))->clearLoops();
+}
+
+InstrumentSequenceLoopRoot InstrumentsManager::getEnvelopeSSGLoopRoot(int envNum) const
+{
+	return envSSG_.at(static_cast<size_t>(envNum))->getLoopRoot();
+}
+
+void InstrumentsManager::setEnvelopeSSGRelease(int envNum, const InstrumentSequenceRelease& release)
+{
+	envSSG_.at(static_cast<size_t>(envNum))->setRelease(release);
+}
+
+InstrumentSequenceRelease InstrumentsManager::getEnvelopeSSGRelease(int envNum) const
 {
 	return envSSG_.at(static_cast<size_t>(envNum))->getRelease();
 }
 
-std::unique_ptr<CommandSequence::Iterator> InstrumentsManager::getEnvelopeSSGIterator(int envNum) const
+SSGEnvelopeIter InstrumentsManager::getEnvelopeSSGIterator(int envNum) const
 {
 	return envSSG_.at(static_cast<size_t>(envNum))->getIterator();
 }
@@ -1825,11 +1842,11 @@ std::vector<int> InstrumentsManager::getEnvelopeSSGEntriedIndices() const
 
 int InstrumentsManager::findFirstAssignableEnvelopeSSG() const
 {
-	std::function<bool(const std::shared_ptr<CommandSequence>&)> cond;
+	std::function<bool(decltype(envSSG_.front()))> cond;
 	if (regardingUnedited_)
-		cond = [](const std::shared_ptr<CommandSequence>& env) { return (env->isUserInstrument() || env->isEdited()); };
+		cond = [](decltype(envSSG_.front()) env) { return (env->isUserInstrument() || env->isEdited()); };
 	else
-		cond = [](const std::shared_ptr<CommandSequence>& env) { return env->isUserInstrument(); };
+		cond = [](decltype(envSSG_.front()) env) { return env->isUserInstrument(); };
 	auto&& it = std::find_if_not(envSSG_.begin(), envSSG_.end(), cond);
 
 	if (it == envSSG_.end()) return -1;
