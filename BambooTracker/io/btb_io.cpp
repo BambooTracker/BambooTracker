@@ -1328,9 +1328,9 @@ AbstractInstrument* BtbIO::loadInstrument(const BinaryContainer& instCtr,
 						subdata = propCtr.readInt32(wfCsr);
 						wfCsr += 4;
 						if (l == 0)
-							instManLocked->setWaveformSSGSequenceData(wfNum, 0, SSGWaveformUnit::makeRawUnit(data, subdata));
+							instManLocked->setWaveformSSGSequenceData(wfNum, 0, SSGWaveformUnit::makeUnitWithDecode(data, subdata));
 						else
-							instManLocked->addWaveformSSGSequenceData(wfNum, SSGWaveformUnit::makeRawUnit(data, subdata));
+							instManLocked->addWaveformSSGSequenceData(wfNum, SSGWaveformUnit::makeUnitWithDecode(data, subdata));
 					}
 
 					uint16_t loopCnt = propCtr.readUint16(wfCsr);

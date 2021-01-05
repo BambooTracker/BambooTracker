@@ -467,17 +467,17 @@ std::vector<SSGWaveformUnit> InstrumentSSG::getWaveformSequence() const
 
 InstrumentSequenceLoopRoot InstrumentSSG::getWaveformLoopRoot() const
 {
-	return owner_->getWaveformSSGLoopRoot(tnNum_);
+	return owner_->getWaveformSSGLoopRoot(wfNum_);
 }
 
 InstrumentSequenceRelease InstrumentSSG::getWaveformRelease() const
 {
-	return owner_->getWaveformSSGRelease(tnNum_);
+	return owner_->getWaveformSSGRelease(wfNum_);
 }
 
 SSGWaveformIter InstrumentSSG::getWaveformSequenceIterator() const
 {
-	return owner_->getWaveformSSGIterator(tnNum_);
+	return owner_->getWaveformSSGIterator(wfNum_);
 }
 
 void InstrumentSSG::setToneNoiseEnabled(bool enabled)
@@ -754,17 +754,17 @@ std::vector<ADPCMEnvelopeUnit> InstrumentADPCM::getEnvelopeSequence() const
 
 InstrumentSequenceLoopRoot InstrumentADPCM::getEnvelopeLoopRoot() const
 {
-	return owner_->getEnvelopeADPCMLoopRoot(arpNum_);
+	return owner_->getEnvelopeADPCMLoopRoot(envNum_);
 }
 
 InstrumentSequenceRelease InstrumentADPCM::getEnvelopeRelease() const
 {
-	return owner_->getEnvelopeADPCMRelease(arpNum_);
+	return owner_->getEnvelopeADPCMRelease(envNum_);
 }
 
 ADPCMEnvelopeIter InstrumentADPCM::getEnvelopeSequenceIterator() const
 {
-	return owner_->getEnvelopeADPCMIterator(arpNum_);
+	return owner_->getEnvelopeADPCMIterator(envNum_);
 }
 
 void InstrumentADPCM::setArpeggioEnabled(bool enabled)

@@ -542,10 +542,10 @@ void InstrumentEditorSSGForm::setInstrumentWaveformParameters()
 				str = QString("%1/%2").arg(r1).arg(r2);
 			}
 			else {
-				str = QString::number(unit.data);
+				str = QString::number(unit.subdata);
 			}
 		}
-		ui->waveEditor->addSequenceCommand(unit.type, str, unit.data);
+		ui->waveEditor->addSequenceCommand(unit.data, str, unit.subdata);
 	}
 	for (auto& loop : instSSG->getWaveformLoopRoot().getAllLoops()) {
 		ui->waveEditor->addLoop(loop.getBeginPos(), loop.getEndPos(), loop.getTimes());

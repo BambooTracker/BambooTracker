@@ -865,19 +865,19 @@ void BambooTracker::addEnvelopeADPCMLoop(int arpNum, const InstrumentSequenceLoo
 	instMan_->addEnvelopeADPCMLoop(arpNum, loop);
 }
 
-void BambooTracker::removeEnvelopeADPCMLoop(int arpNum, int begin, int end)
+void BambooTracker::removeEnvelopeADPCMLoop(int envNum, int begin, int end)
 {
-	instMan_->removeEnvelopeADPCMLoop(arpNum, begin, end);
+	instMan_->removeEnvelopeADPCMLoop(envNum, begin, end);
 }
 
-void BambooTracker::changeEnvelopeADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
+void BambooTracker::changeEnvelopeADPCMLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop)
 {
-	instMan_->changeEnvelopeADPCMLoop(arpNum, prevBegin, prevEnd, loop);
+	instMan_->changeEnvelopeADPCMLoop(envNum, prevBegin, prevEnd, loop);
 }
 
-void BambooTracker::clearEnvelopeADPCMLoops(int arpNum)
+void BambooTracker::clearEnvelopeADPCMLoops(int envNum)
 {
-	instMan_->clearEnvelopeADPCMLoops(arpNum);
+	instMan_->clearEnvelopeADPCMLoops(envNum);
 }
 
 void BambooTracker::setEnvelopeADPCMRelease(int arpNum, const InstrumentSequenceRelease& release)

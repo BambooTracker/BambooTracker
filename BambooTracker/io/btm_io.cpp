@@ -831,9 +831,9 @@ size_t loadInstrumentPropertySection(std::weak_ptr<InstrumentsManager> instMan,
 							subdata = calc_pitch::calculateSSGSquareTP(subdata);
 					}
 					if (l == 0)
-						instManLocked->setWaveformSSGSequenceData(idx, 0, SSGWaveformUnit::makeRawUnit(data, subdata));
+						instManLocked->setWaveformSSGSequenceData(idx, 0, SSGWaveformUnit::makeUnitWithDecode(data, subdata));
 					else
-						instManLocked->addWaveformSSGSequenceData(idx,  SSGWaveformUnit::makeRawUnit(data, subdata));
+						instManLocked->addWaveformSSGSequenceData(idx,  SSGWaveformUnit::makeUnitWithDecode(data, subdata));
 				}
 
 				uint16_t loopCnt = ctr.readUint16(csr);

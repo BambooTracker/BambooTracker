@@ -231,9 +231,9 @@ public:
 	void removeEnvelopeADPCMSequenceData(int envNum);
 	void setEnvelopeADPCMSequenceData(int envNum, int cnt, int data);
 	void addEnvelopeADPCMLoop(int arpNum, const InstrumentSequenceLoop& loop);
-	void removeEnvelopeADPCMLoop(int arpNum, int begin, int end);
-	void changeEnvelopeADPCMLoop(int arpNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
-	void clearEnvelopeADPCMLoops(int arpNum);
+	void removeEnvelopeADPCMLoop(int envNum, int begin, int end);
+	void changeEnvelopeADPCMLoop(int envNum, int prevBegin, int prevEnd, const InstrumentSequenceLoop& loop);
+	void clearEnvelopeADPCMLoops(int envNum);
 	void setEnvelopeADPCMRelease(int arpNum, const InstrumentSequenceRelease& release);
 	void setInstrumentADPCMEnvelope(int instNum, int envNum);
 	void setInstrumentADPCMEnvelopeEnabled(int instNum, bool enabled);

@@ -241,6 +241,7 @@ struct InstrumentSequenceExtendUnit : public InstrumentSequenceBaseUnit
 	static InstrumentSequenceExtendUnit makeRawUnit(int data, int sub) noexcept;
 	static InstrumentSequenceExtendUnit makeRatioUnit(int data, int subFirst, int subSecond) noexcept;
 	static InstrumentSequenceExtendUnit makeShiftUnit(int data, int rshift) noexcept;
+	static InstrumentSequenceExtendUnit makeUnitWithDecode(int data, int subsrc) noexcept;
 
 	void getSubdataAsRaw(int& raw) const noexcept;
 	void getSubdataAsRatio(int& first, int& second) const noexcept;
@@ -616,10 +617,9 @@ public:
 				break;
 			}
 			}
-			if (next == this->END_SEQ_POS) return this->END_SEQ_POS;
 			this->pos_ = next;
 
-			loopStack_.pushLoopsAtPos(this->pos_);
+			if (next != this->END_SEQ_POS) loopStack_.pushLoopsAtPos(this->pos_);
 
 			return this->pos_;
 		}

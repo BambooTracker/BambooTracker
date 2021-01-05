@@ -417,6 +417,14 @@ InstrumentSequenceExtendUnit InstrumentSequenceExtendUnit::makeShiftUnit(int dat
 	return InstrumentSequenceExtendUnit(data, SubdataType::ShiftSubdata, sub);
 }
 
+InstrumentSequenceExtendUnit InstrumentSequenceExtendUnit::makeUnitWithDecode(int data, int subsrc) noexcept
+{
+	SubdataType type;
+	if (subsrc & 0x20000) type = SubdataType::ShiftSubdata;
+	else type = (subsrc & 0x10000) ? SubdataType::RatioSubdata : SubdataType::RawSubdata;
+	return InstrumentSequenceExtendUnit(data, type, subsrc);
+}
+
 void InstrumentSequenceExtendUnit::getSubdataAsRaw(int& raw) const noexcept
 {
 	raw = subdata;
