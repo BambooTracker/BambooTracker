@@ -3321,7 +3321,7 @@ void MainWindow::on_actionWAV_triggered()
 				FileIOErrorMessageBox::openError(path, false, io::FileType::WAV, this);
 			}
 			else {
-				io::BinaryContainer bc = container.createWavBinary();
+				io::BinaryContainer&& bc = container.createWavBinary();
 				fp.write(bc.getPointer(), bc.size());
 				fp.close();
 				bar();
